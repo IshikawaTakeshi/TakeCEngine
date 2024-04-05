@@ -7,6 +7,12 @@ DirectXCommon* DirectXCommon::GetInstance() {
 	return &instance;
 }
 
+void DirectXCommon::Initialize() {
+
+	//DXGIデバイス初期化
+	InitializeDXGIDevice();
+}
+
 void DirectXCommon::InitializeDXGIDevice() {
 
 	//機能レベルとログ出力用の文字列
@@ -29,7 +35,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 
 	//HRESULTはWindows系のエラーコードであり、
 	//関数が成功したかどうかSUCCEEDEDマクロで判定できる
-	HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory));
+	HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory_));
 
 	//初期化の根本的な部分でエラーが出た場合はプログラムが間違っているか、
 	//どうにもできない場合が多いのでassertにしておく
@@ -44,7 +50,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 	IDXGIAdapter4* useAdapter = nullptr;
 
 	//良い順にアダプタを頼む
-	for (UINT i = 0; dxgiFactory->EnumAdapterByGpuPreference(
+	for (UINT i = 0; dxgiFactory_->EnumAdapterByGpuPreference(
 		i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
 		IID_PPV_ARGS(&useAdapter)) != DXGI_ERROR_NOT_FOUND; ++i) {
 		//アダプタの情報を取得する
@@ -71,7 +77,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 	for (size_t i = 0; i < _countof(featureLevels); ++i) {
 
 		//採用したアダプタでデバイスを生成
-		hr = D3D12CreateDevice(useAdapter, featureLevels[i], IID_PPV_ARGS(&device));
+		hr = D3D12CreateDevice(useAdapter, featureLevels[i], IID_PPV_ARGS(&device_));
 
 		//指定した機能レベルでデバイスが生成出来たかを確認
 		if (SUCCEEDED(hr)) {
@@ -82,8 +88,31 @@ void DirectXCommon::InitializeDXGIDevice() {
 	}
 
 	//デバイスの生成がうまくいかなかった場合は起動できない
-	assert(device != nullptr);
+	assert(device_ != nullptr);
 
 	//初期化完了のログを出す
 	Logger::Log("Complete create D3D12Device!!!\n");
+}
+
+void DirectXCommon::InitializeCommand() {
+	HRESULT result = S_FALSE;
+
+	// コマンドアロケータを生成
+	result = device_->CreateCommandAllocator(
+		D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_));
+	// 生成がうまくいかなかった場合は起動できない
+	assert(SUCCEEDED(result));
+
+	// コマンドリストを生成
+	result = device_->CreateCommandList(
+		0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr,
+		IID_PPV_ARGS(&commandList_));
+	// 生成がうまくいかなかった場合は起動できない
+	assert(SUCCEEDED(result));
+
+	// コマンドキューを生成
+	D3D12_COMMAND_QUEUE_DESC cmdQueueDesc{};
+	result = device_->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&commandQueue_));
+	// 生成がうまくいかなかった場合は起動できない
+	assert(SUCCEEDED(result));
 }

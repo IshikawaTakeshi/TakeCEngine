@@ -16,7 +16,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp->Init();
 
 	DirectXCommon* directXCommon = DirectXCommon::GetInstance();
-	directXCommon->InitializeDXGIDevice();
+	directXCommon->Initialize();
 
 	//////////////////////////////////////////////////////////
 	//メインループ
@@ -26,11 +26,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	while (winApp->ProcessMessage() == 0) {
 		
 	}
-
-	//////////////////////////////////////////////////////////
-	//出力ウィンドウへの文字出力
-	//////////////////////////////////////////////////////////
-	Logger::Log("Hello,DirectX!\n");
 
 	return 0;
 }
