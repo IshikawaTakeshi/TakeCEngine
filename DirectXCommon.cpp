@@ -27,6 +27,10 @@ void DirectXCommon::Initialize() {
 	CreateFence();
 }
 
+void DirectXCommon::Finalize() {
+	CloseHandle(fenceEvent_);
+}
+
 void DirectXCommon::PreDraw() {
 
 	//全画面クリア
@@ -37,6 +41,8 @@ void DirectXCommon::PreDraw() {
 void DirectXCommon::PostDraw() {
 	HRESULT result;
 
+
+
 	//画面に描く処理はすべて終わり、画面に移すので、状態を遷移
 	//今回はRenderTargetからPresentにする
 	barrier_.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -44,10 +50,14 @@ void DirectXCommon::PostDraw() {
 	//TransitionBarrierを張る
 	commandList_->ResourceBarrier(1, &barrier_);
 
+
+
 	// コマンドリストの内容を確定
 	result = commandList_->Close();
 	assert(SUCCEEDED(result));
 	
+
+
 	// コマンドリストの実行
 	ID3D12CommandList* cmdLists[] = { commandList_.Get() }; // コマンドリストの配列
 	commandQueue_->ExecuteCommandLists(1, cmdLists);
@@ -68,6 +78,8 @@ void DirectXCommon::PostDraw() {
 		//イベントを待つ
 		WaitForSingleObject(fenceEvent_, INFINITE);
 	}
+
+
 
 	//次のフレーム用のコマンドリストを準備
 	result = commandAllocator_->Reset();
@@ -151,6 +163,9 @@ void DirectXCommon::InitializeDXGIDevice() {
 		DXGI_ADAPTER_DESC3 adapterDesc{};
 		hr = useAdapter_->GetDesc3(&adapterDesc);
 		assert(SUCCEEDED(hr)); //取得できないのは一大事
+
+
+
 		//ソフトウェアアダプタでなければ採用
 		if (!(adapterDesc.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE)) {
 			//採用したアダプタの情報をログに出力。wstringの方なので注意
@@ -171,7 +186,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 	for (size_t i = 0; i < _countof(featureLevels); ++i) {
 
 		//採用したアダプタでデバイスを生成
-		hr = D3D12CreateDevice(useAdapter_, featureLevels[i], IID_PPV_ARGS(&device_));
+		hr = D3D12CreateDevice(useAdapter_.Get(), featureLevels[i], IID_PPV_ARGS(&device_));
 
 		//指定した機能レベルでデバイスが生成出来たかを確認
 		if (SUCCEEDED(hr)) {
@@ -195,7 +210,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 		//エラーの時に止まる
 		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
 		//警告時に止まる
-		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+		//infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
 
 		//抑制するメッセージのID
 		D3D12_MESSAGE_ID denyIds[] = {
@@ -223,6 +238,12 @@ void DirectXCommon::InitializeDXGIDevice() {
 void DirectXCommon::InitializeCommand() {
 	HRESULT result = S_FALSE;
 
+	// コマンドキューを生成
+	D3D12_COMMAND_QUEUE_DESC cmdQueueDesc{};
+	result = device_->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&commandQueue_));
+	// 生成がうまくいかなかった場合は起動できない
+	assert(SUCCEEDED(result));
+
 	// コマンドアロケータを生成
 	result = device_->CreateCommandAllocator(
 		D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_));
@@ -233,12 +254,6 @@ void DirectXCommon::InitializeCommand() {
 	result = device_->CreateCommandList(
 		0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr,
 		IID_PPV_ARGS(&commandList_));
-	// 生成がうまくいかなかった場合は起動できない
-	assert(SUCCEEDED(result));
-
-	// コマンドキューを生成
-	D3D12_COMMAND_QUEUE_DESC cmdQueueDesc{};
-	result = device_->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&commandQueue_));
 	// 生成がうまくいかなかった場合は起動できない
 	assert(SUCCEEDED(result));
 }
@@ -273,6 +288,8 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	result = device_->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&rtvHeap_));
 	assert(SUCCEEDED(result));
 
+
+
 	//SwapChainからResourceを引っ張ってくる
 	for (int i = 0; i < 2; i++){
 		swapChainResources_[i] = { nullptr };
@@ -283,6 +300,8 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	assert(SUCCEEDED(result));
 	result = swapChain_->GetBuffer(1, IID_PPV_ARGS(&swapChainResources_[1]));
 	assert(SUCCEEDED(result));
+
+
 
 	// レンダーターゲットビューの設定
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};

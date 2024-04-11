@@ -26,6 +26,11 @@ public:
 	void Initialize();
 
 	/// <summary>
+	/// 終了・開放処理
+	/// </summary>
+	void Finalize();
+
+	/// <summary>
 	/// 描画前処理
 	/// </summary>
 	void PreDraw();
@@ -45,14 +50,14 @@ public:
 	/// </summary>
 	/// <returns>デバイス</returns>
 	ID3D12Device* GetDevice() const { return device_.Get(); }
-	
+
 	/// <summary>
 	/// 描画コマンドリストの取得
 	/// </summary>
 	/// <returns>描画コマンドリスト</returns>
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 
-	
+
 
 private:
 	// ウィンドウズアプリケーション管理
@@ -60,6 +65,8 @@ private:
 
 	//DXGIファクトリーの作成
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
+	//使用するアダプタ用の変数
+	Microsoft::WRL::ComPtr<IDXGIAdapter4> useAdapter_;
 	//D3D12Deviceの生成
 	Microsoft::WRL::ComPtr<ID3D12Device> device_;
 	//コマンドキューの生成
@@ -70,6 +77,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_;
 	//スワップチェーンの生成
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources_[2];
 	//ディスクリプタヒープの生成
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
 	//RTVを2つ作るのでディスクリプタを2つ用意
@@ -77,13 +86,13 @@ private:
 	//フェンスの生成
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
 
-	uint64_t fenceVal_ = 0;
+	uint64_t fenceVal_;
 
 	HANDLE fenceEvent_;
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources_[2];
+	
 
-	IDXGIAdapter4* useAdapter_;
+	
 
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_;

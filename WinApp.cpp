@@ -1,5 +1,5 @@
 #include "WinApp.h"
-#include <d3d12.h>
+
 
 
 //ウィンドウプロシージャ
@@ -34,6 +34,8 @@ void WinApp::Init() {
 	CreateGameWindow();
 
 #ifdef _DEBUG
+	//debugController
+	debugController_ = nullptr;
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController_)))) {
 		//デバッグレイヤーを有効化する
 		debugController_->EnableDebugLayer();
@@ -42,6 +44,14 @@ void WinApp::Init() {
 	}
 #endif // _DEBUG
 
+}
+
+void WinApp::Finalize() {
+#ifdef _DEBUG
+	debugController_->Release();
+#endif // _DEBUG
+
+	CloseWindow(hwnd_);
 }
 
 bool WinApp::ProcessMessage() {

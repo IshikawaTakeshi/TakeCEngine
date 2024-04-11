@@ -1,5 +1,7 @@
 #pragma once
 #include <Windows.h>
+#include <d3d12.h>
+#include <wrl.h>
 #include <cstdint>
 
 class WinApp {
@@ -37,6 +39,11 @@ public:
 	void Init();
 
 	/// <summary>
+	/// 終了・開放処理
+	/// </summary>
+	void Finalize();
+
+	/// <summary>
 	/// メッセージの処理
 	/// </summary>
 	/// <returns>終了かどうか</returns>
@@ -59,7 +66,7 @@ private:
 	//ウィンドウハンドル
 	HWND hwnd_;
 	//debugController
-	ID3D12Debug1* debugController_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController_;
 	
 	
 };
