@@ -36,7 +36,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Init();
+	void Initialize();
 
 	/// <summary>
 	/// 終了・開放処理

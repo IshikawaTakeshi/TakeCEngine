@@ -31,7 +31,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	D3DResourceLeakChecker leakCheck;
 
 	WinApp* winApp = WinApp::GetInstance();
-	winApp->Init();
+	winApp->Initialize();
 
 	DirectXCommon* directXCommon = DirectXCommon::GetInstance();
 	directXCommon->Initialize();

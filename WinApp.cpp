@@ -18,7 +18,7 @@ LRESULT CALLBACK WindowProc(HWND hwmd, UINT msg,
 	return DefWindowProc(hwmd, msg, wparam, lparam);
 }
 
-void WinApp::Init() {
+void WinApp::Initialize() {
 	// ウィンドウプロシージャ
 	wc_.lpfnWndProc = WinApp::WindowProc;
 	//ウィンドウクラス名()
@@ -48,7 +48,7 @@ void WinApp::Init() {
 
 void WinApp::Finalize() {
 #ifdef _DEBUG
-	debugController_->Release();
+	debugController_.Reset();
 #endif // _DEBUG
 
 	CloseWindow(hwnd_);
