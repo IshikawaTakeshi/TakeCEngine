@@ -2,13 +2,14 @@
 #include <Windows.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
+
+#include <dxcapi.h>
+
 #include <cassert>
 #include <wrl.h>
 #include <vector>
 
-#pragma comment(lib, "d3d12.lib")
-#pragma comment(lib, "dxgi.lib")
-
+#include "Vector4.h"
 #include "WinApp.h"
 
 class DirectXCommon {
@@ -77,26 +78,17 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_;
 	//スワップチェーンの生成
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
-
-	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources_[2];
+	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> swapChainResources_;
 	//ディスクリプタヒープの生成
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
 	//RTVを2つ作るのでディスクリプタを2つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
 	//フェンスの生成
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
-
 	uint64_t fenceVal_;
-
 	HANDLE fenceEvent_;
-
-	
-
-	
-
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_;
-
 
 private:
 	DirectXCommon() = default;
@@ -111,6 +103,7 @@ private:
 	/// コマンド関連初期化
 	/// </summary>
 	void InitializeCommand();
+
 
 
 	/// <summary>
@@ -128,5 +121,125 @@ private:
 	/// </summary>
 	void CreateFence();
 
+
+
+private:
+	//////////////////////////////////////////////////////////////////////////////////////////
+	///			dxc関連
+	//////////////////////////////////////////////////////////////////////////////////////////
+	
+	//dxc関連のメンバ変数
+	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils_;
+	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler_;
+	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler_;
+	Microsoft::WRL::ComPtr<IDxcBlobEncoding> shaderSource_;
+	Microsoft::WRL::ComPtr<IDxcResult> shaderResult_;
+	Microsoft::WRL::ComPtr<IDxcBlobUtf8> shaderError_;
+	Microsoft::WRL::ComPtr<IDxcBlob> shaderBlob_;
+
+private:
+	//dxc関連のメンバ関数
+
+	// <summary>
+	/// dxc初期化
+	/// </summary>
+	void InitializeDxc();
+
+	Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(
+		const std::wstring& filePath,
+		const wchar_t* profile,
+		IDxcUtils* dxcUtils,
+		IDxcCompiler3* dxcCompiler,
+		IDxcIncludeHandler* includeHandler
+	);
+
+private:
+	//////////////////////////////////////////////////////////////////////////////////////////
+	///			PSO関連
+	//////////////////////////////////////////////////////////////////////////////////////////
+	
+	//PSO関連のメンバ変数
+	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
+	Microsoft::WRL::ComPtr<ID3D10Blob> signatureBlob_;
+	Microsoft::WRL::ComPtr<ID3D10Blob> errorBlob_;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+	//InputLayout
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[1] = {};
+	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
+	/// ブレンドステート
+	D3D12_BLEND_DESC blendDesc_{};
+	// ラスタライザステート
+	D3D12_RASTERIZER_DESC rasterizerDesc_{};
+	//PSO生成
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicPipelineState_;
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC graficsPipelineStateDesc_{};
+
+private:
+	//PSO関連のメンバ関数
+	
+	/// <summary>
+	/// ルートシグネチャ初期化
+	/// </summary>
+	void CreateRootSignature();
+
+	/// <summary>
+	/// インプットレイアウト初期化
+	/// </summary>
+	void CreateInputLayout();
+
+	/// <summary>
+	/// ブレンドステート初期化
+	/// </summary>
+	void CreateBlendState();
+
+	/// <summary>
+	/// ラスタライザステート初期化
+	/// </summary>
+	void CreateRasterizerState();
+
+	/// <summary>
+	/// PSO生成
+	/// </summary>
+	void CreatePSO();
+
+private:
+	//////////////////////////////////////////////////////////////////////////////////////////
+	///			vertexResource関連
+	//////////////////////////////////////////////////////////////////////////////////////////
+
+	//vertexResource関連の変数
+	D3D12_HEAP_PROPERTIES uploadHeapProperties_{};
+	D3D12_RESOURCE_DESC vertexResourceDesc_{};
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	Vector4* vertexData = nullptr;
+	// ビューポート
+	D3D12_VIEWPORT viewport_{};
+	// シザー矩形
+	D3D12_RECT scissorRect_{};
+
+private:
+	//vertexResource関連の関数
+
+	/// <summary>
+	/// VertexResource生成
+	/// </summary>
+	void CreateVertexResource();
+
+	/// <summary>
+	/// VertexBufferView作成
+	/// </summary>
+	void CreateVertexBufferView();
+
+	/// <summary>
+	/// VertexData初期化
+	/// </summary>
+	void InitializeVertexData();
+
+	void InitViewport();
+
+	void InitscissorRect();
 };
 

@@ -4,6 +4,11 @@
 
 #include <format>
 
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib,"dxcompiler.lib")
+
+
 DirectXCommon* DirectXCommon::GetInstance() {
 	static DirectXCommon instance;
 	return &instance;
@@ -25,9 +30,49 @@ void DirectXCommon::Initialize() {
 
 	// フェンス生成
 	CreateFence();
+
+	//DXC初期化
+	InitializeDxc();
+
+	//PSO生成
+	CreatePSO();
+
+	//VertexResource生成
+	CreateVertexResource();
+
+	//CreateVBV作成
+	CreateVertexBufferView();
+
+	//VertexData初期化
+	InitializeVertexData();
+
+	//Viewport初期化
+	InitViewport();
+
+	//Scirssor矩形初期化
+	InitscissorRect();
 }
 
 void DirectXCommon::Finalize() {
+
+	/*==========vertexResource関連==========*/
+	vertexResource_.Reset();
+
+	/*==========PSO関連==========*/
+	graphicPipelineState_.Reset();
+	pixelShaderBlob_.Reset();
+	vertexShaderBlob_.Reset();
+	signatureBlob_.Reset();
+	if (errorBlob_.Get()) {
+		errorBlob_.Reset();
+	}
+
+	/*==========dxc関連==========*/
+	rootSignature_.Reset();
+	pixelShaderBlob_.Reset();
+	vertexShaderBlob_.Reset();
+
+	/*==========DirectX関連==========*/
 	CloseHandle(fenceEvent_);
 	fence_.Reset();
 	rtvHeap_.Reset();
@@ -51,7 +96,7 @@ void DirectXCommon::PreDraw() {
 }
 
 void DirectXCommon::PostDraw() {
-	HRESULT result;
+	HRESULT result = S_FALSE;
 
 
 
@@ -128,6 +173,17 @@ void DirectXCommon::ClearRenderTarget() {
 	// 全画面クリア          Red   Green  Blue  Alpha
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f }; // 青っぽい色
 	commandList_->ClearRenderTargetView(rtvHandles_[bbIndex], clearColor, 0, nullptr);
+
+	commandList_->RSSetViewports(1, &viewport_); // Viewportを設定
+	commandList_->RSSetScissorRects(1, &scissorRect_); // Scirssorの設定
+	// RootSignatureを設定。PSOに設定しているが別途設定が必要
+	commandList_->SetGraphicsRootSignature(rootSignature_.Get());
+	commandList_->SetPipelineState(graphicPipelineState_.Get()); // PSOを設定
+	commandList_->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
+	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
+	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
+	commandList_->DrawInstanced(3, 1, 0, 0);
 
 }
 
@@ -350,3 +406,250 @@ void DirectXCommon::CreateFence() {
 	fenceEvent_ = CreateEvent(NULL, FALSE, FALSE, NULL);
 	assert(fenceEvent_ != nullptr);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///			DXC関連
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void DirectXCommon::InitializeDxc() {
+
+	HRESULT result = S_FALSE;
+
+	dxcUtils_ = nullptr;
+	dxcCompiler_ = nullptr;
+
+	result = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_));
+	assert(SUCCEEDED(result));
+	result = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler_));
+	assert(SUCCEEDED(result));
+
+	includeHandler_ = nullptr;
+	result = dxcUtils_->CreateDefaultIncludeHandler(&includeHandler_);
+	assert(SUCCEEDED(result));
+}
+
+Microsoft::WRL::ComPtr<IDxcBlob> DirectXCommon::CompileShader(
+	const std::wstring& filePath, const wchar_t* profile,
+	IDxcUtils* dxcUtils, IDxcCompiler3* dxcCompiler,
+	IDxcIncludeHandler* includeHandler) {
+
+
+	HRESULT result = S_FALSE;
+
+	//これからシェーダーをコンパイルする旨をログに出す
+	Logger::Log(Logger::ConvertString(std::format(L"Begin CompileShader, path:{},profile{}\n", filePath, profile)));
+	//hlslファイルを読み込む
+	shaderSource_ = nullptr;
+	//読めなかったら止める
+	assert(SUCCEEDED(result));
+
+	//読み込んだファイルの内容を設定する
+	DxcBuffer shaderSourceBuffer;
+	shaderSourceBuffer.Ptr = shaderSource_->GetBufferPointer();
+	shaderSourceBuffer.Size = shaderSource_->GetBufferSize();
+	shaderSourceBuffer.Encoding = DXC_CP_UTF8; //UTF8の文字コードであることを通知
+
+	LPCWSTR arguments[] = {
+		filePath.c_str(), //コンパイル対象のhlslファイル名
+		L"-E",L"main", //エントリーポイントの指定。基本的にmain以外にはしない
+		L"-T",profile, //ShaderProfileの設定
+		L"Zi",L"-Qembed_debug", //デバッグ用の情報を埋め込む
+		L"-Od", //最適化を外しておく
+		L"Zpr", //メモリレイアウトは行優先
+	};
+
+	//実際にShaderをコンパイルする
+	shaderResult_ = nullptr;
+	result = dxcCompiler_->Compile(
+		&shaderSourceBuffer,
+		arguments,
+		_countof(arguments),
+		includeHandler,
+		IID_PPV_ARGS(&shaderResult_)
+	);
+	//コンパイルエラーではなくdxcが起動できないほど致命的な状況
+	assert(SUCCEEDED(result));
+
+	shaderError_ = nullptr;
+	shaderResult_->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError_), nullptr);
+	if (shaderError_ != nullptr && shaderError_->GetStringLength() != 0) {
+		Logger::Log(shaderError_->GetStringPointer());
+		//警告・エラーダメ絶対
+		assert(false);
+	}
+
+	shaderBlob_ = nullptr;
+	result = shaderResult_->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob_), nullptr);
+	assert(SUCCEEDED(result));
+	//成功したログを出す
+	Logger::Log(Logger::ConvertString(std::format(L"Compile Succeeded, path:{}, profile:{}\n", filePath, profile)));
+	//もう使わないリソースを開放する
+	shaderSource_.Reset();
+	shaderResult_.Reset();
+
+	//実行用のバイナリを返却
+	return shaderBlob_;
+}
+
+void DirectXCommon::CreateRootSignature() {
+
+	HRESULT result = S_FALSE;
+
+	descriptionRootSignature_.Flags =
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	//シリアライズ
+	signatureBlob_ = nullptr;
+	errorBlob_ = nullptr;
+
+	result = D3D12SerializeRootSignature(&descriptionRootSignature_,
+		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
+	if (FAILED(result)) {
+		Logger::Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
+		assert(false);
+	}
+	//バイナリをもとに生成
+	rootSignature_ = nullptr;
+	result = device_->CreateRootSignature(0, signatureBlob_->GetBufferPointer(),
+		signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&rootSignature_)
+	);
+	assert(SUCCEEDED(result));
+}
+
+void DirectXCommon::CreateInputLayout() {
+
+	inputElementDescs_[0].SemanticName = "POSITION";
+	inputElementDescs_[0].SemanticIndex = 0;
+	inputElementDescs_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElementDescs_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	inputLayoutDesc_.pInputElementDescs = inputElementDescs_;
+	inputLayoutDesc_.NumElements = _countof(inputElementDescs_);
+}
+
+void DirectXCommon::CreateBlendState() {
+	blendDesc_.RenderTarget[0].RenderTargetWriteMask =
+		D3D12_COLOR_WRITE_ENABLE_ALL;
+}
+
+void DirectXCommon::CreateRasterizerState() {
+	rasterizerDesc_.CullMode = D3D12_CULL_MODE_BACK;
+	rasterizerDesc_.FillMode = D3D12_FILL_MODE_SOLID;
+}
+
+void DirectXCommon::CreatePSO() {
+
+	HRESULT result = S_FALSE;
+
+	/// ルートシグネチャ初期化
+	CreateRootSignature();
+	/// インプットレイアウト初期化
+	CreateInputLayout();
+	/// ブレンドステート初期化
+	CreateBlendState();
+	/// ラスタライザステート初期化
+	CreateRasterizerState();
+
+
+	//Shaderをコンパイル
+	vertexShaderBlob_ = CompileShader(L"Object3D.VS.hlsl", L"vs_6_0",
+		dxcUtils_.Get(), dxcCompiler_.Get(), includeHandler_.Get());
+	assert(vertexShaderBlob_ != nullptr);
+
+	pixelShaderBlob_ = CompileShader(L"Object3D.PS.hlsl", L"ps_6_0",
+		dxcUtils_.Get(), dxcCompiler_.Get(), includeHandler_.Get());
+	assert(pixelShaderBlob_ != nullptr);
+
+
+
+	graficsPipelineStateDesc_.pRootSignature = rootSignature_.Get(); // RootSignature
+	graficsPipelineStateDesc_.InputLayout = inputLayoutDesc_; // InputLayout
+
+	graficsPipelineStateDesc_.VS = { vertexShaderBlob_->GetBufferPointer(),
+	vertexShaderBlob_->GetBufferSize() }; // VertexShader
+	graficsPipelineStateDesc_.PS = { pixelShaderBlob_->GetBufferPointer(),
+	pixelShaderBlob_->GetBufferSize() }; // PixelShader
+
+	graficsPipelineStateDesc_.BlendState = blendDesc_; // blendState
+	graficsPipelineStateDesc_.RasterizerState = rasterizerDesc_; // rasterizerState
+
+	//書き込むRTVの情報
+	graficsPipelineStateDesc_.NumRenderTargets = 1;
+	graficsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	//利用するトロポジ(形状)のタイプ。三角形
+	graficsPipelineStateDesc_.PrimitiveTopologyType =
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	//どのように画面に色を打ち込むのかの設定
+	graficsPipelineStateDesc_.SampleDesc.Count = 1;
+	graficsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	//実際に生成
+	graphicPipelineState_ = nullptr;
+	result = device_->CreateGraphicsPipelineState(&graficsPipelineStateDesc_,
+		IID_PPV_ARGS(&graphicPipelineState_));
+	assert(SUCCEEDED(result));
+}
+
+
+void DirectXCommon::CreateVertexResource() {
+
+	HRESULT result = S_FALSE;
+
+	uploadHeapProperties_.Type = D3D12_HEAP_TYPE_UPLOAD; // UploadHeapを使う
+	//頂点リソースの設定
+	vertexResourceDesc_.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	vertexResourceDesc_.Width = sizeof(Vector4) * 3; // リソースのサイズ。今回はVector4を3頂点分
+	//バッファの場合はこれらは1にする決まり
+	vertexResourceDesc_.Height = 1;
+	vertexResourceDesc_.DepthOrArraySize = 1;
+	vertexResourceDesc_.MipLevels = 1;
+	vertexResourceDesc_.SampleDesc.Count = 1;
+	//バッファの場合はこれにする決まり
+	vertexResourceDesc_.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	//実際に頂点リソースを作る
+	vertexResource_ = nullptr;
+	result = device_->CreateCommittedResource(&uploadHeapProperties_, D3D12_HEAP_FLAG_NONE,
+		&vertexResourceDesc_, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+		IID_PPV_ARGS(&vertexResource_));
+	assert(SUCCEEDED(result));
+}
+
+
+void DirectXCommon::CreateVertexBufferView() {
+
+	// リソースの先頭のアドレスから使う
+	vertexBufferView.BufferLocation = vertexResource_->GetGPUVirtualAddress();
+	// 使用するリソースのサイズは頂点3つ分のサイズ
+	vertexBufferView.SizeInBytes = sizeof(Vector4) * 3;
+	// 1頂点あたりのサイズ
+	vertexBufferView.StrideInBytes = sizeof(Vector4);\
+}
+
+void DirectXCommon::InitializeVertexData() {
+
+	// 書き込むためのアドレスを取得
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	// 左下
+	vertexData[0] = { -0.5f,-0.5f,0.0f,1.0f };
+	//上
+	vertexData[1] = { 0.0f,0.5f,0.0f,1.0f };
+	// 右下
+	vertexData[2] = { 0.5f,-0.5f,0.0f,1.0f };
+}
+
+void DirectXCommon::InitViewport() {
+	viewport_.Width = WinApp::kClientWidth;
+	viewport_.Height = WinApp::kClientHeight;
+	viewport_.TopLeftX = 0;
+	viewport_.TopLeftY = 0;
+	viewport_.MinDepth = 0.0f;
+	viewport_.MaxDepth = 1.0f;
+}
+
+void DirectXCommon::InitscissorRect() {
+	scissorRect_.left = 0;
+	scissorRect_.right = WinApp::kClientWidth;
+	scissorRect_.top = 0;
+	scissorRect_.bottom = WinApp::kClientHeight;
+}
+
+
+
