@@ -49,8 +49,8 @@ void DirectXCommon::Initialize() {
 	//Viewport初期化
 	InitViewport();
 
-	//Scirssor矩形初期化
-	InitscissorRect();
+	//Scissor矩形初期化
+	InitScissorRect();
 }
 
 void DirectXCommon::Finalize() {
@@ -128,7 +128,7 @@ void DirectXCommon::PostDraw() {
 	commandQueue_->Signal(fence_.Get(), fenceVal_);
 
 	//Fenceの値が指定したSignal値にたどり着いているか確認する
-	//GetComleteValueの初期値作成時に渡した初期値
+	//GetCompleteValueの初期値作成時に渡した初期値
 	if (fence_->GetCompletedValue() < fenceVal_) {
 		//指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
 		fence_->SetEventOnCompletion(fenceVal_, fenceEvent_);
@@ -441,6 +441,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> DirectXCommon::CompileShader(
 	Logger::Log(Logger::ConvertString(std::format(L"Begin CompileShader, path:{},profile{}\n", filePath, profile)));
 	//hlslファイルを読み込む
 	shaderSource_ = nullptr;
+	result = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource_);
 	//読めなかったら止める
 	assert(SUCCEEDED(result));
 
@@ -454,14 +455,14 @@ Microsoft::WRL::ComPtr<IDxcBlob> DirectXCommon::CompileShader(
 		filePath.c_str(), //コンパイル対象のhlslファイル名
 		L"-E",L"main", //エントリーポイントの指定。基本的にmain以外にはしない
 		L"-T",profile, //ShaderProfileの設定
-		L"Zi",L"-Qembed_debug", //デバッグ用の情報を埋め込む
+		L"-Zi",L"-Qembed_debug", //デバッグ用の情報を埋め込む
 		L"-Od", //最適化を外しておく
-		L"Zpr", //メモリレイアウトは行優先
+		L"-Zpr", //メモリレイアウトは行優先
 	};
 
 	//実際にShaderをコンパイルする
 	shaderResult_ = nullptr;
-	result = dxcCompiler_->Compile(
+	result = dxcCompiler->Compile(
 		&shaderSourceBuffer,
 		arguments,
 		_countof(arguments),
@@ -471,6 +472,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> DirectXCommon::CompileShader(
 	//コンパイルエラーではなくdxcが起動できないほど致命的な状況
 	assert(SUCCEEDED(result));
 
+	//警告・エラーが出てたらログに出して止める
 	shaderError_ = nullptr;
 	shaderResult_->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError_), nullptr);
 	if (shaderError_ != nullptr && shaderError_->GetStringLength() != 0) {
@@ -479,6 +481,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> DirectXCommon::CompileShader(
 		assert(false);
 	}
 
+	//コンパイル結果から実行用のバイナリ部分を取得
 	shaderBlob_ = nullptr;
 	result = shaderResult_->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob_), nullptr);
 	assert(SUCCEEDED(result));
@@ -551,39 +554,49 @@ void DirectXCommon::CreatePSO() {
 
 
 	//Shaderをコンパイル
-	vertexShaderBlob_ = CompileShader(L"Object3D.VS.hlsl", L"vs_6_0",
-		dxcUtils_.Get(), dxcCompiler_.Get(), includeHandler_.Get());
+	vertexShaderBlob_ = CompileShader(
+		L"Object3D.VS.hlsl",
+		L"vs_6_0",
+		dxcUtils_.Get(),
+		dxcCompiler_.Get(),
+		includeHandler_.Get()
+	);
 	assert(vertexShaderBlob_ != nullptr);
 
-	pixelShaderBlob_ = CompileShader(L"Object3D.PS.hlsl", L"ps_6_0",
-		dxcUtils_.Get(), dxcCompiler_.Get(), includeHandler_.Get());
+	pixelShaderBlob_ = CompileShader(
+		L"Object3D.PS.hlsl",
+		L"ps_6_0",
+		dxcUtils_.Get(),
+		dxcCompiler_.Get(),
+		includeHandler_.Get()
+	);
 	assert(pixelShaderBlob_ != nullptr);
 
 
 
-	graficsPipelineStateDesc_.pRootSignature = rootSignature_.Get(); // RootSignature
-	graficsPipelineStateDesc_.InputLayout = inputLayoutDesc_; // InputLayout
+	graphicsPipelineStateDesc_.pRootSignature = rootSignature_.Get(); // RootSignature
+	graphicsPipelineStateDesc_.InputLayout = inputLayoutDesc_; // InputLayout
 
-	graficsPipelineStateDesc_.VS = { vertexShaderBlob_->GetBufferPointer(),
+	graphicsPipelineStateDesc_.VS = { vertexShaderBlob_->GetBufferPointer(),
 	vertexShaderBlob_->GetBufferSize() }; // VertexShader
-	graficsPipelineStateDesc_.PS = { pixelShaderBlob_->GetBufferPointer(),
+	graphicsPipelineStateDesc_.PS = { pixelShaderBlob_->GetBufferPointer(),
 	pixelShaderBlob_->GetBufferSize() }; // PixelShader
 
-	graficsPipelineStateDesc_.BlendState = blendDesc_; // blendState
-	graficsPipelineStateDesc_.RasterizerState = rasterizerDesc_; // rasterizerState
+	graphicsPipelineStateDesc_.BlendState = blendDesc_; // blendState
+	graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc_; // rasterizerState
 
 	//書き込むRTVの情報
-	graficsPipelineStateDesc_.NumRenderTargets = 1;
-	graficsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	graphicsPipelineStateDesc_.NumRenderTargets = 1;
+	graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	//利用するトロポジ(形状)のタイプ。三角形
-	graficsPipelineStateDesc_.PrimitiveTopologyType =
+	graphicsPipelineStateDesc_.PrimitiveTopologyType =
 		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	//どのように画面に色を打ち込むのかの設定
-	graficsPipelineStateDesc_.SampleDesc.Count = 1;
-	graficsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	graphicsPipelineStateDesc_.SampleDesc.Count = 1;
+	graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	//実際に生成
 	graphicPipelineState_ = nullptr;
-	result = device_->CreateGraphicsPipelineState(&graficsPipelineStateDesc_,
+	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
 		IID_PPV_ARGS(&graphicPipelineState_));
 	assert(SUCCEEDED(result));
 }
@@ -644,7 +657,7 @@ void DirectXCommon::InitViewport() {
 	viewport_.MaxDepth = 1.0f;
 }
 
-void DirectXCommon::InitscissorRect() {
+void DirectXCommon::InitScissorRect() {
 	scissorRect_.left = 0;
 	scissorRect_.right = WinApp::kClientWidth;
 	scissorRect_.top = 0;

@@ -5,9 +5,11 @@
 
 #include <dxcapi.h>
 
-#include <cassert>
 #include <wrl.h>
+#include <cassert>
+#include <string>
 #include <vector>
+
 
 #include "Vector4.h"
 #include "WinApp.h"
@@ -78,7 +80,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_;
 	//スワップチェーンの生成
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
-	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> swapChainResources_;
+//	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> swapChainResources_;
+	Microsoft::WRL::ComPtr < ID3D12Resource> swapChainResources_[2];
 	//ディスクリプタヒープの生成
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
 	//RTVを2つ作るのでディスクリプタを2つ用意
@@ -174,7 +177,7 @@ private:
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicPipelineState_;
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC graficsPipelineStateDesc_{};
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc_{};
 
 private:
 	//PSO関連のメンバ関数
@@ -240,6 +243,6 @@ private:
 
 	void InitViewport();
 
-	void InitscissorRect();
+	void InitScissorRect();
 };
 
