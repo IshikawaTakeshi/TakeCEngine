@@ -81,7 +81,7 @@ private:
 	//スワップチェーンの生成
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
 //	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> swapChainResources_;
-	Microsoft::WRL::ComPtr < ID3D12Resource> swapChainResources_[2];
+	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources_[2];
 	//ディスクリプタヒープの生成
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
 	//RTVを2つ作るのでディスクリプタを2つ用意
@@ -125,7 +125,7 @@ private:
 	void CreateFence();
 
 
-
+#pragma region dxc関連
 private:
 	//////////////////////////////////////////////////////////////////////////////////////////
 	///			dxc関連
@@ -155,7 +155,9 @@ private:
 		IDxcCompiler3* dxcCompiler,
 		IDxcIncludeHandler* includeHandler
 	);
+#pragma endregion
 
+#pragma region PSO関連
 private:
 	//////////////////////////////////////////////////////////////////////////////////////////
 	///			PSO関連
@@ -163,6 +165,7 @@ private:
 	
 	//PSO関連のメンバ変数
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
+	D3D12_ROOT_PARAMETER rootParameters_[1];
 	Microsoft::WRL::ComPtr<ID3D10Blob> signatureBlob_;
 	Microsoft::WRL::ComPtr<ID3D10Blob> errorBlob_;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
@@ -206,7 +209,9 @@ private:
 	/// PSO生成
 	/// </summary>
 	void CreatePSO();
+#pragma endregion
 
+#pragma region VertexResource関連
 private:
 	//////////////////////////////////////////////////////////////////////////////////////////
 	///			vertexResource関連
@@ -227,6 +232,12 @@ private:
 	//vertexResource関連の関数
 
 	/// <summary>
+	/// Resource生成関数
+	/// </summary>
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(
+		Microsoft::WRL::ComPtr<ID3D12Device> device,size_t sizeInBytes);
+
+	/// <summary>
 	/// VertexResource生成
 	/// </summary>
 	void CreateVertexResource();
@@ -244,5 +255,22 @@ private:
 	void InitViewport();
 
 	void InitScissorRect();
+
+#pragma endregion
+
+#pragma region materialResource関連
+private:
+	//メンバ変数
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
+	Vector4* materialData_;
+
+private:
+	//メンバ関数
+	/// <summary>
+	/// VertexData初期化
+	/// </summary>
+	void InitializeMaterialData();
+	
+#pragma endregion
 };
 

@@ -51,9 +51,15 @@ void DirectXCommon::Initialize() {
 
 	//Scissor矩形初期化
 	InitScissorRect();
+
+	//materialData初期化
+	InitializeMaterialData();
 }
 
 void DirectXCommon::Finalize() {
+
+	/*==========materialResource関連==========*/
+	materialResource_.Reset();
 
 	/*==========vertexResource関連==========*/
 	vertexResource_.Reset();
@@ -182,6 +188,8 @@ void DirectXCommon::ClearRenderTarget() {
 	commandList_->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//materialCBufferの場所を指定
+	commandList_->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	commandList_->DrawInstanced(3, 1, 0, 0);
 
@@ -407,6 +415,8 @@ void DirectXCommon::CreateFence() {
 	assert(fenceEvent_ != nullptr);
 }
 
+
+#pragma region DXC関連
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///			DXC関連
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -495,12 +505,24 @@ Microsoft::WRL::ComPtr<IDxcBlob> DirectXCommon::CompileShader(
 	return shaderBlob_;
 }
 
+#pragma endregion
+
+#pragma region PSO関連
 void DirectXCommon::CreateRootSignature() {
 
 	HRESULT result = S_FALSE;
-
+	//ルートシグネチャ
 	descriptionRootSignature_.Flags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+	//ルートパラメータ。複数設定できるので配列。
+	rootParameters_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParameters_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParameters_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
+	descriptionRootSignature_.pParameters = rootParameters_; //rootParamerter配列へのポインタ
+	descriptionRootSignature_.NumParameters = _countof(rootParameters_); //配列の長さ
+
+
 	//シリアライズ
 	signatureBlob_ = nullptr;
 	errorBlob_ = nullptr;
@@ -601,7 +623,35 @@ void DirectXCommon::CreatePSO() {
 	assert(SUCCEEDED(result));
 }
 
+#pragma endregion
 
+#pragma region VertexResource関連
+
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(
+	Microsoft::WRL::ComPtr<ID3D12Device> device,size_t sizeInBytes) {
+	
+	HRESULT result = S_FALSE;
+
+	uploadHeapProperties_.Type = D3D12_HEAP_TYPE_UPLOAD; // UploadHeapを使う
+	//頂点リソースの設定
+	vertexResourceDesc_.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	vertexResourceDesc_.Width = sizeInBytes; // リソースのサイズ。今回はVector4を3頂点分
+	//バッファの場合はこれらは1にする決まり
+	vertexResourceDesc_.Height = 1;
+	vertexResourceDesc_.DepthOrArraySize = 1;
+	vertexResourceDesc_.MipLevels = 1;
+	vertexResourceDesc_.SampleDesc.Count = 1;
+	//バッファの場合はこれにする決まり
+	vertexResourceDesc_.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	//実際に頂点リソースを作る
+	vertexResource_ = nullptr;
+	result = device->CreateCommittedResource(&uploadHeapProperties_, D3D12_HEAP_FLAG_NONE,
+		&vertexResourceDesc_, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+		IID_PPV_ARGS(&vertexResource_));
+	assert(SUCCEEDED(result));
+
+	return vertexResource_;
+}
 void DirectXCommon::CreateVertexResource() {
 
 	HRESULT result = S_FALSE;
@@ -638,6 +688,9 @@ void DirectXCommon::CreateVertexBufferView() {
 
 void DirectXCommon::InitializeVertexData() {
 
+	//
+	// vertexResource_ = CreateBufferResource(device_, sizeof(Vector4) * 3);
+	vertexData = nullptr;
 	// 書き込むためのアドレスを取得
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	// 左下
@@ -663,6 +716,23 @@ void DirectXCommon::InitScissorRect() {
 	scissorRect_.top = 0;
 	scissorRect_.bottom = WinApp::kClientHeight;
 }
+
+#pragma endregion
+
+#pragma region MaterialResource関連
+
+void DirectXCommon::InitializeMaterialData() {
+	//マテリアル用リソース作成
+	materialResource_ = CreateBufferResource(device_, sizeof(Vector4));
+	//materialにデータを書き込む
+	materialData_ = nullptr;
+	//書き込むためのアドレスを取得
+	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	//色を書き込む
+	*materialData_ = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+}
+
+#pragma endregion
 
 
 
