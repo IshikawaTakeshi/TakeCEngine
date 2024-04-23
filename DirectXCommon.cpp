@@ -37,14 +37,11 @@ void DirectXCommon::Initialize() {
 	//PSO生成
 	CreatePSO();
 
-	//VertexResource生成
-	CreateVertexResource();
-
-	//CreateVBV作成
-	CreateVertexBufferView();
-
 	//VertexData初期化
 	InitializeVertexData();
+
+	//CreateVBV作成
+	CreateVertexBufferView();	
 
 	//Viewport初期化
 	InitViewport();
@@ -416,9 +413,9 @@ void DirectXCommon::CreateFence() {
 }
 
 
-#pragma region DXC関連
+#pragma region DXC
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-///			DXC関連
+///			DXC
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -507,7 +504,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> DirectXCommon::CompileShader(
 
 #pragma endregion
 
-#pragma region PSO関連
+#pragma region PSO
 void DirectXCommon::CreateRootSignature() {
 
 	HRESULT result = S_FALSE;
@@ -625,56 +622,33 @@ void DirectXCommon::CreatePSO() {
 
 #pragma endregion
 
-#pragma region VertexResource関連
+#pragma region VertexResource
 
 Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(
 	Microsoft::WRL::ComPtr<ID3D12Device> device,size_t sizeInBytes) {
 	
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
 	HRESULT result = S_FALSE;
 
 	uploadHeapProperties_.Type = D3D12_HEAP_TYPE_UPLOAD; // UploadHeapを使う
 	//頂点リソースの設定
-	vertexResourceDesc_.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	vertexResourceDesc_.Width = sizeInBytes; // リソースのサイズ。今回はVector4を3頂点分
+	resourceDesc_.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	resourceDesc_.Width = sizeInBytes; // リソースのサイズ。今回はVector4を3頂点分
 	//バッファの場合はこれらは1にする決まり
-	vertexResourceDesc_.Height = 1;
-	vertexResourceDesc_.DepthOrArraySize = 1;
-	vertexResourceDesc_.MipLevels = 1;
-	vertexResourceDesc_.SampleDesc.Count = 1;
+	resourceDesc_.Height = 1;
+	resourceDesc_.DepthOrArraySize = 1;
+	resourceDesc_.MipLevels = 1;
+	resourceDesc_.SampleDesc.Count = 1;
 	//バッファの場合はこれにする決まり
-	vertexResourceDesc_.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	resourceDesc_.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	//実際に頂点リソースを作る
-	vertexResource_ = nullptr;
 	result = device->CreateCommittedResource(&uploadHeapProperties_, D3D12_HEAP_FLAG_NONE,
-		&vertexResourceDesc_, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-		IID_PPV_ARGS(&vertexResource_));
+		&resourceDesc_, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+		IID_PPV_ARGS(&resource));
 	assert(SUCCEEDED(result));
 
-	return vertexResource_;
+	return resource;
 }
-void DirectXCommon::CreateVertexResource() {
-
-	HRESULT result = S_FALSE;
-
-	uploadHeapProperties_.Type = D3D12_HEAP_TYPE_UPLOAD; // UploadHeapを使う
-	//頂点リソースの設定
-	vertexResourceDesc_.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	vertexResourceDesc_.Width = sizeof(Vector4) * 3; // リソースのサイズ。今回はVector4を3頂点分
-	//バッファの場合はこれらは1にする決まり
-	vertexResourceDesc_.Height = 1;
-	vertexResourceDesc_.DepthOrArraySize = 1;
-	vertexResourceDesc_.MipLevels = 1;
-	vertexResourceDesc_.SampleDesc.Count = 1;
-	//バッファの場合はこれにする決まり
-	vertexResourceDesc_.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	//実際に頂点リソースを作る
-	vertexResource_ = nullptr;
-	result = device_->CreateCommittedResource(&uploadHeapProperties_, D3D12_HEAP_FLAG_NONE,
-		&vertexResourceDesc_, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-		IID_PPV_ARGS(&vertexResource_));
-	assert(SUCCEEDED(result));
-}
-
 
 void DirectXCommon::CreateVertexBufferView() {
 
@@ -688,8 +662,9 @@ void DirectXCommon::CreateVertexBufferView() {
 
 void DirectXCommon::InitializeVertexData() {
 
-	//
-	// vertexResource_ = CreateBufferResource(device_, sizeof(Vector4) * 3);
+	//VertexResource生成
+	vertexResource_ = CreateBufferResource(device_, sizeof(Vector4) * 3);
+
 	vertexData = nullptr;
 	// 書き込むためのアドレスを取得
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
@@ -719,7 +694,7 @@ void DirectXCommon::InitScissorRect() {
 
 #pragma endregion
 
-#pragma region MaterialResource関連
+#pragma region MaterialResource
 
 void DirectXCommon::InitializeMaterialData() {
 	//マテリアル用リソース作成

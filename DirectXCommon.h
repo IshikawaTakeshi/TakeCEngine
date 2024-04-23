@@ -219,7 +219,7 @@ private:
 
 	//vertexResource関連の変数
 	D3D12_HEAP_PROPERTIES uploadHeapProperties_{};
-	D3D12_RESOURCE_DESC vertexResourceDesc_{};
+	D3D12_RESOURCE_DESC resourceDesc_{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	Vector4* vertexData = nullptr;
@@ -236,11 +236,6 @@ private:
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(
 		Microsoft::WRL::ComPtr<ID3D12Device> device,size_t sizeInBytes);
-
-	/// <summary>
-	/// VertexResource生成
-	/// </summary>
-	void CreateVertexResource();
 
 	/// <summary>
 	/// VertexBufferView作成
