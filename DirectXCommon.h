@@ -12,6 +12,7 @@
 
 
 #include "Vector4.h"
+#include "Matrix4x4.h"
 #include "WinApp.h"
 
 class DirectXCommon {
@@ -125,10 +126,10 @@ private:
 	void CreateFence();
 
 
-#pragma region dxc関連
+#pragma region dxc
 private:
 	//////////////////////////////////////////////////////////////////////////////////////////
-	///			dxc関連
+	///			dxc
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
 	//dxc関連のメンバ変数
@@ -157,15 +158,15 @@ private:
 	);
 #pragma endregion
 
-#pragma region PSO関連
+#pragma region PSO
 private:
 	//////////////////////////////////////////////////////////////////////////////////////////
-	///			PSO関連
+	///			PSO
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
 	//PSO関連のメンバ変数
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
-	D3D12_ROOT_PARAMETER rootParameters_[1];
+	D3D12_ROOT_PARAMETER rootParameters_[2];
 	Microsoft::WRL::ComPtr<ID3D10Blob> signatureBlob_;
 	Microsoft::WRL::ComPtr<ID3D10Blob> errorBlob_;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
@@ -211,10 +212,10 @@ private:
 	void CreatePSO();
 #pragma endregion
 
-#pragma region VertexResource関連
+#pragma region VertexResource
 private:
 	//////////////////////////////////////////////////////////////////////////////////////////
-	///			vertexResource関連
+	///			vertexResource
 	//////////////////////////////////////////////////////////////////////////////////////////
 
 	//vertexResource関連の変数
@@ -253,7 +254,7 @@ private:
 
 #pragma endregion
 
-#pragma region materialResource関連
+#pragma region materialResource
 private:
 	//メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
@@ -266,6 +267,22 @@ private:
 	/// </summary>
 	void InitializeMaterialData();
 	
+#pragma endregion
+
+#pragma region wvpResource
+private:
+	//メンバ変数
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResorce_;
+	std::unique_ptr<Matrix4x4> wvpData_;
+
+private:
+
+		//メンバ関数
+		/// <summary>
+		/// wvpData初期化
+		/// </summary>
+		void InitializeWvpData();
+
 #pragma endregion
 };
 

@@ -2,6 +2,7 @@
 
 #include "Logger.h"
 
+
 #include <format>
 
 #pragma comment(lib, "d3d12.lib")
@@ -516,9 +517,11 @@ void DirectXCommon::CreateRootSignature() {
 	rootParameters_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParameters_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
 	rootParameters_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
+	rootParameters_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParameters_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	rootParameters_[1].Descriptor.ShaderRegister = 0;
 	descriptionRootSignature_.pParameters = rootParameters_; //rootParamerter配列へのポインタ
 	descriptionRootSignature_.NumParameters = _countof(rootParameters_); //配列の長さ
-
 
 	//シリアライズ
 	signatureBlob_ = nullptr;
@@ -705,6 +708,18 @@ void DirectXCommon::InitializeMaterialData() {
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	//色を書き込む
 	*materialData_ = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void DirectXCommon::InitializeWvpData() {
+	//wvp用リソース作成
+	wvpResorce_ = CreateBufferResource(device_, sizeof(Matrix4x4));
+	//データを書き込む
+	wvpData_ = nullptr;
+	//書き込むためのアドレスを取得
+	wvpResorce_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
+	//単位行列を書き込む
+	*wvpData_ = MakeIdentity4x4();
+
 }
 
 #pragma endregion
