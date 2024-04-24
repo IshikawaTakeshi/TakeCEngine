@@ -5,6 +5,7 @@
 #include "WinApp.h"
 #include "Logger.h"
 #include "DirectXCommon.h"
+#include "Transform.h"
 
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
@@ -36,6 +37,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectXCommon* directXCommon = DirectXCommon::GetInstance();
 	directXCommon->Initialize();
 
+	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
+	Matrix4x4 worldMatrix = MatrixMath::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	Matrix4x4 cameraMatrix = MatrixMath::MakeAffineMatrix(
+		cameraTransform.scale,cameraTransform.rotate,cameraTransform.translate
+	);
+	Matrix4x4 viewMatrix = MatrixMath::Inverse(cameraMatrix);
+	Matrix4x4 projectionMatrix = MatrixMath::MakePerspectiveFovMatrix(
+		0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f
+	);
+	Matrix4x4 worldViewProjectionMatrix = MatrixMath::Multiply(
+		worldMatrix, MatrixMath::Multiply(viewMatrix, projectionMatrix));
+
+
 	//////////////////////////////////////////////////////////
 	//メインループ
 	//////////////////////////////////////////////////////////
@@ -47,8 +62,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 
-		directXCommon->PostDraw();
+		transform.rotate.y += 0.03f;
+		worldMatrix = MatrixMath::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+		worldViewProjectionMatrix = MatrixMath::Multiply(
+			worldMatrix, MatrixMath::Multiply(viewMatrix, projectionMatrix));
 
+		directXCommon->SetWvpData(worldViewProjectionMatrix);
+
+		
+
+
+		directXCommon->PostDraw();
 	}
 
 	directXCommon->Finalize();

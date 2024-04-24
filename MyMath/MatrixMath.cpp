@@ -1,4 +1,4 @@
-#include "MyMath/MatrixMath.h"
+#include "MatrixMath.h"
 
 
 //行列の加法
@@ -249,7 +249,7 @@ Matrix4x4 MatrixMath::MakeOrthographicMatrix(float left, float top, float right,
 }
 
 //ビューポート変換行列
-Matrix4x4 MatrixMath::MakeVeiwportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
+Matrix4x4 MatrixMath::MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
 	Matrix4x4 result = {
 		width / 2.0f,0,0,0,
 		0,-height / 2.0f,0,0,

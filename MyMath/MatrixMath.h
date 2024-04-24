@@ -1,5 +1,5 @@
-#include "MatrixMath.h"
-#include "Vector3.h"
+#include "../Vector3.h"
+#include "../Matrix4x4.h"
 #include <assert.h>
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -53,7 +53,7 @@ public:
 	static Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip);
 
 	//ビューポート変換行列
-	static Matrix4x4 MakeVeiwportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
+	static Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
 
 	//Matrix4x4からVector3に座標変換
 	static Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);

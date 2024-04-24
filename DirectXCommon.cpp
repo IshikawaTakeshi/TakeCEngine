@@ -2,7 +2,6 @@
 
 #include "Logger.h"
 
-
 #include <format>
 
 #pragma comment(lib, "d3d12.lib")
@@ -19,50 +18,48 @@ void DirectXCommon::Initialize() {
 
 	//DXGIデバイス初期化
 	InitializeDXGIDevice();
-
 	// コマンド関連初期化
 	InitializeCommand();
-
 	// スワップチェーンの生成
 	CreateSwapChain();
-
 	// レンダーターゲット生成
 	CreateFinalRenderTargets();
-
 	// フェンス生成
 	CreateFence();
-
 	//DXC初期化
 	InitializeDxc();
-
 	//PSO生成
 	CreatePSO();
-
 	//VertexData初期化
 	InitializeVertexData();
-
 	//CreateVBV作成
 	CreateVertexBufferView();	
-
 	//Viewport初期化
 	InitViewport();
-
 	//Scissor矩形初期化
 	InitScissorRect();
-
 	//materialData初期化
 	InitializeMaterialData();
+	//wvpData初期化
+	InitializeWvpData();
 }
+	
+	
 
 void DirectXCommon::Finalize() {
 
-	/*==========materialResource関連==========*/
+	/*==========materialResource==========*/
+	
+	wvpData_.reset();
+	wvpResource_.Reset();
+
+	/*==========materialResource==========*/
 	materialResource_.Reset();
 
-	/*==========vertexResource関連==========*/
+	/*==========vertexResource==========*/
 	vertexResource_.Reset();
 
-	/*==========PSO関連==========*/
+	/*==========PSO==========*/
 	graphicPipelineState_.Reset();
 	pixelShaderBlob_.Reset();
 	vertexShaderBlob_.Reset();
@@ -71,12 +68,12 @@ void DirectXCommon::Finalize() {
 		errorBlob_.Reset();
 	}
 
-	/*==========dxc関連==========*/
+	/*==========dxc==========*/
 	rootSignature_.Reset();
 	pixelShaderBlob_.Reset();
 	vertexShaderBlob_.Reset();
 
-	/*==========DirectX関連==========*/
+	/*==========DirectX==========*/
 	CloseHandle(fenceEvent_);
 	fence_.Reset();
 	rtvHeap_.Reset();
@@ -179,7 +176,7 @@ void DirectXCommon::ClearRenderTarget() {
 	commandList_->ClearRenderTargetView(rtvHandles_[bbIndex], clearColor, 0, nullptr);
 
 	commandList_->RSSetViewports(1, &viewport_); // Viewportを設定
-	commandList_->RSSetScissorRects(1, &scissorRect_); // Scirssorの設定
+	commandList_->RSSetScissorRects(1, &scissorRect_); // Scissorの設定
 	// RootSignatureを設定。PSOに設定しているが別途設定が必要
 	commandList_->SetGraphicsRootSignature(rootSignature_.Get());
 	commandList_->SetPipelineState(graphicPipelineState_.Get()); // PSOを設定
@@ -188,6 +185,8 @@ void DirectXCommon::ClearRenderTarget() {
 	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
 	commandList_->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+	//wvp用のCBufferの場所を指定
+	commandList_->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	commandList_->DrawInstanced(3, 1, 0, 0);
 
@@ -515,12 +514,12 @@ void DirectXCommon::CreateRootSignature() {
 
 	//ルートパラメータ。複数設定できるので配列。
 	rootParameters_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParameters_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
 	rootParameters_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
 	rootParameters_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	rootParameters_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 	rootParameters_[1].Descriptor.ShaderRegister = 0;
-	descriptionRootSignature_.pParameters = rootParameters_; //rootParamerter配列へのポインタ
+	descriptionRootSignature_.pParameters = rootParameters_; //rootParameter配列へのポインタ
 	descriptionRootSignature_.NumParameters = _countof(rootParameters_); //配列の長さ
 
 	//シリアライズ
@@ -712,13 +711,15 @@ void DirectXCommon::InitializeMaterialData() {
 
 void DirectXCommon::InitializeWvpData() {
 	//wvp用リソース作成
-	wvpResorce_ = CreateBufferResource(device_, sizeof(Matrix4x4));
+	wvpResource_ = CreateBufferResource(device_, sizeof(Matrix4x4));
 	//データを書き込む
 	wvpData_ = nullptr;
 	//書き込むためのアドレスを取得
-	wvpResorce_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
 	//単位行列を書き込む
-	*wvpData_ = MakeIdentity4x4();
+	*wvpData_ = MatrixMath::MakeIdentity4x4();
+
+
 
 }
 

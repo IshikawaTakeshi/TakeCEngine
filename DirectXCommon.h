@@ -9,11 +9,13 @@
 #include <cassert>
 #include <string>
 #include <vector>
-
+#include <iostream>
+#include <memory>
 
 #include "Vector4.h"
 #include "Matrix4x4.h"
 #include "WinApp.h"
+#include "MyMath/MatrixMath.h"
 
 class DirectXCommon {
 public:
@@ -270,14 +272,19 @@ private:
 #pragma endregion
 
 #pragma region wvpResource
+public:
+	//セッタ
+	void SetWvpData(Matrix4x4 wvpData) { *wvpData_ = wvpData; };
+
 private:
 	//メンバ変数
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResorce_;
-	std::unique_ptr<Matrix4x4> wvpData_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
+	std::shared_ptr<Matrix4x4> wvpData_;
 
 private:
-
 		//メンバ関数
+	
+
 		/// <summary>
 		/// wvpData初期化
 		/// </summary>
