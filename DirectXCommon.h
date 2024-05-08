@@ -68,7 +68,6 @@ public:
 private:
 	// ウィンドウズアプリケーション管理
 	WinApp* winApp_ = WinApp::GetInstance();
-
 	//DXGIファクトリーの作成
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
 	//使用するアダプタ用の変数
@@ -83,10 +82,15 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_;
 	//スワップチェーンの生成
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 //	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> swapChainResources_;
 	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources_[2];
 	//ディスクリプタヒープの生成
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap_;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> drawHeaps_[2];
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
 	//RTVを2つ作るのでディスクリプタを2つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
 	//フェンスの生成
@@ -95,6 +99,7 @@ private:
 	HANDLE fenceEvent_;
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_;
+
 
 private:
 	DirectXCommon() = default;
@@ -109,13 +114,11 @@ private:
 	/// コマンド関連初期化
 	/// </summary>
 	void InitializeCommand();
-
-
-
 	/// <summary>
 	/// スワップチェーンの生成
 	/// </summary>
 	void CreateSwapChain();
+
 
 	/// <summary>
 	/// レンダーターゲット生成
@@ -126,8 +129,13 @@ private:
 	/// フェンス生成
 	/// </summary>
 	void CreateFence();
-
-
+	/// <summary>
+	/// DescriptorHeap作成関数
+	/// </summary>
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(
+		Microsoft::WRL::ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType,
+		UINT numDescriptors, bool shaderVisible
+	);
 #pragma region dxc
 private:
 	//////////////////////////////////////////////////////////////////////////////////////////

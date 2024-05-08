@@ -1,13 +1,18 @@
 #include "DirectXCommon.h"
-
 #include "Logger.h"
-
 #include <format>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib,"dxcompiler.lib")
 
+#pragma region imgui
+#include "externals/imgui/imgui.h"
+#include "externals/imgui/imgui_impl_dx12.h"
+#include "externals/imgui/imgui_impl_win32.h"
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
+	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#pragma endregion
 
 DirectXCommon* DirectXCommon::GetInstance() {
 	static DirectXCommon instance;
@@ -42,14 +47,33 @@ void DirectXCommon::Initialize() {
 	InitializeMaterialData();
 	//wvpData初期化
 	InitializeWvpData();
+
+#ifdef _DEBUG
+	//ImGui初期化
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(winApp_->GetHwnd());
+	ImGui_ImplDX12_Init(DirectXCommon::GetDevice(),
+		swapChainDesc_.BufferCount,
+		rtvDesc_.Format,
+		srvHeap_.Get(),
+		srvHeap_->GetCPUDescriptorHandleForHeapStart(),
+		srvHeap_->GetGPUDescriptorHandleForHeapStart()
+	);
+
+#endif // _DEBUG	
 }
 	
 	
 
 void DirectXCommon::Finalize() {
+	/*==========ImGui==========*/
+	ImGui_ImplDX12_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 
-	/*==========materialResource==========*/
-	
+	/*==========materialResource==========*/	
 	wvpData_.reset();
 	wvpResource_.Reset();
 
@@ -76,7 +100,10 @@ void DirectXCommon::Finalize() {
 	/*==========DirectX==========*/
 	CloseHandle(fenceEvent_);
 	fence_.Reset();
+	drawHeaps_->Reset();
+	srvHeap_.Reset();
 	rtvHeap_.Reset();
+	descriptorHeap_.Reset();
 	swapChainResources_[0].Reset();
 	swapChainResources_[1].Reset();
 	swapChain_.Reset();
@@ -91,15 +118,27 @@ void DirectXCommon::Finalize() {
 
 void DirectXCommon::PreDraw() {
 
+
+
+	ImGui_ImplDX12_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	//開発用UIの処理。実際に開発用のUIを出す場合はここをゲーム特有の処理に置き換える
+	ImGui::ShowDemoWindow();
+
 	//全画面クリア
 	ClearRenderTarget();
-
 }
 
 void DirectXCommon::PostDraw() {
 	HRESULT result = S_FALSE;
 
 
+	
+	
+	//実際のcommandListのImGuiの描画コマンドを積む
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList_.Get());
 
 	//画面に描く処理はすべて終わり、画面に移すので、状態を遷移
 	//今回はRenderTargetからPresentにする
@@ -148,10 +187,11 @@ void DirectXCommon::PostDraw() {
 
 void DirectXCommon::ClearRenderTarget() {
 
+	//ImGuiの内部コマンドを生成する
+	ImGui::Render();
+
 	//書き込むバックバッファのインデックスを取得
 	UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();
-
-
 	
 	//今回のバリアはTransition
 	barrier_.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -174,6 +214,10 @@ void DirectXCommon::ClearRenderTarget() {
 	// 全画面クリア          Red   Green  Blue  Alpha
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f }; // 青っぽい色
 	commandList_->ClearRenderTargetView(rtvHandles_[bbIndex], clearColor, 0, nullptr);
+
+	//描画用ディスクリプタヒープの設定
+	drawHeaps_[0] = { srvHeap_ };
+	commandList_->SetDescriptorHeaps(1, drawHeaps_->GetAddressOf());
 
 	commandList_->RSSetViewports(1, &viewport_); // Viewportを設定
 	commandList_->RSSetScissorRects(1, &scissorRect_); // Scissorの設定
@@ -220,11 +264,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 	//どうにもできない場合が多いのでassertにしておく
 	assert(SUCCEEDED(hr));
 
-
-	//////////////////////////////////////////////////////////
 	//使用するアダプタ(GPU)の決定
-	//////////////////////////////////////////////////////////
-
 	//使用するアダプタ用の変数。最初にnullptrを入れておく
 	useAdapter_ = nullptr;
 
@@ -251,10 +291,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 	//適切なアダプタが見つからなかった場合は起動できない
 	assert(useAdapter_ != nullptr);
 
-	//////////////////////////////////////////////////////////
 	//D3D12Deviceの生成
-	//////////////////////////////////////////////////////////
-
 	//高い順に生成できるか試していく
 	for (size_t i = 0; i < _countof(featureLevels); ++i) {
 
@@ -336,17 +373,16 @@ void DirectXCommon::CreateSwapChain() {
 	HRESULT result = S_FALSE;
 
 	// 各種設定をしてスワップチェーンを生成
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
-	swapChainDesc.Width = WinApp::kClientWidth;
-	swapChainDesc.Height = WinApp::kClientHeight;
-	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 色情報の書式
-	swapChainDesc.SampleDesc.Count = 1;                 // マルチサンプルしない
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // バックバッファとして使えるように
-	swapChainDesc.BufferCount = 2;                      // バッファ数を２つに設定(ダブルバッファ)
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // モニタに映したら(フリップ後)は速やかに破棄
+	swapChainDesc_.Width = WinApp::kClientWidth;
+	swapChainDesc_.Height = WinApp::kClientHeight;
+	swapChainDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 色情報の書式
+	swapChainDesc_.SampleDesc.Count = 1;                 // マルチサンプルしない
+	swapChainDesc_.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // バックバッファとして使えるように
+	swapChainDesc_.BufferCount = 2;                      // バッファ数を２つに設定(ダブルバッファ)
+	swapChainDesc_.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // モニタに映したら(フリップ後)は速やかに破棄
 
 	result = dxgiFactory_->CreateSwapChainForHwnd(
-		commandQueue_.Get(), winApp_->GetHwnd(), &swapChainDesc, nullptr, nullptr,
+		commandQueue_.Get(), winApp_->GetHwnd(), &swapChainDesc_, nullptr, nullptr,
 		reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
 	assert(SUCCEEDED(result));
 }
@@ -354,12 +390,10 @@ void DirectXCommon::CreateSwapChain() {
 void DirectXCommon::CreateFinalRenderTargets() {
 	HRESULT result = S_FALSE;
 
-	// 各種設定をしてディスクリプタヒープを生成
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};
-	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV; // レンダーターゲットビュー
-	heapDesc.NumDescriptors = 2; //ダブルバッファ用に2つ。
-	result = device_->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&rtvHeap_));
-	assert(SUCCEEDED(result));
+	// RTV用のディスクリプタヒープ生成
+	rtvHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
+	// SRV用のディスクリプタヒープ生成
+	srvHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
 
 
@@ -377,16 +411,16 @@ void DirectXCommon::CreateFinalRenderTargets() {
 
 
 	// レンダーターゲットビューの設定
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; // 出力結果をSRGBに変換して書き込む
-	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; // 2dテクスチャとして書き込む
+	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; // 出力結果をSRGBに変換して書き込む
+	rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; // 2dテクスチャとして書き込む
+	
 	// ディスクリプタの先頭を取得する
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = rtvHeap_->GetCPUDescriptorHandleForHeapStart();
 	//1つ目。作る場所をこちらで指定してあげる必要がある
 	rtvHandles_[0] = rtvStartHandle;
 	device_->CreateRenderTargetView(
 		swapChainResources_[0].Get(),
-		&rtvDesc,
+		&rtvDesc_,
 		rtvHandles_[0]
 	);
 	//2つ目のディスクリプタハンドルを得る
@@ -396,9 +430,10 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	//2つ目。
 	device_->CreateRenderTargetView(
 		swapChainResources_[1].Get(),
-		&rtvDesc,
+		&rtvDesc_,
 		rtvHandles_[1]
 	);
+
 }
 
 void DirectXCommon::CreateFence() {
@@ -410,6 +445,20 @@ void DirectXCommon::CreateFence() {
 	//FenceのSignalを待つためのイベントを作成する
 	fenceEvent_ = CreateEvent(NULL, FALSE, FALSE, NULL);
 	assert(fenceEvent_ != nullptr);
+}
+
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap(
+	Microsoft::WRL::ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType,
+	UINT numDescriptors, bool shaderVisible) {
+	
+	descriptorHeap_ = nullptr;
+	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
+	descriptorHeapDesc.Type = heapType;
+	descriptorHeapDesc.NumDescriptors = numDescriptors;
+	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	HRESULT result = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap_));
+	assert(SUCCEEDED(result));
+	return descriptorHeap_;
 }
 
 

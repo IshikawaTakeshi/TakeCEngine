@@ -1,22 +1,14 @@
 #include "WinApp.h"
 
 
+#pragma region imgui
+#include "externals/imgui/imgui.h"
+#include "externals/imgui/imgui_impl_dx12.h"
+#include "externals/imgui/imgui_impl_win32.h"
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
+	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#pragma endregion
 
-//ウィンドウプロシージャ
-LRESULT CALLBACK WindowProc(HWND hwmd, UINT msg,
-	WPARAM wparam, LPARAM lparam) {
-	//メッセージに応じてゲーム特有の処理を行う
-	switch (msg) {
-		//ウィンドウが破棄された
-	case WM_DESTROY:
-		//OSに対して、アプリの終了を伝える
-		PostQuitMessage(0);
-		return 0;
-	}
-
-	//標準のメッセージ処理を行う
-	return DefWindowProc(hwmd, msg, wparam, lparam);
-}
 
 void WinApp::Initialize() {
 	// ウィンドウプロシージャ
@@ -34,6 +26,7 @@ void WinApp::Initialize() {
 	CreateGameWindow();
 
 #ifdef _DEBUG
+
 	//debugController
 	debugController_ = nullptr;
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController_)))) {
@@ -77,7 +70,12 @@ WinApp* WinApp::GetInstance() {
 	return &instance;
 }
 
-LRESULT WinApp::WindowProc(HWND hwmd, UINT msg, WPARAM wparam, LPARAM lparam) {
+//ウィンドウプロシージャ
+LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam)) {
+		return true;
+	}
 	//メッセージに応じてゲーム特有の処理を行う
 	switch (msg) {
 		//ウィンドウが破棄された
@@ -88,7 +86,7 @@ LRESULT WinApp::WindowProc(HWND hwmd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	}
 
 	//標準のメッセージ処理を行う
-	return DefWindowProc(hwmd, msg, wparam, lparam);
+	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
 void WinApp::CreateGameWindow() {
