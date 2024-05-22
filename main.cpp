@@ -1,7 +1,7 @@
 #pragma warning(push)
 //C4023の警告を見なかったことにする
 #pragma warning(disable:4023)
-
+//Include
 #include "WinApp.h"
 #include "Logger.h"
 #include "DirectXCommon.h"
