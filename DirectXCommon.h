@@ -13,9 +13,16 @@
 #include <memory>
 
 #include "Vector4.h"
+#include "Vector2.h"
 #include "Matrix4x4.h"
 #include "WinApp.h"
 #include "MyMath/MatrixMath.h"
+
+struct VertexData {
+	Vector4 position;
+	Vector2 texcoord;
+};
+
 
 class DirectXCommon {
 public:
@@ -39,7 +46,7 @@ public:
 	/// <summary>
 	/// 描画前処理
 	/// </summary>
-	void PreDraw();
+	void PreDraw(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU);
 
 	/// <summary>
 	/// 描画後処理
@@ -49,13 +56,13 @@ public:
 	/// <summary>
 	/// レンダーターゲットのクリア
 	/// </summary>
-	void ClearRenderTarget();
+	void ClearRenderTarget(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU);
 
 	/// <summary>
 	/// デバイスの取得
 	/// </summary>
 	/// <returns>デバイス</returns>
-	ID3D12Device* GetDevice() const { return device_.Get(); }
+	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() const { return device_; }
 
 	/// <summary>
 	/// 描画コマンドリストの取得
@@ -63,6 +70,10 @@ public:
 	/// <returns>描画コマンドリスト</returns>
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 
+	/// <summary>
+	/// srvHeapの取得
+	/// </summary>
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvHeap() { return srvHeap_; }
 
 
 private:
@@ -174,14 +185,16 @@ private:
 	///			PSO
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
-	//PSO関連のメンバ変数
+	//rootSignature
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
-	D3D12_ROOT_PARAMETER rootParameters_[2];
+	D3D12_ROOT_PARAMETER rootParameters_[3] = {};
+	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
 	Microsoft::WRL::ComPtr<ID3D10Blob> signatureBlob_;
 	Microsoft::WRL::ComPtr<ID3D10Blob> errorBlob_;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+	D3D12_STATIC_SAMPLER_DESC staticSamlers_[1] = {};
 	//InputLayout
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[1] = {};
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[2] = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	/// ブレンドステート
 	D3D12_BLEND_DESC blendDesc_{};
@@ -228,12 +241,13 @@ private:
 	///			vertexResource
 	//////////////////////////////////////////////////////////////////////////////////////////
 
+
 	//vertexResource関連の変数
 	D3D12_HEAP_PROPERTIES uploadHeapProperties_{};
 	D3D12_RESOURCE_DESC resourceDesc_{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	Vector4* vertexData = nullptr;
+	VertexData* vertexData_;
 	// ビューポート
 	D3D12_VIEWPORT viewport_{};
 	// シザー矩形

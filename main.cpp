@@ -6,6 +6,7 @@
 #include "Logger.h"
 #include "DirectXCommon.h"
 #include "Transform.h"
+#include "Texture.h"
 
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
@@ -29,6 +30,8 @@ struct D3DResourceLeakChecker {
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
+	CoInitializeEx(0, COINIT_MULTITHREADED);
+
 	D3DResourceLeakChecker leakCheck;
 
 	WinApp* winApp = WinApp::GetInstance();
@@ -36,6 +39,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	DirectXCommon* directXCommon = DirectXCommon::GetInstance();
 	directXCommon->Initialize();
+
+	Texture* texture = new Texture();
+	texture->Initialize(directXCommon);
 
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
@@ -58,9 +64,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ウィンドウの×ボタンが押されるまでループ
 	while (winApp->ProcessMessage() == 0) {
 		
-		directXCommon->PreDraw();
-
-
+		//描画前処理
+		directXCommon->PreDraw(texture->GetTextureSrvHandleGPU());
 
 		transform.rotate.y += 0.03f;
 		worldMatrix = MatrixMath::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
@@ -71,13 +76,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		
 
-
+		//描画後処理
 		directXCommon->PostDraw();
 	}
 
 	directXCommon->Finalize();
 	winApp->Finalize();
-
+	texture->Finalize();
 	
 	leakCheck.~D3DResourceLeakChecker();
 

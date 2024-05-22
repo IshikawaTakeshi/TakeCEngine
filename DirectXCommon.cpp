@@ -54,7 +54,7 @@ void DirectXCommon::Initialize() {
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(winApp_->GetHwnd());
-	ImGui_ImplDX12_Init(DirectXCommon::GetDevice(),
+	ImGui_ImplDX12_Init(DirectXCommon::GetDevice().Get(),
 		swapChainDesc_.BufferCount,
 		rtvDesc_.Format,
 		srvHeap_.Get(),
@@ -116,9 +116,7 @@ void DirectXCommon::Finalize() {
 
 }
 
-void DirectXCommon::PreDraw() {
-
-
+void DirectXCommon::PreDraw(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU) {
 
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -128,7 +126,7 @@ void DirectXCommon::PreDraw() {
 	ImGui::ShowDemoWindow();
 
 	//全画面クリア
-	ClearRenderTarget();
+	ClearRenderTarget(textureSrvHandleGPU);
 }
 
 void DirectXCommon::PostDraw() {
@@ -185,7 +183,7 @@ void DirectXCommon::PostDraw() {
 	assert(SUCCEEDED(result));
 }
 
-void DirectXCommon::ClearRenderTarget() {
+void DirectXCommon::ClearRenderTarget(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU) {
 
 	//ImGuiの内部コマンドを生成する
 	ImGui::Render();
@@ -205,8 +203,6 @@ void DirectXCommon::ClearRenderTarget() {
 	barrier_.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	//TransitionBarrierを張る
 	commandList_->ResourceBarrier(1, &barrier_);
-
-
 
 	//描画先のRTVを設定する
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[bbIndex], false, nullptr);
@@ -231,6 +227,8 @@ void DirectXCommon::ClearRenderTarget() {
 	commandList_->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	commandList_->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	commandList_->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	commandList_->DrawInstanced(3, 1, 0, 0);
 
@@ -451,14 +449,15 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 	Microsoft::WRL::ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType,
 	UINT numDescriptors, bool shaderVisible) {
 	
-	descriptorHeap_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> heap = nullptr;
+
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
 	descriptorHeapDesc.Type = heapType;
 	descriptorHeapDesc.NumDescriptors = numDescriptors;
 	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	HRESULT result = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap_));
+	HRESULT result = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&heap));
 	assert(SUCCEEDED(result));
-	return descriptorHeap_;
+	return heap;
 }
 
 
@@ -561,16 +560,44 @@ void DirectXCommon::CreateRootSignature() {
 	descriptionRootSignature_.Flags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
+	//ディスクリプターレンジ
+	descriptorRange_[0].BaseShaderRegister = 0;
+	descriptorRange_[0].NumDescriptors = 1;
+	descriptorRange_[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRange_[0].OffsetInDescriptorsFromTableStart = 
+		D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //offsetを自動計算
+
 	//ルートパラメータ。複数設定できるので配列。
+	//.0
 	rootParameters_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParameters_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
 	rootParameters_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
+	//.1
 	rootParameters_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	rootParameters_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 	rootParameters_[1].Descriptor.ShaderRegister = 0;
+	//.2
+	rootParameters_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
+	rootParameters_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	rootParameters_[2].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
+	rootParameters_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
+
 	descriptionRootSignature_.pParameters = rootParameters_; //rootParameter配列へのポインタ
 	descriptionRootSignature_.NumParameters = _countof(rootParameters_); //配列の長さ
 
+	//Samplerの設定
+	staticSamlers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
+	staticSamlers_[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
+	staticSamlers_[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamlers_[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamlers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; //比較しない
+	staticSamlers_[0].MaxLOD = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
+	staticSamlers_[0].ShaderRegister = 0; //レジスタ番号0を使う
+	staticSamlers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	
+	descriptionRootSignature_.pStaticSamplers = staticSamlers_;
+	descriptionRootSignature_.NumStaticSamplers = _countof(staticSamlers_);
+	
 	//シリアライズ
 	signatureBlob_ = nullptr;
 	errorBlob_ = nullptr;
@@ -595,6 +622,11 @@ void DirectXCommon::CreateInputLayout() {
 	inputElementDescs_[0].SemanticIndex = 0;
 	inputElementDescs_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	inputElementDescs_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	inputElementDescs_[1].SemanticName = "TEXCOORD";
+	inputElementDescs_[1].SemanticIndex = 0;
+	inputElementDescs_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputElementDescs_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
 	inputLayoutDesc_.pInputElementDescs = inputElementDescs_;
 	inputLayoutDesc_.NumElements = _countof(inputElementDescs_);
 }
@@ -706,25 +738,29 @@ void DirectXCommon::CreateVertexBufferView() {
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(Vector4) * 3;
+	vertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
 	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(Vector4);\
+	vertexBufferView.StrideInBytes = sizeof(VertexData);
 }
 
 void DirectXCommon::InitializeVertexData() {
 
 	//VertexResource生成
-	vertexResource_ = CreateBufferResource(device_, sizeof(Vector4) * 3);
+	vertexResource_ = CreateBufferResource(device_, sizeof(VertexData) * 3);
 
-	vertexData = nullptr;
+	vertexData_ = nullptr;
 	// 書き込むためのアドレスを取得
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	// 左下
-	vertexData[0] = { -0.5f,-0.5f,0.0f,1.0f };
+	vertexData_[0].position = { -0.5f,-0.5f,0.0f,1.0f };
+	vertexData_[0].texcoord = { 0.0f,1.0f };
 	//上
-	vertexData[1] = { 0.0f,0.5f,0.0f,1.0f };
+	vertexData_[1].position = { 0.0f,0.5f,0.0f,1.0f };
+	vertexData_[1].texcoord = { 0.5f,0.0f };
 	// 右下
-	vertexData[2] = { 0.5f,-0.5f,0.0f,1.0f };
+	vertexData_[2].position = { 0.5f,-0.5f,0.0f,1.0f };
+	vertexData_[2].texcoord = { 1.0f,1.0f };
+
 }
 
 void DirectXCommon::InitViewport() {
@@ -755,7 +791,7 @@ void DirectXCommon::InitializeMaterialData() {
 	//書き込むためのアドレスを取得
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	//色を書き込む
-	*materialData_ = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+	*materialData_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void DirectXCommon::InitializeWvpData() {
