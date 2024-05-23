@@ -45,6 +45,9 @@ public:
 	void uploadTextureData(
 		Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(
+		const Microsoft::WRL::ComPtr<ID3D12Device>& device, int32_t width, int32_t height);
+
 	/// <summary>
 	/// textureSrvHandleGPUの取得
 	/// </summary>
@@ -56,5 +59,6 @@ private:
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_;
 	
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
 };
 

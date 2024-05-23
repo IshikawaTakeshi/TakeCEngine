@@ -75,7 +75,10 @@ public:
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvHeap() { return srvHeap_; }
 
-
+	/// <summary>
+	/// dsvHeapの取得
+	/// </summary>
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetDsvHeap() { return dsvHeap_; }
 private:
 	// ウィンドウズアプリケーション管理
 	WinApp* winApp_ = WinApp::GetInstance();
@@ -100,6 +103,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap_;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvHeap_;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> drawHeaps_[2];
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
 	//RTVを2つ作るのでディスクリプタを2つ用意
@@ -192,7 +196,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D10Blob> signatureBlob_;
 	Microsoft::WRL::ComPtr<ID3D10Blob> errorBlob_;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
-	D3D12_STATIC_SAMPLER_DESC staticSamlers_[1] = {};
+	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	//InputLayout
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[2] = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};

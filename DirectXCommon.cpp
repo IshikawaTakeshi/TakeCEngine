@@ -230,7 +230,7 @@ void DirectXCommon::ClearRenderTarget(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHand
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	commandList_->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	commandList_->DrawInstanced(3, 1, 0, 0);
+	commandList_->DrawInstanced(6, 1, 0, 0);
 
 }
 
@@ -392,6 +392,8 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	rtvHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 	// SRV用のディスクリプタヒープ生成
 	srvHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+	//DSV用のディスクリプタヒープ生成。DSVはShader内で触るものではないので、ShaderVisibleはfalse
+	dsvHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 
 
 
@@ -449,15 +451,15 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 	Microsoft::WRL::ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType,
 	UINT numDescriptors, bool shaderVisible) {
 	
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> heap = nullptr;
+	descriptorHeap_ = nullptr;
 
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
 	descriptorHeapDesc.Type = heapType;
 	descriptorHeapDesc.NumDescriptors = numDescriptors;
 	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	HRESULT result = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&heap));
+	HRESULT result = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap_));
 	assert(SUCCEEDED(result));
-	return heap;
+	return descriptorHeap_;
 }
 
 
@@ -586,17 +588,17 @@ void DirectXCommon::CreateRootSignature() {
 	descriptionRootSignature_.NumParameters = _countof(rootParameters_); //配列の長さ
 
 	//Samplerの設定
-	staticSamlers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
-	staticSamlers_[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
-	staticSamlers_[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamlers_[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamlers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; //比較しない
-	staticSamlers_[0].MaxLOD = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
-	staticSamlers_[0].ShaderRegister = 0; //レジスタ番号0を使う
-	staticSamlers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
+	staticSamplers_[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
+	staticSamplers_[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers_[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; //比較しない
+	staticSamplers_[0].MaxLOD = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
+	staticSamplers_[0].ShaderRegister = 0; //レジスタ番号0を使う
+	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
 	
-	descriptionRootSignature_.pStaticSamplers = staticSamlers_;
-	descriptionRootSignature_.NumStaticSamplers = _countof(staticSamlers_);
+	descriptionRootSignature_.pStaticSamplers = staticSamplers_;
+	descriptionRootSignature_.NumStaticSamplers = _countof(staticSamplers_);
 	
 	//シリアライズ
 	signatureBlob_ = nullptr;
@@ -738,7 +740,7 @@ void DirectXCommon::CreateVertexBufferView() {
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
+	vertexBufferView.SizeInBytes = sizeof(VertexData) * 6;
 	// 1頂点あたりのサイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData);
 }
@@ -746,11 +748,12 @@ void DirectXCommon::CreateVertexBufferView() {
 void DirectXCommon::InitializeVertexData() {
 
 	//VertexResource生成
-	vertexResource_ = CreateBufferResource(device_, sizeof(VertexData) * 3);
+	vertexResource_ = CreateBufferResource(device_, sizeof(VertexData) * 6);
 
 	vertexData_ = nullptr;
 	// 書き込むためのアドレスを取得
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+	///三角形1
 	// 左下
 	vertexData_[0].position = { -0.5f,-0.5f,0.0f,1.0f };
 	vertexData_[0].texcoord = { 0.0f,1.0f };
@@ -760,6 +763,17 @@ void DirectXCommon::InitializeVertexData() {
 	// 右下
 	vertexData_[2].position = { 0.5f,-0.5f,0.0f,1.0f };
 	vertexData_[2].texcoord = { 1.0f,1.0f };
+
+	///三角形2
+	// 左下2
+	vertexData_[3].position = { -0.5f,-0.5f,0.5f,1.0f };
+	vertexData_[3].texcoord = { 0.0f,1.0f };
+	//上2
+	vertexData_[4].position = { 0.0f,0.0f,0.0f,1.0f };
+	vertexData_[4].texcoord = { 0.5f,0.0f };
+	// 右下2
+	vertexData_[5].position = { 0.5f,-0.5f,-0.5f,1.0f };
+	vertexData_[5].texcoord = { 1.0f,1.0f };
 
 }
 
