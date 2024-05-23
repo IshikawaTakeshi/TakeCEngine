@@ -7,6 +7,7 @@
 #include "DirectXCommon.h"
 #include "Transform.h"
 #include "Texture.h"
+#include "MyMath/MatrixMath.h"
 
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
@@ -43,12 +44,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Texture* texture = new Texture();
 	texture->Initialize(directXCommon);
 
+	//三角形
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
-	Matrix4x4 worldMatrix = MatrixMath::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-	Matrix4x4 cameraMatrix = MatrixMath::MakeAffineMatrix(
-		cameraTransform.scale,cameraTransform.rotate,cameraTransform.translate
+	Matrix4x4 worldMatrix = MatrixMath::MakeAffineMatrix(
+		transform.scale,
+		transform.rotate,
+		transform.translate
 	);
+
+	//スプライト
+	Transform transformSprite{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Matrix4x4 worldMatrixSprite = MatrixMath::MakeAffineMatrix(
+		transformSprite.scale,
+		transformSprite.rotate,
+		transformSprite.translate
+	);
+
+	//カメラ
+	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
+	Matrix4x4 cameraMatrix = MatrixMath::MakeAffineMatrix(
+		cameraTransform.scale,
+		cameraTransform.rotate,
+		cameraTransform.translate
+	);
+
+	//三角形用ViewProjection
 	Matrix4x4 viewMatrix = MatrixMath::Inverse(cameraMatrix);
 	Matrix4x4 projectionMatrix = MatrixMath::MakePerspectiveFovMatrix(
 		0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f
@@ -56,6 +76,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Matrix4x4 worldViewProjectionMatrix = MatrixMath::Multiply(
 		worldMatrix, MatrixMath::Multiply(viewMatrix, projectionMatrix));
 
+	//スプライト用ViewProjection
+	Matrix4x4 viewMatrixSprite = MatrixMath::MakeIdentity4x4();
+	Matrix4x4 projectionMatrixSprite = MatrixMath::MakeOrthographicMatrix(
+		0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f
+	);
+	Matrix4x4 worldViewProjectionMatrixSprite = MatrixMath::Multiply(
+		worldMatrixSprite, MatrixMath::Multiply(viewMatrixSprite, projectionMatrixSprite)
+	);
+	directXCommon->SetTransformationMatrixDataSprite(&worldViewProjectionMatrixSprite);
 
 	//////////////////////////////////////////////////////////
 	//メインループ

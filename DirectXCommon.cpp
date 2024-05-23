@@ -1,5 +1,6 @@
 #include "DirectXCommon.h"
 #include "Logger.h"
+#include "MyMath/MatrixMath.h"
 #include <format>
 
 #pragma comment(lib, "d3d12.lib")
@@ -220,20 +221,30 @@ void DirectXCommon::ClearRenderTarget(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHand
 	commandList_->RSSetViewports(1, &viewport_); // Viewportを設定
 	commandList_->RSSetScissorRects(1, &scissorRect_); // Scissorの設定
 	// RootSignatureを設定。PSOに設定しているが別途設定が必要
-	commandList_->SetGraphicsRootSignature(rootSignature_.Get());
+	commandList_->SetGraphicsRootSignature(rootSignature_.Get()); // rootSignatureを設定
 	commandList_->SetPipelineState(graphicPipelineState_.Get()); // PSOを設定
-	commandList_->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
+	//commandList_->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
+	// 
+	// //spriteの描画。
+	commandList_->IASetVertexBuffers(0, 1, &vertexBufferViewSprite_); // VBVを設定
+
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
 	commandList_->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+
 	//wvp用のCBufferの場所を指定
-	commandList_->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	//commandList_->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+
+	//TransformationMatrixBufferの場所の設定
+	commandList_->SetComputeRootConstantBufferView(1, transformationMatrixResourceSprite_->GetGPUVirtualAddress());
+
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	commandList_->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+
+	
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	commandList_->DrawInstanced(6, 1, 0, 0);
-
 }
 
 void DirectXCommon::InitializeDXGIDevice() {
@@ -752,44 +763,79 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(
 
 void DirectXCommon::CreateVertexBufferView() {
 
+	//====================三角形===================//
+	
 	// リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource_->GetGPUVirtualAddress();
+	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 6;
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 6;
 	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
+
+	//====================スプライト===================//
+
+	vertexBufferViewSprite_.BufferLocation = vertexResourceSprite_->GetGPUVirtualAddress();
+	vertexBufferViewSprite_.SizeInBytes = sizeof(VertexData) * 6;
+	vertexBufferViewSprite_.StrideInBytes = sizeof(VertexData);
 }
 
 void DirectXCommon::InitializeVertexData() {
 
-	//VertexResource生成
+	//三角形用VertexResource生成
 	vertexResource_ = CreateBufferResource(device_, sizeof(VertexData) * 6);
+	//スプライト用VertexResource生成
+	vertexResourceSprite_ = CreateBufferResource(device_, sizeof(VertexData) * 6);
+	//スプライト用のTransformationMatrix用のVertexResource生成
+	transformationMatrixResourceSprite_ = CreateBufferResource(device_, sizeof(Matrix4x4));
 
-	vertexData_ = nullptr;
 	// 書き込むためのアドレスを取得
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-	///三角形1
-	// 左下
+	//=======================三角形1===========================//
+	//左下
 	vertexData_[0].position = { -0.5f,-0.5f,0.0f,1.0f };
 	vertexData_[0].texcoord = { 0.0f,1.0f };
 	//上
 	vertexData_[1].position = { 0.0f,0.5f,0.0f,1.0f };
 	vertexData_[1].texcoord = { 0.5f,0.0f };
-	// 右下
+	//右下
 	vertexData_[2].position = { 0.5f,-0.5f,0.0f,1.0f };
 	vertexData_[2].texcoord = { 1.0f,1.0f };
 
-	///三角形2
-	// 左下2
+	//=======================三角形2===========================//
+	//左下
 	vertexData_[3].position = { -0.5f,-0.5f,0.5f,1.0f };
 	vertexData_[3].texcoord = { 0.0f,1.0f };
-	//上2
+	//上
 	vertexData_[4].position = { 0.0f,0.0f,0.0f,1.0f };
 	vertexData_[4].texcoord = { 0.5f,0.0f };
-	// 右下2
+	//右下
 	vertexData_[5].position = { 0.5f,-0.5f,-0.5f,1.0f };
 	vertexData_[5].texcoord = { 1.0f,1.0f };
 
+	//=======================スプライト===========================//
+
+	vertexResourceSprite_->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSprite_));
+	//1枚目の三角形
+	vertexDataSprite_[0].position = { 0.0f,360.0f,0.0f,1.0f }; //左下
+	vertexDataSprite_[0].texcoord = { 0.0f,1.0f };
+	vertexDataSprite_[1].position = { 0.0f,0.0f,0.0f,1.0f }; //左上
+	vertexDataSprite_[1].texcoord = { 0.0f,0.0f };
+	vertexDataSprite_[2].position = { 640.0f,360.0f,0.0f,1.0f }; //右下
+	vertexDataSprite_[2].texcoord = { 1.0f,1.0f };
+	//2枚目の三角形
+	vertexDataSprite_[3].position = { 0.0f,0.0f,0.0f,1.0f }; //左上
+	vertexDataSprite_[3].texcoord = { 0.0f,1.0f };
+	vertexDataSprite_[4].position = { 640.0f,0.0f,0.0f,1.0f }; //右上
+	vertexDataSprite_[4].texcoord = { 0.0f,0.0f };
+	vertexDataSprite_[5].position = { 640.0f,360.0f,0.0f,1.0f }; //右下
+	vertexDataSprite_[5].texcoord = { 1.0f,1.0f };
+
+	//TransformationMatrix用
+	transformationMatrixResourceSprite_->
+		Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSprite_));
+
+	//単位行列を書き込んでおく
+	*transformationMatrixDataSprite_ = MatrixMath::MakeIdentity4x4();
 }
 
 void DirectXCommon::InitViewport() {

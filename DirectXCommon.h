@@ -16,7 +16,6 @@
 #include "Vector2.h"
 #include "Matrix4x4.h"
 #include "WinApp.h"
-#include "MyMath/MatrixMath.h"
 
 struct VertexData {
 	Vector4 position;
@@ -249,19 +248,36 @@ private:
 	//////////////////////////////////////////////////////////////////////////////////////////
 
 
-	//vertexResource関連の変数
+	//ヒーププロパティ
 	D3D12_HEAP_PROPERTIES uploadHeapProperties_{};
+	//リソースディスク
 	D3D12_RESOURCE_DESC resourceDesc_{};
+
+	//頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	VertexData* vertexData_;
+	//sprite用頂点リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite_;
+	//sprite用のTransformationMatrix用の頂点リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_;
+
+	//頂点バッファビュー
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+	//sprite用頂点バッファビュー
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite_{};
+
+	//三角形用頂点データ
+	VertexData* vertexData_ = nullptr;;
+	//sprite用頂点データ
+	VertexData* vertexDataSprite_ = nullptr;
+	//sprite用のTransformationMatrix用の頂点データ
+	Matrix4x4* transformationMatrixDataSprite_ = nullptr;
+
 	// ビューポート
 	D3D12_VIEWPORT viewport_{};
 	// シザー矩形
 	D3D12_RECT scissorRect_{};
 
 private:
-	//vertexResource関連の関数
 
 	/// <summary>
 	/// Resource生成関数
@@ -279,9 +295,25 @@ private:
 	/// </summary>
 	void InitializeVertexData();
 
+	/// <summary>
+	/// Viewport初期化
+	/// </summary>
 	void InitViewport();
 
+	/// <summary>
+	/// シザー矩形初期化
+	/// </summary>
 	void InitScissorRect();
+
+public:
+	/// <summary>
+	/// sprite用のTransformationMatrix用の頂点データの代入
+	/// </summary>
+	void SetTransformationMatrixDataSprite(
+		Matrix4x4* transformationMatrixDataSprite) {
+		transformationMatrixDataSprite_ = transformationMatrixDataSprite;
+	}
+
 
 #pragma endregion
 
