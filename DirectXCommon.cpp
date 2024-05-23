@@ -204,12 +204,14 @@ void DirectXCommon::ClearRenderTarget(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHand
 	//TransitionBarrierを張る
 	commandList_->ResourceBarrier(1, &barrier_);
 
-	//描画先のRTVを設定する
-	commandList_->OMSetRenderTargets(1, &rtvHandles_[bbIndex], false, nullptr);
+	//描画先のRTVとDSVを設定する
+	commandList_->OMSetRenderTargets(1, &rtvHandles_[bbIndex], false, &dsvHandle_);
 
 	// 全画面クリア          Red   Green  Blue  Alpha
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f }; // 青っぽい色
 	commandList_->ClearRenderTargetView(rtvHandles_[bbIndex], clearColor, 0, nullptr);
+	//指定した深度で画面全体をクリアにする
+	commandList_->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	//描画用ディスクリプタヒープの設定
 	drawHeaps_[0] = { srvHeap_ };
@@ -434,6 +436,9 @@ void DirectXCommon::CreateFinalRenderTargets() {
 		rtvHandles_[1]
 	);
 
+	dsvHandle_ = dsvHeap_->GetCPUDescriptorHandleForHeapStart();
+	
+
 }
 
 void DirectXCommon::CreateFence() {
@@ -656,8 +661,8 @@ void DirectXCommon::CreatePSO() {
 	/// ラスタライザステート初期化
 	CreateRasterizerState();
 
-
 	//Shaderをコンパイル
+	//VS
 	vertexShaderBlob_ = CompileShader(
 		L"Object3D.VS.hlsl",
 		L"vs_6_0",
@@ -667,6 +672,7 @@ void DirectXCommon::CreatePSO() {
 	);
 	assert(vertexShaderBlob_ != nullptr);
 
+	//PS
 	pixelShaderBlob_ = CompileShader(
 		L"Object3D.PS.hlsl",
 		L"ps_6_0",
@@ -676,7 +682,16 @@ void DirectXCommon::CreatePSO() {
 	);
 	assert(pixelShaderBlob_ != nullptr);
 
+	//Depthの機能を有効化
+	depthStencilDesc_.DepthEnable = true;
+	//書き込み
+	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	//比較関数はLessEqual。近ければ描画される
+	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
+	//DepthStencilの設定
+	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc_;
+	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	graphicsPipelineStateDesc_.pRootSignature = rootSignature_.Get(); // RootSignature
 	graphicsPipelineStateDesc_.InputLayout = inputLayoutDesc_; // InputLayout

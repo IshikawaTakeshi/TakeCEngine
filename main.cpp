@@ -67,7 +67,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//描画前処理
 		directXCommon->PreDraw(texture->GetTextureSrvHandleGPU());
 
-		transform.rotate.y += 0.03f;
+		transform.rotate.y += 0.01f;
 		worldMatrix = MatrixMath::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 		worldViewProjectionMatrix = MatrixMath::Multiply(
 			worldMatrix, MatrixMath::Multiply(viewMatrix, projectionMatrix));

@@ -108,6 +108,8 @@ private:
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
 	//RTVを2つ作るのでディスクリプタを2つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
+	//DSVを設定
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
 	//フェンスの生成
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
 	uint64_t fenceVal_;
@@ -207,6 +209,7 @@ private:
 	//PSO生成
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicPipelineState_;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc_{};
 

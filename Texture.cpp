@@ -34,7 +34,7 @@ void Texture::Initialize(DirectXCommon* dxCommon) {
 	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; //2dTexture
 	//DSVHeapの先頭にDSVを作る
 	dxCommon->GetDevice()->CreateDepthStencilView(
-		depthStencilResource_, &dsvDesc, dxCommon->GetDsvHeap()->GetCPUDescriptorHandleForHeapStart());
+		depthStencilResource_.Get(), &dsvDesc, dxCommon->GetDsvHeap()->GetCPUDescriptorHandleForHeapStart());
 
 	//SRVを作成するDescriptorHeapの場所を決める
 	textureSrvHandleCPU_ = dxCommon->GetSrvHeap()->GetCPUDescriptorHandleForHeapStart();
