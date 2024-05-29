@@ -242,13 +242,13 @@ private:
 	//////////////////////////////////////////////////////////////////////////////////////////
 
 
-	//ヒーププロパティ
-	D3D12_HEAP_PROPERTIES uploadHeapProperties_{};
-	//リソースディスク
-	D3D12_RESOURCE_DESC resourceDesc_{};
+	////ヒーププロパティ
+	//D3D12_HEAP_PROPERTIES uploadHeapProperties_{};
+	////リソースディスク
+	//D3D12_RESOURCE_DESC resourceDesc_{};
 
 	//頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
 	//sprite用のTransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_;
 
@@ -265,23 +265,14 @@ private:
 	// シザー矩形
 	D3D12_RECT scissorRect_{};
 
-private:
-
+public:
 	/// <summary>
 	/// Resource生成関数
 	/// </summary>
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(
-		Microsoft::WRL::ComPtr<ID3D12Device> device,size_t sizeInBytes);
+	static Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(
+		Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInBytes);
 
-	/// <summary>
-	/// VertexBufferView作成
-	/// </summary>
-	void CreateVertexBufferView();
-
-	/// <summary>
-	/// VertexData初期化
-	/// </summary>
-	void InitializeVertexData();
+private:
 
 	/// <summary>
 	/// Viewport初期化
@@ -294,6 +285,22 @@ private:
 	void InitScissorRect();
 
 public:
+
+	/// <summary>
+	///頂点データの代入
+	/// </summary>
+	void SetWvpResource(
+		Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource) {
+		wvpResource_ = wvpResource;
+	}
+
+	/// <summary>
+	/// 頂点バッファビューの代入
+	/// </summary>
+	void SetVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vertexBufferView) {
+		vertexBufferView_ = vertexBufferView;
+	}
+
 	/// <summary>
 	/// sprite用のTransformationMatrix用の頂点データの代入
 	/// </summary>
@@ -308,7 +315,6 @@ public:
 	void SetVertexBufferViewSprite(D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite) {
 		vertexBufferViewSprite_ = vertexBufferViewSprite;
 	}
-
 
 #pragma endregion
 
@@ -325,27 +331,6 @@ private:
 	/// </summary>
 	void InitializeMaterialData();
 	
-#pragma endregion
-
-#pragma region wvpResource
-public:
-	//セッタ
-	void SetWvpData(Matrix4x4 wvpData) { *wvpData_ = wvpData; };
-
-private:
-	//メンバ変数
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
-	std::shared_ptr<Matrix4x4> wvpData_;
-
-private:
-		//メンバ関数
-	
-
-		/// <summary>
-		/// wvpData初期化
-		/// </summary>
-		void InitializeWvpData();
-
 #pragma endregion
 };
 

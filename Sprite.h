@@ -39,12 +39,6 @@ public:
 	void Finalize();
 
 	/// <summary>
-	/// Resource生成関数
-	/// </summary>
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(
-		Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInBytes);
-
-	/// <summary>
 	/// 頂点バッファビューの取得
 	/// </summary>
 	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView()
@@ -53,7 +47,7 @@ public:
 	/// <summary>
 	/// sprite用のTransformationMatrix用の頂点リソースの取得
 	/// </summary>
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource()
+	Microsoft::WRL::ComPtr<ID3D12Resource> GetTransformationMatrixResource()
 	{ return transformationMatrixResource_; }
 
 	/// <summary>

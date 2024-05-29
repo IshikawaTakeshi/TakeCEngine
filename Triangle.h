@@ -34,13 +34,27 @@ public:
 	/// </summary>
 	void Finalize();
 
+	/// <summary>
+	/// 頂点バッファビューの取得
+	/// </summary>
+	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() {
+		return vertexBufferView_;
+	}
+
+	/// <summary>
+	/// 頂点リソースの取得
+	/// </summary>
+	Microsoft::WRL::ComPtr<ID3D12Resource> GetWvpResource() {
+		return wvpResource_;
+	}
+
 
 private:
 
 	//頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	//TransformationMatrix用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
 	//頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 

@@ -1,7 +1,7 @@
 #include "Sprite.h"
 #include "DirectXCommon.h"
 #include "MyMath/MatrixMath.h"
-#include "DirectXCommon.h"
+
 
 #pragma region imgui
 #include "externals/imgui/imgui.h"
@@ -15,13 +15,12 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 #pragma region 初期化処理
 void Sprite::Initialize(DirectXCommon* dxCommon) {
 
-	//スプライト用VertexResource生成
-	vertexResource_ = CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * 6);
+	//VertexResource生成
+	vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * 6);
 	//頂点バッファビューの作成
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 6;
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
-
 
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	//1枚目の三角形
@@ -40,7 +39,7 @@ void Sprite::Initialize(DirectXCommon* dxCommon) {
 	vertexData_[5].texcoord = { 1.0f,1.0f };
 
 	//スプライト用のTransformationMatrix用のVertexResource生成
-	transformationMatrixResource_ = CreateBufferResource(dxCommon->GetDevice(), sizeof(Matrix4x4));
+	transformationMatrixResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(Matrix4x4));
 
 	//TransformationMatrix用
 	transformationMatrixResource_->
@@ -90,35 +89,9 @@ void Sprite::Update() {
 	ImGui::DragFloat3("SpriteTranslate", &transform_.translate.x, 1.0f);
 	ImGui::End();
 }
+
 #pragma endregion
 
-#pragma region resource生成関数
-Microsoft::WRL::ComPtr<ID3D12Resource> Sprite::CreateBufferResource(
-	Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInBytes) {
-
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
-	HRESULT result = S_FALSE;
-
-	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
-	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD; // UploadHeapを使う
-	//頂点リソースの設定
-	//リソースディスク
-	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	resourceDesc.Width = sizeInBytes; // リソースのサイズ。今回はVector4を3頂点分
-	//バッファの場合はこれらは1にする決まり
-	resourceDesc.Height = 1;
-	resourceDesc.DepthOrArraySize = 1;
-	resourceDesc.MipLevels = 1;
-	resourceDesc.SampleDesc.Count = 1;
-	//バッファの場合はこれにする決まり
-	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	//実際に頂点リソースを作る
-	result = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
-		&resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-		IID_PPV_ARGS(&resource));
-	assert(SUCCEEDED(result));
-
-	return resource;
-}
+#pragma region 解放処理
+void Sprite::Finalize() {}
 #pragma endregion

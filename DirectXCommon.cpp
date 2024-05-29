@@ -35,19 +35,13 @@ void DirectXCommon::Initialize() {
 	//DXC初期化
 	InitializeDxc();
 	//PSO生成
-	CreatePSO();
-	//VertexData初期化
-	InitializeVertexData();
-	//CreateVBV作成
-	CreateVertexBufferView();	
+	CreatePSO();	
 	//Viewport初期化
 	InitViewport();
 	//Scissor矩形初期化
 	InitScissorRect();
 	//materialData初期化
 	InitializeMaterialData();
-	//wvpData初期化
-	InitializeWvpData();
 
 #ifdef _DEBUG
 	//ImGui初期化
@@ -74,17 +68,12 @@ void DirectXCommon::Finalize() {
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
-	/*==========materialResource==========*/	
-	wvpData_.reset();
-	wvpResource_.Reset();
-
 	/*==========materialResource==========*/
 	materialResource_.Reset();
 
 	/*==========vertexResource==========*/
 	delete vertexData_;
 
-	vertexResource_.Reset();
 
 	/*==========PSO==========*/
 	graphicPipelineState_.Reset();
@@ -746,67 +735,29 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(
 	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
 	HRESULT result = S_FALSE;
 
-	uploadHeapProperties_.Type = D3D12_HEAP_TYPE_UPLOAD; // UploadHeapを使う
+	//ヒーププロパティ
+	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
+	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD; // UploadHeapを使う
+
+
 	//頂点リソースの設定
-	resourceDesc_.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	resourceDesc_.Width = sizeInBytes; // リソースのサイズ。今回はVector4を3頂点分
+	D3D12_RESOURCE_DESC resourceDesc{};
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	resourceDesc.Width = sizeInBytes; // リソースのサイズ。今回はVector4を3頂点分
 	//バッファの場合はこれらは1にする決まり
-	resourceDesc_.Height = 1;
-	resourceDesc_.DepthOrArraySize = 1;
-	resourceDesc_.MipLevels = 1;
-	resourceDesc_.SampleDesc.Count = 1;
+	resourceDesc.Height = 1;
+	resourceDesc.DepthOrArraySize = 1;
+	resourceDesc.MipLevels = 1;
+	resourceDesc.SampleDesc.Count = 1;
 	//バッファの場合はこれにする決まり
-	resourceDesc_.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	//実際に頂点リソースを作る
-	result = device->CreateCommittedResource(&uploadHeapProperties_, D3D12_HEAP_FLAG_NONE,
-		&resourceDesc_, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+	result = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
+		&resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
 		IID_PPV_ARGS(&resource));
 	assert(SUCCEEDED(result));
 
 	return resource;
-}
-
-void DirectXCommon::CreateVertexBufferView() {
-
-	//====================三角形===================//
-	
-	// リソースの先頭のアドレスから使う
-	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 6;
-	// 1頂点あたりのサイズ
-	vertexBufferView_.StrideInBytes = sizeof(VertexData);
-}
-
-void DirectXCommon::InitializeVertexData() {
-
-	//三角形用VertexResource生成
-	vertexResource_ = CreateBufferResource(device_, sizeof(VertexData) * 6);
-	
-	// 書き込むためのアドレスを取得
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-	//=======================三角形1===========================//
-	//左下
-	vertexData_[0].position = { -0.5f,-0.5f,0.0f,1.0f };
-	vertexData_[0].texcoord = { 0.0f,1.0f };
-	//上
-	vertexData_[1].position = { 0.0f,0.5f,0.0f,1.0f };
-	vertexData_[1].texcoord = { 0.5f,0.0f };
-	//右下
-	vertexData_[2].position = { 0.5f,-0.5f,0.0f,1.0f };
-	vertexData_[2].texcoord = { 1.0f,1.0f };
-
-	//=======================三角形2===========================//
-	//左下
-	vertexData_[3].position = { -0.5f,-0.5f,0.5f,1.0f };
-	vertexData_[3].texcoord = { 0.0f,1.0f };
-	//上
-	vertexData_[4].position = { 0.0f,0.0f,0.0f,1.0f };
-	vertexData_[4].texcoord = { 0.5f,0.0f };
-	//右下
-	vertexData_[5].position = { 0.5f,-0.5f,-0.5f,1.0f };
-	vertexData_[5].texcoord = { 1.0f,1.0f };
-
 }
 
 void DirectXCommon::InitViewport() {
@@ -838,20 +789,6 @@ void DirectXCommon::InitializeMaterialData() {
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	//色を書き込む
 	*materialData_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-}
-
-void DirectXCommon::InitializeWvpData() {
-	//wvp用リソース作成
-	wvpResource_ = CreateBufferResource(device_, sizeof(Matrix4x4));
-	//データを書き込む
-	wvpData_ = nullptr;
-	//書き込むためのアドレスを取得
-	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
-	//単位行列を書き込む
-	*wvpData_ = MatrixMath::MakeIdentity4x4();
-
-
-
 }
 
 #pragma endregion
