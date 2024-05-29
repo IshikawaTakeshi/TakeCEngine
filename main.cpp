@@ -13,6 +13,13 @@
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
 
+#pragma region imgui
+#include "externals/imgui/imgui.h"
+#include "externals/imgui/imgui_impl_dx12.h"
+#include "externals/imgui/imgui_impl_win32.h"
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
+	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#pragma endregion
 
 struct D3DResourceLeakChecker {
 	~D3DResourceLeakChecker() {
@@ -98,6 +105,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//スプライト
 		sprite->Update();
 
+		
 
 		//描画後処理
 		directXCommon->PostDraw();

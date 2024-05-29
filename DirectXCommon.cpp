@@ -133,10 +133,11 @@ void DirectXCommon::PreDraw(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU) {
 }
 
 void DirectXCommon::PostDraw() {
+
 	HRESULT result = S_FALSE;
 
-
-	
+	//ImGuiの内部コマンドを生成する
+	ImGui::Render();
 	
 	//実際のcommandListのImGuiの描画コマンドを積む
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList_.Get());
@@ -188,8 +189,6 @@ void DirectXCommon::PostDraw() {
 
 void DirectXCommon::ClearRenderTarget(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU) {
 
-	//ImGuiの内部コマンドを生成する
-	ImGui::Render();
 
 	//書き込むバックバッファのインデックスを取得
 	UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();

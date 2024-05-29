@@ -3,77 +3,92 @@
 #include "MyMath/MatrixMath.h"
 #include "DirectXCommon.h"
 
+#pragma region imgui
+#include "externals/imgui/imgui.h"
+#include "externals/imgui/imgui_impl_dx12.h"
+#include "externals/imgui/imgui_impl_win32.h"
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
+	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#pragma endregion
+
+
 #pragma region 初期化処理
 void Sprite::Initialize(DirectXCommon* dxCommon) {
 
 	//スプライト用VertexResource生成
-	vertexResourceSprite_ = CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * 6);
+	vertexResource_ = CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * 6);
 	//頂点バッファビューの作成
-	vertexBufferViewSprite_.BufferLocation = vertexResourceSprite_->GetGPUVirtualAddress();
-	vertexBufferViewSprite_.SizeInBytes = sizeof(VertexData) * 6;
-	vertexBufferViewSprite_.StrideInBytes = sizeof(VertexData);
+	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 6;
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
 
-	vertexResourceSprite_->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSprite_));
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	//1枚目の三角形
-	vertexDataSprite_[0].position = { 0.0f,360.0f,0.0f,1.0f }; //左下
-	vertexDataSprite_[0].texcoord = { 0.0f,1.0f };
-	vertexDataSprite_[1].position = { 0.0f,0.0f,0.0f,1.0f }; //左上
-	vertexDataSprite_[1].texcoord = { 0.0f,0.0f };
-	vertexDataSprite_[2].position = { 640.0f,360.0f,0.0f,1.0f }; //右下
-	vertexDataSprite_[2].texcoord = { 1.0f,1.0f };
+	vertexData_[0].position = { 0.0f,360.0f,0.0f,1.0f }; //左下
+	vertexData_[0].texcoord = { 0.0f,1.0f };
+	vertexData_[1].position = { 0.0f,0.0f,0.0f,1.0f }; //左上
+	vertexData_[1].texcoord = { 0.0f,0.0f };
+	vertexData_[2].position = { 640.0f,360.0f,0.0f,1.0f }; //右下
+	vertexData_[2].texcoord = { 1.0f,1.0f };
 	//2枚目の三角形
-	vertexDataSprite_[3].position = { 0.0f,0.0f,0.0f,1.0f }; //左上
-	vertexDataSprite_[3].texcoord = { 0.0f,0.0f };
-	vertexDataSprite_[4].position = { 640.0f,0.0f,0.0f,1.0f }; //右上
-	vertexDataSprite_[4].texcoord = { 1.0f,0.0f };
-	vertexDataSprite_[5].position = { 640.0f,360.0f,0.0f,1.0f }; //右下
-	vertexDataSprite_[5].texcoord = { 1.0f,1.0f };
-
+	vertexData_[3].position = { 0.0f,0.0f,0.0f,1.0f }; //左上
+	vertexData_[3].texcoord = { 0.0f,0.0f };
+	vertexData_[4].position = { 640.0f,0.0f,0.0f,1.0f }; //右上
+	vertexData_[4].texcoord = { 1.0f,0.0f };
+	vertexData_[5].position = { 640.0f,360.0f,0.0f,1.0f }; //右下
+	vertexData_[5].texcoord = { 1.0f,1.0f };
 
 	//スプライト用のTransformationMatrix用のVertexResource生成
-	transformationMatrixResourceSprite_ = CreateBufferResource(dxCommon->GetDevice(), sizeof(Matrix4x4));
+	transformationMatrixResource_ = CreateBufferResource(dxCommon->GetDevice(), sizeof(Matrix4x4));
 
 	//TransformationMatrix用
-	transformationMatrixResourceSprite_->
-		Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSprite_));
+	transformationMatrixResource_->
+		Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixData_));
 
 	//単位行列を書き込んでおく
-	*transformationMatrixDataSprite_ = MatrixMath::MakeIdentity4x4();
+	*transformationMatrixData_ = MatrixMath::MakeIdentity4x4();
 
 	//CPUで動かす用のTransform
-	transformSprite_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
-	worldMatrixSprite_ = MatrixMath::MakeAffineMatrix(
-		transformSprite_.scale,
-		transformSprite_.rotate,
-		transformSprite_.translate
+	//アフィン行列
+	worldMatrix_ = MatrixMath::MakeAffineMatrix(
+		transform_.scale,
+		transform_.rotate,
+		transform_.translate
 	);
 
-
-	viewMatrixSprite_ = MatrixMath::MakeIdentity4x4();
-
-	projectionMatrixSprite_ = MatrixMath::MakeOrthographicMatrix(
+	//ViewProjectionの初期化
+	viewMatrix_ = MatrixMath::MakeIdentity4x4();
+	projectionMatrix_ = MatrixMath::MakeOrthographicMatrix(
 		0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f);
-	worldViewProjectionMatrixSprite_ = MatrixMath::Multiply(
-		worldMatrixSprite_, MatrixMath::Multiply(viewMatrixSprite_, projectionMatrixSprite_));
-	*transformationMatrixDataSprite_ = worldViewProjectionMatrixSprite_;
+	worldViewProjectionMatrix_ = MatrixMath::Multiply(
+		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
+	*transformationMatrixData_ = worldViewProjectionMatrix_;
 }
 #pragma endregion
 
 #pragma region 更新処理
 void Sprite::Update() {
 
-	worldMatrixSprite_ = MatrixMath::MakeAffineMatrix(
-		transformSprite_.scale,
-		transformSprite_.rotate,
-		transformSprite_.translate
+	//アフィン行列の更新
+	worldMatrix_ = MatrixMath::MakeAffineMatrix(
+		transform_.scale,
+		transform_.rotate,
+		transform_.translate
 	);
 
-	worldViewProjectionMatrixSprite_ = MatrixMath::Multiply(
-		worldMatrixSprite_, MatrixMath::Multiply(viewMatrixSprite_, projectionMatrixSprite_));
-	*transformationMatrixDataSprite_ = worldViewProjectionMatrixSprite_;
+	//ViewProjectionの処理
+	worldViewProjectionMatrix_ = MatrixMath::Multiply(
+		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
+	*transformationMatrixData_ = worldViewProjectionMatrix_;
 
+
+	//ImGuiの更新
+	ImGui::Begin("Sprite");
+	ImGui::DragFloat3("SpriteTranslate", &transform_.translate.x, 1.0f);
+	ImGui::End();
 }
 #pragma endregion
 
@@ -83,6 +98,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Sprite::CreateBufferResource(
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
 	HRESULT result = S_FALSE;
+
 	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
 	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD; // UploadHeapを使う
 	//頂点リソースの設定

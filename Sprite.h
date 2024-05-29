@@ -48,31 +48,37 @@ public:
 	/// 頂点バッファビューの取得
 	/// </summary>
 	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView()
-	{ return vertexBufferViewSprite_; }
+	{ return vertexBufferView_; }
 
 	/// <summary>
 	/// sprite用のTransformationMatrix用の頂点リソースの取得
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource()
-	{ return transformationMatrixResourceSprite_; }
+	{ return transformationMatrixResource_; }
+
+	/// <summary>
+	/// Transformの取得
+	/// </summary>
+	Transform GetTransform() { return transform_; }
+
 
 private:
 	//Sprite用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	//sprite用のTransformationMatrix用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_;
 	//頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite_{};
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 
-	Transform transformSprite_{};
-	Matrix4x4 worldMatrixSprite_;
-	Matrix4x4 viewMatrixSprite_;
-	Matrix4x4 projectionMatrixSprite_;
-	Matrix4x4 worldViewProjectionMatrixSprite_;
+	Transform transform_{};
+	Matrix4x4 worldMatrix_;
+	Matrix4x4 viewMatrix_;
+	Matrix4x4 projectionMatrix_;
+	Matrix4x4 worldViewProjectionMatrix_;
 
 	//sprite用頂点データ
-	VertexData* vertexDataSprite_ = nullptr;
+	VertexData* vertexData_ = nullptr;
 	//sprite用のTransformationMatrix用の頂点データ
-	Matrix4x4* transformationMatrixDataSprite_ = nullptr;
+	Matrix4x4* transformationMatrixData_ = nullptr;
 };
 
