@@ -43,12 +43,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	D3DResourceLeakChecker leakCheck;
 
+	//タイトルバーの名前の入力
 	WinApp* winApp = WinApp::GetInstance();
-	winApp->Initialize();
+	winApp->Initialize(L"CG2_評価課題1");
 
+	//DirectX初期化
 	DirectXCommon* directXCommon = DirectXCommon::GetInstance();
 	directXCommon->Initialize();
 
+	//テクスチャ初期化
 	Texture* texture = new Texture();
 	texture->Initialize(directXCommon);
 

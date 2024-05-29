@@ -10,7 +10,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 #pragma endregion
 
 
-void WinApp::Initialize() {
+void WinApp::Initialize(const wchar_t title[]) {
 	// ウィンドウプロシージャ
 	wc_.lpfnWndProc = WinApp::WindowProc;
 	//ウィンドウクラス名()
@@ -23,7 +23,7 @@ void WinApp::Initialize() {
 	//ウィンドウクラスを登録する
 	RegisterClass(&wc_);
 
-	CreateGameWindow();
+	CreateGameWindow(title);
 
 #ifdef _DEBUG
 
@@ -89,7 +89,7 @@ LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-void WinApp::CreateGameWindow() {
+void WinApp::CreateGameWindow(const wchar_t title[]) {
 
 	//ウィンドウサイズを表す構造体にクライアント領域を入れる
 	wrc_ = { 0,0,kClientWidth,kClientHeight };
@@ -99,7 +99,7 @@ void WinApp::CreateGameWindow() {
 
 	hwnd_ = CreateWindow(
 		wc_.lpszClassName,       //利用するクラス名
-		L"CG2",                 //タイトルバーの文字(何でもいい,引数に入れることもできる)
+		title,                 //タイトルバーの文字(何でもいい,引数に入れることもできる)
 		WS_OVERLAPPEDWINDOW,    //よく見るウィンドウスタイル
 		CW_USEDEFAULT,          //表示X座標(Windowsに任せる)
 		CW_USEDEFAULT,          //表示Y座標(WindowsOSに任せる)

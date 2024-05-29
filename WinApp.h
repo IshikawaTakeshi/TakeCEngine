@@ -31,12 +31,12 @@ public:
 	/// <summary>
 	/// ゲームウィンドウの作成
 	/// </summary>
-	void CreateGameWindow();
+	void CreateGameWindow(const wchar_t title[]);
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(const wchar_t title[]);
 
 	/// <summary>
 	/// 終了・開放処理
