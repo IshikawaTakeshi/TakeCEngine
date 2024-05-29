@@ -12,15 +12,9 @@
 #include <iostream>
 #include <memory>
 
-#include "Vector4.h"
-#include "Vector2.h"
+#include "VertexData.h"
 #include "Matrix4x4.h"
 #include "WinApp.h"
-
-struct VertexData {
-	Vector4 position;
-	Vector2 texcoord;
-};
 
 
 class DirectXCommon {
@@ -255,8 +249,6 @@ private:
 
 	//頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
-	//sprite用頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite_;
 	//sprite用のTransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_;
 
@@ -267,10 +259,6 @@ private:
 
 	//三角形用頂点データ
 	VertexData* vertexData_ = nullptr;;
-	//sprite用頂点データ
-	VertexData* vertexDataSprite_ = nullptr;
-	//sprite用のTransformationMatrix用の頂点データ
-	Matrix4x4* transformationMatrixDataSprite_ = nullptr;
 
 	// ビューポート
 	D3D12_VIEWPORT viewport_{};
@@ -309,9 +297,16 @@ public:
 	/// <summary>
 	/// sprite用のTransformationMatrix用の頂点データの代入
 	/// </summary>
-	void SetTransformationMatrixDataSprite(
-		Matrix4x4* transformationMatrixDataSprite) {
-		transformationMatrixDataSprite_ = transformationMatrixDataSprite;
+	void SetTransformationMatrixResourceSprite(
+		Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite) {
+		transformationMatrixResourceSprite_ = transformationMatrixResourceSprite;
+	}
+
+	/// <summary>
+	/// sprite用頂点バッファビューの代入
+	/// </summary>
+	void SetVertexBufferViewSprite(D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite) {
+		vertexBufferViewSprite_ = vertexBufferViewSprite;
 	}
 
 

@@ -8,6 +8,7 @@
 #include "Transform.h"
 #include "Texture.h"
 #include "MyMath/MatrixMath.h"
+#include "Sprite.h"
 
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
@@ -53,12 +54,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	);
 
 	//スプライト
-	Transform transformSprite{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	Matrix4x4 worldMatrixSprite = MatrixMath::MakeAffineMatrix(
-		transformSprite.scale,
-		transformSprite.rotate,
-		transformSprite.translate
-	);
+	Sprite* sprite = new Sprite();
+	sprite->Initialize(directXCommon);
 
 	//カメラ
 	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
@@ -76,15 +73,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Matrix4x4 worldViewProjectionMatrix = MatrixMath::Multiply(
 		worldMatrix, MatrixMath::Multiply(viewMatrix, projectionMatrix));
 
-	//スプライト用ViewProjection
-	Matrix4x4 viewMatrixSprite = MatrixMath::MakeIdentity4x4();
-	Matrix4x4 projectionMatrixSprite = MatrixMath::MakeOrthographicMatrix(
-		0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f
-	);
-	Matrix4x4 worldViewProjectionMatrixSprite = MatrixMath::Multiply(
-		worldMatrixSprite, MatrixMath::Multiply(viewMatrixSprite, projectionMatrixSprite)
-	);
-	directXCommon->SetTransformationMatrixDataSprite(&worldViewProjectionMatrixSprite);
+	//スプライト
+	directXCommon->SetVertexBufferViewSprite(sprite->GetVertexBufferView());
+	directXCommon->SetTransformationMatrixResourceSprite(sprite->transformationMatrixResource());
 
 	//////////////////////////////////////////////////////////
 	//メインループ
@@ -96,6 +87,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//描画前処理
 		directXCommon->PreDraw(texture->GetTextureSrvHandleGPU());
 
+		//三角形
 		transform.rotate.y += 0.01f;
 		worldMatrix = MatrixMath::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 		worldViewProjectionMatrix = MatrixMath::Multiply(
@@ -103,7 +95,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		directXCommon->SetWvpData(worldViewProjectionMatrix);
 
-		
+		//スプライト
+		sprite->Update();
+
 
 		//描画後処理
 		directXCommon->PostDraw();
