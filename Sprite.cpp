@@ -16,13 +16,13 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 void Sprite::Initialize(DirectXCommon* dxCommon) {
 
 	//VertexResource生成
-	vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * 6);
+	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * 6);
 	//頂点バッファビューの作成
-	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
+	vertexBufferView_.BufferLocation = wvpResource_->GetGPUVirtualAddress();
 	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 6;
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	//1枚目の三角形
 	vertexData_[0].position = { 0.0f,360.0f,0.0f,1.0f }; //左下
 	vertexData_[0].texcoord = { 0.0f,1.0f };
@@ -38,15 +38,17 @@ void Sprite::Initialize(DirectXCommon* dxCommon) {
 	vertexData_[5].position = { 640.0f,360.0f,0.0f,1.0f }; //右下
 	vertexData_[5].texcoord = { 1.0f,1.0f };
 
+
+
 	//スプライト用のTransformationMatrix用のVertexResource生成
 	transformationMatrixResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(Matrix4x4));
 
 	//TransformationMatrix用
 	transformationMatrixResource_->
-		Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixData_));
+	Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
 
 	//単位行列を書き込んでおく
-	*transformationMatrixData_ = MatrixMath::MakeIdentity4x4();
+	*wvpData_ = MatrixMath::MakeIdentity4x4();
 
 	//CPUで動かす用のTransform
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
@@ -64,7 +66,7 @@ void Sprite::Initialize(DirectXCommon* dxCommon) {
 		0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f);
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	*transformationMatrixData_ = worldViewProjectionMatrix_;
+	*wvpData_ = worldViewProjectionMatrix_;
 }
 #pragma endregion
 
@@ -81,7 +83,7 @@ void Sprite::Update() {
 	//ViewProjectionの処理
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	*transformationMatrixData_ = worldViewProjectionMatrix_;
+	*wvpData_ = worldViewProjectionMatrix_;
 
 
 	//ImGuiの更新

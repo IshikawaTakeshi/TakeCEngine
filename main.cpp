@@ -56,19 +56,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Texture* texture = new Texture();
 	texture->Initialize(directXCommon);
 
-	//三角形
-	Triangle* triangle = new Triangle();
-	triangle->Initialize(directXCommon);
-	directXCommon->SetVertexBufferView(triangle->GetVertexBufferView());
-	directXCommon->SetWvpResource(triangle->GetWvpResource());
-
-	//スプライト
-	Sprite* sprite = new Sprite();
-	sprite->Initialize(directXCommon);
-	directXCommon->SetVertexBufferViewSprite(sprite->GetVertexBufferView());
-	directXCommon->SetTransformationMatrixResourceSprite(sprite->GetTransformationMatrixResource());
-
-
 	//カメラ
 	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
 	Matrix4x4 cameraMatrix = MatrixMath::MakeAffineMatrix(
@@ -76,6 +63,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		cameraTransform.rotate,
 		cameraTransform.translate
 	);
+
+	//三角形
+	Triangle* triangle = new Triangle();
+	triangle->Initialize(directXCommon,cameraMatrix);
+	directXCommon->SetVertexBufferView(triangle->GetVertexBufferView());
+	directXCommon->SetWvpResource(triangle->GetWvpResource());
+	
+	//スプライト
+	Sprite* sprite = new Sprite();
+	sprite->Initialize(directXCommon);
+	directXCommon->SetVertexBufferViewSprite(sprite->GetVertexBufferView());
+	directXCommon->SetTransformationMatrixResourceSprite(sprite->GetTransformationMatrixResource());
+	
 
 	
 	//////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		directXCommon->PreDraw(texture->GetTextureSrvHandleGPU());
 
 		//三角形
-		
+		triangle->Update();
 
 		//スプライト
 		sprite->Update();

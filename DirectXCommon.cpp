@@ -226,7 +226,7 @@ void DirectXCommon::ClearRenderTarget(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHand
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	commandList_->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	commandList_->DrawInstanced(6, 1, 0, 0);
+	commandList_->DrawInstanced(3, 1, 0, 0);
 
 
 

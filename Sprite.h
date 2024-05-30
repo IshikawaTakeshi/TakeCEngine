@@ -58,7 +58,7 @@ public:
 
 private:
 	//Sprite用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
 	//sprite用のTransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_;
 	//頂点バッファビュー
@@ -73,6 +73,6 @@ private:
 	//sprite用頂点データ
 	VertexData* vertexData_ = nullptr;
 	//sprite用のTransformationMatrix用の頂点データ
-	Matrix4x4* transformationMatrixData_ = nullptr;
+	Matrix4x4* wvpData_ = nullptr;
 };
 

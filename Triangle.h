@@ -22,7 +22,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView);
 
 	/// <summary>
 	/// 更新処理
@@ -39,6 +39,10 @@ public:
 	/// </summary>
 	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() {
 		return vertexBufferView_;
+	}
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> GetVertexResource() {
+		return vertexResource_;
 	}
 
 	/// <summary>
@@ -67,6 +71,6 @@ private:
 	//頂点データ
 	VertexData* vertexData_ = nullptr;
 	//TransformationMatrix用の頂点データ
-	Matrix4x4* transformationMatrixData_ = nullptr;
+	Matrix4x4* wvpData_ = nullptr;
 };
 
