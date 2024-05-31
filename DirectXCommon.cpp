@@ -41,7 +41,7 @@ void DirectXCommon::Initialize() {
 	//Scissor矩形初期化
 	InitScissorRect();
 	//materialData初期化
-	InitializeMaterialData();
+	//InitializeMaterialData();
 
 #ifdef _DEBUG
 	//ImGui初期化
@@ -69,7 +69,7 @@ void DirectXCommon::Finalize() {
 	ImGui::DestroyContext();
 
 	/*==========materialResource==========*/
-	materialResource_.Reset();
+	//materialResource_.Reset();
 
 	/*==========vertexResource==========*/
 	delete vertexData_;
@@ -108,7 +108,7 @@ void DirectXCommon::Finalize() {
 
 }
 
-void DirectXCommon::PreDraw(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU) {
+void DirectXCommon::PreDraw() {
 
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -118,7 +118,7 @@ void DirectXCommon::PreDraw(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU) {
 	ImGui::ShowDemoWindow();
 
 	//全画面クリア
-	ClearRenderTarget(textureSrvHandleGPU);
+	ClearRenderTarget();
 }
 
 void DirectXCommon::PostDraw() {
@@ -176,7 +176,7 @@ void DirectXCommon::PostDraw() {
 	assert(SUCCEEDED(result));
 }
 
-void DirectXCommon::ClearRenderTarget(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU) {
+void DirectXCommon::ClearRenderTarget() {
 
 
 	//書き込むバックバッファのインデックスを取得
@@ -213,31 +213,6 @@ void DirectXCommon::ClearRenderTarget(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHand
 	// RootSignatureを設定。PSOに設定しているが別途設定が必要
 	commandList_->SetGraphicsRootSignature(rootSignature_.Get()); // rootSignatureを設定
 	commandList_->SetPipelineState(graphicPipelineState_.Get()); // PSOを設定
-	commandList_->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
-
-	
-
-	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
-	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//materialCBufferの場所を指定
-	commandList_->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
-	//wvp用のCBufferの場所を指定
-	commandList_->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	commandList_->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
-	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	commandList_->DrawInstanced(3, 1, 0, 0);
-
-
-
-	//spriteの描画。
-	commandList_->IASetVertexBuffers(0, 1, &vertexBufferViewSprite_); // VBVを設定
-	//TransformationMatrixCBufferの場所の設定
-	commandList_->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite_->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	commandList_->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
-	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	commandList_->DrawInstanced(6, 1, 0, 0);
 
 }
 
@@ -780,16 +755,16 @@ void DirectXCommon::InitScissorRect() {
 
 #pragma region MaterialResource
 
-void DirectXCommon::InitializeMaterialData() {
-	//マテリアル用リソース作成
-	materialResource_ = CreateBufferResource(device_, sizeof(Vector4));
-	//materialにデータを書き込む
-	materialData_ = nullptr;
-	//書き込むためのアドレスを取得
-	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-	//色を書き込む
-	*materialData_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-}
+//void DirectXCommon::InitializeMaterialData() {
+//	//マテリアル用リソース作成
+//	materialResource_ = CreateBufferResource(device_, sizeof(Vector4));
+//	//materialにデータを書き込む
+//	materialData_ = nullptr;
+//	//書き込むためのアドレスを取得
+//	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+//	//色を書き込む
+//	*materialData_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+//}
 
 #pragma endregion
 

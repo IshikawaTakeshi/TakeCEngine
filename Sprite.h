@@ -17,6 +17,7 @@
 #include "VertexData.h"
 
 class DirectXCommon;
+class Texture;
 class Sprite {
 public:
 
@@ -37,6 +38,17 @@ public:
 	/// 終了・開放処理
 	/// </summary>
 	void Finalize();
+
+	/// <summary>
+	/// MaterialData初期化
+	/// </summary>
+	void InitializeMaterialData(DirectXCommon* dxCommon);
+
+	/// <summary>
+	/// MaterialData初期化
+	/// </summary>
+	void InitializeCommandList(DirectXCommon* dxCommon, Texture* texture);
+
 
 	/// <summary>
 	/// 頂点バッファビューの取得
@@ -74,5 +86,9 @@ private:
 	VertexData* vertexData_ = nullptr;
 	//sprite用のTransformationMatrix用の頂点データ
 	Matrix4x4* wvpData_ = nullptr;
+
+	//マテリアルリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite_;
+	Vector4* materialDataSprite_;
 };
 

@@ -16,6 +16,7 @@
 #include "VertexData.h"
 
 class DirectXCommon;
+class Texture;
 class Triangle {
 public:
 
@@ -27,7 +28,7 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void Update();
+	void Update(int id);
 
 	/// <summary>
 	/// 終了・開放処理
@@ -41,6 +42,18 @@ public:
 		return vertexBufferView_;
 	}
 
+	/// <summary>
+	/// MaterialData初期化
+	/// </summary>
+	void InitializeMaterialData(DirectXCommon* dxCommon);
+
+	/// <summary>
+	/// MaterialData初期化
+	/// </summary>
+	void InitializeCommandList(DirectXCommon* dxCommon, Texture* texture);
+
+
+
 	Microsoft::WRL::ComPtr<ID3D12Resource> GetVertexResource() {
 		return vertexResource_;
 	}
@@ -52,6 +65,7 @@ public:
 		return wvpResource_;
 	}
 
+	void SetVertexData(VertexData* vertexData) { vertexData_ = vertexData; }
 
 private:
 
@@ -62,7 +76,9 @@ private:
 	//頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 
+	//CPU用のTransform
 	Transform transform_{};
+	//行列
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;
@@ -72,5 +88,9 @@ private:
 	VertexData* vertexData_ = nullptr;
 	//TransformationMatrix用の頂点データ
 	Matrix4x4* wvpData_ = nullptr;
+
+	//マテリアルリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
+	Vector4* materialData_;
 };
 

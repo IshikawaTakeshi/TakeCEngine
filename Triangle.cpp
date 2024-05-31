@@ -1,6 +1,7 @@
 #include "Triangle.h"
 #include "DirectXCommon.h"
 #include "MyMath/MatrixMath.h"
+#include "Texture.h"
 
 #pragma region imgui
 #include "externals/imgui/imgui.h"
@@ -12,6 +13,8 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 
 void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 
+	//======================= VertexResource ===========================//
+	
 	//VertexResource生成
 	vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * 3);
 
@@ -24,7 +27,7 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 
 	// 書き込むためのアドレスを取得
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-	//=======================三角形1===========================//
+	
 	//左下
 	vertexData_[0].position = { -0.5f,-0.5f,0.0f,1.0f };
 	vertexData_[0].texcoord = { 0.0f,1.0f };
@@ -36,7 +39,8 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 	vertexData_[2].texcoord = { 1.0f,1.0f };
 
 
-
+	//======================= transformationMatrix用のVertexResource ===========================//
+	
 	//スプライト用のTransformationMatrix用のVertexResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(Matrix4x4));
 
@@ -45,6 +49,13 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 
 	//単位行列を書き込んでおく
 	*wvpData_ = MatrixMath::MakeIdentity4x4();
+
+
+	//======================= MatrialResource ===========================//
+
+	InitializeMaterialData(dxCommon);
+
+	//======================= Transform・各行列の初期化 ===========================//
 
 	//CPUで動かす用のTransform
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
@@ -57,7 +68,6 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 	);
 
 	//ViewProjectionの初期化
-
 	viewMatrix_ = MatrixMath::Inverse(cameraView);
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
 		0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f
@@ -67,17 +77,54 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 	*wvpData_ = worldViewProjectionMatrix_;
 }
 
-void Triangle::Update() {
+void Triangle::Update(int id) {
 
-	transform_.rotate.y += 0.01f;
+	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+
+	//wvpの更新
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
 	*wvpData_ = worldViewProjectionMatrix_;
 
 	//ImGuiの更新
-	ImGui::Begin("Triangle");
-	ImGui::DragFloat3("TriangleTranslate", &transform_.translate.x, 1.0f);
+	std::string label = "Window::Triangle";
+	label += "##" + std::to_string(id);
+	ImGui::Begin(label.c_str());
+	ImGui::ColorEdit4("triangleColor", &materialData_->x);
+	ImGui::DragFloat3("TriangleScale", &transform_.scale.x, 0.01f);
+	ImGui::DragFloat3("TriangleRotate", &transform_.rotate.x, 0.01f);
+	ImGui::DragFloat3("TriangleTranslate", &transform_.translate.x, 0.01f);
 	ImGui::End();
 }
+
+void Triangle::InitializeMaterialData(DirectXCommon* dxCommon) {
+	//マテリアル用リソース作成
+	materialResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(Vector4));
+	//materialにデータを書き込む
+	materialData_ = nullptr;
+	//書き込むためのアドレスを取得
+	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	//色を書き込む
+	*materialData_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Triangle::InitializeCommandList(DirectXCommon* dxCommon,Texture* texture) {
+
+
+
+	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
+	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
+	dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//materialCBufferの場所を指定
+	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+	//wvp用のCBufferの場所を指定
+	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture->GetTextureSrvHandleGPU());
+	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
+	dxCommon->GetCommandList()->DrawInstanced(3, 1, 0, 0);
+
+}
+
 

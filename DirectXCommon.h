@@ -39,7 +39,7 @@ public:
 	/// <summary>
 	/// 描画前処理
 	/// </summary>
-	void PreDraw(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU);
+	void PreDraw();
 
 	/// <summary>
 	/// 描画後処理
@@ -49,7 +49,7 @@ public:
 	/// <summary>
 	/// レンダーターゲットのクリア
 	/// </summary>
-	void ClearRenderTarget(D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU);
+	void ClearRenderTarget();
 
 	/// <summary>
 	/// デバイスの取得
@@ -90,7 +90,7 @@ private:
 	//スワップチェーンの生成
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
-//	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> swapChainResources_;
+	//std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> swapChainResources_;
 	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources_[2];
 	//ディスクリプタヒープの生成
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap_;
@@ -318,19 +318,19 @@ public:
 
 #pragma endregion
 
-#pragma region materialResource
-private:
-	//メンバ変数
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
-	Vector4* materialData_;
-
-private:
-	//メンバ関数
-	/// <summary>
-	/// VertexData初期化
-	/// </summary>
-	void InitializeMaterialData();
-	
-#pragma endregion
+//#pragma region materialResource
+//private:
+//	//メンバ変数
+//	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
+//	Vector4* materialData_;
+//
+//private:
+//	//メンバ関数
+//	/// <summary>
+//	/// MaterialData初期化
+//	/// </summary>
+//	void InitializeMaterialData();
+//	
+//#pragma endregion
 };
 

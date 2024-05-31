@@ -64,12 +64,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		cameraTransform.translate
 	);
 
-	//三角形
-	Triangle* triangle = new Triangle();
-	triangle->Initialize(directXCommon,cameraMatrix);
-	directXCommon->SetVertexBufferView(triangle->GetVertexBufferView());
-	directXCommon->SetWvpResource(triangle->GetWvpResource());
-	
+	//三角形1
+	Triangle* triangle1 = new Triangle();
+	triangle1->Initialize(directXCommon,cameraMatrix);
+	directXCommon->SetVertexBufferView(triangle1->GetVertexBufferView());
+	directXCommon->SetWvpResource(triangle1->GetWvpResource());
+
+	//三角形2
+	Triangle* triangle2 = new Triangle();
+	triangle2->Initialize(directXCommon, cameraMatrix);
+	directXCommon->SetVertexBufferView(triangle2->GetVertexBufferView());
+	directXCommon->SetWvpResource(triangle2->GetWvpResource());
+
 	//スプライト
 	Sprite* sprite = new Sprite();
 	sprite->Initialize(directXCommon);
@@ -86,10 +92,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	while (winApp->ProcessMessage() == 0) {
 		
 		//描画前処理
-		directXCommon->PreDraw(texture->GetTextureSrvHandleGPU());
+		directXCommon->PreDraw();
+
+		triangle1->InitializeCommandList(directXCommon, texture);
+		triangle2->InitializeCommandList(directXCommon, texture);
+		sprite->InitializeCommandList(directXCommon, texture);
 
 		//三角形
-		triangle->Update();
+		triangle1->Update(1);
+		triangle2->Update(2);
 
 		//スプライト
 		sprite->Update();
