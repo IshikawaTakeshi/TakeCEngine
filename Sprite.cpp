@@ -4,15 +4,30 @@
 #include "Texture.h"
 
 #pragma region imgui
+#ifdef DEBUG
+
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+#endif // DEBUG
+
 #pragma endregion
 
 
+Sprite::~Sprite() {
+	delete materialDataSprite_;
+	materialResourceSprite_.Reset();
+	delete vertexData_;
+	delete wvpData_;
+	wvpResource_.Reset();
+	transformationMatrixResource_.Reset();
+}
+
 #pragma region 初期化処理
+
 void Sprite::Initialize(DirectXCommon* dxCommon) {
 
 	//======================= VertexResource ===========================//
@@ -93,11 +108,13 @@ void Sprite::Update() {
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
 	*wvpData_ = worldViewProjectionMatrix_;
 
-
+#ifdef DEBUG
 	//ImGuiの更新
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat3("SpriteTranslate", &transform_.translate.x, 1.0f);
 	ImGui::End();
+#endif // DEBUG
+
 }
 
 #pragma endregion

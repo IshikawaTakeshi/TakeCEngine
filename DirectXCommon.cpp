@@ -8,11 +8,13 @@
 #pragma comment(lib,"dxcompiler.lib")
 
 #pragma region imgui
+#ifdef DEBUG
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#endif // DEBUG
 #pragma endregion
 
 DirectXCommon* DirectXCommon::GetInstance() {
@@ -43,8 +45,9 @@ void DirectXCommon::Initialize() {
 	//materialData初期化
 	//InitializeMaterialData();
 
-#ifdef _DEBUG
+
 	//ImGui初期化
+#ifdef DEBUG
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
@@ -56,43 +59,54 @@ void DirectXCommon::Initialize() {
 		srvHeap_->GetCPUDescriptorHandleForHeapStart(),
 		srvHeap_->GetGPUDescriptorHandleForHeapStart()
 	);
+#endif // DEBUG
 
-#endif // _DEBUG	
 }
 	
 	
 
 void DirectXCommon::Finalize() {
 	/*==========ImGui==========*/
+#ifdef DEBUG
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+#endif // DEBUG
 
 	/*==========materialResource==========*/
 	//materialResource_.Reset();
 
 	/*==========vertexResource==========*/
 	delete vertexData_;
-
+	transformationMatrixResourceSprite_.Reset();
+	wvpResource_.Reset();
 
 	/*==========PSO==========*/
 	graphicPipelineState_.Reset();
 	pixelShaderBlob_.Reset();
 	vertexShaderBlob_.Reset();
+	rootSignature_.Reset();
 	signatureBlob_.Reset();
 	if (errorBlob_.Get()) {
 		errorBlob_.Reset();
 	}
 
 	/*==========dxc==========*/
-	rootSignature_.Reset();
-	pixelShaderBlob_.Reset();
-	vertexShaderBlob_.Reset();
+	shaderBlob_.Reset();
+	if (shaderError_.Get()) {
+		shaderError_.Reset();
+	}
+	shaderResult_.Reset();
+	shaderSource_.Reset();
+	includeHandler_.Reset();
+	dxcCompiler_.Reset();
+	dxcUtils_.Reset();
 
 	/*==========DirectX==========*/
 	CloseHandle(fenceEvent_);
 	fence_.Reset();
 	drawHeaps_->Reset();
+	dsvHeap_.Reset();
 	srvHeap_.Reset();
 	rtvHeap_.Reset();
 	descriptorHeap_.Reset();
@@ -109,27 +123,30 @@ void DirectXCommon::Finalize() {
 }
 
 void DirectXCommon::PreDraw() {
-
+#ifdef DEBUG
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
 	//開発用UIの処理。実際に開発用のUIを出す場合はここをゲーム特有の処理に置き換える
 	ImGui::ShowDemoWindow();
-
+#endif // DEBUG
 	//全画面クリア
 	ClearRenderTarget();
 }
 
 void DirectXCommon::PostDraw() {
-
+#ifdef _DEBUG
 	HRESULT result = S_FALSE;
+#endif // DEBUG
 
+#ifdef DEBUG
 	//ImGuiの内部コマンドを生成する
 	ImGui::Render();
 	
 	//実際のcommandListのImGuiの描画コマンドを積む
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList_.Get());
+#endif // DEBUG
 
 	//画面に描く処理はすべて終わり、画面に移すので、状態を遷移
 	//今回はRenderTargetからPresentにする
@@ -141,7 +158,10 @@ void DirectXCommon::PostDraw() {
 
 
 	// コマンドリストの内容を確定
-	result = commandList_->Close();
+#ifdef DEBUG
+	result =
+#endif // DEBUG
+		commandList_->Close();
 	assert(SUCCEEDED(result));
 	
 
@@ -170,9 +190,16 @@ void DirectXCommon::PostDraw() {
 
 
 	//次のフレーム用のコマンドリストを準備
-	result = commandAllocator_->Reset();
+#ifdef DEBUG
+	result =
+#endif // DEBUG
+		commandAllocator_->Reset();
 	assert(SUCCEEDED(result));
-	result = commandList_->Reset(commandAllocator_.Get(), nullptr);
+
+#ifdef DEBUG
+	result =
+#endif // DEBUG
+		commandList_->Reset(commandAllocator_.Get(), nullptr);
 	assert(SUCCEEDED(result));
 }
 
@@ -442,7 +469,10 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 	descriptorHeapDesc.Type = heapType;
 	descriptorHeapDesc.NumDescriptors = numDescriptors;
 	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	HRESULT result = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap_));
+#ifdef _DEBUG
+	HRESULT result =
+#endif // DEBUG	
+		device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap_));
 	assert(SUCCEEDED(result));
 	return descriptorHeap_;
 }

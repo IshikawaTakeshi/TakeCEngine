@@ -4,12 +4,24 @@
 #include "Texture.h"
 
 #pragma region imgui
+#ifdef DEBUG
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#endif // DEBUG
+
 #pragma endregion
+
+Triangle::~Triangle() {
+	delete materialData_;
+	materialResource_.Reset();
+	delete wvpData_;
+	delete vertexData_;
+	wvpResource_.Reset();
+	vertexResource_.Reset();
+}
 
 void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 
@@ -77,7 +89,11 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 	*wvpData_ = worldViewProjectionMatrix_;
 }
 
-void Triangle::Update(int id) {
+void Triangle::Update(
+#ifdef DEBUG
+	int id
+#endif
+) {
 
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
@@ -88,6 +104,7 @@ void Triangle::Update(int id) {
 	*wvpData_ = worldViewProjectionMatrix_;
 
 	//ImGuiの更新
+#ifdef DEBUG
 	std::string label = "Window::Triangle";
 	label += "##" + std::to_string(id);
 	ImGui::Begin(label.c_str());
@@ -96,6 +113,8 @@ void Triangle::Update(int id) {
 	ImGui::DragFloat3("TriangleRotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("TriangleTranslate", &transform_.translate.x, 0.01f);
 	ImGui::End();
+#endif // DEBUG
+
 }
 
 void Triangle::InitializeMaterialData(DirectXCommon* dxCommon) {
@@ -110,8 +129,6 @@ void Triangle::InitializeMaterialData(DirectXCommon* dxCommon) {
 }
 
 void Triangle::InitializeCommandList(DirectXCommon* dxCommon,Texture* texture) {
-
-
 
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい

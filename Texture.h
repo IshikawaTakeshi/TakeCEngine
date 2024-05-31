@@ -19,7 +19,7 @@ class Texture {
 public:
 
 	Texture() = default;
-	~Texture() = default;
+	~Texture();
 
 	/// <summary>
 	/// シングルトンインスタンスの取得

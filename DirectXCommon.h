@@ -318,19 +318,5 @@ public:
 
 #pragma endregion
 
-//#pragma region materialResource
-//private:
-//	//メンバ変数
-//	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
-//	Vector4* materialData_;
-//
-//private:
-//	//メンバ関数
-//	/// <summary>
-//	/// MaterialData初期化
-//	/// </summary>
-//	void InitializeMaterialData();
-//	
-//#pragma endregion
 };
 

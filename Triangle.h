@@ -20,6 +20,9 @@ class Texture;
 class Triangle {
 public:
 
+	Triangle() = default;
+	~Triangle();
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -28,12 +31,11 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void Update(int id);
-
-	/// <summary>
-	/// 終了・開放処理
-	/// </summary>
-	void Finalize();
+	void Update(
+#ifdef DEBUG
+		int id
+#endif // DEBUG	
+	);
 
 	/// <summary>
 	/// 頂点バッファビューの取得

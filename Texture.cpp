@@ -4,6 +4,12 @@
 #include "DirectXCommon.h"
 #include "WinApp.h"
 
+Texture::~Texture() {
+	depthStencilResource_.Reset();
+	textureResource_.Reset();
+
+}
+
 Texture* Texture::GetInstance() {
 	static Texture* texture;
 	return texture;
@@ -93,7 +99,10 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Texture::CreateTextureResource(const Micr
 	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK; //WritebackポリシーでCPUアクセス可能
 	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0; //プロセッサの近くに配置
 	
-	HRESULT hr = device->CreateCommittedResource(
+#ifdef _DEBUG
+	HRESULT hr =
+#endif // DEBUG		
+		device->CreateCommittedResource(
 		&heapProperties, //Heapの設定
 		D3D12_HEAP_FLAG_NONE, //Heapの特殊な設定
 		&resourceDesc, //Resourceの設定
@@ -115,7 +124,10 @@ void Texture::uploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, 
 		//MipMapLevelを指定して各imageを取得
 		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
 		//Textureに転送
-		HRESULT hr = texture->WriteToSubresource(
+#ifdef _DEBUG
+		HRESULT hr =
+#endif // DEBUG	
+			texture->WriteToSubresource(
 			UINT(mipLevel),
 			nullptr,
 			img->pixels,
@@ -150,7 +162,12 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Texture::CreateDepthStencilTextureResourc
 	depthCLearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //フォーマット。Resoureと合わせる
 
 	//Resoureの生成
-	HRESULT hr = device->CreateCommittedResource(
+#ifdef _DEBUG
+
+	HRESULT hr = 
+
+#endif // DEBUG
+		device->CreateCommittedResource(
 		&heapProperties, //Heapの設定
 		D3D12_HEAP_FLAG_NONE, //Heapの特殊な設定
 		&resourceDesc, //Resourceの設定
@@ -158,6 +175,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Texture::CreateDepthStencilTextureResourc
 		&depthCLearValue, //Clear最適値。
 		IID_PPV_ARGS(&depthStencilResource_) //作成するResourceポインタへのポインタ
 	);
+
 	assert(SUCCEEDED(hr));
 
 	return depthStencilResource_;

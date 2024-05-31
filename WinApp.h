@@ -25,6 +25,7 @@ public:
 	/// <param name="wparam">メッセージ情報1</param>
 	/// <param name="lparam">メッセージ情報2</param>
 	/// <returns>成否</returns>
+
 	static LRESULT WindowProc(HWND hwnd, UINT msg,WPARAM wParam, LPARAM lParam);
 
 

@@ -22,7 +22,7 @@ class Sprite {
 public:
 
 	Sprite() = default;
-	~Sprite() = default;
+	~Sprite();
 
 	/// <summary>
 	/// 初期化
