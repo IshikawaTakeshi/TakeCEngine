@@ -4,7 +4,7 @@
 #include "Texture.h"
 
 #pragma region imgui
-#ifdef DEBUG
+#ifdef _DEBUG
 
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_dx12.h"
@@ -108,7 +108,7 @@ void Sprite::Update() {
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
 	*wvpData_ = worldViewProjectionMatrix_;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	//ImGuiの更新
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat3("SpriteTranslate", &transform_.translate.x, 1.0f);

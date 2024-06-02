@@ -10,18 +10,14 @@ Texture::~Texture() {
 
 }
 
-Texture* Texture::GetInstance() {
-	static Texture* texture;
-	return texture;
-}
-
-void Texture::Initialize(DirectXCommon* dxCommon) {
-
+void Texture::Initialize(DirectXCommon* dxCommon, const std::string& filePath) {
+	filePath_ = filePath;
 	//Textureを読み込んで転送する
-	DirectX::ScratchImage mipImages = LoadTexture("./Resources/uvChecker.png");
+	DirectX::ScratchImage mipImages = LoadTexture(filePath_);
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	textureResource_ = CreateTextureResource(dxCommon->GetDevice(), metadata);
-	uploadTextureData(textureResource_, mipImages);
+	UploadTextureData(textureResource_, mipImages);
+
 
 	//DepthstencilTextureをウィンドウのサイズで作成
 	depthStencilResource_ = CreateDepthStencilTextureResource(
@@ -114,7 +110,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Texture::CreateTextureResource(const Micr
 	return textureResource_;
 }
 
-void Texture::uploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
+void Texture::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
 
 	//Meta情報を取得
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();

@@ -14,6 +14,7 @@
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
 
+
 class DirectXCommon;
 class Texture {
 public:
@@ -22,15 +23,9 @@ public:
 	~Texture();
 
 	/// <summary>
-	/// シングルトンインスタンスの取得
-	/// </summary>
-	/// <returns></returns>
-	static Texture* GetInstance();
-
-	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize(DirectXCommon* dxCommon, const std::string& filePath);
 
 	/// <summary>
 	/// 終了・開放処理
@@ -42,7 +37,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(
 	const Microsoft::WRL::ComPtr<ID3D12Device>& device, const DirectX::TexMetadata& metadata);
 
-	void uploadTextureData(
+	void UploadTextureData(
 		Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(
@@ -52,6 +47,8 @@ public:
 	/// textureSrvHandleGPUの取得
 	/// </summary>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureSrvHandleGPU() const { return textureSrvHandleGPU_; }
+	
+	std::string filePath_;
 
 private:
 
@@ -60,5 +57,7 @@ private:
 	
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
+
+
 };
 

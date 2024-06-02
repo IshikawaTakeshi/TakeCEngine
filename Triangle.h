@@ -32,7 +32,7 @@ public:
 	/// 更新処理
 	/// </summary>
 	void Update(
-#ifdef DEBUG
+#ifdef _DEBUG
 		int id
 #endif // DEBUG	
 	);
@@ -94,5 +94,8 @@ private:
 	//マテリアルリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
 	Vector4* materialData_;
+
+	//Texture
+	Texture* Texture_ = nullptr;
 };
 

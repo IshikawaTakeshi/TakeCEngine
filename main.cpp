@@ -15,7 +15,7 @@
 #pragma comment(lib,"dxguid.lib")
 
 #pragma region imgui
-#ifdef DEBUG
+#ifdef _DEBUG
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
@@ -56,8 +56,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//テクスチャ初期化
 	Texture* texture = new Texture();
-	texture->Initialize(directXCommon);
 
+	texture->Initialize(directXCommon, "./Resources/uvChecker.png");
+	
 	//カメラ
 	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
 	Matrix4x4 cameraMatrix = MatrixMath::MakeAffineMatrix(
@@ -101,13 +102,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		sprite->InitializeCommandList(directXCommon, texture);
 
 		//三角形
-		triangle1->Update();
-		triangle2->Update();
+		triangle1->Update(
+#ifdef _DEBUG
+		1
+#endif // _DEBUG
+
+		);
+		triangle2->Update(
+#ifdef _DEBUG
+			2
+#endif // _DEBUG
+		);
 
 		//スプライト
 		sprite->Update();
 
-		
 
 		//描画後処理
 		directXCommon->PostDraw();
@@ -116,6 +125,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	directXCommon->Finalize();
 	winApp->Finalize();
 	texture->Finalize();
+	
 
 	leakCheck.~D3DResourceLeakChecker();
 

@@ -8,7 +8,7 @@
 #pragma comment(lib,"dxcompiler.lib")
 
 #pragma region imgui
-#ifdef DEBUG
+#ifdef _DEBUG
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
@@ -47,7 +47,7 @@ void DirectXCommon::Initialize() {
 
 
 	//ImGui初期化
-#ifdef DEBUG
+#ifdef _DEBUG
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
@@ -67,7 +67,7 @@ void DirectXCommon::Initialize() {
 
 void DirectXCommon::Finalize() {
 	/*==========ImGui==========*/
-#ifdef DEBUG
+#ifdef _DEBUG
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
@@ -123,7 +123,7 @@ void DirectXCommon::Finalize() {
 }
 
 void DirectXCommon::PreDraw() {
-#ifdef DEBUG
+#ifdef _DEBUG
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -140,7 +140,7 @@ void DirectXCommon::PostDraw() {
 	HRESULT result = S_FALSE;
 #endif // DEBUG
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	//ImGuiの内部コマンドを生成する
 	ImGui::Render();
 	
@@ -158,7 +158,7 @@ void DirectXCommon::PostDraw() {
 
 
 	// コマンドリストの内容を確定
-#ifdef DEBUG
+#ifdef _DEBUG
 	result =
 #endif // DEBUG
 		commandList_->Close();
@@ -190,13 +190,13 @@ void DirectXCommon::PostDraw() {
 
 
 	//次のフレーム用のコマンドリストを準備
-#ifdef DEBUG
+#ifdef _DEBUG
 	result =
 #endif // DEBUG
 		commandAllocator_->Reset();
 	assert(SUCCEEDED(result));
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	result =
 #endif // DEBUG
 		commandList_->Reset(commandAllocator_.Get(), nullptr);
@@ -783,20 +783,6 @@ void DirectXCommon::InitScissorRect() {
 
 #pragma endregion
 
-#pragma region MaterialResource
-
-//void DirectXCommon::InitializeMaterialData() {
-//	//マテリアル用リソース作成
-//	materialResource_ = CreateBufferResource(device_, sizeof(Vector4));
-//	//materialにデータを書き込む
-//	materialData_ = nullptr;
-//	//書き込むためのアドレスを取得
-//	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-//	//色を書き込む
-//	*materialData_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-//}
-
-#pragma endregion
 
 
 

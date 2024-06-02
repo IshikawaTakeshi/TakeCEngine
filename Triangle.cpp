@@ -4,7 +4,7 @@
 #include "Texture.h"
 
 #pragma region imgui
-#ifdef DEBUG
+#ifdef _DEBUG
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
@@ -90,7 +90,7 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 }
 
 void Triangle::Update(
-#ifdef DEBUG
+#ifdef _DEBUG
 	int id
 #endif
 ) {
@@ -103,12 +103,14 @@ void Triangle::Update(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
 	*wvpData_ = worldViewProjectionMatrix_;
 
+	bool botton = false;
 	//ImGuiの更新
-#ifdef DEBUG
+#ifdef _DEBUG
 	std::string label = "Window::Triangle";
 	label += "##" + std::to_string(id);
 	ImGui::Begin(label.c_str());
 	ImGui::ColorEdit4("triangleColor", &materialData_->x);
+	ImGui::Selectable("TextureTable",botton);
 	ImGui::DragFloat3("TriangleScale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat3("TriangleRotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("TriangleTranslate", &transform_.translate.x, 0.01f);
