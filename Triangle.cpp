@@ -15,10 +15,10 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 #pragma endregion
 
 Triangle::~Triangle() {
-	delete materialData_;
+	//delete materialData_;
 	materialResource_.Reset();
-	delete wvpData_;
-	delete vertexData_;
+	//delete wvpData_;
+	//delete vertexData_;
 	wvpResource_.Reset();
 	vertexResource_.Reset();
 }

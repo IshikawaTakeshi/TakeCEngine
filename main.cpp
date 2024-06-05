@@ -122,9 +122,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		directXCommon->PostDraw();
 	}
 
-	directXCommon->Finalize();
-	winApp->Finalize();
 	texture->Finalize();
+	triangle2->~Triangle();
+	triangle1->~Triangle();
+	sprite->~Sprite();
+	
+	winApp->Finalize();
+	directXCommon->Finalize();
 	
 
 	leakCheck.~D3DResourceLeakChecker();

@@ -90,7 +90,6 @@ private:
 	//スワップチェーンの生成
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
-	//std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> swapChainResources_;
 	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources_[2];
 	//ディスクリプタヒープの生成
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap_;

@@ -18,10 +18,10 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 
 
 Sprite::~Sprite() {
-	delete materialDataSprite_;
-	materialResourceSprite_.Reset();
+	/*delete materialDataSprite_;
 	delete vertexData_;
-	delete wvpData_;
+	delete wvpData_;*/
+	materialResourceSprite_.Reset();
 	wvpResource_.Reset();
 	transformationMatrixResource_.Reset();
 }

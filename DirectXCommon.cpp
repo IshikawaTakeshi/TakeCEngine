@@ -86,10 +86,10 @@ void DirectXCommon::Finalize() {
 	pixelShaderBlob_.Reset();
 	vertexShaderBlob_.Reset();
 	rootSignature_.Reset();
-	signatureBlob_.Reset();
 	if (errorBlob_.Get()) {
 		errorBlob_.Reset();
 	}
+	signatureBlob_.Reset();
 
 	/*==========dxc==========*/
 	shaderBlob_.Reset();
@@ -105,7 +105,8 @@ void DirectXCommon::Finalize() {
 	/*==========DirectX==========*/
 	CloseHandle(fenceEvent_);
 	fence_.Reset();
-	drawHeaps_->Reset();
+	drawHeaps_[0].Reset();
+	drawHeaps_[1].Reset();
 	dsvHeap_.Reset();
 	srvHeap_.Reset();
 	rtvHeap_.Reset();
