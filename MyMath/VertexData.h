@@ -1,6 +1,6 @@
 #pragma once
-#include "Vector4.h"
-#include "Vector2.h"
+#include "../Vector4.h"
+#include "../Vector2.h"
 
 struct VertexData {
 	Vector4 position;

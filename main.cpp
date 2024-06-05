@@ -2,14 +2,14 @@
 //C4023の警告を見なかったことにする
 #pragma warning(disable:4023)
 //Include
-#include "WinApp.h"
-#include "Logger.h"
-#include "DirectXCommon.h"
+#include "Include/WinApp.h"
+#include "Include/Logger.h"
+#include "Include/DirectXCommon.h"
 #include "Transform.h"
-#include "Texture.h"
+#include "Texture/Texture.h"
 #include "MyMath/MatrixMath.h"
-#include "Sprite.h"
-#include "Triangle.h"
+#include "Sprite/Sprite.h"
+#include "Triangle/Triangle.h"
 
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")

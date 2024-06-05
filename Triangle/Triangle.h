@@ -11,9 +11,9 @@
 #include <iostream>
 #include <memory>
 
-#include "Matrix4x4.h"
-#include "Transform.h"
-#include "VertexData.h"
+#include "../MyMath/Matrix4x4.h"
+#include "../MyMath/Transform.h"
+#include "../MyMath/VertexData.h"
 
 class DirectXCommon;
 class Texture;

@@ -1,8 +1,8 @@
 #include "Texture.h"
 
-#include "Logger.h"
-#include "DirectXCommon.h"
-#include "WinApp.h"
+#include "../Include/Logger.h"
+#include "../Include/DirectXCommon.h"
+#include "../Include/WinApp.h"
 
 Texture::~Texture() {
 	depthStencilResource_.Reset();

@@ -12,8 +12,8 @@
 #include <iostream>
 #include <memory>
 
-#include "VertexData.h"
-#include "Matrix4x4.h"
+#include "../MyMath/VertexData.h"
+#include "../MyMath/Matrix4x4.h"
 #include "WinApp.h"
 
 

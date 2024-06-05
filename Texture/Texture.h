@@ -11,8 +11,8 @@
 #include <iostream>
 #include <memory>
 
-#include "externals/DirectXTex/DirectXTex.h"
-#include "externals/DirectXTex/d3dx12.h"
+#include "../externals/DirectXTex/DirectXTex.h"
+#include "../externals/DirectXTex/d3dx12.h"
 
 
 class DirectXCommon;
