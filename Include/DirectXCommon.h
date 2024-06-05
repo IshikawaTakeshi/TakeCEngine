@@ -241,24 +241,6 @@ private:
 	//////////////////////////////////////////////////////////////////////////////////////////
 
 
-	////ヒーププロパティ
-	//D3D12_HEAP_PROPERTIES uploadHeapProperties_{};
-	////リソースディスク
-	//D3D12_RESOURCE_DESC resourceDesc_{};
-
-	//頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
-	//sprite用のTransformationMatrix用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_;
-
-	//頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
-	//sprite用頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite_{};
-
-	//三角形用頂点データ
-	VertexData* vertexData_ = nullptr;;
-
 	// ビューポート
 	D3D12_VIEWPORT viewport_{};
 	// シザー矩形
@@ -282,38 +264,6 @@ private:
 	/// シザー矩形初期化
 	/// </summary>
 	void InitScissorRect();
-
-public:
-
-	/// <summary>
-	///頂点データの代入
-	/// </summary>
-	void SetWvpResource(
-		Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource) {
-		wvpResource_ = wvpResource;
-	}
-
-	/// <summary>
-	/// 頂点バッファビューの代入
-	/// </summary>
-	void SetVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vertexBufferView) {
-		vertexBufferView_ = vertexBufferView;
-	}
-
-	/// <summary>
-	/// sprite用のTransformationMatrix用の頂点データの代入
-	/// </summary>
-	void SetTransformationMatrixResourceSprite(
-		Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite) {
-		transformationMatrixResourceSprite_ = transformationMatrixResourceSprite;
-	}
-
-	/// <summary>
-	/// sprite用頂点バッファビューの代入
-	/// </summary>
-	void SetVertexBufferViewSprite(D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite) {
-		vertexBufferViewSprite_ = vertexBufferViewSprite;
-	}
 
 #pragma endregion
 

@@ -1,5 +1,5 @@
-﻿#pragma once
-#include <vector3.h>
+#pragma once
+#include "../Vector3.h"
 
 class MyMath {
 public:

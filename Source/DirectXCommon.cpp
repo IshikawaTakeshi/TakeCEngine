@@ -73,14 +73,6 @@ void DirectXCommon::Finalize() {
 	ImGui::DestroyContext();
 #endif // DEBUG
 
-	/*==========materialResource==========*/
-	//materialResource_.Reset();
-
-	/*==========vertexResource==========*/
-	delete vertexData_;
-	transformationMatrixResourceSprite_.Reset();
-	wvpResource_.Reset();
-
 	/*==========PSO==========*/
 	graphicPipelineState_.Reset();
 	pixelShaderBlob_.Reset();

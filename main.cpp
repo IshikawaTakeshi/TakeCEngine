@@ -5,11 +5,12 @@
 #include "Include/WinApp.h"
 #include "Include/Logger.h"
 #include "Include/DirectXCommon.h"
-#include "Transform.h"
+#include "MyMath/Transform.h"
 #include "Texture/Texture.h"
 #include "MyMath/MatrixMath.h"
 #include "Sprite/Sprite.h"
 #include "Triangle/Triangle.h"
+#include "Sphere/Sphere.h"
 
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
@@ -60,7 +61,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	texture->Initialize(directXCommon, "./Resources/uvChecker.png");
 	
 	//カメラ
-	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
+	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
 	Matrix4x4 cameraMatrix = MatrixMath::MakeAffineMatrix(
 		cameraTransform.scale,
 		cameraTransform.rotate,
@@ -70,21 +71,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//三角形1
 	Triangle* triangle1 = new Triangle();
 	triangle1->Initialize(directXCommon,cameraMatrix);
-	directXCommon->SetVertexBufferView(triangle1->GetVertexBufferView());
-	directXCommon->SetWvpResource(triangle1->GetWvpResource());
-
+	
 	//三角形2
 	Triangle* triangle2 = new Triangle();
 	triangle2->Initialize(directXCommon, cameraMatrix);
-	directXCommon->SetVertexBufferView(triangle2->GetVertexBufferView());
-	directXCommon->SetWvpResource(triangle2->GetWvpResource());
+	
+	//球
+	Sphere* sphere = new Sphere();
+	sphere->Initialize(directXCommon, cameraMatrix);
 
 	//スプライト
 	Sprite* sprite = new Sprite();
 	sprite->Initialize(directXCommon);
-	directXCommon->SetVertexBufferViewSprite(sprite->GetVertexBufferView());
-	directXCommon->SetTransformationMatrixResourceSprite(sprite->GetTransformationMatrixResource());
-	
 
 	
 	//////////////////////////////////////////////////////////
@@ -99,20 +97,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		triangle1->InitializeCommandList(directXCommon, texture);
 		triangle2->InitializeCommandList(directXCommon, texture);
+		sphere->InitializeCommandList(directXCommon, texture);
 		sprite->InitializeCommandList(directXCommon, texture);
 
 		//三角形
-		triangle1->Update(
-#ifdef _DEBUG
-		1
-#endif // _DEBUG
-
-		);
-		triangle2->Update(
-#ifdef _DEBUG
-			2
-#endif // _DEBUG
-		);
+		triangle1->Update(1);
+		triangle2->Update(2);
+		sphere->Update();
 
 		//スプライト
 		sprite->Update();
@@ -123,9 +114,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 	texture->Finalize();
-	triangle2->~Triangle();
-	triangle1->~Triangle();
-	sprite->~Sprite();
+	delete triangle2;
+	delete triangle1;
+	delete sphere;
+	delete sprite;
 	
 	winApp->Finalize();
 	directXCommon->Finalize();

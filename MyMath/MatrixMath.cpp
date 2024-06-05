@@ -1,5 +1,6 @@
-#include "MatrixMath.h"
-
+#include "../MyMath/MatrixMath.h"
+#include <assert.h>
+#include <cmath>
 
 //行列の加法
 Matrix4x4 MatrixMath::Add(const Matrix4x4& m1, const Matrix4x4& m2) {
