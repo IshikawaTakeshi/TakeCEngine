@@ -85,11 +85,7 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 	*wvpData_ = worldViewProjectionMatrix_;
 }
 
-void Triangle::Update(
-#ifdef _DEBUG
-	int id
-#endif
-) {
+void Triangle::Update(int id) {
 
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
@@ -139,7 +135,6 @@ void Triangle::InitializeCommandList(DirectXCommon* dxCommon,Texture* texture) {
 	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture->GetTextureSrvHandleGPU());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	dxCommon->GetCommandList()->DrawInstanced(3, 1, 0, 0);
-
 }
 
 

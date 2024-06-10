@@ -34,6 +34,11 @@ void DirectXCommon::Initialize() {
 	CreateFinalRenderTargets();
 	// フェンス生成
 	CreateFence();
+
+	descriptorSizeSRV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	descriptorSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	descriptorSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
 	//DXC初期化
 	InitializeDxc();
 	//PSO生成
@@ -94,12 +99,9 @@ void DirectXCommon::Finalize() {
 	/*==========DirectX==========*/
 	CloseHandle(fenceEvent_);
 	fence_.Reset();
-	drawHeaps_[0].Reset();
-	drawHeaps_[1].Reset();
 	dsvHeap_.Reset();
 	srvHeap_.Reset();
 	rtvHeap_.Reset();
-	descriptorHeap_.Reset();
 	swapChainResources_[0].Reset();
 	swapChainResources_[1].Reset();
 	swapChain_.Reset();
@@ -222,8 +224,8 @@ void DirectXCommon::ClearRenderTarget() {
 	commandList_->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	//描画用ディスクリプタヒープの設定
-	drawHeaps_[0] = { srvHeap_ };
-	commandList_->SetDescriptorHeaps(1, drawHeaps_->GetAddressOf());
+	ID3D12DescriptorHeap* drawHeaps_[] = { srvHeap_.Get()};
+	commandList_->SetDescriptorHeaps(1, drawHeaps_);
 
 	commandList_->RSSetViewports(1, &viewport_); // Viewportを設定
 	commandList_->RSSetScissorRects(1, &scissorRect_); // Scissorの設定
@@ -453,30 +455,28 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 	Microsoft::WRL::ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType,
 	UINT numDescriptors, bool shaderVisible) {
 	
-	descriptorHeap_ = nullptr;
+	ID3D12DescriptorHeap* descriptorHeap_ = nullptr;
 
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
 	descriptorHeapDesc.Type = heapType;
 	descriptorHeapDesc.NumDescriptors = numDescriptors;
 	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-#ifdef _DEBUG
-	HRESULT result =
-#endif // DEBUG	
-		device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap_));
+
+	HRESULT result = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap_));
 	assert(SUCCEEDED(result));
 	return descriptorHeap_;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetCPUDescriptorHandle(uint32_t descriptorSize, uint32_t index) {
+D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,uint32_t descriptorSize, uint32_t index) {
 	
-	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	handleCPU.ptr += (descriptorSize * index);
 	return handleCPU;
 }
 
-D3D12_GPU_DESCRIPTOR_HANDLE DirectXCommon::GetGPUDescriptorHandle(uint32_t descriptorSize, uint32_t index) {
+D3D12_GPU_DESCRIPTOR_HANDLE DirectXCommon::GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,uint32_t descriptorSize, uint32_t index) {
 	
-	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap_->GetGPUDescriptorHandleForHeapStart();
+	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 	handleGPU.ptr += (descriptorSize * index);
 	return handleGPU;
 }

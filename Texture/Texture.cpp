@@ -29,7 +29,7 @@ void Texture::Initialize(uint32_t index, DirectXCommon* dxCommon, const std::str
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-	
+
 	//DSVの設定
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //format.基本的にはResourceに合わせる
@@ -39,11 +39,8 @@ void Texture::Initialize(uint32_t index, DirectXCommon* dxCommon, const std::str
 		depthStencilResource_.Get(), &dsvDesc, dxCommon->GetDsvHeap()->GetCPUDescriptorHandleForHeapStart());
 
 	//SRVを作成するDescriptorHeapの場所を決める
-	textureSrvHandleCPU_ = dxCommon->GetSrvHeap()->GetCPUDescriptorHandleForHeapStart();
-	textureSrvHandleGPU_ = dxCommon->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();
-	//先頭はImGuiが使っているのでその次を使う
-	textureSrvHandleCPU_.ptr += index * dxCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU_.ptr += index * dxCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleCPU_ = dxCommon->GetCPUDescriptorHandle(dxCommon->GetSrvHeap(), dxCommon->GetDescriptorSizeSRV(), index);
+	textureSrvHandleGPU_ = dxCommon->GetGPUDescriptorHandle(dxCommon->GetSrvHeap(), dxCommon->GetDescriptorSizeSRV(), index);
 	//SRVの生成
 	dxCommon->GetDevice()->CreateShaderResourceView(textureResource_.Get(), &srvDesc, textureSrvHandleCPU_);
 
@@ -56,7 +53,7 @@ void Texture::Finalize() {
 }
 
 DirectX::ScratchImage Texture::LoadTexture(const std::string& filePath) {
-	
+
 	//テクスチャファイルを読み込んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = Logger::ConvertString(filePath);
@@ -70,7 +67,7 @@ DirectX::ScratchImage Texture::LoadTexture(const std::string& filePath) {
 		image.GetImageCount(),
 		image.GetMetadata(),
 		DirectX::TEX_FILTER_SRGB,
-		0,mipImages);
+		0, mipImages);
 	assert(SUCCEEDED(hr));
 
 	//ミップマップ付きのデータを返す
@@ -78,7 +75,7 @@ DirectX::ScratchImage Texture::LoadTexture(const std::string& filePath) {
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Texture::CreateTextureResource(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const DirectX::TexMetadata& metadata) {
-	
+
 	//metadataを基にResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = UINT(metadata.width);
@@ -94,11 +91,9 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Texture::CreateTextureResource(const Micr
 	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM; //細かい設定で行う
 	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK; //WritebackポリシーでCPUアクセス可能
 	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0; //プロセッサの近くに配置
-	
-#ifdef _DEBUG
-	HRESULT hr =
-#endif // DEBUG		
-		device->CreateCommittedResource(
+
+
+	HRESULT hr = device->CreateCommittedResource(
 		&heapProperties, //Heapの設定
 		D3D12_HEAP_FLAG_NONE, //Heapの特殊な設定
 		&resourceDesc, //Resourceの設定
@@ -115,15 +110,12 @@ void Texture::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, 
 	//Meta情報を取得
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	//ぜんMipMapについて
-	for (size_t mipLevel = 0;  mipLevel < metadata.mipLevels;  ++mipLevel) {
-		
+	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
+
 		//MipMapLevelを指定して各imageを取得
 		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
 		//Textureに転送
-#ifdef _DEBUG
-		HRESULT hr =
-#endif // DEBUG	
-			texture->WriteToSubresource(
+		HRESULT hr = texture->WriteToSubresource(
 			UINT(mipLevel),
 			nullptr,
 			img->pixels,
@@ -136,7 +128,7 @@ void Texture::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, 
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Texture::CreateDepthStencilTextureResource(
 	const Microsoft::WRL::ComPtr<ID3D12Device>& device, int32_t width, int32_t height) {
-	
+
 	//生成するResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = width; //Texureの幅
@@ -158,12 +150,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Texture::CreateDepthStencilTextureResourc
 	depthCLearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //フォーマット。Resoureと合わせる
 
 	//Resoureの生成
-#ifdef _DEBUG
-
-	HRESULT hr = 
-
-#endif // DEBUG
-		device->CreateCommittedResource(
+	HRESULT hr = device->CreateCommittedResource(
 		&heapProperties, //Heapの設定
 		D3D12_HEAP_FLAG_NONE, //Heapの特殊な設定
 		&resourceDesc, //Resourceの設定
@@ -171,7 +158,6 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Texture::CreateDepthStencilTextureResourc
 		&depthCLearValue, //Clear最適値。
 		IID_PPV_ARGS(&depthStencilResource_) //作成するResourceポインタへのポインタ
 	);
-
 	assert(SUCCEEDED(hr));
 
 	return depthStencilResource_;

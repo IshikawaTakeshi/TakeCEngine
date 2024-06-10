@@ -73,8 +73,17 @@ public:
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetDsvHeap() { return dsvHeap_; }
 
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(uint32_t descriptorSize, uint32_t index);
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(uint32_t descriptorSize, uint32_t index);
+	/// <summary>
+	/// descriptorHeapの取得
+	/// </summary>
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetRtvHeap() { return rtvHeap_; }
+
+	uint32_t GetDescriptorSizeSRV() { return descriptorSizeSRV_; }
+	uint32_t GetDescriptorSizeRTV() { return descriptorSizeRTV_; }
+	uint32_t GetDescriptorSizeDSV() { return descriptorSizeDSV_; }
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,uint32_t descriptorSize, uint32_t index);
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,uint32_t descriptorSize, uint32_t index);
 
 private:
 	// ウィンドウズアプリケーション管理
@@ -96,11 +105,11 @@ private:
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources_[2];
 	//ディスクリプタヒープの生成
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap_;
+	
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvHeap_;
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> drawHeaps_[2];
+
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
 	//RTVを2つ作るのでディスクリプタを2つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
@@ -112,6 +121,10 @@ private:
 	HANDLE fenceEvent_;
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_;
+
+	uint32_t descriptorSizeSRV_;
+	uint32_t descriptorSizeRTV_;
+	uint32_t descriptorSizeDSV_;
 
 
 private:

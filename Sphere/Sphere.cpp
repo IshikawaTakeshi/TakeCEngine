@@ -86,8 +86,6 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 			vertexData_[start + 4].position.w = 1.0f;
 			vertexData_[start + 4].texcoord.x = static_cast<float>(lonIndex + 1) / static_cast<float>(kSubdivision);
 			vertexData_[start + 4].texcoord.y = 1.0f - (static_cast<float>(latIndex + 1) / static_cast<float>(kSubdivision));
-
-
 			
 			//基準点c1(右下)
 			vertexData_[start + 5] = vertexData_[start + 2];
@@ -158,6 +156,7 @@ void Sphere::Update() {
 	ImGui::DragFloat3("SphereScale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat3("SphereRotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("SphereTranslate", &transform_.translate.x, 0.01f);
+	ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 	ImGui::End();
 #endif // _DEBUG
 }
@@ -173,7 +172,7 @@ void Sphere::InitializeMaterialData(DirectXCommon* dxCommon) {
 	*materialData_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-void Sphere::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture) {
+void Sphere::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2) {
 
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
@@ -183,7 +182,7 @@ void Sphere::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture) {
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture->GetTextureSrvHandleGPU());
+	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMonsterBall ? texture2->GetTextureSrvHandleGPU() : texture1->GetTextureSrvHandleGPU());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	dxCommon->GetCommandList()->DrawInstanced(kSubdivision * kSubdivision * 6, 1, 0, 0);
 }

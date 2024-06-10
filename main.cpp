@@ -36,7 +36,6 @@ struct D3DResourceLeakChecker {
 	}
 };
 
-
 //////////////////////////////////////////////////////////
 //Windowsアプリでのエントリーポイント(main関数)
 //////////////////////////////////////////////////////////
@@ -55,10 +54,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectXCommon* directXCommon = DirectXCommon::GetInstance();
 	directXCommon->Initialize();
 
-	/*const uint32_t descriptorSizeSRV = directXCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const uint32_t descriptorSizeRTV = directXCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	const uint32_t descriptorSizeDSV = directXCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);*/
-
 	//テクスチャ初期化
 	Texture* texture1 = new Texture();
 	texture1->Initialize(1, directXCommon, "./Resources/uvChecker.png");
@@ -74,14 +69,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		cameraTransform.translate
 	);
 
-	//三角形1
-	Triangle* triangle1 = new Triangle();
-	triangle1->Initialize(directXCommon,cameraMatrix);
-	
-	//三角形2
-	Triangle* triangle2 = new Triangle();
-	triangle2->Initialize(directXCommon, cameraMatrix);
-	
 	//球
 	Sphere* sphere = new Sphere();
 	sphere->Initialize(directXCommon, cameraMatrix);
@@ -101,14 +88,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//描画前処理
 		directXCommon->PreDraw();
 
-		triangle1->InitializeCommandList(directXCommon, texture1);
-		triangle2->InitializeCommandList(directXCommon, texture1);
-		sphere->InitializeCommandList(directXCommon, texture2);
-		sprite->InitializeCommandList(directXCommon, texture2);
+		sphere->InitializeCommandList(directXCommon, texture1,texture2);
+		sprite->InitializeCommandList(directXCommon, texture1);
 
-		//三角形
-		triangle1->Update(1);
-		triangle2->Update(2);
+		//球
 		sphere->Update();
 
 		//スプライト
@@ -121,8 +104,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	delete texture1;
 	delete texture2;
-	delete triangle2;
-	delete triangle1;
 	delete sphere;
 	delete sprite;
 	

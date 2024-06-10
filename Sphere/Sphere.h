@@ -40,7 +40,7 @@ public:
 	/// <summary>
 	/// MaterialData初期化
 	/// </summary>
-	void InitializeCommandList(DirectXCommon* dxCommon, Texture* texture);
+	void InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2);
 
 private:
 
@@ -73,6 +73,6 @@ private:
 
 	//Texture
 	Texture* Texture_ = nullptr;
-
+	bool useMonsterBall = true;
 };
 
