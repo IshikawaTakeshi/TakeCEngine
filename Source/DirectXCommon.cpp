@@ -42,9 +42,6 @@ void DirectXCommon::Initialize() {
 	InitViewport();
 	//Scissor矩形初期化
 	InitScissorRect();
-	//materialData初期化
-	//InitializeMaterialData();
-
 
 	//ImGui初期化
 #ifdef _DEBUG
@@ -470,6 +467,19 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 	return descriptorHeap_;
 }
 
+D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetCPUDescriptorHandle(uint32_t descriptorSize, uint32_t index) {
+	
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+	handleCPU.ptr += (descriptorSize * index);
+	return handleCPU;
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE DirectXCommon::GetGPUDescriptorHandle(uint32_t descriptorSize, uint32_t index) {
+	
+	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap_->GetGPUDescriptorHandleForHeapStart();
+	handleGPU.ptr += (descriptorSize * index);
+	return handleGPU;
+}
 
 #pragma region DXC
 ////////////////////////////////////////////////////////////////////////////////////////////////////

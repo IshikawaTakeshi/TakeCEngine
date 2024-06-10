@@ -55,11 +55,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectXCommon* directXCommon = DirectXCommon::GetInstance();
 	directXCommon->Initialize();
 
-	//テクスチャ初期化
-	Texture* texture = new Texture();
+	/*const uint32_t descriptorSizeSRV = directXCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const uint32_t descriptorSizeRTV = directXCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	const uint32_t descriptorSizeDSV = directXCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);*/
 
-	texture->Initialize(directXCommon, "./Resources/uvChecker.png");
-	
+	//テクスチャ初期化
+	Texture* texture1 = new Texture();
+	texture1->Initialize(1, directXCommon, "./Resources/uvChecker.png");
+	//テクスチャ初期化
+	Texture* texture2 = new Texture();
+	texture2->Initialize(2, directXCommon, "./Resources/monsterBall.png");
+
 	//カメラ
 	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
 	Matrix4x4 cameraMatrix = MatrixMath::MakeAffineMatrix(
@@ -95,10 +101,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//描画前処理
 		directXCommon->PreDraw();
 
-		triangle1->InitializeCommandList(directXCommon, texture);
-		triangle2->InitializeCommandList(directXCommon, texture);
-		sphere->InitializeCommandList(directXCommon, texture);
-		sprite->InitializeCommandList(directXCommon, texture);
+		triangle1->InitializeCommandList(directXCommon, texture1);
+		triangle2->InitializeCommandList(directXCommon, texture1);
+		sphere->InitializeCommandList(directXCommon, texture2);
+		sprite->InitializeCommandList(directXCommon, texture2);
 
 		//三角形
 		triangle1->Update(1);
@@ -113,7 +119,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		directXCommon->PostDraw();
 	}
 
-	texture->Finalize();
+	delete texture1;
+	delete texture2;
 	delete triangle2;
 	delete triangle1;
 	delete sphere;

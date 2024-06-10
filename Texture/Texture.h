@@ -25,7 +25,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, const std::string& filePath);
+	void Initialize(uint32_t index, DirectXCommon* dxCommon, const std::string& filePath);
 
 	/// <summary>
 	/// 終了・開放処理

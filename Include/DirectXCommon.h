@@ -72,6 +72,10 @@ public:
 	/// dsvHeapの取得
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetDsvHeap() { return dsvHeap_; }
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(uint32_t descriptorSize, uint32_t index);
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(uint32_t descriptorSize, uint32_t index);
+
 private:
 	// ウィンドウズアプリケーション管理
 	WinApp* winApp_ = WinApp::GetInstance();
@@ -145,6 +149,8 @@ private:
 		Microsoft::WRL::ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType,
 		UINT numDescriptors, bool shaderVisible
 	);
+
+
 #pragma region dxc
 private:
 	//////////////////////////////////////////////////////////////////////////////////////////

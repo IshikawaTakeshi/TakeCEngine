@@ -10,7 +10,7 @@ Texture::~Texture() {
 
 }
 
-void Texture::Initialize(DirectXCommon* dxCommon, const std::string& filePath) {
+void Texture::Initialize(uint32_t index, DirectXCommon* dxCommon, const std::string& filePath) {
 	filePath_ = filePath;
 	//Textureを読み込んで転送する
 	DirectX::ScratchImage mipImages = LoadTexture(filePath_);
@@ -42,8 +42,8 @@ void Texture::Initialize(DirectXCommon* dxCommon, const std::string& filePath) {
 	textureSrvHandleCPU_ = dxCommon->GetSrvHeap()->GetCPUDescriptorHandleForHeapStart();
 	textureSrvHandleGPU_ = dxCommon->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();
 	//先頭はImGuiが使っているのでその次を使う
-	textureSrvHandleCPU_.ptr += dxCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU_.ptr += dxCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleCPU_.ptr += index * dxCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleGPU_.ptr += index * dxCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	//SRVの生成
 	dxCommon->GetDevice()->CreateShaderResourceView(textureResource_.Get(), &srvDesc, textureSrvHandleCPU_);
 
