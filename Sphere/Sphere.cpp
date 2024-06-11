@@ -41,8 +41,8 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 	InitializeMaterialData(dxCommon);
 
 	//======================= DirectionalLightResource ===========================//
-
-
+	
+	InitializeDirectionalLightData(dxCommon);
 
 	//======================= Transform・各行列の初期化 ===========================//
 
@@ -187,6 +187,16 @@ void Sphere::InitializeMaterialData(DirectXCommon* dxCommon) {
 	materialData_->enableLighting = false;
 }
 
+void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
+
+	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DirectionalLight));
+	directionalLightData_ = nullptr;
+	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
+	directionalLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	directionalLightData_->direction_ = { 0.0f,-1.0f,0.0f };
+	directionalLightData_->intensity = 1.0f;
+}
+
 void Sphere::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2) {
 
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
@@ -196,9 +206,12 @@ void Sphere::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, T
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	//Lighting用のCBufferの場所を指定
+	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
+
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMonsterBall ? texture2->GetTextureSrvHandleGPU() : texture1->GetTextureSrvHandleGPU());
-	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
+// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	dxCommon->GetCommandList()->DrawInstanced(kSubdivision * kSubdivision * 6, 1, 0, 0);
 }
 

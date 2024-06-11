@@ -46,14 +46,10 @@ public:
 	void InitializeMaterialData(DirectXCommon* dxCommon);
 
 	/// <summary>
-	/// Data初期化
+	/// directionalLightData初期化
 	/// </summary>
-	void InitializeMaterialData(DirectXCommon* dxCommon);
+	void InitializeDirectionalLightData(DirectXCommon* dxCommon);
 
-	/// <summary>
-	/// MaterialData初期化
-	/// </summary>
-	void InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2);
 
 	/// <summary>
 	/// LightData初期化

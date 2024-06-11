@@ -29,5 +29,13 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 	PixelShaderOutPut output;
 	float4 textureColor = gTexture.Sample(gSampler, input.texcoord);
 	output.color = gMaterial.color * textureColor;
+	
+	//Lightingの計算
+	if ( gMaterial.enableLighting != 0 ) { //Lightingする場合
+		float cos = saturate(dot(normalize(input.normal), -gDirectionalLight.direction));
+		output.color = gMaterial.color * textureColor * gDirectionalLight.color * cos * gDirectionalLight.intensity;
+	} else { //Lightingしない場合。前回まで同じ計算
+		output.color = gMaterial.color * textureColor;
+	}
 	return output;
 }
