@@ -2,6 +2,9 @@
 #include "../Vector3.h"
 #include "../MyMath/Matrix4x4.h"
 #include "../MyMath/VertexData.h"
+#include "../MyMath/TransformMatrix.h"
+#include "../MyMath/Material.h"
+#include "../DirectionalLight.h"
 #include "../MyMath/Transform.h"
 
 #include <stdint.h>
@@ -33,7 +36,17 @@ public:
 	}
 
 	/// <summary>
+	/// VertexData初期化
+	/// </summary>
+	void InitializeVertexData(DirectXCommon* dxCommon);
+
+	/// <summary>
 	/// MaterialData初期化
+	/// </summary>
+	void InitializeMaterialData(DirectXCommon* dxCommon);
+
+	/// <summary>
+	/// Data初期化
 	/// </summary>
 	void InitializeMaterialData(DirectXCommon* dxCommon);
 
@@ -41,6 +54,12 @@ public:
 	/// MaterialData初期化
 	/// </summary>
 	void InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2);
+
+	/// <summary>
+	/// LightData初期化
+	/// </summary>
+	void InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2);
+
 
 private:
 
@@ -51,8 +70,19 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	//TransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
+	//頂点データ
+	VertexData* vertexData_ = nullptr;
 	//頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+	//TransformationMatrix用の頂点データ
+	TransformMatrix* transformMatrixData_ = nullptr;
+	//平行光源用のリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
+	DirectionalLight* directionalLightData_;
+
+	//マテリアルリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
+	Material* materialData_;
 
 	//CPU用のTransform
 	Transform transform_{};
@@ -62,14 +92,8 @@ private:
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 worldViewProjectionMatrix_;
 
-	//頂点データ
-	VertexData* vertexData_ = nullptr;
-	//TransformationMatrix用の頂点データ
-	Matrix4x4* wvpData_ = nullptr;
-
-	//マテリアルリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
-	Vector4* materialData_;
+	
+	
 
 	//Texture
 	Texture* Texture_ = nullptr;

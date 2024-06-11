@@ -43,6 +43,7 @@ void Sprite::Initialize(DirectXCommon* dxCommon) {
 	//1枚目の三角形
 	vertexData_[0].position = { 0.0f,90.0f,0.0f,1.0f }; //左下
 	vertexData_[0].texcoord = { 0.0f,1.0f };
+	vertexData_[0].normal = { 0.0f,0.0f,-1.0f };
 	vertexData_[1].position = { 0.0f,0.0f,0.0f,1.0f }; //左上
 	vertexData_[1].texcoord = { 0.0f,0.0f };
 	vertexData_[2].position = { 160.0f,90.0f,0.0f,1.0f }; //右下
@@ -62,10 +63,10 @@ void Sprite::Initialize(DirectXCommon* dxCommon) {
 
 	//TransformationMatrix用
 	transformationMatrixResource_->
-	Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
+	Map(0, nullptr, reinterpret_cast<void**>(&transformMatrixData_));
 
 	//単位行列を書き込んでおく
-	*wvpData_ = MatrixMath::MakeIdentity4x4();
+	*transformMatrixData_ = MatrixMath::MakeIdentity4x4();
 
 	//======================= MatrialResource ===========================//
 
@@ -89,7 +90,7 @@ void Sprite::Initialize(DirectXCommon* dxCommon) {
 		0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f);
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	*wvpData_ = worldViewProjectionMatrix_;
+	*transformMatrixData_ = worldViewProjectionMatrix_;
 }
 #pragma endregion
 
@@ -106,7 +107,7 @@ void Sprite::Update() {
 	//ViewProjectionの処理
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	*wvpData_ = worldViewProjectionMatrix_;
+	*transformMatrixData_ = worldViewProjectionMatrix_;
 
 #ifdef _DEBUG
 	//ImGuiの更新

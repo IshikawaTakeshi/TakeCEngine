@@ -53,10 +53,10 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(Matrix4x4));
 
 	//TransformationMatrix用
-	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformMatrixData_));
 
 	//単位行列を書き込んでおく
-	*wvpData_ = MatrixMath::MakeIdentity4x4();
+	*transformMatrixData_ = MatrixMath::MakeIdentity4x4();
 
 
 	//======================= MatrialResource ===========================//
@@ -82,7 +82,7 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 	);
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	*wvpData_ = worldViewProjectionMatrix_;
+	*transformMatrixData_ = worldViewProjectionMatrix_;
 }
 
 void Triangle::Update(int id) {
@@ -93,7 +93,7 @@ void Triangle::Update(int id) {
 	//wvpの更新
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	*wvpData_ = worldViewProjectionMatrix_;
+	*transformMatrixData_ = worldViewProjectionMatrix_;
 
 	bool botton = false;
 	//ImGuiの更新

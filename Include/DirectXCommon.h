@@ -204,14 +204,14 @@ private:
 	
 	//rootSignature
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
-	D3D12_ROOT_PARAMETER rootParameters_[3] = {};
+	D3D12_ROOT_PARAMETER rootParameters_[4] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
 	Microsoft::WRL::ComPtr<ID3D10Blob> signatureBlob_;
 	Microsoft::WRL::ComPtr<ID3D10Blob> errorBlob_;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	//InputLayout
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[2] = {};
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3] = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	/// ブレンドステート
 	D3D12_BLEND_DESC blendDesc_{};

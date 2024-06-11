@@ -85,7 +85,7 @@ private:
 	//sprite用頂点データ
 	VertexData* vertexData_ = nullptr;
 	//sprite用のTransformationMatrix用の頂点データ
-	Matrix4x4* wvpData_ = nullptr;
+	Matrix4x4* transformMatrixData_ = nullptr;
 
 	//マテリアルリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite_;
