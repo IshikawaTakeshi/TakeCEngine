@@ -93,8 +93,12 @@ void Sphere::Update() {
 	ImGui::DragFloat3("SphereRotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("SphereTranslate", &transform_.translate.x, 0.01f);
 	ImGui::Checkbox("useMonsterBall", &useMonsterBall);
-
+	ImGui::ColorEdit4("LightColor", &directionalLightData_->color_.x);
+	ImGui::SliderFloat3("LightDirection", &directionalLightData_->direction_.x, -1.0f,1.0f);
+	ImGui::SliderFloat("LightIntensity", &directionalLightData_->intensity, 0.0f, 1.0f);
+	directionalLightData_->direction_ = MyMath::Normalize(directionalLightData_->direction_);
 	ImGui::End();
+	
 #endif // _DEBUG
 }
 
