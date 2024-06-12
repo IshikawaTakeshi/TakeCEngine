@@ -1,6 +1,7 @@
 #pragma once
 #include "Vector4.h"
 #include "Vector3.h"
+#include <cstdint>
 
 struct DirectionalLight {
 	//ライトの色
@@ -8,6 +9,6 @@ struct DirectionalLight {
 	//ライトの向き
 	Vector3 direction_;
 	//輝度
-	float intensity;
+	float intensity_;
 };
 

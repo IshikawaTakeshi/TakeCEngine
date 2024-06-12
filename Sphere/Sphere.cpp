@@ -95,9 +95,9 @@ void Sphere::Update() {
 	ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 	ImGui::ColorEdit4("LightColor", &directionalLightData_->color_.x);
 	ImGui::SliderFloat3("LightDirection", &directionalLightData_->direction_.x, -1.0f,1.0f);
-	ImGui::SliderFloat("LightIntensity", &directionalLightData_->intensity, 0.0f, 1.0f);
-	directionalLightData_->direction_ = MyMath::Normalize(directionalLightData_->direction_);
+	ImGui::SliderFloat("LightIntensity", &directionalLightData_->intensity_, 0.0f, 1.0f);
 	ImGui::End();
+	MyMath::Normalize(directionalLightData_->direction_);
 	
 #endif // _DEBUG
 }
@@ -207,7 +207,7 @@ void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 	//光源の方向を書き込む
 	directionalLightData_->direction_ = { 0.0f,-1.0f,0.0f };
 	//光源の輝度書き込む
-	directionalLightData_->intensity = 1.0f;
+	directionalLightData_->intensity_ = 1.0f;
 }
 
 void Sphere::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2) {

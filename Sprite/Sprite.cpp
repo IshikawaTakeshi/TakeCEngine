@@ -158,7 +158,7 @@ void Sprite::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 	//光源の方向を書き込む
 	directionalLightData_->direction_ = { 0.0f,-1.0f,0.0f };
 	//光源の輝度書き込む
-	directionalLightData_->intensity = 1.0f;
+	directionalLightData_->intensity_ = 1.0f;
 }
 
 void Sprite::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture) {

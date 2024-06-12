@@ -87,9 +87,10 @@ private:
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 worldViewProjectionMatrix_;
-
 	
-	
+	//Lightingのフラグ
+	bool enableLighting = false;
+	bool enableHarfLambert = false;
 
 	//Texture
 	Texture* Texture_ = nullptr;
