@@ -64,6 +64,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
 	transformMatrixData_->WVP = worldViewProjectionMatrix_;
+	transformMatrixData_->World = worldMatrix_;
 }
 
 void Sphere::Update() {
@@ -83,6 +84,7 @@ void Sphere::Update() {
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
 	transformMatrixData_->WVP = worldViewProjectionMatrix_;
+	transformMatrixData_->World = worldMatrix_;
 
 
 #ifdef _DEBUG
@@ -91,6 +93,7 @@ void Sphere::Update() {
 	ImGui::DragFloat3("SphereRotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("SphereTranslate", &transform_.translate.x, 0.01f);
 	ImGui::Checkbox("useMonsterBall", &useMonsterBall);
+
 	ImGui::End();
 #endif // _DEBUG
 }
@@ -129,7 +132,7 @@ void Sphere::InitializeVertexData(DirectXCommon* dxCommon) {
 			vertexData_[start].texcoord.x = static_cast<float>(lonIndex) / static_cast<float>(kSubdivision);
 			vertexData_[start].texcoord.y = 1.0f - (static_cast<float>(latIndex) / static_cast<float>(kSubdivision));
 			vertexData_[start].normal.x = vertexData_[start].position.x;
-			vertexData_[start].normal.x = vertexData_[start].position.y;
+			vertexData_[start].normal.y = vertexData_[start].position.y;
 			vertexData_[start].normal.z = vertexData_[start].position.z;
 
 			//基準点b1(左上)
@@ -140,7 +143,7 @@ void Sphere::InitializeVertexData(DirectXCommon* dxCommon) {
 			vertexData_[start + 1].texcoord.x = static_cast<float>(lonIndex) / static_cast<float>(kSubdivision);
 			vertexData_[start + 1].texcoord.y = 1.0f - (static_cast<float>(latIndex + 1) / static_cast<float>(kSubdivision));
 			vertexData_[start + 1].normal.x = vertexData_[start + 1].position.x;
-			vertexData_[start + 1].normal.x = vertexData_[start + 1].position.y;
+			vertexData_[start + 1].normal.y = vertexData_[start + 1].position.y;
 			vertexData_[start + 1].normal.z = vertexData_[start + 1].position.z;
 
 			//基準点c1(右下)
@@ -151,7 +154,7 @@ void Sphere::InitializeVertexData(DirectXCommon* dxCommon) {
 			vertexData_[start + 2].texcoord.x = static_cast<float>(lonIndex + 1) / static_cast<float>(kSubdivision);
 			vertexData_[start + 2].texcoord.y = 1.0f - (static_cast<float>(latIndex) / static_cast<float>(kSubdivision));
 			vertexData_[start + 2].normal.x = vertexData_[start + 2].position.x;
-			vertexData_[start + 2].normal.x = vertexData_[start + 2].position.y;
+			vertexData_[start + 2].normal.y = vertexData_[start + 2].position.y;
 			vertexData_[start + 2].normal.z = vertexData_[start + 2].position.z;
 
 			//2枚目の三角形
@@ -166,7 +169,7 @@ void Sphere::InitializeVertexData(DirectXCommon* dxCommon) {
 			vertexData_[start + 4].texcoord.x = static_cast<float>(lonIndex + 1) / static_cast<float>(kSubdivision);
 			vertexData_[start + 4].texcoord.y = 1.0f - (static_cast<float>(latIndex + 1) / static_cast<float>(kSubdivision));
 			vertexData_[start + 4].normal.x = vertexData_[start + 4].position.x;
-			vertexData_[start + 4].normal.x = vertexData_[start + 4].position.y;
+			vertexData_[start + 4].normal.y = vertexData_[start + 4].position.y;
 			vertexData_[start + 4].normal.z = vertexData_[start + 4].position.z;
 
 			//基準点c1(右下)
@@ -184,16 +187,22 @@ void Sphere::InitializeMaterialData(DirectXCommon* dxCommon) {
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	//色を書き込む
 	materialData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	materialData_->enableLighting = false;
+	//Lightingを有効にする
+	materialData_->enableLighting = true;
 }
 
 void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 
+	//平行光源用Resourceの作成
 	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DirectionalLight));
 	directionalLightData_ = nullptr;
+	//データを書き込むためのアドレスを取得
 	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
+	//光源の色を書き込む
 	directionalLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	//光源の方向を書き込む
 	directionalLightData_->direction_ = { 0.0f,-1.0f,0.0f };
+	//光源の輝度書き込む
 	directionalLightData_->intensity = 1.0f;
 }
 
@@ -206,11 +215,11 @@ void Sphere::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, T
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMonsterBall ? texture2->GetTextureSrvHandleGPU() : texture1->GetTextureSrvHandleGPU());
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 
-	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMonsterBall ? texture2->GetTextureSrvHandleGPU() : texture1->GetTextureSrvHandleGPU());
 // 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	dxCommon->GetCommandList()->DrawInstanced(kSubdivision * kSubdivision * 6, 1, 0, 0);
 }

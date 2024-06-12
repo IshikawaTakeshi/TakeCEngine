@@ -48,7 +48,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//タイトルバーの名前の入力
 	WinApp* winApp = WinApp::GetInstance();
-	winApp->Initialize(L"CG2_評価課題1");
+	winApp->Initialize(L"CG2_05_03");
 
 	//DirectX初期化
 	DirectXCommon* directXCommon = DirectXCommon::GetInstance();

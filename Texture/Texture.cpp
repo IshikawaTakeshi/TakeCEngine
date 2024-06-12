@@ -19,7 +19,7 @@ void Texture::Initialize(uint32_t index, DirectXCommon* dxCommon, const std::str
 	UploadTextureData(textureResource_, mipImages);
 
 
-	//DepthstencilTextureをウィンドウのサイズで作成
+	//DepthStencilTextureをウィンドウのサイズで作成
 	depthStencilResource_ = CreateDepthStencilTextureResource(
 		dxCommon->GetDevice(), WinApp::kClientWidth, WinApp::kClientHeight);
 

@@ -128,9 +128,8 @@ void DirectXCommon::PreDraw() {
 }
 
 void DirectXCommon::PostDraw() {
-#ifdef _DEBUG
+
 	HRESULT result = S_FALSE;
-#endif // DEBUG
 
 #ifdef _DEBUG
 	//ImGuiの内部コマンドを生成する
@@ -150,10 +149,8 @@ void DirectXCommon::PostDraw() {
 
 
 	// コマンドリストの内容を確定
-#ifdef _DEBUG
-	result =
-#endif // DEBUG
-		commandList_->Close();
+
+	result = commandList_->Close();
 	assert(SUCCEEDED(result));
 	
 
@@ -182,16 +179,10 @@ void DirectXCommon::PostDraw() {
 
 
 	//次のフレーム用のコマンドリストを準備
-#ifdef _DEBUG
-	result =
-#endif // DEBUG
-		commandAllocator_->Reset();
+	result = commandAllocator_->Reset();
 	assert(SUCCEEDED(result));
 
-#ifdef _DEBUG
-	result =
-#endif // DEBUG
-		commandList_->Reset(commandAllocator_.Get(), nullptr);
+	result = commandList_->Reset(commandAllocator_.Get(), nullptr);
 	assert(SUCCEEDED(result));
 }
 
@@ -218,7 +209,7 @@ void DirectXCommon::ClearRenderTarget() {
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[bbIndex], false, &dsvHandle_);
 
 	// 全画面クリア          Red   Green  Blue  Alpha
-	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f }; // 青っぽい色
+	float clearColor[] = { 0.1f, 0.4f, 0.5f, 1.0f }; // 青っぽい色
 	commandList_->ClearRenderTargetView(rtvHandles_[bbIndex], clearColor, 0, nullptr);
 	//指定した深度で画面全体をクリアにする
 	commandList_->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
@@ -602,9 +593,9 @@ void DirectXCommon::CreateRootSignature() {
 	rootParameters_[2].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
 	rootParameters_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
 	//.3 平行光源をShaderで使う
-	rootParameters_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	rootParameters_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	rootParameters_[3].Descriptor.ShaderRegister = 1; //レジスタ番号は1
+	rootParameters_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParameters_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParameters_[3].Descriptor.ShaderRegister = 1; //レジスタ番号1を使う
 
 	descriptionRootSignature_.pParameters = rootParameters_; //rootParameter配列へのポインタ
 	descriptionRootSignature_.NumParameters = _countof(rootParameters_); //配列の長さ
@@ -642,7 +633,7 @@ void DirectXCommon::CreateRootSignature() {
 
 void DirectXCommon::CreateInputLayout() {
 
-	//potision
+	//position
 	inputElementDescs_[0].SemanticName = "POSITION";
 	inputElementDescs_[0].SemanticIndex = 0;
 	inputElementDescs_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;

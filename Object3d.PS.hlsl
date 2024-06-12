@@ -13,13 +13,12 @@ struct DirectionalLight {
 
 //マテリアル
 ConstantBuffer<Material> gMaterial : register(b0);
+//並行光源
+ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 //テクスチャ
 Texture2D<float4> gTexture : register(t0);
 //サンプラー
 SamplerState gSampler : register(s0);
-//並行光源
-ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
-
 
 struct PixelShaderOutPut {
 	float4 color : SV_TARGET0;

@@ -15,6 +15,9 @@
 #include "../MyMath/Matrix4x4.h"
 #include "../MyMath/Transform.h"
 #include "../MyMath/VertexData.h"
+#include "../MyMath/Material.h"
+#include "../MyMath/TransformMatrix.h"
+#include "../DirectionalLight.h"
 
 class DirectXCommon;
 class Texture;
@@ -43,6 +46,12 @@ public:
 	/// MaterialData初期化
 	/// </summary>
 	void InitializeMaterialData(DirectXCommon* dxCommon);
+
+	/// <summary>
+	/// directionalLightData初期化
+	/// </summary>
+	void InitializeDirectionalLightData(DirectXCommon* dxCommon);
+
 
 	/// <summary>
 	/// MaterialData初期化
@@ -85,10 +94,14 @@ private:
 	//sprite用頂点データ
 	VertexData* vertexData_ = nullptr;
 	//sprite用のTransformationMatrix用の頂点データ
-	Matrix4x4* transformMatrixData_ = nullptr;
+	TransformMatrix* transformMatrixData_ = nullptr;
 
 	//マテリアルリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite_;
-	Vector4* materialDataSprite_;
+	Material* materialDataSprite_;
+	//平行光源用のリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
+	DirectionalLight* directionalLightData_;
+
 };
 
