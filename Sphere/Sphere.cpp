@@ -44,6 +44,10 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 	
 	InitializeDirectionalLightData(dxCommon);
 
+	//======================= IndexResource ===========================//
+	
+	InitializeIndexBufferView(dxCommon);
+
 	//======================= Transform・各行列の初期化 ===========================//
 
 //CPUで動かす用のTransform
@@ -61,10 +65,6 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
 		0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f
 	);
-	worldViewProjectionMatrix_ = MatrixMath::Multiply(
-		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	transformMatrixData_->WVP = worldViewProjectionMatrix_;
-	transformMatrixData_->World = worldMatrix_;
 }
 
 void Sphere::Update() {
@@ -108,12 +108,12 @@ void Sphere::InitializeVertexData(DirectXCommon* dxCommon) {
 	const float kLatEvery = std::numbers::pi_v<float> / static_cast<float>(kSubdivision); // 緯度分割1つ分の角度
 
 	//VertexResource生成
-	vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * kSubdivision * kSubdivision * 6);
+	vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * kSubdivision * kSubdivision);
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * kSubdivision * kSubdivision * 6;
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * kSubdivision * kSubdivision;
 	// 1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
@@ -125,7 +125,7 @@ void Sphere::InitializeVertexData(DirectXCommon* dxCommon) {
 
 		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
 			float lon = lonIndex * kLonEvery; //現在の経度(ファイ)
-			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+			uint32_t start = (latIndex * kSubdivision + lonIndex);
 
 			//1枚目の三角形
 			//頂点データの入力。基準点a(左下)
@@ -161,23 +161,17 @@ void Sphere::InitializeVertexData(DirectXCommon* dxCommon) {
 			vertexData_[start + 2].normal.y = vertexData_[start + 2].position.y;
 			vertexData_[start + 2].normal.z = vertexData_[start + 2].position.z;
 
-			//2枚目の三角形
-			//基準点b2(左上)
-			vertexData_[start + 3] = vertexData_[start + 1];
-
 			//基準点d(右上)
-			vertexData_[start + 4].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
-			vertexData_[start + 4].position.y = sin(lat + kLatEvery);
-			vertexData_[start + 4].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
-			vertexData_[start + 4].position.w = 1.0f;
-			vertexData_[start + 4].texcoord.x = static_cast<float>(lonIndex + 1) / static_cast<float>(kSubdivision);
-			vertexData_[start + 4].texcoord.y = 1.0f - (static_cast<float>(latIndex + 1) / static_cast<float>(kSubdivision));
-			vertexData_[start + 4].normal.x = vertexData_[start + 4].position.x;
-			vertexData_[start + 4].normal.y = vertexData_[start + 4].position.y;
-			vertexData_[start + 4].normal.z = vertexData_[start + 4].position.z;
+			vertexData_[start + 3].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
+			vertexData_[start + 3].position.y = sin(lat + kLatEvery);
+			vertexData_[start + 3].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
+			vertexData_[start + 3].position.w = 1.0f;
+			vertexData_[start + 3].texcoord.x = static_cast<float>(lonIndex + 1) / static_cast<float>(kSubdivision);
+			vertexData_[start + 3].texcoord.y = 1.0f - (static_cast<float>(latIndex + 1) / static_cast<float>(kSubdivision));
+			vertexData_[start + 3].normal.x = vertexData_[start + 3].position.x;
+			vertexData_[start + 3].normal.y = vertexData_[start + 3].position.y;
+			vertexData_[start + 3].normal.z = vertexData_[start + 3].position.z;
 
-			//基準点c1(右下)
-			vertexData_[start + 5] = vertexData_[start + 2];
 		}
 	}
 }
@@ -210,6 +204,38 @@ void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 	directionalLightData_->intensity_ = 1.0f;
 }
 
+void Sphere::InitializeIndexBufferView(DirectXCommon* dxCommon) {
+
+	// インデックスバッファのサイズを適切に設定
+	uint32_t indexCount = (kSubdivision) * (kSubdivision) * 6;
+	indexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(uint32_t) * indexCount);
+
+	// インデックスバッファビューの設定
+	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
+	indexBufferView_.SizeInBytes = sizeof(uint32_t) * indexCount;
+	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
+
+	// インデックスリソースにデータを書き込む
+	uint32_t* indexData = nullptr;
+	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6; 
+
+			// 最初の三角形のインデックス
+			indexData[start] = 0;
+			indexData[start + 1] = 1;
+			indexData[start + 2] = 2;
+
+			// 二つ目の三角形のインデックス
+			indexData[start + 3] = 1;
+			indexData[start + 4] = 3;
+			indexData[start + 5] = 2;
+		}
+	}
+}
+
 void Sphere::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2) {
 
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
@@ -223,8 +249,10 @@ void Sphere::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, T
 	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMonsterBall ? texture2->GetTextureSrvHandleGPU() : texture1->GetTextureSrvHandleGPU());
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
-
-// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	dxCommon->GetCommandList()->DrawInstanced(kSubdivision * kSubdivision * 6, 1, 0, 0);
+	//IBVの設定
+	dxCommon->GetCommandList()->IASetIndexBuffer(&indexBufferView_);
+	// 描画！(DrawCall/ドローコール)
+	dxCommon->GetCommandList()->DrawIndexedInstanced(kSubdivision * kSubdivision * 6, 1, 0, 0, 0);
+	//dxCommon->GetCommandList()->DrawInstanced(kSubdivision * kSubdivision * 4, 1, 0, 0);
 }
 

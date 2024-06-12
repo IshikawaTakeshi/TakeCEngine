@@ -50,6 +50,10 @@ public:
 	/// </summary>
 	void InitializeDirectionalLightData(DirectXCommon* dxCommon);
 
+	/// <summary>
+	/// IndexBufferView初期化
+	/// </summary>
+	void InitializeIndexBufferView(DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// LightData初期化
@@ -75,10 +79,12 @@ private:
 	//平行光源用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
 	DirectionalLight* directionalLightData_;
-
 	//マテリアルリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
 	Material* materialData_;
+	//IndexBufferView用のリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
+	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 
 	//CPU用のTransform
 	Transform transform_{};
@@ -87,11 +93,9 @@ private:
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 worldViewProjectionMatrix_;
-	
 	//Lightingのフラグ
 	bool enableLighting = false;
 	bool enableHarfLambert = false;
-
 	//Texture
 	Texture* Texture_ = nullptr;
 	bool useMonsterBall = true;

@@ -52,6 +52,11 @@ public:
 	/// </summary>
 	void InitializeDirectionalLightData(DirectXCommon* dxCommon);
 
+	/// <summary>
+	/// IndexBufferView初期化
+	/// </summary>
+	void InitializeIndexBufferView(DirectXCommon* dxCommon);
+
 
 	/// <summary>
 	/// MaterialData初期化
@@ -102,6 +107,9 @@ private:
 	//平行光源用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
 	DirectionalLight* directionalLightData_;
+	//IndexBufferView用のリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
+	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 
 };
 

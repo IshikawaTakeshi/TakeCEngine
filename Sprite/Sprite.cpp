@@ -18,12 +18,12 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 
 
 Sprite::~Sprite() {
-	/*delete materialDataSprite_;
-	delete vertexData_;
-	delete wvpData_;*/
+
 	materialResourceSprite_.Reset();
 	wvpResource_.Reset();
 	transformationMatrixResource_.Reset();
+	directionalLightResource_.Reset();
+	indexResource_.Reset();
 }
 
 #pragma region 初期化処理
@@ -33,28 +33,24 @@ void Sprite::Initialize(DirectXCommon* dxCommon) {
 	//======================= VertexResource ===========================//
 
 	//VertexResource生成
-	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * 6);
+	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * 4);
 	//頂点バッファビューの作成
 	vertexBufferView_.BufferLocation = wvpResource_->GetGPUVirtualAddress();
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 6;
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 4;
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	//1枚目の三角形
-	vertexData_[0].position = { 0.0f,90.0f,0.0f,1.0f }; //左下
+	vertexData_[0].position = { 0.0f,180.0f,0.0f,1.0f }; //左下
 	vertexData_[0].texcoord = { 0.0f,1.0f };
 	vertexData_[0].normal = { 0.0f,0.0f,-1.0f };
 	vertexData_[1].position = { 0.0f,0.0f,0.0f,1.0f }; //左上
 	vertexData_[1].texcoord = { 0.0f,0.0f };
-	vertexData_[2].position = { 160.0f,90.0f,0.0f,1.0f }; //右下
+	vertexData_[2].position = { 320.0f,180.0f,0.0f,1.0f }; //右下
 	vertexData_[2].texcoord = { 1.0f,1.0f };
-	//2枚目の三角形
-	vertexData_[3].position = { 0.0f,0.0f,0.0f,1.0f }; //左上
-	vertexData_[3].texcoord = { 0.0f,0.0f };
-	vertexData_[4].position = { 160.0f,0.0f,0.0f,1.0f }; //右上
-	vertexData_[4].texcoord = { 1.0f,0.0f };
-	vertexData_[5].position = { 160.0f,90.0f,0.0f,1.0f }; //右下
-	vertexData_[5].texcoord = { 1.0f,1.0f };
+	vertexData_[3].position = { 320.0f,0.0f,0.0f,1.0f }; //右上
+	vertexData_[3].texcoord = { 1.0f,0.0f };
+
 
 	//======================= transformationMatrix用のVertexResource ===========================//
 
@@ -63,7 +59,7 @@ void Sprite::Initialize(DirectXCommon* dxCommon) {
 
 	//TransformationMatrix用
 	transformationMatrixResource_->
-	Map(0, nullptr, reinterpret_cast<void**>(&transformMatrixData_));
+		Map(0, nullptr, reinterpret_cast<void**>(&transformMatrixData_));
 
 	//単位行列を書き込んでおく
 	transformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
@@ -76,6 +72,9 @@ void Sprite::Initialize(DirectXCommon* dxCommon) {
 
 	InitializeDirectionalLightData(dxCommon);
 
+	//======================= IndexResource ===========================//
+
+	InitializeIndexBufferView(dxCommon);
 
 	//======================= Transform・各行列の初期化 ===========================//
 
@@ -161,6 +160,24 @@ void Sprite::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 	directionalLightData_->intensity_ = 1.0f;
 }
 
+void Sprite::InitializeIndexBufferView(DirectXCommon* dxCommon) {
+
+	//リソースの作成
+	indexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(uint32_t) * 6);
+	//リソースの先頭のアドレスから使う
+	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
+	//使用するリソースのサイズはインデックス6つ分のサイズ
+	indexBufferView_.SizeInBytes = sizeof(uint32_t) * 6;
+	//インデックスはuint32_tとする
+	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
+
+	//インデックスリソースにデータを書き込む
+	uint32_t* indexData = nullptr;
+	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	indexData[0] = 0; indexData[1] = 1; indexData[2] = 2;
+	indexData[3] = 1; indexData[4] = 3; indexData[5] = 2;
+}
+
 void Sprite::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture) {
 	//spriteの描画。
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
@@ -172,7 +189,8 @@ void Sprite::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture) {
 	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture->GetTextureSrvHandleGPU());
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
-
+	//IBVの設定
+	dxCommon->GetCommandList()->IASetIndexBuffer(&indexBufferView_);
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	dxCommon->GetCommandList()->DrawInstanced(6, 1, 0, 0);
+	dxCommon->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 }
