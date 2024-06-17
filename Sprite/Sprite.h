@@ -110,6 +110,7 @@ private:
 	//IndexBufferView用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
-
+	//uvTransform
+	Transform uvTransform_;
 };
 

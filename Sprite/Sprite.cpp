@@ -88,6 +88,13 @@ void Sprite::Initialize(DirectXCommon* dxCommon) {
 		transform_.translate
 	);
 
+	//uvTransform
+	uvTransform_ = {
+		{1.0f,1.0f,1.0f},
+		{0.0f,0.0f,0.0f},
+		{0.0f,0.0f,0.0f}
+	};
+
 	//ViewProjectionの初期化
 	viewMatrix_ = MatrixMath::MakeIdentity4x4();
 	projectionMatrix_ = MatrixMath::MakeOrthographicMatrix(
@@ -119,8 +126,15 @@ void Sprite::Update() {
 	//ImGuiの更新
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat3("SpriteTranslate", &transform_.translate.x, 1.0f);
-
+	ImGui::DragFloat2("UVTranslate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
+	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
+	Matrix4x4 uvTransformMatrix = MatrixMath::MakeScaleMatrix(uvTransform_.scale);
+	uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeRotateZMatrix(uvTransform_.rotate.z));
+	uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeTranslateMatrix(uvTransform_.translate));
+	materialDataSprite_->uvTransform = uvTransformMatrix;
 	ImGui::End();
+	
 #endif // DEBUG
 
 }
@@ -142,6 +156,7 @@ void Sprite::InitializeMaterialData(DirectXCommon* dxCommon) {
 	materialResourceSprite_->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite_));
 	//色を書き込む
 	materialDataSprite_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialDataSprite_->uvTransform = MatrixMath::MakeIdentity4x4();
 	materialDataSprite_->enableLighting = false;
 }
 

@@ -62,6 +62,13 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 		transform_.translate
 	);
 
+	//uvTransformの行列
+	uvTransform_ = {
+		{1.0f,1.0f,1.0f},
+		{0.0f,0.0f,0.0f},
+		{0.0f,0.0f,0.0f}
+	};
+
 	//ViewProjectionの初期化
 	viewMatrix_ = MatrixMath::Inverse(cameraView);
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
@@ -98,8 +105,17 @@ void Sphere::Update() {
 	ImGui::ColorEdit4("LightColor", &directionalLightData_->color_.x);
 	ImGui::SliderFloat3("LightDirection", &directionalLightData_->direction_.x, -1.0f, 1.0f);
 	ImGui::SliderFloat("LightIntensity", &directionalLightData_->intensity_, 0.0f, 1.0f);
-	ImGui::End();
+	ImGui::DragFloat2("UVTranslate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
+	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
 	MyMath::Normalize(directionalLightData_->direction_);
+	Matrix4x4 uvTransformMatrix = MatrixMath::MakeScaleMatrix(uvTransform_.scale);
+	uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeRotateZMatrix(uvTransform_.rotate.z));
+	uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeTranslateMatrix(uvTransform_.translate));
+	materialData_->uvTransform = uvTransformMatrix;
+	ImGui::End();
+
+
 
 #endif // _DEBUG
 }
@@ -195,6 +211,8 @@ void Sphere::InitializeMaterialData(DirectXCommon* dxCommon) {
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	//色を書き込む
 	materialData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	//UVTransform行列の初期化
+	materialData_->uvTransform = MatrixMath::MakeIdentity4x4();
 	//Lightingを有効にする
 	materialData_->enableLighting = true;
 }
