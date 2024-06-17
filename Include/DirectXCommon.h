@@ -20,6 +20,9 @@
 class DirectXCommon {
 public:
 
+	DirectXCommon() = default;
+	~DirectXCommon() = default;
+
 	/// <summary>
 	/// シングルトンインスタンスの取得
 	/// </summary>
@@ -128,8 +131,6 @@ private:
 
 
 private:
-	DirectXCommon() = default;
-	~DirectXCommon() = default;
 
 	/// <summary>
 	/// DXGIデバイス初期化

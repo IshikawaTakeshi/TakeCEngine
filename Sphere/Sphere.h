@@ -78,10 +78,10 @@ private:
 	TransformMatrix* transformMatrixData_ = nullptr;
 	//平行光源用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-	DirectionalLight* directionalLightData_;
+	DirectionalLight* directionalLightData_ = nullptr;;
 	//マテリアルリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
-	Material* materialData_;
+	Material* materialData_ = nullptr;
 	//IndexBufferView用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};

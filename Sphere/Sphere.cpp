@@ -13,9 +13,11 @@
 #endif 
 
 Sphere::~Sphere() {
-	materialResource_.Reset();;
-	wvpResource_.Reset();
-	vertexResource_.Reset();
+	//indexResource_.Reset();
+	//directionalLightResource_.Reset();
+	//materialResource_.Reset();
+	//wvpResource_.Reset();
+	//vertexResource_.Reset();
 }
 
 void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
@@ -41,11 +43,11 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 	InitializeMaterialData(dxCommon);
 
 	//======================= DirectionalLightResource ===========================//
-	
+
 	InitializeDirectionalLightData(dxCommon);
 
 	//======================= IndexResource ===========================//
-	
+
 	InitializeIndexBufferView(dxCommon);
 
 	//======================= Transform・各行列の初期化 ===========================//
@@ -94,26 +96,29 @@ void Sphere::Update() {
 	ImGui::DragFloat3("SphereTranslate", &transform_.translate.x, 0.01f);
 	ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 	ImGui::ColorEdit4("LightColor", &directionalLightData_->color_.x);
-	ImGui::SliderFloat3("LightDirection", &directionalLightData_->direction_.x, -1.0f,1.0f);
+	ImGui::SliderFloat3("LightDirection", &directionalLightData_->direction_.x, -1.0f, 1.0f);
 	ImGui::SliderFloat("LightIntensity", &directionalLightData_->intensity_, 0.0f, 1.0f);
 	ImGui::End();
 	MyMath::Normalize(directionalLightData_->direction_);
-	
+
 #endif // _DEBUG
 }
 
 void Sphere::InitializeVertexData(DirectXCommon* dxCommon) {
 
+	// 頂点数の設定
+	uint32_t vertexCount = (kSubdivision * kSubdivision) * 6;
+
 	const float kLonEvery = 2.0f * std::numbers::pi_v<float> / static_cast<float>(kSubdivision); // 経度分割1つ分の角度
 	const float kLatEvery = std::numbers::pi_v<float> / static_cast<float>(kSubdivision); // 緯度分割1つ分の角度
 
 	//VertexResource生成
-	vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * kSubdivision * kSubdivision);
+	vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * vertexCount);
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * kSubdivision * kSubdivision;
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * vertexCount;
 	// 1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
@@ -125,7 +130,7 @@ void Sphere::InitializeVertexData(DirectXCommon* dxCommon) {
 
 		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
 			float lon = lonIndex * kLonEvery; //現在の経度(ファイ)
-			uint32_t start = (latIndex * kSubdivision + lonIndex);
+			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
 
 			//1枚目の三角形
 			//頂点データの入力。基準点a(左下)
@@ -161,6 +166,9 @@ void Sphere::InitializeVertexData(DirectXCommon* dxCommon) {
 			vertexData_[start + 2].normal.y = vertexData_[start + 2].position.y;
 			vertexData_[start + 2].normal.z = vertexData_[start + 2].position.z;
 
+			//基準点b2(左上)
+			//vertexData_[start + 3] = vertexData_[start + 1];
+
 			//基準点d(右上)
 			vertexData_[start + 3].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
 			vertexData_[start + 3].position.y = sin(lat + kLatEvery);
@@ -172,6 +180,8 @@ void Sphere::InitializeVertexData(DirectXCommon* dxCommon) {
 			vertexData_[start + 3].normal.y = vertexData_[start + 3].position.y;
 			vertexData_[start + 3].normal.z = vertexData_[start + 3].position.z;
 
+			//基準点c2(右下)
+			//vertexData_[start + 5] = vertexData_[start + 2];
 		}
 	}
 }
@@ -206,8 +216,8 @@ void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 
 void Sphere::InitializeIndexBufferView(DirectXCommon* dxCommon) {
 
-	// インデックスバッファのサイズを適切に設定
-	uint32_t indexCount = (kSubdivision) * (kSubdivision) * 6;
+	// インデックスバッファのサイズを設定
+	uint32_t indexCount = (kSubdivision * kSubdivision) * 6;
 	indexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(uint32_t) * indexCount);
 
 	// インデックスバッファビューの設定
@@ -221,17 +231,17 @@ void Sphere::InitializeIndexBufferView(DirectXCommon* dxCommon) {
 
 	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
 		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
-			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6; 
+			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
 
 			// 最初の三角形のインデックス
-			indexData[start] = 0;
-			indexData[start + 1] = 1;
-			indexData[start + 2] = 2;
+			indexData[start] = start;         //左下
+			indexData[start + 1] = start + 2; //左上
+			indexData[start + 2] = start + 1; //右下
 
 			// 二つ目の三角形のインデックス
-			indexData[start + 3] = 1;
-			indexData[start + 4] = 3;
-			indexData[start + 5] = 2;
+			indexData[start + 3] = start + 2; //左上
+			indexData[start + 4] = start + 3; //右上
+			indexData[start + 5] = start + 1; //右下
 		}
 	}
 }
@@ -253,6 +263,5 @@ void Sphere::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, T
 	dxCommon->GetCommandList()->IASetIndexBuffer(&indexBufferView_);
 	// 描画！(DrawCall/ドローコール)
 	dxCommon->GetCommandList()->DrawIndexedInstanced(kSubdivision * kSubdivision * 6, 1, 0, 0, 0);
-	//dxCommon->GetCommandList()->DrawInstanced(kSubdivision * kSubdivision * 4, 1, 0, 0);
 }
 

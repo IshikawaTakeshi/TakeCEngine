@@ -103,10 +103,10 @@ private:
 
 	//マテリアルリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite_;
-	Material* materialDataSprite_;
+	Material* materialDataSprite_ = nullptr;
 	//平行光源用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-	DirectionalLight* directionalLightData_;
+	DirectionalLight* directionalLightData_ = nullptr;
 	//IndexBufferView用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
