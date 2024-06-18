@@ -59,9 +59,9 @@ public:
 
 
 	/// <summary>
-	/// MaterialData初期化
+	/// 描画処理
 	/// </summary>
-	void InitializeCommandList(DirectXCommon* dxCommon, Texture* texture);
+	void DrawCall(DirectXCommon* dxCommon, Texture* texture);
 
 
 	/// <summary>

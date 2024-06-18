@@ -56,9 +56,9 @@ public:
 	void InitializeIndexBufferView(DirectXCommon* dxCommon);
 
 	/// <summary>
-	/// LightData初期化
+	/// 描画処理
 	/// </summary>
-	void InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2);
+	void DrawCall(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2);
 
 
 private:

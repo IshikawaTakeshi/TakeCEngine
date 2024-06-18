@@ -193,7 +193,7 @@ void Sprite::InitializeIndexBufferView(DirectXCommon* dxCommon) {
 	indexData[3] = 1; indexData[4] = 3; indexData[5] = 2;
 }
 
-void Sprite::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture) {
+void Sprite::DrawCall(DirectXCommon* dxCommon, Texture* texture) {
 	//spriteの描画。
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	//materialCBufferの場所を指定

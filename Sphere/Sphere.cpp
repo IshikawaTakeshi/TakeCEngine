@@ -264,7 +264,7 @@ void Sphere::InitializeIndexBufferView(DirectXCommon* dxCommon) {
 	}
 }
 
-void Sphere::InitializeCommandList(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2) {
+void Sphere::DrawCall(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2) {
 
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい

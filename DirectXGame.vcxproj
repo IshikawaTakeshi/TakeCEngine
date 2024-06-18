@@ -105,7 +105,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Source\Logger.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelData\Model.cpp" />
     <ClCompile Include="MyMath\MatrixMath.cpp" />
     <ClCompile Include="Sphere\Sphere.cpp" />
     <ClCompile Include="Sprite\Sprite.cpp" />
@@ -125,7 +125,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="Include\Logger.h" />
-    <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelData\Model.h" />
     <ClInclude Include="MyMath\Material.h" />
     <ClInclude Include="MyMath\Matrix3x3.h" />
     <ClInclude Include="MyMath\Matrix4x4.h" />

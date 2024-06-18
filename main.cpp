@@ -11,7 +11,7 @@
 #include "Sprite/Sprite.h"
 #include "Triangle/Triangle.h"
 #include "Sphere/Sphere.h"
-
+#include "ModelData/Model.h"
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
 
@@ -69,6 +69,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		cameraTransform.translate
 	);
 
+	//モデル
+	Model* model = new Model();
+	model->Initialize(directXCommon,"Resources/obj_mtl_blend","plane.obj");
+
 	//球
 	Sphere* sphere = new Sphere();
 	sphere->Initialize(directXCommon, cameraMatrix);
@@ -88,8 +92,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//描画前処理
 		directXCommon->PreDraw();
 
-		sphere->InitializeCommandList(directXCommon, texture1,texture2);
-		sprite->InitializeCommandList(directXCommon, texture1);
+
 
 		//球
 		sphere->Update();
@@ -97,6 +100,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//スプライト
 		sprite->Update();
 
+
+		model->DrawCall(directXCommon);
+		sphere->DrawCall(directXCommon, texture1, texture2);
+		sprite->DrawCall(directXCommon, texture1);
 
 		//描画後処理
 		directXCommon->PostDraw();

@@ -52,7 +52,7 @@ public:
 	/// <summary>
 	/// MaterialData初期化
 	/// </summary>
-	void InitializeCommandList(DirectXCommon* dxCommon, Texture* texture);
+	void DrawCall(DirectXCommon* dxCommon, Texture* texture);
 
 
 
