@@ -71,15 +71,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//モデル
 	Model* model = new Model();
-	model->Initialize(directXCommon,"Resources/obj_mtl_blend","plane.obj");
+	model->Initialize(directXCommon,cameraMatrix,"Resources/obj_mtl_blend","axis.obj");
 
 	//球
-	Sphere* sphere = new Sphere();
-	sphere->Initialize(directXCommon, cameraMatrix);
+	//Sphere* sphere = new Sphere();
+	//sphere->Initialize(directXCommon, cameraMatrix);
 
 	//スプライト
-	Sprite* sprite = new Sprite();
-	sprite->Initialize(directXCommon);
+	//Sprite* sprite = new Sprite();
+	//sprite->Initialize(directXCommon);
 
 	
 	//////////////////////////////////////////////////////////
@@ -92,18 +92,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//描画前処理
 		directXCommon->PreDraw();
 
-
+		model->Update();
 
 		//球
-		sphere->Update();
+		//sphere->Update();
 
 		//スプライト
-		sprite->Update();
+		//sprite->Update();
 
 
-		model->DrawCall(directXCommon);
-		sphere->DrawCall(directXCommon, texture1, texture2);
-		sprite->DrawCall(directXCommon, texture1);
+		model->DrawCall(directXCommon,texture1);
+		//sphere->DrawCall(directXCommon, texture1, texture2);
+		//sprite->DrawCall(directXCommon, texture1);
 
 		//描画後処理
 		directXCommon->PostDraw();
@@ -111,8 +111,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	delete texture1;
 	delete texture2;
-	delete sphere;
-	delete sprite;
+	delete model;
+	//delete sphere;
+	//delete sprite;
 	
 	winApp->Finalize();
 	directXCommon->Finalize();

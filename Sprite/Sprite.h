@@ -38,11 +38,6 @@ public:
 	void Update();
 
 	/// <summary>
-	/// 終了・開放処理
-	/// </summary>
-	void Finalize();
-
-	/// <summary>
 	/// MaterialData初期化
 	/// </summary>
 	void InitializeMaterialData(DirectXCommon* dxCommon);

@@ -141,11 +141,6 @@ void Sprite::Update() {
 
 #pragma endregion
 
-#pragma region 解放処理
-void Sprite::Finalize() {}
-
-#pragma endregion
-
 void Sprite::InitializeMaterialData(DirectXCommon* dxCommon) {
 
 	//マテリアル用リソース作成

@@ -11,13 +11,14 @@
 #include "../externals/imgui/imgui_impl_dx12.h"
 #include "../externals/imgui/imgui_impl_win32.h"
 #endif 
+#pragma endregion
 
 Sphere::~Sphere() {
-	//indexResource_.Reset();
-	//directionalLightResource_.Reset();
-	//materialResource_.Reset();
-	//wvpResource_.Reset();
-	//vertexResource_.Reset();
+	indexResource_.Reset();
+	materialResource_.Reset();
+	directionalLightResource_.Reset();
+	wvpResource_.Reset();
+	vertexResource_.Reset();
 }
 
 void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
@@ -52,7 +53,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 
 	//======================= Transform・各行列の初期化 ===========================//
 
-//CPUで動かす用のTransform
+	//CPUで動かす用のTransform
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	//アフィン行列
@@ -77,14 +78,6 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 }
 
 void Sphere::Update() {
-
-
-	//アフィン行列
-	worldMatrix_ = MatrixMath::MakeAffineMatrix(
-		transform_.scale,
-		transform_.rotate,
-		transform_.translate
-	);
 
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);

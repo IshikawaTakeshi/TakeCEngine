@@ -68,23 +68,28 @@ private:
 
 	//頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
-	//TransformationMatrix用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
 	//頂点データ
 	VertexData* vertexData_ = nullptr;
 	//頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+
+	//TransformationMatrix用の頂点リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
 	//TransformationMatrix用の頂点データ
 	TransformMatrix* transformMatrixData_ = nullptr;
+
 	//平行光源用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
 	DirectionalLight* directionalLightData_ = nullptr;;
+
 	//マテリアルリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
 	Material* materialData_ = nullptr;
+
 	//IndexBufferView用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
+
 	//uvTransformの行列
 	Transform uvTransform_;
 

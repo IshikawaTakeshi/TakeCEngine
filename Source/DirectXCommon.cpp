@@ -75,6 +75,38 @@ void DirectXCommon::Finalize() {
 	ImGui::DestroyContext();
 #endif // DEBUG
 
+	graphicPipelineState_.Reset();
+	pixelShaderBlob_.Reset();
+	vertexShaderBlob_.Reset();
+	rootSignature_.Reset();
+	if (errorBlob_) {
+		errorBlob_.Reset();
+	}
+	signatureBlob_.Reset();
+
+	shaderBlob_.Reset();
+	if (shaderError_) {
+		shaderError_.Reset();
+	}
+	shaderResult_.Reset();
+	shaderSource_.Reset();
+	includeHandler_.Reset();
+	dxcCompiler_.Reset();
+	dxcUtils_.Reset();
+
+	fence_.Reset();
+	dsvHeap_.Reset();
+	rtvHeap_.Reset();
+	srvHeap_.Reset();
+	swapChainResources_[1].Reset();
+	swapChainResources_[0].Reset();
+	swapChain_.Reset();
+	commandList_.Reset();
+	commandAllocator_.Reset();
+	commandQueue_.Reset();
+	device_.Reset();
+	useAdapter_.Reset();
+	dxgiFactory_.Reset();
 }
 
 void DirectXCommon::PreDraw() {
