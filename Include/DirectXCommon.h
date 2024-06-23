@@ -3,20 +3,17 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 
-#include <dxcapi.h>
-
 #include <wrl.h>
-#include <cassert>
 #include <string>
 #include <vector>
 #include <iostream>
-#include <memory>
 
 #include "../MyMath/VertexData.h"
 #include "../MyMath/Matrix4x4.h"
 #include "WinApp.h"
 
-
+class DXC;
+class PSO;
 class DirectXCommon {
 public:
 
@@ -91,6 +88,10 @@ public:
 private:
 	// ウィンドウズアプリケーション管理
 	WinApp* winApp_ = WinApp::GetInstance();
+	//DirectXShaderCompiler
+	DXC* dxc = nullptr;
+	//PipelineStateObject
+	PSO* pso = nullptr;
 	//DXGIファクトリーの作成
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
 	//使用するアダプタ用の変数
@@ -166,92 +167,35 @@ private:
 
 
 #pragma region dxc
-private:
-	//////////////////////////////////////////////////////////////////////////////////////////
-	///			dxc
-	//////////////////////////////////////////////////////////////////////////////////////////
-	
-	//dxc関連のメンバ変数
-	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils_;
-	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler_;
-	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler_;
-	Microsoft::WRL::ComPtr<IDxcBlobEncoding> shaderSource_;
-	Microsoft::WRL::ComPtr<IDxcResult> shaderResult_;
-	Microsoft::WRL::ComPtr<IDxcBlobUtf8> shaderError_;
-	Microsoft::WRL::ComPtr<IDxcBlob> shaderBlob_;
-
-private:
-	//dxc関連のメンバ関数
-
-	// <summary>
-	/// dxc初期化
-	/// </summary>
-	void InitializeDxc();
-
-	Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(
-		const std::wstring& filePath,
-		const wchar_t* profile,
-		IDxcUtils* dxcUtils,
-		IDxcCompiler3* dxcCompiler,
-		IDxcIncludeHandler* includeHandler
-	);
-#pragma endregion
-
-#pragma region PSO
-private:
-	//////////////////////////////////////////////////////////////////////////////////////////
-	///			PSO
-	//////////////////////////////////////////////////////////////////////////////////////////
-	
-	//rootSignature
-	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
-	D3D12_ROOT_PARAMETER rootParameters_[4] = {};
-	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
-	Microsoft::WRL::ComPtr<ID3D10Blob> signatureBlob_;
-	Microsoft::WRL::ComPtr<ID3D10Blob> errorBlob_;
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
-	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
-	//InputLayout
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3] = {};
-	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
-	/// ブレンドステート
-	D3D12_BLEND_DESC blendDesc_{};
-	// ラスタライザステート
-	D3D12_RASTERIZER_DESC rasterizerDesc_{};
-	//PSO生成
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
-	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicPipelineState_;
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc_{};
-
-private:
-	//PSO関連のメンバ関数
-	
-	/// <summary>
-	/// ルートシグネチャ初期化
-	/// </summary>
-	void CreateRootSignature();
-
-	/// <summary>
-	/// インプットレイアウト初期化
-	/// </summary>
-	void CreateInputLayout();
-
-	/// <summary>
-	/// ブレンドステート初期化
-	/// </summary>
-	void CreateBlendState();
-
-	/// <summary>
-	/// ラスタライザステート初期化
-	/// </summary>
-	void CreateRasterizerState();
-
-	/// <summary>
-	/// PSO生成
-	/// </summary>
-	void CreatePSO();
+//private:
+//	//////////////////////////////////////////////////////////////////////////////////////////
+//	///			dxc
+//	//////////////////////////////////////////////////////////////////////////////////////////
+//	
+//	//dxc関連のメンバ変数
+//	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils_;
+//	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler_;
+//	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler_;
+//	Microsoft::WRL::ComPtr<IDxcBlobEncoding> shaderSource_;
+//	Microsoft::WRL::ComPtr<IDxcResult> shaderResult_;
+//	Microsoft::WRL::ComPtr<IDxcBlobUtf8> shaderError_;
+//	Microsoft::WRL::ComPtr<IDxcBlob> shaderBlob_;
+//
+//private:
+//	//dxc関連のメンバ関数
+//
+//	// <summary>
+//	/// dxc初期化
+//	/// </summary>
+//	void InitializeDxc();
+//
+//	Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(
+//		const std::wstring& filePath,
+//		const wchar_t* profile,
+//		IDxcUtils* dxcUtils,
+//		IDxcCompiler3* dxcCompiler,
+//		IDxcIncludeHandler* includeHandler
+//	);
 #pragma endregion
 
 #pragma region VertexResource

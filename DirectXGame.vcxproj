@@ -93,8 +93,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DirectionalLight.cpp" />
+    <ClCompile Include="DirectXShaderCompiler.cpp" />
     <ClCompile Include="MyMath\MyMath.cpp" />
     <ClCompile Include="MyMath\VertexData.cpp" />
+    <ClCompile Include="PipelineStateObject.cpp" />
     <ClCompile Include="Source\DirectXCommon.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
@@ -115,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectionalLight.h" />
+    <ClInclude Include="DirectXShaderCompiler.h" />
     <ClInclude Include="Include\DirectXCommon.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
@@ -132,6 +135,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="MyMath\MatrixMath.h" />
     <ClInclude Include="MyMath\MyMath.h" />
     <ClInclude Include="MyMath\TransformMatrix.h" />
+    <ClInclude Include="PipelineStateObject.h" />
     <ClInclude Include="Sphere\Sphere.h" />
     <ClInclude Include="Sprite\Sprite.h" />
     <ClInclude Include="Texture\Texture.h" />
