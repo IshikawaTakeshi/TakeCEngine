@@ -13,7 +13,7 @@
 
 #include "../MyMath/Matrix4x4.h"
 #include "../MyMath/Transform.h"
-#include "../MyMath/VertexData.h"
+#include "../Include/ResourceDataStructure.h"
 
 class DirectXCommon;
 class Texture;

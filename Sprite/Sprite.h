@@ -14,13 +14,12 @@
 
 #include "../MyMath/Matrix4x4.h"
 #include "../MyMath/Transform.h"
-#include "../MyMath/VertexData.h"
-#include "../MyMath/Material.h"
 #include "../MyMath/TransformMatrix.h"
-#include "../DirectionalLight.h"
+#include "../Include/ResourceDataStructure.h"
 
 class DirectXCommon;
 class Texture;
+class Mesh;
 class Sprite {
 public:
 
@@ -38,38 +37,14 @@ public:
 	void Update();
 
 	/// <summary>
-	/// MaterialData初期化
-	/// </summary>
-	void InitializeMaterialData(DirectXCommon* dxCommon);
-
-	/// <summary>
 	/// directionalLightData初期化
 	/// </summary>
 	void InitializeDirectionalLightData(DirectXCommon* dxCommon);
 
 	/// <summary>
-	/// IndexBufferView初期化
-	/// </summary>
-	void InitializeIndexBufferView(DirectXCommon* dxCommon);
-
-
-	/// <summary>
 	/// 描画処理
 	/// </summary>
 	void DrawCall(DirectXCommon* dxCommon, Texture* texture);
-
-
-	/// <summary>
-	/// 頂点バッファビューの取得
-	/// </summary>
-	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView()
-	{ return vertexBufferView_; }
-
-	/// <summary>
-	/// sprite用のTransformationMatrix用の頂点リソースの取得
-	/// </summary>
-	Microsoft::WRL::ComPtr<ID3D12Resource> GetTransformationMatrixResource()
-	{ return transformationMatrixResource_; }
 
 	/// <summary>
 	/// Transformの取得
@@ -78,34 +53,23 @@ public:
 
 
 private:
-	//Sprite用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
+
+	//メッシュ
+	Mesh* mesh_ = nullptr;
+
 	//sprite用のTransformationMatrix用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_;
-	//頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
+	//sprite用のTransformationMatrix用の頂点データ
+	TransformMatrix* wvpData_ = nullptr;
 
 	Transform transform_{};
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 worldViewProjectionMatrix_;
-
-	//sprite用頂点データ
-	VertexData* vertexData_ = nullptr;
-	//sprite用のTransformationMatrix用の頂点データ
-	TransformMatrix* transformMatrixData_ = nullptr;
-
-	//マテリアルリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite_;
-	Material* materialDataSprite_ = nullptr;
+	
 	//平行光源用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-	DirectionalLight* directionalLightData_ = nullptr;
-	//IndexBufferView用のリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
-	//uvTransform
-	Transform uvTransform_;
+	DirectionalLightData* directionalLightData_ = nullptr;
 };
 

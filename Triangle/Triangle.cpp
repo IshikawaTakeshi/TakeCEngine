@@ -22,29 +22,29 @@ Triangle::~Triangle() {
 void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 
 	//======================= VertexResource ===========================//
-	
-	//VertexResource生成
-	vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * 3);
+	//
+	////VertexResource生成
+	//vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * 3);
 
-	// リソースの先頭のアドレスから使う
-	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 3;
-	// 1頂点あたりのサイズ
-	vertexBufferView_.StrideInBytes = sizeof(VertexData);
+	//// リソースの先頭のアドレスから使う
+	//vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
+	//// 使用するリソースのサイズは頂点3つ分のサイズ
+	//vertexBufferView_.SizeInBytes = sizeof(VertexData) * 3;
+	//// 1頂点あたりのサイズ
+	//vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
-	// 書き込むためのアドレスを取得
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-	
-	//左下
-	vertexData_[0].position = { -0.5f,-0.5f,0.0f,1.0f };
-	vertexData_[0].texcoord = { 0.0f,1.0f };
-	//上
-	vertexData_[1].position = { 0.0f,0.5f,0.0f,1.0f };
-	vertexData_[1].texcoord = { 0.5f,0.0f };
-	//右下
-	vertexData_[2].position = { 0.5f,-0.5f,0.0f,1.0f };
-	vertexData_[2].texcoord = { 1.0f,1.0f };
+	//// 書き込むためのアドレスを取得
+	//vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+	//
+	////左下
+	//vertexData_[0].position = { -0.5f,-0.5f,0.0f,1.0f };
+	//vertexData_[0].texcoord = { 0.0f,1.0f };
+	////上
+	//vertexData_[1].position = { 0.0f,0.5f,0.0f,1.0f };
+	//vertexData_[1].texcoord = { 0.5f,0.0f };
+	////右下
+	//vertexData_[2].position = { 0.5f,-0.5f,0.0f,1.0f };
+	//vertexData_[2].texcoord = { 1.0f,1.0f };
 
 
 	//======================= transformationMatrix用のVertexResource ===========================//

@@ -8,8 +8,8 @@
 #include <vector>
 #include <iostream>
 
-#include "../MyMath/VertexData.h"
 #include "../MyMath/Matrix4x4.h"
+#include "../Include/ResourceDataStructure.h"
 #include "WinApp.h"
 
 class DXC;

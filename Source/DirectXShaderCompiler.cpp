@@ -1,5 +1,5 @@
-#include "DirectXShaderCompiler.h"
-#include "Include/Logger.h"
+#include "../Include/DirectXShaderCompiler.h"
+#include "../Include/Logger.h"
 #include <cassert>
 #include <format>
 

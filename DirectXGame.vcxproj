@@ -92,11 +92,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DirectionalLight.cpp" />
-    <ClCompile Include="DirectXShaderCompiler.cpp" />
+    <ClCompile Include="Source\Material.cpp" />
+    <ClCompile Include="Source\Mesh.cpp" />
+    <ClCompile Include="Source\DirectionalLight.cpp" />
+    <ClCompile Include="Source\DirectXShaderCompiler.cpp" />
     <ClCompile Include="MyMath\MyMath.cpp" />
-    <ClCompile Include="MyMath\VertexData.cpp" />
-    <ClCompile Include="PipelineStateObject.cpp" />
+    <ClCompile Include="Source\PipelineStateObject.cpp" />
     <ClCompile Include="Source\DirectXCommon.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
@@ -114,10 +115,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Texture\Texture.cpp" />
     <ClCompile Include="Triangle\Triangle.cpp" />
     <ClCompile Include="Source\WinApp.cpp" />
+    <ClCompile Include="Source\VertexResource.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DirectionalLight.h" />
-    <ClInclude Include="DirectXShaderCompiler.h" />
+    <ClInclude Include="Include\DirectionalLight.h" />
+    <ClInclude Include="Include\DirectXShaderCompiler.h" />
     <ClInclude Include="Include\DirectXCommon.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
@@ -128,14 +130,16 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="Include\Logger.h" />
+    <ClInclude Include="Include\Mesh.h" />
+    <ClInclude Include="Include\Material.h" />
     <ClInclude Include="ModelData\Model.h" />
-    <ClInclude Include="MyMath\Material.h" />
     <ClInclude Include="MyMath\Matrix3x3.h" />
     <ClInclude Include="MyMath\Matrix4x4.h" />
     <ClInclude Include="MyMath\MatrixMath.h" />
     <ClInclude Include="MyMath\MyMath.h" />
     <ClInclude Include="MyMath\TransformMatrix.h" />
-    <ClInclude Include="PipelineStateObject.h" />
+    <ClInclude Include="Include\PipelineStateObject.h" />
+    <ClInclude Include="Include\ResourceDataStructure.h" />
     <ClInclude Include="Sphere\Sphere.h" />
     <ClInclude Include="Sprite\Sprite.h" />
     <ClInclude Include="Texture\Texture.h" />
@@ -144,8 +148,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vector4.h" />
-    <ClInclude Include="MyMath\VertexData.h" />
     <ClInclude Include="Include\WinApp.h" />
+    <ClInclude Include="Include\VertexResource.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">

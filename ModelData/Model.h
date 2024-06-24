@@ -1,21 +1,18 @@
 #pragma once
 
-#include "../MyMath/VertexData.h"
 #include "../Vector2.h"
 #include "../Vector3.h"
 #include "../Vector4.h"
 #include "../MyMath/Transform.h"
 #include "../MyMath/Matrix4x4.h"
 #include "../MyMath/TransformMatrix.h"
-#include "../MyMath/Material.h"
-#include "../DirectionalLight.h"
+#include "../Include/ResourceDataStructure.h"
 #include <d3d12.h>
 #include <wrl.h>
 #include <string>
 #include <vector>
 
-
-struct MaterialData {
+struct ModelMaterialData {
 
 	std::string textureFilePath;
 };
@@ -23,8 +20,9 @@ struct MaterialData {
 struct ModelData {
 
 	std::vector<VertexData> vertices;
-	MaterialData material;
+	ModelMaterialData material;
 };
+
 
 class Texture;
 class DirectXCommon;
@@ -73,7 +71,7 @@ public:
 	/// <summary>
 	/// mtlファイルを読む関数
 	/// </summary>
-	MaterialData LoadMtlFile(const std::string& directoryPath, const std::string& filename);
+	ModelMaterialData LoadMtlFile(const std::string& directoryPath, const std::string& filename);
 
 
 
@@ -95,11 +93,11 @@ private:
 
 	//平行光源用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-	DirectionalLight* directionalLightData_ = nullptr;;
+	DirectionalLightData* directionalLightData_ = nullptr;;
 
 	//マテリアルリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
-	Material* materialData_ = nullptr;
+	MaterialData* materialData_ = nullptr;
 
 
 	//CPU用のTransform

@@ -1,7 +1,9 @@
-#include "Sphere.h"
+#include "../Sphere/Sphere.h"
 #include "../MyMath/MatrixMath.h"
 #include "../MyMath/MyMath.h"
 #include "../Include/DirectXCommon.h"
+#include "../Include/Mesh.h"
+#include "../Include/Material.h"
 #include "../Texture/Texture.h"
 #include <numbers>
 
@@ -14,19 +16,20 @@
 #pragma endregion
 
 Sphere::~Sphere() {
-	indexResource_.Reset();
-	materialResource_.Reset();
+	
 	directionalLightResource_.Reset();
 	wvpResource_.Reset();
-	vertexResource_.Reset();
 }
 
 void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 
+	//メッシュ初期化
+	mesh_ = new Mesh();
+	mesh_->InitializeMesh();
 
 	//======================= VertexResource ===========================//
 
-	InitializeVertexData(dxCommon);
+	mesh_->InitializeVertexResourceSphere(dxCommon->GetDevice());
 
 	//======================= transformationMatrix用のVertexResource ===========================//
 
@@ -41,7 +44,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 
 	//======================= MaterialResource ===========================//
 
-	InitializeMaterialData(dxCommon);
+	mesh_->GetMaterial()->GetMaterialResource();
 
 	//======================= DirectionalLightResource ===========================//
 
@@ -49,7 +52,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 
 	//======================= IndexResource ===========================//
 
-	InitializeIndexBufferView(dxCommon);
+	mesh_->InitializeIndexResourceSphere(dxCommon->GetDevice());
 
 	//======================= Transform・各行列の初期化 ===========================//
 
@@ -62,13 +65,6 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
 		transform_.rotate,
 		transform_.translate
 	);
-
-	//uvTransformの行列
-	uvTransform_ = {
-		{1.0f,1.0f,1.0f},
-		{0.0f,0.0f,0.0f},
-		{0.0f,0.0f,0.0f}
-	};
 
 	//ViewProjectionの初期化
 	viewMatrix_ = MatrixMath::Inverse(cameraView);
@@ -98,14 +94,7 @@ void Sphere::Update() {
 	ImGui::ColorEdit4("LightColor", &directionalLightData_->color_.x);
 	ImGui::SliderFloat3("LightDirection", &directionalLightData_->direction_.x, -1.0f, 1.0f);
 	ImGui::SliderFloat("LightIntensity", &directionalLightData_->intensity_, 0.0f, 1.0f);
-	ImGui::DragFloat2("UVTranslate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
-	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
 	MyMath::Normalize(directionalLightData_->direction_);
-	Matrix4x4 uvTransformMatrix = MatrixMath::MakeScaleMatrix(uvTransform_.scale);
-	uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeRotateZMatrix(uvTransform_.rotate.z));
-	uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeTranslateMatrix(uvTransform_.translate));
-	materialData_->uvTransform = uvTransformMatrix;
 	ImGui::End();
 
 
@@ -113,107 +102,10 @@ void Sphere::Update() {
 #endif // _DEBUG
 }
 
-void Sphere::InitializeVertexData(DirectXCommon* dxCommon) {
-
-	// 頂点数の設定
-	uint32_t vertexCount = (kSubdivision * kSubdivision) * 6;
-
-	const float kLonEvery = 2.0f * std::numbers::pi_v<float> / static_cast<float>(kSubdivision); // 経度分割1つ分の角度
-	const float kLatEvery = std::numbers::pi_v<float> / static_cast<float>(kSubdivision); // 緯度分割1つ分の角度
-
-	//VertexResource生成
-	vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * vertexCount);
-
-	// リソースの先頭のアドレスから使う
-	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * vertexCount;
-	// 1頂点あたりのサイズ
-	vertexBufferView_.StrideInBytes = sizeof(VertexData);
-
-	// 書き込むためのアドレスを取得
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-
-	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
-		float lat = -std::numbers::pi_v<float> / 2.0f + kLatEvery * latIndex; //現在の緯度(シータ)
-
-		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
-			float lon = lonIndex * kLonEvery; //現在の経度(ファイ)
-			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
-
-			//1枚目の三角形
-			//頂点データの入力。基準点a(左下)
-			vertexData_[start].position.x = cos(lat) * cos(lon);
-			vertexData_[start].position.y = sin(lat);
-			vertexData_[start].position.z = cos(lat) * sin(lon);
-			vertexData_[start].position.w = 1.0f;
-			vertexData_[start].texcoord.x = static_cast<float>(lonIndex) / static_cast<float>(kSubdivision);
-			vertexData_[start].texcoord.y = 1.0f - (static_cast<float>(latIndex) / static_cast<float>(kSubdivision));
-			vertexData_[start].normal.x = vertexData_[start].position.x;
-			vertexData_[start].normal.y = vertexData_[start].position.y;
-			vertexData_[start].normal.z = vertexData_[start].position.z;
-
-			//基準点b1(左上)
-			vertexData_[start + 1].position.x = cos(lat + kLatEvery) * cos(lon);
-			vertexData_[start + 1].position.y = sin(lat + kLatEvery);
-			vertexData_[start + 1].position.z = cos(lat + kLatEvery) * sin(lon);
-			vertexData_[start + 1].position.w = 1.0f;
-			vertexData_[start + 1].texcoord.x = static_cast<float>(lonIndex) / static_cast<float>(kSubdivision);
-			vertexData_[start + 1].texcoord.y = 1.0f - (static_cast<float>(latIndex + 1) / static_cast<float>(kSubdivision));
-			vertexData_[start + 1].normal.x = vertexData_[start + 1].position.x;
-			vertexData_[start + 1].normal.y = vertexData_[start + 1].position.y;
-			vertexData_[start + 1].normal.z = vertexData_[start + 1].position.z;
-
-			//基準点c1(右下)
-			vertexData_[start + 2].position.x = cos(lat) * cos(lon + kLonEvery);
-			vertexData_[start + 2].position.y = sin(lat);
-			vertexData_[start + 2].position.z = cos(lat) * sin(lon + kLonEvery);
-			vertexData_[start + 2].position.w = 1.0f;
-			vertexData_[start + 2].texcoord.x = static_cast<float>(lonIndex + 1) / static_cast<float>(kSubdivision);
-			vertexData_[start + 2].texcoord.y = 1.0f - (static_cast<float>(latIndex) / static_cast<float>(kSubdivision));
-			vertexData_[start + 2].normal.x = vertexData_[start + 2].position.x;
-			vertexData_[start + 2].normal.y = vertexData_[start + 2].position.y;
-			vertexData_[start + 2].normal.z = vertexData_[start + 2].position.z;
-
-			//基準点b2(左上)
-			//vertexData_[start + 3] = vertexData_[start + 1];
-
-			//基準点d(右上)
-			vertexData_[start + 3].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
-			vertexData_[start + 3].position.y = sin(lat + kLatEvery);
-			vertexData_[start + 3].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
-			vertexData_[start + 3].position.w = 1.0f;
-			vertexData_[start + 3].texcoord.x = static_cast<float>(lonIndex + 1) / static_cast<float>(kSubdivision);
-			vertexData_[start + 3].texcoord.y = 1.0f - (static_cast<float>(latIndex + 1) / static_cast<float>(kSubdivision));
-			vertexData_[start + 3].normal.x = vertexData_[start + 3].position.x;
-			vertexData_[start + 3].normal.y = vertexData_[start + 3].position.y;
-			vertexData_[start + 3].normal.z = vertexData_[start + 3].position.z;
-
-			//基準点c2(右下)
-			//vertexData_[start + 5] = vertexData_[start + 2];
-		}
-	}
-}
-
-void Sphere::InitializeMaterialData(DirectXCommon* dxCommon) {
-	//マテリアル用リソース作成
-	materialResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(Material));
-	//materialにデータを書き込む
-	materialData_ = nullptr;
-	//書き込むためのアドレスを取得
-	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-	//色を書き込む
-	materialData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	//UVTransform行列の初期化
-	materialData_->uvTransform = MatrixMath::MakeIdentity4x4();
-	//Lightingを有効にする
-	materialData_->enableLighting = true;
-}
-
 void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 
 	//平行光源用Resourceの作成
-	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DirectionalLight));
+	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DirectionalLightData));
 	directionalLightData_ = nullptr;
 	//データを書き込むためのアドレスを取得
 	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
@@ -225,45 +117,14 @@ void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 	directionalLightData_->intensity_ = 1.0f;
 }
 
-void Sphere::InitializeIndexBufferView(DirectXCommon* dxCommon) {
-
-	// インデックスバッファのサイズを設定
-	uint32_t indexCount = (kSubdivision * kSubdivision) * 6;
-	indexResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(uint32_t) * indexCount);
-
-	// インデックスバッファビューの設定
-	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
-	indexBufferView_.SizeInBytes = sizeof(uint32_t) * indexCount;
-	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
-
-	// インデックスリソースにデータを書き込む
-	uint32_t* indexData = nullptr;
-	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
-
-	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
-		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
-			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
-
-			// 最初の三角形のインデックス
-			indexData[start] = start;         //左下
-			indexData[start + 1] = start + 2; //左上
-			indexData[start + 2] = start + 1; //右下
-
-			// 二つ目の三角形のインデックス
-			indexData[start + 3] = start + 2; //左上
-			indexData[start + 4] = start + 3; //右上
-			indexData[start + 5] = start + 1; //右下
-		}
-	}
-}
-
 void Sphere::DrawCall(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2) {
 
-	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
+	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
-	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(
+		0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
@@ -271,8 +132,8 @@ void Sphere::DrawCall(DirectXCommon* dxCommon, Texture* texture1, Texture* textu
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//IBVの設定
-	dxCommon->GetCommandList()->IASetIndexBuffer(&indexBufferView_);
+	dxCommon->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	// 描画！(DrawCall/ドローコール)
-	dxCommon->GetCommandList()->DrawIndexedInstanced(kSubdivision * kSubdivision * 6, 1, 0, 0, 0);
+	dxCommon->GetCommandList()->DrawIndexedInstanced(mesh_->kSubdivision * mesh_->kSubdivision * 6, 1, 0, 0, 0);
 }
 

@@ -16,8 +16,8 @@
 
 Model::~Model() {
 	
-	materialResource_.Reset();
 	directionalLightResource_.Reset();
+	materialResource_.Reset();
 	wvpResource_.Reset();
 	vertexResource_.Reset();
 }
@@ -121,7 +121,7 @@ void Model::InitializeVertexData(DirectXCommon* dxCommon) {
 
 void Model::InitializeMaterialData(DirectXCommon* dxCommon) {
 	//マテリアル用リソース作成
-	materialResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(Material));
+	materialResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(MaterialData));
 	//materialにデータを書き込む
 	materialData_ = nullptr;
 	//書き込むためのアドレスを取得
@@ -137,7 +137,7 @@ void Model::InitializeMaterialData(DirectXCommon* dxCommon) {
 void Model::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 
 	//平行光源用Resourceの作成
-	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DirectionalLight));
+	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DirectionalLightData));
 	directionalLightData_ = nullptr;
 	//データを書き込むためのアドレスを取得
 	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
@@ -230,9 +230,9 @@ ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string
 	return modelData;
 }
 
-MaterialData Model::LoadMtlFile(const std::string& directoryPath, const std::string& filename) {
+ModelMaterialData Model::LoadMtlFile(const std::string& directoryPath, const std::string& filename) {
 
-	MaterialData materialData; //構築するMaterialData
+	ModelMaterialData materialData; //構築するMaterialData
 	std::string line; //ファイルから読んだ1行を核のするもの
 	std::ifstream file(directoryPath + "/" + filename);
 	assert(file.is_open());

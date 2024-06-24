@@ -1,16 +1,15 @@
 #pragma once
 #include "../Vector3.h"
 #include "../MyMath/Matrix4x4.h"
-#include "../MyMath/VertexData.h"
 #include "../MyMath/TransformMatrix.h"
-#include "../MyMath/Material.h"
-#include "../DirectionalLight.h"
 #include "../MyMath/Transform.h"
+#include "../Include/ResourceDataStructure.h"
 
 #include <stdint.h>
 #include <d3d12.h>
 #include <wrl.h>
 
+class Mesh;
 class Texture;
 class DirectXCommon;
 class Sphere {
@@ -29,31 +28,9 @@ public:
 	void Update();
 
 	/// <summary>
-	/// 頂点バッファビューの取得
-	/// </summary>
-	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() {
-		return vertexBufferView_;
-	}
-
-	/// <summary>
-	/// VertexData初期化
-	/// </summary>
-	void InitializeVertexData(DirectXCommon* dxCommon);
-
-	/// <summary>
-	/// MaterialData初期化
-	/// </summary>
-	void InitializeMaterialData(DirectXCommon* dxCommon);
-
-	/// <summary>
 	/// directionalLightData初期化
 	/// </summary>
 	void InitializeDirectionalLightData(DirectXCommon* dxCommon);
-
-	/// <summary>
-	/// IndexBufferView初期化
-	/// </summary>
-	void InitializeIndexBufferView(DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// 描画処理
@@ -63,15 +40,8 @@ public:
 
 private:
 
-	//分割数
-	static inline const uint32_t kSubdivision = 16;
-
-	//頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
-	//頂点データ
-	VertexData* vertexData_ = nullptr;
-	//頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+	//メッシュ
+	Mesh* mesh_;
 
 	//TransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
@@ -80,18 +50,7 @@ private:
 
 	//平行光源用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-	DirectionalLight* directionalLightData_ = nullptr;;
-
-	//マテリアルリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
-	Material* materialData_ = nullptr;
-
-	//IndexBufferView用のリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
-
-	//uvTransformの行列
-	Transform uvTransform_;
+	DirectionalLightData* directionalLightData_ = nullptr;;
 
 	//CPU用のTransform
 	Transform transform_{};
@@ -100,11 +59,8 @@ private:
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 worldViewProjectionMatrix_;
-	//Lightingのフラグ
-	bool enableLighting = false;
-	bool enableHarfLambert = false;
+
 	//Texture
-	Texture* Texture_ = nullptr;
 	bool useMonsterBall = true;
 };
 
