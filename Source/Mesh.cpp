@@ -8,7 +8,7 @@ void Mesh::InitializeMesh() {
 	material_ = new Material();
 }
 
-void Mesh::InitializeVertexResourceSphere(Microsoft::WRL::ComPtr<ID3D12Device> device) {
+void Mesh::InitializeVertexResourceSphere(ID3D12Device* device) {
 
 	// 頂点数の設定
 	uint32_t vertexCount = (kSubdivision * kSubdivision) * 6;
@@ -87,7 +87,7 @@ void Mesh::InitializeVertexResourceSphere(Microsoft::WRL::ComPtr<ID3D12Device> d
 	}
 }
 
-void Mesh::InitializeVertexResourceSprite(Microsoft::WRL::ComPtr<ID3D12Device> device) {
+void Mesh::InitializeVertexResourceSprite(ID3D12Device* device) {
 
 	//VertexResource生成
 	vertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * 4);
@@ -111,7 +111,7 @@ void Mesh::InitializeVertexResourceSprite(Microsoft::WRL::ComPtr<ID3D12Device> d
 	vertexData[3].texcoord = { 1.0f,0.0f };
 }
 
-void Mesh::InitializeVertexResourceTriangle(Microsoft::WRL::ComPtr<ID3D12Device> device) {
+void Mesh::InitializeVertexResourceTriangle(ID3D12Device* device) {
 
 	//VertexResource生成
 	vertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * 3);
@@ -140,7 +140,7 @@ void Mesh::InitializeVertexResourceTriangle(Microsoft::WRL::ComPtr<ID3D12Device>
 
 }
 
-void Mesh::InitializeIndexResourceSphere(Microsoft::WRL::ComPtr<ID3D12Device> device) {
+void Mesh::InitializeIndexResourceSphere(ID3D12Device* device) {
 
 	// インデックスバッファのサイズを設定
 	uint32_t indexCount = (kSubdivision * kSubdivision) * 6;
@@ -172,7 +172,7 @@ void Mesh::InitializeIndexResourceSphere(Microsoft::WRL::ComPtr<ID3D12Device> de
 	}
 }
 
-void Mesh::InitializeIndexResourceSprite(Microsoft::WRL::ComPtr<ID3D12Device> device) {
+void Mesh::InitializeIndexResourceSprite(ID3D12Device* device) {
 
 	//リソースの作成
 	indexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(uint32_t) * 6);

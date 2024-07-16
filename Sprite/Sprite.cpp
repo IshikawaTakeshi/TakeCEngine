@@ -33,6 +33,8 @@ void Sprite::Initialize(DirectXCommon* dxCommon) {
 	mesh_->InitializeVertexResourceSprite(dxCommon->GetDevice());
 	//IndexResource初期化
 	mesh_->InitializeIndexResourceSprite(dxCommon->GetDevice());
+	//MaterialResource初期化
+	mesh_->GetMaterial()->InitializeMaterialResource(dxCommon->GetDevice(), false);
 
 	//======================= transformationMatrix用のVertexResource ===========================//
 
@@ -46,10 +48,7 @@ void Sprite::Initialize(DirectXCommon* dxCommon) {
 	//単位行列を書き込んでおく
 	wvpData_->WVP = MatrixMath::MakeIdentity4x4();
 
-	//======================= MaterialResource ===========================//
-
-	mesh_->GetMaterial()->InitializeMaterialResource(dxCommon, false);
-
+	
 	//======================= DirectionalLightResource ===========================//
 
 	InitializeDirectionalLightData(dxCommon);

@@ -55,7 +55,7 @@ public:
 	/// デバイスの取得
 	/// </summary>
 	/// <returns>デバイス</returns>
-	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() const { return device_; }
+	ID3D12Device* GetDevice() const { return device_.Get(); }
 
 	/// <summary>
 	/// 描画コマンドリストの取得
@@ -66,24 +66,24 @@ public:
 	/// <summary>
 	/// srvHeapの取得
 	/// </summary>
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvHeap() { return srvHeap_; }
+	ID3D12DescriptorHeap* GetSrvHeap() { return srvHeap_.Get(); }
 
 	/// <summary>
 	/// dsvHeapの取得
 	/// </summary>
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetDsvHeap() { return dsvHeap_; }
+	ID3D12DescriptorHeap* GetDsvHeap() { return dsvHeap_.Get(); }
 
 	/// <summary>
 	/// descriptorHeapの取得
 	/// </summary>
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetRtvHeap() { return rtvHeap_; }
+	ID3D12DescriptorHeap* GetRtvHeap() { return rtvHeap_.Get(); }
 
 	uint32_t GetDescriptorSizeSRV() { return descriptorSizeSRV_; }
 	uint32_t GetDescriptorSizeRTV() { return descriptorSizeRTV_; }
 	uint32_t GetDescriptorSizeDSV() { return descriptorSizeDSV_; }
 
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,uint32_t descriptorSize, uint32_t index);
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,uint32_t descriptorSize, uint32_t index);
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap,uint32_t descriptorSize, uint32_t index);
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap,uint32_t descriptorSize, uint32_t index);
 
 private:
 	// ウィンドウズアプリケーション管理
@@ -161,7 +161,7 @@ private:
 	/// DescriptorHeap作成関数
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(
-		Microsoft::WRL::ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType,
+		ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType,
 		UINT numDescriptors, bool shaderVisible
 	);
 
@@ -215,7 +215,7 @@ public:
 	/// Resource生成関数
 	/// </summary>
 	static Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(
-		Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInBytes);
+	ID3D12Device* device, size_t sizeInBytes);
 
 private:
 

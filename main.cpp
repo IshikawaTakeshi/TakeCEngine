@@ -74,8 +74,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	model->Initialize(directXCommon,cameraMatrix,"Resources/obj_mtl_blend","axis.obj");
 
 	//球
-	//Sphere* sphere = new Sphere();
-	//sphere->Initialize(directXCommon, cameraMatrix);
+	Sphere* sphere = new Sphere();
+	sphere->Initialize(directXCommon, cameraMatrix);
 
 	//スプライト
 	//Sprite* sprite = new Sprite();
@@ -102,7 +102,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 		model->DrawCall(directXCommon,texture1);
-		//sphere->DrawCall(directXCommon, texture1, texture2);
+		sphere->DrawCall(directXCommon, texture1, texture2);
 		//sprite->DrawCall(directXCommon, texture1);
 
 		//描画後処理
@@ -112,7 +112,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete texture1;
 	delete texture2;
 	delete model;
-	//delete sphere;
+	delete sphere;
 	//delete sprite;
 	
 	winApp->Finalize();

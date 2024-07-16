@@ -25,22 +25,22 @@ public:
 	/// <summary>
 	/// 球体の頂点バッファリソース初期化
 	/// </summary>
-	void InitializeVertexResourceSphere(Microsoft::WRL::ComPtr<ID3D12Device> device);
+	void InitializeVertexResourceSphere(ID3D12Device* device);
 
 	/// <summary>
 	/// スプライトの頂点バッファリソース初期化
 	/// </summary>
-	void InitializeVertexResourceSprite(Microsoft::WRL::ComPtr<ID3D12Device> device);
+	void InitializeVertexResourceSprite(ID3D12Device* device);
 
 	/// <summary>
 	/// 三角形の頂点バッファリソース初期化
 	/// </summary>
-	void InitializeVertexResourceTriangle(Microsoft::WRL::ComPtr<ID3D12Device> device);
+	void InitializeVertexResourceTriangle(ID3D12Device* device);
 
 	/// <summary>
 	/// 頂点バッファビューの取得
 	/// </summary>
-	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() const { return vertexBufferView_; }
+	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return vertexBufferView_; }
 
 
 	//================================= IndexBufferResource ==================================//
@@ -48,17 +48,17 @@ public:
 	/// <summary>
 	/// 球体のIndexResource初期化
 	/// </summary>
-	void InitializeIndexResourceSphere(Microsoft::WRL::ComPtr<ID3D12Device> device);
+	void InitializeIndexResourceSphere(ID3D12Device* device);
 
 	/// <summary>
 	/// スプライトのIndexResource初期化
 	/// </summary>
-	void InitializeIndexResourceSprite(Microsoft::WRL::ComPtr<ID3D12Device> device);
+	void InitializeIndexResourceSprite(ID3D12Device* device);
 
 	/// <summary>
 	/// インデックスバッファビューの取得
 	/// </summary>
-	const D3D12_INDEX_BUFFER_VIEW GetIndexBufferView() { return indexBufferView_; }
+	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() { return indexBufferView_; }
 
 	//================================= MaterialBufferResource ==================================//
 

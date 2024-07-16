@@ -53,7 +53,7 @@ void Material::UpdateMaterial() {
 void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> device, bool enableLight) {
 
 	//マテリアル用リソース作成
-	materialResource_ = DirectXCommon::CreateBufferResource(device, sizeof(MaterialData));
+	materialResource_ = DirectXCommon::CreateBufferResource(device.Get(), sizeof(MaterialData));
 	//materialにデータを書き込む
 	materialData_ = nullptr;
 	//書き込むためのアドレスを取得
