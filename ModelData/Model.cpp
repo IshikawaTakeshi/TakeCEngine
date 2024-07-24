@@ -2,6 +2,8 @@
 #include "../Include/DirectXCommon.h"
 #include "../MyMath/MatrixMath.h"
 #include "../Texture/Texture.h"
+#include "../Include/Material.h"
+#include "../Include/Mesh.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>
@@ -15,21 +17,30 @@
 #pragma endregion
 
 Model::~Model() {
-	
+
 	directionalLightResource_.Reset();
-	materialResource_.Reset();
 	wvpResource_.Reset();
-	vertexResource_.Reset();
 }
 
-void Model::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std::string& directoryPath, const std::string& filename) {
+void Model::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView,
+	const std::string& resourceDirectoryPath,
+	const std::string& modelDirectoryPath,
+	const std::string& filename) {
+
 
 	//モデル読み込み
-	modelData_ = LoadObjFile(directoryPath,filename);
+	modelData_ = LoadObjFile(resourceDirectoryPath,modelDirectoryPath, filename);
+
+	//======================= メッシュ初期化 ===========================//
+
+	mesh_ = new Mesh();
+
+	mesh_->InitializeMesh(1, dxCommon, true, modelData_.material.textureFilePath);
+
 
 	//======================= VertexResource ===========================//
 
-	InitializeVertexData(dxCommon);
+	mesh_->InitializeVertexResourceObjModel(dxCommon->GetDevice(), modelData_);
 
 	//======================= transformationMatrix用のVertexResource ===========================//
 
@@ -44,11 +55,12 @@ void Model::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std:
 
 	//======================= MaterialResource ===========================//
 
-	InitializeMaterialData(dxCommon);
+	mesh_->GetMaterial()->GetMaterialResource();
 
 	//======================= DirectionalLightResource ===========================//
 
 	InitializeDirectionalLightData(dxCommon);
+
 
 
 	//======================= Transform・各行列の初期化 ===========================//
@@ -88,51 +100,36 @@ void Model::Update() {
 	ImGui::End();
 }
 
-void Model::DrawCall(DirectXCommon* dxCommon, Texture* texture) {
+void Model::DrawCall(DirectXCommon* dxCommon) {
 
-	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
+	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
-	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture->GetTextureSrvHandleGPU());
+	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetMaterial()->GetTexture()->GetTextureSrvHandleGPU());
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 
 	dxCommon->GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
 }
 
-void Model::InitializeVertexData(DirectXCommon* dxCommon) {
-
-	//頂点リソースを作る
-	vertexResource_ = dxCommon->CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * modelData_.vertices.size());
-	//頂点バッファビューを作る
-	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
-	vertexBufferView_.StrideInBytes = sizeof(VertexData);
-
-	//リソースにデータを書き込む
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-	std::memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
-}
-
-void Model::InitializeMaterialData(DirectXCommon* dxCommon) {
-	//マテリアル用リソース作成
-	materialResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(MaterialData));
-	//materialにデータを書き込む
-	materialData_ = nullptr;
-	//書き込むためのアドレスを取得
-	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-	//色を書き込む
-	materialData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	//UVTransform行列の初期化
-	materialData_->uvTransform = MatrixMath::MakeIdentity4x4();
-	//Lightingを有効にする
-	materialData_->enableLighting = true;
-}
+//void Model::InitializeVertexData(DirectXCommon* dxCommon) {
+//
+//	//頂点リソースを作る
+//	vertexResource_ = dxCommon->CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * modelData_.vertices.size());
+//	//頂点バッファビューを作る
+//	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
+//	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
+//	vertexBufferView_.StrideInBytes = sizeof(VertexData);
+//
+//	//リソースにデータを書き込む
+//	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+//	std::memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+//}
 
 void Model::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 
@@ -151,17 +148,17 @@ void Model::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 
 
 
-ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
+ModelData Model::LoadObjFile(const std::string& resourceDirectoryPath, const std::string& modelDirectoryPath, const std::string& filename) {
 	ModelData modelData; //構築するModelData
 	std::vector<Vector4> positions; //位置
 	std::vector<Vector3> normals; //法線
 	std::vector<Vector2> texcoords; //テクスチャ座標
 	std::string line; //ファイルから読んだ1行を格納するもの
-	std::ifstream file(directoryPath + "/" + filename); //ファイルを開く
+	std::ifstream file(resourceDirectoryPath + "/" + modelDirectoryPath + "/" + filename); //ファイルを開く
 	assert(file.is_open()); //開けれなかったら止める
 
 	while (std::getline(file, line)) {
-		std::string identifier; 
+		std::string identifier;
 		std::istringstream s(line);
 		s >> identifier; //先頭の識別子を読む
 
@@ -177,8 +174,8 @@ ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string
 			Vector2 texcoord;
 			s >> texcoord.x >> texcoord.y;
 			texcoords.push_back(texcoord);
-		} else if(identifier == "vn"){
-			 
+		} else if (identifier == "vn") {
+
 			Vector3 normal;
 			s >> normal.x >> normal.y >> normal.z;
 			normals.push_back(normal);
@@ -222,7 +219,8 @@ ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string
 			s >> materialFileName;
 
 			//基本的にobjファイルと同一階層にmtlは存在させるので、ディレクトリ名とファイル名を渡す
-			modelData.material = LoadMtlFile(directoryPath, materialFileName);
+			modelData.material = LoadMtlFile(resourceDirectoryPath, modelDirectoryPath, materialFileName);
+			modelData.material.textureFilePath = modelData.material.textureFilePath;
 		}
 
 	}
@@ -230,11 +228,11 @@ ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string
 	return modelData;
 }
 
-ModelMaterialData Model::LoadMtlFile(const std::string& directoryPath, const std::string& filename) {
+ModelMaterialData Model::LoadMtlFile(const std::string& resourceDirectoryPath, const std::string& modelDirectoryPath, const std::string& filename) {
 
 	ModelMaterialData materialData; //構築するMaterialData
 	std::string line; //ファイルから読んだ1行を核のするもの
-	std::ifstream file(directoryPath + "/" + filename);
+	std::ifstream file(resourceDirectoryPath + "/" + modelDirectoryPath + "/" + filename);
 	assert(file.is_open());
 
 	while (std::getline(file, line)) {
@@ -248,7 +246,7 @@ ModelMaterialData Model::LoadMtlFile(const std::string& directoryPath, const std
 			s >> textureFileName;
 
 			//連結してファイルパスにする
-			materialData.textureFilePath = directoryPath + "/" + textureFileName;
+			materialData.textureFilePath = resourceDirectoryPath + "/" + textureFileName;
 		}
 	}
 

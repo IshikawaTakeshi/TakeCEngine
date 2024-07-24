@@ -1,6 +1,7 @@
 #include "../Include/Logger.h"
-#include <Windows.h>
+
 #include <debugapi.h>
+#include <iostream>
 
 //出力ウィンドウに文字を出す関数
 void Logger::Log(const std::string& message) {
@@ -35,4 +36,21 @@ std::string Logger::ConvertString(const std::wstring& str) {
 	std::string result(sizeNeeded, 0);
 	WideCharToMultiByte(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), result.data(), sizeNeeded, NULL, NULL);
 	return result;
+}
+
+std::string Logger::GetErrorMessage(HRESULT hr) {
+	LPVOID lpMsgBuf;
+	DWORD dwFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
+
+	FormatMessage(
+		dwFlags,
+		NULL,
+		hr,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPWSTR)&lpMsgBuf,
+		0, NULL);
+
+	std::string errorMsg = (LPSTR)lpMsgBuf;
+	LocalFree(lpMsgBuf);
+	return errorMsg;
 }

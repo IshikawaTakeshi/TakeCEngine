@@ -3,9 +3,10 @@
 #include "../Include/Material.h"
 #include <numbers>
 
-void Mesh::InitializeMesh() {
+void Mesh::InitializeMesh(uint32_t index, DirectXCommon* dxCommon, bool enableLight, const std::string& filePath) {
 
 	material_ = new Material();
+	material_->InitializeTexture(index,dxCommon,enableLight,filePath);
 }
 
 void Mesh::InitializeVertexResourceSphere(ID3D12Device* device) {
@@ -140,6 +141,23 @@ void Mesh::InitializeVertexResourceTriangle(ID3D12Device* device) {
 
 }
 
+void Mesh::InitializeVertexResourceObjModel(ID3D12Device* device, ModelData modelData) {
+
+	//頂点リソースを作る
+	vertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * modelData.vertices.size());
+	//頂点バッファビューを作る
+	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
+	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
+
+	//リソースにデータを書き込む
+
+	//頂点データ
+	VertexData* vertexData;
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
+}
+
 void Mesh::InitializeIndexResourceSphere(ID3D12Device* device) {
 
 	// インデックスバッファのサイズを設定
@@ -161,13 +179,13 @@ void Mesh::InitializeIndexResourceSphere(ID3D12Device* device) {
 
 			// 最初の三角形のインデックス
 			indexData[start] = start;         //左下
-			indexData[start + 1] = start + 2; //左上
-			indexData[start + 2] = start + 1; //右下
+			indexData[start + 1] = start + 1; //左上
+			indexData[start + 2] = start + 2; //右下
 
 			// 二つ目の三角形のインデックス
-			indexData[start + 3] = start + 2; //左上
+			indexData[start + 3] = start + 1; //左上
 			indexData[start + 4] = start + 3; //右上
-			indexData[start + 5] = start + 1; //右下
+			indexData[start + 5] = start + 2; //右下
 		}
 	}
 }

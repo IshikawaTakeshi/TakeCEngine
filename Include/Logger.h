@@ -1,4 +1,5 @@
 #pragma once
+#include <Windows.h>
 #include <string>
 
 class Logger {
@@ -12,5 +13,8 @@ public:
 
 	//コンバートストリング(string型)
 	static std::string ConvertString(const std::wstring& str);
+
+	//エラーメッセージの取得
+	static std::string GetErrorMessage(HRESULT hr);
 };
 

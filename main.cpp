@@ -5,6 +5,7 @@
 #include "Include/WinApp.h"
 #include "Include/Logger.h"
 #include "Include/DirectXCommon.h"
+#include "Include/Input.h"
 #include "MyMath/Transform.h"
 #include "Texture/Texture.h"
 #include "MyMath/MatrixMath.h"
@@ -42,8 +43,7 @@ struct D3DResourceLeakChecker {
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-	CoInitializeEx(0, COINIT_MULTITHREADED);
-
+	
 	D3DResourceLeakChecker leakCheck;
 
 	//タイトルバーの名前の入力
@@ -53,6 +53,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//DirectX初期化
 	DirectXCommon* directXCommon = DirectXCommon::GetInstance();
 	directXCommon->Initialize();
+
+	//入力初期化
+	Input* input = new Input();
+	input->Initialize(winApp);
 
 	//テクスチャ初期化
 	Texture* texture1 = new Texture();
@@ -71,11 +75,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//モデル
 	Model* model = new Model();
-	model->Initialize(directXCommon,cameraMatrix,"Resources/obj_mtl_blend","axis.obj");
+	model->Initialize(directXCommon,cameraMatrix,"Resources","obj_mtl_blend","axis.obj");
+	//model->SetTextureFilePath("./Resources/uvChecker.png");
 
 	//球
 	Sphere* sphere = new Sphere();
-	sphere->Initialize(directXCommon, cameraMatrix);
+	sphere->Initialize(directXCommon, cameraMatrix,true, "./Resources/uvChecker.png");
 
 	//スプライト
 	//Sprite* sprite = new Sprite();
@@ -92,17 +97,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//描画前処理
 		directXCommon->PreDraw();
 
+		//モデルの更新処理
 		model->Update();
 
 		//球
-		//sphere->Update();
+		sphere->Update();
 
 		//スプライト
 		//sprite->Update();
 
 
-		model->DrawCall(directXCommon,texture1);
-		sphere->DrawCall(directXCommon, texture1, texture2);
+		model->DrawCall(directXCommon);
+		sphere->DrawCall(directXCommon);
 		//sprite->DrawCall(directXCommon, texture1);
 
 		//描画後処理

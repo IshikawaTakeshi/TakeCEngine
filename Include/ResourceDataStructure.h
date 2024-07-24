@@ -3,6 +3,8 @@
 #include "../Vector3.h"
 #include "../Vector4.h"
 #include "../MyMath/Matrix4x4.h"
+#include <string>
+#include <vector>
 #include <cstdint>
 
 struct MaterialData {
@@ -24,3 +26,14 @@ struct DirectionalLightData {
 	float intensity_; //輝度
 };
 
+
+struct ModelMaterialData {
+
+	std::string textureFilePath;
+};
+
+struct ModelData {
+
+	std::vector<VertexData> vertices;
+	ModelMaterialData material;
+};

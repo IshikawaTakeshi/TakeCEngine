@@ -29,7 +29,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize(DirectXCommon* dxCommon, bool enableLight, const std::string& textureFilePath);
 
 	/// <summary>
 	/// 更新処理
@@ -44,7 +44,7 @@ public:
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void DrawCall(DirectXCommon* dxCommon, Texture* texture);
+	void DrawCall(DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// Transformの取得

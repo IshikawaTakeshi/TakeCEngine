@@ -13,6 +13,9 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 
 
 void WinApp::Initialize(const wchar_t title[]) {
+
+	HRESULT hr = CoInitializeEx(0, COINIT_MULTITHREADED);
+
 	// ウィンドウプロシージャ
 	wc_.lpfnWndProc = WinApp::WindowProc;
 	//ウィンドウクラス名()
@@ -26,6 +29,8 @@ void WinApp::Initialize(const wchar_t title[]) {
 	RegisterClass(&wc_);
 
 	CreateGameWindow(title);
+
+	assert(SUCCEEDED(hr));
 
 #ifdef _DEBUG
 
@@ -73,7 +78,7 @@ WinApp* WinApp::GetInstance() {
 }
 
 //ウィンドウプロシージャ
-LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam)) {
 		return true;

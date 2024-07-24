@@ -35,6 +35,8 @@ public:
 	/// </summary>
 	ID3D12Resource* GetMaterialResource() { return materialResource_.Get(); }
 
+	Texture* GetTexture() { return texture_; }
+
 private:
 
 	//テクスチャ

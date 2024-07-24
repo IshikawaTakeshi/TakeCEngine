@@ -21,11 +21,11 @@ Sphere::~Sphere() {
 	wvpResource_.Reset();
 }
 
-void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView) {
+void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, bool enableLight, const std::string& textureFilePath) {
 
 	//メッシュ初期化
 	mesh_ = new Mesh();
-	mesh_->InitializeMesh();
+	mesh_->InitializeMesh(1,dxCommon,enableLight,textureFilePath);
 
 	//======================= VertexResource ===========================//
 
@@ -117,7 +117,7 @@ void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 	directionalLightData_->intensity_ = 1.0f;
 }
 
-void Sphere::DrawCall(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2) {
+void Sphere::DrawCall(DirectXCommon* dxCommon) {
 
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
@@ -128,7 +128,7 @@ void Sphere::DrawCall(DirectXCommon* dxCommon, Texture* texture1, Texture* textu
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMonsterBall ? texture2->GetTextureSrvHandleGPU() : texture1->GetTextureSrvHandleGPU());
+	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetMaterial()->GetTexture()->GetTextureSrvHandleGPU());
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//IBVの設定

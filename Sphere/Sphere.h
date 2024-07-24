@@ -6,6 +6,7 @@
 #include "../Include/ResourceDataStructure.h"
 
 #include <stdint.h>
+#include <string>
 #include <d3d12.h>
 #include <wrl.h>
 
@@ -20,7 +21,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView);
+	void Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, bool enableLight, const std::string& textureFilePath);
 
 	/// <summary>
 	/// 更新処理
@@ -35,7 +36,7 @@ public:
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void DrawCall(DirectXCommon* dxCommon, Texture* texture1, Texture* texture2);
+	void DrawCall(DirectXCommon* dxCommon);
 
 
 private:
@@ -62,5 +63,6 @@ private:
 
 	//Texture
 	bool useMonsterBall = true;
+
 };
 

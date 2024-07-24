@@ -1,9 +1,12 @@
 #pragma once
 #include "../Include/ResourceDataStructure.h"
+#include <string>
 #include <d3d12.h>
 #include <wrl.h>
 
+struct ModelData;
 class Material;
+class DirectXCommon;
 class Mesh {
 public:
 
@@ -13,7 +16,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void InitializeMesh();
+	void InitializeMesh(uint32_t index, DirectXCommon* dxCommon, bool enableLight, const std::string& filePath);
 
 	/// <summary>
 	/// 更新処理
@@ -36,6 +39,12 @@ public:
 	/// 三角形の頂点バッファリソース初期化
 	/// </summary>
 	void InitializeVertexResourceTriangle(ID3D12Device* device);
+
+	/// <summary>
+	/// objモデルの頂点バッファリソース初期化
+	/// </summary>
+	/// <param name="device"></param>
+	void InitializeVertexResourceObjModel(ID3D12Device* device,ModelData modelData);
 
 	/// <summary>
 	/// 頂点バッファビューの取得

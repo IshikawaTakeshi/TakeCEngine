@@ -24,11 +24,11 @@ Sprite::~Sprite() {
 
 #pragma region 初期化処理
 
-void Sprite::Initialize(DirectXCommon* dxCommon) {
+void Sprite::Initialize(DirectXCommon* dxCommon, bool enableLight, const std::string& textureFilePath) {
 
 	//メッシュ初期化
 	mesh_ = new Mesh();
-	mesh_->InitializeMesh();
+	mesh_->InitializeMesh(1,dxCommon,enableLight,textureFilePath);
 	//vertexResource初期化
 	mesh_->InitializeVertexResourceSprite(dxCommon->GetDevice());
 	//IndexResource初期化
@@ -120,7 +120,7 @@ void Sprite::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 }
 
 #pragma region 描画処理
-void Sprite::DrawCall(DirectXCommon* dxCommon, Texture* texture) {
+void Sprite::DrawCall(DirectXCommon* dxCommon) {
 	//spriteの描画。
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
 	//materialCBufferの場所を指定
@@ -129,7 +129,7 @@ void Sprite::DrawCall(DirectXCommon* dxCommon, Texture* texture) {
 	//TransformationMatrixCBufferの場所の設定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture->GetTextureSrvHandleGPU());
+	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetMaterial()->GetTexture()->GetTextureSrvHandleGPU());
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//IBVの設定

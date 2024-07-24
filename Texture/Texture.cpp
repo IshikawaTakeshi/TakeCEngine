@@ -68,6 +68,7 @@ DirectX::ScratchImage Texture::LoadTexture(const std::string& filePath) {
 		image.GetMetadata(),
 		DirectX::TEX_FILTER_SRGB,
 		0, mipImages);
+
 	assert(SUCCEEDED(hr));
 
 	//ミップマップ付きのデータを返す

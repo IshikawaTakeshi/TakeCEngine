@@ -25,7 +25,7 @@ public:
 	/// <param name="wparam">メッセージ情報1</param>
 	/// <param name="lparam">メッセージ情報2</param>
 	/// <returns>成否</returns>
-	static LRESULT WindowProc(HWND hwnd, UINT msg,WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg,WPARAM wParam, LPARAM lParam);
 
 	/// <summary>
 	/// ゲームウィンドウの作成
@@ -48,11 +48,21 @@ public:
 	/// <returns>終了かどうか</returns>
 	bool ProcessMessage();
 
+public:
+
 	/// <summary>
 	/// ウィンドウハンドルの取得
 	/// </summary>
 	/// <returns></returns>
 	HWND GetHwnd() const { return hwnd_; }
+
+	/// <summary>
+	/// ウィンドウクラスの取得
+	/// </summary>
+	/// <returns></returns>
+	const WNDCLASS& GetWndClass() const { return wc_; }
+
+	const RECT& GetWindowRect() const { return wrc_; }
 
 private:
 	WinApp() = default;
