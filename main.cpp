@@ -138,7 +138,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		if (input->PushKey(DIK_B)) {
 			//モデルのテクスチャを変更
 			sphere->SetTexture(texture1);
-			1
 		}
 		model->DrawCall(directXCommon);
 		sphere->DrawCall(directXCommon);
