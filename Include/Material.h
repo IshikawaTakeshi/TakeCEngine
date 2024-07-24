@@ -1,6 +1,7 @@
 #pragma once
 #include "../Include/ResourceDataStructure.h"
 #include "../MyMath/Transform.h"
+#include "../Texture/Texture.h"
 #include <d3d12.h>
 #include <wrl.h>
 #include <string>
@@ -8,17 +9,16 @@
 
 
 class DirectXCommon;
-class Texture;
 class Material {
 public:
 
 	Material() = default;
-	~Material() = default;
+	~Material();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void InitializeTexture(uint32_t index, DirectXCommon* dxCommon,  bool enableLight, const std::string& filePath);
+	void InitializeTexture(uint32_t index, DirectXCommon* dxCommon, bool enableLight, const std::string& filePath);
 
 	/// <summary>
 	/// 更新処理
@@ -28,7 +28,9 @@ public:
 	/// <summary>
 	/// マテリアルリソース初期化
 	/// </summary>
-	void InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> device,bool enableLight);
+	void InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> device, bool enableLight);
+
+public: //ゲッター
 
 	/// <summary>
 	/// マテリアルリソースの取得
@@ -36,6 +38,24 @@ public:
 	ID3D12Resource* GetMaterialResource() { return materialResource_.Get(); }
 
 	Texture* GetTexture() { return texture_; }
+
+public: //セッター
+
+	/// <summary>
+	///uvTransformのセッター
+	/// </summary>
+	void SetUvTransform(const Transform& uvTransform) { uvTransform_ = uvTransform; }
+
+	/// <summary>
+	/// マテリアルデータのセッター
+	/// </summary>
+	void SetMaterialData(MaterialData* materialData) { materialData_ = materialData; }
+
+	/// <summary>
+	/// テクスチャのセッター
+	/// </summary>
+	void SetTexture(Texture* texture) { texture_ = texture; }
+
 
 private:
 

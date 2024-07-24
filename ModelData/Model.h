@@ -51,7 +51,7 @@ public:
 
 public: //ゲッター
 
-
+	Mesh* GetMesh() { return mesh_; }
 
 public: //セッター
 
@@ -59,7 +59,6 @@ public: //セッター
 
 	void SetWorldMatrix(const Matrix4x4& worldMatrix) { worldMatrix_ = worldMatrix; }
 
-	void SetTextureFilePath(const std::string& textureFilePath) { modelData_.material.textureFilePath = textureFilePath; }
 
 private:
 

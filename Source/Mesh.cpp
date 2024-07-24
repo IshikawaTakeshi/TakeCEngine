@@ -1,7 +1,8 @@
 #include "../Include/Mesh.h"
 #include "../Include/DirectXCommon.h"
-#include "../Include/Material.h"
 #include <numbers>
+
+Mesh::~Mesh() {}
 
 void Mesh::InitializeMesh(uint32_t index, DirectXCommon* dxCommon, bool enableLight, const std::string& filePath) {
 

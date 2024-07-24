@@ -2,6 +2,8 @@
 #include "../Include/WinApp.h"
 #include <cassert>
 
+Input::~Input() {}
+
 void Input::Initialize(WinApp* winApp) {
 	HRESULT result;
 

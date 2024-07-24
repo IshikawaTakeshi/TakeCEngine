@@ -14,7 +14,7 @@ class DXC {
 public:
 
 	DXC() = default;
-	~DXC() = default;
+	~DXC();
 
 	/// <summary>
 	/// dxc初期化

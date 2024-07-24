@@ -1,17 +1,17 @@
 #pragma once
 #include "../Include/ResourceDataStructure.h"
+#include "../Include/Material.h"
 #include <string>
 #include <d3d12.h>
 #include <wrl.h>
 
-struct ModelData;
-class Material;
+
 class DirectXCommon;
 class Mesh {
 public:
 
 	Mesh() = default;
-	~Mesh() = default;
+	~Mesh();
 
 	/// <summary>
 	/// 初期化
@@ -72,6 +72,12 @@ public:
 	//================================= MaterialBufferResource ==================================//
 
 	Material* GetMaterial() { return material_; }
+
+public:
+
+	void SetTexture(Texture* texture) {
+		material_->SetTexture(texture);
+	}
 
 public:
 

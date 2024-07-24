@@ -98,14 +98,7 @@ void DirectXCommon::Finalize() {
 }
 
 void DirectXCommon::PreDraw() {
-#ifdef _DEBUG
-	ImGui_ImplDX12_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
 
-	//開発用UIの処理。実際に開発用のUIを出す場合はここをゲーム特有の処理に置き換える
-	ImGui::ShowDemoWindow();
-#endif // DEBUG
 	//全画面クリア
 	ClearRenderTarget();
 }

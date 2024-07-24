@@ -4,14 +4,12 @@
 #include "../MyMath/TransformMatrix.h"
 #include "../MyMath/Transform.h"
 #include "../Include/ResourceDataStructure.h"
-
+#include "../Include/Mesh.h"
 #include <stdint.h>
 #include <string>
 #include <d3d12.h>
 #include <wrl.h>
 
-class Mesh;
-class Texture;
 class DirectXCommon;
 class Sphere {
 public:
@@ -37,6 +35,14 @@ public:
 	/// 描画処理
 	/// </summary>
 	void DrawCall(DirectXCommon* dxCommon);
+
+public: //ゲッター
+
+public: //セッター
+
+	void SetTexture(Texture* texture) {
+		mesh_->SetTexture(texture);
+	}
 
 
 private:

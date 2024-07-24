@@ -13,6 +13,9 @@ class WinApp;
 class Input {
 public:
 
+	Input() = default;
+	~Input();
+
 	/// <summary>
 	/// 初期化処理
 	/// </summary>

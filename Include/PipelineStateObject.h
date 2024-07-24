@@ -15,7 +15,7 @@ class PSO {
 public:
 
 	PSO() = default;
-	~PSO() = default;
+	~PSO();
 
 	/// <summary>
 	/// 開放処理

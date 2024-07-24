@@ -2,9 +2,6 @@
 #include "../MyMath/MatrixMath.h"
 #include "../MyMath/MyMath.h"
 #include "../Include/DirectXCommon.h"
-#include "../Include/Mesh.h"
-#include "../Include/Material.h"
-#include "../Texture/Texture.h"
 #include <numbers>
 
 #pragma region imgui

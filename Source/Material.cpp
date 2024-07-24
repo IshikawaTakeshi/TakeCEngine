@@ -1,6 +1,5 @@
 #include "../Include/Material.h"
 #include "../Include/DirectXCommon.h"
-#include "../Texture/Texture.h"
 #include "../MyMath/MatrixMath.h"
 
 #pragma region imgui
@@ -13,6 +12,8 @@
 
 #pragma endregion
 
+
+Material::~Material() {}
 
 void Material::InitializeTexture(uint32_t index, DirectXCommon* dxCommon, bool enableLight, const std::string& filePath) {
 

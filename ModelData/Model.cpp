@@ -93,7 +93,7 @@ void Model::Update() {
 	transformMatrixData_->WVP = worldViewProjectionMatrix_;
 	transformMatrixData_->World = worldMatrix_;
 
-	ImGui::Begin("Window::Model");
+	ImGui::Begin("Window:Model");
 	ImGui::DragFloat3("ModelScale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat3("ModelRotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("ModelTranslate", &transform_.translate.x, 0.01f);

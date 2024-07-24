@@ -5,6 +5,9 @@
 #include <cassert>
 
 #pragma region PSO
+
+PSO::~PSO() {}
+
 void PSO::Finalize() {
 
 	graphicPipelineState_.Reset();

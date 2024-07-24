@@ -87,15 +87,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//sprite->Initialize(directXCommon);
 
 	
-	//////////////////////////////////////////////////////////
-	//メインループ
-	//////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	//										メインループ
+	/////////////////////////////////////////////////////////////////////////////////////////////
 	
 	//ウィンドウの×ボタンが押されるまでループ
 	while (winApp->ProcessMessage() == 0) {
-		
-		//描画前処理
-		directXCommon->PreDraw();
+
+
+
+		//========================== 更新処理　==========================//
+
+
+#ifdef _DEBUG
+		//ImGui受付開始
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		//開発用UIの処理。実際に開発用のUIを出す場合はここをゲーム特有の処理に置き換える
+		ImGui::ShowDemoWindow();
+#endif // DEBUG
+
+		//入力更新
+		input->Update();
+
 
 		//モデルの更新処理
 		model->Update();
@@ -103,10 +119,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//球
 		sphere->Update();
 
+
+
 		//スプライト
 		//sprite->Update();
 
 
+		//========================== 描画処理　==========================//
+		
+		//描画前処理
+		directXCommon->PreDraw();
+
+	
+		if (input->TriggerKey(DIK_SPACE)) {
+			//モデルのテクスチャを変更
+			sphere->SetTexture(texture2);
+		}
+		if (input->PushKey(DIK_B)) {
+			//モデルのテクスチャを変更
+			sphere->SetTexture(texture1);
+		}
 		model->DrawCall(directXCommon);
 		sphere->DrawCall(directXCommon);
 		//sprite->DrawCall(directXCommon, texture1);
