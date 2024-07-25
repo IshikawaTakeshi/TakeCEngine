@@ -51,16 +51,16 @@ public:
 public:
 
 	/// <summary>
+	/// ウィンドウクラスのhInstance取得
+	/// </summary>
+	/// <returns></returns>
+	const HINSTANCE& GetHInstance() const { return wc_.hInstance; }
+
+	/// <summary>
 	/// ウィンドウハンドルの取得
 	/// </summary>
 	/// <returns></returns>
-	HWND GetHwnd() const { return hwnd_; }
-
-	/// <summary>
-	/// ウィンドウクラスの取得
-	/// </summary>
-	/// <returns></returns>
-	const WNDCLASS& GetWndClass() const { return wc_; }
+	const HWND& GetHwnd() const { return hwnd_; }
 
 	const RECT& GetWindowRect() const { return wrc_; }
 
