@@ -3,18 +3,25 @@
 #include <dinput.h>
 #include <wrl.h>
 
-#pragma comment(lib, "dinput8.lib")
-#pragma comment(lib, "dxguid.lib")
 
-//エイリアステンプレート
-template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 class WinApp;
 class Input {
 public:
 
+	//エイリアステンプレート
+	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+public:
+
 	Input() = default;
 	~Input();
+
+	/// <summary>
+	/// シングルトンインスタンスの取得
+	/// </summary>
+	/// <returns></returns>
+	static Input* GetInstance();
 
 	/// <summary>
 	/// 初期化処理

@@ -1,13 +1,21 @@
 #include "../Include/Input.h"
 #include "../Include/WinApp.h"
 #include <cassert>
+#include <memory.h>
+#pragma comment(lib, "dinput8.lib")
+#pragma comment(lib, "dxguid.lib")
 
 Input::~Input() {}
+
+Input* Input::GetInstance() {
+	static Input instance;
+	return &instance;
+}
 
 void Input::Initialize(WinApp* winApp) {
 	HRESULT result;
 
-	this->winApp_ = winApp;
+	winApp_ = winApp;
 
 	//DirectInputの初期化
 	result = DirectInput8Create(winApp->GetHInstance(),
@@ -15,7 +23,7 @@ void Input::Initialize(WinApp* winApp) {
 	assert(SUCCEEDED(result));
 
 	//キーボードデバイスの初期化
-	result = directInput_->CreateDevice(GUID_SysKeyboard, &keyboard_, nullptr);
+	result = directInput_->CreateDevice(GUID_SysKeyboard, &keyboard_, NULL);
 	assert(SUCCEEDED(result));
 
 	//入力データ形式のセット
@@ -23,7 +31,7 @@ void Input::Initialize(WinApp* winApp) {
 	assert(SUCCEEDED(result));
 
 	//排他制御レベルのセット
-	result = keyboard_->SetCooperativeLevel(winApp->GetHwnd(),DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+	result = keyboard_->SetCooperativeLevel(winApp->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 	assert(SUCCEEDED(result));
 }
 
@@ -33,7 +41,6 @@ void Input::Update() {
 
 	//前回のキー入力を保存
 	memcpy(preKey, key, sizeof(key));
-
 	//キーボード情報の取得開始
 	result = keyboard_->Acquire();
 	assert(SUCCEEDED(result));
@@ -45,21 +52,11 @@ void Input::Update() {
 }
 
 bool Input::PushKey(BYTE keyNumber) {
-	
-	//指定キーが押されているか
-	if (key[keyNumber]) {
-		return true;
-	}
-
-	//そうでなければfalseを返す
-	return false;
+	// 指定キーが押されているか
+	return key[keyNumber] != 0;
 }
 
 bool Input::TriggerKey(BYTE keyNumber) {
-
-	if (key[keyNumber] && !preKey[keyNumber]) {
-		return true;
-	}
-
-	return false;
+	// 指定キーが押された瞬間か
+	return key[keyNumber] && !preKey[keyNumber];
 }

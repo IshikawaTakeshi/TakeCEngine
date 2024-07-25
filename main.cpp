@@ -6,9 +6,10 @@
 #include "Include/Logger.h"
 #include "Include/DirectXCommon.h"
 #include "Include/Input.h"
+
 #include "MyMath/Transform.h"
-#include "Texture/Texture.h"
 #include "MyMath/MatrixMath.h"
+#include "Texture/Texture.h"
 #include "Sprite/Sprite.h"
 #include "Triangle/Triangle.h"
 #include "Sphere/Sphere.h"
@@ -43,7 +44,7 @@ struct D3DResourceLeakChecker {
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-	
+
 	D3DResourceLeakChecker leakCheck;
 
 	//タイトルバーの名前の入力
@@ -55,7 +56,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	directXCommon->Initialize();
 
 	//入力初期化
-	Input* input = new Input();
+	Input* input = Input::GetInstance();
 	input->Initialize(winApp);
 
 	//テクスチャ初期化
@@ -75,25 +76,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//モデル
 	Model* model = new Model();
-	model->Initialize(directXCommon,cameraMatrix,"Resources","obj_mtl_blend","axis.obj");
+	model->Initialize(directXCommon, cameraMatrix, "Resources", "obj_mtl_blend", "axis.obj");
 	//model->SetTextureFilePath("./Resources/uvChecker.png");
 
 	//球
 	Sphere* sphere = new Sphere();
-	sphere->Initialize(directXCommon, cameraMatrix,true, "./Resources/uvChecker.png");
+	sphere->Initialize(directXCommon, cameraMatrix, true, "./Resources/uvChecker.png");
 
 	//スプライト
 	//Sprite* sprite = new Sprite();
 	//sprite->Initialize(directXCommon);
 
-	
+
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	//										メインループ
 	/////////////////////////////////////////////////////////////////////////////////////////////
-	
-	//ウィンドウの×ボタンが押されるまでループ
-	while (winApp->ProcessMessage() == 0) {
 
+	//ウィンドウの×ボタンが押されるまでループ
+
+	while (true) {
+		//メッセージ処理
+		if (winApp->ProcessMessage()) {
+			//ウィンドウの×ボタンが押されたらループを抜ける
+			break;
+		}
 
 
 		//========================== 更新処理　==========================//
@@ -126,11 +132,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 		//========================== 描画処理　==========================//
-		
+
 		//描画前処理
 		directXCommon->PreDraw();
 
-	
+
 		if (input->TriggerKey(DIK_SPACE)) {
 			//モデルのテクスチャを変更
 			sphere->SetTexture(texture2);
@@ -152,16 +158,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete model;
 	delete sphere;
 	//delete sprite;
-	
-	winApp->Finalize();
+
+	delete input;
 	directXCommon->Finalize();
-	
+	delete directXCommon;
+
+	winApp->Finalize();
+	delete winApp;
 
 	leakCheck.~D3DResourceLeakChecker();
 
 	return 0;
 }
-
 
 
 

@@ -12,6 +12,15 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 #pragma endregion
 
 
+WinApp::WinApp() {}
+
+WinApp::~WinApp() {}
+
+WinApp* WinApp::GetInstance() {
+	static WinApp instance;
+	return &instance;
+}
+
 void WinApp::Initialize(const wchar_t title[]) {
 
 	HRESULT hr = CoInitializeEx(0, COINIT_MULTITHREADED);
@@ -47,11 +56,9 @@ void WinApp::Initialize(const wchar_t title[]) {
 }
 
 void WinApp::Finalize() {
-#ifdef _DEBUG
-	debugController_.Reset();
-#endif // _DEBUG
 
 	CloseWindow(hwnd_);
+	CoUninitialize();
 }
 
 bool WinApp::ProcessMessage() {
@@ -72,10 +79,6 @@ bool WinApp::ProcessMessage() {
 	return false;
 }
 
-WinApp* WinApp::GetInstance() {
-	static WinApp instance;
-	return &instance;
-}
 
 //ウィンドウプロシージャ
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
