@@ -43,12 +43,10 @@ void Input::Update() {
 	memcpy(preKey, key, sizeof(key));
 	//キーボード情報の取得開始
 	result = keyboard_->Acquire();
-	assert(SUCCEEDED(result));
-
+	
 	//全てのキーの入力情報を取得
 	result = keyboard_->GetDeviceState(sizeof(key), key);
-	assert(SUCCEEDED(result));
-
+	
 }
 
 bool Input::PushKey(BYTE keyNumber) {

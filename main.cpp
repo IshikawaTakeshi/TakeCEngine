@@ -159,9 +159,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete sphere;
 	//delete sprite;
 
-	delete input;
 	directXCommon->Finalize();
-	delete directXCommon;
 
 	winApp->Finalize();
 	delete winApp;
