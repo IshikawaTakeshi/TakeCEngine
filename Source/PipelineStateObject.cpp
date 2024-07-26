@@ -119,7 +119,7 @@ void PSO::CreateRasterizerState() {
 	rasterizerDesc_.FillMode = D3D12_FILL_MODE_SOLID;
 }
 
-void PSO::CreatePSO(Microsoft::WRL::ComPtr<ID3D12Device> device, DXC* dxc) {
+void PSO::CreatePSO(Microsoft::WRL::ComPtr<ID3D12Device> device, DXC* dxc_) {
 
 	HRESULT result = S_FALSE;
 
@@ -134,22 +134,22 @@ void PSO::CreatePSO(Microsoft::WRL::ComPtr<ID3D12Device> device, DXC* dxc) {
 
 	//Shaderをコンパイル
 	//VS
-	vertexShaderBlob_ = dxc->CompileShader(
+	vertexShaderBlob_ = dxc_->CompileShader(
 		L"Object3D.VS.hlsl",
 		L"vs_6_0",
-		dxc->GetDxcUtils().Get(),
-		dxc->GetDxcCompiler().Get(),
-		dxc->GetIncludeHandler().Get()
+		dxc_->GetDxcUtils().Get(),
+		dxc_->GetDxcCompiler().Get(),
+		dxc_->GetIncludeHandler().Get()
 	);
 	assert(vertexShaderBlob_ != nullptr);
 
 	//PS
-	pixelShaderBlob_ = dxc->CompileShader(
+	pixelShaderBlob_ = dxc_->CompileShader(
 		L"Object3D.PS.hlsl",
 		L"ps_6_0",
-		dxc->GetDxcUtils().Get(),
-		dxc->GetDxcCompiler().Get(),
-		dxc->GetIncludeHandler().Get()
+		dxc_->GetDxcUtils().Get(),
+		dxc_->GetDxcCompiler().Get(),
+		dxc_->GetIncludeHandler().Get()
 	);
 	assert(pixelShaderBlob_ != nullptr);
 

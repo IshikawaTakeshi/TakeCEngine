@@ -153,16 +153,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		directXCommon->PostDraw();
 	}
 
-	delete texture1;
-	delete texture2;
+	
 	delete model;
 	delete sphere;
+	delete texture1;
+	delete texture2;
 	//delete sprite;
 
 	directXCommon->Finalize();
 
 	winApp->Finalize();
-	delete winApp;
+	
 
 	leakCheck.~D3DResourceLeakChecker();
 

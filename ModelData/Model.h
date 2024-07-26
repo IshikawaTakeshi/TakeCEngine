@@ -63,7 +63,7 @@ public: //セッター
 private:
 
 	//メッシュ
-	Mesh* mesh_;
+	Mesh* mesh_ = nullptr;
 
 	//構築するModelData
 	ModelData modelData_;

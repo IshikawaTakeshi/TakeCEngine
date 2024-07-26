@@ -19,6 +19,12 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 #endif // DEBUG
 #pragma endregion
 
+DirectXCommon::~DirectXCommon() {
+
+	delete pso_;
+	delete dxc_;
+}
+
 DirectXCommon* DirectXCommon::GetInstance() {
 	static DirectXCommon instance;
 	return &instance;
@@ -42,11 +48,11 @@ void DirectXCommon::Initialize() {
 	descriptorSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 	//DXC初期化
-	dxc = new DXC();
-	dxc->InitializeDxc();
+	dxc_ = new DXC();
+	dxc_->InitializeDxc();
 	//PSO生成
-	pso = new PSO();
-	pso->CreatePSO(device_,dxc);	
+	pso_ = new PSO();
+	pso_->CreatePSO(device_,dxc_);	
 	//Viewport初期化
 	InitViewport();
 	//Scissor矩形初期化
@@ -79,8 +85,8 @@ void DirectXCommon::Finalize() {
 	ImGui::DestroyContext();
 #endif // DEBUG
 
-	dxc->Finalize();
-	pso->Finalize();
+	dxc_->Finalize();	
+	pso_->Finalize();
 
 	fence_.Reset();
 	dsvHeap_.Reset();
@@ -192,8 +198,8 @@ void DirectXCommon::ClearRenderTarget() {
 	commandList_->RSSetViewports(1, &viewport_); // Viewportを設定
 	commandList_->RSSetScissorRects(1, &scissorRect_); // Scissorの設定
 	// RootSignatureを設定。PSOに設定しているが別途設定が必要
-	commandList_->SetGraphicsRootSignature(pso->GetRootSignature().Get()); // rootSignatureを設定
-	commandList_->SetPipelineState(pso->GetGraphicPipelineState().Get()); // PSOを設定
+	commandList_->SetGraphicsRootSignature(pso_->GetRootSignature().Get()); // rootSignatureを設定
+	commandList_->SetPipelineState(pso_->GetGraphicPipelineState().Get()); // PSOを設定
 
 }
 
@@ -281,7 +287,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 		//エラーの時に止まる
 		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
 		//警告時に止まる
-		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+		//infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
 
 		//抑制するメッセージのID
 		D3D12_MESSAGE_ID denyIds[] = {

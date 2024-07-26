@@ -18,7 +18,7 @@ class DirectXCommon {
 public:
 
 	DirectXCommon() = default;
-	~DirectXCommon() = default;
+	~DirectXCommon();
 
 	/// <summary>
 	/// シングルトンインスタンスの取得
@@ -89,42 +89,42 @@ private:
 	// ウィンドウズアプリケーション管理
 	WinApp* winApp_ = WinApp::GetInstance();
 	//DirectXShaderCompiler
-	DXC* dxc = nullptr;
+	DXC* dxc_ = nullptr;
 	//PipelineStateObject
-	PSO* pso = nullptr;
+	PSO* pso_ = nullptr;
 	//DXGIファクトリーの作成
-	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
+	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_ = nullptr;
 	//使用するアダプタ用の変数
-	Microsoft::WRL::ComPtr<IDXGIAdapter4> useAdapter_;
+	Microsoft::WRL::ComPtr<IDXGIAdapter4> useAdapter_ = nullptr;
 	//D3D12Deviceの生成
-	Microsoft::WRL::ComPtr<ID3D12Device> device_;
+	Microsoft::WRL::ComPtr<ID3D12Device> device_ = nullptr;
 	//コマンドキューの生成
-	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_;
+	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
 	//コマンドアロケータの作成
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_ = nullptr;
 	//コマンドリストの生成
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_;
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
 	//スワップチェーンの生成
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources_[2];
 	//ディスクリプタヒープの生成
 	
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_;
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvHeap_;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvHeap_ = nullptr;
 
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
 	//RTVを2つ作るのでディスクリプタを2つ用意
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2] = {};
 	//DSVを設定
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
 	//フェンスの生成
-	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
+	Microsoft::WRL::ComPtr<ID3D12Fence> fence_ = nullptr;
 	uint64_t fenceVal_;
 	HANDLE fenceEvent_;
 	// TransitionBarrierの設定
-	D3D12_RESOURCE_BARRIER barrier_;
+	D3D12_RESOURCE_BARRIER barrier_{};
 
 	uint32_t descriptorSizeSRV_;
 	uint32_t descriptorSizeRTV_;
@@ -166,7 +166,7 @@ private:
 	);
 
 
-#pragma region dxc
+#pragma region dxc_
 //private:
 //	//////////////////////////////////////////////////////////////////////////////////////////
 //	///			dxc

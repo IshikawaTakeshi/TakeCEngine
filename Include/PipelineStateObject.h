@@ -45,7 +45,7 @@ public:
 	/// <summary>
 	/// PSO生成
 	/// </summary>
-	void CreatePSO(Microsoft::WRL::ComPtr<ID3D12Device> device, DXC* dxc);
+	void CreatePSO(Microsoft::WRL::ComPtr<ID3D12Device> device, DXC* dxc_);
 
 	/// <summary>
 	/// rootSignatureの取得
