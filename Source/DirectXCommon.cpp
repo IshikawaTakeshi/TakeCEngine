@@ -19,25 +19,19 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 #endif // DEBUG
 #pragma endregion
 
+
 DirectXCommon::~DirectXCommon() {
 
-	delete pso_;
-	delete dxc_;
 }
 
-DirectXCommon* DirectXCommon::GetInstance() {
-	static DirectXCommon instance;
-	return &instance;
-}
-
-void DirectXCommon::Initialize() {
+void DirectXCommon::Initialize(HWND hwnd) {
 
 	//DXGIデバイス初期化
 	InitializeDXGIDevice();
 	// コマンド関連初期化
 	InitializeCommand();
 	// スワップチェーンの生成
-	CreateSwapChain();
+	CreateSwapChain(hwnd);
 	// レンダーターゲット生成
 	CreateFinalRenderTargets();
 	// フェンス生成
@@ -58,35 +52,23 @@ void DirectXCommon::Initialize() {
 	//Scissor矩形初期化
 	InitScissorRect();
 
-	//ImGui初期化
-#ifdef _DEBUG
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(winApp_->GetHwnd());
-	ImGui_ImplDX12_Init(DirectXCommon::GetDevice(),
-		swapChainDesc_.BufferCount,
-		rtvDesc_.Format,
-		srvHeap_.Get(),
-		srvHeap_->GetCPUDescriptorHandleForHeapStart(),
-		srvHeap_->GetGPUDescriptorHandleForHeapStart()
-	);
-#endif // DEBUG
-
 }
 	
 	
 
 void DirectXCommon::Finalize() {
-	/*==========ImGui==========*/
-#ifdef _DEBUG
-	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-#endif // DEBUG
 
-	dxc_->Finalize();	
-	pso_->Finalize();
+	//if (dxc_ != nullptr) {
+	//	dxc_->Finalize();
+	//	delete dxc_;
+	//	dxc_ = nullptr;
+	//}
+
+	//if (pso_ != nullptr) {
+	//	pso_->Finalize();
+	//	delete pso_;
+	//	pso_ = nullptr;
+	//}
 
 	fence_.Reset();
 	dsvHeap_.Reset();
@@ -335,7 +317,7 @@ void DirectXCommon::InitializeCommand() {
 	assert(SUCCEEDED(result));
 }
 
-void DirectXCommon::CreateSwapChain() {
+void DirectXCommon::CreateSwapChain(HWND hwnd) {
 
 	HRESULT result = S_FALSE;
 
@@ -349,7 +331,7 @@ void DirectXCommon::CreateSwapChain() {
 	swapChainDesc_.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // モニタに映したら(フリップ後)は速やかに破棄
 
 	result = dxgiFactory_->CreateSwapChainForHwnd(
-		commandQueue_.Get(), winApp_->GetHwnd(), &swapChainDesc_, nullptr, nullptr,
+		commandQueue_.Get(), hwnd, &swapChainDesc_, nullptr, nullptr,
 		reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
 	assert(SUCCEEDED(result));
 }

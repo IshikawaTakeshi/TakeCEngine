@@ -16,20 +16,24 @@ class DXC;
 class PSO;
 class DirectXCommon {
 public:
-
-	DirectXCommon() = default;
-	~DirectXCommon();
+	/////////////////////////////////////////////////////////////////////////////////////
+	///			publicメンバ関数
+	/////////////////////////////////////////////////////////////////////////////////////
 
 	/// <summary>
-	/// シングルトンインスタンスの取得
+	/// コンストラクタ
 	/// </summary>
-	/// <returns></returns>
-	static DirectXCommon* GetInstance();
+	DirectXCommon() = default;
+
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
+	~DirectXCommon();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(HWND hwnd);
 
 	/// <summary>
 	/// 終了・開放処理
@@ -50,6 +54,19 @@ public:
 	/// レンダーターゲットのクリア
 	/// </summary>
 	void ClearRenderTarget();
+
+
+	/// <summary>
+	/// Resource生成関数
+	/// </summary>
+	static Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(
+		ID3D12Device* device, size_t sizeInBytes);
+
+
+public:
+	/////////////////////////////////////////////////////////////////////////////////////
+	///			Getter
+	/////////////////////////////////////////////////////////////////////////////////////
 
 	/// <summary>
 	/// デバイスの取得
@@ -78,16 +95,29 @@ public:
 	/// </summary>
 	ID3D12DescriptorHeap* GetRtvHeap() { return rtvHeap_.Get(); }
 
+	/// <summary>
+	/// BufferCountの取得
+	/// </summary>
+	/// <returns></returns>
+	UINT GetBufferCount() { return swapChainDesc_.BufferCount; }
+
+	DXGI_FORMAT GetRtvFormat() { return rtvDesc_.Format; }
+
+
+
 	uint32_t GetDescriptorSizeSRV() { return descriptorSizeSRV_; }
 	uint32_t GetDescriptorSizeRTV() { return descriptorSizeRTV_; }
 	uint32_t GetDescriptorSizeDSV() { return descriptorSizeDSV_; }
 
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap,uint32_t descriptorSize, uint32_t index);
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap,uint32_t descriptorSize, uint32_t index);
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
 
 private:
-	// ウィンドウズアプリケーション管理
-	WinApp* winApp_ = WinApp::GetInstance();
+	/////////////////////////////////////////////////////////////////////////////////////
+	///			メンバ変数
+	/////////////////////////////////////////////////////////////////////////////////////
+
+
 	//DirectXShaderCompiler
 	DXC* dxc_ = nullptr;
 	//PipelineStateObject
@@ -108,8 +138,8 @@ private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources_[2];
+
 	//ディスクリプタヒープの生成
-	
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvHeap_ = nullptr;
@@ -130,8 +160,16 @@ private:
 	uint32_t descriptorSizeRTV_;
 	uint32_t descriptorSizeDSV_;
 
+	// ビューポート
+	D3D12_VIEWPORT viewport_{};
+	// シザー矩形
+	D3D12_RECT scissorRect_{};
 
 private:
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	///			privateメンバ関数
+	/////////////////////////////////////////////////////////////////////////////////////
 
 	/// <summary>
 	/// DXGIデバイス初期化
@@ -139,14 +177,24 @@ private:
 	void InitializeDXGIDevice();
 
 	// <summary>
-	/// コマンド関連初期化
+	/// コマンドキュー・リスト・アロケータ初期化
 	/// </summary>
 	void InitializeCommand();
+
+	/// <summary>
+	/// Viewport初期化
+	/// </summary>
+	void InitViewport();
+
+	/// <summary>
+	/// シザー矩形初期化
+	/// </summary>
+	void InitScissorRect();
+
 	/// <summary>
 	/// スワップチェーンの生成
 	/// </summary>
-	void CreateSwapChain();
-
+	void CreateSwapChain(HWND hwnd);
 
 	/// <summary>
 	/// レンダーターゲット生成
@@ -164,72 +212,6 @@ private:
 		ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType,
 		UINT numDescriptors, bool shaderVisible
 	);
-
-
-#pragma region dxc_
-//private:
-//	//////////////////////////////////////////////////////////////////////////////////////////
-//	///			dxc
-//	//////////////////////////////////////////////////////////////////////////////////////////
-//	
-//	//dxc関連のメンバ変数
-//	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils_;
-//	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler_;
-//	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler_;
-//	Microsoft::WRL::ComPtr<IDxcBlobEncoding> shaderSource_;
-//	Microsoft::WRL::ComPtr<IDxcResult> shaderResult_;
-//	Microsoft::WRL::ComPtr<IDxcBlobUtf8> shaderError_;
-//	Microsoft::WRL::ComPtr<IDxcBlob> shaderBlob_;
-//
-//private:
-//	//dxc関連のメンバ関数
-//
-//	// <summary>
-//	/// dxc初期化
-//	/// </summary>
-//	void InitializeDxc();
-//
-//	Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(
-//		const std::wstring& filePath,
-//		const wchar_t* profile,
-//		IDxcUtils* dxcUtils,
-//		IDxcCompiler3* dxcCompiler,
-//		IDxcIncludeHandler* includeHandler
-//	);
-#pragma endregion
-
-#pragma region VertexResource
-private:
-	//////////////////////////////////////////////////////////////////////////////////////////
-	///			vertexResource
-	//////////////////////////////////////////////////////////////////////////////////////////
-
-
-	// ビューポート
-	D3D12_VIEWPORT viewport_{};
-	// シザー矩形
-	D3D12_RECT scissorRect_{};
-
-public:
-	/// <summary>
-	/// Resource生成関数
-	/// </summary>
-	static Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(
-	ID3D12Device* device, size_t sizeInBytes);
-
-private:
-
-	/// <summary>
-	/// Viewport初期化
-	/// </summary>
-	void InitViewport();
-
-	/// <summary>
-	/// シザー矩形初期化
-	/// </summary>
-	void InitScissorRect();
-
-#pragma endregion
 
 };
 

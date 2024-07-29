@@ -52,8 +52,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp->Initialize(L"CG2_06_02");
 
 	//DirectX初期化
-	DirectXCommon* directXCommon = DirectXCommon::GetInstance();
-	directXCommon->Initialize();
+	DirectXCommon* directXCommon = new DirectXCommon();
+	directXCommon->Initialize(winApp->GetHwnd());
+
+#pragma region ImGui初期化
+#ifdef _DEBUG
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(winApp->GetHwnd());
+	ImGui_ImplDX12_Init(directXCommon->GetDevice(),
+		directXCommon->GetBufferCount(),
+		directXCommon->GetRtvFormat(),
+		directXCommon->GetSrvHeap(),
+		directXCommon->GetSrvHeap()->GetCPUDescriptorHandleForHeapStart(),
+		directXCommon->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart()
+	);
+#endif // DEBUG
+#pragma endregion
 
 	//入力初期化
 	Input* input = Input::GetInstance();
@@ -153,6 +169,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		directXCommon->PostDraw();
 	}
 
+
+	/*==========ImGuiの開放==========*/
+#ifdef _DEBUG
+	ImGui_ImplDX12_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+#endif // DEBUG
+
+
+	directXCommon->Finalize();
+	winApp->Finalize();
 	
 	delete model;
 	delete sphere;
@@ -160,10 +187,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete texture2;
 	//delete sprite;
 
-	directXCommon->Finalize();
 
-	winApp->Finalize();
-	
 
 	leakCheck.~D3DResourceLeakChecker();
 
