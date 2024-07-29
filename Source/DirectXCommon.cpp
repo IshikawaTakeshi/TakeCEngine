@@ -95,6 +95,9 @@ void DirectXCommon::PostDraw() {
 
 	HRESULT result = S_FALSE;
 
+	//書き込むバックバッファのインデックスを取得
+	UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();
+
 #ifdef _DEBUG
 	//ImGuiの内部コマンドを生成する
 	ImGui::Render();
@@ -140,7 +143,7 @@ void DirectXCommon::PostDraw() {
 	//次のフレーム用のコマンドリストを準備
 	result = commandAllocator_->Reset();
 	assert(SUCCEEDED(result));
-
+	//コマンドリストのリセット
 	result = commandList_->Reset(commandAllocator_.Get(), nullptr);
 	assert(SUCCEEDED(result));
 }
@@ -173,12 +176,13 @@ void DirectXCommon::ClearRenderTarget() {
 	//指定した深度で画面全体をクリアにする
 	commandList_->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-	//描画用ディスクリプタヒープの設定
+	//SRV用ディスクリプタヒープの設定
 	ID3D12DescriptorHeap* drawHeaps_[] = { srvHeap_.Get()};
 	commandList_->SetDescriptorHeaps(1, drawHeaps_);
-
-	commandList_->RSSetViewports(1, &viewport_); // Viewportを設定
-	commandList_->RSSetScissorRects(1, &scissorRect_); // Scissorの設定
+	// Viewportを設定
+	commandList_->RSSetViewports(1, &viewport_);
+	// Scissorの設定
+	commandList_->RSSetScissorRects(1, &scissorRect_);
 	// RootSignatureを設定。PSOに設定しているが別途設定が必要
 	commandList_->SetGraphicsRootSignature(pso_->GetRootSignature().Get()); // rootSignatureを設定
 	commandList_->SetPipelineState(pso_->GetGraphicPipelineState().Get()); // PSOを設定
