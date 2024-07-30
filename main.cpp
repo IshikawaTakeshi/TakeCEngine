@@ -53,7 +53,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//DirectX初期化
 	DirectXCommon* directXCommon = new DirectXCommon();
-	directXCommon->Initialize(winApp->GetHwnd());
+	directXCommon->Initialize(winApp);
 
 #pragma region ImGui初期化
 #ifdef _DEBUG

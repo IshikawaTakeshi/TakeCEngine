@@ -8,9 +8,10 @@
 #include <vector>
 #include <iostream>
 #include <array>
+
+#include "../Include/WinApp.h"
 #include "../MyMath/Matrix4x4.h"
 #include "../Include/ResourceDataStructure.h"
-#include "WinApp.h"
 
 class DXC;
 class PSO;
@@ -43,7 +44,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(HWND hwnd);
+	void Initialize(WinApp* winApp);
 
 	/// <summary>
 	/// 終了・開放処理
@@ -60,10 +61,7 @@ public:
 	/// </summary>
 	void PostDraw();
 
-	/// <summary>
-	/// レンダーターゲットのクリア
-	/// </summary>
-	void ClearRenderTarget();
+	
 
 
 	/// <summary>
@@ -127,7 +125,8 @@ private:
 	///			メンバ変数
 	/////////////////////////////////////////////////////////////////////////////////////
 
-
+	//WindowApp
+	WinApp* winApp_ = nullptr;
 	//DirectXShaderCompiler
 	DXC* dxc_ = nullptr;
 	//PipelineStateObject
@@ -204,8 +203,19 @@ private:
 	/// <summary>
 	/// スワップチェーンの生成
 	/// </summary>
-	void CreateSwapChain(HWND hwnd);
+	void CreateSwapChain();
 
+	/// <summary>
+	/// 
+	/// </summary>
+	void CreateDescriptorHeap();
+
+	/// <summary>
+	/// レンダーターゲットのクリア
+	/// </summary>
+	void ClearRenderTarget();
+
+	
 	/// <summary>
 	/// レンダーターゲット生成
 	/// </summary>

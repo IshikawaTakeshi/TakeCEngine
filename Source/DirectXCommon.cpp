@@ -1,4 +1,5 @@
 #include "../Include/DirectXCommon.h"
+
 #include "../Include/Logger.h"
 #include "../MyMath/MatrixMath.h"
 #include "../Include/DirectXShaderCompiler.h"
@@ -24,34 +25,37 @@ DirectXCommon::~DirectXCommon() {
 
 }
 
-void DirectXCommon::Initialize(HWND hwnd) {
+void DirectXCommon::Initialize(WinApp* winApp) {
+
+	//null検出
+	assert(winApp);
+	//メンバ変数に記録	
+	winApp_ = winApp;
 
 	//DXGIデバイス初期化
 	InitializeDXGIDevice();
 	// コマンド関連初期化
 	InitializeCommand();
 	// スワップチェーンの生成
-	CreateSwapChain(hwnd);
+	CreateSwapChain();
+	
+
+	//ディスクリプタヒープ生成
+	CreateDescriptorHeap();
 	// レンダーターゲット生成
 	CreateFinalRenderTargets();
 	// フェンス生成
 	CreateFence();
-
-	descriptorSizeSRV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	descriptorSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	descriptorSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
+	//Viewport初期化
+	InitViewport();
+	//Scissor矩形初期化
+	InitScissorRect();
 	//DXC初期化
 	dxc_ = new DXC();
 	dxc_->InitializeDxc();
 	//PSO生成
 	pso_ = new PSO();
-	pso_->CreatePSO(device_,dxc_);	
-	//Viewport初期化
-	InitViewport();
-	//Scissor矩形初期化
-	InitScissorRect();
-
+	pso_->CreatePSO(device_, dxc_);
 }
 	
 	
@@ -96,7 +100,7 @@ void DirectXCommon::PostDraw() {
 	HRESULT result = S_FALSE;
 
 	//書き込むバックバッファのインデックスを取得
-	UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();
+	//UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();
 
 #ifdef _DEBUG
 	//ImGuiの内部コマンドを生成する
@@ -321,7 +325,7 @@ void DirectXCommon::InitializeCommand() {
 	assert(SUCCEEDED(result));
 }
 
-void DirectXCommon::CreateSwapChain(HWND hwnd) {
+void DirectXCommon::CreateSwapChain() {
 
 	HRESULT result = S_FALSE;
 
@@ -335,13 +339,17 @@ void DirectXCommon::CreateSwapChain(HWND hwnd) {
 	swapChainDesc_.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // モニタに映したら(フリップ後)は速やかに破棄
 
 	result = dxgiFactory_->CreateSwapChainForHwnd(
-		commandQueue_.Get(), hwnd, &swapChainDesc_, nullptr, nullptr,
+		commandQueue_.Get(), winApp_->GetHwnd(), &swapChainDesc_, nullptr, nullptr,
 		reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
 	assert(SUCCEEDED(result));
 }
 
-void DirectXCommon::CreateFinalRenderTargets() {
-	HRESULT result = S_FALSE;
+void DirectXCommon::CreateDescriptorHeap() {
+
+	//ディスクリプタヒープのサイズを取得
+	descriptorSizeSRV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	descriptorSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	descriptorSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 	// RTV用のディスクリプタヒープ生成
 	rtvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
@@ -349,7 +357,13 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	srvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 	//DSV用のディスクリプタヒープ生成。DSVはShader内で触るものではないので、ShaderVisibleはfalse
 	dsvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	
+}
 
+void DirectXCommon::CreateFinalRenderTargets() {
+	HRESULT result = S_FALSE;
+
+	
 
 
 	//SwapChainからResourceを引っ張ってくる
