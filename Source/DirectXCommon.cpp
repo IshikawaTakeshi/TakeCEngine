@@ -145,9 +145,8 @@ void DirectXCommon::PostDraw() {
 		WaitForSingleObject(fenceEvent_, INFINITE);
 	}
 
-
-
 	//次のフレーム用のコマンドリストを準備
+	//コマンドアロケータのリセット
 	result = commandAllocator_->Reset();
 	assert(SUCCEEDED(result));
 	//コマンドリストのリセット
