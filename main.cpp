@@ -36,7 +36,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
-	D3DResourceLeakChecker* leakCheck;
+	D3DResourceLeakChecker* leakCheck = new D3DResourceLeakChecker;
 
 	//タイトルバーの名前の入力
 	WinApp* winApp = WinApp::GetInstance();
