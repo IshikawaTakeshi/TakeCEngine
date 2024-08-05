@@ -43,28 +43,28 @@ void Texture::Finalize() {
 	textureResource_.Reset();
 }
 
-DirectX::ScratchImage Texture::LoadTexture(const std::string& filePath) {
-
-	//テクスチャファイルを読み込んでプログラムで扱えるようにする
-	DirectX::ScratchImage image{};
-	std::wstring filePathW = StringUtility::ConvertString(filePath);
-	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
-	assert(SUCCEEDED(hr));
-
-	//ミップマップの作成
-	DirectX::ScratchImage mipImages{};
-	hr = DirectX::GenerateMipMaps(
-		image.GetImages(),
-		image.GetImageCount(),
-		image.GetMetadata(),
-		DirectX::TEX_FILTER_SRGB,
-		0, mipImages);
-
-	assert(SUCCEEDED(hr));
-
-	//ミップマップ付きのデータを返す
-	return mipImages;
-}
+//DirectX::ScratchImage Texture::LoadTexture(const std::string& filePath) {
+//
+//	////テクスチャファイルを読み込んでプログラムで扱えるようにする
+//	//DirectX::ScratchImage image{};
+//	//std::wstring filePathW = StringUtility::ConvertString(filePath);
+//	//HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+//	//assert(SUCCEEDED(hr));
+//
+//	////ミップマップの作成
+//	//DirectX::ScratchImage mipImages{};
+//	//hr = DirectX::GenerateMipMaps(
+//	//	image.GetImages(),
+//	//	image.GetImageCount(),
+//	//	image.GetMetadata(),
+//	//	DirectX::TEX_FILTER_SRGB,
+//	//	0, mipImages);
+//
+//	//assert(SUCCEEDED(hr));
+//
+//	////ミップマップ付きのデータを返す
+//	//return mipImages;
+//}
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Texture::CreateTextureResource(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const DirectX::TexMetadata& metadata) {
 

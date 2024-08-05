@@ -7,6 +7,7 @@
 #include "Include/Logger.h"
 #include "Include/DirectXCommon.h"
 #include "Include/Input.h"
+#include "TextureManager.h"
 
 #include "MyMath/Transform.h"
 #include "MyMath/MatrixMath.h"
@@ -47,9 +48,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectXCommon* directXCommon = new DirectXCommon();
 	directXCommon->Initialize(winApp);
 
-	//SpriteCommon初期化
-	SpriteCommon* spriteCommon = new SpriteCommon();
-	spriteCommon->Initialize(directXCommon);
+	//入力初期化
+	Input* input = Input::GetInstance();
+	input->Initialize(winApp);
+
 
 #pragma region ImGui初期化
 #ifdef _DEBUG
@@ -67,10 +69,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #endif // DEBUG
 #pragma endregion
 
-	//入力初期化
-	Input* input = Input::GetInstance();
-	input->Initialize(winApp);
 
+	//SpriteCommon初期化
+	SpriteCommon* spriteCommon = new SpriteCommon();
+	spriteCommon->Initialize(directXCommon);
+
+	//テクスチャマネージャ初期化
+	TextureManager::GetInstance()->Initialize();
+	
 	//テクスチャ初期化
 	Texture* texture1 = new Texture();
 	texture1->Initialize(1, directXCommon, "./Resources/uvChecker.png");
@@ -182,8 +188,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui::DestroyContext();
 #endif // DEBUG
 
+	//テクスチャマネージャの開放
+	TextureManager::GetInstance()->Finalize();
 
+	//SpriteCommonの開放
+	
+	//directXCommonの開放
 	directXCommon->Finalize();
+
+	//winAppの開放
 	winApp->Finalize();
 	
 	//delete model;

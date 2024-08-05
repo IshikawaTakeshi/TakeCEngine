@@ -37,7 +37,7 @@ public:
 	/// </summary>
 	/// <param name="filePath">テクスチャファイルのパス</param>
 	/// <returns>画像イメージデータ</returns>
-	DirectX::ScratchImage LoadTexture(const std::string& filePath);
+	//DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
 	/// <summary>
 	/// テクスチャリソースの作成

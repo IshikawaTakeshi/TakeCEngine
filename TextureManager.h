@@ -14,6 +14,7 @@
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
 
+class DirectXCommon;
 class TextureManager {
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -31,9 +32,32 @@ public:
 	static TextureManager* GetInstance();
 
 	/// <summary>
+	/// 初期化
+	/// </summary>
+	void Initialize();
+
+	/// <summary>
 	/// 終了処理
 	/// </summary>
 	void Finalize();
+
+	/// <summary>
+	/// テクスチャファイルの読み込み
+	/// </summary>
+	/// <param name="filePath">テクスチャファイルのパス</param>
+	/// <returns>画像イメージデータ</returns>
+	void LoadTexture(const std::string& filePath);
+
+	/// <summary>
+	/// テクスチャリソースの作成
+	/// </summary>
+	/// <param name="device"></param>
+	/// <param name="metadata"></param>
+	/// <returns></returns>
+	[[nodiscard]]
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
+
+
 
 private:
 	//テクスチャ1枚分のデータ
@@ -49,6 +73,9 @@ private:
 	//シングルトンインスタンス
 	static TextureManager* instance_;
 
+	//SRVインデックスの開始番号
+	static uint32_t kSRVIndexTop;
+
 	TextureManager() = default;
 	~TextureManager() = default;
 	TextureManager(TextureManager&) = delete;
@@ -56,8 +83,11 @@ private:
 
 private:
 
+	//directXCommonのインスタンス
+	DirectXCommon* dxCommon_ = nullptr;
+
 	//テクスチャデータのリスト
-	std::vector<TextureData> textureDataList_;
+	std::vector<TextureData> textureDatas_;
 
 };
 

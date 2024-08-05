@@ -125,8 +125,33 @@ public:
 	uint32_t GetDescriptorSizeRTV() { return descriptorSizeRTV_; }
 	uint32_t GetDescriptorSizeDSV() { return descriptorSizeDSV_; }
 
+	/// <summary>
+	/// CPUディスクリプタハンドルの取得
+	/// </summary>
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
+
+	/// <summary>
+	/// GPUディスクリプタハンドルの取得
+	/// </summary>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
+
+	/// <summary>
+	/// SRV専用のCPUディスクリプタハンドルの取得
+	/// </summary>
+	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVCPUDescriptorHandle(uint32_t index);
+
+	/// <summary>
+	/// SRV専用のGPUディスクリプタハンドルの取得
+	/// </summary>
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
+
+
+public:
+	/////////////////////////////////////////////////////////////////////////////////////
+	///			定数
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	static const uint32_t kMaxSRVCount;
 
 private:
 	/////////////////////////////////////////////////////////////////////////////////////

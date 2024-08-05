@@ -24,6 +24,8 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 
 #pragma endregion
 
+const uint32_t DirectXCommon::kMaxSRVCount = 512;
+
 
 DirectXCommon::~DirectXCommon() {
 
@@ -402,7 +404,7 @@ void DirectXCommon::CreateDescriptorHeap() {
 	// RTV用のディスクリプタヒープ生成
 	rtvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 	// SRV用のディスクリプタヒープ生成
-	srvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+	srvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
 	//DSV用のディスクリプタヒープ生成。DSVはShader内で触るものではないので、ShaderVisibleはfalse
 	dsvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 	
@@ -521,6 +523,9 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 	return descriptorHeap_;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+///		CPUディスクリプタハンドルの取得
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap,uint32_t descriptorSize, uint32_t index) {
 	
@@ -529,10 +534,34 @@ D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetCPUDescriptorHandle(ID3D12Descript
 	return handleCPU;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+///		GPUディスクリプタハンドルの取得
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 D3D12_GPU_DESCRIPTOR_HANDLE DirectXCommon::GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap,uint32_t descriptorSize, uint32_t index) {
 	
 	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 	handleGPU.ptr += (descriptorSize * index);
+	return handleGPU;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+///		SRV用のCPUディスクリプタハンドルの取得
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetSRVCPUDescriptorHandle(uint32_t index) {
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = srvHeap_->GetCPUDescriptorHandleForHeapStart();
+	handleCPU.ptr += (descriptorSizeSRV_ * index);
+	return handleCPU;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+///		SRV用のGPUディスクリプタハンドルの取得
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+D3D12_GPU_DESCRIPTOR_HANDLE DirectXCommon::GetSRVGPUDescriptorHandle(uint32_t index) {
+	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = srvHeap_->GetGPUDescriptorHandleForHeapStart();
+	handleGPU.ptr += (descriptorSizeSRV_ * index);
 	return handleGPU;
 }
 
