@@ -20,7 +20,8 @@ void PSO::Finalize() {
 	signatureBlob_.Reset();
 
 }
-void PSO::CreateRootSignature(Microsoft::WRL::ComPtr<ID3D12Device> device) {
+
+void PSO::CreateRootSignature(ID3D12Device* device) {
 
 	HRESULT result = S_FALSE;
 	//ルートシグネチャ
@@ -119,7 +120,7 @@ void PSO::CreateRasterizerState() {
 	rasterizerDesc_.FillMode = D3D12_FILL_MODE_SOLID;
 }
 
-void PSO::CreatePSO(Microsoft::WRL::ComPtr<ID3D12Device> device, DXC* dxc_) {
+void PSO::CreatePSO(ID3D12Device* device, DXC* dxc_) {
 
 	HRESULT result = S_FALSE;
 

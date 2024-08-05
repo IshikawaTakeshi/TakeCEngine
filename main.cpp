@@ -11,6 +11,7 @@
 #include "MyMath/Transform.h"
 #include "MyMath/MatrixMath.h"
 #include "Texture/Texture.h"
+#include "Sprite/SpriteCommon.h"
 #include "Sprite/Sprite.h"
 #include "Triangle/Triangle.h"
 #include "Sphere/Sphere.h"
@@ -45,6 +46,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//DirectX初期化
 	DirectXCommon* directXCommon = new DirectXCommon();
 	directXCommon->Initialize(winApp);
+
+	//SpriteCommon初期化
+	SpriteCommon* spriteCommon = new SpriteCommon();
+	spriteCommon->Initialize(directXCommon);
 
 #pragma region ImGui初期化
 #ifdef _DEBUG
@@ -82,17 +87,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	);
 
 	//モデル
-	Model* model = new Model();
-	model->Initialize(directXCommon, cameraMatrix, "Resources", "obj_mtl_blend", "axis.obj");
+	//Model* model = new Model();
+	//model->Initialize(directXCommon, cameraMatrix, "Resources", "obj_mtl_blend", "axis.obj");
 	//model->SetTextureFilePath("./Resources/uvChecker.png");
 
 	//球
-	Sphere* sphere = new Sphere();
-	sphere->Initialize(directXCommon, cameraMatrix, true, "./Resources/uvChecker.png");
+	//Sphere* sphere = new Sphere();
+	//sphere->Initialize(directXCommon, cameraMatrix, true, "./Resources/uvChecker.png");
 
 	//スプライト
-	//Sprite* sprite = new Sprite();
-	//sprite->Initialize(directXCommon);
+	Sprite* sprite = new Sprite();
+	sprite->Initialize(directXCommon,true, "./Resources/uvChecker.png");
 
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,34 +132,35 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 		//モデルの更新処理
-		model->Update();
+		//model->Update();
 
 		//球
-		sphere->Update();
+		//sphere->Update();
 
 
 
 		//スプライト
-		//sprite->Update();
+		sprite->Update();
 
 
 		//========================== 描画処理　==========================//
 
 		//描画前処理
 		directXCommon->PreDraw();
+		//Spriteの描画前処理
+		spriteCommon->PreDraw();
 
-
-		if (input->TriggerKey(DIK_SPACE)) {
-			//モデルのテクスチャを変更
-			sphere->SetTexture(texture2);
-		}
-		if (input->PushKey(DIK_B)) {
-			//モデルのテクスチャを変更
-			sphere->SetTexture(texture1);
-		}
-		model->DrawCall(directXCommon);
-		sphere->DrawCall(directXCommon);
-		//sprite->DrawCall(directXCommon, texture1);
+		//if (input->TriggerKey(DIK_SPACE)) {
+		//	//モデルのテクスチャを変更
+		//	sphere->SetTexture(texture2);
+		//}
+		//if (input->PushKey(DIK_B)) {
+		//	//モデルのテクスチャを変更
+		//	sphere->SetTexture(texture1);
+		//}
+		//model->DrawCall(directXCommon);
+		//sphere->DrawCall(directXCommon);
+		sprite->DrawCall(directXCommon);
 
 		//描画後処理
 		directXCommon->PostDraw();
@@ -172,11 +178,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	directXCommon->Finalize();
 	winApp->Finalize();
 	
-	delete model;
-	delete sphere;
+	//delete model;
+	//delete sphere;
 	delete texture1;
 	delete texture2;
-	//delete sprite;
+	delete sprite;
 
 	delete leakCheck;
 	

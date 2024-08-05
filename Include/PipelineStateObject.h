@@ -8,11 +8,24 @@ class DirectXCommon;
 class DXC;
 class PSO {
 
-//////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
 ///			PSO
-//////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 public:
+
+	///////////////////////////////////////////////////////////////////////////////////////////
+	///			エイリアステンプレート
+	///////////////////////////////////////////////////////////////////////////////////////////
+
+
+	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+public:
+
+	///////////////////////////////////////////////////////////////////////////////////////////
+	///			publicメンバ関数
+	///////////////////////////////////////////////////////////////////////////////////////////
 
 	PSO() = default;
 	~PSO();
@@ -25,7 +38,7 @@ public:
 	/// <summary>
 	/// ルートシグネチャ初期化
 	/// </summary>
-	void CreateRootSignature(Microsoft::WRL::ComPtr<ID3D12Device> device);
+	void CreateRootSignature(ID3D12Device* device);
 
 	/// <summary>
 	/// インプットレイアウト初期化
@@ -45,27 +58,40 @@ public:
 	/// <summary>
 	/// PSO生成
 	/// </summary>
-	void CreatePSO(Microsoft::WRL::ComPtr<ID3D12Device> device, DXC* dxc_);
+	void CreatePSO(ID3D12Device* device, DXC* dxc_);
+
+public:
+
+	///////////////////////////////////////////////////////////////////////////////////////////
+	///			getter
+	///////////////////////////////////////////////////////////////////////////////////////////
+
 
 	/// <summary>
 	/// rootSignatureの取得
 	/// </summary>
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> GetRootSignature() { return rootSignature_; }
+	ID3D12RootSignature* GetRootSignature() const { return rootSignature_.Get(); }
 
 	/// <summary>
 	///graphicPipelineStateの取得
 	/// </summary>
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> GetGraphicPipelineState() { return graphicPipelineState_; }
+	ID3D12PipelineState* GetGraphicPipelineState() const { return graphicPipelineState_.Get(); }
+
+
 
 private:
+
+	///////////////////////////////////////////////////////////////////////////////////////////
+	///			privateメンバ変数
+	///////////////////////////////////////////////////////////////////////////////////////////
 
 	//rootSignature
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
 	D3D12_ROOT_PARAMETER rootParameters_[4] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
-	Microsoft::WRL::ComPtr<ID3D10Blob> signatureBlob_;
-	Microsoft::WRL::ComPtr<ID3D10Blob> errorBlob_;
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+	ComPtr<ID3D10Blob> signatureBlob_;
+	ComPtr<ID3D10Blob> errorBlob_;
+	ComPtr<ID3D12RootSignature> rootSignature_;
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	//InputLayout
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3] = {};
@@ -75,10 +101,12 @@ private:
 	// ラスタライザステート
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};
 	//PSO生成
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+	ComPtr<IDxcBlob> vertexShaderBlob_;
+	ComPtr<IDxcBlob> pixelShaderBlob_;
+	//depthStencilState
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicPipelineState_;
+	//graphicPipelineState
+	ComPtr<ID3D12PipelineState> graphicPipelineState_;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc_{};
 
 

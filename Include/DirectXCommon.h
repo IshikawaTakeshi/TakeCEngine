@@ -100,7 +100,7 @@ public:
 	ID3D12DescriptorHeap* GetDsvHeap() { return dsvHeap_.Get(); }
 
 	/// <summary>
-	/// descriptorHeapの取得
+	/// rtvHeapの取得
 	/// </summary>
 	ID3D12DescriptorHeap* GetRtvHeap() { return rtvHeap_.Get(); }
 
@@ -110,9 +110,16 @@ public:
 	/// <returns></returns>
 	UINT GetBufferCount() { return swapChainDesc_.BufferCount; }
 
+	/// <summary>
+	/// rtvDescの取得
+	/// </summary>
 	DXGI_FORMAT GetRtvFormat() { return rtvDesc_.Format; }
 
-
+	/// <summary>
+	/// Dxcの取得
+	/// </summary>
+	/// <returns></returns>
+	DXC* GetDXC() { return dxc_; }
 
 	uint32_t GetDescriptorSizeSRV() { return descriptorSizeSRV_; }
 	uint32_t GetDescriptorSizeRTV() { return descriptorSizeRTV_; }

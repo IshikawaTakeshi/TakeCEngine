@@ -66,7 +66,7 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	dxc_->InitializeDxc();
 	//PSO生成
 	pso_ = new PSO();
-	pso_->CreatePSO(device_, dxc_);
+	pso_->CreatePSO(device_.Get(), dxc_);
 }
 	
 	
@@ -202,8 +202,8 @@ void DirectXCommon::ClearRenderTarget() {
 	// Scissorの設定
 	commandList_->RSSetScissorRects(1, &scissorRect_);
 	// RootSignatureを設定。PSOに設定しているが別途設定が必要
-	commandList_->SetGraphicsRootSignature(pso_->GetRootSignature().Get()); // rootSignatureを設定
-	commandList_->SetPipelineState(pso_->GetGraphicPipelineState().Get()); // PSOを設定
+	commandList_->SetGraphicsRootSignature(pso_->GetRootSignature()); // rootSignatureを設定
+	commandList_->SetPipelineState(pso_->GetGraphicPipelineState()); // PSOを設定
 
 }
 

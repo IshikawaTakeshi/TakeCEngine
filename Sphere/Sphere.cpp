@@ -117,8 +117,10 @@ void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 void Sphere::DrawCall(DirectXCommon* dxCommon) {
 
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
+
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
-	dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	//materialCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(
 		0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());

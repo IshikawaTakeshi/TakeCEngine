@@ -93,6 +93,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="D3DResourceLeakChecker\D3DResourceLeakChecker.cpp" />
+    <ClCompile Include="Sprite\SpriteCommon.cpp" />
     <ClCompile Include="StringUtility\StringUtility.cpp" />
     <ClCompile Include="Source\Input.cpp" />
     <ClCompile Include="Source\Material.cpp" />
@@ -135,6 +136,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Include\Mesh.h" />
     <ClInclude Include="Include\Material.h" />
     <ClInclude Include="Include\Input.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Sprite\SpriteCommon.h" />
     <ClInclude Include="StringUtility\StringUtility.h" />
     <ClInclude Include="ModelData\Model.h" />
     <ClInclude Include="MyMath\Matrix3x3.h" />
@@ -177,6 +180,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <None Include="Object3d.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DirectXGame.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
