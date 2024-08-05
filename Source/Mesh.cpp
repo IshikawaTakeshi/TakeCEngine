@@ -102,14 +102,14 @@ void Mesh::InitializeVertexResourceSprite(ID3D12Device* device) {
 	VertexData* vertexData;
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	//1枚目の三角形
-	vertexData[0].position = { 0.0f,180.0f,0.0f,1.0f }; //左下
+	vertexData[0].position = { 0.0f,90.0f,0.0f,1.0f }; //左下
 	vertexData[0].texcoord = { 0.0f,1.0f };
 	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
 	vertexData[1].position = { 0.0f,0.0f,0.0f,1.0f }; //左上
 	vertexData[1].texcoord = { 0.0f,0.0f };
-	vertexData[2].position = { 320.0f,180.0f,0.0f,1.0f }; //右下
+	vertexData[2].position = { 160.0f,90.0f,0.0f,1.0f }; //右下
 	vertexData[2].texcoord = { 1.0f,1.0f };
-	vertexData[3].position = { 320.0f,0.0f,0.0f,1.0f }; //右上
+	vertexData[3].position = { 160.0f,0.0f,0.0f,1.0f }; //右上
 	vertexData[3].texcoord = { 1.0f,0.0f };
 }
 

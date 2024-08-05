@@ -23,7 +23,7 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void UpdateMaterial();
+	void UpdateMaterialImGui();
 
 	/// <summary>
 	/// マテリアルリソース初期化

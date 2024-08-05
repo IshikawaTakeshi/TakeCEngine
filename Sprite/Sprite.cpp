@@ -81,7 +81,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& textureFi
 #pragma endregion
 
 #pragma region 更新処理
-void Sprite::Update() {
+void Sprite::Update(int num) {
 
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(
@@ -98,8 +98,12 @@ void Sprite::Update() {
 
 #ifdef _DEBUG
 	//ImGuiの更新
-	ImGui::Begin("Sprite");
+	std::string windowName = "Sprite" + std::to_string(num);
+	ImGui::Begin(windowName.c_str());
 	ImGui::DragFloat3("SpriteTranslate", &transform_.translate.x, 1.0f);
+	ImGui::DragFloat3("SpriteRotate", &transform_.rotate.x, 0.01f);
+	ImGui::DragFloat3("SpriteScale", &transform_.scale.x, 0.01f);
+	mesh_->GetMaterial()->UpdateMaterialImGui();
 	ImGui::End();
 	
 #endif // DEBUG

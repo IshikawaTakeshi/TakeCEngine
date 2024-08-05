@@ -96,9 +96,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//sphere->Initialize(directXCommon, cameraMatrix, true, "./Resources/uvChecker.png");
 
 	//スプライト
-	Sprite* sprite = new Sprite();
-	sprite->Initialize(spriteCommon, "./Resources/uvChecker.png");
-
+	std::vector<Sprite*> sprites;
+	for (uint32_t i = 0; i < 5; i++) {
+		Sprite* sprite = new Sprite();
+		sprite->Initialize(spriteCommon, "./Resources/uvChecker.png");
+		sprites.push_back(sprite);
+	}
+	
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	//										メインループ
@@ -140,7 +144,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 		//スプライト
-		sprite->Update();
+		for (int i = 0; i < 5; i++) {
+			sprites[i]->Update(i);
+		}
 
 
 		//========================== 描画処理　==========================//
@@ -160,7 +166,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//}
 		//model->DrawCall(directXCommon);
 		//sphere->DrawCall(directXCommon);
-		sprite->DrawCall(directXCommon);
+		for (int i = 0; i < 5; i++) {
+			sprites[i]->DrawCall(directXCommon);
+		}
 
 		//描画後処理
 		directXCommon->PostDraw();
@@ -182,7 +190,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//delete sphere;
 	delete texture1;
 	delete texture2;
-	delete sprite;
+	
+	for (auto& sprite : sprites) {
+		delete sprite;
+	}
 
 	delete leakCheck;
 	

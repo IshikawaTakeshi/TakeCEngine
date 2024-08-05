@@ -35,7 +35,7 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void Update();
+	void Update(int num);
 
 	/// <summary>
 	/// directionalLightData初期化
