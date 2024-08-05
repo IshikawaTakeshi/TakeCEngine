@@ -1,5 +1,6 @@
 #include "../Include/DirectXShaderCompiler.h"
 #include "../Include/Logger.h"
+#include "../StringUtility/StringUtility.h"
 #include <cassert>
 #include <format>
 
@@ -49,7 +50,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> DXC::CompileShader(
 	HRESULT result = S_FALSE;
 
 	//これからシェーダーをコンパイルする旨をログに出す
-	Logger::Log(Logger::ConvertString(std::format(L"Begin CompileShader, path:{},profile{}\n", filePath, profile)));
+	Logger::Log(StringUtility::ConvertString(std::format(L"Begin CompileShader, path:{},profile{}\n", filePath, profile)));
 	//hlslファイルを読み込む
 	shaderSource_ = nullptr;
 	result = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource_);
@@ -97,7 +98,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> DXC::CompileShader(
 	result = shaderResult_->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob_), nullptr);
 	assert(SUCCEEDED(result));
 	//成功したログを出す
-	Logger::Log(Logger::ConvertString(std::format(L"Compile Succeeded, path:{}, profile:{}\n", filePath, profile)));
+	Logger::Log(StringUtility::ConvertString(std::format(L"Compile Succeeded, path:{}, profile:{}\n", filePath, profile)));
 	//もう使わないリソースを開放する
 	shaderSource_.Reset();
 	shaderResult_.Reset();

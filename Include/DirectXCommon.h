@@ -147,6 +147,9 @@ private:
 	ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 	std::array<ComPtr<ID3D12Resource>,2> swapChainResources_;
+	//深度ステンシルバッファの生成
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
+
 
 	//ディスクリプタヒープの生成
 	ComPtr<ID3D12DescriptorHeap> rtvHeap_ = nullptr;
@@ -154,8 +157,10 @@ private:
 	ComPtr<ID3D12DescriptorHeap> dsvHeap_ = nullptr;
 
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
+	//RTVHandleの要素数
+	static inline const uint32_t rtvCount_ = 2;
 	//RTVを2つ作るのでディスクリプタを2つ用意
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2] = {};
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[rtvCount_] = {};
 	//DSVを設定
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
 	//フェンスの生成
@@ -206,7 +211,14 @@ private:
 	void CreateSwapChain();
 
 	/// <summary>
-	/// 
+	/// 深度バッファの生成
+	/// </summary>
+	void CreateDepthStencilTextureResource(
+		const Microsoft::WRL::ComPtr<ID3D12Device>& device, int32_t width, int32_t height);
+
+
+	/// <summary>
+	/// ディスクリプタヒープ生成
 	/// </summary>
 	void CreateDescriptorHeap();
 
@@ -217,9 +229,14 @@ private:
 
 	
 	/// <summary>
-	/// レンダーターゲット生成
+	/// RTVの初期化
 	/// </summary>
-	void CreateFinalRenderTargets();
+	void InitializeRenderTargetView();
+
+	/// <summary>
+	/// DSVの初期化
+	/// </summary>
+	void InitializeDepthStencilView();
 
 	/// <summary>
 	/// フェンス生成
@@ -232,6 +249,7 @@ private:
 		ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType,
 		UINT numDescriptors, bool shaderVisible
 	);
+
 
 };
 
