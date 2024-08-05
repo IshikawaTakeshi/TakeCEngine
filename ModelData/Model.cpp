@@ -35,7 +35,7 @@ void Model::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView,
 
 	mesh_ = new Mesh();
 
-	mesh_->InitializeMesh(1, dxCommon, true, modelData_.material.textureFilePath);
+	mesh_->InitializeMesh(1, dxCommon, modelData_.material.textureFilePath);
 
 
 	//======================= VertexResource ===========================//

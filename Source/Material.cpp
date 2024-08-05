@@ -15,10 +15,10 @@
 
 Material::~Material() {}
 
-void Material::InitializeTexture(uint32_t index, DirectXCommon* dxCommon, bool enableLight, const std::string& filePath) {
+void Material::InitializeTexture(uint32_t index, DirectXCommon* dxCommon, const std::string& filePath) {
 
 	//マテリアルリソース初期化
-	InitializeMaterialResource(dxCommon->GetDevice(), enableLight);
+	InitializeMaterialResource(dxCommon->GetDevice());
 
 	//テクスチャ初期化
 	texture_ = new Texture();
@@ -51,7 +51,7 @@ void Material::UpdateMaterial() {
 
 }
 
-void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> device, bool enableLight) {
+void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> device) {
 
 	//マテリアル用リソース作成
 	materialResource_ = DirectXCommon::CreateBufferResource(device.Get(), sizeof(MaterialData));
@@ -62,5 +62,5 @@ void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> d
 	//色を書き込む
 	materialData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	materialData_->uvTransform = MatrixMath::MakeIdentity4x4();
-	materialData_->enableLighting = enableLight;
+	materialData_->enableLighting = false;
 }

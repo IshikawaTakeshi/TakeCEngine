@@ -18,11 +18,11 @@ Sphere::~Sphere() {
 	wvpResource_.Reset();
 }
 
-void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, bool enableLight, const std::string& textureFilePath) {
+void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std::string& textureFilePath) {
 
 	//メッシュ初期化
 	mesh_ = new Mesh();
-	mesh_->InitializeMesh(1,dxCommon,enableLight,textureFilePath);
+	mesh_->InitializeMesh(1,dxCommon,textureFilePath);
 
 	//======================= VertexResource ===========================//
 

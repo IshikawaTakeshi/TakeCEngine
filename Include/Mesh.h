@@ -16,7 +16,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void InitializeMesh(uint32_t index, DirectXCommon* dxCommon, bool enableLight, const std::string& filePath);
+	void InitializeMesh(uint32_t index, DirectXCommon* dxCommon,const std::string& filePath);
 
 	/// <summary>
 	/// 更新処理

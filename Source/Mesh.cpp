@@ -4,10 +4,10 @@
 
 Mesh::~Mesh() {}
 
-void Mesh::InitializeMesh(uint32_t index, DirectXCommon* dxCommon, bool enableLight, const std::string& filePath) {
+void Mesh::InitializeMesh(uint32_t index, DirectXCommon* dxCommon,const std::string& filePath) {
 
 	material_ = new Material();
-	material_->InitializeTexture(index,dxCommon,enableLight,filePath);
+	material_->InitializeTexture(index,dxCommon,filePath);
 }
 
 void Mesh::InitializeVertexResourceSphere(ID3D12Device* device) {

@@ -20,6 +20,7 @@
 class DirectXCommon;
 class Texture;
 class Mesh;
+class SpriteCommon;
 class Sprite {
 public:
 
@@ -29,7 +30,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, bool enableLight, const std::string& textureFilePath);
+	void Initialize(SpriteCommon* spriteCommon, const std::string& textureFilePath);
 
 	/// <summary>
 	/// 更新処理
@@ -53,6 +54,9 @@ public:
 
 
 private:
+
+	//SpriteCommon
+	SpriteCommon* spriteCommon_ = nullptr;
 
 	//メッシュ
 	Mesh* mesh_ = nullptr;

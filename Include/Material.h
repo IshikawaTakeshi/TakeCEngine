@@ -18,7 +18,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void InitializeTexture(uint32_t index, DirectXCommon* dxCommon, bool enableLight, const std::string& filePath);
+	void InitializeTexture(uint32_t index, DirectXCommon* dxCommon, const std::string& filePath);
 
 	/// <summary>
 	/// 更新処理
@@ -28,7 +28,7 @@ public:
 	/// <summary>
 	/// マテリアルリソース初期化
 	/// </summary>
-	void InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> device, bool enableLight);
+	void InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> device);
 
 public: //ゲッター
 

@@ -1,4 +1,5 @@
 #include "Sprite.h"
+#include "../Sprite/SpriteCommon.h"
 #include "../Include/DirectXCommon.h"
 #include "../Include/Mesh.h"
 #include "../Include/Material.h"
@@ -24,22 +25,25 @@ Sprite::~Sprite() {
 
 #pragma region 初期化処理
 
-void Sprite::Initialize(DirectXCommon* dxCommon, bool enableLight, const std::string& textureFilePath) {
+void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& textureFilePath) {
+
+	//SpriteCommonの設定
+	spriteCommon_ = spriteCommon;
 
 	//メッシュ初期化
 	mesh_ = new Mesh();
-	mesh_->InitializeMesh(1,dxCommon,enableLight,textureFilePath);
+	mesh_->InitializeMesh(1,spriteCommon_->GetDirectXCommon(),textureFilePath);
 	//vertexResource初期化
-	mesh_->InitializeVertexResourceSprite(dxCommon->GetDevice());
+	mesh_->InitializeVertexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice());
 	//IndexResource初期化
-	mesh_->InitializeIndexResourceSprite(dxCommon->GetDevice());
+	mesh_->InitializeIndexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice());
 	//MaterialResource初期化
-	mesh_->GetMaterial()->InitializeMaterialResource(dxCommon->GetDevice(), false);
+	mesh_->GetMaterial()->InitializeMaterialResource(spriteCommon->GetDirectXCommon()->GetDevice());
 
 	//======================= transformationMatrix用のVertexResource ===========================//
 
 	//スプライト用のTransformationMatrix用のVertexResource生成
-	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(TransformMatrix));
+	wvpResource_ = DirectXCommon::CreateBufferResource(spriteCommon->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
 
 	//TransformationMatrix用
 	wvpResource_->
@@ -51,7 +55,7 @@ void Sprite::Initialize(DirectXCommon* dxCommon, bool enableLight, const std::st
 	
 	//======================= DirectionalLightResource ===========================//
 
-	InitializeDirectionalLightData(dxCommon);
+	InitializeDirectionalLightData(spriteCommon->GetDirectXCommon());
 
 	//======================= Transform・各行列の初期化 ===========================//
 

@@ -97,7 +97,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//スプライト
 	Sprite* sprite = new Sprite();
-	sprite->Initialize(directXCommon,true, "./Resources/uvChecker.png");
+	sprite->Initialize(spriteCommon, "./Resources/uvChecker.png");
 
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
