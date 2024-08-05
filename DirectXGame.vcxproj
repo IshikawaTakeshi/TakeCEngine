@@ -92,6 +92,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="D3DResourceLeakChecker\D3DResourceLeakChecker.cpp" />
     <ClCompile Include="StringUtility\StringUtility.cpp" />
     <ClCompile Include="Source\Input.cpp" />
     <ClCompile Include="Source\Material.cpp" />
@@ -119,6 +120,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Source\VertexResource.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="D3DResourceLeakChecker\D3DResourceLeakChecker.h" />
     <ClInclude Include="Include\DirectXShaderCompiler.h" />
     <ClInclude Include="Include\DirectXCommon.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />

@@ -2,6 +2,7 @@
 //C4023の警告を見なかったことにする
 #pragma warning(disable:4023)
 //Include
+#include "D3DResourceLeakChecker/D3DResourceLeakChecker.h"
 #include "Include/WinApp.h"
 #include "Include/Logger.h"
 #include "Include/DirectXCommon.h"
@@ -27,16 +28,6 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 #endif // DEBUG
 #pragma endregion
 
-struct D3DResourceLeakChecker {
-	~D3DResourceLeakChecker() {
-		Microsoft::WRL::ComPtr<IDXGIDebug1> debug;
-		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
-			debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
-			debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
-			debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
-		}
-	}
-};
 
 //////////////////////////////////////////////////////////
 //Windowsアプリでのエントリーポイント(main関数)
@@ -45,7 +36,7 @@ struct D3DResourceLeakChecker {
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
-	D3DResourceLeakChecker leakCheck;
+	D3DResourceLeakChecker* leakCheck;
 
 	//タイトルバーの名前の入力
 	WinApp* winApp = WinApp::GetInstance();
@@ -187,10 +178,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete texture2;
 	//delete sprite;
 
-
-
-	leakCheck.~D3DResourceLeakChecker();
-
+	delete leakCheck;
+	
 	return 0;
 }
 

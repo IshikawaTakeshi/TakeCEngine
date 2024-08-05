@@ -32,13 +32,31 @@ public:
 	/// </summary>
 	void Finalize();
 
+	/// <summary>
+	/// テクスチャファイルの読み込み
+	/// </summary>
+	/// <param name="filePath">テクスチャファイルのパス</param>
+	/// <returns>画像イメージデータ</returns>
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
+	/// <summary>
+	/// テクスチャリソースの作成
+	/// </summary>
+	/// <param name="device"></param>
+	/// <param name="metadata"></param>
+	/// <returns></returns>
+	[[nodiscard]]
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(
 	const Microsoft::WRL::ComPtr<ID3D12Device>& device, const DirectX::TexMetadata& metadata);
 
-	void UploadTextureData(
-		Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
+	/// <summary>
+	/// テクスチャデータのアップロード
+	/// </summary>
+	/// <param name="texture"></param>
+	/// <param name="mipImages"></param>
+	/// <returns></returns>
+	[[nodiscard]]
+	void UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 
 	
 	/// <summary>
