@@ -8,6 +8,7 @@
 #include <vector>
 #include <iostream>
 #include <array>
+#include <chrono>
 
 #include "../Include/WinApp.h"
 #include "../MyMath/Matrix4x4.h"
@@ -179,6 +180,10 @@ private:
 	// シザー矩形
 	D3D12_RECT scissorRect_{};
 
+	//記録時間(FPS固定)
+	std::chrono::steady_clock::time_point reference_;
+
+
 private:
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -216,7 +221,6 @@ private:
 	void CreateDepthStencilTextureResource(
 		const Microsoft::WRL::ComPtr<ID3D12Device>& device, int32_t width, int32_t height);
 
-
 	/// <summary>
 	/// ディスクリプタヒープ生成
 	/// </summary>
@@ -226,7 +230,6 @@ private:
 	/// レンダーターゲットのクリア
 	/// </summary>
 	void ClearRenderTarget();
-
 	
 	/// <summary>
 	/// RTVの初期化
@@ -242,6 +245,17 @@ private:
 	/// フェンス生成
 	/// </summary>
 	void CreateFence();
+
+	/// <summary>
+	/// FPS固定の初期化
+	/// </summary>
+	void InitializeFixFPS();
+
+	/// <summary>
+	///	FPS固定の更新
+	/// </summary>
+	void UpdateFixFPS();
+
 	/// <summary>
 	/// DescriptorHeap作成関数
 	/// </summary>
