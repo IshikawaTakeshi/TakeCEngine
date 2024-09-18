@@ -40,15 +40,15 @@ public: //ゲッター
 
 public: //セッター
 
-	void SetTexture(Texture* texture) {
-		mesh_->SetTexture(texture);
-	}
-
 
 private:
 
 	//メッシュ
 	Mesh* mesh_;
+
+	//テクスチャ番号
+	uint32_t textureIndex_ = 0;
+
 
 	//TransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;

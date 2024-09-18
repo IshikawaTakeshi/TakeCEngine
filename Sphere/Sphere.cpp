@@ -2,6 +2,7 @@
 #include "../MyMath/MatrixMath.h"
 #include "../MyMath/MyMath.h"
 #include "../Include/DirectXCommon.h"
+#include"../TextureManager.h"
 #include <numbers>
 
 #pragma region imgui
@@ -22,15 +23,28 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 
 	//メッシュ初期化
 	mesh_ = new Mesh();
-	mesh_->InitializeMesh(1,dxCommon,textureFilePath);
+	mesh_->InitializeMesh(dxCommon,textureFilePath);
 
 	//======================= VertexResource ===========================//
 
 	mesh_->InitializeVertexResourceSphere(dxCommon->GetDevice());
 
+	//======================= MaterialResource ===========================//
+
+	mesh_->GetMaterial()->GetMaterialResource();
+
+	//======================= IndexResource ===========================//
+
+	mesh_->InitializeIndexResourceSphere(dxCommon->GetDevice());
+
+	//テクスチャ番号の検索と記録
+	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
+
+
+
 	//======================= transformationMatrix用のVertexResource ===========================//
 
-	//スプライト用のTransformationMatrix用のVertexResource生成
+	//TransformationMatrix用のVertexResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(TransformMatrix));
 
 	//TransformationMatrix用
@@ -39,17 +53,11 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 	//単位行列を書き込んでおく
 	transformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
-	//======================= MaterialResource ===========================//
-
-	mesh_->GetMaterial()->GetMaterialResource();
 
 	//======================= DirectionalLightResource ===========================//
 
 	InitializeDirectionalLightData(dxCommon);
 
-	//======================= IndexResource ===========================//
-
-	mesh_->InitializeIndexResourceSphere(dxCommon->GetDevice());
 
 	//======================= Transform・各行列の初期化 ===========================//
 
@@ -127,7 +135,7 @@ void Sphere::DrawCall(DirectXCommon* dxCommon) {
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetMaterial()->GetTexture()->GetTextureSrvHandleGPU());
+	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//IBVの設定

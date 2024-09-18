@@ -16,11 +16,10 @@
 #include "../MyMath/Transform.h"
 #include "../MyMath/TransformMatrix.h"
 #include "../Include/ResourceDataStructure.h"
+#include "../Include/Mesh.h"
+#include "../Sprite/SpriteCommon.h"
 
 class DirectXCommon;
-class Texture;
-class Mesh;
-class SpriteCommon;
 class Sprite {
 public:
 
@@ -30,7 +29,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(SpriteCommon* spriteCommon, const std::string& textureFilePath);
+	void Initialize(SpriteCommon* spriteCommon,const std::string& filePath);
 
 	/// <summary>
 	/// 更新処理
@@ -47,10 +46,15 @@ public:
 	/// </summary>
 	void DrawCall(DirectXCommon* dxCommon);
 
+	///テクスチャ変更処理
+	//void ChangeTexture(const std::string& textureFilePath);
+
 	/// <summary>
 	/// Transformの取得
 	/// </summary>
 	Transform GetTransform() { return transform_; }
+
+	uint32_t GetTextureIndex() { return textureIndex_; }
 
 
 private:
@@ -60,6 +64,9 @@ private:
 
 	//メッシュ
 	Mesh* mesh_ = nullptr;
+
+	//テクスチャ番号
+	uint32_t textureIndex_ = 0;
 
 	//sprite用のTransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;

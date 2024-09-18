@@ -11,7 +11,7 @@
 
 #include "MyMath/Transform.h"
 #include "MyMath/MatrixMath.h"
-#include "Texture/Texture.h"
+//#include "Texture/Texture.h"
 #include "Sprite/SpriteCommon.h"
 #include "Sprite/Sprite.h"
 #include "Triangle/Triangle.h"
@@ -75,15 +75,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	spriteCommon->Initialize(directXCommon);
 
 	//テクスチャマネージャ初期化
-	TextureManager::GetInstance()->Initialize();
+	TextureManager::GetInstance()->Initialize(directXCommon);
 	
-	//テクスチャ初期化
-	Texture* texture1 = new Texture();
-	texture1->Initialize(1, directXCommon, "./Resources/uvChecker.png");
-	//テクスチャ初期化
-	Texture* texture2 = new Texture();
-	texture2->Initialize(2, directXCommon, "./Resources/monsterBall.png");
-
 	//カメラ
 	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
 	Matrix4x4 cameraMatrix = MatrixMath::MakeAffineMatrix(
@@ -105,7 +98,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::vector<Sprite*> sprites;
 	for (uint32_t i = 0; i < 5; i++) {
 		Sprite* sprite = new Sprite();
-		sprite->Initialize(spriteCommon, "./Resources/uvChecker.png");
+		sprite->Initialize(spriteCommon, "Resources/uvChecker.png");
 		sprites.push_back(sprite);
 	}
 	
@@ -201,8 +194,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 	//delete model;
 	//delete sphere;
-	delete texture1;
-	delete texture2;
 	
 	for (auto& sprite : sprites) {
 		delete sprite;

@@ -4,6 +4,7 @@
 #include "../Texture/Texture.h"
 #include "../Include/Material.h"
 #include "../Include/Mesh.h"
+#include "../TextureManager.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>
@@ -35,7 +36,7 @@ void Model::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView,
 
 	mesh_ = new Mesh();
 
-	mesh_->InitializeMesh(1, dxCommon, modelData_.material.textureFilePath);
+	mesh_->InitializeMesh(dxCommon, modelData_.material.textureFilePath);
 
 
 	//======================= VertexResource ===========================//
@@ -110,7 +111,7 @@ void Model::DrawCall(DirectXCommon* dxCommon) {
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetMaterial()->GetTexture()->GetTextureSrvHandleGPU());
+	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 

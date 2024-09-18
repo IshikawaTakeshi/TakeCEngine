@@ -1,10 +1,11 @@
-#include "Sprite.h"
+#include "../Sprite/Sprite.h"
 #include "../Sprite/SpriteCommon.h"
 #include "../Include/DirectXCommon.h"
 #include "../Include/Mesh.h"
 #include "../Include/Material.h"
 #include "../MyMath/MatrixMath.h"
 #include "../Texture/Texture.h"
+#include "../TextureManager.h"
 
 #pragma region imgui
 #ifdef _DEBUG
@@ -25,20 +26,23 @@ Sprite::~Sprite() {
 
 #pragma region 初期化処理
 
-void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& textureFilePath) {
+void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath) {
 
 	//SpriteCommonの設定
 	spriteCommon_ = spriteCommon;
 
 	//メッシュ初期化
 	mesh_ = new Mesh();
-	mesh_->InitializeMesh(1,spriteCommon_->GetDirectXCommon(),textureFilePath);
+	mesh_->InitializeMesh(spriteCommon_->GetDirectXCommon(),filePath);
 	//vertexResource初期化
 	mesh_->InitializeVertexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice());
 	//IndexResource初期化
 	mesh_->InitializeIndexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice());
 	//MaterialResource初期化
 	mesh_->GetMaterial()->InitializeMaterialResource(spriteCommon->GetDirectXCommon()->GetDevice());
+
+	//テクスチャ番号の検索と記録
+	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filePath);
 
 	//======================= transformationMatrix用のVertexResource ===========================//
 
@@ -137,7 +141,7 @@ void Sprite::DrawCall(DirectXCommon* dxCommon) {
 	//TransformationMatrixCBufferの場所の設定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetMaterial()->GetTexture()->GetTextureSrvHandleGPU());
+	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//IBVの設定

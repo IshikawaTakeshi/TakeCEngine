@@ -2,12 +2,15 @@
 #include "../Include/DirectXCommon.h"
 #include <numbers>
 
-Mesh::~Mesh() {}
+Mesh::~Mesh() {
 
-void Mesh::InitializeMesh(uint32_t index, DirectXCommon* dxCommon,const std::string& filePath) {
+}
+
+void Mesh::InitializeMesh(DirectXCommon* dxCommon,const std::string& filePath) {
 
 	material_ = new Material();
-	material_->InitializeTexture(index,dxCommon,filePath);
+	material_->InitializeTexture(dxCommon, filePath);
+	
 }
 
 void Mesh::InitializeVertexResourceSphere(ID3D12Device* device) {

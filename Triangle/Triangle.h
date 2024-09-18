@@ -52,7 +52,7 @@ public:
 	/// <summary>
 	/// MaterialData初期化
 	/// </summary>
-	void DrawCall(DirectXCommon* dxCommon, Texture* texture);
+	void DrawCall(DirectXCommon* dxCommon);
 
 
 
@@ -97,5 +97,7 @@ private:
 
 	//Texture
 	Texture* Texture_ = nullptr;
+
+	uint32_t textureIndex_ = 0;
 };
 

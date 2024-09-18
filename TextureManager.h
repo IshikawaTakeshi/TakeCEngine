@@ -1,20 +1,19 @@
 #pragma once
 #include <d3d12.h>
 #include <dxgi1_6.h>
-
 #include <dxcapi.h>
 
 #include <wrl.h>
-#include <cassert>
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <memory>
 
+#include "Include/DirectXCommon.h"
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
 
-class DirectXCommon;
 class TextureManager {
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -26,6 +25,10 @@ public:
 
 public:
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	///			publicメンバ関数
+	/////////////////////////////////////////////////////////////////////////////////////
+
 	/// <summary>
 	/// インスタンス取得
 	/// </summary>
@@ -34,7 +37,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// 終了処理
@@ -57,9 +60,32 @@ public:
 	[[nodiscard]]
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
 
+public:
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	///			getter
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	/// <summary>
+	/// SRVインデックスの開始番号
+	/// </summary>
+	/// <param name="filePath"></param>
+	/// <returns></returns>
+	uint32_t GetTextureIndexByFilePath(const std::string& filePath);
+
+	/// <summary>
+	/// テクスチャ番号からGPUハンドルを取得
+	/// </summary>
+	/// <param name="index"></param>
+	/// <returns></returns>
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGPU(uint32_t index);
 
 private:
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	///			構造体
+	/////////////////////////////////////////////////////////////////////////////////////
+	
 	//テクスチャ1枚分のデータ
 	struct TextureData {
 		std::string filePath; //ファイルパス
@@ -70,6 +96,11 @@ private:
 	};
 
 private:
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	///			privateメンバ変数
+	/////////////////////////////////////////////////////////////////////////////////////
+
 	//シングルトンインスタンス
 	static TextureManager* instance_;
 

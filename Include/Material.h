@@ -18,7 +18,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void InitializeTexture(uint32_t index, DirectXCommon* dxCommon, const std::string& filePath);
+	void InitializeTexture(DirectXCommon* dxCommon, const std::string& filePath);
 
 	/// <summary>
 	/// 更新処理
@@ -37,8 +37,6 @@ public: //ゲッター
 	/// </summary>
 	ID3D12Resource* GetMaterialResource() { return materialResource_.Get(); }
 
-	Texture* GetTexture() { return texture_; }
-
 public: //セッター
 
 	/// <summary>
@@ -51,16 +49,10 @@ public: //セッター
 	/// </summary>
 	void SetMaterialData(MaterialData* materialData) { materialData_ = materialData; }
 
-	/// <summary>
-	/// テクスチャのセッター
-	/// </summary>
-	void SetTexture(Texture* texture) { texture_ = texture; }
 
 
 private:
 
-	//テクスチャ
-	Texture* texture_;
 
 	//マテリアルリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;

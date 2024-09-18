@@ -1,6 +1,7 @@
 #include "../Include/Material.h"
 #include "../Include/DirectXCommon.h"
 #include "../MyMath/MatrixMath.h"
+#include "../TextureManager.h"
 
 #pragma region imgui
 #ifdef _DEBUG
@@ -15,14 +16,13 @@
 
 Material::~Material() {}
 
-void Material::InitializeTexture(uint32_t index, DirectXCommon* dxCommon, const std::string& filePath) {
+void Material::InitializeTexture(DirectXCommon* dxCommon, const std::string& filePath) {
 
 	//マテリアルリソース初期化
 	InitializeMaterialResource(dxCommon->GetDevice());
 
 	//テクスチャ初期化
-	texture_ = new Texture();
-	texture_->Initialize(index, dxCommon, filePath);
+	TextureManager::GetInstance()->LoadTexture(filePath);
 
 	//uvTransform
 	uvTransform_ = {

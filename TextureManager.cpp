@@ -1,7 +1,10 @@
 #include "TextureManager.h"
-#include "Include/DirectXCommon.h"
+
 #include "StringUtility/StringUtility.h"
 
+#include <cassert>
+
+TextureManager* TextureManager::instance_ = nullptr;
 //ImGUiで0番を使用するため、1番から使用
 uint32_t TextureManager::kSRVIndexTop = 1;
 
@@ -20,10 +23,12 @@ TextureManager* TextureManager::GetInstance() {
 ///			初期化
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void TextureManager::Initialize() {
+void TextureManager::Initialize(DirectXCommon* dxCommon) {
 
 	//SRVの数と同数
 	textureDatas_.reserve(DirectXCommon::kMaxSRVCount);
+	//dxCommon_の取得
+	dxCommon_ = dxCommon;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,6 +55,9 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	if(it != textureDatas_.end()) {
 		return;
 	}
+
+	//テクスチャ枚数上限チェック
+	assert(textureDatas_.size() + kSRVIndexTop < DirectXCommon::kMaxSRVCount);
 
 	//テクスチャファイルを読み込んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
@@ -79,7 +87,7 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	textureData.resource = CreateTextureResource(textureData.metadata);
 
 	//テクスチャデータの要素数番号をSRVのインデックスとして設定
-	uint32_t srvIndex = static_cast<uint32_t>(textureDatas_.size());
+	uint32_t srvIndex = static_cast<uint32_t>(textureDatas_.size() - 1) + kSRVIndexTop;
 	textureData.srvHandleCPU = dxCommon_->GetSRVCPUDescriptorHandle(srvIndex);
 	textureData.srvHandleGPU = dxCommon_->GetSRVGPUDescriptorHandle(srvIndex);
 
@@ -127,4 +135,35 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(con
 	);
 	assert(SUCCEEDED(hr));
 	return textureResource;
+}
+
+uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath) {
+	
+	//読み込み済みテクスチャを検索
+	auto it = std::find_if(
+		textureDatas_.begin(),
+		textureDatas_.end(),
+		[&](TextureData& textureData) {return textureData.filePath == filePath; }
+	);
+
+	if (it != textureDatas_.end()) {
+		
+		//読み込み済みなら要素番号を返す
+		uint32_t textureIndex = static_cast<uint32_t>(std::distance(textureDatas_.begin(), it));
+		return textureIndex;
+	}
+	
+	//検索がヒットしない場合、assert
+	assert(false);
+	return 0;
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(uint32_t index) {
+
+	//範囲外指定違反チェック
+	assert(index < textureDatas_.size());
+
+	//テクスチャデータの参照を取得
+	TextureData& textureData = textureDatas_[index];
+	return textureData.srvHandleGPU;
 }

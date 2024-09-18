@@ -84,5 +84,7 @@ private:
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 worldViewProjectionMatrix_;
+
+	uint32_t textureIndex_ = 0;
 };
 
