@@ -1,7 +1,6 @@
 #pragma once
 #include "../Include/ResourceDataStructure.h"
 #include "../MyMath/Transform.h"
-#include "../Texture/Texture.h"
 #include <d3d12.h>
 #include <wrl.h>
 #include <string>

@@ -1,9 +1,8 @@
 #include "../ModelData/Model.h"
 #include "../Include/DirectXCommon.h"
-#include "../MyMath/MatrixMath.h"
-#include "../Texture/Texture.h"
 #include "../Include/Material.h"
 #include "../Include/Mesh.h"
+#include "../MyMath/MatrixMath.h"
 #include "../TextureManager.h"
 #include <fstream>
 #include <sstream>

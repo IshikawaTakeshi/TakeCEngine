@@ -4,7 +4,6 @@
 #include "../Include/Mesh.h"
 #include "../Include/Material.h"
 #include "../MyMath/MatrixMath.h"
-#include "../Texture/Texture.h"
 #include "../TextureManager.h"
 
 #pragma region imgui

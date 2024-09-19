@@ -116,7 +116,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Sphere\Sphere.cpp" />
     <ClCompile Include="Sprite\Sprite.cpp" />
     <ClCompile Include="TextureManager.cpp" />
-    <ClCompile Include="Texture\Texture.cpp" />
     <ClCompile Include="Triangle\Triangle.cpp" />
     <ClCompile Include="Source\WinApp.cpp" />
     <ClCompile Include="Source\VertexResource.cpp" />
@@ -151,7 +150,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Sphere\Sphere.h" />
     <ClInclude Include="Sprite\Sprite.h" />
     <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="Texture\Texture.h" />
     <ClInclude Include="MyMath\Transform.h" />
     <ClInclude Include="Triangle\Triangle.h" />
     <ClInclude Include="Vector2.h" />

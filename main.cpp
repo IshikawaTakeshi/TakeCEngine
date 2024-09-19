@@ -98,7 +98,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::vector<Sprite*> sprites;
 	for (uint32_t i = 0; i < 5; i++) {
 		Sprite* sprite = new Sprite();
-		sprite->Initialize(spriteCommon, "Resources/uvChecker.png");
+		if (i % 2 == 0) {
+			sprite->Initialize(spriteCommon, "Resources/uvChecker.png");
+		} else {
+			sprite->Initialize(spriteCommon, "Resources/monsterBall.png");
+		}
 		sprites.push_back(sprite);
 	}
 	

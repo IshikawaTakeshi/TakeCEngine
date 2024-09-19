@@ -50,9 +50,9 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	auto it = std::find_if(
 		textureDatas_.begin(),
 		textureDatas_.end(),
-		[&](TextureData& textureData) {return textureData.filePath == filePath;}
+		[&](TextureData& textureData) {return textureData.filePath == filePath; }
 	);
-	if(it != textureDatas_.end()) {
+	if (it != textureDatas_.end()) {
 		return;
 	}
 
@@ -85,6 +85,7 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	textureData.filePath = filePath;
 	textureData.metadata = mipImages.GetMetadata();
 	textureData.resource = CreateTextureResource(textureData.metadata);
+	UploadTextureData(textureData.resource, mipImages);
 
 	//テクスチャデータの要素数番号をSRVのインデックスとして設定
 	uint32_t srvIndex = static_cast<uint32_t>(textureDatas_.size() - 1) + kSRVIndexTop;
@@ -137,8 +138,29 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(con
 	return textureResource;
 }
 
+void TextureManager::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
+
+	//Meta情報を取得
+	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	//全MipMapについて
+	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
+
+		//MipMapLevelを指定して各imageを取得
+		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
+		//Textureに転送
+		HRESULT hr = texture->WriteToSubresource(
+			UINT(mipLevel),
+			nullptr,
+			img->pixels,
+			UINT(img->rowPitch),
+			UINT(img->slicePitch)
+		);
+		assert(SUCCEEDED(hr));
+	}
+}
+
 uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath) {
-	
+
 	//読み込み済みテクスチャを検索
 	auto it = std::find_if(
 		textureDatas_.begin(),
@@ -147,12 +169,12 @@ uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath) 
 	);
 
 	if (it != textureDatas_.end()) {
-		
+
 		//読み込み済みなら要素番号を返す
 		uint32_t textureIndex = static_cast<uint32_t>(std::distance(textureDatas_.begin(), it));
 		return textureIndex;
 	}
-	
+
 	//検索がヒットしない場合、assert
 	assert(false);
 	return 0;

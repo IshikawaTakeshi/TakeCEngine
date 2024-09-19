@@ -1,7 +1,6 @@
 #include "Triangle.h"
 #include "../Include/DirectXCommon.h"
 #include "../MyMath/MatrixMath.h"
-#include "../Texture/Texture.h"
 #include "../TextureManager.h"
 
 #pragma region imgui

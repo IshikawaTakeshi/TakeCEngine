@@ -29,6 +29,12 @@ const uint32_t DirectXCommon::kMaxSRVCount = 512;
 
 DirectXCommon::~DirectXCommon() {
 
+	delete winApp_;	
+	delete dxc_;
+	delete pso_;
+	winApp_ = nullptr;
+	dxc_ = nullptr;
+	pso_ = nullptr;
 }
 
 void DirectXCommon::Initialize(WinApp* winApp) {
