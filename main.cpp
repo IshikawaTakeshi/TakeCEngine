@@ -170,7 +170,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//model->DrawCall(directXCommon);
 		//sphere->DrawCall(directXCommon);
 		for (int i = 0; i < 5; i++) {
-			sprites[i]->DrawCall(directXCommon);
+			sprites[i]->DrawCall();
 		}
 
 		//描画後処理

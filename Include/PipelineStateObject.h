@@ -53,12 +53,12 @@ public:
 	/// <summary>
 	/// ラスタライザステート初期化
 	/// </summary>
-	void CreateRasterizerState();
+	void CreateRasterizerState(D3D12_CULL_MODE cullMode);
 
 	/// <summary>
 	/// PSO生成
 	/// </summary>
-	void CreatePSO(ID3D12Device* device, DXC* dxc_);
+	void CreatePSO(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode);
 
 public:
 
@@ -77,6 +77,9 @@ public:
 	/// </summary>
 	ID3D12PipelineState* GetGraphicPipelineState() const { return graphicPipelineState_.Get(); }
 
+	///////////////////////////////////////////////////////////////////////////////////////////
+	///			setter
+	///////////////////////////////////////////////////////////////////////////////////////////
 
 
 private:
@@ -96,11 +99,9 @@ private:
 	//InputLayout
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3] = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
-	/// ブレンドステート
 	D3D12_BLEND_DESC blendDesc_{};
-	// ラスタライザステート
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};
-	//PSO生成
+	//shaderBlob
 	ComPtr<IDxcBlob> vertexShaderBlob_;
 	ComPtr<IDxcBlob> pixelShaderBlob_;
 	//depthStencilState

@@ -115,12 +115,12 @@ void PSO::CreateBlendState() {
 		D3D12_COLOR_WRITE_ENABLE_ALL;
 }
 
-void PSO::CreateRasterizerState() {
-	rasterizerDesc_.CullMode = D3D12_CULL_MODE_BACK;
+void PSO::CreateRasterizerState(D3D12_CULL_MODE cullMode) {
+	rasterizerDesc_.CullMode = cullMode;
 	rasterizerDesc_.FillMode = D3D12_FILL_MODE_SOLID;
 }
 
-void PSO::CreatePSO(ID3D12Device* device, DXC* dxc_) {
+void PSO::CreatePSO(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode) {
 
 	HRESULT result = S_FALSE;
 
@@ -131,7 +131,7 @@ void PSO::CreatePSO(ID3D12Device* device, DXC* dxc_) {
 	/// ブレンドステート初期化
 	CreateBlendState();
 	/// ラスタライザステート初期化
-	CreateRasterizerState();
+	CreateRasterizerState(cullMode);
 
 	//Shaderをコンパイル
 	//VS

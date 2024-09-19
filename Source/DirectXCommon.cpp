@@ -74,7 +74,7 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	dxc_->InitializeDxc();
 	//PSO生成
 	pso_ = new PSO();
-	pso_->CreatePSO(device_.Get(), dxc_);
+	pso_->CreatePSO(device_.Get(), dxc_, D3D12_CULL_MODE_BACK);
 }
 	
 	

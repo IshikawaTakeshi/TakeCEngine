@@ -7,7 +7,8 @@ void SpriteCommon::Initialize(DirectXCommon* directXCommon) {
 	dxCommon_ = directXCommon;
 
 	pso_ = new PSO();
-	pso_->CreatePSO(dxCommon_->GetDevice(),dxCommon_->GetDXC());
+	pso_->CreatePSO(dxCommon_->GetDevice(),dxCommon_->GetDXC(), D3D12_CULL_MODE_NONE); //PSO生成
+	//pso_->SetCullMode(); //カリングなし
 }
 
 void SpriteCommon::PreDraw() {

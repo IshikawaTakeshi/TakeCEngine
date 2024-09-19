@@ -46,12 +46,11 @@ public:
 	/// <param name="device"></param>
 	void InitializeVertexResourceObjModel(ID3D12Device* device,ModelData modelData);
 
-	void UpdateSprite(Vector2 anchorPoint);
-
 	/// <summary>
 	/// 頂点バッファビューの取得
 	/// </summary>
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return vertexBufferView_; }
+	ID3D12Resource* GetVertexResource() { return vertexResource_.Get(); }
 
 
 	//================================= IndexBufferResource ==================================//

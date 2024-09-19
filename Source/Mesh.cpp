@@ -1,5 +1,6 @@
 #include "../Include/Mesh.h"
 #include "../Include/DirectXCommon.h"
+#include "../TextureManager.h"
 #include <numbers>
 
 Mesh::~Mesh() {
@@ -110,10 +111,10 @@ void Mesh::InitializeVertexResourceSprite(ID3D12Device* device, Vector2 anchorPo
 	float top = 0.0f - anchorPoint.y;
 	float bottom = 1.0f - anchorPoint.y;
 	//1枚目の三角形
-	vertexData[0].position = { 0.0f + left,90.0f + bottom,0.0f,1.0f }; //左下
-	vertexData[1].position = { 0.0f + left,0.0f + top,0.0f,1.0f }; //左上
-	vertexData[2].position = { 160.0f + right,90.0f + bottom,0.0f,1.0f }; //右下
-	vertexData[3].position = { 160.0f + right,0.0f + top,0.0f,1.0f }; //右上
+	vertexData[0].position = { left,bottom,0.0f,1.0f }; //左下
+	vertexData[1].position = { left,top,0.0f,1.0f }; //左上
+	vertexData[2].position = { right,bottom,0.0f,1.0f }; //右下
+	vertexData[3].position = { right,top,0.0f,1.0f }; //右上
 	vertexData[0].texcoord = { 0.0f,1.0f };
 	vertexData[1].texcoord = { 0.0f,0.0f };
 	vertexData[2].texcoord = { 1.0f,1.0f };
@@ -167,21 +168,6 @@ void Mesh::InitializeVertexResourceObjModel(ID3D12Device* device, ModelData mode
 	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 }
 
-void Mesh::UpdateSprite(Vector2 anchorPoint) {
-	//頂点データ
-	VertexData* vertexData;
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	//anchorPoint
-	float left = 0.0f - anchorPoint.x;
-	float right = 1.0f - anchorPoint.x;
-	float top = 0.0f - anchorPoint.y;
-	float bottom = 1.0f - anchorPoint.y;
-	//1枚目の三角形
-	vertexData[0].position = { left,bottom,0.0f,1.0f }; //左下
-	vertexData[1].position = { left,top,0.0f,1.0f }; //左上
-	vertexData[2].position = { right,bottom,0.0f,1.0f }; //右下
-	vertexData[3].position = { right,top,0.0f,1.0f }; //右上
-}
 
 void Mesh::InitializeIndexResourceSphere(ID3D12Device* device) {
 
