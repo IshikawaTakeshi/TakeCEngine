@@ -34,7 +34,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	mesh_ = new Mesh();
 	mesh_->InitializeMesh(spriteCommon_->GetDirectXCommon(),filePath);
 	//vertexResource初期化
-	mesh_->InitializeVertexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice());
+	mesh_->InitializeVertexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice(),anchorPoint_);
 	//IndexResource初期化
 	mesh_->InitializeIndexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice());
 	//MaterialResource初期化
@@ -86,12 +86,21 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 #pragma region 更新処理
 void Sprite::Update(int num) {
 
+	// アンカーポイントの位置に平行移動
+	//Matrix4x4 anchorTranslate = MatrixMath::MakeTranslateMatrix(
+	//	Vector3{ -anchorPoint_.x * transform_.scale.x,-anchorPoint_.y * transform_.scale.y,0.0f }
+	//);
+
+	mesh_->UpdateSprite(anchorPoint_);
+
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(
 		transform_.scale,
 		transform_.rotate,
 		transform_.translate
 	);
+
+	//worldMatrix_ = MatrixMath::Multiply(anchorTranslate, worldMatrix_);
 
 	//ViewProjectionの処理
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
@@ -104,8 +113,9 @@ void Sprite::Update(int num) {
 	std::string windowName = "Sprite" + std::to_string(num);
 	ImGui::Begin(windowName.c_str());
 	ImGui::DragFloat3("SpriteTranslate", &transform_.translate.x, 1.0f);
-	ImGui::DragFloat3("SpriteRotate", &transform_.rotate.x, 0.01f);
-	ImGui::DragFloat3("SpriteScale", &transform_.scale.x, 0.01f);
+	ImGui::DragFloat3("SpriteRotate",    &transform_.rotate.x, 0.01f);
+	ImGui::DragFloat3("SpriteScale",     &transform_.scale.x, 0.01f);
+	ImGui::SliderFloat2("AnchorPoint", &anchorPoint_.x, -10.0f, 10.0f);
 	mesh_->GetMaterial()->UpdateMaterialImGui();
 	ImGui::End();
 	

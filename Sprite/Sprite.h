@@ -49,13 +49,25 @@ public:
 	///テクスチャ変更処理
 	//void ChangeTexture(const std::string& textureFilePath);
 
-	/// <summary>
-	/// Transformの取得
-	/// </summary>
+	//================================================================================================
+	// getter
+	//================================================================================================
+
+	//トランスフォーム取得
 	Transform GetTransform() { return transform_; }
 
+	//テクスチャの要素番号取得
 	uint32_t GetTextureIndex() { return textureIndex_; }
 
+	//アンカーポイント取得
+	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
+
+	//================================================================================================
+	// setter
+	//================================================================================================
+
+	//アンカーポイント設定
+	void SetAnchorPoint(const Vector2& anchorPoint) { anchorPoint_ = anchorPoint; }
 
 private:
 
@@ -73,11 +85,15 @@ private:
 	//sprite用のTransformationMatrix用の頂点データ
 	TransformMatrix* wvpData_ = nullptr;
 
+	//Transform
 	Transform transform_{};
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 worldViewProjectionMatrix_;
+
+	//アンカーポイント
+	Vector2 anchorPoint_ = { 0.0f,0.0f };
 	
 	//平行光源用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;

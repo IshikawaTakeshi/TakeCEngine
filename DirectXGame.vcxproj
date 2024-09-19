@@ -93,6 +93,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="D3DResourceLeakChecker\D3DResourceLeakChecker.cpp" />
+    <ClCompile Include="MyMath\Matrix4x4.cpp" />
     <ClCompile Include="Sprite\SpriteCommon.cpp" />
     <ClCompile Include="StringUtility\StringUtility.cpp" />
     <ClCompile Include="Source\Input.cpp" />
@@ -119,6 +120,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Triangle\Triangle.cpp" />
     <ClCompile Include="Source\WinApp.cpp" />
     <ClCompile Include="Source\VertexResource.cpp" />
+    <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D3DResourceLeakChecker\D3DResourceLeakChecker.h" />

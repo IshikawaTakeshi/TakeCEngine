@@ -33,7 +33,7 @@ public:
 	/// <summary>
 	/// スプライトの頂点バッファリソース初期化
 	/// </summary>
-	void InitializeVertexResourceSprite(ID3D12Device* device);
+	void InitializeVertexResourceSprite(ID3D12Device* device,Vector2 anchorPoint);
 
 	/// <summary>
 	/// 三角形の頂点バッファリソース初期化
@@ -45,6 +45,8 @@ public:
 	/// </summary>
 	/// <param name="device"></param>
 	void InitializeVertexResourceObjModel(ID3D12Device* device,ModelData modelData);
+
+	void UpdateSprite(Vector2 anchorPoint);
 
 	/// <summary>
 	/// 頂点バッファビューの取得
