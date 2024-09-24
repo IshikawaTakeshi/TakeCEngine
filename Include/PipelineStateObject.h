@@ -4,7 +4,6 @@
 #include <dxcapi.h>
 #include <wrl.h>
 
-class DirectXCommon;
 class DXC;
 class PSO {
 

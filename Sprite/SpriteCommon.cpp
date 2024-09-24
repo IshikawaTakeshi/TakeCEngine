@@ -17,10 +17,11 @@ void SpriteCommon::Initialize(DirectXCommon* directXCommon) {
 
 	pso_ = new PSO();
 	pso_->CreatePSO(dxCommon_->GetDevice(),dxCommon_->GetDXC(), D3D12_CULL_MODE_NONE); //PSO生成
+	rootSignature_ = pso_->GetRootSignature();
 }
 
 void SpriteCommon::Finalize() {
-
+	rootSignature_.Reset();
 	dxCommon_ = nullptr;
 	delete pso_;
 	pso_ = nullptr;
@@ -31,7 +32,7 @@ void SpriteCommon::Finalize() {
 
 void SpriteCommon::PreDraw() {
 
-	rootSignature_ = pso_->GetRootSignature();
+	
 	//ルートシグネチャ設定
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
 	//PSO設定

@@ -221,10 +221,6 @@ void DirectXCommon::ClearRenderTarget() {
 	commandList_->RSSetViewports(1, &viewport_);
 	// Scissorの設定
 	commandList_->RSSetScissorRects(1, &scissorRect_);
-	// RootSignatureを設定。PSOに設定しているが別途設定が必要
-	commandList_->SetGraphicsRootSignature(pso_->GetRootSignature()); // rootSignatureを設定
-	commandList_->SetPipelineState(pso_->GetGraphicPipelineState()); // PSOを設定
-
 }
 
 void DirectXCommon::InitializeDXGIDevice() {
