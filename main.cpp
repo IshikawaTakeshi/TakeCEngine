@@ -11,7 +11,6 @@
 
 #include "MyMath/Transform.h"
 #include "MyMath/MatrixMath.h"
-//#include "Texture/Texture.h"
 #include "Sprite/SpriteCommon.h"
 #include "Sprite/Sprite.h"
 #include "Triangle/Triangle.h"
@@ -41,7 +40,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	D3DResourceLeakChecker* leakCheck = new D3DResourceLeakChecker;
 
 	//タイトルバーの名前の入力
-	WinApp* winApp = WinApp::GetInstance();
+	WinApp* winApp = new WinApp();
 	winApp->Initialize(L"CG2_06_02");
 
 	//DirectX初期化
@@ -71,7 +70,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 	//SpriteCommon初期化
-	SpriteCommon* spriteCommon = new SpriteCommon();
+	SpriteCommon* spriteCommon = spriteCommon->GetInstance();
 	spriteCommon->Initialize(directXCommon);
 
 	//テクスチャマネージャ初期化
@@ -189,18 +188,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	TextureManager::GetInstance()->Finalize();
 
 	//SpriteCommonの開放
+	spriteCommon->Finalize();
+
+	//入力の開放
+	input->Finalize();
 	
 	//directXCommonの開放
 	directXCommon->Finalize();
+	delete directXCommon;
 
 	//winAppの開放
 	winApp->Finalize();
+	delete winApp;
 	
 	//delete model;
 	//delete sphere;
 	
 	for (auto& sprite : sprites) {
 		delete sprite;
+		sprite = nullptr;
 	}
 
 	delete leakCheck;

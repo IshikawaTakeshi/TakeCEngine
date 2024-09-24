@@ -18,8 +18,13 @@
 
 
 Sprite::~Sprite() {
-
+	
+	
+	wvpResource_.Reset();
 	directionalLightResource_.Reset();
+	delete mesh_;
+	spriteCommon_ = nullptr;
+	
 	
 }
 

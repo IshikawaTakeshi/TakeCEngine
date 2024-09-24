@@ -16,12 +16,6 @@ public:
 	~WinApp();
 
 	/// <summary>
-	/// シングルトンインスタンスの取得
-	/// </summary>
-	/// <returns>シングルトンインスタンス</returns>
-	static WinApp* GetInstance();
-
-	/// <summary>
 	/// ウィンドウプロシージャ
 	/// </summary>
 	/// <param name="hwnd">ウィンドウハンドル</param>

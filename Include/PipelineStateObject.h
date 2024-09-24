@@ -33,7 +33,7 @@ public:
 	/// <summary>
 	/// 開放処理
 	/// </summary>
-	void Finalize();
+	//void Finalize();
 
 	/// <summary>
 	/// ルートシグネチャ初期化

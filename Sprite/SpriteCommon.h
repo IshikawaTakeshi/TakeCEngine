@@ -20,16 +20,7 @@ public:
 	///			publicメンバ関数
 	/////////////////////////////////////////////////////////////////////////////////////
 
-
-	/// <summary>
-	/// コンストラクタ
-	/// </summary>
-	SpriteCommon() = default;
-
-	/// <summary>
-	/// デストラクタ
-	/// </summary>
-	~SpriteCommon();
+	static SpriteCommon* GetInstance();
 
 	/// <summary>
 	/// 初期化
@@ -37,9 +28,19 @@ public:
 	void Initialize(DirectXCommon* directXCommon);
 
 	/// <summary>
+	/// 終了処理
+	/// </summary>
+	void Finalize();
+
+	/// <summary>
 	/// 共通描画設定
 	/// </summary>
 	void PreDraw();
+
+	/// <summary>
+	/// 描画後処理
+	/// </summary>
+	//void PostDraw();
 	
 public:
 
@@ -58,19 +59,21 @@ public:
 	void SetDirectXCommon(DirectXCommon* dxCommon) { dxCommon_ = dxCommon; }
 
 private:
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			privateメンバ関数
-	/////////////////////////////////////////////////////////////////////////////////////
+	
+	SpriteCommon() = default;
+	~SpriteCommon() = default;
+	SpriteCommon(const SpriteCommon&) = delete;
+	SpriteCommon& operator=(const SpriteCommon&) = delete;
 
-	void CreateRootSignature();
-
-	void CreatePSO();
 
 private:
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	///			privateメンバ変数
 	/////////////////////////////////////////////////////////////////////////////////////
+
+	//シングルトンインスタンス
+	static SpriteCommon* instance_;
 
 	//DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;

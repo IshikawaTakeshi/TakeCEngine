@@ -29,12 +29,12 @@ const uint32_t DirectXCommon::kMaxSRVCount = 512;
 
 DirectXCommon::~DirectXCommon() {
 
-	delete winApp_;	
-	delete dxc_;
-	delete pso_;
-	winApp_ = nullptr;
-	dxc_ = nullptr;
-	pso_ = nullptr;
+	//delete winApp_;	
+	//delete dxc_;
+	//delete pso_;
+	//winApp_ = nullptr;
+	//dxc_ = nullptr;
+	//pso_ = nullptr;
 }
 
 void DirectXCommon::Initialize(WinApp* winApp) {
@@ -58,7 +58,7 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	//深度ステンシルテクスチャの生成
 	CreateDepthStencilTextureResource(device_, WinApp::kClientWidth, WinApp::kClientHeight);
 	//ディスクリプタヒープ生成
-	CreateDescriptorHeap();
+	CreateDescriptorHeaps();
 	// RTVの初期化
 	InitializeRenderTargetView();
 	// DSVの初期化
@@ -81,31 +81,43 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 
 void DirectXCommon::Finalize() {
 
-	//if (dxc_ != nullptr) {
-	//	dxc_->Finalize();
-	//	delete dxc_;
-	//	dxc_ = nullptr;
-	//}
-
-	//if (pso_ != nullptr) {
-	//	pso_->Finalize();
-	//	delete pso_;
-	//	pso_ = nullptr;
-	//}
+	CloseHandle(fenceEvent_);
+	fenceEvent_ = nullptr;
 
 	fence_.Reset();
-	dsvHeap_.Reset();
-	rtvHeap_.Reset();
-	srvHeap_.Reset();
-	swapChainResources_[1].Reset();
-	swapChainResources_[0].Reset();
-	swapChain_.Reset();
+
 	commandList_.Reset();
 	commandAllocator_.Reset();
 	commandQueue_.Reset();
+	
+	swapChain_.Reset();
+
+	dsvHeap_.Reset();
+	srvHeap_.Reset();
+	rtvHeap_.Reset();
+
+	swapChainResources_[1].Reset();
+	swapChainResources_[0].Reset();
+
+	
 	device_.Reset();
 	useAdapter_.Reset();
 	dxgiFactory_.Reset();
+
+	if (dxc_ != nullptr) {
+		delete dxc_;
+		dxc_ = nullptr;
+	}
+
+	if (pso_ != nullptr) {
+		//pso_->Finalize();
+		delete pso_;
+		pso_ = nullptr;
+	}
+
+	winApp_ = nullptr;
+
+
 }
 
 void DirectXCommon::PreDraw() {
@@ -299,7 +311,9 @@ void DirectXCommon::InitializeDXGIDevice() {
 		//エラーの時に止まる
 		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
 		//警告時に止まる
-		//infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+		//
+		// 
+		// infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
 
 		//抑制するメッセージのID
 		D3D12_MESSAGE_ID denyIds[] = {
@@ -400,7 +414,7 @@ void DirectXCommon::CreateDepthStencilTextureResource(const Microsoft::WRL::ComP
 	assert(SUCCEEDED(hr));
 }
 
-void DirectXCommon::CreateDescriptorHeap() {
+void DirectXCommon::CreateDescriptorHeaps() {
 
 	//ディスクリプタヒープのサイズを取得
 	descriptorSizeSRV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);

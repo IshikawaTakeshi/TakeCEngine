@@ -20,6 +20,8 @@ Model::~Model() {
 
 	directionalLightResource_.Reset();
 	wvpResource_.Reset();
+	delete mesh_;
+	mesh_ = nullptr;
 }
 
 void Model::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView,

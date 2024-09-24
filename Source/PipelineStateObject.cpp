@@ -6,11 +6,8 @@
 
 #pragma region PSO
 
-PSO::~PSO() {}
+PSO::~PSO() {
 
-void PSO::Finalize() {
-
-	graphicPipelineState_.Reset();
 	pixelShaderBlob_.Reset();
 	vertexShaderBlob_.Reset();
 	rootSignature_.Reset();
@@ -18,8 +15,10 @@ void PSO::Finalize() {
 		errorBlob_.Reset();
 	}
 	signatureBlob_.Reset();
-
+	graphicPipelineState_.Reset();
 }
+
+
 
 void PSO::CreateRootSignature(ID3D12Device* device) {
 

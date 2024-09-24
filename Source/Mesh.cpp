@@ -4,14 +4,14 @@
 #include <numbers>
 
 Mesh::~Mesh() {
-
+	delete material_;
+	material_ = nullptr;
 }
 
 void Mesh::InitializeMesh(DirectXCommon* dxCommon,const std::string& filePath) {
 
 	material_ = new Material();
 	material_->InitializeTexture(dxCommon, filePath);
-	
 }
 
 void Mesh::InitializeVertexResourceSphere(ID3D12Device* device) {

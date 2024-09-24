@@ -14,7 +14,11 @@
 #pragma endregion
 
 
-Material::~Material() {}
+Material::~Material() {
+
+	materialResource_.Reset();
+	
+}
 
 void Material::InitializeTexture(DirectXCommon* dxCommon, const std::string& filePath) {
 
@@ -24,6 +28,7 @@ void Material::InitializeTexture(DirectXCommon* dxCommon, const std::string& fil
 	//テクスチャ初期化
 	TextureManager::GetInstance()->LoadTexture(filePath);
 
+	
 	//uvTransform
 	uvTransform_ = {
 		{1.0f,1.0f,1.0f},
@@ -60,6 +65,7 @@ void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> d
 	materialData_ = nullptr;
 	//書き込むためのアドレスを取得
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+
 	//色を書き込む
 	materialData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	materialData_->uvTransform = MatrixMath::MakeIdentity4x4();

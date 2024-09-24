@@ -2,18 +2,34 @@
 #include "../Include/DirectXCommon.h"
 #include "../Include/PipelineStateObject.h"
 
+SpriteCommon* SpriteCommon::instance_ = nullptr;
+
+SpriteCommon* SpriteCommon::GetInstance() {	
+	if(instance_ == nullptr) {
+		instance_ = new SpriteCommon();
+	}
+	return instance_;
+}
+
 void SpriteCommon::Initialize(DirectXCommon* directXCommon) {
 
 	dxCommon_ = directXCommon;
 
 	pso_ = new PSO();
 	pso_->CreatePSO(dxCommon_->GetDevice(),dxCommon_->GetDXC(), D3D12_CULL_MODE_NONE); //PSO生成
-	//pso_->SetCullMode(); //カリングなし
+}
+
+void SpriteCommon::Finalize() {
+
+	dxCommon_ = nullptr;
+	delete pso_;
+	pso_ = nullptr;
+	delete instance_;
+	instance_ = nullptr;
+
 }
 
 void SpriteCommon::PreDraw() {
-
-
 
 	rootSignature_ = pso_->GetRootSignature();
 	//ルートシグネチャ設定

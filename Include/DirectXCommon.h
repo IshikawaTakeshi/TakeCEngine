@@ -168,19 +168,19 @@ private:
 	ComPtr<IDXGIFactory7> dxgiFactory_ = nullptr;
 	//使用するアダプタ用の変数
 	ComPtr<IDXGIAdapter4> useAdapter_ = nullptr;
-	//D3D12Deviceの生成
+	//D3D12Device
 	ComPtr<ID3D12Device> device_ = nullptr;
-	//コマンドキューの生成
+	//コマンドキュー
 	ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
-	//コマンドアロケータの作成
+	//コマンドアロケータ
 	ComPtr<ID3D12CommandAllocator> commandAllocator_ = nullptr;
-	//コマンドリストの生成
+	//コマンドリスト
 	ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
-	//スワップチェーンの生成
+	//スワップチェーン
 	ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 	std::array<ComPtr<ID3D12Resource>,2> swapChainResources_;
-	//深度ステンシルバッファの生成
+	//深度ステンシルバッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
 
 
@@ -256,7 +256,7 @@ private:
 	/// <summary>
 	/// ディスクリプタヒープ生成
 	/// </summary>
-	void CreateDescriptorHeap();
+	void CreateDescriptorHeaps();
 
 	/// <summary>
 	/// レンダーターゲットのクリア

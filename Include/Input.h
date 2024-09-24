@@ -14,9 +14,6 @@ public:
 
 public:
 
-	Input() = default;
-	~Input();
-
 	/// <summary>
 	/// シングルトンインスタンスの取得
 	/// </summary>
@@ -35,6 +32,8 @@ public:
 	/// <param name="winApp"></param>
 	void Update();
 
+	void Finalize();
+
 	/// <summary>
 	/// キーの押下をチェック
 	/// </summary>
@@ -45,6 +44,16 @@ public:
 	bool TriggerKey(BYTE keyNumber);
 
 private:
+
+	Input() = default;
+	~Input() = default;
+	Input(const Input&) = delete;
+	Input& operator=(const Input&) = delete;
+
+private:
+
+	//シングルトンインスタンス
+	static Input* instance_;
 
 	ComPtr<IDirectInput8> directInput_ = nullptr;
 	ComPtr<IDirectInputDevice8> keyboard_ = nullptr;

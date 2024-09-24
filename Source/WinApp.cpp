@@ -11,14 +11,13 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 #endif // DEBUG
 #pragma endregion
 
-
 WinApp::WinApp() {}
 
-WinApp::~WinApp() {}
+WinApp::~WinApp() {
+#ifdef _DEBUG
+	debugController_.Reset();
+#endif // _DEBUG
 
-WinApp* WinApp::GetInstance() {
-	static WinApp instance;
-	return &instance;
 }
 
 void WinApp::Initialize(const wchar_t title[]) {
