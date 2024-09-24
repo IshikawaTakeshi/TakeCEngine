@@ -13,6 +13,8 @@
 #include "MyMath/MatrixMath.h"
 #include "Sprite/SpriteCommon.h"
 #include "Sprite/Sprite.h"
+#include "Object3dCommon.h"
+#include "Object3d.h"
 #include "Triangle/Triangle.h"
 #include "Sphere/Sphere.h"
 #include "ModelData/Model.h"
@@ -73,6 +75,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	SpriteCommon* spriteCommon = spriteCommon->GetInstance();
 	spriteCommon->Initialize(directXCommon);
 
+	//Object3dCommon初期化
+	Object3dCommon* object3dCommon = object3dCommon->GetInstance();
+	object3dCommon->Initialize();
+
 	//テクスチャマネージャ初期化
 	TextureManager::GetInstance()->Initialize(directXCommon);
 	
@@ -104,6 +110,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 		sprites.push_back(sprite);
 	}
+
+	//3dObject
+	Object3d* object3d = new Object3d();
+	object3d->Initialize();
 	
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,6 +200,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//SpriteCommonの開放
 	spriteCommon->Finalize();
 
+	//Object3dCommonの開放
+	object3dCommon->Finalize();
+
 	//入力の開放
 	input->Finalize();
 	
@@ -204,10 +217,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//delete model;
 	//delete sphere;
 	
+	//spritesの開放
 	for (auto& sprite : sprites) {
 		delete sprite;
 		sprite = nullptr;
 	}
+
+	//Object3dの開放
+	delete object3d;
+	object3d = nullptr;
 
 	delete leakCheck;
 	
