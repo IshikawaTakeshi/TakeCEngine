@@ -33,18 +33,15 @@ void Model::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView,
 	//モデル読み込み
 	modelData_ = LoadObjFile(resourceDirectoryPath,modelDirectoryPath, filename);
 
-	//======================= メッシュ初期化 ===========================//
-
+	//メッシュ初期化
 	mesh_ = new Mesh();
-
 	mesh_->InitializeMesh(dxCommon, modelData_.material.textureFilePath);
 
 
-	//======================= VertexResource ===========================//
-
+	//VertexResource
 	mesh_->InitializeVertexResourceObjModel(dxCommon->GetDevice(), modelData_);
 
-	//======================= transformationMatrix用のVertexResource ===========================//
+	//transformationMatrix用のVertexResource
 
 	//スプライト用のTransformationMatrix用のVertexResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(TransformMatrix));
@@ -55,17 +52,11 @@ void Model::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView,
 	//単位行列を書き込んでおく
 	transformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
-	//======================= MaterialResource ===========================//
-
+	//MaterialResource
 	mesh_->GetMaterial()->GetMaterialResource();
 
-	//======================= DirectionalLightResource ===========================//
-
+	//DirectionalLightResource
 	InitializeDirectionalLightData(dxCommon);
-
-
-
-	//======================= Transform・各行列の初期化 ===========================//
 
 	//CPUで動かす用のTransform
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };

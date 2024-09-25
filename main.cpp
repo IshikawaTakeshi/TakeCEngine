@@ -100,20 +100,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//sphere->Initialize(directXCommon, cameraMatrix, true, "./Resources/uvChecker.png");
 
 	//スプライト
-	//std::vector<Sprite*> sprites;
-	//for (uint32_t i = 0; i < 5; i++) {
-	//	Sprite* sprite = new Sprite();
-	//	if (i % 2 == 0) {
-	//		sprite->Initialize(spriteCommon, "Resources/uvChecker.png");
-	//	} else {
-	//		sprite->Initialize(spriteCommon, "Resources/monsterBall.png");
-	//	}
-	//	sprites.push_back(sprite);
-	//}
+	std::vector<Sprite*> sprites;
+	for (uint32_t i = 0; i < 5; i++) {
+		Sprite* sprite = new Sprite();
+		if (i % 2 == 0) {
+			sprite->Initialize(spriteCommon, "Resources/uvChecker.png");
+		} else {
+			sprite->Initialize(spriteCommon, "Resources/monsterBall.png");
+		}
+		sprites.push_back(sprite);
+	}
 
 	//3dObject
 	Object3d* object3d = new Object3d();
-	object3d->Initialize();
+	object3d->Initialize(object3dCommon,cameraMatrix);
 	
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,10 +156,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 		//スプライト
-	/*	for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 5; i++) {
 			sprites[i]->Update(i);
-		}*/
-
+		}
+		object3d->Update();
 
 		//========================== 描画処理　==========================//
 
@@ -181,9 +181,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//}
 		//model->DrawCall(directXCommon);
 		//sphere->DrawCall(directXCommon);
-		//for (int i = 0; i < 5; i++) {
-		//	sprites[i]->DrawCall();
-		//}
+		for (int i = 0; i < 5; i++) {
+			sprites[i]->DrawCall();
+		}
+
+		object3d->Draw();
 
 		//描画後処理
 		directXCommon->PostDraw();
@@ -221,10 +223,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//delete sphere;
 	
 	//spritesの開放
-	//for (auto& sprite : sprites) {
-	//	delete sprite;
-	//	sprite = nullptr;
-	//}
+	for (auto& sprite : sprites) {
+		delete sprite;
+		sprite = nullptr;
+	}
 
 	//Object3dの開放
 	delete object3d;

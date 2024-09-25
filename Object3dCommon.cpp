@@ -1,4 +1,6 @@
 #include "Object3dCommon.h"
+#include "Include/DirectXCommon.h"
+#include "Include/PipelineStateObject.h"
 
 Object3dCommon* Object3dCommon::instance_ = nullptr;
 

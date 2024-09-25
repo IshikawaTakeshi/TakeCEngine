@@ -36,13 +36,6 @@ public:
 	/// </summary>
 	void Update(int num);
 
-	
-
-	/// <summary>
-	/// directionalLightData初期化
-	/// </summary>
-	void InitializeDirectionalLightData(DirectXCommon* dxCommon);
-
 	/// <summary>
 	/// 描画処理
 	/// </summary>
@@ -142,9 +135,5 @@ private:
 
 	Vector2 textureLeftTop_ = { 0.0f,0.0f  }; //テクスチャの左上座標
 	Vector2 textureSize_ = { 65.0f,65.0f }; //テクスチャの切り出しサイズ
-	
-	//平行光源用のリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-	DirectionalLightData* directionalLightData_ = nullptr;
 };
 

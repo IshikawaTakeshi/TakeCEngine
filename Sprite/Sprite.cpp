@@ -21,7 +21,6 @@ Sprite::~Sprite() {
 	
 	
 	wvpResource_.Reset();
-	directionalLightResource_.Reset();
 	delete mesh_;
 	spriteCommon_ = nullptr;
 	
@@ -59,11 +58,6 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 
 	//単位行列を書き込んでおく
 	wvpData_->WVP = MatrixMath::MakeIdentity4x4();
-
-	
-	//======================= DirectionalLightResource ===========================//
-
-	InitializeDirectionalLightData(spriteCommon->GetDirectXCommon());
 
 	//======================= Transform・各行列の初期化 ===========================//
 
@@ -185,20 +179,6 @@ void Sprite::AdjustTextureSize() {
 
 #pragma endregion
 
-void Sprite::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
-
-	//平行光源用Resourceの作成
-	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DirectionalLightData));
-	directionalLightData_ = nullptr;
-	//データを書き込むためのアドレスを取得
-	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
-	//光源の色を書き込む
-	directionalLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
-	//光源の方向を書き込む
-	directionalLightData_->direction_ = { 0.0f,-1.0f,0.0f };
-	//光源の輝度書き込む
-	directionalLightData_->intensity_ = 1.0f;
-}
 
 #pragma region 描画処理
 void Sprite::DrawCall() {
@@ -211,8 +191,6 @@ void Sprite::DrawCall() {
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
-	//Lighting用のCBufferの場所を指定
-	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//IBVの設定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。

@@ -1,7 +1,10 @@
 #pragma once
-#include "Include/DirectXCommon.h"
-#include "Include/PipelineStateObject.h"
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <wrl.h>
 
+class PSO;
+class DirectXCommon;
 class Object3dCommon {
 
 public:
