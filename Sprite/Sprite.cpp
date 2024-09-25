@@ -53,8 +53,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	wvpResource_ = DirectXCommon::CreateBufferResource(spriteCommon->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
 
 	//TransformationMatrix用
-	wvpResource_->
-		Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
 
 	//単位行列を書き込んでおく
 	wvpData_->WVP = MatrixMath::MakeIdentity4x4();
@@ -94,7 +93,6 @@ void Sprite::Update(int num) {
 	if (adjustSwitch_) {
 		AdjustTextureSize();
 	}
-	
 
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(

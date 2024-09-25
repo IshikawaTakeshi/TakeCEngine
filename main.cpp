@@ -15,6 +15,8 @@
 #include "Sprite/Sprite.h"
 #include "Object3dCommon.h"
 #include "Object3d.h"
+#include "ModelCommon.h"
+#include "ModelData/model.h"
 #include "Triangle/Triangle.h"
 #include "Sphere/Sphere.h"
 #include "ModelData/Model.h"
@@ -79,6 +81,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Object3dCommon* object3dCommon = object3dCommon->GetInstance();
 	object3dCommon->Initialize(directXCommon);
 
+	//ModelCommon初期化
+	ModelCommon* modelCommon = modelCommon->GetInstance();
+	modelCommon->Initialize(directXCommon);
+
 	//テクスチャマネージャ初期化
 	TextureManager::GetInstance()->Initialize(directXCommon);
 	
@@ -89,15 +95,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		cameraTransform.rotate,
 		cameraTransform.translate
 	);
-
-	//モデル
-	//Model* model = new Model();
-	//model->Initialize(directXCommon, cameraMatrix, "Resources", "obj_mtl_blend", "axis.obj");
-	//model->SetTextureFilePath("./Resources/uvChecker.png");
-
-	//球
-	//Sphere* sphere = new Sphere();
-	//sphere->Initialize(directXCommon, cameraMatrix, true, "./Resources/uvChecker.png");
 
 	//スプライト
 	std::vector<Sprite*> sprites;
@@ -111,9 +108,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		sprites.push_back(sprite);
 	}
 
+	//モデル
+	Model* model0 = new Model();
+	model0->Initialize(modelCommon);
+	Model* model1 = new Model();
+	model1->Initialize(modelCommon);
+
+
 	//3dObject
 	Object3d* object3d = new Object3d();
-	object3d->Initialize(object3dCommon,cameraMatrix);
+	object3d->Initialize(object3dCommon,cameraMatrix,model0);
+	object3d->SetScale({0.5f,0.5f,0.5f});
+	Object3d* object3d1 = new Object3d();
+	object3d1->Initialize(object3dCommon, cameraMatrix, model1);
+	object3d1->SetScale({ 0.5f,0.5f,0.5f });
 	
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,33 +167,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		for (int i = 0; i < 5; i++) {
 			sprites[i]->Update(i);
 		}
-		object3d->Update();
+		object3d->Update(0);
+		object3d1->Update(1);
 
 		//========================== 描画処理　==========================//
 
-		//描画前処理
-		directXCommon->PreDraw();
-		//Spriteの描画前処理
-		spriteCommon->PreDraw();
+		
+		directXCommon->PreDraw(); //描画前処理
+		spriteCommon->PreDraw();  //Spriteの描画前処理
 
-		//Object3dの描画前処理
-		object3dCommon->PreDraw();
+		
+		object3dCommon->PreDraw(); //Object3dの描画前処理
 
-		//if (input->TriggerKey(DIK_SPACE)) {
-		//	//モデルのテクスチャを変更
-		//	sphere->SetTexture(texture2);
-		//}
-		//if (input->PushKey(DIK_B)) {
-		//	//モデルのテクスチャを変更
-		//	sphere->SetTexture(texture1);
-		//}
-		//model->DrawCall(directXCommon);
-		//sphere->DrawCall(directXCommon);
 		for (int i = 0; i < 5; i++) {
-			sprites[i]->DrawCall();
+			sprites[i]->DrawCall(); //スプライトの描画
 		}
 
-		object3d->Draw();
+		
+		object3d->Draw(); //3Dオブジェクトの描画
+		object3d1->Draw(); //3Dオブジェクトの描画
 
 		//描画後処理
 		directXCommon->PostDraw();

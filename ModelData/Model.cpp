@@ -4,6 +4,7 @@
 #include "../Include/Mesh.h"
 #include "../MyMath/MatrixMath.h"
 #include "../TextureManager.h"
+#include "../ModelCommon.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>
@@ -18,127 +19,41 @@
 
 Model::~Model() {
 
-	directionalLightResource_.Reset();
-	wvpResource_.Reset();
 	delete mesh_;
 	mesh_ = nullptr;
 }
 
-void Model::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView,
-	const std::string& resourceDirectoryPath,
-	const std::string& modelDirectoryPath,
-	const std::string& filename) {
+void Model::Initialize(ModelCommon* ModelCommon) {
+	modelCommon_ = ModelCommon;
 
-
-	//モデル読み込み
-	modelData_ = LoadObjFile(resourceDirectoryPath,modelDirectoryPath, filename);
+	//objファイル読み込み
+	modelData_ = LoadObjFile("Resources", "obj_mtl_blend", "axis.obj");
 
 	//メッシュ初期化
 	mesh_ = new Mesh();
-	mesh_->InitializeMesh(dxCommon, modelData_.material.textureFilePath);
-
-
+	mesh_->InitializeMesh(modelCommon_->GetDirectXCommon(), modelData_.material.textureFilePath);
+	
 	//VertexResource
-	mesh_->InitializeVertexResourceObjModel(dxCommon->GetDevice(), modelData_);
-
-	//transformationMatrix用のVertexResource
-
-	//スプライト用のTransformationMatrix用のVertexResource生成
-	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(TransformMatrix));
-
-	//TransformationMatrix用
-	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformMatrixData_));
-
-	//単位行列を書き込んでおく
-	transformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
-
+	mesh_->InitializeVertexResourceObjModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 	//MaterialResource
-	mesh_->GetMaterial()->GetMaterialResource();
-
-	//DirectionalLightResource
-	InitializeDirectionalLightData(dxCommon);
-
-	//CPUで動かす用のTransform
-	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-
-	//アフィン行列
-	worldMatrix_ = MatrixMath::MakeAffineMatrix(
-		transform_.scale,
-		transform_.rotate,
-		transform_.translate
-	);
-
-	//ViewProjectionの初期化
-	viewMatrix_ = MatrixMath::Inverse(cameraView);
-	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
-		0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f
-	);
+	mesh_->GetMaterial()->InitializeMaterialResource(modelCommon_->GetDirectXCommon()->GetDevice());
+	//テクスチャ番号の取得
+	modelData_.material.textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 }
 
-void Model::Update() {
 
-	//アフィン行列の更新
-	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 
-	//wvpの更新
-	worldViewProjectionMatrix_ = MatrixMath::Multiply(
-		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	transformMatrixData_->WVP = worldViewProjectionMatrix_;
-	transformMatrixData_->World = worldMatrix_;
-
-	ImGui::Begin("Window:Model");
-	ImGui::DragFloat3("ModelScale", &transform_.scale.x, 0.01f);
-	ImGui::DragFloat3("ModelRotate", &transform_.rotate.x, 0.01f);
-	ImGui::DragFloat3("ModelTranslate", &transform_.translate.x, 0.01f);
-	ImGui::End();
-}
-
-void Model::DrawCall(DirectXCommon* dxCommon) {
-
-	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
+void Model::Draw() {
+	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
-	dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
-	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//wvp用のCBufferの場所を指定
-	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	modelCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
-	//Lighting用のCBufferの場所を指定
-	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
-
-	dxCommon->GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+	modelCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData_.material.textureIndex));
+	//DrawCall
+	modelCommon_->GetDirectXCommon()->GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
 }
-
-//void Model::InitializeVertexData(DirectXCommon* dxCommon) {
-//
-//	//頂点リソースを作る
-//	vertexResource_ = dxCommon->CreateBufferResource(dxCommon->GetDevice(), sizeof(VertexData) * modelData_.vertices.size());
-//	//頂点バッファビューを作る
-//	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-//	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
-//	vertexBufferView_.StrideInBytes = sizeof(VertexData);
-//
-//	//リソースにデータを書き込む
-//	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-//	std::memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
-//}
-
-void Model::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
-
-	//平行光源用Resourceの作成
-	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DirectionalLightData));
-	directionalLightData_ = nullptr;
-	//データを書き込むためのアドレスを取得
-	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
-	//光源の色を書き込む
-	directionalLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
-	//光源の方向を書き込む
-	directionalLightData_->direction_ = { 0.0f,-1.0f,0.0f };
-	//光源の輝度書き込む
-	directionalLightData_->intensity_ = 1.0f;
-}
-
 
 
 ModelData Model::LoadObjFile(const std::string& resourceDirectoryPath, const std::string& modelDirectoryPath, const std::string& filename) {

@@ -4,6 +4,7 @@
 #include "Include/DirectXCommon.h"
 #include "Include/Mesh.h"
 #include "TextureManager.h"
+#include "ModelData/Model.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>
@@ -16,20 +17,16 @@
 #endif 
 #pragma endregion
 
-void Object3d::Initialize(Object3dCommon* object3dCommon, Matrix4x4 cameraView) {
+Object3d::~Object3d() {
+	
+	directionalLightResource_.Reset();
+	wvpResource_.Reset();
+
+}
+
+void Object3d::Initialize(Object3dCommon* object3dCommon, Matrix4x4 cameraView, Model* model) {
 	object3dCommon_ = object3dCommon;
-
-	modelData_ = LoadObjFile("Resources", "obj_mtl_blend", "axis.obj");
-
-	//メッシュ初期化
-	mesh_ = new Mesh();
-	mesh_->InitializeMesh(object3dCommon_->GetDirectXCommon(), modelData_.material.textureFilePath);
-	//テクスチャ番号の取得
-	modelData_.material.textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
-
-	//VertexResource
-	mesh_->InitializeVertexResourceObjModel(object3dCommon_->GetDirectXCommon()->GetDevice(), modelData_);
-
+	model_ = model;
 	//スプライト用のTransformationMatrix用のVertexResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
 
@@ -38,9 +35,6 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, Matrix4x4 cameraView) 
 
 	//単位行列を書き込んでおく
 	transformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
-
-	//MaterialResource
-	mesh_->GetMaterial()->InitializeMaterialResource(object3dCommon_->GetDirectXCommon()->GetDevice());
 
 	//平行光源用Resourceの作成
 	directionalLightResource_ = DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(DirectionalLightData));
@@ -70,7 +64,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, Matrix4x4 cameraView) 
 	);
 }
 
-void Object3d::Update() {
+void Object3d::Update(int num) {
 
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
@@ -80,8 +74,9 @@ void Object3d::Update() {
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
 	transformMatrixData_->WVP = worldViewProjectionMatrix_;
 	transformMatrixData_->World = worldMatrix_;
-
-	ImGui::Begin("Object3d");
+	//ImGuiの更新
+	std::string windowName = "Object3d" + std::to_string(num);
+	ImGui::Begin(windowName.c_str());
 	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
@@ -90,19 +85,15 @@ void Object3d::Update() {
 
 void Object3d::Draw() {
 
-	object3dCommon_->GetDirectXCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
-	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
-	object3dCommon_->GetDirectXCommon()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//materialCBufferの場所を指定
-	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData_.material.textureIndex));
+
 	//Lighting用のCBufferの場所を指定
 	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 
-	object3dCommon_->GetDirectXCommon()->GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+	if(model_ != nullptr) {
+		model_->Draw();
+	}
 }
 
 ModelData Object3d::LoadObjFile(const std::string& resourceDirectoryPath, const std::string& modelDirectoryPath, const std::string& filename) {

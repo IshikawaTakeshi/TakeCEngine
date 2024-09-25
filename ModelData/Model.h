@@ -6,9 +6,11 @@
 #include <d3d12.h>
 #include <wrl.h>
 
+
 class Mesh;
 class Texture;
 class DirectXCommon;
+class ModelCommon;
 class Model {
 public:
 
@@ -18,26 +20,17 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView,
-		const std::string& resourceDirectoryPath,
-		const std::string& modelDirectoryPath, 
-		const std::string& filename);
+	void Initialize(ModelCommon* ModelCommon);
 
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void Update();
+	//void Update();
 
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void DrawCall(DirectXCommon* dxCommon);
-
-	/// <summary>
-	/// directionalLightData初期化
-	/// </summary>
-	void InitializeDirectionalLightData(DirectXCommon* dxCommon);
-
+	void Draw();
 
 	/// <summary>
 	/// objファイルを読む関数
@@ -53,38 +46,14 @@ public: //ゲッター
 
 	Mesh* GetMesh() { return mesh_; }
 
-public: //セッター
-
-	void SetTransform(const Transform& transform) { transform_ = transform; }
-
-	void SetWorldMatrix(const Matrix4x4& worldMatrix) { worldMatrix_ = worldMatrix; }
-
-
 private:
+
+	ModelCommon* modelCommon_ = nullptr;
 
 	//メッシュ
 	Mesh* mesh_ = nullptr;
 
 	//構築するModelData
 	ModelData modelData_;
-
-	//TransformationMatrix用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
-	//TransformationMatrix用の頂点データ
-	TransformMatrix* transformMatrixData_ = nullptr;
-
-	//平行光源用のリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-	DirectionalLightData* directionalLightData_ = nullptr;;
-
-	//CPU用のTransform
-	Transform transform_{};
-	//行列
-	Matrix4x4 worldMatrix_;
-	Matrix4x4 viewMatrix_;
-	Matrix4x4 projectionMatrix_;
-	Matrix4x4 worldViewProjectionMatrix_;
-
-	uint32_t textureIndex_ = 0;
 };
 
