@@ -104,7 +104,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Source\Material.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\DirectXShaderCompiler.cpp" />
-    <ClCompile Include="MyMath\MyMath.cpp" />
+    <ClCompile Include="MyMath\Vector3Math.cpp" />
     <ClCompile Include="Source\PipelineStateObject.cpp" />
     <ClCompile Include="Source\DirectXCommon.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
@@ -153,7 +153,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="MyMath\Matrix3x3.h" />
     <ClInclude Include="MyMath\Matrix4x4.h" />
     <ClInclude Include="MyMath\MatrixMath.h" />
-    <ClInclude Include="MyMath\MyMath.h" />
+    <ClInclude Include="MyMath\Vector3Math.h" />
     <ClInclude Include="MyMath\TransformMatrix.h" />
     <ClInclude Include="Include\PipelineStateObject.h" />
     <ClInclude Include="Include\ResourceDataStructure.h" />

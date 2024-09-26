@@ -69,7 +69,7 @@
     <ClCompile Include="Sphere\Sphere.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="MyMath\MyMath.cpp">
+    <ClCompile Include="MyMath\Vector3Math.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Source\PipelineStateObject.cpp">
@@ -188,7 +188,7 @@
     <ClInclude Include="MyMath\TransformMatrix.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="MyMath\MyMath.h">
+    <ClInclude Include="MyMath\Vector3Math.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="MyMath\Matrix3x3.h">

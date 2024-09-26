@@ -1,5 +1,5 @@
 #include "Vector3.h"
-#include "MyMath/MyMath.h"
+#include "MyMath/Vector3Math.h"
 
 
 //===============================================================
@@ -7,7 +7,7 @@
 //===============================================================
 
 Vector3 operator+(const Vector3& v1, const Vector3& v2) {
-	return MyMath::Add(v1, v2);
+	return Vector3Math::Add(v1, v2);
 }
 
 Vector3 operator+(const Vector3& v) {
@@ -15,7 +15,7 @@ Vector3 operator+(const Vector3& v) {
 }
 
 Vector3 operator-(const Vector3& v1, const Vector3& v2) {
-	return MyMath::Subtract(v1, v2);
+	return Vector3Math::Subtract(v1, v2);
 }
 
 Vector3 operator-(const Vector3& v) {
@@ -23,7 +23,7 @@ Vector3 operator-(const Vector3& v) {
 }
 
 Vector3 operator*(float s, const Vector3& v) {
-	return MyMath::Multiply(s, v);
+	return Vector3Math::Multiply(s, v);
 }
 
 Vector3 operator*(const Vector3& v, float s) {
@@ -31,7 +31,7 @@ Vector3 operator*(const Vector3& v, float s) {
 }
 
 Vector3 operator/(float s, const Vector3& v) {
-	return MyMath::Multiply(1.0f / s, v);
+	return Vector3Math::Multiply(1.0f / s, v);
 }
 
 Vector3 operator/(const Vector3& v, float s) {

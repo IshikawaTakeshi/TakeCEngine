@@ -1,6 +1,6 @@
 #include "../Sphere/Sphere.h"
 #include "../MyMath/MatrixMath.h"
-#include "../MyMath/MyMath.h"
+#include "../MyMath/Vector3Math.h"
 #include "../Include/DirectXCommon.h"
 #include"../TextureManager.h"
 #include <numbers>
@@ -99,11 +99,11 @@ void Sphere::Update() {
 	ImGui::ColorEdit4("LightColor", &directionalLightData_->color_.x);
 	ImGui::SliderFloat3("LightDirection", &directionalLightData_->direction_.x, -1.0f, 1.0f);
 	ImGui::SliderFloat("LightIntensity", &directionalLightData_->intensity_, 0.0f, 1.0f);
-	MyMath::Normalize(directionalLightData_->direction_);
+	Vector3Math::Normalize(directionalLightData_->direction_);
 	ImGui::End();
 
 
-
+	
 #endif // _DEBUG
 }
 

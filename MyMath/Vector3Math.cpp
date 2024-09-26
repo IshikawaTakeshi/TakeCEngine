@@ -1,4 +1,4 @@
-#include "../MyMath/MyMath.h"
+#include "../MyMath/Vector3Math.h"
 #include <cmath>
 
 /////////////////////////////////////////////////////////////////
@@ -6,7 +6,7 @@
 /////////////////////////////////////////////////////////////////
 
 //加算
-Vector3 MyMath::Add(const Vector3& v1, const Vector3& v2) {
+Vector3 Vector3Math::Add(const Vector3& v1, const Vector3& v2) {
 	Vector3 result;
 	result.x = v1.x + v2.x;
 	result.y = v1.y + v2.y;
@@ -15,7 +15,7 @@ Vector3 MyMath::Add(const Vector3& v1, const Vector3& v2) {
 }
 
 //減算
-Vector3 MyMath::Subtract(const Vector3& v1, const Vector3& v2) {
+Vector3 Vector3Math::Subtract(const Vector3& v1, const Vector3& v2) {
 	Vector3 result;
 	result.x = v1.x - v2.x;
 	result.y = v1.y - v2.y;
@@ -24,7 +24,7 @@ Vector3 MyMath::Subtract(const Vector3& v1, const Vector3& v2) {
 }
 
 //乗算
-Vector3 MyMath::Multiply(float scalar, const Vector3& v) {
+Vector3 Vector3Math::Multiply(float scalar, const Vector3& v) {
 	Vector3 result;
 	result.x = scalar * v.x;
 	result.y = scalar * v.y;
@@ -32,7 +32,7 @@ Vector3 MyMath::Multiply(float scalar, const Vector3& v) {
 	return result;
 }
 
-Vector3 MyMath::Multiply(const Vector3& v1, const Vector3& v2) {
+Vector3 Vector3Math::Multiply(const Vector3& v1, const Vector3& v2) {
 	Vector3 result;
 	result.x = v1.x * v2.x;
 	result.y = v1.y * v2.y;
@@ -40,7 +40,7 @@ Vector3 MyMath::Multiply(const Vector3& v1, const Vector3& v2) {
 	return result;
 }
 
-Vector3 MyMath::Divide(float scalar, const Vector3& v) {
+Vector3 Vector3Math::Divide(float scalar, const Vector3& v) {
 	Vector3 result;
 	result.x = scalar / v.x;
 	result.y = scalar / v.y;
@@ -49,14 +49,14 @@ Vector3 MyMath::Divide(float scalar, const Vector3& v) {
 }
 
 //内積
-float MyMath::Dot(const Vector3& v1, const Vector3& v2) {
+float Vector3Math::Dot(const Vector3& v1, const Vector3& v2) {
 	float result;
 	result = (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 	return result;
 }
 
 //クロス積
-Vector3 MyMath::Cross(const Vector3& v1, const Vector3& v2) {
+Vector3 Vector3Math::Cross(const Vector3& v1, const Vector3& v2) {
 	Vector3 result = {
 	(v1.y * v2.z) - (v1.z * v2.y),
 	(v1.z * v2.x) - (v1.x * v2.z),
@@ -67,14 +67,14 @@ Vector3 MyMath::Cross(const Vector3& v1, const Vector3& v2) {
 
 
 //長さ(ノルム)
-float MyMath::Length(const Vector3& v) {
+float Vector3Math::Length(const Vector3& v) {
 	float result;
 	result = sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
 	return result;
 }
 
 //正規化
-Vector3 MyMath::Normalize(const Vector3& v) {
+Vector3 Vector3Math::Normalize(const Vector3& v) {
 	Vector3 result;
 	float length = Length(v);
 	result.x = v.x / length;
