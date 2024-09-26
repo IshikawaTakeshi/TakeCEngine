@@ -23,11 +23,11 @@ Model::~Model() {
 	mesh_ = nullptr;
 }
 
-void Model::Initialize(ModelCommon* ModelCommon) {
+void Model::Initialize(ModelCommon* ModelCommon, const std::string& filename) {
 	modelCommon_ = ModelCommon;
 
 	//objファイル読み込み
-	modelData_ = LoadObjFile("Resources", "obj_mtl_blend", "axis.obj");
+	modelData_ = LoadObjFile("Resources", "obj_mtl_blend", filename);
 
 	//メッシュ初期化
 	mesh_ = new Mesh();

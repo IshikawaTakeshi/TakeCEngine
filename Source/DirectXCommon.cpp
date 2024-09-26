@@ -153,8 +153,8 @@ void DirectXCommon::PostDraw() {
 	assert(SUCCEEDED(result));
 
 	// コマンドリストの実行
-	ID3D12CommandList* cmdLists[] = { commandList_.Get() }; // コマンドリストの配列
-	commandQueue_->ExecuteCommandLists(1, cmdLists);
+	ComPtr<ID3D12CommandList> cmdLists[] = { commandList_.Get() }; // コマンドリストの配列
+	commandQueue_->ExecuteCommandLists(1, cmdLists->GetAddressOf());
 
 	//GPUとOSに画面の交換を行うよう通知
 	swapChain_->Present(1, 0);
@@ -215,8 +215,8 @@ void DirectXCommon::ClearRenderTarget() {
 	commandList_->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	//SRV用ディスクリプタヒープの設定
-	ID3D12DescriptorHeap* drawHeaps_[] = { srvHeap_.Get()};
-	commandList_->SetDescriptorHeaps(1, drawHeaps_);
+	ComPtr<ID3D12DescriptorHeap> drawHeaps_[] = { srvHeap_.Get()};
+	commandList_->SetDescriptorHeaps(1, drawHeaps_->GetAddressOf());
 	// Viewportを設定
 	commandList_->RSSetViewports(1, &viewport_);
 	// Scissorの設定

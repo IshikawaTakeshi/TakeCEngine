@@ -17,7 +17,7 @@ public: // publicメンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Object3dCommon* object3dCommon, Matrix4x4 cameraView,Model* model);
+	void Initialize(Object3dCommon* object3dCommon, Matrix4x4 cameraView,const std::string& filePath);
 
 	/// <summary>
 	/// 終了処理
@@ -29,16 +29,6 @@ public: // publicメンバ関数
 	/// </summary>
 	void Draw();
 
-	/// <summary>
-	/// objファイル読み取り
-	/// </summary>
-	ModelData LoadObjFile(const std::string& resourceDirectoryPath, const std::string& modelDirectoryPath, const std::string& filename);
-
-	/// <summary>
-	/// mtlファイル読み取り
-	/// </summary>
-	ModelMaterialData LoadMtlFile(const std::string& resourceDirectoryPath, const std::string& modelDirectoryPath, const std::string& filename);
-
 public: //getter
 
 	Vector3 GetScale() const { return transform_.scale; }
@@ -47,7 +37,7 @@ public: //getter
 
 public: //setter
 
-	void SetModel(Model* model) { model_ = model; }
+	void SetModel(const std::string& filePath);
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	void SetRotation(const Vector3& rotation) { transform_.rotate = rotation; }
 	void SetPosition(const Vector3& position) { transform_.translate = position; }

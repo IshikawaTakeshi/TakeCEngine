@@ -20,7 +20,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(ModelCommon* ModelCommon);
+	void Initialize(ModelCommon* ModelCommon,const std::string& filename);
 
 	/// <summary>
 	/// 更新処理
@@ -35,7 +35,7 @@ public:
 	/// <summary>
 	/// objファイルを読む関数
 	/// </summary>
-	ModelData LoadObjFile(const std::string& resourceDirectoryPath, const std::string& modelDirectoryPath, const std::string& filename);
+	ModelData LoadObjFile(const std::string& resourceDirectoryPath,const std::string& DirectoryPath, const std::string& filename);
 	
 	/// <summary>
 	/// mtlファイルを読む関数

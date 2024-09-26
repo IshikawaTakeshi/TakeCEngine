@@ -15,8 +15,7 @@
 #include "Sprite/Sprite.h"
 #include "Object3dCommon.h"
 #include "Object3d.h"
-#include "ModelCommon.h"
-#include "ModelData/model.h"
+#include "ModelManager.h"
 #include "Triangle/Triangle.h"
 #include "Sphere/Sphere.h"
 #include "ModelData/Model.h"
@@ -74,16 +73,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 	//SpriteCommon初期化
-	SpriteCommon* spriteCommon = spriteCommon->GetInstance();
+	SpriteCommon* spriteCommon = SpriteCommon::GetInstance();
 	spriteCommon->Initialize(directXCommon);
 
 	//Object3dCommon初期化
-	Object3dCommon* object3dCommon = object3dCommon->GetInstance();
+	Object3dCommon* object3dCommon = Object3dCommon::GetInstance();
 	object3dCommon->Initialize(directXCommon);
 
-	//ModelCommon初期化
-	ModelCommon* modelCommon = modelCommon->GetInstance();
-	modelCommon->Initialize(directXCommon);
+	//ModelManager初期化
+	ModelManager::GetInstance()->Initialize(directXCommon);
+
 
 	//テクスチャマネージャ初期化
 	TextureManager::GetInstance()->Initialize(directXCommon);
@@ -97,30 +96,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	);
 
 	//スプライト
-	std::vector<Sprite*> sprites;
-	for (uint32_t i = 0; i < 5; i++) {
-		Sprite* sprite = new Sprite();
-		if (i % 2 == 0) {
-			sprite->Initialize(spriteCommon, "Resources/uvChecker.png");
-		} else {
-			sprite->Initialize(spriteCommon, "Resources/monsterBall.png");
-		}
-		sprites.push_back(sprite);
-	}
+	//std::vector<Sprite*> sprites;
+	//for (uint32_t i = 0; i < 5; i++) {
+	//	Sprite* sprite = new Sprite();
+	//	if (i % 2 == 0) {
+	//		sprite->Initialize(spriteCommon, "Resources/uvChecker.png");
+	//	} else {
+	//		sprite->Initialize(spriteCommon, "Resources/monsterBall.png");
+	//	}
+	//	sprites.push_back(sprite);
+	//}
 
-	//モデル
-	Model* model0 = new Model();
-	model0->Initialize(modelCommon);
-	Model* model1 = new Model();
-	model1->Initialize(modelCommon);
+	//Model読み込み
+	ModelManager::GetInstance()->LoadModel("axis.obj");
+	ModelManager::GetInstance()->LoadModel("plane.obj");
 
 
 	//3dObject
 	Object3d* object3d = new Object3d();
-	object3d->Initialize(object3dCommon,cameraMatrix,model0);
+	object3d->Initialize(object3dCommon,cameraMatrix,"axis.obj");
 	object3d->SetScale({0.5f,0.5f,0.5f});
 	Object3d* object3d1 = new Object3d();
-	object3d1->Initialize(object3dCommon, cameraMatrix, model1);
+	object3d1->Initialize(object3dCommon, cameraMatrix,"plane.obj");
 	object3d1->SetScale({ 0.5f,0.5f,0.5f });
 	
 
@@ -164,9 +161,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 		//スプライト
-		for (int i = 0; i < 5; i++) {
+	/*	for (int i = 0; i < 5; i++) {
 			sprites[i]->Update(i);
-		}
+		}*/
 		object3d->Update(0);
 		object3d1->Update(1);
 
@@ -179,9 +176,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 		object3dCommon->PreDraw(); //Object3dの描画前処理
 
-		for (int i = 0; i < 5; i++) {
-			sprites[i]->DrawCall(); //スプライトの描画
-		}
+		//for (int i = 0; i < 5; i++) {
+		//	sprites[i]->DrawCall(); //スプライトの描画
+		//}
 
 		
 		object3d->Draw(); //3Dオブジェクトの描画
@@ -201,6 +198,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//テクスチャマネージャの開放
 	TextureManager::GetInstance()->Finalize();
+
+	//ModelManagerの開放
+	ModelManager::GetInstance()->Finalize();
 
 	//SpriteCommonの開放
 	spriteCommon->Finalize();
@@ -223,14 +223,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//delete sphere;
 	
 	//spritesの開放
-	for (auto& sprite : sprites) {
-		delete sprite;
-		sprite = nullptr;
-	}
+	//for (auto& sprite : sprites) {
+	//	delete sprite;
+	//	sprite = nullptr;
+	//}
 
 	//Object3dの開放
 	delete object3d;
 	object3d = nullptr;
+	delete object3d1;
+	object3d1 = nullptr;
 
 	delete leakCheck;
 	

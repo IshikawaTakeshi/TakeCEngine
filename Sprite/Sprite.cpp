@@ -110,15 +110,18 @@ void Sprite::Update(int num) {
 #ifdef _DEBUG
 	//ImGuiの更新
 	std::string windowName = "Sprite" + std::to_string(num);
-	ImGui::Begin(windowName.c_str());
-	ImGui::DragFloat2("SpriteTranslate", &position_.x, 1);
-	ImGui::DragFloat("SpriteRotation", &rotation_, 0.01f);
-	ImGui::DragFloat2("SpriteScale", &size_.x, 1);
-	ImGui::SliderFloat2("AnchorPoint", &anchorPoint_.x, -1.0f, 1.0f);
-	ImGui::Checkbox("isFlipX", &isFlipX_);
-	ImGui::Checkbox("isFlipY", &isFlipY_);
-	ImGui::Checkbox("adjustSwitch", &adjustSwitch_);
-	mesh_->GetMaterial()->UpdateMaterialImGui();
+	ImGui::Begin("Sprite");
+	if(ImGui::TreeNode(windowName.c_str())){
+		ImGui::DragFloat2("SpriteTranslate", &position_.x, 1);
+		ImGui::DragFloat("SpriteRotation", &rotation_, 0.01f);
+		ImGui::DragFloat2("SpriteScale", &size_.x, 1);
+		ImGui::SliderFloat2("AnchorPoint", &anchorPoint_.x, -1.0f, 1.0f);
+		ImGui::Checkbox("isFlipX", &isFlipX_);
+		ImGui::Checkbox("isFlipY", &isFlipY_);
+		ImGui::Checkbox("adjustSwitch", &adjustSwitch_);
+		mesh_->GetMaterial()->UpdateMaterialImGui();
+		ImGui::TreePop();
+	}
 	ImGui::End();
 	
 #endif // DEBUG

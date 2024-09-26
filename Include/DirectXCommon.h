@@ -196,7 +196,7 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[rtvCount_] = {};
 	//DSVを設定
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
-	//フェンスの生成
+	//フェンス
 	ComPtr<ID3D12Fence> fence_ = nullptr;
 	uint64_t fenceVal_;
 	HANDLE fenceEvent_;
