@@ -54,6 +54,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -79,6 +80,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -92,7 +94,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="D3DResourceLeakChecker\D3DResourceLeakChecker.cpp" />
+    <ClCompile Include="engine\2d\Sprite.cpp" />
+    <ClCompile Include="engine\base\D3DResourceLeakChecker.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
     <ClCompile Include="externals\imgui\imgui_draw.cpp" />
@@ -100,33 +103,34 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="ModelCommon.cpp" />
-    <ClCompile Include="ModelManager.cpp" />
-    <ClCompile Include="MyMath\Matrix4x4.cpp" />
-    <ClCompile Include="Object3d.cpp" />
-    <ClCompile Include="Object3dCommon.cpp" />
-    <ClCompile Include="Sprite\SpriteCommon.cpp" />
-    <ClCompile Include="StringUtility\StringUtility.cpp" />
-    <ClCompile Include="Source\Input.cpp" />
-    <ClCompile Include="Source\Material.cpp" />
-    <ClCompile Include="Source\Mesh.cpp" />
-    <ClCompile Include="Source\DirectXShaderCompiler.cpp" />
-    <ClCompile Include="MyMath\Vector3Math.cpp" />
-    <ClCompile Include="Source\PipelineStateObject.cpp" />
-    <ClCompile Include="Source\DirectXCommon.cpp" />
-    <ClCompile Include="Source\Logger.cpp" />
+    <ClCompile Include="engine\3d\ModelCommon.cpp" />
+    <ClCompile Include="engine\base\ModelManager.cpp" />
+    <ClCompile Include="engine\math\Matrix4x4.cpp" />
+    <ClCompile Include="engine\base\Object3d.cpp" />
+    <ClCompile Include="engine\3d\Object3dCommon.cpp" />
+    <ClCompile Include="engine\2d\SpriteCommon.cpp" />
+    <ClCompile Include="engine\base\StringUtility.cpp" />
+    <ClCompile Include="engine\io\Input.cpp" />
+    <ClCompile Include="engine\2d\Material.cpp" />
+    <ClCompile Include="engine\3d\Mesh.cpp" />
+    <ClCompile Include="engine\base\DirectXShaderCompiler.cpp" />
+    <ClCompile Include="engine\math\Vector3Math.cpp" />
+    <ClCompile Include="engine\base\PipelineStateObject.cpp" />
+    <ClCompile Include="engine\base\DirectXCommon.cpp" />
+    <ClCompile Include="engine\base\Logger.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="ModelData\Model.cpp" />
-    <ClCompile Include="MyMath\MatrixMath.cpp" />
-    <ClCompile Include="Sphere\Sphere.cpp" />
-    <ClCompile Include="Sprite\Sprite.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
-    <ClCompile Include="Triangle\Triangle.cpp" />
-    <ClCompile Include="Source\WinApp.cpp" />
-    <ClCompile Include="Vector3.cpp" />
+    <ClCompile Include="engine\3d\Model.cpp" />
+    <ClCompile Include="engine\math\MatrixMath.cpp" />
+    <ClCompile Include="engine\3d\Sphere.cpp" />
+    <ClCompile Include="engine\base\TextureManager.cpp" />
+    <ClCompile Include="engine\3d\Triangle.cpp" />
+    <ClCompile Include="engine\base\WinApp.cpp" />
+    <ClCompile Include="engine\math\Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D3DResourceLeakChecker\D3DResourceLeakChecker.h" />
+    <ClInclude Include="engine\2d\Sprite.h" />
+    <ClInclude Include="engine\2d\SpriteCommon.h" />
+    <ClInclude Include="engine\base\D3DResourceLeakChecker.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
     <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
@@ -135,48 +139,34 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="Include\DirectXShaderCompiler.h" />
-    <ClInclude Include="Include\DirectXCommon.h" />
-    <ClInclude Include="Include\Logger.h" />
-    <ClInclude Include="Include\Mesh.h" />
-    <ClInclude Include="Include\Material.h" />
-    <ClInclude Include="Include\Input.h" />
-    <ClInclude Include="ModelCommon.h" />
-    <ClInclude Include="ModelManager.h" />
-    <ClInclude Include="Object3d.h" />
-    <ClInclude Include="Object3dCommon.h" />
+    <ClInclude Include="engine\base\DirectXShaderCompiler.h" />
+    <ClInclude Include="engine\base\DirectXCommon.h" />
+    <ClInclude Include="engine\base\Logger.h" />
+    <ClInclude Include="engine\3d\Mesh.h" />
+    <ClInclude Include="engine\3d\Material.h" />
+    <ClInclude Include="engine\io\Input.h" />
+    <ClInclude Include="engine\3d\ModelCommon.h" />
+    <ClInclude Include="engine\base\ModelManager.h" />
+    <ClInclude Include="engine\base\Object3d.h" />
+    <ClInclude Include="engine\3d\Object3dCommon.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Sprite\SpriteCommon.h" />
-    <ClInclude Include="StringUtility\StringUtility.h" />
-    <ClInclude Include="ModelData\Model.h" />
-    <ClInclude Include="MyMath\Matrix3x3.h" />
-    <ClInclude Include="MyMath\Matrix4x4.h" />
-    <ClInclude Include="MyMath\MatrixMath.h" />
-    <ClInclude Include="MyMath\Vector3Math.h" />
-    <ClInclude Include="MyMath\TransformMatrix.h" />
-    <ClInclude Include="Include\PipelineStateObject.h" />
-    <ClInclude Include="Include\ResourceDataStructure.h" />
-    <ClInclude Include="Sphere\Sphere.h" />
-    <ClInclude Include="Sprite\Sprite.h" />
-    <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="MyMath\Transform.h" />
-    <ClInclude Include="Triangle\Triangle.h" />
-    <ClInclude Include="Vector2.h" />
-    <ClInclude Include="Vector3.h" />
-    <ClInclude Include="Vector4.h" />
-    <ClInclude Include="Include\WinApp.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Object3d.PS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="Object3d.VS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
+    <ClInclude Include="engine\base\StringUtility.h" />
+    <ClInclude Include="engine\3d\Model.h" />
+    <ClInclude Include="engine\math\Matrix3x3.h" />
+    <ClInclude Include="engine\math\Matrix4x4.h" />
+    <ClInclude Include="engine\math\MatrixMath.h" />
+    <ClInclude Include="engine\math\Vector3Math.h" />
+    <ClInclude Include="engine\math\TransformMatrix.h" />
+    <ClInclude Include="engine\base\PipelineStateObject.h" />
+    <ClInclude Include="engine\base\ResourceDataStructure.h" />
+    <ClInclude Include="engine\3d\Sphere.h" />
+    <ClInclude Include="engine\base\TextureManager.h" />
+    <ClInclude Include="engine\math\Transform.h" />
+    <ClInclude Include="engine\3d\Triangle.h" />
+    <ClInclude Include="engine\math\Vector2.h" />
+    <ClInclude Include="engine\math\Vector3.h" />
+    <ClInclude Include="engine\math\Vector4.h" />
+    <ClInclude Include="engine\base\WinApp.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
@@ -187,10 +177,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Object3d.hlsli" />
+    <ResourceCompile Include="DirectXGame.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="DirectXGame.rc" />
+    <Image Include="Resources\06_img_02.jpg" />
+    <Image Include="Resources\monsterBall.png" />
+    <Image Include="Resources\niwat.png" />
+    <Image Include="Resources\niwatori.jpg" />
+    <Image Include="Resources\rick.png" />
+    <Image Include="Resources\uvChecker.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,23 +2,23 @@
 //C4023の警告を見なかったことにする
 #pragma warning(disable:4023)
 //Include
-#include "D3DResourceLeakChecker/D3DResourceLeakChecker.h"
-#include "Include/WinApp.h"
-#include "Include/Logger.h"
-#include "Include/DirectXCommon.h"
-#include "Include/Input.h"
+#include "D3DResourceLeakChecker.h"
+#include "WinApp.h"
+#include "Logger.h"
+#include "DirectXCommon.h"
+#include "Input.h"
 #include "TextureManager.h"
 
-#include "MyMath/Transform.h"
-#include "MyMath/MatrixMath.h"
-#include "Sprite/SpriteCommon.h"
-#include "Sprite/Sprite.h"
+#include "Transform.h"
+#include "MatrixMath.h"
+#include "SpriteCommon.h"
+#include "Sprite.h"
 #include "Object3dCommon.h"
 #include "Object3d.h"
 #include "ModelManager.h"
-#include "Triangle/Triangle.h"
-#include "Sphere/Sphere.h"
-#include "ModelData/Model.h"
+#include "Triangle.h"
+#include "Sphere.h"
+#include "Model.h"
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
 
