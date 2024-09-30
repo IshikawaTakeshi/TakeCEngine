@@ -19,6 +19,8 @@
 #include "Triangle.h"
 #include "Sphere.h"
 #include "Model.h"
+#include "Camera.h"
+
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
 
@@ -44,7 +46,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//タイトルバーの名前の入力
 	WinApp* winApp = new WinApp();
-	winApp->Initialize(L"CG2_07_03");
+	winApp->Initialize(L"CG2_08_01");
 
 	//DirectX初期化
 	DirectXCommon* directXCommon = new DirectXCommon();
@@ -88,12 +90,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	TextureManager::GetInstance()->Initialize(directXCommon);
 	
 	//カメラ
-	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
-	Matrix4x4 cameraMatrix = MatrixMath::MakeAffineMatrix(
-		cameraTransform.scale,
-		cameraTransform.rotate,
-		cameraTransform.translate
-	);
+	Camera* camera = new Camera();
+	camera->SetTranslate({ 0.0f,0.0f,-10.0f });
+	camera->SetRotate({ 0.0f,0.0f,0.0f });
+	object3dCommon->SetDefaultCamera(camera);
 
 	//スプライト
 	//std::vector<Sprite*> sprites;
@@ -114,10 +114,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//3dObject
 	Object3d* object3d = new Object3d();
-	object3d->Initialize(object3dCommon,cameraMatrix,"axis.obj");
+	object3d->Initialize(object3dCommon,"axis.obj");
 	object3d->SetScale({0.5f,0.5f,0.5f});
 	Object3d* object3d1 = new Object3d();
-	object3d1->Initialize(object3dCommon, cameraMatrix,"plane.obj");
+	object3d1->Initialize(object3dCommon,"plane.obj");
 	object3d1->SetScale({ 0.5f,0.5f,0.5f });
 	
 
@@ -151,14 +151,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//入力更新
 		input->Update();
 
-
-		//モデルの更新処理
-		//model->Update();
-
-		//球
-		//sphere->Update();
-
-
+		//カメラの更新
+		camera->Update();
 
 		//スプライト
 	/*	for (int i = 0; i < 5; i++) {
@@ -224,9 +218,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//winAppの開放
 	winApp->Finalize();
 	delete winApp;
-	
-	//delete model;
-	//delete sphere;
 	
 	//spritesの開放
 	//for (auto& sprite : sprites) {

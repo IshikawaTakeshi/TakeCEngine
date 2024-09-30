@@ -4,6 +4,7 @@
 #include <wrl.h>
 
 class PSO;
+class Camera;
 class DirectXCommon;
 class Object3dCommon {
 
@@ -35,6 +36,14 @@ public:
 
 	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
 
+	Camera* GetDefaultCamera() const { return defaultCamera_; }
+
+//================================================================================================
+// 	   setter
+//================================================================================================
+
+	void SetDefaultCamera(Camera* camera) { defaultCamera_ = camera; }
+
 private:
 
 	Object3dCommon() = default;
@@ -55,6 +64,9 @@ private:
 
 	//PSO
 	PSO* pso_ = nullptr;
+
+	//defaultCamera
+	Camera* defaultCamera_ = nullptr;
 
 };
 

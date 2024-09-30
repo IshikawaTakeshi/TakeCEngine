@@ -6,6 +6,7 @@
 #include "TextureManager.h"
 #include "ModelManager.h"
 #include "Model.h"
+#include "Camera.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>
@@ -25,7 +26,7 @@ Object3d::~Object3d() {
 
 }
 
-void Object3d::Initialize(Object3dCommon* object3dCommon, Matrix4x4 cameraView,const std::string& filePath) {
+void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 	object3dCommon_ = object3dCommon;
 	SetModel(filePath);
 	model_->GetMesh()->GetMaterial()->SetEnableLighting(true);
@@ -59,11 +60,8 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, Matrix4x4 cameraView,c
 		transform_.translate
 	);
 
-	//ViewProjectionの初期化
-	viewMatrix_ = MatrixMath::Inverse(cameraView);
-	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
-		0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f
-	);
+	//カメラのセット
+	camera_ = object3dCommon_->GetDefaultCamera();
 }
 
 void Object3d::Update() {
@@ -72,9 +70,14 @@ void Object3d::Update() {
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 
 	//wvpの更新
-	worldViewProjectionMatrix_ = MatrixMath::Multiply(
-		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	transformMatrixData_->WVP = worldViewProjectionMatrix_;
+	if (camera_) {
+		const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
+		WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
+	} else {
+		WVPMatrix_ = worldMatrix_;
+	}
+	
+	transformMatrixData_->WVP = WVPMatrix_;
 	transformMatrixData_->World = worldMatrix_;
 }
 

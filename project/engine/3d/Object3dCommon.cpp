@@ -14,10 +14,14 @@ Object3dCommon* Object3dCommon::GetInstance() {
 
 void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 
+	//DirectXCommon取得
 	dxCommon_ = directXCommon;
 
+	//PSO生成
 	pso_ = new PSO();
-	pso_->CreatePSO(dxCommon_->GetDevice(), dxCommon_->GetDXC(), D3D12_CULL_MODE_NONE); //PSO生成
+	pso_->CreatePSO(dxCommon_->GetDevice(), dxCommon_->GetDXC(), D3D12_CULL_MODE_NONE);
+
+	//ルートシグネチャ取得
 	rootSignature_ = pso_->GetRootSignature();
 }
 

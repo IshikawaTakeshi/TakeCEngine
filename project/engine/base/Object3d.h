@@ -6,6 +6,7 @@
 #include <wrl.h>
 
 class Model;
+class Camera;
 class Object3dCommon;
 class Object3d {
 
@@ -17,7 +18,7 @@ public: // publicメンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Object3dCommon* object3dCommon, Matrix4x4 cameraView,const std::string& filePath);
+	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath);
 
 	/// <summary>
 	/// 終了処理
@@ -42,6 +43,7 @@ public: //getter
 public: //setter
 
 	void SetModel(const std::string& filePath);
+	void SetCamera(Camera* camera) { camera_ = camera; }
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	void SetRotation(const Vector3& rotation) { transform_.rotate = rotation; }
 	void SetPosition(const Vector3& position) { transform_.translate = position; }
@@ -63,14 +65,11 @@ private: // privateメンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
 	DirectionalLightData* directionalLightData_ = nullptr;;
 
-	//CPU用のTransform
+	//Transform
 	Transform transform_{};
-	//行列
+	//WorldMatrix
 	Matrix4x4 worldMatrix_;
-	Matrix4x4 viewMatrix_;
-	Matrix4x4 projectionMatrix_;
-	Matrix4x4 worldViewProjectionMatrix_;
-
-
+	Matrix4x4 WVPMatrix_;
+	//Camera
+	Camera* camera_ = nullptr;
 };
-
