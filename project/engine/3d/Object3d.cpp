@@ -7,6 +7,8 @@
 #include "ModelManager.h"
 #include "Model.h"
 #include "Camera.h"
+#include "CameraManager.h"
+
 #include <fstream>
 #include <sstream>
 #include <cassert>
@@ -71,7 +73,8 @@ void Object3d::Update() {
 
 	//wvpの更新
 	if (camera_) {
-		const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
+		const Matrix4x4& viewProjectionMatrix =
+			CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
 		WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
 	} else {
 		WVPMatrix_ = worldMatrix_;

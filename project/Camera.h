@@ -7,6 +7,7 @@ public:
 	Camera();
 	~Camera();
 	void Update();
+	void UpdateImGui();
 
 public: //getter
 	

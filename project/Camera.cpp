@@ -2,6 +2,14 @@
 #include "MatrixMath.h"
 #include "WinApp.h"
 
+#pragma region imgui
+#ifdef _DEBUG
+#include "externals/imgui/imgui.h"
+#include "externals/imgui/imgui_impl_dx12.h"
+#include "externals/imgui/imgui_impl_win32.h"
+#endif 
+#pragma endregion
+
 Camera::Camera()
 	: transform_({ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} })
 	, fovX_(0.45f)
@@ -33,4 +41,10 @@ void Camera::Update() {
 	);
 
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
+}
+
+void Camera::UpdateImGui() {
+	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
+	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
+	ImGui::DragFloat("FovX", &fovX_, 0.01f);
 }

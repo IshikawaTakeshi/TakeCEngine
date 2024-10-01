@@ -20,6 +20,7 @@
 #include "Sphere.h"
 #include "Model.h"
 #include "Camera.h"
+#include "CameraManager.h"
 
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
@@ -74,26 +75,35 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
 
-	//SpriteCommon初期化
+	//SpriteCommon
 	SpriteCommon* spriteCommon = SpriteCommon::GetInstance();
 	spriteCommon->Initialize(directXCommon);
 
-	//Object3dCommon初期化
+	//Object3dCommon
 	Object3dCommon* object3dCommon = Object3dCommon::GetInstance();
 	object3dCommon->Initialize(directXCommon);
 
-	//ModelManager初期化
+	//CameraManager
+
+	//ModelManager
 	ModelManager::GetInstance()->Initialize(directXCommon);
 
-
-	//テクスチャマネージャ初期化
+	//TextureManager
 	TextureManager::GetInstance()->Initialize(directXCommon);
 	
-	//カメラ
-	Camera* camera = new Camera();
-	camera->SetTranslate({ 0.0f,0.0f,-10.0f });
-	camera->SetRotate({ 0.0f,0.0f,0.0f });
-	object3dCommon->SetDefaultCamera(camera);
+	//Camera0
+	Camera* camera0 = new Camera();
+	camera0->SetTranslate({ 0.0f,0.0f,-20.0f });
+	camera0->SetRotate({ 0.0f,0.0f,0.0f });
+	CameraManager::GetInstance()->AddCamera(*camera0);
+
+	//Camera1
+	Camera* camera1 = new Camera();
+	camera1->SetTranslate({ 5.0f,0.0f,-10.0f });
+	camera1->SetRotate({ 0.0f,-0.4f,0.0f });
+	CameraManager::GetInstance()->AddCamera(*camera1);
+
+	object3dCommon->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 
 	//スプライト
 	//std::vector<Sprite*> sprites;
@@ -151,8 +161,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//入力更新
 		input->Update();
 
+		
+	
+
 		//カメラの更新
-		camera->Update();
+		CameraManager::GetInstance()->Update();
+
+		if (input->GetInstance()->TriggerKey(DIK_1)) {
+			CameraManager::GetInstance()->SetActiveCamera(0);
+
+		} else if (input->GetInstance()->TriggerKey(DIK_2)) {
+			CameraManager::GetInstance()->SetActiveCamera(1);
+
+		}
+
 
 		//スプライト
 	/*	for (int i = 0; i < 5; i++) {
@@ -163,6 +185,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #ifdef _DEBUG
 		//ImGuiの更新
+		CameraManager::GetInstance()->UpdateImGui();
 		object3d->UpdateImGui(0);
 		object3d1->UpdateImGui(1);
 #endif // DEBUG
@@ -196,6 +219,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui::DestroyContext();
 #endif // DEBUG
 
+	//Object3dの開放
+	delete object3d;
+	object3d = nullptr;
+	delete object3d1;
+	object3d1 = nullptr;
+
 	//テクスチャマネージャの開放
 	TextureManager::GetInstance()->Finalize();
 
@@ -207,6 +236,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//Object3dCommonの開放
 	object3dCommon->Finalize();
+
+	//カメラの開放
+	delete camera0;
 
 	//入力の開放
 	input->Finalize();
@@ -224,12 +256,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//	delete sprite;
 	//	sprite = nullptr;
 	//}
-
-	//Object3dの開放
-	delete object3d;
-	object3d = nullptr;
-	delete object3d1;
-	object3d1 = nullptr;
 
 	delete leakCheck;
 	
