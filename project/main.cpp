@@ -83,8 +83,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Object3dCommon* object3dCommon = Object3dCommon::GetInstance();
 	object3dCommon->Initialize(directXCommon);
 
-	//CameraManager
-
 	//ModelManager
 	ModelManager::GetInstance()->Initialize(directXCommon);
 
@@ -92,30 +90,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	TextureManager::GetInstance()->Initialize(directXCommon);
 	
 	//Camera0
-	Camera* camera0 = new Camera();
+	std::shared_ptr<Camera> camera0 = std::make_shared<Camera>();
 	camera0->SetTranslate({ 0.0f,0.0f,-20.0f });
 	camera0->SetRotate({ 0.0f,0.0f,0.0f });
 	CameraManager::GetInstance()->AddCamera(*camera0);
 
 	//Camera1
-	Camera* camera1 = new Camera();
+	std::shared_ptr<Camera> camera1 = std::make_shared<Camera>();
 	camera1->SetTranslate({ 5.0f,0.0f,-10.0f });
 	camera1->SetRotate({ 0.0f,-0.4f,0.0f });
 	CameraManager::GetInstance()->AddCamera(*camera1);
 
+	//デフォルトカメラの設定
 	object3dCommon->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
-
-	//スプライト
-	//std::vector<Sprite*> sprites;
-	//for (uint32_t i = 0; i < 5; i++) {
-	//	Sprite* sprite = new Sprite();
-	//	if (i % 2 == 0) {
-	//		sprite->Initialize(spriteCommon, "Resources/uvChecker.png");
-	//	} else {
-	//		sprite->Initialize(spriteCommon, "Resources/monsterBall.png");
-	//	}
-	//	sprites.push_back(sprite);
-	//}
 
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("axis.obj");
@@ -123,10 +110,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 	//3dObject
-	Object3d* object3d = new Object3d();
+	std::shared_ptr<Object3d> object3d = std::make_shared<Object3d>();
 	object3d->Initialize(object3dCommon,"axis.obj");
 	object3d->SetScale({0.5f,0.5f,0.5f});
-	Object3d* object3d1 = new Object3d();
+	std::shared_ptr<Object3d> object3d1 = std::make_shared<Object3d>();
 	object3d1->Initialize(object3dCommon,"plane.obj");
 	object3d1->SetScale({ 0.5f,0.5f,0.5f });
 	
@@ -144,9 +131,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			break;
 		}
 
-
 		//========================== 更新処理　==========================//
-
 
 #ifdef _DEBUG
 		//ImGui受付開始
@@ -161,25 +146,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//入力更新
 		input->Update();
 
-		
-	
-
 		//カメラの更新
 		CameraManager::GetInstance()->Update();
 
+		//カメラの切り替え
 		if (input->GetInstance()->TriggerKey(DIK_1)) {
 			CameraManager::GetInstance()->SetActiveCamera(0);
-
-		} else if (input->GetInstance()->TriggerKey(DIK_2)) {
+		} 
+		else if (input->GetInstance()->TriggerKey(DIK_2)) {
 			CameraManager::GetInstance()->SetActiveCamera(1);
-
 		}
 
-
-		//スプライト
-	/*	for (int i = 0; i < 5; i++) {
-			sprites[i]->Update(i);
-		}*/
 		object3d->Update();
 		object3d1->Update();
 
@@ -219,26 +196,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui::DestroyContext();
 #endif // DEBUG
 
-	//Object3dの開放
-	delete object3d;
-	object3d = nullptr;
-	delete object3d1;
-	object3d1 = nullptr;
 
 	//テクスチャマネージャの開放
 	TextureManager::GetInstance()->Finalize();
-
 	//ModelManagerの開放
 	ModelManager::GetInstance()->Finalize();
+	//CameraManagerの開放
+	CameraManager::GetInstance()->Finalize();
 
-	//SpriteCommonの開放
+	//SpriteCommonの開放aa
 	spriteCommon->Finalize();
 
 	//Object3dCommonの開放
 	object3dCommon->Finalize();
-
-	//カメラの開放
-	delete camera0;
 
 	//入力の開放
 	input->Finalize();

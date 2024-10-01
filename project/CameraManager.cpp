@@ -40,6 +40,11 @@ void CameraManager::UpdateImGui() {
 #endif // _DEBUG
 }
 
+void CameraManager::Finalize() {
+	delete instance_;
+	instance_ = nullptr;
+}
+
 void CameraManager::AddCamera(const Camera& camera) {
 	// カメラを追加
 	cameras_.push_back(std::make_unique<Camera>(camera));

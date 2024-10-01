@@ -13,6 +13,8 @@ public:
 
 	void UpdateImGui();
 
+	void Finalize();
+
 	// カメラを追加するメソッド
 	void AddCamera(const Camera& camera);
 
