@@ -21,6 +21,7 @@
 #include "Model.h"
 #include "Camera.h"
 #include "CameraManager.h"
+#include "SrvManager.h"
 
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
@@ -53,10 +54,29 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectXCommon* directXCommon = new DirectXCommon();
 	directXCommon->Initialize(winApp);
 
+	//SrvManager
+	SrvManager* srvManager = new SrvManager();
+	srvManager->Initialize(directXCommon);
 	//入力初期化
 	Input* input = Input::GetInstance();
 	input->Initialize(winApp);
 
+
+	//SpriteCommon
+	SpriteCommon* spriteCommon = SpriteCommon::GetInstance();
+	spriteCommon->Initialize(directXCommon);
+
+	//Object3dCommon
+	Object3dCommon* object3dCommon = Object3dCommon::GetInstance();
+	object3dCommon->Initialize(directXCommon);
+
+	//ModelManager
+	ModelManager::GetInstance()->Initialize(directXCommon);
+
+	//TextureManager
+	TextureManager::GetInstance()->Initialize(directXCommon);
+
+	
 
 #pragma region ImGui初期化
 #ifdef _DEBUG
@@ -73,21 +93,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	);
 #endif // DEBUG
 #pragma endregion
-
-
-	//SpriteCommon
-	SpriteCommon* spriteCommon = SpriteCommon::GetInstance();
-	spriteCommon->Initialize(directXCommon);
-
-	//Object3dCommon
-	Object3dCommon* object3dCommon = Object3dCommon::GetInstance();
-	object3dCommon->Initialize(directXCommon);
-
-	//ModelManager
-	ModelManager::GetInstance()->Initialize(directXCommon);
-
-	//TextureManager
-	TextureManager::GetInstance()->Initialize(directXCommon);
 	
 	//Camera0
 	std::shared_ptr<Camera> camera0 = std::make_shared<Camera>();
@@ -107,7 +112,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 	ModelManager::GetInstance()->LoadModel("plane.obj");
-
 
 	//3dObject
 	std::shared_ptr<Object3d> object3d = std::make_shared<Object3d>();
@@ -196,7 +200,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui::DestroyContext();
 #endif // DEBUG
 
-
+	delete srvManager;
 	//テクスチャマネージャの開放
 	TextureManager::GetInstance()->Finalize();
 	//ModelManagerの開放
@@ -204,15 +208,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//CameraManagerの開放
 	CameraManager::GetInstance()->Finalize();
 
-	//SpriteCommonの開放aa
-	spriteCommon->Finalize();
-
+	
 	//Object3dCommonの開放
 	object3dCommon->Finalize();
-
+	//SpriteCommonの開放aa
+	spriteCommon->Finalize();
 	//入力の開放
 	input->Finalize();
-	
 	//directXCommonの開放
 	directXCommon->Finalize();
 	delete directXCommon;

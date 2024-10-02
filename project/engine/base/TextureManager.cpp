@@ -1,5 +1,5 @@
 #include "TextureManager.h"
-
+#include "SrvManager.h"
 #include "StringUtility.h"
 
 #include <cassert>
@@ -23,12 +23,16 @@ TextureManager* TextureManager::GetInstance() {
 ///			初期化
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void TextureManager::Initialize(DirectXCommon* dxCommon) {
+void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 
-	//SRVの数と同数
-	textureDatas_.reserve(DirectXCommon::kMaxSRVCount);
+
 	//dxCommon_の取得
 	dxCommon_ = dxCommon;
+	//SRVManagerの取得
+	srvManager_ = srvManager;
+	//SRVの数と同数
+	textureDatas_.reserve(srvManager_->kMaxSRVCount_);
+	
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,17 +54,12 @@ void TextureManager::Finalize() {
 void TextureManager::LoadTexture(const std::string& filePath) {
 
 	//読み込み済みテクスチャを検索
-	auto it = std::find_if(
-		textureDatas_.begin(),
-		textureDatas_.end(),
-		[&](TextureData& textureData) {return textureData.filePath == filePath; }
-	);
-	if (it != textureDatas_.end()) {
+	if (textureDatas_.contains(filePath)) {
 		return;
 	}
 
 	//テクスチャ枚数上限チェック
-	assert(textureDatas_.size() + kSRVIndexTop < DirectXCommon::kMaxSRVCount);
+	assert(srvManager_->Allocate());
 
 	//テクスチャファイルを読み込んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
@@ -79,22 +78,19 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 
 	assert(SUCCEEDED(hr));
 
-	//テクスチャデータの追加
-	textureDatas_.resize(textureDatas_.size() + 1);
-	//追加したテクスチャデータの参照を取得する
-	TextureData& textureData = textureDatas_.back();
+	//テクスチャデータを追加して書き込む
+	TextureData& textureData = textureDatas_[filePath];
 
 	//テクスチャデータの設定
-	textureData.filePath = filePath;
 	textureData.metadata = mipImages.GetMetadata();
 	textureData.resource = CreateTextureResource(textureData.metadata);
 	UploadTextureData(textureData.resource, mipImages);
 
 	//テクスチャデータの要素数番号をSRVのインデックスとして設定
-	uint32_t srvIndex = static_cast<uint32_t>(textureDatas_.size() - 1) + kSRVIndexTop;
-	textureData.srvHandleCPU = dxCommon_->GetSRVCPUDescriptorHandle(srvIndex);
-	textureData.srvHandleGPU = dxCommon_->GetSRVGPUDescriptorHandle(srvIndex);
-
+	textureData.srvIndex = srvManager_->Allocate();
+	textureData.srvHandleCPU = srvManager_->GetSRVCPUDescriptorHandle(textureData.srvIndex);
+	textureData.srvHandleGPU = srvManager_->GetSRVGPUDescriptorHandle(textureData.srvIndex);
+	
 	//metadataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = textureData.metadata.format;

@@ -9,11 +9,13 @@
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <unordered_map>
 
 #include "DirectXCommon.h"
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
 
+class SrvManager;
 class TextureManager {
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +39,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
 
 	/// <summary>
 	/// 終了処理
@@ -99,9 +101,9 @@ private:
 	
 	//テクスチャ1枚分のデータ
 	struct TextureData {
-		std::string filePath; //ファイルパス
 		DirectX::TexMetadata metadata; //テクスチャのメタデータ
 		ComPtr<ID3D12Resource> resource; //テクスチャリソース
+		uint32_t srvIndex; //SRVインデックス
 		D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU; //CPUディスクリプタハンドル
 		D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU; //GPUディスクリプタハンドル
 	};
@@ -129,7 +131,9 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 
 	//テクスチャデータのリスト
-	std::vector<TextureData> textureDatas_;
+	std::unordered_map<std::string, TextureData> textureDatas_;
+
+	SrvManager* srvManager_ = nullptr;
 
 };
 

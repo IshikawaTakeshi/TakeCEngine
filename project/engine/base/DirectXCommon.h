@@ -62,15 +62,17 @@ public:
 	/// </summary>
 	void PostDraw();
 
-	
-
-
 	/// <summary>
 	/// Resource生成関数
 	/// </summary>
 	static ComPtr<ID3D12Resource> CreateBufferResource(
 		ID3D12Device* device, size_t sizeInBytes);
 
+	/// <summary>
+	/// DescriptorHeap作成関数
+	/// </summary>
+	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(
+		D3D12_DESCRIPTOR_HEAP_TYPE heapType,UINT numDescriptors, bool shaderVisible);
 
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -88,11 +90,6 @@ public:
 	/// </summary>
 	/// <returns>描画コマンドリスト</returns>
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
-
-	/// <summary>
-	/// srvHeapの取得
-	/// </summary>
-	ID3D12DescriptorHeap* GetSrvHeap() { return srvHeap_.Get(); }
 
 	/// <summary>
 	/// dsvHeapの取得
@@ -121,7 +118,6 @@ public:
 	/// <returns></returns>
 	DXC* GetDXC() { return dxc_; }
 
-	uint32_t GetDescriptorSizeSRV() { return descriptorSizeSRV_; }
 	uint32_t GetDescriptorSizeRTV() { return descriptorSizeRTV_; }
 	uint32_t GetDescriptorSizeDSV() { return descriptorSizeDSV_; }
 
@@ -135,23 +131,7 @@ public:
 	/// </summary>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
 
-	/// <summary>
-	/// SRV専用のCPUディスクリプタハンドルの取得
-	/// </summary>
-	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVCPUDescriptorHandle(uint32_t index);
 
-	/// <summary>
-	/// SRV専用のGPUディスクリプタハンドルの取得
-	/// </summary>
-	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
-
-
-public:
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			定数
-	/////////////////////////////////////////////////////////////////////////////////////
-
-	static const uint32_t kMaxSRVCount;
 
 private:
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -186,7 +166,7 @@ private:
 
 	//ディスクリプタヒープの生成
 	ComPtr<ID3D12DescriptorHeap> rtvHeap_ = nullptr;
-	ComPtr<ID3D12DescriptorHeap> srvHeap_ = nullptr;
+	
 	ComPtr<ID3D12DescriptorHeap> dsvHeap_ = nullptr;
 
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
@@ -203,7 +183,7 @@ private:
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_{};
 
-	uint32_t descriptorSizeSRV_;
+	
 	uint32_t descriptorSizeRTV_;
 	uint32_t descriptorSizeDSV_;
 
@@ -288,13 +268,7 @@ private:
 	/// </summary>
 	void UpdateFixFPS();
 
-	/// <summary>
-	/// DescriptorHeap作成関数
-	/// </summary>
-	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(
-		ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType,
-		UINT numDescriptors, bool shaderVisible
-	);
+	
 
 
 };
