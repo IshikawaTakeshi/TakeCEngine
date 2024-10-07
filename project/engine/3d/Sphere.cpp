@@ -38,7 +38,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 	mesh_->InitializeIndexResourceSphere(dxCommon->GetDevice());
 
 	//テクスチャ番号の検索と記録
-	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
+	filePath_ = textureFilePath;
 
 
 
@@ -135,7 +135,7 @@ void Sphere::DrawCall(DirectXCommon* dxCommon) {
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
+	//dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU());
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//IBVの設定

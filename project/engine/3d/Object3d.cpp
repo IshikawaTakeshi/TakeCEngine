@@ -94,6 +94,7 @@ void Object3d::UpdateImGui(int id) {
 		ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 		ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
+		model_->GetMesh()->GetMaterial()->UpdateMaterialImGui();
 		ImGui::TreePop();
 	}
 	ImGui::End();
@@ -101,6 +102,8 @@ void Object3d::UpdateImGui(int id) {
 #endif // _DEBUG
 
 void Object3d::Draw() {
+
+	
 
 	//wvp用のCBufferの場所を指定
 	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());

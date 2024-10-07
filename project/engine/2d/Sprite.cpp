@@ -45,7 +45,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	mesh_->GetMaterial()->InitializeMaterialResource(spriteCommon->GetDirectXCommon()->GetDevice());
 
 	//テクスチャ番号の検索と記録
-	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filePath);
+	filePath_ = filePath;
 
 	//======================= transformationMatrix用のVertexResource ===========================//
 
@@ -74,8 +74,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	viewMatrix_ = MatrixMath::MakeIdentity4x4();
 	projectionMatrix_ = MatrixMath::MakeOrthographicMatrix(
 		0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f);
-	worldViewProjectionMatrix_ = MatrixMath::Multiply(
-		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
+	worldViewProjectionMatrix_ = worldMatrix_ * viewMatrix_ * projectionMatrix_;
 	wvpData_->WVP = worldViewProjectionMatrix_;
 	wvpData_->World = worldMatrix_;
 }
@@ -138,7 +137,7 @@ void Sprite::UpdateVertexData() {
 	float top = 0.0f - anchorPoint_.y;
 	float bottom = 1.0f - anchorPoint_.y;
 	//テクスチャ範囲指定
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(textureIndex_);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(filePath_);
 	float tex_left = textureLeftTop_.x / metadata.width;
 	float tex_top = textureLeftTop_.y / metadata.height;
 	float tex_right = (textureLeftTop_.x + textureSize_.x) / metadata.width;
@@ -169,7 +168,7 @@ void Sprite::UpdateVertexData() {
 void Sprite::AdjustTextureSize() {
 
 	//テクスチャメタデータを取得
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(textureIndex_);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(filePath_);
 
 	textureSize_.x = static_cast<float>(metadata.width);
 	textureSize_.y = static_cast<float>(metadata.height);
@@ -191,7 +190,7 @@ void Sprite::DrawCall() {
 	//TransformationMatrixCBufferの場所の設定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
+	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(filePath_));
 	//IBVの設定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。

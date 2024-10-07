@@ -77,21 +77,14 @@ public:
 	///			getter
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	/// <summary>
-	/// SRVインデックスの開始番号
-	/// </summary>
-	/// <param name="filePath"></param>
-	/// <returns></returns>
-	uint32_t GetTextureIndexByFilePath(const std::string& filePath);
+	/// GPUハンドル取得
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGPU(const std::string& filePath);
+	/// SRVインデックス取得
+	uint32_t GetSrvIndex(const std::string& filePath);
+	/// メタデータ取得
+	const DirectX::TexMetadata& GetMetadata(const std::string& filePath);
 
-	/// <summary>
-	/// テクスチャ番号からGPUハンドルを取得
-	/// </summary>
-	/// <param name="index"></param>
-	/// <returns></returns>
-	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGPU(uint32_t index);
-
-	const DirectX::TexMetadata& GetMetadata(uint32_t textureIndex);
+	SrvManager* GetSrvManager() { return srvManager_; }
 
 private:
 

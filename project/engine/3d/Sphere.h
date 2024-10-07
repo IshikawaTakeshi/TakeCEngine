@@ -46,8 +46,8 @@ private:
 	//メッシュ
 	Mesh* mesh_;
 
-	//テクスチャ番号
-	uint32_t textureIndex_ = 0;
+	//filePath
+	std::string filePath_;
 
 
 	//TransformationMatrix用の頂点リソース

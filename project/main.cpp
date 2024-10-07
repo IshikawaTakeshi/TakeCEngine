@@ -57,10 +57,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//SrvManager
 	SrvManager* srvManager = new SrvManager();
 	srvManager->Initialize(directXCommon);
+
 	//入力初期化
 	Input* input = Input::GetInstance();
 	input->Initialize(winApp);
-
 
 	//SpriteCommon
 	SpriteCommon* spriteCommon = SpriteCommon::GetInstance();
@@ -71,10 +71,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	object3dCommon->Initialize(directXCommon);
 
 	//ModelManager
-	ModelManager::GetInstance()->Initialize(directXCommon);
+	ModelManager::GetInstance()->Initialize(directXCommon,srvManager);
 
 	//TextureManager
-	TextureManager::GetInstance()->Initialize(directXCommon);
+	TextureManager::GetInstance()->Initialize(directXCommon,srvManager);
 
 	
 
@@ -87,9 +87,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui_ImplDX12_Init(directXCommon->GetDevice(),
 		directXCommon->GetBufferCount(),
 		directXCommon->GetRtvFormat(),
-		directXCommon->GetSrvHeap(),
-		directXCommon->GetSrvHeap()->GetCPUDescriptorHandleForHeapStart(),
-		directXCommon->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart()
+		srvManager->GetSrvHeap(),
+		srvManager->GetSrvHeap()->GetCPUDescriptorHandleForHeapStart(),
+		srvManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart()
 	);
 #endif // DEBUG
 #pragma endregion
@@ -175,13 +175,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		 //描画前処理
 		directXCommon->PreDraw();
-		spriteCommon->PreDraw();  //Spriteの描画前処理
+		srvManager->PreDraw();       //SRV描画前処理
+		spriteCommon->PreDraw();     //Spriteの描画前処理
+		object3dCommon->PreDraw();   //Object3dの描画前処理
 
-
-		object3dCommon->PreDraw(); //Object3dの描画前処理
-
-		object3d->Draw(); //3Dオブジェクトの描画
-		object3d1->Draw(); //3Dオブジェクトの描画
+		object3d->Draw();            //3Dオブジェクトの描画
+		object3d1->Draw();           //3Dオブジェクトの描画
 
 		//描画後処理
 		directXCommon->PostDraw();

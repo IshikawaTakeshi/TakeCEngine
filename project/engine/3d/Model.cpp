@@ -3,6 +3,7 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "MatrixMath.h"
+#include "SrvManager.h"
 #include "TextureManager.h"
 #include "ModelCommon.h"
 #include <fstream>
@@ -23,11 +24,11 @@ Model::~Model() {
 	mesh_ = nullptr;
 }
 
-void Model::Initialize(ModelCommon* ModelCommon, const std::string& filename) {
+void Model::Initialize(ModelCommon* ModelCommon, const std::string& filePath) {
 	modelCommon_ = ModelCommon;
 
 	//objファイル読み込み
-	modelData_ = LoadObjFile("Resources", "obj_mtl_blend", filename);
+	modelData_ = LoadObjFile("Resources", "obj_mtl_blend", filePath);
 
 	//メッシュ初期化
 	mesh_ = new Mesh();
@@ -37,8 +38,6 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& filename) {
 	mesh_->InitializeVertexResourceObjModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 	//MaterialResource
 	mesh_->GetMaterial()->InitializeMaterialResource(modelCommon_->GetDirectXCommon()->GetDevice());
-	//テクスチャ番号の取得
-	modelData_.material.textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 }
 
 
@@ -50,7 +49,7 @@ void Model::Draw() {
 	//materialCBufferの場所を指定
 	modelCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	modelCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData_.material.textureIndex));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
 	//DrawCall
 	modelCommon_->GetDirectXCommon()->GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
 }

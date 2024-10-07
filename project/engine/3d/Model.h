@@ -9,6 +9,7 @@
 
 class Mesh;
 class Texture;
+class SrvManager;
 class DirectXCommon;
 class ModelCommon;
 class Model {

@@ -63,9 +63,6 @@ public:
 	//トランスフォーム取得
 	Transform GetTransform() { return transform_; }
 
-	//テクスチャの要素番号取得
-	uint32_t GetTextureIndex() { return textureIndex_; }
-
 	//アンカーポイント取得
 	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
 
@@ -112,8 +109,8 @@ private:
 	//メッシュ
 	Mesh* mesh_ = nullptr;
 
-	//テクスチャ番号
-	uint32_t textureIndex_ = 0;
+	//filePath
+	std::string filePath_;
 
 	//sprite用のTransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
