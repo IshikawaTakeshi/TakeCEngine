@@ -49,7 +49,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WinApp* winApp = new WinApp();
 	winApp->Initialize(L"CG2_08_01");
 
-	//DirectX初期化
+	////DirectX初期化
 	DirectXCommon* directXCommon = new DirectXCommon();
 	directXCommon->Initialize(winApp);
 
@@ -101,7 +101,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	camera1->SetRotate({ 0.0f,-0.4f,0.0f });
 	CameraManager::GetInstance()->AddCamera(*camera1);
 
-	//デフォルトカメラの設定
+	////デフォルトカメラの設定
 	object3dCommon->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 
 	//Model読み込み
@@ -169,18 +169,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//========================== 描画処理　==========================//
 
-		
-		directXCommon->PreDraw(); //描画前処理
+		 //描画前処理
+		directXCommon->PreDraw();
 		spriteCommon->PreDraw();  //Spriteの描画前処理
 
-		
+
 		object3dCommon->PreDraw(); //Object3dの描画前処理
 
-		//for (int i = 0; i < 5; i++) {
-		//	sprites[i]->DrawCall(); //スプライトの描画
-		//}
-
-		
 		object3d->Draw(); //3Dオブジェクトの描画
 		object3d1->Draw(); //3Dオブジェクトの描画
 
@@ -195,6 +190,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 #endif // DEBUG
+
+	object3d.reset();
+	object3d1.reset();
 
 
 	//テクスチャマネージャの開放
@@ -221,12 +219,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp->Finalize();
 	delete winApp;
 	
-	//spritesの開放
-	//for (auto& sprite : sprites) {
-	//	delete sprite;
-	//	sprite = nullptr;
-	//}
-
 	delete leakCheck;
 	
 	return 0;

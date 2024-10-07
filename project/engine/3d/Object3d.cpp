@@ -22,9 +22,9 @@
 #pragma endregion
 
 Object3d::~Object3d() {
-	
-	directionalLightResource_.Reset();
 	wvpResource_.Reset();
+	directionalLightResource_.Reset();
+	
 
 }
 
