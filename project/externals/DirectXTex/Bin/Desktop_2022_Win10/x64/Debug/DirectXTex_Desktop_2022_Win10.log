@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿  DirectXTexUtil.cpp
   BC.cpp
   BC4BC5.cpp
@@ -19,5 +20,11 @@
   DirectXTexResize.cpp
   DirectXTexTGA.cpp
   DirectXTexWIC.cpp
+=======
+﻿  BC.cpp
+  BC4BC5.cpp
+  BC6HBC7.cpp
+  BCDirectCompute.cpp
+>>>>>>> GE3_08_01
   コードを生成中...
   DirectXTex_Desktop_2022_Win10.vcxproj -> C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\project\externals\DirectXTex\Bin\Desktop_2022_Win10\x64\Debug\DirectXTex.lib
