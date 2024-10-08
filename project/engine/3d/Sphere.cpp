@@ -122,7 +122,7 @@ void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 	directionalLightData_->intensity_ = 1.0f;
 }
 
-void Sphere::DrawCall(DirectXCommon* dxCommon) {
+void Sphere::Draw(DirectXCommon* dxCommon) {
 
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
 

@@ -9,6 +9,7 @@
 #include "Input.h"
 #include "TextureManager.h"
 
+#include "Audio.h"
 #include "Transform.h"
 #include "MatrixMath.h"
 #include "SpriteCommon.h"
@@ -113,6 +114,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 
+	std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>();
+	sprite->Initialize(spriteCommon, "Resources/uvChecker.png");
+
 	//3dObject
 	std::shared_ptr<Object3d> object3d = std::make_shared<Object3d>();
 	object3d->Initialize(object3dCommon,"axis.obj");
@@ -161,12 +165,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			CameraManager::GetInstance()->SetActiveCamera(1);
 		}
 
+		//Spriteの更新
+		sprite->Update();
+
+		//3dobjectの更新
 		object3d->Update();
 		object3d1->Update();
 
 #ifdef _DEBUG
 		//ImGuiの更新
 		CameraManager::GetInstance()->UpdateImGui();
+		sprite->UpdateImGui(0);
 		object3d->UpdateImGui(0);
 		object3d1->UpdateImGui(1);
 #endif // DEBUG
@@ -178,6 +187,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		srvManager->PreDraw();       //SRV描画前処理
 		spriteCommon->PreDraw();     //Spriteの描画前処理
 		object3dCommon->PreDraw();   //Object3dの描画前処理
+
+		//Spriteの描画
+		sprite->Draw();
 
 		object3d->Draw();            //3Dオブジェクトの描画
 		object3d1->Draw();           //3Dオブジェクトの描画

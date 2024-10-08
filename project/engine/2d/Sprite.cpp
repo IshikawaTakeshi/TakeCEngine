@@ -181,7 +181,7 @@ void Sprite::AdjustTextureSize() {
 
 
 #pragma region 描画処理
-void Sprite::DrawCall() {
+void Sprite::Draw() {
 	//spriteの描画。
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
 	//materialCBufferの場所を指定

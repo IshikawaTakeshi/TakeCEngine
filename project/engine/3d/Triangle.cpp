@@ -101,7 +101,7 @@ void Triangle::InitializeMaterialData(DirectXCommon* dxCommon) {
 	*materialData_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-void Triangle::DrawCall(DirectXCommon* dxCommon) {
+void Triangle::Draw(DirectXCommon* dxCommon) {
 
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい

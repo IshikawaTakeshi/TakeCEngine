@@ -98,14 +98,6 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 		textureData.resource.Get(),
 		textureData.srvIndex
 	);
-	//D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	//srvDesc.Format = textureData.metadata.format;
-	//srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	//srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	//srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels);
-
-	////SRVの生成
-	//dxCommon_->GetDevice()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureData.srvHandleCPU);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

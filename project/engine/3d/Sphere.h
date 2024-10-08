@@ -34,7 +34,7 @@ public:
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void DrawCall(DirectXCommon* dxCommon);
+	void Draw(DirectXCommon* dxCommon);
 
 public: //ゲッター
 

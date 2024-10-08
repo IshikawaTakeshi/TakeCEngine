@@ -53,7 +53,7 @@ public:
 	/// <summary>
 	/// MaterialData初期化
 	/// </summary>
-	void DrawCall(DirectXCommon* dxCommon);
+	void Draw(DirectXCommon* dxCommon);
 
 
 
