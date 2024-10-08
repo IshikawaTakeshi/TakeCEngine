@@ -1,28 +1,36 @@
 #pragma once
-#include "TakeCFrameWork.h"
+#include "Audio.h"
+#include "Camera.h"
+#include "CameraManager.h"
+#include "Input.h"
+#include "ModelManager.h"
+#include "Sprite.h"
+#include "Object3d.h"
+#include "Object3dCommon.h"
+#include "SpriteCommon.h"
 
-class MyGame : public TakeCFrameWork {
+class GamePlayScene {
 public:
 
-	MyGame() = default;
-	~MyGame() = default;
+	GamePlayScene() = default;
+	~GamePlayScene() = default;
 
 	//初期化
-	void Initialize() override;
+	void Initialize();
 
 	//終了処理
-	void Finalize() override;
+	void Finalize();
 
 	//更新処理
-	void Update()override;
+	void Update();
 
 	//描画処理
-	void Draw()override;
+	void Draw();
 
 private:
 
 	//サウンドデータ
-	Audio::SoundData soundData1;
+	AudioManager::SoundData soundData1;
 	// カメラ
 	std::shared_ptr<Camera> camera0 = nullptr;
 	std::shared_ptr<Camera> camera1 = nullptr;
@@ -31,6 +39,5 @@ private:
 	//3Dオブジェクト
 	std::shared_ptr <Object3d> object3d = nullptr;
 	std::shared_ptr <Object3d> object3d1 = nullptr;
-
 };
 

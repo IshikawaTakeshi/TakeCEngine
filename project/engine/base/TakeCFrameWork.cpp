@@ -4,38 +4,38 @@ void TakeCFrameWork::Initialize() {
 
 
 	//タイトルバーの名前の入力
-	winApp = new WinApp();
-	winApp->Initialize(L"CG2_08_01");
+	winApp_ = new WinApp();
+	winApp_->Initialize(L"CG2_08_01");
 
 	////DirectX初期化
-	directXCommon = new DirectXCommon();
-	directXCommon->Initialize(winApp);
+	directXCommon_ = new DirectXCommon();
+	directXCommon_->Initialize(winApp_);
 
 	//SrvManager
-	srvManager = new SrvManager();
-	srvManager->Initialize(directXCommon);
+	srvManager_ = new SrvManager();
+	srvManager_->Initialize(directXCommon_);
 
 	//入力初期化
-	input = Input::GetInstance();
-	input->Initialize(winApp);
+	input_ = Input::GetInstance();
+	input_->Initialize(winApp_);
 
 	//Audio
-	audio = std::make_shared<Audio>();
-	audio->Initialize();
+	audio_ = AudioManager::GetInstance();
+	audio_->Initialize();
 
 	//SpriteCommon
-	spriteCommon = SpriteCommon::GetInstance();
-	spriteCommon->Initialize(directXCommon);
+	spriteCommon_ = SpriteCommon::GetInstance();
+	spriteCommon_->Initialize(directXCommon_);
 
 	//Object3dCommon
-	object3dCommon = Object3dCommon::GetInstance();
-	object3dCommon->Initialize(directXCommon);
+	object3dCommon_ = Object3dCommon::GetInstance();
+	object3dCommon_->Initialize(directXCommon_);
 
 	//ModelManager
-	ModelManager::GetInstance()->Initialize(directXCommon, srvManager);
+	ModelManager::GetInstance()->Initialize(directXCommon_, srvManager_);
 
 	//TextureManager
-	TextureManager::GetInstance()->Initialize(directXCommon, srvManager);
+	TextureManager::GetInstance()->Initialize(directXCommon_, srvManager_);
 
 
 
@@ -44,13 +44,13 @@ void TakeCFrameWork::Initialize() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(winApp->GetHwnd());
-	ImGui_ImplDX12_Init(directXCommon->GetDevice(),
-		directXCommon->GetBufferCount(),
-		directXCommon->GetRtvFormat(),
-		srvManager->GetSrvHeap(),
-		srvManager->GetSrvHeap()->GetCPUDescriptorHandleForHeapStart(),
-		srvManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart()
+	ImGui_ImplWin32_Init(winApp_->GetHwnd());
+	ImGui_ImplDX12_Init(directXCommon_->GetDevice(),
+		directXCommon_->GetBufferCount(),
+		directXCommon_->GetRtvFormat(),
+		srvManager_->GetSrvHeap(),
+		srvManager_->GetSrvHeap()->GetCPUDescriptorHandleForHeapStart(),
+		srvManager_->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart()
 	);
 #endif // DEBUG
 #pragma endregion
@@ -74,28 +74,28 @@ void TakeCFrameWork::Finalize() {
 	CameraManager::GetInstance()->Finalize();
 
 	//Object3dCommonの開放
-	object3dCommon->Finalize();
+	object3dCommon_->Finalize();
 	//SpriteCommonの開放aa
-	spriteCommon->Finalize();
+	spriteCommon_->Finalize();
 	//Audioの開放
-	audio->Finalize();
+	audio_->Finalize();
 	//入力の開放
-	input->Finalize();
+	input_->Finalize();
 	//SrvManagerの開放
-	delete srvManager;
+	delete srvManager_;
 	//directXCommonの開放
-	directXCommon->Finalize();
-	delete directXCommon;
+	directXCommon_->Finalize();
+	delete directXCommon_;
 
 	//winAppの開放
-	winApp->Finalize();
-	delete winApp;
+	winApp_->Finalize();
+	delete winApp_;
 }
 
 void TakeCFrameWork::Update() {
 
 	//メッセージ処理
-	if (winApp->ProcessMessage()) {
+	if (winApp_->ProcessMessage()) {
 		//ウィンドウの×ボタンが押されたらループを抜ける
 		isEnd_ = true;
 	}

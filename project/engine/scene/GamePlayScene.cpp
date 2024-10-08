@@ -1,16 +1,12 @@
-#include "MyGame.h"
+#include "GamePlayScene.h"
 
 //====================================================================
 //			初期化
 //====================================================================
 
-void MyGame::Initialize() {
-
-	//FrameWorkの初期化
-	TakeCFrameWork::Initialize();
-
+void GamePlayScene::Initialize() {
 	//サウンドデータ
-	soundData1 = audio->SoundLoadWave("Resources/audioSources/fanfare.wav");
+	soundData1 = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/fanfare.wav");
 
 	//Camera0
 	camera0 = std::make_shared<Camera>();
@@ -25,7 +21,7 @@ void MyGame::Initialize() {
 	CameraManager::GetInstance()->AddCamera(*camera1);
 
 	//デフォルトカメラの設定
-	object3dCommon->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
+	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("axis.obj");
@@ -33,15 +29,15 @@ void MyGame::Initialize() {
 
 	//Sprite
 	sprite = std::make_shared<Sprite>();
-	sprite->Initialize(spriteCommon, "Resources/uvChecker.png");
+	sprite->Initialize(SpriteCommon::GetInstance(), "Resources/uvChecker.png");
 
 	//3dObject
 	object3d = std::make_shared<Object3d>();
-	object3d->Initialize(object3dCommon, "axis.obj");
+	object3d->Initialize(Object3dCommon::GetInstance(), "axis.obj");
 	object3d->SetScale({ 0.5f,0.5f,0.5f });
 
 	object3d1 = std::make_shared<Object3d>();
-	object3d1->Initialize(object3dCommon, "plane.obj");
+	object3d1->Initialize(Object3dCommon::GetInstance(), "plane.obj");
 	object3d1->SetScale({ 0.5f,0.5f,0.5f });
 }
 
@@ -49,23 +45,16 @@ void MyGame::Initialize() {
 //			終了処理
 //====================================================================
 
-void MyGame::Finalize() {
+void GamePlayScene::Finalize() {
 	sprite.reset();    //スプライトの解放
 	object3d.reset();  //3Dオブジェクトの解放
 	object3d1.reset();
-	audio->SoundUnload(&soundData1); //音声データ解放
-	TakeCFrameWork::Finalize();      //FrameWorkの終了処理
+
+	AudioManager::GetInstance()->SoundUnload(&soundData1); //音声データ解放
+
 }
 
-//====================================================================
-//			更新処理
-//====================================================================
-
-void MyGame::Update() {
-
-	//FrameWorkの更新
-	TakeCFrameWork::Update();
-
+void GamePlayScene::Update() {
 	//ImGuiの更新
 	CameraManager::GetInstance()->UpdateImGui();
 	sprite->UpdateImGui(0);
@@ -74,45 +63,37 @@ void MyGame::Update() {
 
 
 	//オーディオ再生
-	if (input->TriggerKey(DIK_A)) {
-		audio->SoundPlayWave(audio->GetXAudio2(), soundData1);
+	if (Input::GetInstance()->TriggerKey(DIK_A)) {
+		AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), soundData1);
 	}
 	//入力更新
-	input->Update();
+	Input::GetInstance()->Update();
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
 
 	//カメラの切り替え
-	if (input->GetInstance()->TriggerKey(DIK_1)) {
+	if (Input::GetInstance()->TriggerKey(DIK_1)) {
 		CameraManager::GetInstance()->SetActiveCamera(0);
-	} else if (input->GetInstance()->TriggerKey(DIK_2)) {
+	} else if (Input::GetInstance()->TriggerKey(DIK_2)) {
 		CameraManager::GetInstance()->SetActiveCamera(1);
 	}
 
 
 	sprite->Update(); 	//Spriteの更新
-	
+
 	object3d->Update(); //3dObjectの更新
 	object3d1->Update();
 }
 
-//====================================================================
-//			描画処理
-//====================================================================
+void GamePlayScene::Draw() {
 
-void MyGame::Draw() {
+	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
+	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
 
-	 //描画前処理
-	directXCommon->PreDraw();
-	srvManager->PreDraw();       //SRV描画前処理
-	spriteCommon->PreDraw();     //Spriteの描画前処理
-	object3dCommon->PreDraw();   //Object3dの描画前処理
-	
+
 	sprite->Draw();              //スプライトの描画
 	object3d->Draw();            //3Dオブジェクトの描画
 	object3d1->Draw();           //3Dオブジェクトの描画
 
-	//描画後処理
-	directXCommon->PostDraw();
 }

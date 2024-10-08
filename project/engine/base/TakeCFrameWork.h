@@ -22,13 +22,13 @@ public:
 
 protected:
 
-	WinApp* winApp = nullptr;
-	DirectXCommon* directXCommon = nullptr;
-	SrvManager* srvManager = nullptr;
-	Input* input = nullptr;
-	std::shared_ptr<Audio> audio = nullptr;
-	SpriteCommon* spriteCommon = nullptr;
-	Object3dCommon* object3dCommon = nullptr;
+	WinApp* winApp_ = nullptr;
+	DirectXCommon* directXCommon_ = nullptr;
+	SrvManager* srvManager_ = nullptr;
+	Input* input_ = nullptr;
+	AudioManager* audio_ = nullptr;
+	SpriteCommon* spriteCommon_ = nullptr;
+	Object3dCommon* object3dCommon_ = nullptr;
 
 
 	//終了フラグ

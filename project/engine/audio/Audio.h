@@ -5,7 +5,7 @@
 #include <string>
 
 #pragma comment(lib, "xaudio2.lib")
-class Audio {
+class AudioManager {
 public:
 
 	//エイリアステンプレート
@@ -50,8 +50,7 @@ public:
 	///			publicメンバ関数
 	//===================================================================================
 
-	Audio() = default;
-	~Audio() = default;
+	static AudioManager* GetInstance();
 
 	/// <summary>
 	/// 初期化処理
@@ -93,12 +92,18 @@ public:
 
 	IXAudio2MasteringVoice* GetMasteringVoice() const { return masteringVoice_; }
 
-
 private:
 
+	static AudioManager* instance_;
+
+	AudioManager() = default;
+	~AudioManager() = default;
+	AudioManager(const AudioManager&) = delete;
+	AudioManager& operator=(const AudioManager&) = delete;
+
+private:
 
 	ComPtr<IXAudio2> xAudio2_ = nullptr;
 	IXAudio2MasteringVoice* masteringVoice_ = nullptr;
 
 };
-

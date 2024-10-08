@@ -1,11 +1,20 @@
 #include "../Audio/Audio.h"
 #include <cassert>
 
+AudioManager* AudioManager::instance_ = nullptr;
+
 //================================================================================================
 // 初期化処理
 //================================================================================================
 
-void Audio::Initialize() {
+AudioManager* AudioManager::GetInstance() {	
+	if (instance_ == nullptr) {
+		instance_ = new AudioManager();
+	}
+	return instance_;
+}
+
+void AudioManager::Initialize() {
 
 	//XAudio2オブジェクトの生成
 	HRESULT hr = XAudio2Create(&xAudio2_, 0, XAUDIO2_DEFAULT_PROCESSOR);
@@ -20,7 +29,7 @@ void Audio::Initialize() {
 // 音声データ読み込み
 //================================================================================================
 
-Audio::SoundData Audio::SoundLoadWave(const char* filename) {
+AudioManager::SoundData AudioManager::SoundLoadWave(const char* filename) {
 	
 #pragma region ファイルオープン
 	//ファイル入力ストリームのインスタンス
@@ -101,7 +110,7 @@ Audio::SoundData Audio::SoundLoadWave(const char* filename) {
 // 音声データの開放
 //================================================================================================
 
-void Audio::SoundUnload(SoundData* soundData) {
+void AudioManager::SoundUnload(SoundData* soundData) {
 
 	//バッファの解放
 	delete[] soundData->pBuffer;
@@ -115,7 +124,7 @@ void Audio::SoundUnload(SoundData* soundData) {
 // 音声再生
 //================================================================================================
 
-void Audio::SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData) {
+void AudioManager::SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData) {
 
 	HRESULT result;
 
@@ -139,7 +148,7 @@ void Audio::SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData) {
 // 解放処理
 //================================================================================================
 
-void Audio::Finalize() {
+void AudioManager::Finalize() {
 	//XAudio2の解放
 	xAudio2_.Reset();
 	
