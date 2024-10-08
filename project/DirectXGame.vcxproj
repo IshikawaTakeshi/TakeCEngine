@@ -137,7 +137,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Triangle.cpp" />
     <ClCompile Include="engine\base\WinApp.cpp" />
     <ClCompile Include="engine\math\Vector3.cpp" />
-    <ClCompile Include="SrvManager.cpp" />
+    <ClCompile Include="application\MyGame.cpp" />
+    <ClCompile Include="engine\base\SrvManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\audio\Audio.h" />
@@ -146,6 +147,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\2d\Sprite.h" />
     <ClInclude Include="engine\2d\SpriteCommon.h" />
     <ClInclude Include="engine\base\D3DResourceLeakChecker.h" />
+    <ClInclude Include="engine\EngineIncludes.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
     <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
@@ -164,6 +166,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\base\ModelManager.h" />
     <ClInclude Include="engine\3d\Object3d.h" />
     <ClInclude Include="engine\3d\Object3dCommon.h" />
+    <ClInclude Include="application\MyGame.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\base\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />
@@ -182,7 +185,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\Vector3.h" />
     <ClInclude Include="engine\math\Vector4.h" />
     <ClInclude Include="engine\base\WinApp.h" />
-    <ClInclude Include="SrvManager.h" />
+    <ClInclude Include="engine\base\SrvManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
