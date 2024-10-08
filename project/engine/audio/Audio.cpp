@@ -1,6 +1,10 @@
 #include "../Audio/Audio.h"
 #include <cassert>
 
+//================================================================================================
+// 初期化処理
+//================================================================================================
+
 void Audio::Initialize() {
 
 	//XAudio2オブジェクトの生成
@@ -11,6 +15,10 @@ void Audio::Initialize() {
 	hr = xAudio2_->CreateMasteringVoice(&masteringVoice_);
 	assert(SUCCEEDED(hr));
 }
+
+//================================================================================================
+// 音声データ読み込み
+//================================================================================================
 
 Audio::SoundData Audio::SoundLoadWave(const char* filename) {
 	
@@ -31,7 +39,6 @@ Audio::SoundData Audio::SoundLoadWave(const char* filename) {
 	if (strncmp(riff.chunk.id, "RIFF", 4) != 0) {
 		assert(0);
 	}
-
 	//ファイルがWAVEかチェック
 	if (strncmp(riff.type, "WAVE", 4) != 0) {
 		assert(0);
@@ -53,13 +60,18 @@ Audio::SoundData Audio::SoundLoadWave(const char* filename) {
 	ChunkHeader data;
 	file.read((char*)&data, sizeof(data));
 	//JUNKチャンクを検出した場合
-	if (strncmp(data.id, "JUNK", 4) == 0) {
-		//読み取り位置をJUNKチャンクの終わりまで進める
+	if (strncmp(data.id, "JUNK", 4) == 0) {	
+		file.seekg(data.size, std::ios_base::cur); //読み取り位置をチャンクの終わりまで進める
+		file.read((char*)&data, sizeof(data));     //再読み込み
+	}
+
+	//LISTチャンクを検出した場合
+	if (strncmp(data.id, "LIST", 4) == 0) {
 		file.seekg(data.size, std::ios_base::cur);
-		//再読み込み
 		file.read((char*)&data, sizeof(data));
 	}
 
+	//Dataチャンクかチェック
 	if (strncmp(data.id, "data", 4) != 0) {
 		assert(0);
 	}
@@ -85,6 +97,10 @@ Audio::SoundData Audio::SoundLoadWave(const char* filename) {
 	return soundData;
 }
 
+//================================================================================================
+// 音声データの開放
+//================================================================================================
+
 void Audio::SoundUnload(SoundData* soundData) {
 
 	//バッファの解放
@@ -94,6 +110,10 @@ void Audio::SoundUnload(SoundData* soundData) {
 	soundData->bufferSize = 0;
 	soundData->wfex = {};
 }
+
+//================================================================================================
+// 音声再生
+//================================================================================================
 
 void Audio::SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData) {
 
@@ -114,6 +134,10 @@ void Audio::SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData) {
 	result = pSourceVoice->SubmitSourceBuffer(&buffer);
 	result = pSourceVoice->Start();
 }
+
+//================================================================================================
+// 解放処理
+//================================================================================================
 
 void Audio::Finalize(SoundData soundData) {
 	//XAudio2の解放

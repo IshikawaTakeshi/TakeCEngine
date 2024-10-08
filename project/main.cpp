@@ -63,6 +63,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Input* input = Input::GetInstance();
 	input->Initialize(winApp);
 
+	//Audio
+	std::shared_ptr<Audio> audio = std::make_shared<Audio>();
+	audio->Initialize();
+
 	//SpriteCommon
 	SpriteCommon* spriteCommon = SpriteCommon::GetInstance();
 	spriteCommon->Initialize(directXCommon);
@@ -94,6 +98,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	);
 #endif // DEBUG
 #pragma endregion
+
+	//サウンドデータ
+	Audio::SoundData soundData1;
+	soundData1 = audio->SoundLoadWave("Resources/audioSources/fanfare.wav");
+
 	
 	//Camera0
 	std::shared_ptr<Camera> camera0 = std::make_shared<Camera>();
@@ -151,6 +160,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::ShowDemoWindow();
 #endif // DEBUG
 
+		//オーディオ再生
+		if (input->TriggerKey(DIK_A)) {
+			audio->SoundPlayWave(audio->GetXAudio2(), soundData1);
+		}
 		//入力更新
 		input->Update();
 
@@ -205,6 +218,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 #endif // DEBUG
+
+	audio->Finalize(soundData1);
 
 	delete srvManager;
 	object3d.reset();
