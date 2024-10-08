@@ -6,6 +6,7 @@
 
 void MyGame::Initialize() {
 
+	//FrameWorkの初期化
 	TakeCFrameWork::Initialize();
 
 	//サウンドデータ
@@ -49,11 +50,11 @@ void MyGame::Initialize() {
 //====================================================================
 
 void MyGame::Finalize() {
-	sprite.reset();
-	object3d.reset();
+	sprite.reset();    //スプライトの解放
+	object3d.reset();  //3Dオブジェクトの解放
 	object3d1.reset();
 	audio->SoundUnload(&soundData1); //音声データ解放
-	TakeCFrameWork::Finalize();
+	TakeCFrameWork::Finalize();      //FrameWorkの終了処理
 }
 
 //====================================================================
@@ -62,6 +63,7 @@ void MyGame::Finalize() {
 
 void MyGame::Update() {
 
+	//FrameWorkの更新
 	TakeCFrameWork::Update();
 
 	//ImGuiの更新
@@ -88,16 +90,11 @@ void MyGame::Update() {
 		CameraManager::GetInstance()->SetActiveCamera(1);
 	}
 
-	//Spriteの更新
-	sprite->Update();
 
-	//3dObjectの更新
-	object3d->Update();
+	sprite->Update(); 	//Spriteの更新
+	
+	object3d->Update(); //3dObjectの更新
 	object3d1->Update();
-
-#ifdef _DEBUG
-
-#endif // DEBUG
 }
 
 //====================================================================
@@ -106,17 +103,13 @@ void MyGame::Update() {
 
 void MyGame::Draw() {
 
-	//========================== 描画処理　==========================//
-
 	 //描画前処理
 	directXCommon->PreDraw();
 	srvManager->PreDraw();       //SRV描画前処理
 	spriteCommon->PreDraw();     //Spriteの描画前処理
 	object3dCommon->PreDraw();   //Object3dの描画前処理
-
-	//Spriteの描画
-	sprite->Draw();
-
+	
+	sprite->Draw();              //スプライトの描画
 	object3d->Draw();            //3Dオブジェクトの描画
 	object3d1->Draw();           //3Dオブジェクトの描画
 
