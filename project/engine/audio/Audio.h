@@ -81,7 +81,7 @@ public:
 	/// <summary>
 	/// 解放処理
 	/// </summary>
-	void Finalize(SoundData soundData);
+	void Finalize();
 
 public:
 

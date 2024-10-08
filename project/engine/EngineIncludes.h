@@ -24,6 +24,7 @@
 #include "Camera.h"
 #include "CameraManager.h"
 #include "SrvManager.h"
+#include "TakeCFrameWork.h"
 
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")

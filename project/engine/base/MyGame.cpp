@@ -6,57 +6,7 @@
 
 void MyGame::Initialize() {
 
-	//タイトルバーの名前の入力
-	winApp = new WinApp();
-	winApp->Initialize(L"CG2_08_01");
-
-	////DirectX初期化
-	directXCommon = new DirectXCommon();
-	directXCommon->Initialize(winApp);
-
-	//SrvManager
-	srvManager = new SrvManager();
-	srvManager->Initialize(directXCommon);
-
-	//入力初期化
-	input = Input::GetInstance();
-	input->Initialize(winApp);
-
-	//Audio
-	audio = std::make_shared<Audio>();
-	audio->Initialize();
-
-	//SpriteCommon
-	spriteCommon = SpriteCommon::GetInstance();
-	spriteCommon->Initialize(directXCommon);
-
-	//Object3dCommon
-	object3dCommon = Object3dCommon::GetInstance();
-	object3dCommon->Initialize(directXCommon);
-
-	//ModelManager
-	ModelManager::GetInstance()->Initialize(directXCommon, srvManager);
-
-	//TextureManager
-	TextureManager::GetInstance()->Initialize(directXCommon, srvManager);
-
-
-
-#pragma region ImGui初期化
-#ifdef _DEBUG
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(winApp->GetHwnd());
-	ImGui_ImplDX12_Init(directXCommon->GetDevice(),
-		directXCommon->GetBufferCount(),
-		directXCommon->GetRtvFormat(),
-		srvManager->GetSrvHeap(),
-		srvManager->GetSrvHeap()->GetCPUDescriptorHandleForHeapStart(),
-		srvManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart()
-	);
-#endif // DEBUG
-#pragma endregion
+	TakeCFrameWork::Initialize();
 
 	//サウンドデータ
 	soundData1 = audio->SoundLoadWave("Resources/audioSources/fanfare.wav");
@@ -99,45 +49,11 @@ void MyGame::Initialize() {
 //====================================================================
 
 void MyGame::Finalize() {
-
-
-	/*==========ImGuiの開放==========*/
-#ifdef _DEBUG
-	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-#endif // DEBUG
-
-	audio->Finalize(soundData1);
-
-	delete srvManager;
 	sprite.reset();
 	object3d.reset();
 	object3d1.reset();
-
-
-	//テクスチャマネージャの開放
-	TextureManager::GetInstance()->Finalize();
-	//ModelManagerの開放
-	ModelManager::GetInstance()->Finalize();
-	//CameraManagerの開放
-	CameraManager::GetInstance()->Finalize();
-
-
-	//Object3dCommonの開放
-	object3dCommon->Finalize();
-	//SpriteCommonの開放aa
-	spriteCommon->Finalize();
-	//入力の開放
-	input->Finalize();
-	//directXCommonの開放
-	directXCommon->Finalize();
-	delete directXCommon;
-
-	//winAppの開放
-	winApp->Finalize();
-	delete winApp;
-
+	audio->SoundUnload(&soundData1); //音声データ解放
+	TakeCFrameWork::Finalize();
 }
 
 //====================================================================
@@ -146,27 +62,14 @@ void MyGame::Finalize() {
 
 void MyGame::Update() {
 
-	//メッセージ処理
-	if (winApp->ProcessMessage()) {
-		//ウィンドウの×ボタンが押されたらループを抜ける
-		isEnd_ = true;
-	}
+	TakeCFrameWork::Update();
 
-	//========================== 更新処理　==========================//
-
-#ifdef _DEBUG
-		//ImGui受付開始
-	ImGui_ImplDX12_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-
-	//開発用UIの処理。実際に開発用のUIを出す場合はここをゲーム特有の処理に置き換える
-		//ImGuiの更新
+	//ImGuiの更新
 	CameraManager::GetInstance()->UpdateImGui();
 	sprite->UpdateImGui(0);
 	object3d->UpdateImGui(0);
 	object3d1->UpdateImGui(1);
-#endif // DEBUG
+
 
 	//オーディオ再生
 	if (input->TriggerKey(DIK_A)) {

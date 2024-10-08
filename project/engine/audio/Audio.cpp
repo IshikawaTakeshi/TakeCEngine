@@ -139,11 +139,10 @@ void Audio::SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData) {
 // 解放処理
 //================================================================================================
 
-void Audio::Finalize(SoundData soundData) {
+void Audio::Finalize() {
 	//XAudio2の解放
 	xAudio2_.Reset();
-	//音声データ解放
-	SoundUnload(&soundData);
+	
 }
 
 
