@@ -10,17 +10,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	D3DResourceLeakChecker* leakCheck = new D3DResourceLeakChecker;
 
 	//ゲームクラスの生成と初期化
-	MyGame* myGame;
-	myGame->Initialize();
+	MyGame myGame;
+	myGame.Initialize();
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (true) {
-		if (myGame->IsEnd() == true) {
+		if (myGame.IsEnd() == true) {
 			break;
 		}
-		myGame->Update();
-		myGame->Draw();
+		myGame.Update();
+		myGame.Draw();
 	}
+
+	myGame.Finalize();
 
 	delete leakCheck;
 	

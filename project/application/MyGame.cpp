@@ -161,7 +161,11 @@ void MyGame::Update() {
 	ImGui::NewFrame();
 
 	//開発用UIの処理。実際に開発用のUIを出す場合はここをゲーム特有の処理に置き換える
-	ImGui::ShowDemoWindow();
+		//ImGuiの更新
+	CameraManager::GetInstance()->UpdateImGui();
+	sprite->UpdateImGui(0);
+	object3d->UpdateImGui(0);
+	object3d1->UpdateImGui(1);
 #endif // DEBUG
 
 	//オーディオ再生
@@ -189,11 +193,7 @@ void MyGame::Update() {
 	object3d1->Update();
 
 #ifdef _DEBUG
-	//ImGuiの更新
-	CameraManager::GetInstance()->UpdateImGui();
-	sprite->UpdateImGui(0);
-	object3d->UpdateImGui(0);
-	object3d1->UpdateImGui(1);
+
 #endif // DEBUG
 }
 
