@@ -29,7 +29,7 @@ protected:
 	AudioManager* audio_ = nullptr;
 	SpriteCommon* spriteCommon_ = nullptr;
 	Object3dCommon* object3dCommon_ = nullptr;
-
+	SceneManager* sceneManager_ = nullptr;
 
 	//終了フラグ
 	bool isEnd_ = false;

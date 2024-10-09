@@ -126,7 +126,7 @@ private:
 
 	Vector2 position_ = { 0.0f,0.0f };
 	float rotation_ = 0.0f;
-	Vector2 size_ = { 200.0f,200.0f };
+	Vector2 size_ = { 400.0f,200.0f };
 
 	
 	Vector2 anchorPoint_ = { 0.0f,0.0f }; //アンカーポイント
@@ -135,6 +135,5 @@ private:
 	bool adjustSwitch_ = false; //テクスチャサイズ調整スイッチ
 
 	Vector2 textureLeftTop_ = { 0.0f,0.0f  }; //テクスチャの左上座標
-	Vector2 textureSize_ = { 500.0f,500.0f }; //テクスチャの切り出しサイズ
+	Vector2 textureSize_ = { 100.0f,100.0f }; //テクスチャの切り出しサイズ
 };
-

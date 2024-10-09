@@ -192,6 +192,9 @@ private:
 	// シザー矩形
 	D3D12_RECT scissorRect_{};
 
+	//画面の色
+	float clearColor[4] = { 0.1f, 0.4f, 0.5f, 1.0f }; // 青っぽい色
+
 	//記録時間(FPS固定)
 	std::chrono::steady_clock::time_point reference_;
 

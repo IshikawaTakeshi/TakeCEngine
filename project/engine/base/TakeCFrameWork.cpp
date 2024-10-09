@@ -53,13 +53,19 @@ void TakeCFrameWork::Initialize() {
 		srvManager_->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart()
 	);
 #endif // DEBUG
+
+	//シーンの生成
+	sceneManager_ = new SceneManager();
+
 #pragma endregion
 }
 
 void TakeCFrameWork::Finalize() {
 
+	//シーンの開放
+	delete sceneManager_;
 
-	/*==========ImGuiの開放==========*/
+	//==========ImGuiの開放==========//
 #ifdef _DEBUG
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();

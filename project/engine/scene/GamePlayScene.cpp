@@ -9,16 +9,16 @@ void GamePlayScene::Initialize() {
 	soundData1 = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/fanfare.wav");
 
 	//Camera0
-	camera0 = std::make_shared<Camera>();
-	camera0->SetTranslate({ 0.0f,0.0f,-20.0f });
-	camera0->SetRotate({ 0.0f,0.0f,0.0f });
-	CameraManager::GetInstance()->AddCamera(*camera0);
+	camera0_ = std::make_shared<Camera>();
+	camera0_->SetTranslate({ 0.0f,0.0f,-20.0f });
+	camera0_->SetRotate({ 0.0f,0.0f,0.0f });
+	CameraManager::GetInstance()->AddCamera(*camera0_);
 
 	//Camera1
-	camera1 = std::make_shared<Camera>();
-	camera1->SetTranslate({ 5.0f,0.0f,-10.0f });
-	camera1->SetRotate({ 0.0f,-0.4f,0.0f });
-	CameraManager::GetInstance()->AddCamera(*camera1);
+	camera1_ = std::make_shared<Camera>();
+	camera1_->SetTranslate({ 5.0f,0.0f,-10.0f });
+	camera1_->SetRotate({ 0.0f,-0.4f,0.0f });
+	CameraManager::GetInstance()->AddCamera(*camera1_);
 
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
@@ -28,8 +28,8 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 
 	//Sprite
-	sprite = std::make_shared<Sprite>();
-	sprite->Initialize(SpriteCommon::GetInstance(), "Resources/uvChecker.png");
+	sprite_ = std::make_shared<Sprite>();
+	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/uvChecker.png");
 
 	//3dObject
 	object3d = std::make_shared<Object3d>();
@@ -46,7 +46,7 @@ void GamePlayScene::Initialize() {
 //====================================================================
 
 void GamePlayScene::Finalize() {
-	sprite.reset();    //スプライトの解放
+	sprite_.reset();    //スプライトの解放
 	object3d.reset();  //3Dオブジェクトの解放
 	object3d1.reset();
 
@@ -57,7 +57,7 @@ void GamePlayScene::Finalize() {
 void GamePlayScene::Update() {
 	//ImGuiの更新
 	CameraManager::GetInstance()->UpdateImGui();
-	sprite->UpdateImGui(0);
+	sprite_->UpdateImGui(0);
 	object3d->UpdateImGui(0);
 	object3d1->UpdateImGui(1);
 
@@ -79,9 +79,7 @@ void GamePlayScene::Update() {
 		CameraManager::GetInstance()->SetActiveCamera(1);
 	}
 
-
-	sprite->Update(); 	//Spriteの更新
-
+	sprite_->Update(); 	//Spriteの更新
 	object3d->Update(); //3dObjectの更新
 	object3d1->Update();
 }
@@ -92,7 +90,7 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
 
 
-	sprite->Draw();              //スプライトの描画
+	sprite_->Draw();              //スプライトの描画
 	object3d->Draw();            //3Dオブジェクトの描画
 	object3d1->Draw();           //3Dオブジェクトの描画
 

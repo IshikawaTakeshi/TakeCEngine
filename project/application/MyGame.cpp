@@ -9,8 +9,8 @@ void MyGame::Initialize() {
 	//FrameWorkの初期化
 	TakeCFrameWork::Initialize();
 
-	gamePlayScene_ = std::make_shared<GamePlayScene>();
-	gamePlayScene_->Initialize();
+	currentScene_ = std::make_shared<TitleScene>();
+	currentScene_->Initialize();
 }
 
 //====================================================================
@@ -19,9 +19,8 @@ void MyGame::Initialize() {
 
 void MyGame::Finalize() {
 
-	gamePlayScene_->Finalize();
-	//gamePlayScene_.reset();
-
+	currentScene_->Finalize();
+	
 	TakeCFrameWork::Finalize();      //FrameWorkの終了処理
 }
 
@@ -34,7 +33,7 @@ void MyGame::Update() {
 	//FrameWorkの更新
 	TakeCFrameWork::Update();
 
-	gamePlayScene_->Update();
+	currentScene_->Update();
 }
 
 //====================================================================
@@ -47,8 +46,7 @@ void MyGame::Draw() {
 	directXCommon_->PreDraw();
 	srvManager_->PreDraw();       //SRV描画前処理
 	
-	gamePlayScene_->Draw();
-	
+	currentScene_->Draw();
 
 	//描画後処理
 	directXCommon_->PostDraw();

@@ -1,6 +1,7 @@
 #pragma once
 #include "TakeCFrameWork.h"
 #include "GamePlayScene.h"
+#include "TitleScene.h"
 
 class MyGame : public TakeCFrameWork {
 public:
@@ -22,5 +23,5 @@ public:
 
 private:
 
-	std::shared_ptr<GamePlayScene> gamePlayScene_;
+	std::shared_ptr<BaseScene> currentScene_;
 };

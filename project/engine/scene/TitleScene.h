@@ -11,11 +11,11 @@
 #include "Object3dCommon.h"
 #include "SpriteCommon.h"
 
-class GamePlayScene : public BaseScene {
+class TitleScene : public BaseScene {
 public:
 
-	GamePlayScene() = default;
-	~GamePlayScene() = default;
+	TitleScene() = default;
+	~TitleScene() = default;
 
 	//初期化
 	void Initialize() override;
@@ -31,15 +31,13 @@ public:
 
 private:
 
+
 	//サウンドデータ
-	AudioManager::SoundData soundData1;
+	//AudioManager::SoundData soundData1;
 	// カメラ
 	std::shared_ptr<Camera> camera0_ = nullptr;
 	std::shared_ptr<Camera> camera1_ = nullptr;
 	//スプライト
 	std::shared_ptr<Sprite> sprite_ = nullptr;
-	//3Dオブジェクト
-	std::shared_ptr <Object3d> object3d = nullptr;
-	std::shared_ptr <Object3d> object3d1 = nullptr;
 };
 
