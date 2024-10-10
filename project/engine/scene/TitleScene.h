@@ -39,5 +39,6 @@ private:
 	std::shared_ptr<Camera> camera1_ = nullptr;
 	//スプライト
 	std::shared_ptr<Sprite> sprite_ = nullptr;
+	std::shared_ptr<Object3d> titleObject = nullptr;
 };
 

@@ -64,8 +64,14 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	//テクスチャファイルを読み込んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = StringUtility::ConvertString(filePath);
-	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
-	assert(SUCCEEDED(hr));
+	HRESULT hr;
+	if (filePathW.empty()) {
+		hr = DirectX::LoadFromWICFile(L"Resources/black.png", DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+		assert(SUCCEEDED(hr));
+	} else {
+		hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+		assert(SUCCEEDED(hr));
+	}
 
 	//ミップマップの作成
 	DirectX::ScratchImage mipImages{};

@@ -30,9 +30,10 @@ void CameraManager::UpdateImGui() {
 	ImGui::Begin("CameraManager");
 	ImGui::Text("Camera Count : %d", cameras_.size());
 	ImGui::Separator();
-	for (int i = 0; i < static_cast<int>(cameras_.size()); i++) {
-		if (ImGui::Button(("Camera" + std::to_string(i)).c_str())) {
-			SetActiveCamera(i);
+	for (const auto& [name, camera] : cameras_) {
+		// ボタンを表示し、押されたらアクティブカメラを設定
+		if (ImGui::Button(name.c_str())) {
+			SetActiveCamera(name);
 		}
 	}
 	activeCamera_->UpdateImGui();
@@ -41,23 +42,36 @@ void CameraManager::UpdateImGui() {
 }
 
 void CameraManager::Finalize() {
+
+	cameras_.clear();
 	delete instance_;
 	instance_ = nullptr;
 }
 
-void CameraManager::AddCamera(const Camera& camera) {
-	// カメラを追加
-	cameras_.push_back(std::make_unique<Camera>(camera));
+void CameraManager::AddCamera(std::string name, const Camera& camera) {
+	//生成済みのカメラの検索
+	if (cameras_.contains(name)) {
+		return;
+	}
+
+	// 新しいカメラを追加
+	cameras_.insert(std::make_pair(name, std::make_unique<Camera>(camera)));
 
 	// もしこれが最初のカメラなら、それをアクティブに設定
 	if (cameras_.size() == 1) {
-		activeCamera_ = cameras_.back().get();
+		activeCamera_ = cameras_.find(name)->second.get();
 	}
 }
 
-void CameraManager::SetActiveCamera(int index) {
-	if (index >= 0 && index < static_cast<int>(cameras_.size())) {
-		activeCamera_ = cameras_[index].get();
+void CameraManager::SetActiveCamera(std::string name) {
+
+	auto it = cameras_.find(name);
+	// 指定された名前のカメラが見つかった場合は、それをアクティブに設定
+	if (it != cameras_.end()) {
+		activeCamera_ = it->second.get();
+	} else {
+		// 見つからなかった場合は、最初のカメラをアクティブに設定
+		it = cameras_.begin();
 	}
 }
 

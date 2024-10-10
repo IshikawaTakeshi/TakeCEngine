@@ -1,6 +1,7 @@
 #pragma once
 #include "Transform.h"
 #include "Matrix4x4.h"
+#include <string>
 
 class Camera {
 public:
@@ -43,5 +44,8 @@ private:
 	float nearClip_;
 	//farクリップ距離
 	float farClip_;
+
+	//名前(cameraManager::cameras_のキー)
+	//std::string name_;
 };
 

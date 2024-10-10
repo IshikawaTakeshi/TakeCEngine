@@ -55,7 +55,7 @@ void TakeCFrameWork::Initialize() {
 #endif // DEBUG
 
 	//シーンの生成
-	sceneManager_ = new SceneManager();
+	sceneManager_ = SceneManager::GetInstance();
 
 #pragma endregion
 }
@@ -63,7 +63,7 @@ void TakeCFrameWork::Initialize() {
 void TakeCFrameWork::Finalize() {
 
 	//シーンの開放
-	delete sceneManager_;
+	sceneManager_->Finalize();
 
 	//==========ImGuiの開放==========//
 #ifdef _DEBUG
@@ -115,6 +115,12 @@ void TakeCFrameWork::Update() {
 	ImGui::NewFrame();
 	
 #endif // DEBUG
+
+	//入力の更新
+	input_->Update();
+
+	//シーンの更新
+	sceneManager_->Update();
 }
 
 void TakeCFrameWork::Run() {

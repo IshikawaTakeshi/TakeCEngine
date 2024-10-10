@@ -1,4 +1,6 @@
 #include "GamePlayScene.h"
+#include "TitleScene.h"
+#include "SceneManager.h"
 
 //====================================================================
 //			初期化
@@ -12,13 +14,13 @@ void GamePlayScene::Initialize() {
 	camera0_ = std::make_shared<Camera>();
 	camera0_->SetTranslate({ 0.0f,0.0f,-20.0f });
 	camera0_->SetRotate({ 0.0f,0.0f,0.0f });
-	CameraManager::GetInstance()->AddCamera(*camera0_);
+	CameraManager::GetInstance()->AddCamera("Camera0", *camera0_);
 
 	//Camera1
 	camera1_ = std::make_shared<Camera>();
 	camera1_->SetTranslate({ 5.0f,0.0f,-10.0f });
 	camera1_->SetRotate({ 0.0f,-0.4f,0.0f });
-	CameraManager::GetInstance()->AddCamera(*camera1_);
+	CameraManager::GetInstance()->AddCamera("Camera1", *camera1_);
 
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
@@ -61,27 +63,25 @@ void GamePlayScene::Update() {
 	object3d->UpdateImGui(0);
 	object3d1->UpdateImGui(1);
 
-
 	//オーディオ再生
 	if (Input::GetInstance()->TriggerKey(DIK_A)) {
 		AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), soundData1);
 	}
-	//入力更新
-	Input::GetInstance()->Update();
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
 
-	//カメラの切り替え
-	if (Input::GetInstance()->TriggerKey(DIK_1)) {
-		CameraManager::GetInstance()->SetActiveCamera(0);
-	} else if (Input::GetInstance()->TriggerKey(DIK_2)) {
-		CameraManager::GetInstance()->SetActiveCamera(1);
-	}
-
 	sprite_->Update(); 	//Spriteの更新
 	object3d->Update(); //3dObjectの更新
 	object3d1->Update();
+
+	//シーン遷移
+	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+		//ゲームプレイシーンの生成
+		std::shared_ptr<BaseScene> scece = std::make_shared<TitleScene>();
+		//シーン切り替え依頼
+		SceneManager::GetInstance()->SetNextScene(scece);
+	}
 }
 
 void GamePlayScene::Draw() {
