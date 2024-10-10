@@ -51,10 +51,13 @@ void GamePlayScene::Finalize() {
 	sprite_.reset();    //スプライトの解放
 	object3d.reset();  //3Dオブジェクトの解放
 	object3d1.reset();
-
+	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	AudioManager::GetInstance()->SoundUnload(&soundData1); //音声データ解放
-
 }
+
+//====================================================================
+//			更新処理
+//====================================================================
 
 void GamePlayScene::Update() {
 	//ImGuiの更新
@@ -84,14 +87,16 @@ void GamePlayScene::Update() {
 	}
 }
 
+//====================================================================
+//			描画処理
+//====================================================================
+
 void GamePlayScene::Draw() {
 
 	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
 	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
 
-
 	sprite_->Draw();              //スプライトの描画
 	object3d->Draw();            //3Dオブジェクトの描画
 	object3d1->Draw();           //3Dオブジェクトの描画
-
 }

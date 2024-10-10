@@ -63,6 +63,11 @@ void CameraManager::AddCamera(std::string name, const Camera& camera) {
 	}
 }
 
+void CameraManager::ResetCameras() {
+	cameras_.clear();
+	activeCamera_ = nullptr;
+}
+
 void CameraManager::SetActiveCamera(std::string name) {
 
 	auto it = cameras_.find(name);

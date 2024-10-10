@@ -19,6 +19,12 @@ public:
 	// カメラを追加するメソッド
 	void AddCamera(std::string name, const Camera& camera);
 
+	//カメラの情報のリセット
+	void ResetCameras();
+
+	// アクティブカメラのリセット
+	//void ResetActiveCamera();
+
 	// アクティブなカメラを設定する
 	void SetActiveCamera(std::string name);
 
