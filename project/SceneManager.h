@@ -1,6 +1,7 @@
 #pragma once
-#include "BaseScene.h"
 #include <memory>
+#include "BaseScene.h"
+#include "AbstractSceneFactory.h"
 
 ////////////////////
 ///	シーン管理クラス
@@ -16,7 +17,15 @@ public:
 
 	void Draw();
 
-	void SetNextScene(std::shared_ptr<BaseScene> nextScene) { nextScene_ = nextScene; }
+	void ChangeScene(const std::string& sceneName);
+
+	void ChangeToNextScene();
+
+	//========================================================================
+	//	アクセッサ
+	//========================================================================
+
+	void SetSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; }
 
 private:
 
@@ -30,5 +39,6 @@ private:
 	static SceneManager* instance_;
 	std::shared_ptr<BaseScene> currentScene_ = nullptr;
 	std::shared_ptr<BaseScene> nextScene_ = nullptr;
+	//シーンファクトリー(借りてくる)
+	AbstractSceneFactory* sceneFactory_ = nullptr;
 };
-

@@ -14,9 +14,6 @@
 class GamePlayScene : public BaseScene {
 public:
 
-	GamePlayScene() = default;
-	~GamePlayScene() = default;
-
 	//初期化
 	void Initialize() override;
 

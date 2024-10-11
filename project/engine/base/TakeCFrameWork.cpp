@@ -2,7 +2,6 @@
 
 void TakeCFrameWork::Initialize() {
 
-
 	//タイトルバーの名前の入力
 	winApp_ = new WinApp();
 	winApp_->Initialize(L"CG2_08_01");
@@ -54,16 +53,12 @@ void TakeCFrameWork::Initialize() {
 	);
 #endif // DEBUG
 
-	//シーンの生成
 	sceneManager_ = SceneManager::GetInstance();
 
 #pragma endregion
 }
 
 void TakeCFrameWork::Finalize() {
-
-	//シーンの開放
-	sceneManager_->Finalize();
 
 	//==========ImGuiの開放==========//
 #ifdef _DEBUG

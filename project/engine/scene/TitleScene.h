@@ -14,8 +14,6 @@
 class TitleScene : public BaseScene {
 public:
 
-	TitleScene() = default;
-	~TitleScene() = default;
 
 	//初期化
 	void Initialize() override;

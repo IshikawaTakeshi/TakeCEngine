@@ -53,10 +53,8 @@ void TitleScene::Update() {
 
 	//シーン遷移
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-		//ゲームプレイシーンの生成
-		std::shared_ptr<BaseScene> scece = std::make_shared<GamePlayScene>();
 		//シーン切り替え依頼
-		SceneManager::GetInstance()->SetNextScene(scece);
+		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 	}
 }
 

@@ -1,4 +1,5 @@
 #include "MyGame.h"
+#include "SceneFactory.h"
 
 //====================================================================
 //			初期化
@@ -9,8 +10,11 @@ void MyGame::Initialize() {
 	//FrameWorkの初期化
 	TakeCFrameWork::Initialize();
 
-	currentScene_ = std::make_shared<TitleScene>();
-	sceneManager_->SetNextScene(currentScene_);
+	sceneFactory_ = new SceneFactory();
+	//シーンマネージャーのセット
+	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_);
+	//最初のシーンを設定
+	SceneManager::GetInstance()->ChangeScene("TITLE");
 }
 
 //====================================================================
@@ -18,8 +22,8 @@ void MyGame::Initialize() {
 //====================================================================
 
 void MyGame::Finalize() {
-
-	TakeCFrameWork::Finalize();      //FrameWorkの終了処理
+	sceneManager_->Finalize();  //シーンの開放
+	TakeCFrameWork::Finalize(); //FrameWorkの終了処理
 }
 
 //====================================================================

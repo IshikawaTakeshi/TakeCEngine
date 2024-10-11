@@ -1,7 +1,5 @@
 #pragma once
 #include "TakeCFrameWork.h"
-#include "GamePlayScene.h"
-#include "TitleScene.h"
 
 class MyGame : public TakeCFrameWork {
 public:

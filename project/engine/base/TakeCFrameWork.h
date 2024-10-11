@@ -1,5 +1,6 @@
 #pragma once
 #include "EngineIncludes.h"
+#include "AbstractSceneFactory.h"
 
 class TakeCFrameWork {
 public:
@@ -30,6 +31,7 @@ protected:
 	SpriteCommon* spriteCommon_ = nullptr;
 	Object3dCommon* object3dCommon_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
+	AbstractSceneFactory* sceneFactory_ = nullptr;
 
 	//終了フラグ
 	bool isEnd_ = false;
