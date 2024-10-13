@@ -61,7 +61,7 @@ void GamePlayScene::Finalize() {
 
 void GamePlayScene::Update() {
 	//ImGuiの更新
-#ifdef DEBUG
+#ifdef _DEBUG
 	CameraManager::GetInstance()->UpdateImGui();
 	sprite_->UpdateImGui(0);
 	object3d->UpdateImGui(0);

@@ -9,7 +9,7 @@ public:
 	~Camera();
 	void Update();
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	void UpdateImGui();
 #endif // DEBUG
 
