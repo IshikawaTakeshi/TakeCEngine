@@ -41,10 +41,14 @@ void TitleScene::Finalize() {
 }
 
 void TitleScene::Update() {
+#ifdef DEBUG
 	//ImGuiの更新
 	CameraManager::GetInstance()->UpdateImGui();
 	sprite_->UpdateImGui(0);
 	titleObject->UpdateImGui(0);
+#endif // DEBUG
+
+
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
 

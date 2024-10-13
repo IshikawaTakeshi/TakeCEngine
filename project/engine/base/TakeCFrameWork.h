@@ -8,7 +8,7 @@ public:
 	//デストラクタ
 	virtual ~TakeCFrameWork() = default;
 	//初期化
-	virtual void Initialize();
+	virtual void Initialize(const std::wstring& titleName);
 	//終了処理
 	virtual void Finalize();
 	//更新処理
@@ -19,7 +19,7 @@ public:
 	virtual bool IsEndRequest() const { return isEnd_; }
 
 	//実行処理
-	void Run();
+	void Run(const std::wstring& titleName);
 
 protected:
 

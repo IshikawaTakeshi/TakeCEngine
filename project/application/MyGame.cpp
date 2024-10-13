@@ -5,10 +5,10 @@
 //			初期化
 //====================================================================
 
-void MyGame::Initialize() {
+void MyGame::Initialize(const std::wstring& titleName) {
 
 	//FrameWorkの初期化
-	TakeCFrameWork::Initialize();
+	TakeCFrameWork::Initialize(titleName);
 
 	sceneFactory_ = new SceneFactory();
 	//シーンマネージャーのセット

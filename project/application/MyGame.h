@@ -8,7 +8,7 @@ public:
 	~MyGame() = default;
 
 	//初期化
-	void Initialize() override;
+	void Initialize(const std::wstring& titleName) override;
 
 	//終了処理
 	void Finalize() override;

@@ -8,7 +8,12 @@ public:
 	Camera();
 	~Camera();
 	void Update();
+
+#ifdef DEBUG
 	void UpdateImGui();
+#endif // DEBUG
+
+	
 
 public: //getter
 	

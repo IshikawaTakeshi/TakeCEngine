@@ -1,10 +1,10 @@
 #include "TakeCFrameWork.h"
 
-void TakeCFrameWork::Initialize() {
+void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//タイトルバーの名前の入力
 	winApp_ = new WinApp();
-	winApp_->Initialize(L"CG2_08_01");
+	winApp_->Initialize(titleName.c_str());
 
 	////DirectX初期化
 	directXCommon_ = new DirectXCommon();
@@ -118,9 +118,9 @@ void TakeCFrameWork::Update() {
 	sceneManager_->Update();
 }
 
-void TakeCFrameWork::Run() {
+void TakeCFrameWork::Run(const std::wstring& titleName) {
 	//ゲームクラスの生成と初期化
-	Initialize();
+	Initialize(titleName);
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (true) {

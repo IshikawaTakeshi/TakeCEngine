@@ -61,10 +61,14 @@ void GamePlayScene::Finalize() {
 
 void GamePlayScene::Update() {
 	//ImGuiの更新
+#ifdef DEBUG
 	CameraManager::GetInstance()->UpdateImGui();
 	sprite_->UpdateImGui(0);
 	object3d->UpdateImGui(0);
 	object3d1->UpdateImGui(1);
+
+#endif // DEBUG
+
 
 	//オーディオ再生
 	if (Input::GetInstance()->TriggerKey(DIK_A)) {
