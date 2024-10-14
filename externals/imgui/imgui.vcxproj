@@ -19,22 +19,26 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\project\externals\imgui\imconfig.h" />
-    <ClInclude Include="..\..\project\externals\imgui\imgui.h" />
-    <ClInclude Include="..\..\project\externals\imgui\imgui_internal.h" />
-    <ClInclude Include="..\..\project\externals\imgui\imstb_rectpack.h" />
-    <ClInclude Include="..\..\project\externals\imgui\imstb_textedit.h" />
-    <ClInclude Include="..\..\project\externals\imgui\imstb_truetype.h" />
+    <ClCompile Include="imgui.cpp" />
+    <ClCompile Include="imgui_demo.cpp" />
+    <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui_impl_dx12.cpp" />
+    <ClCompile Include="imgui_impl_win32.cpp" />
+    <ClCompile Include="imgui_tables.cpp" />
+    <ClCompile Include="imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\project\externals\imgui\imgui.cpp" />
-    <ClCompile Include="..\..\project\externals\imgui\imgui_demo.cpp" />
-    <ClCompile Include="..\..\project\externals\imgui\imgui_draw.cpp" />
-    <ClCompile Include="..\..\project\externals\imgui\imgui_tables.cpp" />
-    <ClCompile Include="..\..\project\externals\imgui\imgui_widgets.cpp" />
+    <ClInclude Include="imconfig.h" />
+    <ClInclude Include="imgui.h" />
+    <ClInclude Include="imgui_impl_dx12.h" />
+    <ClInclude Include="imgui_impl_win32.h" />
+    <ClInclude Include="imgui_internal.h" />
+    <ClInclude Include="imstb_rectpack.h" />
+    <ClInclude Include="imstb_textedit.h" />
+    <ClInclude Include="imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\project\externals\imgui\LICENSE.txt" />
+    <Text Include="LICENSE.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

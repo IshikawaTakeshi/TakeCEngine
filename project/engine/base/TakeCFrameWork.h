@@ -32,7 +32,8 @@ protected:
 	Object3dCommon* object3dCommon_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
 	AbstractSceneFactory* sceneFactory_ = nullptr;
-
+	ImGuiManager* imguiManager_ = nullptr;
+	
 	//終了フラグ
 	bool isEnd_ = false;
 };

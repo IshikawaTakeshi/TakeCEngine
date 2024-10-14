@@ -1,5 +1,6 @@
 #include "TakeCFrameWork.h"
 
+
 void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//タイトルバーの名前の入力
@@ -36,37 +37,18 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//TextureManager
 	TextureManager::GetInstance()->Initialize(directXCommon_, srvManager_);
 
-
-
-#pragma region ImGui初期化
 #ifdef _DEBUG
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(winApp_->GetHwnd());
-	ImGui_ImplDX12_Init(directXCommon_->GetDevice(),
-		directXCommon_->GetBufferCount(),
-		directXCommon_->GetRtvFormat(),
-		srvManager_->GetSrvHeap(),
-		srvManager_->GetSrvHeap()->GetCPUDescriptorHandleForHeapStart(),
-		srvManager_->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart()
-	);
-#endif // DEBUG
-
+	imguiManager_ = new ImGuiManager();
+	imguiManager_->Initialize(winApp_, directXCommon_,srvManager_);
+#endif
 	sceneManager_ = SceneManager::GetInstance();
 
-#pragma endregion
 }
 
 void TakeCFrameWork::Finalize() {
-
-	//==========ImGuiの開放==========//
 #ifdef _DEBUG
-	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-#endif // DEBUG
-
+	imguiManager_->Finalize();
+#endif
 	//テクスチャマネージャの開放
 	TextureManager::GetInstance()->Finalize();
 	//ModelManagerの開放
@@ -101,21 +83,19 @@ void TakeCFrameWork::Update() {
 		isEnd_ = true;
 	}
 
-	//========================== 更新処理　==========================//
-
 #ifdef _DEBUG
-		//ImGui受付開始
-	ImGui_ImplDX12_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-	
-#endif // DEBUG
+	imguiManager_->Begin();
+#endif
 
 	//入力の更新
 	input_->Update();
 
 	//シーンの更新
 	sceneManager_->Update();
+
+#ifdef DEBUG
+	imguiManager_->End();
+#endif // DEBUG
 }
 
 void TakeCFrameWork::Run(const std::wstring& titleName) {

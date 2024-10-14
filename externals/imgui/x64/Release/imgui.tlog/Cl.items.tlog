@@ -1,5 +1,7 @@
-C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\project\externals\imgui\imgui.cpp;C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\x64\Release\imgui.obj
-C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\project\externals\imgui\imgui_demo.cpp;C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\x64\Release\imgui_demo.obj
-C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\project\externals\imgui\imgui_draw.cpp;C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\x64\Release\imgui_draw.obj
-C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\project\externals\imgui\imgui_tables.cpp;C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\x64\Release\imgui_tables.obj
-C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\project\externals\imgui\imgui_widgets.cpp;C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\x64\Release\imgui_widgets.obj
+C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\imgui.cpp;C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\x64\Release\imgui.obj
+C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\imgui_demo.cpp;C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\x64\Release\imgui_demo.obj
+C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\imgui_draw.cpp;C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\x64\Release\imgui_draw.obj
+C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\imgui_impl_dx12.cpp;C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\x64\Release\imgui_impl_dx12.obj
+C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\imgui_impl_win32.cpp;C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\x64\Release\imgui_impl_win32.obj
+C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\imgui_tables.cpp;C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\x64\Release\imgui_tables.obj
+C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\imgui_widgets.cpp;C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\externals\imgui\x64\Release\imgui_widgets.obj

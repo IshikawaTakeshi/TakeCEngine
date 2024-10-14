@@ -79,56 +79,37 @@ public:
 	///			Getter
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	/// <summary>
 	/// デバイスの取得
-	/// </summary>
-	/// <returns>デバイス</returns>
 	ID3D12Device* GetDevice() const { return device_.Get(); }
 
-	/// <summary>
 	/// 描画コマンドリストの取得
-	/// </summary>
-	/// <returns>描画コマンドリスト</returns>
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 
-	/// <summary>
 	/// dsvHeapの取得
-	/// </summary>
 	ID3D12DescriptorHeap* GetDsvHeap() { return dsvHeap_.Get(); }
 
-	/// <summary>
 	/// rtvHeapの取得
-	/// </summary>
 	ID3D12DescriptorHeap* GetRtvHeap() { return rtvHeap_.Get(); }
 
-	/// <summary>
 	/// BufferCountの取得
-	/// </summary>
-	/// <returns></returns>
 	UINT GetBufferCount() { return swapChainDesc_.BufferCount; }
 
-	/// <summary>
 	/// rtvDescの取得
-	/// </summary>
 	DXGI_FORMAT GetRtvFormat() { return rtvDesc_.Format; }
 
-	/// <summary>
 	/// Dxcの取得
-	/// </summary>
-	/// <returns></returns>
 	DXC* GetDXC() { return dxc_; }
 
+	/// RTVのデスクリプタサイズ取得
 	uint32_t GetDescriptorSizeRTV() { return descriptorSizeRTV_; }
+
+	/// DSVのデスクリプタサイズ取得
 	uint32_t GetDescriptorSizeDSV() { return descriptorSizeDSV_; }
 
-	/// <summary>
 	/// CPUディスクリプタハンドルの取得
-	/// </summary>
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
 
-	/// <summary>
 	/// GPUディスクリプタハンドルの取得
-	/// </summary>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
 
 

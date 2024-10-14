@@ -9,7 +9,6 @@
 #include "DirectXCommon.h"
 #include "Input.h"
 #include "TextureManager.h"
-
 #include "Audio.h"
 #include "Camera.h"
 #include "CameraManager.h"
@@ -27,15 +26,9 @@
 #include "Triangle.h"
 #include "TakeCFrameWork.h"
 
+//DirectXTex
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
 
-#pragma region imgui
-#ifdef _DEBUG
-#include "externals/imgui/imgui.h"
-#include "externals/imgui/imgui_impl_dx12.h"
-#include "externals/imgui/imgui_impl_win32.h"
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
-	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-#endif // DEBUG
-#pragma endregion
+//imgui
+#include "ImGuiManager.h"
