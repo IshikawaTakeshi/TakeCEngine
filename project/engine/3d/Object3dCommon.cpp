@@ -25,6 +25,10 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	rootSignature_ = pso_->GetRootSignature();
 }
 
+void Object3dCommon::UpdateImGui() {
+	pso_->UpdateImGui();
+}
+
 void Object3dCommon::Finalize() {
 	rootSignature_.Reset();
 	dxCommon_ = nullptr;

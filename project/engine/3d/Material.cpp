@@ -17,7 +17,7 @@
 Material::~Material() {
 
 	materialResource_.Reset();
-	
+
 }
 
 void Material::InitializeTexture(DirectXCommon* dxCommon, const std::string& filePath) {
@@ -28,7 +28,7 @@ void Material::InitializeTexture(DirectXCommon* dxCommon, const std::string& fil
 	//テクスチャ初期化
 	TextureManager::GetInstance()->LoadTexture(filePath);
 
-	
+
 	//uvTransform
 	uvTransform_ = {
 		{1.0f,1.0f,1.0f},
@@ -38,23 +38,21 @@ void Material::InitializeTexture(DirectXCommon* dxCommon, const std::string& fil
 }
 
 void Material::UpdateMaterialImGui() {
-
-
 #ifdef _DEBUG
 	//ImGuiの更新
-	ImGui::Text("Material");
-	ImGui::ColorEdit4("Color", &materialData_->color.x);
-	ImGui::Text("uvTransform");
-	ImGui::DragFloat2("UVTranslate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
-	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
-	Matrix4x4 uvTransformMatrix = MatrixMath::MakeScaleMatrix(uvTransform_.scale);
-	uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeRotateZMatrix(uvTransform_.rotate.z));
-	uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeTranslateMatrix(uvTransform_.translate));
-	materialData_->uvTransform = uvTransformMatrix;
-
+	if (ImGui::TreeNode("Material")) {
+		ImGui::ColorEdit4("Color", &materialData_->color.x);
+		ImGui::Text("uvTransform");
+		ImGui::DragFloat2("UVTranslate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
+		ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
+		ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
+		Matrix4x4 uvTransformMatrix = MatrixMath::MakeScaleMatrix(uvTransform_.scale);
+		uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeRotateZMatrix(uvTransform_.rotate.z));
+		uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeTranslateMatrix(uvTransform_.translate));
+		materialData_->uvTransform = uvTransformMatrix;
+		ImGui::TreePop();
+	}
 #endif // DEBUG
-
 }
 
 void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> device) {

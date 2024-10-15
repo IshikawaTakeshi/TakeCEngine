@@ -1,6 +1,5 @@
 #include "TakeCFrameWork.h"
 
-
 void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//タイトルバーの名前の入力
@@ -93,7 +92,7 @@ void TakeCFrameWork::Update() {
 	//シーンの更新
 	sceneManager_->Update();
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	imguiManager_->End();
 #endif // DEBUG
 }

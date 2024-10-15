@@ -20,6 +20,8 @@ public:
 	/// </summary>
 	void Initialize(DirectXCommon* directXCommon);
 
+	void UpdateImGui();
+
 	/// <summary>
 	/// 開放処理
 	/// </summary>

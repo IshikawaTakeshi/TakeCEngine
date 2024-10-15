@@ -2,9 +2,8 @@
 #include "Logger.h"
 #include "DirectXCommon.h"
 #include "DirectXShaderCompiler.h"
+#include "ImGuiManager.h"
 #include <cassert>
-
-#pragma region PSO
 
 PSO::~PSO() {
 
@@ -18,7 +17,9 @@ PSO::~PSO() {
 	graphicPipelineState_.Reset();
 }
 
-
+//=============================================================================
+// RootSignatureの生成
+//=============================================================================
 
 void PSO::CreateRootSignature(ID3D12Device* device) {
 
@@ -87,6 +88,10 @@ void PSO::CreateRootSignature(ID3D12Device* device) {
 	assert(SUCCEEDED(result));
 }
 
+//=============================================================================
+// InputLayoutの生成
+//=============================================================================
+
 void PSO::CreateInputLayout() {
 
 	//position
@@ -109,22 +114,44 @@ void PSO::CreateInputLayout() {
 	inputLayoutDesc_.NumElements = _countof(inputElementDescs_);
 }
 
+//=============================================================================
+// BlendStateの生成
+//=============================================================================
+
 void PSO::CreateBlendState() {
-	blendDesc_.RenderTarget[0].RenderTargetWriteMask =
-		D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc_.RenderTarget[0].BlendEnable = true;
+	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 }
+
+//=============================================================================
+// RasterizerStateの生成
+//=============================================================================
 
 void PSO::CreateRasterizerState(D3D12_CULL_MODE cullMode) {
 	rasterizerDesc_.CullMode = cullMode;
 	rasterizerDesc_.FillMode = D3D12_FILL_MODE_SOLID;
 }
 
+//=============================================================================
+// PSOの生成
+//=============================================================================
+
 void PSO::CreatePSO(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode) {
 
 	HRESULT result = S_FALSE;
 
+	device_ = device;
+
+	itemCurrentIdx = 0;
+
 	/// ルートシグネチャ初期化
-	CreateRootSignature(device);
+	CreateRootSignature(device_);
 	/// インプットレイアウト初期化
 	CreateInputLayout();
 	/// ブレンドステート初期化
@@ -186,9 +213,82 @@ void PSO::CreatePSO(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode) {
 	graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	//実際に生成
 	graphicPipelineState_ = nullptr;
-	result = device->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
+	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
 		IID_PPV_ARGS(&graphicPipelineState_));
 	assert(SUCCEEDED(result));
 }
 
-#pragma endregion
+void PSO::UpdateImGui() {
+	ImGui::Text("BlendState");
+	UpdateImGuiCombo();
+}
+
+bool PSO::UpdateImGuiCombo() {
+
+	//コンボボックスの項目
+	std::vector<std::string> items = { "Add", "Subtract","Multiply","Screen" };
+	//現在の項目
+	std::string& currentItem = items[itemCurrentIdx];
+	//変更があったかどうか
+	bool changed = false;
+
+	//コンボボックスの表示
+	if (ImGui::BeginCombo("Lighting", currentItem.c_str())) {
+		for (int n = 0; n < items.size(); n++) {
+			const bool is_selected = (currentItem == items[n]);
+			if (ImGui::Selectable(items[n].c_str(), is_selected)) {
+				currentItem = items[itemCurrentIdx];
+				itemCurrentIdx = n;
+				changed = true;
+			}
+			// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+			if (is_selected) {
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+
+		currentItem = items[itemCurrentIdx];
+		ImGui::EndCombo();
+	}
+
+	//変更があった場合
+	if (changed) {
+
+		HRESULT result = S_FALSE;
+
+		switch (itemCurrentIdx) {
+		case 0: // Add
+			blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+			blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+			blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+			break;
+
+		case 1: // Subtract
+			blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+			blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_SUBTRACT;
+			blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+
+			break;
+
+		case 2: // Multiply
+			blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_ZERO;
+			blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+			blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_COLOR;
+			break;
+
+		case 3: // Screen
+			blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_INV_DEST_COLOR;
+			blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+			blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+			break;
+		}
+
+		//PSOの再生成をする
+		graphicsPipelineStateDesc_.BlendState = blendDesc_; // blendState
+		result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
+			IID_PPV_ARGS(&graphicPipelineState_));
+		assert(SUCCEEDED(result));
+	}
+
+	return changed;
+}

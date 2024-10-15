@@ -3,6 +3,7 @@
 #include <d3d12.h>
 #include <dxcapi.h>
 #include <wrl.h>
+#include <cstdint>
 
 class DXC;
 class PSO {
@@ -59,6 +60,10 @@ public:
 	/// </summary>
 	void CreatePSO(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode);
 
+	void UpdateImGui();
+
+	bool UpdateImGuiCombo();
+
 public:
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -108,7 +113,9 @@ private:
 	//graphicPipelineState
 	ComPtr<ID3D12PipelineState> graphicPipelineState_;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc_{};
-
-
+	//BlendMode
+	uint32_t itemCurrentIdx = 0;
+	//device
+	ID3D12Device* device_ = nullptr;
 };
 

@@ -8,24 +8,14 @@
 #include "Model.h"
 #include "Camera.h"
 #include "CameraManager.h"
-
+#include "ImGuiManager.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>
 
-#pragma region imgui
-#ifdef _DEBUG
-#include "externals/imgui/imgui.h"
-#include "externals/imgui/imgui_impl_dx12.h"
-#include "externals/imgui/imgui_impl_win32.h"
-#endif 
-#pragma endregion
-
 Object3d::~Object3d() {
 	wvpResource_.Reset();
 	directionalLightResource_.Reset();
-	
-
 }
 
 void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
@@ -95,6 +85,11 @@ void Object3d::UpdateImGui(int id) {
 		ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 		model_->GetMesh()->GetMaterial()->UpdateMaterialImGui();
+		ImGui::Text("Lighting");
+		ImGui::ColorEdit4("Color", &directionalLightData_->color_.x);
+		ImGui::DragFloat3("Direction", &directionalLightData_->direction_.x, 0.01f);
+		ImGui::DragFloat("Intensity", &directionalLightData_->intensity_, 0.01f);
+		object3dCommon_->UpdateImGui();
 		ImGui::TreePop();
 	}
 	ImGui::End();
