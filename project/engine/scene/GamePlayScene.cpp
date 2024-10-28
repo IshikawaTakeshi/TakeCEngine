@@ -33,14 +33,15 @@ void GamePlayScene::Initialize() {
 	sprite_ = std::make_shared<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/uvChecker.png");
 
-	//3dObject
+	//Object3d
 	object3d = std::make_shared<Object3d>();
 	object3d->Initialize(Object3dCommon::GetInstance(), "axis.obj");
-	object3d->SetScale({ 0.5f,0.5f,0.5f });
 
-	object3d1 = std::make_shared<Object3d>();
-	object3d1->Initialize(Object3dCommon::GetInstance(), "plane.obj");
-	object3d1->SetScale({ 0.5f,0.5f,0.5f });
+	//Particle3d
+	particle3d_ = std::make_unique<Particle3d>();
+	particle3d_->SetDirectXCommon(Object3dCommon::GetInstance()->GetDirectXCommon());
+	particle3d_->Initialize("Resources/plane.obj");
+	particle3d_->SetCamera(CameraManager::GetInstance()->GetActiveCamera());
 }
 
 //====================================================================
@@ -49,8 +50,7 @@ void GamePlayScene::Initialize() {
 
 void GamePlayScene::Finalize() {
 	sprite_.reset();    //スプライトの解放
-	object3d.reset();  //3Dオブジェクトの解放
-	object3d1.reset();
+
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	AudioManager::GetInstance()->SoundUnload(&soundData1); //音声データ解放
 }
@@ -64,8 +64,7 @@ void GamePlayScene::Update() {
 #ifdef _DEBUG
 	CameraManager::GetInstance()->UpdateImGui();
 	sprite_->UpdateImGui(0);
-	object3d->UpdateImGui(0);
-	object3d1->UpdateImGui(1);
+
 
 #endif // DEBUG
 
@@ -79,8 +78,8 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->Update();
 
 	sprite_->Update(); 	//Spriteの更新
-	object3d->Update(); //3dObjectの更新
-	object3d1->Update();
+	object3d->Update(); //3Dオブジェクトの更新
+	particle3d_->Update(); //パーティクルの更新
 
 	//シーン遷移
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
@@ -99,6 +98,6 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
 
 	sprite_->Draw();              //スプライトの描画
-	object3d->Draw();            //3Dオブジェクトの描画
-	object3d1->Draw();           //3Dオブジェクトの描画
+	object3d->Draw();             //3Dオブジェクトの描画
+	particle3d_->Draw();          //パーティクルの描画
 }

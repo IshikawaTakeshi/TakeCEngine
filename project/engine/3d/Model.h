@@ -33,6 +33,8 @@ public:
 	/// </summary>
 	void Draw();
 
+	void DrawForParticle();
+
 	/// <summary>
 	/// objファイルを読む関数
 	/// </summary>
@@ -47,6 +49,8 @@ public: //ゲッター
 
 	Mesh* GetMesh() { return mesh_; }
 
+	uint32_t GetInstanceCount() const { return instanceCount_; }
+
 private:
 
 	ModelCommon* modelCommon_ = nullptr;
@@ -56,5 +60,8 @@ private:
 
 	//構築するModelData
 	ModelData modelData_;
+
+	//描画するインスタンスの個数
+	uint32_t instanceCount_ = 10;
 };
 

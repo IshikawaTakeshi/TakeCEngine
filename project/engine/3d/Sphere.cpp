@@ -48,10 +48,10 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(TransformMatrix));
 
 	//TransformationMatrix用
-	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformMatrixData_));
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
 
 	//単位行列を書き込んでおく
-	transformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
+	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
 
 	//======================= DirectionalLightResource ===========================//
@@ -86,8 +86,8 @@ void Sphere::Update() {
 	//wvpの更新
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	transformMatrixData_->WVP = worldViewProjectionMatrix_;
-	transformMatrixData_->World = worldMatrix_;
+	TransformMatrixData_->WVP = worldViewProjectionMatrix_;
+	TransformMatrixData_->World = worldMatrix_;
 
 
 #ifdef _DEBUG

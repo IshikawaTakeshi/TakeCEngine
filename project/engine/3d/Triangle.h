@@ -90,7 +90,7 @@ private:
 	//頂点データ
 	VertexData* vertexData_ = nullptr;
 	//TransformationMatrix用の頂点データ
-	Matrix4x4* transformMatrixData_ = nullptr;
+	Matrix4x4* TransformMatrixData_ = nullptr;
 
 	//マテリアルリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
