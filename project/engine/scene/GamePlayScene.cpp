@@ -34,13 +34,12 @@ void GamePlayScene::Initialize() {
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/uvChecker.png");
 
 	//Object3d
-	object3d = std::make_shared<Object3d>();
-	object3d->Initialize(Object3dCommon::GetInstance(), "axis.obj");
+	//object3d = std::make_shared<Object3d>();
+	//object3d->Initialize(Object3dCommon::GetInstance(), "axis.obj");
 
 	//Particle3d
 	particle3d_ = std::make_unique<Particle3d>();
-	particle3d_->SetDirectXCommon(Object3dCommon::GetInstance()->GetDirectXCommon());
-	particle3d_->Initialize("Resources/plane.obj");
+	particle3d_->Initialize("plane.obj");
 	particle3d_->SetCamera(CameraManager::GetInstance()->GetActiveCamera());
 }
 
@@ -64,7 +63,7 @@ void GamePlayScene::Update() {
 #ifdef _DEBUG
 	CameraManager::GetInstance()->UpdateImGui();
 	sprite_->UpdateImGui(0);
-
+	particle3d_->UpdateImGui();
 
 #endif // DEBUG
 
@@ -78,7 +77,7 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->Update();
 
 	sprite_->Update(); 	//Spriteの更新
-	object3d->Update(); //3Dオブジェクトの更新
+	//object3d->Update(); //3Dオブジェクトの更新
 	particle3d_->Update(); //パーティクルの更新
 
 	//シーン遷移
@@ -98,6 +97,6 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
 
 	sprite_->Draw();              //スプライトの描画
-	object3d->Draw();             //3Dオブジェクトの描画
+	//object3d->Draw();             //3Dオブジェクトの描画
 	particle3d_->Draw();          //パーティクルの描画
 }

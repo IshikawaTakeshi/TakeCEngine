@@ -6,11 +6,11 @@ struct Material {
 	float4x4 uvTransform;
 };
 
-struct DirectionalLight {
-	float4 color; //ライトのカラー	
-	float3 direction; //ライトの向き
-	float intensity; //輝度
-};
+//struct DirectionalLight {
+//	float4 color; //ライトのカラー	
+//	float3 direction; //ライトの向き
+//	float intensity; //輝度
+//};
 
 //マテリアル
 ConstantBuffer<Material> gMaterial : register(b0);

@@ -45,6 +45,9 @@ private:
 
 private:
 
+	//SRVマネージャ
+	SrvManager* srvManager_ = nullptr;
+
 	//インスタンス
 	static ModelManager* instance_;
 

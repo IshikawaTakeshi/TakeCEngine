@@ -20,18 +20,20 @@ struct VertexData {
 	Vector3 normal;
 };
 
+//ディレクショナルライトのデータ
 struct DirectionalLightData {
 	Vector4 color_; //ライトの色
 	Vector3 direction_; //ライトの向き
 	float intensity_; //輝度
 };
 
-
+//モデル1個分のマテリアルデータ
 struct ModelMaterialData {
 
 	std::string textureFilePath;
 };
 
+//モデル1個分のデータ
 struct ModelData {
 
 	std::vector<VertexData> vertices;

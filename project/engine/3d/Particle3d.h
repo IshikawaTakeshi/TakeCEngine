@@ -2,6 +2,7 @@
 #include "ResourceDataStructure.h"
 #include "Transform.h"
 #include "TransformMatrix.h"
+#include "DirectXCommon.h"
 #include <d3d12.h>
 #include <wrl.h>
 
@@ -9,6 +10,7 @@ class DirectXCommon;
 class Camera;
 class Model;
 class PSO;
+class SrvManager;
 class Particle3d {
 public:
 
@@ -31,7 +33,7 @@ public:
 	void Update();
 
 #ifdef _DEBUG
-	//void UpdateImGui(int id);
+	void UpdateImGui();
 #endif // _DEBUG
 
 	/// <summary>
@@ -49,6 +51,8 @@ public: //setter
 
 
 private: // privateメンバ変数
+
+	SrvManager* srvManager_ = nullptr;
 
 	//DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
@@ -76,6 +80,8 @@ private: // privateメンバ変数
 	//Camera
 	Camera* camera_ = nullptr;
 
-
+	ComPtr<ID3D12Resource> instancingResource_;
+	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU; //CPUディスクリプタハンドル
+	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU; //GPUディスクリプタハンドル
 };
 

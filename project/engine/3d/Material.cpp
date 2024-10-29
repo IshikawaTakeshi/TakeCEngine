@@ -28,7 +28,6 @@ void Material::InitializeTexture(DirectXCommon* dxCommon, const std::string& fil
 	//テクスチャ初期化
 	TextureManager::GetInstance()->LoadTexture(filePath);
 
-
 	//uvTransform
 	uvTransform_ = {
 		{1.0f,1.0f,1.0f},

@@ -6,6 +6,7 @@
 #include "SrvManager.h"
 #include "TextureManager.h"
 #include "ModelCommon.h"
+#include "SrvManager.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>
@@ -57,8 +58,8 @@ void Model::DrawForParticle() {
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
+	//SRVのDescriptorTableの先頭を設定
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, modelCommon_->GetSrvManager()->Allocate() + 1);
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
 }

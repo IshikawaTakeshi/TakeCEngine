@@ -1,7 +1,7 @@
 #include "TextureManager.h"
 #include "SrvManager.h"
 #include "StringUtility.h"
-
+#include "TransformMatrix.h"
 #include <cassert>
 
 TextureManager* TextureManager::instance_ = nullptr;
