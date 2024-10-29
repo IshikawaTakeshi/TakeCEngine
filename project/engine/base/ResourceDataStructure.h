@@ -30,7 +30,8 @@ struct DirectionalLightData {
 //モデル1個分のマテリアルデータ
 struct ModelMaterialData {
 
-	std::string textureFilePath;
+	std::string textureFilePath; //テクスチャファイルのパス
+	uint32_t srvIndex; //テクスチャのインデックス
 };
 
 //モデル1個分のデータ

@@ -47,15 +47,8 @@ public: //setter
 
 	void SetModel(const std::string& filePath);
 	void SetCamera(Camera* camera) { camera_ = camera; }
-	void SetDirectXCommon(DirectXCommon* dxCommon) { dxCommon_ = dxCommon; }
-
 
 private: // privateメンバ変数
-
-	SrvManager* srvManager_ = nullptr;
-
-	//DirectXCommon
-	DirectXCommon* dxCommon_ = nullptr;
 
 	//RootSignature
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;

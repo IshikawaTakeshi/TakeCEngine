@@ -8,37 +8,36 @@
 #include "ImGuiManager.h"
 #include "CameraManager.h"
 #include "SrvManager.h"
-
+#include "ModelCommon.h"
 
 Particle3d::~Particle3d() {}
 
 void Particle3d::Initialize(const std::string& filePath) {
 
-	////DirectXCommonの取得
-	//dxCommon_ = dxCommon;
-
-	////srvManagerの取得
-	//srvManager_ = srvManager;
-
-	//PSO生成
-	pso_ = new PSO();
-	pso_->CreatePSOForParticle(dxCommon_->GetDevice(), dxCommon_->GetDXC(), D3D12_CULL_MODE_NONE);
-	//ルートシグネチャ取得
-	rootSignature_ = pso_->GetRootSignature();
-
 	//モデルの読み込み
 	SetModel(filePath);
 
-	////SRVの生成
-	//srvManager_->CreateSRVforStructuredBuffer(
-	//	10,
-	//	sizeof(TransformMatrix),
-	//	instancingResource_.Get(),
-	//	srvManager_->Allocate() + 1
-	//);
+	//PSO生成
+	pso_ = new PSO();
+	pso_->CreatePSOForParticle(
+		model_->GetModelCommon()->GetDirectXCommon()->GetDevice(),
+		model_->GetModelCommon()->GetDirectXCommon()->GetDXC(),
+		D3D12_CULL_MODE_NONE);
+	//ルートシグネチャ取得
+	rootSignature_ = pso_->GetRootSignature();
+
+	//SRVの生成
+	model_->GetModelCommon()->GetSrvManager()->CreateSRVforStructuredBuffer(
+		10,
+		sizeof(TransformMatrix),
+		instancingResource_.Get(),
+		model_->GetModelCommon()->GetSrvManager()->Allocate() + 1
+	);
+
+
 
 	//TransformationMatrix用のResource生成
-	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix) * kNumInstance_);
+	wvpResource_ = DirectXCommon::CreateBufferResource(model_->GetModelCommon()->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix) * kNumInstance_);
 	//TransformationMatrix用
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 	//単位行列を書き込んでおく
@@ -89,8 +88,10 @@ void Particle3d::UpdateImGui() {
 void Particle3d::Draw() {
 
 	//wvp用のCBufferの場所を指定
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
-	
+	model_->GetModelCommon()->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	//SRVのDescriptorTableの先頭を設定
+	model_->GetModelCommon()->GetSrvManager()->SetGraphicsRootDescriptorTable(2, 2);
+
 	model_->DrawForParticle();
 }
 

@@ -51,6 +51,8 @@ public: //ゲッター
 
 	uint32_t GetInstanceCount() const { return instanceCount_; }
 
+	ModelCommon* GetModelCommon() { return modelCommon_; }
+
 private:
 
 	ModelCommon* modelCommon_ = nullptr;
