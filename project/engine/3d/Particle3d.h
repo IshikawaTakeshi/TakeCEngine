@@ -10,6 +10,7 @@ class DirectXCommon;
 class Camera;
 class Model;
 class PSO;
+class ParticleCommon;
 class SrvManager;
 class Particle3d {
 public:
@@ -25,7 +26,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(const std::string& filePath);
+	void Initialize(ParticleCommon* particleCommon,const std::string& filePath);
 
 	/// <summary>
 	/// 終了処理
@@ -50,6 +51,8 @@ public: //setter
 
 private: // privateメンバ変数
 
+	ParticleCommon* particleCommon_ = nullptr;
+
 	//RootSignature
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 
@@ -59,8 +62,6 @@ private: // privateメンバ変数
 	//モデル
 	Model* model_ = nullptr;
 
-	//TransformationMatrix用のリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
 	//TransformationMatrix用のデータ
 	TransformMatrix* instancingData_ = nullptr;
 
@@ -73,6 +74,7 @@ private: // privateメンバ変数
 	//Camera
 	Camera* camera_ = nullptr;
 
+	uint32_t useSrvIndex_ = 0;
 	ComPtr<ID3D12Resource> instancingResource_;
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU; //CPUディスクリプタハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU; //GPUディスクリプタハンドル

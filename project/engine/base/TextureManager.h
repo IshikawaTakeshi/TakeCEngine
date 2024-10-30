@@ -110,9 +110,6 @@ private:
 	//シングルトンインスタンス
 	static TextureManager* instance_;
 
-	//SRVインデックスの開始番号
-	static uint32_t kSRVIndexTop;
-
 	TextureManager() = default;
 	~TextureManager() = default;
 	TextureManager(TextureManager&) = delete;

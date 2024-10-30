@@ -97,8 +97,6 @@ void Object3d::UpdateImGui(int id) {
 
 void Object3d::Draw() {
 
-	
-
 	//wvp用のCBufferの場所を指定
 	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 

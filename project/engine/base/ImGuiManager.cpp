@@ -19,15 +19,15 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, SrvManage
 	ImGui_ImplWin32_Init(winApp->GetHwnd());
 
 	//デスクリプタヒープの設定
-	srvManager_->Allocate();
+	uint32_t useSrvIndex = srvManager_->Allocate();
 
 	ImGui_ImplDX12_Init(
 		dxCommon_->GetDevice(),
 		static_cast<int>(dxCommon_->GetBufferCount()),
 		dxCommon_->GetRtvFormat(),
 		srvManager_->GetSrvHeap(),
-		srvManager_->GetSrvHeap()->GetCPUDescriptorHandleForHeapStart(),
-		srvManager_->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart()
+		srvManager_->GetSrvDescriptorHandleCPU(useSrvIndex),
+		srvManager_->GetSrvDescriptorHandleGPU(useSrvIndex)
 	);
 }
 

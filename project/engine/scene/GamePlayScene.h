@@ -11,6 +11,9 @@
 #include "Object3dCommon.h"
 #include "SpriteCommon.h"
 #include "Particle3d.h"
+#include "ParticleCommon.h"
+
+
 
 class GamePlayScene : public BaseScene {
 public:
@@ -42,4 +45,3 @@ private:
 	//パーティクル
 	std::unique_ptr<Particle3d> particle3d_ = nullptr;
 };
-

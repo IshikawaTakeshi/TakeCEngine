@@ -30,6 +30,7 @@ protected:
 	AudioManager* audio_ = nullptr;
 	SpriteCommon* spriteCommon_ = nullptr;
 	Object3dCommon* object3dCommon_ = nullptr;
+	ParticleCommon* particleCommon_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
 	AbstractSceneFactory* sceneFactory_ = nullptr;
 	ImGuiManager* imguiManager_ = nullptr;

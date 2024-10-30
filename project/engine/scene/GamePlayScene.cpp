@@ -39,7 +39,7 @@ void GamePlayScene::Initialize() {
 
 	//Particle3d
 	particle3d_ = std::make_unique<Particle3d>();
-	particle3d_->Initialize("plane.obj");
+	particle3d_->Initialize(ParticleCommon::GetInstance(), "plane.obj");
 	particle3d_->SetCamera(CameraManager::GetInstance()->GetActiveCamera());
 }
 
@@ -94,9 +94,10 @@ void GamePlayScene::Update() {
 void GamePlayScene::Draw() {
 
 	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
+	//sprite_->Draw();              //スプライトの描画
 	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
-
-	sprite_->Draw();              //スプライトの描画
 	//object3d->Draw();             //3Dオブジェクトの描画
+	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
+
 	particle3d_->Draw();          //パーティクルの描画
 }

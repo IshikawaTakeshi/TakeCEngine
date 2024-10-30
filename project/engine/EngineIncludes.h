@@ -25,6 +25,8 @@
 #include "Transform.h"
 #include "Triangle.h"
 #include "TakeCFrameWork.h"
+#include "Particle3d.h"
+#include "ParticleCommon.h"
 
 //DirectXTex
 #include <dxgidebug.h>

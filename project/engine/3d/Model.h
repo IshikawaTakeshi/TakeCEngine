@@ -53,6 +53,14 @@ public: //ゲッター
 
 	ModelCommon* GetModelCommon() { return modelCommon_; }
 
+	const std::string& GetTextureFilePath() const { return modelData_.material.textureFilePath; }
+
+public: //セッター
+
+	void SetInstanceCount(uint32_t instanceCount) { instanceCount_ = instanceCount; }
+
+	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
+
 private:
 
 	ModelCommon* modelCommon_ = nullptr;
@@ -64,6 +72,6 @@ private:
 	ModelData modelData_;
 
 	//描画するインスタンスの個数
-	uint32_t instanceCount_ = 10;
+	uint32_t instanceCount_;
 };
 

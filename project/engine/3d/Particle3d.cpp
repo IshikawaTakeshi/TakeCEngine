@@ -9,37 +9,34 @@
 #include "CameraManager.h"
 #include "SrvManager.h"
 #include "ModelCommon.h"
+#include "ParticleCommon.h"
+#include "TextureManager.h"
 
 Particle3d::~Particle3d() {}
 
-void Particle3d::Initialize(const std::string& filePath) {
+void Particle3d::Initialize(ParticleCommon* particleCommon,const std::string& filePath) {
+
+	particleCommon_ = particleCommon;
 
 	//モデルの読み込み
 	SetModel(filePath);
-
-	//PSO生成
-	pso_ = new PSO();
-	pso_->CreatePSOForParticle(
-		model_->GetModelCommon()->GetDirectXCommon()->GetDevice(),
-		model_->GetModelCommon()->GetDirectXCommon()->GetDXC(),
-		D3D12_CULL_MODE_NONE);
-	//ルートシグネチャ取得
-	rootSignature_ = pso_->GetRootSignature();
-
-	//SRVの生成
-	model_->GetModelCommon()->GetSrvManager()->CreateSRVforStructuredBuffer(
-		10,
-		sizeof(TransformMatrix),
-		instancingResource_.Get(),
-		model_->GetModelCommon()->GetSrvManager()->Allocate() + 1
-	);
-
-
+	model_->SetInstanceCount(kNumInstance_);
 
 	//TransformationMatrix用のResource生成
-	wvpResource_ = DirectXCommon::CreateBufferResource(model_->GetModelCommon()->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix) * kNumInstance_);
+	instancingResource_ = DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix) * kNumInstance_);
+
+	useSrvIndex_ = model_->GetModelCommon()->GetSrvManager()->Allocate();
+
+	//SRVの生成
+	particleCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
+		kNumInstance_,
+		sizeof(TransformMatrix),
+		instancingResource_.Get(),
+		useSrvIndex_
+	);
+
 	//TransformationMatrix用
-	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
+	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 	//単位行列を書き込んでおく
 	for (uint32_t i = 0; i < kNumInstance_; i++) {
 		instancingData_[i].WVP = MatrixMath::MakeIdentity4x4();
@@ -87,10 +84,12 @@ void Particle3d::UpdateImGui() {
 
 void Particle3d::Draw() {
 
+
 	//wvp用のCBufferの場所を指定
-	model_->GetModelCommon()->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定
-	model_->GetModelCommon()->GetSrvManager()->SetGraphicsRootDescriptorTable(2, 2);
+	//particleCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+
+	//instancing用のDataを読むためにStructuredBufferのSRVを設定する
+	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(1, useSrvIndex_);
 
 	model_->DrawForParticle();
 }

@@ -30,6 +30,10 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	object3dCommon_ = Object3dCommon::GetInstance();
 	object3dCommon_->Initialize(directXCommon_);
 
+	//ParticleCommon
+	particleCommon_ = ParticleCommon::GetInstance();
+	particleCommon_->Initialize(directXCommon_, srvManager_);
+
 	//ModelManager
 	ModelManager::GetInstance()->Initialize(directXCommon_, srvManager_);
 
@@ -55,9 +59,8 @@ void TakeCFrameWork::Finalize() {
 	//CameraManagerの開放
 	CameraManager::GetInstance()->Finalize();
 
-	//Object3dCommonの開放
+	particleCommon_->Finalize();
 	object3dCommon_->Finalize();
-	//SpriteCommonの開放aa
 	spriteCommon_->Finalize();
 	//Audioの開放
 	audio_->Finalize();

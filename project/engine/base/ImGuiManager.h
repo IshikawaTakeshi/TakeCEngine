@@ -24,6 +24,7 @@ public:
 
 private:
 
+	
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
 };

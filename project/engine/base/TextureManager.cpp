@@ -5,8 +5,7 @@
 #include <cassert>
 
 TextureManager* TextureManager::instance_ = nullptr;
-//ImGUiで0番を使用するため、1番から使用
-uint32_t TextureManager::kSRVIndexTop = 1;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///			シングルトンインスタンスの取得
@@ -93,7 +92,7 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	UploadTextureData(textureData.resource, mipImages);
 
 	//テクスチャデータの要素数番号をSRVのインデックスとして設定
-	textureData.srvIndex = srvManager_->Allocate() + kSRVIndexTop;
+	textureData.srvIndex = srvManager_->Allocate();
 	textureData.srvHandleCPU = srvManager_->GetSrvDescriptorHandleCPU(textureData.srvIndex);
 	textureData.srvHandleGPU = srvManager_->GetSrvDescriptorHandleGPU(textureData.srvIndex);
 	
