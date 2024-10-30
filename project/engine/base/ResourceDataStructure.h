@@ -40,3 +40,9 @@ struct ModelData {
 	std::vector<VertexData> vertices;
 	ModelMaterialData material;
 };
+
+struct ParticleForGPU {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+	Vector4 Color;
+};

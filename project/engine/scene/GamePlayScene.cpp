@@ -34,8 +34,8 @@ void GamePlayScene::Initialize() {
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/uvChecker.png");
 
 	//Object3d
-	//object3d = std::make_shared<Object3d>();
-	//object3d->Initialize(Object3dCommon::GetInstance(), "axis.obj");
+	object3d = std::make_shared<Object3d>();
+	object3d->Initialize(Object3dCommon::GetInstance(), "axis.obj");
 
 	//Particle3d
 	particle3d_ = std::make_unique<Particle3d>();
@@ -76,7 +76,7 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->Update();
 
 	sprite_->Update(); 	//Spriteの更新
-	//object3d->Update(); //3Dオブジェクトの更新
+	object3d->Update(); //3Dオブジェクトの更新
 	particle3d_->Update(); //パーティクルの更新
 
 	//シーン遷移
@@ -93,9 +93,11 @@ void GamePlayScene::Update() {
 void GamePlayScene::Draw() {
 
 	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
-	//sprite_->Draw();              //スプライトの描画
+	sprite_->Draw();              //スプライトの描画
+
 	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
-	//object3d->Draw();             //3Dオブジェクトの描画
+	object3d->Draw();             //3Dオブジェクトの描画
+
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 
 	particle3d_->Draw();          //パーティクルの描画

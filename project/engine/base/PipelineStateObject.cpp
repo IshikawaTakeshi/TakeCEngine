@@ -190,7 +190,7 @@ void PSO::CreateBlendState() {
 	blendDesc_.RenderTarget[0].BlendEnable = true;
 	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
 	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
 	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
@@ -330,17 +330,14 @@ void PSO::CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE 
 	assert(pixelShaderBlob_ != nullptr);
 
 #pragma region SetDepthStencilState
-	//Depthの機能を有効化
-	depthStencilDesc_.DepthEnable = true;
-	//書き込み
-	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-	//比較関数はLessEqual。近ければ描画される
-	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+
+	depthStencilDesc_.DepthEnable = true;                           //Depthの機能を有効化
+	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO; //書き込みをしない
+	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; //比較関数はLessEqual。近ければ描画される
 
 	//DepthStencilの設定
 	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc_;
 	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
 	graphicsPipelineStateDesc_.pRootSignature = rootSignature_.Get(); // RootSignature
 	graphicsPipelineStateDesc_.InputLayout = inputLayoutDesc_; // InputLayout
 
@@ -419,7 +416,6 @@ bool PSO::UpdateImGuiCombo() {
 			blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 			blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_SUBTRACT;
 			blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
-
 			break;
 
 		case 2: // Multiply

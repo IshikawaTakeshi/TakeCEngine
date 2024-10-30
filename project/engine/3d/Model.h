@@ -33,7 +33,7 @@ public:
 	/// </summary>
 	void Draw();
 
-	void DrawForParticle();
+	void DrawForParticle(UINT instanceCount_);
 
 	/// <summary>
 	/// objファイルを読む関数
@@ -49,15 +49,12 @@ public: //ゲッター
 
 	Mesh* GetMesh() { return mesh_; }
 
-	uint32_t GetInstanceCount() const { return instanceCount_; }
 
 	ModelCommon* GetModelCommon() { return modelCommon_; }
 
 	const std::string& GetTextureFilePath() const { return modelData_.material.textureFilePath; }
 
 public: //セッター
-
-	void SetInstanceCount(uint32_t instanceCount) { instanceCount_ = instanceCount; }
 
 	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
 
@@ -70,8 +67,4 @@ private:
 
 	//構築するModelData
 	ModelData modelData_;
-
-	//描画するインスタンスの個数
-	uint32_t instanceCount_;
 };
-
