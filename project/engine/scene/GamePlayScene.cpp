@@ -67,7 +67,6 @@ void GamePlayScene::Update() {
 
 #endif // DEBUG
 
-
 	//オーディオ再生
 	if (Input::GetInstance()->TriggerKey(DIK_A)) {
 		AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), soundData1);
