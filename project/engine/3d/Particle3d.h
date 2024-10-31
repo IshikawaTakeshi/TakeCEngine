@@ -6,6 +6,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <random>
+#include <list>
 
 class DirectXCommon;
 class Camera;
@@ -70,11 +71,10 @@ private: // privateメンバ変数
 	uint32_t numInstance_ = 0; //描画するインスタンス数
 
 	//Particleの配列
-	Particle particles_[kNumMaxInstance_];
+	std::list<Particle> particles_;
 
 	bool isBillboard_ = false;
 
-	bool isSpawn_ = false;
 
 private:
 
