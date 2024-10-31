@@ -18,8 +18,8 @@ void GamePlayScene::Initialize() {
 
 	//Camera1
 	camera1_ = std::make_shared<Camera>();
-	camera1_->SetTranslate({ 5.0f,0.0f,-10.0f });
-	camera1_->SetRotate({ 0.0f,-0.4f,0.0f });
+	camera1_->SetTranslate({ 5.0f,0.0f,-1.0f });
+	camera1_->SetRotate({ 0.0f,-1.4f,0.0f });
 	CameraManager::GetInstance()->AddCamera("Camera1", *camera1_);
 
 	//デフォルトカメラの設定
@@ -96,7 +96,7 @@ void GamePlayScene::Draw() {
 	sprite_->Draw();              //スプライトの描画
 
 	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
-	object3d->Draw();             //3Dオブジェクトの描画
+	//object3d->Draw();             //3Dオブジェクトの描画
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 

@@ -11,6 +11,8 @@
 #include "ModelCommon.h"
 #include "ParticleCommon.h"
 #include "TextureManager.h"
+#include <numbers>
+
 
 Particle3d::~Particle3d() {}
 
@@ -58,6 +60,12 @@ void Particle3d::Update() {
 		if (particles_[index].lifeTime_ <= particles_[index].currentTime_) {
 			continue;
 		}
+		//新しいパーティクルの生成
+		if (isSpawn_) {
+			std::random_device seedGenerator;
+			std::mt19937 randomEngine(seedGenerator());
+			particles_[index] = MakeNewParticle(randomEngine);
+		}
 
 		//位置の更新
 		particles_[index].transforms_.translate += particles_[index].velocity_ * kDeltaTime_;
@@ -65,20 +73,31 @@ void Particle3d::Update() {
 		float alpha = 1.0f - (particles_[index].currentTime_ / particles_[index].lifeTime_);
 
 		//アフィン行列の更新
+		
 		worldMatrix_ = MatrixMath::MakeAffineMatrix(
 			particles_[index].transforms_.scale,
 			particles_[index].transforms_.rotate,
 			particles_[index].transforms_.translate
 		);
 
+		if (isBillboard_) {
+			worldMatrix_ = MatrixMath::MakeAffineMatrix(
+				particles_[index].transforms_.scale,
+				CameraManager::GetInstance()->GetActiveCamera()->GetRotate(),
+				particles_[index].transforms_.translate
+			);
+		}
+
 		//wvpの更新
 		if (camera_) {
-			const Matrix4x4& viewProjectionMatrix = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+			
+			const Matrix4x4& viewProjectionMatrix = MatrixMath::MakeRotateYMatrix(0) *
+				CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
 			WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
+			
 		} else {
 			WVPMatrix_ = worldMatrix_;
 		}
-
 
 		instancingData_[numInstance_].WVP = WVPMatrix_;
 		instancingData_[numInstance_].World = worldMatrix_;
@@ -93,6 +112,10 @@ void Particle3d::UpdateImGui() {
 	ImGui::DragFloat3("Scale", &particles_[0].transforms_.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat3("Rotate", &particles_[0].transforms_.rotate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat3("Translate", &particles_[0].transforms_.translate.x, 0.01f, -10.0f, 10.0f);
+	ImGui::Checkbox("Billboard", &isBillboard_);
+	if (ImGui::Button("Spawn")) {
+		isSpawn_ = true;
+	}
 	particleCommon_->GetPSO()->UpdateImGui();
 	ImGui::End();
 }

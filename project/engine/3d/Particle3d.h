@@ -72,6 +72,10 @@ private: // privateメンバ変数
 	//Particleの配列
 	Particle particles_[kNumMaxInstance_];
 
+	bool isBillboard_ = false;
+
+	bool isSpawn_ = false;
+
 private:
 
 	//ParticleCommon
@@ -84,9 +88,10 @@ private:
 	Model* model_ = nullptr;
 	//TransformationMatrix用のデータ
 	ParticleForGPU* instancingData_ = nullptr;
-	//WorldMatrix
+	//Matrix
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 WVPMatrix_;
+	//Matrix4x4 billboardMatrix_;
 	//Camera
 	Camera* camera_ = nullptr;
 	uint32_t useSrvIndex_ = 0;
