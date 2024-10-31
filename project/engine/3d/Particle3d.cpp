@@ -36,6 +36,14 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 		useSrvIndex_
 	);
 
+	//Emitter初期化
+	emitter_.transforms_.translate = { 0.0f,0.0f,0.0f };
+	emitter_.transforms_.rotate = { 0.0f,0.0f,0.0f };
+	emitter_.transforms_.scale = { 1.0f,1.0f,1.0f };
+	emitter_.particleCount_ = 3;
+	emitter_.frequency_ = 2.0f;
+	emitter_.frequencyTime_ = 0.0f;
+
 	//TransformationMatrix用
 	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 	//単位行列を書き込んでおく
@@ -45,15 +53,15 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 		instancingData_[i].Color = { 1.0f,1.0f,1.0f,1.0f };
 	}
 
+	//ランダムエンジンの初期化
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
-
-	for (uint32_t i = 0; i < kNumMaxInstance_; i++) {
-		particles_.push_back(MakeNewParticle(randomEngine));
-	}
 }
 
 void Particle3d::Update() {
+
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
 
 	numInstance_ = 0;
 	for (std::list<Particle>::iterator particleIterator = particles_.begin();
@@ -62,7 +70,15 @@ void Particle3d::Update() {
 			particleIterator = particles_.erase(particleIterator); //寿命が来たら削除
 			continue;
 		}
+
 		if (numInstance_ < kNumMaxInstance_) {
+
+			//エミッターの更新
+			emitter_.frequencyTime_ += kDeltaTime_;
+			if(emitter_.frequency_ <= emitter_.frequencyTime_) {
+				particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
+				emitter_.frequencyTime_ -= emitter_.frequency_; //余計に過ぎた時間も加味して頻度計算する
+			}
 
 			//位置の更新
 			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
@@ -111,15 +127,13 @@ void Particle3d::UpdateImGui() {
 	std::mt19937 randomEngine(seedGenerator());
 
 	ImGui::Begin("Particle3d");
-	//ImGui::DragFloat3("Scale", &particles_[0].transforms_.scale.x, 0.01f, -10.0f, 10.0f);
-	//ImGui::DragFloat3("Rotate", &particles_[0].transforms_.rotate.x, 0.01f, -10.0f, 10.0f);
-	//ImGui::DragFloat3("Translate", &particles_[0].transforms_.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::Checkbox("Billboard", &isBillboard_);
 	if (ImGui::Button("SpawnParticle")) {
-		particles_.push_back(MakeNewParticle(randomEngine));
-		particles_.push_back(MakeNewParticle(randomEngine));
-		particles_.push_back(MakeNewParticle(randomEngine));
+		particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
 	}
+	ImGui::Text("ParticleCount:%d", particles_.size());
+	ImGui::Text("Emitter");
+	ImGui::SliderFloat3("Translate", &emitter_.transforms_.translate.x, -10.0f, 10.0f);
 	particleCommon_->GetPSO()->UpdateImGui();
 	ImGui::End();
 }
@@ -132,7 +146,7 @@ void Particle3d::Draw() {
 	model_->DrawForParticle(numInstance_);
 }
 
-Particle3d::Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine) {
+Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
 	
 	std::uniform_real_distribution<float> distribution(-0.1f, 1.0f); //位置と速度を[-1,1]でランダムに設定
 	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);    //色を[0,1]でランダムに設定
@@ -141,12 +155,21 @@ Particle3d::Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine) {
 	Particle particle;
 	particle.transforms_.scale = { 1.0f,1.0f,1.0f };
 	particle.transforms_.rotate = { 0.0f,0.0f,0.0f };
-	particle.transforms_.translate = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
+	Vector3 randomTranslate = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
+	particle.transforms_.translate = translate + randomTranslate;
 	particle.velocity_ = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
 	particle.color_ = { distColor(randomEngine),distColor(randomEngine),distColor(randomEngine),1.0f };
 	particle.lifeTime_ = distTime(randomEngine);
 	particle.currentTime_ = 0.0f;
 	return particle;
+}
+
+std::list<Particle> Particle3d::Emit(const Emitter& emitter, std::mt19937& randomEngine) {
+	std::list<Particle> particles;
+	for (uint32_t count = 0; count < emitter.particleCount_; ++count) {
+		particles.push_back(MakeNewParticle(randomEngine,emitter.transforms_.translate));
+	}
+	return particles;
 }
 
 void Particle3d::SetModel(const std::string& filePath) {

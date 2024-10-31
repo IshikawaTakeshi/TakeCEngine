@@ -8,6 +8,23 @@
 #include <random>
 #include <list>
 
+//Particle1個分のデータ
+struct Particle {
+	Transform transforms_;  //位置
+	Vector3 velocity_; 	    //速度
+	Vector4 color_;         //色
+	float lifeTime_;        //寿命
+	float currentTime_;     //経過時間
+};
+
+//エミッター
+struct Emitter {
+	Transform transforms_;   //エミッターの位置
+	uint32_t particleCount_; //発生するParticleの数
+	float frequency_;        //発生頻度
+	float frequencyTime_;    //経過時間
+};
+
 class DirectXCommon;
 class Camera;
 class Model;
@@ -17,14 +34,7 @@ class SrvManager;
 class Particle3d {
 public:
 
-	//Particle1個分のデータ
-	struct Particle {
-		Transform transforms_;
-		Vector3 velocity_;
-		Vector4 color_;
-		float lifeTime_;
-		float currentTime_;
-	};
+
 
 	//エイリアステンプレート
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
@@ -53,7 +63,10 @@ public:
 	/// </summary>
 	void Draw();
 
-	Particle MakeNewParticle(std::mt19937& randomEngine);
+	Particle MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate);
+
+
+	std::list<Particle> Emit(const Emitter& emitter, std::mt19937& randomEngine);
 
 public: //getter
 
@@ -64,18 +77,13 @@ public: //setter
 
 private: // privateメンバ変数
 
+	static const uint32_t kNumMaxInstance_ = 100; //Particleの総数
 	const float kDeltaTime_ = 1.0f / 60.0f; //1フレームの時間
-
-	static const uint32_t kNumMaxInstance_ = 10; //Particleの総数
-
 	uint32_t numInstance_ = 0; //描画するインスタンス数
-
-	//Particleの配列
-	std::list<Particle> particles_;
-
+	std::list<Particle> particles_; //Particleの配列
 	bool isBillboard_ = false;
-
-
+	Emitter emitter_;
+	
 private:
 
 	//ParticleCommon
