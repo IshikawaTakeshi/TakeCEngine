@@ -3,7 +3,7 @@
 #include "Transform.h"
 #include "TransformMatrix.h"
 #include "DirectXCommon.h"
-#include "AABB.h"
+
 #include <d3d12.h>
 #include <wrl.h>
 #include <random>
@@ -24,6 +24,11 @@ struct Emitter {
 	uint32_t particleCount_; //発生するParticleの数
 	float frequency_;        //発生頻度
 	float frequencyTime_;    //経過時間
+};
+
+struct AABB {
+	Vector3 min_;
+	Vector3 max_;
 };
 
 //加速フィールド
@@ -75,6 +80,8 @@ public:
 
 
 	std::list<Particle> Emit(const Emitter& emitter, std::mt19937& randomEngine);
+
+	bool IsCollision(const AABB& aabb, const Vector3& point);
 
 public: //getter
 

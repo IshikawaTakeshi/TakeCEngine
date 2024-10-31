@@ -3,6 +3,7 @@
 #include "PipelineStateObject.h"
 #include "ModelManager.h"
 #include "MatrixMath.h"
+#include "Vector3Math.h"
 #include "Model.h"
 #include "Camera.h"
 #include "ImGuiManager.h"
@@ -46,8 +47,8 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 
 	//Acceleration初期化
 	accelerationField_.acceleration_ = { 0.0f,-9.8f,0.0f };
-	accelerationField_.aabb_.SetMin( { -1.0f,-1.0f,-1.0f });
-	accelerationField_.aabb_.SetMax( { 1.0f, 1.0f, 1.0f });
+	accelerationField_.aabb_.min_ = { -3.0f,-3.0f,-3.0f };
+	accelerationField_.aabb_.max_ =  { 3.0f, 3.0f, 3.0f };
 
 	//TransformationMatrix用
 	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
@@ -71,13 +72,13 @@ void Particle3d::Update() {
 	numInstance_ = 0;
 	for (std::list<Particle>::iterator particleIterator = particles_.begin();
 		particleIterator != particles_.end(); ) {
-		if ((*particleIterator).lifeTime_ <= (*particleIterator).currentTime_) {
-			particleIterator = particles_.erase(particleIterator); //寿命が来たら削除
-			continue;
-		}
+		
 
 		if (numInstance_ < kNumMaxInstance_) {
-
+			if ((*particleIterator).lifeTime_ <= (*particleIterator).currentTime_) {
+				particleIterator = particles_.erase(particleIterator); //寿命が来たら削除
+				continue;
+			}
 			//エミッターの更新
 			emitter_.frequencyTime_ += kDeltaTime_;
 			if(emitter_.frequency_ <= emitter_.frequencyTime_) {
@@ -86,9 +87,14 @@ void Particle3d::Update() {
 			}
 
 			//位置の更新
+			if(IsCollision(accelerationField_.aabb_, (*particleIterator).transforms_.translate)) {
+				(*particleIterator).velocity_ += accelerationField_.acceleration_ * kDeltaTime_;
+			}
+
 			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
 			(*particleIterator).currentTime_ += kDeltaTime_; //経過時間の更新
 			float alpha = 1.0f - ((*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+
 
 			//アフィン行列の更新
 
@@ -133,10 +139,11 @@ void Particle3d::UpdateImGui() {
 
 	ImGui::Begin("Particle3d");
 	ImGui::Checkbox("Billboard", &isBillboard_);
+
 	if (ImGui::Button("SpawnParticle")) {
 		particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
 	}
-	ImGui::Text("ParticleCount:%d", particles_.size());
+	ImGui::Text("ParticleCount:%d", numInstance_);
 	ImGui::Text("Emitter");
 	ImGui::SliderFloat3("Translate", &emitter_.transforms_.translate.x, -10.0f, 10.0f);
 	particleCommon_->GetPSO()->UpdateImGui();
@@ -175,6 +182,23 @@ std::list<Particle> Particle3d::Emit(const Emitter& emitter, std::mt19937& rando
 		particles.push_back(MakeNewParticle(randomEngine,emitter.transforms_.translate));
 	}
 	return particles;
+}
+
+bool Particle3d::IsCollision(const AABB& aabb, const Vector3& point) {
+	//最近接点を求める
+	Vector3 clossestPoint{
+		std::clamp(point.x,aabb.min_.x,aabb.max_.x),
+		std::clamp(point.y,aabb.min_.y,aabb.max_.y),
+		std::clamp(point.z,aabb.min_.z,aabb.max_.z)
+	};
+	//最近接点と球の中心との距離を求める
+	float distance = Vector3Math::Length(clossestPoint - point);
+	//距離が半径よりも小さければ衝突
+	if (distance <= point.x && distance <= point.y && distance <= point.z) {
+		return true;
+	}
+
+	return false;
 }
 
 void Particle3d::SetModel(const std::string& filePath) {
