@@ -8,38 +8,27 @@
 #include "Model.h"
 #include "Camera.h"
 #include "CameraManager.h"
-
+#include "ImGuiManager.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>
 
-#pragma region imgui
-#ifdef _DEBUG
-#include "externals/imgui/imgui.h"
-#include "externals/imgui/imgui_impl_dx12.h"
-#include "externals/imgui/imgui_impl_win32.h"
-#endif 
-#pragma endregion
-
 Object3d::~Object3d() {
-	
-	directionalLightResource_.Reset();
 	wvpResource_.Reset();
-
+	directionalLightResource_.Reset();
 }
 
 void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 	object3dCommon_ = object3dCommon;
 	SetModel(filePath);
 	model_->GetMesh()->GetMaterial()->SetEnableLighting(true);
-	//スプライト用のTransformationMatrix用のVertexResource生成
+
+	//TransformationMatrix用のResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
-
 	//TransformationMatrix用
-	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformMatrixData_));
-
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
 	//単位行列を書き込んでおく
-	transformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
+	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
 	//平行光源用Resourceの作成
 	directionalLightResource_ = DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(DirectionalLightData));
@@ -80,8 +69,8 @@ void Object3d::Update() {
 		WVPMatrix_ = worldMatrix_;
 	}
 	
-	transformMatrixData_->WVP = WVPMatrix_;
-	transformMatrixData_->World = worldMatrix_;
+	TransformMatrixData_->WVP = WVPMatrix_;
+	TransformMatrixData_->World = worldMatrix_;
 }
 
 #ifdef _DEBUG
@@ -94,6 +83,12 @@ void Object3d::UpdateImGui(int id) {
 		ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 		ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
+		model_->GetMesh()->GetMaterial()->UpdateMaterialImGui();
+		ImGui::Text("Lighting");
+		ImGui::ColorEdit4("Color", &directionalLightData_->color_.x);
+		ImGui::DragFloat3("Direction", &directionalLightData_->direction_.x, 0.01f);
+		ImGui::DragFloat("Intensity", &directionalLightData_->intensity_, 0.01f);
+		object3dCommon_->UpdateImGui();
 		ImGui::TreePop();
 	}
 	ImGui::End();

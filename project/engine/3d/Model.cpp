@@ -3,19 +3,13 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "MatrixMath.h"
+#include "SrvManager.h"
 #include "TextureManager.h"
 #include "ModelCommon.h"
+#include "SrvManager.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>
-
-#pragma region imgui
-#ifdef _DEBUG
-#include "../externals/imgui/imgui.h"
-#include "../externals/imgui/imgui_impl_dx12.h"
-#include "../externals/imgui/imgui_impl_win32.h"
-#endif 
-#pragma endregion
 
 Model::~Model() {
 
@@ -23,11 +17,11 @@ Model::~Model() {
 	mesh_ = nullptr;
 }
 
-void Model::Initialize(ModelCommon* ModelCommon, const std::string& filename) {
+void Model::Initialize(ModelCommon* ModelCommon, const std::string& filePath) {
 	modelCommon_ = ModelCommon;
 
 	//objファイル読み込み
-	modelData_ = LoadObjFile("Resources", "obj_mtl_blend", filename);
+	modelData_ = LoadObjFile("Resources", "obj_mtl_blend", filePath);
 
 	//メッシュ初期化
 	mesh_ = new Mesh();
@@ -37,22 +31,37 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& filename) {
 	mesh_->InitializeVertexResourceObjModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 	//MaterialResource
 	mesh_->GetMaterial()->InitializeMaterialResource(modelCommon_->GetDirectXCommon()->GetDevice());
-	//テクスチャ番号の取得
-	modelData_.material.textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 }
 
 
 
 void Model::Draw() {
-	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
+
+	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
+
+	commandList->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
-	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
-	modelCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	modelCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData_.material.textureIndex));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
 	//DrawCall
-	modelCommon_->GetDirectXCommon()->GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+	commandList->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+}
+
+void Model::DrawForParticle(UINT instanceCount_) {
+	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
+
+	commandList->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
+	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//materialCBufferの場所を指定
+	commandList->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
+	//DrawCall
+	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
 }
 
 

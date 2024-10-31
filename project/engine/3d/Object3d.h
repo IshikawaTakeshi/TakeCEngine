@@ -59,7 +59,7 @@ private: // privateメンバ変数
 	//TransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
 	//TransformationMatrix用の頂点データ
-	TransformMatrix* transformMatrixData_ = nullptr;
+	TransformMatrix* TransformMatrixData_ = nullptr;
 
 	//平行光源用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;

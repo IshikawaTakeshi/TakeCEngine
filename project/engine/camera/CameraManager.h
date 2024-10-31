@@ -1,4 +1,5 @@
 #pragma once
+#include <unordered_map>
 #include <map>
 #include <vector>
 #include <string>
@@ -16,16 +17,23 @@ public:
 	void Finalize();
 
 	// カメラを追加するメソッド
-	void AddCamera(const Camera& camera);
+	void AddCamera(std::string name, const Camera& camera);
+
+	//カメラの情報のリセット
+	void ResetCameras();
+
+	// アクティブカメラのリセット
+	//void ResetActiveCamera();
 
 	// アクティブなカメラを設定する
-	void SetActiveCamera(int index);
+	void SetActiveCamera(std::string name);
 
 	// アクティブなカメラを取得する
 	Camera* GetActiveCamera();
 
 	// カメラの数を取得する
 	int GetCameraCount() const;
+
 
 private:
 
@@ -37,7 +45,7 @@ private:
 private:
 
 	static CameraManager* instance_;
-	std::vector<std::unique_ptr<Camera>> cameras_;
+	std::unordered_map<std::string, std::unique_ptr<Camera>> cameras_;
 	Camera* activeCamera_;  // 現在アクティブなカメラ
 };
 

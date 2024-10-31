@@ -4,6 +4,7 @@
 #include <memory>
 class Model;
 class ModelCommon;
+class SrvManager;
 class DirectXCommon;
 class ModelManager {
 public:
@@ -16,7 +17,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
 
 	/// <summary>
 	/// 開放処理
@@ -43,6 +44,9 @@ private:
 	ModelManager& operator=(const ModelManager&) = delete;
 
 private:
+
+	//SRVマネージャ
+	SrvManager* srvManager_ = nullptr;
 
 	//インスタンス
 	static ModelManager* instance_;

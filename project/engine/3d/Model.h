@@ -9,6 +9,7 @@
 
 class Mesh;
 class Texture;
+class SrvManager;
 class DirectXCommon;
 class ModelCommon;
 class Model {
@@ -32,6 +33,8 @@ public:
 	/// </summary>
 	void Draw();
 
+	void DrawForParticle(UINT instanceCount_);
+
 	/// <summary>
 	/// objファイルを読む関数
 	/// </summary>
@@ -46,6 +49,15 @@ public: //ゲッター
 
 	Mesh* GetMesh() { return mesh_; }
 
+
+	ModelCommon* GetModelCommon() { return modelCommon_; }
+
+	const std::string& GetTextureFilePath() const { return modelData_.material.textureFilePath; }
+
+public: //セッター
+
+	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
+
 private:
 
 	ModelCommon* modelCommon_ = nullptr;
@@ -56,4 +68,3 @@ private:
 	//構築するModelData
 	ModelData modelData_;
 };
-

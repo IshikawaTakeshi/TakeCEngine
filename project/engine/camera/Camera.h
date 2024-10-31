@@ -1,13 +1,19 @@
 #pragma once
 #include "Transform.h"
 #include "Matrix4x4.h"
+#include <string>
 
 class Camera {
 public:
 	Camera();
 	~Camera();
 	void Update();
+
+#ifdef _DEBUG
 	void UpdateImGui();
+#endif // DEBUG
+
+	
 
 public: //getter
 	
@@ -43,5 +49,8 @@ private:
 	float nearClip_;
 	//farクリップ距離
 	float farClip_;
+
+	//名前(cameraManager::cameras_のキー)
+	//std::string name_;
 };
 

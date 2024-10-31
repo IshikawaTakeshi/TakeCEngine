@@ -30,10 +30,10 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(Matrix4x4));
 
 	//TransformationMatrix用
-	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformMatrixData_));
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
 
 	//単位行列を書き込んでおく
-	*transformMatrixData_ = MatrixMath::MakeIdentity4x4();
+	*TransformMatrixData_ = MatrixMath::MakeIdentity4x4();
 
 
 	//======================= MatrialResource ===========================//
@@ -59,7 +59,7 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 	);
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	*transformMatrixData_ = worldViewProjectionMatrix_;
+	*TransformMatrixData_ = worldViewProjectionMatrix_;
 }
 
 void Triangle::Update() {
@@ -70,7 +70,7 @@ void Triangle::Update() {
 	//wvpの更新
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	*transformMatrixData_ = worldViewProjectionMatrix_;
+	*TransformMatrixData_ = worldViewProjectionMatrix_;
 }
 
 #ifdef _DEBUG
@@ -101,7 +101,7 @@ void Triangle::InitializeMaterialData(DirectXCommon* dxCommon) {
 	*materialData_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-void Triangle::DrawCall(DirectXCommon* dxCommon) {
+void Triangle::Draw(DirectXCommon* dxCommon) {
 
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
@@ -111,7 +111,7 @@ void Triangle::DrawCall(DirectXCommon* dxCommon) {
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
+	//dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	dxCommon->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }

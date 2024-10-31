@@ -34,7 +34,7 @@ public:
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void DrawCall(DirectXCommon* dxCommon);
+	void Draw(DirectXCommon* dxCommon);
 
 public: //ゲッター
 
@@ -46,14 +46,14 @@ private:
 	//メッシュ
 	Mesh* mesh_;
 
-	//テクスチャ番号
-	uint32_t textureIndex_ = 0;
+	//filePath
+	std::string filePath_;
 
 
 	//TransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
 	//TransformationMatrix用の頂点データ
-	TransformMatrix* transformMatrixData_ = nullptr;
+	TransformMatrix* TransformMatrixData_ = nullptr;
 
 	//平行光源用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;

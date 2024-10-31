@@ -62,96 +62,57 @@ public:
 	/// </summary>
 	void PostDraw();
 
-	
-
-
 	/// <summary>
 	/// Resource生成関数
 	/// </summary>
 	static ComPtr<ID3D12Resource> CreateBufferResource(
 		ID3D12Device* device, size_t sizeInBytes);
 
+	/// <summary>
+	/// DescriptorHeap作成関数
+	/// </summary>
+	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(
+		D3D12_DESCRIPTOR_HEAP_TYPE heapType,UINT numDescriptors, bool shaderVisible);
 
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	///			Getter
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	/// <summary>
 	/// デバイスの取得
-	/// </summary>
-	/// <returns>デバイス</returns>
 	ID3D12Device* GetDevice() const { return device_.Get(); }
 
-	/// <summary>
 	/// 描画コマンドリストの取得
-	/// </summary>
-	/// <returns>描画コマンドリスト</returns>
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 
-	/// <summary>
-	/// srvHeapの取得
-	/// </summary>
-	ID3D12DescriptorHeap* GetSrvHeap() { return srvHeap_.Get(); }
-
-	/// <summary>
 	/// dsvHeapの取得
-	/// </summary>
 	ID3D12DescriptorHeap* GetDsvHeap() { return dsvHeap_.Get(); }
 
-	/// <summary>
 	/// rtvHeapの取得
-	/// </summary>
 	ID3D12DescriptorHeap* GetRtvHeap() { return rtvHeap_.Get(); }
 
-	/// <summary>
 	/// BufferCountの取得
-	/// </summary>
-	/// <returns></returns>
 	UINT GetBufferCount() { return swapChainDesc_.BufferCount; }
 
-	/// <summary>
 	/// rtvDescの取得
-	/// </summary>
 	DXGI_FORMAT GetRtvFormat() { return rtvDesc_.Format; }
 
-	/// <summary>
 	/// Dxcの取得
-	/// </summary>
-	/// <returns></returns>
 	DXC* GetDXC() { return dxc_; }
 
-	uint32_t GetDescriptorSizeSRV() { return descriptorSizeSRV_; }
+	/// RTVのデスクリプタサイズ取得
 	uint32_t GetDescriptorSizeRTV() { return descriptorSizeRTV_; }
+
+	/// DSVのデスクリプタサイズ取得
 	uint32_t GetDescriptorSizeDSV() { return descriptorSizeDSV_; }
 
-	/// <summary>
 	/// CPUディスクリプタハンドルの取得
-	/// </summary>
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
 
-	/// <summary>
 	/// GPUディスクリプタハンドルの取得
-	/// </summary>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
 
-	/// <summary>
-	/// SRV専用のCPUディスクリプタハンドルの取得
-	/// </summary>
-	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVCPUDescriptorHandle(uint32_t index);
 
-	/// <summary>
-	/// SRV専用のGPUディスクリプタハンドルの取得
-	/// </summary>
-	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
-
-
-public:
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			定数
-	/////////////////////////////////////////////////////////////////////////////////////
-
-	static const uint32_t kMaxSRVCount;
 
 private:
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -186,7 +147,7 @@ private:
 
 	//ディスクリプタヒープの生成
 	ComPtr<ID3D12DescriptorHeap> rtvHeap_ = nullptr;
-	ComPtr<ID3D12DescriptorHeap> srvHeap_ = nullptr;
+	
 	ComPtr<ID3D12DescriptorHeap> dsvHeap_ = nullptr;
 
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
@@ -203,7 +164,7 @@ private:
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_{};
 
-	uint32_t descriptorSizeSRV_;
+	
 	uint32_t descriptorSizeRTV_;
 	uint32_t descriptorSizeDSV_;
 
@@ -211,6 +172,9 @@ private:
 	D3D12_VIEWPORT viewport_{};
 	// シザー矩形
 	D3D12_RECT scissorRect_{};
+
+	//画面の色
+	float clearColor[4] = { 0.1f, 0.4f, 0.5f, 1.0f }; // 青っぽい色
 
 	//記録時間(FPS固定)
 	std::chrono::steady_clock::time_point reference_;
@@ -288,13 +252,7 @@ private:
 	/// </summary>
 	void UpdateFixFPS();
 
-	/// <summary>
-	/// DescriptorHeap作成関数
-	/// </summary>
-	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(
-		ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType,
-		UINT numDescriptors, bool shaderVisible
-	);
+	
 
 
 };

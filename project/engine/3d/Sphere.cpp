@@ -38,7 +38,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 	mesh_->InitializeIndexResourceSphere(dxCommon->GetDevice());
 
 	//テクスチャ番号の検索と記録
-	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
+	filePath_ = textureFilePath;
 
 
 
@@ -48,10 +48,10 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(TransformMatrix));
 
 	//TransformationMatrix用
-	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformMatrixData_));
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
 
 	//単位行列を書き込んでおく
-	transformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
+	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
 
 	//======================= DirectionalLightResource ===========================//
@@ -86,8 +86,8 @@ void Sphere::Update() {
 	//wvpの更新
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	transformMatrixData_->WVP = worldViewProjectionMatrix_;
-	transformMatrixData_->World = worldMatrix_;
+	TransformMatrixData_->WVP = worldViewProjectionMatrix_;
+	TransformMatrixData_->World = worldMatrix_;
 
 
 #ifdef _DEBUG
@@ -122,7 +122,7 @@ void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 	directionalLightData_->intensity_ = 1.0f;
 }
 
-void Sphere::DrawCall(DirectXCommon* dxCommon) {
+void Sphere::Draw(DirectXCommon* dxCommon) {
 
 	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
 
@@ -135,7 +135,7 @@ void Sphere::DrawCall(DirectXCommon* dxCommon) {
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
+	//dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU());
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//IBVの設定

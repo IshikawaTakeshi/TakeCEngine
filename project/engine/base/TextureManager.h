@@ -9,11 +9,13 @@
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <unordered_map>
 
 #include "DirectXCommon.h"
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
 
+class SrvManager;
 class TextureManager {
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +39,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
 
 	/// <summary>
 	/// 終了処理
@@ -75,21 +77,14 @@ public:
 	///			getter
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	/// <summary>
-	/// SRVインデックスの開始番号
-	/// </summary>
-	/// <param name="filePath"></param>
-	/// <returns></returns>
-	uint32_t GetTextureIndexByFilePath(const std::string& filePath);
+	/// GPUハンドル取得
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGPU(const std::string& filePath);
+	/// SRVインデックス取得
+	uint32_t GetSrvIndex(const std::string& filePath);
+	/// メタデータ取得
+	const DirectX::TexMetadata& GetMetadata(const std::string& filePath);
 
-	/// <summary>
-	/// テクスチャ番号からGPUハンドルを取得
-	/// </summary>
-	/// <param name="index"></param>
-	/// <returns></returns>
-	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGPU(uint32_t index);
-
-	const DirectX::TexMetadata& GetMetadata(uint32_t textureIndex);
+	SrvManager* GetSrvManager() { return srvManager_; }
 
 private:
 
@@ -99,9 +94,9 @@ private:
 	
 	//テクスチャ1枚分のデータ
 	struct TextureData {
-		std::string filePath; //ファイルパス
 		DirectX::TexMetadata metadata; //テクスチャのメタデータ
 		ComPtr<ID3D12Resource> resource; //テクスチャリソース
+		uint32_t srvIndex; //SRVインデックス
 		D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU; //CPUディスクリプタハンドル
 		D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU; //GPUディスクリプタハンドル
 	};
@@ -115,9 +110,6 @@ private:
 	//シングルトンインスタンス
 	static TextureManager* instance_;
 
-	//SRVインデックスの開始番号
-	static uint32_t kSRVIndexTop;
-
 	TextureManager() = default;
 	~TextureManager() = default;
 	TextureManager(TextureManager&) = delete;
@@ -129,7 +121,9 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 
 	//テクスチャデータのリスト
-	std::vector<TextureData> textureDatas_;
+	std::unordered_map<std::string, TextureData> textureDatas_;
+
+	SrvManager* srvManager_ = nullptr;
 
 };
 

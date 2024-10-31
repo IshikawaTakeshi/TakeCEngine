@@ -1,5 +1,6 @@
 #include "ModelCommon.h"
-
+#include "DirectXCommon.h"
+#include "SrvManager.h"
 ModelCommon* ModelCommon::instance_ = nullptr;
 
 ModelCommon* ModelCommon::GetInstance() {
@@ -9,9 +10,9 @@ ModelCommon* ModelCommon::GetInstance() {
 	return instance_;
 }
 
-void ModelCommon::Initialize(DirectXCommon* dxCommon) {
+void ModelCommon::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager) {
 	dxCommon_ = dxCommon;
-
+	srvManager_ = srvManager;
 }
 
 void ModelCommon::Finalize() {

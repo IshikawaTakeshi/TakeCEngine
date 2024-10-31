@@ -1,9 +1,0 @@
-﻿  DirectXCommon.cpp
-  Sprite.cpp
-  Texture.cpp
-  Triangle.cpp
-  WinApp.cpp
-  main.cpp
-C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\WinApp.cpp(78,6): error C3861: 'ImGui_ImplWin32_WndProcHandler': 識別子が見つかりませんでした
-C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\Triangle.cpp(106,7): error C2220: 次の警告はエラーとして処理されます
-C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\Triangle.cpp(106,7): warning C4189: 'botton': ローカル変数が初期化されましたが、参照されていません

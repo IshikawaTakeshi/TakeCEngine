@@ -3,6 +3,7 @@
 #include <d3d12.h>
 #include <dxcapi.h>
 #include <wrl.h>
+#include <cstdint>
 
 class DXC;
 class PSO {
@@ -13,11 +14,7 @@ class PSO {
 
 public:
 
-	///////////////////////////////////////////////////////////////////////////////////////////
-	///			エイリアステンプレート
-	///////////////////////////////////////////////////////////////////////////////////////////
-
-
+	///	エイリアステンプレート
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public:
@@ -35,9 +32,15 @@ public:
 	//void Finalize();
 
 	/// <summary>
-	/// ルートシグネチャ初期化
+	/// Object3D用のルートシグネチャ生成
 	/// </summary>
 	void CreateRootSignature(ID3D12Device* device);
+
+	/// <summary>
+	/// パーティクル用のルートシグネチャ生成
+	/// </summary>
+	/// <param name="device"></param>
+	void CreateRootSignatureForParticle(ID3D12Device* device);
 
 	/// <summary>
 	/// インプットレイアウト初期化
@@ -59,6 +62,12 @@ public:
 	/// </summary>
 	void CreatePSO(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode);
 
+	void CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode);
+
+	void UpdateImGui();
+
+	bool UpdateImGuiCombo();
+
 public:
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -76,11 +85,6 @@ public:
 	/// </summary>
 	ID3D12PipelineState* GetGraphicPipelineState() const { return graphicPipelineState_.Get(); }
 
-	///////////////////////////////////////////////////////////////////////////////////////////
-	///			setter
-	///////////////////////////////////////////////////////////////////////////////////////////
-
-
 private:
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -91,6 +95,7 @@ private:
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
 	D3D12_ROOT_PARAMETER rootParameters_[4] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
+	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};
 	ComPtr<ID3D10Blob> signatureBlob_;
 	ComPtr<ID3D10Blob> errorBlob_;
 	ComPtr<ID3D12RootSignature> rootSignature_;
@@ -108,7 +113,8 @@ private:
 	//graphicPipelineState
 	ComPtr<ID3D12PipelineState> graphicPipelineState_;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc_{};
-
-
+	//BlendMode
+	uint32_t itemCurrentIdx = 0;
+	//device
+	ID3D12Device* device_ = nullptr;
 };
-

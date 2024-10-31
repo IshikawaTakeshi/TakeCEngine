@@ -74,6 +74,8 @@ public:
 
 	Material* GetMaterial() { return material_; }
 
+	void SetMaterial(Material* material) { material_ = material; }
+
 public:
 
 	//球体の分割数
