@@ -3,6 +3,7 @@
 #include "Transform.h"
 #include "TransformMatrix.h"
 #include "DirectXCommon.h"
+#include "AABB.h"
 #include <d3d12.h>
 #include <wrl.h>
 #include <random>
@@ -23,6 +24,13 @@ struct Emitter {
 	uint32_t particleCount_; //発生するParticleの数
 	float frequency_;        //発生頻度
 	float frequencyTime_;    //経過時間
+};
+
+//加速フィールド
+struct AccelerationField {
+	Vector3 acceleration_; //加速度
+	Vector3 position_;     //位置
+	AABB aabb_;            //当たり判定
 };
 
 class DirectXCommon;
@@ -83,6 +91,7 @@ private: // privateメンバ変数
 	std::list<Particle> particles_; //Particleの配列
 	bool isBillboard_ = false;
 	Emitter emitter_;
+	AccelerationField accelerationField_;
 	
 private:
 

@@ -44,6 +44,11 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	emitter_.frequency_ = 2.0f;
 	emitter_.frequencyTime_ = 0.0f;
 
+	//Acceleration初期化
+	accelerationField_.acceleration_ = { 0.0f,-9.8f,0.0f };
+	accelerationField_.aabb_.SetMin( { -1.0f,-1.0f,-1.0f });
+	accelerationField_.aabb_.SetMax( { 1.0f, 1.0f, 1.0f });
+
 	//TransformationMatrix用
 	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 	//単位行列を書き込んでおく
