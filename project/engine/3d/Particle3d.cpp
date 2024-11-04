@@ -3,6 +3,7 @@
 #include "PipelineStateObject.h"
 #include "ModelManager.h"
 #include "MatrixMath.h"
+#include "Vector3Math.h"
 #include "Model.h"
 #include "Camera.h"
 #include "ImGuiManager.h"
@@ -36,6 +37,19 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 		useSrvIndex_
 	);
 
+	//Emitter初期化
+	emitter_.transforms_.translate = { 0.0f,0.0f,0.0f };
+	emitter_.transforms_.rotate = { 0.0f,0.0f,0.0f };
+	emitter_.transforms_.scale = { 1.0f,1.0f,1.0f };
+	emitter_.particleCount_ = 3;
+	emitter_.frequency_ = 2.0f;
+	emitter_.frequencyTime_ = 0.0f;
+
+	//Acceleration初期化
+	accelerationField_.acceleration_ = { 0.0f,-9.8f,0.0f };
+	accelerationField_.aabb_.min_ = { -3.0f,-3.0f,-3.0f };
+	accelerationField_.aabb_.max_ =  { 3.0f, 3.0f, 3.0f };
+
 	//TransformationMatrix用
 	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 	//単位行列を書き込んでおく
@@ -45,77 +59,93 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 		instancingData_[i].Color = { 1.0f,1.0f,1.0f,1.0f };
 	}
 
+	//ランダムエンジンの初期化
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
-
-	for (uint32_t i = 0; i < kNumMaxInstance_; i++) {
-		particles_[i] = MakeNewParticle(randomEngine);
-	}
 }
 
 void Particle3d::Update() {
 
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
+
 	numInstance_ = 0;
-	for (uint32_t index = 0; index < kNumMaxInstance_; index++) {
-		if (particles_[index].lifeTime_ <= particles_[index].currentTime_) {
-			continue;
-		}
-		//新しいパーティクルの生成
-		if (isSpawn_) {
-			std::random_device seedGenerator;
-			std::mt19937 randomEngine(seedGenerator());
-			particles_[index] = MakeNewParticle(randomEngine);
-		}
-
-		//位置の更新
-		particles_[index].transforms_.translate += particles_[index].velocity_ * kDeltaTime_;
-		particles_[index].currentTime_ += kDeltaTime_; //経過時間の更新
-		float alpha = 1.0f - (particles_[index].currentTime_ / particles_[index].lifeTime_);
-
-		//アフィン行列の更新
+	for (std::list<Particle>::iterator particleIterator = particles_.begin();
+		particleIterator != particles_.end(); ) {
 		
-		worldMatrix_ = MatrixMath::MakeAffineMatrix(
-			particles_[index].transforms_.scale,
-			particles_[index].transforms_.rotate,
-			particles_[index].transforms_.translate
-		);
 
-		if (isBillboard_) {
+		if (numInstance_ < kNumMaxInstance_) {
+			if ((*particleIterator).lifeTime_ <= (*particleIterator).currentTime_) {
+				particleIterator = particles_.erase(particleIterator); //寿命が来たら削除
+				continue;
+			}
+			//エミッターの更新
+			emitter_.frequencyTime_ += kDeltaTime_;
+			if(emitter_.frequency_ <= emitter_.frequencyTime_) {
+				particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
+				emitter_.frequencyTime_ -= emitter_.frequency_; //余計に過ぎた時間も加味して頻度計算する
+			}
+
+			//位置の更新
+			if(IsCollision(accelerationField_.aabb_, (*particleIterator).transforms_.translate)) {
+				(*particleIterator).velocity_ += accelerationField_.acceleration_ * kDeltaTime_;
+			}
+
+			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
+			(*particleIterator).currentTime_ += kDeltaTime_; //経過時間の更新
+			float alpha = 1.0f - ((*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+
+
+			//アフィン行列の更新
+
 			worldMatrix_ = MatrixMath::MakeAffineMatrix(
-				particles_[index].transforms_.scale,
-				CameraManager::GetInstance()->GetActiveCamera()->GetRotate(),
-				particles_[index].transforms_.translate
+				(*particleIterator).transforms_.scale,
+				(*particleIterator).transforms_.rotate,
+				(*particleIterator).transforms_.translate
 			);
-		}
 
-		//wvpの更新
-		if (camera_) {
-			
-			const Matrix4x4& viewProjectionMatrix = MatrixMath::MakeRotateYMatrix(0) *
-				CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
-			WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
-			
-		} else {
-			WVPMatrix_ = worldMatrix_;
-		}
+			if (isBillboard_) {
+				worldMatrix_ = MatrixMath::MakeAffineMatrix(
+					(*particleIterator).transforms_.scale,
+					CameraManager::GetInstance()->GetActiveCamera()->GetRotate(),
+					(*particleIterator).transforms_.translate
+				);
+			}
 
-		instancingData_[numInstance_].WVP = WVPMatrix_;
-		instancingData_[numInstance_].World = worldMatrix_;
-		instancingData_[numInstance_].Color = particles_[index].color_;
-		instancingData_[numInstance_].Color.w = alpha;
-		++numInstance_;
+			//wvpの更新
+			if (camera_) {
+
+				const Matrix4x4& viewProjectionMatrix = MatrixMath::MakeRotateYMatrix(0) *
+					CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+				WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
+
+			} else {
+				WVPMatrix_ = worldMatrix_;
+			}
+
+			instancingData_[numInstance_].WVP = WVPMatrix_;
+			instancingData_[numInstance_].World = worldMatrix_;
+			instancingData_[numInstance_].Color = (*particleIterator).color_;
+			instancingData_[numInstance_].Color.w = alpha;
+			++numInstance_;
+		}
+		++particleIterator; //次のイテレータに進める
 	}
 }
 
 void Particle3d::UpdateImGui() {
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
+
 	ImGui::Begin("Particle3d");
-	ImGui::DragFloat3("Scale", &particles_[0].transforms_.scale.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat3("Rotate", &particles_[0].transforms_.rotate.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat3("Translate", &particles_[0].transforms_.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::Checkbox("Billboard", &isBillboard_);
-	if (ImGui::Button("Spawn")) {
-		isSpawn_ = true;
+
+	if (ImGui::Button("SpawnParticle")) {
+		particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
 	}
+	ImGui::Text("ParticleCount:%d", numInstance_);
+	ImGui::Text("Emitter");
+	ImGui::SliderFloat3("Translate", &emitter_.transforms_.translate.x, -10.0f, 10.0f);
 	particleCommon_->GetPSO()->UpdateImGui();
 	ImGui::End();
 }
@@ -128,7 +158,7 @@ void Particle3d::Draw() {
 	model_->DrawForParticle(numInstance_);
 }
 
-Particle3d::Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine) {
+Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
 	
 	std::uniform_real_distribution<float> distribution(-0.1f, 1.0f); //位置と速度を[-1,1]でランダムに設定
 	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);    //色を[0,1]でランダムに設定
@@ -137,12 +167,38 @@ Particle3d::Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine) {
 	Particle particle;
 	particle.transforms_.scale = { 1.0f,1.0f,1.0f };
 	particle.transforms_.rotate = { 0.0f,0.0f,0.0f };
-	particle.transforms_.translate = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
+	Vector3 randomTranslate = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
+	particle.transforms_.translate = translate + randomTranslate;
 	particle.velocity_ = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
 	particle.color_ = { distColor(randomEngine),distColor(randomEngine),distColor(randomEngine),1.0f };
 	particle.lifeTime_ = distTime(randomEngine);
 	particle.currentTime_ = 0.0f;
 	return particle;
+}
+
+std::list<Particle> Particle3d::Emit(const Emitter& emitter, std::mt19937& randomEngine) {
+	std::list<Particle> particles;
+	for (uint32_t count = 0; count < emitter.particleCount_; ++count) {
+		particles.push_back(MakeNewParticle(randomEngine,emitter.transforms_.translate));
+	}
+	return particles;
+}
+
+bool Particle3d::IsCollision(const AABB& aabb, const Vector3& point) {
+	//最近接点を求める
+	Vector3 clossestPoint{
+		std::clamp(point.x,aabb.min_.x,aabb.max_.x),
+		std::clamp(point.y,aabb.min_.y,aabb.max_.y),
+		std::clamp(point.z,aabb.min_.z,aabb.max_.z)
+	};
+	//最近接点と球の中心との距離を求める
+	float distance = Vector3Math::Length(clossestPoint - point);
+	//距離が半径よりも小さければ衝突
+	if (distance <= point.x && distance <= point.y && distance <= point.z) {
+		return true;
+	}
+
+	return false;
 }
 
 void Particle3d::SetModel(const std::string& filePath) {
