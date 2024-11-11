@@ -68,9 +68,12 @@ void Object3d::Update() {
 	} else {
 		WVPMatrix_ = worldMatrix_;
 	}
+
+	WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 	
 	TransformMatrixData_->WVP = WVPMatrix_;
 	TransformMatrixData_->World = worldMatrix_;
+	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 }
 
 #ifdef _DEBUG

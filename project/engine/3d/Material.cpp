@@ -68,5 +68,5 @@ void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> d
 	materialData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	materialData_->uvTransform = MatrixMath::MakeIdentity4x4();
 	materialData_->enableLighting = false;
-	materialData_->shininess = 1.0f;
+	materialData_->shininess = 60.0f;
 }
