@@ -43,13 +43,11 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 	if (output.color.a == 0.0f) { discard; }
 
 	//Lightingの計算
-	if (gMaterial.enableLighting != 0) { //Lightingする場合
+	if ( gMaterial.enableLighting == 1 ) { //DirectionalLight
 	
-		float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction); //法線とライト方向の内積
+		float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction); 
 		float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
 		float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
-		//float3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
-		//float RdotE = dot(reflectLight, toEye);
 		float3 halfVector = normalize(-gDirectionalLight.direction + toEye);
 		float NdotH = dot(normalize(input.normal), halfVector);
 		float specularPow = pow(saturate(NdotH), gMaterial.shininess);
@@ -62,11 +60,13 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 		output.color.rgb = diffuse + specular;
 		//アルファ値
 		output.color.a = gMaterial.color.a * textureColor.a;
-		//	//ランバート反射
-		//	float cos = saturate(dot(normalize(input.normal), -gDirectionalLight.direction));
-		//	output.color = gMaterial.color * textureColor * gDirectionalLight.color * cos * gDirectionalLight.intensity;
-
-	} else { //Lightingしない場合。前回まで同じ計算
+		
+	}
+	else if ( gMaterial.enableLighting == 2 ) { //PointLighting
+	
+		float3 pointLightDirection = normalize()
+	}
+	else {
 		output.color = gMaterial.color * textureColor;
 	}
 	
