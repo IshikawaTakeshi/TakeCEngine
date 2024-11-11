@@ -279,6 +279,13 @@ Vector3 MatrixMath::Transform(const Vector3& vector, const Matrix4x4& matrix) {
 	return result;
 }
 
+Matrix4x4 MatrixMath::InverseTranspose(const Matrix4x4& m) {
+	
+	Matrix4x4 result = Inverse(m);
+	result = Transpose(result);
+	return result;
+}
+
 //void MatrixMath::MatirxScreenPrintf(int x, int y, const Matrix4x4& matrix,const char* label) {
 //	Novice::ScreenPrintf(x, y, "%s", label);
 //	for (int row = 0; row < 4; row++){

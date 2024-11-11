@@ -18,6 +18,10 @@ CameraManager* CameraManager::GetInstance() {
 	return instance_;
 }
 
+void CameraManager::Initialize(DirectXCommon* dxCommon) {
+	dxCommon_ = dxCommon;
+}
+
 void CameraManager::Update() {
 	if (activeCamera_) {
 		activeCamera_->Update();

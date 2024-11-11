@@ -67,9 +67,10 @@ private: // privateメンバ変数
 
 	//Transform
 	Transform transform_{};
-	//WorldMatrix
+	//TransformMatrix
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 WVPMatrix_;
+	Matrix4x4 WorldInverseTransposeMatrix_;
 	//Camera
 	Camera* camera_ = nullptr;
 };

@@ -40,6 +40,9 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//TextureManager
 	TextureManager::GetInstance()->Initialize(directXCommon_, srvManager_);
 
+	//CameraManager
+	CameraManager::GetInstance()->Initialize(directXCommon_);
+
 #ifdef _DEBUG
 	imguiManager_ = new ImGuiManager();
 	imguiManager_->Initialize(winApp_, directXCommon_,srvManager_);

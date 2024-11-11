@@ -2,11 +2,19 @@
 #include "Transform.h"
 #include "Matrix4x4.h"
 #include <string>
+#include <d3d12.h>
+#include <wrl.h>
+
+//定数バッファ用の構造体
+struct CameraForGPU {
+	Vector3 worldPosition;
+};
 
 class Camera {
 public:
-	Camera();
+	Camera() = default;
 	~Camera();
+	void Initialize(ID3D12Device* device);
 	void Update();
 
 #ifdef _DEBUG
@@ -23,6 +31,7 @@ public: //getter
 	const Matrix4x4& GetViewProjectionMatrix() const { return viewProjectionMatrix_; }
 	const Vector3& GetTranslate() const { return transform_.translate; }
 	const Vector3& GetRotate() const { return transform_.rotate; }
+	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetCameraResource() const { return cameraResource_; }
 
 public: //setter
 
@@ -34,6 +43,10 @@ public: //setter
 	void SetFarClip(const float farClip) { farClip_ = farClip; }
 
 private:
+
+	//バッファリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource_;
+	CameraForGPU* cameraForGPU_;
 
 	Transform transform_;
 	Matrix4x4 worldMatrix_;

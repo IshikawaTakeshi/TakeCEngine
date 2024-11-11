@@ -68,9 +68,12 @@ void Object3d::Update() {
 	} else {
 		WVPMatrix_ = worldMatrix_;
 	}
+
+	WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 	
 	TransformMatrixData_->WVP = WVPMatrix_;
 	TransformMatrixData_->World = worldMatrix_;
+	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 }
 
 #ifdef _DEBUG
@@ -86,7 +89,7 @@ void Object3d::UpdateImGui(int id) {
 		model_->GetMesh()->GetMaterial()->UpdateMaterialImGui();
 		ImGui::Text("Lighting");
 		ImGui::ColorEdit4("Color", &directionalLightData_->color_.x);
-		ImGui::DragFloat3("Direction", &directionalLightData_->direction_.x, 0.01f);
+		ImGui::SliderFloat3("Direction", &directionalLightData_->direction_.x, -1.0f, 1.0f);
 		ImGui::DragFloat("Intensity", &directionalLightData_->intensity_, 0.01f);
 		object3dCommon_->UpdateImGui();
 		ImGui::TreePop();
@@ -102,6 +105,9 @@ void Object3d::Draw() {
 
 	//Lighting用のCBufferの場所を指定
 	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
+	//カメラ情報のCBufferの場所を指定
+	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(
+		4,CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
 
 	if(model_ != nullptr) {
 		model_->Draw();

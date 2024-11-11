@@ -53,6 +53,10 @@ void PSO::CreateRootSignature(ID3D12Device* device) {
 	rootParameters_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParameters_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
 	rootParameters_[3].Descriptor.ShaderRegister = 1; //レジスタ番号1を使う
+	//.4 カメラの情報
+	rootParameters_[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParameters_[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParameters_[4].Descriptor.ShaderRegister = 2; //レジスタ番号2を使う
 
 	descriptionRootSignature_.pParameters = rootParameters_; //rootParameter配列へのポインタ
 	descriptionRootSignature_.NumParameters = _countof(rootParameters_); //配列の長さ
@@ -176,6 +180,7 @@ void PSO::CreateInputLayout() {
 	inputElementDescs_[2].SemanticIndex = 0;
 	inputElementDescs_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	inputElementDescs_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	//worldPosition
 
 	inputLayoutDesc_.pInputElementDescs = inputElementDescs_;
 	inputLayoutDesc_.NumElements = _countof(inputElementDescs_);
@@ -188,9 +193,9 @@ void PSO::CreateInputLayout() {
 void PSO::CreateBlendState() {
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 	blendDesc_.RenderTarget[0].BlendEnable = true;
-	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
 	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ZERO;
 	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
 	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
@@ -375,7 +380,7 @@ void PSO::UpdateImGui() {
 bool PSO::UpdateImGuiCombo() {
 
 	//コンボボックスの項目
-	std::vector<std::string> items = { "Add", "Subtract","Multiply","Screen" };
+	std::vector<std::string> items = { "Normal", "Add", "Subtract","Multiply","Screen"};
 	//現在の項目
 	std::string& currentItem = items[itemCurrentIdx];
 	//変更があったかどうか
@@ -406,29 +411,35 @@ bool PSO::UpdateImGuiCombo() {
 		HRESULT result = S_FALSE;
 
 		switch (itemCurrentIdx) {
-		case 0: // Add
+		case 0: // Normal
+			blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
+			blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+			blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ZERO;
+			break;
+		case 1: // Add
 			blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 			blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
 			blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
 			break;
 
-		case 1: // Subtract
+		case 2: // Subtract
 			blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 			blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_SUBTRACT;
 			blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
 			break;
 
-		case 2: // Multiply
+		case 3: // Multiply
 			blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_ZERO;
 			blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
 			blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_COLOR;
 			break;
 
-		case 3: // Screen
+		case 4: // Screen
 			blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_INV_DEST_COLOR;
 			blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
 			blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
 			break;
+		
 		}
 
 		//PSOの再生成をする

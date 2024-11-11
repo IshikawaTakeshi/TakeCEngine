@@ -58,7 +58,6 @@ public:
 	//Matrix4x4からVector3に座標変換
 	static Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
 
-	//数値表示
-	//static void MatirxScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label);
-
+	//InverseTranspose
+	static Matrix4x4 InverseTranspose(const Matrix4x4& m);
 };
