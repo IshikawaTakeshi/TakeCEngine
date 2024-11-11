@@ -106,8 +106,8 @@ void GamePlayScene::Draw() {
 	//sprite_->Draw();              //スプライトの描画
 
 	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
-	//object3d->Draw();             //3Dオブジェクトの描画
-	//object3d1->Draw();
+	object3d->Draw();             //3Dオブジェクトの描画
+	object3d1->Draw();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 

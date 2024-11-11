@@ -86,7 +86,7 @@ void Object3d::UpdateImGui(int id) {
 		model_->GetMesh()->GetMaterial()->UpdateMaterialImGui();
 		ImGui::Text("Lighting");
 		ImGui::ColorEdit4("Color", &directionalLightData_->color_.x);
-		ImGui::DragFloat3("Direction", &directionalLightData_->direction_.x, 0.01f);
+		ImGui::SliderFloat3("Direction", &directionalLightData_->direction_.x, -1.0f, 1.0f);
 		ImGui::DragFloat("Intensity", &directionalLightData_->intensity_, 0.01f);
 		object3dCommon_->UpdateImGui();
 		ImGui::TreePop();
