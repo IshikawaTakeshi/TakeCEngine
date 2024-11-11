@@ -93,7 +93,7 @@ private:
 
 	//rootSignature
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
-	D3D12_ROOT_PARAMETER rootParameters_[4] = {};
+	D3D12_ROOT_PARAMETER rootParameters_[5] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};
 	ComPtr<ID3D10Blob> signatureBlob_;

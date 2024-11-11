@@ -7,12 +7,7 @@
 #include <vector>
 #include <cstdint>
 
-struct MaterialData {
-	Vector4 color; //カラー
-	uint32_t enableLighting; //ライティングを有効にするフラグ
-	float padding[3];
-	Matrix4x4 uvTransform; //UVトランスフォーム
-};
+
 
 struct VertexData {
 	Vector4 position;

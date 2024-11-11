@@ -102,6 +102,9 @@ void Object3d::Draw() {
 
 	//Lighting用のCBufferの場所を指定
 	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
+	//カメラ情報のCBufferの場所を指定
+	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(
+		4,CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
 
 	if(model_ != nullptr) {
 		model_->Draw();

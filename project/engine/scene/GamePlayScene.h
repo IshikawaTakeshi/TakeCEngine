@@ -41,7 +41,7 @@ private:
 	std::shared_ptr<Sprite> sprite_ = nullptr;
 	//3Dオブジェクト
 	std::shared_ptr <Object3d> object3d = nullptr;
-	//std::shared_ptr <Object3d> object3d1 = nullptr;
+	std::shared_ptr <Object3d> object3d1 = nullptr;
 	//パーティクル
 	std::unique_ptr<Particle3d> particle3d_ = nullptr;
 };

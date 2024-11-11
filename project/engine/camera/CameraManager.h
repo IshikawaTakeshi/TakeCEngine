@@ -4,11 +4,15 @@
 #include <vector>
 #include <string>
 #include <memory>
+
+class DirectXCommon;
 class Camera;
 class CameraManager {
 public:
 	
 	static CameraManager* GetInstance();
+
+	void Initialize(DirectXCommon* dxCommon);
 
 	void Update();
 
@@ -34,6 +38,8 @@ public:
 	// カメラの数を取得する
 	int GetCameraCount() const;
 
+	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
+
 
 private:
 
@@ -43,6 +49,8 @@ private:
 	CameraManager& operator=(const CameraManager&) = delete;
 
 private:
+
+	DirectXCommon* dxCommon_ = nullptr;
 
 	static CameraManager* instance_;
 	std::unordered_map<std::string, std::unique_ptr<Camera>> cameras_;

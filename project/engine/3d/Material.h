@@ -6,6 +6,12 @@
 #include <string>
 #include <cstdint>
 
+struct MaterialData {
+	Vector4 color; //カラー
+	Matrix4x4 uvTransform; //UVトランスフォーム
+	uint32_t enableLighting; //ライティングを有効にするフラグ
+	float shininess; //鏡面反射の強さ
+};
 
 class DirectXCommon;
 class Material {

@@ -2,8 +2,9 @@
 
 struct Material {
 	float4 color; //カラー
-	int enableLighting; //Lightingを有効にするフラグ
 	float4x4 uvTransform;
+	int enableLighting; //Lightingを有効にするフラグ
+	float shininess;
 };
 
 struct DirectionalLight {
@@ -12,10 +13,16 @@ struct DirectionalLight {
 	float intensity; //輝度
 };
 
+struct Camera {
+	float3 worldPosition;
+};
+
 //マテリアル
 ConstantBuffer<Material> gMaterial : register(b0);
 //並行光源
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
+//カメラ
+ConstantBuffer<Camera> gCamera : register(b2);
 //テクスチャ
 Texture2D<float4> gTexture : register(t0);
 //サンプラー
@@ -30,6 +37,10 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 
 	float4 transformedUV = mul(float4(input.texcoord,0.0f,1.0f), gMaterial.uvTransform);
 	float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
+	float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
+	float3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
+	float RdotE = dot(reflectLight, toEye);
+	float specularPow = pow(saturate(RdotE), gMaterial.shininess);
 	
 	if (textureColor.a < 0.5f) { discard; }
 
@@ -37,11 +48,16 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 
 	//Lightingの計算
 	if (gMaterial.enableLighting != 0) { //Lightingする場合
-		
-			//HalfLambert
+
 		float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction); //法線とライト方向の内積
 		float cos = pow(NdotL * 0.5 + 0.5f, 2.0f);
-		output.color.rgb = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
+		//拡散反射
+		float3 diffuse = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
+		//鏡面反射
+		float3 specular = gMaterial.color.rgb * gDirectionalLight.intensity * specularPow * float3(1.0f, 1.0f, 1.0f);
+		//拡散反射+鏡面反射
+		output.color.rgb = diffuse + specular;
+		//アルファ値
 		output.color.a = gMaterial.color.a * textureColor.a;
 		//	//ランバート反射
 		//	float cos = saturate(dot(normalize(input.normal), -gDirectionalLight.direction));
