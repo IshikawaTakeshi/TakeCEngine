@@ -48,9 +48,11 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 		float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction); //法線とライト方向の内積
 		float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
 		float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
-		float3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
-		float RdotE = dot(reflectLight, toEye);
-		float specularPow = pow(saturate(RdotE), gMaterial.shininess);
+		//float3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
+		//float RdotE = dot(reflectLight, toEye);
+		float3 halfVector = normalize(-gDirectionalLight.direction + toEye);
+		float NdotH = dot(normalize(input.normal), halfVector);
+		float specularPow = pow(saturate(NdotH), gMaterial.shininess);
 	
 		//拡散反射
 		float3 diffuse = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
