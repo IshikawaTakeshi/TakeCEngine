@@ -2,8 +2,9 @@
 
 struct Material {
 	float4 color; //カラー
-	int enableLighting; //Lightingを有効にするフラグ
 	float4x4 uvTransform;
+	int enableLighting; //Lightingを有効にするフラグ
+	float shininess;
 };
 
 //struct DirectionalLight {

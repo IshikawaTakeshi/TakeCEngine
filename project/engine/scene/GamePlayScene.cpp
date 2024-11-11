@@ -30,7 +30,7 @@ void GamePlayScene::Initialize() {
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 	ModelManager::GetInstance()->LoadModel("plane.obj");
-	ModelManager::GetInstance()->LoadModel("skydome.obj");
+	ModelManager::GetInstance()->LoadModel("sphere.obj");
 
 	//Sprite
 	sprite_ = std::make_shared<Sprite>();
@@ -38,8 +38,7 @@ void GamePlayScene::Initialize() {
 
 	//Object3d
 	object3d = std::make_shared<Object3d>();
-	object3d->Initialize(Object3dCommon::GetInstance(), "skydome.obj");
-	object3d->SetScale({ 0.002f,0.002f,0.002f });
+	object3d->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
 
 	object3d1 = std::make_shared<Object3d>();
 	object3d1->Initialize(Object3dCommon::GetInstance(), "axis.obj");
