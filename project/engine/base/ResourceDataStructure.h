@@ -15,11 +15,19 @@ struct VertexData {
 	Vector3 normal;
 };
 
-//ディレクショナルライトのデータ
+//DirectionalLightのデータ
 struct DirectionalLightData {
 	Vector4 color_; //ライトの色
 	Vector3 direction_; //ライトの向き
 	float intensity_; //輝度
+};
+
+//PointLightのデータ
+struct PointLightData {
+	Vector4 color_; //ライトの色
+	Vector3 position_; //ライトの位置
+	float intensity_; //輝度
+	//float range_; //有効範囲
 };
 
 //モデル1個分のマテリアルデータ
