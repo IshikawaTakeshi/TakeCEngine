@@ -57,17 +57,22 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 	
 		float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction); //法線とライト方向の内積
 		float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
+		//ハーフベクトルの計算
 		float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
 		float3 halfVector = normalize(-gDirectionalLight.direction + toEye);
 		float NdotH = dot(normalize(input.normal), halfVector);
 		float specularPow = pow(saturate(NdotH), gMaterial.shininess);
+		//pointLightの計算
+		float3 pointLightDirection = normalize(input.worldPosition - gPointLight.position);
 	
 		//拡散反射
-		float3 diffuse = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
+		float3 diffuseDir = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
+		float3 diffusePoint = gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * dot(normalize(input.normal), pointLightDirection) * gPointLight.intensity;
 		//鏡面反射
-		float3 specular = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float3(1.0f, 1.0f, 1.0f);
+		float3 specularDir = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float3(1.0f, 1.0f, 1.0f);
+		float3 specularPoint = gPointLight.color.rgb * gPointLight.intensity * specularPow * float3(1.0f, 1.0f, 1.0f);
 		//拡散反射+鏡面反射
-		output.color.rgb = diffuse + specular;
+		output.color.rgb = diffuseDir + specularDir + diffusePoint + specularPoint;
 		//アルファ値
 		output.color.a = gMaterial.color.a * textureColor.a;
 		
