@@ -1,4 +1,5 @@
 #pragma once
+#include "ResourceDataStructure.h"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
@@ -63,6 +64,14 @@ private:
 
 	//RootSignature
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+
+	//平行光源用のリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
+	DirectionalLightData* directionalLightData_ = nullptr;
+	//ポイントライトのリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> pointLightResource_;
+	PointLightData* pointLightData_ = nullptr;
+
 
 	//PSO
 	PSO* pso_ = nullptr;

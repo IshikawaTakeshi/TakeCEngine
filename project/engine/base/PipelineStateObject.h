@@ -31,10 +31,13 @@ public:
 	/// </summary>
 	//void Finalize();
 
+	
+	void CreateRootSignatureForSprite(ID3D12Device* device);
+
 	/// <summary>
 	/// Object3D用のルートシグネチャ生成
 	/// </summary>
-	void CreateRootSignature(ID3D12Device* device);
+	void CreateRootSignatureForObject3D(ID3D12Device* device);
 
 	/// <summary>
 	/// パーティクル用のルートシグネチャ生成
@@ -60,7 +63,8 @@ public:
 	/// <summary>
 	/// PSO生成
 	/// </summary>
-	void CreatePSO(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode);
+	void CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode);
+	void CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode);
 
 	void CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode);
 
@@ -93,7 +97,7 @@ private:
 
 	//rootSignature
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
-	D3D12_ROOT_PARAMETER rootParameters_[5] = {};
+	D3D12_ROOT_PARAMETER rootParameters_[6] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};
 	ComPtr<ID3D10Blob> signatureBlob_;

@@ -5,6 +5,8 @@
 #include <string>
 #include <memory>
 
+#include "Camera.h"
+
 class DirectXCommon;
 class Camera;
 class CameraManager {

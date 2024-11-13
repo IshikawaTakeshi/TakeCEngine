@@ -1,5 +1,4 @@
 #include "CameraManager.h"
-#include "Camera.h"
 
 #pragma region imgui
 #ifdef _DEBUG
