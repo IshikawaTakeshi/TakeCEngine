@@ -3,6 +3,7 @@
 #include "PipelineStateObject.h"
 #include "ImGuiManager.h"
 #include "CameraManager.h"
+#include "Vector3Math.h"
 
 Object3dCommon* Object3dCommon::instance_ = nullptr;
 
@@ -37,15 +38,17 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	//光源の方向を書き込む
 	directionalLightData_->direction_ = { 0.0f,-1.0f,0.0f };
 	//光源の輝度書き込む
-	directionalLightData_->intensity_ = 1.0f;
+	directionalLightData_->intensity_ = 0.0f;
 
 	//PointLight用のResourceの作成
 	pointLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(PointLightData));
 	pointLightData_ = nullptr;
 	pointLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&pointLightData_));
 	pointLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
-	pointLightData_->position_ = { 0.0f,0.0f,0.0f };
-	pointLightData_->intensity_ = 1.0f;
+	pointLightData_->position_ = { 0.0f,2.0f,0.0f };
+	pointLightData_->intensity_ = 2.0f;
+	pointLightData_->radius_ = 10.0f;
+	pointLightData_->decay_ = 1.0f;
 
 #pragma endregion
 }
@@ -53,11 +56,14 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 void Object3dCommon::UpdateImGui() {
 	ImGui::Text("DirectionalLight");
 	ImGui::SliderFloat3("Direction", &directionalLightData_->direction_.x, -1.0f, 1.0f);
+	directionalLightData_->direction_ = Vector3Math::Normalize(directionalLightData_->direction_);
 	ImGui::DragFloat("dirIntensity", &directionalLightData_->intensity_, 0.01f);
 	ImGui::Text("PointLight");
 	ImGui::ColorEdit4("Color", &pointLightData_->color_.x);
 	ImGui::DragFloat3("Position", &pointLightData_->position_.x, 0.01f);
 	ImGui::DragFloat("Intensity", &pointLightData_->intensity_, 0.01f);
+	ImGui::SliderFloat("PointLightRadius", &pointLightData_->radius_, 0.0f, 100.0f);
+	ImGui::SliderFloat("Decay", &pointLightData_->decay_, 0.0f, 2.0f);
 	pso_->UpdateImGui();
 }
 
