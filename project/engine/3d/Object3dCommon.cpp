@@ -63,6 +63,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	spotLightData_->intensity_ = 4.0f;
 	spotLightData_->decay_ = 2.0f;
 	spotLightData_->cosAngle_ = std::cosf(std::numbers::pi_v<float> / 3.0f);
+	spotLightData_->penumbraAngle_ = std::numbers::pi_v<float> / 6.0f;
 
 #pragma endregion
 }
@@ -87,6 +88,7 @@ void Object3dCommon::UpdateImGui() {
 	ImGui::DragFloat("SpotIntensity", &spotLightData_->intensity_, 0.01f);
 	ImGui::SliderFloat("SpotDecay", &spotLightData_->decay_, 0.0f, 2.0f);
 	ImGui::SliderAngle("SpotCosAngle", &spotLightData_->cosAngle_);
+	ImGui::SliderAngle("SpotPenumbraAngle", &spotLightData_->penumbraAngle_);
 	//spotLightData_->cosAngle_ = std::cosf(spotLightData_->cosAngle_);
 	pso_->UpdateImGui();
 }
