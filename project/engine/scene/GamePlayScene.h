@@ -44,6 +44,7 @@ private:
 	std::shared_ptr <Object3d> object3d = nullptr;
 	std::shared_ptr <Object3d> object3d1 = nullptr;
 	//パーティクル発生器
-	std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
+	std::unique_ptr<ParticleEmitter> particleEmitter1_ = nullptr;
+	std::unique_ptr<ParticleEmitter> particleEmitter2_ = nullptr;
 	
 };

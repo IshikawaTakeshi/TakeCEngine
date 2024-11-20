@@ -40,7 +40,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	//光源の方向を書き込む
 	directionalLightData_->direction_ = { 0.0f,-1.0f,0.0f };
 	//光源の輝度書き込む
-	directionalLightData_->intensity_ = 0.0f;
+	directionalLightData_->intensity_ = 1.0f;
 
 	//PointLight用のResourceの作成
 	pointLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(PointLightData));

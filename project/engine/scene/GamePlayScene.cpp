@@ -29,6 +29,7 @@ void GamePlayScene::Initialize() {
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	//Model読み込み
+	ModelManager::GetInstance()->LoadModel("Box.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("sphere.obj");
@@ -47,13 +48,13 @@ void GamePlayScene::Initialize() {
 
 	//CreateParticle
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Particle1", "plane.obj");
-	particleEmitter_ = std::make_unique<ParticleEmitter>();
-	particleEmitter_->Initialize(
-		"Particle1",
-		{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} },
-		100, 0.5f
-	);
-	
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Particle2", "sphere.obj");
+	particleEmitter1_ = std::make_unique<ParticleEmitter>();
+	particleEmitter2_ = std::make_unique<ParticleEmitter>();
+	particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },1, 0.5f);
+	particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },1, 0.5f);
+	particleEmitter1_->SetParticleName("Particle1");
+	particleEmitter2_->SetParticleName("Particle2");
 }
 
 //====================================================================
@@ -79,7 +80,8 @@ void GamePlayScene::Update() {
 	Object3dCommon::GetInstance()->UpdateImGui();
 	object3d->UpdateImGui(0);
 	object3d1->UpdateImGui(1);
-	particleEmitter_->UpdateImGui();
+	particleEmitter1_->UpdateImGui();
+	particleEmitter2_->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
 #endif // DEBUG
@@ -93,9 +95,15 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->Update();
 
 	//sprite_->Update(); 	//Spriteの更新
-	object3d->Update(); //3Dオブジェクトの更新
+	// 
+	//3Dオブジェクトの更新
+	object3d->Update(); 
 	object3d1->Update();
-	particleEmitter_->Update(); //パーティクル発生器の更新
+
+	//パーティクル発生器の更新
+	particleEmitter1_->Update(); 
+	particleEmitter2_->Update();
+
 	TakeCFrameWork::GetParticleManager()->Update(); //パーティクルの更新
 
 	//シーン遷移
