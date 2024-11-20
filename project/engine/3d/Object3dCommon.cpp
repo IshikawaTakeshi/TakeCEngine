@@ -4,6 +4,8 @@
 #include "ImGuiManager.h"
 #include "CameraManager.h"
 #include "Vector3Math.h"
+#include <numbers>
+#include <algorithm>
 
 Object3dCommon* Object3dCommon::instance_ = nullptr;
 
@@ -46,9 +48,22 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	pointLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&pointLightData_));
 	pointLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	pointLightData_->position_ = { 0.0f,2.0f,0.0f };
-	pointLightData_->intensity_ = 2.0f;
+	pointLightData_->intensity_ = 0.0f;
 	pointLightData_->radius_ = 10.0f;
 	pointLightData_->decay_ = 1.0f;
+
+	//SpotLight用のResourceの作成
+	spotLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(SpotLightData));
+	spotLightData_ = nullptr;
+	spotLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&spotLightData_));
+	spotLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	spotLightData_->position_ = { 2.0f,2.0f,0.0f };
+	spotLightData_->direction_ = { -1.0f,-1.0f,0.0f };
+	spotLightData_->distance_ = 7.0f;
+	spotLightData_->intensity_ = 4.0f;
+	spotLightData_->decay_ = 2.0f;
+	spotLightData_->cosAngle_ = std::cosf(std::numbers::pi_v<float> / 3.0f);
+	spotLightData_->penumbraAngle_ = std::numbers::pi_v<float> / 6.0f;
 
 #pragma endregion
 }
@@ -64,6 +79,17 @@ void Object3dCommon::UpdateImGui() {
 	ImGui::DragFloat("Intensity", &pointLightData_->intensity_, 0.01f);
 	ImGui::SliderFloat("PointLightRadius", &pointLightData_->radius_, 0.0f, 100.0f);
 	ImGui::SliderFloat("Decay", &pointLightData_->decay_, 0.0f, 2.0f);
+	ImGui::Text("SpotLight");
+	ImGui::ColorEdit4("SpotColor", &spotLightData_->color_.x);
+	ImGui::DragFloat3("SpotPosition", &spotLightData_->position_.x, 0.01f);
+	ImGui::DragFloat3("SpotDirection", &spotLightData_->direction_.x, 0.01f);
+	spotLightData_->direction_ = Vector3Math::Normalize(spotLightData_->direction_);
+	ImGui::DragFloat("SpotDistance", &spotLightData_->distance_, 0.01f);
+	ImGui::DragFloat("SpotIntensity", &spotLightData_->intensity_, 0.01f);
+	ImGui::SliderFloat("SpotDecay", &spotLightData_->decay_, 0.0f, 2.0f);
+	ImGui::SliderAngle("SpotCosAngle", &spotLightData_->cosAngle_);
+	ImGui::SliderAngle("SpotPenumbraAngle", &spotLightData_->penumbraAngle_);
+	//spotLightData_->cosAngle_ = std::cosf(spotLightData_->cosAngle_);
 	pso_->UpdateImGui();
 }
 
@@ -96,5 +122,7 @@ void Object3dCommon::PreDraw() {
 
 	//pointLightのCBuffer
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(5, pointLightResource_->GetGPUVirtualAddress());
+	//spotLightのCBuffer
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(6, spotLightResource_->GetGPUVirtualAddress());
 
 }

@@ -61,6 +61,11 @@ void PSO::CreateRootSignatureForSprite(ID3D12Device* device) {
 	rootParameters_[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParameters_[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
 	rootParameters_[5].Descriptor.ShaderRegister = 3; //レジスタ番号3
+	//.6 SpotLightのデータ
+	rootParameters_[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParameters_[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParameters_[6].Descriptor.ShaderRegister = 4; //レジスタ番号4
+
 
 	descriptionRootSignature_.pParameters = rootParameters_; //rootParameter配列へのポインタ
 	descriptionRootSignature_.NumParameters = _countof(rootParameters_); //配列の長さ
@@ -124,7 +129,7 @@ void PSO::CreateRootSignatureForObject3D(ID3D12Device* device) {
 	rootParameters_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
 	rootParameters_[2].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
 	rootParameters_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
-	//.3 平行光源をShaderで使う
+	//.3 DirectionalLight
 	rootParameters_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParameters_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
 	rootParameters_[3].Descriptor.ShaderRegister = 1; //レジスタ番号1
@@ -136,6 +141,10 @@ void PSO::CreateRootSignatureForObject3D(ID3D12Device* device) {
 	rootParameters_[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParameters_[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
 	rootParameters_[5].Descriptor.ShaderRegister = 3; //レジスタ番号3
+	//.6 SpotLightのデータ
+	rootParameters_[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParameters_[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParameters_[6].Descriptor.ShaderRegister = 4; //レジスタ番号4
 
 	descriptionRootSignature_.pParameters = rootParameters_; //rootParameter配列へのポインタ
 	descriptionRootSignature_.NumParameters = _countof(rootParameters_); //配列の長さ

@@ -71,7 +71,9 @@ private:
 	//ポイントライトのリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> pointLightResource_;
 	PointLightData* pointLightData_ = nullptr;
-
+	//スポットライトのリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> spotLightResource_;
+	SpotLightData* spotLightData_ = nullptr;
 
 	//PSO
 	PSO* pso_ = nullptr;
