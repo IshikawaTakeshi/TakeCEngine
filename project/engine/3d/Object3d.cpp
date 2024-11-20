@@ -76,8 +76,7 @@ void Object3d::UpdateImGui(int id) {
 		ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 		model_->GetMesh()->GetMaterial()->UpdateMaterialImGui();
-		
-		object3dCommon_->UpdateImGui();
+		object3dCommon_->GetPSO()->UpdateImGui();
 		ImGui::TreePop();
 	}
 	ImGui::End();

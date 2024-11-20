@@ -3,28 +3,42 @@
 #include "Particle3d.h"
 #include <list>
 #include <wrl.h>
+#include <unordered_map>
+#include <string>
+#include <memory>
+#include <random>
 
 class DirectXCommon;
+class ParticleCommon;
 class ParticleManager {
 
 public:
-	ParticleManager();
-	~ParticleManager();
+	ParticleManager() = default;
+	~ParticleManager() = default;
 
-	void Initialize();
+	static ParticleManager* GetInstance();
+
+	/// <summary>
+	/// パーティクルグループの生成
+	/// </summary>
+	/// <param name="particleCommon">パーティクル共通情報</param>
+	/// <param name="name">グループ名(固有名)</param>
+	/// <param name="filePath">objファイルパス</param>
+	void CreateParticleGroup(ParticleCommon* particleCommon,const std::string& name, const std::string& filePath);
 
 	void Update();
 
+	void UpdateImGui();
+
+	void Draw();
+
+	void Finalize();
+
+	void Emit(const std::string& name, const Vector3& emitPosition, uint32_t count);
+
+
 private:
 
-	struct ParticleGroup {
-		ModelMaterialData modelMaterialData;
-		std::list<Particle3d*> particles;
-		uint32_t instancingSrvIndex;
-		Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource;
-		uint32_t instanceCount;
-		//インスタンシングデータを書き込むためのポインタ
-	};
+	std::unordered_map<std::string, std::unique_ptr<Particle3d>> particleGroups_;
 
 };
-

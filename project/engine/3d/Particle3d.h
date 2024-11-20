@@ -18,13 +18,7 @@ struct Particle {
 	float currentTime_;     //経過時間
 };
 
-//エミッター
-struct Emitter {
-	Transform transforms_;   //エミッターの位置
-	uint32_t particleCount_; //発生するParticleの数
-	float frequency_;        //発生頻度
-	float frequencyTime_;    //経過時間
-};
+
 
 struct AABB {
 	Vector3 min_;
@@ -47,11 +41,8 @@ class SrvManager;
 class Particle3d {
 public:
 
-
-
 	//エイリアステンプレート
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 
 	Particle3d() = default;
 	~Particle3d();
@@ -76,12 +67,19 @@ public:
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// パーティクルの生成
+	/// </summary>
 	Particle MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate);
 
-
-	std::list<Particle> Emit(const Emitter& emitter, std::mt19937& randomEngine);
+	/// <summary>
+	/// パーティクルの発生
+	/// </summary>
+	std::list<Particle> Emit(const Vector3& emitterPos, uint32_t particleCount);
 
 	bool IsCollision(const AABB& aabb, const Vector3& point);
+
+	void SpliceParticles(std::list<Particle> particles);
 
 public: //getter
 
@@ -97,29 +95,31 @@ private: // privateメンバ変数
 	uint32_t numInstance_ = 0; //描画するインスタンス数
 	std::list<Particle> particles_; //Particleの配列
 	bool isBillboard_ = false;
-	Emitter emitter_;
+	//Emitter emitter_;
 	AccelerationField accelerationField_;
 	
 private:
 
+	
 	//ParticleCommon
 	ParticleCommon* particleCommon_ = nullptr;
-	//RootSignature
-	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
-	//PSO
-	PSO* pso_ = nullptr;
+
+	//Camera
+	Camera* camera_ = nullptr;
+
 	//モデル
 	Model* model_ = nullptr;
-	//TransformationMatrix用のデータ
+
+
+
+	//instancing用のデータ
 	ParticleForGPU* instancingData_ = nullptr;
+	uint32_t instancingSrvIndex_ = 0;
+	ComPtr<ID3D12Resource> instancingResource_;
 	//Matrix
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 WVPMatrix_;
 	//Matrix4x4 billboardMatrix_;
-	//Camera
-	Camera* camera_ = nullptr;
-	uint32_t useSrvIndex_ = 0;
-	ComPtr<ID3D12Resource> instancingResource_;
-	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU; //CPUディスクリプタハンドル
-	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU; //GPUディスクリプタハンドル
+
+
 };

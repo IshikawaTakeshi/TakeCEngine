@@ -12,7 +12,8 @@
 #include "SpriteCommon.h"
 #include "Particle3d.h"
 #include "ParticleCommon.h"
-
+#include "ParticleManager.h"
+#include "ParticleEmitter.h"
 
 
 class GamePlayScene : public BaseScene {
@@ -42,6 +43,7 @@ private:
 	//3Dオブジェクト
 	std::shared_ptr <Object3d> object3d = nullptr;
 	std::shared_ptr <Object3d> object3d1 = nullptr;
-	//パーティクル
-	std::unique_ptr<Particle3d> particle3d_ = nullptr;
+	//パーティクル発生器
+	std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
+	
 };
