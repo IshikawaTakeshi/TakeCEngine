@@ -8,36 +8,34 @@ ParticleManager* ParticleManager::GetInstance() {
 }
 
 //================================================================================================
-// パ�EチE��クルグループ�E生�E
+// 初期化
 //================================================================================================
 
 void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon,const std::string& name, const std::string& filePath) {
 
 	if (particleGroups_.contains(name)) {
-		//すでに読み込み済みならreturn
+		//既に同名のparticleGroupが存在する場合は生成しない
 		return;
 	}
 
-	//パ�EチE��クルグループ�E生�Eとファイル読み込み、�E期化
+	//particleGroupの生成
 	std::unique_ptr<Particle3d> particleGroup = std::make_unique<Particle3d>();
 	particleGroup->Initialize(particleCommon,filePath);
 	particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
 }
 
 //================================================================================================
-// パ�EチE��クルグループ�E更新
+// 更新処理
 //================================================================================================
 
 void ParticleManager::Update() {
-
-	//MEMO:particleGroups_の値をnameとparticleに刁E��
 	for (auto& [name, particleGroup] : particleGroups_) {
 		particleGroup->Update();
 	}
 }
 
 //================================================================================================
-// ImGuiの更新
+// ImGuiの更新処理
 //================================================================================================
 
 void ParticleManager::UpdateImGui() {
@@ -47,7 +45,7 @@ void ParticleManager::UpdateImGui() {
 	ImGui::Text("ParticleGroup Count : %d", particleGroups_.size());
 	ImGui::Separator();
 	for (const auto& [name, particleGroup] : particleGroups_) {
-		// ボタンを表示し、E
+		// 繝懊ち繝ｳ繧定｡ｨ遉ｺ縺励・
 		if (ImGui::TreeNode(name.c_str())) {
 			particleGroup->UpdateImGui();
 			ImGui::TreePop();
@@ -59,12 +57,10 @@ void ParticleManager::UpdateImGui() {
 }
 
 //================================================================================================
-// パ�EチE��クルグループ�E描画
+// 描画処理
 //================================================================================================
 
 void ParticleManager::Draw() {
-
-	//MEMO:particleGroups_の値をnameとparticleに刁E��
 	for (auto& [name, particleGroup] : particleGroups_) {
 		particleGroup->Draw();
 	}
@@ -75,16 +71,16 @@ void ParticleManager::Finalize() {
 }
 
 //================================================================================================
-// パ�EチE��クルの発甁E
+// パーティクルの発生
 //================================================================================================
 
 void ParticleManager::Emit(const std::string& name, const Vector3& emitPosition, uint32_t count) {
 
-	//登録済みのグループ名かどぁE��チェチE��
+	//存在しない場合は処理しない
 	if (!particleGroups_.contains(name)) {
 		return;
 	}
 
-	//持E��されたパ�EチE��クルグループに登録
+	//particleGroupsに発生させたパーティクルを登録させる
 	particleGroups_.at(name)->SpliceParticles(particleGroups_.at(name)->Emit(emitPosition, count));
 }
