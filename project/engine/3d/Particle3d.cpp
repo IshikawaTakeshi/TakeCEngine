@@ -139,13 +139,12 @@ void Particle3d::Update() {
 //=============================================================================
 
 void Particle3d::UpdateImGui() {
-	std::random_device seedGenerator;
-	std::mt19937 randomEngine(seedGenerator());
-
+#ifdef _DEBUG
 	ImGui::Text("Particle3d");
 	ImGui::Checkbox("Billboard", &isBillboard_);
 	ImGui::Text("ParticleCount:%d", numInstance_);
 	particleCommon_->GetPSO()->UpdateImGui();
+#endif // _DEBUG
 }
 
 void Particle3d::Draw() {

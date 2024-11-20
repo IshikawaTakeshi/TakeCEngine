@@ -4,13 +4,14 @@
 #include <numbers>
 
 Mesh::~Mesh() {
-	delete material_;
-	material_ = nullptr;
+	material_.reset();
+	vertexResource_.Reset();
+	indexResource_.Reset();
 }
 
 void Mesh::InitializeMesh(DirectXCommon* dxCommon,const std::string& filePath) {
 
-	material_ = new Material();
+	material_ = std::make_unique<Material>();
 	material_->InitializeTexture(dxCommon, filePath);
 }
 

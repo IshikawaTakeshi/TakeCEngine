@@ -1,13 +1,13 @@
 #pragma once
 
+#include "Mesh.h"
 #include "ResourceDataStructure.h"
 #include "Transform.h"
 #include "TransformMatrix.h"
 #include <d3d12.h>
 #include <wrl.h>
+#include <memory>
 
-
-class Mesh;
 class Texture;
 class SrvManager;
 class DirectXCommon;
@@ -47,7 +47,7 @@ public:
 
 public: //ゲッター
 
-	Mesh* GetMesh() { return mesh_; }
+	Mesh* GetMesh() { return mesh_.get(); }
 
 
 	ModelCommon* GetModelCommon() { return modelCommon_; }
@@ -56,6 +56,8 @@ public: //ゲッター
 
 public: //セッター
 
+	void SetMesh(Mesh* mesh) { mesh_.reset(mesh); }
+
 	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
 
 private:
@@ -63,7 +65,7 @@ private:
 	ModelCommon* modelCommon_ = nullptr;
 
 	//メッシュ
-	Mesh* mesh_ = nullptr;
+	std::unique_ptr<Mesh> mesh_ = nullptr;
 
 	//構築するModelData
 	ModelData modelData_;

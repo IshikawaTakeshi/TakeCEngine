@@ -2,22 +2,11 @@
 #include "DirectXCommon.h"
 #include "MatrixMath.h"
 #include "TextureManager.h"
-
-#pragma region imgui
-#ifdef _DEBUG
-
-#include "../externals/imgui/imgui.h"
-#include "../externals/imgui/imgui_impl_dx12.h"
-#include "../externals/imgui/imgui_impl_win32.h"
-#endif // DEBUG
-
-#pragma endregion
-
+#include "ImGuiManager.h"
 
 Material::~Material() {
 
 	materialResource_.Reset();
-
 }
 
 void Material::InitializeTexture(DirectXCommon* dxCommon, const std::string& filePath) {

@@ -26,9 +26,9 @@ public:
 
 protected:
 
-	WinApp* winApp_ = nullptr;
-	DirectXCommon* directXCommon_ = nullptr;
-	SrvManager* srvManager_ = nullptr;
+	std::unique_ptr<WinApp> winApp_ = nullptr;
+	std::unique_ptr<DirectXCommon> directXCommon_ = nullptr;
+	std::unique_ptr<SrvManager> srvManager_ = nullptr;
 	Input* input_ = nullptr;
 	AudioManager* audio_ = nullptr;
 	SpriteCommon* spriteCommon_ = nullptr;
@@ -36,7 +36,7 @@ protected:
 	ParticleCommon* particleCommon_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
 	ImGuiManager* imguiManager_ = nullptr;
-	AbstractSceneFactory* sceneFactory_ = nullptr;
+	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;
 	static ParticleManager* particleManager_;
 	
 	//終了フラグ

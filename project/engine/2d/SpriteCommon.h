@@ -2,6 +2,7 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
+#include <memory>
 
 class PSO;
 class DirectXCommon;
@@ -82,7 +83,7 @@ private:
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 
 	//PipelineStateObject
-	PSO* pso_ = nullptr;
+	std::unique_ptr<PSO> pso_ = nullptr;
 
 };
 

@@ -2,9 +2,7 @@
 
 #include "Logger.h"
 #include "StringUtility.h"
-#include "MatrixMath.h"
-#include "DirectXShaderCompiler.h"
-#include "PipelineStateObject.h"
+#include "ImGuiManager.h"
 #include <format>
 #include <cassert>
 #include <thread>
@@ -13,25 +11,8 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "winmm.lib")
 
-#pragma region imgui
-#ifdef _DEBUG
-#include "../externals/imgui/imgui.h"
-#include "../externals/imgui/imgui_impl_dx12.h"
-#include "../externals/imgui/imgui_impl_win32.h"
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
-	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-#endif // DEBUG
-
-#pragma endregion
-
 DirectXCommon::~DirectXCommon() {
-
-	//delete winApp_;	
-	//delete dxc_;
-	//delete pso_;
-	//winApp_ = nullptr;
-	//dxc_ = nullptr;
-	//pso_ = nullptr;
+	
 }
 
 //==============================================================================================
@@ -70,12 +51,9 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	InitViewport();
 	//Scissor矩形初期化
 	InitScissorRect();
-	//DXC初期化
-	dxc_ = new DXC();
+
+	dxc_ = std::make_unique<DXC>();
 	dxc_->InitializeDxc();
-	//PSO生成
-	pso_ = new PSO();
-	pso_->CreatePSOForObject3D(device_.Get(), dxc_, D3D12_CULL_MODE_BACK);
 }
 
 //==============================================================================================
@@ -106,20 +84,8 @@ void DirectXCommon::Finalize() {
 	useAdapter_.Reset();
 	dxgiFactory_.Reset();
 
-	if (dxc_ != nullptr) {
-		delete dxc_;
-		dxc_ = nullptr;
-	}
-
-	if (pso_ != nullptr) {
-		//pso_->Finalize();
-		delete pso_;
-		pso_ = nullptr;
-	}
-
+	dxc_.reset();
 	winApp_ = nullptr;
-
-
 }
 
 //==============================================================================================

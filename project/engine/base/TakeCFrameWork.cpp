@@ -6,20 +6,20 @@ ParticleManager* TakeCFrameWork::particleManager_ = nullptr;
 void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//タイトルバーの名前の入力
-	winApp_ = new WinApp();
+	winApp_ = std::make_unique<WinApp>();
 	winApp_->Initialize(titleName.c_str());
 
 	////DirectX初期化
-	directXCommon_ = new DirectXCommon();
-	directXCommon_->Initialize(winApp_);
+	directXCommon_ = std::make_unique<DirectXCommon>();
+	directXCommon_->Initialize(winApp_.get());
 
 	//SrvManager
-	srvManager_ = new SrvManager();
-	srvManager_->Initialize(directXCommon_);
+	srvManager_ = std::make_unique<SrvManager>();
+	srvManager_->Initialize(directXCommon_.get());
 
 	//入力初期化
 	input_ = Input::GetInstance();
-	input_->Initialize(winApp_);
+	input_->Initialize(winApp_.get());
 
 	//Audio
 	audio_ = AudioManager::GetInstance();
@@ -27,31 +27,31 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//SpriteCommon
 	spriteCommon_ = SpriteCommon::GetInstance();
-	spriteCommon_->Initialize(directXCommon_);
+	spriteCommon_->Initialize(directXCommon_.get());
 
 	//Object3dCommon
 	object3dCommon_ = Object3dCommon::GetInstance();
-	object3dCommon_->Initialize(directXCommon_);
+	object3dCommon_->Initialize(directXCommon_.get());
 
 	//ParticleCommon
 	particleCommon_ = ParticleCommon::GetInstance();
-	particleCommon_->Initialize(directXCommon_, srvManager_);
+	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get());
 
 	//CameraManager
-	CameraManager::GetInstance()->Initialize(directXCommon_);
+	CameraManager::GetInstance()->Initialize(directXCommon_.get());
 
 	//ModelManager
-	ModelManager::GetInstance()->Initialize(directXCommon_, srvManager_);
+	ModelManager::GetInstance()->Initialize(directXCommon_.get(), srvManager_.get());
 
 	//TextureManager
-	TextureManager::GetInstance()->Initialize(directXCommon_, srvManager_);
+	TextureManager::GetInstance()->Initialize(directXCommon_.get(), srvManager_.get());
 
 	//ParticleManager
 	particleManager_ = ParticleManager::GetInstance();
 
 #ifdef _DEBUG
 	imguiManager_ = new ImGuiManager();
-	imguiManager_->Initialize(winApp_, directXCommon_,srvManager_);
+	imguiManager_->Initialize(winApp_.get(), directXCommon_.get(), srvManager_.get());
 #endif
 	sceneManager_ = SceneManager::GetInstance();
 
@@ -75,14 +75,14 @@ void TakeCFrameWork::Finalize() {
 	//入力の開放
 	input_->Finalize();
 	//SrvManagerの開放
-	delete srvManager_;
+	srvManager_.reset();
 	//directXCommonの開放
 	directXCommon_->Finalize();
-	delete directXCommon_;
+	directXCommon_.reset();
 
 	//winAppの開放
 	winApp_->Finalize();
-	delete winApp_;
+	winApp_.reset();
 }
 
 void TakeCFrameWork::Update() {

@@ -10,9 +10,9 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//FrameWorkの初期化
 	TakeCFrameWork::Initialize(titleName);
 
-	sceneFactory_ = new SceneFactory();
+	sceneFactory_ = std::make_unique<SceneFactory>();
 	//シーンマネージャーのセット
-	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_);
+	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
 	//最初のシーンを設定
 	SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 }
