@@ -9,12 +9,14 @@
 #include <iostream>
 #include <array>
 #include <chrono>
+#include <memory>
 
+#include "DirectXShaderCompiler.h"
 #include "WinApp.h"
 #include "Matrix4x4.h"
 #include "ResourceDataStructure.h"
 
-class DXC;
+
 class PSO;
 class DirectXCommon {
 
@@ -98,7 +100,7 @@ public:
 	DXGI_FORMAT GetRtvFormat() { return rtvDesc_.Format; }
 
 	/// Dxcの取得
-	DXC* GetDXC() { return dxc_; }
+	DXC* GetDXC() { return dxc_.get(); }
 
 	/// RTVのデスクリプタサイズ取得
 	uint32_t GetDescriptorSizeRTV() { return descriptorSizeRTV_; }
@@ -119,12 +121,10 @@ private:
 	///			メンバ変数
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	//WindowApp
+	//WindowApp(借り物)
 	WinApp* winApp_ = nullptr;
 	//DirectXShaderCompiler
-	DXC* dxc_ = nullptr;
-	//PipelineStateObject
-	PSO* pso_ = nullptr;
+	std::unique_ptr<DXC> dxc_ = nullptr;
 	//DXGIファクトリーの作成
 	ComPtr<IDXGIFactory7> dxgiFactory_ = nullptr;
 	//使用するアダプタ用の変数

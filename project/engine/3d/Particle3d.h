@@ -18,8 +18,6 @@ struct Particle {
 	float currentTime_;     //経過時間
 };
 
-
-
 struct AABB {
 	Vector3 min_;
 	Vector3 max_;
@@ -47,7 +45,6 @@ public:
 	Particle3d() = default;
 	~Particle3d();
 
-
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -58,9 +55,7 @@ public:
 	/// </summary>
 	void Update();
 
-#ifdef _DEBUG
 	void UpdateImGui();
-#endif // _DEBUG
 
 	/// <summary>
 	/// 描画
@@ -109,8 +104,6 @@ private:
 
 	//モデル
 	Model* model_ = nullptr;
-
-
 
 	//instancing用のデータ
 	ParticleForGPU* instancingData_ = nullptr;

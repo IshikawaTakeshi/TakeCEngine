@@ -15,7 +15,7 @@ void SpriteCommon::Initialize(DirectXCommon* directXCommon) {
 
 	dxCommon_ = directXCommon;
 
-	pso_ = new PSO();
+	pso_ = std::make_unique<PSO>();
 	pso_->CreatePSOForSprite(dxCommon_->GetDevice(),dxCommon_->GetDXC(), D3D12_CULL_MODE_NONE); //PSO生成
 	rootSignature_ = pso_->GetRootSignature();
 }
@@ -23,11 +23,9 @@ void SpriteCommon::Initialize(DirectXCommon* directXCommon) {
 void SpriteCommon::Finalize() {
 	rootSignature_.Reset();
 	dxCommon_ = nullptr;
-	delete pso_;
-	pso_ = nullptr;
+	pso_.reset();
 	delete instance_;
 	instance_ = nullptr;
-
 }
 
 void SpriteCommon::PreDraw() {

@@ -1,7 +1,6 @@
 #include "Model.h"
 #include "DirectXCommon.h"
 #include "Material.h"
-#include "Mesh.h"
 #include "MatrixMath.h"
 #include "SrvManager.h"
 #include "TextureManager.h"
@@ -13,8 +12,7 @@
 
 Model::~Model() {
 
-	delete mesh_;
-	mesh_ = nullptr;
+	mesh_.reset();
 }
 
 void Model::Initialize(ModelCommon* ModelCommon, const std::string& filePath) {
@@ -24,7 +22,7 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& filePath) {
 	modelData_ = LoadObjFile("Resources", "obj_mtl_blend", filePath);
 
 	//メッシュ初期化
-	mesh_ = new Mesh();
+	mesh_ = std::make_unique<Mesh>();
 	mesh_->InitializeMesh(modelCommon_->GetDirectXCommon(), modelData_.material.textureFilePath);
 	
 	//VertexResource

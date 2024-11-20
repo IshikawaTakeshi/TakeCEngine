@@ -4,7 +4,7 @@
 #include <string>
 #include <d3d12.h>
 #include <wrl.h>
-
+#include <memory>
 
 class DirectXCommon;
 class Mesh {
@@ -76,9 +76,7 @@ public:
 
 	//================================= MaterialBufferResource ==================================//
 
-	Material* GetMaterial() { return material_; }
-
-	void SetMaterial(Material* material) { material_ = material; }
+	Material* GetMaterial() { return material_.get(); }
 
 public:
 
@@ -88,7 +86,7 @@ public:
 private:
 
 	//マテリアル
-	Material* material_;
+	std::unique_ptr<Material> material_ = nullptr;
 
 	//頂点バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
@@ -101,4 +99,3 @@ private:
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 
 };
-
