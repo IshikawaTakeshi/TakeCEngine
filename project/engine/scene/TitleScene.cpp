@@ -6,12 +6,14 @@ void TitleScene::Initialize() {
 
 	//Camera0
 	camera0_ = std::make_shared<Camera>();
+	camera0_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
 	camera0_->SetTranslate({ 0.0f,0.0f,-20.0f });
 	camera0_->SetRotate({ 0.0f,0.0f,0.0f });
 	CameraManager::GetInstance()->AddCamera("Tcamera0", *camera0_);
 
 	//Camera1
 	camera1_ = std::make_shared<Camera>();
+	camera1_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
 	camera1_->SetTranslate({ -5.0f,0.0f,-10.0f });
 	camera1_->SetRotate({ 0.0f,0.4f,0.0f });
 	CameraManager::GetInstance()->AddCamera("Tcamera1", *camera1_);

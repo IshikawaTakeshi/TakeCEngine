@@ -1,6 +1,6 @@
 #include "Object3dCommon.h"
 #include "DirectXCommon.h"
-#include "PipelineStateObject.h"
+
 #include "ImGuiManager.h"
 #include "CameraManager.h"
 #include "Vector3Math.h"
@@ -69,6 +69,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 }
 
 void Object3dCommon::UpdateImGui() {
+	ImGui::Begin("Lighting");
 	ImGui::Text("DirectionalLight");
 	ImGui::SliderFloat3("Direction", &directionalLightData_->direction_.x, -1.0f, 1.0f);
 	directionalLightData_->direction_ = Vector3Math::Normalize(directionalLightData_->direction_);
@@ -91,6 +92,7 @@ void Object3dCommon::UpdateImGui() {
 	ImGui::SliderAngle("SpotPenumbraAngle", &spotLightData_->penumbraAngle_);
 	//spotLightData_->cosAngle_ = std::cosf(spotLightData_->cosAngle_);
 	pso_->UpdateImGui();
+	ImGui::End();
 }
 
 void Object3dCommon::Finalize() {

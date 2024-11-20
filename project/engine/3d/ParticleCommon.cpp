@@ -1,7 +1,8 @@
 #include "ParticleCommon.h"
 #include "DirectXCommon.h"
 #include "SrvManager.h"
-#include "PipelineStateObject.h"
+
+#include "CameraManager.h"
 
 ParticleCommon* ParticleCommon::instance_ = nullptr;
 
@@ -28,8 +29,13 @@ void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 	rootSignature_ = pso_->GetRootSignature();
 }
 
+void ParticleCommon::UpdateImGui() {
+	pso_->UpdateImGui();
+}
+
 void ParticleCommon::Finalize() {
 
+	rootSignature_.Reset();
 	delete pso_;
 }
 

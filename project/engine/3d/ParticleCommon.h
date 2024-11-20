@@ -1,9 +1,9 @@
 #pragma once
 #include <wrl.h>
 #include <d3d12.h>
-
+#include "PipelineStateObject.h"
+class Camera;
 class DirectXCommon;
-class PSO;
 class SrvManager;
 class ParticleCommon {
 public:
@@ -15,15 +15,31 @@ public:
 
 	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
 
+	void UpdateImGui();
+
 	void Finalize();
 
 	void PreDraw();
+
+	//================================================================================================
+	// 	   getter
+	//================================================================================================
 
 	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
 
 	SrvManager* GetSrvManager() const { return srvManager_; }
 
 	PSO* GetPSO() const { return pso_; }
+
+	Camera* GetDefaultCamera() const { return defaultCamera_; }
+
+
+	//================================================================================================
+	// 	   setter
+	//================================================================================================
+
+	void SetDefaultCamera(Camera* camera) { defaultCamera_ = camera; }
+
 
 private:
 
@@ -44,5 +60,8 @@ private:
 
 	//RootSignature
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+
+	//defaultCamera
+	Camera* defaultCamera_ = nullptr;
 };
 

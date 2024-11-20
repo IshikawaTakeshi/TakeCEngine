@@ -152,6 +152,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\scene\SceneManager.cpp" />
     <ClCompile Include="engine\3d\Particle3d.cpp" />
     <ClCompile Include="engine\3d\ParticleCommon.cpp" />
+    <ClCompile Include="engine\base\ParticleEmitter.cpp" />
     <ClCompile Include="engine\base\ParticleManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -189,6 +190,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\base\ImGuiManager.h" />
     <ClInclude Include="engine\3d\Particle3d.h" />
     <ClInclude Include="engine\3d\ParticleCommon.h" />
+    <ClInclude Include="engine\base\ParticleEmitter.h" />
     <ClInclude Include="engine\base\ParticleManager.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\base\StringUtility.h" />

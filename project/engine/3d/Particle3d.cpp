@@ -15,7 +15,13 @@
 #include <numbers>
 
 
-Particle3d::~Particle3d() {}
+Particle3d::~Particle3d() {
+	instancingResource_.Reset();
+}
+
+//=============================================================================
+// 初期化
+//=============================================================================
 
 void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& filePath) {
 
@@ -25,25 +31,19 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	SetModel(filePath);
 	
 	//TransformationMatrix用のResource生成
-	instancingResource_ = DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
+	instancingResource_ = 
+		DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
 
-	useSrvIndex_ = model_->GetModelCommon()->GetSrvManager()->Allocate();
+	//SRVのインデックスを取得
+	instancingSrvIndex_ = particleCommon_->GetSrvManager()->Allocate();
 
 	//SRVの生成
 	particleCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
 		kNumMaxInstance_,
 		sizeof(ParticleForGPU),
 		instancingResource_.Get(),
-		useSrvIndex_
+		instancingSrvIndex_
 	);
-
-	//Emitter初期化
-	emitter_.transforms_.translate = { 0.0f,0.0f,0.0f };
-	emitter_.transforms_.rotate = { 0.0f,0.0f,0.0f };
-	emitter_.transforms_.scale = { 1.0f,1.0f,1.0f };
-	emitter_.particleCount_ = 3;
-	emitter_.frequency_ = 2.0f;
-	emitter_.frequencyTime_ = 0.0f;
 
 	//Acceleration初期化
 	accelerationField_.acceleration_ = { 0.0f,-9.8f,0.0f };
@@ -59,13 +59,17 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 		instancingData_[i].Color = { 1.0f,1.0f,1.0f,1.0f };
 	}
 
-	//ランダムエンジンの初期化
-	std::random_device seedGenerator;
-	std::mt19937 randomEngine(seedGenerator());
+	//カメラのセット
+	camera_ = particleCommon_->GetDefaultCamera();
 }
+
+//=============================================================================
+// 更新処理
+//=============================================================================
 
 void Particle3d::Update() {
 
+	//ランダムエンジンの初期化
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
@@ -73,37 +77,33 @@ void Particle3d::Update() {
 	for (std::list<Particle>::iterator particleIterator = particles_.begin();
 		particleIterator != particles_.end(); ) {
 		
-
+		//MEMO:Particleの総出現数だけ繰り返す
 		if (numInstance_ < kNumMaxInstance_) {
+
+			//寿命が来たら削除
 			if ((*particleIterator).lifeTime_ <= (*particleIterator).currentTime_) {
-				particleIterator = particles_.erase(particleIterator); //寿命が来たら削除
+				particleIterator = particles_.erase(particleIterator); 
 				continue;
 			}
-			//エミッターの更新
-			emitter_.frequencyTime_ += kDeltaTime_;
-			if(emitter_.frequency_ <= emitter_.frequencyTime_) {
-				particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
-				emitter_.frequencyTime_ -= emitter_.frequency_; //余計に過ぎた時間も加味して頻度計算する
-			}
 
-			//位置の更新
+			//加速フィールドの位置更新
 			if(IsCollision(accelerationField_.aabb_, (*particleIterator).transforms_.translate)) {
 				(*particleIterator).velocity_ += accelerationField_.acceleration_ * kDeltaTime_;
 			}
 
+			//particle1つの位置更新
 			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
 			(*particleIterator).currentTime_ += kDeltaTime_; //経過時間の更新
 			float alpha = 1.0f - ((*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 
-
-			//アフィン行列の更新
-
+			//行列の更新
 			worldMatrix_ = MatrixMath::MakeAffineMatrix(
 				(*particleIterator).transforms_.scale,
 				(*particleIterator).transforms_.rotate,
 				(*particleIterator).transforms_.translate
 			);
 
+			//ビルボードの処理
 			if (isBillboard_) {
 				worldMatrix_ = MatrixMath::MakeAffineMatrix(
 					(*particleIterator).transforms_.scale,
@@ -114,7 +114,6 @@ void Particle3d::Update() {
 
 			//wvpの更新
 			if (camera_) {
-
 				const Matrix4x4& viewProjectionMatrix = MatrixMath::MakeRotateYMatrix(0) *
 					CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
 				WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
@@ -123,15 +122,21 @@ void Particle3d::Update() {
 				WVPMatrix_ = worldMatrix_;
 			}
 
+			//インスタンシングデータをGPUに転送
 			instancingData_[numInstance_].WVP = WVPMatrix_;
 			instancingData_[numInstance_].World = worldMatrix_;
 			instancingData_[numInstance_].Color = (*particleIterator).color_;
 			instancingData_[numInstance_].Color.w = alpha;
-			++numInstance_;
+
+			++numInstance_; //次のインスタンスに進める
 		}
 		++particleIterator; //次のイテレータに進める
 	}
 }
+
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 
 void Particle3d::UpdateImGui() {
 	std::random_device seedGenerator;
@@ -139,13 +144,7 @@ void Particle3d::UpdateImGui() {
 
 	ImGui::Begin("Particle3d");
 	ImGui::Checkbox("Billboard", &isBillboard_);
-
-	if (ImGui::Button("SpawnParticle")) {
-		particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
-	}
 	ImGui::Text("ParticleCount:%d", numInstance_);
-	ImGui::Text("Emitter");
-	ImGui::SliderFloat3("Translate", &emitter_.transforms_.translate.x, -10.0f, 10.0f);
 	particleCommon_->GetPSO()->UpdateImGui();
 	ImGui::End();
 }
@@ -153,7 +152,7 @@ void Particle3d::UpdateImGui() {
 void Particle3d::Draw() {
 
 	//instancing用のDataを読むためにStructuredBufferのSRVを設定する
-	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(1, useSrvIndex_);
+	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(1, instancingSrvIndex_);
 
 	model_->DrawForParticle(numInstance_);
 }
@@ -176,10 +175,14 @@ Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine, const Vector3& 
 	return particle;
 }
 
-std::list<Particle> Particle3d::Emit(const Emitter& emitter, std::mt19937& randomEngine) {
+std::list<Particle> Particle3d::Emit(const Vector3& emitterPos,uint32_t particleCount) {
+	//ランダムエンジン
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
+
 	std::list<Particle> particles;
-	for (uint32_t count = 0; count < emitter.particleCount_; ++count) {
-		particles.push_back(MakeNewParticle(randomEngine,emitter.transforms_.translate));
+	for (uint32_t index = 0; index < particleCount; ++index) {
+		particles.push_back(MakeNewParticle(randomEngine,emitterPos));
 	}
 	return particles;
 }
@@ -199,6 +202,10 @@ bool Particle3d::IsCollision(const AABB& aabb, const Vector3& point) {
 	}
 
 	return false;
+}
+
+void Particle3d::SpliceParticles(std::list<Particle> particles) {
+	particles_.splice(particles_.end(),particles);
 }
 
 void Particle3d::SetModel(const std::string& filePath) {
