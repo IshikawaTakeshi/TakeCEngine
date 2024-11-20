@@ -1,5 +1,6 @@
 #pragma once
 #include "EngineIncludes.h"
+
 #include "AbstractSceneFactory.h"
 
 class TakeCFrameWork {
@@ -21,6 +22,8 @@ public:
 	//実行処理
 	void Run(const std::wstring& titleName);
 
+	static ParticleManager* GetParticleManager();
+
 protected:
 
 	WinApp* winApp_ = nullptr;
@@ -32,8 +35,9 @@ protected:
 	Object3dCommon* object3dCommon_ = nullptr;
 	ParticleCommon* particleCommon_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
-	AbstractSceneFactory* sceneFactory_ = nullptr;
 	ImGuiManager* imguiManager_ = nullptr;
+	AbstractSceneFactory* sceneFactory_ = nullptr;
+	static ParticleManager* particleManager_;
 	
 	//終了フラグ
 	bool isEnd_ = false;

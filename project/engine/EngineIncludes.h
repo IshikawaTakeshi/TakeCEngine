@@ -24,9 +24,9 @@
 #include "SceneManager.h"
 #include "Transform.h"
 #include "Triangle.h"
-#include "TakeCFrameWork.h"
 #include "Particle3d.h"
 #include "ParticleCommon.h"
+#include "ParticleManager.h"
 
 //DirectXTex
 #include <dxgidebug.h>

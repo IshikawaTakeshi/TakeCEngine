@@ -1,6 +1,7 @@
 #include "GamePlayScene.h"
 #include "TitleScene.h"
 #include "SceneManager.h"
+#include "TakeCFrameWork.h"
 
 //====================================================================
 //			初期化
@@ -26,7 +27,7 @@ void GamePlayScene::Initialize() {
 
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
-
+	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 	ModelManager::GetInstance()->LoadModel("plane.obj");
@@ -44,10 +45,15 @@ void GamePlayScene::Initialize() {
 	object3d1 = std::make_shared<Object3d>();
 	object3d1->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
 
-	//Particle3d
-	particle3d_ = std::make_unique<Particle3d>();
-	particle3d_->Initialize(ParticleCommon::GetInstance(), "plane.obj");
-	particle3d_->SetCamera(CameraManager::GetInstance()->GetActiveCamera());
+	//CreateParticle
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Particle1", "plane.obj");
+	particleEmitter_ = std::make_unique<ParticleEmitter>();
+	particleEmitter_->Initialize(
+		"Particle1",
+		{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} },
+		100, 0.5f
+	);
+	
 }
 
 //====================================================================
@@ -70,9 +76,11 @@ void GamePlayScene::Update() {
 #ifdef _DEBUG
 	CameraManager::GetInstance()->UpdateImGui();
 	//sprite_->UpdateImGui(0);
+	Object3dCommon::GetInstance()->UpdateImGui();
 	object3d->UpdateImGui(0);
 	object3d1->UpdateImGui(1);
-	particle3d_->UpdateImGui();
+	particleEmitter_->UpdateImGui();
+	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
 #endif // DEBUG
 
@@ -87,7 +95,8 @@ void GamePlayScene::Update() {
 	//sprite_->Update(); 	//Spriteの更新
 	object3d->Update(); //3Dオブジェクトの更新
 	object3d1->Update();
-	particle3d_->Update(); //パーティクルの更新
+	particleEmitter_->Update(); //パーティクル発生器の更新
+	TakeCFrameWork::GetParticleManager()->Update(); //パーティクルの更新
 
 	//シーン遷移
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
@@ -110,6 +119,5 @@ void GamePlayScene::Draw() {
 	object3d1->Draw();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
-
-	particle3d_->Draw();          //パーティクルの描画
+	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
 }

@@ -1,10 +1,10 @@
 #pragma once
 #include "ResourceDataStructure.h"
+#include "PipelineStateObject.h"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
 
-class PSO;
 class Camera;
 class DirectXCommon;
 class Object3dCommon {
@@ -40,6 +40,8 @@ public:
 	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
 
 	Camera* GetDefaultCamera() const { return defaultCamera_; }
+
+	PSO* GetPSO() const { return pso_; }
 
 //================================================================================================
 // 	   setter

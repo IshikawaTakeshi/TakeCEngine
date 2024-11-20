@@ -1,4 +1,7 @@
 #include "TakeCFrameWork.h"
+#include <cassert>
+
+ParticleManager* TakeCFrameWork::particleManager_ = nullptr;
 
 void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
@@ -34,14 +37,17 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	particleCommon_ = ParticleCommon::GetInstance();
 	particleCommon_->Initialize(directXCommon_, srvManager_);
 
+	//CameraManager
+	CameraManager::GetInstance()->Initialize(directXCommon_);
+
 	//ModelManager
 	ModelManager::GetInstance()->Initialize(directXCommon_, srvManager_);
 
 	//TextureManager
 	TextureManager::GetInstance()->Initialize(directXCommon_, srvManager_);
 
-	//CameraManager
-	CameraManager::GetInstance()->Initialize(directXCommon_);
+	//ParticleManager
+	particleManager_ = ParticleManager::GetInstance();
 
 #ifdef _DEBUG
 	imguiManager_ = new ImGuiManager();
@@ -55,12 +61,11 @@ void TakeCFrameWork::Finalize() {
 #ifdef _DEBUG
 	imguiManager_->Finalize();
 #endif
-	//テクスチャマネージャの開放
+
 	TextureManager::GetInstance()->Finalize();
-	//ModelManagerの開放
 	ModelManager::GetInstance()->Finalize();
-	//CameraManagerの開放
 	CameraManager::GetInstance()->Finalize();
+	particleManager_->Finalize();
 
 	particleCommon_->Finalize();
 	object3dCommon_->Finalize();
@@ -117,4 +122,9 @@ void TakeCFrameWork::Run(const std::wstring& titleName) {
 	}
 
 	Finalize();   //終了処理
+}
+
+ParticleManager* TakeCFrameWork::GetParticleManager() {
+	assert(particleManager_ != nullptr);
+	return particleManager_;
 }
