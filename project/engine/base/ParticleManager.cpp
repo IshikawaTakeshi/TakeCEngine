@@ -2,11 +2,6 @@
 #include"ImGuiManager.h"
 #include <cassert>
 
-ParticleManager* ParticleManager::GetInstance() {
-	static ParticleManager instance;
-	return &instance;
-}
-
 //================================================================================================
 // 初期化
 //================================================================================================

@@ -71,13 +71,13 @@ void DirectXCommon::Finalize() {
 	commandAllocator_.Reset();
 	commandQueue_.Reset();
 
-	swapChain_.Reset();
 
 	dsvHeap_.Reset();
 	rtvHeap_.Reset();
 
-	swapChainResources_[1].Reset();
 	swapChainResources_[0].Reset();
+	swapChainResources_[1].Reset();
+	swapChain_.Reset();
 
 
 	device_.Reset();
@@ -280,9 +280,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 		//エラーの時に止まる
 		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
 		//警告時に止まる
-		//
-		// 
-		// infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+		//infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
 
 		//抑制するメッセージのID
 		D3D12_MESSAGE_ID denyIds[] = {

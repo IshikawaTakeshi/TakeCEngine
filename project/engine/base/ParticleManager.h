@@ -16,8 +16,6 @@ public:
 	ParticleManager() = default;
 	~ParticleManager() = default;
 
-	static ParticleManager* GetInstance();
-
 	/// <summary>
 	/// パーティクルグループの生成
 	/// </summary>
