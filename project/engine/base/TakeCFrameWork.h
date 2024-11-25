@@ -37,7 +37,7 @@ protected:
 	SceneManager* sceneManager_ = nullptr;
 	ImGuiManager* imguiManager_ = nullptr;
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;
-	static ParticleManager* particleManager_;
+	static std::unique_ptr<ParticleManager> particleManager_;
 	
 	//終了フラグ
 	bool isEnd_ = false;

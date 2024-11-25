@@ -195,26 +195,26 @@ void PSO::CreateRootSignatureForParticle(ID3D12Device* device) {
 
 	//ルートパラメータ。複数設定できるので配列。
 	//.0
-	rootParameters_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootParameters_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
+	rootParametersForParticle_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForParticle_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	rootParametersForParticle_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
 	//.1
-	rootParameters_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	rootParameters_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	rootParameters_[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_;
-	rootParameters_[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_);
+	rootParametersForParticle_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParametersForParticle_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	rootParametersForParticle_[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_;
+	rootParametersForParticle_[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_);
 	//.2
-	rootParameters_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
-	rootParameters_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootParameters_[2].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_; //Tableの中身の配列を指定
-	rootParameters_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_); //Tableで利用する数
+	rootParametersForParticle_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
+	rootParametersForParticle_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	rootParametersForParticle_[2].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_; //Tableの中身の配列を指定
+	rootParametersForParticle_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_); //Tableで利用する数
 	//.3 平行光源をShaderで使う
-	rootParameters_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	rootParameters_[3].Descriptor.ShaderRegister = 1; //レジスタ番号1を使う
+	rootParametersForParticle_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForParticle_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParametersForParticle_[3].Descriptor.ShaderRegister = 1; //レジスタ番号1を使う
 
-	descriptionRootSignature_.pParameters = rootParameters_; //rootParameter配列へのポインタ
-	descriptionRootSignature_.NumParameters = _countof(rootParameters_); //配列の長さ
+	descriptionRootSignature_.pParameters = rootParametersForParticle_; //rootParameter配列へのポインタ
+	descriptionRootSignature_.NumParameters = _countof(rootParametersForParticle_); //配列の長さ
 
 	//Samplerの設定
 	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ

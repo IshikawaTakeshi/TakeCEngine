@@ -39,6 +39,8 @@ void TitleScene::Initialize() {
 void TitleScene::Finalize() {
 	sprite_.reset();
 	titleObject.reset();
+	camera0_.reset();
+	camera1_.reset();
 	CameraManager::GetInstance()->ResetCameras();
 }
 

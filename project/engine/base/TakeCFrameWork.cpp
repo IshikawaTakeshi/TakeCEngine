@@ -1,7 +1,7 @@
 #include "TakeCFrameWork.h"
 #include <cassert>
 
-ParticleManager* TakeCFrameWork::particleManager_ = nullptr;
+std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
 
 void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
@@ -47,7 +47,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	TextureManager::GetInstance()->Initialize(directXCommon_.get(), srvManager_.get());
 
 	//ParticleManager
-	particleManager_ = ParticleManager::GetInstance();
+	particleManager_ = std::make_unique<ParticleManager>();
 
 #ifdef _DEBUG
 	imguiManager_ = new ImGuiManager();
@@ -70,6 +70,7 @@ void TakeCFrameWork::Finalize() {
 	particleCommon_->Finalize();
 	object3dCommon_->Finalize();
 	spriteCommon_->Finalize();
+	sceneFactory_.reset();
 	//Audioの開放
 	audio_->Finalize();
 	//入力の開放
@@ -126,5 +127,5 @@ void TakeCFrameWork::Run(const std::wstring& titleName) {
 
 ParticleManager* TakeCFrameWork::GetParticleManager() {
 	assert(particleManager_ != nullptr);
-	return particleManager_;
+	return particleManager_.get();
 }
