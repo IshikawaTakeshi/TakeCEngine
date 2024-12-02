@@ -172,7 +172,7 @@ uint32_t TextureManager::GetSrvIndex(const std::string& filePath) {
 
 	//読み込み済みテクスチャを検索
 	if (textureDatas_.contains(filePath)) {
-		return textureDatas_.at(filePath).srvIndex;;
+		return textureDatas_.at(filePath).srvIndex;
 	}
 	assert(false);
 	return 0;

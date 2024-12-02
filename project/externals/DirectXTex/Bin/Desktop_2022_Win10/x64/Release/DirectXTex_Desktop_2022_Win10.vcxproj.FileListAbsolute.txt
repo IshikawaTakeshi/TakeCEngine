@@ -1,2 +1,0 @@
-C:\Users\bluec\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\project\externals\DirectXTex\Bin\Desktop_2022_Win10\x64\Release\DirectXTex.lib
-C:\Users\K023G\OneDrive\デスクトップ\Kamata\CG\CG2\DirectXGame\project\externals\DirectXTex\Bin\Desktop_2022_Win10\x64\Release\DirectXTex.lib
