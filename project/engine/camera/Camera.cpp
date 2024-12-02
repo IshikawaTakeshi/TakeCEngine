@@ -3,6 +3,7 @@
 #include "WinApp.h"
 #include "DirectXCommon.h"
 #include "ImGuiManager.h"
+#include "Input.h"
 
 Camera::~Camera() {}
 
@@ -25,6 +26,14 @@ void Camera::Initialize(ID3D12Device* device) {
 }
 
 void Camera::Update() {
+	// マウスの移動量を取得
+	Input::MouseMove mouseMove = Input::GetInstance()->GetMouseMove();
+
+	// マウスのY軸移動量に基づいてピッチを調整
+	pitch_ += mouseMove.lY * 0.001f; 
+
+	// ピッチに基づいて回転行列を作成
+	Matrix4x4 pitchMatrix = MatrixMath::MakeRotationX(pitch_);
 
 	cameraForGPU_->worldPosition = transform_.translate;
 

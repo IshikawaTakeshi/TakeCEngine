@@ -63,6 +63,8 @@ private:
 	//farクリップ距離
 	float farClip_;
 
+	float pitch_ = 0.0f;
+
 	//名前(cameraManager::cameras_のキー)
 	//std::string name_;
 };

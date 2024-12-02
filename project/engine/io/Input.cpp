@@ -25,15 +25,23 @@ void Input::Initialize(WinApp* winApp) {
 	assert(SUCCEEDED(result));
 
 	//キーボードデバイスの初期化
-	result = directInput_->CreateDevice(GUID_SysKeyboard, &keyboard_, NULL);
+	result = directInput_->CreateDevice(GUID_SysKeyboard, &keyboardDevice_, NULL);
 	assert(SUCCEEDED(result));
 
 	//入力データ形式のセット
-	result = keyboard_->SetDataFormat(&c_dfDIKeyboard);
+	result = keyboardDevice_->SetDataFormat(&c_dfDIKeyboard);
 	assert(SUCCEEDED(result));
 
 	//排他制御レベルのセット
-	result = keyboard_->SetCooperativeLevel(winApp->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+	result = keyboardDevice_->SetCooperativeLevel(winApp->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+	assert(SUCCEEDED(result));
+
+	//マウス初期化
+	result = directInput_->CreateDevice(GUID_SysMouse, &mouseDevice_, NULL);
+	assert(SUCCEEDED(result));
+	result = mouseDevice_->SetDataFormat(&c_dfDIMouse2);
+	assert(SUCCEEDED(result));
+	result = mouseDevice_->SetCooperativeLevel(winApp->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	assert(SUCCEEDED(result));
 }
 
@@ -44,17 +52,22 @@ void Input::Update() {
 	//前回のキー入力を保存
 	memcpy(preKey, key, sizeof(key));
 	//キーボード情報の取得開始
-	result = keyboard_->Acquire();
-	
+	result = keyboardDevice_->Acquire();
 	//全てのキーの入力情報を取得
-	result = keyboard_->GetDeviceState(sizeof(key), key);
-	
+	result = keyboardDevice_->GetDeviceState(sizeof(key), key);
+
+	//マウス情報の取得
+	memcpy(&mousePre_, &mouse_, sizeof(mouse_));
+	result = mouseDevice_->Acquire();
+	result = mouseDevice_->GetDeviceState(sizeof(DIMOUSESTATE2), &mouse_);
+	//ポーリング
+	result = mouseDevice_->Poll();
 }
 
 void Input::Finalize() {
-		if (keyboard_) {
-		keyboard_->Unacquire();
-		keyboard_.Reset();
+	if (keyboardDevice_) {
+		keyboardDevice_->Unacquire();
+		keyboardDevice_.Reset();
 	}
 	if (directInput_) {
 		directInput_.Reset();
@@ -71,4 +84,74 @@ bool Input::PushKey(BYTE keyNumber) {
 bool Input::TriggerKey(BYTE keyNumber) {
 	// 指定キーが押された瞬間か
 	return key[keyNumber] && !preKey[keyNumber];
+}
+
+bool Input::GetJoystickState(int32_t stickNo, DIJOYSTATE2& out) const {
+
+	if (stickNo < 0 || stickNo >= static_cast<int32_t>(devJoysticks_.size())) return false;
+
+	auto& joystick = devJoysticks_[stickNo];
+	if (!joystick.device_) return false;
+
+	out = joystick.state_.directInput_;
+	return true;
+}
+
+bool Input::GetJoystickStatePrevious(int32_t stickNo, DIJOYSTATE2& out) const {
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) return false;
+	if (devJoysticks_[stickNo].type_ != PadType::DirectInput) return false;
+	out = devJoysticks_[stickNo].statePre_.directInput_;
+	return true;
+}
+
+bool Input::GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const {
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) return false;
+	if (devJoysticks_[stickNo].type_ != PadType::XInput) return false;
+	out = devJoysticks_[stickNo].state_.xInput_;
+	return true;
+}
+
+bool Input::GetJoystickStatePrevious(int32_t stickNo, XINPUT_STATE& out) const {
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) return false;
+	if (devJoysticks_[stickNo].type_ != PadType::XInput) return false;
+	out = devJoysticks_[stickNo].statePre_.xInput_;
+	return true;
+}
+
+void Input::SetJoystickDeadZone(int32_t stickNo, int32_t deadZoneL, int32_t deadZoneR) {
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) return;
+	devJoysticks_[stickNo].deadZoneL_ = deadZoneL;
+	devJoysticks_[stickNo].deadZoneR_ = deadZoneR;
+}
+
+size_t Input::GetNumberOfJoysticks() {
+	return devJoysticks_.size();
+}
+
+const DIMOUSESTATE2& Input::GetAllMouse() const {
+	return mouse_;
+}
+
+bool Input::IsPressMouse(int32_t buttonNumber) const {
+	return mouse_.rgbButtons[buttonNumber] & 0x80;
+}
+
+bool Input::IsTriggerMouse(int32_t buttonNumber) const {
+	return (mouse_.rgbButtons[buttonNumber] & 0x80) && !(mousePre_.rgbButtons[buttonNumber] & 0x80);
+}
+
+Input::MouseMove Input::GetMouseMove() {
+	MouseMove move;
+	move.lX = mouse_.lX;
+	move.lY = mouse_.lY;
+	move.lZ = mouse_.lZ;
+	return move;
+}
+
+int32_t Input::GetWheel() const {
+	return mouse_.lZ;
+}
+
+const Vector2& Input::GetMousePosition() const {
+	return mousePosition_;
 }

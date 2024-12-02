@@ -35,13 +35,14 @@ public:
 
 	//音声データ
 	struct SoundData {
-		
+
 		//波形フォーマット
 		WAVEFORMATEX wfex;
 		//バッファの先頭アドレス
 		BYTE* pBuffer;
 		//バッファのサイズ
 		unsigned int bufferSize;
+		IXAudio2SourceVoice* pSourceVoice;
 	};
 
 public:
@@ -75,8 +76,8 @@ public:
 	/// </summary>
 	/// <param name="xAudio2"></param>
 	/// <param name="soundData"></param>
-	void SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData);
-	
+	void SoundPlayWave(IXAudio2* xAudio2, SoundData& soundData);
+
 	/// <summary>
 	/// 解放処理
 	/// </summary>
