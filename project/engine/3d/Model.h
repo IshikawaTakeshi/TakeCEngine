@@ -4,6 +4,12 @@
 #include "ResourceDataStructure.h"
 #include "Transform.h"
 #include "TransformMatrix.h"
+
+//assimp
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include <d3d12.h>
 #include <wrl.h>
 #include <memory>
@@ -21,7 +27,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(ModelCommon* ModelCommon,const std::string& filename);
+	void Initialize(ModelCommon* ModelCommon, const std::string& modelDirectoryPath, const std::string& filename);
 
 	/// <summary>
 	/// 更新処理
@@ -38,17 +44,20 @@ public:
 	/// <summary>
 	/// objファイルを読む関数
 	/// </summary>
-	ModelData LoadObjFile(const std::string& resourceDirectoryPath,const std::string& DirectoryPath, const std::string& filename);
+	ModelData LoadModelFile(const std::string& DirectoryPath, const std::string& filename);
 	
 	/// <summary>
 	/// mtlファイルを読む関数
 	/// </summary>
 	ModelMaterialData LoadMtlFile(const std::string& resourceDirectoryPath, const std::string& modelDirectoryPath, const std::string& filename);
 
+	Node ReadNode(aiNode* node);
+
 public: //ゲッター
 
 	Mesh* GetMesh() { return mesh_.get(); }
 
+	ModelData& GetModelData() { return modelData_; }
 
 	ModelCommon* GetModelCommon() { return modelCommon_; }
 

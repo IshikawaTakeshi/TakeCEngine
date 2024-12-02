@@ -6,10 +6,6 @@
 #include "TextureManager.h"
 #include "ModelCommon.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 #include <fstream>
 #include <sstream>
 #include <cassert>
@@ -21,11 +17,11 @@ Model::~Model() {
 	mesh_.reset();
 }
 
-void Model::Initialize(ModelCommon* ModelCommon, const std::string& filePath) {
+void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirectoryPath, const std::string& filePath) {
 	modelCommon_ = ModelCommon;
 
 	//objファイル読み込み
-	modelData_ = LoadObjFile("Resources", "obj_mtl_blend", filePath);
+	modelData_ = LoadModelFile(modelDirectoryPath, filePath);
 
 	//メッシュ初期化
 	mesh_ = std::make_unique<Mesh>();
@@ -69,10 +65,10 @@ void Model::DrawForParticle(UINT instanceCount_) {
 }
 
 
-ModelData Model::LoadObjFile(const std::string& resourceDirectoryPath, const std::string& modelDirectoryPath, const std::string& filename) {
+ModelData Model::LoadModelFile(const std::string& modelDirectoryPath, const std::string& filename) {
 
 	Assimp::Importer importer;
-	std::string filePath = resourceDirectoryPath + "/" + modelDirectoryPath + "/" + filename;
+	std::string filePath = "./Resources/" + modelDirectoryPath + "/" + filename;
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 	assert(scene->HasMeshes()); //メッシュがない場合はエラー
 
@@ -109,12 +105,20 @@ ModelData Model::LoadObjFile(const std::string& resourceDirectoryPath, const std
 	//materialの解析
 	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
 		aiMaterial* material = scene->mMaterials[materialIndex];
+		unsigned int textureCount = material->GetTextureCount(aiTextureType_DIFFUSE);
+		textureCount;
 		if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
 			aiString textureFilePath;
 			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-			modelData_.material.textureFilePath = resourceDirectoryPath + "/" + textureFilePath.C_Str();
+			modelData_.material.textureFilePath = std::string("./Resources/images/") + textureFilePath.C_Str();
+		} else { //テクスチャがない場合はデフォルトのテクスチャを設定
+			modelData_.material.textureFilePath = "./Resources/images/uvChecker.png";
+
 		}
 	}
+
+	//rootNodeの解析
+	modelData_.rootNode = ReadNode(scene->mRootNode);
 
 	return modelData_;
 }
@@ -142,4 +146,22 @@ ModelMaterialData Model::LoadMtlFile(const std::string& resourceDirectoryPath, c
 	}
 
 	return materialData;
+}
+
+Node Model::ReadNode(aiNode* node) {
+	Node result;
+	aiMatrix4x4 aiLocalMatrix = node->mTransformation; //nodeのlocalMatrix
+	aiLocalMatrix.Transpose(); //列ベクトルを行ベクトルの転置
+	for (int row = 0; row < 4; ++row) {
+		for (int column = 0; column < 4; ++column) {
+			result.localMatrix.m[row][column] = aiLocalMatrix[row][column];
+		}
+	}
+
+	result.name = node->mName.C_Str(); //名前の格納
+	result.children.resize(node->mNumChildren); //子ノードの数だけ確保
+	for (uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {
+		result.children[childIndex] = ReadNode(node->mChildren[childIndex]); //再帰的に子ノードを読む
+	}
+	return result;
 }

@@ -28,7 +28,7 @@ public:
 	/// モデルの読み込み
 	/// </summary>
 	/// <param name="filePath">モデルのファイルパス</param>
-	void LoadModel(const std::string& filePath);
+	void LoadModel(const std::string& modelDirectoryPath, const std::string& filePath);
 
 	/// <summary>
 	/// モデルの検索

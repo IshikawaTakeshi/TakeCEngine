@@ -29,22 +29,23 @@ void GamePlayScene::Initialize() {
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	//Model読み込み
-	//ModelManager::GetInstance()->LoadModel("Box.obj");
-	ModelManager::GetInstance()->LoadModel("axis.obj");
-	ModelManager::GetInstance()->LoadModel("plane.obj");
-	ModelManager::GetInstance()->LoadModel("sphere.obj");
-	ModelManager::GetInstance()->LoadModel("terrain.obj");
+	ModelManager::GetInstance()->LoadModel("gltf","cube.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf","plane.gltf");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend","axis.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "terrain.obj");
 
 	//Sprite
 	sprite_ = std::make_shared<Sprite>();
-	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/uvChecker.png");
+	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/uvChecker.png");
 
 	//Object3d
 	object3d = std::make_shared<Object3d>();
 	object3d->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
 
 	object3d1 = std::make_shared<Object3d>();
-	object3d1->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
+	object3d1->Initialize(Object3dCommon::GetInstance(), "plane.gltf");
 
 	//CreateParticle
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Particle1", "plane.obj");

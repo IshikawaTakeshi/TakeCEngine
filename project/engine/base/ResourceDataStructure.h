@@ -51,13 +51,21 @@ struct ModelMaterialData {
 	uint32_t srvIndex; //テクスチャのインデックス
 };
 
+struct Node {
+	Matrix4x4 localMatrix;
+	std::string name;
+	std::vector<Node> children;
+};
+
 //モデル1個分のデータ
 struct ModelData {
 
 	std::vector<VertexData> vertices;
 	ModelMaterialData material;
+	Node rootNode;
 };
 
+//パーティクル用の行列,色データ
 struct ParticleForGPU {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
