@@ -28,7 +28,7 @@ void ModelManager::Finalize() {
 	instance_ = nullptr;
 }
 
-void ModelManager::LoadModel(const std::string& filePath) {
+void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::string& filePath) {
 
 	//読み込み済みモデルの検索
 	if (models_.contains(filePath)) {
@@ -38,7 +38,7 @@ void ModelManager::LoadModel(const std::string& filePath) {
 
 	//モデルの生成とファイル読み込み、初期化
 	std::unique_ptr<Model> model = std::make_unique<Model>();
-	model->Initialize(modelCommon_,filePath);
+	model->Initialize(modelCommon_,modelDirectoryPath, filePath);
 
 	//モデルをコンテナに追加
 	models_.insert(std::make_pair(filePath, std::move(model)));

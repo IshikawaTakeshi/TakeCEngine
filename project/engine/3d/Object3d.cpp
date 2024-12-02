@@ -60,8 +60,8 @@ void Object3d::Update() {
 
 	WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 	
-	TransformMatrixData_->WVP = WVPMatrix_;
-	TransformMatrixData_->World = worldMatrix_;
+	TransformMatrixData_->World = model_->GetModelData().rootNode.localMatrix * worldMatrix_;
+	TransformMatrixData_->WVP = model_->GetModelData().rootNode.localMatrix * WVPMatrix_;
 	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 }
 

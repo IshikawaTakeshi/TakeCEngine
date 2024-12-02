@@ -27,7 +27,7 @@ void TitleScene::Initialize() {
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/monsterBall.png");
 
 	//Model読み込み
-	ModelManager::GetInstance()->LoadModel("Title.obj");
+	ModelManager::GetInstance()->LoadModel("model_mtl_blend","Title.obj");
 
 	//object
 	titleObject = std::make_shared<Object3d>();
