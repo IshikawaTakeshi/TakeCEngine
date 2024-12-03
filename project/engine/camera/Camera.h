@@ -49,10 +49,15 @@ private:
 	CameraForGPU* cameraForGPU_;
 
 	Transform transform_;
+	Vector3 offset_;
+	float offsetZ = 0;
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 viewProjectionMatrix_;
+	//累積回転行列
+	Matrix4x4 rotationMatrix_;
+	//Matrix4x4 rotationMatrixDelta_;
 	
 	//水平方向視野角
 	float fovX_;

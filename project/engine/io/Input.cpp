@@ -152,6 +152,14 @@ int32_t Input::GetWheel() const {
 	return mouse_.lZ;
 }
 
-const Vector2& Input::GetMousePosition() const {
-	return mousePosition_;
+const Vector2& Input::GetCursorPosition() const {
+    static POINT point;
+    point.x = static_cast<LONG>(mousePosition_.x);
+    point.y = static_cast<LONG>(mousePosition_.y);
+    GetCursorPos(&point);
+    ScreenToClient(winApp_->GetHwnd(), &point);
+    static Vector2 updatedMousePosition;
+    updatedMousePosition.x = static_cast<float>(point.x);
+    updatedMousePosition.y = static_cast<float>(point.y);
+    return updatedMousePosition;
 }

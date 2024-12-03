@@ -156,7 +156,7 @@ public:
 	/// マウスの位置を取得する（ウィンドウ座標系）
 	/// </summary>
 	/// <returns>マウスの位置</returns>
-	const Vector2& GetMousePosition() const;
+	const Vector2& GetCursorPosition() const;
 
 private:
 
@@ -174,9 +174,12 @@ private:
 	ComPtr<IDirectInputDevice8> keyboardDevice_ = nullptr;
 	ComPtr<IDirectInputDevice8> mouseDevice_ = nullptr;
 	std::vector<Joystick> devJoysticks_;
+	
 
 	//WindowsAPI
 	WinApp* winApp_ = nullptr;
+	//ウィンドウハンドル
+	//HWND hwnd_;
 	//キー情報
 	BYTE key[256] = {};
 	//前回フレームのキーデータ

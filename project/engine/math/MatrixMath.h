@@ -58,6 +58,9 @@ public:
 	//Matrix4x4からVector3に座標変換
 	static Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
 
+	//Matrix4x4からVector3に回転とスケーリングのみ反映
+	static Vector3 TransformNormal(const Vector3& v, const Matrix4x4& matrix);
+
 	//InverseTranspose
 	static Matrix4x4 InverseTranspose(const Matrix4x4& m);
 };
