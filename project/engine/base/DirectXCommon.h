@@ -178,6 +178,8 @@ private:
 
 	//記録時間(FPS固定)
 	std::chrono::steady_clock::time_point reference_;
+	int frameCount = 0;
+	float currentFPS = 0.0f;
 
 
 private:

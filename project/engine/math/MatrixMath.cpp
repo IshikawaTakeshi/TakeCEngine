@@ -279,6 +279,15 @@ Vector3 MatrixMath::Transform(const Vector3& vector, const Matrix4x4& matrix) {
 	return result;
 }
 
+Vector3 MatrixMath::TransformNormal(const Vector3& v, const Matrix4x4& matrix) {
+	Vector3 result;
+	result.x = v.x * matrix.m[0][0] + v.y * matrix.m[1][0] + v.z * matrix.m[2][0];
+	result.y = v.x * matrix.m[0][1] + v.y * matrix.m[1][1] + v.z * matrix.m[2][1];
+	result.z = v.x * matrix.m[0][2] + v.y * matrix.m[1][2] + v.z * matrix.m[2][2];
+
+	return result;
+}
+
 Matrix4x4 MatrixMath::InverseTranspose(const Matrix4x4& m) {
 	
 	Matrix4x4 result = Inverse(m);

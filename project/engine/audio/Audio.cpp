@@ -7,7 +7,7 @@ AudioManager* AudioManager::instance_ = nullptr;
 // 初期化処理
 //================================================================================================
 
-AudioManager* AudioManager::GetInstance() {	
+AudioManager* AudioManager::GetInstance() {
 	if (instance_ == nullptr) {
 		instance_ = new AudioManager();
 	}
@@ -30,7 +30,7 @@ void AudioManager::Initialize() {
 //================================================================================================
 
 AudioManager::SoundData AudioManager::SoundLoadWave(const char* filename) {
-	
+
 #pragma region ファイルオープン
 	//ファイル入力ストリームのインスタンス
 	std::ifstream file;
@@ -69,7 +69,7 @@ AudioManager::SoundData AudioManager::SoundLoadWave(const char* filename) {
 	ChunkHeader data;
 	file.read((char*)&data, sizeof(data));
 	//JUNKチャンクを検出した場合
-	if (strncmp(data.id, "JUNK", 4) == 0) {	
+	if (strncmp(data.id, "JUNK", 4) == 0) {
 		file.seekg(data.size, std::ios_base::cur); //読み取り位置をチャンクの終わりまで進める
 		file.read((char*)&data, sizeof(data));     //再読み込み
 	}
@@ -111,6 +111,12 @@ AudioManager::SoundData AudioManager::SoundLoadWave(const char* filename) {
 //================================================================================================
 
 void AudioManager::SoundUnload(SoundData* soundData) {
+	// 再生中のボイスを停止して破棄
+	if (soundData->pSourceVoice) {
+		soundData->pSourceVoice->Stop();
+		soundData->pSourceVoice->DestroyVoice();
+		soundData->pSourceVoice = nullptr;
+	}
 
 	//バッファの解放
 	delete[] soundData->pBuffer;
@@ -124,7 +130,7 @@ void AudioManager::SoundUnload(SoundData* soundData) {
 // 音声再生
 //================================================================================================
 
-void AudioManager::SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData) {
+void AudioManager::SoundPlayWave(IXAudio2* xAudio2, SoundData& soundData) {
 
 	HRESULT result;
 
@@ -132,6 +138,8 @@ void AudioManager::SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData) 
 	IXAudio2SourceVoice* pSourceVoice = nullptr;
 	result = xAudio2->CreateSourceVoice(&pSourceVoice, &soundData.wfex);
 	assert(SUCCEEDED(result));
+
+	soundData.pSourceVoice = pSourceVoice;
 
 	//再生する波形データの設定
 	XAUDIO2_BUFFER buffer = {};
@@ -151,7 +159,4 @@ void AudioManager::SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData) 
 void AudioManager::Finalize() {
 	//XAudio2の解放
 	xAudio2_.Reset();
-	
 }
-
-

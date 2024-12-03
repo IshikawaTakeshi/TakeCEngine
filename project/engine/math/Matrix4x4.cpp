@@ -32,13 +32,17 @@ Matrix4x4 Matrix4x4::operator-=(const Matrix4x4& matrix) {
 }
 
 Matrix4x4 Matrix4x4::operator*=(const Matrix4x4& matrix) {
+	
+	Matrix4x4 result;
 	for (int row = 0; row < 4; row++) {
 		for (int colmn = 0; colmn < 4; colmn++) {
 			m[row][colmn] = 0;
 			for (int k = 0; k < 4; k++) {
-				m[row][colmn] += m[row][k] * matrix.m[k][colmn];
+				result.m[row][colmn] += m[row][k] * matrix.m[k][colmn];
 			}
 		}
 	}
+	*this = result;
+
 	return *this;
 }
