@@ -43,6 +43,9 @@ public:
 
 	static Matrix4x4 MakeRotateMatrix(const Vector3& rotate);
 
+	//任意軸回転行列
+	static Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
+
 	//3次元アフィン変換行列
 	static Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
