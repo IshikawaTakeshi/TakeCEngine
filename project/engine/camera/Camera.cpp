@@ -10,7 +10,7 @@ Camera::~Camera() {}
 void Camera::Initialize(ID3D12Device* device) {
 	
 	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
-	offset_ = { 0.0f, 0.0f, -20.0f };
+	offset_ = { 0.0f, 0.0f, -25.0f };
 	fovX_ = 0.45f;
 	aspectRatio_ = float(WinApp::kClientWidth) / float(WinApp::kClientHeight);
 	nearClip_ = 0.1f;
@@ -41,11 +41,14 @@ void Camera::Update() {
 
 	//累積回転行列の計算
 	rotationMatrix_ = rotationMatrix_ * rotationMatrixDelta_;
-	//オフセットを考慮したワールド行列の計算
 
-	
-	offsetZ += (float)Input::GetInstance()->GetWheel() * 0.01f;
-	offset_ = { 0.0f, 0.0f, -20.0f + offsetZ  };
+	if (Input::GetInstance()->IsPressMouse(2)) {
+		offsetDelta_.x += (float)Input::GetInstance()->GetMouseMove().lX * 0.01f;
+		offsetDelta_.y -= (float)Input::GetInstance()->GetMouseMove().lY * 0.01f;
+	}
+	//オフセットを考慮したワールド行列の計算
+	offsetDelta_.z += (float)Input::GetInstance()->GetWheel() * 0.01f;
+	offset_ = offsetDelta_;
 	
 	offset_ = MatrixMath::TransformNormal(offset_, rotationMatrix_);
 	transform_.translate = offset_;

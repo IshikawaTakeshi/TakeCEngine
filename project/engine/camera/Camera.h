@@ -50,7 +50,7 @@ private:
 
 	Transform transform_;
 	Vector3 offset_;
-	float offsetZ = 0;
+	Vector3 offsetDelta_;
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;
