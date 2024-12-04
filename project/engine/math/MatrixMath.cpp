@@ -219,6 +219,38 @@ Matrix4x4 MatrixMath::MakeRotateMatrix(const Vector3& rotate) {
 	return rotateMatrix;
 }
 
+Matrix4x4 MatrixMath::MakeRotateAxisAngle(const Vector3& axis, float angle) {
+    float cosA = std::cos(angle);
+    float sinA = std::sin(angle);
+    float oneMinusCosA = 1.0f - cosA;
+
+    Matrix4x4 result;
+    result.m[0][0] = cosA + axis.x * axis.x * oneMinusCosA;
+    result.m[0][1] = axis.x * axis.y * oneMinusCosA - axis.z * sinA;
+    result.m[0][2] = axis.x * axis.z * oneMinusCosA + axis.y * sinA;
+    result.m[0][3] = 0.0f;
+
+    result.m[1][0] = axis.y * axis.x * oneMinusCosA + axis.z * sinA;
+    result.m[1][1] = cosA + axis.y * axis.y * oneMinusCosA;
+    result.m[1][2] = axis.y * axis.z * oneMinusCosA - axis.x * sinA;
+    result.m[1][3] = 0.0f;
+
+    result.m[2][0] = axis.z * axis.x * oneMinusCosA - axis.y * sinA;
+    result.m[2][1] = axis.z * axis.y * oneMinusCosA + axis.x * sinA;
+    result.m[2][2] = cosA + axis.z * axis.z * oneMinusCosA;
+    result.m[2][3] = 0.0f;
+
+    result.m[3][0] = 0.0f;
+    result.m[3][1] = 0.0f;
+    result.m[3][2] = 0.0f;
+    result.m[3][3] = 1.0f;
+
+	//MEMO:行ベクトルで計算されているので転置する
+	result = Transpose(result);
+
+    return result;
+}
+
 //3次元アフィン変換行列
 Matrix4x4 MatrixMath::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
 	Matrix4x4 rotateMatrix = MakeRotateMatrix(rotate);

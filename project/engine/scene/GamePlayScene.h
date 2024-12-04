@@ -47,4 +47,10 @@ private:
 	std::unique_ptr<ParticleEmitter> particleEmitter1_ = nullptr;
 	std::unique_ptr<ParticleEmitter> particleEmitter2_ = nullptr;
 	
+
+	//MT4
+	Vector3 axis = {};
+	float angle = 0.44f;
+	Matrix4x4 rotateMatrix = {};
+
 };

@@ -2,7 +2,8 @@
 #include "TitleScene.h"
 #include "SceneManager.h"
 #include "TakeCFrameWork.h"
-
+#include "Vector3Math.h"
+#include <format>
 //====================================================================
 //			初期化
 //====================================================================
@@ -56,6 +57,10 @@ void GamePlayScene::Initialize() {
 	particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },1, 0.5f);
 	particleEmitter1_->SetParticleName("Particle1");
 	particleEmitter2_->SetParticleName("Particle2");
+
+	axis = Vector3Math::Normalize({ 1.0f,1.0f,1.0f });
+	angle = 0.44f;
+	rotateMatrix = MatrixMath::MakeRotateAxisAngle(axis, angle);
 }
 
 //====================================================================
@@ -66,7 +71,7 @@ void GamePlayScene::Finalize() {
 	sprite_.reset();    //スプライトの解放
 
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
-	AudioManager::GetInstance()->SoundUnload(&soundData1); //音声データ解放
+	//AudioManager::GetInstance()->SoundUnload(&soundData1); //音声データ解放
 }
 
 //====================================================================
@@ -76,15 +81,25 @@ void GamePlayScene::Finalize() {
 void GamePlayScene::Update() {
 	//ImGuiの更新
 #ifdef _DEBUG
-	CameraManager::GetInstance()->UpdateImGui();
-	//sprite_->UpdateImGui(0);
-	Object3dCommon::GetInstance()->UpdateImGui();
-	object3d->UpdateImGui(0);
-	object3d1->UpdateImGui(1);
-	particleEmitter1_->UpdateImGui();
-	particleEmitter2_->UpdateImGui();
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	//CameraManager::GetInstance()->UpdateImGui();
+	////sprite_->UpdateImGui(0);
+	//Object3dCommon::GetInstance()->UpdateImGui();
+	//object3d->UpdateImGui(0);
+	//object3d1->UpdateImGui(1);
+	//particleEmitter1_->UpdateImGui();
+	//particleEmitter2_->UpdateImGui();
+	//TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
+	ImGui::Begin("MT4_01_01");
+	/*ImGui::SliderFloat(std::format("GamePlayScene##{:p}", reinterpret_cast<void*>(&tmp2)).c_str(), &tmp, 0.0f, 10.0f);
+	ImGui::SliderFloat(std::format("GamePlayScene##{:p}", reinterpret_cast<void*>(&tmp2)).c_str(), &tmp2, 0.0f, 10.0f);*/
+
+	ImGui::Text(std::format("rotateMatrix :\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}",
+		rotateMatrix.m[0][0], rotateMatrix.m[0][1], rotateMatrix.m[0][2], rotateMatrix.m[0][3],
+		rotateMatrix.m[1][0], rotateMatrix.m[1][1], rotateMatrix.m[1][2], rotateMatrix.m[1][3],
+		rotateMatrix.m[2][0], rotateMatrix.m[2][1], rotateMatrix.m[2][2], rotateMatrix.m[2][3],
+		rotateMatrix.m[3][0], rotateMatrix.m[3][1], rotateMatrix.m[3][2], rotateMatrix.m[3][3]).c_str());
+	ImGui::End();
 #endif // DEBUG
 
 	//オーディオ再生
