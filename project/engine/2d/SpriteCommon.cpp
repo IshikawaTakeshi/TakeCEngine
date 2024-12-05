@@ -16,7 +16,7 @@ void SpriteCommon::Initialize(DirectXCommon* directXCommon) {
 	dxCommon_ = directXCommon;
 
 	pso_ = new PSO();
-	pso_->CreatePSO(dxCommon_->GetDevice(),dxCommon_->GetDXC(), D3D12_CULL_MODE_NONE); //PSO生成
+	pso_->CreatePSOForSprite(dxCommon_->GetDevice(),dxCommon_->GetDXC(), D3D12_CULL_MODE_NONE); //PSO生成
 	rootSignature_ = pso_->GetRootSignature();
 }
 

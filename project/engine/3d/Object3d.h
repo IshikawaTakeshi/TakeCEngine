@@ -61,9 +61,6 @@ private: // privateメンバ変数
 	//TransformationMatrix用の頂点データ
 	TransformMatrix* TransformMatrixData_ = nullptr;
 
-	//平行光源用のリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-	DirectionalLightData* directionalLightData_ = nullptr;;
 
 	//Transform
 	Transform transform_{};

@@ -15,7 +15,6 @@
 
 Object3d::~Object3d() {
 	wvpResource_.Reset();
-	directionalLightResource_.Reset();
 }
 
 void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
@@ -30,17 +29,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	//単位行列を書き込んでおく
 	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
-	//平行光源用Resourceの作成
-	directionalLightResource_ = DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(DirectionalLightData));
-	directionalLightData_ = nullptr;
-	//データを書き込むためのアドレスを取得
-	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
-	//光源の色を書き込む
-	directionalLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
-	//光源の方向を書き込む
-	directionalLightData_->direction_ = { 0.0f,-1.0f,0.0f };
-	//光源の輝度書き込む
-	directionalLightData_->intensity_ = 1.0f;
+
 	//CPUで動かす用のTransform
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
@@ -87,10 +76,7 @@ void Object3d::UpdateImGui(int id) {
 		ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 		model_->GetMesh()->GetMaterial()->UpdateMaterialImGui();
-		ImGui::Text("Lighting");
-		ImGui::ColorEdit4("Color", &directionalLightData_->color_.x);
-		ImGui::SliderFloat3("Direction", &directionalLightData_->direction_.x, -1.0f, 1.0f);
-		ImGui::DragFloat("Intensity", &directionalLightData_->intensity_, 0.01f);
+		
 		object3dCommon_->UpdateImGui();
 		ImGui::TreePop();
 	}
@@ -103,11 +89,6 @@ void Object3d::Draw() {
 	//wvp用のCBufferの場所を指定
 	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 
-	//Lighting用のCBufferの場所を指定
-	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
-	//カメラ情報のCBufferの場所を指定
-	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(
-		4,CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
 
 	if(model_ != nullptr) {
 		model_->Draw();

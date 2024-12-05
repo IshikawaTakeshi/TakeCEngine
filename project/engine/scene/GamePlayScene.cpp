@@ -13,8 +13,8 @@ void GamePlayScene::Initialize() {
 	//Camera0
 	camera0_ = std::make_shared<Camera>();
 	camera0_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	camera0_->SetTranslate({ 0.0f,0.0f,-20.0f });
-	camera0_->SetRotate({ 0.0f,0.0f,0.0f });
+	camera0_->SetTranslate({ 0.0f,4.0f,-20.0f });
+	camera0_->SetRotate({ 0.16f,0.0f,0.0f });
 	CameraManager::GetInstance()->AddCamera("Camera0", *camera0_);
 
 	//Camera1
@@ -31,6 +31,7 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("sphere.obj");
+	ModelManager::GetInstance()->LoadModel("terrain.obj");
 
 	//Sprite
 	sprite_ = std::make_shared<Sprite>();
@@ -38,10 +39,10 @@ void GamePlayScene::Initialize() {
 
 	//Object3d
 	object3d = std::make_shared<Object3d>();
-	object3d->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
+	object3d->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
 
 	object3d1 = std::make_shared<Object3d>();
-	object3d1->Initialize(Object3dCommon::GetInstance(), "axis.obj");
+	object3d1->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
 
 	//Particle3d
 	particle3d_ = std::make_unique<Particle3d>();
