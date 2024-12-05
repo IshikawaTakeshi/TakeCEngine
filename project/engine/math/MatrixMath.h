@@ -66,4 +66,7 @@ namespace MatrixMath {
 
 	//InverseTranspose
 	Matrix4x4 InverseTranspose(const Matrix4x4& m);
+
+	//ある方向からある方向へ向ける回転行列
+	Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
 };
