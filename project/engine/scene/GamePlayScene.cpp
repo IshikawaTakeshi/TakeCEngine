@@ -58,9 +58,15 @@ void GamePlayScene::Initialize() {
 	particleEmitter1_->SetParticleName("Particle1");
 	particleEmitter2_->SetParticleName("Particle2");
 
-	axis = Vector3Math::Normalize({ 1.0f,1.0f,1.0f });
-	angle = 0.44f;
-	rotateMatrix = MatrixMath::MakeRotateAxisAngle(axis, angle);
+	//MT4
+	from0 = Vector3Math::Normalize({ 1.0f,0.7f,0.5f });
+	to0 = -from0;
+	from1 = Vector3Math::Normalize({ -0.6f,0.9f,0.2f });
+	to1 = Vector3Math::Normalize({ 0.4f,0.7f,-0.5f });
+	rotateMatrix0 = MatrixMath::DirectionToDirection(
+		Vector3Math::Normalize(Vector3{1.0f,0.0f,0.0f }), Vector3Math::Normalize(Vector3{ -1.0f,0.0f,0.0f }));
+	rotateMatrix1 = MatrixMath::DirectionToDirection(from0, to0);
+	rotateMatrix2 = MatrixMath::DirectionToDirection(from1, to1);
 }
 
 //====================================================================
@@ -91,14 +97,22 @@ void GamePlayScene::Update() {
 	//TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
 	ImGui::Begin("MT4_01_01");
-	/*ImGui::SliderFloat(std::format("GamePlayScene##{:p}", reinterpret_cast<void*>(&tmp2)).c_str(), &tmp, 0.0f, 10.0f);
-	ImGui::SliderFloat(std::format("GamePlayScene##{:p}", reinterpret_cast<void*>(&tmp2)).c_str(), &tmp2, 0.0f, 10.0f);*/
+	ImGui::Text(std::format("rotateMatrix0 :\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}",
+		rotateMatrix0.m[0][0], rotateMatrix0.m[0][1], rotateMatrix0.m[0][2], rotateMatrix0.m[0][3],
+		rotateMatrix0.m[1][0], rotateMatrix0.m[1][1], rotateMatrix0.m[1][2], rotateMatrix0.m[1][3],
+		rotateMatrix0.m[2][0], rotateMatrix0.m[2][1], rotateMatrix0.m[2][2], rotateMatrix0.m[2][3],
+		rotateMatrix0.m[3][0], rotateMatrix0.m[3][1], rotateMatrix0.m[3][2], rotateMatrix0.m[3][3]).c_str());
+	ImGui::Text(std::format("rotateMatrix1 :\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}",
+		rotateMatrix1.m[0][0], rotateMatrix1.m[0][1], rotateMatrix1.m[0][2], rotateMatrix2.m[0][3],
+		rotateMatrix1.m[1][0], rotateMatrix1.m[1][1], rotateMatrix1.m[1][2], rotateMatrix2.m[1][3],
+		rotateMatrix1.m[2][0], rotateMatrix1.m[2][1], rotateMatrix1.m[2][2], rotateMatrix2.m[2][3],
+		rotateMatrix1.m[3][0], rotateMatrix1.m[3][1], rotateMatrix1.m[3][2], rotateMatrix2.m[3][3]).c_str());
+	ImGui::Text(std::format("rotateMatrix2 :\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}",
+		rotateMatrix2.m[0][0], rotateMatrix2.m[0][1], rotateMatrix2.m[0][2], rotateMatrix2.m[0][3],
+		rotateMatrix2.m[1][0], rotateMatrix2.m[1][1], rotateMatrix2.m[1][2], rotateMatrix2.m[1][3],
+		rotateMatrix2.m[2][0], rotateMatrix2.m[2][1], rotateMatrix2.m[2][2], rotateMatrix2.m[2][3],
+		rotateMatrix2.m[3][0], rotateMatrix2.m[3][1], rotateMatrix2.m[3][2], rotateMatrix2.m[3][3]).c_str());
 
-	ImGui::Text(std::format("rotateMatrix :\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}\n {:.3f} {:.3f} {:.3f} {:.3f}",
-		rotateMatrix.m[0][0], rotateMatrix.m[0][1], rotateMatrix.m[0][2], rotateMatrix.m[0][3],
-		rotateMatrix.m[1][0], rotateMatrix.m[1][1], rotateMatrix.m[1][2], rotateMatrix.m[1][3],
-		rotateMatrix.m[2][0], rotateMatrix.m[2][1], rotateMatrix.m[2][2], rotateMatrix.m[2][3],
-		rotateMatrix.m[3][0], rotateMatrix.m[3][1], rotateMatrix.m[3][2], rotateMatrix.m[3][3]).c_str());
 	ImGui::End();
 #endif // DEBUG
 
