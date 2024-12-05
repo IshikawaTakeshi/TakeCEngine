@@ -226,28 +226,25 @@ Matrix4x4 MatrixMath::MakeRotateAxisAngle(const Vector3& axis, float angle) {
 	float oneMinusCosA = 1.0f - cosA;
 
 	Matrix4x4 result;
-	result.m[0][0] = cosA + axis.x * axis.x * oneMinusCosA;
-	result.m[0][1] = axis.x * axis.y * oneMinusCosA - axis.z * sinA;
-	result.m[0][2] = axis.x * axis.z * oneMinusCosA + axis.y * sinA;
+	result.m[0][0] = axis.x * axis.x * oneMinusCosA + cosA;
+	result.m[0][1] = axis.x * axis.y * oneMinusCosA + axis.z * sinA;
+	result.m[0][2] = axis.x * axis.z * oneMinusCosA - axis.y * sinA;
 	result.m[0][3] = 0.0f;
 
-	result.m[1][0] = axis.y * axis.x * oneMinusCosA + axis.z * sinA;
-	result.m[1][1] = cosA + axis.y * axis.y * oneMinusCosA;
-	result.m[1][2] = axis.y * axis.z * oneMinusCosA - axis.x * sinA;
+	result.m[1][0] = axis.y * axis.x * oneMinusCosA - axis.z * sinA;
+	result.m[1][1] = axis.y * axis.y * oneMinusCosA + cosA;
+	result.m[1][2] = axis.y * axis.z * oneMinusCosA + axis.x * sinA;
 	result.m[1][3] = 0.0f;
 
-	result.m[2][0] = axis.z * axis.x * oneMinusCosA - axis.y * sinA;
-	result.m[2][1] = axis.z * axis.y * oneMinusCosA + axis.x * sinA;
-	result.m[2][2] = cosA + axis.z * axis.z * oneMinusCosA;
+	result.m[2][0] = axis.z * axis.x * oneMinusCosA + axis.y * sinA;
+	result.m[2][1] = axis.z * axis.y * oneMinusCosA - axis.x * sinA;
+	result.m[2][2] = axis.z * axis.z * oneMinusCosA + cosA;
 	result.m[2][3] = 0.0f;
 
 	result.m[3][0] = 0.0f;
 	result.m[3][1] = 0.0f;
 	result.m[3][2] = 0.0f;
 	result.m[3][3] = 1.0f;
-
-	//MEMO:行ベクトルで計算されているので転置する
-	result = Transpose(result);
 
 	return result;
 }
@@ -329,37 +326,45 @@ Matrix4x4 MatrixMath::InverseTranspose(const Matrix4x4& m) {
 }
 
 Matrix4x4 MatrixMath::DirectionToDirection(const Vector3& from, const Vector3& to) {
-	Vector3 axis = Vector3Math::Normalize(Vector3Math::Cross(from, to));
-	float cosTheta = Vector3Math::Dot(from, to);
-	float sinA = Vector3Math::
+
+	Vector3 crossProduct = Vector3Math::Cross(from, to);
+	float cosA = Vector3Math::Dot(from, to);
+	float sinA = Vector3Math::Length(crossProduct);
 	float oneMinusCosA = 1.0f - cosA;
 
+	Vector3 axis;
+	if (sinA < 1e-6) {
+		// from と to が反対方向を向いている場合
+		if (fabs(from.x) > fabs(from.y)) {
+			axis = Vector3Math::Normalize(Vector3{ from.y,-from.x,0.0f });
+		} else {
+			axis = Vector3Math::Normalize(Vector3{ from.z, 0.0f, -from.x });
+		}
+	} else {
+		axis = Vector3Math::Normalize(crossProduct);
+	}
+
 	Matrix4x4 result;
-	result.m[0][0] = cosA + axis.x * axis.x * oneMinusCosA;
-	result.m[0][1] = axis.x * axis.y * oneMinusCosA - axis.z * sinA;
-	result.m[0][2] = axis.x * axis.z * oneMinusCosA + axis.y * sinA;
+	result.m[0][0] = axis.x * axis.x * oneMinusCosA + cosA;
+	result.m[0][1] = axis.x * axis.y * oneMinusCosA + axis.z * sinA;
+	result.m[0][2] = axis.x * axis.z * oneMinusCosA - axis.y * sinA;
 	result.m[0][3] = 0.0f;
 
-	result.m[1][0] = axis.y * axis.x * oneMinusCosA + axis.z * sinA;
-	result.m[1][1] = cosA + axis.y * axis.y * oneMinusCosA;
-	result.m[1][2] = axis.y * axis.z * oneMinusCosA - axis.x * sinA;
+	result.m[1][0] = axis.y * axis.x * oneMinusCosA - axis.z * sinA;
+	result.m[1][1] = axis.y * axis.y * oneMinusCosA + cosA;
+	result.m[1][2] = axis.y * axis.z * oneMinusCosA + axis.x * sinA;
 	result.m[1][3] = 0.0f;
 
-	result.m[2][0] = axis.z * axis.x * oneMinusCosA - axis.y * sinA;
-	result.m[2][1] = axis.z * axis.y * oneMinusCosA + axis.x * sinA;
-	result.m[2][2] = cosA + axis.z * axis.z * oneMinusCosA;
+	result.m[2][0] = axis.z * axis.x * oneMinusCosA + axis.y * sinA;
+	result.m[2][1] = axis.z * axis.y * oneMinusCosA - axis.x * sinA;
+	result.m[2][2] = axis.z * axis.z * oneMinusCosA + cosA;
 	result.m[2][3] = 0.0f;
 
 	result.m[3][0] = 0.0f;
 	result.m[3][1] = 0.0f;
 	result.m[3][2] = 0.0f;
 	result.m[3][3] = 1.0f;
-
-	//MEMO:行ベクトルで計算されているので転置する
-	result = Transpose(result);
-
 	return result;
-
 }
 
 //void MatrixMath::MatirxScreenPrintf(int x, int y, const Matrix4x4& matrix,const char* label) {

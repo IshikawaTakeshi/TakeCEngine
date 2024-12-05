@@ -38,6 +38,7 @@ Vector3 operator/(const Vector3& v, float s) {
 	return s / v;
 }
 
+
 //===============================================================
 //		複合代入演算子
 //===============================================================
@@ -69,3 +70,9 @@ Vector3 Vector3::operator/=(float s) {
 	z /= s;
 	return *this;
 }
+
+bool Vector3::operator==(const Vector3& v) const {
+	return x == v.x && y == v.y && z == v.z;
+}
+
+
