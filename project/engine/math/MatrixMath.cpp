@@ -249,6 +249,31 @@ Matrix4x4 MatrixMath::MakeRotateAxisAngle(const Vector3& axis, float angle) {
 	return result;
 }
 
+Matrix4x4 MatrixMath::MakeRotateMatrix(const Quaternion& quaternion) {
+	Matrix4x4 result;
+	result.m[0][0] = 1.0f - 2.0f * quaternion.y * quaternion.y - 2.0f * quaternion.z * quaternion.z;
+	result.m[0][1] = 2.0f * quaternion.x * quaternion.y + 2.0f * quaternion.w * quaternion.z;
+	result.m[0][2] = 2.0f * quaternion.x * quaternion.z - 2.0f * quaternion.w * quaternion.y;
+	result.m[0][3] = 0.0f;
+
+	result.m[1][0] = 2.0f * quaternion.x * quaternion.y - 2.0f * quaternion.w * quaternion.z;
+	result.m[1][1] = 1.0f - 2.0f * quaternion.x * quaternion.x - 2.0f * quaternion.z * quaternion.z;
+	result.m[1][2] = 2.0f * quaternion.y * quaternion.z + 2.0f * quaternion.w * quaternion.x;
+	result.m[1][3] = 0.0f;
+
+	result.m[2][0] = 2.0f * quaternion.x * quaternion.z + 2.0f * quaternion.w * quaternion.y;
+	result.m[2][1] = 2.0f * quaternion.y * quaternion.z - 2.0f * quaternion.w * quaternion.x;
+	result.m[2][2] = 1.0f - 2.0f * quaternion.x * quaternion.x - 2.0f * quaternion.y * quaternion.y;
+	result.m[2][3] = 0.0f;
+
+	result.m[3][0] = 0.0f;
+	result.m[3][1] = 0.0f;
+	result.m[3][2] = 0.0f;
+	result.m[3][3] = 1.0f;
+
+	return result;
+}
+
 //3次元アフィン変換行列
 Matrix4x4 MatrixMath::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
 	Matrix4x4 rotateMatrix = MakeRotateMatrix(rotate);
