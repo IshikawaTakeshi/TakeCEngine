@@ -15,6 +15,8 @@
 #include "ParticleManager.h"
 #include "ParticleEmitter.h"
 
+#include "Quaternion.h"
+
 
 class GamePlayScene : public BaseScene {
 public:
@@ -49,11 +51,13 @@ private:
 	
 
 	//MT4
-	Vector3 from0;
-	Vector3 to0;
-	Vector3 from1;
-	Vector3 to1;
-	Matrix4x4 rotateMatrix0;
-	Matrix4x4 rotateMatrix1;
-	Matrix4x4 rotateMatrix2;
+	Quaternion q1 = { 2.0f,3.0f,4.0f,1.0f };
+	Quaternion q2 = { 1.0f,3.0f,5.0f,2.0f };
+	Quaternion identity = QuaternionMath::IdentityQuaternion();
+	Quaternion conjugate = QuaternionMath::Conjugate(q1);
+	float norm = QuaternionMath::Norm(q1);
+	Quaternion normal = QuaternionMath::Normalize(q1);
+	Quaternion inverse = QuaternionMath::Inverse(q1);
+	Quaternion mul1 = QuaternionMath::Multiply(q1, q2);
+	Quaternion mul2 = QuaternionMath::Multiply(q2, q1);
 };
