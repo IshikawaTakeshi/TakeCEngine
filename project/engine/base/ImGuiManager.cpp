@@ -5,6 +5,7 @@
 #include "SrvManager.h"
 #include <wrl.h>
 #include <cassert>
+#include <format>
 
 void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, SrvManager* srvManager) {
 
@@ -59,4 +60,20 @@ void ImGuiManager::Draw() {
 
 	//実際のcommandListのImGuiの描画コマンドを積む
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+}
+
+void ImGuiManager::QuaternionScreenPrintf(const std::string& label, const Quaternion& q) {
+	ImGui::Text("%s : %.2f %.2f %.2f %.2f", label.c_str(), q.x, q.y, q.z, q.w);
+}
+
+void ImGuiManager::Vector3ScreenPrintf(const std::string& label, const Vector3& v) {
+	ImGui::Text("%s : %.2f %.2f %.2f", label.c_str(), v.x, v.y, v.z);
+}
+
+void ImGuiManager::Matrix4x4ScreenPrintf(const std::string& label, const Matrix4x4& m) {
+	ImGui::Text(label.c_str());
+	ImGui::Text("%.3f %.3f %.3f %.3f", m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3]);
+	ImGui::Text("%.3f %.3f %.3f %.3f", m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3]);
+	ImGui::Text("%.3f %.3f %.3f %.3f", m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3]);
+	ImGui::Text("%.3f %.3f %.3f %.3f", m.m[3][0], m.m[3][1], m.m[3][2], m.m[3][3]);
 }

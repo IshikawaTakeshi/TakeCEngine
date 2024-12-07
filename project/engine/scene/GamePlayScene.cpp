@@ -3,6 +3,7 @@
 #include "SceneManager.h"
 #include "TakeCFrameWork.h"
 #include "Vector3Math.h"
+#include "ImGuiManager.h"
 #include <format>
 //====================================================================
 //			初期化
@@ -57,6 +58,13 @@ void GamePlayScene::Initialize() {
 	particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },1, 0.5f);
 	particleEmitter1_->SetParticleName("Particle1");
 	particleEmitter2_->SetParticleName("Particle2");
+
+	//MT4
+	rotation_ = QuaternionMath::MakeRotateAxisAngleQuaternion(Vector3Math::Normalize({ 1.0f,0.4f,-0.2f }), 0.45f);
+	pointY_ = { 2.1f,-0.9f,1.3f };
+	rotateMatrix_ = MatrixMath::MakeRotateMatrix(rotation_);
+	rotateByQuaternion_ = QuaternionMath::RotateVector(pointY_,rotation_);
+	rotateByMatrix_ = MatrixMath::Transform(pointY_,rotateMatrix_);
 }
 
 //====================================================================
@@ -87,19 +95,10 @@ void GamePlayScene::Update() {
 	//TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
 	ImGui::Begin("MT4_01_01");
-	ImGui::Text(std::format("Identity        : {:.2f} {:.2f} {:.2f} {:.2f}",
-		identity.x,identity.y,identity.z,identity.w).c_str());
-	ImGui::Text(std::format("Conjugate       : {:.2f} {:.2f} {:.2f} {:.2f}",
-		conjugate.x,conjugate.y,conjugate.z,conjugate.w).c_str());
-	ImGui::Text(std::format("Inverse         : {:.2f} {:.2f} {:.2f} {:.2f}",
-		inverse.x,inverse.y,inverse.z,inverse.w).c_str());
-	ImGui::Text(std::format("Normalize       : {:.2f} {:.2f} {:.2f} {:.2f}",
-		normal.x,normal.y,normal.z,normal.w).c_str());
-	ImGui::Text(std::format("Multiply(q1,q2) : {:.2f} {:.2f} {:.2f} {:.2f}",
-		mul1.x, mul1.y, mul1.z, mul1.w).c_str());
-	ImGui::Text(std::format("Multiply(q2,q1) : {:.2f} {:.2f} {:.2f} {:.2f}",
-		mul2.x, mul2.y, mul2.z, mul2.w).c_str());
-	ImGui::Text(std::format("norm            : {:.2f}", norm).c_str());
+	ImGuiManager::QuaternionScreenPrintf("Quaternion", rotation_);
+	ImGuiManager::Matrix4x4ScreenPrintf("RotateMatrix", rotateMatrix_);
+	ImGuiManager::Vector3ScreenPrintf("RotateByQuaternion", rotateByQuaternion_);
+	ImGuiManager::Vector3ScreenPrintf("RotateByMatrix", rotateByMatrix_);
 	ImGui::End();
 #endif // DEBUG
 

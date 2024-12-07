@@ -52,5 +52,28 @@ Quaternion QuaternionMath::Inverse(const Quaternion& q) {
     result.z = conjugate.z / powf(norm, 2);
     result.w = conjugate.w / powf(norm, 2);
     return result;
+}
 
+Quaternion QuaternionMath::MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle) {
+    Quaternion result;
+    float halfAngle = angle / 2.0f;
+    float sinHalfAngle = sinf(halfAngle);
+    result.x = axis.x * sinHalfAngle;
+    result.y = axis.y * sinHalfAngle;
+    result.z = axis.z * sinHalfAngle;
+    result.w = cosf(halfAngle);
+    return result;
+}
+
+Vector3 QuaternionMath::RotateVector(const Vector3& vector,const Quaternion& quaternion) {
+    Vector3 result;
+    Quaternion q = quaternion;
+    Quaternion v = { vector.x,vector.y,vector.z,0.0f };
+    Quaternion qConjugate = Conjugate(q);
+    Quaternion v1 = Multiply(q, v);
+    Quaternion v2 = Multiply(v1, qConjugate);
+    result.x = v2.x;
+    result.y = v2.y;
+    result.z = v2.z;
+    return result;
 }
