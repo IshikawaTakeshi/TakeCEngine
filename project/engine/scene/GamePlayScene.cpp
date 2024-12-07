@@ -58,13 +58,6 @@ void GamePlayScene::Initialize() {
 	particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },1, 0.5f);
 	particleEmitter1_->SetParticleName("Particle1");
 	particleEmitter2_->SetParticleName("Particle2");
-
-	//MT4
-	rotation_ = QuaternionMath::MakeRotateAxisAngleQuaternion(Vector3Math::Normalize({ 1.0f,0.4f,-0.2f }), 0.45f);
-	pointY_ = { 2.1f,-0.9f,1.3f };
-	rotateMatrix_ = MatrixMath::MakeRotateMatrix(rotation_);
-	rotateByQuaternion_ = QuaternionMath::RotateVector(pointY_,rotation_);
-	rotateByMatrix_ = MatrixMath::Transform(pointY_,rotateMatrix_);
 }
 
 //====================================================================
@@ -85,27 +78,15 @@ void GamePlayScene::Finalize() {
 void GamePlayScene::Update() {
 	//ImGuiの更新
 #ifdef _DEBUG
-	//CameraManager::GetInstance()->UpdateImGui();
-	////sprite_->UpdateImGui(0);
-	//Object3dCommon::GetInstance()->UpdateImGui();
-	//object3d->UpdateImGui(0);
-	//object3d1->UpdateImGui(1);
-	//particleEmitter1_->UpdateImGui();
-	//particleEmitter2_->UpdateImGui();
-	//TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	CameraManager::GetInstance()->UpdateImGui();
+	//sprite_->UpdateImGui(0);
+	Object3dCommon::GetInstance()->UpdateImGui();
+	particleEmitter1_->UpdateImGui();
+	particleEmitter2_->UpdateImGui();
+	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
-	ImGui::Begin("MT4_01_01");
-	ImGuiManager::QuaternionScreenPrintf("Quaternion", rotation_);
-	ImGuiManager::Matrix4x4ScreenPrintf("RotateMatrix", rotateMatrix_);
-	ImGuiManager::Vector3ScreenPrintf("RotateByQuaternion", rotateByQuaternion_);
-	ImGuiManager::Vector3ScreenPrintf("RotateByMatrix", rotateByMatrix_);
-	ImGui::End();
 #endif // DEBUG
 
-	//オーディオ再生
-	if (Input::GetInstance()->TriggerKey(DIK_A)) {
-		AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), soundData1);
-	}
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
