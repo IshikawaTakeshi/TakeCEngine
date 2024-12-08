@@ -50,21 +50,14 @@ void GamePlayScene::Initialize() {
 	object3d1->Initialize(Object3dCommon::GetInstance(), "plane.gltf");
 
 	//CreateParticle
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Particle1", "plane.obj");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Particle2", "sphere.obj");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Sphere", "sphere.obj");
 	particleEmitter1_ = std::make_unique<ParticleEmitter>();
 	particleEmitter2_ = std::make_unique<ParticleEmitter>();
 	particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },1, 0.5f);
 	particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },1, 0.5f);
-	particleEmitter1_->SetParticleName("Particle1");
-	particleEmitter2_->SetParticleName("Particle2");
-
-	//MT4
-	rotation_ = QuaternionMath::MakeRotateAxisAngleQuaternion(Vector3Math::Normalize({ 1.0f,0.4f,-0.2f }), 0.45f);
-	pointY_ = { 2.1f,-0.9f,1.3f };
-	rotateMatrix_ = MatrixMath::MakeRotateMatrix(rotation_);
-	rotateByQuaternion_ = QuaternionMath::RotateVector(pointY_,rotation_);
-	rotateByMatrix_ = MatrixMath::Transform(pointY_,rotateMatrix_);
+	particleEmitter1_->SetParticleName("Plane");
+	particleEmitter2_->SetParticleName("Sphere");
 }
 
 //====================================================================
@@ -85,27 +78,30 @@ void GamePlayScene::Finalize() {
 void GamePlayScene::Update() {
 	//ImGuiの更新
 #ifdef _DEBUG
-	//CameraManager::GetInstance()->UpdateImGui();
-	////sprite_->UpdateImGui(0);
+	CameraManager::GetInstance()->UpdateImGui();
+	//sprite_->UpdateImGui(0);
 	//Object3dCommon::GetInstance()->UpdateImGui();
-	//object3d->UpdateImGui(0);
-	//object3d1->UpdateImGui(1);
-	//particleEmitter1_->UpdateImGui();
-	//particleEmitter2_->UpdateImGui();
-	//TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	particleEmitter1_->UpdateImGui();
+	particleEmitter2_->UpdateImGui();
+	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
-	ImGui::Begin("MT4_01_01");
-	ImGuiManager::QuaternionScreenPrintf("Quaternion", rotation_);
-	ImGuiManager::Matrix4x4ScreenPrintf("RotateMatrix", rotateMatrix_);
-	ImGuiManager::Vector3ScreenPrintf("RotateByQuaternion", rotateByQuaternion_);
-	ImGuiManager::Vector3ScreenPrintf("RotateByMatrix", rotateByMatrix_);
+	ImGui::Begin("How to use");
+	ImGui::Text("Camera");
+	ImGui::Text("Rotate : Mouse Right Button Drag");
+	ImGui::Text("MoveXY : Mouse Middle Button Drag");
+	ImGui::Text("MoveZ : Mouse Wheel");
+	ImGui::Separator();
+	ImGui::Text("ParticleManager");
+	ImGui::Text("SoapBubbleButton : Initialize Attribute  to look like SoapBubble."); 
+	ImGui::Text("FireButton : Initialize Attribute to look like Fire.");
+	ImGui::Text("BlendState : BlendState Combo");
+	ImGui::Separator();
+	ImGui::Text("ParticleEmitter");
+	ImGui::Text("Emit : Emit CheckBox");
 	ImGui::End();
+
 #endif // DEBUG
 
-	//オーディオ再生
-	if (Input::GetInstance()->TriggerKey(DIK_A)) {
-		AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), soundData1);
-	}
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
@@ -125,7 +121,7 @@ void GamePlayScene::Update() {
 	//シーン遷移
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
 		//シーン切り替え依頼
-		SceneManager::GetInstance()->ChangeScene("TITLE");
+		//SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
 }
 

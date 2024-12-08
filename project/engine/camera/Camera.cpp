@@ -76,11 +76,7 @@ void Camera::Update() {
 #ifdef _DEBUG
 void Camera::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
-	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat("FovX", &fovX_, 0.01f);
 }
 
 #endif // DEBUG
-
-
-

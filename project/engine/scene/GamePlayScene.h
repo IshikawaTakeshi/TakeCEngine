@@ -48,12 +48,4 @@ private:
 	//パーティクル発生器
 	std::unique_ptr<ParticleEmitter> particleEmitter1_ = nullptr;
 	std::unique_ptr<ParticleEmitter> particleEmitter2_ = nullptr;
-	
-
-	//MT4
-	Quaternion rotation_;
-	Vector3 pointY_;
-	Matrix4x4 rotateMatrix_;
-	Vector3 rotateByQuaternion_;
-	Vector3 rotateByMatrix_;
 };

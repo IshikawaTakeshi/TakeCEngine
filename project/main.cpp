@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ゲームクラスの生成
 	TakeCFrameWork* game = new MyGame();
 	//ゲームの実行
-	game->Run(L"MT4_01_04");
+	game->Run(L"LE2B_03_イシカワ_タケシ");
 	//leakCheckerの解放
 	delete leakCheck;
 	

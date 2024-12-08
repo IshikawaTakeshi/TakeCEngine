@@ -40,7 +40,7 @@ void ParticleManager::UpdateImGui() {
 	ImGui::Text("ParticleGroup Count : %d", particleGroups_.size());
 	ImGui::Separator();
 	for (const auto& [name, particleGroup] : particleGroups_) {
-		// 繝懊ち繝ｳ繧定｡ｨ遉ｺ縺励・
+		
 		if (ImGui::TreeNode(name.c_str())) {
 			particleGroup->UpdateImGui();
 			ImGui::TreePop();
