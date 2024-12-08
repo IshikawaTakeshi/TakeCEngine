@@ -5,6 +5,7 @@
 #include "Vector3Math.h"
 #include "ImGuiManager.h"
 #include <format>
+#include <numbers>
 //====================================================================
 //			初期化
 //====================================================================
@@ -58,6 +59,16 @@ void GamePlayScene::Initialize() {
 	particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },30, 0.5f);
 	particleEmitter1_->SetParticleName("Plane");
 	particleEmitter2_->SetParticleName("Sphere");
+
+	//MT4
+	rotation0 = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.71f,0.71f,0.0f }, 0.3f);
+	rotation1 = { -rotation0.x,-rotation0.y,-rotation0.z,-rotation0.w };
+
+	interpolate0 = QuaternionMath::Slerp(rotation0, rotation1, 0.0f);
+	interpolate1 = QuaternionMath::Slerp(rotation0, rotation1, 0.3f);
+	interpolate2 = QuaternionMath::Slerp(rotation0, rotation1, 0.5f);
+	interpolate3 = QuaternionMath::Slerp(rotation0, rotation1, 0.7f);
+	interpolate4 = QuaternionMath::Slerp(rotation0, rotation1, 1.0f);
 }
 
 //====================================================================
@@ -81,24 +92,18 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->UpdateImGui();
 	//sprite_->UpdateImGui(0);
 	//Object3dCommon::GetInstance()->UpdateImGui();
-	particleEmitter1_->UpdateImGui();
-	particleEmitter2_->UpdateImGui();
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	//particleEmitter1_->UpdateImGui();
+	//particleEmitter2_->UpdateImGui();
+	//TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
-	ImGui::Begin("How to use");
-	ImGui::Text("Camera");
-	ImGui::Text("Rotate : Mouse Right Button Drag");
-	ImGui::Text("MoveXY : Mouse Middle Button Drag");
-	ImGui::Text("MoveZ : Mouse Wheel");
-	ImGui::Separator();
-	ImGui::Text("ParticleManager");
-	ImGui::Text("SoapBubbleButton : Initialize Attribute  to look like SoapBubble."); 
-	ImGui::Text("FireButton : Initialize Attribute to look like Fire.");
-	ImGui::Text("BlendState : BlendState Combo");
-	ImGui::Separator();
-	ImGui::Text("ParticleEmitter");
-	ImGui::Text("Emit : Emit CheckBox");
+	ImGui::Begin("MT4");
+	ImGuiManager::QuaternionScreenPrintf("interpolate0", interpolate0);
+	ImGuiManager::QuaternionScreenPrintf("interpolate1", interpolate1);
+	ImGuiManager::QuaternionScreenPrintf("interpolate2", interpolate2);
+	ImGuiManager::QuaternionScreenPrintf("interpolate3", interpolate3);
+	ImGuiManager::QuaternionScreenPrintf("interpolate4", interpolate4);
 	ImGui::End();
+	
 
 #endif // DEBUG
 
