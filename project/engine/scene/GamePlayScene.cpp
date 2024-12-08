@@ -50,14 +50,14 @@ void GamePlayScene::Initialize() {
 	object3d1->Initialize(Object3dCommon::GetInstance(), "plane.gltf");
 
 	//CreateParticle
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Particle1", "plane.obj");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Particle2", "sphere.obj");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Sphere", "sphere.obj");
 	particleEmitter1_ = std::make_unique<ParticleEmitter>();
 	particleEmitter2_ = std::make_unique<ParticleEmitter>();
 	particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },1, 0.5f);
 	particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },1, 0.5f);
-	particleEmitter1_->SetParticleName("Particle1");
-	particleEmitter2_->SetParticleName("Particle2");
+	particleEmitter1_->SetParticleName("Plane");
+	particleEmitter2_->SetParticleName("Sphere");
 }
 
 //====================================================================
@@ -85,6 +85,21 @@ void GamePlayScene::Update() {
 	particleEmitter2_->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
+	ImGui::Begin("How to use");
+	ImGui::Text("Camera");
+	ImGui::Text("Rotate : Mouse Right Button Drag");
+	ImGui::Text("MoveXY : Mouse Middle Button Drag");
+	ImGui::Text("MoveZ : Mouse Wheel");
+	ImGui::Separator();
+	ImGui::Text("ParticleManager");
+	ImGui::Text("SoapBubbleButton : Initialize Attribute  to look like SoapBubble."); 
+	ImGui::Text("FireButton : Initialize Attribute to look like Fire.");
+	ImGui::Text("BlendState : BlendState Combo");
+	ImGui::Separator();
+	ImGui::Text("ParticleEmitter");
+	ImGui::Text("Emit : Emit CheckBox");
+	ImGui::End();
+
 #endif // DEBUG
 
 
@@ -106,7 +121,7 @@ void GamePlayScene::Update() {
 	//シーン遷移
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
 		//シーン切り替え依頼
-		SceneManager::GetInstance()->ChangeScene("TITLE");
+		//SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
 }
 

@@ -42,7 +42,7 @@ void ParticleEmitter::UpdateImGui() {
 		int count = particleCount_;
 		ImGui::SliderInt("ParticleCount", &count, 0, 100);
 		particleCount_ = count;
-
+		ImGui::SliderFloat("Frequency", &frequency_, 0.0f, 1.0f);
 
 		ImGui::TreePop();
 	}

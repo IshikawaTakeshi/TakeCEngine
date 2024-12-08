@@ -18,6 +18,27 @@ struct Particle {
 	float currentTime_;     //経過時間
 };
 
+struct AttributeRange {
+	float min;
+	float max;
+};
+
+// パーティクルの属性を保持する構造体
+struct ParticleAttributes {
+	Vector3 scale = { 1.0f,1.0f,1.0f };
+	Vector3 color = { 1.0f,1.0f,1.0f };
+	AttributeRange positionRange = {-1.0f, 1.0f};
+	AttributeRange velocityRange = { -1.0f,1.0f };
+	AttributeRange colorRange = { 0.0f,1.0f };
+	AttributeRange lifetimeRange = { 1.0f,3.0f };
+	//進行方向に向けるフラグ
+	bool isalignToDirection = false;
+	//Billboardかどうか
+	bool isBillboard = false;
+	//色を編集するかどうか
+	bool editColor = false;
+};
+
 struct AABB {
 	Vector3 min_;
 	Vector3 max_;
@@ -76,22 +97,43 @@ public:
 
 	void SpliceParticles(std::list<Particle> particles);
 
+	void EmitMove(std::list<Particle>::iterator particleIterator);
+
+	//void ConvergenceMove(std::list<Particle>::iterator particleIterator);
+
+	/// <summary>
+	/// パーティクルの属性を設定(シャボン玉)
+	/// </summary>
+	void SetAttributesSoapBubble();
+
+	/// <summary>
+	/// パーティクルの属性を設定(松明の火)
+	/// </summary>
+	void SetAttributesFire();
+
 public: //getter
 
 public: //setter
 
 	void SetModel(const std::string& filePath);
+	//void SetModelTexture(const std::string& texturefilePath);
 	void SetCamera(Camera* camera) { camera_ = camera; }
 
 private: // privateメンバ変数
 
-	static const uint32_t kNumMaxInstance_ = 100; //Particleの総数
-	const float kDeltaTime_ = 1.0f / 60.0f; //1フレームの時間
-	uint32_t numInstance_ = 0; //描画するインスタンス数
-	std::list<Particle> particles_; //Particleの配列
-	bool isBillboard_ = false;
-	//Emitter emitter_;
+	//Particleの総数
+	static const uint32_t kNumMaxInstance_ = 1000; 
+	//1フレームの時間
+	const float kDeltaTime_ = 1.0f / 60.0f;
+	//描画するインスタンス数
+	uint32_t numInstance_ = 0; 
+	//Particleの配列
+	std::list<Particle> particles_; 
+
+	//加速フィールド
 	AccelerationField accelerationField_;
+	//パーティクルの属性
+	ParticleAttributes particleAttributes_;
 	
 private:
 
