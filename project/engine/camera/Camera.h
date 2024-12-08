@@ -29,6 +29,7 @@ public: //getter
 	const Matrix4x4& GetViewMatrix() const { return viewMatrix_; }
 	const Matrix4x4& GetProjectionMatrix() const { return projectionMatrix_; }
 	const Matrix4x4& GetViewProjectionMatrix() const { return viewProjectionMatrix_; }
+	const Matrix4x4& GetRotationMatrix() const { return rotationMatrix_; }
 	const Vector3& GetTranslate() const { return transform_.translate; }
 	const Vector3& GetRotate() const { return transform_.rotate; }
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetCameraResource() const { return cameraResource_; }

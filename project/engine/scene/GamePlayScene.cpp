@@ -80,7 +80,7 @@ void GamePlayScene::Update() {
 #ifdef _DEBUG
 	CameraManager::GetInstance()->UpdateImGui();
 	//sprite_->UpdateImGui(0);
-	Object3dCommon::GetInstance()->UpdateImGui();
+	//Object3dCommon::GetInstance()->UpdateImGui();
 	particleEmitter1_->UpdateImGui();
 	particleEmitter2_->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();

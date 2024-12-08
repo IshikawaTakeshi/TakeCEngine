@@ -105,11 +105,9 @@ void Particle3d::Update() {
 
 			//ビルボードの処理
 			if (isBillboard_) {
-				worldMatrix_ = MatrixMath::MakeAffineMatrix(
-					(*particleIterator).transforms_.scale,
-					CameraManager::GetInstance()->GetActiveCamera()->GetRotate(),
-					(*particleIterator).transforms_.translate
-				);
+				Matrix4x4 translateMatrix = MatrixMath::MakeTranslateMatrix((*particleIterator).transforms_.translate);
+				Matrix4x4 scaleMatrix = MatrixMath::MakeScaleMatrix((*particleIterator).transforms_.scale);
+				worldMatrix_ = translateMatrix * CameraManager::GetInstance()->GetActiveCamera()->GetRotationMatrix() * scaleMatrix;
 			}
 
 			//wvpの更新
