@@ -108,6 +108,9 @@ Quaternion QuaternionMath::Slerp(Quaternion q0, Quaternion q1, float t) {
 	float scale1 = std::sinf(t * theta) / sinTheta;
 
 	//それぞれの保管係数を利用して補間後のクォータニオンを求める
+	if (dot >= 0.0005f) {
+		return (1.0f - t) * q0 + t * q1;
+	}
 	return scale0 * q0 + scale1 * q1;
 }
 

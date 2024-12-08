@@ -62,7 +62,7 @@ void GamePlayScene::Initialize() {
 
 	//MT4
 	rotation0 = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.71f,0.71f,0.0f }, 0.3f);
-	rotation1 = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.71f,0.0f,0.71f }, 3.141592f);
+	rotation1 = { -rotation0.x,-rotation0.y,-rotation0.z,-rotation0.w };
 
 	interpolate0 = QuaternionMath::Slerp(rotation0, rotation1, 0.0f);
 	interpolate1 = QuaternionMath::Slerp(rotation0, rotation1, 0.3f);
