@@ -106,8 +106,7 @@ void GamePlayScene::Update() {
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
 
-	//sprite_->Update(); 	//Spriteの更新
-	// 
+	sprite_->Update(); 	//Spriteの更新
 	//3Dオブジェクトの更新
 	object3d->Update(); 
 	object3d1->Update();
@@ -121,7 +120,7 @@ void GamePlayScene::Update() {
 	//シーン遷移
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
 		//シーン切り替え依頼
-		//SceneManager::GetInstance()->ChangeScene("TITLE");
+		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
 }
 
@@ -132,7 +131,7 @@ void GamePlayScene::Update() {
 void GamePlayScene::Draw() {
 
 	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
-	//sprite_->Draw();              //スプライトの描画
+	sprite_->Draw();              //スプライトの描画
 
 	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
 	object3d->Draw();             //3Dオブジェクトの描画

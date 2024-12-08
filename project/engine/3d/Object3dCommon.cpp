@@ -24,7 +24,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 
 	//PSO生成
 	pso_ = new PSO();
-	pso_->CreatePSOForObject3D(dxCommon_->GetDevice(), dxCommon_->GetDXC(), D3D12_CULL_MODE_NONE);
+	pso_->CreatePSOForObject3D(dxCommon_->GetDevice(), dxCommon_->GetDXC(), D3D12_FILL_MODE_SOLID);
 
 	//ルートシグネチャ取得
 	rootSignature_ = pso_->GetRootSignature();

@@ -37,38 +37,21 @@ void PSO::CreateRootSignatureForSprite(ID3D12Device* device) {
 
 	//ルートパラメータ。複数設定できるので配列。
 	//.0
-	rootParameters_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootParameters_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
+	rootParametersForSprite_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForSprite_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	rootParametersForSprite_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
 	//.1
-	rootParameters_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	rootParameters_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	rootParameters_[1].Descriptor.ShaderRegister = 0;
+	rootParametersForSprite_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParametersForSprite_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	rootParametersForSprite_[1].Descriptor.ShaderRegister = 0;
 	//.2
-	rootParameters_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
-	rootParameters_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootParameters_[2].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
-	rootParameters_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
-	//.3 平行光源をShaderで使う
-	rootParameters_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	rootParameters_[3].Descriptor.ShaderRegister = 1; //レジスタ番号1
-	//.4 カメラの情報
-	rootParameters_[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	rootParameters_[4].Descriptor.ShaderRegister = 2; //レジスタ番号2
-	//.5 PointLightのデータ
-	rootParameters_[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	rootParameters_[5].Descriptor.ShaderRegister = 3; //レジスタ番号3
-	//.6 SpotLightのデータ
-	rootParameters_[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	rootParameters_[6].Descriptor.ShaderRegister = 4; //レジスタ番号4
+	rootParametersForSprite_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
+	rootParametersForSprite_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	rootParametersForSprite_[2].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
+	rootParametersForSprite_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
 
-
-	descriptionRootSignature_.pParameters = rootParameters_; //rootParameter配列へのポインタ
-	descriptionRootSignature_.NumParameters = _countof(rootParameters_); //配列の長さ
+	descriptionRootSignature_.pParameters = rootParametersForSprite_; //rootParameter配列へのポインタ
+	descriptionRootSignature_.NumParameters = _countof(rootParametersForSprite_); //配列の長さ
 
 	//Samplerの設定
 	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
@@ -117,37 +100,37 @@ void PSO::CreateRootSignatureForObject3D(ID3D12Device* device) {
 
 	//ルートパラメータ。複数設定できるので配列。
 	//.0
-	rootParameters_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootParameters_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
+	rootParametersForObject3d_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForObject3d_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	rootParametersForObject3d_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
 	//.1
-	rootParameters_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	rootParameters_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	rootParameters_[1].Descriptor.ShaderRegister = 0;
+	rootParametersForObject3d_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParametersForObject3d_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	rootParametersForObject3d_[1].Descriptor.ShaderRegister = 0;
 	//.2
-	rootParameters_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
-	rootParameters_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootParameters_[2].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
-	rootParameters_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
+	rootParametersForObject3d_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
+	rootParametersForObject3d_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	rootParametersForObject3d_[2].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
+	rootParametersForObject3d_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
 	//.3 DirectionalLight
-	rootParameters_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	rootParameters_[3].Descriptor.ShaderRegister = 1; //レジスタ番号1
+	rootParametersForObject3d_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForObject3d_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParametersForObject3d_[3].Descriptor.ShaderRegister = 1; //レジスタ番号1
 	//.4 カメラの情報
-	rootParameters_[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	rootParameters_[4].Descriptor.ShaderRegister = 2; //レジスタ番号2
+	rootParametersForObject3d_[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForObject3d_[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParametersForObject3d_[4].Descriptor.ShaderRegister = 2; //レジスタ番号2
 	//.5 PointLightのデータ
-	rootParameters_[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	rootParameters_[5].Descriptor.ShaderRegister = 3; //レジスタ番号3
+	rootParametersForObject3d_[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForObject3d_[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParametersForObject3d_[5].Descriptor.ShaderRegister = 3; //レジスタ番号3
 	//.6 SpotLightのデータ
-	rootParameters_[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters_[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	rootParameters_[6].Descriptor.ShaderRegister = 4; //レジスタ番号4
+	rootParametersForObject3d_[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForObject3d_[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParametersForObject3d_[6].Descriptor.ShaderRegister = 4; //レジスタ番号4
 
-	descriptionRootSignature_.pParameters = rootParameters_; //rootParameter配列へのポインタ
-	descriptionRootSignature_.NumParameters = _countof(rootParameters_); //配列の長さ
+	descriptionRootSignature_.pParameters = rootParametersForObject3d_; //rootParameter配列へのポインタ
+	descriptionRootSignature_.NumParameters = _countof(rootParametersForObject3d_); //配列の長さ
 
 	//Samplerの設定
 	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
@@ -208,10 +191,6 @@ void PSO::CreateRootSignatureForParticle(ID3D12Device* device) {
 	rootParametersForParticle_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
 	rootParametersForParticle_[2].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_; //Tableの中身の配列を指定
 	rootParametersForParticle_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_); //Tableで利用する数
-	//.3 平行光源をShaderで使う
-	rootParametersForParticle_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParametersForParticle_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	rootParametersForParticle_[3].Descriptor.ShaderRegister = 1; //レジスタ番号1を使う
 
 	descriptionRootSignature_.pParameters = rootParametersForParticle_; //rootParameter配列へのポインタ
 	descriptionRootSignature_.NumParameters = _countof(rootParametersForParticle_); //配列の長さ
@@ -278,31 +257,47 @@ void PSO::CreateInputLayout() {
 // BlendStateの生成
 //=============================================================================
 
-void PSO::CreateBlendState() {
+void PSO::CreateBlendStateForObject3d() {
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 	blendDesc_.RenderTarget[0].BlendEnable = true;
-	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ZERO;
+	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
 	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+
+}
+
+void PSO::CreateBlendStateForParticle() {
+	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc_.RenderTarget[0].BlendEnable = true;
+	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+}
+
+void PSO::CreateBlendStateForSprite() {
+	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 }
 
 //=============================================================================
 // RasterizerStateの生成
 //=============================================================================
 
-void PSO::CreateRasterizerState(D3D12_CULL_MODE cullMode) {
-	rasterizerDesc_.CullMode = cullMode;
-	rasterizerDesc_.FillMode = D3D12_FILL_MODE_SOLID;
+void PSO::CreateRasterizerState(D3D12_FILL_MODE fillMode) {
+	rasterizerDesc_.CullMode = D3D12_CULL_MODE_NONE;
+	rasterizerDesc_.FillMode = fillMode;
 }
 
 //=============================================================================
 // PSOの生成
 //=============================================================================
 
-void PSO::CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode) {
+void PSO::CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode) {
 	HRESULT result = S_FALSE;
 
 	device_ = device;
@@ -314,14 +309,14 @@ void PSO::CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cu
 	/// インプットレイアウト初期化
 	CreateInputLayout();
 	/// ブレンドステート初期化
-	CreateBlendState();
+	CreateBlendStateForSprite();
 	/// ラスタライザステート初期化
-	CreateRasterizerState(cullMode);
+	CreateRasterizerState(fillMode);
 
 	//Shaderをコンパイル
 	//VS
 	vertexShaderBlob_ = dxc_->CompileShader(
-		L"Resources/shaders/Object3D.VS.hlsl",
+		L"Resources/shaders/Sprite.VS.hlsl",
 		L"vs_6_0",
 		dxc_->GetDxcUtils().Get(),
 		dxc_->GetDxcCompiler().Get(),
@@ -331,7 +326,7 @@ void PSO::CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cu
 
 	//PS
 	pixelShaderBlob_ = dxc_->CompileShader(
-		L"Resources/shaders/Object3D.PS.hlsl",
+		L"Resources/shaders/Sprite.PS.hlsl",
 		L"ps_6_0",
 		dxc_->GetDxcUtils().Get(),
 		dxc_->GetDxcCompiler().Get(),
@@ -380,7 +375,7 @@ void PSO::CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cu
 	assert(SUCCEEDED(result));
 }
 
-void PSO::CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode) {
+void PSO::CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode) {
 
 	HRESULT result = S_FALSE;
 
@@ -393,9 +388,9 @@ void PSO::CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE 
 	/// インプットレイアウト初期化
 	CreateInputLayout();
 	/// ブレンドステート初期化
-	CreateBlendState();
+	CreateBlendStateForObject3d();
 	/// ラスタライザステート初期化
-	CreateRasterizerState(cullMode);
+	CreateRasterizerState(fillMode);
 
 	//Shaderをコンパイル
 	//VS
@@ -459,7 +454,7 @@ void PSO::CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE 
 	assert(SUCCEEDED(result));
 }
 
-void PSO::CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE cullMode) {
+void PSO::CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode) {
 
 
 	HRESULT result = S_FALSE;
@@ -473,9 +468,9 @@ void PSO::CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_CULL_MODE 
 	/// インプットレイアウト初期化
 	CreateInputLayout();
 	/// ブレンドステート初期化
-	CreateBlendState();
+	CreateBlendStateForParticle();
 	/// ラスタライザステート初期化
-	CreateRasterizerState(cullMode);
+	CreateRasterizerState(fillMode);
 
 
 
@@ -546,7 +541,7 @@ void PSO::UpdateImGui() {
 bool PSO::UpdateImGuiCombo() {
 
 	//コンボボックスの項目
-	std::vector<std::string> items = { "Normal", "Add", "Subtract","Multiply","Screen"};
+	std::vector<std::string> items = { "Normal", "Add", "Subtract","Multiply","Screen" };
 	//現在の項目
 	std::string& currentItem = items[itemCurrentIdx];
 	//変更があったかどうか
@@ -605,7 +600,7 @@ bool PSO::UpdateImGuiCombo() {
 			blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
 			blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
 			break;
-		
+
 		}
 
 		//PSOの再生成をする

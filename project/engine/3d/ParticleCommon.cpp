@@ -24,7 +24,7 @@ void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 	pso_->CreatePSOForParticle(
 		dxCommon_->GetDevice(),
 		dxCommon_->GetDXC(),
-		D3D12_CULL_MODE_NONE);
+		D3D12_FILL_MODE_SOLID);
 
 	rootSignature_ = pso_->GetRootSignature();
 }

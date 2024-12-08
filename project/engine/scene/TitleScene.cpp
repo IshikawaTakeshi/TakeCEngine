@@ -24,16 +24,14 @@ void TitleScene::Initialize() {
 
 	//Sprite
 	sprite_ = std::make_shared<Sprite>();
-	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/monsterBall.png");
+	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/uvChecker.png");
 
 	//Model読み込み
-	ModelManager::GetInstance()->LoadModel("model_mtl_blend","Title.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "terrain.obj");
 
 	//object
 	titleObject = std::make_shared<Object3d>();
-	titleObject->Initialize(Object3dCommon::GetInstance(), "Title.obj");
-	titleObject->SetScale({ 0.1f,0.1f,0.1f});
-	titleObject->SetRotation({ -1.5f,0.0f,0.0f });
+	titleObject->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
 }
 
 void TitleScene::Finalize() {
@@ -48,7 +46,7 @@ void TitleScene::Update() {
 #ifdef _DEBUG
 	//ImGuiの更新
 	CameraManager::GetInstance()->UpdateImGui();
-	sprite_->UpdateImGui(0);
+	//sprite_->UpdateImGui(0);
 	titleObject->UpdateImGui(0);
 #endif // DEBUG
 
@@ -69,7 +67,7 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 
 	SpriteCommon::GetInstance()->PreDraw();
-	Object3dCommon::GetInstance()->PreDraw();
 	sprite_->Draw();
+	Object3dCommon::GetInstance()->PreDraw();
 	titleObject->Draw();
 }
