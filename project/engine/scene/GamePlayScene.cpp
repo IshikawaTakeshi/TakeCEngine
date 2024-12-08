@@ -32,9 +32,10 @@ void GamePlayScene::Initialize() {
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	//Model読み込み
-	ModelManager::GetInstance()->LoadModel("gltf","cube.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf","plane.gltf");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend","axis.obj");
+	//ModelManager::GetInstance()->LoadModel("gltf","cube.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf","plane.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf","AnimatedCube.gltf");
+	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend","axis.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "terrain.obj");
@@ -44,11 +45,11 @@ void GamePlayScene::Initialize() {
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/uvChecker.png");
 
 	//Object3d
-	object3d = std::make_shared<Object3d>();
-	object3d->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
+	//object3d = std::make_shared<Object3d>();
+	//object3d->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
 
 	object3d1 = std::make_shared<Object3d>();
-	object3d1->Initialize(Object3dCommon::GetInstance(), "plane.gltf");
+	object3d1->Initialize(Object3dCommon::GetInstance(), "AnimatedCube.gltf");
 
 	//CreateParticle
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
@@ -59,16 +60,6 @@ void GamePlayScene::Initialize() {
 	particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },30, 0.5f);
 	particleEmitter1_->SetParticleName("Plane");
 	particleEmitter2_->SetParticleName("Sphere");
-
-	//MT4
-	rotation0 = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.71f,0.71f,0.0f }, 0.3f);
-	rotation1 = { -rotation0.x,-rotation0.y,-rotation0.z,-rotation0.w };
-
-	interpolate0 = QuaternionMath::Slerp(rotation0, rotation1, 0.0f);
-	interpolate1 = QuaternionMath::Slerp(rotation0, rotation1, 0.3f);
-	interpolate2 = QuaternionMath::Slerp(rotation0, rotation1, 0.5f);
-	interpolate3 = QuaternionMath::Slerp(rotation0, rotation1, 0.7f);
-	interpolate4 = QuaternionMath::Slerp(rotation0, rotation1, 1.0f);
 }
 
 //====================================================================
@@ -91,19 +82,10 @@ void GamePlayScene::Update() {
 #ifdef _DEBUG
 	CameraManager::GetInstance()->UpdateImGui();
 	//sprite_->UpdateImGui(0);
-	//Object3dCommon::GetInstance()->UpdateImGui();
-	//particleEmitter1_->UpdateImGui();
-	//particleEmitter2_->UpdateImGui();
-	//TakeCFrameWork::GetParticleManager()->UpdateImGui();
-
-	ImGui::Begin("MT4");
-	ImGuiManager::QuaternionScreenPrintf("interpolate0", interpolate0);
-	ImGuiManager::QuaternionScreenPrintf("interpolate1", interpolate1);
-	ImGuiManager::QuaternionScreenPrintf("interpolate2", interpolate2);
-	ImGuiManager::QuaternionScreenPrintf("interpolate3", interpolate3);
-	ImGuiManager::QuaternionScreenPrintf("interpolate4", interpolate4);
-	ImGui::End();
-	
+	Object3dCommon::GetInstance()->UpdateImGui();
+	particleEmitter1_->UpdateImGui();
+	particleEmitter2_->UpdateImGui();
+	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
 #endif // DEBUG
 
@@ -113,7 +95,7 @@ void GamePlayScene::Update() {
 
 	sprite_->Update(); 	//Spriteの更新
 	//3Dオブジェクトの更新
-	object3d->Update(); 
+	//object3d->Update(); 
 	object3d1->Update();
 
 	//パーティクル発生器の更新
@@ -139,7 +121,7 @@ void GamePlayScene::Draw() {
 	sprite_->Draw();              //スプライトの描画
 
 	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
-	object3d->Draw();             //3Dオブジェクトの描画
+	//object3d->Draw();             //3Dオブジェクトの描画
 	object3d1->Draw();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理

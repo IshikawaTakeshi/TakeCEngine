@@ -22,6 +22,8 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirecto
 
 	//objファイル読み込み
 	modelData_ = LoadModelFile(modelDirectoryPath, filePath);
+	//Animation読み込み
+	animation_ = Animation::LoadAnimationFile(modelDirectoryPath, filePath);
 
 	//メッシュ初期化
 	mesh_ = std::make_unique<Mesh>();
@@ -33,7 +35,21 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirecto
 	mesh_->GetMaterial()->InitializeMaterialResource(modelCommon_->GetDirectXCommon()->GetDevice());
 }
 
+void Model::Update() {
+	//60fpsで進める
+//MEMO: 計測した時間を使って可変フレーム対応するのが望ましい
+	animationTime += 1.0f / 60.0f;
 
+	//最後まで行ったら最初からリピート再生する
+	animationTime = std::fmod(animationTime, animation_.GetDuration());
+
+	//rootNodeのAnimationを取得
+	NodeAnimation& rootNodeAnimation = animation_.GetNodeAnimation(modelData_.rootNode.name);
+	translate_ = Animation::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
+	rotate_ = Animation::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
+	scale_ = Animation::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
+	localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
+}
 
 void Model::Draw() {
 
