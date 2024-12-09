@@ -87,10 +87,6 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 		output.color.a = gMaterial.color.a * textureColor.a;
 		
 	}
-	else if ( gMaterial.enableLighting == 2 ) { //PointLighting
-	
-		float3 pointLightDirection = normalize()
-	}
 	else {
 		output.color = gMaterial.color * textureColor;
 	}
