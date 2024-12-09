@@ -60,7 +60,7 @@ private:
 	DirectionalLightData* directionalLightData_ = nullptr;;
 
 	//CPU用のTransform
-	Transform transform_{};
+	EulerTransform transform_{};
 	//行列
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 viewMatrix_;

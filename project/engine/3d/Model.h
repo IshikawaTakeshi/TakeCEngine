@@ -4,6 +4,7 @@
 #include "ResourceDataStructure.h"
 #include "Transform.h"
 #include "TransformMatrix.h"
+#include "Animation/Animation.h"
 
 //assimp
 #include <assimp/Importer.hpp>
@@ -32,7 +33,7 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	//void Update();
+	void Update();
 
 	/// <summary>
 	/// 描画処理
@@ -61,7 +62,11 @@ public: //ゲッター
 
 	ModelCommon* GetModelCommon() { return modelCommon_; }
 
+	Animation& GetAnimation() { return animation_; }
+
 	const std::string& GetTextureFilePath() const { return modelData_.material.textureFilePath; }
+
+	const Matrix4x4& GetLocalMatrix() const { return localMatrix_; }
 
 public: //セッター
 
@@ -78,4 +83,13 @@ private:
 
 	//構築するModelData
 	ModelData modelData_;
+	Animation animation_;
+
+	Vector3 translate_;
+	Quaternion rotate_;
+	Vector3 scale_;
+	Matrix4x4 localMatrix_;
+
+	//再生中の時刻
+	float animationTime = 0.0f;
 };

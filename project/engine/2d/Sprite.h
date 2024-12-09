@@ -61,7 +61,7 @@ public:
 	//================================================================================================
 
 	//トランスフォーム取得
-	Transform GetTransform() { return transform_; }
+	EulerTransform GetTransform() { return transform_; }
 
 	//アンカーポイント取得
 	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
@@ -118,7 +118,7 @@ private:
 	TransformMatrix* wvpData_ = nullptr;
 
 	//Transform
-	Transform transform_{};
+	EulerTransform transform_{};
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;

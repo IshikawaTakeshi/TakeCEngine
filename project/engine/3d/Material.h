@@ -47,7 +47,7 @@ public: //セッター
 	/// <summary>
 	///uvTransformのセッター
 	/// </summary>
-	void SetUvTransform(const Transform& uvTransform) { uvTransform_ = uvTransform; }
+	void SetUvTransform(const EulerTransform& uvTransform) { uvTransform_ = uvTransform; }
 
 	/// <summary>
 	/// マテリアルデータのセッター
@@ -64,7 +64,7 @@ private:
 	MaterialData* materialData_ = nullptr;
 
 	//uvTransform
-	Transform uvTransform_;
+	EulerTransform uvTransform_;
 
 
 

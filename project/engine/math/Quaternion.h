@@ -38,6 +38,5 @@ namespace QuaternionMath {
 
 	//Quaternionの回転結果をベクトルで返す
 	Vector3 RotateVector(const Vector3& vector,const Quaternion& quaternion);
-	//球面線形補間
-	Quaternion Slerp(Quaternion q0, Quaternion q1, float t);
+	
 }

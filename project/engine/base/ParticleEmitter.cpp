@@ -7,7 +7,7 @@ ParticleEmitter::~ParticleEmitter() {
 
 }
 
-void ParticleEmitter::Initialize(const std::string& emitterName, Transform transforms, uint32_t count, float frequency) {
+void ParticleEmitter::Initialize(const std::string& emitterName, EulerTransform transforms, uint32_t count, float frequency) {
 
 	
 	//Emitter初期化
