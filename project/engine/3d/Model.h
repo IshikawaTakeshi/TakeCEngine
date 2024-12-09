@@ -62,6 +62,8 @@ public: //ゲッター
 
 	ModelCommon* GetModelCommon() { return modelCommon_; }
 
+	Animation& GetAnimation() { return animation_; }
+
 	const std::string& GetTextureFilePath() const { return modelData_.material.textureFilePath; }
 
 	const Matrix4x4& GetLocalMatrix() const { return localMatrix_; }

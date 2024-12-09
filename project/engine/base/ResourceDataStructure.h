@@ -3,6 +3,7 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix4x4.h"
+#include "Transform.h"
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -52,6 +53,7 @@ struct ModelMaterialData {
 };
 
 struct Node {
+	QuaternionTransform transform;
 	Matrix4x4 localMatrix;
 	std::string name;
 	std::vector<Node> children;

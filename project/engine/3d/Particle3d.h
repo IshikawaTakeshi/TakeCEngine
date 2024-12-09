@@ -11,7 +11,7 @@
 
 //Particle1個分のデータ
 struct Particle {
-	Transform transforms_;  //位置
+	EulerTransform transforms_;  //位置
 	Vector3 velocity_; 	    //速度
 	Vector4 color_;         //色
 	float lifeTime_;        //寿命

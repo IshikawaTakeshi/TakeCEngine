@@ -63,7 +63,7 @@ private: // privateメンバ変数
 
 
 	//Transform
-	Transform transform_{};
+	EulerTransform transform_{};
 	//TransformMatrix
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 WVPMatrix_;

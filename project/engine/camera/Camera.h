@@ -49,7 +49,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource_;
 	CameraForGPU* cameraForGPU_;
 
-	Transform transform_;
+	EulerTransform transform_;
 	Vector3 offset_;
 	Vector3 offsetDelta_;
 	Matrix4x4 worldMatrix_;

@@ -19,7 +19,7 @@ public:
 	/// <param name="transforms">SRT</param>
 	/// <param name="count">発生させるパーティクルの数</param>
 	/// <param name="frequency">発生頻度</param>
-	void Initialize(const std::string& emitterName, Transform transforms,uint32_t count, float frequency);
+	void Initialize(const std::string& emitterName, EulerTransform transforms,uint32_t count, float frequency);
 
 	/// <summary>
 	/// 更新処理
@@ -49,7 +49,7 @@ private:
 	static const uint32_t kNumMaxInstance_ = 100; //Particleの総数
 	const float kDeltaTime_ = 1.0f / 60.0f; //1フレームの時間
 	bool isEmit_; //発生フラグ
-	Transform transforms_;   //エミッターの位置
+	EulerTransform transforms_;   //エミッターの位置
 	uint32_t particleCount_; //発生するParticleの数
 	float frequency_;        //発生頻度
 	float frequencyTime_;    //経過時間

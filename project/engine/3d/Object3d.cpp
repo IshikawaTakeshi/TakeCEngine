@@ -46,7 +46,6 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 
 void Object3d::Update() {
 
-	model_->Update();
 
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
@@ -60,11 +59,20 @@ void Object3d::Update() {
 		WVPMatrix_ = worldMatrix_;
 	}
 
-	WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 	
+	
+	if (model_->GetAnimation().GetDuration() != 0.0f) {
+		WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_* model_->GetLocalMatrix());
+		model_->Update();
 	TransformMatrixData_->World = model_->GetLocalMatrix() * worldMatrix_;
 	TransformMatrixData_->WVP = model_->GetLocalMatrix() * WVPMatrix_;
 	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
+	} else {
+		WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
+		TransformMatrixData_->World = model_->GetModelData().rootNode.localMatrix * worldMatrix_;
+		TransformMatrixData_->WVP = model_->GetModelData().rootNode.localMatrix * WVPMatrix_;
+		TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
+	}
 }
 
 #ifdef _DEBUG

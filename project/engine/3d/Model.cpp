@@ -36,8 +36,14 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirecto
 }
 
 void Model::Update() {
+
+	//アニメーションがない場合は何もしない
+	if (animation_.GetDuration() == 0.0f) {
+		return;
+	}
+	
 	//60fpsで進める
-//MEMO: 計測した時間を使って可変フレーム対応するのが望ましい
+	//MEMO: 計測した時間を使って可変フレーム対応するのが望ましい
 	animationTime += 1.0f / 60.0f;
 
 	//最後まで行ったら最初からリピート再生する
@@ -123,13 +129,14 @@ ModelData Model::LoadModelFile(const std::string& modelDirectoryPath, const std:
 		aiMaterial* material = scene->mMaterials[materialIndex];
 		unsigned int textureCount = material->GetTextureCount(aiTextureType_DIFFUSE);
 		textureCount;
-		if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
-			aiString textureFilePath;
-			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
+		
+		aiString textureFilePath;
+		if(material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath) == AI_SUCCESS){
 			modelData_.material.textureFilePath = std::string("./Resources/images/") + textureFilePath.C_Str();
-		} else { //テクスチャがない場合はデフォルトのテクスチャを設定
+		} 
+		
+		if(modelData_.material.textureFilePath == "") { //テクスチャがない場合はデフォルトのテクスチャを設定
 			modelData_.material.textureFilePath = "./Resources/images/uvChecker.png";
-
 		}
 	}
 

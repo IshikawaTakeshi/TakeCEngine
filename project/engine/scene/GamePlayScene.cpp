@@ -45,8 +45,8 @@ void GamePlayScene::Initialize() {
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/uvChecker.png");
 
 	//Object3d
-	//object3d = std::make_shared<Object3d>();
-	//object3d->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
+	object3d = std::make_shared<Object3d>();
+	object3d->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
 
 	object3d1 = std::make_shared<Object3d>();
 	object3d1->Initialize(Object3dCommon::GetInstance(), "AnimatedCube.gltf");
@@ -83,6 +83,8 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->UpdateImGui();
 	//sprite_->UpdateImGui(0);
 	Object3dCommon::GetInstance()->UpdateImGui();
+	object3d->UpdateImGui(0);
+	object3d1->UpdateImGui(1);
 	particleEmitter1_->UpdateImGui();
 	particleEmitter2_->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
@@ -95,7 +97,7 @@ void GamePlayScene::Update() {
 
 	sprite_->Update(); 	//Spriteの更新
 	//3Dオブジェクトの更新
-	//object3d->Update(); 
+	object3d->Update(); 
 	object3d1->Update();
 
 	//パーティクル発生器の更新
@@ -121,7 +123,7 @@ void GamePlayScene::Draw() {
 	sprite_->Draw();              //スプライトの描画
 
 	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
-	//object3d->Draw();             //3Dオブジェクトの描画
+	object3d->Draw();             //3Dオブジェクトの描画
 	object3d1->Draw();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
