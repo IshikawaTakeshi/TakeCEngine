@@ -4,11 +4,11 @@
 #include <string>
 #include <map>
 
-class Animation {
+class Animator {
 public:
 
-	Animation() = default;
-	~Animation() = default;
+	Animator() = default;
+	~Animator() = default;
 
 	static Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
 	
@@ -29,18 +29,17 @@ public:
 	///　アニメーションの尺を取得
 	/// </summary>
 	/// <returns></returns>
-	float GetDuration() const { return duration; }
+	float GetDuration() const { return animation_.duration; }
 
 	/// <summary>
 	/// ノードアニメーションを取得
 	/// </summary>
 	NodeAnimation& GetNodeAnimation(const std::string& nodeName);
 
-	std::map<std::string, NodeAnimation>& GetNodeAnimations() { return nodeAnimations; }
+	std::map<std::string, NodeAnimation>& GetNodeAnimations() { return animation_.nodeAnimations; }
 private:
 
 	
-	float duration; //アニメーションの全体の尺(秒単位)
-	std::map<std::string, NodeAnimation> nodeAnimations;
+	Animation animation_;
 };
 

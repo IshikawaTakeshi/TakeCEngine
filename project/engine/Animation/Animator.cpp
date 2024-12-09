@@ -6,9 +6,10 @@
 #include <assimp/postprocess.h>
 
 #include <cassert>
+#include "Animator.h"
 
 
-Animation Animation::LoadAnimationFile(const std::string& directoryPath, const std::string& filename) {
+Animation Animator::LoadAnimationFile(const std::string& directoryPath, const std::string& filename) {
     Animation animation;
     Assimp::Importer importer;
     std::string filePath ="./Resources/" + directoryPath + "/" + filename;
@@ -93,7 +94,6 @@ Quaternion Animation::CalculateValue(const std::vector<KeyflameQuaternion>& keyf
 }
 
 NodeAnimation& Animation::GetNodeAnimation(const std::string& nodeName) {
+
 	return nodeAnimations.at(nodeName);
 }
-
-

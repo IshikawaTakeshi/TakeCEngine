@@ -35,6 +35,7 @@ void GamePlayScene::Initialize() {
 	//ModelManager::GetInstance()->LoadModel("gltf","cube.gltf");
 	//ModelManager::GetInstance()->LoadModel("gltf","plane.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf","AnimatedCube.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf","simpleSkin.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
 	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend","axis.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
