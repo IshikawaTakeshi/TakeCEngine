@@ -17,6 +17,10 @@ Object3d::~Object3d() {
 	wvpResource_.Reset();
 }
 
+//=============================================================================
+// 初期化
+//=============================================================================
+
 void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 	object3dCommon_ = object3dCommon;
 	SetModel(filePath);
@@ -44,6 +48,10 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	camera_ = object3dCommon_->GetDefaultCamera();
 }
 
+//=============================================================================
+// 更新処理
+//=============================================================================
+
 void Object3d::Update() {
 
 
@@ -60,20 +68,25 @@ void Object3d::Update() {
 	}
 
 	
-	
+	//Animationがある場合は更新
 	if (model_->GetAnimation().GetDuration() != 0.0f) {
 		WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_* model_->GetLocalMatrix());
 		model_->Update();
 	TransformMatrixData_->World = model_->GetLocalMatrix() * worldMatrix_;
 	TransformMatrixData_->WVP = model_->GetLocalMatrix() * WVPMatrix_;
 	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
-	} else {
+	} 
+	else { //Animationがない場合
 		WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 		TransformMatrixData_->World = model_->GetModelData().rootNode.localMatrix * worldMatrix_;
 		TransformMatrixData_->WVP = model_->GetModelData().rootNode.localMatrix * WVPMatrix_;
 		TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 	}
 }
+
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 
 #ifdef _DEBUG
 void Object3d::UpdateImGui(int id) {
@@ -93,6 +106,10 @@ void Object3d::UpdateImGui(int id) {
 }
 #endif // _DEBUG
 
+//=============================================================================
+// 描画
+//=============================================================================
+
 void Object3d::Draw() {
 
 	//wvp用のCBufferの場所を指定
@@ -103,6 +120,10 @@ void Object3d::Draw() {
 		model_->Draw();
 	}
 }
+
+//=============================================================================
+// モデルの設定
+//=============================================================================
 
 void Object3d::SetModel(const std::string& filePath) {
 		model_ = ModelManager::GetInstance()->FindModel(filePath);

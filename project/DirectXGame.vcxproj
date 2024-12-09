@@ -251,6 +251,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <Image Include="Resources\uvChecker.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\glTF\simpleSkin.bin" />
+    <None Include="Resources\glTF\simpleSkin.gltf" />
+    <None Include="Resources\glTF\sneakWalk.bin" />
+    <None Include="Resources\glTF\sneakWalk.gltf" />
+    <None Include="Resources\glTF\walk.bin" />
+    <None Include="Resources\glTF\walk.fbx" />
+    <None Include="Resources\glTF\walk.gltf" />
     <None Include="Resources\shaders\Object3d.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

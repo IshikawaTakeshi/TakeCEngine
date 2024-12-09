@@ -470,6 +470,19 @@
     <None Include="Resources\shaders\Particle.hlsli" />
     <None Include="Resources\shaders\Object3d.hlsli" />
     <None Include="Resources\shaders\Sprite.hlsli" />
+    <None Include="Resources\glTF\sneakWalk.bin">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="Resources\glTF\sneakWalk.gltf" />
+    <None Include="Resources\glTF\walk.bin">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="Resources\glTF\walk.fbx" />
+    <None Include="Resources\glTF\walk.gltf" />
+    <None Include="Resources\glTF\simpleSkin.bin">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="Resources\glTF\simpleSkin.gltf" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Particle.PS.hlsl" />

@@ -41,10 +41,11 @@ private:
 	std::shared_ptr<Camera> camera0_ = nullptr;
 	std::shared_ptr<Camera> camera1_ = nullptr;
 	//スプライト
-	std::shared_ptr<Sprite> sprite_ = nullptr;
+	std::unique_ptr<Sprite> sprite_ = nullptr;
 	//3Dオブジェクト
-	std::shared_ptr <Object3d> object3d = nullptr;
-	std::shared_ptr <Object3d> object3d1 = nullptr;
+	std::unique_ptr <Object3d> object3d = nullptr;
+	std::unique_ptr <Object3d> object3d1 = nullptr;
+	std::unique_ptr <Object3d> humanObject = nullptr;
 	//パーティクル発生器
 	std::unique_ptr<ParticleEmitter> particleEmitter1_ = nullptr;
 	std::unique_ptr<ParticleEmitter> particleEmitter2_ = nullptr;

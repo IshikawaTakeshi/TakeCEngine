@@ -93,7 +93,6 @@ Quaternion Animation::CalculateValue(const std::vector<KeyflameQuaternion>& keyf
 }
 
 NodeAnimation& Animation::GetNodeAnimation(const std::string& nodeName) {
-
 	return nodeAnimations.at(nodeName);
 }
 

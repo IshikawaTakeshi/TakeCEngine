@@ -10,10 +10,10 @@
 struct Joint {
 	QuaternionTransform transform; 
 	Matrix4x4 localMatrix;
-	Matrix4x4 skeletonSpaceMatrix; //SkeletonSpaceでの変換行列
+	Matrix4x4 skeletonSpaceMatrix;    //SkeletonSpaceでの変換行列
 	std::string name;
-	std::vector<int32_t> children; //子Jointのインデックス
-	int32_t index;                 //自身のインデックス
+	std::vector<int32_t> children;    //子Jointのインデックス
+	int32_t index;                    //自身のインデックス
 	std::optional<uint32_t> parent;   //親Jointのインデックス
 };
 

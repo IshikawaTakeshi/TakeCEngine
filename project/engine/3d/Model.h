@@ -36,12 +36,16 @@ public:
 	/// </summary>
 	void Update();
 
+	void UpdateSkeleton();
+
 	/// <summary>
 	/// 描画処理
 	/// </summary>
 	void Draw();
 
 	void DrawForParticle(UINT instanceCount_);
+
+	void ApplyAnimation();
 
 	/// <summary>
 	/// objファイルを読む関数
@@ -74,22 +78,33 @@ public:
 
 public: //ゲッター
 
+	//メッシュの取得
 	Mesh* GetMesh() { return mesh_.get(); }
 
+	//スケルトンの取得
+	Skeleton& GetSkeleton() { return skeleton_; }
+
+	//ModelDataの取得
 	ModelData& GetModelData() { return modelData_; }
 
+	//ModelCommonの取得
 	ModelCommon* GetModelCommon() { return modelCommon_; }
 
+	//Animationの取得
 	Animation& GetAnimation() { return animation_; }
 
+	//テクスチャファイルパスの取得
 	const std::string& GetTextureFilePath() const { return modelData_.material.textureFilePath; }
 
+	//ローカル行列の取得
 	const Matrix4x4& GetLocalMatrix() const { return localMatrix_; }
 
 public: //セッター
 
+	//メッシュの設定
 	void SetMesh(Mesh* mesh) { mesh_.reset(mesh); }
 
+	//ModelCommonの設定
 	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
 
 private:
@@ -98,6 +113,8 @@ private:
 
 	//メッシュ
 	std::unique_ptr<Mesh> mesh_ = nullptr;
+	//スケルトン
+	Skeleton skeleton_;
 
 	//構築するModelData
 	ModelData modelData_;

@@ -28,6 +28,8 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirecto
 	modelData_ = LoadModelFile(modelDirectoryPath, filePath);
 	//Animation読み込み
 	animation_ = Animation::LoadAnimationFile(modelDirectoryPath, filePath);
+	//Skeleton作成
+	skeleton_ = CreateSkeleton(modelData_.rootNode);
 
 	//メッシュ初期化
 	mesh_ = std::make_unique<Mesh>();
@@ -54,6 +56,10 @@ void Model::Update() {
 	//MEMO: 計測した時間を使って可変フレーム対応するのが望ましい
 	animationTime += 1.0f / 60.0f;
 
+	//アニメーションの更新とボーンへの適用
+	ApplyAnimation();
+	UpdateSkeleton();
+
 	//最後まで行ったら最初からリピート再生する
 	animationTime = std::fmod(animationTime, animation_.GetDuration());
 
@@ -63,6 +69,25 @@ void Model::Update() {
 	rotate_ = Animation::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
 	scale_ = Animation::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
 	localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
+}
+
+//=============================================================================
+// スケルトンの更新
+//=============================================================================
+
+void Model::UpdateSkeleton() {
+	//全てのJointを更新
+	for (Joint& joint : skeleton_.joints) {
+		joint.localMatrix = MatrixMath::MakeAffineMatrix(
+			joint.transform.scale, 
+			joint.transform.rotate,
+			joint.transform.translate);
+		if (joint.parent) { //親がいる場合親の行列を掛ける
+			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton_.joints[*joint.parent].skeletonSpaceMatrix;
+		} else { //親がいない場合は自身の行列をそのまま使う
+			joint.skeletonSpaceMatrix = joint.localMatrix;
+		}
+	}
 }
 
 //=============================================================================
@@ -100,6 +125,22 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
+}
+
+//=============================================================================
+// アニメーション適用
+//=============================================================================
+
+void Model::ApplyAnimation() {
+	for (Joint& joint : skeleton_.joints) {
+		//対象のJointのAnimationがあれば、値の適用を行う。
+		if (auto it = animation_.GetNodeAnimations().find(joint.name); it != animation_.GetNodeAnimations().end()) {
+			const NodeAnimation& rootNodeAnimation = (*it).second;
+			joint.transform.scale = Animation::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
+			joint.transform.rotate = Animation::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
+			joint.transform.translate = Animation::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
+		}
+	}
 }
 
 //=============================================================================
@@ -224,6 +265,8 @@ Node Model::ReadNode(aiNode* node) {
 	return result;
 }
 
+//
+
 Skeleton Model::CreateSkeleton(const Node& rootNode) {
 	Skeleton skeleton;
 	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
@@ -242,6 +285,7 @@ int32_t Model::CreateJoint(const Node& node, const std::optional<int32_t>& paren
 	joint.localMatrix = node.localMatrix;
 	joint.skeletonSpaceMatrix = MatrixMath::MakeIdentity4x4();
 	joint.transform = node.transform;
+	joint.index = static_cast<int32_t>(joints.size());
 	joint.parent = parent;
 	joints.push_back(joint); //SkeletonのJoint列に追加
 	for (const Node& child : node.children) {
