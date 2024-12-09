@@ -24,7 +24,7 @@ void TitleScene::Initialize() {
 
 	//Sprite
 	sprite_ = std::make_shared<Sprite>();
-	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/uvChecker.png");
+	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/monsterBall.png");
 
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "terrain.obj");

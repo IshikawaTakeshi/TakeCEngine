@@ -46,7 +46,7 @@ void GamePlayScene::Initialize() {
 
 	//Object3d
 	object3d = std::make_shared<Object3d>();
-	object3d->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
+	object3d->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
 
 	object3d1 = std::make_shared<Object3d>();
 	object3d1->Initialize(Object3dCommon::GetInstance(), "AnimatedCube.gltf");

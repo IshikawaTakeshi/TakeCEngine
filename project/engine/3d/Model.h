@@ -5,6 +5,7 @@
 #include "Transform.h"
 #include "TransformMatrix.h"
 #include "Animation/Animation.h"
+#include "Animation/Skeleton.h"
 
 //assimp
 #include <assimp/Importer.hpp>
@@ -52,7 +53,24 @@ public:
 	/// </summary>
 	ModelMaterialData LoadMtlFile(const std::string& resourceDirectoryPath, const std::string& modelDirectoryPath, const std::string& filename);
 
-	Node ReadNode(aiNode* node);
+	/// <summary>
+	/// ノードの読み込み
+	/// </summary>
+	Node ReadNode(aiNode* rootNode);
+
+	/// <summary>
+	/// Skeletonの作成
+	/// </summary>
+	Skeleton CreateSkeleton(const Node& node);
+
+	/// <summary>
+	/// NodeからJointを作成
+	/// </summary>
+	/// <param name="node"></param>
+	/// <param name="parent"></param>
+	/// <param name="joints"></param>
+	/// <returns></returns>
+	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
 
 public: //ゲッター
 

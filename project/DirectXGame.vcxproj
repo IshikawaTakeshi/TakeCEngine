@@ -167,6 +167,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\AABB.h" />
     <ClInclude Include="engine\Animation\Keyflame.h" />
     <ClInclude Include="engine\Animation\NodeAnimation.h" />
+    <ClInclude Include="engine\Animation\Skeleton.h" />
     <ClInclude Include="engine\math\Easing.h" />
     <ClInclude Include="engine\math\Quaternion.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />
