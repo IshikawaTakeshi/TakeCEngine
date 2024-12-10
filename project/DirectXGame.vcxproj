@@ -161,6 +161,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\ParticleCommon.cpp" />
     <ClCompile Include="engine\base\ParticleEmitter.cpp" />
     <ClCompile Include="engine\base\ParticleManager.cpp" />
+    <ClCompile Include="SkeletalMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Animation\Animator.h" />
@@ -227,6 +228,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\scene\TitleScene.h" />
     <ClInclude Include="engine\scene\SceneFactory.h" />
     <ClInclude Include="engine\scene\SceneManager.h" />
+    <ClInclude Include="SkeletalMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
