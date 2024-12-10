@@ -237,7 +237,7 @@
     <ClCompile Include="engine\math\Quaternion.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Animation\Animation.cpp">
+    <ClCompile Include="engine\Animation\Animator.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="engine\math\Easing.cpp">
@@ -428,10 +428,13 @@
     <ClInclude Include="engine\Animation\NodeAnimation.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Animation\Animation.h">
+    <ClInclude Include="engine\Animation\Animator.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\Easing.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Animation\Skeleton.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -467,6 +470,19 @@
     <None Include="Resources\shaders\Particle.hlsli" />
     <None Include="Resources\shaders\Object3d.hlsli" />
     <None Include="Resources\shaders\Sprite.hlsli" />
+    <None Include="Resources\glTF\sneakWalk.bin">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="Resources\glTF\sneakWalk.gltf" />
+    <None Include="Resources\glTF\walk.bin">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="Resources\glTF\walk.fbx" />
+    <None Include="Resources\glTF\walk.gltf" />
+    <None Include="Resources\glTF\simpleSkin.bin">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="Resources\glTF\simpleSkin.gltf" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Particle.PS.hlsl" />

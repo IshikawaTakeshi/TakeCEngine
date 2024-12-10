@@ -4,26 +4,29 @@
 #include <string>
 #include <map>
 
-class Animation {
+class Animator {
 public:
 
-	Animation() = default;
-	~Animation() = default;
+	Animator() = default;
+	~Animator() = default;
 
 	static Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
-
+	
+	/// <summary>
+	/// ベクトルの補間値を計算
+	/// </summary>
 	static Vector3 CalculateValue(const std::vector<KeyflameVector3>& keyframes, float time);
 
+	/// <summary>
+	/// クォータニオンの補間値を計算
+	/// </summary>
+	/// <param name="keyframes"></param>
+	/// <param name="time"></param>
+	/// <returns></returns>
 	static Quaternion CalculateValue(const std::vector<KeyflameQuaternion>& keyframes, float time);
-
-	float GetDuration() const { return duration; }
-
-	NodeAnimation& GetNodeAnimation(const std::string& nodeName);
 
 private:
 
-	
-	float duration; //アニメーションの全体の尺(秒単位)
-	std::map<std::string, NodeAnimation> nodeAnimations;
+
 };
 

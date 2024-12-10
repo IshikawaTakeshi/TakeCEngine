@@ -1,6 +1,8 @@
 #pragma once
 #include "Animation/Keyflame.h"
 #include <vector>
+#include <string>
+#include <map>
 
 
 template <typename T>
@@ -14,6 +16,7 @@ struct NodeAnimation {
 	AnimationCurve<Vector3> scale;
 };
 
-struct Animatoin {
-	
+struct Animation {
+	float duration; //アニメーションの全体の尺(秒単位)
+	std::map<std::string, NodeAnimation> nodeAnimations;
 };

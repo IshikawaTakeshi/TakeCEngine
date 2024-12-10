@@ -17,13 +17,19 @@ Model::~Model() {
 	mesh_.reset();
 }
 
+//=============================================================================
+// 初期化
+//=============================================================================
+
 void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirectoryPath, const std::string& filePath) {
 	modelCommon_ = ModelCommon;
 
 	//objファイル読み込み
 	modelData_ = LoadModelFile(modelDirectoryPath, filePath);
 	//Animation読み込み
-	animation_ = Animation::LoadAnimationFile(modelDirectoryPath, filePath);
+	animation_ = Animator::LoadAnimationFile(modelDirectoryPath, filePath);
+	//Skeleton作成
+	skeleton_ = CreateSkeleton(modelData_.rootNode);
 
 	//メッシュ初期化
 	mesh_ = std::make_unique<Mesh>();
@@ -35,10 +41,14 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirecto
 	mesh_->GetMaterial()->InitializeMaterialResource(modelCommon_->GetDirectXCommon()->GetDevice());
 }
 
+//=============================================================================
+// 更新処理
+//=============================================================================
+
 void Model::Update() {
 
 	//アニメーションがない場合は何もしない
-	if (animation_.GetDuration() == 0.0f) {
+	if (animation_.duration == 0.0f) {
 		return;
 	}
 	
@@ -47,15 +57,38 @@ void Model::Update() {
 	animationTime += 1.0f / 60.0f;
 
 	//最後まで行ったら最初からリピート再生する
-	animationTime = std::fmod(animationTime, animation_.GetDuration());
+	animationTime = std::fmod(animationTime, animation_.duration);
 
-	//rootNodeのAnimationを取得
-	NodeAnimation& rootNodeAnimation = animation_.GetNodeAnimation(modelData_.rootNode.name);
-	translate_ = Animation::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
-	rotate_ = Animation::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
-	scale_ = Animation::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
-	localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
+	//アニメーションの更新とボーンへの適用
+	ApplyAnimation();
+	UpdateSkeleton();
 }
+
+//=============================================================================
+// スケルトンの更新
+//=============================================================================
+
+void Model::UpdateSkeleton() {
+	//全てのJointを更新
+	for (Joint& joint : skeleton_.joints) {
+
+		//ローカル行列を更新
+		joint.localMatrix = MatrixMath::MakeAffineMatrix(
+			joint.transform.scale, 
+			joint.transform.rotate,
+			joint.transform.translate);
+
+		if (joint.parent) { //親がいる場合親の行列を掛ける
+			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton_.joints[*joint.parent].skeletonSpaceMatrix;
+		} else { //親がいない場合は自身の行列をそのまま使う
+			joint.skeletonSpaceMatrix = joint.localMatrix;
+		}
+	}
+}
+
+//=============================================================================
+// 描画処理
+//=============================================================================
 
 void Model::Draw() {
 
@@ -72,6 +105,10 @@ void Model::Draw() {
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
 }
 
+//=============================================================================
+// パーティクル用描画処理
+//=============================================================================
+
 void Model::DrawForParticle(UINT instanceCount_) {
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
@@ -86,6 +123,31 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
 }
 
+void Model::DrawSkeleton() {
+
+
+}
+
+//=============================================================================
+// アニメーション適用
+//=============================================================================
+
+void Model::ApplyAnimation() {
+	for (Joint& joint : skeleton_.joints) {
+		//対象のJointのAnimationがあれば、値の適用を行う。
+		if (auto it = animation_.nodeAnimations.find(joint.name); it != animation_.nodeAnimations.end()) {
+			const NodeAnimation& rootNodeAnimation = (*it).second;
+			joint.transform.scale = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
+			joint.transform.rotate = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
+			joint.transform.translate = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
+			joint.localMatrix = MatrixMath::MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
+		}
+	}
+}
+
+//=============================================================================
+// objファイルを読む関数
+//=============================================================================
 
 ModelData Model::LoadModelFile(const std::string& modelDirectoryPath, const std::string& filename) {
 
@@ -146,6 +208,10 @@ ModelData Model::LoadModelFile(const std::string& modelDirectoryPath, const std:
 	return modelData_;
 }
 
+//=============================================================================
+// mtlファイルを読む関数
+//=============================================================================
+
 ModelMaterialData Model::LoadMtlFile(const std::string& resourceDirectoryPath, const std::string& modelDirectoryPath, const std::string& filename) {
 
 	ModelMaterialData materialData; //構築するMaterialData
@@ -171,15 +237,27 @@ ModelMaterialData Model::LoadMtlFile(const std::string& resourceDirectoryPath, c
 	return materialData;
 }
 
+//=============================================================================
+// Nodeの解析
+//=============================================================================
+
 Node Model::ReadNode(aiNode* node) {
 	Node result;
-	aiMatrix4x4 aiLocalMatrix = node->mTransformation; //nodeのlocalMatrix
-	aiLocalMatrix.Transpose(); //列ベクトルを行ベクトルの転置
-	for (int row = 0; row < 4; ++row) {
-		for (int column = 0; column < 4; ++column) {
-			result.localMatrix.m[row][column] = aiLocalMatrix[row][column];
-		}
-	}
+	aiVector3D scale,translate;
+	aiQuaternion rotate;
+	node->mTransformation.Decompose(scale, rotate, translate);
+	result.transform.scale = { scale.x,scale.y,scale.z };
+	result.transform.rotate = { rotate.x,-rotate.y,-rotate.z,rotate.w }; //x軸を反転
+	result.transform.translate = { -translate.x,translate.y,translate.z }; //x軸を反転
+	result.localMatrix = MatrixMath::MakeAffineMatrix(result.transform.scale, result.transform.rotate, result.transform.translate);
+
+	//aiMatrix4x4 aiLocalMatrix = node->mTransformation; //nodeのlocalMatrix
+	//aiLocalMatrix.Transpose(); //列ベクトルを行ベクトルの転置
+	//for (int row = 0; row < 4; ++row) {
+	//	for (int column = 0; column < 4; ++column) {
+	//		result.localMatrix.m[row][column] = aiLocalMatrix[row][column];
+	//	}
+	//}
 
 	result.name = node->mName.C_Str(); //名前の格納
 	result.children.resize(node->mNumChildren); //子ノードの数だけ確保
@@ -187,4 +265,37 @@ Node Model::ReadNode(aiNode* node) {
 		result.children[childIndex] = ReadNode(node->mChildren[childIndex]); //再帰的に子ノードを読む
 	}
 	return result;
+}
+
+//
+
+Skeleton Model::CreateSkeleton(const Node& rootNode) {
+	Skeleton skeleton;
+	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
+	
+	//名前とindexのマッピングを行いアクセスしやすくする
+	for (const Joint& joint : skeleton.joints) {
+		skeleton.jointMap.emplace(joint.name, joint.index);
+	}
+
+	return skeleton;
+}
+
+int32_t Model::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints) {
+	Joint joint;
+	joint.name = node.name;
+	joint.localMatrix = node.localMatrix;
+	joint.skeletonSpaceMatrix = MatrixMath::MakeIdentity4x4();
+	joint.transform = node.transform;
+	joint.index = static_cast<int32_t>(joints.size());
+	joint.parent = parent;
+	joints.push_back(joint); //SkeletonのJoint列に追加
+	for (const Node& child : node.children) {
+		//子Jointを作成して、そのIndexを登録
+		int32_t childIndex = CreateJoint(child, joint.index, joints);
+		joints[joint.index].children.push_back(childIndex);
+	}
+
+	//自身のIndexを返す
+	return joint.index;
 }

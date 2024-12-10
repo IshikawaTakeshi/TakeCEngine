@@ -108,7 +108,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="engine\Animation\Animation.cpp" />
+    <ClCompile Include="engine\Animation\Animator.cpp" />
     <ClCompile Include="engine\3d\AABB.cpp" />
     <ClCompile Include="engine\math\Easing.cpp" />
     <ClCompile Include="engine\math\Quaternion.cpp" />
@@ -163,10 +163,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\ParticleManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\Animation\Animation.h" />
+    <ClInclude Include="engine\Animation\Animator.h" />
     <ClInclude Include="engine\3d\AABB.h" />
     <ClInclude Include="engine\Animation\Keyflame.h" />
     <ClInclude Include="engine\Animation\NodeAnimation.h" />
+    <ClInclude Include="engine\Animation\Skeleton.h" />
     <ClInclude Include="engine\math\Easing.h" />
     <ClInclude Include="engine\math\Quaternion.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />
@@ -250,6 +251,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <Image Include="Resources\uvChecker.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\glTF\simpleSkin.bin" />
+    <None Include="Resources\glTF\simpleSkin.gltf" />
+    <None Include="Resources\glTF\sneakWalk.bin" />
+    <None Include="Resources\glTF\sneakWalk.gltf" />
+    <None Include="Resources\glTF\walk.bin" />
+    <None Include="Resources\glTF\walk.fbx" />
+    <None Include="Resources\glTF\walk.gltf" />
     <None Include="Resources\shaders\Object3d.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
