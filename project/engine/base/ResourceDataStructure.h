@@ -61,8 +61,8 @@ struct Node {
 
 //モデル1個分のデータ
 struct ModelData {
-
 	std::vector<VertexData> vertices;
+	std::vector<uint32_t> indices;
 	ModelMaterialData material;
 	Node rootNode;
 };

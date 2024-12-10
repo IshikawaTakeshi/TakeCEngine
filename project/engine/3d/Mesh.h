@@ -44,7 +44,7 @@ public:
 	/// objモデルの頂点バッファリソース初期化
 	/// </summary>
 	/// <param name="device"></param>
-	void InitializeVertexResourceObjModel(ID3D12Device* device,ModelData modelData);
+	void InitializeVertexResourceModel(ID3D12Device* device,ModelData modelData);
 
 	void InitializeVertexResourceAABB(ID3D12Device* device);
 
@@ -68,6 +68,8 @@ public:
 	void InitializeIndexResourceSprite(ID3D12Device* device);
 
 	void InitializeIndexResourceAABB(ID3D12Device* device);
+
+	void InitializeIndexResourceModel(ID3D12Device* device, ModelData modelData);
 
 	/// <summary>
 	/// インデックスバッファビューの取得
