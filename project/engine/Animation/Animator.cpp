@@ -1,4 +1,4 @@
-#include "Animation.h"
+#include "Animator.h"
 #include "Easing.h"
 //assimp
 #include <assimp/Importer.hpp>
@@ -16,7 +16,7 @@ Animation Animator::LoadAnimationFile(const std::string& directoryPath, const st
     const aiScene* scene = importer.ReadFile(filePath.c_str(), 0);
     //アニメーションがない場合
 	if(scene->mNumAnimations == 0) {
-		return animation;
+		return animation = {};
 	}
     aiAnimation* animationAssimp = scene->mAnimations[0];
     animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
@@ -56,7 +56,7 @@ Animation Animator::LoadAnimationFile(const std::string& directoryPath, const st
 	return animation;
 }
 
-Vector3 Animation::CalculateValue(const std::vector<KeyflameVector3>& keyframes, float time) {
+Vector3 Animator::CalculateValue(const std::vector<KeyflameVector3>& keyframes, float time) {
 	assert(!keyframes.empty()); //keyframesが空の場合はエラー
 	if(keyframes.size() == 1 || time <= keyframes[0].time) {
 		return keyframes[0].value;
@@ -75,7 +75,7 @@ Vector3 Animation::CalculateValue(const std::vector<KeyflameVector3>& keyframes,
 	return (*keyframes.rbegin()).value;
 }
 
-Quaternion Animation::CalculateValue(const std::vector<KeyflameQuaternion>& keyframes, float time) {
+Quaternion Animator::CalculateValue(const std::vector<KeyflameQuaternion>& keyframes, float time) {
 	assert(!keyframes.empty()); //keyframesが空の場合はエラー
 	if(keyframes.size() == 1 || time <= keyframes[0].time) {
 		return keyframes[0].value;
@@ -91,9 +91,4 @@ Quaternion Animation::CalculateValue(const std::vector<KeyflameQuaternion>& keyf
 	}
 	//最後のキーフレームを返す
 	return (*keyframes.rbegin()).value;
-}
-
-NodeAnimation& Animation::GetNodeAnimation(const std::string& nodeName) {
-
-	return nodeAnimations.at(nodeName);
 }

@@ -27,7 +27,7 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirecto
 	//objファイル読み込み
 	modelData_ = LoadModelFile(modelDirectoryPath, filePath);
 	//Animation読み込み
-	animation_ = Animation::LoadAnimationFile(modelDirectoryPath, filePath);
+	animation_ = Animator::LoadAnimationFile(modelDirectoryPath, filePath);
 	//Skeleton作成
 	skeleton_ = CreateSkeleton(modelData_.rootNode);
 
@@ -48,7 +48,7 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirecto
 void Model::Update() {
 
 	//アニメーションがない場合は何もしない
-	if (animation_.GetDuration() == 0.0f) {
+	if (animation_.duration == 0.0f) {
 		return;
 	}
 	
@@ -56,19 +56,12 @@ void Model::Update() {
 	//MEMO: 計測した時間を使って可変フレーム対応するのが望ましい
 	animationTime += 1.0f / 60.0f;
 
+	//最後まで行ったら最初からリピート再生する
+	animationTime = std::fmod(animationTime, animation_.duration);
+
 	//アニメーションの更新とボーンへの適用
 	ApplyAnimation();
 	UpdateSkeleton();
-
-	//最後まで行ったら最初からリピート再生する
-	animationTime = std::fmod(animationTime, animation_.GetDuration());
-
-	//rootNodeのAnimationを取得
-	NodeAnimation& rootNodeAnimation = animation_.GetNodeAnimation(modelData_.rootNode.name);
-	translate_ = Animation::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
-	rotate_ = Animation::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
-	scale_ = Animation::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
-	localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
 }
 
 //=============================================================================
@@ -78,10 +71,13 @@ void Model::Update() {
 void Model::UpdateSkeleton() {
 	//全てのJointを更新
 	for (Joint& joint : skeleton_.joints) {
+
+		//ローカル行列を更新
 		joint.localMatrix = MatrixMath::MakeAffineMatrix(
 			joint.transform.scale, 
 			joint.transform.rotate,
 			joint.transform.translate);
+
 		if (joint.parent) { //親がいる場合親の行列を掛ける
 			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton_.joints[*joint.parent].skeletonSpaceMatrix;
 		} else { //親がいない場合は自身の行列をそのまま使う
@@ -127,6 +123,11 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
 }
 
+void Model::DrawSkeleton() {
+
+
+}
+
 //=============================================================================
 // アニメーション適用
 //=============================================================================
@@ -134,11 +135,12 @@ void Model::DrawForParticle(UINT instanceCount_) {
 void Model::ApplyAnimation() {
 	for (Joint& joint : skeleton_.joints) {
 		//対象のJointのAnimationがあれば、値の適用を行う。
-		if (auto it = animation_.GetNodeAnimations().find(joint.name); it != animation_.GetNodeAnimations().end()) {
+		if (auto it = animation_.nodeAnimations.find(joint.name); it != animation_.nodeAnimations.end()) {
 			const NodeAnimation& rootNodeAnimation = (*it).second;
-			joint.transform.scale = Animation::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
-			joint.transform.rotate = Animation::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
-			joint.transform.translate = Animation::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
+			joint.transform.scale = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
+			joint.transform.rotate = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
+			joint.transform.translate = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
+			joint.localMatrix = MatrixMath::MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
 		}
 	}
 }

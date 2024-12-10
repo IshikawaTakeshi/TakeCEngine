@@ -4,7 +4,7 @@
 #include "ResourceDataStructure.h"
 #include "Transform.h"
 #include "TransformMatrix.h"
-#include "Animation/Animation.h"
+#include "Animation/Animator.h"
 #include "Animation/Skeleton.h"
 
 //assimp
@@ -43,8 +43,17 @@ public:
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// パーティクル描画
+	/// </summary>
+	/// <param name="instanceCount_"></param>
 	void DrawForParticle(UINT instanceCount_);
 
+	void DrawSkeleton();
+
+	/// <summary>
+	/// アニメーションの適用
+	/// </summary>
 	void ApplyAnimation();
 
 	/// <summary>

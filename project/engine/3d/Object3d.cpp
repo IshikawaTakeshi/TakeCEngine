@@ -69,12 +69,12 @@ void Object3d::Update() {
 
 	
 	//Animationがある場合は更新
-	if (model_->GetAnimation().GetDuration() != 0.0f) {
-		WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_* model_->GetLocalMatrix());
+	if (model_->GetAnimation().duration != 0.0f) {
+		WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
+		TransformMatrixData_->World = worldMatrix_;
+		TransformMatrixData_->WVP = WVPMatrix_;
+		TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 		model_->Update();
-	TransformMatrixData_->World = model_->GetLocalMatrix() * worldMatrix_;
-	TransformMatrixData_->WVP = model_->GetLocalMatrix() * WVPMatrix_;
-	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 	} 
 	else { //Animationがない場合
 		WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);

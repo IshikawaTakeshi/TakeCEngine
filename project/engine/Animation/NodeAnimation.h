@@ -1,6 +1,8 @@
 #pragma once
 #include "Animation/Keyflame.h"
 #include <vector>
+#include <string>
+#include <map>
 
 
 template <typename T>

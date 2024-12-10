@@ -25,21 +25,8 @@ public:
 	/// <returns></returns>
 	static Quaternion CalculateValue(const std::vector<KeyflameQuaternion>& keyframes, float time);
 
-	/// <summary>
-	///　アニメーションの尺を取得
-	/// </summary>
-	/// <returns></returns>
-	float GetDuration() const { return animation_.duration; }
-
-	/// <summary>
-	/// ノードアニメーションを取得
-	/// </summary>
-	NodeAnimation& GetNodeAnimation(const std::string& nodeName);
-
-	std::map<std::string, NodeAnimation>& GetNodeAnimations() { return animation_.nodeAnimations; }
 private:
 
-	
-	Animation animation_;
+
 };
 
