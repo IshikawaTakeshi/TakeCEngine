@@ -34,9 +34,11 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirecto
 	//メッシュ初期化
 	mesh_ = std::make_unique<Mesh>();
 	mesh_->InitializeMesh(modelCommon_->GetDirectXCommon(), modelData_.material.textureFilePath);
-	
+
 	//VertexResource
-	mesh_->InitializeVertexResourceObjModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+	mesh_->InitializeVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+	//indexResource
+	mesh_->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 	//MaterialResource
 	mesh_->GetMaterial()->InitializeMaterialResource(modelCommon_->GetDirectXCommon()->GetDevice());
 }
@@ -51,7 +53,7 @@ void Model::Update() {
 	if (animation_.duration == 0.0f) {
 		return;
 	}
-	
+
 	//60fpsで進める
 	//MEMO: 計測した時間を使って可変フレーム対応するのが望ましい
 	animationTime += 1.0f / 60.0f;
@@ -74,7 +76,7 @@ void Model::UpdateSkeleton() {
 
 		//ローカル行列を更新
 		joint.localMatrix = MatrixMath::MakeAffineMatrix(
-			joint.transform.scale, 
+			joint.transform.scale,
 			joint.transform.rotate,
 			joint.transform.translate);
 
@@ -101,8 +103,10 @@ void Model::Draw() {
 	commandList->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
+	//IBVの設定
+	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	//DrawCall
-	commandList->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
 }
 
 //=============================================================================
@@ -161,29 +165,31 @@ ModelData Model::LoadModelFile(const std::string& modelDirectoryPath, const std:
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 		assert(mesh->HasNormals()); //法線がない場合は現在エラー
 		assert(mesh->HasTextureCoords(0)); //UVがない場合は現在エラー
+		modelData_.vertices.resize(mesh->mNumVertices);
 
+		//vertexの解析
+		for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
+			aiVector3D& position = mesh->mVertices[vertexIndex];
+			aiVector3D& normal = mesh->mNormals[vertexIndex];
+			aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
+
+			modelData_.vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
+			modelData_.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
+			modelData_.vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
+
+		}
 		//faceの解析
 		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
 			aiFace& face = mesh->mFaces[faceIndex];
 			assert(face.mNumIndices == 3); //三角形以外はエラー
 
-			//vertexの解析
+			//Indice解析
 			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
-				uint32_t vertexIndex = face.mIndices[element];
-				aiVector3D& position = mesh->mVertices[vertexIndex];
-				aiVector3D& normal = mesh->mNormals[vertexIndex];
-				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
-				VertexData vertexData;
-				vertexData.position = { position.x,position.y,position.z, 1.0f };
-				vertexData.normal = { normal.x,normal.y,normal.z };
-				vertexData.texcoord = { texcoord.x,texcoord.y };
-
-				//aiProcess_MakeLeftHandedはz*=-1で、右手->左手に変換するので手動で対処する
-				vertexData.position.x *= -1.0f;
-				vertexData.normal.x *= -1.0f;
-				modelData_.vertices.push_back(vertexData);
+				uint32_t indicesIndex = face.mIndices[element];
+				modelData_.indices.push_back(indicesIndex);
 			}
 		}
+
 	}
 
 	//materialの解析
@@ -191,13 +197,13 @@ ModelData Model::LoadModelFile(const std::string& modelDirectoryPath, const std:
 		aiMaterial* material = scene->mMaterials[materialIndex];
 		unsigned int textureCount = material->GetTextureCount(aiTextureType_DIFFUSE);
 		textureCount;
-		
+
 		aiString textureFilePath;
-		if(material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath) == AI_SUCCESS){
+		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath) == AI_SUCCESS) {
 			modelData_.material.textureFilePath = std::string("./Resources/images/") + textureFilePath.C_Str();
-		} 
-		
-		if(modelData_.material.textureFilePath == "") { //テクスチャがない場合はデフォルトのテクスチャを設定
+		}
+
+		if (modelData_.material.textureFilePath == "") { //テクスチャがない場合はデフォルトのテクスチャを設定
 			modelData_.material.textureFilePath = "./Resources/images/uvChecker.png";
 		}
 	}
@@ -243,7 +249,7 @@ ModelMaterialData Model::LoadMtlFile(const std::string& resourceDirectoryPath, c
 
 Node Model::ReadNode(aiNode* node) {
 	Node result;
-	aiVector3D scale,translate;
+	aiVector3D scale, translate;
 	aiQuaternion rotate;
 	node->mTransformation.Decompose(scale, rotate, translate);
 	result.transform.scale = { scale.x,scale.y,scale.z };
@@ -272,7 +278,7 @@ Node Model::ReadNode(aiNode* node) {
 Skeleton Model::CreateSkeleton(const Node& rootNode) {
 	Skeleton skeleton;
 	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
-	
+
 	//名前とindexのマッピングを行いアクセスしやすくする
 	for (const Joint& joint : skeleton.joints) {
 		skeleton.jointMap.emplace(joint.name, joint.index);

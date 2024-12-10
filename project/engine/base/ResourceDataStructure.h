@@ -73,6 +73,7 @@ struct JointWeightData {
 struct ModelData {
 	std::map<std::string, JointWeightData> skinClusterData;
 	std::vector<VertexData> vertices;
+	std::vector<uint32_t> indices;
 	ModelMaterialData material;
 	Node rootNode;
 };
