@@ -10,6 +10,11 @@ class DirectXCommon;
 class Mesh {
 public:
 
+	enum class MeshAttribute {
+		Rigid,
+		Skinned
+	};
+
 	Mesh() = default;
 	~Mesh();
 
