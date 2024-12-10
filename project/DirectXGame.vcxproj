@@ -110,6 +110,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="engine\Animation\Animator.cpp" />
     <ClCompile Include="engine\3d\AABB.cpp" />
+    <ClCompile Include="engine\Animation\SkinCluster.cpp" />
     <ClCompile Include="engine\math\Easing.cpp" />
     <ClCompile Include="engine\math\Quaternion.cpp" />
     <ClCompile Include="engine\scene\AbstractSceneFactory.cpp" />
@@ -169,6 +170,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Animation\Keyflame.h" />
     <ClInclude Include="engine\Animation\NodeAnimation.h" />
     <ClInclude Include="engine\Animation\Skeleton.h" />
+    <ClInclude Include="engine\Animation\SkinCluster.h" />
     <ClInclude Include="engine\math\Easing.h" />
     <ClInclude Include="engine\math\Quaternion.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />

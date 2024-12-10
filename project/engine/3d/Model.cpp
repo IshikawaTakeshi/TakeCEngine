@@ -183,10 +183,37 @@ ModelData Model::LoadModelFile(const std::string& modelDirectoryPath, const std:
 			aiFace& face = mesh->mFaces[faceIndex];
 			assert(face.mNumIndices == 3); //三角形以外はエラー
 
-			//Indice解析
+			//Indices解析
 			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
 				uint32_t indicesIndex = face.mIndices[element];
 				modelData_.indices.push_back(indicesIndex);
+			}
+
+			//boneの解析
+			for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+				aiBone* bone = mesh->mBones[boneIndex];
+				std::string jointwName = bone->mName.C_Str();
+				JointWeightData& jointWeightData = modelData_.skinClusterData[jointwName];
+
+				//BindPoseMatrixに戻す
+				aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
+				aiVector3D scale, translate;
+				aiQuaternion rotate;
+
+				//成分の抽出
+				bindPoseMatrixAssimp.Decompose(scale, rotate, translate);
+
+				//左手系のBindPoseMatrixの作成
+				Matrix4x4 bindPoseMatrix = MatrixMath::MakeAffineMatrix(
+					{ scale.x,scale.y,scale.z }, { rotate.x,-rotate.y,-rotate.z,rotate.w }, { -translate.x,translate.y,translate.z });
+				jointWeightData.inverseBindPoseMatrix = MatrixMath::Inverse(bindPoseMatrix);
+
+				//Weightの解析
+				for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+
+					//InverceBindPoseMatrixの作成
+					jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight, bone->mWeights[weightIndex].mVertexId });
+				}
 			}
 		}
 
