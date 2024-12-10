@@ -152,7 +152,11 @@ void Mesh::InitializeVertexResourceTriangle(ID3D12Device* device) {
 
 }
 
-void Mesh::InitializeVertexResourceObjModel(ID3D12Device* device, ModelData modelData) {
+//=============================================================================
+// objモデルの頂点バッファリソース初期化
+//=============================================================================
+
+void Mesh::InitializeVertexResourceModel(ID3D12Device* device, ModelData modelData) {
 
 	//頂点リソースを作る
 	vertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * modelData.vertices.size());
@@ -169,6 +173,20 @@ void Mesh::InitializeVertexResourceObjModel(ID3D12Device* device, ModelData mode
 	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 }
 
+//================================================================================================
+// モデルのIndexResourceの初期化
+//================================================================================================
+
+void Mesh::InitializeIndexResourceModel(ID3D12Device* device, ModelData modelData) {
+	indexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(uint32_t) * modelData.indices.size());
+	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
+	indexBufferView_.SizeInBytes = UINT(sizeof(uint32_t) * modelData.indices.size());
+	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
+
+	uint32_t* indexData = nullptr;
+	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	std::memcpy(indexData, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size());
+}
 void Mesh::InitializeVertexResourceAABB(ID3D12Device* device) {
 
 	vertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * 24);
@@ -237,6 +255,7 @@ void Mesh::InitializeIndexResourceAABB(ID3D12Device* device) {
 	indexData[4] = 4; indexData[5] = 5; indexData[6] = 6; indexData[7] = 7;
 
 }
+
 
 
 void Mesh::InitializeIndexResourceSphere(ID3D12Device* device) {
