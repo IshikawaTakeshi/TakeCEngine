@@ -136,7 +136,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\StringUtility.cpp" />
     <ClCompile Include="engine\io\Input.cpp" />
     <ClCompile Include="engine\3d\Material.cpp" />
-    <ClCompile Include="engine\3d\Mesh.cpp" />
+    <ClCompile Include="engine\3d\Mesh\Mesh.cpp" />
     <ClCompile Include="engine\base\DirectXShaderCompiler.cpp" />
     <ClCompile Include="engine\math\Vector3Math.cpp" />
     <ClCompile Include="engine\base\PipelineStateObject.cpp" />
@@ -162,7 +162,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\ParticleCommon.cpp" />
     <ClCompile Include="engine\base\ParticleEmitter.cpp" />
     <ClCompile Include="engine\base\ParticleManager.cpp" />
-    <ClCompile Include="SkeletalMesh.cpp" />
+    <ClCompile Include="engine\3d\Mesh\SkeletalMesh.cpp" />
+    <ClCompile Include="engine\3d\Mesh\RigidMesh.cpp" />
+    <ClCompile Include="engine\3d\Mesh\SkinMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Animation\Animator.h" />
@@ -193,7 +195,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\base\DirectXShaderCompiler.h" />
     <ClInclude Include="engine\base\DirectXCommon.h" />
     <ClInclude Include="engine\base\Logger.h" />
-    <ClInclude Include="engine\3d\Mesh.h" />
+    <ClInclude Include="engine\3d\Mesh\Mesh.h" />
     <ClInclude Include="engine\3d\Material.h" />
     <ClInclude Include="engine\io\Input.h" />
     <ClInclude Include="engine\3d\ModelCommon.h" />
@@ -230,7 +232,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\scene\TitleScene.h" />
     <ClInclude Include="engine\scene\SceneFactory.h" />
     <ClInclude Include="engine\scene\SceneManager.h" />
-    <ClInclude Include="SkeletalMesh.h" />
+    <ClInclude Include="engine\3d\Mesh\SkeletalMesh.h" />
+    <ClInclude Include="engine\3d\Mesh\RigidMesh.h" />
+    <ClInclude Include="engine\3d\Mesh\SkinMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
@@ -291,6 +295,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Resources\shaders\Particle.VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\SkinningObject3d.VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

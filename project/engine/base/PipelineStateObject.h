@@ -4,6 +4,7 @@
 #include <dxcapi.h>
 #include <wrl.h>
 #include <cstdint>
+#include <array>
 
 class DXC;
 class PSO {
@@ -39,6 +40,8 @@ public:
 	/// </summary>
 	void CreateRootSignatureForObject3D(ID3D12Device* device);
 
+	void CreateRootSignatureForSkinnedObject3D(ID3D12Device* device);
+
 	/// <summary>
 	/// パーティクル用のルートシグネチャ生成
 	/// </summary>
@@ -49,6 +52,7 @@ public:
 	/// インプットレイアウト初期化
 	/// </summary>
 	void CreateInputLayout();
+	//void CreateInputLayoutForSkinningObject();
 
 	/// <summary>
 	/// ブレンドステート初期化
@@ -67,6 +71,7 @@ public:
 	/// </summary>
 	void CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 	void CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+	void CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 	void CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 
 	void UpdateImGui();
@@ -99,6 +104,7 @@ private:
 	//rootSignature
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
 	D3D12_ROOT_PARAMETER rootParametersForObject3d_[7] = {};
+	D3D12_ROOT_PARAMETER rootParametersForSkinningObject3d_[8] = {};
 	D3D12_ROOT_PARAMETER rootParametersForParticle_[3] = {};
 	D3D12_ROOT_PARAMETER rootParametersForSprite_[3] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
@@ -108,7 +114,8 @@ private:
 	ComPtr<ID3D12RootSignature> rootSignature_;
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	//InputLayout
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3] = {};
+	std::array<D3D12_INPUT_ELEMENT_DESC,5> inputElementDescs_ = {};
+	//D3D12_INPUT_ELEMENT_DESC inputElementDescsForSkinningObject_[3] = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};

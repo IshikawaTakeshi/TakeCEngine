@@ -42,7 +42,7 @@ public:
 	/// 頂点バッファビューの取得
 	/// </summary>
 	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() {
-		return vertexBufferView_;
+		return vertexBufferViews_;
 	}
 
 	/// <summary>
@@ -77,7 +77,7 @@ private:
 	//TransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
 	//頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferViews_{};
 
 	//CPU用のTransform
 	EulerTransform transform_{};

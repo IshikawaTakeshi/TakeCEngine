@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Mesh.h"
 #include "ResourceDataStructure.h"
 #include "Transform.h"
 #include "TransformMatrix.h"
 #include "Animation/Animator.h"
 #include "Animation/Skeleton.h"
+#include "Animation/SkinCluster.h"
 
 //assimp
 #include <assimp/Importer.hpp>
@@ -16,6 +16,7 @@
 #include <wrl.h>
 #include <memory>
 
+class Mesh;
 class Texture;
 class SrvManager;
 class DirectXCommon;
@@ -49,7 +50,7 @@ public:
 	/// <param name="instanceCount_"></param>
 	void DrawForParticle(UINT instanceCount_);
 
-	void DrawSkeleton();
+	//void DrawSkeleton();
 
 	/// <summary>
 	/// アニメーションの適用
@@ -124,6 +125,8 @@ private:
 	std::unique_ptr<Mesh> mesh_ = nullptr;
 	//スケルトン
 	Skeleton skeleton_;
+	//スキンクラスター
+	SkinCluster skinCluster_;
 
 	//構築するModelData
 	ModelData modelData_;

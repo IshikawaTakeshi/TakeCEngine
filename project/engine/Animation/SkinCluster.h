@@ -7,6 +7,7 @@
 
 #include "ResourceDataStructure.h"
 #include "Skeleton.h"
+#include "SrvManager.h"
 
 //最大の影響ボーン数
 const uint32_t kNumMaxInfluence = 4;
@@ -30,7 +31,9 @@ struct SkinCluster {
 	std::span<WellForGPU> mappedPalette;
 	std::pair<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE> paletteSrvHandle;
 
-	void Create(const Microsoft::WRL::ComPtr<ID3D12Device>& device,const Skeleton& skeleton,const ModelData& modelData,
-				const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize);
+	void Create(const Microsoft::WRL::ComPtr<ID3D12Device>& device,SrvManager* srvManager,
+				const Skeleton& skeleton,const ModelData& modelData);
+
+	void Update(const Skeleton& skeleton);
 };
 

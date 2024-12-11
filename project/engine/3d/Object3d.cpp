@@ -2,7 +2,7 @@
 #include "Object3dCommon.h"
 #include "MatrixMath.h"
 #include "DirectXCommon.h"
-#include "Mesh.h"
+#include "Mesh/Mesh.h"
 #include "TextureManager.h"
 #include "ModelManager.h"
 #include "Model.h"

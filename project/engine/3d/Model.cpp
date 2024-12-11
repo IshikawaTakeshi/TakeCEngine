@@ -5,6 +5,7 @@
 #include "SrvManager.h"
 #include "TextureManager.h"
 #include "ModelCommon.h"
+#include "Mesh/SkinMesh.h"
 
 #include <fstream>
 #include <sstream>
@@ -30,13 +31,16 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirecto
 	animation_ = Animator::LoadAnimationFile(modelDirectoryPath, filePath);
 	//Skeleton作成
 	skeleton_ = CreateSkeleton(modelData_.rootNode);
+	//SkinCluster作成
+	skinCluster_.Create(modelCommon_->GetDirectXCommon()->GetDevice(), modelCommon_->GetSrvManager(), skeleton_, modelData_);
 
 	//メッシュ初期化
-	mesh_ = std::make_unique<Mesh>();
+	mesh_ = std::make_unique<SkinMesh>();
 	mesh_->InitializeMesh(modelCommon_->GetDirectXCommon(), modelData_.material.textureFilePath);
 
 	//VertexResource
 	mesh_->InitializeVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+	mesh_->AddVertexBufferView(skinCluster_.influenceBufferView);
 	//indexResource
 	mesh_->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 	//MaterialResource
@@ -58,12 +62,17 @@ void Model::Update() {
 	//MEMO: 計測した時間を使って可変フレーム対応するのが望ましい
 	animationTime += 1.0f / 60.0f;
 
-	//最後まで行ったら最初からリピート再生する
-	animationTime = std::fmod(animationTime, animation_.duration);
-
 	//アニメーションの更新とボーンへの適用
 	ApplyAnimation();
+
+	//スケルトンの更新
 	UpdateSkeleton();
+
+	//SkinClusterの更新
+	skinCluster_.Update(skeleton_);
+
+	//最後まで行ったら最初からリピート再生する
+	animationTime = std::fmod(animationTime, animation_.duration);
 }
 
 //=============================================================================
@@ -96,7 +105,8 @@ void Model::Draw() {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	commandList->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
+	// VBVを設定
+	mesh_->SetVertexBuffers(commandList,0);
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
@@ -116,7 +126,8 @@ void Model::Draw() {
 void Model::DrawForParticle(UINT instanceCount_) {
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	commandList->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
+	// VBVを設定
+	mesh_->SetVertexBuffers(commandList, 0); 
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
@@ -127,10 +138,10 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
 }
 
-void Model::DrawSkeleton() {
-
-
-}
+//void Model::DrawSkeleton() {
+//
+//
+//}
 
 //=============================================================================
 // アニメーション適用

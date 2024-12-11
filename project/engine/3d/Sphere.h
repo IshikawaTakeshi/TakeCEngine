@@ -4,7 +4,7 @@
 #include "TransformMatrix.h"
 #include "Transform.h"
 #include "ResourceDataStructure.h"
-#include "Mesh.h"
+#include "Mesh/RigidMesh.h"
 #include <stdint.h>
 #include <string>
 #include <d3d12.h>
@@ -44,7 +44,7 @@ public: //セッター
 private:
 
 	//メッシュ
-	Mesh* mesh_;
+	RigidMesh* mesh_;
 
 	//filePath
 	std::string filePath_;

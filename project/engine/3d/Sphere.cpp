@@ -22,7 +22,7 @@ Sphere::~Sphere() {
 void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std::string& textureFilePath) {
 
 	//メッシュ初期化
-	mesh_ = new Mesh();
+	mesh_ = new RigidMesh();
 	mesh_->InitializeMesh(dxCommon,textureFilePath);
 
 	//======================= VertexResource ===========================//
@@ -124,7 +124,7 @@ void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
 
 void Sphere::Draw(DirectXCommon* dxCommon) {
 
-	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
+	mesh_->SetVertexBuffers(dxCommon->GetCommandList(),0);
 
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	//dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

@@ -16,7 +16,7 @@
 #include "Transform.h"
 #include "TransformMatrix.h"
 #include "ResourceDataStructure.h"
-#include "Mesh.h"
+#include "Mesh/RigidMesh.h"
 #include "SpriteCommon.h"
 
 class DirectXCommon;
@@ -107,7 +107,7 @@ private:
 	SpriteCommon* spriteCommon_ = nullptr;
 
 	//メッシュ
-	Mesh* mesh_ = nullptr;
+	RigidMesh* mesh_ = nullptr;
 
 	//filePath
 	std::string filePath_;
