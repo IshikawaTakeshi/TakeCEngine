@@ -39,3 +39,13 @@ void SkinMesh::InitializeIndexResourceModel(ID3D12Device* device, ModelData mode
 	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
 	std::memcpy(indexData, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size());
 }
+
+void SkinMesh::InitializeVertexResourceSphere(ID3D12Device* device) {}
+
+void SkinMesh::InitializeVertexResourceSprite(ID3D12Device* device, Vector2 anchorPoint) {}
+
+void SkinMesh::InitializeVertexResourceTriangle(ID3D12Device* device) {}
+
+void SkinMesh::InitializeIndexResourceSphere(ID3D12Device* device) {}
+
+void SkinMesh::InitializeIndexResourceSprite(ID3D12Device* device) {}

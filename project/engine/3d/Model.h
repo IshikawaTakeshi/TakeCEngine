@@ -6,6 +6,7 @@
 #include "Animation/Animator.h"
 #include "Animation/Skeleton.h"
 #include "Animation/SkinCluster.h"
+#include "Mesh/Mesh.h"
 
 //assimp
 #include <assimp/Importer.hpp>
@@ -16,7 +17,7 @@
 #include <wrl.h>
 #include <memory>
 
-class Mesh;
+
 class Texture;
 class SrvManager;
 class DirectXCommon;

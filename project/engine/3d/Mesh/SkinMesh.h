@@ -4,7 +4,7 @@
 #include <wrl.h>
 #include <memory>
 
-class SkinMesh : public Mesh{
+class SkinMesh : public Mesh {
 public:
 
 	SkinMesh() = default;
@@ -23,14 +23,44 @@ public:
 	/// </summary>
 	/// <param name="device"></param>
 	/// /// <param name="modelData"></param>
-	virtual void InitializeVertexResourceModel(ID3D12Device* device, ModelData modelData);
+	void InitializeVertexResourceModel(ID3D12Device* device, ModelData modelData) override;
 
 	/// <summary>
 	/// モデルのIndexResource初期化
 	/// </summary>
 	/// <param name="device"></param>
 	/// <param name="modelData"></param>
-	virtual void InitializeIndexResourceModel(ID3D12Device* device, ModelData modelData);
+	void InitializeIndexResourceModel(ID3D12Device* device, ModelData modelData) override;
+
+
+	//================================= VertexBufferResource ==================================//
+
+	/// <summary>
+	/// 球体の頂点バッファリソース初期化
+	/// </summary>
+	void InitializeVertexResourceSphere(ID3D12Device* device) override;
+
+	/// <summary>
+	/// スプライトの頂点バッファリソース初期化
+	/// </summary>
+	void InitializeVertexResourceSprite(ID3D12Device* device,Vector2 anchorPoint) override;
+
+	/// <summary>
+	/// 三角形の頂点バッファリソース初期化
+	/// </summary>
+	void InitializeVertexResourceTriangle(ID3D12Device* device) override;
+
+	//================================= IndexBufferResource ==================================//
+
+	/// <summary>
+	/// 球体のIndexResource初期化
+	/// </summary>
+	void InitializeIndexResourceSphere(ID3D12Device* device) override;
+
+	/// <summary>
+	/// スプライトのIndexResource初期化
+	/// </summary>
+	void InitializeIndexResourceSprite(ID3D12Device* device) override;
 
 	
 public: //getter
