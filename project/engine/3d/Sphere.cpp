@@ -14,7 +14,7 @@
 #pragma endregion
 
 Sphere::~Sphere() {
-	
+	mesh_.reset();
 	directionalLightResource_.Reset();
 	wvpResource_.Reset();
 }
@@ -22,7 +22,7 @@ Sphere::~Sphere() {
 void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std::string& textureFilePath) {
 
 	//メッシュ初期化
-	mesh_ = new RigidMesh();
+	mesh_ = std::make_unique<Mesh>();
 	mesh_->InitializeMesh(dxCommon,textureFilePath);
 
 	//======================= VertexResource ===========================//

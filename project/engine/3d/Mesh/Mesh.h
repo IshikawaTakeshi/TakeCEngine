@@ -9,63 +9,58 @@ class DirectXCommon;
 class Mesh {
 public:
 
-	virtual ~Mesh() = default;
+	Mesh() = default;
+	~Mesh();
+
+	void InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath);
 
 	/// <summary>
-	/// 初期化
-	/// </summary>
-	virtual void InitializeMesh(DirectXCommon* dxCommon,const std::string& filePath);
+		/// 描画処理時に使用する頂点バッファを設定
+		/// </summary>
+		/// <param name="commandList"></param>
+		/// <param name="startSlot"></param>
+	void SetVertexBuffers(ID3D12GraphicsCommandList* commandList, UINT startSlot);
 
-	/// <summary>
-	/// 描画処理時に使用する頂点バッファを設定
-	/// </summary>
-	/// <param name="commandList"></param>
-	/// <param name="startSlot"></param>
-	virtual void SetVertexBuffers(ID3D12GraphicsCommandList* commandList, UINT startSlot) = 0;
+	void AddVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vbv);
 
-	virtual void AddVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vbv) = 0;
 
 	//================================= VertexBufferResource ==================================//
 
 	/// <summary>
 	/// 球体の頂点バッファリソース初期化
 	/// </summary>
-	virtual void InitializeVertexResourceSphere(ID3D12Device* device) = 0;
+	void InitializeVertexResourceSphere(ID3D12Device* device);
 
 	/// <summary>
 	/// スプライトの頂点バッファリソース初期化
 	/// </summary>
-	virtual void InitializeVertexResourceSprite(ID3D12Device* device,Vector2 anchorPoint) = 0;
+	void InitializeVertexResourceSprite(ID3D12Device* device, Vector2 anchorPoint);
 
 	/// <summary>
 	/// 三角形の頂点バッファリソース初期化
 	/// </summary>
-	virtual void InitializeVertexResourceTriangle(ID3D12Device* device) = 0;
+	void InitializeVertexResourceTriangle(ID3D12Device* device);
 
 	/// <summary>
 	/// モデルの頂点バッファリソース初期化
 	/// </summary>
 	/// <param name="device"></param>
-	virtual void InitializeVertexResourceModel(ID3D12Device* device,ModelData modelData) = 0;
+	void InitializeVertexResourceModel(ID3D12Device* device, ModelData modelData);
 
 	//================================= IndexBufferResource ==================================//
 
 	/// <summary>
 	/// 球体のIndexResource初期化
 	/// </summary>
-	virtual void InitializeIndexResourceSphere(ID3D12Device* device) = 0;
+	void InitializeIndexResourceSphere(ID3D12Device* device);
 
 	/// <summary>
 	/// スプライトのIndexResource初期化
 	/// </summary>
-	virtual void InitializeIndexResourceSprite(ID3D12Device* device) = 0;
+	void InitializeIndexResourceSprite(ID3D12Device* device);
 
-	/// <summary>
-	/// モデルのIndexResource初期化
-	/// </summary>
-	/// <param name="device"></param>
-	/// <param name="modelData"></param>
-	virtual void InitializeIndexResourceModel(ID3D12Device* device, ModelData modelData) = 0;
+	void InitializeIndexResourceModel(ID3D12Device* device, ModelData modelData);
+
 
 public: //getter
 	
@@ -90,6 +85,7 @@ protected:
 
 	//頂点バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
+	std::vector<D3D12_VERTEX_BUFFER_VIEW> vertexBufferViews_;
 
 	//IndexBufferView用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;

@@ -5,7 +5,7 @@
 #include "SrvManager.h"
 #include "TextureManager.h"
 #include "ModelCommon.h"
-#include "Mesh/SkinMesh.h"
+#include "Mesh/Mesh.h"
 
 #include <fstream>
 #include <sstream>
@@ -35,7 +35,7 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirecto
 	skinCluster_.Create(modelCommon_->GetDirectXCommon()->GetDevice(), modelCommon_->GetSrvManager(), skeleton_, modelData_);
 
 	//メッシュ初期化
-	mesh_ = std::make_unique<SkinMesh>();
+	mesh_ = std::make_unique<Mesh>();
 	mesh_->InitializeMesh(modelCommon_->GetDirectXCommon(), modelData_.material.textureFilePath);
 
 	//VertexResource
