@@ -106,7 +106,27 @@ void Model::Draw() {
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
 	// VBVを設定
-	mesh_->SetVertexBuffers(commandList,0);
+	mesh_->SetVertexBuffers(commandList, 0);
+	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//materialCBufferの場所を指定
+	commandList->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
+	//IBVの設定
+	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
+	//DrawCall
+	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
+}
+
+void Model::DrawForASkinningModel() {
+
+	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
+
+	D3D12_VERTEX_BUFFER_VIEW vbv[] = { mesh_->GetVertexBufferView(0),skinCluster_.influenceBufferView };
+
+	// VBVを設定
+	commandList->IASetVertexBuffers(0, 2, vbv);
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
@@ -198,36 +218,35 @@ ModelData Model::LoadModelFile(const std::string& modelDirectoryPath, const std:
 			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
 				uint32_t indicesIndex = face.mIndices[element];
 				modelData_.indices.push_back(indicesIndex);
-			}
-
-			//boneの解析
-			for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
-				aiBone* bone = mesh->mBones[boneIndex];
-				std::string jointwName = bone->mName.C_Str();
-				JointWeightData& jointWeightData = modelData_.skinClusterData[jointwName];
-
-				//BindPoseMatrixに戻す
-				aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
-				aiVector3D scale, translate;
-				aiQuaternion rotate;
-
-				//成分の抽出
-				bindPoseMatrixAssimp.Decompose(scale, rotate, translate);
-
-				//左手系のBindPoseMatrixの作成
-				Matrix4x4 bindPoseMatrix = MatrixMath::MakeAffineMatrix(
-					{ scale.x,scale.y,scale.z }, { rotate.x,-rotate.y,-rotate.z,rotate.w }, { -translate.x,translate.y,translate.z });
-				jointWeightData.inverseBindPoseMatrix = MatrixMath::Inverse(bindPoseMatrix);
-
-				//Weightの解析
-				for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
-
-					//InverceBindPoseMatrixの作成
-					jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight, bone->mWeights[weightIndex].mVertexId });
-				}
-			}
+			}		
 		}
 
+		//boneの解析
+		for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+			aiBone* bone = mesh->mBones[boneIndex];
+			std::string jointwName = bone->mName.C_Str();
+			JointWeightData& jointWeightData = modelData_.skinClusterData[jointwName];
+
+			//BindPoseMatrixに戻す
+			aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
+			aiVector3D scale, translate;
+			aiQuaternion rotate;
+
+			//成分の抽出
+			bindPoseMatrixAssimp.Decompose(scale, rotate, translate);
+
+			//左手系のBindPoseMatrixの作成
+			Matrix4x4 bindPoseMatrix = MatrixMath::MakeAffineMatrix(
+				{ scale.x,scale.y,scale.z }, { rotate.x,-rotate.y,-rotate.z,rotate.w }, { -translate.x,translate.y,translate.z });
+			jointWeightData.inverseBindPoseMatrix = MatrixMath::Inverse(bindPoseMatrix);
+
+			//Weightの解析
+			for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+
+				//InverceBindPoseMatrixの作成
+				jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight, bone->mWeights[weightIndex].mVertexId });
+			}
+		}
 	}
 
 	//materialの解析

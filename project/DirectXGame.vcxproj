@@ -170,6 +170,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Animation\NodeAnimation.h" />
     <ClInclude Include="engine\Animation\Skeleton.h" />
     <ClInclude Include="engine\Animation\SkinCluster.h" />
+    <ClInclude Include="engine\base\PSOType.h" />
     <ClInclude Include="engine\math\Easing.h" />
     <ClInclude Include="engine\math\Quaternion.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />

@@ -68,6 +68,6 @@ void TitleScene::Draw() {
 
 	SpriteCommon::GetInstance()->PreDraw();
 	sprite_->Draw();
-	Object3dCommon::GetInstance()->PreDraw();
+	Object3dCommon::GetInstance()->PreDrawForObject3d();
 	titleObject->Draw();
 }

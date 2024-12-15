@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "CameraManager.h"
 #include "ImGuiManager.h"
+
 #include <fstream>
 #include <sstream>
 #include <cassert>
@@ -23,8 +24,13 @@ Object3d::~Object3d() {
 
 void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 	object3dCommon_ = object3dCommon;
+
+
+
+	//モデルの設定
 	SetModel(filePath);
 	model_->GetMesh()->GetMaterial()->SetEnableLighting(true);
+
 
 	//TransformationMatrix用のResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
@@ -32,6 +38,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
 	//単位行列を書き込んでおく
 	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
+
 
 
 	//CPUで動かす用のTransform
@@ -99,7 +106,6 @@ void Object3d::UpdateImGui(int id) {
 		ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 		model_->GetMesh()->GetMaterial()->UpdateMaterialImGui();
-		object3dCommon_->GetPSO()->UpdateImGui();
 		ImGui::TreePop();
 	}
 	ImGui::End();
@@ -112,12 +118,24 @@ void Object3d::UpdateImGui(int id) {
 
 void Object3d::Draw() {
 
-	//wvp用のCBufferの場所を指定
-	object3dCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	ID3D12GraphicsCommandList* commandList = object3dCommon_->GetDirectXCommon()->GetCommandList();
 
+	//wvp用のCBufferの場所を指定
+	commandList->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 
 	if(model_ != nullptr) {
 		model_->Draw();
+	}
+}
+
+void Object3d::DrawForASkinningModel() {
+	ID3D12GraphicsCommandList* commandList = object3dCommon_->GetDirectXCommon()->GetCommandList();
+
+	//wvp用のCBufferの場所を指定
+	commandList->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+
+	if (model_ != nullptr) {
+		model_->DrawForASkinningModel();
 	}
 }
 
@@ -126,5 +144,5 @@ void Object3d::Draw() {
 //=============================================================================
 
 void Object3d::SetModel(const std::string& filePath) {
-		model_ = ModelManager::GetInstance()->FindModel(filePath);
+	model_ = ModelManager::GetInstance()->FindModel(filePath);
 }

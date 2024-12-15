@@ -21,13 +21,16 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 
 	//DirectXCommon取得
 	dxCommon_ = directXCommon;
-
 	//PSO生成
-	pso_ = new PSO();
-	pso_->CreatePSOForObject3D(dxCommon_->GetDevice(), dxCommon_->GetDXC(), D3D12_FILL_MODE_SOLID);
+	psoForObject3d_ = std::make_unique<PSO>();
+	psoForObject3d_->CreatePSO(kObject3D, dxCommon_->GetDevice(),dxCommon_->GetDXC(), D3D12_FILL_MODE_SOLID);
+	psoForSkinningObject3d_ = std::make_unique<PSO>();
+	psoForSkinningObject3d_->CreatePSO(kSkinningObject3D, dxCommon_->GetDevice(), dxCommon_->GetDXC(), D3D12_FILL_MODE_SOLID);
 
 	//ルートシグネチャ取得
-	rootSignature_ = pso_->GetRootSignature();
+	rootSignatureForObject3d_ = psoForObject3d_->GetRootSignature();
+	rootSignatureForSkinningObject3d_ = psoForSkinningObject3d_->GetRootSignature();
+
 
 #pragma region "Lighting"
 	//平行光源用Resourceの作成
@@ -90,31 +93,51 @@ void Object3dCommon::UpdateImGui() {
 	ImGui::SliderFloat("SpotDecay", &spotLightData_->decay_, 0.0f, 2.0f);
 	ImGui::SliderAngle("SpotCosAngle", &spotLightData_->cosAngle_);
 	ImGui::SliderAngle("SpotPenumbraAngle", &spotLightData_->penumbraAngle_);
-	//spotLightData_->cosAngle_ = std::cosf(spotLightData_->cosAngle_);
-	pso_->UpdateImGui();
 	ImGui::End();
 }
 
 void Object3dCommon::Finalize() {
-	rootSignature_.Reset();
 	directionalLightResource_.Reset();
 	pointLightResource_.Reset();
 	dxCommon_ = nullptr;
-	delete pso_;
-	pso_ = nullptr;
 
 	delete instance_;
 	instance_ = nullptr;
 }
 
-void Object3dCommon::PreDraw() {
+void Object3dCommon::PreDrawForObject3d() {
 
-	//ルートシグネチャ設定
-	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
-	//PSO設定
-	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetGraphicPipelineState());
+	
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//ルートシグネチャ設定
+	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignatureForObject3d_.Get());
+	//PSO設定
+	dxCommon_->GetCommandList()->SetPipelineState(psoForObject3d_->GetGraphicPipelineState());
+
+	//Lighting用のCBufferの場所を指定
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
+	//カメラ情報のCBufferの場所を指定
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(
+		4, CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
+
+	//pointLightのCBuffer
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(5, pointLightResource_->GetGPUVirtualAddress());
+	//spotLightのCBuffer
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(6, spotLightResource_->GetGPUVirtualAddress());
+
+}
+
+void Object3dCommon::PreDrawForSkinningObject3d() {
+
+	//プリミティブトポロジー設定
+	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//ルートシグネチャ設定
+	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignatureForSkinningObject3d_.Get());
+	//PSO設定
+	dxCommon_->GetCommandList()->SetPipelineState(psoForSkinningObject3d_->GetGraphicPipelineState());
 
 	//Lighting用のCBufferの場所を指定
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
