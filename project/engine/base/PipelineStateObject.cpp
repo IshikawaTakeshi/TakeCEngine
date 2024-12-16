@@ -3,6 +3,7 @@
 #include "DirectXCommon.h"
 #include "DirectXShaderCompiler.h"
 #include "ImGuiManager.h"
+
 #include <cassert>
 
 PSO::~PSO() {
@@ -163,6 +164,90 @@ void PSO::CreateRootSignatureForObject3D(ID3D12Device* device) {
 	assert(SUCCEEDED(result));
 }
 
+void PSO::CreateRootSignatureForSkinnedObject3D(ID3D12Device* device) {
+
+	HRESULT result = S_FALSE;
+	//ルートシグネチャ
+	descriptionRootSignature_.Flags =
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+	//ディスクリプターレンジ
+	descriptorRange_[0].BaseShaderRegister = 0;
+	descriptorRange_[0].NumDescriptors = 1;
+	descriptorRange_[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRange_[0].OffsetInDescriptorsFromTableStart =
+		D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //offsetを自動計算
+
+	//ルートパラメータ。複数設定できるので配列。
+	//.0
+	rootParametersForSkinningObject3d_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForSkinningObject3d_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	rootParametersForSkinningObject3d_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
+	//.1
+	rootParametersForSkinningObject3d_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParametersForSkinningObject3d_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	rootParametersForSkinningObject3d_[1].Descriptor.ShaderRegister = 0;
+	//.2
+	rootParametersForSkinningObject3d_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
+	rootParametersForSkinningObject3d_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	rootParametersForSkinningObject3d_[2].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
+	rootParametersForSkinningObject3d_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
+	//.3 DirectionalLight
+	rootParametersForSkinningObject3d_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForSkinningObject3d_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParametersForSkinningObject3d_[3].Descriptor.ShaderRegister = 1; //レジスタ番号1
+	//.4 カメラの情報
+	rootParametersForSkinningObject3d_[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForSkinningObject3d_[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParametersForSkinningObject3d_[4].Descriptor.ShaderRegister = 2; //レジスタ番号2
+	//.5 PointLightのデータ
+	rootParametersForSkinningObject3d_[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForSkinningObject3d_[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParametersForSkinningObject3d_[5].Descriptor.ShaderRegister = 3; //レジスタ番号3
+	//.6 SpotLightのデータ
+	rootParametersForSkinningObject3d_[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParametersForSkinningObject3d_[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParametersForSkinningObject3d_[6].Descriptor.ShaderRegister = 4; //レジスタ番号4
+	//.7 Well
+	rootParametersForSkinningObject3d_[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
+	rootParametersForSkinningObject3d_[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; //PixelShaderで使う
+	rootParametersForSkinningObject3d_[7].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
+	rootParametersForSkinningObject3d_[7].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
+
+	descriptionRootSignature_.pParameters = rootParametersForSkinningObject3d_; //rootParameter配列へのポインタ
+	descriptionRootSignature_.NumParameters = _countof(rootParametersForSkinningObject3d_); //配列の長さ
+
+	//Samplerの設定
+	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
+	staticSamplers_[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
+	staticSamplers_[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers_[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; //比較しない
+	staticSamplers_[0].MaxLOD = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
+	staticSamplers_[0].ShaderRegister = 0; //レジスタ番号0を使う
+	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+
+	descriptionRootSignature_.pStaticSamplers = staticSamplers_;
+	descriptionRootSignature_.NumStaticSamplers = _countof(staticSamplers_);
+
+	//シリアライズ
+	signatureBlob_ = nullptr;
+	errorBlob_ = nullptr;
+
+	result = D3D12SerializeRootSignature(&descriptionRootSignature_,
+		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
+	if (FAILED(result)) {
+		Logger::Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
+		assert(false);
+	}
+	//バイナリをもとに生成
+	rootSignature_ = nullptr;
+	result = device->CreateRootSignature(0, signatureBlob_->GetBufferPointer(),
+		signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&rootSignature_)
+	);
+	assert(SUCCEEDED(result));
+}
+
 void PSO::CreateRootSignatureForParticle(ID3D12Device* device) {
 
 	HRESULT result = S_FALSE;
@@ -247,10 +332,43 @@ void PSO::CreateInputLayout() {
 	inputElementDescs_[2].SemanticIndex = 0;
 	inputElementDescs_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	inputElementDescs_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	//worldPosition
 
-	inputLayoutDesc_.pInputElementDescs = inputElementDescs_;
-	inputLayoutDesc_.NumElements = _countof(inputElementDescs_);
+	inputLayoutDesc_.pInputElementDescs = inputElementDescs_.data();
+	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescs_.size());
+}
+
+void PSO::CreateInputLayoutForSkinningObject() {
+
+	//position
+	inputElementDescsForSkinningObject_[0].SemanticName = "POSITION";
+	inputElementDescsForSkinningObject_[0].SemanticIndex = 0;
+	inputElementDescsForSkinningObject_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElementDescsForSkinningObject_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	//texcoord
+	inputElementDescsForSkinningObject_[1].SemanticName = "TEXCOORD";
+	inputElementDescsForSkinningObject_[1].SemanticIndex = 0;
+	inputElementDescsForSkinningObject_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputElementDescsForSkinningObject_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	//normal
+	inputElementDescsForSkinningObject_[2].SemanticName = "NORMAL";
+	inputElementDescsForSkinningObject_[2].SemanticIndex = 0;
+	inputElementDescsForSkinningObject_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputElementDescsForSkinningObject_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	//weight
+	inputElementDescsForSkinningObject_[3].SemanticName = "WEIGHT";
+	inputElementDescsForSkinningObject_[3].SemanticIndex = 0;
+	inputElementDescsForSkinningObject_[3].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElementDescsForSkinningObject_[3].InputSlot = 1; //1番目のSlotのVBVだと伝える
+	inputElementDescsForSkinningObject_[3].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	//index
+	inputElementDescsForSkinningObject_[4].SemanticName = "INDEX";
+	inputElementDescsForSkinningObject_[4].SemanticIndex = 0;
+	inputElementDescsForSkinningObject_[4].Format = DXGI_FORMAT_R32G32B32A32_SINT;
+	inputElementDescsForSkinningObject_[4].InputSlot = 1;
+	inputElementDescsForSkinningObject_[4].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+	inputLayoutDesc_.pInputElementDescs = inputElementDescsForSkinningObject_.data();
+	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescsForSkinningObject_.size());
 }
 
 //=============================================================================
@@ -454,6 +572,85 @@ void PSO::CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE 
 	assert(SUCCEEDED(result));
 }
 
+void PSO::CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode) {
+
+	HRESULT result = S_FALSE;
+
+	device_ = device;
+
+	itemCurrentIdx = 0;
+
+	/// ルートシグネチャ初期化
+	CreateRootSignatureForSkinnedObject3D(device_);
+	/// インプットレイアウト初期化
+	CreateInputLayoutForSkinningObject();
+	/// ブレンドステート初期化
+	CreateBlendStateForObject3d();
+	/// ラスタライザステート初期化
+	CreateRasterizerState(fillMode);
+
+	//Shaderをコンパイル
+	//VS
+	vertexShaderBlob_ = dxc_->CompileShader(
+		L"Resources/shaders/SkinningObject3D.VS.hlsl",
+		L"vs_6_0",
+		dxc_->GetDxcUtils().Get(),
+		dxc_->GetDxcCompiler().Get(),
+		dxc_->GetIncludeHandler().Get()
+	);
+	assert(vertexShaderBlob_ != nullptr);
+
+	//PS
+	pixelShaderBlob_ = dxc_->CompileShader(
+		L"Resources/shaders/Object3D.PS.hlsl",
+		L"ps_6_0",
+		dxc_->GetDxcUtils().Get(),
+		dxc_->GetDxcCompiler().Get(),
+		dxc_->GetIncludeHandler().Get()
+	);
+	assert(pixelShaderBlob_ != nullptr);
+
+#pragma region SetDepthStencilState
+	//Depthの機能を有効化
+	depthStencilDesc_.DepthEnable = true;
+	//書き込み
+	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	//比較関数はLessEqual。近ければ描画される
+	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+
+	//DepthStencilの設定
+	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc_;
+	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	graphicsPipelineStateDesc_.pRootSignature = rootSignature_.Get(); // RootSignature
+	graphicsPipelineStateDesc_.InputLayout = inputLayoutDesc_; // InputLayout
+
+	graphicsPipelineStateDesc_.VS = { vertexShaderBlob_->GetBufferPointer(),
+	vertexShaderBlob_->GetBufferSize() }; // VertexShader
+	graphicsPipelineStateDesc_.PS = { pixelShaderBlob_->GetBufferPointer(),
+	pixelShaderBlob_->GetBufferSize() }; // PixelShader
+
+	graphicsPipelineStateDesc_.BlendState = blendDesc_; // blendState
+	graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc_; // rasterizerState
+
+#pragma endregion
+
+	//書き込むRTVの情報
+	graphicsPipelineStateDesc_.NumRenderTargets = 1;
+	graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	//利用するトロポジ(形状)のタイプ。三角形
+	graphicsPipelineStateDesc_.PrimitiveTopologyType =
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	//どのように画面に色を打ち込むのかの設定
+	graphicsPipelineStateDesc_.SampleDesc.Count = 1;
+	graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	//実際に生成
+	graphicPipelineState_ = nullptr;
+	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
+		IID_PPV_ARGS(&graphicPipelineState_));
+	assert(SUCCEEDED(result));
+}
+
 void PSO::CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode) {
 
 
@@ -531,6 +728,23 @@ void PSO::CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE 
 	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
 		IID_PPV_ARGS(&graphicPipelineState_));
 	assert(SUCCEEDED(result));
+}
+
+void PSO::CreatePSO(PSOType psoType, ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode) {
+	switch (psoType) {
+	case PSOType::kObject3D:
+		CreatePSOForObject3D(device, dxc_, fillMode);
+		break;
+	case PSOType::kParticle:
+		CreatePSOForParticle(device, dxc_, fillMode);
+		break;
+	case PSOType::kSprite:
+		CreatePSOForSprite(device, dxc_, fillMode);
+		break;
+	case PSOType::kSkinningObject3D:
+		CreatePSOForSkinningObject3D(device, dxc_, fillMode);
+		break;
+	}
 }
 
 void PSO::UpdateImGui() {

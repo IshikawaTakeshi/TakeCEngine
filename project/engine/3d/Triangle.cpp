@@ -103,7 +103,7 @@ void Triangle::InitializeMaterialData(DirectXCommon* dxCommon) {
 
 void Triangle::Draw(DirectXCommon* dxCommon) {
 
-	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
+	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViews_); // VBVを設定
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定

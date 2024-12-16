@@ -110,6 +110,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="engine\Animation\Animator.cpp" />
     <ClCompile Include="engine\3d\AABB.cpp" />
+    <ClCompile Include="engine\Animation\SkinCluster.cpp" />
     <ClCompile Include="engine\math\Easing.cpp" />
     <ClCompile Include="engine\math\Quaternion.cpp" />
     <ClCompile Include="engine\scene\AbstractSceneFactory.cpp" />
@@ -135,7 +136,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\StringUtility.cpp" />
     <ClCompile Include="engine\io\Input.cpp" />
     <ClCompile Include="engine\3d\Material.cpp" />
-    <ClCompile Include="engine\3d\Mesh.cpp" />
+    <ClCompile Include="engine\3d\Mesh\Mesh.cpp" />
     <ClCompile Include="engine\base\DirectXShaderCompiler.cpp" />
     <ClCompile Include="engine\math\Vector3Math.cpp" />
     <ClCompile Include="engine\base\PipelineStateObject.cpp" />
@@ -168,6 +169,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Animation\Keyflame.h" />
     <ClInclude Include="engine\Animation\NodeAnimation.h" />
     <ClInclude Include="engine\Animation\Skeleton.h" />
+    <ClInclude Include="engine\Animation\SkinCluster.h" />
+    <ClInclude Include="engine\base\PSOType.h" />
     <ClInclude Include="engine\math\Easing.h" />
     <ClInclude Include="engine\math\Quaternion.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />
@@ -190,7 +193,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\base\DirectXShaderCompiler.h" />
     <ClInclude Include="engine\base\DirectXCommon.h" />
     <ClInclude Include="engine\base\Logger.h" />
-    <ClInclude Include="engine\3d\Mesh.h" />
+    <ClInclude Include="engine\3d\Mesh\Mesh.h" />
     <ClInclude Include="engine\3d\Material.h" />
     <ClInclude Include="engine\io\Input.h" />
     <ClInclude Include="engine\3d\ModelCommon.h" />
@@ -287,6 +290,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Resources\shaders\Particle.VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\SkinningObject3d.VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

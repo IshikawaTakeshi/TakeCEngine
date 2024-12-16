@@ -5,6 +5,7 @@
 #include "SrvManager.h"
 #include "TextureManager.h"
 #include "ModelCommon.h"
+#include "Mesh/Mesh.h"
 
 #include <fstream>
 #include <sstream>
@@ -30,6 +31,8 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirecto
 	animation_ = Animator::LoadAnimationFile(modelDirectoryPath, filePath);
 	//Skeleton作成
 	skeleton_ = CreateSkeleton(modelData_.rootNode);
+	//SkinCluster作成
+	skinCluster_.Create(modelCommon_->GetDirectXCommon()->GetDevice(), modelCommon_->GetSrvManager(), skeleton_, modelData_);
 
 	//メッシュ初期化
 	mesh_ = std::make_unique<Mesh>();
@@ -37,6 +40,7 @@ void Model::Initialize(ModelCommon* ModelCommon, const std::string& modelDirecto
 
 	//VertexResource
 	mesh_->InitializeVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+	mesh_->AddVertexBufferView(skinCluster_.influenceBufferView);
 	//indexResource
 	mesh_->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 	//MaterialResource
@@ -58,12 +62,17 @@ void Model::Update() {
 	//MEMO: 計測した時間を使って可変フレーム対応するのが望ましい
 	animationTime += 1.0f / 60.0f;
 
-	//最後まで行ったら最初からリピート再生する
-	animationTime = std::fmod(animationTime, animation_.duration);
-
 	//アニメーションの更新とボーンへの適用
 	ApplyAnimation();
+
+	//スケルトンの更新
 	UpdateSkeleton();
+
+	//SkinClusterの更新
+	skinCluster_.Update(skeleton_);
+
+	//最後まで行ったら最初からリピート再生する
+	animationTime = std::fmod(animationTime, animation_.duration);
 }
 
 //=============================================================================
@@ -72,6 +81,7 @@ void Model::Update() {
 
 void Model::UpdateSkeleton() {
 	//全てのJointを更新
+	int i = 0;
 	for (Joint& joint : skeleton_.joints) {
 
 		//ローカル行列を更新
@@ -85,6 +95,8 @@ void Model::UpdateSkeleton() {
 		} else { //親がいない場合は自身の行列をそのまま使う
 			joint.skeletonSpaceMatrix = joint.localMatrix;
 		}
+
+		i++;
 	}
 }
 
@@ -96,7 +108,8 @@ void Model::Draw() {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	commandList->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
+	// VBVを設定
+	mesh_->SetVertexBuffers(commandList, 0);
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
@@ -109,6 +122,33 @@ void Model::Draw() {
 	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
 }
 
+void Model::DrawForASkinningModel() {
+
+	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
+
+	D3D12_VERTEX_BUFFER_VIEW vbv[] = { mesh_->GetVertexBufferView(0),mesh_->GetVertexBufferView(1) };
+
+	// VBVを設定
+	commandList->IASetVertexBuffers(0, 2, vbv);
+	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//materialCBufferの場所を指定
+	commandList->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
+
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(7, skinCluster_.useSrvIndex);
+	//IBVの設定
+	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
+	//DrawCall
+	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
+}
+
+void Model::DrawSkeleton() {
+
+
+}
+
 //=============================================================================
 // パーティクル用描画処理
 //=============================================================================
@@ -116,7 +156,8 @@ void Model::Draw() {
 void Model::DrawForParticle(UINT instanceCount_) {
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	commandList->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
+	// VBVを設定
+	mesh_->SetVertexBuffers(commandList, 0); 
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
@@ -127,16 +168,17 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
 }
 
-void Model::DrawSkeleton() {
-
-
-}
+//void Model::DrawSkeleton() {
+//
+//
+//}
 
 //=============================================================================
 // アニメーション適用
 //=============================================================================
 
 void Model::ApplyAnimation() {
+	int i = 0;
 	for (Joint& joint : skeleton_.joints) {
 		//対象のJointのAnimationがあれば、値の適用を行う。
 		if (auto it = animation_.nodeAnimations.find(joint.name); it != animation_.nodeAnimations.end()) {
@@ -144,8 +186,10 @@ void Model::ApplyAnimation() {
 			joint.transform.scale = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
 			joint.transform.rotate = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
 			joint.transform.translate = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
-			joint.localMatrix = MatrixMath::MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
+			//joint.localMatrix = MatrixMath::MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
+		
 		}
+		i++;
 	}
 }
 
@@ -183,13 +227,39 @@ ModelData Model::LoadModelFile(const std::string& modelDirectoryPath, const std:
 			aiFace& face = mesh->mFaces[faceIndex];
 			assert(face.mNumIndices == 3); //三角形以外はエラー
 
-			//Indice解析
+			//Indices解析
 			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
 				uint32_t indicesIndex = face.mIndices[element];
 				modelData_.indices.push_back(indicesIndex);
-			}
+			}		
 		}
 
+		//boneの解析
+		for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+			aiBone* bone = mesh->mBones[boneIndex];
+			std::string jointwName = bone->mName.C_Str();
+			JointWeightData& jointWeightData = modelData_.skinClusterData[jointwName];
+
+			//BindPoseMatrixに戻す
+			aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
+			aiVector3D scale, translate;
+			aiQuaternion rotate;
+
+			//成分の抽出
+			bindPoseMatrixAssimp.Decompose(scale, rotate, translate);
+
+			//左手系のBindPoseMatrixの作成
+			Matrix4x4 bindPoseMatrix = MatrixMath::MakeAffineMatrix(
+				{ scale.x,scale.y,scale.z }, { rotate.x,-rotate.y,-rotate.z,rotate.w }, { -translate.x,translate.y,translate.z });
+			jointWeightData.inverseBindPoseMatrix = MatrixMath::Inverse(bindPoseMatrix);
+
+			//Weightの解析
+			for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+
+				//InverceBindPoseMatrixの作成
+				jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight, bone->mWeights[weightIndex].mVertexId });
+			}
+		}
 	}
 
 	//materialの解析
@@ -282,6 +352,21 @@ Skeleton Model::CreateSkeleton(const Node& rootNode) {
 	//名前とindexのマッピングを行いアクセスしやすくする
 	for (const Joint& joint : skeleton.joints) {
 		skeleton.jointMap.emplace(joint.name, joint.index);
+	}
+
+	for (Joint& joint : skeleton_.joints) {
+
+		//ローカル行列を更新
+		joint.localMatrix = MatrixMath::MakeAffineMatrix(
+			joint.transform.scale,
+			joint.transform.rotate,
+			joint.transform.translate);
+
+		if (joint.parent) { //親がいる場合親の行列を掛ける
+			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton_.joints[*joint.parent].skeletonSpaceMatrix;
+		} else { //親がいない場合は自身の行列をそのまま使う
+			joint.skeletonSpaceMatrix = joint.localMatrix;
+		}
 	}
 
 	return skeleton;

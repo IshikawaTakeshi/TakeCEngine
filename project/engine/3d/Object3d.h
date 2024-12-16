@@ -1,16 +1,21 @@
 #pragma once
-#include "ResourceDataStructure.h"
-#include "Transform.h"
-#include "TransformMatrix.h"
 #include <d3d12.h>
 #include <wrl.h>
+
+#include "ResourceDataStructure.h"
+
+#include "Transform.h"
+#include "TransformMatrix.h"
+#include "PSOType.h"
 
 class Model;
 class Camera;
 class Object3dCommon;
 class Object3d {
+public:
 
-public: // publicメンバ関数
+	//エイリアステンプレート
+	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 	Object3d() = default;
 	~Object3d();
@@ -33,6 +38,7 @@ public: // publicメンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
+	void DrawForASkinningModel();
 
 public: //getter
 
@@ -70,4 +76,7 @@ private: // privateメンバ変数
 	Matrix4x4 WorldInverseTransposeMatrix_;
 	//Camera
 	Camera* camera_ = nullptr;
+
+
+
 };

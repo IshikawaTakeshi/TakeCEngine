@@ -150,7 +150,7 @@
     <ClCompile Include="engine\3d\Model.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Mesh.cpp">
+    <ClCompile Include="engine\3d\Mesh\Mesh.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="engine\math\MatrixMath.cpp">
@@ -243,6 +243,9 @@
     <ClCompile Include="engine\math\Easing.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\Animation\SkinCluster.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\base\DirectXCommon.h">
@@ -296,7 +299,7 @@
     <ClInclude Include="engine\3d\Material.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Mesh.h">
+    <ClInclude Include="engine\3d\Mesh\Mesh.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Model.h">
@@ -437,6 +440,12 @@
     <ClInclude Include="engine\Animation\Skeleton.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="engine\Animation\SkinCluster.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\PSOType.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
@@ -491,5 +500,6 @@
     <FxCompile Include="Resources\shaders\Object3d.VS.hlsl" />
     <FxCompile Include="Resources\shaders\Sprite.PS.hlsl" />
     <FxCompile Include="Resources\shaders\Sprite.VS.hlsl" />
+    <FxCompile Include="Resources\shaders\SkinningObject3d.VS.hlsl" />
   </ItemGroup>
 </Project>

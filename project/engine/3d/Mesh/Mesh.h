@@ -1,7 +1,6 @@
 #pragma once
 #include "ResourceDataStructure.h"
 #include "Material.h"
-#include <string>
 #include <d3d12.h>
 #include <wrl.h>
 #include <memory>
@@ -13,15 +12,17 @@ public:
 	Mesh() = default;
 	~Mesh();
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	void InitializeMesh(DirectXCommon* dxCommon,const std::string& filePath);
+	void InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath);
 
 	/// <summary>
-	/// 更新処理
-	/// </summary>
-	//void Update();
+		/// 描画処理時に使用する頂点バッファを設定
+		/// </summary>
+		/// <param name="commandList"></param>
+		/// <param name="startSlot"></param>
+	void SetVertexBuffers(ID3D12GraphicsCommandList* commandList, UINT startSlot);
+
+	void AddVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vbv);
+
 
 	//================================= VertexBufferResource ==================================//
 
@@ -33,7 +34,7 @@ public:
 	/// <summary>
 	/// スプライトの頂点バッファリソース初期化
 	/// </summary>
-	void InitializeVertexResourceSprite(ID3D12Device* device,Vector2 anchorPoint);
+	void InitializeVertexResourceSprite(ID3D12Device* device, Vector2 anchorPoint);
 
 	/// <summary>
 	/// 三角形の頂点バッファリソース初期化
@@ -41,19 +42,10 @@ public:
 	void InitializeVertexResourceTriangle(ID3D12Device* device);
 
 	/// <summary>
-	/// objモデルの頂点バッファリソース初期化
+	/// モデルの頂点バッファリソース初期化
 	/// </summary>
 	/// <param name="device"></param>
-	void InitializeVertexResourceModel(ID3D12Device* device,ModelData modelData);
-
-	void InitializeVertexResourceAABB(ID3D12Device* device);
-
-	/// <summary>
-	/// 頂点バッファビューの取得
-	/// </summary>
-	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return vertexBufferView_; }
-	ID3D12Resource* GetVertexResource() { return vertexResource_.Get(); }
-
+	void InitializeVertexResourceModel(ID3D12Device* device, ModelData modelData);
 
 	//================================= IndexBufferResource ==================================//
 
@@ -67,17 +59,21 @@ public:
 	/// </summary>
 	void InitializeIndexResourceSprite(ID3D12Device* device);
 
-	void InitializeIndexResourceAABB(ID3D12Device* device);
-
 	void InitializeIndexResourceModel(ID3D12Device* device, ModelData modelData);
 
-	/// <summary>
+
+public: //getter
+	
+	/// 頂点リソースの取得
+	ID3D12Resource* GetVertexResource() { return vertexResource_.Get(); }
+
+	/// 頂点バッファビューの取得
+	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView(int num) const { return vertexBufferViews_[num]; }
+
 	/// インデックスバッファビューの取得
-	/// </summary>
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() { return indexBufferView_; }
 
-	//================================= MaterialBufferResource ==================================//
-
+	/// マテリアルの取得
 	Material* GetMaterial() { return material_.get(); }
 
 public:
@@ -85,19 +81,16 @@ public:
 	//球体の分割数
 	static inline const uint32_t kSubdivision = 16;
 
-private:
+protected:
 
 	//マテリアル
 	std::unique_ptr<Material> material_ = nullptr;
 
 	//頂点バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
-	
-	//頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+	std::vector<D3D12_VERTEX_BUFFER_VIEW> vertexBufferViews_;
 
 	//IndexBufferView用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
-
 };

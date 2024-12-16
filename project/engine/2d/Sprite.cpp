@@ -1,7 +1,6 @@
 #include "Sprite.h"
 #include "SpriteCommon.h"
 #include "DirectXCommon.h"
-#include "Mesh.h"
 #include "Material.h"
 #include "MatrixMath.h"
 #include "TextureManager.h"
@@ -21,7 +20,7 @@ Sprite::~Sprite() {
 	
 	
 	wvpResource_.Reset();
-	delete mesh_;
+	mesh_.reset();
 	spriteCommon_ = nullptr;
 	
 	
@@ -35,7 +34,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	spriteCommon_ = spriteCommon;
 	
 	//メッシュ初期化
-	mesh_ = new Mesh();
+	mesh_ = std::make_unique<Mesh>();
 	mesh_->InitializeMesh(spriteCommon_->GetDirectXCommon(),filePath);
 	//vertexResource初期化
 	mesh_->InitializeVertexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice(),anchorPoint_);
@@ -183,7 +182,7 @@ void Sprite::AdjustTextureSize() {
 #pragma region 描画処理
 void Sprite::Draw() {
 	//spriteの描画。
-	spriteCommon_->GetDirectXCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &mesh_->GetVertexBufferView()); // VBVを設定
+	mesh_->SetVertexBuffers(spriteCommon_->GetDirectXCommon()->GetCommandList(), 0);
 	//materialCBufferの場所を指定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(
 		0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
