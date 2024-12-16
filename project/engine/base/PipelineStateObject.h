@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <array>
 
+#include "PSOType.h"
+
 class DXC;
 class PSO {
 
@@ -14,6 +16,7 @@ class PSO {
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
 public:
+
 
 	///	エイリアステンプレート
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
@@ -27,10 +30,6 @@ public:
 	PSO() = default;
 	~PSO();
 
-	/// <summary>
-	/// 開放処理
-	/// </summary>
-	//void Finalize();
 
 
 	void CreateRootSignatureForSprite(ID3D12Device* device);
@@ -52,7 +51,7 @@ public:
 	/// インプットレイアウト初期化
 	/// </summary>
 	void CreateInputLayout();
-	//void CreateInputLayoutForSkinningObject();
+	void CreateInputLayoutForSkinningObject();
 
 	/// <summary>
 	/// ブレンドステート初期化
@@ -73,6 +72,8 @@ public:
 	void CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 	void CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 	void CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+	void CreatePSO(PSOType psoType, ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+
 
 	void UpdateImGui();
 
@@ -114,8 +115,8 @@ private:
 	ComPtr<ID3D12RootSignature> rootSignature_;
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	//InputLayout
-	std::array<D3D12_INPUT_ELEMENT_DESC,5> inputElementDescs_ = {};
-	//D3D12_INPUT_ELEMENT_DESC inputElementDescsForSkinningObject_[3] = {};
+	std::array<D3D12_INPUT_ELEMENT_DESC,3> inputElementDescs_ = {};
+	std::array < D3D12_INPUT_ELEMENT_DESC,5> inputElementDescsForSkinningObject_ = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};

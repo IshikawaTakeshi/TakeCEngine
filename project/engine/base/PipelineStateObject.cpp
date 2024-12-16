@@ -3,6 +3,7 @@
 #include "DirectXCommon.h"
 #include "DirectXShaderCompiler.h"
 #include "ImGuiManager.h"
+
 #include <cassert>
 
 PSO::~PSO() {
@@ -207,14 +208,14 @@ void PSO::CreateRootSignatureForSkinnedObject3D(ID3D12Device* device) {
 	rootParametersForSkinningObject3d_[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParametersForSkinningObject3d_[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
 	rootParametersForSkinningObject3d_[6].Descriptor.ShaderRegister = 4; //レジスタ番号4
-	//.7
+	//.7 Well
 	rootParametersForSkinningObject3d_[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
 	rootParametersForSkinningObject3d_[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; //PixelShaderで使う
 	rootParametersForSkinningObject3d_[7].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
 	rootParametersForSkinningObject3d_[7].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
 
-	descriptionRootSignature_.pParameters = rootParametersForObject3d_; //rootParameter配列へのポインタ
-	descriptionRootSignature_.NumParameters = _countof(rootParametersForObject3d_); //配列の長さ
+	descriptionRootSignature_.pParameters = rootParametersForSkinningObject3d_; //rootParameter配列へのポインタ
+	descriptionRootSignature_.NumParameters = _countof(rootParametersForSkinningObject3d_); //配列の長さ
 
 	//Samplerの設定
 	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
@@ -331,56 +332,44 @@ void PSO::CreateInputLayout() {
 	inputElementDescs_[2].SemanticIndex = 0;
 	inputElementDescs_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	inputElementDescs_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	//	//weight
-	inputElementDescs_[3].SemanticName = "WEIGHT";
-	inputElementDescs_[3].SemanticIndex = 0;
-	inputElementDescs_[3].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	inputElementDescs_[3].InputSlot = 1; //1番目のSlotのVBVだと伝える
-	inputElementDescs_[3].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	//index
-	inputElementDescs_[4].SemanticName = "INDEX";
-	inputElementDescs_[4].SemanticIndex = 0;
-	inputElementDescs_[4].Format = DXGI_FORMAT_R32G32B32A32_SINT;
-	inputElementDescs_[4].InputSlot = 1;
-	inputElementDescs_[4].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
 	inputLayoutDesc_.pInputElementDescs = inputElementDescs_.data();
 	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescs_.size());
 }
-//
-//void PSO::CreateInputLayoutForSkinningObject() {
-//
-//	//position
-//	inputElementDescsForSkinningObject_[0].SemanticName = "POSITION";
-//	inputElementDescsForSkinningObject_[0].SemanticIndex = 0;
-//	inputElementDescsForSkinningObject_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-//	inputElementDescsForSkinningObject_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-//	//texcoord
-//	inputElementDescsForSkinningObject_[1].SemanticName = "TEXCOORD";
-//	inputElementDescsForSkinningObject_[1].SemanticIndex = 0;
-//	inputElementDescsForSkinningObject_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-//	inputElementDescsForSkinningObject_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-//	//normal
-//	inputElementDescsForSkinningObject_[2].SemanticName = "NORMAL";
-//	inputElementDescsForSkinningObject_[2].SemanticIndex = 0;
-//	inputElementDescsForSkinningObject_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-//	inputElementDescsForSkinningObject_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-//	//weight
-//	inputElementDescsForSkinningObject_[3].SemanticName = "WEIGHT";
-//	inputElementDescsForSkinningObject_[3].SemanticIndex = 0;
-//	inputElementDescsForSkinningObject_[3].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-//	inputElementDescsForSkinningObject_[3].InputSlot = 1; //1番目のSlotのVBVだと伝える
-//	inputElementDescsForSkinningObject_[3].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-//	//index
-//	inputElementDescsForSkinningObject_[4].SemanticName = "INDEX";
-//	inputElementDescsForSkinningObject_[4].SemanticIndex = 0;
-//	inputElementDescsForSkinningObject_[4].Format = DXGI_FORMAT_R32G32B32A32_SINT;
-//	inputElementDescsForSkinningObject_[4].InputSlot = 1;
-//	inputElementDescsForSkinningObject_[4].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-//
-//	inputLayoutDesc_.pInputElementDescs = inputElementDescs_;
-//	inputLayoutDesc_.NumElements = _countof(inputElementDescs_);
-//}
+
+void PSO::CreateInputLayoutForSkinningObject() {
+
+	//position
+	inputElementDescsForSkinningObject_[0].SemanticName = "POSITION";
+	inputElementDescsForSkinningObject_[0].SemanticIndex = 0;
+	inputElementDescsForSkinningObject_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElementDescsForSkinningObject_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	//texcoord
+	inputElementDescsForSkinningObject_[1].SemanticName = "TEXCOORD";
+	inputElementDescsForSkinningObject_[1].SemanticIndex = 0;
+	inputElementDescsForSkinningObject_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputElementDescsForSkinningObject_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	//normal
+	inputElementDescsForSkinningObject_[2].SemanticName = "NORMAL";
+	inputElementDescsForSkinningObject_[2].SemanticIndex = 0;
+	inputElementDescsForSkinningObject_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputElementDescsForSkinningObject_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	//weight
+	inputElementDescsForSkinningObject_[3].SemanticName = "WEIGHT";
+	inputElementDescsForSkinningObject_[3].SemanticIndex = 0;
+	inputElementDescsForSkinningObject_[3].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElementDescsForSkinningObject_[3].InputSlot = 1; //1番目のSlotのVBVだと伝える
+	inputElementDescsForSkinningObject_[3].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	//index
+	inputElementDescsForSkinningObject_[4].SemanticName = "INDEX";
+	inputElementDescsForSkinningObject_[4].SemanticIndex = 0;
+	inputElementDescsForSkinningObject_[4].Format = DXGI_FORMAT_R32G32B32A32_SINT;
+	inputElementDescsForSkinningObject_[4].InputSlot = 1;
+	inputElementDescsForSkinningObject_[4].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+	inputLayoutDesc_.pInputElementDescs = inputElementDescsForSkinningObject_.data();
+	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescsForSkinningObject_.size());
+}
 
 //=============================================================================
 // BlendStateの生成
@@ -594,7 +583,7 @@ void PSO::CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FI
 	/// ルートシグネチャ初期化
 	CreateRootSignatureForSkinnedObject3D(device_);
 	/// インプットレイアウト初期化
-	CreateInputLayout();
+	CreateInputLayoutForSkinningObject();
 	/// ブレンドステート初期化
 	CreateBlendStateForObject3d();
 	/// ラスタライザステート初期化
@@ -739,6 +728,23 @@ void PSO::CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE 
 	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
 		IID_PPV_ARGS(&graphicPipelineState_));
 	assert(SUCCEEDED(result));
+}
+
+void PSO::CreatePSO(PSOType psoType, ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode) {
+	switch (psoType) {
+	case PSOType::kObject3D:
+		CreatePSOForObject3D(device, dxc_, fillMode);
+		break;
+	case PSOType::kParticle:
+		CreatePSOForParticle(device, dxc_, fillMode);
+		break;
+	case PSOType::kSprite:
+		CreatePSOForSprite(device, dxc_, fillMode);
+		break;
+	case PSOType::kSkinningObject3D:
+		CreatePSOForSkinningObject3D(device, dxc_, fillMode);
+		break;
+	}
 }
 
 void PSO::UpdateImGui() {

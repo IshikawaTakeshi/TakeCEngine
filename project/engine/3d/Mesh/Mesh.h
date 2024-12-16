@@ -67,6 +67,9 @@ public: //getter
 	/// 頂点リソースの取得
 	ID3D12Resource* GetVertexResource() { return vertexResource_.Get(); }
 
+	/// 頂点バッファビューの取得
+	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView(int num) const { return vertexBufferViews_[num]; }
+
 	/// インデックスバッファビューの取得
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() { return indexBufferView_; }
 

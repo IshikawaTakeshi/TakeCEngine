@@ -45,6 +45,10 @@ public:
 	/// </summary>
 	void Draw();
 
+	void DrawForASkinningModel();
+
+	void DrawSkeleton();
+
 	/// <summary>
 	/// パーティクル描画
 	/// </summary>
@@ -103,6 +107,7 @@ public: //ゲッター
 
 	//Animationの取得
 	Animation& GetAnimation() { return animation_; }
+
 
 	//テクスチャファイルパスの取得
 	const std::string& GetTextureFilePath() const { return modelData_.material.textureFilePath; }

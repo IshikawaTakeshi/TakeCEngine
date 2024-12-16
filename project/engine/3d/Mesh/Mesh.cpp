@@ -13,6 +13,7 @@ void Mesh::InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath) 
 
 	material_ = std::make_unique<Material>();
 	material_->InitializeTexture(dxCommon, filePath);
+	vertexBufferViews_.resize(1);
 }
 
 
@@ -23,7 +24,7 @@ void Mesh::SetVertexBuffers(ID3D12GraphicsCommandList* commandList, UINT startSl
 }
 
 void Mesh::AddVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vbv) {
-		vertexBufferViews_.push_back(vbv);
+	vertexBufferViews_.push_back(vbv);
 }
 
 void Mesh::InitializeVertexResourceSphere(ID3D12Device* device) {

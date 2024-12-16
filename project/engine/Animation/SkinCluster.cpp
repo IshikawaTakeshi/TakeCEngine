@@ -9,18 +9,19 @@ void SkinCluster::Create(
 	const Skeleton& skeleton, const ModelData& modelData) {
 
 	//palette用のReosurce確保
-	paletteResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(WellForGPU) * modelData.vertices.size());
+	//MEMO:sizeInBytesはWellForGPUのサイズ×ジョイント数
+	paletteResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(WellForGPU) * skeleton.joints.size());
 	WellForGPU* mappedPaletteData = nullptr;
 	paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPaletteData));
-	mappedPalette = { mappedPaletteData, modelData.vertices.size() };
+	mappedPalette = { mappedPaletteData, skeleton.joints.size() };
 	//paletteのSRVのIndexを取得
-	uint32_t srvIndex = srvManager->Allocate();
-	paletteSrvHandle.first = srvManager->GetSrvDescriptorHandleCPU(srvIndex);
-	paletteSrvHandle.second = srvManager->GetSrvDescriptorHandleGPU(srvIndex);
+	useSrvIndex = srvManager->Allocate();
+	paletteSrvHandle.first = srvManager->GetSrvDescriptorHandleCPU(useSrvIndex);
+	paletteSrvHandle.second = srvManager->GetSrvDescriptorHandleGPU(useSrvIndex);
 
 	//paletteのsrv作成
 	srvManager->CreateSRVforStructuredBuffer(
-		UINT(skeleton.joints.size()),sizeof(WellForGPU),paletteResource.Get(),srvIndex);
+		UINT(skeleton.joints.size()),sizeof(WellForGPU),paletteResource.Get(),useSrvIndex);
 
 	//influence用のResource確保
 	influenceResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData.vertices.size());
@@ -50,7 +51,7 @@ void SkinCluster::Create(
 
 		inverseBindPoseMatrices[(*it).second] = jointWeight.second.inverseBindPoseMatrix;
 		for (const auto& vertexWeight : jointWeight.second.vertexWeights) {
-			VertexInfluence& currentInfluence = mappedInfluences[vertexWeight.vertexIndex];
+			auto& currentInfluence = mappedInfluences[vertexWeight.vertexIndex];
 			for (uint32_t i = 0; i < kNumMaxInfluence; i++) {
 
 				//Weightが0.0fの場合、WeightとJointのIndexを書き込む
@@ -65,8 +66,9 @@ void SkinCluster::Create(
 }
 
 void SkinCluster::Update(const Skeleton& skeleton) {
-	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); jointIndex++) {
+	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
 		assert(jointIndex < inverseBindPoseMatrices.size());
+
 		mappedPalette[jointIndex].skeletonSpaceMatrix =
 			inverseBindPoseMatrices[jointIndex] * skeleton.joints[jointIndex].skeletonSpaceMatrix;
 		mappedPalette[jointIndex].skeletonSpaceInvTransposeMatrix =
