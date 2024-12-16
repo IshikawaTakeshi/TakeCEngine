@@ -34,24 +34,24 @@ void GamePlayScene::Initialize() {
 	//Model読み込み
 	//ModelManager::GetInstance()->LoadModel("gltf","cube.gltf");
 	//ModelManager::GetInstance()->LoadModel("gltf","plane.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf","AnimatedCube.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf","simpleSkin.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf","AnimatedCube.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf","simpleSkin.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
 	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend","axis.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "terrain.obj");
+	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "terrain.obj");
 
 	//Sprite
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/uvChecker.png");
 
 	//Object3d
-	object3d = std::make_unique<Object3d>();
-	object3d->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
+	//object3d = std::make_unique<Object3d>();
+	//object3d->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
 
-	object3d1 = std::make_unique<Object3d>();
-	object3d1->Initialize(Object3dCommon::GetInstance(), "AnimatedCube.gltf");
+	//object3d1 = std::make_unique<Object3d>();
+	//object3d1->Initialize(Object3dCommon::GetInstance(), "AnimatedCube.gltf");
 
 	humanObject = std::make_unique<Object3d>();
 	humanObject->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
@@ -104,8 +104,8 @@ void GamePlayScene::Update() {
 
 	sprite_->Update(); 	//Spriteの更新
 	//3Dオブジェクトの更新
-	object3d->Update(); 
-	object3d1->Update();
+	//object3d->Update(); 
+	//object3d1->Update();
 	humanObject->Update();
 	//パーティクル発生器の更新
 	particleEmitter1_->Update(); 
@@ -130,8 +130,8 @@ void GamePlayScene::Draw() {
 	sprite_->Draw();              //スプライトの描画
 
 	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
-	object3d->Draw();             //3Dオブジェクトの描画
-	object3d1->Draw();
+	//object3d->Draw();             //3Dオブジェクトの描画
+	//object3d1->Draw();
 
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理
 	humanObject->DrawForASkinningModel();

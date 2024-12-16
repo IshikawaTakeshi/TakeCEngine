@@ -25,12 +25,9 @@ Object3d::~Object3d() {
 void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 	object3dCommon_ = object3dCommon;
 
-
-
 	//モデルの設定
 	SetModel(filePath);
 	model_->GetMesh()->GetMaterial()->SetEnableLighting(true);
-
 
 	//TransformationMatrix用のResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
@@ -38,8 +35,6 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
 	//単位行列を書き込んでおく
 	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
-
-
 
 	//CPUで動かす用のTransform
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
@@ -85,7 +80,7 @@ void Object3d::Update() {
 	} 
 	else { //Animationがない場合
 		WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
-		TransformMatrixData_->World = model_->GetModelData().rootNode.localMatrix * worldMatrix_;
+		TransformMatrixData_->World = worldMatrix_;
 		TransformMatrixData_->WVP = model_->GetModelData().rootNode.localMatrix * WVPMatrix_;
 		TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 	}

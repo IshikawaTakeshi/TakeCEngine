@@ -40,7 +40,7 @@ Animation Animator::LoadAnimationFile(const std::string& directoryPath, const st
 			aiQuatKey& keyAssimp = NodeAnimationAssimp->mRotationKeys[keyIndex];
 			KeyflameQuaternion keyflame;
 			keyflame.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
-			keyflame.value = {keyAssimp.mValue.w, keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z};
+			keyflame.value = {keyAssimp.mValue.x, -keyAssimp.mValue.y, -keyAssimp.mValue.z, keyAssimp.mValue.w};
 			nodeAnimation.rotate.keyflames.push_back(keyflame);
 		}
 		//scale

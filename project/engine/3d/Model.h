@@ -47,6 +47,8 @@ public:
 
 	void DrawForASkinningModel();
 
+	void DrawSkeleton();
+
 	/// <summary>
 	/// パーティクル描画
 	/// </summary>

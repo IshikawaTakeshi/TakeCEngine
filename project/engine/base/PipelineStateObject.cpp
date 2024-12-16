@@ -208,7 +208,7 @@ void PSO::CreateRootSignatureForSkinnedObject3D(ID3D12Device* device) {
 	rootParametersForSkinningObject3d_[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParametersForSkinningObject3d_[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
 	rootParametersForSkinningObject3d_[6].Descriptor.ShaderRegister = 4; //レジスタ番号4
-	//.7
+	//.7 Well
 	rootParametersForSkinningObject3d_[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
 	rootParametersForSkinningObject3d_[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; //PixelShaderで使う
 	rootParametersForSkinningObject3d_[7].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
