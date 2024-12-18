@@ -33,8 +33,8 @@ struct SkinCluster {
 	uint32_t useSrvIndex;
 
 	void Create(const Microsoft::WRL::ComPtr<ID3D12Device>& device,SrvManager* srvManager,
-				const Skeleton& skeleton,const ModelData& modelData);
+				Skeleton* skeleton,const ModelData& modelData);
 
-	void Update(const Skeleton& skeleton);
+	void Update(Skeleton* skeleton);
 };
 

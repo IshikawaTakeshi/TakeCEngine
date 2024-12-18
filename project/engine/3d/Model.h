@@ -35,7 +35,7 @@ public:
 	/// </summary>
 	void Update();
 
-	void UpdateSkeleton();
+	//void UpdateSkeleton();
 
 	/// <summary>
 	/// 描画処理
@@ -44,7 +44,6 @@ public:
 
 	void DrawForASkinningModel();
 
-	void DrawSkeleton();
 
 	/// <summary>
 	/// パーティクル描画
@@ -52,26 +51,11 @@ public:
 	/// <param name="instanceCount_"></param>
 	void DrawForParticle(UINT instanceCount_);
 
-	//void DrawSkeleton();
-
 	/// <summary>
 	/// アニメーションの適用
 	/// </summary>
-	void ApplyAnimation();
+	//void ApplyAnimation();
 
-	/// <summary>
-	/// Skeletonの作成
-	/// </summary>
-	Skeleton CreateSkeleton(const Node& node);
-
-	/// <summary>
-	/// NodeからJointを作成
-	/// </summary>
-	/// <param name="node"></param>
-	/// <param name="parent"></param>
-	/// <param name="joints"></param>
-	/// <returns></returns>
-	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
 
 public: //ゲッター
 
@@ -79,7 +63,7 @@ public: //ゲッター
 	Mesh* GetMesh() { return mesh_.get(); }
 
 	//スケルトンの取得
-	Skeleton& GetSkeleton() { return skeleton_; }
+	Skeleton* GetSkeleton() { return skeleton_.get(); }
 
 	//ModelDataの取得
 	ModelData& GetModelData() { return modelData_; }
@@ -112,7 +96,7 @@ private:
 	//メッシュ
 	std::unique_ptr<Mesh> mesh_ = nullptr;
 	//スケルトン
-	Skeleton skeleton_;
+	std::unique_ptr<Skeleton> skeleton_;
 	//スキンクラスター
 	SkinCluster skinCluster_;
 
