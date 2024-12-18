@@ -40,8 +40,6 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	mesh_->InitializeVertexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice(),anchorPoint_);
 	//IndexResource初期化
 	mesh_->InitializeIndexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice());
-	//MaterialResource初期化
-	mesh_->GetMaterial()->InitializeMaterialResource(spriteCommon->GetDirectXCommon()->GetDevice());
 
 	//テクスチャ番号の検索と記録
 	filePath_ = filePath;

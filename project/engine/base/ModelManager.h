@@ -1,7 +1,15 @@
 #pragma once
+#include "ResourceDataStructure.h"
+
+//assimp
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include <map>
 #include <string>
 #include <memory>
+
 class Model;
 class ModelCommon;
 class SrvManager;
@@ -35,6 +43,16 @@ public:
 	/// </summary>
 	/// <param name="filePath">モデルのファイルパス</param>
 	Model* FindModel(const std::string& filePath);
+
+	/// <summary>
+/// objファイルを読む関数
+/// </summary>
+	ModelData LoadModelFile(const std::string& DirectoryPath, const std::string& filename);
+
+	/// <summary>
+	/// ノードの読み込み
+	/// </summary>
+	Node ReadNode(aiNode* rootNode);
 
 private:
 

@@ -23,7 +23,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void InitializeTexture(DirectXCommon* dxCommon, const std::string& filePath);
+	void Initialize(DirectXCommon* dxCommon, const std::string& filePath);
 
 	/// <summary>
 	/// 更新処理
