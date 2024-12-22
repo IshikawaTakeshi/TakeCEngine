@@ -69,7 +69,7 @@ public:
 	/// <param name="mipImages"></param>
 	/// <returns></returns>
 	[[nodiscard]]
-	void UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
+	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 
 public:
 
@@ -96,6 +96,7 @@ private:
 	struct TextureData {
 		DirectX::TexMetadata metadata; //テクスチャのメタデータ
 		ComPtr<ID3D12Resource> resource; //テクスチャリソース
+		ComPtr<ID3D12Resource> intermediateResource; //中間リソース
 		uint32_t srvIndex; //SRVインデックス
 		D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU; //CPUディスクリプタハンドル
 		D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU; //GPUディスクリプタハンドル
@@ -122,6 +123,8 @@ private:
 
 	//テクスチャデータのリスト
 	std::unordered_map<std::string, TextureData> textureDatas_;
+
+
 
 	SrvManager* srvManager_ = nullptr;
 

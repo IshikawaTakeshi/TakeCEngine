@@ -6,7 +6,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//leakCheckerの生成
 	D3DResourceLeakChecker* leakCheck = new D3DResourceLeakChecker;
 	//ゲームクラスの生成
-	TakeCFrameWork* game = new MyGame();
+	std::unique_ptr<TakeCFrameWork> game = std::make_unique<MyGame>();
 	//ゲームの実行
 	game->Run(L"LE2B_03_イシカワ_タケシ");
 	//leakCheckerの解放
