@@ -1,6 +1,7 @@
 #include "TitleScene.h"
 #include "GamePlayScene.h"
 #include "SceneManager.h"
+#include "ImGuiManager.h"
 
 void TitleScene::Initialize() {
 
@@ -46,16 +47,18 @@ void TitleScene::Update() {
 #ifdef _DEBUG
 	//ImGuiの更新
 	CameraManager::GetInstance()->UpdateImGui();
-	//sprite_->UpdateImGui(0);
 	titleObject->UpdateImGui(0);
+
+	ImGui::Begin("TitleScene");
+	ImGui::Text("TitleScene");
+	ImGui::Text("Press Enter to Start");
+	ImGui::End();
+	
 #endif // DEBUG
 
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
-
-	sprite_->Update();
-	titleObject->Update();
 
 	//シーン遷移
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
@@ -67,7 +70,7 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 
 	SpriteCommon::GetInstance()->PreDraw();
-	sprite_->Draw();
+
 	Object3dCommon::GetInstance()->PreDrawForObject3d();
-	titleObject->Draw();
+
 }

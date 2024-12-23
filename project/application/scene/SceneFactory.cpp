@@ -1,6 +1,7 @@
 #include "SceneFactory.h"
 #include "TitleScene.h"
 #include "GamePlayScene.h"
+#include "GameClearScene.h"
 
 std::shared_ptr<BaseScene> SceneFactory::CreateScene(const std::string& sceneName) {
 
@@ -10,6 +11,8 @@ std::shared_ptr<BaseScene> SceneFactory::CreateScene(const std::string& sceneNam
 		newScene = std::make_shared<TitleScene>();
 	} else if (sceneName == "GAMEPLAY") {
 		newScene = std::make_shared<GamePlayScene>();
-	} 
+	} else if(sceneName == "GAMECLEAR") {
+		newScene = std::make_shared<GameClearScene>();
+	}
 	return newScene;
 }

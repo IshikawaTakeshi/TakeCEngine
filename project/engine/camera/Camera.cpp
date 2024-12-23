@@ -14,7 +14,7 @@ void Camera::Initialize(ID3D12Device* device) {
 	fovX_ = 0.45f;
 	aspectRatio_ = float(WinApp::kClientWidth) / float(WinApp::kClientHeight);
 	nearClip_ = 0.1f;
-	farClip_ = 100.0f;
+	farClip_ = 500.0f;
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(fovX_, aspectRatio_, nearClip_, farClip_);
@@ -56,8 +56,6 @@ void Camera::Update() {
 	Matrix4x4 translationMatrix = MatrixMath::MakeTranslateMatrix(transform_.translate);
 	Matrix4x4 scaleMatrix = MatrixMath::MakeScaleMatrix(transform_.scale);
 
-
-
 	worldMatrix_ = scaleMatrix * rotationMatrix_ * translationMatrix;
 	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);
 
@@ -76,7 +74,16 @@ void Camera::Update() {
 #ifdef _DEBUG
 void Camera::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
+	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat("FovX", &fovX_, 0.01f);
+}
+
+void Camera::SetRotate(const Vector3& rotate) {
+	transform_.rotate = rotate;
+	rotationMatrix_ = MatrixMath::MakeRotateMatrix(transform_.rotate);
+	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);
+	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
 }
 
 #endif // DEBUG

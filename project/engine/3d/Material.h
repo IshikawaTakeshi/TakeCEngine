@@ -56,6 +56,8 @@ public: //セッター
 
 	void SetEnableLighting(bool enable) { materialData_->enableLighting = enable; }
 
+	void SetMaterialDataColor(Vector4 color) { materialData_->color = color; }
+
 private:
 
 

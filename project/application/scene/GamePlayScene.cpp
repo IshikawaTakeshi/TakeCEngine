@@ -4,6 +4,7 @@
 #include "TakeCFrameWork.h"
 #include "Vector3Math.h"
 #include "ImGuiManager.h"
+#include "Collision/CollisionManager.h"
 #include <format>
 #include <numbers>
 //====================================================================
@@ -15,16 +16,16 @@ void GamePlayScene::Initialize() {
 	//Camera0
 	camera0_ = std::make_shared<Camera>();
 	camera0_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	camera0_->SetTranslate({ 0.0f,4.0f,-20.0f });
-	camera0_->SetRotate({ 0.16f,0.0f,0.0f });
+	camera0_->SetTranslate({ 0.0f,75.0f,-20.0f });
+	camera0_->SetRotate({ 1.0f,0.0f,0.0f });
 	CameraManager::GetInstance()->AddCamera("Camera0", *camera0_);
 
-	//Camera1
-	camera1_ = std::make_shared<Camera>();
-	camera1_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	camera1_->SetTranslate({ 5.0f,0.0f,-1.0f });
-	camera1_->SetRotate({ 0.0f,-1.4f,0.0f });
-	CameraManager::GetInstance()->AddCamera("Camera1", *camera1_);
+	////Camera1
+	//camera1_ = std::make_shared<Camera>();
+	//camera1_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
+	//camera1_->SetTranslate({ 5.0f,0.0f,-1.0f });
+	//camera1_->SetRotate({ 0.0f,-1.4f,0.0f });
+	//CameraManager::GetInstance()->AddCamera("Camera1", *camera1_);
 
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
@@ -35,14 +36,20 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "terrain.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "lock.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "Player.obj");
 
 	//Sprite
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/uvChecker.png");
 
-	//Object3d
-	object3d = std::make_unique<Object3d>();
-	object3d->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
+	//player
+	player_ = std::make_unique<Player>();
+	player_->Initialize(Object3dCommon::GetInstance(), "Player.obj");
+
+	//enemy
+	enemy_ = std::make_unique<Enemy>();
+	enemy_->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
 
 }
 
@@ -66,9 +73,9 @@ void GamePlayScene::Update() {
 #ifdef _DEBUG
 	CameraManager::GetInstance()->UpdateImGui();
 	//sprite_->UpdateImGui(0);
-	Object3dCommon::GetInstance()->UpdateImGui();
-	object3d->UpdateImGui(0);
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	//Object3dCommon::GetInstance()->UpdateImGui();
+	//player_->UpdateImGui();
+	//TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
 #endif // DEBUG
 
@@ -76,18 +83,19 @@ void GamePlayScene::Update() {
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
 
-	sprite_->Update(); 	//Spriteの更新
+	//sprite_->Update(); 	//Spriteの更新
 	//3Dオブジェクトの更新
-	object3d->Update(); 
-
+	player_->Update(); 
+	enemy_->Update();
 	//パーティクル発生器の更新
 
-	TakeCFrameWork::GetParticleManager()->Update(); //パーティクルの更新
+	CollisionManager::GetInstance()->ClearCollider();
+	CheckAllCollisions();
 
 	//シーン遷移
-	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+	if (!enemy_->GetIsAlive()) {
 		//シーン切り替え依頼
-		SceneManager::GetInstance()->ChangeScene("TITLE");
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
 	}
 }
 
@@ -101,10 +109,31 @@ void GamePlayScene::Draw() {
 	sprite_->Draw();              //スプライトの描画
 
 	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
-	object3d->Draw();             //3Dオブジェクトの描画
-
+	player_->Draw();             //3Dオブジェクトの描画
+	enemy_->Draw();
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
+}
+
+
+void GamePlayScene::CheckAllCollisions() {
+
+	CollisionManager::GetInstance()->ClearCollider();
+
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullet();
+	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullet();
+
+	CollisionManager::GetInstance()->RegisterCollider(player_.get());
+	CollisionManager::GetInstance()->RegisterCollider(enemy_.get());
+
+	for (PlayerBullet* pBullet : playerBullets) {
+		CollisionManager::GetInstance()->RegisterCollider(pBullet);
+	}
+	for (EnemyBullet* eBullet : enemyBullets) {
+		CollisionManager::GetInstance()->RegisterCollider(eBullet);
+	}
+
+	CollisionManager::GetInstance()->CheckAllCollisions();
 }

@@ -17,6 +17,11 @@
 
 #include "Quaternion.h"
 
+//app
+#include "Player/Player.h"
+#include "Enemy/Enemy.h"
+
+
 
 class GamePlayScene : public BaseScene {
 public:
@@ -33,6 +38,11 @@ public:
 	//描画処理
 	void Draw() override;
 
+	/// <summary>
+/// すべての当たり判定を行う処理
+/// </summary>
+	void CheckAllCollisions();
+
 private:
 
 	// カメラ
@@ -40,6 +50,9 @@ private:
 	std::shared_ptr<Camera> camera1_ = nullptr;
 	//スプライト
 	std::unique_ptr<Sprite> sprite_ = nullptr;
-	//3Dオブジェクト
-	std::unique_ptr <Object3d> object3d = nullptr;
+	
+
+	//app
+	std::unique_ptr<Player> player_ = nullptr;
+	std::unique_ptr<Enemy> enemy_ = nullptr;
 };

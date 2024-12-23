@@ -37,7 +37,7 @@ public: //getter
 public: //setter
 
 	void SetTranslate(const Vector3& Translate) { transform_.translate = Translate; }
-	void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
+	void SetRotate(const Vector3& rotate);
 	void SetFovX(const float fovX) { fovX_ = fovX; }
 	void SetAspectRatio(const float aspectRatio) { aspectRatio_ = aspectRatio; }
 	void SetNearClip(const float nearClip) { nearClip_ = nearClip; }
