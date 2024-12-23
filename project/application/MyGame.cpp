@@ -1,5 +1,5 @@
 #include "MyGame.h"
-#include "SceneFactory.h"
+#include "scene/SceneFactory.h"
 
 //====================================================================
 //			初期化

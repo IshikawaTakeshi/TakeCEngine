@@ -11,8 +11,6 @@
 //====================================================================
 
 void GamePlayScene::Initialize() {
-	//サウンドデータ
-	soundData1 = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/fanfare.wav");
 
 	//Camera0
 	camera0_ = std::make_shared<Camera>();
@@ -32,40 +30,20 @@ void GamePlayScene::Initialize() {
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	//Model読み込み
-	//ModelManager::GetInstance()->LoadModel("gltf","cube.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf","plane.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf","AnimatedCube.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf","simpleSkin.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
 	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend","axis.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "terrain.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "terrain.obj");
 
 	//Sprite
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/uvChecker.png");
 
 	//Object3d
-	//object3d = std::make_unique<Object3d>();
-	//object3d->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
+	object3d = std::make_unique<Object3d>();
+	object3d->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
 
-	//object3d1 = std::make_unique<Object3d>();
-	//object3d1->Initialize(Object3dCommon::GetInstance(), "AnimatedCube.gltf");
-
-	humanObject = std::make_unique<Object3d>();
-	humanObject->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
-	humanObject->SetPosition({ 0.0f,1.0f,0.0f });
-
-	//CreateParticle
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Sphere", "sphere.obj");
-	particleEmitter1_ = std::make_unique<ParticleEmitter>();
-	particleEmitter2_ = std::make_unique<ParticleEmitter>();
-	particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },30, 0.5f);
-	particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },30, 0.5f);
-	particleEmitter1_->SetParticleName("Plane");
-	particleEmitter2_->SetParticleName("Sphere");
 }
 
 //====================================================================
@@ -90,10 +68,6 @@ void GamePlayScene::Update() {
 	//sprite_->UpdateImGui(0);
 	Object3dCommon::GetInstance()->UpdateImGui();
 	object3d->UpdateImGui(0);
-	object3d1->UpdateImGui(1);
-	humanObject->UpdateImGui(2);
-	particleEmitter1_->UpdateImGui();
-	particleEmitter2_->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
 #endif // DEBUG
@@ -104,12 +78,9 @@ void GamePlayScene::Update() {
 
 	sprite_->Update(); 	//Spriteの更新
 	//3Dオブジェクトの更新
-	//object3d->Update(); 
-	//object3d1->Update();
-	humanObject->Update();
+	object3d->Update(); 
+
 	//パーティクル発生器の更新
-	particleEmitter1_->Update(); 
-	particleEmitter2_->Update();
 
 	TakeCFrameWork::GetParticleManager()->Update(); //パーティクルの更新
 
@@ -130,11 +101,9 @@ void GamePlayScene::Draw() {
 	sprite_->Draw();              //スプライトの描画
 
 	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
-	//object3d->Draw();             //3Dオブジェクトの描画
-	//object3d1->Draw();
+	object3d->Draw();             //3Dオブジェクトの描画
 
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理
-	humanObject->DrawForASkinningModel();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画

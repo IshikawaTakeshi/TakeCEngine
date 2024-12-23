@@ -21,7 +21,7 @@
 #include "Sprite.h"
 #include "Sphere.h"
 #include "SrvManager.h"
-#include "SceneManager.h"
+#include "application/scene/SceneManager.h"
 #include "Transform.h"
 #include "Triangle.h"
 #include "Particle3d.h"
