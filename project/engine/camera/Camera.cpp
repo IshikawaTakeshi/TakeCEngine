@@ -9,8 +9,9 @@ Camera::~Camera() {}
 
 void Camera::Initialize(ID3D12Device* device) {
 	
-	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 75.0f, -50.0f} };
 	offset_ = { 0.0f, 0.0f, -25.0f };
+	initOffset_ = { 0.0f,80.0f,-50.0f };
 	fovX_ = 0.45f;
 	aspectRatio_ = float(WinApp::kClientWidth) / float(WinApp::kClientHeight);
 	nearClip_ = 0.1f;
@@ -48,8 +49,9 @@ void Camera::Update() {
 	}
 	//オフセットを考慮したワールド行列の計算
 	offsetDelta_.z += (float)Input::GetInstance()->GetWheel() * 0.01f;
+
+
 	offset_ = offsetDelta_;
-	
 	offset_ = MatrixMath::TransformNormal(offset_, rotationMatrix_);
 	transform_.translate = offset_;
 	

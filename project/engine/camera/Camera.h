@@ -42,6 +42,7 @@ public: //setter
 	void SetAspectRatio(const float aspectRatio) { aspectRatio_ = aspectRatio; }
 	void SetNearClip(const float nearClip) { nearClip_ = nearClip; }
 	void SetFarClip(const float farClip) { farClip_ = farClip; }
+	void SetOffset(const Vector3& offset) { offset_ = offset; }
 
 private:
 
@@ -51,6 +52,7 @@ private:
 
 	EulerTransform transform_;
 	Vector3 offset_;
+	Vector3 initOffset_;
 	Vector3 offsetDelta_;
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 viewMatrix_;

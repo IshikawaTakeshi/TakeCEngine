@@ -20,12 +20,6 @@ void GamePlayScene::Initialize() {
 	camera0_->SetRotate({ 1.0f,0.0f,0.0f });
 	CameraManager::GetInstance()->AddCamera("Camera0", *camera0_);
 
-	////Camera1
-	//camera1_ = std::make_shared<Camera>();
-	//camera1_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	//camera1_->SetTranslate({ 5.0f,0.0f,-1.0f });
-	//camera1_->SetRotate({ 0.0f,-1.4f,0.0f });
-	//CameraManager::GetInstance()->AddCamera("Camera1", *camera1_);
 
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
@@ -72,10 +66,13 @@ void GamePlayScene::Update() {
 	//ImGuiの更新
 #ifdef _DEBUG
 	CameraManager::GetInstance()->UpdateImGui();
-	//sprite_->UpdateImGui(0);
-	//Object3dCommon::GetInstance()->UpdateImGui();
-	//player_->UpdateImGui();
-	//TakeCFrameWork::GetParticleManager()->UpdateImGui();
+
+	ImGui::Begin("How to use");
+	ImGui::Text("Camera");
+	ImGui::Text("Rotate : Mouse Right Button Drag");
+	ImGui::Text("MoveXY : Mouse Middle Button Drag");
+	ImGui::Text("MoveZ : Mouse Wheel");
+	ImGui::End();
 
 #endif // DEBUG
 

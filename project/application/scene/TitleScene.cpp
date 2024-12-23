@@ -46,8 +46,8 @@ void TitleScene::Finalize() {
 void TitleScene::Update() {
 #ifdef _DEBUG
 	//ImGuiの更新
-	CameraManager::GetInstance()->UpdateImGui();
-	titleObject->UpdateImGui(0);
+	//CameraManager::GetInstance()->UpdateImGui();
+	//titleObject->UpdateImGui(0);
 
 	ImGui::Begin("TitleScene");
 	ImGui::Text("TitleScene");
