@@ -72,6 +72,10 @@ void GamePlayScene::Update() {
 	ImGui::Text("Rotate : Mouse Right Button Drag");
 	ImGui::Text("MoveXY : Mouse Middle Button Drag");
 	ImGui::Text("MoveZ : Mouse Wheel");
+	ImGui::Separator();
+	ImGui::Text("Player");
+	ImGui::Text("Move : W,A,S,D");
+	ImGui::Text("Shot : Space");
 	ImGui::End();
 
 #endif // DEBUG
