@@ -67,22 +67,34 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	if (filePathW.empty()) {
 		hr = DirectX::LoadFromWICFile(L"Resources/black.png", DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 		assert(SUCCEEDED(hr));
-	} else {
+
+	} else if(filePathW.ends_with(L".dds")){
+		hr = DirectX::LoadFromDDSFile(filePathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+		assert(SUCCEEDED(hr));
+
+	}else {
 		hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 		assert(SUCCEEDED(hr));
 	}
 
 	//ミップマップの作成
 	DirectX::ScratchImage mipImages{};
-	hr = DirectX::GenerateMipMaps(
-		image.GetImages(),
-		image.GetImageCount(),
-		image.GetMetadata(),
-		DirectX::TEX_FILTER_SRGB,
-		0, mipImages);
 
-	assert(SUCCEEDED(hr));
+	//圧縮フォーマットかどうかの判定
+	if (DirectX::IsCompressed(image.GetMetadata().format)) {
+		mipImages = std::move(image); //圧縮フォーマットの場合はそのまま使う
 
+	} else { //非圧縮フォーマットの場合はミップマップを作成
+
+		hr = DirectX::GenerateMipMaps(
+			image.GetImages(),
+			image.GetImageCount(),
+			image.GetMetadata(),
+			DirectX::TEX_FILTER_SRGB,
+			0, mipImages);
+
+		assert(SUCCEEDED(hr));
+	}
 	//テクスチャデータを追加して書き込む
 	TextureData& textureData = textureDatas_[filePath];
 
@@ -98,6 +110,7 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	
 	//metadataを基にSRVの設定
 	srvManager_->CreateSRVforTexture2D(
+		textureData.metadata.IsCubemap(),
 		textureData.metadata.format,
 		UINT(textureData.metadata.mipLevels),
 		textureData.resource.Get(),

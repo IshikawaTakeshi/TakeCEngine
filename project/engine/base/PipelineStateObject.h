@@ -51,6 +51,7 @@ public:
 	/// インプットレイアウト初期化
 	/// </summary>
 	void CreateInputLayout();
+	void CreateInputLayoutForSkyBox();
 	void CreateInputLayoutForSkinningObject();
 
 	/// <summary>
@@ -72,6 +73,7 @@ public:
 	void CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 	void CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 	void CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+	void CreatePSOForSkyBox(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 	void CreatePSO(PSOType psoType, ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 
 
@@ -97,6 +99,8 @@ public:
 	ID3D12PipelineState* GetGraphicPipelineState() const { return graphicPipelineState_.Get(); }
 
 private:
+
+	void SetGraphicPipelineStateDesc();
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///			privateメンバ変数

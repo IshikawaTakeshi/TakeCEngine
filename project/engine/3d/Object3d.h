@@ -67,7 +67,6 @@ private: // privateメンバ変数
 	//TransformationMatrix用の頂点データ
 	TransformMatrix* TransformMatrixData_ = nullptr;
 
-
 	//Transform
 	EulerTransform transform_{};
 	//TransformMatrix
@@ -76,7 +75,5 @@ private: // privateメンバ変数
 	Matrix4x4 WorldInverseTransposeMatrix_;
 	//Camera
 	Camera* camera_ = nullptr;
-
-
 
 };
