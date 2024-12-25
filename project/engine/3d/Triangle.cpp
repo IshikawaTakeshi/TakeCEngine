@@ -3,14 +3,9 @@
 #include "MatrixMath.h"
 #include "TextureManager.h"
 
-#pragma region imgui
 #ifdef _DEBUG
-#include "../externals/imgui/imgui.h"
-#include "../externals/imgui/imgui_impl_dx12.h"
-#include "../externals/imgui/imgui_impl_win32.h"
+#include "ImGuiManager.h"
 #endif // DEBUG
-
-#pragma endregion
 
 Triangle::~Triangle() {
 
@@ -20,8 +15,6 @@ Triangle::~Triangle() {
 }
 
 void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
-
-
 
 
 	//======================= transformationMatrix用のVertexResource ===========================//

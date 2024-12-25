@@ -51,6 +51,7 @@ public:
 	/// インプットレイアウト初期化
 	/// </summary>
 	void CreateInputLayout();
+	void CreateInputLayoutForSkyBox();
 	void CreateInputLayoutForSkinningObject();
 
 	/// <summary>
@@ -72,6 +73,7 @@ public:
 	void CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 	void CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 	void CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+	void CreatePSOForSkyBox(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 	void CreatePSO(PSOType psoType, ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 
 
@@ -98,6 +100,8 @@ public:
 
 private:
 
+	void SetGraphicPipelineStateDesc();
+
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///			privateメンバ変数
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -116,6 +120,7 @@ private:
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	//InputLayout
 	std::array<D3D12_INPUT_ELEMENT_DESC,3> inputElementDescs_ = {};
+	std::array<D3D12_INPUT_ELEMENT_DESC,2> inputElementDescsForSkyBox_ = {};
 	std::array < D3D12_INPUT_ELEMENT_DESC,5> inputElementDescsForSkinningObject_ = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_BLEND_DESC blendDesc_{};

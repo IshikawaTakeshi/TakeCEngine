@@ -9,7 +9,7 @@ Material::~Material() {
 	materialResource_.Reset();
 }
 
-void Material::InitializeTexture(DirectXCommon* dxCommon, const std::string& filePath) {
+void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath) {
 
 	//マテリアルリソース初期化
 	InitializeMaterialResource(dxCommon->GetDevice());

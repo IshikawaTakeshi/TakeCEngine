@@ -67,29 +67,41 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	if (filePathW.empty()) {
 		hr = DirectX::LoadFromWICFile(L"Resources/black.png", DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 		assert(SUCCEEDED(hr));
-	} else {
+
+	} else if(filePathW.ends_with(L".dds")){
+		hr = DirectX::LoadFromDDSFile(filePathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+		assert(SUCCEEDED(hr));
+
+	}else {
 		hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 		assert(SUCCEEDED(hr));
 	}
 
 	//ミップマップの作成
 	DirectX::ScratchImage mipImages{};
-	hr = DirectX::GenerateMipMaps(
-		image.GetImages(),
-		image.GetImageCount(),
-		image.GetMetadata(),
-		DirectX::TEX_FILTER_SRGB,
-		0, mipImages);
 
-	assert(SUCCEEDED(hr));
+	//圧縮フォーマットかどうかの判定
+	if (DirectX::IsCompressed(image.GetMetadata().format)) {
+		mipImages = std::move(image); //圧縮フォーマットの場合はそのまま使う
 
+	} else { //非圧縮フォーマットの場合はミップマップを作成
+
+		hr = DirectX::GenerateMipMaps(
+			image.GetImages(),
+			image.GetImageCount(),
+			image.GetMetadata(),
+			DirectX::TEX_FILTER_SRGB,
+			0, mipImages);
+
+		assert(SUCCEEDED(hr));
+	}
 	//テクスチャデータを追加して書き込む
 	TextureData& textureData = textureDatas_[filePath];
 
 	//テクスチャデータの設定
 	textureData.metadata = mipImages.GetMetadata();
 	textureData.resource = CreateTextureResource(textureData.metadata);
-	UploadTextureData(textureData.resource, mipImages);
+	textureData.intermediateResource = UploadTextureData(textureData.resource, mipImages);
 
 	//テクスチャデータの要素数番号をSRVのインデックスとして設定
 	textureData.srvIndex = srvManager_->Allocate();
@@ -98,6 +110,7 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	
 	//metadataを基にSRVの設定
 	srvManager_->CreateSRVforTexture2D(
+		textureData.metadata.IsCubemap(),
 		textureData.metadata.format,
 		UINT(textureData.metadata.mipLevels),
 		textureData.resource.Get(),
@@ -121,11 +134,9 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(con
 	resourceDesc.SampleDesc.Count = 1;
 	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metadata.dimension);
 
-	//利用するHeapの設定。非常に特殊な運用。
+	//利用するHeapの設定。VRAMを使う設定
 	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM; //細かい設定で行う
-	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK; //WritebackポリシーでCPUアクセス可能
-	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0; //プロセッサの近くに配置
+	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
 	HRESULT hr;
@@ -133,34 +144,47 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(con
 		&heapProperties, //Heapの設定
 		D3D12_HEAP_FLAG_NONE, //Heapの特殊な設定
 		&resourceDesc, //Resourceの設定
-		D3D12_RESOURCE_STATE_GENERIC_READ, //初回のResourceState.Textureは基本読むだけ
+		D3D12_RESOURCE_STATE_COPY_DEST, //データ転送される設定
 		nullptr, //Clear最適値。
-		IID_PPV_ARGS(&textureResource)
-	);
+		IID_PPV_ARGS(&textureResource));
+
 	assert(SUCCEEDED(hr));
 	return textureResource;
 }
 
-void TextureManager::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
+Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
 
-	//Meta情報を取得
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	//全MipMapについて
-	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
+	//サブリソースの作成
+	std::vector<D3D12_SUBRESOURCE_DATA> subresources;
+	DirectX::PrepareUpload(
+		dxCommon_->GetDevice(),
+		mipImages.GetImages(),
+		mipImages.GetImageCount(),
+		mipImages.GetMetadata(),
+		subresources);
 
-		//MipMapLevelを指定して各imageを取得
-		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
-		//Textureに転送
-		HRESULT hr;
-		hr = texture->WriteToSubresource(
-			UINT(mipLevel),
-			nullptr,
-			img->pixels,
-			UINT(img->rowPitch),
-			UINT(img->slicePitch)
-		);
-		assert(SUCCEEDED(hr));
-	}
+	//中間リソースのサイズの取得
+	uint64_t intermediateSize = GetRequiredIntermediateSize(texture.Get(),0,UINT(subresources.size()));
+
+	//中間リソースの作成
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = nullptr;
+	intermediateResource = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), intermediateSize);
+
+	//中間リソースにデータをコピー
+	UpdateSubresources(dxCommon_->GetCommandList(),texture.Get(),
+	intermediateResource.Get(),0,0,UINT(subresources.size()),subresources.data());
+
+	//Textureへ転送後に利用できるようにResourseStateを変更
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = texture.Get();
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+	dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
+
+	return intermediateResource;
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(const std::string& filePath) {

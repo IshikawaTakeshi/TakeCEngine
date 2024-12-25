@@ -5,5 +5,5 @@ enum  PSOType {
 	kObject3D,
 	kSkinningObject3D,
 	kParticle,
-
+	kSkyBox,
 };

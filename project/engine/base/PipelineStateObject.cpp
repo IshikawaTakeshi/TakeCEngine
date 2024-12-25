@@ -337,6 +337,25 @@ void PSO::CreateInputLayout() {
 	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescs_.size());
 }
 
+void PSO::CreateInputLayoutForSkyBox() {
+
+	//position
+	inputElementDescsForSkyBox_[0].SemanticName = "POSITION";
+	inputElementDescsForSkyBox_[0].SemanticIndex = 0;
+	inputElementDescsForSkyBox_[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputElementDescsForSkyBox_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+	//texcoord
+	inputElementDescsForSkyBox_[1].SemanticName = "TEXCOORD";
+	inputElementDescsForSkyBox_[1].SemanticIndex = 0;
+	inputElementDescsForSkyBox_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputElementDescsForSkyBox_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+	inputLayoutDesc_.pInputElementDescs = inputElementDescsForSkyBox_.data();
+	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescsForSkyBox_.size());
+
+}
+
 void PSO::CreateInputLayoutForSkinningObject() {
 
 	//position
@@ -452,7 +471,7 @@ void PSO::CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fi
 	);
 	assert(pixelShaderBlob_ != nullptr);
 
-#pragma region SetDepthStencilState
+#pragma region SetDepthStencilDesc
 	//Depthの機能を有効化
 	depthStencilDesc_.DepthEnable = true;
 	//書き込み
@@ -460,32 +479,11 @@ void PSO::CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fi
 	//比較関数はLessEqual。近ければ描画される
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
-	//DepthStencilの設定
-	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc_;
-	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-	graphicsPipelineStateDesc_.pRootSignature = rootSignature_.Get(); // RootSignature
-	graphicsPipelineStateDesc_.InputLayout = inputLayoutDesc_; // InputLayout
-
-	graphicsPipelineStateDesc_.VS = { vertexShaderBlob_->GetBufferPointer(),
-	vertexShaderBlob_->GetBufferSize() }; // VertexShader
-	graphicsPipelineStateDesc_.PS = { pixelShaderBlob_->GetBufferPointer(),
-	pixelShaderBlob_->GetBufferSize() }; // PixelShader
-
-	graphicsPipelineStateDesc_.BlendState = blendDesc_; // blendState
-	graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc_; // rasterizerState
-
 #pragma endregion
 
-	//書き込むRTVの情報
-	graphicsPipelineStateDesc_.NumRenderTargets = 1;
-	graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	//利用するトロポジ(形状)のタイプ。三角形
-	graphicsPipelineStateDesc_.PrimitiveTopologyType =
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	//どのように画面に色を打ち込むのかの設定
-	graphicsPipelineStateDesc_.SampleDesc.Count = 1;
-	graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	//GraphicPipelineStateDescの設定
+	SetGraphicPipelineStateDesc();
+
 	//実際に生成
 	graphicPipelineState_ = nullptr;
 	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
@@ -531,7 +529,7 @@ void PSO::CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE 
 	);
 	assert(pixelShaderBlob_ != nullptr);
 
-#pragma region SetDepthStencilState
+#pragma region SetDepthStencilDesc
 	//Depthの機能を有効化
 	depthStencilDesc_.DepthEnable = true;
 	//書き込み
@@ -539,32 +537,11 @@ void PSO::CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE 
 	//比較関数はLessEqual。近ければ描画される
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
-	//DepthStencilの設定
-	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc_;
-	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-	graphicsPipelineStateDesc_.pRootSignature = rootSignature_.Get(); // RootSignature
-	graphicsPipelineStateDesc_.InputLayout = inputLayoutDesc_; // InputLayout
-
-	graphicsPipelineStateDesc_.VS = { vertexShaderBlob_->GetBufferPointer(),
-	vertexShaderBlob_->GetBufferSize() }; // VertexShader
-	graphicsPipelineStateDesc_.PS = { pixelShaderBlob_->GetBufferPointer(),
-	pixelShaderBlob_->GetBufferSize() }; // PixelShader
-
-	graphicsPipelineStateDesc_.BlendState = blendDesc_; // blendState
-	graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc_; // rasterizerState
-
 #pragma endregion
 
-	//書き込むRTVの情報
-	graphicsPipelineStateDesc_.NumRenderTargets = 1;
-	graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	//利用するトロポジ(形状)のタイプ。三角形
-	graphicsPipelineStateDesc_.PrimitiveTopologyType =
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	//どのように画面に色を打ち込むのかの設定
-	graphicsPipelineStateDesc_.SampleDesc.Count = 1;
-	graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	//GraphicPipelineStateDescの設定
+	SetGraphicPipelineStateDesc();
+
 	//実際に生成
 	graphicPipelineState_ = nullptr;
 	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
@@ -610,40 +587,18 @@ void PSO::CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FI
 	);
 	assert(pixelShaderBlob_ != nullptr);
 
-#pragma region SetDepthStencilState
+#pragma region SetDepthStencilDesc
 	//Depthの機能を有効化
 	depthStencilDesc_.DepthEnable = true;
 	//書き込み
 	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	//比較関数はLessEqual。近ければ描画される
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-
-	//DepthStencilの設定
-	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc_;
-	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-	graphicsPipelineStateDesc_.pRootSignature = rootSignature_.Get(); // RootSignature
-	graphicsPipelineStateDesc_.InputLayout = inputLayoutDesc_; // InputLayout
-
-	graphicsPipelineStateDesc_.VS = { vertexShaderBlob_->GetBufferPointer(),
-	vertexShaderBlob_->GetBufferSize() }; // VertexShader
-	graphicsPipelineStateDesc_.PS = { pixelShaderBlob_->GetBufferPointer(),
-	pixelShaderBlob_->GetBufferSize() }; // PixelShader
-
-	graphicsPipelineStateDesc_.BlendState = blendDesc_; // blendState
-	graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc_; // rasterizerState
-
 #pragma endregion
 
-	//書き込むRTVの情報
-	graphicsPipelineStateDesc_.NumRenderTargets = 1;
-	graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	//利用するトロポジ(形状)のタイプ。三角形
-	graphicsPipelineStateDesc_.PrimitiveTopologyType =
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	//どのように画面に色を打ち込むのかの設定
-	graphicsPipelineStateDesc_.SampleDesc.Count = 1;
-	graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	//GraphicPipelineStateDescの設定
+	SetGraphicPipelineStateDesc();
+
 	//実際に生成
 	graphicPipelineState_ = nullptr;
 	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
@@ -652,7 +607,6 @@ void PSO::CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FI
 }
 
 void PSO::CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode) {
-
 
 	HRESULT result = S_FALSE;
 
@@ -668,8 +622,6 @@ void PSO::CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE 
 	CreateBlendStateForParticle();
 	/// ラスタライザステート初期化
 	CreateRasterizerState(fillMode);
-
-
 
 	//Shaderをコンパイル
 	//VS
@@ -692,37 +644,73 @@ void PSO::CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE 
 	);
 	assert(pixelShaderBlob_ != nullptr);
 
-#pragma region SetDepthStencilState
+#pragma region SetDepthStencilDesc
 
 	depthStencilDesc_.DepthEnable = true;                           //Depthの機能を有効化
 	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO; //書き込みをしない
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; //比較関数はLessEqual。近ければ描画される
 
-	//DepthStencilの設定
-	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc_;
-	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	graphicsPipelineStateDesc_.pRootSignature = rootSignature_.Get(); // RootSignature
-	graphicsPipelineStateDesc_.InputLayout = inputLayoutDesc_; // InputLayout
+#pragma endregion
 
-	graphicsPipelineStateDesc_.VS = { vertexShaderBlob_->GetBufferPointer(),
-	vertexShaderBlob_->GetBufferSize() }; // VertexShader
-	graphicsPipelineStateDesc_.PS = { pixelShaderBlob_->GetBufferPointer(),
-	pixelShaderBlob_->GetBufferSize() }; // PixelShader
+	//GraphicPipelineStateDescの設定
+	SetGraphicPipelineStateDesc();
+	
+	//実際に生成
+	graphicPipelineState_ = nullptr;
+	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
+		IID_PPV_ARGS(&graphicPipelineState_));
+	assert(SUCCEEDED(result));
+}
 
-	graphicsPipelineStateDesc_.BlendState = blendDesc_; // blendState
-	graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc_; // rasterizerState
+void PSO::CreatePSOForSkyBox(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode) {
+
+	HRESULT result = S_FALSE;
+
+	device_ = device;
+
+	itemCurrentIdx = 0;
+
+	/// ルートシグネチャ初期化
+	CreateRootSignatureForSprite(device_);
+	/// インプットレイアウト初期化
+	CreateInputLayoutForSkyBox();
+	/// ブレンドステート初期化
+	CreateBlendStateForSprite();
+	/// ラスタライザステート初期化
+	CreateRasterizerState(fillMode);
+
+	//Shaderをコンパイル
+	//VS
+	vertexShaderBlob_ = dxc_->CompileShader(
+		L"Resources/shaders/SkyBox.VS.hlsl",
+		L"vs_6_0",
+		dxc_->GetDxcUtils().Get(),
+		dxc_->GetDxcCompiler().Get(),
+		dxc_->GetIncludeHandler().Get()
+	);
+	assert(vertexShaderBlob_ != nullptr);
+
+	//PS
+	pixelShaderBlob_ = dxc_->CompileShader(
+		L"Resources/shaders/SkyBox.PS.hlsl",
+		L"ps_6_0",
+		dxc_->GetDxcUtils().Get(),
+		dxc_->GetDxcCompiler().Get(),
+		dxc_->GetIncludeHandler().Get()
+	);
+	assert(pixelShaderBlob_ != nullptr);
+
+#pragma region SetDepthStencilDesc
+
+	depthStencilDesc_.DepthEnable = true;                           //Depthの機能を有効化
+	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO; //書き込みをしない
+	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; //比較関数はLessEqual。近ければ描画される
 
 #pragma endregion
 
-	//書き込むRTVの情報
-	graphicsPipelineStateDesc_.NumRenderTargets = 1;
-	graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	//利用するトロポジ(形状)のタイプ。三角形
-	graphicsPipelineStateDesc_.PrimitiveTopologyType =
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	//どのように画面に色を打ち込むのかの設定
-	graphicsPipelineStateDesc_.SampleDesc.Count = 1;
-	graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	//GraphicPipelineStateDescの設定
+	SetGraphicPipelineStateDesc();
+
 	//実際に生成
 	graphicPipelineState_ = nullptr;
 	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
@@ -743,6 +731,9 @@ void PSO::CreatePSO(PSOType psoType, ID3D12Device* device, DXC* dxc_, D3D12_FILL
 		break;
 	case PSOType::kSkinningObject3D:
 		CreatePSOForSkinningObject3D(device, dxc_, fillMode);
+		break;
+	case PSOType::kSkyBox:
+		CreatePSOForSkyBox(device, dxc_, fillMode);
 		break;
 	}
 }
@@ -825,4 +816,41 @@ bool PSO::UpdateImGuiCombo() {
 	}
 
 	return changed;
+}
+
+void PSO::SetGraphicPipelineStateDesc() {
+
+	//DepthStencilの設定
+	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc_;
+	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	// RootSignature
+	graphicsPipelineStateDesc_.pRootSignature = rootSignature_.Get(); 
+
+	// InputLayout
+	graphicsPipelineStateDesc_.InputLayout = inputLayoutDesc_;
+
+	// VertexShader
+	graphicsPipelineStateDesc_.VS = { vertexShaderBlob_->GetBufferPointer(),
+	vertexShaderBlob_->GetBufferSize() }; 
+
+	// PixelShader
+	graphicsPipelineStateDesc_.PS = { pixelShaderBlob_->GetBufferPointer(),
+	pixelShaderBlob_->GetBufferSize() }; 
+
+	// blendState
+	graphicsPipelineStateDesc_.BlendState = blendDesc_; 
+
+	// rasterizerState
+	graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc_; 
+
+	//書き込むRTVの情報
+	graphicsPipelineStateDesc_.NumRenderTargets = 1;
+	graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	//利用するトロポジ(形状)のタイプ。三角形
+	graphicsPipelineStateDesc_.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+
+	//どのように画面に色を打ち込むのかの設定
+	graphicsPipelineStateDesc_.SampleDesc.Count = 1;
+	graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 }

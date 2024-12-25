@@ -2,10 +2,11 @@
 #include "BaseScene.h"
 
 #include "Audio.h"
+#include "Input.h"
 #include "Camera.h"
 #include "CameraManager.h"
-#include "Input.h"
 #include "ModelManager.h"
+#include "SkyBox/SkyBox.h"
 #include "Sprite.h"
 #include "Object3d.h"
 #include "Object3dCommon.h"
@@ -40,11 +41,12 @@ private:
 	// カメラ
 	std::shared_ptr<Camera> camera0_ = nullptr;
 	std::shared_ptr<Camera> camera1_ = nullptr;
+	//SkyBox
+	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 	//スプライト
 	std::unique_ptr<Sprite> sprite_ = nullptr;
 	//3Dオブジェクト
 	std::unique_ptr <Object3d> object3d = nullptr;
-	std::unique_ptr <Object3d> object3d1 = nullptr;
 	std::unique_ptr <Object3d> humanObject = nullptr;
 	//パーティクル発生器
 	std::unique_ptr<ParticleEmitter> particleEmitter1_ = nullptr;

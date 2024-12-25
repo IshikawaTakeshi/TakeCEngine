@@ -12,7 +12,7 @@ Mesh::~Mesh() {
 void Mesh::InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath) {
 
 	material_ = std::make_unique<Material>();
-	material_->InitializeTexture(dxCommon, filePath);
+	material_->Initialize(dxCommon, filePath);
 	vertexBufferViews_.resize(1);
 }
 

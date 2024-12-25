@@ -6,14 +6,14 @@
 
 void SkinCluster::Create(
 	const Microsoft::WRL::ComPtr<ID3D12Device>& device,SrvManager* srvManager,
-	const Skeleton& skeleton, const ModelData& modelData) {
+	Skeleton* skeleton, const ModelData& modelData) {
 
 	//palette用のReosurce確保
 	//MEMO:sizeInBytesはWellForGPUのサイズ×ジョイント数
-	paletteResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(WellForGPU) * skeleton.joints.size());
+	paletteResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(WellForGPU) * skeleton->GetJoints().size());
 	WellForGPU* mappedPaletteData = nullptr;
 	paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPaletteData));
-	mappedPalette = { mappedPaletteData, skeleton.joints.size() };
+	mappedPalette = { mappedPaletteData, skeleton->GetJoints().size() };
 	//paletteのSRVのIndexを取得
 	useSrvIndex = srvManager->Allocate();
 	paletteSrvHandle.first = srvManager->GetSrvDescriptorHandleCPU(useSrvIndex);
@@ -21,7 +21,7 @@ void SkinCluster::Create(
 
 	//paletteのsrv作成
 	srvManager->CreateSRVforStructuredBuffer(
-		UINT(skeleton.joints.size()),sizeof(WellForGPU),paletteResource.Get(),useSrvIndex);
+		UINT(skeleton->GetJoints().size()),sizeof(WellForGPU),paletteResource.Get(),useSrvIndex);
 
 	//influence用のResource確保
 	influenceResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData.vertices.size());
@@ -36,16 +36,16 @@ void SkinCluster::Create(
 	influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
 
 	//InverseBindPoseMatricesの保存領域の作成
-	inverseBindPoseMatrices.resize(skeleton.joints.size());
+	inverseBindPoseMatrices.resize(skeleton->GetJoints().size());
 	std::generate(inverseBindPoseMatrices.begin(), inverseBindPoseMatrices.end(), []() {
 		return MatrixMath::MakeIdentity4x4(); });
 
 	//ModelDataのSkinClusterの情報を元に、Influenceの中身を書き込む
 	for (const auto& jointWeight : modelData.skinClusterData) {
-		auto it = skeleton.jointMap.find(jointWeight.first);
+		auto it = skeleton->GetJointMap().find(jointWeight.first);
 
 		//Jointが見つからなかったらスキップ
-		if (it == skeleton.jointMap.end()) {
+		if (it == skeleton->GetJointMap().end()) {
 			continue;
 		}
 
@@ -65,12 +65,12 @@ void SkinCluster::Create(
 	}
 }
 
-void SkinCluster::Update(const Skeleton& skeleton) {
-	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
+void SkinCluster::Update(Skeleton* skeleton) {
+	for (size_t jointIndex = 0; jointIndex < skeleton->GetJoints().size(); ++jointIndex) {
 		assert(jointIndex < inverseBindPoseMatrices.size());
 
 		mappedPalette[jointIndex].skeletonSpaceMatrix =
-			inverseBindPoseMatrices[jointIndex] * skeleton.joints[jointIndex].skeletonSpaceMatrix;
+			inverseBindPoseMatrices[jointIndex] * skeleton->GetJoints()[jointIndex].skeletonSpaceMatrix;
 		mappedPalette[jointIndex].skeletonSpaceInvTransposeMatrix =
 			MatrixMath::Transpose(MatrixMath::Inverse(mappedPalette[jointIndex].skeletonSpaceMatrix));
 	}
