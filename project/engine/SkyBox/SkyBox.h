@@ -39,7 +39,6 @@ private: // privateメンバ変数
 	//RootSignature
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 
-
 	//モデル
 	Model* model_ = nullptr;
 

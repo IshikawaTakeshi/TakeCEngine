@@ -120,6 +120,7 @@ private:
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	//InputLayout
 	std::array<D3D12_INPUT_ELEMENT_DESC,3> inputElementDescs_ = {};
+	std::array<D3D12_INPUT_ELEMENT_DESC,2> inputElementDescsForSkyBox_ = {};
 	std::array < D3D12_INPUT_ELEMENT_DESC,5> inputElementDescsForSkinningObject_ = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_BLEND_DESC blendDesc_{};

@@ -32,26 +32,22 @@ void GamePlayScene::Initialize() {
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	//Model読み込み
-	//ModelManager::GetInstance()->LoadModel("gltf","cube.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf","plane.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf","AnimatedCube.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf","simpleSkin.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
-	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend","axis.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "terrain.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
+
+	//SkyBox
+	skyBox_ = std::make_unique<SkyBox>();
+	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
 
 	//Sprite
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/uvChecker.png");
 
 	//Object3d
-	//object3d = std::make_unique<Object3d>();
-	//object3d->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
-
-	//object3d1 = std::make_unique<Object3d>();
-	//object3d1->Initialize(Object3dCommon::GetInstance(), "AnimatedCube.gltf");
+	object3d = std::make_unique<Object3d>();
+	object3d->Initialize(Object3dCommon::GetInstance(), "plane.obj");
 
 	humanObject = std::make_unique<Object3d>();
 	humanObject->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
@@ -90,7 +86,6 @@ void GamePlayScene::Update() {
 	//sprite_->UpdateImGui(0);
 	Object3dCommon::GetInstance()->UpdateImGui();
 	object3d->UpdateImGui(0);
-	object3d1->UpdateImGui(1);
 	humanObject->UpdateImGui(2);
 	particleEmitter1_->UpdateImGui();
 	particleEmitter2_->UpdateImGui();
@@ -101,11 +96,12 @@ void GamePlayScene::Update() {
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
+	//SkyBoxの更新
+	skyBox_->Update();
 
 	sprite_->Update(); 	//Spriteの更新
 	//3Dオブジェクトの更新
 	//object3d->Update(); 
-	//object3d1->Update();
 	humanObject->Update();
 	//パーティクル発生器の更新
 	particleEmitter1_->Update(); 
@@ -126,12 +122,14 @@ void GamePlayScene::Update() {
 
 void GamePlayScene::Draw() {
 
+	//SkyBoxの描画
+	skyBox_->Draw();
+
 	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
 	sprite_->Draw();              //スプライトの描画
 
 	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
 	//object3d->Draw();             //3Dオブジェクトの描画
-	//object3d1->Draw();
 
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理
 	humanObject->DrawForASkinningModel();

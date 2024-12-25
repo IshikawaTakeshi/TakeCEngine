@@ -340,19 +340,19 @@ void PSO::CreateInputLayout() {
 void PSO::CreateInputLayoutForSkyBox() {
 
 	//position
-	inputElementDescs_[0].SemanticName = "POSITION";
-	inputElementDescs_[0].SemanticIndex = 0;
-	inputElementDescs_[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	inputElementDescs_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	inputElementDescsForSkyBox_[0].SemanticName = "POSITION";
+	inputElementDescsForSkyBox_[0].SemanticIndex = 0;
+	inputElementDescsForSkyBox_[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputElementDescsForSkyBox_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
 	//texcoord
-	inputElementDescs_[1].SemanticName = "TEXCOORD";
-	inputElementDescs_[1].SemanticIndex = 0;
-	inputElementDescs_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	inputElementDescs_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	inputElementDescsForSkyBox_[1].SemanticName = "TEXCOORD";
+	inputElementDescsForSkyBox_[1].SemanticIndex = 0;
+	inputElementDescsForSkyBox_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputElementDescsForSkyBox_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
-	inputLayoutDesc_.pInputElementDescs = inputElementDescs_.data();
-	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescs_.size());
+	inputLayoutDesc_.pInputElementDescs = inputElementDescsForSkyBox_.data();
+	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescsForSkyBox_.size());
 
 }
 
@@ -444,7 +444,7 @@ void PSO::CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fi
 	/// ルートシグネチャ初期化
 	CreateRootSignatureForSprite(device_);
 	/// インプットレイアウト初期化
-	CreateInputLayoutForSkyBox();
+	CreateInputLayout();
 	/// ブレンドステート初期化
 	CreateBlendStateForSprite();
 	/// ラスタライザステート初期化
@@ -673,7 +673,7 @@ void PSO::CreatePSOForSkyBox(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fi
 	/// ルートシグネチャ初期化
 	CreateRootSignatureForSprite(device_);
 	/// インプットレイアウト初期化
-	CreateInputLayout();
+	CreateInputLayoutForSkyBox();
 	/// ブレンドステート初期化
 	CreateBlendStateForSprite();
 	/// ラスタライザステート初期化
