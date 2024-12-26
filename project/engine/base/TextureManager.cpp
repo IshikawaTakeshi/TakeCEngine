@@ -72,7 +72,7 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 		hr = DirectX::LoadFromDDSFile(filePathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
 		assert(SUCCEEDED(hr));
 
-	}else {
+	} else {
 		hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 		assert(SUCCEEDED(hr));
 	}

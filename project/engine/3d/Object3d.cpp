@@ -118,6 +118,7 @@ void Object3d::Draw() {
 	//wvp用のCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 
+
 	if(model_ != nullptr) {
 		model_->Draw();
 	}

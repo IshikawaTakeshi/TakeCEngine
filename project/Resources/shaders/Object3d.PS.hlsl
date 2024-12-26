@@ -5,6 +5,7 @@ struct Material {
 	float4x4 uvTransform;
 	int enableLighting; //Lightingを有効にするフラグ
 	float shininess;
+	float envCoefficient; //環境マップの反射係数
 };
 
 struct DirectionalLight {
@@ -49,6 +50,8 @@ ConstantBuffer<SpotLight> gSpotLight : register(b4);
 
 //テクスチャ
 Texture2D<float4> gTexture : register(t0);
+//環境マップ用テクスチャ
+TextureCube<float4> gEnvironmentTexture : register(t1);
 //サンプラー
 SamplerState gSampler : register(s0);
 
@@ -101,6 +104,11 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 		float cosAngle = dot(spotLightDirectionOfSurface, gSpotLight.direction);
 		float falloffFactor = saturate((cosAngle - gSpotLight.cosAngle) / (gSpotLight.penumbraAngle - gSpotLight.cosAngle));
 		
+		//環境マップの計算
+		float3 cameraToPosition = normalize(input.worldPosition - gCamera.worldPosition);
+		float3 reflectedVector = reflect(cameraToPosition, normalize(input.normal));
+		float4 environmentColor = gEnvironmentTexture.Sample(gSampler, reflectedVector);
+		
 		//Diffuse_Reflection
 		float3 diffuseDir = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
 		float3 diffusePoint = gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * cosPoint* gPointLight.intensity * factor;
@@ -110,9 +118,11 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 		float3 specularDir = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float3(1.0f, 1.0f, 1.0f);
 		float3 specularPoint = gPointLight.color.rgb * gPointLight.intensity * factor * specularPowPoint * float3(1.0f, 1.0f, 1.0f);
 		float3 specularSpot = gSpotLight.color.rgb * gSpotLight.intensity * falloffFactor * attenuationFactor * specularPowSpot * float3(1.0f, 1.0f, 1.0f);
-		
+			
 		//拡散反射+鏡面反射
 		output.color.rgb = diffuseDir + specularDir + diffusePoint + specularPoint + diffuseSpot + specularSpot;
+		//環境マップ
+		output.color.rgb += environmentColor.rgb * gMaterial.envCoefficient;
 		//アルファ値
 		output.color.a = gMaterial.color.a * textureColor.a;
 		

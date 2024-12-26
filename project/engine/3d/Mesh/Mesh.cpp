@@ -9,10 +9,10 @@ Mesh::~Mesh() {
 	indexResource_.Reset();
 }
 
-void Mesh::InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath) {
+void Mesh::InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath) {
 
 	material_ = std::make_unique<Material>();
-	material_->Initialize(dxCommon, filePath);
+	material_->Initialize(dxCommon, filePath,envMapfilePath);
 	vertexBufferViews_.resize(1);
 }
 

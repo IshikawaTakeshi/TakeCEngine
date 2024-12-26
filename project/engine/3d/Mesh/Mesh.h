@@ -12,7 +12,7 @@ public:
 	Mesh() = default;
 	~Mesh();
 
-	void InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath);
+	void InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath,const std::string& envMapfilePath = "");
 
 	/// <summary>
 		/// 描画処理時に使用する頂点バッファを設定

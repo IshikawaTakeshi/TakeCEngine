@@ -48,6 +48,7 @@ struct SpotLightData {
 struct ModelMaterialData {
 
 	std::string textureFilePath; //テクスチャファイルのパス
+	std::string envMapFilePath; //環境マップのパス
 	uint32_t srvIndex; //テクスチャのインデックス
 };
 
