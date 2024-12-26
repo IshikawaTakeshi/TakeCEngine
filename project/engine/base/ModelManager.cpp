@@ -144,6 +144,10 @@ ModelData ModelManager::LoadModelFile(const std::string& modelDirectoryPath, con
 		if (modelData.material.textureFilePath == "") { //テクスチャがない場合はデフォルトのテクスチャを設定
 			modelData.material.textureFilePath = "./Resources/images/uvChecker.png";
 		}
+
+		//環境マップテクスチャの設定
+		//MEMO: 画像はDDSファイルのみ対応
+		modelData.material.envMapFilePath = "./Resources/images/rostock_laage_airport_4k.dds";
 	}
 
 	//rootNodeの解析

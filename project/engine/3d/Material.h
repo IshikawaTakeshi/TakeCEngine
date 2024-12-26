@@ -11,6 +11,7 @@ struct MaterialData {
 	Matrix4x4 uvTransform; //UVトランスフォーム
 	uint32_t enableLighting; //ライティングを有効にするフラグ
 	float shininess; //鏡面反射の強さ
+	float envCoefficient; //環境光の強さ
 };
 
 class DirectXCommon;
@@ -23,7 +24,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, const std::string& filePath);
+	void Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath = "");
 
 	/// <summary>
 	/// 更新処理

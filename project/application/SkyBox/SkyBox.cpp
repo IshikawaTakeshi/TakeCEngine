@@ -82,6 +82,6 @@ void SkyBox::Draw() {
 	commandList->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 
 	if (model_ != nullptr) {
-		model_->Draw();
+		model_->DrawSkyBox();
 	}
 }

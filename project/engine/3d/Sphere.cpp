@@ -23,7 +23,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 
 	//メッシュ初期化
 	mesh_ = std::make_unique<Mesh>();
-	mesh_->InitializeMesh(dxCommon,textureFilePath);
+	//mesh_->InitializeMesh(dxCommon,textureFilePath);
 
 	//======================= VertexResource ===========================//
 

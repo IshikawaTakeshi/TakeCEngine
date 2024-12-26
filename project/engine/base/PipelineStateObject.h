@@ -108,11 +108,12 @@ private:
 
 	//rootSignature
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
-	D3D12_ROOT_PARAMETER rootParametersForObject3d_[7] = {};
-	D3D12_ROOT_PARAMETER rootParametersForSkinningObject3d_[8] = {};
+	D3D12_ROOT_PARAMETER rootParametersForObject3d_[8] = {};
+	D3D12_ROOT_PARAMETER rootParametersForSkinningObject3d_[9] = {};
 	D3D12_ROOT_PARAMETER rootParametersForParticle_[3] = {};
 	D3D12_ROOT_PARAMETER rootParametersForSprite_[3] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
+	D3D12_DESCRIPTOR_RANGE descriptorRangeForObject3d_[2] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};
 	ComPtr<ID3D10Blob> signatureBlob_;
 	ComPtr<ID3D10Blob> errorBlob_;

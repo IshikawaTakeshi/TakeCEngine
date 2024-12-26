@@ -36,6 +36,13 @@ void PSO::CreateRootSignatureForSprite(ID3D12Device* device) {
 	descriptorRange_[0].OffsetInDescriptorsFromTableStart =
 		D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //offsetを自動計算
 
+	//.1 envMap
+	descriptorRange_[1].BaseShaderRegister = 1;
+	descriptorRange_[1].NumDescriptors = 1;
+	descriptorRange_[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRange_[1].OffsetInDescriptorsFromTableStart =
+		D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //offsetを自動計算
+
 	//ルートパラメータ。複数設定できるので配列。
 	//.0
 	rootParametersForSprite_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
@@ -93,26 +100,32 @@ void PSO::CreateRootSignatureForObject3D(ID3D12Device* device) {
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	//ディスクリプターレンジ
-	descriptorRange_[0].BaseShaderRegister = 0;
-	descriptorRange_[0].NumDescriptors = 1;
-	descriptorRange_[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptorRange_[0].OffsetInDescriptorsFromTableStart =
-		D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //offsetを自動計算
+	//.0 Texture
+	descriptorRangeForObject3d_[0].BaseShaderRegister = 0;
+	descriptorRangeForObject3d_[0].NumDescriptors = 1;
+	descriptorRangeForObject3d_[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeForObject3d_[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //offsetを自動計算
+
+	//.1 envMap
+	descriptorRangeForObject3d_[1].BaseShaderRegister = 1;
+	descriptorRangeForObject3d_[1].NumDescriptors = 1;
+	descriptorRangeForObject3d_[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeForObject3d_[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	//ルートパラメータ。複数設定できるので配列。
-	//.0
+	//.0 Material
 	rootParametersForObject3d_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParametersForObject3d_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
 	rootParametersForObject3d_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
-	//.1
+	//.1 TransformationMatrix
 	rootParametersForObject3d_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	rootParametersForObject3d_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 	rootParametersForObject3d_[1].Descriptor.ShaderRegister = 0;
-	//.2
+	//.2 Texture
 	rootParametersForObject3d_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
 	rootParametersForObject3d_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootParametersForObject3d_[2].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
-	rootParametersForObject3d_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
+	rootParametersForObject3d_[2].DescriptorTable.pDescriptorRanges = &descriptorRangeForObject3d_[0]; //Tableの中身の配列を指定
+	rootParametersForObject3d_[2].DescriptorTable.NumDescriptorRanges = 1; //Tableで利用する数
 	//.3 DirectionalLight
 	rootParametersForObject3d_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParametersForObject3d_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
@@ -129,6 +142,11 @@ void PSO::CreateRootSignatureForObject3D(ID3D12Device* device) {
 	rootParametersForObject3d_[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParametersForObject3d_[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
 	rootParametersForObject3d_[6].Descriptor.ShaderRegister = 4; //レジスタ番号4
+	//.7 envMap
+	rootParametersForObject3d_[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
+	rootParametersForObject3d_[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	rootParametersForObject3d_[7].DescriptorTable.pDescriptorRanges = &descriptorRangeForObject3d_[1]; //Tableの中身の配列を指定
+	rootParametersForObject3d_[7].DescriptorTable.NumDescriptorRanges = 1; //Tableで利用する数
 
 	descriptionRootSignature_.pParameters = rootParametersForObject3d_; //rootParameter配列へのポインタ
 	descriptionRootSignature_.NumParameters = _countof(rootParametersForObject3d_); //配列の長さ
@@ -172,11 +190,18 @@ void PSO::CreateRootSignatureForSkinnedObject3D(ID3D12Device* device) {
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	//ディスクリプターレンジ
-	descriptorRange_[0].BaseShaderRegister = 0;
-	descriptorRange_[0].NumDescriptors = 1;
-	descriptorRange_[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptorRange_[0].OffsetInDescriptorsFromTableStart =
+	descriptorRangeForObject3d_[0].BaseShaderRegister = 0;
+	descriptorRangeForObject3d_[0].NumDescriptors = 1;
+	descriptorRangeForObject3d_[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeForObject3d_[0].OffsetInDescriptorsFromTableStart =
 		D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //offsetを自動計算
+
+	//.1 envMap
+	descriptorRangeForObject3d_[1].BaseShaderRegister = 1;
+	descriptorRangeForObject3d_[1].NumDescriptors = 1;
+	descriptorRangeForObject3d_[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeForObject3d_[1].OffsetInDescriptorsFromTableStart =
+		D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	//ルートパラメータ。複数設定できるので配列。
 	//.0
@@ -190,8 +215,8 @@ void PSO::CreateRootSignatureForSkinnedObject3D(ID3D12Device* device) {
 	//.2
 	rootParametersForSkinningObject3d_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
 	rootParametersForSkinningObject3d_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootParametersForSkinningObject3d_[2].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
-	rootParametersForSkinningObject3d_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
+	rootParametersForSkinningObject3d_[2].DescriptorTable.pDescriptorRanges = &descriptorRangeForObject3d_[0]; //Tableの中身の配列を指定
+	rootParametersForSkinningObject3d_[2].DescriptorTable.NumDescriptorRanges = 1; //Tableで利用する数
 	//.3 DirectionalLight
 	rootParametersForSkinningObject3d_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParametersForSkinningObject3d_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
@@ -211,8 +236,13 @@ void PSO::CreateRootSignatureForSkinnedObject3D(ID3D12Device* device) {
 	//.7 Well
 	rootParametersForSkinningObject3d_[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
 	rootParametersForSkinningObject3d_[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; //PixelShaderで使う
-	rootParametersForSkinningObject3d_[7].DescriptorTable.pDescriptorRanges = descriptorRange_; //Tableの中身の配列を指定
-	rootParametersForSkinningObject3d_[7].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange_); //Tableで利用する数
+	rootParametersForSkinningObject3d_[7].DescriptorTable.pDescriptorRanges = descriptorRangeForObject3d_; //Tableの中身の配列を指定
+	rootParametersForSkinningObject3d_[7].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForObject3d_); //Tableで利用する数
+	//.8 envMap
+	rootParametersForSkinningObject3d_[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
+	rootParametersForSkinningObject3d_[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	rootParametersForSkinningObject3d_[8].DescriptorTable.pDescriptorRanges = &descriptorRangeForObject3d_[1]; //Tableの中身の配列を指定
+	rootParametersForSkinningObject3d_[8].DescriptorTable.NumDescriptorRanges = 1; //Tableで利用する数
 
 	descriptionRootSignature_.pParameters = rootParametersForSkinningObject3d_; //rootParameter配列へのポインタ
 	descriptionRootSignature_.NumParameters = _countof(rootParametersForSkinningObject3d_); //配列の長さ

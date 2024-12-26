@@ -4,18 +4,24 @@
 #include "TextureManager.h"
 #include "ImGuiManager.h"
 
+#include <algorithm>
+
 Material::~Material() {
 
 	materialResource_.Reset();
 }
 
-void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath) {
+void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath) {
 
 	//マテリアルリソース初期化
 	InitializeMaterialResource(dxCommon->GetDevice());
 
 	//テクスチャ初期化
 	TextureManager::GetInstance()->LoadTexture(filePath);
+	if(envMapfilePath != ""){
+		TextureManager::GetInstance()->LoadTexture(envMapfilePath);
+	}
+
 
 	//uvTransform
 	uvTransform_ = {
@@ -35,6 +41,7 @@ void Material::UpdateMaterialImGui() {
 		ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
 		ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
 		ImGui::DragFloat("Shininess", &materialData_->shininess, 0.1f, 0.1f, 100.0f);
+		ImGui::DragFloat("EnvCoefficient", &materialData_->envCoefficient, 0.001f, 0.0f, 1.0f);
 		Matrix4x4 uvTransformMatrix = MatrixMath::MakeScaleMatrix(uvTransform_.scale);
 		uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeRotateZMatrix(uvTransform_.rotate.z));
 		uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeTranslateMatrix(uvTransform_.translate));
@@ -58,4 +65,5 @@ void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> d
 	materialData_->uvTransform = MatrixMath::MakeIdentity4x4();
 	materialData_->enableLighting = false;
 	materialData_->shininess = 60.0f;
+	materialData_->envCoefficient = 0.5f;
 }

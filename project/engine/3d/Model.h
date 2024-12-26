@@ -42,6 +42,8 @@ public:
 	/// </summary>
 	void Draw();
 
+	void DrawSkyBox();
+
 	void DrawForASkinningModel();
 
 
