@@ -39,7 +39,8 @@ public:
 	/// </summary>
 	void CreateRootSignatureForObject3D(ID3D12Device* device);
 
-	void CreateRootSignatureForSkinnedObject3D(ID3D12Device* device);
+	void CreateGraphicRootSignatureForSkinnedObject3D(ID3D12Device* device);
+	void CreateComputeRootSignatureForSkinnedObject3D(ID3D12Device* device);
 
 	/// <summary>
 	/// パーティクル用のルートシグネチャ生成
@@ -91,7 +92,7 @@ public:
 	/// <summary>
 	/// rootSignatureの取得
 	/// </summary>
-	ID3D12RootSignature* GetRootSignature() const { return rootSignature_.Get(); }
+	ID3D12RootSignature* GetRootSignature() const { return graphicRootSignature_.Get(); }
 
 	/// <summary>
 	///graphicPipelineStateの取得
@@ -101,6 +102,7 @@ public:
 private:
 
 	void SetGraphicPipelineStateDesc();
+	void SetComputePipelineStateDesc();
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///			privateメンバ変数
@@ -109,15 +111,19 @@ private:
 	//rootSignature
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
 	D3D12_ROOT_PARAMETER rootParametersForObject3d_[8] = {};
-	D3D12_ROOT_PARAMETER rootParametersForSkinningObject3d_[9] = {};
+	D3D12_ROOT_PARAMETER graphicRootParameters_[8] = {};
+	D3D12_ROOT_PARAMETER computeRootParameters_[12] = {};
 	D3D12_ROOT_PARAMETER rootParametersForParticle_[3] = {};
 	D3D12_ROOT_PARAMETER rootParametersForSprite_[3] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRangeForObject3d_[2] = {};
+	D3D12_DESCRIPTOR_RANGE graphicDescriptorRange_[2] = {};
+	D3D12_DESCRIPTOR_RANGE computeDescriptorRange_[4] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};
 	ComPtr<ID3D10Blob> signatureBlob_;
 	ComPtr<ID3D10Blob> errorBlob_;
-	ComPtr<ID3D12RootSignature> rootSignature_;
+	ComPtr<ID3D12RootSignature> graphicRootSignature_;
+	ComPtr<ID3D12RootSignature> computeRootSignature_;
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	//InputLayout
 	std::array<D3D12_INPUT_ELEMENT_DESC,3> inputElementDescs_ = {};
@@ -129,11 +135,14 @@ private:
 	//shaderBlob
 	ComPtr<IDxcBlob> vertexShaderBlob_;
 	ComPtr<IDxcBlob> pixelShaderBlob_;
+	ComPtr<IDxcBlob> computeShaderBlob_;
 	//depthStencilState
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
 	//graphicPipelineState
 	ComPtr<ID3D12PipelineState> graphicPipelineState_;
+	ComPtr<ID3D12PipelineState> computePipelineState_;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc_{};
+	D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineStateDesc_{};
 	//BlendMode
 	uint32_t itemCurrentIdx = 0;
 	//device

@@ -24,6 +24,15 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData, const std
 
 	//objファイル読み込み
 	modelData_ = modelData;
+
+	//UAVの設定
+	uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
+	modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
+		modelData_.vertices.size(),
+		sizeof(VertexData),
+		mesh_->GetVertexResource(),
+		uavIndex_);
+
 	//Animation読み込み
 	animation_ = Animator::LoadAnimationFile(modelDirectoryPath, filePath);
 	//Skeleton作成
@@ -41,7 +50,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData, const std
 
 	//VertexResource
 	mesh_->InitializeVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
-	mesh_->AddVertexBufferView(skinCluster_.influenceBufferView);
+	//mesh_->AddVertexBufferView(skinCluster_.influenceBufferView);
 	//indexResource
 	mesh_->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 }
@@ -129,20 +138,20 @@ void Model::DrawForASkinningModel() {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	D3D12_VERTEX_BUFFER_VIEW vbv[] = { mesh_->GetVertexBufferView(0),mesh_->GetVertexBufferView(1) };
+	//D3D12_VERTEX_BUFFER_VIEW vbv[] = { mesh_->GetVertexBufferView(0),mesh_->GetVertexBufferView(1) };
 
 	// VBVを設定
-	commandList->IASetVertexBuffers(0, 2, vbv);
+	mesh_->SetVertexBuffers(commandList, 0);
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	//SRVのDescriptorTableの先頭を設定
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
-
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(7, skinCluster_.useSrvIndex);
-
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(8, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.envMapFilePath));
+
+	
 	//IBVの設定
 	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	//DrawCall

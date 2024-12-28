@@ -5,7 +5,7 @@
 #include <cassert>
 
 void SkinCluster::Create(
-	const Microsoft::WRL::ComPtr<ID3D12Device>& device,SrvManager* srvManager,
+	const ComPtr<ID3D12Device>& device,SrvManager* srvManager,
 	Skeleton* skeleton, const ModelData& modelData) {
 
 	//palette用のReosurce確保
@@ -30,10 +30,14 @@ void SkinCluster::Create(
 	std::memset(mappedInfluenceData, 0, sizeof(VertexInfluence) * modelData.vertices.size());
 	mappedInfluences = { mappedInfluenceData, modelData.vertices.size() };
 
-	//influenceのVBV作成
-	influenceBufferView.BufferLocation = influenceResource->GetGPUVirtualAddress();
-	influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData.vertices.size());
-	influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
+	//influenceのSRV作成
+	//influenceBufferView.BufferLocation = influenceResource->GetGPUVirtualAddress();
+	//influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData.vertices.size());
+	//influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
+	srvManager->CreateSRVforStructuredBuffer(
+		UINT(modelData.vertices.size()),sizeof(VertexInfluence),influenceResource.Get(),srvManager->Allocate());
+
+	
 
 	//InverseBindPoseMatricesの保存領域の作成
 	inverseBindPoseMatrices.resize(skeleton->GetJoints().size());

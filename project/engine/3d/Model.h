@@ -113,4 +113,6 @@ private:
 
 	//再生中の時刻
 	float animationTime = 0.0f;
+
+	uint32_t uavIndex_ = 0;
 };
