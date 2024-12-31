@@ -28,9 +28,9 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	psoForSkinningObject3d_->CreatePSO(kSkinningObject3D, dxCommon_->GetDevice(), dxCommon_->GetDXC(), D3D12_FILL_MODE_SOLID);
 
 	//ルートシグネチャ取得
-	rootSignatureForObject3d_ = psoForObject3d_->GetRootSignature();
-	rootSignatureForSkinningObject3d_ = psoForSkinningObject3d_->GetRootSignature();
-
+	rootSignatureForObject3d_ = psoForObject3d_->GetGraphicRootSignature();
+	rootSignatureForSkinningObject3d_[graphic] = psoForSkinningObject3d_->GetGraphicRootSignature();
+	rootSignatureForSkinningObject3d_[compute] = psoForSkinningObject3d_->GetComputeRootSignature();
 
 #pragma region "Lighting"
 	//平行光源用Resourceの作成
@@ -134,10 +134,10 @@ void Object3dCommon::PreDrawForSkinningObject3d() {
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//ルートシグネチャ設定
-	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignatureForSkinningObject3d_.Get());
 	//PSO設定
 	dxCommon_->GetCommandList()->SetPipelineState(psoForSkinningObject3d_->GetGraphicPipelineState());
+	//ルートシグネチャ設定
+	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignatureForSkinningObject3d_[graphic].Get());
 
 	//Lighting用のCBufferの場所を指定
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
@@ -150,4 +150,12 @@ void Object3dCommon::PreDrawForSkinningObject3d() {
 	//spotLightのCBuffer
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(6, spotLightResource_->GetGPUVirtualAddress());
 
+}
+
+void Object3dCommon::DisPatch() {
+
+	//PSO設定
+	dxCommon_->GetCommandList()->SetPipelineState(psoForSkinningObject3d_->GetComputePipelineState());
+	//ルートシグネチャ設定
+	dxCommon_->GetCommandList()->SetComputeRootSignature(rootSignatureForSkinningObject3d_[compute].Get());
 }

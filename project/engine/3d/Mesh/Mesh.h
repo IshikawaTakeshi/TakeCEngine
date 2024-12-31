@@ -21,10 +21,9 @@ public:
 		/// <param name="startSlot"></param>
 	void SetVertexBuffers(ID3D12GraphicsCommandList* commandList, UINT startSlot);
 
+	void SetSkinnedVertexBuffer(ID3D12GraphicsCommandList* commandList, UINT startSlot);
+
 	void AddVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vbv);
-
-
-	//================================= VertexBufferResource ==================================//
 
 	/// <summary>
 	/// 球体の頂点バッファリソース初期化
@@ -45,9 +44,9 @@ public:
 	/// モデルの頂点バッファリソース初期化
 	/// </summary>
 	/// <param name="device"></param>
-	void InitializeVertexResourceModel(ID3D12Device* device, ModelData modelData);
-
-	//================================= IndexBufferResource ==================================//
+	void InitializeInputVertexResourceModel(ID3D12Device* device, ModelData modelData);
+	void InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData modelData);
+	void InitializeSkinnedVertexResource(ID3D12Device* device, ModelData modelData);
 
 	/// <summary>
 	/// 球体のIndexResource初期化
@@ -61,11 +60,18 @@ public:
 
 	void InitializeIndexResourceModel(ID3D12Device* device, ModelData modelData);
 
+	void InitializeVertexCountResource(ID3D12Device* device, SkinningInfo skinningInfo);
+
 
 public: //getter
 	
 	/// 頂点リソースの取得
-	ID3D12Resource* GetVertexResource() { return vertexResource_.Get(); }
+	ID3D12Resource* GetInputVertexResource() { return inputVertexResource_.Get(); }
+	ID3D12Resource* GetOutputVertexResource() { return outputVertexResource_.Get(); }
+	ID3D12Resource* GetSkinnedVertexResource() { return skinnedVertexResource_.Get(); }
+
+	/// 頂点数リソースの取得
+	ID3D12Resource* GetVertexCountResource() { return vertexCountResource_.Get(); }
 
 	/// 頂点バッファビューの取得
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView(int num) const { return vertexBufferViews_[num]; }
@@ -87,8 +93,14 @@ protected:
 	std::unique_ptr<Material> material_ = nullptr;
 
 	//頂点バッファリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> inputVertexResource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> outputVertexResource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> skinnedVertexResource_;
 	std::vector<D3D12_VERTEX_BUFFER_VIEW> vertexBufferViews_;
+	D3D12_VERTEX_BUFFER_VIEW skinnedVBV_{};
+
+	//頂点数リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexCountResource_;
 
 	//IndexBufferView用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;

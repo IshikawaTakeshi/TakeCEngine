@@ -124,6 +124,10 @@ void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_
 	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(RootParameterIndex, GetSrvDescriptorHandleGPU(srvIndex));
 }
 
+void SrvManager::SetComputeRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex) {
+	dxCommon_->GetCommandList()->SetComputeRootDescriptorTable(RootParameterIndex, GetSrvDescriptorHandleGPU(srvIndex));
+}
+
 //================================================================================================
 // テクスチャ確保可能チェック
 //================================================================================================

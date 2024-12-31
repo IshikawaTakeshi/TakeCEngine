@@ -33,35 +33,35 @@ void GamePlayScene::Initialize() {
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
+	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
+	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
+	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
 
 	//SkyBox
-	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
+	//skyBox_ = std::make_unique<SkyBox>();
+	//skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
 
 	//Sprite
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/uvChecker.png");
 
 	//Object3d
-	object3d = std::make_unique<Object3d>();
-	object3d->Initialize(Object3dCommon::GetInstance(), "plane.obj");
+	//object3d = std::make_unique<Object3d>();
+	//object3d->Initialize(Object3dCommon::GetInstance(), "plane.obj");
 
 	humanObject = std::make_unique<Object3d>();
 	humanObject->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
 	humanObject->SetPosition({ 0.0f,1.0f,0.0f });
 
 	//CreateParticle
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Sphere", "sphere.obj");
+	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
+	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Sphere", "sphere.obj");
 	particleEmitter1_ = std::make_unique<ParticleEmitter>();
 	particleEmitter2_ = std::make_unique<ParticleEmitter>();
-	particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },30, 0.5f);
-	particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },30, 0.5f);
-	particleEmitter1_->SetParticleName("Plane");
-	particleEmitter2_->SetParticleName("Sphere");
+	//particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },30, 0.5f);
+	//particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },30, 0.5f);
+	//particleEmitter1_->SetParticleName("Plane");
+	//particleEmitter2_->SetParticleName("Sphere");
 }
 
 //====================================================================
@@ -85,7 +85,7 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->UpdateImGui();
 	//sprite_->UpdateImGui(0);
 	Object3dCommon::GetInstance()->UpdateImGui();
-	object3d->UpdateImGui(0);
+	//object3d->UpdateImGui(0);
 	humanObject->UpdateImGui(2);
 	particleEmitter1_->UpdateImGui();
 	particleEmitter2_->UpdateImGui();
@@ -97,15 +97,15 @@ void GamePlayScene::Update() {
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
 	//SkyBoxの更新
-	skyBox_->Update();
+	//skyBox_->Update();
 
-	sprite_->Update(); 	//Spriteの更新
+	//sprite_->Update(); 	//Spriteの更新
 	//3Dオブジェクトの更新
 	//object3d->Update(); 
 	humanObject->Update();
 	//パーティクル発生器の更新
-	particleEmitter1_->Update(); 
-	particleEmitter2_->Update();
+	//particleEmitter1_->Update(); 
+	//particleEmitter2_->Update();
 
 	TakeCFrameWork::GetParticleManager()->Update(); //パーティクルの更新
 
@@ -123,7 +123,7 @@ void GamePlayScene::Update() {
 void GamePlayScene::Draw() {
 
 	//SkyBoxの描画
-	skyBox_->Draw();
+	//skyBox_->Draw();
 
 	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
 	sprite_->Draw();              //スプライトの描画
@@ -131,9 +131,11 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
 	//object3d->Draw();             //3Dオブジェクトの描画
 
+	Object3dCommon::GetInstance()->DisPatch();
+	humanObject->DisPatchForASkinningModel();
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理
 	humanObject->DrawForASkinningModel();
 
-	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
-	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
+	//ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
+	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
 }

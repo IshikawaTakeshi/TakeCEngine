@@ -71,6 +71,8 @@ public:
 	/// <param name="RootParameterIndex"></param>
 	/// <param name="srvIndex"></param>
 	void SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex);
+
+	void SetComputeRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex);
 	
 public:
 	//================================================================================================

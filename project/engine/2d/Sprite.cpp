@@ -127,7 +127,7 @@ void Sprite::UpdateImGui(int id) {
 void Sprite::UpdateVertexData() {
 	//頂点データ
 	VertexData* vertexData;
-	mesh_->GetVertexResource()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	mesh_->GetInputVertexResource()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	//anchorPoint
 	float left = 0.0f - anchorPoint_.x;
 	float right = 1.0f - anchorPoint_.x;

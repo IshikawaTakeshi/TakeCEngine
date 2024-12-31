@@ -78,6 +78,8 @@ ModelData ModelManager::LoadModelFile(const std::string& modelDirectoryPath, con
 		assert(mesh->HasNormals()); //法線がない場合は現在エラー
 		assert(mesh->HasTextureCoords(0)); //UVがない場合は現在エラー
 		modelData.vertices.resize(mesh->mNumVertices);
+		//Meshの頂点数の格納
+		modelData.skinningInfo.numVertices = mesh->mNumVertices;
 
 		//vertexの解析
 		for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {

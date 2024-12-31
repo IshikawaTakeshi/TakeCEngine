@@ -92,12 +92,14 @@ public:
 	/// <summary>
 	/// rootSignatureの取得
 	/// </summary>
-	ID3D12RootSignature* GetRootSignature() const { return graphicRootSignature_.Get(); }
+	ID3D12RootSignature* GetGraphicRootSignature() const { return graphicRootSignature_.Get(); }
+	ID3D12RootSignature* GetComputeRootSignature() const { return computeRootSignature_.Get(); }
 
 	/// <summary>
 	///graphicPipelineStateの取得
 	/// </summary>
 	ID3D12PipelineState* GetGraphicPipelineState() const { return graphicPipelineState_.Get(); }
+	ID3D12PipelineState* GetComputePipelineState() const { return computePipelineState_.Get(); }
 
 private:
 
@@ -111,8 +113,8 @@ private:
 	//rootSignature
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
 	D3D12_ROOT_PARAMETER rootParametersForObject3d_[8] = {};
-	D3D12_ROOT_PARAMETER graphicRootParameters_[8] = {};
-	D3D12_ROOT_PARAMETER computeRootParameters_[12] = {};
+	D3D12_ROOT_PARAMETER graphicRootParameters_[9] = {};
+	D3D12_ROOT_PARAMETER computeRootParameters_[5] = {};
 	D3D12_ROOT_PARAMETER rootParametersForParticle_[3] = {};
 	D3D12_ROOT_PARAMETER rootParametersForSprite_[3] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
@@ -128,7 +130,7 @@ private:
 	//InputLayout
 	std::array<D3D12_INPUT_ELEMENT_DESC,3> inputElementDescs_ = {};
 	std::array<D3D12_INPUT_ELEMENT_DESC,2> inputElementDescsForSkyBox_ = {};
-	std::array < D3D12_INPUT_ELEMENT_DESC,5> inputElementDescsForSkinningObject_ = {};
+	std::array < D3D12_INPUT_ELEMENT_DESC,3> inputElementDescsForSkinningObject_ = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};

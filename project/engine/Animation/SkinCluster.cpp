@@ -15,15 +15,16 @@ void SkinCluster::Create(
 	paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPaletteData));
 	mappedPalette = { mappedPaletteData, skeleton->GetJoints().size() };
 	//paletteのSRVのIndexを取得
-	useSrvIndex = srvManager->Allocate();
-	paletteSrvHandle.first = srvManager->GetSrvDescriptorHandleCPU(useSrvIndex);
-	paletteSrvHandle.second = srvManager->GetSrvDescriptorHandleGPU(useSrvIndex);
+	paletteResourceIndex = srvManager->Allocate();
+	paletteSrvHandle.first = srvManager->GetSrvDescriptorHandleCPU(paletteResourceIndex);
+	paletteSrvHandle.second = srvManager->GetSrvDescriptorHandleGPU(paletteResourceIndex);
 
 	//paletteのsrv作成
 	srvManager->CreateSRVforStructuredBuffer(
-		UINT(skeleton->GetJoints().size()),sizeof(WellForGPU),paletteResource.Get(),useSrvIndex);
+		UINT(skeleton->GetJoints().size()),sizeof(WellForGPU),paletteResource.Get(), paletteResourceIndex);
 
 	//influence用のResource確保
+	//VertexInfluence * std::vector<VertexData>
 	influenceResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData.vertices.size());
 	VertexInfluence* mappedInfluenceData = nullptr;
 	influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluenceData));
@@ -34,8 +35,9 @@ void SkinCluster::Create(
 	//influenceBufferView.BufferLocation = influenceResource->GetGPUVirtualAddress();
 	//influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData.vertices.size());
 	//influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
+	influenceResourceIndex = srvManager->Allocate();
 	srvManager->CreateSRVforStructuredBuffer(
-		UINT(modelData.vertices.size()),sizeof(VertexInfluence),influenceResource.Get(),srvManager->Allocate());
+		UINT(modelData.vertices.size()),sizeof(VertexInfluence),influenceResource.Get(),influenceResourceIndex);
 
 	
 

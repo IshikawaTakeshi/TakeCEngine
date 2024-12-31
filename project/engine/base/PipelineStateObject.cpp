@@ -242,11 +242,16 @@ void PSO::CreateGraphicRootSignatureForSkinnedObject3D(ID3D12Device* device) {
 	graphicRootParameters_[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	graphicRootParameters_[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
 	graphicRootParameters_[6].Descriptor.ShaderRegister = 4; //レジスタ番号4
-	//.8 envMap
+	//.7 envMap
 	graphicRootParameters_[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
 	graphicRootParameters_[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
 	graphicRootParameters_[7].DescriptorTable.pDescriptorRanges = &graphicDescriptorRange_[1];
 	graphicRootParameters_[7].DescriptorTable.NumDescriptorRanges = 1;
+	//.8 outputedVertices
+	graphicRootParameters_[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	graphicRootParameters_[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	graphicRootParameters_[8].DescriptorTable.pDescriptorRanges = &graphicDescriptorRange_[0];
+	graphicRootParameters_[8].DescriptorTable.NumDescriptorRanges = 1;
 
 
 	descriptionRootSignature_.pParameters = graphicRootParameters_; //rootParameter配列へのポインタ
@@ -501,18 +506,6 @@ void PSO::CreateInputLayoutForSkinningObject() {
 	inputElementDescsForSkinningObject_[2].SemanticIndex = 0;
 	inputElementDescsForSkinningObject_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	inputElementDescsForSkinningObject_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	//weight
-	inputElementDescsForSkinningObject_[3].SemanticName = "WEIGHT";
-	inputElementDescsForSkinningObject_[3].SemanticIndex = 0;
-	inputElementDescsForSkinningObject_[3].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	inputElementDescsForSkinningObject_[3].InputSlot = 1; //1番目のSlotのVBVだと伝える
-	inputElementDescsForSkinningObject_[3].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	//index
-	inputElementDescsForSkinningObject_[4].SemanticName = "INDEX";
-	inputElementDescsForSkinningObject_[4].SemanticIndex = 0;
-	inputElementDescsForSkinningObject_[4].Format = DXGI_FORMAT_R32G32B32A32_SINT;
-	inputElementDescsForSkinningObject_[4].InputSlot = 1;
-	inputElementDescsForSkinningObject_[4].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
 	inputLayoutDesc_.pInputElementDescs = inputElementDescsForSkinningObject_.data();
 	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescsForSkinningObject_.size());
@@ -687,6 +680,7 @@ void PSO::CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FI
 
 	/// ルートシグネチャ初期化
 	CreateGraphicRootSignatureForSkinnedObject3D(device_);
+	CreateComputeRootSignatureForSkinnedObject3D(device_);
 	/// インプットレイアウト初期化
 	CreateInputLayoutForSkinningObject();
 	/// ブレンドステート初期化
@@ -876,6 +870,7 @@ void PSO::CreatePSO(PSOType psoType, ID3D12Device* device, DXC* dxc_, D3D12_FILL
 		break;
 	case PSOType::kSkinningObject3D:
 		CreatePSOForSkinningObject3D(device, dxc_, fillMode);
+		
 		break;
 	case PSOType::kSkyBox:
 		CreatePSOForSkyBox(device, dxc_, fillMode);
@@ -1006,6 +1001,6 @@ void PSO::SetComputePipelineStateDesc() {
 		computeShaderBlob_->GetBufferSize()
 	};
 
-	computePipelineStateDesc_.pRootSignature = graphicRootSignature_.Get();
+	computePipelineStateDesc_.pRootSignature = computeRootSignature_.Get();
 
 }

@@ -25,14 +25,6 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData, const std
 	//objファイル読み込み
 	modelData_ = modelData;
 
-	//UAVの設定
-	uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
-	modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
-		modelData_.vertices.size(),
-		sizeof(VertexData),
-		mesh_->GetVertexResource(),
-		uavIndex_);
-
 	//Animation読み込み
 	animation_ = Animator::LoadAnimationFile(modelDirectoryPath, filePath);
 	//Skeleton作成
@@ -49,10 +41,37 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData, const std
 		modelData_.material.envMapFilePath);
 
 	//VertexResource
-	mesh_->InitializeVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
-	//mesh_->AddVertexBufferView(skinCluster_.influenceBufferView);
+	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+	mesh_->InitializeOutputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+	mesh_->InitializeSkinnedVertexResource(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+	//skinningInfoResource
+	mesh_->InitializeVertexCountResource(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_.skinningInfo);
 	//indexResource
 	mesh_->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+
+	//SRVの設定
+	srvIndex_ = modelCommon_->GetSrvManager()->Allocate();
+	modelCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
+		modelData_.skinningInfo.numVertices,
+		sizeof(VertexData),
+		mesh_->GetInputVertexResource(),
+		srvIndex_);
+
+	//UAVの設定
+	uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
+	modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
+		modelData_.skinningInfo.numVertices,
+		sizeof(VertexData),
+		mesh_->GetOutputVertexResource(),
+		uavIndex_);
+
+	//SRVの設定
+	skinnedsrvIndex_ = modelCommon_->GetSrvManager()->Allocate();
+	modelCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
+		modelData_.skinningInfo.numVertices,
+		sizeof(VertexData),
+		mesh_->GetSkinnedVertexResource(),
+		skinnedsrvIndex_);
 }
 
 //=============================================================================
@@ -141,21 +160,43 @@ void Model::DrawForASkinningModel() {
 	//D3D12_VERTEX_BUFFER_VIEW vbv[] = { mesh_->GetVertexBufferView(0),mesh_->GetVertexBufferView(1) };
 
 	// VBVを設定
-	mesh_->SetVertexBuffers(commandList, 0);
+	mesh_->SetSkinnedVertexBuffer(commandList, 0);
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定
+	//SRVのDescriptorTableの設定
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(7, skinCluster_.useSrvIndex);
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(8, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.envMapFilePath));
-
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.envMapFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(8, skinnedsrvIndex_);
 	
 	//IBVの設定
 	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
+	
 	//DrawCall
 	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
+}
+
+void Model::DisPatchForASkinningModel() {
+
+	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
+
+	// VBVを設定
+	mesh_->SetVertexBuffers(commandList, 0);
+
+	//.0 skinningInfo
+	commandList->SetComputeRootConstantBufferView(0, mesh_->GetVertexCountResource()->GetGPUVirtualAddress());
+	//.1 well
+	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(1, skinCluster_.paletteResourceIndex);
+	//.2 inputVertices
+	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(2, srvIndex_);
+	//.3 influence
+	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(3, skinCluster_.influenceResourceIndex);
+	//.4 outputVertices
+	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(4, uavIndex_);
+
+	//Dispatch
+	commandList->Dispatch(static_cast<UINT>(modelData_.vertices.size() + 1023) / 1024, 1, 1);
 }
 
 //void Model::DrawSkeleton() {

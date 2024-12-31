@@ -46,6 +46,8 @@ public:
 
 	void DrawForASkinningModel();
 
+	void DisPatchForASkinningModel();
+
 
 	/// <summary>
 	/// パーティクル描画
@@ -114,5 +116,7 @@ private:
 	//再生中の時刻
 	float animationTime = 0.0f;
 
+	uint32_t srvIndex_ = 0;
 	uint32_t uavIndex_ = 0;
+	uint32_t skinnedsrvIndex_ = 0;
 };
