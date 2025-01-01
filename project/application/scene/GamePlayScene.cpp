@@ -4,6 +4,7 @@
 #include "TakeCFrameWork.h"
 #include "Vector3Math.h"
 #include "ImGuiManager.h"
+#include "Collision/CollisionManager.h"
 #include <format>
 #include <numbers>
 //====================================================================
@@ -36,6 +37,7 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -52,6 +54,18 @@ void GamePlayScene::Initialize() {
 	humanObject = std::make_unique<Object3d>();
 	humanObject->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
 	humanObject->SetPosition({ 0.0f,1.0f,0.0f });
+
+	// Player
+	player_ = std::make_unique<Player>();
+	player_->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
+
+	// Enemy
+	enemy_ = std::make_unique<Enemy>();
+	enemy_->Initialize(Object3dCommon::GetInstance(), "sphere.obj", player_.get());
+
+	// ground
+	ground_ = std::make_unique<Ground>();
+	ground_->Initialize(Object3dCommon::GetInstance(), "ground.obj");
 
 	//CreateParticle
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
@@ -70,7 +84,7 @@ void GamePlayScene::Initialize() {
 
 void GamePlayScene::Finalize() {
 	sprite_.reset();    //スプライトの解放
-
+	CollisionManager::GetInstance()->Finalize();           // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	//AudioManager::GetInstance()->SoundUnload(&soundData1); //音声データ解放
 }
@@ -82,6 +96,7 @@ void GamePlayScene::Finalize() {
 void GamePlayScene::Update() {
 	//ImGuiの更新
 #ifdef _DEBUG
+
 	CameraManager::GetInstance()->UpdateImGui();
 	//sprite_->UpdateImGui(0);
 	Object3dCommon::GetInstance()->UpdateImGui();
@@ -107,7 +122,17 @@ void GamePlayScene::Update() {
 	particleEmitter1_->Update(); 
 	particleEmitter2_->Update();
 
+	// 地面の更新
+	ground_->Update();
+	// プレイヤーの更新
+	player_->Update();
+	// enemyの更新
+	enemy_->Update();
+
 	TakeCFrameWork::GetParticleManager()->Update(); //パーティクルの更新
+
+	CollisionManager::GetInstance()->ClearCollider();
+	CheckAllCollisions();
 
 	//シーン遷移
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
@@ -129,11 +154,32 @@ void GamePlayScene::Draw() {
 	sprite_->Draw();              //スプライトの描画
 
 	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
-	//object3d->Draw();             //3Dオブジェクトの描画
+	player_->Draw();    //プレイヤーの描画
+	enemy_->Draw();     //敵の描画
 
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理
 	humanObject->DrawForASkinningModel();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
+}
+
+void GamePlayScene::CheckAllCollisions() {
+
+	CollisionManager::GetInstance()->ClearCollider();
+
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullet();
+	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullet();
+
+	CollisionManager::GetInstance()->RegisterCollider(player_.get());
+	CollisionManager::GetInstance()->RegisterCollider(enemy_.get());
+
+	for (PlayerBullet* pBullet : playerBullets) {
+		CollisionManager::GetInstance()->RegisterCollider(pBullet);
+	}
+	for (EnemyBullet* eBullet : enemyBullets) {
+		CollisionManager::GetInstance()->RegisterCollider(eBullet);
+	}
+
+	CollisionManager::GetInstance()->CheckAllCollisions();
 }

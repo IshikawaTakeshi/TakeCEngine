@@ -23,7 +23,7 @@ Ground::~Ground() {}
 void Ground::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
 
-	Object3d::Initialize(object3dCommon, filePath,true);
+	Object3d::Initialize(object3dCommon, filePath);
   
 	transform_.translate = {0.0f, -1.0f, 0.0f};
 	//transform_.scale = { 0.1f, .0f, 100.0f };

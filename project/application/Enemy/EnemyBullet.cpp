@@ -19,7 +19,7 @@ void EnemyBullet::Initialize(Object3dCommon* object3dCommon, const Vector3& play
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemyBullet));
 
 	// オブジェクト情報の初期化
-	Object3d::Initialize(object3dCommon, "lock.obj", false);
+	Object3d::Initialize(object3dCommon, "sphere.obj");
 
 	transform_.translate = playerPosition;
 	// 速度の初期化

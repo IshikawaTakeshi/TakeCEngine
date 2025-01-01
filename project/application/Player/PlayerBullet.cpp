@@ -18,7 +18,7 @@ void PlayerBullet::Initialize(Object3dCommon* object3dCommon, const Vector3& pla
 
 
 	//オブジェクト情報の初期化
-	Object3d::Initialize(object3dCommon,"PlayerBullet.obj",true);
+	Object3d::Initialize(object3dCommon,"sphere.obj");
 
 	transform_.translate = playerPosition;
 	transform_.rotate = { 0.0f,0.0f,0.2f };

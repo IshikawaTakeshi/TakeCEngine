@@ -38,9 +38,11 @@ public:
 	/// </summary>
 	void Emit();
 
-	void SetParticleName(const std::string& particleName) {
-		particleName_ = particleName;
-	}
+	void SetParticleName(const std::string& particleName) {particleName_ = particleName; }
+
+	void SetTranslate(const Vector3& translate) {transforms_.translate = translate; }
+
+	void SetIsEmit(bool isEmit) { isEmit_ = isEmit; }
 
 private:
 

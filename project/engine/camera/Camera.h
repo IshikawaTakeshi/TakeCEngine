@@ -17,6 +17,8 @@ public:
 	void Initialize(ID3D12Device* device);
 	void Update();
 
+	void ShakeCamera();
+
 #ifdef _DEBUG
 	void UpdateImGui();
 #endif // DEBUG
@@ -32,6 +34,7 @@ public: //getter
 	const Matrix4x4& GetRotationMatrix() const { return rotationMatrix_; }
 	const Vector3& GetTranslate() const { return transform_.translate; }
 	const Vector3& GetRotate() const { return transform_.rotate; }
+	const bool& GetIsShaking() const { return isShaking_; }
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetCameraResource() const { return cameraResource_; }
 
 public: //setter
@@ -42,6 +45,8 @@ public: //setter
 	void SetAspectRatio(const float aspectRatio) { aspectRatio_ = aspectRatio; }
 	void SetNearClip(const float nearClip) { nearClip_ = nearClip; }
 	void SetFarClip(const float farClip) { farClip_ = farClip; }
+	void SetIsShaking(const bool isShaking) { isShaking_ = isShaking; }
+	void SetShake(float duration, float range);
 
 private:
 
@@ -71,7 +76,10 @@ private:
 
 	float pitch_ = 0.0f;
 
-	//名前(cameraManager::cameras_のキー)
-	//std::string name_;
+
+	bool isShaking_ = false;     // シェイク中かどうか
+	float shakeDuration_ = 0.0f; // シェイクの残り時間
+	Vector3 originalPosition_;   // シェイク開始前のカメラ位置
+	float shakeRange_ = 0.2f;    // シェイクの振幅
 };
 

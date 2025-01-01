@@ -42,13 +42,13 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	player_ = player;
 
 	//Audio読み込み
-	throwRockSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/enemyThrowSE.wav");
-	damageSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/enemyDamage.wav");
+	//throwRockSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/enemyThrowSE.wav");
+	//damageSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/enemyDamage.wav");
 
 	// 衝突属性の設定
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemy));
 
-	Object3d::Initialize(object3dCommon, filePath, true);
+	Object3d::Initialize(object3dCommon, filePath);
 
 	transform_.translate = {0.0f, 4.0f, 20.0f};
 	transform_.scale = {4.0f, 4.0f, 4.0f};
@@ -80,7 +80,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 
 void Enemy::Update() {
 
-	model_->GetMesh()->GetMaterial()->SetMaterialDataColor(color_);
+	model_->GetMesh()->GetMaterial()->SetMaterialColor(color_);
 
 	/*if (hp_ <= 0) {
 		isAlive_ = false;
@@ -390,7 +390,7 @@ void Enemy::ThrowRockAttack() {
 			enemyBullet_.push_back(newBullet);
 		}
 		if (attackTime_ % 60 == 0) {
-			AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), throwRockSE);
+			//AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), throwRockSE);
 		}
 	}
 
@@ -498,7 +498,7 @@ void Enemy::OnCollision(Collider* other) {
 	// 衝突相手がプレイヤー弾の場合
 	if (otherTypeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayerBullet)) {
 		if (!isHit) {
-			AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), damageSE);
+			//AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), damageSE);
 			hp_--;
 			isHit = true;
 		}

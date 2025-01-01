@@ -36,10 +36,10 @@ Player::~Player() {
 
 void Player::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
-	DamageSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/playerDamage.wav");
+	//DamageSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/playerDamage.wav");
 
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
-	Object3d::Initialize(object3dCommon, filePath, true);
+	Object3d::Initialize(object3dCommon, filePath);
 	transform_.translate = {0.0f, 0.0f, -20.0f};
 	isJumping_ = false;   // ジャンプ中かどうか
 	jumpVelocity_ = 0.0f; // ジャンプの初速度
@@ -52,8 +52,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	particleEmitter_ = std::make_unique<ParticleEmitter>();
 	particleEmitter_->Initialize("Emitter_pBullet", transform_, 3, 0.15f);
 	particleEmitter_->SetParticleName("Particle1");
-	particleEmitter_->SetTranslate(transform_.translate);
-	particleEmitter_->SetIsEmit(false);
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +63,7 @@ void Player::Update() {
 
 	UpdateInvincibleTime();
 
-	model_->GetMesh()->GetMaterial()->SetMaterialDataColor(color_);
+	//model_->GetMesh()->GetMaterial()->SetMaterialDataColor(color_);
 
 	// 移動及び攻撃処理
 	Move();
@@ -242,7 +241,7 @@ void Player::OnCollision(Collider* other) {
 	// 衝突相手が敵の場合
 	if (otherTypeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemy)) {
 		if (!isHit) {
-			AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), DamageSE);
+			//AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), DamageSE);
 			CameraManager::GetInstance()->GetActiveCamera()->SetShake(60.0f, 0.2f);
 			CameraManager::GetInstance()->GetActiveCamera()->SetIsShaking(true);
 			hp_--;
@@ -253,7 +252,7 @@ void Player::OnCollision(Collider* other) {
 	// 衝突相手が敵弾の場合
 	if (otherTypeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemyBullet)) {
 		if (!isHit) {
-			AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), DamageSE);
+			//AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), DamageSE);
 			CameraManager::GetInstance()->GetActiveCamera()->SetShake(60.0f, 0.2f);
 			CameraManager::GetInstance()->GetActiveCamera()->SetIsShaking(true);
 			hp_--;
