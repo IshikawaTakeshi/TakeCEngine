@@ -55,7 +55,7 @@ public: //setter
 	void SetPosition(const Vector3& position) { transform_.translate = position; }
 
 
-private: // privateメンバ変数
+protected: // privateメンバ変数
 
 	Object3dCommon* object3dCommon_ = nullptr;
 

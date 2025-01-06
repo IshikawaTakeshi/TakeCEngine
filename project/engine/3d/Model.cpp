@@ -149,11 +149,6 @@ void Model::DrawForASkinningModel() {
 	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
 }
 
-//void Model::DrawSkeleton() {
-//
-//
-//}
-
 //=============================================================================
 // パーティクル用描画処理
 //=============================================================================
@@ -172,34 +167,3 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
 }
-
-//void Model::DrawSkeleton() {
-//
-//
-//}
-
-//=============================================================================
-// アニメーション適用
-//=============================================================================
-//
-//void Model::ApplyAnimation() {
-//
-//}
-
-
-
-//=============================================================================
-// Skeletonの作成
-//=============================================================================
-
-//Skeleton Model::CreateSkeleton(const Node& rootNode) {
-//
-//}
-
-//=============================================================================
-// NodeからJointを作成
-//=============================================================================
-
-//int32_t Model::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints) {
-//
-//}
