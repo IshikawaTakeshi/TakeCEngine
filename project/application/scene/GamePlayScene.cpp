@@ -38,6 +38,7 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -57,7 +58,7 @@ void GamePlayScene::Initialize() {
 
 	// Player
 	player_ = std::make_unique<Player>();
-	player_->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
+	player_->Initialize(Object3dCommon::GetInstance(), "axis.obj");
 
 	// Enemy
 	enemy_ = std::make_unique<Enemy>();
@@ -99,9 +100,10 @@ void GamePlayScene::Update() {
 
 	CameraManager::GetInstance()->UpdateImGui();
 	//sprite_->UpdateImGui(0);
-	Object3dCommon::GetInstance()->UpdateImGui();
-	object3d->UpdateImGui(0);
-	humanObject->UpdateImGui(2);
+	//Object3dCommon::GetInstance()->UpdateImGui();
+	//object3d->UpdateImGui(0);
+	//humanObject->UpdateImGui(2);
+	player_->UpdateImGui();
 	particleEmitter1_->UpdateImGui();
 	particleEmitter2_->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();

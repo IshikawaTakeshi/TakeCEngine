@@ -6,11 +6,15 @@
 #include "Object3dCommon.h"
 #include "PlayerBullet.h"
 #include "Vector3Math.h"
-
 #include "CameraManager.h"
 #include "Sprite.h"
 #include "TextureManager.h"
 #include "WinApp.h"
+
+#include "PlayerState/PlayerStateIdle.h"
+#include "PlayerState/PlayerStateRun.h"
+#include "PlayerState/PlayerStateJump.h"
+#include "PlayerState/PlayerStateAttack.h"
 
 #include <algorithm>
 #include <cassert>
@@ -49,6 +53,10 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	hp_ = maxHP_;
 	color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
+	// プレイヤーの状態を初期化
+	SetState(std::make_unique<PlayerStateIdle>(this));
+	state_->Initialize();
+
 	particleEmitter_ = std::make_unique<ParticleEmitter>();
 	particleEmitter_->Initialize("Emitter_pBullet", transform_, 3, 0.15f);
 	particleEmitter_->SetParticleName("Particle1");
@@ -61,30 +69,19 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 void Player::Update() {
 
-	UpdateInvincibleTime();
+	// プレイヤーの状態を更新
+	state_->Update();
 
-	//model_->GetMesh()->GetMaterial()->SetMaterialDataColor(color_);
+	UpdateInvincibleTime();
 
 	// 移動及び攻撃処理
 	Move();
 
-	// ジャンプ処理
-	if (isJumping_) {
-		jumpVelocity_ += gravity_; // 重力を加算して下降
-		transform_.translate.y += jumpVelocity_;
+	// 攻撃
+	Attack();
 
-		// 地面に着地した場合
-		if (transform_.translate.y <= playerfloor_) {
-			transform_.translate.y = playerfloor_;
-			isJumping_ = false;
-			jumpVelocity_ = 0.0f;
-		}
-	} else {
-		// スペースキーでジャンプを開始
-		if (Input::GetInstance()->PushKey(DIK_SPACE)) {
-			Jump();
-		}
-	}
+	// ジャンプ処理
+	Jump();
 
 	if (hp_ <= 0) {
 		isAlive_ = false;
@@ -147,20 +144,12 @@ void Player::Move() {
 	} else if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
 		transform_.rotate.y += 0.07f;
 	}
-	//// 回転
-	// if (Input::GetInstance()->PushKey(DIK_UP)) {
-	//	transform_.rotate.x -= 0.07f;
-	// } else if (Input::GetInstance()->PushKey(DIK_DOWN)) {
-	//	transform_.rotate.x += 0.07f;
-	// }
+
 #pragma endregion
 
 #pragma region 2.移動処理
 	// 移動速度
 	const float moveSpeed = 0.5f;
-	moveSpeed;
-	// ゲームパッドの状態を得る変数(XINPUT)
-	// XINPUT_STATE joyState;
 
 	// ゲームパッドの状態を取得
 	if (Input::GetInstance()->PushKey(DIK_A)) {
@@ -174,8 +163,6 @@ void Player::Move() {
 	} else if (Input::GetInstance()->PushKey(DIK_S)) {
 		velocity_.z -= moveSpeed;
 	}
-	//	velocity_.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * moveSpeed;
-	//	velocity_.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * moveSpeed;
 
 	// 座標移動(ベクトルの加算)
 	transform_.translate += velocity_;
@@ -185,28 +172,8 @@ void Player::Move() {
 	transform_.translate.z = std::clamp(transform_.translate.z, -kMoveLimit_.y, 0.0f);
 #pragma endregion
 
-#pragma region 3.攻撃処理
+	
 
-	attackInterval_++;
-	if (attackInterval_ > 20) {
-		Attack();
-		attackInterval_ = 0;
-	}
-
-	// 弾の更新
-	for (auto& bullet : playerBullet_) {
-		bullet->Update();
-	}
-
-	// デスフラグの立った弾を削除
-	playerBullet_.remove_if([](PlayerBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
-#pragma endregion
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -223,7 +190,8 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat3("rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("transrate", &transform_.translate.x, 0.01f);
 	ImGui::DragInt("shakingTime", &shakingTime_);
-	Object3d::UpdateImGui(12);
+	ImGui::Text("State: %s", state_->GetName().c_str());
+	//Object3d::UpdateImGui(12);
 	ImGui::End();
 
 #endif // DEBUG
@@ -314,12 +282,29 @@ Vector3 Player::GetWorldPos3DReticle() {
 
 void Player::Attack() {
 
-	// XINPUT_STATE joyState;
 
-	// ゲームパッド未接続なら何もせずに抜ける
-	// if (!Input::GetInstance()->GetJoystickState(0, joyState)) {
-	//	return;
-	// }
+	attackInterval_++;
+	if (attackInterval_ > 20) {
+		ShotBullet();
+		attackInterval_ = 0;
+	}
+
+	// 弾の更新
+	for (auto& bullet : playerBullet_) {
+		bullet->Update();
+	}
+
+	// デスフラグの立った弾を削除
+	playerBullet_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+		});
+}
+
+void Player::ShotBullet() {
 
 	if (Input::GetInstance()->PushKey(DIK_E)) {
 
@@ -327,7 +312,7 @@ void Player::Attack() {
 		const float kBulletSpeed = 0.44f;
 		const float kBulletSpeedy = 0.44f;
 
-		Vector3 bulletVelocity = {0, kBulletSpeedy, kBulletSpeed};
+		Vector3 bulletVelocity = { 0, kBulletSpeedy, kBulletSpeed };
 
 		// プレイヤーから照準オブジェクトへのベクトル
 		bulletVelocity = MatrixMath::TransformNormal(bulletVelocity, worldMatrix_);
@@ -343,8 +328,23 @@ void Player::Attack() {
 
 void Player::Jump() {
 
-	if (!isJumping_) {
-		isJumping_ = true;
-		jumpVelocity_ = jumpForce_; // ジャンプの初速度を設定
+	if (isJumping_) {
+		jumpVelocity_ += gravity_; // 重力を加算して下降
+		transform_.translate.y += jumpVelocity_;
+
+		// 地面に着地した場合
+		if (transform_.translate.y <= playerfloor_) {
+			transform_.translate.y = playerfloor_;
+			isJumping_ = false;
+			jumpVelocity_ = 0.0f;
+		}
+	} else {
+		// スペースキーでジャンプを開始
+		if (Input::GetInstance()->PushKey(DIK_SPACE)) {
+			if (!isJumping_) {
+				isJumping_ = true;
+				jumpVelocity_ = jumpForce_; // ジャンプの初速度を設定
+			}
+		}
 	}
 }

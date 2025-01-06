@@ -40,11 +40,11 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	//アフィン行列
-	worldMatrix_ = MatrixMath::MakeAffineMatrix(
-		transform_.scale,
-		transform_.rotate,
-		transform_.translate
-	);
+	//worldMatrix_ = MatrixMath::MakeAffineMatrix(
+	//	transform_.scale,
+	//	transform_.rotate,
+	//	transform_.translate
+	//);
 
 	//カメラのセット
 	camera_ = object3dCommon_->GetDefaultCamera();

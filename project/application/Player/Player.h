@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Collision/Collider.h"
 #include "ParticleEmitter.h"
+#include "PlayerState/BasePlayerState.h"
 #include <list>
 
 class Sprite;
@@ -46,6 +47,8 @@ public:
 	/// 移動入力処理
 	/// </summary>
 	void Move();
+
+	void SetState(std::unique_ptr<BasePlayerState> state) { state_ = std::move(state); }
 	
 	/// <summary>
 	/// ImGuiの更新処理
@@ -59,17 +62,13 @@ public:
 
 	void UpdateInvincibleTime();
 
+	void Jump();
+
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///		getter
 	////////////////////////////////////////////////////////////////////////////////////////
-
-
-	/// <summary>
-	/// worldTransformの取得
-	/// </summary>
-	//const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
 	/// <summary>
 	/// velocityの取得
@@ -93,22 +92,48 @@ public:
 	/// </summary>
 	bool GetIsAlive() { return isAlive_; }
 
+	bool GetIsJumping() { return isJumping_; }
+
+	float GetPlayerFloor() { return playerfloor_; }
+
+	float GetJumpVelocity() { return jumpVelocity_; }
+
+	const float GetGravity() { return gravity_; }
+
+	const float GetJumpForce() { return jumpForce_; }
+
 	/// <summary>
 	///	弾リストの取得
 	/// </summary>
 	const std::list<PlayerBullet*>& GetBullet() { return playerBullet_; }
+
+	const int32_t& GetHP() { return hp_; }
+	const int32_t& GetMaxHP() { return maxHP_; }
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///		setter
 	////////////////////////////////////////////////////////////////////////////////////////
 
-	//void SetWorldPos(Vector3 pos) { worldTransform_.translation_ = pos; }
+	void SetWorldPos(const Vector3& pos) { transform_.translate = pos; }
 
-	//void SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
+	void SetWorldPosY(const float& posY) { transform_.translate.y = posY; }
 
-	const int32_t& GetHP() { return hp_; }
-	const int32_t& GetMaxHP() { return maxHP_; }
+	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
+
+	void SetVelocityX(const float& velocityX) { velocity_.x = velocityX; }
+
+	void SetVelocityY(const float& velocityY) { velocity_.y = velocityY; }
+
+	void SetVelocityZ(const float& velocityZ) { velocity_.z = velocityZ; }
+
+	void SetIsJumping(bool isJumping) { isJumping_ = isJumping; }
+
+	void SetPlayerFloor(float playerfloor) { playerfloor_ = playerfloor; }
+
+	void SetJumpVelocity(float jumpVelocity) { jumpVelocity_ = jumpVelocity; }
+
+
 
 private:
 
@@ -121,10 +146,7 @@ private:
 	/// </summary>
 	void Attack();
 
-	// ジャンプ処理
-	void Jump();
-
-
+	void ShotBullet();
 
 private:
 
@@ -134,6 +156,8 @@ private:
 
 	AudioManager::SoundData DamageSE;
 
+	// プレイヤーの状態
+	std::unique_ptr<BasePlayerState> state_;
 
 	//移動限界座標
 	static inline const Vector2 kMoveLimit_ = { 15.0f,15.0f };
@@ -156,7 +180,7 @@ private:
 	float jumpVelocity_ = 0.0f;    // ジャンプの初速度
 	const float jumpForce_ = 0.5f; // ジャンプ力
 	const float gravity_ = -0.02f; // 重力
-	float playerfloor_;
+	float playerfloor_ = 0.0f;
 
 	// 体力
 	int32_t hp_;
