@@ -102,6 +102,8 @@ public:
 
 	const float GetJumpForce() { return jumpForce_; }
 
+	uint32_t GetAttackInterval() { return attackInterval_; }
+
 	/// <summary>
 	///	弾リストの取得
 	/// </summary>

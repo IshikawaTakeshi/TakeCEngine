@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "PlayerStateIdle.h"
 #include "PlayerStateJump.h"
+#include "PlayerStateAttack.h"
 
 void PlayerStateRun::Initialize() {}
 
@@ -33,12 +34,14 @@ void PlayerStateRun::Update() {
 		player_->GetIsJumping() == false) {
 		player_->SetState(std::make_unique<PlayerStateIdle>(player_));
 	}
-
 	//SPACEキーでジャンプ
 	else if (player_->GetIsJumping()) {
 		player_->SetState(std::make_unique<PlayerStateJump>(player_));
-	} else {
-
 	}
-
+	//攻撃処理が入力されたらAttack状態に遷移
+	else if (Input::GetInstance()->PushKey(DIK_E)) {
+		player_->SetState(std::make_unique<PlayerStateAttack>(player_));
+	} else {
+		//何もしない
+	}
 }

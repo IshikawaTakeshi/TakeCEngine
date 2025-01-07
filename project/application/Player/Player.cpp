@@ -44,7 +44,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
 	Object3d::Initialize(object3dCommon, filePath);
-	transform_.translate = {0.0f, 0.0f, -20.0f};
+	transform_.translate = { 0.0f, 0.0f, -20.0f };
 	isJumping_ = false;   // ジャンプ中かどうか
 	jumpVelocity_ = 0.0f; // ジャンプの初速度
 	playerfloor_ = 0.0f;  // 地面
@@ -74,7 +74,7 @@ void Player::Update() {
 
 	UpdateInvincibleTime();
 
-	// 移動及び攻撃処理
+	// 移動
 	Move();
 
 	// 攻撃
@@ -135,7 +135,7 @@ void Player::DrawUI() {
 
 void Player::Move() {
 
-	velocity_ = {0, 0, 0};
+	velocity_ = { 0, 0, 0 };
 
 #pragma region 1.旋回処理
 	// 回転
@@ -172,7 +172,7 @@ void Player::Move() {
 	transform_.translate.z = std::clamp(transform_.translate.z, -kMoveLimit_.y, 0.0f);
 #pragma endregion
 
-	
+
 
 }
 
@@ -188,7 +188,7 @@ void Player::UpdateImGui() {
 
 	ImGui::DragFloat3("scale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat3("rotate", &transform_.rotate.x, 0.01f);
-	ImGui::DragFloat3("transrate", &transform_.translate.x, 0.01f);
+	ImGui::DragFloat3("translate", &transform_.translate.x, 0.01f);
 	ImGui::DragInt("shakingTime", &shakingTime_);
 	ImGui::Text("State: %s", state_->GetName().c_str());
 	//Object3d::UpdateImGui(12);
@@ -235,13 +235,13 @@ void Player::UpdateInvincibleTime() {
 
 		// 点滅処理
 		if (damageCoolTime_ % 10 < 5) {
-			color_ = {1.0f, 0.0f, 0.0f, 1.0f}; // 赤色
+			color_ = { 1.0f, 0.0f, 0.0f, 1.0f }; // 赤色
 		} else {
-			color_ = {1.0f, 1.0f, 1.0f, 1.0f}; // 通常色
+			color_ = { 1.0f, 1.0f, 1.0f, 1.0f }; // 通常色
 		}
 	} else {
 		damageCoolTime_ = 60;              // 被弾クールタイムをリセット
-		color_ = {1.0f, 1.0f, 1.0f, 1.0f}; // 通常色に戻す
+		color_ = { 1.0f, 1.0f, 1.0f, 1.0f }; // 通常色に戻す
 	}
 
 	if (damageCoolTime_ <= 0) {
@@ -255,7 +255,7 @@ void Player::UpdateInvincibleTime() {
 
 Vector3 Player::GetWorldPos() {
 	// ワールド行列の平行移動成分を取得(ワールド座標)
-	Vector3 worldPos{worldMatrix_.m[3][0], worldMatrix_.m[3][1], worldMatrix_.m[3][2]};
+	Vector3 worldPos{ worldMatrix_.m[3][0], worldMatrix_.m[3][1], worldMatrix_.m[3][2] };
 
 	return worldPos;
 }
@@ -266,14 +266,14 @@ Vector3 Player::GetWorldPos() {
 
 Vector3 Player::GetWorldPos3DReticle() {
 	/*Vector3 worldPos{
-	    worldTransform3DReticle_.matWorld_.m[3][0],
-	    worldTransform3DReticle_.matWorld_.m[3][1],
-	    worldTransform3DReticle_.matWorld_.m[3][2]
+		worldTransform3DReticle_.matWorld_.m[3][0],
+		worldTransform3DReticle_.matWorld_.m[3][1],
+		worldTransform3DReticle_.matWorld_.m[3][2]
 	};
 
 	return worldPos;*/
 
-	return {0, 0, 0};
+	return { 0, 0, 0 };
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -285,8 +285,9 @@ void Player::Attack() {
 
 	attackInterval_++;
 	if (attackInterval_ > 20) {
-		ShotBullet();
-		attackInterval_ = 0;
+		if (Input::GetInstance()->PushKey(DIK_E)) {
+			ShotBullet();
+		}
 	}
 
 	// 弾の更新
@@ -306,24 +307,24 @@ void Player::Attack() {
 
 void Player::ShotBullet() {
 
-	if (Input::GetInstance()->PushKey(DIK_E)) {
+	// 弾の速度
+	const float kBulletSpeed = 0.44f;
+	const float kBulletSpeedy = 0.44f;
 
-		// 弾の速度
-		const float kBulletSpeed = 0.44f;
-		const float kBulletSpeedy = 0.44f;
+	Vector3 bulletVelocity = { 0, kBulletSpeedy, kBulletSpeed };
 
-		Vector3 bulletVelocity = { 0, kBulletSpeedy, kBulletSpeed };
+	// プレイヤーから照準オブジェクトへのベクトル
+	bulletVelocity = MatrixMath::TransformNormal(bulletVelocity, worldMatrix_);
 
-		// プレイヤーから照準オブジェクトへのベクトル
-		bulletVelocity = MatrixMath::TransformNormal(bulletVelocity, worldMatrix_);
+	// 弾の生成
+	PlayerBullet* newBullet = new PlayerBullet();
+	newBullet->Initialize(Object3dCommon::GetInstance(), GetWorldPos(), bulletVelocity);
+	// newBullet->SetParent(&worldTransform_); //親子関係の設定(ワールド行列の更新を親に依存する
+	// 弾を登録する
+	playerBullet_.push_back(newBullet);
 
-		// 弾の生成
-		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(Object3dCommon::GetInstance(), GetWorldPos(), bulletVelocity);
-		// newBullet->SetParent(&worldTransform_); //親子関係の設定(ワールド行列の更新を親に依存する
-		// 弾を登録する
-		playerBullet_.push_back(newBullet);
-	}
+	attackInterval_ = 0;
+
 }
 
 void Player::Jump() {
