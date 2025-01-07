@@ -50,14 +50,10 @@ float QuaternionMath::Norm(const Quaternion& q) {
 Quaternion QuaternionMath::Normalize(const Quaternion& q) {
 	Quaternion result;
 	float norm = Norm(q);
-	if (norm > 0.0f) {
-		result.x = q.x / norm;
-		result.y = q.y / norm;
-		result.z = q.z / norm;
-		result.w = q.w / norm;
-	} else {
-		result = QuaternionMath::IdentityQuaternion();
-	}
+	result.x = q.x / norm;
+	result.y = q.y / norm;
+	result.z = q.z / norm;
+	result.w = q.w / norm;
 	return result;
 }
 

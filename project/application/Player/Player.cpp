@@ -110,10 +110,11 @@ void Player::Update() {
 void Player::Draw() {
 
 	// モデル描画
-	Object3d::Draw();
-	// 照準オブジェクトの描画
-	// model_->Draw(worldTransform3DReticle_, viewProjection);
+	Object3d::DrawForASkinningModel();
 
+}
+
+void Player::DrawBullet() {
 	// 弾の描画
 	for (auto& bullet : playerBullet_) {
 		bullet->Draw();

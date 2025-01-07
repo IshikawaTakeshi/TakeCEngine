@@ -117,6 +117,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Player\Player.cpp" />
     <ClCompile Include="application\Player\PlayerBullet.cpp" />
     <ClCompile Include="application\Player\PlayerState\BasePlayerState.cpp" />
+    <ClCompile Include="application\scene\GameClearScene.cpp" />
+    <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="engine\Animation\Animator.cpp" />
     <ClCompile Include="engine\3d\AABB.cpp" />
     <ClCompile Include="engine\Animation\Skeleton.cpp" />
@@ -190,6 +192,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Player\PlayerBullet.h" />
     <ClInclude Include="application\Player\PlayerState\BasePlayerState.h" />
     <ClInclude Include="application\Player\PlayerState\PlayerStateAttack.h" />
+    <ClInclude Include="application\scene\GameClearScene.h" />
+    <ClInclude Include="application\scene\GameOverScene.h" />
     <ClInclude Include="engine\Animation\Animator.h" />
     <ClInclude Include="engine\3d\AABB.h" />
     <ClInclude Include="engine\Animation\Keyflame.h" />

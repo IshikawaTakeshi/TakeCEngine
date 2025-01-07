@@ -38,6 +38,8 @@ public:
 	/// </summary>
 	void Draw();
 
+	void DrawBullet();
+
 	/// <summary>
 	/// UIの描画処理
 	/// </summary>

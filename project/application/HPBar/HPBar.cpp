@@ -50,7 +50,7 @@ void HPBar::Draw() {
 	}
 	if (bugeSprite_) {
 
-		bugeSprite_->Draw();
+		//bugeSprite_->Draw();
 	}
 }
 

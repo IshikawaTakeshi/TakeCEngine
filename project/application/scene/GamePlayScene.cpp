@@ -18,15 +18,15 @@ void GamePlayScene::Initialize() {
 	//Camera0
 	camera0_ = std::make_shared<Camera>();
 	camera0_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	camera0_->SetTranslate({ 0.0f,4.0f,-20.0f });
-	//camera0_->SetRotate({ 0.16f,0.0f,0.0f });
+	camera0_->SetTranslate({ 0.0f,20.0f,-50.0f });
+	camera0_->SetRotate({ 0.15f,0.0f,0.0f });
 	CameraManager::GetInstance()->AddCamera("Camera0", *camera0_);
 
 	//Camera1
 	camera1_ = std::make_shared<Camera>();
 	camera1_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
 	camera1_->SetTranslate({ 5.0f,0.0f,-1.0f });
-	//camera1_->SetRotate({ 0.0f,-1.4f,0.0f });
+	camera1_->SetRotate({ 0.0f,-1.4f,0.0f });
 	CameraManager::GetInstance()->AddCamera("Camera1", *camera1_);
 
 	//デフォルトカメラの設定
@@ -39,34 +39,56 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "bunny.obj");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
-
-	//Sprite
-	sprite_ = std::make_unique<Sprite>();
-	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/uvChecker.png");
+	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//Object3d
-	object3d = std::make_unique<Object3d>();
+	/*object3d = std::make_unique<Object3d>();
 	object3d->Initialize(Object3dCommon::GetInstance(), "plane.obj");
 
 	humanObject = std::make_unique<Object3d>();
 	humanObject->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
-	humanObject->SetPosition({ 0.0f,1.0f,0.0f });
+	humanObject->SetPosition({ 0.0f,1.0f,0.0f });*/
 
 	// Player
 	player_ = std::make_unique<Player>();
-	player_->Initialize(Object3dCommon::GetInstance(), "axis.obj");
+	player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
 
 	// Enemy
 	enemy_ = std::make_unique<Enemy>();
-	enemy_->Initialize(Object3dCommon::GetInstance(), "sphere.obj", player_.get());
+	enemy_->Initialize(Object3dCommon::GetInstance(), "bunny.obj", player_.get());
 
 	// ground
 	ground_ = std::make_unique<Ground>();
 	ground_->Initialize(Object3dCommon::GetInstance(), "ground.obj");
+
+	//HPbar
+	enemyhpBar = std::make_unique<HPBar>();
+	enemyhpBar->Initialize(
+		SpriteCommon::GetInstance(),
+		"Resources/images/buckHp.png",
+		"Resources/images/flontHp.png",
+		"Resources/images/enemybuge.png");
+	enemyhpBar->SetPosition({ 723,17 });
+	enemyhpBar->SetSize({ 550,40 });
+	enemyhpBar->SetbugePosition({ 647,1 });
+	enemyhpBar->SetbugeSize({ 75,75 });
+
+
+	playerhpBar = std::make_unique<HPBar>();
+	playerhpBar->Initialize(
+		SpriteCommon::GetInstance(),
+		"Resources/images/buckHp.png",
+		"Resources/images/flontHp.png",
+		"Resources/images/playerbuge.png");
+	playerhpBar->SetPosition({ 93,670 });
+	playerhpBar->SetSize({ 550,40 });
+	playerhpBar->SetbugePosition({ 9,644 });
+	playerhpBar->SetbugeSize({ 75,75 });
 
 	//CreateParticle
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
@@ -84,7 +106,6 @@ void GamePlayScene::Initialize() {
 //====================================================================
 
 void GamePlayScene::Finalize() {
-	sprite_.reset();    //スプライトの解放
 	CollisionManager::GetInstance()->Finalize();           // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	//AudioManager::GetInstance()->SoundUnload(&soundData1); //音声データ解放
@@ -116,10 +137,6 @@ void GamePlayScene::Update() {
 	//SkyBoxの更新
 	skyBox_->Update();
 
-	sprite_->Update(); 	//Spriteの更新
-	//3Dオブジェクトの更新
-	//object3d->Update(); 
-	humanObject->Update();
 	//パーティクル発生器の更新
 	particleEmitter1_->Update(); 
 	particleEmitter2_->Update();
@@ -131,6 +148,11 @@ void GamePlayScene::Update() {
 	// enemyの更新
 	enemy_->Update();
 
+	// hpber
+	enemyhpBar->Update((float)enemy_->GetHP(), (float)enemy_->GetMaxHP());
+	playerhpBar->Update((float)player_->GetHP(), (float)player_->GetMaxHP());
+
+
 	TakeCFrameWork::GetParticleManager()->Update(); //パーティクルの更新
 
 	CollisionManager::GetInstance()->ClearCollider();
@@ -140,6 +162,14 @@ void GamePlayScene::Update() {
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
 		//シーン切り替え依頼
 		SceneManager::GetInstance()->ChangeScene("TITLE");
+	}
+
+	if (!enemy_->GetIsAlive()) {
+		//AudioManager::GetInstance()->SoundUnload(&gamePlayBGM);
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+	} else if (player_->GetHP() <= 0) {
+		//AudioManager::GetInstance()->SoundUnload(&gamePlayBGM);
+		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 	}
 }
 
@@ -153,14 +183,15 @@ void GamePlayScene::Draw() {
 	skyBox_->Draw();
 
 	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
-	sprite_->Draw();              //スプライトの描画
+	enemyhpBar->Draw();
+	playerhpBar->Draw();
 
 	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
-	player_->Draw();    //プレイヤーの描画
 	enemy_->Draw();     //敵の描画
-
+	player_->DrawBullet();
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理
-	humanObject->DrawForASkinningModel();
+	player_->Draw();    //プレイヤーの描画
+	
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
