@@ -4,6 +4,7 @@
 #include "DirectXCommon.h"
 #include "ImGuiManager.h"
 #include "Input.h"
+#include "math/Easing.h"
 
 Camera::~Camera() {}
 
@@ -31,34 +32,44 @@ void Camera::Initialize(ID3D12Device* device) {
 
 void Camera::Update() {
 
-	//追加回転分の回転行列の計算
-	Matrix4x4 rotationMatrixDelta_ = MatrixMath::MakeIdentity4x4();
+	// クォータニオンで回転を管理
+	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
 
 	if (Input::GetInstance()->IsPressMouse(1)) {
-		rotationMatrixDelta_ = rotationMatrixDelta_ * MatrixMath::MakeRotateXMatrix((float)Input::GetInstance()->GetMouseMove().lY * 0.001f);
-		rotationMatrixDelta_ = rotationMatrixDelta_ * MatrixMath::MakeRotateYMatrix((float)Input::GetInstance()->GetMouseMove().lX * 0.001f);
+		// マウス入力による回転計算
+		float deltaPitch = (float)Input::GetInstance()->GetMouseMove().lY * 0.001f; // X軸回転
+		float deltaYaw = (float)Input::GetInstance()->GetMouseMove().lX * 0.001f;   // Y軸回転
+
+		// クォータニオンを用いた回転計算
+		Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
+			Vector3(0,1,0), deltaYaw);
+		Quaternion pitchRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
+			QuaternionMath::RotateVector(Vector3(1, 0, 0), yawRotation * transform_.rotate), deltaPitch);
+
+		//回転の補間
+		//rotationDelta = Easing::Slerp(transform_.rotate, pitchRotation * yawRotation, 1.0f);
+		rotationDelta = pitchRotation * yawRotation;
 	}
 
-	//累積回転行列の計算
-	rotationMatrix_ = rotationMatrix_ * rotationMatrixDelta_;
+	// 累積回転を更新
+	transform_.rotate = rotationDelta * transform_.rotate;
+	transform_.rotate = QuaternionMath::Normalize(transform_.rotate); // クォータニオンを正規化して数値誤差を防ぐ
 
 	if (Input::GetInstance()->IsPressMouse(2)) {
 		offsetDelta_.x += (float)Input::GetInstance()->GetMouseMove().lX * 0.01f;
 		offsetDelta_.y -= (float)Input::GetInstance()->GetMouseMove().lY * 0.01f;
 	}
-	//オフセットを考慮したワールド行列の計算
+
+	// オフセットを考慮したワールド行列の計算
 	offsetDelta_.z += (float)Input::GetInstance()->GetWheel() * 0.01f;
 	offset_ = offsetDelta_;
-	
-	offset_ = MatrixMath::TransformNormal(offset_, rotationMatrix_);
+
+	// 回転を適用
+	offset_ = MatrixMath::TransformNormal(offset_,MatrixMath::MakeRotateMatrix(transform_.rotate));
 	transform_.translate = offset_;
-	
-	Matrix4x4 translationMatrix = MatrixMath::MakeTranslateMatrix(transform_.translate);
-	Matrix4x4 scaleMatrix = MatrixMath::MakeScaleMatrix(transform_.scale);
 
+	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 
-
-	worldMatrix_ = scaleMatrix * rotationMatrix_ * translationMatrix;
 	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);
 
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
@@ -106,6 +117,7 @@ void Camera::ShakeCamera() {
 #ifdef _DEBUG
 void Camera::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
+	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat("FovX", &fovX_, 0.01f);
 }
 

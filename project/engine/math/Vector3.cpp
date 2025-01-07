@@ -30,6 +30,11 @@ Vector3 operator*(const Vector3& v, float s) {
 	return s * v;
 }
 
+Vector3 operator*(const Vector3& v1, const Vector3& v2) {
+	
+	return Vector3Math::Multiply(v1, v2);
+}
+
 Vector3 operator/(float s, const Vector3& v) {
 	return Vector3Math::Multiply(1.0f / s, v);
 }

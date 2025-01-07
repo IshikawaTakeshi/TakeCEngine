@@ -50,10 +50,14 @@ float QuaternionMath::Norm(const Quaternion& q) {
 Quaternion QuaternionMath::Normalize(const Quaternion& q) {
 	Quaternion result;
 	float norm = Norm(q);
-	result.x = q.x / norm;
-	result.y = q.y / norm;
-	result.z = q.z / norm;
-	result.w = q.w / norm;
+	if (norm > 0.0f) {
+		result.x = q.x / norm;
+		result.y = q.y / norm;
+		result.z = q.z / norm;
+		result.w = q.w / norm;
+	} else {
+		result = QuaternionMath::IdentityQuaternion();
+	}
 	return result;
 }
 
@@ -98,6 +102,10 @@ Quaternion operator*(const Quaternion& q, float s) {
 
 Quaternion operator*(float s, const Quaternion& q) {
 	return q * s;
+}
+
+Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs) {
+	return QuaternionMath::Multiply(lhs, rhs);
 }
 
 Quaternion operator/(const Quaternion& q, float s) {

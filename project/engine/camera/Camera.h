@@ -33,14 +33,14 @@ public: //getter
 	const Matrix4x4& GetViewProjectionMatrix() const { return viewProjectionMatrix_; }
 	const Matrix4x4& GetRotationMatrix() const { return rotationMatrix_; }
 	const Vector3& GetTranslate() const { return transform_.translate; }
-	const Vector3& GetRotate() const { return transform_.rotate; }
+	//const Vector3& GetRotate() const { return transform_.rotate; }
 	const bool& GetIsShaking() const { return isShaking_; }
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetCameraResource() const { return cameraResource_; }
 
 public: //setter
 
 	void SetTranslate(const Vector3& Translate) { transform_.translate = Translate; }
-	void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
+	//void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
 	void SetFovX(const float fovX) { fovX_ = fovX; }
 	void SetAspectRatio(const float aspectRatio) { aspectRatio_ = aspectRatio; }
 	void SetNearClip(const float nearClip) { nearClip_ = nearClip; }
@@ -54,7 +54,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource_;
 	CameraForGPU* cameraForGPU_;
 
-	EulerTransform transform_;
+	QuaternionTransform transform_;
 	Vector3 offset_;
 	Vector3 offsetDelta_;
 	Matrix4x4 worldMatrix_;
