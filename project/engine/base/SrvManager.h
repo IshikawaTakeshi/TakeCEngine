@@ -38,6 +38,11 @@ public:
 	/// </summary>
 	void CreateSRVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource, uint32_t srvIndex);
 
+	/// <summary>
+	/// UAV生成（Structured Buffer用）
+	/// </summary>
+	void CreateUAVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource, uint32_t uavIndex);
+
 	//テクスチャ確保可能チェック
 	bool CheckTextureAllocate();
 
