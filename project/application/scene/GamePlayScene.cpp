@@ -58,37 +58,10 @@ void GamePlayScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
 
-	// Enemy
-	enemy_ = std::make_unique<Enemy>();
-	enemy_->Initialize(Object3dCommon::GetInstance(), "bunny.obj", player_.get());
-
 	// ground
 	ground_ = std::make_unique<Ground>();
 	ground_->Initialize(Object3dCommon::GetInstance(), "ground.obj");
 
-	//HPbar
-	enemyhpBar = std::make_unique<HPBar>();
-	enemyhpBar->Initialize(
-		SpriteCommon::GetInstance(),
-		"Resources/images/buckHp.png",
-		"Resources/images/flontHp.png",
-		"Resources/images/enemybuge.png");
-	enemyhpBar->SetPosition({ 723,17 });
-	enemyhpBar->SetSize({ 550,40 });
-	enemyhpBar->SetbugePosition({ 647,1 });
-	enemyhpBar->SetbugeSize({ 75,75 });
-
-
-	playerhpBar = std::make_unique<HPBar>();
-	playerhpBar->Initialize(
-		SpriteCommon::GetInstance(),
-		"Resources/images/buckHp.png",
-		"Resources/images/flontHp.png",
-		"Resources/images/playerbuge.png");
-	playerhpBar->SetPosition({ 93,670 });
-	playerhpBar->SetSize({ 550,40 });
-	playerhpBar->SetbugePosition({ 9,644 });
-	playerhpBar->SetbugeSize({ 75,75 });
 
 	//CreateParticle
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
@@ -145,13 +118,6 @@ void GamePlayScene::Update() {
 	ground_->Update();
 	// プレイヤーの更新
 	player_->Update();
-	// enemyの更新
-	enemy_->Update();
-
-	// hpber
-	enemyhpBar->Update((float)enemy_->GetHP(), (float)enemy_->GetMaxHP());
-	playerhpBar->Update((float)player_->GetHP(), (float)player_->GetMaxHP());
-
 
 	TakeCFrameWork::GetParticleManager()->Update(); //パーティクルの更新
 
@@ -164,13 +130,13 @@ void GamePlayScene::Update() {
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
 
-	if (!enemy_->GetIsAlive()) {
-		//AudioManager::GetInstance()->SoundUnload(&gamePlayBGM);
-		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
-	} else if (player_->GetHP() <= 0) {
-		//AudioManager::GetInstance()->SoundUnload(&gamePlayBGM);
-		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
-	}
+	//if (!enemy_->GetIsAlive()) {
+	//	//AudioManager::GetInstance()->SoundUnload(&gamePlayBGM);
+	//	SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+	//} else if (player_->GetHP() <= 0) {
+	//	//AudioManager::GetInstance()->SoundUnload(&gamePlayBGM);
+	//	SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+	//}
 }
 
 //====================================================================
@@ -183,11 +149,9 @@ void GamePlayScene::Draw() {
 	skyBox_->Draw();
 
 	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
-	enemyhpBar->Draw();
-	playerhpBar->Draw();
 
 	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
-	enemy_->Draw();     //敵の描画
+	ground_->Draw();    //地面の描画
 	player_->DrawBullet();
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理
 	player_->Draw();    //プレイヤーの描画
@@ -202,17 +166,17 @@ void GamePlayScene::CheckAllCollisions() {
 	CollisionManager::GetInstance()->ClearCollider();
 
 	const std::list<PlayerBullet*>& playerBullets = player_->GetBullet();
-	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullet();
+	//const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullet();
 
 	CollisionManager::GetInstance()->RegisterCollider(player_.get());
-	CollisionManager::GetInstance()->RegisterCollider(enemy_.get());
+	//CollisionManager::GetInstance()->RegisterCollider(enemy_.get());
 
 	for (PlayerBullet* pBullet : playerBullets) {
 		CollisionManager::GetInstance()->RegisterCollider(pBullet);
 	}
-	for (EnemyBullet* eBullet : enemyBullets) {
-		CollisionManager::GetInstance()->RegisterCollider(eBullet);
-	}
+	//for (EnemyBullet* eBullet : enemyBullets) {
+	//	CollisionManager::GetInstance()->RegisterCollider(eBullet);
+	//}
 
 	CollisionManager::GetInstance()->CheckAllCollisions();
 }

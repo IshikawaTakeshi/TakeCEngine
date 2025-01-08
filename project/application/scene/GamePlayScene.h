@@ -55,21 +55,15 @@ private:
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 	//スプライト
 	std::unique_ptr<Sprite> sprite_ = nullptr;
-	//3Dオブジェクト
-	//std::unique_ptr <Object3d> object3d = nullptr;
-	//std::unique_ptr <Object3d> humanObject = nullptr;
+
 	//パーティクル発生器
 	std::unique_ptr<ParticleEmitter> particleEmitter1_ = nullptr;
 	std::unique_ptr<ParticleEmitter> particleEmitter2_ = nullptr;
 
 	// プレイヤー
 	std::unique_ptr<Player> player_ = nullptr;
-	// 敵
-	std::unique_ptr<Enemy> enemy_ = nullptr;
+
 	// 地面
 	std::unique_ptr<Ground> ground_ = nullptr;
 
-	//HPBar
-	std::unique_ptr<HPBar> enemyhpBar = nullptr;
-	std::unique_ptr<HPBar> playerhpBar = nullptr;
 };
