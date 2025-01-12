@@ -129,6 +129,21 @@ void SrvManager::SetComputeRootDescriptorTable(UINT RootParameterIndex, uint32_t
 }
 
 //================================================================================================
+// UAV生成（Structured Buffer用）
+//================================================================================================
+
+void SrvManager::CreateUAVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource, uint32_t uavIndex) {
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc{};
+	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+	uavDesc.Buffer.FirstElement = 0;
+	uavDesc.Buffer.NumElements = numElements;
+	uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
+	uavDesc.Buffer.StructureByteStride = stride;
+	dxCommon_->GetDevice()->CreateUnorderedAccessView(pResource, nullptr, &uavDesc, GetSrvDescriptorHandleCPU(uavIndex));
+}
+
+//================================================================================================
 // テクスチャ確保可能チェック
 //================================================================================================
 
@@ -140,6 +155,7 @@ bool SrvManager::CheckTextureAllocate() {
 
 	return false;
 }
+
 
 //================================================================================================
 // 描画前処理

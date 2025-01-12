@@ -5,6 +5,8 @@
 #include "ImGuiManager.h"
 
 #include <cassert>
+#include <d3d12shader.h>
+#include <d3dcompiler.h>
 
 PSO::~PSO() {
 

@@ -134,7 +134,7 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->DisPatch();
 	humanObject->DisPatchForASkinningModel();
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理
-	humanObject->DrawForASkinningModel();
+	//humanObject->DrawForASkinningModel();
 
 	//ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
