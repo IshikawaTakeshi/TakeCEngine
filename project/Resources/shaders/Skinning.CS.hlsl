@@ -19,11 +19,6 @@ struct SkinningInfomation {
 	uint numVertices;
 };
 
-struct Well {
-	float4x4 skeletonSpaceMatrix;
-	float4x4 skeletonSpaceInvTransposeMatrix;
-};
-
 StructuredBuffer<Well> gMatrixPalette : register(t0);
 StructuredBuffer<Vertex> gInputVertices : register(t1);
 
@@ -31,7 +26,7 @@ StructuredBuffer<VertexInfluence> gVertexInfluences : register(t2);
 
 RWStructuredBuffer<Vertex> gSkinnedVertices : register(u0);
 
-ConstantBuffer<VertexInformation> gVertexInformation : register(b0);
+ConstantBuffer<SkinningInfomation> gVertexInformation : register(b0);
 
 
 
@@ -43,7 +38,7 @@ void main(uint3 DTid : SV_DispatchThreadID) {
 	if (vertexIndex < gVertexInformation.numVertices) {
 	
 		Vertex input = gInputVertices[vertexIndex];
-	VertexInfluence influence = gInfluences[vertexIndex];
+	VertexInfluence influence = gVertexInfluences[vertexIndex];
 		
 		//Skinning後の頂点の計算
 		Vertex skinned;
