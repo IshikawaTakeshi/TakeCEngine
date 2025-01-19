@@ -5,8 +5,35 @@
 #include <wrl.h>
 #include <cstdint>
 #include <array>
+#include <vector>
+#include <string>
 
 #include "PSOType.h"
+
+// シェーダーリソース情報を一意に識別するためのキー
+struct ShaderResourceKey {
+	D3D_SHADER_INPUT_TYPE type;
+	UINT bindPoint;
+	UINT space;
+
+	bool operator==(const ShaderResourceKey& other) const {
+		return type == other.type && bindPoint == other.bindPoint && space == other.space;
+	}
+};
+
+struct ShaderResourceKeyHash {
+	std::size_t operator()(const ShaderResourceKey& key) const {
+		return std::hash<UINT>()(static_cast<UINT>(key.type)) ^
+			std::hash<UINT>()(key.bindPoint) ^
+			std::hash<UINT>()(key.space);
+	}
+};
+
+// リソース情報をまとめるデータ構造
+struct ShaderResourceInfo {
+	ShaderResourceKey key;
+	std::string name;
+};
 
 class DXC;
 class PSO {
@@ -30,6 +57,14 @@ public:
 	PSO() = default;
 	~PSO();
 
+	/// <summary>
+	/// shaderblobからルートシグネチャ生成
+	/// </summary>
+	/// <param name="device"></param>
+	/// <param name="shaderBlobs"></param>
+	/// <param name="rootSignature"></param>
+	void CreateRootSignatureFromShaders(
+		ID3D12Device* device, const std::vector<ComPtr<IDxcBlob>>& shaderBlobs, ComPtr<ID3D12RootSignature>& rootSignature);
 
 
 	void CreateRootSignatureForSprite(ID3D12Device* device);

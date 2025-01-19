@@ -7,6 +7,8 @@
 #include <cassert>
 #include <d3d12shader.h>
 #include <d3dcompiler.h>
+#include <unordered_map>
+
 
 PSO::~PSO() {
 
@@ -23,6 +25,135 @@ PSO::~PSO() {
 //=============================================================================
 // RootSignatureの生成
 //=============================================================================
+
+void PSO::CreateRootSignatureFromShaders(ID3D12Device* device, const std::vector<ComPtr<IDxcBlob>>& shaderBlobs, ComPtr<ID3D12RootSignature>& rootSignature) {
+
+	std::unordered_map<ShaderResourceKey, ShaderResourceInfo, ShaderResourceKeyHash> resources;
+
+	// 各シェーダーをリフレクションしてリソースを収集
+	for (const auto& shaderBlob : shaderBlobs) {
+		ComPtr<IDxcContainerReflection> containerReflection;
+		HRESULT hr = DxcCreateInstance(CLSID_DxcContainerReflection, IID_PPV_ARGS(&containerReflection));
+		if (FAILED(hr)) {
+			std::cerr << "Failed to create IDxcContainerReflection." << std::endl;
+			return;
+		}
+
+		hr = containerReflection->Load(shaderBlob.Get());
+		if (FAILED(hr)) {
+			std::cerr << "Failed to load shader blob into reflection." << std::endl;
+			return;
+		}
+
+		UINT32 shaderIdx = 0;
+		hr = containerReflection->FindFirstPartKind(DXC_PART_DXIL, &shaderIdx);
+		if (FAILED(hr)) {
+			std::cerr << "Failed to find DXIL part in shader blob." << std::endl;
+			return;
+		}
+
+		ComPtr<ID3D12ShaderReflection> shaderReflection;
+		hr = containerReflection->GetPartReflection(shaderIdx, IID_PPV_ARGS(&shaderReflection));
+		if (FAILED(hr)) {
+			std::cerr << "Failed to get shader reflection." << std::endl;
+			return;
+		}
+
+		D3D12_SHADER_DESC shaderDesc;
+		shaderReflection->GetDesc(&shaderDesc);
+
+		for (UINT i = 0; i < shaderDesc.BoundResources; ++i) {
+			D3D12_SHADER_INPUT_BIND_DESC bindDesc;
+			shaderReflection->GetResourceBindingDesc(i, &bindDesc);
+
+			ShaderResourceKey key = { bindDesc.Type, bindDesc.BindPoint, bindDesc.Space };
+			if (resources.find(key) == resources.end()) {
+				resources[key] = { key, bindDesc.Name };
+			}
+		}
+	}
+
+	// ルートシグネチャのパラメータを構築
+	std::vector<D3D12_ROOT_PARAMETER> rootParameters;
+	std::vector<D3D12_DESCRIPTOR_RANGE> descriptorRanges;
+
+	for (const auto& resource : resources) {
+		const ShaderResourceKey& key = resource.second.key;
+
+		if (key.type == D3D_SIT_CBUFFER) {
+			// 定数バッファ
+			D3D12_ROOT_PARAMETER rootParam = {};
+			rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+			rootParam.Descriptor.ShaderRegister = key.bindPoint;
+			rootParam.Descriptor.RegisterSpace = key.space;
+			rootParam.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+			rootParameters.push_back(rootParam);
+		} else if (key.type == D3D_SIT_TEXTURE || key.type == D3D_SIT_STRUCTURED) {
+			// テクスチャやストラクチャードバッファ
+			D3D12_DESCRIPTOR_RANGE range = {};
+			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+			range.NumDescriptors = 1;
+			range.BaseShaderRegister = key.bindPoint;
+			range.RegisterSpace = key.space;
+			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+			descriptorRanges.push_back(range);
+		}
+	}
+
+	// ディスクリプタテーブルのルートパラメータを追加
+	if (!descriptorRanges.empty()) {
+		D3D12_ROOT_PARAMETER rootParam = {};
+		rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		rootParam.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+		D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable = {};
+		descriptorTable.NumDescriptorRanges = static_cast<UINT>(descriptorRanges.size());
+		descriptorTable.pDescriptorRanges = descriptorRanges.data();
+
+		rootParam.DescriptorTable = descriptorTable;
+		rootParameters.push_back(rootParam);
+	}
+
+	// ルートシグネチャ記述を構築
+	D3D12_ROOT_SIGNATURE_DESC rootSigDesc = {};
+	rootSigDesc.NumParameters = static_cast<UINT>(rootParameters.size());
+	rootSigDesc.pParameters = rootParameters.data();
+	rootSigDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+	// ルートシグネチャをシリアライズして作成
+	ComPtr<ID3DBlob> serializedRootSig;
+	ComPtr<ID3DBlob> errorBlob;
+	HRESULT hr = D3D12SerializeRootSignature(
+		&rootSigDesc,
+		D3D_ROOT_SIGNATURE_VERSION_1,
+		&serializedRootSig,
+		&errorBlob);
+
+	if (FAILED(hr)) {
+		if (errorBlob) {
+			std::cerr << "Root Signature Serialization Error: " << (char*)errorBlob->GetBufferPointer() << std::endl;
+		} else {
+			std::cerr << "Unknown error during root signature serialization." << std::endl;
+		}
+		return;
+	}
+
+	hr = device->CreateRootSignature(
+		0,
+		serializedRootSig->GetBufferPointer(),
+		serializedRootSig->GetBufferSize(),
+		IID_PPV_ARGS(&rootSignature));
+
+	if (FAILED(hr)) {
+		std::cerr << "Failed to create root signature." << std::endl;
+		return;
+	}
+
+	std::cout << "Root signature successfully created." << std::endl;
+
+}
 
 void PSO::CreateRootSignatureForSprite(ID3D12Device* device) {
 
@@ -594,6 +725,9 @@ void PSO::CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fi
 	);
 	assert(pixelShaderBlob_ != nullptr);
 
+
+
+
 #pragma region SetDepthStencilDesc
 	//Depthの機能を有効化
 	depthStencilDesc_.DepthEnable = true;
@@ -651,6 +785,34 @@ void PSO::CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE 
 		dxc_->GetIncludeHandler().Get()
 	);
 	assert(pixelShaderBlob_ != nullptr);
+
+	Microsoft::WRL::ComPtr<ID3D12ShaderReflection> shaderReflection;
+
+	////シェーダーのリフレクションを取得
+	//result = D3DReflect(vertexShaderBlob_->GetBufferPointer(), vertexShaderBlob_->GetBufferSize(), IID_PPV_ARGS(&shaderReflection));
+
+	////シェーダー情報の取得
+	//D3D12_SHADER_DESC shaderDesc;
+	//shaderReflection->GetDesc(&shaderDesc);
+
+	//for(UINT i = 0; i < shaderDesc.BoundResources; i++) {
+	//	D3D12_SHADER_INPUT_BIND_DESC bindDesc;
+	//	shaderReflection->GetResourceBindingDesc(i, &bindDesc);
+
+	//	if(bindDesc.Type == D3D_SIT_CBUFFER) {
+	//		if(bindDesc.Name == "TransformationMatrix") {
+	//			rootParametersForObject3d_[1].Descriptor.ShaderRegister = bindDesc.BindPoint;
+	//		}
+	//	}
+	//	else if(bindDesc.Type == D3D_SIT_TEXTURE) {
+	//		if(bindDesc.Name == "Texture") {
+	//			descriptorRangeForObject3d_[0].BaseShaderRegister = bindDesc.BindPoint;
+	//		}
+	//		else if(bindDesc.Name == "envMap") {
+	//			descriptorRangeForObject3d_[1].BaseShaderRegister = bindDesc.BindPoint;
+	//		}
+	//	}
+	//}
 
 #pragma region SetDepthStencilDesc
 	//Depthの機能を有効化
