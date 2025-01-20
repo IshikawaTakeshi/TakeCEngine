@@ -13,17 +13,20 @@
 // シェーダーリソース情報を一意に識別するためのキー
 struct ShaderResourceKey {
 	D3D_SHADER_INPUT_TYPE type;
+	D3D12_SHADER_VISIBILITY visibility;
 	UINT bindPoint;
 	UINT space;
 
 	bool operator==(const ShaderResourceKey& other) const {
-		return type == other.type && bindPoint == other.bindPoint && space == other.space;
+		return type == other.type && visibility == other.visibility &&
+			bindPoint == other.bindPoint && space == other.space;
 	}
 };
 
 struct ShaderResourceKeyHash {
 	std::size_t operator()(const ShaderResourceKey& key) const {
 		return std::hash<UINT>()(static_cast<UINT>(key.type)) ^
+			std::hash<UINT>()(static_cast<UINT>(key.visibility)) ^
 			std::hash<UINT>()(key.bindPoint) ^
 			std::hash<UINT>()(key.space);
 	}
@@ -64,7 +67,7 @@ public:
 	/// <param name="shaderBlobs"></param>
 	/// <param name="rootSignature"></param>
 	void CreateRootSignatureFromShaders(
-		ID3D12Device* device, const std::vector<ComPtr<IDxcBlob>>& shaderBlobs, ComPtr<ID3D12RootSignature>& rootSignature);
+		ID3D12Device* device, const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
 
 
 	void CreateRootSignatureForSprite(ID3D12Device* device);

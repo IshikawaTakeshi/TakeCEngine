@@ -3,6 +3,7 @@
 #include "DirectXCommon.h"
 #include "DirectXShaderCompiler.h"
 #include "ImGuiManager.h"
+#include "StringUtility.h"
 
 #include <cassert>
 #include <d3d12shader.h>
@@ -26,12 +27,37 @@ PSO::~PSO() {
 // RootSignatureの生成
 //=============================================================================
 
-void PSO::CreateRootSignatureFromShaders(ID3D12Device* device, const std::vector<ComPtr<IDxcBlob>>& shaderBlobs, ComPtr<ID3D12RootSignature>& rootSignature) {
+void PSO::CreateRootSignatureFromShaders(
+	ID3D12Device* device,
+	const std::vector<ComPtr<IDxcBlob>>& shaderBlobs) {
 
 	std::unordered_map<ShaderResourceKey, ShaderResourceInfo, ShaderResourceKeyHash> resources;
 
+	// シェーダーの可視性を取得する関数
+	auto GetShaderVisibility = [&](D3D12_SHADER_DESC shaderDesc) {
+		UINT shaderVersion = D3D12_SHVER_GET_TYPE(shaderDesc.Version);
+		if (shaderVersion == D3D12_SHVER_VERTEX_SHADER) {
+
+			return D3D12_SHADER_VISIBILITY_VERTEX;
+
+		} else if (shaderVersion == D3D12_SHVER_PIXEL_SHADER) {
+
+			return D3D12_SHADER_VISIBILITY_PIXEL;
+
+		} else if (shaderVersion == D3D12_SHVER_COMPUTE_SHADER) {
+
+			return D3D12_SHADER_VISIBILITY_ALL;
+
+		} else {
+
+			return D3D12_SHADER_VISIBILITY_ALL;
+		}
+	};
+
 	// 各シェーダーをリフレクションしてリソースを収集
-	for (const auto& shaderBlob : shaderBlobs) {
+	for (size_t shaderIndex = 0; shaderIndex < shaderBlobs.size(); ++shaderIndex) {
+		const auto& shaderBlob = shaderBlobs[shaderIndex];
+		
 		ComPtr<IDxcContainerReflection> containerReflection;
 		HRESULT hr = DxcCreateInstance(CLSID_DxcContainerReflection, IID_PPV_ARGS(&containerReflection));
 		if (FAILED(hr)) {
@@ -59,23 +85,31 @@ void PSO::CreateRootSignatureFromShaders(ID3D12Device* device, const std::vector
 			return;
 		}
 
+
 		D3D12_SHADER_DESC shaderDesc;
 		shaderReflection->GetDesc(&shaderDesc);
+	
 
+		D3D12_SHADER_VISIBILITY visibility = GetShaderVisibility(shaderDesc);
+
+		// シェーダーのバインドリソースを収集
 		for (UINT i = 0; i < shaderDesc.BoundResources; ++i) {
 			D3D12_SHADER_INPUT_BIND_DESC bindDesc;
 			shaderReflection->GetResourceBindingDesc(i, &bindDesc);
-
-			ShaderResourceKey key = { bindDesc.Type, bindDesc.BindPoint, bindDesc.Space };
+			
+			ShaderResourceKey key = { bindDesc.Type,visibility, bindDesc.BindPoint, bindDesc.Space };
 			if (resources.find(key) == resources.end()) {
 				resources[key] = { key, bindDesc.Name };
 			}
 		}
 	}
 
+	// ルートシグネチャ記述を構築
+	D3D12_ROOT_SIGNATURE_DESC rootSigDesc = {};
+	rootSigDesc.Flags =
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 	// ルートシグネチャのパラメータを構築
 	std::vector<D3D12_ROOT_PARAMETER> rootParameters;
-	std::vector<D3D12_DESCRIPTOR_RANGE> descriptorRanges;
 
 	for (const auto& resource : resources) {
 		const ShaderResourceKey& key = resource.second.key;
@@ -84,9 +118,9 @@ void PSO::CreateRootSignatureFromShaders(ID3D12Device* device, const std::vector
 			// 定数バッファ
 			D3D12_ROOT_PARAMETER rootParam = {};
 			rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+			rootParam.ShaderVisibility = key.visibility;
 			rootParam.Descriptor.ShaderRegister = key.bindPoint;
-			rootParam.Descriptor.RegisterSpace = key.space;
-			rootParam.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+			//rootParam.Descriptor.RegisterSpace = key.space;
 
 			rootParameters.push_back(rootParam);
 		} else if (key.type == D3D_SIT_TEXTURE || key.type == D3D_SIT_STRUCTURED) {
@@ -95,64 +129,56 @@ void PSO::CreateRootSignatureFromShaders(ID3D12Device* device, const std::vector
 			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 			range.NumDescriptors = 1;
 			range.BaseShaderRegister = key.bindPoint;
-			range.RegisterSpace = key.space;
+			//range.RegisterSpace = key.space;
 			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-			descriptorRanges.push_back(range);
+			D3D12_ROOT_PARAMETER rootParam = {};
+			rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+			rootParam.ShaderVisibility = key.visibility;
+			rootParam.DescriptorTable.pDescriptorRanges = &range;
+			rootParam.DescriptorTable.NumDescriptorRanges = 1;
+
+			rootParameters.push_back(rootParam);
 		}
 	}
 
-	// ディスクリプタテーブルのルートパラメータを追加
-	if (!descriptorRanges.empty()) {
-		D3D12_ROOT_PARAMETER rootParam = {};
-		rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		rootParam.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-
-		D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable = {};
-		descriptorTable.NumDescriptorRanges = static_cast<UINT>(descriptorRanges.size());
-		descriptorTable.pDescriptorRanges = descriptorRanges.data();
-
-		rootParam.DescriptorTable = descriptorTable;
-		rootParameters.push_back(rootParam);
-	}
-
-	// ルートシグネチャ記述を構築
-	D3D12_ROOT_SIGNATURE_DESC rootSigDesc = {};
-	rootSigDesc.NumParameters = static_cast<UINT>(rootParameters.size());
 	rootSigDesc.pParameters = rootParameters.data();
-	rootSigDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	rootSigDesc.NumParameters = static_cast<UINT>(rootParameters.size());
+
+	//Samplerの設定
+	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
+	staticSamplers_[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
+	staticSamplers_[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers_[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; //比較しない
+	staticSamplers_[0].MaxLOD = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
+	staticSamplers_[0].ShaderRegister = 0; //レジスタ番号0を使う
+	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+
+	rootSigDesc.pStaticSamplers = staticSamplers_;
+	rootSigDesc.NumStaticSamplers = _countof(staticSamplers_);
 
 	// ルートシグネチャをシリアライズして作成
-	ComPtr<ID3DBlob> serializedRootSig;
-	ComPtr<ID3DBlob> errorBlob;
-	HRESULT hr = D3D12SerializeRootSignature(
-		&rootSigDesc,
+	signatureBlob_ = nullptr;
+	errorBlob_ = nullptr;
+	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc,
 		D3D_ROOT_SIGNATURE_VERSION_1,
-		&serializedRootSig,
-		&errorBlob);
+		&signatureBlob_,&errorBlob_);
 
 	if (FAILED(hr)) {
-		if (errorBlob) {
-			std::cerr << "Root Signature Serialization Error: " << (char*)errorBlob->GetBufferPointer() << std::endl;
-		} else {
-			std::cerr << "Unknown error during root signature serialization." << std::endl;
-		}
+		Logger::Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
+		assert(false);
+	}
+
+	hr = device->CreateRootSignature(0,signatureBlob_->GetBufferPointer(),
+		signatureBlob_->GetBufferSize(),IID_PPV_ARGS(&graphicRootSignature_));
+
+	if (FAILED(hr)) {
+		Logger::Log(StringUtility::ConvertString(L"Failed to create root signature."));
 		return;
 	}
 
-	hr = device->CreateRootSignature(
-		0,
-		serializedRootSig->GetBufferPointer(),
-		serializedRootSig->GetBufferSize(),
-		IID_PPV_ARGS(&rootSignature));
-
-	if (FAILED(hr)) {
-		std::cerr << "Failed to create root signature." << std::endl;
-		return;
-	}
-
-	std::cout << "Root signature successfully created." << std::endl;
-
+	Logger::Log(StringUtility::ConvertString(L"Root signature successfully created."));
 }
 
 void PSO::CreateRootSignatureForSprite(ID3D12Device* device) {
@@ -169,12 +195,6 @@ void PSO::CreateRootSignatureForSprite(ID3D12Device* device) {
 	descriptorRange_[0].OffsetInDescriptorsFromTableStart =
 		D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //offsetを自動計算
 
-	//.1 envMap
-	descriptorRange_[1].BaseShaderRegister = 1;
-	descriptorRange_[1].NumDescriptors = 1;
-	descriptorRange_[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptorRange_[1].OffsetInDescriptorsFromTableStart =
-		D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //offsetを自動計算
 
 	//ルートパラメータ。複数設定できるので配列。
 	//.0
@@ -695,14 +715,6 @@ void PSO::CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fi
 
 	itemCurrentIdx = 0;
 
-	/// ルートシグネチャ初期化
-	CreateRootSignatureForSprite(device_);
-	/// インプットレイアウト初期化
-	CreateInputLayout();
-	/// ブレンドステート初期化
-	CreateBlendStateForSprite();
-	/// ラスタライザステート初期化
-	CreateRasterizerState(fillMode);
 
 	//Shaderをコンパイル
 	//VS
@@ -725,8 +737,15 @@ void PSO::CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fi
 	);
 	assert(pixelShaderBlob_ != nullptr);
 
-
-
+	/// ルートシグネチャ初期化
+	CreateRootSignatureFromShaders(device, { vertexShaderBlob_, pixelShaderBlob_ });
+	//CreateRootSignatureForSprite(device);
+	/// インプットレイアウト初期化
+	CreateInputLayout();
+	/// ブレンドステート初期化
+	CreateBlendStateForSprite();
+	/// ラスタライザステート初期化
+	CreateRasterizerState(fillMode);
 
 #pragma region SetDepthStencilDesc
 	//Depthの機能を有効化
