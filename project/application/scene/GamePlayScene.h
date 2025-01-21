@@ -18,6 +18,14 @@
 
 #include "Quaternion.h"
 
+//app
+#include "application/Player/Player.h"
+#include "application/Player/PlayerBullet.h"
+#include "application/Enemy/Enemy.h"
+#include "application/Enemy/EnemyBullet.h"
+#include "application/Ground/Ground.h"
+#include "application/HPBar/HPBar.h"
+
 
 class GamePlayScene : public BaseScene {
 public:
@@ -34,6 +42,8 @@ public:
 	//描画処理
 	void Draw() override;
 
+	void CheckAllCollisions();
+
 private:
 
 	//サウンドデータ
@@ -45,10 +55,15 @@ private:
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 	//スプライト
 	std::unique_ptr<Sprite> sprite_ = nullptr;
-	//3Dオブジェクト
-	std::unique_ptr <Object3d> object3d = nullptr;
-	std::unique_ptr <Object3d> humanObject = nullptr;
+
 	//パーティクル発生器
 	std::unique_ptr<ParticleEmitter> particleEmitter1_ = nullptr;
 	std::unique_ptr<ParticleEmitter> particleEmitter2_ = nullptr;
+
+	// プレイヤー
+	std::unique_ptr<Player> player_ = nullptr;
+
+	// 地面
+	std::unique_ptr<Ground> ground_ = nullptr;
+
 };

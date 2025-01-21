@@ -10,6 +10,7 @@ struct Quaternion {
 
 Quaternion operator*(const Quaternion& q, float s);
 Quaternion operator*(float s, const Quaternion& q);
+Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs);
 Quaternion operator/(const Quaternion& q, float s);
 Quaternion operator+(const Quaternion& lhs, const Quaternion& rhs);
 Quaternion operator-(const Quaternion& lhs, const Quaternion& rhs);
@@ -38,5 +39,8 @@ namespace QuaternionMath {
 
 	//Quaternionの回転結果をベクトルで返す
 	Vector3 RotateVector(const Vector3& vector,const Quaternion& quaternion);
+
+	//Quaternionから4x4行列に変換
+
 	
 }

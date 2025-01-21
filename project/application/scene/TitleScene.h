@@ -38,5 +38,7 @@ private:
 	//スプライト
 	std::shared_ptr<Sprite> sprite_ = nullptr;
 	std::shared_ptr<Object3d> titleObject = nullptr;
+	std::unique_ptr<Object3d> startObject = nullptr;
+
 };
 

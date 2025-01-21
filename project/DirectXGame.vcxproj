@@ -46,12 +46,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\generated\obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)DirectXTex;$(SolutionDir)imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)/externals/DirectXTex;$(SolutionDir)/externals/imgui;$(SolutionDir)/externals/nlohmann</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\generated\obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)imgui;$(Solution)DirectXTex;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)/externals/DirectXTex;$(SolutionDir)/externals/imgui;$(SolutionDir)/externals/nlohmann</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -108,6 +108,17 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="application\Collision\Collider.cpp" />
+    <ClCompile Include="application\Collision\CollisionManager.cpp" />
+    <ClCompile Include="application\Enemy\Enemy.cpp" />
+    <ClCompile Include="application\Enemy\EnemyBullet.cpp" />
+    <ClCompile Include="application\Ground\Ground.cpp" />
+    <ClCompile Include="application\HPBar\HPBar.cpp" />
+    <ClCompile Include="application\Player\Player.cpp" />
+    <ClCompile Include="application\Player\PlayerBullet.cpp" />
+    <ClCompile Include="application\Player\PlayerState\BasePlayerState.cpp" />
+    <ClCompile Include="application\scene\GameClearScene.cpp" />
+    <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="engine\Animation\Animator.cpp" />
     <ClCompile Include="engine\3d\AABB.cpp" />
     <ClCompile Include="engine\Animation\Skeleton.cpp" />
@@ -164,8 +175,25 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\ParticleEmitter.cpp" />
     <ClCompile Include="engine\base\ParticleManager.cpp" />
     <ClCompile Include="application\SkyBox\SkyBox.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerStateIdle.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerStateRun.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerStateJump.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerStateAttack.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\Collision\Collider.h" />
+    <ClInclude Include="application\Collision\CollisionManager.h" />
+    <ClInclude Include="application\Collision\CollisionTypeIdDef.h" />
+    <ClInclude Include="application\Enemy\Enemy.h" />
+    <ClInclude Include="application\Enemy\EnemyBullet.h" />
+    <ClInclude Include="application\Ground\Ground.h" />
+    <ClInclude Include="application\HPBar\HPBar.h" />
+    <ClInclude Include="application\Player\Player.h" />
+    <ClInclude Include="application\Player\PlayerBullet.h" />
+    <ClInclude Include="application\Player\PlayerState\BasePlayerState.h" />
+    <ClInclude Include="application\Player\PlayerState\PlayerStateAttack.h" />
+    <ClInclude Include="application\scene\GameClearScene.h" />
+    <ClInclude Include="application\scene\GameOverScene.h" />
     <ClInclude Include="engine\Animation\Animator.h" />
     <ClInclude Include="engine\3d\AABB.h" />
     <ClInclude Include="engine\Animation\Keyflame.h" />
@@ -210,6 +238,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\ParticleCommon.h" />
     <ClInclude Include="engine\base\ParticleEmitter.h" />
     <ClInclude Include="engine\base\ParticleManager.h" />
+    <ClInclude Include="application\Player\PlayerState\PlayerStateIdle.h" />
+    <ClInclude Include="application\Player\PlayerState\PlayerStateRun.h" />
+    <ClInclude Include="application\Player\PlayerState\PlayerStateJump.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\base\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

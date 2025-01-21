@@ -177,32 +177,6 @@ void Model::DrawForASkinningModel() {
 	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
 }
 
-void Model::DisPatchForASkinningModel() {
-
-	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
-
-	// VBVを設定
-	mesh_->SetVertexBuffers(commandList, 0);
-
-	//.0 skinningInfo
-	commandList->SetComputeRootConstantBufferView(0, mesh_->GetVertexCountResource()->GetGPUVirtualAddress());
-	//.1 well
-	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(1, skinCluster_.paletteResourceIndex);
-	//.2 inputVertices
-	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(2, srvIndex_);
-	//.3 influence
-	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(3, skinCluster_.influenceResourceIndex);
-	//.4 outputVertices
-	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(4, uavIndex_);
-
-	//Dispatch
-	commandList->Dispatch(static_cast<UINT>(modelData_.vertices.size() + 1023) / 1024, 1, 1);
-}
-
-//void Model::DrawSkeleton() {
-//
-//
-//}
 
 //=============================================================================
 // パーティクル用描画処理
@@ -222,34 +196,3 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
 }
-
-//void Model::DrawSkeleton() {
-//
-//
-//}
-
-//=============================================================================
-// アニメーション適用
-//=============================================================================
-//
-//void Model::ApplyAnimation() {
-//
-//}
-
-
-
-//=============================================================================
-// Skeletonの作成
-//=============================================================================
-
-//Skeleton Model::CreateSkeleton(const Node& rootNode) {
-//
-//}
-
-//=============================================================================
-// NodeからJointを作成
-//=============================================================================
-
-//int32_t Model::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints) {
-//
-//}

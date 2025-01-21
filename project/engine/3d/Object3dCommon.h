@@ -53,6 +53,18 @@ public:
 
 	void SetDefaultCamera(Camera* camera) { defaultCamera_ = camera; }
 
+	void SetDirectionalLightIntensity(const float intensity) { directionalLightData_->intensity_ = intensity; }
+
+	void SetPointLightIntensity(const float intensity) { pointLightData_->intensity_ = intensity; }
+
+	void SetPointLightPosition(const Vector3& position) { pointLightData_->position_ = position; }
+
+	void SetPointLightColor(const Vector4& color) { pointLightData_->color_ = color; }
+
+	void SetPointLightRadius(float radius) { pointLightData_->radius_ = radius; }
+
+	void SetSLightIntensity(float intensity) { spotLightData_->intensity_ = intensity; }
+
 private:
 
 	Object3dCommon() = default;

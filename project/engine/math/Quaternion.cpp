@@ -100,6 +100,10 @@ Quaternion operator*(float s, const Quaternion& q) {
 	return q * s;
 }
 
+Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs) {
+	return QuaternionMath::Multiply(lhs, rhs);
+}
+
 Quaternion operator/(const Quaternion& q, float s) {
 	return { q.x / s, q.y / s, q.z / s, q.w / s };
 }

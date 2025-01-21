@@ -43,6 +43,8 @@ public: //ゲッター
 	/// </summary>
 	ID3D12Resource* GetMaterialResource() { return materialResource_.Get(); }
 
+	MaterialData* GetMaterialData() { return materialData_; }
+
 public: //セッター
 
 	/// <summary>
@@ -56,6 +58,8 @@ public: //セッター
 	void SetMaterialData(MaterialData* materialData) { materialData_ = materialData; }
 
 	void SetEnableLighting(bool enable) { materialData_->enableLighting = enable; }
+
+	void SetMaterialColor(Vector4 color) { materialData_->color = color; }
 
 private:
 

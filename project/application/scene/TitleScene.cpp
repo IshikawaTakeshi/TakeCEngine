@@ -1,6 +1,7 @@
 #include "TitleScene.h"
 #include "GamePlayScene.h"
 #include "SceneManager.h"
+#include <algorithm>
 
 void TitleScene::Initialize() {
 
@@ -8,30 +9,28 @@ void TitleScene::Initialize() {
 	camera0_ = std::make_shared<Camera>();
 	camera0_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
 	camera0_->SetTranslate({ 0.0f,0.0f,-20.0f });
-	camera0_->SetRotate({ 0.0f,0.0f,0.0f });
+	camera0_->SetRotate({ 0.1f,0.0f,0.0f });
 	CameraManager::GetInstance()->AddCamera("Tcamera0", *camera0_);
-
-	//Camera1
-	camera1_ = std::make_shared<Camera>();
-	camera1_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	camera1_->SetTranslate({ -5.0f,0.0f,-10.0f });
-	camera1_->SetRotate({ 0.0f,0.4f,0.0f });
-	CameraManager::GetInstance()->AddCamera("Tcamera1", *camera1_);
 
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
+	// Model読み込み
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend","Title.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend","enterStartText.obj");
 
 
-	//Sprite
-	sprite_ = std::make_shared<Sprite>();
-	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/monsterBall.png");
-
-	//Model読み込み
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "terrain.obj");
-
-	//object
+	// object
 	titleObject = std::make_shared<Object3d>();
-	titleObject->Initialize(Object3dCommon::GetInstance(), "terrain.obj");
+	titleObject->Initialize(Object3dCommon::GetInstance(), "Title.obj");
+	titleObject->SetScale({ 0.2f, 0.2f, 0.2f });
+	titleObject->SetRotation({ 0.0f, 0.0f, 0.0f });
+	titleObject->SetPosition({ -5.0f, -6.0f, 0.0f });
+	
+	startObject = std::make_unique<Object3d>();
+	startObject->Initialize(Object3dCommon::GetInstance(), "enterStartText.obj");
+	startObject->SetScale({ 0.8f, 0.8f, 0.8f });
+	startObject->SetRotation({ 0.0f, 0.0f, 3.14f });
+	startObject->SetPosition({ -1.0f, -2.5f, 0.0f });
 }
 
 void TitleScene::Finalize() {
@@ -54,8 +53,9 @@ void TitleScene::Update() {
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
 
-	sprite_->Update();
+	//sprite_->Update();
 	titleObject->Update();
+	startObject->Update();
 
 	//シーン遷移
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
@@ -67,7 +67,8 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 
 	SpriteCommon::GetInstance()->PreDraw();
-	sprite_->Draw();
+	//sprite_->Draw();
 	Object3dCommon::GetInstance()->PreDrawForObject3d();
 	titleObject->Draw();
+	startObject->Draw();
 }

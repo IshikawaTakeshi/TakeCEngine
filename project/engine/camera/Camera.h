@@ -17,6 +17,8 @@ public:
 	void Initialize(ID3D12Device* device);
 	void Update();
 
+	void ShakeCamera();
+
 #ifdef _DEBUG
 	void UpdateImGui();
 #endif // DEBUG
@@ -31,17 +33,21 @@ public: //getter
 	const Matrix4x4& GetViewProjectionMatrix() const { return viewProjectionMatrix_; }
 	const Matrix4x4& GetRotationMatrix() const { return rotationMatrix_; }
 	const Vector3& GetTranslate() const { return transform_.translate; }
-	const Vector3& GetRotate() const { return transform_.rotate; }
+	const Quaternion& GetRotate()const { return transform_.rotate; }
+	const bool& GetIsShaking() const { return isShaking_; }
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetCameraResource() const { return cameraResource_; }
 
 public: //setter
 
 	void SetTranslate(const Vector3& Translate) { transform_.translate = Translate; }
-	void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
+	void SetRotate(const Vector3& rotate);
+	void SetOffset(const Vector3& offset) { offset_ = offset; }
 	void SetFovX(const float fovX) { fovX_ = fovX; }
 	void SetAspectRatio(const float aspectRatio) { aspectRatio_ = aspectRatio; }
 	void SetNearClip(const float nearClip) { nearClip_ = nearClip; }
 	void SetFarClip(const float farClip) { farClip_ = farClip; }
+	void SetIsShaking(const bool isShaking) { isShaking_ = isShaking; }
+	void SetShake(float duration, float range);
 
 private:
 
@@ -49,7 +55,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource_;
 	CameraForGPU* cameraForGPU_;
 
-	EulerTransform transform_;
+	QuaternionTransform transform_;
 	Vector3 offset_;
 	Vector3 offsetDelta_;
 	Matrix4x4 worldMatrix_;
@@ -70,8 +76,12 @@ private:
 	float farClip_;
 
 	float pitch_ = 0.0f;
+	bool isDebug_ = false;
 
-	//名前(cameraManager::cameras_のキー)
-	//std::string name_;
+
+	bool isShaking_ = false;     // シェイク中かどうか
+	float shakeDuration_ = 0.0f; // シェイクの残り時間
+	Vector3 originalPosition_;   // シェイク開始前のカメラ位置
+	float shakeRange_ = 0.2f;    // シェイクの振幅
 };
 

@@ -2,8 +2,8 @@
 #include "DirectXCommon.h"
 #include "ResourceDataStructure.h"
 #include "TransformMatrix.h"
+#include "Model.h"
 
-class Model;
 class Camera;
 class PSO;
 class SkyBox {
@@ -29,6 +29,8 @@ public:
 	/// 描画処理
 	/// </summary>
 	void Draw();
+
+	void SetMaterialColor(const Vector4& color) { model_->GetMesh()->GetMaterial()->SetMaterialColor(color); }
 
 private: // privateメンバ変数
 
