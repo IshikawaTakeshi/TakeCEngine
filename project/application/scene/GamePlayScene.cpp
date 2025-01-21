@@ -51,6 +51,9 @@ void GamePlayScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
 
+	sprite_ = std::make_unique<Sprite>();
+	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
+		
 	//CreateParticle
 	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
 	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Sphere", "sphere.obj");
@@ -90,11 +93,12 @@ void GamePlayScene::Update() {
 
 #endif // DEBUG
 
+	sprite_->Update();
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
 	//SkyBoxの更新
-	//skyBox_->Update();
+	skyBox_->Update();
 
 	// プレイヤーの更新
 	player_->Update();
@@ -121,6 +125,7 @@ void GamePlayScene::Draw() {
 	//skyBox_->Draw();
 
 	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
+	sprite_->Draw();    //スプライトの描画
 
 	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
 
