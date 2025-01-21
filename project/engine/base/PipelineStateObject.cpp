@@ -99,6 +99,10 @@ void PSO::CreateRootSignatureFromShaders(
 			
 			ShaderResourceKey key = { bindDesc.Type,visibility, bindDesc.BindPoint, bindDesc.Space };
 			if (resources.find(key) == resources.end()) {
+				//サンプラーの場合はスキップ
+				if (bindDesc.Type == D3D_SIT_SAMPLER) {
+					continue;
+				}
 				resources[key] = { key, bindDesc.Name };
 			}
 		}
@@ -142,7 +146,6 @@ void PSO::CreateRootSignatureFromShaders(
 		}
 	}
 
-	rootParameters.resize(rootParameters.size());
 	rootSigDesc.pParameters = rootParameters.data();
 	rootSigDesc.NumParameters = static_cast<UINT>(rootParameters.size());
 

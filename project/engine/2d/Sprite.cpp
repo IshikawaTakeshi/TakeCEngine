@@ -181,11 +181,11 @@ void Sprite::AdjustTextureSize() {
 void Sprite::Draw() {
 	//spriteの描画。
 	mesh_->SetVertexBuffers(spriteCommon_->GetDirectXCommon()->GetCommandList(), 0);
+	//TransformationMatrixCBufferの場所の設定
+	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 	//materialCBufferの場所を指定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(
-		0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//TransformationMatrixCBufferの場所の設定
-	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+		1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(filePath_));
 	//IBVの設定
