@@ -142,6 +142,7 @@ void PSO::CreateRootSignatureFromShaders(
 		}
 	}
 
+	rootParameters.resize(rootParameters.size());
 	rootSigDesc.pParameters = rootParameters.data();
 	rootSigDesc.NumParameters = static_cast<UINT>(rootParameters.size());
 
