@@ -46,7 +46,7 @@ public:
 
 	void DrawForASkinningModel();
 
-	void DisPatchForASkinningModel();
+	//void DisPatchForASkinningModel();
 
 
 	/// <summary>

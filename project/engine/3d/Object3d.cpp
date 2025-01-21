@@ -137,7 +137,7 @@ void Object3d::DrawForASkinningModel() {
 
 void Object3d::DisPatchForASkinningModel() {
 	if (model_ != nullptr) {
-		model_->DisPatchForASkinningModel();
+		//model_->DisPatchForASkinningModel();
 	}
 }
 
