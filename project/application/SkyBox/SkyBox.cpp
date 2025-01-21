@@ -20,7 +20,7 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename
 	pso_->CreatePSO(kSkyBox, dxCommon_->GetDevice(),dxCommon_->GetDXC(), D3D12_FILL_MODE_SOLID);
 
 	//RootSignatureの生成
-	rootSignature_ = pso_->GetRootSignature();
+	rootSignature_ = pso_->GetGraphicRootSignature();
 
 	//モデルの生成
 	model_ = ModelManager::GetInstance()->FindModel(filename);

@@ -23,16 +23,20 @@ struct WellForGPU {
 };
 
 struct SkinCluster {
+
+	//エイリアステンプレート
+	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
 	std::vector<Matrix4x4> inverseBindPoseMatrices;
-	Microsoft::WRL::ComPtr<ID3D12Resource> influenceResource;
-	D3D12_VERTEX_BUFFER_VIEW influenceBufferView;
+	ComPtr<ID3D12Resource> influenceResource;
 	std::span<VertexInfluence> mappedInfluences;
-	Microsoft::WRL::ComPtr<ID3D12Resource> paletteResource;
+	ComPtr<ID3D12Resource> paletteResource;
 	std::span<WellForGPU> mappedPalette;
 	std::pair<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE> paletteSrvHandle;
-	uint32_t useSrvIndex;
+	uint32_t paletteResourceIndex;
+	uint32_t influenceResourceIndex;
 
-	void Create(const Microsoft::WRL::ComPtr<ID3D12Device>& device,SrvManager* srvManager,
+	void Create(const ComPtr<ID3D12Device>& device,SrvManager* srvManager,
 				Skeleton* skeleton,const ModelData& modelData);
 
 	void Update(Skeleton* skeleton);

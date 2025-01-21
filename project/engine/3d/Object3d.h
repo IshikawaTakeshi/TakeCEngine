@@ -40,6 +40,8 @@ public:
 	void Draw();
 	void DrawForASkinningModel();
 
+	void DisPatchForASkinningModel();
+
 public: //getter
 
 	Vector3 GetScale() const { return transform_.scale; }

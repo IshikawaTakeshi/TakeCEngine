@@ -34,6 +34,7 @@ void GamePlayScene::Initialize() {
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
+
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
@@ -64,14 +65,14 @@ void GamePlayScene::Initialize() {
 
 
 	//CreateParticle
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Sphere", "sphere.obj");
+	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
+	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Sphere", "sphere.obj");
 	particleEmitter1_ = std::make_unique<ParticleEmitter>();
 	particleEmitter2_ = std::make_unique<ParticleEmitter>();
-	particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },30, 0.5f);
-	particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },30, 0.5f);
-	particleEmitter1_->SetParticleName("Plane");
-	particleEmitter2_->SetParticleName("Sphere");
+	//particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },30, 0.5f);
+	//particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },30, 0.5f);
+	//particleEmitter1_->SetParticleName("Plane");
+	//particleEmitter2_->SetParticleName("Sphere");
 }
 
 //====================================================================
@@ -94,10 +95,12 @@ void GamePlayScene::Update() {
 
 	CameraManager::GetInstance()->UpdateImGui();
 	//sprite_->UpdateImGui(0);
+
 	//Object3dCommon::GetInstance()->UpdateImGui();
 	//object3d->UpdateImGui(0);
 	//humanObject->UpdateImGui(2);
 	player_->UpdateImGui();
+
 	particleEmitter1_->UpdateImGui();
 	particleEmitter2_->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
@@ -108,11 +111,11 @@ void GamePlayScene::Update() {
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
 	//SkyBoxの更新
-	skyBox_->Update();
+	//skyBox_->Update();
 
 	//パーティクル発生器の更新
-	particleEmitter1_->Update(); 
-	particleEmitter2_->Update();
+	//particleEmitter1_->Update(); 
+	//particleEmitter2_->Update();
 
 	// 地面の更新
 	ground_->Update();
@@ -146,11 +149,12 @@ void GamePlayScene::Update() {
 void GamePlayScene::Draw() {
 
 	//SkyBoxの描画
-	skyBox_->Draw();
+	//skyBox_->Draw();
 
 	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
 
 	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
+
 	ground_->Draw();    //地面の描画
 	player_->DrawBullet();
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理

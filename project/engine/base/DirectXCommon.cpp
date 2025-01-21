@@ -570,8 +570,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE DirectXCommon::GetGPUDescriptorHandle(ID3D12Descript
 //		BufferResource生成
 //==============================================================================================
 
-Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(
-	ID3D12Device* device, size_t sizeInBytes) {
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
 	HRESULT result = S_FALSE;
@@ -583,7 +582,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(
 	//頂点リソースの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	resourceDesc.Width = sizeInBytes; // リソースのサイズ。今回はVector4を3頂点分
+	resourceDesc.Width = sizeInBytes; // リソースのサイズ
 	//バッファの場合はこれらは1にする決まり
 	resourceDesc.Height = 1;
 	resourceDesc.DepthOrArraySize = 1;
@@ -591,9 +590,42 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(
 	resourceDesc.SampleDesc.Count = 1;
 	//バッファの場合はこれにする決まり
 	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
 	//実際に頂点リソースを作る
 	result = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
 		&resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+		IID_PPV_ARGS(&resource));
+	assert(SUCCEEDED(result));
+
+	return resource;
+}
+
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResourceUAV(ID3D12Device* device, size_t sizeInBytes) {
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
+	HRESULT result = S_FALSE;
+
+	//ヒーププロパティ
+	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
+	uploadHeapProperties.Type = D3D12_HEAP_TYPE_DEFAULT; // defaultを使う
+
+	//頂点リソースの設定
+	D3D12_RESOURCE_DESC resourceDesc{};
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	resourceDesc.Width = sizeInBytes; // リソースのサイズ
+	//バッファの場合はこれらは1にする決まり
+	resourceDesc.Height = 1;
+	resourceDesc.DepthOrArraySize = 1;
+	resourceDesc.MipLevels = 1;
+	resourceDesc.SampleDesc.Count = 1;
+	//バッファの場合はこれにする決まり
+	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	//UAVを利用するかどうか
+	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	//実際に頂点リソースを作る
+	result = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
+		&resourceDesc, D3D12_RESOURCE_STATE_COMMON, nullptr,
 		IID_PPV_ARGS(&resource));
 	assert(SUCCEEDED(result));
 

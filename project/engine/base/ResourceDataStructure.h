@@ -69,10 +69,15 @@ struct JointWeightData {
 	std::vector<VertexWeightData> vertexWeights;
 };
 
+struct SkinningInfo {
+	uint32_t numVertices;
+};
+
 //モデル1個分のデータ
 struct ModelData {
 	std::map<std::string, JointWeightData> skinClusterData;
 	std::vector<VertexData> vertices;
+	SkinningInfo skinningInfo;
 	std::vector<uint32_t> indices;
 	ModelMaterialData material;
 	Node rootNode;

@@ -26,7 +26,7 @@ void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 		dxCommon_->GetDXC(),
 		D3D12_FILL_MODE_SOLID);
 
-	rootSignature_ = pso_->GetRootSignature();
+	rootSignature_ = pso_->GetGraphicRootSignature();
 }
 
 void ParticleCommon::UpdateImGui() {

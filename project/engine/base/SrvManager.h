@@ -38,6 +38,11 @@ public:
 	/// </summary>
 	void CreateSRVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource, uint32_t srvIndex);
 
+	/// <summary>
+	/// UAV生成（RWStructured Buffer用）
+	/// </summary>
+	void CreateUAVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource, uint32_t uavIndex);
+
 	//テクスチャ確保可能チェック
 	bool CheckTextureAllocate();
 
@@ -66,6 +71,8 @@ public:
 	/// <param name="RootParameterIndex"></param>
 	/// <param name="srvIndex"></param>
 	void SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex);
+
+	void SetComputeRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex);
 	
 public:
 	//================================================================================================

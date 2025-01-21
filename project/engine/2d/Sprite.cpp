@@ -127,7 +127,7 @@ void Sprite::UpdateImGui(int id) {
 void Sprite::UpdateVertexData() {
 	//頂点データ
 	VertexData* vertexData;
-	mesh_->GetVertexResource()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	mesh_->GetInputVertexResource()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	//anchorPoint
 	float left = 0.0f - anchorPoint_.x;
 	float right = 1.0f - anchorPoint_.x;
@@ -181,11 +181,11 @@ void Sprite::AdjustTextureSize() {
 void Sprite::Draw() {
 	//spriteの描画。
 	mesh_->SetVertexBuffers(spriteCommon_->GetDirectXCommon()->GetCommandList(), 0);
+	//TransformationMatrixCBufferの場所の設定
+	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 	//materialCBufferの場所を指定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(
-		0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//TransformationMatrixCBufferの場所の設定
-	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+		1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(filePath_));
 	//IBVの設定
