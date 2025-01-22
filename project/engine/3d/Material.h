@@ -61,6 +61,10 @@ public: //セッター
 
 	void SetMaterialColor(Vector4 color) { materialData_->color = color; }
 
+	void SetShininess(float shininess) { materialData_->shininess = shininess; }
+
+	void SetEnvCoefficient(float envCoefficient) { materialData_->envCoefficient = envCoefficient; }
+
 private:
 
 

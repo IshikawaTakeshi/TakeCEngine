@@ -47,6 +47,10 @@ void GamePlayScene::Initialize() {
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
+	//Ground
+	ground_ = std::make_unique<Ground>();
+	ground_->Initialize(Object3dCommon::GetInstance(), "ground.obj");
+
 	// Player
 	player_ = std::make_unique<Player>();
 	player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
@@ -99,6 +103,8 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->Update();
 	//SkyBoxの更新
 	skyBox_->Update();
+	//Groundの更新
+	ground_->Update();
 
 	// プレイヤーの更新
 	player_->Update();
@@ -128,6 +134,9 @@ void GamePlayScene::Draw() {
 	sprite_->Draw();    //スプライトの描画
 
 	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
+
+	//Groundの描画
+	ground_->Draw();
 
 	player_->DrawBullet();
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理

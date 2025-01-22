@@ -27,7 +27,8 @@ void Ground::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
   
 	transform_.translate = {0.0f, -1.0f, 0.0f};
 	//transform_.scale = { 0.1f, .0f, 100.0f };
-
+	model_->GetMesh()->GetMaterial()->SetEnableLighting(false);
+	model_->GetMesh()->GetMaterial()->SetEnvCoefficient(0.0f);
 }
 
 void Ground::Update() {
