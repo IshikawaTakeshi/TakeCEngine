@@ -115,10 +115,12 @@ void GamePlayScene::Update() {
 	CheckAllCollisions();
 
 	//シーン遷移
+#ifdef _DEBUG
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
 		//シーン切り替え依頼
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
+#endif // _DEBUG
 }
 
 //====================================================================
@@ -128,7 +130,7 @@ void GamePlayScene::Update() {
 void GamePlayScene::Draw() {
 
 	//SkyBoxの描画
-	//skyBox_->Draw();
+	skyBox_->Draw();
 
 	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
 	sprite_->Draw();    //スプライトの描画

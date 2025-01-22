@@ -61,21 +61,13 @@ public:
 	~PSO();
 
 	/// <summary>
-	/// shaderblobからルートシグネチャ生成
+	/// shaderからルートシグネチャ生成
 	/// </summary>
 	/// <param name="device"></param>
 	/// <param name="shaderBlobs"></param>
 	/// <param name="rootSignature"></param>
 	void CreateRootSignatureFromShaders(
 		ID3D12Device* device, const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
-
-
-	void CreateRootSignatureForSprite(ID3D12Device* device);
-
-	/// <summary>
-	/// Object3D用のルートシグネチャ生成
-	/// </summary>
-	void CreateRootSignatureForObject3D(ID3D12Device* device);
 
 	void CreateGraphicRootSignatureForSkinnedObject3D(ID3D12Device* device);
 	void CreateComputeRootSignatureForSkinnedObject3D(ID3D12Device* device);
@@ -150,13 +142,11 @@ private:
 
 	//rootSignature
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
-	D3D12_ROOT_PARAMETER rootParametersForObject3d_[8] = {};
 	D3D12_ROOT_PARAMETER graphicRootParameters_[9] = {};
 	D3D12_ROOT_PARAMETER computeRootParameters_[5] = {};
 	D3D12_ROOT_PARAMETER rootParametersForParticle_[3] = {};
-	D3D12_ROOT_PARAMETER rootParametersForSprite_[3] = {};
+
 	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
-	D3D12_DESCRIPTOR_RANGE descriptorRangeForObject3d_[2] = {};
 	D3D12_DESCRIPTOR_RANGE graphicDescriptorRange_[2] = {};
 	D3D12_DESCRIPTOR_RANGE computeDescriptorRange_[4] = {};
 	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};

@@ -123,11 +123,11 @@ void Model::Draw() {
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
-	
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.envMapFilePath));
+	commandList->SetGraphicsRootConstantBufferView(2, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	//textureSRV
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(4, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
+	//envMapSRV
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(6, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.envMapFilePath));
 	//IBVの設定
 	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	//DrawCall
@@ -143,8 +143,8 @@ void Model::DrawSkyBox() {
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	//TextureSRV
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
 
 	//IBVの設定
