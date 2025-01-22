@@ -24,10 +24,10 @@ PSO::~PSO() {
 }
 
 //=============================================================================
-// RootSignatureの生成
+// シェーダー情報からRootSignatureの生成
 //=============================================================================
 
-void PSO::CreateRootSignatureFromShaders(
+Microsoft::WRL::ComPtr<ID3D12RootSignature> PSO::CreateRootSignatureFromShaders(
 	ID3D12Device* device,
 	const std::vector<ComPtr<IDxcBlob>>& shaderBlobs) {
 
@@ -62,33 +62,31 @@ void PSO::CreateRootSignatureFromShaders(
 		HRESULT hr = DxcCreateInstance(CLSID_DxcContainerReflection, IID_PPV_ARGS(&containerReflection));
 		if (FAILED(hr)) {
 			//"Failed to create IDxcContainerReflection."
-			return;
+			assert(false);
 		}
 
 		hr = containerReflection->Load(shaderBlob.Get());
 		if (FAILED(hr)) {
 			//"Failed to load shader blob into reflection."
-			return;
+			assert(false);
 		}
 
 		UINT32 shaderIdx = 0;
 		hr = containerReflection->FindFirstPartKind(DXC_PART_DXIL, &shaderIdx);
 		if (FAILED(hr)) {
 			//"Failed to find DXIL part in shader blob."
-			return;
+			assert(false);
 		}
 
 		ComPtr<ID3D12ShaderReflection> shaderReflection;
 		hr = containerReflection->GetPartReflection(shaderIdx, IID_PPV_ARGS(&shaderReflection));
 		if (FAILED(hr)) {
 			//"Failed to get shader reflection."
-			return;
+			assert(false);
 		}
-
 
 		D3D12_SHADER_DESC shaderDesc;
 		shaderReflection->GetDesc(&shaderDesc);
-	
 
 		D3D12_SHADER_VISIBILITY visibility = GetShaderVisibility(shaderDesc);
 
@@ -177,117 +175,19 @@ void PSO::CreateRootSignatureFromShaders(
 		assert(false);
 	}
 
+	ComPtr<ID3D12RootSignature> rootSignature;
+
 	hr = device->CreateRootSignature(0,signatureBlob_->GetBufferPointer(),
-		signatureBlob_->GetBufferSize(),IID_PPV_ARGS(&graphicRootSignature_));
+		signatureBlob_->GetBufferSize(),IID_PPV_ARGS(&rootSignature));
 
 	if (FAILED(hr)) {
 		Logger::Log(StringUtility::ConvertString(L"Failed to create root signature."));
-		return;
+		assert(false);
 	}
 
 	Logger::Log(StringUtility::ConvertString(L"Root signature successfully created."));
-}
 
-//=============================================================================
-// graphicRootSignatureの生成(SkinningObject3D)
-//=============================================================================
-
-void PSO::CreateGraphicRootSignatureForSkinnedObject3D(ID3D12Device* device) {
-
-	HRESULT result = S_FALSE;
-	//ルートシグネチャ
-	descriptionRootSignature_.Flags =
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-	//ディスクリプターレンジ
-	//.0 Texture
-	graphicDescriptorRange_[0].BaseShaderRegister = 0;
-	graphicDescriptorRange_[0].NumDescriptors = 1;
-	graphicDescriptorRange_[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	graphicDescriptorRange_[0].OffsetInDescriptorsFromTableStart =
-		D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //offsetを自動計算
-
-	//.1 envMap
-	graphicDescriptorRange_[1].BaseShaderRegister = 1;
-	graphicDescriptorRange_[1].NumDescriptors = 1;
-	graphicDescriptorRange_[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	graphicDescriptorRange_[1].OffsetInDescriptorsFromTableStart =
-		D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-	//ルートパラメータ。複数設定できるので配列。
-	//.0 Material
-	graphicRootParameters_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	graphicRootParameters_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	graphicRootParameters_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
-	//.1 TransformationMatrix
-	graphicRootParameters_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	graphicRootParameters_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	graphicRootParameters_[1].Descriptor.ShaderRegister = 0;
-	//.2 Texture
-	graphicRootParameters_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
-	graphicRootParameters_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	graphicRootParameters_[2].DescriptorTable.pDescriptorRanges = &graphicDescriptorRange_[0]; //Tableの中身の配列を指定
-	graphicRootParameters_[2].DescriptorTable.NumDescriptorRanges = 1; //Tableで利用する数
-	//.3 DirectionalLight
-	graphicRootParameters_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	graphicRootParameters_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	graphicRootParameters_[3].Descriptor.ShaderRegister = 1; //レジスタ番号1
-	//.4 カメラの情報
-	graphicRootParameters_[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	graphicRootParameters_[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	graphicRootParameters_[4].Descriptor.ShaderRegister = 2; //レジスタ番号2
-	//.5 PointLightのデータ
-	graphicRootParameters_[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	graphicRootParameters_[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	graphicRootParameters_[5].Descriptor.ShaderRegister = 3; //レジスタ番号3
-	//.6 SpotLightのデータ
-	graphicRootParameters_[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	graphicRootParameters_[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
-	graphicRootParameters_[6].Descriptor.ShaderRegister = 4; //レジスタ番号4
-	//.7 envMap
-	graphicRootParameters_[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
-	graphicRootParameters_[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	graphicRootParameters_[7].DescriptorTable.pDescriptorRanges = &graphicDescriptorRange_[1];
-	graphicRootParameters_[7].DescriptorTable.NumDescriptorRanges = 1;
-	//.8 outputedVertices
-	graphicRootParameters_[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	graphicRootParameters_[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	graphicRootParameters_[8].DescriptorTable.pDescriptorRanges = &graphicDescriptorRange_[0];
-	graphicRootParameters_[8].DescriptorTable.NumDescriptorRanges = 1;
-
-
-	descriptionRootSignature_.pParameters = graphicRootParameters_; //rootParameter配列へのポインタ
-	descriptionRootSignature_.NumParameters = _countof(graphicRootParameters_); //配列の長さ
-
-	//Samplerの設定
-	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
-	staticSamplers_[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
-	staticSamplers_[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers_[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; //比較しない
-	staticSamplers_[0].MaxLOD = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
-	staticSamplers_[0].ShaderRegister = 0; //レジスタ番号0を使う
-	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-
-	descriptionRootSignature_.pStaticSamplers = staticSamplers_;
-	descriptionRootSignature_.NumStaticSamplers = _countof(staticSamplers_);
-
-	//シリアライズ
-	signatureBlob_ = nullptr;
-	errorBlob_ = nullptr;
-
-	result = D3D12SerializeRootSignature(&descriptionRootSignature_,
-		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
-	if (FAILED(result)) {
-		Logger::Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
-		assert(false);
-	}
-	//バイナリをもとに生成
-	graphicRootSignature_ = nullptr;
-	result = device->CreateRootSignature(0, signatureBlob_->GetBufferPointer(),
-		signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&graphicRootSignature_)
-	);
-	assert(SUCCEEDED(result));
+	return rootSignature;
 }
 
 //=============================================================================
@@ -488,7 +388,6 @@ void PSO::CreateInputLayoutForSkyBox() {
 
 	inputLayoutDesc_.pInputElementDescs = inputElementDescsForSkyBox_.data();
 	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescsForSkyBox_.size());
-
 }
 
 void PSO::CreateInputLayoutForSkinningObject() {
@@ -526,7 +425,6 @@ void PSO::CreateBlendStateForObject3d() {
 	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
 	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
-
 }
 
 void PSO::CreateBlendStateForParticle() {
@@ -587,7 +485,7 @@ void PSO::CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fi
 	assert(pixelShaderBlob_ != nullptr);
 
 	/// ルートシグネチャ初期化
-	CreateRootSignatureFromShaders(device, { vertexShaderBlob_, pixelShaderBlob_ });
+	graphicRootSignature_ = CreateRootSignatureFromShaders(device, { vertexShaderBlob_, pixelShaderBlob_ });
 	//CreateRootSignatureForSprite(device);
 	/// インプットレイアウト初期化
 	CreateInputLayout();
@@ -647,7 +545,7 @@ void PSO::CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE 
 	assert(pixelShaderBlob_ != nullptr);
 
 	/// ルートシグネチャ初期化
-	CreateRootSignatureFromShaders(device, { vertexShaderBlob_, pixelShaderBlob_ });
+	graphicRootSignature_ = CreateRootSignatureFromShaders(device, { vertexShaderBlob_, pixelShaderBlob_ });
 	/// インプットレイアウト初期化
 	CreateInputLayout();
 	/// ブレンドステート初期化
@@ -683,16 +581,6 @@ void PSO::CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FI
 
 	itemCurrentIdx = 0;
 
-	/// ルートシグネチャ初期化
-	CreateGraphicRootSignatureForSkinnedObject3D(device_);
-	CreateComputeRootSignatureForSkinnedObject3D(device_);
-	/// インプットレイアウト初期化
-	CreateInputLayoutForSkinningObject();
-	/// ブレンドステート初期化
-	CreateBlendStateForObject3d();
-	/// ラスタライザステート初期化
-	CreateRasterizerState(fillMode);
-
 	//Shaderをコンパイル
 	//VS
 	vertexShaderBlob_ = dxc_->CompileShader(
@@ -722,6 +610,16 @@ void PSO::CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FI
 		dxc_->GetIncludeHandler().Get()
 	);
 	assert(computeShaderBlob_ != nullptr);
+
+	/// ルートシグネチャ初期化
+	graphicRootSignature_ = CreateRootSignatureFromShaders(device, { vertexShaderBlob_, pixelShaderBlob_ });
+	CreateComputeRootSignatureForSkinnedObject3D(device_);
+	/// インプットレイアウト初期化
+	CreateInputLayoutForSkinningObject();
+	/// ブレンドステート初期化
+	CreateBlendStateForObject3d();
+	/// ラスタライザステート初期化
+	CreateRasterizerState(fillMode);
 
 #pragma region SetDepthStencilDesc
 	//Depthの機能を有効化
@@ -836,7 +734,7 @@ void PSO::CreatePSOForSkyBox(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fi
 	assert(pixelShaderBlob_ != nullptr);
 
 	/// ルートシグネチャ初期化
-	CreateRootSignatureFromShaders(device, { vertexShaderBlob_, pixelShaderBlob_ });
+	graphicRootSignature_ = CreateRootSignatureFromShaders(device, { vertexShaderBlob_, pixelShaderBlob_ });
 	/// インプットレイアウト初期化
 	CreateInputLayoutForSkyBox();
 	/// ブレンドステート初期化

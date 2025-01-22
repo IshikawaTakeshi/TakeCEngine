@@ -66,7 +66,7 @@ public:
 	/// <param name="device"></param>
 	/// <param name="shaderBlobs"></param>
 	/// <param name="rootSignature"></param>
-	void CreateRootSignatureFromShaders(
+	ComPtr<ID3D12RootSignature> CreateRootSignatureFromShaders(
 		ID3D12Device* device, const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
 
 	void CreateGraphicRootSignatureForSkinnedObject3D(ID3D12Device* device);
