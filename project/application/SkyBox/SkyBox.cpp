@@ -78,8 +78,8 @@ void SkyBox::Draw() {
 	commandList->SetPipelineState(pso_->GetGraphicPipelineState());
 
 
-	//wvp用のCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	//TransformationMatrix
+	commandList->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
 	if (model_ != nullptr) {
 		model_->DrawSkyBox();

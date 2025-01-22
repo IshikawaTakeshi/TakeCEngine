@@ -29,6 +29,11 @@ void Camera::Initialize(ID3D12Device* device) {
 	cameraForGPU_ = nullptr;
 	cameraResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraForGPU_));
 	cameraForGPU_->worldPosition = transform_.translate;
+
+#ifdef _DEBUG
+	isDebug_ = true;
+#endif // _DEBUG
+
 }
 
 void Camera::Update() {
