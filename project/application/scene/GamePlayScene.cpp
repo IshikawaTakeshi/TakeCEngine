@@ -37,6 +37,7 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "running.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_00.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_01.gltf");
 
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
@@ -67,7 +68,7 @@ void GamePlayScene::Initialize() {
 	sphereModel_->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
 
 	AnimationModel_ = std::make_unique<Object3d>();
-	AnimationModel_->Initialize(Object3dCommon::GetInstance(), "Animation_Node_00.gltf");
+	AnimationModel_->Initialize(Object3dCommon::GetInstance(), "Animation_Node_01.gltf");
 	AnimationModel_->SetPosition({ 10.0f,0.0f,0.0f });
 	AnimationModel_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.0f);
 }
