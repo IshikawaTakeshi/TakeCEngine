@@ -81,6 +81,7 @@ struct ModelData {
 	std::vector<uint32_t> indices;
 	ModelMaterialData material;
 	Node rootNode;
+	bool haveBone = false;
 };
 
 //パーティクル用の行列,色データ

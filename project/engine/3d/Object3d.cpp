@@ -70,19 +70,20 @@ void Object3d::Update() {
 	}
 
 	
-	//Animationがある場合は更新
-	if (model_->GetAnimation().duration != 0.0f) {
+	//Skeletonがある場合は更新
+	if (model_->GetSkeleton()) {
 		WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 		TransformMatrixData_->World = worldMatrix_;
 		TransformMatrixData_->WVP = WVPMatrix_;
 		TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 		model_->Update();
 	} 
-	else { //Animationがない場合
+	else { //Skeletonがない場合
 		WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 		TransformMatrixData_->World = worldMatrix_;
 		TransformMatrixData_->WVP = model_->GetModelData().rootNode.localMatrix * WVPMatrix_;
 		TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
+		model_->Update();
 	}
 }
 

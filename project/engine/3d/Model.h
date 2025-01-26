@@ -119,4 +119,6 @@ private:
 	uint32_t srvIndex_ = 0;
 	uint32_t uavIndex_ = 0;
 	uint32_t skinnedsrvIndex_ = 0;
+
+	bool haveSkeleton_ = true;
 };
