@@ -111,6 +111,7 @@ ModelData ModelManager::LoadModelFile(const std::string& modelDirectoryPath, con
 				continue;
 			}
 			for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+				modelData.haveBone = true;
 				aiBone* bone = mesh->mBones[boneIndex];
 				std::string jointwName = bone->mName.C_Str();
 				JointWeightData& jointWeightData = modelData.skinClusterData[jointwName];

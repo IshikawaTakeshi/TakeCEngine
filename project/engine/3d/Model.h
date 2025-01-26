@@ -78,6 +78,8 @@ public: //ゲッター
 	//Animationの取得
 	Animation& GetAnimation() { return animation_; }
 
+	float GetDuration() { return animation_.duration; }
+
 
 	//テクスチャファイルパスの取得
 	const std::string& GetTextureFilePath() const { return modelData_.material.textureFilePath; }
