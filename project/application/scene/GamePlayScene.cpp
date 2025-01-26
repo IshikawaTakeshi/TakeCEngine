@@ -72,7 +72,7 @@ void GamePlayScene::Initialize() {
 	sphereModel_->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
 
 	AnimationModel_ = std::make_unique<Object3d>();
-	AnimationModel_->Initialize(Object3dCommon::GetInstance(), "Animation_Node_03.gltf");
+	AnimationModel_->Initialize(Object3dCommon::GetInstance(), "Animation_Node_00.gltf");
 	AnimationModel_->SetPosition({ 10.0f,0.0f,0.0f });
 	AnimationModel_->SetScale({ 2.0f,2.0f,2.0f });
 	AnimationModel_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.0f);
