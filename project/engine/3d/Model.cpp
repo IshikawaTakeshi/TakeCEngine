@@ -99,8 +99,6 @@ void Model::Update() {
 	if(haveSkeleton_) {
 		//アニメーションの更新とボーンへの適用
 		skeleton_->ApplyAnimation(animation_, animationTime);
-		//アニメーションの更新とボーンへの適用
-		skeleton_->ApplyAnimation(animation_, animationTime);
 
 		//スケルトンの更新
 		skeleton_->Update();
@@ -108,6 +106,13 @@ void Model::Update() {
 		//SkinClusterの更新
 		skinCluster_.Update(skeleton_.get());
 	}
+
+	//rootNodeのAnimationを取得
+	NodeAnimation& rootNodeAnimation = animation_.nodeAnimations;
+	translate_ = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
+	rotate_ = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
+	scale_ = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
+	localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
 
 	//最後まで行ったら最初からリピート再生する
 	animationTime = std::fmod(animationTime, animation_.duration);
