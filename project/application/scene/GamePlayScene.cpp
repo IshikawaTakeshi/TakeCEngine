@@ -134,16 +134,24 @@ void GamePlayScene::Draw() {
 	//SkyBoxの描画
 	skyBox_->Draw();
 
-	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
+	//Spriteの描画前処理
+	SpriteCommon::GetInstance()->PreDraw();
 	sprite_->Draw();    //スプライトの描画
 
-	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
+	//Object3dの描画前処理
+	Object3dCommon::GetInstance()->PreDrawForObject3d();
 
 	//Groundの描画
 	ground_->Draw();
 
 	player_->DrawBullet();
-	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理
+
+	// ディスパッチ
+	//Object3dCommon::GetInstance()->DisPatch();
+	//player_->DisPatch();
+
+	//SkinningObject3dの描画前処理
+	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();
 	player_->Draw();    //プレイヤーの描画
 	
 

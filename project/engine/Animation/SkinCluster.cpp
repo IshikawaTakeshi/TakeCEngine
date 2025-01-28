@@ -39,6 +39,12 @@ void SkinCluster::Create(
 	srvManager->CreateSRVforStructuredBuffer(
 		UINT(modelData.vertices.size()),sizeof(VertexInfluence),influenceResource.Get(),influenceIndex);
 
+	//skinningInfoResourceの作成
+	skinningInfoResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(SkinningInfo));
+	SkinningInfo* skinningInfoData = nullptr;
+	skinningInfoResource->Map(0, nullptr, reinterpret_cast<void**>(&skinningInfoData));
+	skinningInfo = modelData.skinningInfo;
+
 	//InverseBindPoseMatricesの保存領域の作成
 	inverseBindPoseMatrices.resize(skeleton->GetJoints().size());
 	std::generate(inverseBindPoseMatrices.begin(), inverseBindPoseMatrices.end(), []() {

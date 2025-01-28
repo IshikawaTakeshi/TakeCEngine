@@ -118,7 +118,6 @@ private:
 	//再生中の時刻
 	float animationTime = 0.0f;
 
-	uint32_t skinningInfoSrvIndex_ = 0;
 	uint32_t uavIndex_ = 0;
-	uint32_t skinnedsrvIndex_ = 0;
+	uint32_t inputIndex_ = 0;
 };

@@ -135,9 +135,9 @@ void Object3d::DrawForSkinningModel() {
 	}
 }
 
-void Object3d::DisPatchForASkinningModel() {
+void Object3d::DisPatchForSkinningModel() {
 	if (model_ != nullptr) {
-		//model_->DisPatchForASkinningModel();
+		model_->DisPatchForSkinningModel();
 	}
 }
 

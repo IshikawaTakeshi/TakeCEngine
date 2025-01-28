@@ -45,28 +45,18 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData, const std
 
 	mesh_->InitializeOutputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 
-	mesh_->InitializeSkinnedVertexResource(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
-
 	//skinningInfoResource
 	mesh_->InitializeVertexCountResource(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_.skinningInfo);
 	//indexResource
 	mesh_->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 
-	//SiknningInfoSRVの設定
-	skinningInfoSrvIndex_ = modelCommon_->GetSrvManager()->Allocate();
-	modelCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
-		modelData_.skinningInfo.numVertices,
-		sizeof(SkinningInfo),
-		mesh_->GetInputVertexResource(),
-		skinningInfoSrvIndex_);
-
 	//SRVの設定
-	skinnedsrvIndex_ = modelCommon_->GetSrvManager()->Allocate();
+	inputIndex_ = modelCommon_->GetSrvManager()->Allocate();
 	modelCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
 		modelData_.skinningInfo.numVertices,
 		sizeof(VertexData),
-		mesh_->GetSkinnedVertexResource(),
-		skinnedsrvIndex_);
+		mesh_->GetInputVertexResource(),
+		inputIndex_);
 	//UAVの設定
 	uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
 	modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
@@ -163,7 +153,7 @@ void Model::DrawForSkinningModel() {
 	//D3D12_VERTEX_BUFFER_VIEW vbv[] = { mesh_->GetVertexBufferView(0),mesh_->GetVertexBufferView(1) };
 
 	// VBVを設定
-	mesh_->SetSkinnedVertexBuffer(commandList, 0);
+	mesh_->SetVertexBuffers(commandList, 0);
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
@@ -182,19 +172,21 @@ void Model::DrawForSkinningModel() {
 
 void Model::DisPatchForSkinningModel() {
 
-	//ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
+	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
 	//skinninginfo
-	//commandList->SetComputeRootConstantBufferView(0, )
+	commandList->SetComputeRootConstantBufferView(0, skinCluster_.skinningInfoResource->GetGPUVirtualAddress());
 	//parette
-
+	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(1, skinCluster_.paletteIndex);
 	//influence
-	
+	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(2, skinCluster_.influenceIndex);
 	//inputVertex
-	// 
+	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(3, inputIndex_);
 	//outputVertex
-
+	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(4, uavIndex_);
 	
+	//DisPatch
+	commandList->Dispatch(UINT(modelData_.skinningInfo.numVertices + 1023) / 1024, 1, 1);
 }
 
 

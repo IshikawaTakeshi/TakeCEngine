@@ -40,7 +40,7 @@ public:
 	void Draw();
 	void DrawForSkinningModel();
 
-	void DisPatchForASkinningModel();
+	void DisPatchForSkinningModel();
 
 public: //getter
 
