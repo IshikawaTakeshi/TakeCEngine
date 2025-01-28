@@ -15,13 +15,13 @@ void SkinCluster::Create(
 	paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPaletteData));
 	mappedPalette = { mappedPaletteData, skeleton->GetJoints().size() };
 	//paletteのSRVのIndexを取得
-	paletteResourceIndex = srvManager->Allocate();
-	paletteSrvHandle.first = srvManager->GetSrvDescriptorHandleCPU(paletteResourceIndex);
-	paletteSrvHandle.second = srvManager->GetSrvDescriptorHandleGPU(paletteResourceIndex);
+	paletteIndex = srvManager->Allocate();
+	paletteSrvHandle.first = srvManager->GetSrvDescriptorHandleCPU(paletteIndex);
+	paletteSrvHandle.second = srvManager->GetSrvDescriptorHandleGPU(paletteIndex);
 
 	//paletteのsrv作成
 	srvManager->CreateSRVforStructuredBuffer(
-		UINT(skeleton->GetJoints().size()),sizeof(WellForGPU),paletteResource.Get(), paletteResourceIndex);
+		UINT(skeleton->GetJoints().size()),sizeof(WellForGPU),paletteResource.Get(), paletteIndex);
 
 	//influence用のResource確保
 	//VertexInfluence * std::vector<VertexData>
@@ -35,11 +35,9 @@ void SkinCluster::Create(
 	//influenceBufferView.BufferLocation = influenceResource->GetGPUVirtualAddress();
 	//influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData.vertices.size());
 	//influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
-	influenceResourceIndex = srvManager->Allocate();
+	influenceIndex = srvManager->Allocate();
 	srvManager->CreateSRVforStructuredBuffer(
-		UINT(modelData.vertices.size()),sizeof(VertexInfluence),influenceResource.Get(),influenceResourceIndex);
-
-	
+		UINT(modelData.vertices.size()),sizeof(VertexInfluence),influenceResource.Get(),influenceIndex);
 
 	//InverseBindPoseMatricesの保存領域の作成
 	inverseBindPoseMatrices.resize(skeleton->GetJoints().size());

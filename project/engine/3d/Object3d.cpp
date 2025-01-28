@@ -124,14 +124,14 @@ void Object3d::Draw() {
 	}
 }
 
-void Object3d::DrawForASkinningModel() {
+void Object3d::DrawForSkinningModel() {
 	ID3D12GraphicsCommandList* commandList = object3dCommon_->GetDirectXCommon()->GetCommandList();
 
 	//wvp用のCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 
 	if (model_ != nullptr) {
-		model_->DrawForASkinningModel();
+		model_->DrawForSkinningModel();
 	}
 }
 

@@ -110,7 +110,7 @@ void Player::Update() {
 void Player::Draw() {
 
 	// モデル描画
-	Object3d::DrawForASkinningModel();
+	Object3d::DrawForSkinningModel();
 
 }
 

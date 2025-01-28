@@ -59,13 +59,13 @@ void GamePlayScene::Initialize() {
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
 		
 	//CreateParticle
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
 	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Sphere", "sphere.obj");
 	particleEmitter1_ = std::make_unique<ParticleEmitter>();
 	particleEmitter2_ = std::make_unique<ParticleEmitter>();
-	//particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },30, 0.5f);
+	particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },30, 0.5f);
 	//particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },30, 0.5f);
-	//particleEmitter1_->SetParticleName("Plane");
+	particleEmitter1_->SetParticleName("Plane");
 	//particleEmitter2_->SetParticleName("Sphere");
 }
 
@@ -92,7 +92,7 @@ void GamePlayScene::Update() {
 	player_->UpdateImGui();
 
 	particleEmitter1_->UpdateImGui();
-	particleEmitter2_->UpdateImGui();
+	//particleEmitter2_->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
 #endif // DEBUG
@@ -108,6 +108,8 @@ void GamePlayScene::Update() {
 
 	// プレイヤーの更新
 	player_->Update();
+
+	particleEmitter1_->Update();
 
 	TakeCFrameWork::GetParticleManager()->Update(); //パーティクルの更新
 

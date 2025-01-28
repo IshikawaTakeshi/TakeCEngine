@@ -42,28 +42,23 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData, const std
 
 	//VertexResource
 	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+
 	mesh_->InitializeOutputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+
 	mesh_->InitializeSkinnedVertexResource(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+
 	//skinningInfoResource
 	mesh_->InitializeVertexCountResource(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_.skinningInfo);
 	//indexResource
 	mesh_->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 
-	//SRVの設定
-	srvIndex_ = modelCommon_->GetSrvManager()->Allocate();
+	//SiknningInfoSRVの設定
+	skinningInfoSrvIndex_ = modelCommon_->GetSrvManager()->Allocate();
 	modelCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
 		modelData_.skinningInfo.numVertices,
-		sizeof(VertexData),
+		sizeof(SkinningInfo),
 		mesh_->GetInputVertexResource(),
-		srvIndex_);
-
-	//UAVの設定
-	uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
-	modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
-		modelData_.skinningInfo.numVertices,
-		sizeof(VertexData),
-		mesh_->GetOutputVertexResource(),
-		uavIndex_);
+		skinningInfoSrvIndex_);
 
 	//SRVの設定
 	skinnedsrvIndex_ = modelCommon_->GetSrvManager()->Allocate();
@@ -72,6 +67,14 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData, const std
 		sizeof(VertexData),
 		mesh_->GetSkinnedVertexResource(),
 		skinnedsrvIndex_);
+	//UAVの設定
+	uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
+	modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
+		modelData_.skinningInfo.numVertices,
+		sizeof(VertexData),
+		mesh_->GetOutputVertexResource(),
+		uavIndex_);
+
 }
 
 //=============================================================================
@@ -153,7 +156,7 @@ void Model::DrawSkyBox() {
 	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
 }
 
-void Model::DrawForASkinningModel() {
+void Model::DrawForSkinningModel() {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
@@ -175,6 +178,23 @@ void Model::DrawForASkinningModel() {
 	
 	//DrawCall
 	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
+}
+
+void Model::DisPatchForSkinningModel() {
+
+	//ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
+
+	//skinninginfo
+	//commandList->SetComputeRootConstantBufferView(0, )
+	//parette
+
+	//influence
+	
+	//inputVertex
+	// 
+	//outputVertex
+
+	
 }
 
 
