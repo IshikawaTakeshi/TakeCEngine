@@ -198,23 +198,28 @@ void Mesh::InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData m
 	outputVertexResource_ = DirectXCommon::CreateBufferResourceUAV(device, sizeof(VertexData) * modelData.vertices.size());
 
 	//頂点バッファビューを作る
-	skinnedVBV_.BufferLocation = outputVertexResource_->GetGPUVirtualAddress();
-	skinnedVBV_.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
-	skinnedVBV_.StrideInBytes = sizeof(VertexData);
+	/*vertexBufferViews_[0].BufferLocation = outputVertexResource_->GetGPUVirtualAddress();
+	vertexBufferViews_[0].SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
+	vertexBufferViews_[0].StrideInBytes = sizeof(VertexData);*/
+
+	//リソースにデータを書き込む
+	//VertexData* vertexData;
+	//outputVertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	//std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 }
 
-void Mesh::InitializeSkinnedVertexResource(ID3D12Device* device, ModelData modelData) {
-
-	skinnedVertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * modelData.vertices.size());
-
-	skinnedVBV_.BufferLocation = skinnedVertexResource_->GetGPUVirtualAddress();
-	skinnedVBV_.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
-	skinnedVBV_.StrideInBytes = sizeof(VertexData);
-
-	VertexData* vertexData;
-	skinnedVertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
-}
+//void Mesh::InitializeSkinnedVertexResource(ID3D12Device* device, ModelData modelData) {
+//
+//	skinnedVertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * modelData.vertices.size());
+//
+//	skinnedVBV_.BufferLocation = skinnedVertexResource_->GetGPUVirtualAddress();
+//	skinnedVBV_.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
+//	skinnedVBV_.StrideInBytes = sizeof(VertexData);
+//
+//	VertexData* vertexData;
+//	skinnedVertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+//	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
+//}
 
 void Mesh::InitializeIndexResourceSphere(ID3D12Device* device) {
 

@@ -119,22 +119,23 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> PSO::CreateRootSignatureFromShaders(
 
 		if (key.type == D3D_SIT_CBUFFER) {
 			// 定数バッファ
+
 			D3D12_ROOT_PARAMETER rootParam = {};
 			rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 			rootParam.ShaderVisibility = key.visibility;
 			rootParam.Descriptor.ShaderRegister = key.bindPoint;
 			//rootParam.Descriptor.RegisterSpace = key.space;
-
 			rootParameters.push_back(rootParam);
+
 		} else if (key.type == D3D_SIT_TEXTURE || key.type == D3D_SIT_STRUCTURED) {
 			// テクスチャやストラクチャードバッファ
+
 			D3D12_DESCRIPTOR_RANGE range = {};
 			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 			range.NumDescriptors = 1;
 			range.BaseShaderRegister = key.bindPoint;
 			//range.RegisterSpace = key.space;
 			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
 			descriptorRanges.push_back(range);
 
 			D3D12_ROOT_PARAMETER rootParam = {};
@@ -143,6 +144,22 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> PSO::CreateRootSignatureFromShaders(
 			rootParam.DescriptorTable.pDescriptorRanges = &descriptorRanges.back();
 			rootParam.DescriptorTable.NumDescriptorRanges = 1;
 
+			rootParameters.push_back(rootParam);
+		} else if (key.type == D3D_SIT_UAV_RWSTRUCTURED) {
+			// RWStructuredBuffer
+
+			D3D12_DESCRIPTOR_RANGE range = {};
+			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+			range.NumDescriptors = 1;
+			range.BaseShaderRegister = key.bindPoint;;
+			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+			descriptorRanges.push_back(range);
+
+			D3D12_ROOT_PARAMETER rootParam = {};
+			rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+			rootParam.ShaderVisibility = key.visibility;
+			rootParam.DescriptorTable.pDescriptorRanges = &descriptorRanges.back();
+			rootParam.DescriptorTable.NumDescriptorRanges = 1;
 			rootParameters.push_back(rootParam);
 		}
 	}
@@ -613,7 +630,8 @@ void PSO::CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FI
 
 	/// ルートシグネチャ初期化
 	graphicRootSignature_ = CreateRootSignatureFromShaders(device, { vertexShaderBlob_, pixelShaderBlob_ });
-	CreateComputeRootSignatureForSkinnedObject3D(device_);
+	computeRootSignature_ = CreateRootSignatureFromShaders(device, { computeShaderBlob_ });
+
 	/// インプットレイアウト初期化
 	CreateInputLayoutForSkinningObject();
 	/// ブレンドステート初期化

@@ -38,9 +38,9 @@ public:
 	/// 描画
 	/// </summary>
 	void Draw();
-	void DrawForASkinningModel();
+	void DrawForSkinningModel();
 
-	void DisPatchForASkinningModel();
+	void DisPatchForSkinningModel();
 
 public: //getter
 
