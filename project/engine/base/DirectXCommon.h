@@ -72,7 +72,7 @@ public:
 	/// <summary>
 	/// UAVを使用するResource生成関数
 	/// </summary>
-	static ComPtr<ID3D12Resource> CreateBufferResourceUAV(ID3D12Device* device, size_t sizeInBytes);
+	static ComPtr<ID3D12Resource> CreateBufferResourceUAV(ID3D12Device* device, size_t sizeInBytes, ID3D12GraphicsCommandList* commandList);
 
 	/// <summary>
 	/// DescriptorHeap作成関数

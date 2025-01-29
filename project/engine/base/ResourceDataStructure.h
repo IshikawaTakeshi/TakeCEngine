@@ -77,10 +77,11 @@ struct SkinningInfo {
 struct ModelData {
 	std::map<std::string, JointWeightData> skinClusterData;
 	std::vector<VertexData> vertices;
-	SkinningInfo skinningInfo;
+	SkinningInfo skinningInfoData;
 	std::vector<uint32_t> indices;
 	ModelMaterialData material;
 	Node rootNode;
+	bool haveBone = false;
 };
 
 //パーティクル用の行列,色データ

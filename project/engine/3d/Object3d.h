@@ -38,15 +38,16 @@ public:
 	/// 描画
 	/// </summary>
 	void Draw();
-	void DrawForASkinningModel();
+	void DrawForSkinningModel();
 
-	void DisPatchForASkinningModel();
+	void DisPatchForSkinningModel();
 
 public: //getter
 
 	Vector3 GetScale() const { return transform_.scale; }
 	Vector3 GetRotation() const { return transform_.rotate; }
 	Vector3 GetPosition() const { return transform_.translate; }
+	Model* GetModel() { return model_; }
 
 public: //setter
 
@@ -55,7 +56,6 @@ public: //setter
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	void SetRotation(const Vector3& rotation) { transform_.rotate = rotation; }
 	void SetPosition(const Vector3& position) { transform_.translate = position; }
-
 
 protected: // privateメンバ変数
 

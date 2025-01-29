@@ -44,7 +44,9 @@ public:
 
 	void DrawSkyBox();
 
-	void DrawForASkinningModel();
+	void DrawForSkinningModel();
+
+	void DisPatchForSkinningModel();
 
 	//void DisPatchForASkinningModel();
 
@@ -77,6 +79,8 @@ public: //ゲッター
 
 	//Animationの取得
 	Animation& GetAnimation() { return animation_; }
+
+	float GetDuration() { return animation_.duration; }
 
 
 	//テクスチャファイルパスの取得
@@ -116,7 +120,9 @@ private:
 	//再生中の時刻
 	float animationTime = 0.0f;
 
-	uint32_t srvIndex_ = 0;
 	uint32_t uavIndex_ = 0;
-	uint32_t skinnedsrvIndex_ = 0;
+
+	bool haveSkeleton_ = true;
+
+	uint32_t inputIndex_ = 0;
 };

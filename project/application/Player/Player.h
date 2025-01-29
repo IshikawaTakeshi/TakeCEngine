@@ -40,6 +40,8 @@ public:
 
 	void DrawBullet();
 
+	void DisPatch();
+
 	/// <summary>
 	/// UIの描画処理
 	/// </summary>

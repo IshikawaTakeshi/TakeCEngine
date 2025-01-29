@@ -63,7 +63,9 @@ private:
 	// プレイヤー
 	std::unique_ptr<Player> player_ = nullptr;
 
-	// 地面
-	std::unique_ptr<Ground> ground_ = nullptr;
+	std::unique_ptr<Object3d> planeModel1_ = nullptr;
+	std::unique_ptr<Object3d> planeModel2_ = nullptr;
+	std::unique_ptr<Object3d> sphereModel_ = nullptr;
+	std::unique_ptr<Object3d> AnimationModel_ = nullptr;
 
 };

@@ -34,6 +34,14 @@ void GamePlayScene::Initialize() {
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf", "running.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_00.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_01.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_02.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_03.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_04.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_05.gltf");
 
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
@@ -47,25 +55,22 @@ void GamePlayScene::Initialize() {
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
-	//Ground
-	ground_ = std::make_unique<Ground>();
-	ground_->Initialize(Object3dCommon::GetInstance(), "ground.obj");
-
 	// Player
 	player_ = std::make_unique<Player>();
 	player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
 
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
+
 		
 	//CreateParticle
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
 	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Sphere", "sphere.obj");
 	particleEmitter1_ = std::make_unique<ParticleEmitter>();
 	particleEmitter2_ = std::make_unique<ParticleEmitter>();
-	//particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },30, 0.5f);
+	particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },30, 0.5f);
 	//particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },30, 0.5f);
-	//particleEmitter1_->SetParticleName("Plane");
+	particleEmitter1_->SetParticleName("Plane");
 	//particleEmitter2_->SetParticleName("Sphere");
 }
 
@@ -88,11 +93,11 @@ void GamePlayScene::Update() {
 #ifdef _DEBUG
 
 	CameraManager::GetInstance()->UpdateImGui();
+	Object3dCommon::GetInstance()->UpdateImGui();
 
 	player_->UpdateImGui();
-
 	particleEmitter1_->UpdateImGui();
-	particleEmitter2_->UpdateImGui();
+	//particleEmitter2_->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
 #endif // DEBUG
@@ -103,13 +108,14 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->Update();
 	//SkyBoxの更新
 	skyBox_->Update();
-	//Groundの更新
-	ground_->Update();
-
+	
 	// プレイヤーの更新
 	player_->Update();
 
-	TakeCFrameWork::GetParticleManager()->Update(); //パーティクルの更新
+
+	particleEmitter1_->Update();
+  //パーティクルの更新
+	TakeCFrameWork::GetParticleManager()->Update(); 
 
 	CollisionManager::GetInstance()->ClearCollider();
 	CheckAllCollisions();
@@ -132,21 +138,25 @@ void GamePlayScene::Draw() {
 	//SkyBoxの描画
 	skyBox_->Draw();
 
-	SpriteCommon::GetInstance()->PreDraw();     //Spriteの描画前処理
+	//Spriteの描画前処理
+	SpriteCommon::GetInstance()->PreDraw();
 	sprite_->Draw();    //スプライトの描画
 
-	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
-
-	//Groundの描画
-	ground_->Draw();
+	//Object3dの描画前処理
+	Object3dCommon::GetInstance()->PreDrawForObject3d();
 
 	player_->DrawBullet();
-	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理
+
+	// ディスパッチ
+	Object3dCommon::GetInstance()->DisPatch();
+	player_->DisPatch();
+
+	//SkinningObject3dの描画前処理
+	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();
 	player_->Draw();    //プレイヤーの描画
-	
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
-	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
+	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
 }
 
 void GamePlayScene::CheckAllCollisions() {

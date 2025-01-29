@@ -11,35 +11,37 @@ void SkinCluster::Create(
 	//palette用のReosurce確保
 	//MEMO:sizeInBytesはWellForGPUのサイズ×ジョイント数
 	paletteResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(WellForGPU) * skeleton->GetJoints().size());
+	
+	//paletteのSRVのIndexを取得
+	paletteIndex = srvManager->Allocate();
+	paletteSrvHandle.first = srvManager->GetSrvDescriptorHandleCPU(paletteIndex);
+	paletteSrvHandle.second = srvManager->GetSrvDescriptorHandleGPU(paletteIndex);
+	//paletteのsrv作成
+	srvManager->CreateSRVforStructuredBuffer(
+		UINT(skeleton->GetJoints().size()),sizeof(WellForGPU),paletteResource.Get(), paletteIndex);
+
 	WellForGPU* mappedPaletteData = nullptr;
 	paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPaletteData));
 	mappedPalette = { mappedPaletteData, skeleton->GetJoints().size() };
-	//paletteのSRVのIndexを取得
-	paletteResourceIndex = srvManager->Allocate();
-	paletteSrvHandle.first = srvManager->GetSrvDescriptorHandleCPU(paletteResourceIndex);
-	paletteSrvHandle.second = srvManager->GetSrvDescriptorHandleGPU(paletteResourceIndex);
-
-	//paletteのsrv作成
-	srvManager->CreateSRVforStructuredBuffer(
-		UINT(skeleton->GetJoints().size()),sizeof(WellForGPU),paletteResource.Get(), paletteResourceIndex);
 
 	//influence用のResource確保
 	//VertexInfluence * std::vector<VertexData>
 	influenceResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData.vertices.size());
+	
+	//influenceのSRV作成
+	influenceIndex = srvManager->Allocate();
+	srvManager->CreateSRVforStructuredBuffer(
+		UINT(modelData.vertices.size()),sizeof(VertexInfluence),influenceResource.Get(),influenceIndex);
+
 	VertexInfluence* mappedInfluenceData = nullptr;
 	influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluenceData));
 	std::memset(mappedInfluenceData, 0, sizeof(VertexInfluence) * modelData.vertices.size());
 	mappedInfluences = { mappedInfluenceData, modelData.vertices.size() };
 
-	//influenceのSRV作成
-	//influenceBufferView.BufferLocation = influenceResource->GetGPUVirtualAddress();
-	//influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData.vertices.size());
-	//influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
-	influenceResourceIndex = srvManager->Allocate();
-	srvManager->CreateSRVforStructuredBuffer(
-		UINT(modelData.vertices.size()),sizeof(VertexInfluence),influenceResource.Get(),influenceResourceIndex);
-
-	
+	//skinningInfoResourceの作成
+	skinningInfoResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(SkinningInfo));
+	skinningInfoResource->Map(0, nullptr, reinterpret_cast<void**>(&skinningInfoData));
+	*skinningInfoData = modelData.skinningInfoData;
 
 	//InverseBindPoseMatricesの保存領域の作成
 	inverseBindPoseMatrices.resize(skeleton->GetJoints().size());

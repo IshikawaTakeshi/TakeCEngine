@@ -110,7 +110,7 @@ void Player::Update() {
 void Player::Draw() {
 
 	// モデル描画
-	Object3d::DrawForASkinningModel();
+	Object3d::DrawForSkinningModel();
 
 }
 
@@ -119,6 +119,11 @@ void Player::DrawBullet() {
 	for (auto& bullet : playerBullet_) {
 		bullet->Draw();
 	}
+}
+
+void Player::DisPatch() {
+	// ディスパッチ
+	Object3d::DisPatchForSkinningModel();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

@@ -45,8 +45,8 @@ public:
 	/// </summary>
 	/// <param name="device"></param>
 	void InitializeInputVertexResourceModel(ID3D12Device* device, ModelData modelData);
-	void InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData modelData);
-	void InitializeSkinnedVertexResource(ID3D12Device* device, ModelData modelData);
+	void InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData modelData, ID3D12GraphicsCommandList* commandList);
+	//void InitializeSkinnedVertexResource(ID3D12Device* device, ModelData modelData);
 
 	/// <summary>
 	/// 球体のIndexResource初期化
@@ -60,15 +60,15 @@ public:
 
 	void InitializeIndexResourceModel(ID3D12Device* device, ModelData modelData);
 
-	void InitializeVertexCountResource(ID3D12Device* device, SkinningInfo skinningInfo);
-
+	//Map
+	void MapInputVertexResource(ModelData modelData);
 
 public: //getter
 	
 	/// 頂点リソースの取得
 	ID3D12Resource* GetInputVertexResource() { return inputVertexResource_.Get(); }
 	ID3D12Resource* GetOutputVertexResource() { return outputVertexResource_.Get(); }
-	ID3D12Resource* GetSkinnedVertexResource() { return skinnedVertexResource_.Get(); }
+	//ID3D12Resource* GetSkinnedVertexResource() { return skinnedVertexResource_.Get(); }
 
 	/// 頂点数リソースの取得
 	ID3D12Resource* GetVertexCountResource() { return vertexCountResource_.Get(); }
@@ -95,7 +95,7 @@ protected:
 	//頂点バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> inputVertexResource_;
 	Microsoft::WRL::ComPtr<ID3D12Resource> outputVertexResource_;
-	Microsoft::WRL::ComPtr<ID3D12Resource> skinnedVertexResource_;
+	//Microsoft::WRL::ComPtr<ID3D12Resource> skinnedVertexResource_;
 	std::vector<D3D12_VERTEX_BUFFER_VIEW> vertexBufferViews_;
 	D3D12_VERTEX_BUFFER_VIEW skinnedVBV_{};
 
