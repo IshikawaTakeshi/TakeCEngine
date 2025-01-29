@@ -60,6 +60,9 @@ public:
 
 	void InitializeIndexResourceModel(ID3D12Device* device, ModelData modelData);
 
+	//Map
+	void MapInputVertexResource(ModelData modelData);
+
 public: //getter
 	
 	/// 頂点リソースの取得

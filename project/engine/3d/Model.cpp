@@ -47,13 +47,14 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData, const std
 		modelData_.material.textureFilePath,
 		modelData_.material.envMapFilePath);
 
-	//VertexResource
+	//inputVertexResource
 	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+	//mesh_->MapInputVertexResource(modelData_);
 	//indexResource
 	mesh_->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 
 	if (modelData_.haveBone) {
-		//outputResource
+		//outputVertexResource
 		mesh_->InitializeOutputVertexResourceModel(
 			modelCommon_->GetDirectXCommon()->GetDevice(),
 			modelData_,
@@ -66,6 +67,9 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData, const std
 			sizeof(VertexData),
 			mesh_->GetInputVertexResource(),
 			inputIndex_);
+
+		
+
 		//UAVの設定
 		uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
 		modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
@@ -73,7 +77,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData, const std
 			sizeof(VertexData),
 			mesh_->GetOutputVertexResource(),
 			uavIndex_);
-	}
+	} 
 }
 
 //=============================================================================
@@ -211,10 +215,10 @@ void Model::DisPatchForSkinningModel() {
 	commandList->SetComputeRootConstantBufferView(0, skinCluster_.skinningInfoResource->GetGPUVirtualAddress());
 	//parette
 	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(1, skinCluster_.paletteIndex);
-	//influence
-	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(2, skinCluster_.influenceIndex);
 	//inputVertex
-	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(3, inputIndex_);
+	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(2, inputIndex_);
+	//influence
+	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(3, skinCluster_.influenceIndex);
 	//outputVertex
 	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(4, uavIndex_);
 
