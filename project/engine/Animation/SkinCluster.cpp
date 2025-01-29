@@ -41,9 +41,8 @@ void SkinCluster::Create(
 
 	//skinningInfoResourceの作成
 	skinningInfoResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(SkinningInfo));
-	SkinningInfo* skinningInfoData = nullptr;
 	skinningInfoResource->Map(0, nullptr, reinterpret_cast<void**>(&skinningInfoData));
-	skinningInfo = modelData.skinningInfo;
+	*skinningInfoData = modelData.skinningInfoData;
 
 	//InverseBindPoseMatricesの保存領域の作成
 	inverseBindPoseMatrices.resize(skeleton->GetJoints().size());

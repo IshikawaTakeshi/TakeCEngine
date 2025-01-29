@@ -45,7 +45,7 @@ public:
 	/// </summary>
 	/// <param name="device"></param>
 	void InitializeInputVertexResourceModel(ID3D12Device* device, ModelData modelData);
-	void InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData modelData);
+	void InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData modelData, ID3D12GraphicsCommandList* commandList);
 	//void InitializeSkinnedVertexResource(ID3D12Device* device, ModelData modelData);
 
 	/// <summary>
@@ -59,9 +59,6 @@ public:
 	void InitializeIndexResourceSprite(ID3D12Device* device);
 
 	void InitializeIndexResourceModel(ID3D12Device* device, ModelData modelData);
-
-	void InitializeVertexCountResource(ID3D12Device* device, SkinningInfo skinningInfo);
-
 
 public: //getter
 	

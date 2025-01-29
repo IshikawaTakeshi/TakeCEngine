@@ -28,12 +28,16 @@ struct SkinCluster {
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 	std::vector<Matrix4x4> inverseBindPoseMatrices;
+	//influenceResource
 	ComPtr<ID3D12Resource> influenceResource;
 	std::span<VertexInfluence> mappedInfluences;
+	//paletteResource
 	ComPtr<ID3D12Resource> paletteResource;
-	ComPtr<ID3D12Resource> skinningInfoResource;
 	std::span<WellForGPU> mappedPalette;
-	SkinningInfo skinningInfo;
+	//skinningInfoResource
+	ComPtr<ID3D12Resource> skinningInfoResource;
+	SkinningInfo* skinningInfoData;
+
 	std::pair<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE> paletteSrvHandle;
 	uint32_t paletteIndex;
 	uint32_t influenceIndex;

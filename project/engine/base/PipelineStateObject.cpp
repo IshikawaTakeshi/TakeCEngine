@@ -601,7 +601,7 @@ void PSO::CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FI
 	//Shaderをコンパイル
 	//VS
 	vertexShaderBlob_ = dxc_->CompileShader(
-		L"Resources/shaders/SkinningObject3D.VS.hlsl",
+		L"Resources/shaders/Object3D.VS.hlsl",
 		L"vs_6_0",
 		dxc_->GetDxcUtils().Get(),
 		dxc_->GetDxcCompiler().Get(),

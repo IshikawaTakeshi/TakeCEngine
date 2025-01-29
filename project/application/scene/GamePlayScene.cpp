@@ -35,13 +35,13 @@ void GamePlayScene::Initialize() {
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "running.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_00.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_01.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_02.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_03.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_04.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_05.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf", "running.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_00.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_01.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_02.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_03.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_04.gltf");
+	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_05.gltf");
 
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
@@ -96,10 +96,6 @@ void GamePlayScene::Update() {
 	Object3dCommon::GetInstance()->UpdateImGui();
 
 	player_->UpdateImGui();
-	planeModel1_->UpdateImGui(1);
-	planeModel2_->UpdateImGui(2);
-	sphereModel_->UpdateImGui(3);
-	AnimationModel_->UpdateImGui(4);
 	particleEmitter1_->UpdateImGui();
 	//particleEmitter2_->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
@@ -152,16 +148,12 @@ void GamePlayScene::Draw() {
 	player_->DrawBullet();
 
 	// ディスパッチ
-	//Object3dCommon::GetInstance()->DisPatch();
-	//player_->DisPatch();
+	Object3dCommon::GetInstance()->DisPatch();
+	player_->DisPatch();
 
 	//SkinningObject3dの描画前処理
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();
 	player_->Draw();    //プレイヤーの描画
-	planeModel1_->Draw();
-	planeModel2_->Draw();
-	sphereModel_->Draw();
-	AnimationModel_->Draw();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
