@@ -28,9 +28,6 @@ RWStructuredBuffer<Vertex> gSkinnedVertices : register(u0);
 
 ConstantBuffer<SkinningInfomation> gVertexInformation : register(b0);
 
-
-
-
 [numthreads(1024, 1, 1)]
 void main(uint3 DTid : SV_DispatchThreadID) {
 	

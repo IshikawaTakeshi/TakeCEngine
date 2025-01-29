@@ -187,6 +187,12 @@ void Model::DisPatchForSkinningModel() {
 	
 	//DisPatch
 	commandList->Dispatch(UINT(modelData_.skinningInfo.numVertices + 1023) / 1024, 1, 1);
+
+	// UAV から Vertex Buffer へのバリア
+	D3D12_RESOURCE_BARRIER uavBarrier = {};
+	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+	uavBarrier.UAV.pResource = mesh_->GetOutputVertexResource();
+	commandList->ResourceBarrier(1, &uavBarrier);
 }
 
 

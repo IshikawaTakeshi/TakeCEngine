@@ -198,9 +198,9 @@ void Mesh::InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData m
 	outputVertexResource_ = DirectXCommon::CreateBufferResourceUAV(device, sizeof(VertexData) * modelData.vertices.size());
 
 	//頂点バッファビューを作る
-	vertexBufferViews_[0].BufferLocation = outputVertexResource_->GetGPUVirtualAddress();
+	/*vertexBufferViews_[0].BufferLocation = outputVertexResource_->GetGPUVirtualAddress();
 	vertexBufferViews_[0].SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
-	vertexBufferViews_[0].StrideInBytes = sizeof(VertexData);
+	vertexBufferViews_[0].StrideInBytes = sizeof(VertexData);*/
 
 	//リソースにデータを書き込む
 	//VertexData* vertexData;
