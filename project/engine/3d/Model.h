@@ -80,6 +80,8 @@ public: //ゲッター
 	//Animationの取得
 	Animation& GetAnimation() { return animation_; }
 
+	float GetDuration() { return animation_.duration; }
+
 
 	//テクスチャファイルパスの取得
 	const std::string& GetTextureFilePath() const { return modelData_.material.textureFilePath; }
@@ -119,5 +121,8 @@ private:
 	float animationTime = 0.0f;
 
 	uint32_t uavIndex_ = 0;
+
+	bool haveSkeleton_ = true;
+
 	uint32_t inputIndex_ = 0;
 };

@@ -28,10 +28,17 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData, const std
 	//Animation読み込み
 	animation_ = Animator::LoadAnimationFile(modelDirectoryPath, filePath);
 	//Skeleton作成
-	skeleton_ = std::make_unique<Skeleton>();
-	skeleton_->Create(modelData_.rootNode);
-	//SkinCluster作成
-	skinCluster_.Create(modelCommon_->GetDirectXCommon()->GetDevice(), modelCommon_->GetSrvManager(), skeleton_.get(), modelData_);
+
+	if(modelData_.haveBone) {
+		skeleton_ = std::make_unique<Skeleton>();
+		skeleton_->Create(modelData_.rootNode);
+		//SkinCluster作成
+		skinCluster_.Create(modelCommon_->GetDirectXCommon()->GetDevice(), modelCommon_->GetSrvManager(), skeleton_.get(), modelData_);
+		haveSkeleton_ = true;
+	}else {
+		skeleton_ = nullptr;
+		haveSkeleton_ = false;
+	}
 
 	//メッシュ初期化
 	mesh_ = std::make_unique<Mesh>();
@@ -82,15 +89,24 @@ void Model::Update() {
 	//MEMO: 計測した時間を使って可変フレーム対応するのが望ましい
 	animationTime += 1.0f / 60.0f;
 
-	//アニメーションの更新とボーンへの適用
-	skeleton_->ApplyAnimation(animation_, animationTime);
+	if (haveSkeleton_) {
+		//アニメーションの更新とボーンへの適用
+		skeleton_->ApplyAnimation(animation_, animationTime);
 
-	//スケルトンの更新
-	skeleton_->Update();
+		//スケルトンの更新
+		skeleton_->Update();
 
-	//SkinClusterの更新
-	skinCluster_.Update(skeleton_.get());
+		//SkinClusterの更新
+		skinCluster_.Update(skeleton_.get());
+	} else {
 
+	//rootNodeのAnimationを取得
+	NodeAnimation& rootNodeAnimation = animation_.nodeAnimations[modelData_.rootNode.name];
+	translate_ = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
+	rotate_ = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
+	scale_ = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
+	localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
+	}
 	//最後まで行ったら最初からリピート再生する
 	animationTime = std::fmod(animationTime, animation_.duration);
 }

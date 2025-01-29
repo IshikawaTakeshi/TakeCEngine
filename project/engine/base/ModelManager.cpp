@@ -10,7 +10,7 @@
 ModelManager* ModelManager::instance_ = nullptr;
 
 ModelManager* ModelManager::GetInstance() {
-  
+
 	if (instance_ == nullptr) {
 		instance_ = new ModelManager();
 	}
@@ -21,12 +21,12 @@ void ModelManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 
 	//ModelCommon初期化
 	modelCommon_ = ModelCommon::GetInstance();
-	modelCommon_->Initialize(dxCommon,srvManager);
+	modelCommon_->Initialize(dxCommon, srvManager);
 }
 
 void ModelManager::Finalize() {
 	modelCommon_->Finalize();
-	
+
 	delete instance_;
 	instance_ = nullptr;
 }
@@ -42,16 +42,16 @@ void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::s
 	//モデルの生成とファイル読み込み、初期化
 	ModelData modelData = LoadModelFile(modelDirectoryPath, filePath);
 	std::unique_ptr<Model> model = std::make_unique<Model>();
-	model->Initialize(modelCommon_,modelData,modelDirectoryPath, filePath);
+	model->Initialize(modelCommon_, modelData, modelDirectoryPath, filePath);
 
 	//モデルをコンテナに追加
 	models_.insert(std::make_pair(filePath, std::move(model)));
 }
 
 Model* ModelManager::FindModel(const std::string& filePath) {
-	
+
 	//読み込み済みモデルを検索
-	if(models_.contains(filePath)){
+	if (models_.contains(filePath)) {
 		//読み込みモデルを戻り値としてreturn
 		return models_.at(filePath).get();
 	}
@@ -70,64 +70,71 @@ ModelData ModelManager::LoadModelFile(const std::string& modelDirectoryPath, con
 	Assimp::Importer importer;
 	std::string filePath = "./Resources/" + modelDirectoryPath + "/" + filename;
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
-	assert(scene->HasMeshes()); //メッシュがない場合はエラー
 
-	//Meshの解析
-	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
-		aiMesh* mesh = scene->mMeshes[meshIndex];
-		assert(mesh->HasNormals()); //法線がない場合は現在エラー
-		assert(mesh->HasTextureCoords(0)); //UVがない場合は現在エラー
-		modelData.vertices.resize(mesh->mNumVertices);
-		//Meshの頂点数の格納
-		modelData.skinningInfo.numVertices = mesh->mNumVertices;
+	if (scene->HasMeshes()) {
+		//Meshの解析
+		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+			aiMesh* mesh = scene->mMeshes[meshIndex];
+			assert(mesh->HasNormals()); //法線がない場合は現在エラー
+			assert(mesh->HasTextureCoords(0)); //UVがない場合は現在エラー
+			modelData.vertices.resize(mesh->mNumVertices);
+			//Meshの頂点数の格納
+			modelData.skinningInfo.numVertices = mesh->mNumVertices;
 
-		//vertexの解析
-		for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
-			aiVector3D& position = mesh->mVertices[vertexIndex];
-			aiVector3D& normal = mesh->mNormals[vertexIndex];
-			aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
+			//vertexの解析
+			for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
+				aiVector3D& position = mesh->mVertices[vertexIndex];
+				aiVector3D& normal = mesh->mNormals[vertexIndex];
+				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
 
-			modelData.vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
-			modelData.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
-			modelData.vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
+				modelData.vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
+				modelData.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
+				modelData.vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
 
-		}
-		//faceの解析
-		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
-			aiFace& face = mesh->mFaces[faceIndex];
-			assert(face.mNumIndices == 3); //三角形以外はエラー
-
-			//Indices解析
-			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
-				uint32_t indicesIndex = face.mIndices[element];
-				modelData.indices.push_back(indicesIndex);
 			}
-		}
+			//faceの解析
+			for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
+				aiFace& face = mesh->mFaces[faceIndex];
+				assert(face.mNumIndices == 3); //三角形以外はエラー
 
-		//boneの解析
-		for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
-			aiBone* bone = mesh->mBones[boneIndex];
-			std::string jointwName = bone->mName.C_Str();
-			JointWeightData& jointWeightData = modelData.skinClusterData[jointwName];
+				//Indices解析
+				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
+					uint32_t indicesIndex = face.mIndices[element];
+					modelData.indices.push_back(indicesIndex);
+				}
+			}
 
-			//BindPoseMatrixに戻す
-			aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
-			aiVector3D scale, translate;
-			aiQuaternion rotate;
+			//boneの解析
+			//boneがない場合はスキップ
+			if (mesh->HasBones() == false) {
+				modelData.haveBone = false;
+				continue;
+			}
+			for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+				modelData.haveBone = true;
+				aiBone* bone = mesh->mBones[boneIndex];
+				std::string jointwName = bone->mName.C_Str();
+				JointWeightData& jointWeightData = modelData.skinClusterData[jointwName];
 
-			//成分の抽出
-			bindPoseMatrixAssimp.Decompose(scale, rotate, translate);
+				//BindPoseMatrixに戻す
+				aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
+				aiVector3D scale, translate;	
+				aiQuaternion rotate;
 
-			//左手系のBindPoseMatrixの作成
-			Matrix4x4 bindPoseMatrix = MatrixMath::MakeAffineMatrix(
-				{ scale.x,scale.y,scale.z }, { rotate.x,-rotate.y,-rotate.z,rotate.w }, { -translate.x,translate.y,translate.z });
-			jointWeightData.inverseBindPoseMatrix = MatrixMath::Inverse(bindPoseMatrix);
+				//成分の抽出
+				bindPoseMatrixAssimp.Decompose(scale, rotate, translate);
 
-			//Weightの解析
-			for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+				//左手系のBindPoseMatrixの作成
+				Matrix4x4 bindPoseMatrix = MatrixMath::MakeAffineMatrix(
+					{ scale.x,scale.y,scale.z }, { rotate.x,-rotate.y,-rotate.z,rotate.w }, { -translate.x,translate.y,translate.z });
+				jointWeightData.inverseBindPoseMatrix = MatrixMath::Inverse(bindPoseMatrix);
 
-				//InverceBindPoseMatrixの作成
-				jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight, bone->mWeights[weightIndex].mVertexId });
+				//Weightの解析
+				for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+
+					//InverceBindPoseMatrixの作成
+					jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight, bone->mWeights[weightIndex].mVertexId });
+				}
 			}
 		}
 	}
