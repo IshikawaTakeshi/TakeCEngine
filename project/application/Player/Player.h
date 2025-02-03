@@ -52,6 +52,10 @@ public:
 	/// </summary>
 	void Move();
 
+	void MoveRight();
+
+	void MoveLeft();
+
 	void SetState(std::unique_ptr<BasePlayerState> state) { state_ = std::move(state); }
 	
 	/// <summary>

@@ -40,8 +40,6 @@ Player::~Player() {
 
 void Player::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
-	//DamageSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/playerDamage.wav");
-
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
 	Object3d::Initialize(object3dCommon, filePath);
 	transform_.translate = { 0.0f, 0.0f, -20.0f };
@@ -77,11 +75,6 @@ void Player::Update() {
 	// 移動
 	Move();
 
-	// 攻撃
-	Attack();
-
-	// ジャンプ処理
-	Jump();
 
 	if (hp_ <= 0) {
 		isAlive_ = false;
@@ -143,43 +136,38 @@ void Player::Move() {
 
 	velocity_ = { 0, 0, 0 };
 
-#pragma region 1.旋回処理
-	// 回転
-	if (Input::GetInstance()->PushKey(DIK_LEFT)) {
-		transform_.rotate.y -= 0.07f;
-	} else if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
-		transform_.rotate.y += 0.07f;
-	}
-
-#pragma endregion
-
 #pragma region 2.移動処理
-	// 移動速度
-	const float moveSpeed = 0.5f;
-
-	// ゲームパッドの状態を取得
-	if (Input::GetInstance()->PushKey(DIK_A)) {
-		velocity_.x -= moveSpeed;
-	} else if (Input::GetInstance()->PushKey(DIK_D)) {
-		velocity_.x += moveSpeed;
-	}
-
-	if (Input::GetInstance()->PushKey(DIK_W)) {
-		velocity_.z += moveSpeed;
-	} else if (Input::GetInstance()->PushKey(DIK_S)) {
-		velocity_.z -= moveSpeed;
-	}
-
-	// 座標移動(ベクトルの加算)
-	transform_.translate += velocity_;
 
 	// 移動範囲の制限
 	transform_.translate.x = std::clamp(transform_.translate.x, -kMoveLimit_.x, kMoveLimit_.x);
 	transform_.translate.z = std::clamp(transform_.translate.z, -kMoveLimit_.y, 0.0f);
 #pragma endregion
+}
 
+void Player::MoveRight() {
+	// 移動速度
+	const float moveSpeed = 0.5f;
 
+	// ゲームパッドの状態を取得
+	if (Input::GetInstance()->TriggerKey(DIK_D)) {
+		velocity_.x += moveSpeed;
+	}
 
+	// 座標移動(ベクトルの加算)
+	transform_.translate += velocity_;
+}
+
+void Player::MoveLeft() {
+	// 移動速度
+	const float moveSpeed = 0.5f;
+
+	// ゲームパッドの状態を取得
+	if (Input::GetInstance()->TriggerKey(DIK_A)) {
+		velocity_.x -= moveSpeed;
+	}
+
+	// 座標移動(ベクトルの加算)
+	transform_.translate += velocity_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -271,13 +259,7 @@ Vector3 Player::GetWorldPos() {
 ////////////////////////////////////////////////////////////////////////////////////
 
 Vector3 Player::GetWorldPos3DReticle() {
-	/*Vector3 worldPos{
-		worldTransform3DReticle_.matWorld_.m[3][0],
-		worldTransform3DReticle_.matWorld_.m[3][1],
-		worldTransform3DReticle_.matWorld_.m[3][2]
-	};
 
-	return worldPos;*/
 
 	return { 0, 0, 0 };
 }

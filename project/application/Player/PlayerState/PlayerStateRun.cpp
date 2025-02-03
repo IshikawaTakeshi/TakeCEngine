@@ -11,20 +11,8 @@ void PlayerStateRun::Update() {
 	//const float moveSpeed = 0.5f;
 
 	// ゲームパッドの状態を取得
-	//if (Input::GetInstance()->PushKey(DIK_A)) {
-	//	player_->SetVelocityX(player_->GetVelocity().x - moveSpeed);
-	//} else if (Input::GetInstance()->PushKey(DIK_D)) {
-	//	player_->SetVelocityX(player_->GetVelocity().x + moveSpeed);
-	//}
-
-	//if (Input::GetInstance()->PushKey(DIK_W)) {
-	//	player_->SetVelocityZ(player_->GetVelocity().z + moveSpeed);
-	//} else if (Input::GetInstance()->PushKey(DIK_S)) {
-	//	player_->SetVelocityZ(player_->GetVelocity().z - moveSpeed);
-	//}
-
-	//// 座標移動(ベクトルの加算)
-	//player_->SetWorldPos(player_->GetWorldPos() + player_->GetVelocity());
+	player_->MoveLeft();
+	player_->MoveRight();
 
 	//入力がないときはIdle状態に遷移
 	if (!Input::GetInstance()->PushKey(DIK_W) &&

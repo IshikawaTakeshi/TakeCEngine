@@ -157,6 +157,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\TakeCFrameWork.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="engine\base\ImGuiManager.cpp" />
+    <ClCompile Include="application\Command.cpp" />
+    <ClCompile Include="application\InputHandler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
     <ClCompile Include="engine\math\MatrixMath.cpp" />
@@ -241,6 +243,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Player\PlayerState\PlayerStateIdle.h" />
     <ClInclude Include="application\Player\PlayerState\PlayerStateRun.h" />
     <ClInclude Include="application\Player\PlayerState\PlayerStateJump.h" />
+    <ClInclude Include="application\Command.h" />
+    <ClInclude Include="application\InputHandler.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\base\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

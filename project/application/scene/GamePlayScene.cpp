@@ -15,6 +15,12 @@ void GamePlayScene::Initialize() {
 	//サウンドデータ
 	soundData1 = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/fanfare.wav");
 
+	inputHandler_ = new InputHandler();
+
+	//Assign Command
+	inputHandler_->AssignMoveLeftCommand2PressKeyA();
+	inputHandler_->AssignMoveRightCommand2PressKeyD();
+
 	//Camera0
 	camera0_ = std::make_shared<Camera>();
 	camera0_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
@@ -35,13 +41,6 @@ void GamePlayScene::Initialize() {
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf", "running.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_00.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_01.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_02.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_03.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_04.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_05.gltf");
 
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
@@ -89,6 +88,13 @@ void GamePlayScene::Finalize() {
 //====================================================================
 
 void GamePlayScene::Update() {
+
+	iCommand_ = inputHandler_->HandleInput();
+
+	if (this->iCommand_) {
+		iCommand_->Execute(*player_);
+	}
+
 	//ImGuiの更新
 #ifdef _DEBUG
 

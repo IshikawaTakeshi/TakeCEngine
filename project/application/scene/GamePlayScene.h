@@ -25,6 +25,8 @@
 #include "application/Enemy/EnemyBullet.h"
 #include "application/Ground/Ground.h"
 #include "application/HPBar/HPBar.h"
+#include "application/Command.h"
+#include "application/InputHandler.h"
 
 
 class GamePlayScene : public BaseScene {
@@ -45,6 +47,9 @@ public:
 	void CheckAllCollisions();
 
 private:
+
+	InputHandler* inputHandler_;
+	ICommand* iCommand_;
 
 	//サウンドデータ
 	AudioManager::SoundData soundData1;
