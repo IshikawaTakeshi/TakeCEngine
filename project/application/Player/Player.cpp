@@ -297,7 +297,7 @@ void Player::Attack() {
 
 	attackInterval_++;
 	if (attackInterval_ > 20) {
-		if (Input::GetInstance()->PushKey(DIK_K)) {
+		if (Input::GetInstance()->IsTriggerMouse(0)) {
 			ShotBullet();
 		}
 	}

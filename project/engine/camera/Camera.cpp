@@ -70,12 +70,14 @@ void Camera::Update() {
 
 		// オフセットを考慮したワールド行列の計算
 		offsetDelta_.z += (float)Input::GetInstance()->GetWheel() * 0.01f;
-		offset_ = offsetDelta_;
-
-		// 回転を適用
-		offset_ = QuaternionMath::RotateVector(offset_, transform_.rotate);
-		transform_.translate = offset_;
+		
 	}
+
+	offset_ = offsetDelta_;
+
+	// 回転を適用
+	offset_ = QuaternionMath::RotateVector(offset_, transform_.rotate);
+	transform_.translate = offset_;
 
 	transform_.rotate = QuaternionMath::Normalize(transform_.rotate); // クォータニオンを正規化して数値誤差を防ぐ
 

@@ -327,12 +327,12 @@ void Enemy::FallingRockAttack() {
 		if (attackTime_ % 30 == 0) {
 			for (int i = 0; i < 2; ++i) {
 				Vector3 randomPosition = {
-				    -15.0f + (std::rand() / (float)RAND_MAX) * 30.0f, // X座標: -15 から 15
+				    -30.0f + (std::rand() / (float)RAND_MAX) * 30.0f, // X座標: -15 から 15
 				    spawnHeight,                                      // Y座標: 固定値
-				    (std::rand() / (float)RAND_MAX) * -20.0f          // Z座標: 0 から 15
+				    (std::rand() / (float)RAND_MAX) * -30.0f          // Z座標: 0 から 15
 				};
 
-				Vector3 bulletVelocity = {0.0f, -5.2f, 0.0f};
+				Vector3 bulletVelocity = {0.0f, -9.8f, 0.0f};
 
 				EnemyBullet* newBullet = new EnemyBullet();
 				newBullet->Initialize(Object3dCommon::GetInstance(), randomPosition, bulletVelocity);
