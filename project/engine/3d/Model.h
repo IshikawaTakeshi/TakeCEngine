@@ -28,7 +28,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(ModelCommon* ModelCommon,ModelData& modelData, const std::string& modelDirectoryPath, const std::string& filename);
+	void Initialize(ModelCommon* ModelCommon,ModelData& modelData);
 
 	/// <summary>
 	/// 更新処理
@@ -96,6 +96,10 @@ public: //セッター
 
 	//ModelCommonの設定
 	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
+
+	void SetAnimation(Animation& animation) { animation_ = animation; }
+
+	void SetAnimation(const std::string& modelDirectoryPath, const std::string& filename);
 
 private:
 

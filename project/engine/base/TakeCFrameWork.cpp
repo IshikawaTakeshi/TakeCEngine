@@ -2,6 +2,7 @@
 #include <cassert>
 
 std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
+std::unique_ptr<Animator> TakeCFrameWork::animator_ = nullptr;
 
 void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
@@ -37,6 +38,8 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	particleCommon_ = ParticleCommon::GetInstance();
 	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get());
 
+	animator_ = std::make_unique<Animator>();
+
 	//CameraManager
 	CameraManager::GetInstance()->Initialize(directXCommon_.get());
 
@@ -48,6 +51,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//ParticleManager
 	particleManager_ = std::make_unique<ParticleManager>();
+
 
 #ifdef _DEBUG
 	imguiManager_ = new ImGuiManager();
@@ -62,6 +66,7 @@ void TakeCFrameWork::Finalize() {
 	imguiManager_->Finalize();
 #endif
 
+	animator_->Finalize();
 	TextureManager::GetInstance()->Finalize();
 	ModelManager::GetInstance()->Finalize();
 	CameraManager::GetInstance()->Finalize();
@@ -128,4 +133,9 @@ void TakeCFrameWork::Run(const std::wstring& titleName) {
 ParticleManager* TakeCFrameWork::GetParticleManager() {
 	assert(particleManager_ != nullptr);
 	return particleManager_.get();
+}
+
+Animator* TakeCFrameWork::GetAnimator() {
+	assert(animator_ != nullptr);
+	return animator_.get();
 }

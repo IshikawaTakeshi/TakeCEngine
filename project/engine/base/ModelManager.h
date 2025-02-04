@@ -45,8 +45,8 @@ public:
 	Model* FindModel(const std::string& filePath);
 
 	/// <summary>
-/// objファイルを読む関数
-/// </summary>
+	/// modelファイルを読む関数
+	/// </summary>
 	ModelData LoadModelFile(const std::string& DirectoryPath, const std::string& filename);
 
 	/// <summary>
@@ -62,9 +62,6 @@ private:
 	ModelManager& operator=(const ModelManager&) = delete;
 
 private:
-
-	//SRVマネージャ
-	SrvManager* srvManager_ = nullptr;
 
 	//インスタンス
 	static ModelManager* instance_;

@@ -35,20 +35,17 @@ void GamePlayScene::Initialize() {
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf", "running.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_00.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_01.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_02.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_03.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_04.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf/Animation_Node", "Animation_Node_05.gltf");
+
 
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
-	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "bunny.obj");
+	
+	//Animation読み込み
+	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -58,6 +55,7 @@ void GamePlayScene::Initialize() {
 	// Player
 	player_ = std::make_unique<Player>();
 	player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
+	player_->GetModel()->SetAnimation("gltf", "running.gltf");
 
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");

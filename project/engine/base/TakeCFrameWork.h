@@ -24,6 +24,8 @@ public:
 
 	static ParticleManager* GetParticleManager();
 
+	static Animator* GetAnimator();
+
 protected:
 
 	std::unique_ptr<WinApp> winApp_ = nullptr;
@@ -38,6 +40,7 @@ protected:
 	ImGuiManager* imguiManager_ = nullptr;
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;
 	static std::unique_ptr<ParticleManager> particleManager_;
+	static std::unique_ptr<Animator> animator_;
 	
 	//終了フラグ
 	bool isEnd_ = false;

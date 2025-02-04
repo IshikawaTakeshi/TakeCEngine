@@ -27,6 +27,7 @@
 #include "Particle3d.h"
 #include "ParticleCommon.h"
 #include "ParticleManager.h"
+#include "Animation/Animator.h"
 
 //DirectXTex
 #include <dxgidebug.h>
