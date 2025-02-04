@@ -4,8 +4,15 @@
 #include "PlayerStateIdle.h"
 #include "PlayerStateJump.h"
 #include "PlayerStateAttack.h"
+#include "TakeCFrameWork.h"
 
-void PlayerStateRun::Initialize() {}
+void PlayerStateRun::Initialize() {
+
+	//Runアニメーションの設定
+	stateAnimation_ = TakeCFrameWork::GetAnimator()->FindAnimation("running.gltf");
+	player_->GetModel()->SetAnimation(stateAnimation_);
+
+}
 
 void PlayerStateRun::Update() {
 	//const float moveSpeed = 0.5f;
@@ -39,8 +46,8 @@ void PlayerStateRun::Update() {
 		player_->SetState(std::make_unique<PlayerStateJump>(player_));
 	}
 	//攻撃処理が入力されたらAttack状態に遷移
-	else if (Input::GetInstance()->PushKey(DIK_E)) {
-		player_->SetState(std::make_unique<PlayerStateAttack>(player_));
+	else if (Input::GetInstance()->PushKey(DIK_K)) {
+		//player_->SetState(std::make_unique<PlayerStateAttack>(player_));
 	} else {
 		//何もしない
 	}

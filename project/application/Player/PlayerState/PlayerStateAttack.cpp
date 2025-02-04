@@ -3,17 +3,24 @@
 #include "Input.h"
 #include "PlayerStateIdle.h"
 #include "PlayerStateJump.h"
+#include "PlayerStateRun.h"
+#include "TakeCFrameWork.h"
 
-void PlayerStateAttack::Initialize() {}
+
+
+void PlayerStateAttack::Initialize() {
+
+	//Attackアニメーションの設定
+	stateAnimation_ = TakeCFrameWork::GetAnimator()->FindAnimation("throwAttack.gltf");
+	player_->GetModel()->SetAnimation(stateAnimation_);
+}
 
 void PlayerStateAttack::Update() {
 
-	//攻撃入力がないときはIdle状態に遷移
-	if (!Input::GetInstance()->PushKey(DIK_E)) {
-		player_->SetState(std::make_unique<PlayerStateIdle>(player_));
-	}
-	//ジャンプしているならJump状態に遷移
-	else if (player_->GetIsJumping()) {
-		player_->SetState(std::make_unique<PlayerStateJump>(player_));
-	}
+	////Animation終了時にIdle状態に遷移
+	//float animationTime = player_->GetModel()->GetAnimationTime();
+	//float duration = player_->GetModel()->GetAnimation().duration;
+	//if (animationTime > duration) {
+	//	player_->SetState(std::make_unique<PlayerStateIdle>(player_));
+	//} 
 }

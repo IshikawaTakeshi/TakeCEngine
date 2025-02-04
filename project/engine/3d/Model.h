@@ -89,6 +89,8 @@ public: //ゲッター
 	//ローカル行列の取得
 	const Matrix4x4& GetLocalMatrix() const { return localMatrix_; }
 
+	float GetAnimationTime() { return animationTime; }
+
 public: //セッター
 
 	//メッシュの設定
@@ -97,9 +99,9 @@ public: //セッター
 	//ModelCommonの設定
 	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
 
-	void SetAnimation(Animation& animation) { animation_ = animation; }
+	void SetAnimation(Animation animation);
 
-	void SetAnimation(const std::string& modelDirectoryPath, const std::string& filename);
+	//void SetAnimation(const std::string& modelDirectoryPath, const std::string& filename);
 
 private:
 

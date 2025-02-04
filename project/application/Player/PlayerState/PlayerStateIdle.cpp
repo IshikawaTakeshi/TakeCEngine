@@ -4,8 +4,14 @@
 #include "PlayerStateRun.h"
 #include "PlayerStateJump.h"
 #include "PlayerStateAttack.h"
+#include "TakeCFrameWork.h"
 
-void PlayerStateIdle::Initialize() {}
+void PlayerStateIdle::Initialize() {
+	
+	//待機アニメーションの設定
+	stateAnimation_ = TakeCFrameWork::GetAnimator()->FindAnimation("Idle.gltf");
+	player_->GetModel()->SetAnimation(stateAnimation_);
+}
 
 void PlayerStateIdle::Update() {
 	
@@ -20,10 +26,10 @@ void PlayerStateIdle::Update() {
 		
 		player_->SetState(std::make_unique<PlayerStateJump>(player_));
 	} 
-	else if (Input::GetInstance()->PushKey(DIK_E)) {
+	else if (Input::GetInstance()->PushKey(DIK_K)) {
 
 
-		player_->SetState(std::make_unique<PlayerStateAttack>(player_));
+		//player_->SetState(std::make_unique<PlayerStateAttack>(player_));
 	} 
 	else {
 		//何もしない

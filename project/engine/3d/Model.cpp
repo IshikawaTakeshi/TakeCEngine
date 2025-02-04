@@ -257,7 +257,12 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
 }
 
-void Model::SetAnimation(const std::string& modelDirectoryPath, const std::string& filename) {
-	animation_ = Animator::LoadAnimationFile(modelDirectoryPath, filename);
+void Model::SetAnimation(Animation animation) {
+	animation_ = animation;
 	animationTime = 0.0f;
 }
+
+//void Model::SetAnimation(const std::string& modelDirectoryPath, const std::string& filename) {
+//	animation_ = Animator::LoadAnimationFile(modelDirectoryPath, filename);
+//	animationTime = 0.0f;
+//}

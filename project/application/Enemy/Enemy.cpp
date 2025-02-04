@@ -43,7 +43,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 
 	//Audio読み込み
 	//throwRockSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/enemyThrowSE.wav");
-	//damageSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/enemyDamage.wav");
+	damageSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/enemyDamage.wav");
 
 	// 衝突属性の設定
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemy));
@@ -82,9 +82,9 @@ void Enemy::Update() {
 
 	model_->GetMesh()->GetMaterial()->SetMaterialColor(color_);
 
-	/*if (hp_ <= 0) {
+	if (hp_ <= 0) {
 		isAlive_ = false;
-	}*/
+	}
 
 	if (hp_ >= 0) {
 		UpdatePhase();
@@ -498,7 +498,7 @@ void Enemy::OnCollision(Collider* other) {
 	// 衝突相手がプレイヤー弾の場合
 	if (otherTypeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayerBullet)) {
 		if (!isHit) {
-			//AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), damageSE);
+			AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), damageSE,1.1f);
 			hp_--;
 			isHit = true;
 		}

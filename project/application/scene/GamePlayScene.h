@@ -47,25 +47,25 @@ public:
 private:
 
 	//サウンドデータ
-	AudioManager::SoundData soundData1;
+	AudioManager::SoundData BGM;
+	bool isSoundPlay = false;
 	// カメラ
 	std::shared_ptr<Camera> camera0_ = nullptr;
 	std::shared_ptr<Camera> camera1_ = nullptr;
 	//SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
-	//スプライト
-	std::unique_ptr<Sprite> sprite_ = nullptr;
 
-	//パーティクル発生器
-	std::unique_ptr<ParticleEmitter> particleEmitter1_ = nullptr;
-	std::unique_ptr<ParticleEmitter> particleEmitter2_ = nullptr;
+	//HPbar
+	std::unique_ptr<HPBar> playerhpBar_ = nullptr;
+	std::unique_ptr<HPBar> enemyhpBar_ = nullptr;
 
 	// プレイヤー
 	std::unique_ptr<Player> player_ = nullptr;
 
-	std::unique_ptr<Object3d> planeModel1_ = nullptr;
-	std::unique_ptr<Object3d> planeModel2_ = nullptr;
-	std::unique_ptr<Object3d> sphereModel_ = nullptr;
-	std::unique_ptr<Object3d> AnimationModel_ = nullptr;
+	//敵
+	std::unique_ptr<Enemy> enemy_ = nullptr;
+
+	//地面
+	std::unique_ptr<Ground> ground_ = nullptr;
 
 };
