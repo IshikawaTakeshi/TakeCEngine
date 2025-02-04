@@ -322,6 +322,21 @@ void Particle3d::SetAttributesFire() {
 	accelerationField_.position_ = { 4.0f,0.0f,0.0f };
 }
 
+void Particle3d::SetAttributesHadouken() {
+	particleAttributes_.scale = { 1.0f,1.0f,1.0f };
+	particleAttributes_.positionRange = { -0.1f,1.0f };
+	particleAttributes_.velocityRange = { -1.1f,1.1f };
+	particleAttributes_.colorRange = { 0.0f,1.0f };
+	particleAttributes_.lifetimeRange = { 0.1f,0.3f };
+	particleAttributes_.isBillboard = true;
+	particleAttributes_.editColor = true;
+	particleAttributes_.color = { 0.0f,0.9f,0.2f };
+	accelerationField_.acceleration_ = { 0.0f,3.7f,0.0f };
+	accelerationField_.aabb_.min_ = { -10.3f,-10.3f,-10.3f };
+	accelerationField_.aabb_.max_ = { 10.3f,10.3f,10.3f };
+	accelerationField_.position_ = { 4.0f,0.0f,0.0f };
+}
+
 //=============================================================================
 // モデルの設定
 //=============================================================================

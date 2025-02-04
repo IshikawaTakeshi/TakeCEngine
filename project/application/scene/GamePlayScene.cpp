@@ -35,6 +35,8 @@ void GamePlayScene::Initialize() {
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "enemy.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "enemyBullet.gltf");
 
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
@@ -59,7 +61,7 @@ void GamePlayScene::Initialize() {
 
 	// Enemy
 	enemy_ = std::make_unique<Enemy>();
-	enemy_->Initialize(Object3dCommon::GetInstance(), "plane.obj",player_.get());
+	enemy_->Initialize(Object3dCommon::GetInstance(), "enemy.gltf",player_.get());
 		
 	//Ground
 	ground_ = std::make_unique<Ground>();
@@ -86,6 +88,7 @@ void GamePlayScene::Initialize() {
 
 	//CreateParticle
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"PlayerBullet", "sphere.obj");
+	TakeCFrameWork::GetParticleManager()->SetParticleAttribute("PlayerBullet");
 }
 
 //====================================================================
@@ -140,7 +143,7 @@ void GamePlayScene::Update() {
 	enemyhpBar_->Update(float(enemy_->GetHP()), float(enemy_->GetMaxHP()));
 
   //パーティクルの更新
-	//TakeCFrameWork::GetParticleManager()->Update(); 
+	TakeCFrameWork::GetParticleManager()->Update(); 
 
 	CollisionManager::GetInstance()->ClearCollider();
 	CheckAllCollisions();
@@ -200,7 +203,7 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();
 	player_->Draw();    //プレイヤーの描画
 
-	//ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
+	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
 }
 

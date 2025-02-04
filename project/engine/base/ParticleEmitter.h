@@ -44,6 +44,10 @@ public:
 
 	void SetIsEmit(bool isEmit) { isEmit_ = isEmit; }
 
+	void SetFrequency(float frequency) { frequency_ = frequency; }
+
+	void SetParticleCount(uint32_t count) { particleCount_ = count; }
+
 private:
 
 	//Model* model_ = nullptr;

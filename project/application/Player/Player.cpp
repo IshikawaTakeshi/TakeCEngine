@@ -44,6 +44,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
 	Object3d::Initialize(object3dCommon, filePath);
+	transform_.scale = {1.2f, 1.2f, 1.2f};
 	transform_.translate = { 0.0f, 0.0f, -20.0f };
 	isJumping_ = false;   // ジャンプ中かどうか
 	jumpVelocity_ = 0.0f; // ジャンプの初速度

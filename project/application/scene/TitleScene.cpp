@@ -18,14 +18,16 @@ void TitleScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend","Title.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend","enterStartText.obj");
 
+	ModelManager::GetInstance()->LoadModel("gltf","TitleText.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf","PushEnter.gltf");
+
+	// Sprite
+	sprite_ = std::make_shared<Sprite>();
+	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/TitleText.png");
+	sprite_->AdjustTextureSize();
+	sprite_->SetPosition({ 512.0f, 256.0f});
 
 	// object
-	titleObject = std::make_shared<Object3d>();
-	titleObject->Initialize(Object3dCommon::GetInstance(), "Title.obj");
-	titleObject->SetScale({ 0.2f, 0.2f, 0.2f });
-	titleObject->SetRotation({ 0.0f, 0.0f, 0.0f });
-	titleObject->SetPosition({ -5.0f, -6.0f, 0.0f });
-	
 	startObject = std::make_unique<Object3d>();
 	startObject->Initialize(Object3dCommon::GetInstance(), "enterStartText.obj");
 	startObject->SetScale({ 0.8f, 0.8f, 0.8f });
@@ -45,7 +47,7 @@ void TitleScene::Update() {
 #ifdef _DEBUG
 	//ImGuiの更新
 	CameraManager::GetInstance()->UpdateImGui();
-	//sprite_->UpdateImGui(0);
+	sprite_->UpdateImGui(0);
 	titleObject->UpdateImGui(0);
 #endif // DEBUG
 
@@ -53,8 +55,7 @@ void TitleScene::Update() {
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
 
-	//sprite_->Update();
-	titleObject->Update();
+	sprite_->Update();
 	startObject->Update();
 
 	//シーン遷移
@@ -67,8 +68,7 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 
 	SpriteCommon::GetInstance()->PreDraw();
-	//sprite_->Draw();
+	sprite_->Draw();
 	Object3dCommon::GetInstance()->PreDrawForObject3d();
-	titleObject->Draw();
 	startObject->Draw();
 }

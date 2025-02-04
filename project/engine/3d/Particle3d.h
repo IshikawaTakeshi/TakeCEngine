@@ -111,6 +111,8 @@ public:
 	/// </summary>
 	void SetAttributesFire();
 
+	void SetAttributesHadouken();
+
 public: //getter
 
 public: //setter

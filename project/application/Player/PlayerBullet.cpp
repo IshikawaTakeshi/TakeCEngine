@@ -35,8 +35,10 @@ void PlayerBullet::Initialize(Object3dCommon* object3dCommon, const Vector3& pla
 
 	particleEmitter_ = std::make_unique<ParticleEmitter>();
 	particleEmitter_->Initialize("Emitter_pBullet", transform_, 3, 0.15f);
-	particleEmitter_->SetParticleName("Particle1");
+	particleEmitter_->SetParticleName("PlayerBullet");
 	particleEmitter_->SetTranslate(transform_.translate);
+	particleEmitter_->SetFrequency(0.05f);
+	particleEmitter_->SetParticleCount(5);
 	particleEmitter_->SetIsEmit(true);
 }
 

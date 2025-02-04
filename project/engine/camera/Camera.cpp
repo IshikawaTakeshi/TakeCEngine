@@ -102,7 +102,7 @@ void Camera::SetShake(float duration, float range) {
 		isShaking_ = true;
 		shakeDuration_ = duration;                // シェイク継続時間を設定
 		shakeRange_ = range;                      // シェイクの振幅を設定
-		originalPosition_ = transform_.translate; // 元の位置を保存
+		originalPosition_ = offsetDelta_; // 元の位置を保存
 	}
 }
 
@@ -115,13 +115,13 @@ void Camera::ShakeCamera() {
 			float offsetZ = (static_cast<float>(rand()) / RAND_MAX) * shakeRange_ * 2.0f - shakeRange_;
 
 			// カメラの位置を揺らす
-			transform_.translate = originalPosition_ + Vector3{ offsetX, offsetY, offsetZ };
+			offsetDelta_ = originalPosition_ + Vector3{ offsetX, offsetY, offsetZ };
 
 			// 残り時間を減らす
 			shakeDuration_ -= 1.0f;
 		} else {
 			// シェイク終了
-			transform_.translate = originalPosition_; // 元の位置に戻す
+			offsetDelta_ = originalPosition_; // 元の位置に戻す
 			isShaking_ = false;
 		}
 	}
