@@ -12,8 +12,6 @@
 //====================================================================
 
 void GamePlayScene::Initialize() {
-	//サウンドデータ
-	BGM = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/gamePlayBGM.wav");
 
 	//Camera0
 	camera0_ = std::make_shared<Camera>();
@@ -59,33 +57,6 @@ void GamePlayScene::Initialize() {
 	player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
 	player_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("Idle.gltf"));
 
-	// Enemy
-	enemy_ = std::make_unique<Enemy>();
-	enemy_->Initialize(Object3dCommon::GetInstance(), "enemy.gltf",player_.get());
-		
-	//Ground
-	ground_ = std::make_unique<Ground>();
-	ground_->Initialize(Object3dCommon::GetInstance(), "ground.obj");
-
-	//HPBar
-	playerhpBar_ = std::make_unique<HPBar>();
-	playerhpBar_->Initialize(SpriteCommon::GetInstance(),
-		"Resources/images/backHp.png",
-		"Resources/images/flontHp.png","Resources/images/white.png");
-	playerhpBar_->SetPosition({ 93,670 });
-	playerhpBar_->SetSize({ 550,40 });
-	playerhpBar_->SetbugePosition({ 9,644 });
-	playerhpBar_->SetbugeSize({ 75,75 });
-
-	enemyhpBar_ = std::make_unique<HPBar>();
-	enemyhpBar_->Initialize(SpriteCommon::GetInstance(),
-		"Resources/images/backHp.png",
-		"Resources/images/flontHp.png", "Resources/images/white.png");
-	enemyhpBar_->SetPosition({ 723,17 });
-	enemyhpBar_->SetSize({ 550,40 });
-	enemyhpBar_->SetbugePosition({ 647,1 });
-	enemyhpBar_->SetbugeSize({ 75,75 });
-
 	//CreateParticle
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"PlayerBullet", "sphere.obj");
 	TakeCFrameWork::GetParticleManager()->SetParticleAttribute("PlayerBullet");
@@ -98,7 +69,7 @@ void GamePlayScene::Initialize() {
 void GamePlayScene::Finalize() {
 	CollisionManager::GetInstance()->Finalize();           // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
-	AudioManager::GetInstance()->SoundUnload(&BGM); //音声データ解放
+	//AudioManager::GetInstance()->SoundUnload(&BGM); //音声データ解放
 }
 
 //====================================================================
@@ -119,10 +90,10 @@ void GamePlayScene::Update() {
 #endif // DEBUG
 
 	// オーディオ再生
-	if (!isSoundPlay) {
-		AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), BGM,0.1f);
-		isSoundPlay = true;
-	}
+	//if (!isSoundPlay) {
+		//AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), BGM,0.1f);
+	//	isSoundPlay = true;
+	//}
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
@@ -133,14 +104,14 @@ void GamePlayScene::Update() {
 	player_->Update();
 
 	//敵の更新
-	enemy_->Update();
+	//enemy_->Update();
 
 	//地面の更新
-	ground_->Update();
+	//ground_->Update();
 
 	//HPBarの更新
-	playerhpBar_->Update(float(player_->GetHP()), float(player_->GetMaxHP()));
-	enemyhpBar_->Update(float(enemy_->GetHP()), float(enemy_->GetMaxHP()));
+	//playerhpBar_->Update(float(player_->GetHP()), float(player_->GetMaxHP()));
+	//enemyhpBar_->Update(float(enemy_->GetHP()), float(enemy_->GetMaxHP()));
 
   //パーティクルの更新
 	TakeCFrameWork::GetParticleManager()->Update(); 
@@ -148,23 +119,14 @@ void GamePlayScene::Update() {
 	CollisionManager::GetInstance()->ClearCollider();
 	CheckAllCollisions();
 
-	//シーン遷移
-	if (!enemy_->GetIsAlive()) {
-		AudioManager::GetInstance()->SoundUnload(&BGM);
-		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
-	} else if (player_->GetHP() <= 0) {
-		AudioManager::GetInstance()->SoundUnload(&BGM);
-		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
-	}
-
 #ifdef _DEBUG
 	// デバッグ用:シーン遷移
 	if (Input::GetInstance()->TriggerKey(DIK_P)) {
 		// シーン切り替え依頼
-		AudioManager::GetInstance()->SoundUnload(&BGM);
+		//AudioManager::GetInstance()->SoundUnload(&BGM);
 		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 	} else if (Input::GetInstance()->TriggerKey(DIK_O)) {
-		AudioManager::GetInstance()->SoundUnload(&BGM);
+		//AudioManager::GetInstance()->SoundUnload(&BGM);
 		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
 	}
 #endif // _DEBUG
@@ -181,18 +143,11 @@ void GamePlayScene::Draw() {
 
 	//Spriteの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
-	//HPBarの描画
-	playerhpBar_->Draw();
-	enemyhpBar_->Draw();
 
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance()->PreDrawForObject3d();
 
 	player_->DrawBullet();
-
-	enemy_->Draw();
-
-	ground_->Draw();
 
 
 	// ディスパッチ
@@ -218,15 +173,6 @@ void GamePlayScene::CheckAllCollisions() {
 	for (PlayerBullet* pBullet : playerBullets) {
 		CollisionManager::GetInstance()->RegisterCollider(pBullet);
 	}
-
-	CollisionManager::GetInstance()->RegisterCollider(enemy_.get());
-
-	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullet();
-
-	for (EnemyBullet* eBullet : enemyBullets) {
-		CollisionManager::GetInstance()->RegisterCollider(eBullet);
-	}
-
 
 	CollisionManager::GetInstance()->CheckAllCollisions();
 }

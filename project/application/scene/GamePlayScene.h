@@ -47,7 +47,7 @@ public:
 private:
 
 	//サウンドデータ
-	AudioManager::SoundData BGM;
+	//AudioManager::SoundData BGM;
 	bool isSoundPlay = false;
 	// カメラ
 	std::shared_ptr<Camera> camera0_ = nullptr;
@@ -56,16 +56,16 @@ private:
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 
 	//HPbar
-	std::unique_ptr<HPBar> playerhpBar_ = nullptr;
-	std::unique_ptr<HPBar> enemyhpBar_ = nullptr;
+	//std::unique_ptr<HPBar> playerhpBar_ = nullptr;
+	//std::unique_ptr<HPBar> enemyhpBar_ = nullptr;
 
 	// プレイヤー
 	std::unique_ptr<Player> player_ = nullptr;
 
-	//敵
-	std::unique_ptr<Enemy> enemy_ = nullptr;
+	////敵
+	//std::unique_ptr<Enemy> enemy_ = nullptr;
 
-	//地面
-	std::unique_ptr<Ground> ground_ = nullptr;
+	////地面
+	//std::unique_ptr<Ground> ground_ = nullptr;
 
 };
