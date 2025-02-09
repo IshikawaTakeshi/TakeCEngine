@@ -7,6 +7,7 @@
 #include <array>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 #include "PSOType.h"
 
@@ -69,8 +70,8 @@ public:
 	ComPtr<ID3D12RootSignature> CreateRootSignatureFromShaders(
 		ID3D12Device* device, const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
 
-	void CreateGraphicRootSignatureForSkinnedObject3D(ID3D12Device* device);
-	void CreateComputeRootSignatureForSkinnedObject3D(ID3D12Device* device);
+	std::unordered_map<ShaderResourceKey, ShaderResourceInfo, ShaderResourceKeyHash> LoadShaderResourceInfo
+	(const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
 
 	/// <summary>
 	/// パーティクル用のルートシグネチャ生成

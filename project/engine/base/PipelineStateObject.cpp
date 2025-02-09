@@ -8,7 +8,7 @@
 #include <cassert>
 #include <d3d12shader.h>
 #include <d3dcompiler.h>
-#include <unordered_map>
+
 
 
 PSO::~PSO() {
@@ -33,78 +33,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> PSO::CreateRootSignatureFromShaders(
 
 	std::unordered_map<ShaderResourceKey, ShaderResourceInfo, ShaderResourceKeyHash> resources;
 
-	// シェーダーの可視性を取得する関数
-	auto GetShaderVisibility = [&](D3D12_SHADER_DESC shaderDesc) {
-		UINT shaderVersion = D3D12_SHVER_GET_TYPE(shaderDesc.Version);
-		if (shaderVersion == D3D12_SHVER_VERTEX_SHADER) {
-
-			return D3D12_SHADER_VISIBILITY_VERTEX;
-
-		} else if (shaderVersion == D3D12_SHVER_PIXEL_SHADER) {
-
-			return D3D12_SHADER_VISIBILITY_PIXEL;
-
-		} else if (shaderVersion == D3D12_SHVER_COMPUTE_SHADER) {
-
-			return D3D12_SHADER_VISIBILITY_ALL;
-
-		} else {
-
-			return D3D12_SHADER_VISIBILITY_ALL;
-		}
-	};
-
-	// 各シェーダーをリフレクションしてリソースを収集
-	for (size_t shaderIndex = 0; shaderIndex < shaderBlobs.size(); ++shaderIndex) {
-		const auto& shaderBlob = shaderBlobs[shaderIndex];
-		
-		ComPtr<IDxcContainerReflection> containerReflection;
-		HRESULT hr = DxcCreateInstance(CLSID_DxcContainerReflection, IID_PPV_ARGS(&containerReflection));
-		if (FAILED(hr)) {
-			//"Failed to create IDxcContainerReflection."
-			assert(false);
-		}
-
-		hr = containerReflection->Load(shaderBlob.Get());
-		if (FAILED(hr)) {
-			//"Failed to load shader blob into reflection."
-			assert(false);
-		}
-
-		UINT32 shaderIdx = 0;
-		hr = containerReflection->FindFirstPartKind(DXC_PART_DXIL, &shaderIdx);
-		if (FAILED(hr)) {
-			//"Failed to find DXIL part in shader blob."
-			assert(false);
-		}
-
-		ComPtr<ID3D12ShaderReflection> shaderReflection;
-		hr = containerReflection->GetPartReflection(shaderIdx, IID_PPV_ARGS(&shaderReflection));
-		if (FAILED(hr)) {
-			//"Failed to get shader reflection."
-			assert(false);
-		}
-
-		D3D12_SHADER_DESC shaderDesc;
-		shaderReflection->GetDesc(&shaderDesc);
-
-		D3D12_SHADER_VISIBILITY visibility = GetShaderVisibility(shaderDesc);
-
-		// シェーダーのバインドリソースを収集
-		for (UINT i = 0; i < shaderDesc.BoundResources; ++i) {
-			D3D12_SHADER_INPUT_BIND_DESC bindDesc;
-			shaderReflection->GetResourceBindingDesc(i, &bindDesc);
-			
-			ShaderResourceKey key = { bindDesc.Type,visibility, bindDesc.BindPoint, bindDesc.Space };
-			if (resources.find(key) == resources.end()) {
-				//サンプラーの場合はスキップ
-				if (bindDesc.Type == D3D_SIT_SAMPLER) {
-					continue;
-				}
-				resources[key] = { key, bindDesc.Name };
-			}
-		}
-	}
+	resources = LoadShaderResourceInfo(shaderBlobs);
 
 	// ルートシグネチャ記述を構築
 	D3D12_ROOT_SIGNATURE_DESC rootSigDesc = {};
@@ -205,6 +134,87 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> PSO::CreateRootSignatureFromShaders(
 	Logger::Log(StringUtility::ConvertString(L"Root signature successfully created."));
 
 	return rootSignature;
+}
+
+std::unordered_map<ShaderResourceKey, ShaderResourceInfo, ShaderResourceKeyHash> PSO::LoadShaderResourceInfo(
+	const std::vector<ComPtr<IDxcBlob>>& shaderBlobs) {
+
+	std::unordered_map<ShaderResourceKey, ShaderResourceInfo, ShaderResourceKeyHash> resources;
+
+	// シェーダーの可視性を取得する関数
+	auto GetShaderVisibility = [&](D3D12_SHADER_DESC shaderDesc) {
+		UINT shaderVersion = D3D12_SHVER_GET_TYPE(shaderDesc.Version);
+		if (shaderVersion == D3D12_SHVER_VERTEX_SHADER) {
+
+			return D3D12_SHADER_VISIBILITY_VERTEX;
+
+		} else if (shaderVersion == D3D12_SHVER_PIXEL_SHADER) {
+
+			return D3D12_SHADER_VISIBILITY_PIXEL;
+
+		} else if (shaderVersion == D3D12_SHVER_COMPUTE_SHADER) {
+
+			return D3D12_SHADER_VISIBILITY_ALL;
+
+		} else {
+
+			return D3D12_SHADER_VISIBILITY_ALL;
+		}
+	};
+
+	// 各シェーダーをリフレクションしてリソースを収集
+	for (size_t shaderIndex = 0; shaderIndex < shaderBlobs.size(); ++shaderIndex) {
+		const auto& shaderBlob = shaderBlobs[shaderIndex];
+
+		ComPtr<IDxcContainerReflection> containerReflection;
+		HRESULT hr = DxcCreateInstance(CLSID_DxcContainerReflection, IID_PPV_ARGS(&containerReflection));
+		if (FAILED(hr)) {
+			//"Failed to create IDxcContainerReflection."
+			assert(false);
+		}
+
+		hr = containerReflection->Load(shaderBlob.Get());
+		if (FAILED(hr)) {
+			//"Failed to load shader blob into reflection."
+			assert(false);
+		}
+
+		UINT32 shaderIdx = 0;
+		hr = containerReflection->FindFirstPartKind(DXC_PART_DXIL, &shaderIdx);
+		if (FAILED(hr)) {
+			//"Failed to find DXIL part in shader blob."
+			assert(false);
+		}
+
+		ComPtr<ID3D12ShaderReflection> shaderReflection;
+		hr = containerReflection->GetPartReflection(shaderIdx, IID_PPV_ARGS(&shaderReflection));
+		if (FAILED(hr)) {
+			//"Failed to get shader reflection."
+			assert(false);
+		}
+
+		D3D12_SHADER_DESC shaderDesc;
+		shaderReflection->GetDesc(&shaderDesc);
+
+		D3D12_SHADER_VISIBILITY visibility = GetShaderVisibility(shaderDesc);
+
+		// シェーダーのバインドリソースを収集
+		for (UINT i = 0; i < shaderDesc.BoundResources; ++i) {
+			D3D12_SHADER_INPUT_BIND_DESC bindDesc;
+			shaderReflection->GetResourceBindingDesc(i, &bindDesc);
+
+			ShaderResourceKey key = { bindDesc.Type,visibility, bindDesc.BindPoint, bindDesc.Space };
+			if (resources.find(key) == resources.end()) {
+				//サンプラーの場合はスキップ
+				if (bindDesc.Type == D3D_SIT_SAMPLER) {
+					continue;
+				}
+				resources[key] = { key, bindDesc.Name };
+			}
+		}
+	}
+
+	return resources;
 }
 
 void PSO::CreateRootSignatureForParticle(ID3D12Device* device) {
