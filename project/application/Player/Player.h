@@ -52,7 +52,7 @@ public:
 	/// </summary>
 	void Move();
 
-	void SetState(std::unique_ptr<BasePlayerState> state) { state_ = std::move(state); }
+	void SetState(std::unique_ptr<BasePlayerState> state);
 	
 	/// <summary>
 	/// ImGuiの更新処理

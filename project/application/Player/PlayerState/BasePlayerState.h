@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "Animation/NodeAnimation.h"
 
 class Player;
 class BasePlayerState {
@@ -18,10 +19,15 @@ public:
 	//状態名の取得
 	const std::string& GetName() const { return name_; }
 
+	//アニメーションの取得
+	const Animation& GetAnimation() const { return stateAnimation_; }
+
 protected:
 
 	//状態名
 	std::string name_;
+
+	Animation stateAnimation_;
 
 	Player* player_ = nullptr;
 

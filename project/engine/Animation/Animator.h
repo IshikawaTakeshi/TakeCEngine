@@ -2,13 +2,19 @@
 #include "Animation/NodeAnimation.h"
 #include "Matrix4x4.h"
 #include <string>
-#include <map>
+#include <unordered_map>
 
 class Animator {
 public:
 
 	Animator() = default;
 	~Animator() = default;
+
+	void Finalize();
+
+	void LoadAnimation(const std::string& filePath);
+
+	Animation FindAnimation(const std::string& filePath);
 
 	static Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
 	
@@ -27,6 +33,7 @@ public:
 
 private:
 
+	std::unordered_map<std::string, Animation> animations_;
 
 };
 

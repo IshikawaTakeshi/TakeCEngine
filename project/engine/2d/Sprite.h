@@ -47,13 +47,13 @@ public:
 
 	///テクスチャ変更処理
 	//void ChangeTexture(const std::string& textureFilePath);
+	//テクスチャサイズをイメージに合わせる
+	void AdjustTextureSize();
 private:
 
 	//頂点データ更新
 	void UpdateVertexData();
 
-	//テクスチャサイズをイメージに合わせる
-	void AdjustTextureSize();
 	
 public:
 	//================================================================================================

@@ -14,7 +14,12 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//シーンマネージャーのセット
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
 	//最初のシーンを設定
+	SceneManager::GetInstance()->ChangeScene("TITLE");
+#ifdef _DEBUG
 	SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+#endif // _DEBUG
+	
+	
 }
 
 //====================================================================

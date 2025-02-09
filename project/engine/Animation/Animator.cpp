@@ -8,6 +8,46 @@
 #include <cassert>
 #include "Animator.h"
 
+//=============================================================================
+//	アニメーションの読み込み/登録
+//=============================================================================
+
+void Animator::Finalize() {
+	animations_.clear();
+}
+
+void Animator::LoadAnimation(const std::string& filePath) {
+
+	//読み込み済みアニメーションを検索
+	if (animations_.contains(filePath)) {
+		//すでに読み込み済みならreturn
+		return;
+	}
+
+	//アニメーションの生成とファイル読み込み、初期化
+	Animation animation = LoadAnimationFile("Animation", filePath);
+	//アニメーションをコンテナに追加
+	animations_.insert(std::make_pair(filePath, animation));
+}
+
+//=============================================================================
+//	アニメーションの検索
+//=============================================================================
+
+Animation Animator::FindAnimation(const std::string& filePath) {
+	//読み込み済みアニメーションを検索
+	if (animations_.contains(filePath)) {
+		//読み込みアニメーションを戻り値としてreturn
+		return animations_.at(filePath);
+	}
+
+	//ファイル名一致なし
+	return {};
+}
+
+//=============================================================================
+//	アニメーションファイルの読み込み
+//=============================================================================
 
 Animation Animator::LoadAnimationFile(const std::string& directoryPath, const std::string& filename) {
     Animation animation;
@@ -55,6 +95,10 @@ Animation Animator::LoadAnimationFile(const std::string& directoryPath, const st
 	}
 	return animation;
 }
+
+//=============================================================================
+//	補間値の計算
+//=============================================================================
 
 Vector3 Animator::CalculateValue(const std::vector<KeyflameVector3>& keyframes, float time) {
 	assert(!keyframes.empty()); //keyframesが空の場合はエラー

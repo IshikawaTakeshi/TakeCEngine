@@ -76,7 +76,7 @@ public:
 	/// </summary>
 	/// <param name="xAudio2"></param>
 	/// <param name="soundData"></param>
-	void SoundPlayWave(IXAudio2* xAudio2, SoundData& soundData);
+	void SoundPlayWave(IXAudio2* xAudio2, SoundData& soundData,float volume);
 
 	/// <summary>
 	/// 解放処理

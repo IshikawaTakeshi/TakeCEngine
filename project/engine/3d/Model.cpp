@@ -19,14 +19,11 @@ Model::~Model() {
 // 初期化
 //=============================================================================
 
-void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData, const std::string& modelDirectoryPath, const std::string& filePath) {
+void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData) {
 	modelCommon_ = ModelCommon;
 
 	//objファイル読み込み
 	modelData_ = modelData;
-
-	//Animation読み込み
-	animation_ = Animator::LoadAnimationFile(modelDirectoryPath, filePath);
 
 	//Skeleton作成
 	if (modelData_.haveBone) {
@@ -259,3 +256,13 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
 }
+
+void Model::SetAnimation(Animation animation) {
+	animation_ = animation;
+	animationTime = 0.0f;
+}
+
+//void Model::SetAnimation(const std::string& modelDirectoryPath, const std::string& filename) {
+//	animation_ = Animator::LoadAnimationFile(modelDirectoryPath, filename);
+//	animationTime = 0.0f;
+//}

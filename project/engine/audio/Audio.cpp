@@ -130,7 +130,7 @@ void AudioManager::SoundUnload(SoundData* soundData) {
 // 音声再生
 //================================================================================================
 
-void AudioManager::SoundPlayWave(IXAudio2* xAudio2, SoundData& soundData) {
+void AudioManager::SoundPlayWave(IXAudio2* xAudio2, SoundData& soundData, float volume) {
 
 	HRESULT result;
 
@@ -140,6 +140,9 @@ void AudioManager::SoundPlayWave(IXAudio2* xAudio2, SoundData& soundData) {
 	assert(SUCCEEDED(result));
 
 	soundData.pSourceVoice = pSourceVoice;
+
+	//音量の設定
+	pSourceVoice->SetVolume(volume);
 
 	//再生する波形データの設定
 	XAUDIO2_BUFFER buffer = {};

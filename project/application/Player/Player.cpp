@@ -40,10 +40,11 @@ Player::~Player() {
 
 void Player::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
-	//DamageSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/playerDamage.wav");
+	DamageSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/playerDamage.wav");
 
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
 	Object3d::Initialize(object3dCommon, filePath);
+	transform_.scale = {1.2f, 1.2f, 1.2f};
 	transform_.translate = { 0.0f, 0.0f, -20.0f };
 	isJumping_ = false;   // ジャンプ中かどうか
 	jumpVelocity_ = 0.0f; // ジャンプの初速度
@@ -182,6 +183,11 @@ void Player::Move() {
 
 }
 
+void Player::SetState(std::unique_ptr<BasePlayerState> state) {
+	state_ = std::move(state);
+	state_->Initialize();
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 ///		ImGuiの更新処理
 ////////////////////////////////////////////////////////////////////////////////////
@@ -215,7 +221,7 @@ void Player::OnCollision(Collider* other) {
 	// 衝突相手が敵の場合
 	if (otherTypeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemy)) {
 		if (!isHit) {
-			//AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), DamageSE);
+			AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), DamageSE,1.1f);
 			CameraManager::GetInstance()->GetActiveCamera()->SetShake(60.0f, 0.2f);
 			CameraManager::GetInstance()->GetActiveCamera()->SetIsShaking(true);
 			hp_--;
@@ -226,7 +232,7 @@ void Player::OnCollision(Collider* other) {
 	// 衝突相手が敵弾の場合
 	if (otherTypeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemyBullet)) {
 		if (!isHit) {
-			//AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), DamageSE);
+			AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), DamageSE,1.1f);
 			CameraManager::GetInstance()->GetActiveCamera()->SetShake(60.0f, 0.2f);
 			CameraManager::GetInstance()->GetActiveCamera()->SetIsShaking(true);
 			hp_--;
@@ -291,7 +297,7 @@ void Player::Attack() {
 
 	attackInterval_++;
 	if (attackInterval_ > 20) {
-		if (Input::GetInstance()->PushKey(DIK_E)) {
+		if (Input::GetInstance()->IsTriggerMouse(0)) {
 			ShotBullet();
 		}
 	}
@@ -314,10 +320,10 @@ void Player::Attack() {
 void Player::ShotBullet() {
 
 	// 弾の速度
-	const float kBulletSpeed = 0.44f;
-	const float kBulletSpeedy = 0.44f;
+	const float kBulletSpeedZ = 1.44f;
+	const float kBulletSpeedY = 0.44f;
 
-	Vector3 bulletVelocity = { 0, kBulletSpeedy, kBulletSpeed };
+	Vector3 bulletVelocity = { 0, kBulletSpeedY, kBulletSpeedZ };
 
 	// プレイヤーから照準オブジェクトへのベクトル
 	bulletVelocity = MatrixMath::TransformNormal(bulletVelocity, worldMatrix_);

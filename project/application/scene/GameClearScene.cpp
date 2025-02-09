@@ -57,7 +57,7 @@ void GameClearScene::Initialize() {
 
 	//whiteOutSprite
 	whiteOutSprite_ = std::make_unique<Sprite>();
-	whiteOutSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/buckHp.png");
+	whiteOutSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/backHp.png");
 	whiteOutSprite_->SetPosition({ 640.0f, 360.0f });
 	whiteOutSprite_->SetSize({ 0.0f, 0.0f });
 	whiteOutSprite_->SetAnchorPoint({ 0.5f, 0.5f });
@@ -120,7 +120,7 @@ void GameClearScene::Update() {
 
 		// シーン遷移
 		if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-			lerpTime_ = 0.0f;
+			
 			changePhase_ = true;
 		}
 		if (changePhase_) {

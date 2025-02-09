@@ -109,7 +109,7 @@ private:
 
 	// 新しく追加: 跳ねた回数をカウントする変数
 	int bounceCount_ = 0;
-	static const int kMaxBounces = 2; // 最大跳ね回数
+	static const int kMaxBounces = 1; // 最大跳ね回数
 	float bulletfloor_;
 };
 

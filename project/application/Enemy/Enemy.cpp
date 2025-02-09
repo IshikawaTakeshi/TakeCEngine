@@ -43,7 +43,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 
 	//Audio読み込み
 	//throwRockSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/enemyThrowSE.wav");
-	//damageSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/enemyDamage.wav");
+	damageSE = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/enemyDamage.wav");
 
 	// 衝突属性の設定
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemy));
@@ -82,9 +82,9 @@ void Enemy::Update() {
 
 	model_->GetMesh()->GetMaterial()->SetMaterialColor(color_);
 
-	/*if (hp_ <= 0) {
+	if (hp_ <= 0) {
 		isAlive_ = false;
-	}*/
+	}
 
 	if (hp_ >= 0) {
 		UpdatePhase();
@@ -327,12 +327,12 @@ void Enemy::FallingRockAttack() {
 		if (attackTime_ % 30 == 0) {
 			for (int i = 0; i < 2; ++i) {
 				Vector3 randomPosition = {
-				    -15.0f + (std::rand() / (float)RAND_MAX) * 30.0f, // X座標: -15 から 15
+				    -30.0f + (std::rand() / (float)RAND_MAX) * 30.0f, // X座標: -15 から 15
 				    spawnHeight,                                      // Y座標: 固定値
-				    (std::rand() / (float)RAND_MAX) * -15.0f          // Z座標: 0 から 15
+				    (std::rand() / (float)RAND_MAX) * -30.0f          // Z座標: 0 から 15
 				};
 
-				Vector3 bulletVelocity = {0.0f, -0.2f, 0.0f};
+				Vector3 bulletVelocity = {0.0f, -9.8f, 0.0f};
 
 				EnemyBullet* newBullet = new EnemyBullet();
 				newBullet->Initialize(Object3dCommon::GetInstance(), randomPosition, bulletVelocity);
@@ -498,7 +498,7 @@ void Enemy::OnCollision(Collider* other) {
 	// 衝突相手がプレイヤー弾の場合
 	if (otherTypeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayerBullet)) {
 		if (!isHit) {
-			//AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), damageSE);
+			AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), damageSE,1.1f);
 			hp_--;
 			isHit = true;
 		}

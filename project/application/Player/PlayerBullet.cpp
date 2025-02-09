@@ -31,12 +31,14 @@ void PlayerBullet::Initialize(Object3dCommon* object3dCommon, const Vector3& pla
 	// 重力の設定
 	gravity_ = -0.02f; // 調整可能
 
-	bulletfloor_ = -1.0f;//弾が跳ねる高さ
+	bulletfloor_ = -2.0f;//弾が跳ねる高さ
 
 	particleEmitter_ = std::make_unique<ParticleEmitter>();
 	particleEmitter_->Initialize("Emitter_pBullet", transform_, 3, 0.15f);
-	particleEmitter_->SetParticleName("Particle1");
+	particleEmitter_->SetParticleName("PlayerBullet");
 	particleEmitter_->SetTranslate(transform_.translate);
+	particleEmitter_->SetFrequency(0.05f);
+	particleEmitter_->SetParticleCount(5);
 	particleEmitter_->SetIsEmit(true);
 }
 
