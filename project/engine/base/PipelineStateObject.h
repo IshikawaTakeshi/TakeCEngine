@@ -14,20 +14,20 @@
 #include "PSOType.h"
 
 // シェーダーリソース情報を一意に識別するためのキー
-struct ShaderResourceKey {
+struct BindResourceKey {
 	D3D_SHADER_INPUT_TYPE type;
 	D3D12_SHADER_VISIBILITY visibility;
 	UINT bindPoint;
 	UINT space;
 
-	bool operator==(const ShaderResourceKey& other) const {
+	bool operator==(const BindResourceKey& other) const {
 		return type == other.type && visibility == other.visibility &&
 			bindPoint == other.bindPoint && space == other.space;
 	}
 };
 
-struct ShaderResourceKeyHash {
-	std::size_t operator()(const ShaderResourceKey& key) const {
+struct BindResourceKeyHash {
+	std::size_t operator()(const BindResourceKey& key) const {
 		return std::hash<UINT>()(static_cast<UINT>(key.type)) ^
 			std::hash<UINT>()(static_cast<UINT>(key.visibility)) ^
 			std::hash<UINT>()(key.bindPoint) ^
@@ -35,11 +35,10 @@ struct ShaderResourceKeyHash {
 	}
 };
 
-// リソース情報をまとめるデータ構造（入力レイアウト情報を追加）
+// バインドしているリソースの情報
 struct BindResourceInfo {
-	ShaderResourceKey key;
+	BindResourceKey key;
 	std::string name; // バインドしているバッファリソースの名前
-	std::optional<D3D12_SIGNATURE_PARAMETER_DESC> inputParamDesc; // 入力レイアウト情報
 };
 
 ///	エイリアステンプレート
@@ -50,7 +49,14 @@ struct GraphicShaderData {
 	ComPtr<IDxcBlob> pixelBlob;
 };
 
-using ShaderResourceMap = std::unordered_map<ShaderResourceKey, BindResourceInfo, ShaderResourceKeyHash>;
+using BindResourceMap = std::unordered_map<BindResourceKey, BindResourceInfo, BindResourceKeyHash>;
+
+
+// リソース情報をまとめるデータ構造
+struct ShaderResourceInfo {
+	BindResourceMap resources;
+	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs;
+};
 
 class DXC;
 class PSO {
@@ -84,25 +90,16 @@ public:
 	/// </summary>
 	/// <param name="shaderBlobs"></param>
 	/// <returns></returns>
-	ShaderResourceMap LoadShaderResourceInfo
+	ShaderResourceInfo LoadShaderResourceInfo
 	(const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
 
-	ComPtr<ID3D12RootSignature> CreateRootSignature(ID3D12Device* device, ShaderResourceMap resourceMap);
+	ComPtr<ID3D12RootSignature> CreateRootSignature(ID3D12Device* device, BindResourceMap resourceMap);
 
 	/// <summary>
 	/// パーティクル用のルートシグネチャ生成
 	/// </summary>
 	/// <param name="device"></param>
 	void CreateRootSignatureForParticle(ID3D12Device* device);
-
-	/// <summary>
-	/// インプットレイアウト初期化
-	/// </summary>
-	void CreateInputLayout();
-	void CreateInputLayoutForSkyBox();
-	void CreateInputLayoutForSkinningObject();
-
-	void CreateInputLayout(ShaderResourceMap resourceMap);
 
 	/// <summary>
 	/// ブレンドステート初期化
@@ -176,10 +173,8 @@ private:
 	ComPtr<ID3D12RootSignature> graphicRootSignature_;
 	ComPtr<ID3D12RootSignature> computeRootSignature_;
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
-	//InputLayout
-	std::array<D3D12_INPUT_ELEMENT_DESC,3> inputElementDescs_ = {};
-	std::array<D3D12_INPUT_ELEMENT_DESC,2> inputElementDescsForSkyBox_ = {};
-	std::array < D3D12_INPUT_ELEMENT_DESC,3> inputElementDescsForSkinningObject_ = {};
+	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_; // 入力レイアウト情報
+	std::vector<D3D12_SIGNATURE_PARAMETER_DESC> inputParamDescs_; // 入力レイアウト情報
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};

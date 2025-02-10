@@ -153,10 +153,12 @@ void PSO::CompileComputeShader(DXC* dxc_, const std::wstring& filePath) {
 //	return rootSignature;
 //}
 
-ShaderResourceMap PSO::LoadShaderResourceInfo(
+ShaderResourceInfo PSO::LoadShaderResourceInfo(
 	const std::vector<ComPtr<IDxcBlob>>& shaderBlobs) {
 
-	ShaderResourceMap resources;
+
+	ShaderResourceInfo resultInfo;
+	BindResourceMap bindResources;
 
 	// シェーダーの可視性を取得する関数
 	auto GetShaderVisibility = [&](D3D12_SHADER_DESC shaderDesc) {
@@ -220,13 +222,13 @@ ShaderResourceMap PSO::LoadShaderResourceInfo(
 			D3D12_SHADER_INPUT_BIND_DESC bindDesc;
 			shaderReflection->GetResourceBindingDesc(i, &bindDesc);
 
-			ShaderResourceKey key = { bindDesc.Type,visibility, bindDesc.BindPoint, bindDesc.Space };
-			if (resources.find(key) == resources.end()) {
+			BindResourceKey key = { bindDesc.Type,visibility, bindDesc.BindPoint, bindDesc.Space };
+			if (bindResources.find(key) == bindResources.end()) {
 				//サンプラーの場合はスキップ
 				if (bindDesc.Type == D3D_SIT_SAMPLER) {
 					continue;
 				}
-				resources[key] = { key, bindDesc.Name };
+				bindResources[key] = { key, bindDesc.Name };
 			}
 		}
 
@@ -236,21 +238,19 @@ ShaderResourceMap PSO::LoadShaderResourceInfo(
 				D3D12_SIGNATURE_PARAMETER_DESC paramDesc;
 				shaderReflection->GetInputParameterDesc(i, &paramDesc);
 
-				// `SemanticName` と `SemanticIndex` をキーにしてリソース情報を更新
-				for (auto& [key, resource] : resources) {
-					if (resource.name == paramDesc.SemanticName) {
-						resource.inputParamDesc = paramDesc;
-						break;
-					}
-				}
+				resultInfo.inputElementDescs[i].SemanticName = paramDesc.SemanticName;
+				resultInfo.inputElementDescs[i].SemanticIndex = paramDesc.SemanticIndex;
+				resultInfo.inputElementDescs[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+
 			}
 		}
 	}
 
-	return resources;
+	return 
 }
 
-ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, ShaderResourceMap resourceMap) {
+ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, BindResourceMap resourceMap) {
 	
 	// ルートシグネチャ記述を構築
 	D3D12_ROOT_SIGNATURE_DESC rootSigDesc = {};
@@ -261,7 +261,7 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 	std::list<D3D12_DESCRIPTOR_RANGE> descriptorRanges;
 
 	for (const auto& resource : resourceMap) {
-		const ShaderResourceKey& key = resource.second.key;
+		const BindResourceKey& key = resource.second.key;
 
 		if (key.type == D3D_SIT_CBUFFER) {
 			// 定数バッファ
@@ -421,72 +421,68 @@ void PSO::CreateRootSignatureForParticle(ID3D12Device* device) {
 // InputLayoutの生成
 //=============================================================================
 
-void PSO::CreateInputLayout() {
+//void PSO::CreateInputLayout() {
+//
+//	//position
+//	inputElementDescs_[0].SemanticName = "POSITION";
+//	inputElementDescs_[0].SemanticIndex = 0;
+//	inputElementDescs_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+//	inputElementDescs_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+//	//texcoord
+//	inputElementDescs_[1].SemanticName = "TEXCOORD";
+//	inputElementDescs_[1].SemanticIndex = 0;
+//	inputElementDescs_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+//	inputElementDescs_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+//	//normal
+//	inputElementDescs_[2].SemanticName = "NORMAL";
+//	inputElementDescs_[2].SemanticIndex = 0;
+//	inputElementDescs_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+//	inputElementDescs_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+//
+//	inputLayoutDesc_.pInputElementDescs = inputElementDescs_.data();
+//	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescs_.size());
+//}
+//
+//void PSO::CreateInputLayoutForSkyBox() {
+//
+//	//position
+//	inputElementDescsForSkyBox_[0].SemanticName = "POSITION";
+//	inputElementDescsForSkyBox_[0].SemanticIndex = 0;
+//	inputElementDescsForSkyBox_[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+//	inputElementDescsForSkyBox_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+//
+//	//texcoord
+//	inputElementDescsForSkyBox_[1].SemanticName = "TEXCOORD";
+//	inputElementDescsForSkyBox_[1].SemanticIndex = 0;
+//	inputElementDescsForSkyBox_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+//	inputElementDescsForSkyBox_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+//
+//	inputLayoutDesc_.pInputElementDescs = inputElementDescsForSkyBox_.data();
+//	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescsForSkyBox_.size());
+//}
+//
+//void PSO::CreateInputLayoutForSkinningObject() {
+//
+//	//position
+//	inputElementDescsForSkinningObject_[0].SemanticName = "POSITION";
+//	inputElementDescsForSkinningObject_[0].SemanticIndex = 0;
+//	inputElementDescsForSkinningObject_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+//	inputElementDescsForSkinningObject_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+//	//texcoord
+//	inputElementDescsForSkinningObject_[1].SemanticName = "TEXCOORD";
+//	inputElementDescsForSkinningObject_[1].SemanticIndex = 0;
+//	inputElementDescsForSkinningObject_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+//	inputElementDescsForSkinningObject_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+//	//normal
+//	inputElementDescsForSkinningObject_[2].SemanticName = "NORMAL";
+//	inputElementDescsForSkinningObject_[2].SemanticIndex = 0;
+//	inputElementDescsForSkinningObject_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+//	inputElementDescsForSkinningObject_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+//
+//	inputLayoutDesc_.pInputElementDescs = inputElementDescsForSkinningObject_.data();
+//	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescsForSkinningObject_.size());
+//}
 
-	//position
-	inputElementDescs_[0].SemanticName = "POSITION";
-	inputElementDescs_[0].SemanticIndex = 0;
-	inputElementDescs_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	inputElementDescs_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	//texcoord
-	inputElementDescs_[1].SemanticName = "TEXCOORD";
-	inputElementDescs_[1].SemanticIndex = 0;
-	inputElementDescs_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	inputElementDescs_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	//normal
-	inputElementDescs_[2].SemanticName = "NORMAL";
-	inputElementDescs_[2].SemanticIndex = 0;
-	inputElementDescs_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	inputElementDescs_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-
-	inputLayoutDesc_.pInputElementDescs = inputElementDescs_.data();
-	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescs_.size());
-}
-
-void PSO::CreateInputLayoutForSkyBox() {
-
-	//position
-	inputElementDescsForSkyBox_[0].SemanticName = "POSITION";
-	inputElementDescsForSkyBox_[0].SemanticIndex = 0;
-	inputElementDescsForSkyBox_[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	inputElementDescsForSkyBox_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-
-	//texcoord
-	inputElementDescsForSkyBox_[1].SemanticName = "TEXCOORD";
-	inputElementDescsForSkyBox_[1].SemanticIndex = 0;
-	inputElementDescsForSkyBox_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	inputElementDescsForSkyBox_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-
-	inputLayoutDesc_.pInputElementDescs = inputElementDescsForSkyBox_.data();
-	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescsForSkyBox_.size());
-}
-
-void PSO::CreateInputLayoutForSkinningObject() {
-
-	//position
-	inputElementDescsForSkinningObject_[0].SemanticName = "POSITION";
-	inputElementDescsForSkinningObject_[0].SemanticIndex = 0;
-	inputElementDescsForSkinningObject_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	inputElementDescsForSkinningObject_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	//texcoord
-	inputElementDescsForSkinningObject_[1].SemanticName = "TEXCOORD";
-	inputElementDescsForSkinningObject_[1].SemanticIndex = 0;
-	inputElementDescsForSkinningObject_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	inputElementDescsForSkinningObject_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	//normal
-	inputElementDescsForSkinningObject_[2].SemanticName = "NORMAL";
-	inputElementDescsForSkinningObject_[2].SemanticIndex = 0;
-	inputElementDescsForSkinningObject_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	inputElementDescsForSkinningObject_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-
-	inputLayoutDesc_.pInputElementDescs = inputElementDescsForSkinningObject_.data();
-	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescsForSkinningObject_.size());
-}
-
-void PSO::CreateInputLayout(ShaderResourceMap resourceMap) {
-
-
-}
 
 //=============================================================================
 // BlendStateの生成
@@ -845,7 +841,7 @@ void PSO::CreateGraphicPSO(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fill
 	itemCurrentIdx = 0;
 
 	//シェーダー情報を読み込む
-	ShaderResourceMap resourceMap = LoadShaderResourceInfo({ graphicShaderData_.vertexBlob,graphicShaderData_.pixelBlob });
+	BindResourceMap resourceMap = LoadShaderResourceInfo({ graphicShaderData_.vertexBlob,graphicShaderData_.pixelBlob });
 	/// ルートシグネチャ初期化
 	graphicRootSignature_ = CreateRootSignature(device, resourceMap);
 	/// インプットレイアウト初期化
@@ -878,7 +874,7 @@ void PSO::CreateComputePSO(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fill
 	HRESULT result = S_FALSE;
 
 	//シェーダー情報を読み込む
-	ShaderResourceMap resourceMap = LoadShaderResourceInfo({computeShaderBlob_ });
+	BindResourceMap resourceMap = LoadShaderResourceInfo({computeShaderBlob_ });
 	/// ルートシグネチャ初期化
 	computeRootSignature_ = CreateRootSignature(device, resourceMap);
 
