@@ -39,7 +39,7 @@ struct ShaderResourceKeyHash {
 struct BindResourceInfo {
 	ShaderResourceKey key;
 	std::string name; // バインドしているバッファリソースの名前
-	
+	std::optional<D3D12_SIGNATURE_PARAMETER_DESC> inputParamDesc; // 入力レイアウト情報
 };
 
 ///	エイリアステンプレート

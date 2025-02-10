@@ -236,6 +236,13 @@ ShaderResourceMap PSO::LoadShaderResourceInfo(
 				D3D12_SIGNATURE_PARAMETER_DESC paramDesc;
 				shaderReflection->GetInputParameterDesc(i, &paramDesc);
 
+				// `SemanticName` と `SemanticIndex` をキーにしてリソース情報を更新
+				for (auto& [key, resource] : resources) {
+					if (resource.name == paramDesc.SemanticName) {
+						resource.inputParamDesc = paramDesc;
+						break;
+					}
+				}
 			}
 		}
 	}
