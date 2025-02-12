@@ -68,15 +68,8 @@ public:
 
 	void CompileComputeShader(DXC* dxc_, const std::wstring& filePath);
 
-	/// <summary>
-	/// shaderからルートシグネチャ生成
-	/// </summary>
-	/// <param name="device"></param>
-	/// <param name="shaderBlobs"></param>
-	/// <param name="rootSignature"></param>
-	//ComPtr<ID3D12RootSignature> CreateRootSignatureFromShaders(
-	//	ID3D12Device* device, const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
-
+	// 入力レイアウトの情報を抽出する関数
+	void ExtractInputLayout(ID3D12ShaderReflection* shaderReflection);
 
 	/// <summary>
 	/// シェーダー情報の読み込み
