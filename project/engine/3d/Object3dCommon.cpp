@@ -27,10 +27,10 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 
 	psoForObject3d_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.VS.hlsl");
 	psoForObject3d_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.PS.hlsl");
+	psoForObject3d_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID);
 
-	psoForSkinningObject3d_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.VS.hlsl");
-	psoForSkinningObject3d_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.PS.hlsl");
 	psoForSkinningObject3d_->CompileComputeShader(dxCommon_->GetDXC(), L"Resources/shaders/Skinning.CS.hlsl");
+	psoForSkinningObject3d_->CreateComputePSO(dxCommon_->GetDevice());
 
 	//ルートシグネチャ取得
 	rootSignatureForObject3d_ = psoForObject3d_->GetGraphicRootSignature();

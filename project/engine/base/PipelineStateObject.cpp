@@ -6,6 +6,7 @@
 #include "StringUtility.h"
 
 #include <cassert>
+#include <vector>
 
 PSO::~PSO() {
 
@@ -153,11 +154,9 @@ void PSO::CompileComputeShader(DXC* dxc_, const std::wstring& filePath) {
 //	return rootSignature;
 //}
 
-ShaderResourceInfo PSO::LoadShaderResourceInfo(
+BindResourceMap PSO::LoadShaderResourceInfo(
 	const std::vector<ComPtr<IDxcBlob>>& shaderBlobs) {
 
-
-	ShaderResourceInfo resultInfo;
 	BindResourceMap bindResources;
 
 	// シェーダーの可視性を取得する関数
@@ -234,20 +233,33 @@ ShaderResourceInfo PSO::LoadShaderResourceInfo(
 
 		// 入力レイアウト情報を収集（頂点シェーダーのみ
 		if (visibility == D3D12_SHADER_VISIBILITY_VERTEX) {
+			std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs;
+			inputElementDescs.resize(shaderDesc.InputParameters);
 			for (UINT i = 0; i < shaderDesc.InputParameters; ++i) {
 				D3D12_SIGNATURE_PARAMETER_DESC paramDesc;
 				shaderReflection->GetInputParameterDesc(i, &paramDesc);
 
-				resultInfo.inputElementDescs[i].SemanticName = paramDesc.SemanticName;
-				resultInfo.inputElementDescs[i].SemanticIndex = paramDesc.SemanticIndex;
-				resultInfo.inputElementDescs[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+				inputElementDescs[i].SemanticName = paramDesc.SemanticName;
+				inputElementDescs[i].SemanticIndex = paramDesc.SemanticIndex;
+				inputElementDescs[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
-
+				if (paramDesc.Mask == 1) {
+					inputElementDescs[i].Format = DXGI_FORMAT_R32_FLOAT;
+				} else if (paramDesc.Mask <= 3) {
+					inputElementDescs[i].Format = DXGI_FORMAT_R32G32_FLOAT;
+				} else if (paramDesc.Mask <= 7) {
+					inputElementDescs[i].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				} else {
+					inputElementDescs[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+				}
 			}
+			
+			inputLayoutDesc_.pInputElementDescs = inputElementDescs.data();
+			inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescs.size());
 		}
 	}
 
-	return 
+	return { bindResources};
 }
 
 ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, BindResourceMap resourceMap) {
@@ -834,18 +846,15 @@ void PSO::CreateRasterizerState(D3D12_FILL_MODE fillMode) {
 //	assert(SUCCEEDED(result));
 //}
 
-void PSO::CreateGraphicPSO(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode) {
+void PSO::CreateGraphicPSO(ID3D12Device* device, D3D12_FILL_MODE fillMode) {
 
 	HRESULT result = S_FALSE;
-	device_ = device;
 	itemCurrentIdx = 0;
 
 	//シェーダー情報を読み込む
-	BindResourceMap resourceMap = LoadShaderResourceInfo({ graphicShaderData_.vertexBlob,graphicShaderData_.pixelBlob });
+	BindResourceMap shaderResourceInfo = LoadShaderResourceInfo({ graphicShaderData_.vertexBlob,graphicShaderData_.pixelBlob });
 	/// ルートシグネチャ初期化
-	graphicRootSignature_ = CreateRootSignature(device, resourceMap);
-	/// インプットレイアウト初期化
-	CreateInputLayout();
+	graphicRootSignature_ = CreateRootSignature(device, shaderResourceInfo);
 	/// ブレンドステート初期化
 	CreateBlendStateForObject3d();
 	/// ラスタライザステート初期化
@@ -864,19 +873,19 @@ void PSO::CreateGraphicPSO(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fill
 
 	//実際に生成
 	graphicPipelineState_ = nullptr;
-	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
+	result = device->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
 		IID_PPV_ARGS(&graphicPipelineState_));
 	assert(SUCCEEDED(result));
 }
 
-void PSO::CreateComputePSO(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode) {
+void PSO::CreateComputePSO(ID3D12Device* device) {
 
 	HRESULT result = S_FALSE;
 
 	//シェーダー情報を読み込む
-	BindResourceMap resourceMap = LoadShaderResourceInfo({computeShaderBlob_ });
+	BindResourceMap shaderResourceInfo = LoadShaderResourceInfo({computeShaderBlob_ });
 	/// ルートシグネチャ初期化
-	computeRootSignature_ = CreateRootSignature(device, resourceMap);
+	computeRootSignature_ = CreateRootSignature(device, shaderResourceInfo);
 
 	/// ComputePipelineStateDescの設定
 	SetComputePipelineStateDesc();

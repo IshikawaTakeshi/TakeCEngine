@@ -51,13 +51,6 @@ struct GraphicShaderData {
 
 using BindResourceMap = std::unordered_map<BindResourceKey, BindResourceInfo, BindResourceKeyHash>;
 
-
-// リソース情報をまとめるデータ構造
-struct ShaderResourceInfo {
-	BindResourceMap resources;
-	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs;
-};
-
 class DXC;
 class PSO {
 public:
@@ -90,7 +83,7 @@ public:
 	/// </summary>
 	/// <param name="shaderBlobs"></param>
 	/// <returns></returns>
-	ShaderResourceInfo LoadShaderResourceInfo
+	BindResourceMap LoadShaderResourceInfo
 	(const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
 
 	ComPtr<ID3D12RootSignature> CreateRootSignature(ID3D12Device* device, BindResourceMap resourceMap);
@@ -122,9 +115,9 @@ public:
 	//void CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 	//void CreatePSOForSkyBox(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
 	
-	void CreateGraphicPSO(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+	void CreateGraphicPSO(ID3D12Device* device, D3D12_FILL_MODE fillMode);
 
-	void CreateComputePSO(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+	void CreateComputePSO(ID3D12Device* device);
 
 	void UpdateImGui();
 

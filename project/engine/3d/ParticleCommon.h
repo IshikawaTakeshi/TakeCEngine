@@ -1,7 +1,9 @@
 #pragma once
 #include <wrl.h>
 #include <d3d12.h>
+#include <memory>
 #include "PipelineStateObject.h"
+
 class Camera;
 class DirectXCommon;
 class SrvManager;
@@ -29,7 +31,7 @@ public:
 
 	SrvManager* GetSrvManager() const { return srvManager_; }
 
-	PSO* GetPSO() const { return pso_; }
+	PSO* GetPSO() const { return pso_.get(); }
 
 	Camera* GetDefaultCamera() const { return defaultCamera_; }
 
@@ -54,7 +56,7 @@ private:
 
 	DirectXCommon* dxCommon_ = nullptr;
 
-	PSO* pso_ = nullptr;
+	std::unique_ptr<PSO> pso_ = nullptr;
 
 	SrvManager* srvManager_ = nullptr;
 
