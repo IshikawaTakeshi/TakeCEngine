@@ -233,29 +233,29 @@ BindResourceMap PSO::LoadShaderResourceInfo(
 
 		// 入力レイアウト情報を収集（頂点シェーダーのみ
 		if (visibility == D3D12_SHADER_VISIBILITY_VERTEX) {
-			std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs;
-			inputElementDescs.resize(shaderDesc.InputParameters);
+			//std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs;
+			inputElementDescs_.resize(shaderDesc.InputParameters);
 			for (UINT i = 0; i < shaderDesc.InputParameters; ++i) {
-				D3D12_SIGNATURE_PARAMETER_DESC paramDesc;
-				shaderReflection->GetInputParameterDesc(i, &paramDesc);
+				
+				shaderReflection->GetInputParameterDesc(i, &inputParamDesc_);
 
-				inputElementDescs[i].SemanticName = paramDesc.SemanticName;
-				inputElementDescs[i].SemanticIndex = paramDesc.SemanticIndex;
-				inputElementDescs[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+				inputElementDescs_[i].SemanticName = inputParamDesc_.SemanticName;
+				inputElementDescs_[i].SemanticIndex = inputParamDesc_.SemanticIndex;
+				inputElementDescs_[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
-				if (paramDesc.Mask == 1) {
-					inputElementDescs[i].Format = DXGI_FORMAT_R32_FLOAT;
-				} else if (paramDesc.Mask <= 3) {
-					inputElementDescs[i].Format = DXGI_FORMAT_R32G32_FLOAT;
-				} else if (paramDesc.Mask <= 7) {
-					inputElementDescs[i].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				if (inputParamDesc_.Mask == 1) {
+					inputElementDescs_[i].Format = DXGI_FORMAT_R32_FLOAT;
+				} else if (inputParamDesc_.Mask <= 3) {
+					inputElementDescs_[i].Format = DXGI_FORMAT_R32G32_FLOAT;
+				} else if (inputParamDesc_.Mask <= 7) {
+					inputElementDescs_[i].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 				} else {
-					inputElementDescs[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+					inputElementDescs_[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 				}
 			}
 			
-			inputLayoutDesc_.pInputElementDescs = inputElementDescs.data();
-			inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescs.size());
+			inputLayoutDesc_.pInputElementDescs = inputElementDescs_.data();
+			inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescs_.size());
 		}
 	}
 
@@ -365,69 +365,69 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, BindR
 	return rootSignature;
 }
 
-void PSO::CreateRootSignatureForParticle(ID3D12Device* device) {
-
-	HRESULT result = S_FALSE;
-	//デスクリプション
-	descriptionRootSignature_.Flags =
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-	//ディスクリプターレンジ
-	//.0 particle/Texture
-	descriptorRangeForInstancing_[0].BaseShaderRegister = 0;
-	descriptorRangeForInstancing_[0].NumDescriptors = 1;
-	descriptorRangeForInstancing_[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptorRangeForInstancing_[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-	//ルートパラメータ。複数設定できるので配列。
-	//.0 Material
-	rootParametersForParticle_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParametersForParticle_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootParametersForParticle_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
-	//.1 Particle
-	rootParametersForParticle_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	rootParametersForParticle_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	rootParametersForParticle_[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_;
-	rootParametersForParticle_[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_);
-	//.2 Texture
-	rootParametersForParticle_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
-	rootParametersForParticle_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootParametersForParticle_[2].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_; //Tableの中身の配列を指定
-	rootParametersForParticle_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_); //Tableで利用する数
-
-	descriptionRootSignature_.pParameters = rootParametersForParticle_; //rootParameter配列へのポインタ
-	descriptionRootSignature_.NumParameters = _countof(rootParametersForParticle_); //配列の長さ
-
-	//Samplerの設定
-	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
-	staticSamplers_[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
-	staticSamplers_[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers_[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; //比較しない
-	staticSamplers_[0].MaxLOD = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
-	staticSamplers_[0].ShaderRegister = 0; //レジスタ番号0を使う
-	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-
-	descriptionRootSignature_.pStaticSamplers = staticSamplers_;
-	descriptionRootSignature_.NumStaticSamplers = _countof(staticSamplers_);
-
-	//シリアライズ
-	signatureBlob_ = nullptr;
-	errorBlob_ = nullptr;
-
-	result = D3D12SerializeRootSignature(&descriptionRootSignature_,
-		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
-	if (FAILED(result)) {
-		Logger::Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
-		assert(false);
-	}
-	//バイナリをもとに生成
-	graphicRootSignature_ = nullptr;
-	result = device->CreateRootSignature(0, signatureBlob_->GetBufferPointer(),
-		signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&graphicRootSignature_)
-	);
-	assert(SUCCEEDED(result));
-}
+//void PSO::CreateRootSignatureForParticle(ID3D12Device* device) {
+//
+//	HRESULT result = S_FALSE;
+//	//デスクリプション
+//	descriptionRootSignature_.Flags =
+//		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+//
+//	//ディスクリプターレンジ
+//	//.0 particle/Texture
+//	descriptorRangeForInstancing_[0].BaseShaderRegister = 0;
+//	descriptorRangeForInstancing_[0].NumDescriptors = 1;
+//	descriptorRangeForInstancing_[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+//	descriptorRangeForInstancing_[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+//
+//	//ルートパラメータ。複数設定できるので配列。
+//	//.0 Material
+//	rootParametersForParticle_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+//	rootParametersForParticle_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+//	rootParametersForParticle_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
+//	//.1 Particle
+//	rootParametersForParticle_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+//	rootParametersForParticle_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+//	rootParametersForParticle_[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_;
+//	rootParametersForParticle_[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_);
+//	//.2 Texture
+//	rootParametersForParticle_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
+//	rootParametersForParticle_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+//	rootParametersForParticle_[2].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_; //Tableの中身の配列を指定
+//	rootParametersForParticle_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_); //Tableで利用する数
+//
+//	descriptionRootSignature_.pParameters = rootParametersForParticle_; //rootParameter配列へのポインタ
+//	descriptionRootSignature_.NumParameters = _countof(rootParametersForParticle_); //配列の長さ
+//
+//	//Samplerの設定
+//	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
+//	staticSamplers_[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
+//	staticSamplers_[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+//	staticSamplers_[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+//	staticSamplers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; //比較しない
+//	staticSamplers_[0].MaxLOD = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
+//	staticSamplers_[0].ShaderRegister = 0; //レジスタ番号0を使う
+//	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+//
+//	descriptionRootSignature_.pStaticSamplers = staticSamplers_;
+//	descriptionRootSignature_.NumStaticSamplers = _countof(staticSamplers_);
+//
+//	//シリアライズ
+//	signatureBlob_ = nullptr;
+//	errorBlob_ = nullptr;
+//
+//	result = D3D12SerializeRootSignature(&descriptionRootSignature_,
+//		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
+//	if (FAILED(result)) {
+//		Logger::Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
+//		assert(false);
+//	}
+//	//バイナリをもとに生成
+//	graphicRootSignature_ = nullptr;
+//	result = device->CreateRootSignature(0, signatureBlob_->GetBufferPointer(),
+//		signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&graphicRootSignature_)
+//	);
+//	assert(SUCCEEDED(result));
+//}
 
 //=============================================================================
 // InputLayoutの生成

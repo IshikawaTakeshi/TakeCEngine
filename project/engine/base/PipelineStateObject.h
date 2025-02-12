@@ -152,9 +152,6 @@ private:
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	//rootSignature
-	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
-	D3D12_ROOT_PARAMETER graphicRootParameters_[9] = {};
-	D3D12_ROOT_PARAMETER computeRootParameters_[5] = {};
 	D3D12_ROOT_PARAMETER rootParametersForParticle_[3] = {};
 
 	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
@@ -167,7 +164,7 @@ private:
 	ComPtr<ID3D12RootSignature> computeRootSignature_;
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_; // 入力レイアウト情報
-	std::vector<D3D12_SIGNATURE_PARAMETER_DESC> inputParamDescs_; // 入力レイアウト情報
+	D3D12_SIGNATURE_PARAMETER_DESC inputParamDesc_; // 入力レイアウト情報
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};
