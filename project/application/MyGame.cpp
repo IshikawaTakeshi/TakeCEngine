@@ -1,5 +1,9 @@
 #include "MyGame.h"
 #include "scene/SceneFactory.h"
+#include "Logger.h"
+#include "StringUtility.h"
+
+#include <chrono>
 
 //====================================================================
 //			初期化
@@ -7,10 +11,80 @@
 
 void MyGame::Initialize(const std::wstring& titleName) {
 
+	using Clock = std::chrono::high_resolution_clock;
+
+	// 計測開始
+	auto start = Clock::now();
+
 	//FrameWorkの初期化
 	TakeCFrameWork::Initialize(titleName);
 
 	sceneFactory_ = std::make_unique<SceneFactory>();
+
+	//Model読み込み
+	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "enemy.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "enemyBullet.gltf");
+
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "bunny.obj");
+
+
+	//Animation読み込み
+	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
+
+	//シーンマネージャーのセット
+	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
+	//最初のシーンを設定
+	//SceneManager::GetInstance()->ChangeScene("TITLE");
+#ifdef _DEBUG
+	SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+#endif // _DEBUG
+
+	// 計測終了
+	auto end = Clock::now();
+
+	// 経過時間をミリ秒単位で計算
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	Logger::Log(StringUtility::ConvertString(L"Resource Load Time : " + std::to_wstring(duration) + L"ms"));
+}void MyGame::Initialize(const std::wstring& titleName) {
+
+	using Clock = std::chrono::high_resolution_clock;
+
+	// 計測開始
+	auto start = Clock::now();
+
+	//FrameWorkの初期化
+	TakeCFrameWork::Initialize(titleName);
+
+	sceneFactory_ = std::make_unique<SceneFactory>();
+
+	//Model読み込み
+	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "enemy.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "enemyBullet.gltf");
+
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "bunny.obj");
+
+
+	//Animation読み込み
+	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
+
 	//シーンマネージャーのセット
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
 	//最初のシーンを設定
@@ -19,7 +93,12 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 #endif // _DEBUG
 	
-	
+	// 計測終了
+	auto end = Clock::now();
+
+	// 経過時間をミリ秒単位で計算
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	Logger::Log(StringUtility::ConvertString(L"Resource Load Time : " + std::to_wstring(duration) + L"ms"));
 }
 
 //====================================================================

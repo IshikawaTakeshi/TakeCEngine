@@ -30,22 +30,7 @@ void GamePlayScene::Initialize() {
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
-	//Model読み込み
-	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "enemy.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "enemyBullet.gltf");
-
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
 	
-	//Animation読み込み
-	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
