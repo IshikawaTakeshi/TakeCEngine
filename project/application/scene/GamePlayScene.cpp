@@ -62,16 +62,22 @@ void GamePlayScene::Initialize() {
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
 
-		
-	//CreateParticle
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Plane", "plane.obj");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "Sphere", "sphere.obj");
-	particleEmitter1_ = std::make_unique<ParticleEmitter>();
-	particleEmitter2_ = std::make_unique<ParticleEmitter>();
-	particleEmitter1_->Initialize("Emitter1",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{3.0f,0.0f,0.0f} },30, 0.5f);
-	//particleEmitter2_->Initialize("Emitter2",{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{-3.0f,0.0f,0.0f} },30, 0.5f);
-	particleEmitter1_->SetParticleName("Plane");
-	//particleEmitter2_->SetParticleName("Sphere");
+	planeModel1_ = std::make_unique<Object3d>();
+	planeModel1_->Initialize(Object3dCommon::GetInstance(), "plane.gltf");
+	planeModel1_->SetPosition({ 10.0f,0.0f,0.0f });
+
+	
+	planeModel2_ = std::make_unique<Object3d>();
+	planeModel2_->Initialize(Object3dCommon::GetInstance(), "plane.obj");
+	planeModel2_->SetPosition({ -10.0f,0.0f,0.0f });
+
+	sphereModel_ = std::make_unique<Object3d>();
+	sphereModel_->Initialize(Object3dCommon::GetInstance(), "sphere.obj");
+
+	animationModel_ = std::make_unique<Object3d>();
+	animationModel_->Initialize(Object3dCommon::GetInstance(), "Animation_Node_00.gltf");
+	animationModel_->SetPosition({ 5.0f,0.0f,0.0f });
+	animationModel_->SetScale({1.5f,1.5f,1.5f});
 }
 
 //====================================================================
@@ -99,10 +105,7 @@ void GamePlayScene::Update() {
 	planeModel1_->UpdateImGui(1);
 	planeModel2_->UpdateImGui(2);
 	sphereModel_->UpdateImGui(3);
-	AnimationModel_->UpdateImGui(4);
-	particleEmitter1_->UpdateImGui();
-	//particleEmitter2_->UpdateImGui();
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	animationModel_->UpdateImGui(4);
 
 #endif // DEBUG
 
@@ -116,10 +119,11 @@ void GamePlayScene::Update() {
 	// プレイヤーの更新
 	player_->Update();
 
+	planeModel1_->Update();
+	planeModel2_->Update();
 
-	particleEmitter1_->Update();
-  //パーティクルの更新
-	TakeCFrameWork::GetParticleManager()->Update(); 
+	sphereModel_->Update();
+	animationModel_->Update();
 
 	CollisionManager::GetInstance()->ClearCollider();
 	CheckAllCollisions();
@@ -150,21 +154,14 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->PreDrawForObject3d();
 
 	player_->DrawBullet();
-
-	// ディスパッチ
-	//Object3dCommon::GetInstance()->DisPatch();
-	//player_->DisPatch();
+	planeModel1_->Draw();
+	planeModel2_->Draw();
+	sphereModel_->Draw();
+	animationModel_->Draw();
 
 	//SkinningObject3dの描画前処理
 	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();
 	player_->Draw();    //プレイヤーの描画
-	planeModel1_->Draw();
-	planeModel2_->Draw();
-	sphereModel_->Draw();
-	AnimationModel_->Draw();
-
-	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
-	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
 }
 
 void GamePlayScene::CheckAllCollisions() {
