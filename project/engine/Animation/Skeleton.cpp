@@ -28,7 +28,6 @@ void Skeleton::Create(const Node& rootNode) {
 
 void Skeleton::Update() {
 	//全てのJointを更新
-	int i = 0;
 	for (Joint& joint : joints) {
 
 		//ローカル行列を更新
@@ -42,8 +41,6 @@ void Skeleton::Update() {
 		} else { //親がいない場合は自身の行列をそのまま使う
 			joint.skeletonSpaceMatrix = joint.localMatrix;
 		}
-
-		i++;
 	}
 }
 

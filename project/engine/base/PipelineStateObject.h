@@ -8,24 +8,26 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <d3d12shader.h>
+#include <d3dcompiler.h>
 
 #include "PSOType.h"
 
 // シェーダーリソース情報を一意に識別するためのキー
-struct ShaderResourceKey {
+struct BindResourceKey {
 	D3D_SHADER_INPUT_TYPE type;
 	D3D12_SHADER_VISIBILITY visibility;
 	UINT bindPoint;
 	UINT space;
 
-	bool operator==(const ShaderResourceKey& other) const {
+	bool operator==(const BindResourceKey& other) const {
 		return type == other.type && visibility == other.visibility &&
 			bindPoint == other.bindPoint && space == other.space;
 	}
 };
 
-struct ShaderResourceKeyHash {
-	std::size_t operator()(const ShaderResourceKey& key) const {
+struct BindResourceKeyHash {
+	std::size_t operator()(const BindResourceKey& key) const {
 		return std::hash<UINT>()(static_cast<UINT>(key.type)) ^
 			std::hash<UINT>()(static_cast<UINT>(key.visibility)) ^
 			std::hash<UINT>()(key.bindPoint) ^
@@ -33,25 +35,24 @@ struct ShaderResourceKeyHash {
 	}
 };
 
-// リソース情報をまとめるデータ構造
-struct ShaderResourceInfo {
-	ShaderResourceKey key;
-	std::string name;
+// バインドしているリソースの情報
+struct BindResourceInfo {
+	BindResourceKey key;
+	std::string name; // バインドしているバッファリソースの名前
 };
+
+///	エイリアステンプレート
+template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+struct GraphicShaderData {
+	ComPtr<IDxcBlob> vertexBlob;
+	ComPtr<IDxcBlob> pixelBlob;
+};
+
+using BindResourceMap = std::unordered_map<BindResourceKey, BindResourceInfo, BindResourceKeyHash>;
 
 class DXC;
 class PSO {
-
-	///////////////////////////////////////////////////////////////////////////////////////////////
-	///			PSO
-	///////////////////////////////////////////////////////////////////////////////////////////////
-
-public:
-
-
-	///	エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 public:
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -61,30 +62,30 @@ public:
 	PSO() = default;
 	~PSO();
 
-	/// <summary>
-	/// shaderからルートシグネチャ生成
-	/// </summary>
-	/// <param name="device"></param>
-	/// <param name="shaderBlobs"></param>
-	/// <param name="rootSignature"></param>
-	ComPtr<ID3D12RootSignature> CreateRootSignatureFromShaders(
-		ID3D12Device* device, const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
+	void CompileVertexShader(DXC* dxc_, const std::wstring& filePath);
 
-	std::unordered_map<ShaderResourceKey, ShaderResourceInfo, ShaderResourceKeyHash> LoadShaderResourceInfo
+	void CompilePixelShader(DXC* dxc_, const std::wstring& filePath);
+
+	void CompileComputeShader(DXC* dxc_, const std::wstring& filePath);
+
+	// 入力レイアウトの情報を抽出する関数
+	void ExtractInputLayout(ID3D12ShaderReflection* shaderReflection);
+
+	/// <summary>
+	/// シェーダー情報の読み込み
+	/// </summary>
+	/// <param name="shaderBlobs"></param>
+	/// <returns></returns>
+	BindResourceMap LoadShaderResourceInfo
 	(const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
+
+	ComPtr<ID3D12RootSignature> CreateRootSignature(ID3D12Device* device, BindResourceMap resourceMap);
 
 	/// <summary>
 	/// パーティクル用のルートシグネチャ生成
 	/// </summary>
 	/// <param name="device"></param>
 	void CreateRootSignatureForParticle(ID3D12Device* device);
-
-	/// <summary>
-	/// インプットレイアウト初期化
-	/// </summary>
-	void CreateInputLayout();
-	void CreateInputLayoutForSkyBox();
-	void CreateInputLayoutForSkinningObject();
 
 	/// <summary>
 	/// ブレンドステート初期化
@@ -101,13 +102,15 @@ public:
 	/// <summary>
 	/// PSO生成
 	/// </summary>
-	void CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
-	void CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
-	void CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
-	void CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
-	void CreatePSOForSkyBox(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
-	void CreatePSO(PSOType psoType, ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+	//void CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+	//void CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+	//void CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+	//void CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+	//void CreatePSOForSkyBox(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
+	
+	void CreateGraphicPSO(ID3D12Device* device, D3D12_FILL_MODE fillMode);
 
+	void CreateComputePSO(ID3D12Device* device);
 
 	void UpdateImGui();
 
@@ -142,31 +145,27 @@ private:
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	//rootSignature
-	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
-	D3D12_ROOT_PARAMETER graphicRootParameters_[9] = {};
-	D3D12_ROOT_PARAMETER computeRootParameters_[5] = {};
 	D3D12_ROOT_PARAMETER rootParametersForParticle_[3] = {};
 
-	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
-	D3D12_DESCRIPTOR_RANGE graphicDescriptorRange_[2] = {};
-	D3D12_DESCRIPTOR_RANGE computeDescriptorRange_[4] = {};
-	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};
+	//inputElementParametar
+	std::vector<std::string> semanticName_;
+
 	ComPtr<ID3D10Blob> signatureBlob_;
 	ComPtr<ID3D10Blob> errorBlob_;
 	ComPtr<ID3D12RootSignature> graphicRootSignature_;
 	ComPtr<ID3D12RootSignature> computeRootSignature_;
+
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
-	//InputLayout
-	std::array<D3D12_INPUT_ELEMENT_DESC,3> inputElementDescs_ = {};
-	std::array<D3D12_INPUT_ELEMENT_DESC,2> inputElementDescsForSkyBox_ = {};
-	std::array < D3D12_INPUT_ELEMENT_DESC,3> inputElementDescsForSkinningObject_ = {};
+	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_;
+	D3D12_SIGNATURE_PARAMETER_DESC inputParamDesc_;
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};
+
 	//shaderBlob
-	ComPtr<IDxcBlob> vertexShaderBlob_;
-	ComPtr<IDxcBlob> pixelShaderBlob_;
+	GraphicShaderData graphicShaderData_;
 	ComPtr<IDxcBlob> computeShaderBlob_;
+
 	//depthStencilState
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
 	//graphicPipelineState

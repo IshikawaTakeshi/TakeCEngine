@@ -607,5 +607,6 @@
     <FxCompile Include="Resources\shaders\SkyBox.VS.hlsl" />
     <FxCompile Include="Resources\shaders\SkyBox.PS.hlsl" />
     <FxCompile Include="Resources\shaders\Skinning.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\InitializeParticle.CS.hlsl" />
   </ItemGroup>
 </Project>

@@ -144,8 +144,6 @@ void GameOverScene::Draw() {
 	ground_->Draw();
 	GameOverText_->Draw();
 	
-	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();
-
 	ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); // パーティクルの描画
 }
