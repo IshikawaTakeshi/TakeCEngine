@@ -147,20 +147,21 @@ private:
 	//rootSignature
 	D3D12_ROOT_PARAMETER rootParametersForParticle_[3] = {};
 
-	D3D12_DESCRIPTOR_RANGE descriptorRange_[1] = {};
-	D3D12_DESCRIPTOR_RANGE graphicDescriptorRange_[2] = {};
-	D3D12_DESCRIPTOR_RANGE computeDescriptorRange_[4] = {};
-	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};
+	//inputElementParametar
+	std::vector<std::string> semanticName_;
+
 	ComPtr<ID3D10Blob> signatureBlob_;
 	ComPtr<ID3D10Blob> errorBlob_;
 	ComPtr<ID3D12RootSignature> graphicRootSignature_;
 	ComPtr<ID3D12RootSignature> computeRootSignature_;
+
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
-	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_; // 入力レイアウト情報
-	D3D12_SIGNATURE_PARAMETER_DESC inputParamDesc_; // 入力レイアウト情報
+	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_;
+	D3D12_SIGNATURE_PARAMETER_DESC inputParamDesc_;
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};
+
 	//shaderBlob
 	GraphicShaderData graphicShaderData_;
 	ComPtr<IDxcBlob> computeShaderBlob_;

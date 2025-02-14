@@ -58,8 +58,8 @@ void GamePlayScene::Initialize() {
 	player_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("Idle.gltf"));
 
 	//CreateParticle
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"PlayerBullet", "sphere.obj");
-	TakeCFrameWork::GetParticleManager()->SetParticleAttribute("PlayerBullet");
+	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"PlayerBullet", "sphere.obj");
+	//TakeCFrameWork::GetParticleManager()->SetParticleAttribute("PlayerBullet");
 }
 
 //====================================================================
@@ -85,7 +85,7 @@ void GamePlayScene::Update() {
 
 	player_->UpdateImGui();
 	//particleEmitter2_->UpdateImGui();
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	//TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
 #endif // DEBUG
 
@@ -114,7 +114,7 @@ void GamePlayScene::Update() {
 	//enemyhpBar_->Update(float(enemy_->GetHP()), float(enemy_->GetMaxHP()));
 
   //パーティクルの更新
-	TakeCFrameWork::GetParticleManager()->Update(); 
+	//TakeCFrameWork::GetParticleManager()->Update(); 
 
 	CollisionManager::GetInstance()->ClearCollider();
 	CheckAllCollisions();
@@ -144,22 +144,19 @@ void GamePlayScene::Draw() {
 	//Spriteの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
 
-	//Object3dの描画前処理
-	Object3dCommon::GetInstance()->PreDrawForObject3d();
-
-	player_->DrawBullet();
-
 
 	// ディスパッチ
 	Object3dCommon::GetInstance()->DisPatch();
 	player_->DisPatch();
 
-	//SkinningObject3dの描画前処理
-	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();
+	//Object3dの描画前処理
+	Object3dCommon::GetInstance()->PreDrawForObject3d();
+
+	player_->DrawBullet();
 	player_->Draw();    //プレイヤーの描画
 
-	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
-	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
+	//ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
+	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
 }
 
 void GamePlayScene::CheckAllCollisions() {

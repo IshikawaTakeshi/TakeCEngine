@@ -47,11 +47,14 @@ void PSO::ExtractInputLayout(ID3D12ShaderReflection* shaderReflection) {
 	shaderReflection->GetDesc(&shaderDesc);
 
 	inputElementDescs_.resize(shaderDesc.InputParameters);
+	semanticName_.resize(shaderDesc.InputParameters);
 	for (UINT i = 0; i < shaderDesc.InputParameters; ++i) {
 		D3D12_SIGNATURE_PARAMETER_DESC inputParamDesc;
 		shaderReflection->GetInputParameterDesc(i, &inputParamDesc);
 
-		inputElementDescs_[i].SemanticName = std::string(inputParamDesc.SemanticName);
+		semanticName_[i] = inputParamDesc.SemanticName;
+
+		inputElementDescs_[i].SemanticName = semanticName_[i].c_str();
 		inputElementDescs_[i].SemanticIndex = inputParamDesc.SemanticIndex;
 		inputElementDescs_[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 

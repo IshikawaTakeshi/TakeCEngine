@@ -44,7 +44,7 @@ public:
 
 	void DrawSkyBox();
 
-	void DrawForSkinningModel();
+	//void DrawForSkinningModel();
 
 	void DisPatchForSkinningModel();
 

@@ -21,7 +21,7 @@ VertexShaderOutput main(VertexShaderInput input,uint instanceId : SV_InstanceID)
 	worldMatrix[0] *= particle.scale.x;
 	worldMatrix[1] *= particle.scale.y;
 	worldMatrix[2] *= particle.scale.z;
-	worldMatrix[3] *= particle.translate;
+	worldMatrix[3].xyz = particle.translate;
 	output.position = mul(input.position, mul(worldMatrix, gPerView.viewProjection));
 	output.texcoord = input.texcoord;
 	output.color = gParticle[instanceId].color;

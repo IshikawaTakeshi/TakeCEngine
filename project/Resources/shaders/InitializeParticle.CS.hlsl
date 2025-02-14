@@ -11,6 +11,6 @@ void main( uint3 DTid : SV_DispatchThreadID ) {
 		return;
 	}
 	
-	gParticles[particleIndex] = (Particle) 0;
+	gParticles[particleIndex] = (ParticleForGPU) 0;
 
 }
