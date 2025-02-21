@@ -50,6 +50,11 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
 	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "bunny.obj");
 
+	//Animation読み込み
+	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
+
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
@@ -58,6 +63,8 @@ void GamePlayScene::Initialize() {
 	// Player
 	player_ = std::make_unique<Player>();
 	player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
+	player_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("Idle.gltf"));
+
 
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
@@ -142,17 +149,16 @@ void GamePlayScene::Draw() {
 	SpriteCommon::GetInstance()->PreDraw();
 	sprite_->Draw();    //スプライトの描画
 
+
+	// ディスパッチ
+	Object3dCommon::GetInstance()->DisPatch();
+	player_->DisPatch();
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance()->PreDrawForObject3d();
 
 	player_->DrawBullet();
 
-	// ディスパッチ
-	Object3dCommon::GetInstance()->DisPatch();
-	player_->DisPatch();
-
-	//SkinningObject3dの描画前処理
-	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();
+	
 	player_->Draw();    //プレイヤーの描画
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理

@@ -10,6 +10,12 @@ public:
 	Animator() = default;
 	~Animator() = default;
 
+	void Finalize();
+
+	void LoadAnimation(const std::string& filePath);
+
+	Animation FindAnimation(const std::string& filePath);
+
 	static Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
 	
 	/// <summary>
@@ -27,6 +33,6 @@ public:
 
 private:
 
-
+	std::map<std::string, Animation> animations_;
 };
 

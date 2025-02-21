@@ -3,6 +3,8 @@
 
 std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
 
+std::unique_ptr<Animator> TakeCFrameWork::animator_ = nullptr;
+
 void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//タイトルバーの名前の入力
@@ -36,6 +38,9 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//ParticleCommon
 	particleCommon_ = ParticleCommon::GetInstance();
 	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get());
+
+	//Animator
+	animator_ = std::make_unique<Animator>();
 
 	//CameraManager
 	CameraManager::GetInstance()->Initialize(directXCommon_.get());
@@ -128,4 +133,9 @@ void TakeCFrameWork::Run(const std::wstring& titleName) {
 ParticleManager* TakeCFrameWork::GetParticleManager() {
 	assert(particleManager_ != nullptr);
 	return particleManager_.get();
+}
+
+Animator* TakeCFrameWork::GetAnimator() {
+	assert(animator_ != nullptr);
+	return animator_.get();
 }

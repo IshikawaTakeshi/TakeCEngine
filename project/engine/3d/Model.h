@@ -44,8 +44,6 @@ public:
 
 	void DrawSkyBox();
 
-	void DrawForSkinningModel();
-
 	void DisPatchForSkinningModel();
 
 	//void DisPatchForASkinningModel();
@@ -96,6 +94,8 @@ public: //セッター
 
 	//ModelCommonの設定
 	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
+
+	void SetAnimation(Animation animation);
 
 private:
 

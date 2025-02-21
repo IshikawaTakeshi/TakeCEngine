@@ -168,30 +168,6 @@ void Model::DrawSkyBox() {
 	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
 }
 
-void Model::DrawForSkinningModel() {
-
-	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
-
-	//D3D12_VERTEX_BUFFER_VIEW vbv[] = { mesh_->GetVertexBufferView(0),mesh_->GetVertexBufferView(1) };
-
-	// VBVを設定
-	mesh_->SetVertexBuffers(commandList, 0);
-	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(2, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//TextureSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(4, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
-	//envMapSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(6, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.envMapFilePath));
-
-	//IBVの設定
-	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
-
-	//DrawCall
-	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
-}
-
 void Model::DisPatchForSkinningModel() {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
@@ -258,4 +234,9 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
+}
+
+void Model::SetAnimation(Animation animation) {
+	animation_ = animation;
+	animationTime = 0.0f;
 }

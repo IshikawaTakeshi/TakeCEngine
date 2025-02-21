@@ -38,7 +38,6 @@ public:
 	/// 描画
 	/// </summary>
 	void Draw();
-	void DrawForSkinningModel();
 
 	void DisPatchForSkinningModel();
 

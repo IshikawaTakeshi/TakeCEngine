@@ -151,7 +151,6 @@ void GameClearScene::Draw() {
 	whiteOutSprite_->Draw();
 	Object3dCommon::GetInstance()->PreDrawForObject3d();   //Object3dの描画前処理
 	GameClearText_->Draw();
-	Object3dCommon::GetInstance()->PreDrawForSkinningObject3d();   //Object3dの描画前処理
 	//player_->Draw();    //プレイヤーの描画
 	
 	ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理

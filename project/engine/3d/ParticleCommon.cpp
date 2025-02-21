@@ -20,11 +20,10 @@ void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 
 	srvManager_ = srvManager;
 
-	pso_ = new PSO();
-	pso_->CreatePSOForParticle(
-		dxCommon_->GetDevice(),
-		dxCommon_->GetDXC(),
-		D3D12_FILL_MODE_SOLID);
+	pso_ = std::make_unique<PSO>();
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/Particle.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/Particle.PS.hlsl");
+	pso_->CreateGraphicPSO(dxCommon_->GetDevice(),D3D12_FILL_MODE_SOLID);
 
 	rootSignature_ = pso_->GetGraphicRootSignature();
 }
@@ -36,7 +35,7 @@ void ParticleCommon::UpdateImGui() {
 void ParticleCommon::Finalize() {
 
 	rootSignature_.Reset();
-	delete pso_;
+	pso_.reset();
 }
 
 void ParticleCommon::PreDraw() {
