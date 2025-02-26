@@ -6,6 +6,7 @@
 #include "StringUtility.h"
 
 #include <cassert>
+#include <list>
 
 PSO::~PSO() {
 
@@ -31,6 +32,8 @@ void PSO::CompilePixelShader(DXC* dxc_, const std::wstring& filePath) {
 	graphicShaderData_.pixelBlob = dxc_->CompileShader(
 		filePath, L"ps_6_0", dxc_->GetDxcUtils().Get(), dxc_->GetDxcCompiler().Get(), dxc_->GetIncludeHandler().Get()
 	);
+
+	//
 }
 
 void PSO::CompileComputeShader(DXC* dxc_, const std::wstring& filePath) {
@@ -134,7 +137,8 @@ ShaderResourceMap PSO::LoadShaderResourceInfo(
 		}
 		// 入力レイアウト情報を収集（頂点シェーダーのみ
 		if (visibility == D3D12_SHADER_VISIBILITY_VERTEX) {
-			ExtractInputLayout(shaderReflection.Get());
+			//ExtractInputLayout(shaderReflection.Get());
+			CreateInputLayout();
 		}
 	}
 	return { bindResources };
@@ -295,6 +299,7 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 
 void PSO::CreateInputLayout() {
 
+	inputElementDescs_.resize(3);
 	//position
 	inputElementDescs_[0].SemanticName = "POSITION";
 	inputElementDescs_[0].SemanticIndex = 0;

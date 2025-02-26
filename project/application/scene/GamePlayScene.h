@@ -63,9 +63,6 @@ private:
 	// プレイヤー
 	std::unique_ptr<Player> player_ = nullptr;
 
-	std::unique_ptr<Object3d> planeModel1_ = nullptr;
-	std::unique_ptr<Object3d> planeModel2_ = nullptr;
-	std::unique_ptr<Object3d> sphereModel_ = nullptr;
-	std::unique_ptr<Object3d> AnimationModel_ = nullptr;
+	std::unique_ptr<Object3d> animationModel_ = nullptr;
 
 };

@@ -7,7 +7,7 @@
 #include <array>
 #include <vector>
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <d3d12shader.h>
 #include <d3dcompiler.h>
 
@@ -28,16 +28,22 @@ struct ShaderResourceKey {
 		return type == other.type && visibility == other.visibility &&
 			bindPoint == other.bindPoint && space == other.space;
 	}
-};
 
-struct ShaderResourceKeyHash {
-	std::size_t operator()(const ShaderResourceKey& key) const {
-		return std::hash<UINT>()(static_cast<UINT>(key.type)) ^
-			std::hash<UINT>()(static_cast<UINT>(key.visibility)) ^
-			std::hash<UINT>()(key.bindPoint) ^
-			std::hash<UINT>()(key.space);
+	// std::map 用の比較関数
+	bool operator<(const ShaderResourceKey& other) const {
+		return std::tie(type, visibility, bindPoint, space) <
+			std::tie(other.type, other.visibility, other.bindPoint, other.space);
 	}
 };
+
+//struct ShaderResourceKeyHash {
+//	std::size_t operator()(const ShaderResourceKey& key) const {
+//		return std::hash<UINT>()(static_cast<UINT>(key.type)) ^
+//			std::hash<UINT>()(static_cast<UINT>(key.visibility)) ^
+//			std::hash<UINT>()(key.bindPoint) ^
+//			std::hash<UINT>()(key.space);
+//	}
+//};
 
 // リソース情報をまとめるデータ構造
 struct BindResourceInfo {
@@ -45,7 +51,7 @@ struct BindResourceInfo {
 	std::string name;
 };
 
-using ShaderResourceMap = std::unordered_map<ShaderResourceKey, BindResourceInfo, ShaderResourceKeyHash>;
+using ShaderResourceMap = std::map<ShaderResourceKey, BindResourceInfo>;
 
 
 struct GraphicShaderData {
