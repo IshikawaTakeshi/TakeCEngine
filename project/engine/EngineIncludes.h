@@ -10,6 +10,7 @@
 #include "Input.h"
 #include "TextureManager.h"
 #include "Audio.h"
+#include "Animation/Animator.h"
 #include "Camera.h"
 #include "CameraManager.h"
 #include "MatrixMath.h"

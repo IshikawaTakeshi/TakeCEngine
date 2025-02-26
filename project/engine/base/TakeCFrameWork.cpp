@@ -38,6 +38,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	particleCommon_ = ParticleCommon::GetInstance();
 	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get());
 
+	//Animator
 	animator_ = std::make_unique<Animator>();
 
 	//CameraManager

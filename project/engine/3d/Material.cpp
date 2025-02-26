@@ -42,6 +42,11 @@ void Material::UpdateMaterialImGui() {
 		ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
 		ImGui::DragFloat("Shininess", &materialData_->shininess, 0.1f, 0.1f, 100.0f);
 		ImGui::DragFloat("EnvCoefficient", &materialData_->envCoefficient, 0.001f, 0.0f, 1.0f);
+
+		bool enableLighting = materialData_->enableLighting;
+		ImGui::Checkbox("EnableLighting", &enableLighting);
+		materialData_->enableLighting = enableLighting;
+
 		Matrix4x4 uvTransformMatrix = MatrixMath::MakeScaleMatrix(uvTransform_.scale);
 		uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeRotateZMatrix(uvTransform_.rotate.z));
 		uvTransformMatrix = MatrixMath::Multiply(uvTransformMatrix, MatrixMath::MakeTranslateMatrix(uvTransform_.translate));

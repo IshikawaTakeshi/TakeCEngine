@@ -44,9 +44,7 @@ public:
 
 	void DrawSkyBox();
 
-	//void DrawForSkinningModel();
-
-	void DisPatchForSkinningModel();
+	void DisPatch();
 
 	//void DisPatchForASkinningModel();
 
@@ -100,8 +98,6 @@ public: //セッター
 	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
 
 	void SetAnimation(Animation animation);
-
-	//void SetAnimation(const std::string& modelDirectoryPath, const std::string& filename);
 
 private:
 

@@ -7,52 +7,65 @@
 #include <array>
 #include <vector>
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <d3d12shader.h>
 #include <d3dcompiler.h>
 
 #include "PSOType.h"
 
+///	エイリアステンプレート
+template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+
 // シェーダーリソース情報を一意に識別するためのキー
-struct BindResourceKey {
+struct ShaderResourceKey {
 	D3D_SHADER_INPUT_TYPE type;
 	D3D12_SHADER_VISIBILITY visibility;
 	UINT bindPoint;
 	UINT space;
 
-	bool operator==(const BindResourceKey& other) const {
+	bool operator==(const ShaderResourceKey& other) const {
 		return type == other.type && visibility == other.visibility &&
 			bindPoint == other.bindPoint && space == other.space;
 	}
-};
 
-struct BindResourceKeyHash {
-	std::size_t operator()(const BindResourceKey& key) const {
-		return std::hash<UINT>()(static_cast<UINT>(key.type)) ^
-			std::hash<UINT>()(static_cast<UINT>(key.visibility)) ^
-			std::hash<UINT>()(key.bindPoint) ^
-			std::hash<UINT>()(key.space);
+	// std::map 用の比較関数
+	bool operator<(const ShaderResourceKey& other) const {
+		return std::tie(type, visibility, bindPoint, space) <
+			std::tie(other.type, other.visibility, other.bindPoint, other.space);
 	}
 };
 
-// バインドしているリソースの情報
+//struct ShaderResourceKeyHash {
+//	std::size_t operator()(const ShaderResourceKey& key) const {
+//		return std::hash<UINT>()(static_cast<UINT>(key.type)) ^
+//			std::hash<UINT>()(static_cast<UINT>(key.visibility)) ^
+//			std::hash<UINT>()(key.bindPoint) ^
+//			std::hash<UINT>()(key.space);
+//	}
+//};
+
+// リソース情報をまとめるデータ構造
 struct BindResourceInfo {
-	BindResourceKey key;
-	std::string name; // バインドしているバッファリソースの名前
+	ShaderResourceKey key;
+	std::string name;
 };
 
-///	エイリアステンプレート
-template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+using ShaderResourceMap = std::map<ShaderResourceKey, BindResourceInfo>;
+
 
 struct GraphicShaderData {
 	ComPtr<IDxcBlob> vertexBlob;
 	ComPtr<IDxcBlob> pixelBlob;
 };
 
-using BindResourceMap = std::unordered_map<BindResourceKey, BindResourceInfo, BindResourceKeyHash>;
-
 class DXC;
 class PSO {
+
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	///			PSO
+	///////////////////////////////////////////////////////////////////////////////////////////////
+
 public:
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -68,24 +81,11 @@ public:
 
 	void CompileComputeShader(DXC* dxc_, const std::wstring& filePath);
 
-	// 入力レイアウトの情報を抽出する関数
+	ShaderResourceMap LoadShaderResourceInfo(const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
+
+	ComPtr<ID3D12RootSignature> CreateRootSignature(ID3D12Device* device, ShaderResourceMap resourceMap);
+
 	void ExtractInputLayout(ID3D12ShaderReflection* shaderReflection);
-
-	/// <summary>
-	/// シェーダー情報の読み込み
-	/// </summary>
-	/// <param name="shaderBlobs"></param>
-	/// <returns></returns>
-	BindResourceMap LoadShaderResourceInfo
-	(const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
-
-	ComPtr<ID3D12RootSignature> CreateRootSignature(ID3D12Device* device, BindResourceMap resourceMap);
-
-	/// <summary>
-	/// パーティクル用のルートシグネチャ生成
-	/// </summary>
-	/// <param name="device"></param>
-	void CreateRootSignatureForParticle(ID3D12Device* device);
 
 	/// <summary>
 	/// ブレンドステート初期化
@@ -102,13 +102,7 @@ public:
 	/// <summary>
 	/// PSO生成
 	/// </summary>
-	//void CreatePSOForSprite(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
-	//void CreatePSOForObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
-	//void CreatePSOForSkinningObject3D(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
-	//void CreatePSOForParticle(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
-	//void CreatePSOForSkyBox(ID3D12Device* device, DXC* dxc_, D3D12_FILL_MODE fillMode);
-	
-	void CreateGraphicPSO(ID3D12Device* device, D3D12_FILL_MODE fillMode);
+	void CreateGraphicPSO(ID3D12Device* device, D3D12_FILL_MODE fillMode, D3D12_DEPTH_WRITE_MASK depthWriteMask);
 
 	void CreateComputePSO(ID3D12Device* device);
 
@@ -147,7 +141,6 @@ private:
 	//rootSignature
 	D3D12_ROOT_PARAMETER rootParametersForParticle_[3] = {};
 
-	//inputElementParametar
 	std::vector<std::string> semanticName_;
 
 	ComPtr<ID3D10Blob> signatureBlob_;
@@ -156,8 +149,10 @@ private:
 	ComPtr<ID3D12RootSignature> computeRootSignature_;
 
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
-	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_;
-	D3D12_SIGNATURE_PARAMETER_DESC inputParamDesc_;
+	//InputLayout
+	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_ = {};
+	std::array<D3D12_INPUT_ELEMENT_DESC,2> inputElementDescsForSkyBox_ = {};
+	std::array < D3D12_INPUT_ELEMENT_DESC,3> inputElementDescsForSkinningObject_ = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};

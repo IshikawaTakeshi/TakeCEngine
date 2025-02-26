@@ -32,8 +32,7 @@ public:
 	/// <summary>
 	/// 描画前処理
 	/// </summary>
-	void PreDrawForObject3d();
-	//void PreDrawForSkinningObject3d();
+	void PreDraw();
 
 	void DisPatch();
 
@@ -45,7 +44,7 @@ public:
 
 	Camera* GetDefaultCamera() const { return defaultCamera_; }
 
-	PSO* GetPSO() const { return graphicPSO_.get(); }
+	PSO* GetPSO() const { return pso_.get(); }
 
 //================================================================================================
 // 	   setter
@@ -74,11 +73,6 @@ private:
 
 private:
 
-	enum RootSignatureType {
-		graphic,
-		compute
-	};
-
 	//インスタンス
 	static Object3dCommon* instance_;
 
@@ -99,8 +93,7 @@ private:
 	Camera* defaultCamera_ = nullptr;
 
 	//PSO
-	std::unique_ptr<PSO> graphicPSO_ = nullptr;
-	std::unique_ptr<PSO> computePSO_ = nullptr;
+	std::unique_ptr<PSO> pso_ = nullptr;
 	
 	//RootSignature
 	ComPtr<ID3D12RootSignature> graphicRootSignature_ = nullptr;

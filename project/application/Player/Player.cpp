@@ -124,7 +124,7 @@ void Player::DrawBullet() {
 
 void Player::DisPatch() {
 	// ディスパッチ
-	Object3d::DisPatchForSkinningModel();
+	Object3d::DisPatch();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

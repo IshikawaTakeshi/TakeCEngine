@@ -18,14 +18,6 @@ void GameOverScene::Initialize() {
 	// デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
-	// Model読み込み
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend","GameOverText.obj");
-	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
 
 	//DirectionalLightの輝度を設定
 	Object3dCommon::GetInstance()->SetDirectionalLightIntensity(1.0f);
@@ -140,7 +132,7 @@ void GameOverScene::Draw() {
 	skybox_->Draw();
 
 	SpriteCommon::GetInstance()->PreDraw(); // Spriteの描画前処理
-	Object3dCommon::GetInstance()->PreDrawForObject3d(); // Object3dの描画前処理
+	Object3dCommon::GetInstance()->PreDraw(); // Object3dの描画前処理
 	ground_->Draw();
 	GameOverText_->Draw();
 	

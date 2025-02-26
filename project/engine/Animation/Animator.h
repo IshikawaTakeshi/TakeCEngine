@@ -33,7 +33,6 @@ public:
 
 private:
 
-	std::unordered_map<std::string, Animation> animations_;
-
+	std::map<std::string, Animation> animations_;
 };
 

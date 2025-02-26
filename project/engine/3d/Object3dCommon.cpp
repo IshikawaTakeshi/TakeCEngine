@@ -22,19 +22,17 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	//DirectXCommon取得
 	dxCommon_ = directXCommon;
 	//PSO生成
-	graphicPSO_ = std::make_unique<PSO>();
-	computePSO_ = std::make_unique<PSO>();
 
-	graphicPSO_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.VS.hlsl");
-	graphicPSO_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.PS.hlsl");
-	graphicPSO_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID);
+	pso_ = std::make_unique<PSO>();
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.PS.hlsl");
+	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL);
 
-	computePSO_->CompileComputeShader(dxCommon_->GetDXC(), L"Resources/shaders/Skinning.CS.hlsl");
-	computePSO_->CreateComputePSO(dxCommon_->GetDevice());
+	pso_->CompileComputeShader(dxCommon_->GetDXC(), L"Resources/shaders/Skinning.CS.hlsl");
+	pso_->CreateComputePSO(dxCommon_->GetDevice());
 
-	//ルートシグネチャ取得
-	graphicRootSignature_ = graphicPSO_->GetGraphicRootSignature();
-	computeRootSignature_ = computePSO_->GetComputeRootSignature();
+	graphicRootSignature_ = pso_->GetGraphicRootSignature();
+	computeRootSignature_ = pso_->GetComputeRootSignature();
 
 #pragma region "Lighting"
 	//平行光源用Resourceの作成
@@ -109,57 +107,34 @@ void Object3dCommon::Finalize() {
 	instance_ = nullptr;
 }
 
-void Object3dCommon::PreDrawForObject3d() {
+void Object3dCommon::PreDraw() {
 
+
+	//PSO設定
+	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetGraphicPipelineState());
+	// ルートシグネチャ設定
+	dxCommon_->GetCommandList()->SetGraphicsRootSignature(graphicRootSignature_.Get());
 	
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//ルートシグネチャ設定
-	dxCommon_->GetCommandList()->SetGraphicsRootSignature(graphicRootSignature_.Get());
-	//PSO設定
-	dxCommon_->GetCommandList()->SetPipelineState(graphicPSO_->GetGraphicPipelineState());
-
 	//DirectionalLight
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(2, directionalLightResource_->GetGPUVirtualAddress());
 	//カメラ情報のCBufferの場所を指定
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(
-		4, CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
+		3, CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
 
 	//pointLightのCBuffer
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(6, pointLightResource_->GetGPUVirtualAddress());
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(4, pointLightResource_->GetGPUVirtualAddress());
 	//spotLightのCBuffer
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(1, spotLightResource_->GetGPUVirtualAddress());
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(5, spotLightResource_->GetGPUVirtualAddress());
 
 }
-
-//void Object3dCommon::PreDrawForSkinningObject3d() {
-//
-//	//プリミティブトポロジー設定
-//	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//
-//	//PSO設定
-//	dxCommon_->GetCommandList()->SetPipelineState(computePSO_->GetGraphicPipelineState());
-//	//ルートシグネチャ設定
-//	dxCommon_->GetCommandList()->SetGraphicsRootSignature(computeRootSignature_.Get());
-//
-//	//DirectionalLight
-//	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
-//	//カメラ情報のCBufferの場所を指定
-//	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(
-//		4, CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
-//
-//	//pointLightのCBuffer
-//	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(6, pointLightResource_->GetGPUVirtualAddress());
-//	//spotLightのCBuffer
-//	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(1, spotLightResource_->GetGPUVirtualAddress());
-//
-//}
 
 void Object3dCommon::DisPatch() {
 
 	//PSO設定
-	dxCommon_->GetCommandList()->SetPipelineState(computePSO_->GetComputePipelineState());
+	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetComputePipelineState());
 	//ルートシグネチャ設定
 	dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignature_.Get());
 }
