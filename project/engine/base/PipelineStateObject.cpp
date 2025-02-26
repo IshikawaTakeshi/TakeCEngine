@@ -22,7 +22,7 @@ void PSO::CompileVertexShader(DXC* dxc_, const std::wstring& filePath) {
 
 	//頂点シェーダーのコンパイル
 	graphicShaderData_.vertexBlob = dxc_->CompileShader(
-		filePath, L"vs_6_0", dxc_->GetDxcUtils().Get(), dxc_->GetDxcCompiler().Get(), dxc_->GetIncludeHandler().Get()
+		filePath, L"vs_6_6", dxc_->GetDxcUtils().Get(), dxc_->GetDxcCompiler().Get(), dxc_->GetIncludeHandler().Get()
 	);
 }
 
@@ -30,7 +30,7 @@ void PSO::CompilePixelShader(DXC* dxc_, const std::wstring& filePath) {
 
 	//ピクセルシェーダーのコンパイル
 	graphicShaderData_.pixelBlob = dxc_->CompileShader(
-		filePath, L"ps_6_0", dxc_->GetDxcUtils().Get(), dxc_->GetDxcCompiler().Get(), dxc_->GetIncludeHandler().Get()
+		filePath, L"ps_6_6", dxc_->GetDxcUtils().Get(), dxc_->GetDxcCompiler().Get(), dxc_->GetIncludeHandler().Get()
 	);
 
 	//
@@ -403,7 +403,7 @@ void PSO::CreateRasterizerState(D3D12_FILL_MODE fillMode) {
 //=============================================================================
 // PSOの生成
 //=============================================================================
-void PSO::CreateGraphicPSO(ID3D12Device* device, D3D12_FILL_MODE fillMode) {
+void PSO::CreateGraphicPSO(ID3D12Device* device, D3D12_FILL_MODE fillMode, D3D12_DEPTH_WRITE_MASK depthWriteMask) {
 	HRESULT result = S_FALSE;
 	itemCurrentIdx = 0;
 	//シェーダー情報を読み込む
@@ -416,7 +416,7 @@ void PSO::CreateGraphicPSO(ID3D12Device* device, D3D12_FILL_MODE fillMode) {
 	CreateRasterizerState(fillMode);
 #pragma region SetDepthStencilDesc
 	depthStencilDesc_.DepthEnable = true;                           //Depthの機能を有効化
-	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO; //書き込みをしない
+	depthStencilDesc_.DepthWriteMask = depthWriteMask;              //Depthの書き込みマスク
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; //比較関数はLessEqual。近ければ描画される
 #pragma endregion
 	//GraphicPipelineStateDescの設定

@@ -63,6 +63,6 @@ private:
 	// プレイヤー
 	std::unique_ptr<Player> player_ = nullptr;
 
-	std::unique_ptr<Object3d> animationModel_ = nullptr;
+	std::unique_ptr<Object3d> drawTestModel_ = nullptr;
 
 };

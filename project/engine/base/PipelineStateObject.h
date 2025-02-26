@@ -109,7 +109,7 @@ public:
 	/// <summary>
 	/// PSO生成
 	/// </summary>
-	void CreateGraphicPSO(ID3D12Device* device, D3D12_FILL_MODE fillMode);
+	void CreateGraphicPSO(ID3D12Device* device, D3D12_FILL_MODE fillMode, D3D12_DEPTH_WRITE_MASK depthWriteMask);
 
 	void CreateComputePSO(ID3D12Device* device);
 

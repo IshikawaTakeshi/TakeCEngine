@@ -35,12 +35,14 @@ void GamePlayScene::Initialize() {
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "AnimatedCube.gltf");
 
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "cube.obj");
 
 	//Animation読み込み
 	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
@@ -58,9 +60,9 @@ void GamePlayScene::Initialize() {
 	player_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("Idle.gltf"));
 
 	//animationModel
-	animationModel_ = std::make_unique<Object3d>();
-	animationModel_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
-	animationModel_->SetPosition({ 0.0f,0.0f,0.0f });
+	drawTestModel_ = std::make_unique<Object3d>();
+	drawTestModel_->Initialize(Object3dCommon::GetInstance(), "AnimatedCube.gltf");
+	drawTestModel_->SetPosition({ 0.0f,0.0f,0.0f });
 
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
@@ -97,8 +99,8 @@ void GamePlayScene::Update() {
 
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();
-
-	player_->UpdateImGui();
+	drawTestModel_->UpdateImGui(0);
+	//player_->UpdateImGui();
 	particleEmitter1_->UpdateImGui();
 	//particleEmitter2_->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
@@ -115,7 +117,7 @@ void GamePlayScene::Update() {
 	// プレイヤーの更新
 	player_->Update();
 
-	animationModel_->Update();
+	drawTestModel_->Update();
 
 
 	particleEmitter1_->Update();
@@ -149,13 +151,13 @@ void GamePlayScene::Draw() {
 
 
 	// ディスパッチ
-	Object3dCommon::GetInstance()->DisPatch();
-	animationModel_->DisPatchForSkinningModel();
+	//Object3dCommon::GetInstance()->DisPatch();
+	//drawTestModel_->DisPatchForSkinningModel();
 	//player_->DisPatch();
 	
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance()->PreDrawForObject3d();
-	animationModel_->Draw();
+	drawTestModel_->Draw();
 	//player_->Draw();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理

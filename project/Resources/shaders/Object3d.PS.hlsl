@@ -126,8 +126,9 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 		//アルファ値
 		output.color.a = gMaterial.color.a * textureColor.a;
 		
-	} else if (gMaterial.enableLighting == 0) { //Lightingしない場合。前回まで同じ計算
+	}else if (gMaterial.enableLighting == 0) { //Lightingしない場合。前回まで同じ計算
 		output.color = gMaterial.color * textureColor;
+		output.color.rgb = saturate(input.normal);
 	}
 	
 	return output;
