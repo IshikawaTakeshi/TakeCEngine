@@ -7,16 +7,22 @@ class BoxCollider : public Collider {
 
 public:
 
-	void Initialize(Object3dCommon* object3dCommon,const std::string& filePath) override;
+	//初期化
+	void Initialize(Object3d* collisionObject,const std::string& filePath) override;
 
 	//void OnCollision([[maybe_unused]] Collider* other) override;
 
+	//衝突判定
 	bool CheckCollision(Collider* other) override;
+
+	//当たり判定範囲の描画
+	void DrawCollider() override;
 
 	OBB GetOBB() { return obb_; }
 
 	Matrix4x4 GetRotateMatrix() { return rotateMatrix_; }
 
+	//OBBとの衝突判定
 	bool CheckCollisionOBB(BoxCollider* otherBox);
 
 private: // privateメンバ変数

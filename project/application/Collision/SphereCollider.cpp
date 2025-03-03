@@ -1,16 +1,26 @@
 #define NOMINMAX
 #include "SphereCollider.h"
 #include "BoxCollider.h"
+#include "Model.h"
+#include "ModelManager.h"
 
 #include <algorithm>
 
-void SphereCollider::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
-	collisionObject_ = std::make_unique<Object3d>();
-	collisionObject_->Initialize(object3dCommon, filePath);
+//=============================================================================
+// 初期化
+//=============================================================================
 
-	centerPos_ = collisionObject_->GetPosition();
-	radius_ = collisionObject_->GetScale().Length() / 2.0f;
+void SphereCollider::Initialize(Object3d* collisionObject, const std::string& filePath) {
+
+	centerPos_ = collisionObject->GetPosition();
+	radius_ = collisionObject->GetScale().Length() / 2.0f;
+
+	collisionModel_ = ModelManager::GetInstance()->FindModel(filePath);
 }
+
+//=============================================================================
+// 衝突判定
+//=============================================================================
 
 bool SphereCollider::CheckCollision(Collider* other) {
 
@@ -24,6 +34,15 @@ bool SphereCollider::CheckCollision(Collider* other) {
 	}
 
 	return false;
+}
+
+//=============================================================================
+// 当たり判定範囲の描画
+//=============================================================================
+
+void SphereCollider::DrawCollider() {
+
+	collisionModel_->Draw();
 }
 
 bool SphereCollider::CheckCollisionOBB(BoxCollider* otherBox) {

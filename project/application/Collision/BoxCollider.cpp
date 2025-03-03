@@ -2,16 +2,20 @@
 #include "3d/Object3dCommon.h"
 #include "MatrixMath.h"
 #include "SphereCollider.h"
+#include "Model.h"
+#include "ModelManager.h"
 
 #include <cmath>
 
-void BoxCollider::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
-	collisionObject_ = std::make_unique<Object3d>();
-	collisionObject_->Initialize(object3dCommon, filePath);
+//=============================================================================
+// 初期化
+//=============================================================================
 
-	rotateMatrix_ = MatrixMath::MakeRotateMatrix(collisionObject_->GetRotation());
+void BoxCollider::Initialize(Object3d* collisionObject, const std::string& filePath) {
 
-	obb_.center = collisionObject_->GetPosition();
+	rotateMatrix_ = MatrixMath::MakeRotateMatrix(collisionObject->GetRotation());
+
+	obb_.center = collisionObject->GetPosition();
 	obb_.axis[0].x = rotateMatrix_.m[0][0];
 	obb_.axis[0].y = rotateMatrix_.m[0][1];
 	obb_.axis[0].z = rotateMatrix_.m[0][2];
@@ -24,10 +28,12 @@ void BoxCollider::Initialize(Object3dCommon* object3dCommon, const std::string& 
 	obb_.axis[2].y = rotateMatrix_.m[2][1];
 	obb_.axis[2].z = rotateMatrix_.m[2][2];
 
-	obb_.halfSize = collisionObject_->GetScale() / 2.0f;
+	obb_.halfSize = collisionObject->GetScale() / 2.0f;
+
+	collisionModel_ = ModelManager::GetInstance()->FindModel(filePath);
 }
 //=============================================================================
-// OBBの衝突判定
+// 衝突判定
 //=============================================================================
 
 bool BoxCollider::CheckCollision(Collider* other) {
@@ -40,6 +46,19 @@ bool BoxCollider::CheckCollision(Collider* other) {
 	}
 	return false;
 }
+
+//=============================================================================
+// 当たり判定範囲の描画
+//=============================================================================
+
+void BoxCollider::DrawCollider() {
+
+	collisionModel_->Draw();
+}
+
+//=============================================================================
+// OBBとの衝突判定
+//=============================================================================
 
 bool BoxCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 	const Vector3* thisAxis = this->obb_.axis;

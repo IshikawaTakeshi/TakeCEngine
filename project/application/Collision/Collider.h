@@ -3,14 +3,11 @@
 #include <cstdint>
 #include <memory>
 
+class Model;
 class Collider {
 public:
 
-	virtual void Initialize(Object3dCommon* object3dCommon,const std::string& filePath) = 0;
-
-	void Update();
-
-	void DrawCollisionObj();
+	virtual void Initialize(Object3d* collisionObject, const std::string& filePath) = 0;
 
 	/// <summary>
 	/// 衝突時に呼ばれる関数
@@ -18,6 +15,8 @@ public:
 	virtual void OnCollision([[maybe_unused]] Collider* other) = 0;
 
 	virtual bool CheckCollision(Collider* other) = 0;
+
+	virtual void DrawCollider() = 0;
 
 public:
 
@@ -70,6 +69,5 @@ protected:
 	//種別ID
 	uint32_t typeID_ = 0u;
 
-	//衝突判定用オブジェクト
-	std::unique_ptr<Object3d> collisionObject_;
+	Model* collisionModel_ = nullptr;
 };
