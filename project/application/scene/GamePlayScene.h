@@ -19,10 +19,6 @@
 #include "Quaternion.h"
 
 //app
-#include "application/Player/Player.h"
-#include "application/Player/PlayerBullet.h"
-#include "application/Enemy/Enemy.h"
-#include "application/Enemy/EnemyBullet.h"
 #include "application/Ground/Ground.h"
 #include "application/HPBar/HPBar.h"
 

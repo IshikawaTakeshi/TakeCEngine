@@ -1,4 +1,6 @@
 #pragma once
+#include <cmath>
+#include <algorithm>
 
 /// <summary>
 /// 3次元ベクトル
@@ -13,6 +15,14 @@ struct Vector3 final {
 	Vector3 operator*=(float s);
 	Vector3 operator/=(float s);
 	bool operator==(const Vector3& v) const;
+
+	float Dot(const Vector3& other) const;
+
+	Vector3 Cross(const Vector3& other) const;
+
+	float Length() const;
+
+	Vector3 Normalize() const;
 };
 
 Vector3 operator+(const Vector3& v1, const Vector3& v2);

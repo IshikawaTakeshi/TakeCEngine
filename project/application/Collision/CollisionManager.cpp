@@ -1,6 +1,7 @@
 #include "CollisionManager.h"
 #include "Collider.h"
 #include "Vector3Math.h"
+#include "DirectXCommon.h"
 
 CollisionManager* CollisionManager::instance_ = nullptr;
 
@@ -11,20 +12,65 @@ CollisionManager* CollisionManager::GetInstance() {
 	return instance_;
 }
 
+//=============================================================================
+// 初期化
+//=============================================================================
+
+void CollisionManager::Initialize(DirectXCommon* dxCommon) {
+
+	dxCommon_ = dxCommon;
+
+	pso_ = std::make_unique<PSO>();
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.PS.hlsl");
+	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_WIREFRAME, D3D12_DEPTH_WRITE_MASK_ALL);
+
+	rootSignature_ = pso_->GetGraphicRootSignature();
+}
+
+//=============================================================================
+// 描画前処理
+//=============================================================================
+
+void CollisionManager::PreDraw() {
+	//ルートシグネチャ設定
+	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
+	//PSO設定
+	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetGraphicPipelineState());
+	//プリミティブトポロジー設定
+	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+//=============================================================================
+// シングルトンインスタンスの解放処理
+//=============================================================================
+
 void CollisionManager::Finalize() {
 	delete instance_;
 	instance_ = nullptr;
 }
+
+//=============================================================================
+// コライダーリストへの登録をする関数
+//=============================================================================
 
 void CollisionManager::RegisterCollider(Collider* collider) {
 
 	colliders_.push_back(collider);
 }
 
+//=============================================================================
+// コライダーリストをクリアする関数
+//=============================================================================
+
 void CollisionManager::ClearCollider() {
 
 	colliders_.clear();
 }
+
+//=============================================================================
+// 全てのコライダーの衝突判定を行う関数
+//=============================================================================
 
 void CollisionManager::CheckAllCollisions() {
 
@@ -51,6 +97,10 @@ void CollisionManager::CheckAllCollisions() {
 	}
 
 }
+
+//=============================================================================
+// コライダー2つ衝突判定と応答処理
+//=============================================================================
 
 void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
 
