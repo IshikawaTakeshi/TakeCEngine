@@ -147,3 +147,7 @@ void Object3d::DisPatch() {
 void Object3d::SetModel(const std::string& filePath) {
 	model_ = ModelManager::GetInstance()->FindModel(filePath);
 }
+
+void Object3d::SetCollisionModel(const std::string& filePath) {
+	collisionModel_ = ModelManager::GetInstance()->FindModel(filePath);
+}

@@ -12,7 +12,7 @@ public:
 	/// <summary>
 	/// 衝突時に呼ばれる関数
 	/// </summary>
-	virtual void OnCollision([[maybe_unused]] Collider* other) = 0;
+	virtual void OnCollisionAction([[maybe_unused]] Collider* other) = 0;
 
 	virtual bool CheckCollision(Collider* other) = 0;
 

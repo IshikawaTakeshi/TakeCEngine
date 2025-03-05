@@ -2,6 +2,9 @@
 #include "Collider.h"
 #include "Vector3Math.h"
 #include "DirectXCommon.h"
+#include "GameCharacter.h"
+#include "Collision/BoxCollider.h"
+#include "Collision/SphereCollider.h"
 
 CollisionManager* CollisionManager::instance_ = nullptr;
 
@@ -114,8 +117,55 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 	//コライダーAとBの衝突判定
 	if (Vector3Math::Length(posA - posB) <= colliderA->GetRadius() + colliderB->GetRadius()) {
 		//コライダーAの衝突処理
-		colliderA->OnCollision(colliderB);
+		colliderA->OnCollisionAction(colliderB);
 		//コライダーBの衝突処理
-		colliderB->OnCollision(colliderA);
+		colliderB->OnCollisionAction(colliderA);
+	}
+}
+
+void CollisionManager::RegisterGameCharacter(GameCharacter* gameCharacter) {
+
+	gameCharacters_.push_back(gameCharacter);
+}
+
+void CollisionManager::ClearGameCharacter() {
+
+	gameCharacters_.clear();
+}
+
+void CollisionManager::CheckAllCollisionsForGameCharacter() {
+
+	//リスト内のペアを総当たり
+	std::list<GameCharacter*>::iterator itrA = gameCharacters_.begin();
+	for (; itrA != gameCharacters_.end(); ++itrA) {
+		//イテレータAからコライダーAを取得する
+		GameCharacter* gameCharacterA = *itrA;
+		//イテレータA+1からコライダーBを取得する(重複判定の回避)
+		std::list<GameCharacter*>::iterator itrB = itrA;
+		itrB++;
+		for (; itrB != gameCharacters_.end(); ++itrB) {
+			//イテレータBからコライダーBを取得する
+			GameCharacter* gameCharacterB = *itrB;
+			//コライダーAとBの衝突判定
+			CheckCollisionPairForGameCharacter(gameCharacterA, gameCharacterB);
+		}
+	}
+}
+
+void CollisionManager::CheckCollisionPairForGameCharacter(GameCharacter* gameCharacterA, GameCharacter* gameCharacterB) {
+
+	//コライダーAとB
+	Collider* colliderA = gameCharacterA->GetCollider();
+	Collider* colliderB = gameCharacterB->GetCollider();
+
+	//コライダーがnullptrだったらreturn
+	if (!colliderA || !colliderB) return;
+
+	//コライダーAとBの衝突判定
+	if (colliderA->CheckCollision(colliderB)) {
+		//コライダーAの衝突処理
+		gameCharacterA->OnCollisionAction(colliderB);
+		//コライダーBの衝突処理
+		gameCharacterB->OnCollisionAction(colliderA);
 	}
 }

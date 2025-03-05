@@ -153,6 +153,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\TakeCFrameWork.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="engine\base\ImGuiManager.cpp" />
+    <ClCompile Include="application\GameCharacter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
     <ClCompile Include="engine\math\MatrixMath.cpp" />
@@ -172,6 +173,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\ParticleManager.cpp" />
     <ClCompile Include="application\SkyBox\SkyBox.cpp" />
     <ClCompile Include="application\Collision\SphereCollider.cpp" />
+    <ClCompile Include="application\SampleCharacter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Collision\Collider.h" />
@@ -228,6 +230,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\ParticleCommon.h" />
     <ClInclude Include="engine\base\ParticleEmitter.h" />
     <ClInclude Include="engine\base\ParticleManager.h" />
+    <ClInclude Include="application\GameCharacter.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\base\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />
@@ -252,6 +255,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\SkyBox\SkyBox.h" />
     <ClInclude Include="application\Collision\SphereCollider.h" />
+    <ClInclude Include="application\SampleCharacter.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

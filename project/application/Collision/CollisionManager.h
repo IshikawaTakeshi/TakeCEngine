@@ -5,6 +5,7 @@
 #include <memory>
 class DirectXCommon;
 class Collider;
+class GameCharacter;
 class CollisionManager {
 
 
@@ -52,6 +53,15 @@ public:
 	/// <param name="colliderB">コライダーB</param>
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 
+
+	void RegisterGameCharacter(GameCharacter* gameCharacter);
+
+	void ClearGameCharacter();
+
+	void CheckAllCollisionsForGameCharacter();
+
+	void CheckCollisionPairForGameCharacter(GameCharacter* gameCharacterA, GameCharacter* gameCharacterB);
+
 private:
 
 	//シングルトンインスタンス
@@ -72,6 +82,8 @@ private:
 
 	//コライダーリスト
 	std::list<Collider*> colliders_;
+
+	std::list<GameCharacter*> gameCharacters_;
 
 	std::unique_ptr<PSO> pso_ = nullptr;
 
