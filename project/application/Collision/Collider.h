@@ -4,19 +4,34 @@
 #include <memory>
 
 class Model;
+class DirectXCommon;
 class Collider {
 public:
 
-	virtual void Initialize(Object3d* collisionObject, const std::string& filePath) = 0;
+	virtual ~Collider() = default;
+
+	//エイリアステンプレート
+	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+
+	virtual void Initialize(DirectXCommon* dxCommon, Object3d* collisionObject) = 0;
+
+	virtual void Update() = 0;
+
+	virtual void DrawCollider() = 0;
 
 	/// <summary>
-	/// 衝突時に呼ばれる関数
+	/// 衝突時に呼ばれる処理
 	/// </summary>
 	virtual void OnCollisionAction([[maybe_unused]] Collider* other) = 0;
 
+	/// <summary>
+	/// 衝突判定
+	/// </summary>
+	/// <param name="other"></param>
+	/// <returns></returns>
 	virtual bool CheckCollision(Collider* other) = 0;
 
-	virtual void DrawCollider() = 0;
 
 public:
 
@@ -69,5 +84,26 @@ protected:
 	//種別ID
 	uint32_t typeID_ = 0u;
 
-	Model* collisionModel_ = nullptr;
+	//DirectXCommon
+	DirectXCommon* dxCommon_ = nullptr;
+
+	//モデル
+	Model* model_ = nullptr;
+
+	//当たり判定のモデルのファイルパス
+	std::string colliderFilePath_;
+
+	//TransformationMatrix用の頂点リソース
+	ComPtr<ID3D12Resource> wvpResource_;
+	//TransformationMatrix用の頂点データ
+	TransformMatrix* TransformMatrixData_ = nullptr;
+
+	//Transform
+	EulerTransform transform_{};
+	//TransformMatrix
+	Matrix4x4 worldMatrix_;
+	Matrix4x4 WVPMatrix_;
+	Matrix4x4 WorldInverseTransposeMatrix_;
+	//Camera
+	Camera* camera_ = nullptr;
 };

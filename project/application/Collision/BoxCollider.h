@@ -7,16 +7,21 @@ class BoxCollider : public Collider {
 
 public:
 
-	//初期化
-	void Initialize(Object3d* collisionObject,const std::string& filePath) override;
+	BoxCollider() = default;
+	~BoxCollider();
 
-	//void OnCollision([[maybe_unused]] Collider* other) override;
+	//初期化
+	void Initialize(DirectXCommon* dxCommon ,Object3d* collisionObject) override;
+
+	void Update() override;
 
 	//衝突判定
 	bool CheckCollision(Collider* other) override;
 
 	//当たり判定範囲の描画
 	void DrawCollider() override;
+
+	Vector3 GetWorldPos() override;
 
 	OBB GetOBB() { return obb_; }
 

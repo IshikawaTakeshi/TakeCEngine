@@ -45,13 +45,12 @@ public: //getter
 
 	Vector3 GetScale() const { return transform_.scale; }
 	Vector3 GetRotation() const { return transform_.rotate; }
-	Vector3 GetPosition() const { return transform_.translate; }
+	Vector3 GetTranslate() const { return transform_.translate; }
 	Model* GetModel() { return model_; }
 
 public: //setter
 
 	void SetModel(const std::string& filePath);
-	void SetCollisionModel(const std::string& filePath);
 	void SetCamera(Camera* camera) { camera_ = camera; }
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	void SetRotation(const Vector3& rotation) { transform_.rotate = rotation; }
@@ -63,8 +62,6 @@ protected: // privateメンバ変数
 
 	//モデル
 	Model* model_ = nullptr;
-	//コリジョンモデル
-	Model* collisionModel_ = nullptr;
 
 	//TransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;

@@ -24,8 +24,8 @@ void CollisionManager::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 
 	pso_ = std::make_unique<PSO>();
-	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.VS.hlsl");
-	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.PS.hlsl");
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/SkyBox.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/SkyBox.PS.hlsl");
 	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_WIREFRAME, D3D12_DEPTH_WRITE_MASK_ALL);
 
 	rootSignature_ = pso_->GetGraphicRootSignature();
@@ -164,8 +164,8 @@ void CollisionManager::CheckCollisionPairForGameCharacter(GameCharacter* gameCha
 	//コライダーAとBの衝突判定
 	if (colliderA->CheckCollision(colliderB)) {
 		//コライダーAの衝突処理
-		gameCharacterA->OnCollisionAction(colliderB);
+		gameCharacterA->OnCollisionAction(gameCharacterB);
 		//コライダーBの衝突処理
-		gameCharacterB->OnCollisionAction(colliderA);
+		gameCharacterB->OnCollisionAction(gameCharacterA);
 	}
 }

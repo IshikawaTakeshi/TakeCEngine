@@ -4,6 +4,8 @@
 #include "SphereCollider.h"
 #include "Model.h"
 #include "ModelManager.h"
+#include "CameraManager.h"
+#include "DirectXCommon.h"
 
 #include <cmath>
 
@@ -11,11 +13,17 @@
 // 初期化
 //=============================================================================
 
-void BoxCollider::Initialize(Object3d* collisionObject, const std::string& filePath) {
+BoxCollider::~BoxCollider() {}
+
+void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject) {
+
+	dxCommon_ = dxCommon;
+
+	colliderFilePath_ = "cube.obj";
 
 	rotateMatrix_ = MatrixMath::MakeRotateMatrix(collisionObject->GetRotation());
 
-	obb_.center = collisionObject->GetPosition();
+	obb_.center = collisionObject->GetTranslate();
 	obb_.axis[0].x = rotateMatrix_.m[0][0];
 	obb_.axis[0].y = rotateMatrix_.m[0][1];
 	obb_.axis[0].z = rotateMatrix_.m[0][2];
@@ -30,7 +38,52 @@ void BoxCollider::Initialize(Object3d* collisionObject, const std::string& fileP
 
 	obb_.halfSize = collisionObject->GetScale() / 2.0f;
 
-	collisionModel_ = ModelManager::GetInstance()->FindModel(filePath);
+	//モデルの生成
+	model_ = ModelManager::GetInstance()->FindModel(colliderFilePath_);
+
+	//TransformationMatrix用のResource生成
+	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
+	//TransformationMatrix用
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
+	//単位行列を書き込んでおく
+	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
+
+	//CPUで動かす用のTransform
+	transform_ = {
+		collisionObject->GetScale(),
+		collisionObject->GetRotation(),
+		collisionObject->GetTranslate()
+	};
+
+	//アフィン行列
+	worldMatrix_ = MatrixMath::MakeAffineMatrix(
+		transform_.scale,
+		transform_.rotate,
+		transform_.translate
+	);
+
+	//カメラのセット
+	camera_ = CameraManager::GetInstance()->GetActiveCamera();
+}
+
+void BoxCollider::Update() {
+
+	//アフィン行列の更新
+	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+
+	//wvpの更新
+	if (camera_) {
+		const Matrix4x4& viewProjectionMatrix =
+			CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+		WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
+	} else {
+		WVPMatrix_ = worldMatrix_;
+	}
+
+	WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
+	TransformMatrixData_->World = worldMatrix_;
+	TransformMatrixData_->WVP = model_->GetModelData().rootNode.localMatrix * WVPMatrix_;
+	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 }
 //=============================================================================
 // 衝突判定
@@ -53,7 +106,15 @@ bool BoxCollider::CheckCollision(Collider* other) {
 
 void BoxCollider::DrawCollider() {
 
-	collisionModel_->Draw();
+	//TransformationMatrix
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
+
+	model_->Draw();
+}
+
+Vector3 BoxCollider::GetWorldPos() {
+	
+	return obb_.center;
 }
 
 //=============================================================================

@@ -44,7 +44,7 @@ public:
 	/// <summary>
 	/// 位置を取得
 	/// </summary>
-	Vector2 GetPosition() const;
+	Vector2 GetTranslate() const;
 
 private:
 	std::unique_ptr<Sprite> backgroundSprite_; // 背景スプライト

@@ -59,12 +59,13 @@ void GamePlayScene::Initialize() {
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
 
-		
-	//player_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("Idle.gltf"));
-		
 	//CreateParticle
 	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"PlayerBullet", "sphere.obj");
 	//TakeCFrameWork::GetParticleManager()->SetParticleAttribute("PlayerBullet");
+
+	//SampleCharacter
+	sampleCharacter_ = std::make_unique<SampleCharacter>();
+	sampleCharacter_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
 }
 
 //====================================================================
@@ -101,6 +102,11 @@ void GamePlayScene::Update() {
 
 	sprite_->Update();
 
+	//SampleCharacter
+	sampleCharacter_->Update();
+
+	//当たり判定の更新
+	CheckAllCollisions();
 
   //パーティクルの更新
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
@@ -131,6 +137,10 @@ void GamePlayScene::Draw() {
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance()->PreDraw();
 	drawTestModel_->Draw();
+	sampleCharacter_->Draw();
+
+	CollisionManager::GetInstance()->PreDraw();   //当たり判定の描画前処理
+	sampleCharacter_->DrawCollider(); //当たり判定の描画
 	
 	//ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画

@@ -66,7 +66,7 @@ public:
 	//アンカーポイント取得
 	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
 
-	const Vector2& GetPosition() const { return position_; }
+	const Vector2& GetTranslate() const { return position_; }
 
 	const float GetRotation() const { return rotation_; }
 

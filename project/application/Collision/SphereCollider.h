@@ -6,15 +6,17 @@ class SphereCollider : public Collider {
 public:
 
 	//初期化
-	void Initialize(Object3d* collisionObject, const std::string& filePath) override;
+	void Initialize(DirectXCommon* dxCommon, Object3d* collisionObject) override;
 
-	//void OnCollision([[maybe_unused]] Collider* other) override;
+	void Update() override;
 
 	//衝突判定
 	bool CheckCollision(Collider* other) override;
 
 	//当たり判定範囲の描画
 	void DrawCollider() override;
+
+	Vector3 GetWorldPos() override;
 
 	//中心座標の取得
 	Vector3 GetCenterPos() const { return centerPos_; }

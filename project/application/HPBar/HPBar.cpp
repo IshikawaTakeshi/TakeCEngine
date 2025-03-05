@@ -32,7 +32,7 @@ void HPBar::Update(float currentHP, float maxHP) {
 	foregroundSprite_->SetSize(size);
 
 	// フォアグラウンドスプライトの位置を背景に揃える
-	foregroundSprite_->SetPosition(backgroundSprite_->GetPosition());
+	foregroundSprite_->SetPosition(backgroundSprite_->GetTranslate());
 	backgroundSprite_->Update();
 	foregroundSprite_->Update();
 	bugeSprite_->Update();
@@ -87,4 +87,4 @@ void HPBar::SetSize(const Vector2& size) {
 
 void HPBar::SetbugeSize(const Vector2& size) { bugeSprite_->SetSize(size); }
 
-Vector2 HPBar::GetPosition() const { return position_; }
+Vector2 HPBar::GetTranslate() const { return position_; }

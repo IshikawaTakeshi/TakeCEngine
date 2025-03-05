@@ -21,6 +21,7 @@
 //app
 #include "application/Ground/Ground.h"
 #include "application/HPBar/HPBar.h"
+#include "application/SampleCharacter.h"
 
 
 class GamePlayScene : public BaseScene {
@@ -59,5 +60,8 @@ private:
 
 	//スプライト
 	std::unique_ptr<Sprite> sprite_ = nullptr;
+
+	//サンプルキャラクター
+	std::unique_ptr<SampleCharacter> sampleCharacter_ = nullptr;
 
 };

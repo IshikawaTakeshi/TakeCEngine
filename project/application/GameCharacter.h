@@ -2,6 +2,12 @@
 #include "Object3d.h"
 #include "Collision/Collider.h"
 
+enum class CharacterType {
+	NONE,
+	PLAYER,
+	ENEMY,
+};
+
 class GameCharacter {
 public:
 
@@ -13,9 +19,14 @@ public:
 
 	virtual void Draw() = 0;
 
-	virtual void OnCollisionAction(Collider* other) = 0;
+	virtual void DrawCollider() = 0;
+
+
+	virtual void OnCollisionAction(GameCharacter* other) = 0;
 
 	virtual Collider* GetCollider() { return collider_.get(); }
+
+	virtual CharacterType GetCharacterType() { return characterType_; }
 
 protected:
 
@@ -23,4 +34,5 @@ protected:
 
 	std::unique_ptr<Collider> collider_;
 
+	CharacterType characterType_ = CharacterType::NONE;
 };
