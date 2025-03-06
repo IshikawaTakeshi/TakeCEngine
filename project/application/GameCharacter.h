@@ -28,7 +28,11 @@ public:
 
 	virtual CharacterType GetCharacterType() { return characterType_; }
 
+	Model* GetModel() { return object3d_->GetModel(); }
+
 	virtual void SetCharacterType(CharacterType type) { characterType_ = type; }
+
+	void SetTranslate(const Vector3& translate) { object3d_->SetTranslate(translate); }
 
 protected:
 

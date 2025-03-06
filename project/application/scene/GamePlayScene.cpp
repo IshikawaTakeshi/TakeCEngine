@@ -42,8 +42,8 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "cube.obj");
 
 	//Animation読み込み
-	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
 	TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
 
 	//SkyBox
@@ -51,10 +51,10 @@ void GamePlayScene::Initialize() {
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 	//animationModel
-	drawTestModel_ = std::make_unique<Object3d>();
-	drawTestModel_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
-	drawTestModel_->SetPosition({ 0.0f,0.0f,0.0f });
-	drawTestModel_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("running.gltf"));
+	//drawTestModel_ = std::make_unique<Object3d>();
+	//drawTestModel_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
+	//drawTestModel_->SetTranslate({ 0.0f,0.0f,0.0f });
+	//drawTestModel_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("running.gltf"));
 
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
@@ -67,11 +67,14 @@ void GamePlayScene::Initialize() {
 	samplePlayer_ = std::make_unique<SampleCharacter>();
 	samplePlayer_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
 	samplePlayer_->SetCharacterType(CharacterType::PLAYER);
+	samplePlayer_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("running.gltf"));
 
 	//SampleEnemy
 	sampleEnemy_ = std::make_unique<SampleCharacter>();
 	sampleEnemy_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
 	sampleEnemy_->SetCharacterType(CharacterType::ENEMY);
+	sampleEnemy_->SetTranslate({ 0.0f,0.0f,15.0f });
+	sampleEnemy_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("Idle.gltf"));
 }
 
 //====================================================================
@@ -163,11 +166,11 @@ void GamePlayScene::Draw() {
 
 void GamePlayScene::CheckAllCollisions() {
 
-	CollisionManager::GetInstance()->RegisterCollider(samplePlayer_->GetCollider());
+	CollisionManager::GetInstance()->ClearGameCharacter();
 
-	CollisionManager::GetInstance()->RegisterCollider(sampleEnemy_->GetCollider());
+	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(samplePlayer_.get()));
 
-	CollisionManager::GetInstance()->ClearCollider();
+	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(sampleEnemy_.get()));
 
 	CollisionManager::GetInstance()->CheckAllCollisionsForGameCharacter();
 }

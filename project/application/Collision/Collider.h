@@ -51,7 +51,7 @@ public:
 	/// </summary>
 	uint32_t GetTypeID() const { return typeID_; }
 
-
+	Model* GetModel() { return model_; }
 
 public:
 	////////////////////////////////////////////////////////////////////////////////////////

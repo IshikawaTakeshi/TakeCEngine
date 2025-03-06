@@ -32,7 +32,7 @@ void TitleScene::Initialize() {
 	startObject->Initialize(Object3dCommon::GetInstance(), "enterStartText.obj");
 	startObject->SetScale({ 0.8f, 0.8f, 0.8f });
 	startObject->SetRotation({ 0.0f, 0.0f, 3.14f });
-	startObject->SetPosition({ -1.0f, -2.5f, 0.0f });
+	startObject->SetTranslate({ -1.0f, -2.5f, 0.0f });
 }
 
 void TitleScene::Finalize() {

@@ -25,19 +25,19 @@ void SampleCharacter::Update() {
 
 	if(characterType_ == CharacterType::PLAYER) {
 		if (Input::GetInstance()->PushKey(DIK_W)) {
-			object3d_->SetPosition(object3d_->GetTranslate() + Vector3(0.0f, 0.0f, 0.1f));
+			object3d_->SetTranslate(object3d_->GetTranslate() + Vector3(0.0f, 0.0f, 0.1f));
 		}
 
 		if (Input::GetInstance()->PushKey(DIK_S)) {
-			object3d_->SetPosition(object3d_->GetTranslate() + Vector3(0.0f, 0.0f, -0.1f));
+			object3d_->SetTranslate(object3d_->GetTranslate() + Vector3(0.0f, 0.0f, -0.1f));
 		}
 
 		if (Input::GetInstance()->PushKey(DIK_A)) {
-			object3d_->SetPosition(object3d_->GetTranslate() + Vector3(-0.1f, 0.0f, 0.0f));
+			object3d_->SetTranslate(object3d_->GetTranslate() + Vector3(-0.1f, 0.0f, 0.0f));
 		}
 
 		if (Input::GetInstance()->PushKey(DIK_D)) {
-			object3d_->SetPosition(object3d_->GetTranslate() + Vector3(0.1f, 0.0f, 0.0f));
+			object3d_->SetTranslate(object3d_->GetTranslate() + Vector3(0.1f, 0.0f, 0.0f));
 		}
 	}
 	//キー入力で移動
@@ -70,6 +70,7 @@ void SampleCharacter::OnCollisionAction(GameCharacter* other) {
 	if (other->GetCharacterType() == CharacterType::ENEMY) {
 		//衝突したら赤色に変更
 		object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,0.0f,0.0f,1.0f });
+		collider_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,0.0f,0.0f,1.0f });
 	}
 }
 

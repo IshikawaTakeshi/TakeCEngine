@@ -51,7 +51,7 @@ void GameClearScene::Initialize() {
 	//GameClearText
 	GameClearText_ = std::make_unique<Object3d>();
 	GameClearText_->Initialize(Object3dCommon::GetInstance(), "GameClearText.obj");
-	GameClearText_->SetPosition({ 8.0f, 0.0f, 10.0f });
+	GameClearText_->SetTranslate({ 8.0f, 0.0f, 10.0f });
 	GameClearText_->SetRotation({ 0.0f, 3.2f, 0.0f });
 	GameClearText_->SetScale({ 2.5f, 2.5f, 1.0f });
 
