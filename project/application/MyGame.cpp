@@ -2,6 +2,7 @@
 #include "scene/SceneFactory.h"
 #include "Logger.h"
 #include "StringUtility.h"
+#include "Collision/CollisionManager.h"
 
 #include <chrono>
 
@@ -23,6 +24,9 @@ void MyGame::Initialize(const std::wstring& titleName) {
 
 	//シーンマネージャーのセット
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
+
+	CollisionManager::GetInstance()->Initialize(directXCommon_.get());
+
 	//最初のシーンを設定
 	//SceneManager::GetInstance()->ChangeScene("TITLE");
 #ifdef _DEBUG

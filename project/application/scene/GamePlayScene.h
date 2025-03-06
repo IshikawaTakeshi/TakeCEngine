@@ -62,6 +62,7 @@ private:
 	std::unique_ptr<Sprite> sprite_ = nullptr;
 
 	//サンプルキャラクター
-	std::unique_ptr<SampleCharacter> sampleCharacter_ = nullptr;
+	std::unique_ptr<SampleCharacter> samplePlayer_ = nullptr;
+	std::unique_ptr<SampleCharacter> sampleEnemy_ = nullptr;
 
 };

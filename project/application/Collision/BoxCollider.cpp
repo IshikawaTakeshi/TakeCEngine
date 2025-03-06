@@ -6,14 +6,13 @@
 #include "ModelManager.h"
 #include "CameraManager.h"
 #include "DirectXCommon.h"
+#include "GameCharacter.h"
 
 #include <cmath>
 
 //=============================================================================
 // 初期化
 //=============================================================================
-
-BoxCollider::~BoxCollider() {}
 
 void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject) {
 
@@ -82,7 +81,7 @@ void BoxCollider::Update() {
 
 	WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 	TransformMatrixData_->World = worldMatrix_;
-	TransformMatrixData_->WVP = model_->GetModelData().rootNode.localMatrix * WVPMatrix_;
+	TransformMatrixData_->WVP = WVPMatrix_;
 	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 }
 //=============================================================================
@@ -109,7 +108,7 @@ void BoxCollider::DrawCollider() {
 	//TransformationMatrix
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
-	model_->Draw();
+	model_->DrawSkyBox();
 }
 
 Vector3 BoxCollider::GetWorldPos() {

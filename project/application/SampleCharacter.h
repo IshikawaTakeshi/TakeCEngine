@@ -10,6 +10,8 @@ public:
 	void DrawCollider() override;
 	void OnCollisionAction(GameCharacter* other) override;
 
+	void SkinningDisPatch();
+
 private:
 
 

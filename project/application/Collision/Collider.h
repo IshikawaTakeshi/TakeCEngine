@@ -5,6 +5,7 @@
 
 class Model;
 class DirectXCommon;
+class GameCharacter;
 class Collider {
 public:
 
@@ -19,11 +20,6 @@ public:
 	virtual void Update() = 0;
 
 	virtual void DrawCollider() = 0;
-
-	/// <summary>
-	/// 衝突時に呼ばれる処理
-	/// </summary>
-	virtual void OnCollisionAction([[maybe_unused]] Collider* other) = 0;
 
 	/// <summary>
 	/// 衝突判定

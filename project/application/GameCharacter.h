@@ -28,6 +28,8 @@ public:
 
 	virtual CharacterType GetCharacterType() { return characterType_; }
 
+	virtual void SetCharacterType(CharacterType type) { characterType_ = type; }
+
 protected:
 
 	std::unique_ptr<Object3d> object3d_;

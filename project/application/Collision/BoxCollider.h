@@ -7,8 +7,6 @@ class BoxCollider : public Collider {
 
 public:
 
-	BoxCollider() = default;
-	~BoxCollider();
 
 	//初期化
 	void Initialize(DirectXCommon* dxCommon ,Object3d* collisionObject) override;

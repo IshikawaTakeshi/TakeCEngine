@@ -117,9 +117,9 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 	//コライダーAとBの衝突判定
 	if (Vector3Math::Length(posA - posB) <= colliderA->GetRadius() + colliderB->GetRadius()) {
 		//コライダーAの衝突処理
-		colliderA->OnCollisionAction(colliderB);
+		//colliderA->OnCollisionAction(colliderB);
 		//コライダーBの衝突処理
-		colliderB->OnCollisionAction(colliderA);
+		//colliderB->OnCollisionAction(colliderA);
 	}
 }
 

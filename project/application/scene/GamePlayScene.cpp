@@ -64,8 +64,14 @@ void GamePlayScene::Initialize() {
 	//TakeCFrameWork::GetParticleManager()->SetParticleAttribute("PlayerBullet");
 
 	//SampleCharacter
-	sampleCharacter_ = std::make_unique<SampleCharacter>();
-	sampleCharacter_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
+	samplePlayer_ = std::make_unique<SampleCharacter>();
+	samplePlayer_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
+	samplePlayer_->SetCharacterType(CharacterType::PLAYER);
+
+	//SampleEnemy
+	sampleEnemy_ = std::make_unique<SampleCharacter>();
+	sampleEnemy_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
+	sampleEnemy_->SetCharacterType(CharacterType::ENEMY);
 }
 
 //====================================================================
@@ -92,7 +98,7 @@ void GamePlayScene::Update() {
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
-	drawTestModel_->Update();
+	//drawTestModel_->Update();
 
 	//SkyBoxの更新
 	skyBox_->Update();
@@ -103,7 +109,8 @@ void GamePlayScene::Update() {
 	sprite_->Update();
 
 	//SampleCharacter
-	sampleCharacter_->Update();
+	samplePlayer_->Update();
+	sampleEnemy_->Update();
 
 	//当たり判定の更新
 	CheckAllCollisions();
@@ -129,18 +136,26 @@ void GamePlayScene::Draw() {
 
 	skyBox_->Draw();    //天球の描画
 
-	SpriteCommon::GetInstance()->PreDraw();    //スプライトの描画前処理
+	//スプライトの描画前処理
+	SpriteCommon::GetInstance()->PreDraw();
 	sprite_->Draw();    //スプライトの描画
 	
-	Object3dCommon::GetInstance()->DisPatch();
-	drawTestModel_->DisPatch();
-	//Object3dの描画前処理
-	Object3dCommon::GetInstance()->PreDraw();
-	drawTestModel_->Draw();
-	sampleCharacter_->Draw();
 
-	CollisionManager::GetInstance()->PreDraw();   //当たり判定の描画前処理
-	sampleCharacter_->DrawCollider(); //当たり判定の描画
+	//Object3dの描画前処理
+	Object3dCommon::GetInstance()->DisPatch();
+	//drawTestModel_->DisPatch();
+	samplePlayer_->SkinningDisPatch();
+	sampleEnemy_->SkinningDisPatch();
+
+	Object3dCommon::GetInstance()->PreDraw();
+	//drawTestModel_->Draw();
+	samplePlayer_->Draw();
+	sampleEnemy_->Draw();
+
+	//当たり判定の描画前処理
+	CollisionManager::GetInstance()->PreDraw();
+	samplePlayer_->DrawCollider();
+	sampleEnemy_->DrawCollider();
 	
 	//ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
@@ -148,7 +163,11 @@ void GamePlayScene::Draw() {
 
 void GamePlayScene::CheckAllCollisions() {
 
-	//CollisionManager::GetInstance()->ClearCollider();
+	CollisionManager::GetInstance()->RegisterCollider(samplePlayer_->GetCollider());
 
-	//CollisionManager::GetInstance()->CheckAllCollisions();
+	CollisionManager::GetInstance()->RegisterCollider(sampleEnemy_->GetCollider());
+
+	CollisionManager::GetInstance()->ClearCollider();
+
+	CollisionManager::GetInstance()->CheckAllCollisionsForGameCharacter();
 }
