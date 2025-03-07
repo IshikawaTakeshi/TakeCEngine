@@ -142,7 +142,6 @@ void GamePlayScene::Draw() {
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
 	sprite_->Draw();    //スプライトの描画
-	
 
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance()->DisPatch();
@@ -154,11 +153,12 @@ void GamePlayScene::Draw() {
 	//drawTestModel_->Draw();
 	samplePlayer_->Draw();
 	sampleEnemy_->Draw();
-
+	
 	//当たり判定の描画前処理
 	CollisionManager::GetInstance()->PreDraw();
 	samplePlayer_->DrawCollider();
 	sampleEnemy_->DrawCollider();
+
 	
 	//ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画

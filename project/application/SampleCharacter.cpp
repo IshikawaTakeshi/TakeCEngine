@@ -24,20 +24,36 @@ void SampleCharacter::Update() {
 
 
 	if(characterType_ == CharacterType::PLAYER) {
-		if (Input::GetInstance()->PushKey(DIK_W)) {
-			object3d_->SetTranslate(object3d_->GetTranslate() + Vector3(0.0f, 0.0f, 0.1f));
-		}
+		XINPUT_STATE joystickState;
+		if (Input::GetInstance()->GetJoystickState(0, joystickState)) { // 0番のジョイスティックを使用
+			// 左スティックの入力値（-32768 ～ 32767 の範囲）
+			float x = static_cast<float>(joystickState.Gamepad.sThumbLX);
+			float y = static_cast<float>(joystickState.Gamepad.sThumbLY);
 
-		if (Input::GetInstance()->PushKey(DIK_S)) {
-			object3d_->SetTranslate(object3d_->GetTranslate() + Vector3(0.0f, 0.0f, -0.1f));
-		}
+			// スティックのデッドゾーン処理（XINPUT ゲームパッドの仕様に準拠）
+			constexpr float DEADZONE = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
+			float magnitude = sqrtf(x * x + y * y);
 
-		if (Input::GetInstance()->PushKey(DIK_A)) {
-			object3d_->SetTranslate(object3d_->GetTranslate() + Vector3(-0.1f, 0.0f, 0.0f));
-		}
+			if (magnitude > DEADZONE) {
+				// デッドゾーンを補正して 0.0f ~ 1.0f の範囲に正規化
+				float normalizedX = x / 32768.0f;
+				float normalizedY = y / 32768.0f;
 
-		if (Input::GetInstance()->PushKey(DIK_D)) {
-			object3d_->SetTranslate(object3d_->GetTranslate() + Vector3(0.1f, 0.0f, 0.0f));
+				// 移動速度を適用
+				constexpr float SPEED = 1.0f;
+				object3d_->SetTranslate({
+					normalizedX * SPEED,
+					object3d_->GetTranslate().y,
+					object3d_->GetTranslate().z
+					});
+
+				object3d_->SetTranslate({
+					object3d_->GetTranslate().x,
+					object3d_->GetTranslate().y,
+					normalizedY * SPEED 
+					});
+				
+			} 
 		}
 	}
 	//キー入力で移動

@@ -44,8 +44,7 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
 	//TransformationMatrix用
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
-	//単位行列を書き込んでおく
-	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
+	
 
 	//CPUで動かす用のTransform
 	transform_ = {
@@ -61,6 +60,9 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 		transform_.translate
 	);
 
+	TransformMatrixData_->World = worldMatrix_;
+	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
+
 	//カメラのセット
 	camera_ = CameraManager::GetInstance()->GetActiveCamera();
 }
@@ -70,8 +72,28 @@ void BoxCollider::Update(EulerTransform transform) {
 	transform_ = transform;
 	obb_.center = transform.translate;
 
+	obb_.halfSize = transform.scale / 2.0f;
+
+	Matrix4x4 scaleMat = MatrixMath::MakeScaleMatrix(transform_.scale);
+
+	rotateMatrix_ = MatrixMath::MakeRotateMatrix(transform_.rotate);
+
+	obb_.axis[0].x = rotateMatrix_.m[0][0];
+	obb_.axis[0].y = rotateMatrix_.m[0][1];
+	obb_.axis[0].z = rotateMatrix_.m[0][2];
+
+	obb_.axis[1].x = rotateMatrix_.m[1][0];
+	obb_.axis[1].y = rotateMatrix_.m[1][1];
+	obb_.axis[1].z = rotateMatrix_.m[1][2];
+
+	obb_.axis[2].x = rotateMatrix_.m[2][0];
+	obb_.axis[2].y = rotateMatrix_.m[2][1];
+	obb_.axis[2].z = rotateMatrix_.m[2][2];
+
+	Matrix4x4 translateMat = MatrixMath::MakeTranslateMatrix(obb_.center);
+
 	//アフィン行列の更新
-	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, obb_.center);
+	worldMatrix_ = scaleMat * rotateMatrix_ * translateMat;
 
 	//wvpの更新
 	if (camera_) {
@@ -111,7 +133,10 @@ void BoxCollider::DrawCollider() {
 	//TransformationMatrix
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
-	model_->DrawSkyBox();
+	if (model_ != nullptr) {
+
+		model_->DrawSkyBox();
+	}
 }
 
 Vector3 BoxCollider::GetWorldPos() {

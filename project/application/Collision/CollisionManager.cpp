@@ -36,12 +36,12 @@ void CollisionManager::Initialize(DirectXCommon* dxCommon) {
 //=============================================================================
 
 void CollisionManager::PreDraw() {
+	//プリミティブトポロジー設定
+	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//ルートシグネチャ設定
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
 	//PSO設定
 	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetGraphicPipelineState());
-	//プリミティブトポロジー設定
-	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 //=============================================================================

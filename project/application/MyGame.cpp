@@ -28,10 +28,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	CollisionManager::GetInstance()->Initialize(directXCommon_.get());
 
 	//最初のシーンを設定
-	//SceneManager::GetInstance()->ChangeScene("TITLE");
-#ifdef _DEBUG
 	SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
-#endif // _DEBUG
 
 	// 計測終了
 	auto end = Clock::now();
