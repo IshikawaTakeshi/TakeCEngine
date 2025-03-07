@@ -44,7 +44,7 @@ void SampleCharacter::Update() {
 	object3d_->Update();
 
 #ifdef _DEBUG
-	collider_->Update();
+	collider_->Update(object3d_->GetTransform());
 #endif // _DEBUG
 
 }

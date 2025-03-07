@@ -43,6 +43,7 @@ public:
 
 public: //getter
 
+	EulerTransform GetTransform() const { return transform_; }
 	Vector3 GetScale() const { return transform_.scale; }
 	Vector3 GetRotation() const { return transform_.rotate; }
 	Vector3 GetTranslate() const { return transform_.translate; }

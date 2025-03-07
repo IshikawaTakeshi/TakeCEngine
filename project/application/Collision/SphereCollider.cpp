@@ -49,7 +49,9 @@ void SphereCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObje
 // 更新処理
 //=============================================================================
 
-void SphereCollider::Update() {
+void SphereCollider::Update(EulerTransform transform) {
+
+	transform_ = transform;
 
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);

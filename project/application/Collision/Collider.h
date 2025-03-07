@@ -17,7 +17,7 @@ public:
 
 	virtual void Initialize(DirectXCommon* dxCommon, Object3d* collisionObject) = 0;
 
-	virtual void Update() = 0;
+	virtual void Update(EulerTransform transform) = 0;
 
 	virtual void DrawCollider() = 0;
 

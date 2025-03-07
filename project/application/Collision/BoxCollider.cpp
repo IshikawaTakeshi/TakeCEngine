@@ -65,7 +65,9 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 	camera_ = CameraManager::GetInstance()->GetActiveCamera();
 }
 
-void BoxCollider::Update() {
+void BoxCollider::Update(EulerTransform transform) {
+
+	transform_ = transform;
 
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
@@ -138,23 +140,64 @@ bool BoxCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 	}
 
 	// 中心間距離を自OBBのローカル座標系で表現
-	float centerToCenter[3](T.Dot(thisAxis[0]), T.Dot(thisAxis[1]), T.Dot(thisAxis[2]));
+	float centerToCenter[3] = { T.Dot(thisAxis[0]), T.Dot(thisAxis[1]), T.Dot(thisAxis[2]) };
 
 
-	// 1.自OBBの各軸を分離軸として判定
+	// 1. 自OBBの各軸を分離軸として判定
 	for (int i = 0; i < 3; i++) {
-		float selfProjection = obb_.halfSize.x * std::fabs(thisAxis[i].x) + obb_.halfSize.y * std::fabs(thisAxis[i].y) + obb_.halfSize.z * std::fabs(thisAxis[i].z);
-		float otherProjection = otherBox->obb_.halfSize.x * absRotation[i][0] + otherBox->obb_.halfSize.y * absRotation[i][1] + otherBox->obb_.halfSize.z * absRotation[i][2];
+		float selfProjection =
+			obb_.halfSize.x * std::fabs(thisAxis[i].Dot(thisAxis[0])) +
+			obb_.halfSize.y * std::fabs(thisAxis[i].Dot(thisAxis[1])) +
+			obb_.halfSize.z * std::fabs(thisAxis[i].Dot(thisAxis[2]));
+
+		float otherProjection =
+			otherBox->obb_.halfSize.x * absRotation[i][0] +
+			otherBox->obb_.halfSize.y * absRotation[i][1] +
+			otherBox->obb_.halfSize.z * absRotation[i][2];
+
 		if (std::fabs(centerToCenter[i]) > selfProjection + otherProjection) return false;
 	}
 
 	// 2. 他OBBの各軸を分離軸として判定
 	for (int i = 0; i < 3; i++) {
-		float selfProjection = obb_.halfSize.x * absRotation[0][i] + obb_.halfSize.y * absRotation[1][i] + obb_.halfSize.z * absRotation[2][i];
-		float otherProjection = otherBox->obb_.halfSize.x * std::fabs(otherAxis[i].x) + otherBox->obb_.halfSize.y * std::fabs(otherAxis[i].y) + otherBox->obb_.halfSize.z * std::fabs(otherAxis[i].z);
+		float selfProjection =
+			obb_.halfSize.x * absRotation[0][i] +
+			obb_.halfSize.y * absRotation[1][i] +
+			obb_.halfSize.z * absRotation[2][i];
+
+		float otherProjection =
+			otherBox->obb_.halfSize.x * std::fabs(otherAxis[i].Dot(otherAxis[0])) +
+			otherBox->obb_.halfSize.y * std::fabs(otherAxis[i].Dot(otherAxis[1])) +
+			otherBox->obb_.halfSize.z * std::fabs(otherAxis[i].Dot(otherAxis[2]));
+
 		if (std::fabs(T.Dot(otherAxis[i])) > selfProjection + otherProjection) return false;
 	}
 
-	// 衝突がある場合trueを返す
+	// 3. OBBの交差軸 (Aの3軸 × Bの3軸) を分離軸として判定
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			Vector3 axis = thisAxis[i].Cross(otherAxis[j]); // 交差軸を求める
+
+			// 交差軸がゼロベクトルならスキップ
+			if (axis.Length() < 1e-6f) continue;
+
+			axis = axis.Normalize();
+
+			float selfProjection =
+				obb_.halfSize.x * std::fabs(thisAxis[0].Dot(axis)) +
+				obb_.halfSize.y * std::fabs(thisAxis[1].Dot(axis)) +
+				obb_.halfSize.z * std::fabs(thisAxis[2].Dot(axis));
+
+			float otherProjection =
+				otherBox->obb_.halfSize.x * std::fabs(otherAxis[0].Dot(axis)) +
+				otherBox->obb_.halfSize.y * std::fabs(otherAxis[1].Dot(axis)) +
+				otherBox->obb_.halfSize.z * std::fabs(otherAxis[2].Dot(axis));
+
+			float t = std::fabs(T.Dot(axis));
+			if (t > selfProjection + otherProjection) return false;
+		}
+	}
+
+	// すべての軸で分離ができなかった場合、衝突
 	return true;
 }
