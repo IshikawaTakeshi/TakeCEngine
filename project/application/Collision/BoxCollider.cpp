@@ -51,7 +51,7 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 	transform_ = {
 		collisionObject->GetScale(),
 		collisionObject->GetRotation(),
-		collisionObject->GetTranslate()
+		obb_.center
 	};
 
 	//アフィン行列
@@ -68,9 +68,10 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 void BoxCollider::Update(EulerTransform transform) {
 
 	transform_ = transform;
+	obb_.center = transform.translate;
 
 	//アフィン行列の更新
-	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, obb_.center);
 
 	//wvpの更新
 	if (camera_) {
