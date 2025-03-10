@@ -90,3 +90,6 @@ struct ParticleForGPU {
 	Matrix4x4 World;
 	Vector4 Color;
 };
+
+//エイリアステンプレート
+template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
