@@ -42,7 +42,7 @@ void SampleCharacter::Update() {
 				// 移動速度を適用
 				constexpr float SPEED = 1.0f;
 				object3d_->SetTranslate({
-					normalizedX * SPEED,
+					object3d_->GetTranslate().x + normalizedX * SPEED,
 					object3d_->GetTranslate().y,
 					object3d_->GetTranslate().z
 					});
@@ -50,12 +50,15 @@ void SampleCharacter::Update() {
 				object3d_->SetTranslate({
 					object3d_->GetTranslate().x,
 					object3d_->GetTranslate().y,
-					normalizedY * SPEED 
+					object3d_->GetTranslate().z + normalizedY * SPEED
 					});
 				
 			} 
 		}
 	}
+
+	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
+
 	//キー入力で移動
 	object3d_->Update();
 
