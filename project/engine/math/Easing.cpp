@@ -13,25 +13,30 @@ Vector3 Easing::Lerp(Vector3 startPos, Vector3 endPos, float easedT) {
 }
 
 Quaternion Easing::Slerp(Quaternion q0, Quaternion q1, float t) {
-	float dot = QuaternionMath::Dot(q0, q1);
-	if (dot < 0.0f) {
-		q0 = -q0;
-		dot = -dot;
-	}
+    float dot = QuaternionMath::Dot(q0, q1);
 
-	//なす角を求める
-	float theta = std::acos(dot);
+    // クォータニオンが逆向きの時、最短経路を取るために反転
+    if (dot < 0.0f) {
+        q0 = -q0;
+        dot = -dot;
+    }
 
-	//thetaとsinを使って補間係数scale0,scale1を求める
-	float sinTheta = std::sinf(theta);
-	float scale0 = std::sinf((1.0f - t) * theta) / sinTheta;
-	float scale1 = std::sinf(t * theta) / sinTheta;
+    // ドット積がほぼ1（角度が小さい）場合、線形補間に切り替える
+    const float THRESHOLD = 0.9995f;
+    if (dot > THRESHOLD) {
+        // LERP (線形補間) を使用
+        Quaternion result = (1.0f - t) * q0 + t * q1;
+        return QuaternionMath::Normalize(result); // 正規化
+    }
 
-	//それぞれの保管係数を利用して補間後のクォータニオンを求める
-	if (dot >= 0.0005f) {
-		return (1.0f - t) * q0 + t * q1;
-	}
-	return scale0 * q0 + scale1 * q1;
+    // 通常の SLERP の計算
+    float theta = std::acos(dot);       // なす角
+    float sinTheta = std::sin(theta);   // sin(θ)
+
+    float scale0 = std::sin((1.0f - t) * theta) / sinTheta;
+    float scale1 = std::sin(t * theta) / sinTheta;
+
+    return scale0 * q0 + scale1 * q1;
 }
 
 float Easing::EaseOut(float x) {
