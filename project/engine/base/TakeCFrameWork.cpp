@@ -3,6 +3,7 @@
 
 std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
 std::unique_ptr<Animator> TakeCFrameWork::animator_ = nullptr;
+std::unique_ptr<WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
 
 void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
@@ -53,6 +54,10 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//ParticleManager
 	particleManager_ = std::make_unique<ParticleManager>();
 
+	//WireFrame
+	wireFrame_ = std::make_unique<WireFrame>();
+	wireFrame_->Initialize(directXCommon_.get());
+
 
 #ifdef _DEBUG
 	imguiManager_ = new ImGuiManager();
@@ -67,6 +72,7 @@ void TakeCFrameWork::Finalize() {
 	imguiManager_->Finalize();
 #endif
 
+	wireFrame_->Finalize();
 	animator_->Finalize();
 	TextureManager::GetInstance()->Finalize();
 	ModelManager::GetInstance()->Finalize();
@@ -139,4 +145,9 @@ ParticleManager* TakeCFrameWork::GetParticleManager() {
 Animator* TakeCFrameWork::GetAnimator() {
 	assert(animator_ != nullptr);
 	return animator_.get();
+}
+
+WireFrame* TakeCFrameWork::GetWireFrame() {
+	assert(wireFrame_ != nullptr);
+	return wireFrame_.get();
 }

@@ -7,6 +7,7 @@
 #include "CameraManager.h"
 #include "DirectXCommon.h"
 #include "GameCharacter.h"
+#include "TakeCFrameWork.h"
 
 #include <cmath>
 
@@ -137,6 +138,8 @@ void BoxCollider::DrawCollider() {
 
 		model_->DrawSkyBox();
 	}
+
+	TakeCFrameWork::GetWireFrame()->DrawOBB(obb_, Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 Vector3 BoxCollider::GetWorldPos() {

@@ -24,9 +24,6 @@ struct WellForGPU {
 
 struct SkinCluster {
 
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 	std::vector<Matrix4x4> inverseBindPoseMatrices;
 	//influenceResource
 	ComPtr<ID3D12Resource> influenceResource;

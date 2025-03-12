@@ -18,9 +18,6 @@ public:
 
 	Vector3 GetWorldPos() override;
 
-	//中心座標の取得
-	Vector3 GetCenterPos() const { return centerPos_; }
-
 	//半径の取得
 	float GetRadius() const { return radius_; }
 
@@ -32,9 +29,6 @@ public:
 
 private:
 
-	Vector3 centerPos_;
-
 	float radius_;
-
 };
 

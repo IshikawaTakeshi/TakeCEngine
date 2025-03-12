@@ -222,7 +222,7 @@
     <ClCompile Include="engine\3d\Particle3d.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\ParticleManager.cpp">
+    <ClCompile Include="engine\base\Particle\ParticleManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\ParticleCommon.cpp">
@@ -231,7 +231,7 @@
     <ClCompile Include="engine\3d\AABB.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\ParticleEmitter.cpp">
+    <ClCompile Include="engine\base\Particle\ParticleEmitter.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="engine\math\Quaternion.cpp">
@@ -280,6 +280,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="application\SampleCharacter.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\2d\WireFrame.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -446,7 +449,7 @@
     <ClInclude Include="engine\3d\Particle3d.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\ParticleManager.h">
+    <ClInclude Include="engine\base\Particle\ParticleManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\ParticleCommon.h">
@@ -455,7 +458,7 @@
     <ClInclude Include="engine\3d\AABB.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\ParticleEmitter.h">
+    <ClInclude Include="engine\base\Particle\ParticleEmitter.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\Quaternion.h">
@@ -524,6 +527,9 @@
     <ClInclude Include="application\SampleCharacter.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="engine\2d\WireFrame.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
@@ -571,6 +577,7 @@
     </None>
     <None Include="Resources\glTF\simpleSkin.gltf" />
     <None Include="Resources\shaders\SkyBox.hlsli" />
+    <None Include="Resources\shaders\WireFrame\WireFrame.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Particle.PS.hlsl" />
@@ -584,5 +591,7 @@
     <FxCompile Include="Resources\shaders\SkyBox.PS.hlsl" />
     <FxCompile Include="Resources\shaders\Skinning.CS.hlsl" />
     <FxCompile Include="Resources\shaders\InitializeParticle.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\WireFrame\WireFrame.VS.hlsl" />
+    <FxCompile Include="Resources\shaders\WireFrame\WireFrame.PS.hlsl" />
   </ItemGroup>
 </Project>

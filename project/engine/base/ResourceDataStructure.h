@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstdint>
 #include <map>
+#include <wrl.h>
 
 struct VertexData {
 	Vector4 position;
@@ -90,3 +91,6 @@ struct ParticleForGPU {
 	Matrix4x4 World;
 	Vector4 Color;
 };
+
+//エイリアステンプレート
+template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;

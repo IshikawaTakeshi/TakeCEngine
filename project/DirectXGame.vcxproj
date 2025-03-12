@@ -115,6 +115,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\GameClearScene.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\Collision\BoxCollider.cpp" />
+    <ClCompile Include="engine\2d\WireFrame.cpp" />
     <ClCompile Include="engine\Animation\Animator.cpp" />
     <ClCompile Include="engine\3d\AABB.cpp" />
     <ClCompile Include="engine\Animation\Skeleton.cpp" />
@@ -169,8 +170,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\SceneManager.cpp" />
     <ClCompile Include="engine\3d\Particle3d.cpp" />
     <ClCompile Include="engine\3d\ParticleCommon.cpp" />
-    <ClCompile Include="engine\base\ParticleEmitter.cpp" />
-    <ClCompile Include="engine\base\ParticleManager.cpp" />
+    <ClCompile Include="engine\base\Particle\ParticleEmitter.cpp" />
+    <ClCompile Include="engine\base\Particle\ParticleManager.cpp" />
     <ClCompile Include="application\SkyBox\SkyBox.cpp" />
     <ClCompile Include="application\Collision\SphereCollider.cpp" />
     <ClCompile Include="application\SampleCharacter.cpp" />
@@ -184,6 +185,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\GameClearScene.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
     <ClInclude Include="application\Collision\BoxCollider.h" />
+    <ClInclude Include="engine\2d\WireFrame.h" />
     <ClInclude Include="engine\Animation\Animator.h" />
     <ClInclude Include="engine\3d\AABB.h" />
     <ClInclude Include="engine\Animation\Keyflame.h" />
@@ -228,8 +230,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\base\ImGuiManager.h" />
     <ClInclude Include="engine\3d\Particle3d.h" />
     <ClInclude Include="engine\3d\ParticleCommon.h" />
-    <ClInclude Include="engine\base\ParticleEmitter.h" />
-    <ClInclude Include="engine\base\ParticleManager.h" />
+    <ClInclude Include="engine\base\Particle\ParticleEmitter.h" />
+    <ClInclude Include="engine\base\Particle\ParticleManager.h" />
     <ClInclude Include="application\GameCharacter.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\base\StringUtility.h" />
@@ -303,6 +305,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
+    <None Include="Resources\shaders\WireFrame\WireFrame.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\InitializeParticle.CS.hlsl">
@@ -365,6 +370,16 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <FxCompile Include="Resources\shaders\Sprite.VS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\WireFrame\WireFrame.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\WireFrame\WireFrame.VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

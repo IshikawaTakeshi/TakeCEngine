@@ -335,7 +335,12 @@ void PSO::CreateRasterizerState(D3D12_FILL_MODE fillMode) {
 //=============================================================================
 // PSOの生成
 //=============================================================================
-void PSO::CreateGraphicPSO(ID3D12Device* device, D3D12_FILL_MODE fillMode, D3D12_DEPTH_WRITE_MASK depthWriteMask) {
+void PSO::CreateGraphicPSO(
+	ID3D12Device* device,
+	D3D12_FILL_MODE fillMode,
+	D3D12_DEPTH_WRITE_MASK depthWriteMask,
+	D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType) {
+
 	HRESULT result = S_FALSE;
 	itemCurrentIdx = 0;
 	//シェーダー情報を読み込む
@@ -352,7 +357,7 @@ void PSO::CreateGraphicPSO(ID3D12Device* device, D3D12_FILL_MODE fillMode, D3D12
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; //比較関数はLessEqual。近ければ描画される
 #pragma endregion
 	//GraphicPipelineStateDescの設定
-	SetGraphicPipelineStateDesc();
+	SetGraphicPipelineStateDesc(topologyType);
 	//実際に生成
 	graphicPipelineState_ = nullptr;
 	result = device->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
@@ -454,7 +459,7 @@ bool PSO::UpdateImGuiCombo() {
 	return changed;
 }
 
-void PSO::SetGraphicPipelineStateDesc() {
+void PSO::SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type) {
 
 	//DepthStencilの設定
 	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc_;
@@ -484,7 +489,7 @@ void PSO::SetGraphicPipelineStateDesc() {
 	graphicsPipelineStateDesc_.NumRenderTargets = 1;
 	graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	//利用するトロポジ(形状)のタイプ。三角形
-	graphicsPipelineStateDesc_.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	graphicsPipelineStateDesc_.PrimitiveTopologyType = type;
 
 	//どのように画面に色を打ち込むのかの設定
 	graphicsPipelineStateDesc_.SampleDesc.Count = 1;

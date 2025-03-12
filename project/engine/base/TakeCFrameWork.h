@@ -26,6 +26,8 @@ public:
 
 	static Animator* GetAnimator();
 
+	static WireFrame* GetWireFrame();
+
 protected:
 
 	std::unique_ptr<WinApp> winApp_ = nullptr;
@@ -41,6 +43,7 @@ protected:
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;
 	static std::unique_ptr<Animator> animator_;
 	static std::unique_ptr<ParticleManager> particleManager_;
+	static std::unique_ptr<WireFrame> wireFrame_;
 	
 	//終了フラグ
 	bool isEnd_ = false;

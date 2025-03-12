@@ -159,6 +159,7 @@ void GamePlayScene::Draw() {
 	samplePlayer_->DrawCollider();
 	sampleEnemy_->DrawCollider();
 
+	TakeCFrameWork::GetWireFrame()->DrawLine({ 0.0f,0.0f,0.0f }, { 10.0f,0.0f,0.0f }, { 1.0f,0.0f,0.0f,1.0f });
 	
 	//ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
