@@ -1,0 +1,181 @@
+#include "WireFrame.h"
+#include "math/MatrixMath.h"
+#include "camera/CameraManager.h"
+
+void WireFrame::Initialize(DirectXCommon* directXCommon) {
+
+	dxCommon_ = directXCommon;
+
+	pso_ = std::make_unique<PSO>();
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/WireFrame/WireFrame.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/WireFrame/WireFrame.PS.hlsl");
+
+	//線描画用のPSOの生成
+	pso_->CreateGraphicPSO(
+		directXCommon->GetDevice(),
+		D3D12_FILL_MODE_WIREFRAME,
+		D3D12_DEPTH_WRITE_MASK_ZERO,
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE
+	);
+
+	rootSignature_ = pso_->GetGraphicRootSignature();
+
+	lineData_ = new LineData();
+	CreateVertexData();
+
+	CalculateSphereVertexData();
+
+	//TransformationMatrix用のResource生成
+	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(WireFrameTransFormMatrixData));
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
+}
+
+void WireFrame::Update() {
+
+	TransformMatrixData_->WVP = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+}
+
+void WireFrame::DrawLine(const Vector3& start, const Vector3& end, const Vector4& color) {
+
+	lineData_->vertexData_[lineIndex_].position = start;
+	lineData_->vertexData_[lineIndex_ + 1].position = end;
+
+	lineData_->vertexData_[lineIndex_].color = color;
+	lineData_->vertexData_[lineIndex_ + 1].color = color;
+
+	lineIndex_ += kLineVertexCount_;
+}
+
+void WireFrame::DrawOBB(const OBB& obb, const Vector4& color) {
+
+	// OBBの各頂点を定義（ローカル座標）
+	Vector3 localVertices[8] = {
+		{-obb.halfSize.x, -obb.halfSize.y, -obb.halfSize.z}, {obb.halfSize.x, -obb.halfSize.y, -obb.halfSize.z},
+		{obb.halfSize.x,  obb.halfSize.y, -obb.halfSize.z}, {-obb.halfSize.x,  obb.halfSize.y, -obb.halfSize.z},
+		{-obb.halfSize.x, -obb.halfSize.y,  obb.halfSize.z}, {obb.halfSize.x, -obb.halfSize.y,  obb.halfSize.z},
+		{obb.halfSize.x,  obb.halfSize.y,  obb.halfSize.z}, {-obb.halfSize.x,  obb.halfSize.y,  obb.halfSize.z}
+	};
+
+	// ワールド座標に変換（回転適用 & 平行移動）
+	Vector3 worldVertices[8];
+	for (int i = 0; i < 8; i++) {
+		worldVertices[i] =
+			obb.center +
+			obb.axis[0] * localVertices[i].x +
+			obb.axis[1] * localVertices[i].y +
+			obb.axis[2] * localVertices[i].z;
+	}
+
+	// OBBのエッジを結ぶ
+	int edges[12][2] = {
+		{0, 1}, {1, 2}, {2, 3}, {3, 0}, // 底面
+		{4, 5}, {5, 6}, {6, 7}, {7, 4}, // 上面
+		{0, 4}, {1, 5}, {2, 6}, {3, 7}  // 側面
+	};
+
+	for (int i = 0; i < 12; i++) {
+		DrawLine(worldVertices[edges[i][0]], worldVertices[edges[i][1]], color);
+	}
+}
+
+void WireFrame::DrawSphere(const Vector3& center, float radius, const Vector4& color) {
+
+	Matrix4x4 worldMatrix = MatrixMath::MakeAffineMatrix(Vector3(radius, radius, radius), Vector3(0.0f, 0.0f, 0.0f), center);
+
+	for (uint32_t i = 0; i + 2 < spheres_.size(); i += 3) {
+		Vector3 a = spheres_[i];
+		Vector3 b = spheres_[i + 1];
+		Vector3 c = spheres_[i + 2];
+
+		a = MatrixMath::Transform(a, worldMatrix);
+		b = MatrixMath::Transform(b, worldMatrix);
+		c = MatrixMath::Transform(c, worldMatrix);
+
+		// 線描画
+		DrawLine(a, b, color);
+		//DrawLine(b, c, color);
+		DrawLine(a, c, color); // 三角形を完成させるための線を追加
+	}
+}
+
+void WireFrame::Draw() {
+
+	//ルートシグネチャ設定
+	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
+	//PSO設定
+	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetGraphicPipelineState());
+	//プリミティブトポロジー設定
+	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+
+	//頂点バッファの設定
+	dxCommon_->GetCommandList()->IASetVertexBuffers(0, 1, &lineData_->vertexBufferViews_);
+
+	//transformMatrixResource
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
+
+	//描画
+	dxCommon_->GetCommandList()->DrawInstanced(lineIndex_, lineIndex_ / kLineVertexCount_, 0, 0);
+
+	//リセット
+	lineIndex_ = 0;
+}
+
+void WireFrame::Reset() {
+	lineIndex_ = 0;
+}
+
+void WireFrame::Finalize() {
+
+	delete lineData_;
+}
+
+void WireFrame::CreateVertexData() {
+
+	UINT vertexBufferSize = sizeof(WireFrameVertexData) * kLineVertexCount_ * kMaxLineCount_;
+
+	//頂点バッファの生成
+	lineData_->vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), vertexBufferSize);
+
+	//頂点バッファのビュー設定
+	lineData_->vertexBufferViews_.BufferLocation = lineData_->vertexResource_->GetGPUVirtualAddress();
+	lineData_->vertexBufferViews_.StrideInBytes = sizeof(WireFrameVertexData);
+	lineData_->vertexBufferViews_.SizeInBytes = vertexBufferSize;
+
+	//頂点リソースのマップ
+	lineData_->vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&lineData_->vertexData_));
+}
+
+void WireFrame::CalculateSphereVertexData() {
+
+	const float pi = 3.1415926535897932f;
+	const uint32_t kSubdivision = 8; // 分割数
+	const float kLonEvery = 2.0f * pi / float(kSubdivision); // 経度の1分割の角度
+	const float kLatEvery = pi / float(kSubdivision); // 緯度の1分割の角度
+
+	// 緯度方向
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; latIndex++) {
+		float lat = -pi / 2.0f + kLatEvery * float(latIndex);
+		// 経度方向
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; lonIndex++) {
+			float lon = kLonEvery * float(lonIndex);
+			// 球の表面上の点を求める
+			Vector3 a, b, c;
+			a.x = cos(lat) * cos(lon);
+			a.y = sin(lat);
+			a.z = cos(lat) * sin(lon);
+
+			b.x = cos(lat + kLatEvery) * cos(lon);
+			b.y = sin(lat + kLatEvery);
+			b.z = cos(lat + kLatEvery) * sin(lon);
+
+			c.x = cos(lat) * cos(lon + kLonEvery);
+			c.y = sin(lat);
+			c.z = cos(lat) * sin(lon + kLonEvery);
+
+			// 座標を保存
+			spheres_.push_back(a);
+			spheres_.push_back(b);
+			spheres_.push_back(c);
+		}
+	}
+}

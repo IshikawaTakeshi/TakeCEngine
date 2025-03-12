@@ -13,8 +13,8 @@
 #include "SpriteCommon.h"
 #include "Particle3d.h"
 #include "ParticleCommon.h"
-#include "ParticleManager.h"
-#include "ParticleEmitter.h"
+#include "base/Particle/ParticleManager.h"
+#include "base/Particle/ParticleEmitter.h"
 
 #include "Quaternion.h"
 

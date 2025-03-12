@@ -27,8 +27,9 @@
 #include "Triangle.h"
 #include "Particle3d.h"
 #include "ParticleCommon.h"
-#include "ParticleManager.h"
+#include "base/Particle/ParticleManager.h"
 #include "Animation/Animator.h"
+#include "2d/WireFrame.h"
 
 //DirectXTex
 #include <dxgidebug.h>

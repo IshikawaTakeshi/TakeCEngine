@@ -16,7 +16,7 @@ void SampleCharacter::Initialize(Object3dCommon* object3dCommon, const std::stri
 	object3d_->Initialize(object3dCommon, filePath);
 
 	//コライダー初期化
-	collider_ = std::make_unique<BoxCollider>();
+	collider_ = std::make_unique<SphereCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 }
 

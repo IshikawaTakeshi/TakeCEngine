@@ -65,7 +65,7 @@ namespace MatrixMath {
 	Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
 
 	//Matrix4x4からVector3に座標変換
-	Vector3 EulerTransform(const Vector3& vector, const Matrix4x4& matrix);
+	Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
 
 	//Matrix4x4からVector3に回転とスケーリングのみ反映
 	Vector3 TransformNormal(const Vector3& v, const Matrix4x4& matrix);

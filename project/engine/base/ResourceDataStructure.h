@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstdint>
 #include <map>
+#include <wrl.h>
 
 struct VertexData {
 	Vector4 position;

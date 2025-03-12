@@ -6,7 +6,7 @@
 #include "CameraManager.h"
 #include "DirectXCommon.h"
 #include "MatrixMath.h"
-
+#include "TakeCFrameWork.h"
 #include <algorithm>
 
 //=============================================================================
@@ -18,7 +18,7 @@ void SphereCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObje
 	dxCommon_ = dxCommon;
 	colliderFilePath_ = "sphere.obj";
 
-	centerPos_ = collisionObject->GetTranslate();
+	transform_.translate = collisionObject->GetTranslate();
 	radius_ = collisionObject->GetScale().Length() / 2.0f;
 
 	//モデルの生成
@@ -93,34 +93,32 @@ bool SphereCollider::CheckCollision(Collider* other) {
 
 void SphereCollider::DrawCollider() {
 
-	//TransformationMatrix
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
-	model_->Draw();
+	TakeCFrameWork::GetWireFrame()->DrawSphere(transform_.translate, radius_, { 1.0f,0.0f,0.0f,1.0f });
 }
 
 Vector3 SphereCollider::GetWorldPos() {
 	
-	return centerPos_;
+	return transform_.translate;
 }
 
 bool SphereCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 	Vector3 closestPoint = otherBox->GetOBB().center;
 
 	for (int i = 0; i < 3; i++) {
-		float distance = Vector3(centerPos_ - otherBox->GetOBB().center).Dot(otherBox->GetOBB().axis[i]);
+		float distance = Vector3(transform_.translate - otherBox->GetOBB().center).Dot(otherBox->GetOBB().axis[i]);
 		float clampedDistance = std::min(distance, otherBox->GetOBB().halfSize.Dot(otherBox->GetOBB().axis[i]));
 		clampedDistance = std::max(-otherBox->GetOBB().halfSize.Dot(otherBox->GetOBB().axis[i]), clampedDistance);
 
 		closestPoint = closestPoint + otherBox->GetOBB().axis[i] * distance;
 	}
 
-	Vector3 diff = centerPos_ - closestPoint;
+	Vector3 diff = transform_.translate - closestPoint;
 	return diff.Dot(diff) <= (radius_ * radius_);
 }
 
 bool SphereCollider::CheckCollisionSphere(SphereCollider* sphere) {
-	Vector3 diff = centerPos_ - sphere->centerPos_;
+	Vector3 diff = transform_.translate - sphere->transform_.translate;
 	float distanceSquared = diff.Dot(diff);
 	float radiusSum = radius_ + sphere->radius_;
 	return distanceSquared <= (radiusSum * radiusSum);
