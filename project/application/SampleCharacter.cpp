@@ -16,7 +16,7 @@ void SampleCharacter::Initialize(Object3dCommon* object3dCommon, const std::stri
 	object3d_->Initialize(object3dCommon, filePath);
 
 	//コライダー初期化
-	collider_ = std::make_unique<SphereCollider>();
+	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 }
 
@@ -63,7 +63,7 @@ void SampleCharacter::Update() {
 	object3d_->Update();
 
 #ifdef _DEBUG
-	collider_->Update(object3d_->GetTransform());
+	collider_->Update(object3d_.get());
 #endif // _DEBUG
 
 }
@@ -86,10 +86,10 @@ void SampleCharacter::DrawCollider() {
 void SampleCharacter::OnCollisionAction(GameCharacter* other) {
 
 	
-	if (other->GetCharacterType() == CharacterType::ENEMY) {
-		//衝突したら赤色に変更
-		object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,0.0f,0.0f,1.0f });
-		collider_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,0.0f,0.0f,1.0f });
+	if (other->GetCharacterType() == CharacterType::ENEMY ||
+		other->GetCharacterType() == CharacterType::PLAYER) {
+		// 衝突したキャラクターのタイプが敵かプレイヤーの場合
+		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
 	}
 }
 

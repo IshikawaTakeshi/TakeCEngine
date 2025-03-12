@@ -47,6 +47,7 @@ public: //getter
 	Vector3 GetScale() const { return transform_.scale; }
 	Vector3 GetRotation() const { return transform_.rotate; }
 	Vector3 GetTranslate() const { return transform_.translate; }
+	Vector3 GetCenterPosition() const;
 	Model* GetModel() { return model_; }
 
 public: //setter

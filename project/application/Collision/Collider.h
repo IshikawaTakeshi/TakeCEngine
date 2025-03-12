@@ -17,7 +17,7 @@ public:
 
 	virtual void Initialize(DirectXCommon* dxCommon, Object3d* collisionObject) = 0;
 
-	virtual void Update(EulerTransform transform) = 0;
+	virtual void Update(Object3d* collisionObject) = 0;
 
 	virtual void DrawCollider() = 0;
 
@@ -40,6 +40,8 @@ public:
 	/// </summary>
 	virtual Vector3 GetWorldPos() = 0;
 
+	Vector4 GetColor() const { return color_; }
+
 	/// <summary>
 	/// 衝突半径の取得
 	///</summary>
@@ -51,12 +53,16 @@ public:
 	/// </summary>
 	uint32_t GetTypeID() const { return typeID_; }
 
-	Model* GetModel() { return model_; }
-
 public:
 	////////////////////////////////////////////////////////////////////////////////////////
 	///		setter
 	////////////////////////////////////////////////////////////////////////////////////////
+
+	/// <summary>
+	/// 色設定
+	/// </summary>
+	/// <param name="color"></param>
+	void SetColor(const Vector4& color) { color_ = color; }
 
 	/// <summary>
 	/// 半径の設定
@@ -74,32 +80,21 @@ protected:
 	///		privateメンバ変数
 	////////////////////////////////////////////////////////////////////////////////////////
 
-	//衝突半径
-	float radius_ = 0.9f;
-
-	//種別ID
-	uint32_t typeID_ = 0u;
-
 	//DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
 
-	//モデル
-	Model* model_ = nullptr;
-
-	//当たり判定のモデルのファイルパス
-	std::string colliderFilePath_;
-
-	//TransformationMatrix用の頂点リソース
-	ComPtr<ID3D12Resource> wvpResource_;
-	//TransformationMatrix用の頂点データ
-	TransformMatrix* TransformMatrixData_ = nullptr;
-
-	//Transform
-	EulerTransform transform_{};
-	//TransformMatrix
-	Matrix4x4 worldMatrix_;
-	Matrix4x4 WVPMatrix_;
-	Matrix4x4 WorldInverseTransposeMatrix_;
 	//Camera
 	Camera* camera_ = nullptr;
+	//TransformMatrix
+	Matrix4x4 worldMatrix_;
+	//Transform
+	EulerTransform transform_{};
+
+	//
+	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
+
+	//衝突半径
+	float radius_ = 0.9f;
+	//種別ID
+	uint32_t typeID_ = 0u;
 };

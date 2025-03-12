@@ -11,7 +11,7 @@ public:
 	//初期化
 	void Initialize(DirectXCommon* dxCommon ,Object3d* collisionObject) override;
 
-	void Update(EulerTransform transform) override;
+	void Update(Object3d* collisionObject) override;
 
 	//衝突判定
 	bool CheckCollision(Collider* other) override;
