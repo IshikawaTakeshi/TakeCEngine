@@ -2,6 +2,7 @@
 #include "scene/SceneFactory.h"
 #include "Logger.h"
 #include "StringUtility.h"
+#include "Collision/CollisionManager.h"
 
 #include <chrono>
 
@@ -23,11 +24,11 @@ void MyGame::Initialize(const std::wstring& titleName) {
 
 	//シーンマネージャーのセット
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
+
+	CollisionManager::GetInstance()->Initialize(directXCommon_.get());
+
 	//最初のシーンを設定
-	//SceneManager::GetInstance()->ChangeScene("TITLE");
-#ifdef _DEBUG
 	SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
-#endif // _DEBUG
 
 	// 計測終了
 	auto end = Clock::now();
@@ -54,6 +55,8 @@ void MyGame::Update() {
 
 	//FrameWorkの更新
 	TakeCFrameWork::Update();
+
+	TakeCFrameWork::GetWireFrame()->Update();
 }
 
 //====================================================================
@@ -67,6 +70,7 @@ void MyGame::Draw() {
 	srvManager_->PreDraw();       //SRV描画前処理
 	
 	sceneManager_->Draw();
+	TakeCFrameWork::GetWireFrame()->Draw();
 
 	//描画後処理
 	directXCommon_->PostDraw();

@@ -3,6 +3,7 @@
 #include "Transform.h"
 #include "TransformMatrix.h"
 #include "DirectXCommon.h"
+#include "math/AABB.h"
 
 #include <d3d12.h>
 #include <wrl.h>
@@ -37,11 +38,6 @@ struct ParticleAttributes {
 	bool isBillboard = false;
 	//色を編集するかどうか
 	bool editColor = false;
-};
-
-struct AABB {
-	Vector3 min_;
-	Vector3 max_;
 };
 
 //加速フィールド

@@ -1,9 +1,11 @@
 #pragma once
 
-
+#include "base/PipelineStateObject.h"
 #include <list>
 #include <memory>
+class DirectXCommon;
 class Collider;
+class GameCharacter;
 class CollisionManager {
 
 
@@ -19,6 +21,10 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	static CollisionManager* GetInstance();
+
+	void Initialize(DirectXCommon* dxCommon);
+
+	void PreDraw();
 
 	/// <summary>
 	/// シングルトンインスタンスの解放処理
@@ -47,6 +53,15 @@ public:
 	/// <param name="colliderB">コライダーB</param>
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 
+
+	void RegisterGameCharacter(GameCharacter* gameCharacter);
+
+	void ClearGameCharacter();
+
+	void CheckAllCollisionsForGameCharacter();
+
+	void CheckCollisionPairForGameCharacter(GameCharacter* gameCharacterA, GameCharacter* gameCharacterB);
+
 private:
 
 	//シングルトンインスタンス
@@ -63,7 +78,15 @@ private:
 	///		privateメンバ関数
 	////////////////////////////////////////////////////////////////////////////////////////
 
+	DirectXCommon* dxCommon_ = nullptr;
+
 	//コライダーリスト
 	std::list<Collider*> colliders_;
+
+	std::list<GameCharacter*> gameCharacters_;
+
+	std::unique_ptr<PSO> pso_ = nullptr;
+
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 };
 

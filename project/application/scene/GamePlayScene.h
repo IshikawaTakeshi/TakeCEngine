@@ -13,18 +13,15 @@
 #include "SpriteCommon.h"
 #include "Particle3d.h"
 #include "ParticleCommon.h"
-#include "ParticleManager.h"
-#include "ParticleEmitter.h"
+#include "base/Particle/ParticleManager.h"
+#include "base/Particle/ParticleEmitter.h"
 
 #include "Quaternion.h"
 
 //app
-#include "application/Player/Player.h"
-#include "application/Player/PlayerBullet.h"
-#include "application/Enemy/Enemy.h"
-#include "application/Enemy/EnemyBullet.h"
 #include "application/Ground/Ground.h"
 #include "application/HPBar/HPBar.h"
+#include "application/SampleCharacter.h"
 
 
 class GamePlayScene : public BaseScene {
@@ -63,5 +60,9 @@ private:
 
 	//スプライト
 	std::unique_ptr<Sprite> sprite_ = nullptr;
+
+	//サンプルキャラクター
+	std::unique_ptr<SampleCharacter> samplePlayer_ = nullptr;
+	std::unique_ptr<SampleCharacter> sampleEnemy_ = nullptr;
 
 };

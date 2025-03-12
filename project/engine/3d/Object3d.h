@@ -43,9 +43,11 @@ public:
 
 public: //getter
 
+	EulerTransform GetTransform() const { return transform_; }
 	Vector3 GetScale() const { return transform_.scale; }
 	Vector3 GetRotation() const { return transform_.rotate; }
-	Vector3 GetPosition() const { return transform_.translate; }
+	Vector3 GetTranslate() const { return transform_.translate; }
+	Vector3 GetCenterPosition() const;
 	Model* GetModel() { return model_; }
 
 public: //setter
@@ -54,7 +56,7 @@ public: //setter
 	void SetCamera(Camera* camera) { camera_ = camera; }
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	void SetRotation(const Vector3& rotation) { transform_.rotate = rotation; }
-	void SetPosition(const Vector3& position) { transform_.translate = position; }
+	void SetTranslate(const Vector3& position) { transform_.translate = position; }
 
 protected: // privateメンバ変数
 

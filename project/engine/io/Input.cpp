@@ -4,6 +4,8 @@
 #include <memory.h>
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "xinput.lib")
+
 
 Input* Input::instance_ = nullptr;
 
@@ -43,6 +45,12 @@ void Input::Initialize(WinApp* winApp) {
 	assert(SUCCEEDED(result));
 	result = mouseDevice_->SetCooperativeLevel(winApp->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	assert(SUCCEEDED(result));
+
+	//ジョイスティックの初期化
+	devJoysticks_.resize(4);
+	for (size_t i = 0; i < devJoysticks_.size(); ++i) {
+		devJoysticks_[i].type_ = PadType::XInput; // 初期化
+	}
 }
 
 void Input::Update() {
@@ -62,6 +70,18 @@ void Input::Update() {
 	result = mouseDevice_->GetDeviceState(sizeof(DIMOUSESTATE2), &mouse_);
 	//ポーリング
 	result = mouseDevice_->Poll();
+
+	// ジョイスティック情報の更新
+	for (size_t i = 0; i < devJoysticks_.size(); ++i) {
+		if (devJoysticks_[i].type_ == PadType::XInput) {
+			XINPUT_STATE state = {};
+			if (XInputGetState(static_cast<DWORD>(i), &state) == ERROR_SUCCESS) {
+				devJoysticks_[i].state_.xInput_ = state;
+			} else {
+				memset(&devJoysticks_[i].state_.xInput_, 0, sizeof(XINPUT_STATE));
+			}
+		}
+	}
 }
 
 void Input::Finalize() {

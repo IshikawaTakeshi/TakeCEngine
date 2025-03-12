@@ -12,14 +12,10 @@
 #include "SpriteCommon.h"
 #include "Particle3d.h"
 #include "ParticleCommon.h"
-#include "ParticleManager.h"
-#include "ParticleEmitter.h"
+#include "base/Particle/ParticleManager.h"
+#include "base/Particle/ParticleEmitter.h"
 
 //===== Application =====//
-#include "application/Player/Player.h"
-#include "application/Player/PlayerBullet.h"
-#include "application/Enemy/Enemy.h"
-#include "application/Enemy/EnemyBullet.h"
 #include "application/SkyBox/SkyBox.h"
 #include "application/Ground/Ground.h"
 
@@ -45,8 +41,7 @@ private:
 	AudioManager::SoundData gameClearBGM;
 	bool isSoundPlay = false;
 	std::unique_ptr<Camera> gameClearCamera_ = nullptr;
-	// プレイヤー
-	std::unique_ptr<Player> player_ = nullptr;
+
 	// 天
 	std::unique_ptr<SkyBox> skybox_ = nullptr;
 	// 地面

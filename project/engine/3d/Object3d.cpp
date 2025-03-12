@@ -33,18 +33,19 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	wvpResource_ = DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
 	//TransformationMatrix用
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
-	//単位行列を書き込んでおく
-	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
-
 	//CPUで動かす用のTransform
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	//アフィン行列
-	//worldMatrix_ = MatrixMath::MakeAffineMatrix(
-	//	transform_.scale,
-	//	transform_.rotate,
-	//	transform_.translate
-	//);
+	worldMatrix_ = MatrixMath::MakeAffineMatrix(
+		transform_.scale,
+		transform_.rotate,
+		transform_.translate
+	);
+
+	//単位行列を書き込んでおく
+	TransformMatrixData_->World = worldMatrix_;
+	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
 	//カメラのセット
 	camera_ = object3dCommon_->GetDefaultCamera();
@@ -134,6 +135,7 @@ void Object3d::Draw() {
 	}
 }
 
+
 void Object3d::DisPatch() {
 	if (model_ != nullptr) {
 		model_->DisPatch();
@@ -143,6 +145,14 @@ void Object3d::DisPatch() {
 //=============================================================================
 // モデルの設定
 //=============================================================================
+
+Vector3 Object3d::GetCenterPosition() const {
+	
+	const Vector3 offset = { 0.0f,1.0f,0.0f };
+
+	Vector3 worldPos = MatrixMath::Transform(offset, worldMatrix_);
+	return worldPos;
+}
 
 void Object3d::SetModel(const std::string& filePath) {
 	model_ = ModelManager::GetInstance()->FindModel(filePath);
