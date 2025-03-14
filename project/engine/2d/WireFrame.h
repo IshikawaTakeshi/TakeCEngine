@@ -7,7 +7,8 @@
 #include "Mesh/Mesh.h"
 #include "PipelineStateObject.h"
 #include "DirectXCommon.h"
-#include "OBB.h"
+#include "math/AABB.h"
+#include "math/OBB.h"
 #include <stdint.h>
 #include <string>
 #include <d3d12.h>
@@ -41,6 +42,10 @@ public:
 
 	void DrawSphere(const Vector3& center, float radius, const Vector4& color);
 
+	void DrawGridGround(const Vector3& center, const Vector3& size,uint32_t division);
+
+	void DrawGridBox(const AABB& aabb, uint32_t division);
+
 	void Draw();
 
 	void Reset();
@@ -52,6 +57,9 @@ private:
 	void CreateVertexData();
 
 	void CalculateSphereVertexData();
+
+	void DrawGridLines(const Vector3& start, const Vector3& end, const Vector3& offset, uint32_t division, const Vector4& color);
+
 private:
 
 	DirectXCommon* dxCommon_ = nullptr;
@@ -80,7 +88,7 @@ private:
 	Matrix4x4 worldViewProjectionMatrix_;
 
 	uint32_t lineIndex_ = 0;
-	const uint32_t kMaxLineCount_ = 100000;
+	const uint32_t kMaxLineCount_ = 1000000;
 	const uint32_t kLineVertexCount_ = 2;
 
 };

@@ -36,9 +36,6 @@ void GameOverScene::Initialize() {
 	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
 	skybox_->SetMaterialColor({ 0.0f,0.0f,0.0f,0.0f });
 	// ground
-	ground_ = std::make_unique<Ground>();
-	ground_->Initialize(Object3dCommon::GetInstance(), "ground.obj");
-	ground_->SetScale({ 1.3f, 1.0f, 1.5f });
 
 	GameOverText_ = std::make_unique<Object3d>();
 	GameOverText_->Initialize(Object3dCommon::GetInstance(), "GameOverText.obj");
@@ -53,11 +50,6 @@ void GameOverScene::Finalize() {
 	AudioManager::GetInstance()->SoundUnload(&gameOverBGM);
 	// カメラの解放
 	CameraManager::GetInstance()->ResetCameras();
-	
-	// プレイヤーの解放
-	//player_.reset();
-	// 地面の解放
-	ground_.reset();
 }
 
 void GameOverScene::Update() {
@@ -78,8 +70,6 @@ void GameOverScene::Update() {
 	CameraManager::GetInstance()->Update();
 	// 天球の更新
 	skybox_->Update();
-	// 地面の更新
-	ground_->Update();
 
 	// プレイヤーの更新
 	//player_->Update();
@@ -133,7 +123,6 @@ void GameOverScene::Draw() {
 
 	SpriteCommon::GetInstance()->PreDraw(); // Spriteの描画前処理
 	Object3dCommon::GetInstance()->PreDraw(); // Object3dの描画前処理
-	ground_->Draw();
 	GameOverText_->Draw();
 	
 	ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理

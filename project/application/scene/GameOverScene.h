@@ -43,8 +43,6 @@ private:
 	std::unique_ptr<Camera> gameOverCamera_ = nullptr;
 	// 天球
 	std::unique_ptr<SkyBox> skybox_ = nullptr;
-	// 地面
-	std::unique_ptr<Ground> ground_ = nullptr;
 
 	std::unique_ptr<Object3d> GameOverText_ = nullptr;
 

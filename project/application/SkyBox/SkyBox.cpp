@@ -5,6 +5,7 @@
 #include "Model.h"
 #include "ModelManager.h"
 #include "math/MatrixMath.h"
+#include "TakeCFrameWork.h"
 
 SkyBox::~SkyBox() {
 	wvpResource_.Reset();
@@ -35,7 +36,7 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename
 	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
 	//CPUで動かす用のTransform
-	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform_ = { {5.0f,5.0f,5.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	//アフィン行列
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(
@@ -86,4 +87,7 @@ void SkyBox::Draw() {
 	if (model_ != nullptr) {
 		model_->DrawSkyBox();
 	}
+
+	TakeCFrameWork::GetWireFrame()->DrawGridBox({
+		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 10);
 }

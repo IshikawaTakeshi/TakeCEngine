@@ -2,6 +2,6 @@
 #include "Vector3.h"
 
 struct AABB {
-	Vector3 min_;
-	Vector3 max_;
+	Vector3 min;
+	Vector3 max;
 };

@@ -16,7 +16,7 @@ void Camera::Initialize(ID3D12Device* device) {
 	fovX_ = 0.45f;
 	aspectRatio_ = float(WinApp::kClientWidth) / float(WinApp::kClientHeight);
 	nearClip_ = 0.1f;
-	farClip_ = 100.0f;
+	farClip_ = 1000.0f;
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(fovX_, aspectRatio_, nearClip_, farClip_);

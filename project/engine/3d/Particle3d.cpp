@@ -48,8 +48,8 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 
 	//Acceleration初期化
 	accelerationField_.acceleration_ = { 0.0f,-9.8f,0.0f };
-	accelerationField_.aabb_.min_ = { -3.0f,-3.0f,-3.0f };
-	accelerationField_.aabb_.max_ =  { 3.0f, 3.0f, 3.0f };
+	accelerationField_.aabb_.min = { -3.0f,-3.0f,-3.0f };
+	accelerationField_.aabb_.max =  { 3.0f, 3.0f, 3.0f };
 
 	//TransformationMatrix用
 	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
@@ -163,8 +163,8 @@ void Particle3d::UpdateImGui() {
 	ImGui::Text("AccelerationField");
 	ImGui::DragFloat3("Acceleration", &accelerationField_.acceleration_.x, 0.01f);
 	ImGui::DragFloat3("Position", &accelerationField_.position_.x, 0.01f);
-	ImGui::DragFloat3("AABBMin", &accelerationField_.aabb_.min_.x, 0.01f);
-	ImGui::DragFloat3("AABBMax", &accelerationField_.aabb_.max_.x, 0.01f);
+	ImGui::DragFloat3("AABBMin", &accelerationField_.aabb_.min.x, 0.01f);
+	ImGui::DragFloat3("AABBMax", &accelerationField_.aabb_.max.x, 0.01f);
 	ImGui::Separator();
 
 #endif // _DEBUG
@@ -241,9 +241,9 @@ std::list<Particle> Particle3d::Emit(const Vector3& emitterPos,uint32_t particle
 bool Particle3d::IsCollision(const AABB& aabb, const Vector3& point) {
 	//最近接点を求める
 	Vector3 clossestPoint{
-		std::clamp(point.x,aabb.min_.x,aabb.max_.x),
-		std::clamp(point.y,aabb.min_.y,aabb.max_.y),
-		std::clamp(point.z,aabb.min_.z,aabb.max_.z)
+		std::clamp(point.x,aabb.min.x,aabb.max.x),
+		std::clamp(point.y,aabb.min.y,aabb.max.y),
+		std::clamp(point.z,aabb.min.z,aabb.max.z)
 	};
 	//最近接点と球の中心との距離を求める
 	float distance = Vector3Math::Length(clossestPoint - point);
@@ -317,8 +317,8 @@ void Particle3d::SetAttributesFire() {
 	particleAttributes_.editColor = true;
 	particleAttributes_.color = { 1.0f,0.14f,0.0f };
 	accelerationField_.acceleration_ = { 0.0f,3.7f,0.0f };
-	accelerationField_.aabb_.min_ = { -10.3f,-10.3f,-10.3f };
-	accelerationField_.aabb_.max_ = { 10.3f,10.3f,10.3f };
+	accelerationField_.aabb_.min = { -10.3f,-10.3f,-10.3f };
+	accelerationField_.aabb_.max = { 10.3f,10.3f,10.3f };
 	accelerationField_.position_ = { 4.0f,0.0f,0.0f };
 }
 
@@ -332,8 +332,8 @@ void Particle3d::SetAttributesHadouken() {
 	particleAttributes_.editColor = true;
 	particleAttributes_.color = { 0.0f,0.9f,0.2f };
 	accelerationField_.acceleration_ = { 0.0f,3.7f,0.0f };
-	accelerationField_.aabb_.min_ = { -10.3f,-10.3f,-10.3f };
-	accelerationField_.aabb_.max_ = { 10.3f,10.3f,10.3f };
+	accelerationField_.aabb_.min = { -10.3f,-10.3f,-10.3f };
+	accelerationField_.aabb_.max = { 10.3f,10.3f,10.3f };
 	accelerationField_.position_ = { 4.0f,0.0f,0.0f };
 }
 
