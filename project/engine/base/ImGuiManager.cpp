@@ -30,6 +30,12 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, SrvManage
 		srvManager_->GetSrvDescriptorHandleCPU(useSrvIndex),
 		srvManager_->GetSrvDescriptorHandleGPU(useSrvIndex)
 	);
+
+	//ImGuiの設定
+	ImGuiIO& io = ImGui::GetIO();
+
+	// Dockingを有効にする
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; 
 }
 
 void ImGuiManager::Finalize() {
