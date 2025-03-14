@@ -8,7 +8,7 @@
 /// <summary>
 /// プレイヤー
 /// </summary>
-class Ground : public Object3d {
+class Ground {
 public:
 	////////////////////////////////////////////////////////////////////////////////////////
 	///		publicメンバ関数
@@ -36,4 +36,8 @@ public:
 	/// ImGuiでのデバッグ処理
 	/// </summary>
 	void ImGuiDebug();
+
+private:
+
+
 };

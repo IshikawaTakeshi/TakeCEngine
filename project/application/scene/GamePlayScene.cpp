@@ -137,7 +137,7 @@ void GamePlayScene::Update() {
 
 void GamePlayScene::Draw() {
 
-	skyBox_->Draw();    //天球の描画
+	//skyBox_->Draw();    //天球の描画
 
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
@@ -159,7 +159,10 @@ void GamePlayScene::Draw() {
 	samplePlayer_->DrawCollider();
 	sampleEnemy_->DrawCollider();
 
-	TakeCFrameWork::GetWireFrame()->DrawLine({ 0.0f,0.0f,0.0f }, { 10.0f,0.0f,0.0f }, { 1.0f,0.0f,0.0f,1.0f });
+	//グリッド地面の描画
+	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 100);
+	TakeCFrameWork::GetWireFrame()->DrawGridBox({
+		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 10);
 	
 	//ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
