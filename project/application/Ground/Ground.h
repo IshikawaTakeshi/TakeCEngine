@@ -5,10 +5,7 @@
 
 #include <list>
 
-/// <summary>
-/// プレイヤー
-/// </summary>
-class Ground {
+class Ground : public Object3d {
 public:
 	////////////////////////////////////////////////////////////////////////////////////////
 	///		publicメンバ関数
@@ -32,6 +29,8 @@ public:
 	/// </summary>
 	void Draw();
 
+	void DrawGridGround();
+
 	/// <summary>
 	/// ImGuiでのデバッグ処理
 	/// </summary>
@@ -39,5 +38,5 @@ public:
 
 private:
 
-
+	float gridGroundSize_ = 1000.0f;
 };
