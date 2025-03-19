@@ -10,14 +10,13 @@
 #include "Object3d.h"
 #include "Object3dCommon.h"
 #include "SpriteCommon.h"
-#include "Particle3d.h"
-#include "ParticleCommon.h"
+#include "3d/Particle/Particle3d.h"
+#include "3d/Particle/ParticleCommon.h"
 #include "base/Particle/ParticleManager.h"
 #include "base/Particle/ParticleEmitter.h"
 
 //===== Application =====//
 #include "application/SkyBox/SkyBox.h"
-#include "application/Ground/Ground.h"
 
 class GameClearScene : public BaseScene {
 public:
@@ -44,9 +43,6 @@ private:
 
 	// 天
 	std::unique_ptr<SkyBox> skybox_ = nullptr;
-	// 地面
-	std::unique_ptr<Ground> ground_ = nullptr;
-	//壁
 
 	//白飛びスプライト
 	std::unique_ptr<Sprite> whiteOutSprite_ = nullptr;
