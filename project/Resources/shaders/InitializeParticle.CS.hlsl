@@ -1,8 +1,8 @@
-#include "Particle.hlsli"
+#include "GPUParticle.hlsli"
 
 static const uint kMaxParticles = 1024;
 
-RWStructuredBuffer<ParticleForGPU> gParticles : register(u0);
+RWStructuredBuffer<ParticleForCS> gParticles : register(u0);
 
 [numthreads(1024, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID ) {
@@ -11,6 +11,6 @@ void main( uint3 DTid : SV_DispatchThreadID ) {
 		return;
 	}
 	
-	gParticles[particleIndex] = (ParticleForGPU) 0;
+	gParticles[particleIndex] = (ParticleForCS) 0;
 
 }

@@ -31,7 +31,6 @@ void GamePlayScene::Initialize() {
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 
-	ParticleCommon::GetInstance()->DispatchForGPUParticle();
 	gpuParticleGroup_ = std::make_unique<GPUParticle>();
 	gpuParticleGroup_->Initialize(ParticleCommon::GetInstance(), "sphere.obj");
 

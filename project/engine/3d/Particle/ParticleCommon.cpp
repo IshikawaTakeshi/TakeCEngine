@@ -49,6 +49,12 @@ void ParticleCommon::Finalize() {
 
 	graphicRootSignature_.Reset();
 	graphicPso_.reset();
+
+	graphicRootSignatureForGPUParticle_.Reset();
+	graphicPsoForGPUParticle_.reset();
+
+	computeRootSignatureForGPUParticle_.Reset();
+	computePsoForGPUParticle_.reset();
 }
 
 void ParticleCommon::PreDraw() {
@@ -73,9 +79,9 @@ void ParticleCommon::PreDrawForGPUParticle() {
 
 void ParticleCommon::DispatchForGPUParticle() {
 
-	//ルートシグネチャ設定
-	dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignatureForGPUParticle_.Get());
 	//PSO設定
 	dxCommon_->GetCommandList()->SetPipelineState(computePsoForGPUParticle_->GetComputePipelineState());
 
+	//ルートシグネチャ設定
+	dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignatureForGPUParticle_.Get());
 }

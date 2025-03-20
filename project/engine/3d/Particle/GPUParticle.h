@@ -42,6 +42,7 @@ private:
 	Model* model_ = nullptr;
 
 	ParticleForCS* particleData_ = nullptr;
+	uint32_t particleUavIndex_ = 0;
 	uint32_t particleSrvIndex_ = 0;
 
 	//PerViewData
@@ -49,7 +50,8 @@ private:
 
 	static const uint32_t kNumMaxInstance_ = 1024;
 
-	ComPtr<ID3D12Resource> particleResource_ = nullptr;
+	ComPtr<ID3D12Resource> particleUavResource_ = nullptr;
+	ComPtr<ID3D12Resource> particleSrvResource_ = nullptr;
 	ComPtr<ID3D12Resource> perViewResource_ = nullptr;
 
 };
