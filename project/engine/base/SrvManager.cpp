@@ -146,7 +146,7 @@ bool SrvManager::CheckTextureAllocate() {
 // 描画前処理
 //================================================================================================
 
-void SrvManager::PreDraw() {
+void SrvManager::SetDescriptorHeap() {
 
 	//SRV用ディスクリプタヒープの設定
 	ID3D12DescriptorHeap* drawHeaps_[] = { descriptorHeap_.Get() };

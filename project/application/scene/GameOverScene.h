@@ -9,8 +9,8 @@
 #include "Object3d.h"
 #include "Object3dCommon.h"
 #include "SpriteCommon.h"
-#include "Particle3d.h"
-#include "ParticleCommon.h"
+#include "3d/Particle/Particle3d.h"
+#include "3d/Particle/ParticleCommon.h"
 #include "base/Particle/ParticleManager.h"
 #include "base/Particle/ParticleEmitter.h"
 

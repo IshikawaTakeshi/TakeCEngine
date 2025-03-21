@@ -19,6 +19,11 @@
 #include "ImGuiManager.h"
 #endif // DEBUG
 
+Ground::~Ground() {
+	model_ = nullptr;
+
+}
+
 void Ground::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
 

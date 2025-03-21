@@ -219,13 +219,13 @@
     <ClCompile Include="engine\base\ImGuiManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Particle3d.cpp">
+    <ClCompile Include="engine\3d\Particle\Particle3d.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\Particle\ParticleManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\ParticleCommon.cpp">
+    <ClCompile Include="engine\3d\Particle\ParticleCommon.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\AABB.cpp">
@@ -283,6 +283,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="engine\2d\WireFrame.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\Particle\GPUParticle.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -446,13 +449,13 @@
     <ClInclude Include="engine\base\ImGuiManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Particle3d.h">
+    <ClInclude Include="engine\3d\Particle\Particle3d.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\base\Particle\ParticleManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\ParticleCommon.h">
+    <ClInclude Include="engine\3d\Particle\ParticleCommon.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\AABB.h">
@@ -530,6 +533,9 @@
     <ClInclude Include="engine\2d\WireFrame.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="engine\3d\Particle\GPUParticle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
@@ -578,6 +584,7 @@
     <None Include="Resources\glTF\simpleSkin.gltf" />
     <None Include="Resources\shaders\SkyBox.hlsli" />
     <None Include="Resources\shaders\WireFrame\WireFrame.hlsli" />
+    <None Include="Resources\shaders\GPUParticle.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Particle.PS.hlsl" />
@@ -593,5 +600,7 @@
     <FxCompile Include="Resources\shaders\InitializeParticle.CS.hlsl" />
     <FxCompile Include="Resources\shaders\WireFrame\WireFrame.VS.hlsl" />
     <FxCompile Include="Resources\shaders\WireFrame\WireFrame.PS.hlsl" />
+    <FxCompile Include="Resources\shaders\GPUParticle.VS.hlsl" />
+    <FxCompile Include="Resources\shaders\GPUParticle.PS.hlsl" />
   </ItemGroup>
 </Project>

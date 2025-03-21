@@ -25,6 +25,22 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//シーンマネージャーのセット
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
 
+	//Model読み込み
+	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
+
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "cube.obj");
+
+	//Animation読み込み
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
+
 	CollisionManager::GetInstance()->Initialize(directXCommon_.get());
 
 	//最初のシーンを設定
@@ -67,11 +83,39 @@ void MyGame::Draw() {
 
 	 //描画前処理
 	directXCommon_->PreDraw();
-	srvManager_->PreDraw();       //SRV描画前処理
+	srvManager_->SetDescriptorHeap();       //SRV描画前処理
 	
 	sceneManager_->Draw();
 	TakeCFrameWork::GetWireFrame()->Draw();
 
 	//描画後処理
 	directXCommon_->PostDraw();
+}
+
+//====================================================================
+//			モデルの読み込み
+//====================================================================
+
+void MyGame::LoadModel() {
+	//gltf
+	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
+	//obj
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "cube.obj");
+}
+
+//====================================================================
+//			アニメーションの読み込み
+//====================================================================
+
+void MyGame::LoadAnimation() {
+
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
 }

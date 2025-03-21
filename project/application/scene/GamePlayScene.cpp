@@ -30,21 +30,9 @@ void GamePlayScene::Initialize() {
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
-	//Model読み込み
-	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
 
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "cube.obj");
-
-	//Animation読み込み
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
+	gpuParticleGroup_ = std::make_unique<GPUParticle>();
+	gpuParticleGroup_->Initialize(ParticleCommon::GetInstance(), "cube.obj");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -96,6 +84,7 @@ void GamePlayScene::Update() {
 	
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();
+	ParticleCommon::GetInstance()->UpdateImGui();
 
 #endif // DEBUG
 
@@ -106,8 +95,8 @@ void GamePlayScene::Update() {
 	//SkyBoxの更新
 	skyBox_->Update();
 	
-	// プレイヤーの更新
-	//player_->Update();
+	//GPUパーティクルの更新
+	gpuParticleGroup_->Update();
 
 	sprite_->Update();
 
@@ -166,6 +155,10 @@ void GamePlayScene::Draw() {
 	
 	//ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
+
+	//GPUパーティクルの描画
+	ParticleCommon::GetInstance()->PreDrawForGPUParticle();
+	gpuParticleGroup_->Draw();
 }
 
 void GamePlayScene::CheckAllCollisions() {

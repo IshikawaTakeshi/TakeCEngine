@@ -23,6 +23,10 @@ public:
 
 	void PreDraw();
 
+	void PreDrawForGPUParticle();
+
+	void DispatchForGPUParticle();
+
 	//================================================================================================
 	// 	   getter
 	//================================================================================================
@@ -31,7 +35,11 @@ public:
 
 	SrvManager* GetSrvManager() const { return srvManager_; }
 
-	PSO* GetPSO() const { return pso_.get(); }
+	PSO* GetGraphicPSO() const { return graphicPso_.get(); }
+
+	PSO* GetGraphicPSOForGPUParticle() const { return graphicPsoForGPUParticle_.get(); }
+
+	PSO* GetComputePSOForGPUParticle() const { return computePsoForGPUParticle_.get(); }
 
 	Camera* GetDefaultCamera() const { return defaultCamera_; }
 
@@ -56,12 +64,16 @@ private:
 
 	DirectXCommon* dxCommon_ = nullptr;
 
-	std::unique_ptr<PSO> pso_ = nullptr;
+	std::unique_ptr<PSO> graphicPso_ = nullptr;
+	std::unique_ptr<PSO> graphicPsoForGPUParticle_ = nullptr;
+	std::unique_ptr<PSO> computePsoForGPUParticle_ = nullptr;
 
 	SrvManager* srvManager_ = nullptr;
 
 	//RootSignature
-	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+	ComPtr<ID3D12RootSignature> graphicRootSignature_ = nullptr;
+	ComPtr<ID3D12RootSignature> graphicRootSignatureForGPUParticle_ = nullptr;
+	ComPtr<ID3D12RootSignature> computeRootSignatureForGPUParticle_ = nullptr;
 
 	//defaultCamera
 	Camera* defaultCamera_ = nullptr;

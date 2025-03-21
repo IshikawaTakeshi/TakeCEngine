@@ -11,8 +11,9 @@
 #include "Object3d.h"
 #include "Object3dCommon.h"
 #include "SpriteCommon.h"
-#include "Particle3d.h"
-#include "ParticleCommon.h"
+#include "3d/Particle/Particle3d.h"
+#include "3d/Particle/ParticleCommon.h"
+#include "3d/Particle/GPUParticle.h"
 #include "base/Particle/ParticleManager.h"
 #include "base/Particle/ParticleEmitter.h"
 
@@ -65,4 +66,5 @@ private:
 	std::unique_ptr<SampleCharacter> samplePlayer_ = nullptr;
 	std::unique_ptr<SampleCharacter> sampleEnemy_ = nullptr;
 
+	std::unique_ptr<GPUParticle> gpuParticleGroup_ = nullptr;
 };
