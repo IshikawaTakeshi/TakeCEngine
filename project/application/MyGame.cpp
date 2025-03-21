@@ -83,7 +83,7 @@ void MyGame::Draw() {
 
 	 //描画前処理
 	directXCommon_->PreDraw();
-	srvManager_->PreDraw();       //SRV描画前処理
+	srvManager_->SetDescriptorHeap();       //SRV描画前処理
 	
 	sceneManager_->Draw();
 	TakeCFrameWork::GetWireFrame()->Draw();

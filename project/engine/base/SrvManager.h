@@ -25,7 +25,7 @@ public:
 	/// <summary>
 	/// 描画前処理
 	/// </summary>
-	void PreDraw();
+	void SetDescriptorHeap();
 
 
 	/// <summary>

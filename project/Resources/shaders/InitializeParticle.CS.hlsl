@@ -12,5 +12,7 @@ void main( uint3 DTid : SV_DispatchThreadID ) {
 	}
 	
 	gParticles[particleIndex] = (ParticleForCS) 0;
-
+	gParticles[particleIndex].translate = float3(0.0f, 0.0f, 0.0f);
+	gParticles[particleIndex].scale = float3(10.0f, 10.0f, 10.0f);
+	gParticles[particleIndex].color = float4(1.0f, 1.0f, 0.0f, 1.0f);
 }

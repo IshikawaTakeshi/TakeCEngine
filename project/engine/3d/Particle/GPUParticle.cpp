@@ -7,7 +7,6 @@
 GPUParticle::~GPUParticle() {
 
 	particleUavResource_.Reset();
-	particleSrvResource_.Reset();
 	perViewResource_.Reset();
 }
 
@@ -23,17 +22,22 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 		particleCommon_->GetDirectXCommon()->GetDevice(),sizeof(ParticleForCS) * kNumMaxInstance_,
 		particleCommon_->GetDirectXCommon()->GetCommandList());
 
-	particleSrvResource_ = DirectXCommon::CreateBufferResource(
-		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForCS) * kNumMaxInstance_);
-	
+
 	//PerViewResource生成
 	perViewResource_ = DirectXCommon::CreateBufferResource(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
 
 	//Mapping
-	particleSrvResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
 	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));
 
+	//SRVリソース
+	particleSrvIndex_ = particleCommon_->GetSrvManager()->Allocate();
+	particleCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
+		kNumMaxInstance_,
+		sizeof(ParticleForCS),
+		particleUavResource_.Get(),
+		particleSrvIndex_
+	);
 	//URVリソース
 	particleUavIndex_ = particleCommon_->GetSrvManager()->Allocate();
 	particleCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
@@ -42,17 +46,6 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 		particleUavResource_.Get(),
 		particleUavIndex_
 	);
-
-	//SRVリソース
-	particleSrvIndex_ = particleCommon_->GetSrvManager()->Allocate();
-	particleCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
-		kNumMaxInstance_,
-		sizeof(ParticleForCS),
-		particleSrvResource_.Get(),
-		particleSrvIndex_
-	);
-
-
 
 	//PerViewData初期化
 	perViewData_->viewProjection = MatrixMath::MakeIdentity4x4();
@@ -77,7 +70,7 @@ void GPUParticle::Draw() {
 	particleCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, perViewResource_->GetGPUVirtualAddress());
 
 	//particleResource
-	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(3, particleSrvIndex_);
+	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(3, particleUavIndex_);
 
 	model_->DrawForGPUParticle(kNumMaxInstance_);
 }
@@ -88,7 +81,8 @@ void GPUParticle::DisPatchInitializeParticle() {
 
 	particleCommon_->DispatchForGPUParticle();
 
-	// UAV から Vertex Buffer へのバリア
+	particleCommon_->GetSrvManager()->SetDescriptorHeap();
+
 	D3D12_RESOURCE_BARRIER uavBarrier = {};
 	//今回のバリアはTransition
 	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;

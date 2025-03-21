@@ -32,7 +32,7 @@ void GamePlayScene::Initialize() {
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 
 	gpuParticleGroup_ = std::make_unique<GPUParticle>();
-	gpuParticleGroup_->Initialize(ParticleCommon::GetInstance(), "sphere.obj");
+	gpuParticleGroup_->Initialize(ParticleCommon::GetInstance(), "cube.obj");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -84,6 +84,7 @@ void GamePlayScene::Update() {
 	
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();
+	ParticleCommon::GetInstance()->UpdateImGui();
 
 #endif // DEBUG
 
@@ -94,8 +95,8 @@ void GamePlayScene::Update() {
 	//SkyBoxの更新
 	skyBox_->Update();
 	
-	// プレイヤーの更新
-	//player_->Update();
+	//GPUパーティクルの更新
+	gpuParticleGroup_->Update();
 
 	sprite_->Update();
 
@@ -157,7 +158,7 @@ void GamePlayScene::Draw() {
 
 	//GPUパーティクルの描画
 	ParticleCommon::GetInstance()->PreDrawForGPUParticle();
-
+	gpuParticleGroup_->Draw();
 }
 
 void GamePlayScene::CheckAllCollisions() {

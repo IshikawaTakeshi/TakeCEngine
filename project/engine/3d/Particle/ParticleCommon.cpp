@@ -42,7 +42,8 @@ void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 }
 
 void ParticleCommon::UpdateImGui() {
-	graphicPso_->UpdateImGui();
+	//graphicPso_->UpdateImGui();
+	graphicPsoForGPUParticle_->UpdateImGui();
 }
 
 void ParticleCommon::Finalize() {

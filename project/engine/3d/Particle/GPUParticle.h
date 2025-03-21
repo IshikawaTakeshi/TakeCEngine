@@ -51,8 +51,5 @@ private:
 	static const uint32_t kNumMaxInstance_ = 1024;
 
 	ComPtr<ID3D12Resource> particleUavResource_ = nullptr;
-	ComPtr<ID3D12Resource> particleSrvResource_ = nullptr;
 	ComPtr<ID3D12Resource> perViewResource_ = nullptr;
-
 };
-
