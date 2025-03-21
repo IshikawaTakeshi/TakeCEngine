@@ -77,42 +77,29 @@ void GPUParticle::Draw() {
 
 void GPUParticle::DisPatchInitializeParticle() {
 
-
-
+	//ComputePSOの設定
 	particleCommon_->DispatchForGPUParticle();
 
+	//MEMO:普段は描画処理前でいいが、今回は描画処理内ではないのでここでDescriptorHeapを設定する
 	particleCommon_->GetSrvManager()->SetDescriptorHeap();
 
 	D3D12_RESOURCE_BARRIER uavBarrier = {};
-	//今回のバリアはTransition
-	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	//Noneにしておく
-	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	//バリアを張る対象のリソース。現在のバックバッファに対して行う
-	uavBarrier.Transition.pResource = particleUavResource_.Get();
-	//遷移前(現在)のResourceState
-	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-	//遷移後のResourceState
-	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
 	//TransitionBarrierを張る
+	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	uavBarrier.Transition.pResource = particleUavResource_.Get();
+	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
 	particleCommon_->GetDirectXCommon()->GetCommandList()->ResourceBarrier(1, &uavBarrier);
 
-
 	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(0, particleUavIndex_);
-
 	particleCommon_->GetDirectXCommon()->GetCommandList()->Dispatch(1, 1, 1);
-
 	
-	//今回のバリアはTransition
-	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	//Noneにしておく
-	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	//バリアを張る対象のリソース。現在のバックバッファに対して行う
-	uavBarrier.Transition.pResource = particleUavResource_.Get();
-	//遷移前(現在)のResourceState
-	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-	//遷移後のResourceState
-	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 	//TransitionBarrierを張る
+	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	uavBarrier.Transition.pResource = particleUavResource_.Get();
+	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 	particleCommon_->GetDirectXCommon()->GetCommandList()->ResourceBarrier(1, &uavBarrier);
 }
