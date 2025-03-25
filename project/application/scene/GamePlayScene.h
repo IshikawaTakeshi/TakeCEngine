@@ -15,7 +15,7 @@
 #include "3d/Particle/ParticleCommon.h"
 #include "3d/Particle/GPUParticle.h"
 #include "base/Particle/ParticleManager.h"
-#include "base/Particle/ParticleEmitter.h"
+#include "3d/Particle/ParticleEmitter.h"
 
 #include "Quaternion.h"
 

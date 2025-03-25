@@ -31,6 +31,10 @@ public:
 
 	void DisPatchInitializeParticle();
 
+	uint32_t GetParticleUavIndex() const { return particleUavIndex_; }
+
+	ID3D12Resource* GetParticleUavResource() const { return particleUavResource_.Get(); }
+
 private:
 
 	ParticleCommon* particleCommon_ = nullptr;

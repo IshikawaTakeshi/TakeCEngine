@@ -91,10 +91,18 @@ struct ParticleForGPU {
 	Matrix4x4 World;
 	Vector4 Color;
 };
-
+//View情報
 struct PerView {
 	Matrix4x4 viewProjection;
 	Matrix4x4 billboardMatrix;
+};
+
+//フレーム情報
+struct PerFrame {
+	//ゲームを開始してからの時間
+	float gameTime;
+	//フレームの経過時間
+	float deltaTime;
 };
 
 //エイリアステンプレート

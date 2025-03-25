@@ -1,9 +1,17 @@
 #include "TakeCFrameWork.h"
 #include <cassert>
 
+//Clockの宣言
+using Clock = std::chrono::high_resolution_clock;
+
 std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
 std::unique_ptr<Animator> TakeCFrameWork::animator_ = nullptr;
 std::unique_ptr<WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
+std::chrono::steady_clock::time_point TakeCFrameWork::gameTime_ = Clock::now();
+
+//====================================================================
+//			初期化
+//====================================================================
 
 void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
@@ -67,6 +75,10 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 }
 
+//====================================================================
+//			終了処理
+//====================================================================
+
 void TakeCFrameWork::Finalize() {
 #ifdef _DEBUG
 	imguiManager_->Finalize();
@@ -98,6 +110,10 @@ void TakeCFrameWork::Finalize() {
 	winApp_.reset();
 }
 
+//====================================================================
+//			更新処理
+//====================================================================
+
 void TakeCFrameWork::Update() {
 
 	//メッセージ処理
@@ -121,6 +137,10 @@ void TakeCFrameWork::Update() {
 #endif // DEBUG
 }
 
+//====================================================================
+//			実行処理
+//====================================================================
+
 void TakeCFrameWork::Run(const std::wstring& titleName) {
 	//ゲームクラスの生成と初期化
 	Initialize(titleName);
@@ -137,17 +157,41 @@ void TakeCFrameWork::Run(const std::wstring& titleName) {
 	Finalize();   //終了処理
 }
 
+//====================================================================
+//			パーティクルマネージャの取得
+//====================================================================
+
 ParticleManager* TakeCFrameWork::GetParticleManager() {
 	assert(particleManager_ != nullptr);
 	return particleManager_.get();
 }
+
+//====================================================================
+//			アニメーターの取得
+//====================================================================
 
 Animator* TakeCFrameWork::GetAnimator() {
 	assert(animator_ != nullptr);
 	return animator_.get();
 }
 
+//====================================================================
+//			ワイヤーフレーム管理クラスの取得
+//====================================================================
+
 WireFrame* TakeCFrameWork::GetWireFrame() {
 	assert(wireFrame_ != nullptr);
 	return wireFrame_.get();
+}
+
+float TakeCFrameWork::GetGameTime() {
+	
+	//現在の時間を取得
+	auto now = Clock::now();
+
+	//経過時間をミリ秒単位で計算
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - gameTime_).count();
+
+	//秒に変換
+	return duration / 1000.0f;
 }
