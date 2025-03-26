@@ -33,6 +33,7 @@ void GamePlayScene::Initialize() {
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "player_animation.gltf");
 
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
@@ -45,6 +46,7 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
 	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
 	TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("player_animation.gltf");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -65,16 +67,16 @@ void GamePlayScene::Initialize() {
 
 	//SampleCharacter
 	samplePlayer_ = std::make_unique<SampleCharacter>();
-	samplePlayer_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
+	samplePlayer_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
 	samplePlayer_->SetCharacterType(CharacterType::PLAYER);
-	samplePlayer_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("running.gltf"));
+	samplePlayer_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf","clear"));
 
 	//SampleEnemy
 	sampleEnemy_ = std::make_unique<SampleCharacter>();
 	sampleEnemy_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
 	sampleEnemy_->SetCharacterType(CharacterType::ENEMY);
 	sampleEnemy_->SetTranslate({ 0.0f,0.0f,15.0f });
-	sampleEnemy_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("Idle.gltf"));
+	sampleEnemy_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "dash"));
 }
 
 //====================================================================

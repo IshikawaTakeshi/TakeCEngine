@@ -25,7 +25,7 @@ void Animator::LoadAnimation(const std::string& filePath) {
 	}
 
 	//アニメーションの生成とファイル読み込み、初期化
-	Animation animation = LoadAnimationFile("Animation", filePath);
+	std::map<std::string, Animation> animation = LoadAnimationFile("Animation", filePath);
 	//アニメーションをコンテナに追加
 	animations_.insert(std::make_pair(filePath, animation));
 }
@@ -34,66 +34,80 @@ void Animator::LoadAnimation(const std::string& filePath) {
 //	アニメーションの検索
 //=============================================================================
 
-Animation Animator::FindAnimation(const std::string& filePath) {
+Animation Animator::FindAnimation(const std::string& filePath, const std::string& animName) {
 	//読み込み済みアニメーションを検索
 	if (animations_.contains(filePath)) {
-		//読み込みアニメーションを戻り値としてreturn
-		return animations_.at(filePath);
+		if (animations_.at(filePath).contains(animName)) {
+
+			//読み込みアニメーションを戻り値としてreturn
+			return animations_.at(filePath).at(animName);
+		}
 	}
 
 	//ファイル名一致なし
+	assert(0 && "アニメーションが見つかりませんでした");
 	return {};
 }
 
 //=============================================================================
 //	アニメーションファイルの読み込み
 //=============================================================================
-
-Animation Animator::LoadAnimationFile(const std::string& directoryPath, const std::string& filename) {
+std::map<std::string, Animation> Animator::LoadAnimationFile(const std::string& directoryPath, const std::string& filename) {
+	std::map<std::string, Animation> animations;
     Animation animation;
     Assimp::Importer importer;
     std::string filePath ="./Resources/" + directoryPath + "/" + filename;
     const aiScene* scene = importer.ReadFile(filePath.c_str(), 0);
     //アニメーションがない場合
 	if(scene->mNumAnimations == 0) {
-		return animation = {};
+		return animations = {};
 	}
-    aiAnimation* animationAssimp = scene->mAnimations[0];
-    animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
 
-    //assimpでは個々のNodeのAnimationをchannelと呼んでいるのでchannelを回してNodeAnimationの情報を取得する
-    for(uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
-		aiNodeAnim* NodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
-		NodeAnimation& nodeAnimation = animation.nodeAnimations[NodeAnimationAssimp->mNodeName.C_Str()];
+	//複数のアニメーションの情報を取得
+	for (uint32_t animationIndex = 0; animationIndex < scene->mNumAnimations; ++animationIndex) {
+		aiAnimation* animationAssimp = scene->mAnimations[animationIndex];
+		animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
 
-		//position, rotation, scaleのkeyflameを取得
-		//position
-        for(uint32_t keyIndex = 0; keyIndex < NodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
-			aiVectorKey& keyAssimp = NodeAnimationAssimp->mPositionKeys[keyIndex];
-			KeyflameVector3 keyflame;
-			keyflame.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
-			keyflame.value = {-keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z}; //右手->左手に変換するので手動で対処する
-			nodeAnimation.translate.keyflames.push_back(keyflame);
-		}
-		//rotation
-		for(uint32_t keyIndex = 0; keyIndex < NodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
-			aiQuatKey& keyAssimp = NodeAnimationAssimp->mRotationKeys[keyIndex];
-			KeyflameQuaternion keyflame;
-			keyflame.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
-			keyflame.value = {keyAssimp.mValue.x, -keyAssimp.mValue.y, -keyAssimp.mValue.z, keyAssimp.mValue.w};
-			nodeAnimation.rotate.keyflames.push_back(keyflame);
-		}
-		//scale
-		for(uint32_t keyIndex = 0; keyIndex < NodeAnimationAssimp->mNumScalingKeys; ++keyIndex) {
-			aiVectorKey& keyAssimp = NodeAnimationAssimp->mScalingKeys[keyIndex];
-			KeyflameVector3 keyflame;
-			keyflame.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
-			keyflame.value = {keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z};
-			nodeAnimation.scale.keyflames.push_back(keyflame);
+		//assimpでは個々のNodeのAnimationをchannelと呼んでいるのでchannelを回してNodeAnimationの情報を取得する
+		for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
+			aiNodeAnim* NodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
+			NodeAnimation& nodeAnimation = animation.nodeAnimations[NodeAnimationAssimp->mNodeName.C_Str()];
+
+			//position, rotation, scaleのkeyflameを取得
+			//position
+			for (uint32_t keyIndex = 0; keyIndex < NodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
+				aiVectorKey& keyAssimp = NodeAnimationAssimp->mPositionKeys[keyIndex];
+				KeyflameVector3 keyflame;
+				keyflame.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
+				keyflame.value = { -keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z }; //右手->左手に変換するので手動で対処する
+				nodeAnimation.translate.keyflames.push_back(keyflame);
+			}
+			//rotation
+			for (uint32_t keyIndex = 0; keyIndex < NodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
+				aiQuatKey& keyAssimp = NodeAnimationAssimp->mRotationKeys[keyIndex];
+				KeyflameQuaternion keyflame;
+				keyflame.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
+				keyflame.value = { keyAssimp.mValue.x, -keyAssimp.mValue.y, -keyAssimp.mValue.z, keyAssimp.mValue.w };
+				nodeAnimation.rotate.keyflames.push_back(keyflame);
+			}
+			//scale
+			for (uint32_t keyIndex = 0; keyIndex < NodeAnimationAssimp->mNumScalingKeys; ++keyIndex) {
+				aiVectorKey& keyAssimp = NodeAnimationAssimp->mScalingKeys[keyIndex];
+				KeyflameVector3 keyflame;
+				keyflame.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
+				keyflame.value = { keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z };
+				nodeAnimation.scale.keyflames.push_back(keyflame);
+			}
+
 		}
 
+		//アニメーション名を取得
+		std::string animationName = animationAssimp->mName.C_Str();
+		animations.insert(std::make_pair(animationName, animation));
 	}
-	return animation;
+
+
+	return animations;
 }
 
 //=============================================================================
