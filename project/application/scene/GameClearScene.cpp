@@ -18,14 +18,6 @@ void GameClearScene::Initialize() {
 	// デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
-	// Model読み込み
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend","GameClearText.obj");
-	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
 
 	//DirectionalLightの輝度を設定
 	Object3dCommon::GetInstance()->SetDirectionalLightIntensity(0.5f);
@@ -43,10 +35,6 @@ void GameClearScene::Initialize() {
 	skybox_ = std::make_unique<SkyBox>();
 	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
 	skybox_->SetMaterialColor({ 0.0f,0.0f,0.0f,1.0f });
-
-	// ground
-	ground_ = std::make_unique<Ground>();
-	ground_->Initialize(Object3dCommon::GetInstance(), "ground.obj");
 
 	//GameClearText
 	GameClearText_ = std::make_unique<Object3d>();
@@ -69,11 +57,6 @@ void GameClearScene::Finalize() {
 	AudioManager::GetInstance()->SoundUnload(&gameClearBGM);
 	// カメラの解放
 	CameraManager::GetInstance()->ResetCameras();
-
-	// プレイヤーの解放
-	//player_.reset();
-	// 地面の解放
-	ground_.reset();
 }
 
 void GameClearScene::Update() {
@@ -94,8 +77,6 @@ void GameClearScene::Update() {
 	CameraManager::GetInstance()->Update();
 	// 天球の更新
 	skybox_->Update();
-	// 地面の更新
-	ground_->Update();
 
 	// プレイヤーの更新
 	//player_->Update();

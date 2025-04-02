@@ -100,5 +100,3 @@ Vector3 Vector3::Normalize() const {
 	float len = Length();
 	return (len > 0) ? (*this * (1.0f / len)) : *this;
 }
-
-

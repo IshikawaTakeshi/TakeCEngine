@@ -92,5 +92,10 @@ struct ParticleForGPU {
 	Vector4 Color;
 };
 
+struct PerView {
+	Matrix4x4 viewProjection;
+	Matrix4x4 billboardMatrix;
+};
+
 //エイリアステンプレート
 template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;

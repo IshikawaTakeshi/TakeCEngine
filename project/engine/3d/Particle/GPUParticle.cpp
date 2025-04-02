@@ -1,0 +1,105 @@
+#include "GPUParticle.h"
+#include "ParticleCommon.h"
+#include "ModelManager.h"
+#include "DirectXCommon.h"
+#include "MatrixMath.h"
+
+GPUParticle::~GPUParticle() {
+
+	particleUavResource_.Reset();
+	perViewResource_.Reset();
+}
+
+void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& filePath) {
+
+	particleCommon_ = particleCommon;
+
+	//モデルの読み込み
+	model_ = ModelManager::GetInstance()->FindModel(filePath);
+
+	//ParticleResource生成
+	particleUavResource_ = DirectXCommon::CreateBufferResourceUAV(
+		particleCommon_->GetDirectXCommon()->GetDevice(),sizeof(ParticleForCS) * kNumMaxInstance_,
+		particleCommon_->GetDirectXCommon()->GetCommandList());
+
+
+	//PerViewResource生成
+	perViewResource_ = DirectXCommon::CreateBufferResource(
+		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
+
+	//Mapping
+	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));
+
+	//SRVリソース
+	particleSrvIndex_ = particleCommon_->GetSrvManager()->Allocate();
+	particleCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
+		kNumMaxInstance_,
+		sizeof(ParticleForCS),
+		particleUavResource_.Get(),
+		particleSrvIndex_
+	);
+	//URVリソース
+	particleUavIndex_ = particleCommon_->GetSrvManager()->Allocate();
+	particleCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
+		kNumMaxInstance_,
+		sizeof(ParticleForCS),
+		particleUavResource_.Get(),
+		particleUavIndex_
+	);
+
+	//PerViewData初期化
+	perViewData_->viewProjection = MatrixMath::MakeIdentity4x4();
+	perViewData_->billboardMatrix = MatrixMath::MakeIdentity4x4();
+
+	camera_ = particleCommon_->GetDefaultCamera();
+
+	//初期化
+	DisPatchInitializeParticle();
+}
+
+void GPUParticle::Update() {
+
+
+	perViewData_->viewProjection = camera_->GetViewProjectionMatrix();
+	perViewData_->billboardMatrix = camera_->GetRotationMatrix();
+}
+
+void GPUParticle::Draw() {
+
+	//perViewResource
+	particleCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, perViewResource_->GetGPUVirtualAddress());
+
+	//particleResource
+	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(3, particleUavIndex_);
+
+	model_->DrawForGPUParticle(kNumMaxInstance_);
+}
+
+void GPUParticle::DisPatchInitializeParticle() {
+
+	//ComputePSOの設定
+	particleCommon_->DispatchForGPUParticle();
+
+	//MEMO:普段は描画処理前でいいが、今回は描画処理内ではないのでここでDescriptorHeapを設定する
+	particleCommon_->GetSrvManager()->SetDescriptorHeap();
+
+	D3D12_RESOURCE_BARRIER uavBarrier = {};
+	//TransitionBarrierを張る
+	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	uavBarrier.Transition.pResource = particleUavResource_.Get();
+	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+	particleCommon_->GetDirectXCommon()->GetCommandList()->ResourceBarrier(1, &uavBarrier);
+
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(0, particleUavIndex_);
+	particleCommon_->GetDirectXCommon()->GetCommandList()->Dispatch(1, 1, 1);
+	
+	//TransitionBarrierを張る
+	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	uavBarrier.Transition.pResource = particleUavResource_.Get();
+	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+	particleCommon_->GetDirectXCommon()->GetCommandList()->ResourceBarrier(1, &uavBarrier);
+}

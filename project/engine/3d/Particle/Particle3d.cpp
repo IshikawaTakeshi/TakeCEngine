@@ -31,7 +31,7 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	//モデルの読み込み
 	SetModel(filePath);
 	
-	//TransformationMatrix用のResource生成
+	//instancing用のResource生成
 	instancingResource_ = 
 		DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
 
@@ -51,7 +51,7 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	accelerationField_.aabb_.min = { -3.0f,-3.0f,-3.0f };
 	accelerationField_.aabb_.max =  { 3.0f, 3.0f, 3.0f };
 
-	//TransformationMatrix用
+	//Mapping
 	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 	//単位行列を書き込んでおく
 	for (uint32_t i = 0; i < kNumMaxInstance_; i++) {
@@ -141,7 +141,7 @@ void Particle3d::UpdateImGui() {
 #ifdef _DEBUG
 	ImGui::Text("Particle3d");
 	ImGui::Text("ParticleCount:%d", numInstance_);
-	particleCommon_->GetPSO()->UpdateImGui();
+	particleCommon_->GetGraphicPSO()->UpdateImGui();
 	ImGui::Separator();
 	ImGui::Text("ParticleAttributes");
 	if(ImGui::Button("SoapBubble")) {

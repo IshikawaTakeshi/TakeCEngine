@@ -341,12 +341,14 @@ void PSO::CreateGraphicPSO(
 	D3D12_DEPTH_WRITE_MASK depthWriteMask,
 	D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType) {
 
+	device_ = device;
+
 	HRESULT result = S_FALSE;
 	itemCurrentIdx = 0;
 	//シェーダー情報を読み込む
 	ShaderResourceMap shaderResourceInfo = LoadShaderResourceInfo({ graphicShaderData_.vertexBlob,graphicShaderData_.pixelBlob });
 	/// ルートシグネチャ初期化
-	graphicRootSignature_ = CreateRootSignature(device, shaderResourceInfo);
+	graphicRootSignature_ = CreateRootSignature(device_, shaderResourceInfo);
 	/// ブレンドステート初期化
 	CreateBlendStateForObject3d();
 	/// ラスタライザステート初期化
@@ -360,7 +362,7 @@ void PSO::CreateGraphicPSO(
 	SetGraphicPipelineStateDesc(topologyType);
 	//実際に生成
 	graphicPipelineState_ = nullptr;
-	result = device->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
+	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
 		IID_PPV_ARGS(&graphicPipelineState_));
 	assert(SUCCEEDED(result));
 }

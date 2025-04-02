@@ -220,4 +220,27 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount_, 0, 0);
+
+}
+
+void Model::DrawForGPUParticle(UINT instanceCount) {
+	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
+
+	// VBVを設定
+	mesh_->SetVertexBuffers(commandList, 0);
+	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//materialCBufferの場所を指定
+	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
+	//DrawCall
+	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount, 0, 0);
+}
+
+void Model::SetAnimation(Animation* animation) {
+	if (animation) {
+		animation_ = new Animation(*animation);
+	}
+	animationTime_ = 0.0f;
 }

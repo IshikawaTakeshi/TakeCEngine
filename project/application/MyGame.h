@@ -21,5 +21,11 @@ public:
 
 private:
 
+	void LoadModel();
+
+	void LoadAnimation();
+
+private:
+
 	std::shared_ptr<BaseScene> currentScene_;
 };

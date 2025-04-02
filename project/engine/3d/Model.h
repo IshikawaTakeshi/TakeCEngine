@@ -55,6 +55,8 @@ public:
 	/// <param name="instanceCount_"></param>
 	void DrawForParticle(UINT instanceCount_);
 
+	void DrawForGPUParticle(UINT instanceCount);
+
 	/// <summary>
 	/// アニメーションの適用
 	/// </summary>
