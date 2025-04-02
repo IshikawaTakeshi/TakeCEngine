@@ -14,9 +14,9 @@ public:
 
 	void LoadAnimation(const std::string& filePath);
 
-	Animation FindAnimation(const std::string& filePath);
+	Animation* FindAnimation(const std::string& filePath,const std::string& animName);
 
-	static Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
+	static std::map<std::string, Animation*> LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
 	
 	/// <summary>
 	/// ベクトルの補間値を計算
@@ -33,6 +33,10 @@ public:
 
 private:
 
-	std::map<std::string, Animation> animations_;
+	/// <summary>
+	/// アニメーションのコンテナ
+	/// (ファイル名, (アニメーション名,アニメーション))
+	/// </summary>
+	std::map<std::string,std::map<std::string, Animation*>> animations_;
 };
 

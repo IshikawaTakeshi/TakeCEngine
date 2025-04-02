@@ -584,7 +584,14 @@
     <None Include="Resources\glTF\simpleSkin.gltf" />
     <None Include="Resources\shaders\SkyBox.hlsli" />
     <None Include="Resources\shaders\WireFrame\WireFrame.hlsli" />
-    <None Include="Resources\shaders\GPUParticle.hlsli" />
+    <None Include="Resources\glTF\player_animation.bin">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="Resources\glTF\player_animation.gltf" />
+    <None Include="Resources\Animation\player_animation.bin">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="Resources\Animation\player_animation.gltf" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Particle.PS.hlsl" />

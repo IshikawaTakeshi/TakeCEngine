@@ -13,22 +13,23 @@
 Model::~Model() {
 
 	mesh_.reset();
+	delete animation_;
 }
 
 //=============================================================================
 // 初期化
 //=============================================================================
 
-void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData) {
+void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 	modelCommon_ = ModelCommon;
 
 	//objファイル読み込み
 	modelData_ = modelData;
 
 	//Skeleton作成
-	if (modelData_.haveBone) {
+	if (modelData_->haveBone) {
 		skeleton_ = std::make_unique<Skeleton>();
-		skeleton_->Create(modelData_.rootNode);
+		skeleton_->Create(modelData_->rootNode);
 		//SkinCluster作成
 		skinCluster_.Create(modelCommon_->GetDirectXCommon()->GetDevice(), modelCommon_->GetSrvManager(), skeleton_.get(), modelData_);
 		haveSkeleton_ = true;
@@ -41,8 +42,8 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData) {
 	mesh_ = std::make_unique<Mesh>();
 	mesh_->InitializeMesh(
 		modelCommon_->GetDirectXCommon(),
-		modelData_.material.textureFilePath,
-		modelData_.material.envMapFilePath);
+		modelData_->material.textureFilePath,
+		modelData_->material.envMapFilePath);
 
 	//inputVertexResource
 	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
@@ -50,7 +51,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData) {
 	//indexResource
 	mesh_->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 
-	if (modelData_.haveBone) {
+	if (modelData_->haveBone) {
 		//outputVertexResource
 		mesh_->InitializeOutputVertexResourceModel(
 			modelCommon_->GetDirectXCommon()->GetDevice(),
@@ -60,7 +61,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData) {
 		//SRVの設定
 		inputIndex_ = modelCommon_->GetSrvManager()->Allocate();
 		modelCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
-			modelData_.skinningInfoData.numVertices,
+			modelData_->skinningInfoData.numVertices,
 			sizeof(VertexData),
 			mesh_->GetInputVertexResource(),
 			inputIndex_);
@@ -70,7 +71,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData) {
 		//UAVの設定
 		uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
 		modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
-			modelData_.skinningInfoData.numVertices,
+			modelData_->skinningInfoData.numVertices,
 			sizeof(VertexData),
 			mesh_->GetOutputVertexResource(),
 			uavIndex_);
@@ -84,17 +85,17 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData& modelData) {
 void Model::Update() {
 
 	//アニメーションがない場合は何もしない
-	if (animation_.duration == 0.0f) {
+	if (animation_->duration == 0.0f) {
 		return;
 	}
 
 	//60fpsで進める
 	//MEMO: 計測した時間を使って可変フレーム対応するのが望ましい
-	animationTime += 1.0f / 60.0f;
+	animationTime_ += 1.0f / 60.0f;
 
 	if (haveSkeleton_) {
 		//アニメーションの更新とボーンへの適用
-		skeleton_->ApplyAnimation(animation_, animationTime);
+		skeleton_->ApplyAnimation(animation_, animationTime_);
 
 		//スケルトンの更新
 		skeleton_->Update();
@@ -104,14 +105,14 @@ void Model::Update() {
 	} else {
 
 		//rootNodeのAnimationを取得
-		NodeAnimation& rootNodeAnimation = animation_.nodeAnimations[modelData_.rootNode.name];
-		translate_ = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
-		rotate_ = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
-		scale_ = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
+		NodeAnimation& rootNodeAnimation = animation_->nodeAnimations[modelData_->rootNode.name];
+		translate_ = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime_);
+		rotate_ = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime_);
+		scale_ = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime_);
 		localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
 	}
 	//最後まで行ったら最初からリピート再生する
-	animationTime = std::fmod(animationTime, animation_.duration);
+	animationTime_ = std::fmod(animationTime_, animation_->duration);
 }
 
 //=============================================================================
@@ -137,13 +138,13 @@ void Model::Draw() {
 	//materialCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//textureSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(6, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(6, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
 	//envMapSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.envMapFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.envMapFilePath));
 	//IBVの設定
 	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	//DrawCall
-	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
+	commandList->DrawIndexedInstanced(UINT(modelData_->indices.size()), 1, 0, 0, 0);
 }
 
 void Model::DrawSkyBox() {
@@ -157,12 +158,12 @@ void Model::DrawSkyBox() {
 	//materialCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//TextureSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
 
 	//IBVの設定
 	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	//DrawCall
-	commandList->DrawIndexedInstanced(UINT(modelData_.indices.size()), 1, 0, 0, 0);
+	commandList->DrawIndexedInstanced(UINT(modelData_->indices.size()), 1, 0, 0, 0);
 }
 
 void Model::DisPatch() {
@@ -196,7 +197,7 @@ void Model::DisPatch() {
 	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(4, uavIndex_);
 
 	//DisPatch
-	commandList->Dispatch(UINT(modelData_.skinningInfoData.numVertices + 1023) / 1024, 1, 1);
+	commandList->Dispatch(UINT(modelData_->skinningInfoData.numVertices + 1023) / 1024, 1, 1);
 
 
 	//今回のバリアはTransition
@@ -228,9 +229,9 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	//materialCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
 	//DrawCall
-	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
+	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount_, 0, 0);
 }
 
 void Model::DrawForGPUParticle(UINT instanceCount) {
@@ -243,12 +244,14 @@ void Model::DrawForGPUParticle(UINT instanceCount) {
 	//materialCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_.material.textureFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
 	//DrawCall
-	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount, 0, 0);
+	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount, 0, 0);
 }
 
-void Model::SetAnimation(Animation animation) {
-	animation_ = animation;
-	animationTime = 0.0f;
+void Model::SetAnimation(Animation* animation) {
+	if (animation) {
+		animation_ = new Animation(*animation);
+	}
+	animationTime_ = 0.0f;
 }

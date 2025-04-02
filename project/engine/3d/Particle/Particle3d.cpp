@@ -122,8 +122,8 @@ void Particle3d::Update() {
 			}
 
 			//インスタンシングデータをGPUに転送
-			instancingData_[numInstance_].WVP = model_->GetModelData().rootNode.localMatrix * WVPMatrix_;
-			instancingData_[numInstance_].World = model_->GetModelData().rootNode.localMatrix * worldMatrix_;
+			instancingData_[numInstance_].WVP = model_->GetModelData()->rootNode.localMatrix * WVPMatrix_;
+			instancingData_[numInstance_].World = model_->GetModelData()->rootNode.localMatrix * worldMatrix_;
 			instancingData_[numInstance_].Color = (*particleIterator).color_;
 			instancingData_[numInstance_].Color.w = alpha;
 
