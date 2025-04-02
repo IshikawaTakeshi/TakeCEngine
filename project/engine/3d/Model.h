@@ -22,7 +22,7 @@ class ModelCommon;
 class Model {
 public:
 
-	Model() = default;
+	Model();
 	~Model();
 
 	/// <summary>
@@ -33,7 +33,7 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void Update();
+	void Update(Animation* animation, float animationTime);
 
 	//void UpdateSkeleton();
 
@@ -75,19 +75,11 @@ public: //ゲッター
 	//ModelCommonの取得
 	ModelCommon* GetModelCommon() { return modelCommon_; }
 
-	//Animationの取得
-	Animation* GetAnimation() { return animation_; }
-
-	float GetDuration() { return animation_->duration; }
-
-
 	//テクスチャファイルパスの取得
 	const std::string& GetTextureFilePath() const { return modelData_->material.textureFilePath; }
 
 	//ローカル行列の取得
 	const Matrix4x4& GetLocalMatrix() const { return localMatrix_; }
-
-	float GetAnimationTime() { return animationTime_; }
 
 public: //セッター
 
@@ -96,8 +88,6 @@ public: //セッター
 
 	//ModelCommonの設定
 	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
-
-	void SetAnimation(Animation* animation);
 
 private:
 
@@ -112,15 +102,12 @@ private:
 
 	//構築するModelData
 	ModelData* modelData_;
-	Animation* animation_;
+	//Animation* animation_;
 
 	Vector3 translate_;
 	Quaternion rotate_;
 	Vector3 scale_;
 	Matrix4x4 localMatrix_;
-
-	//再生中の時刻
-	float animationTime_ = 0.0f;
 
 	uint32_t uavIndex_ = 0;
 

@@ -26,9 +26,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	object3dCommon_ = object3dCommon;
 
 	//モデルの設定
-	
-	model_ = std::make_unique<Model>();
-	CopyModel(filePath);
+	model_ = ModelManager::GetInstance()->CopyModel(filePath);
 	model_->GetMesh()->GetMaterial()->SetEnableLighting(true);
 
 	//TransformationMatrix用のResource生成
@@ -51,6 +49,8 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 
 	//カメラのセット
 	camera_ = object3dCommon_->GetDefaultCamera();
+
+	animationTime_ = 0.0f;
 }
 
 //=============================================================================
@@ -79,24 +79,35 @@ void Object3d::Update() {
 		TransformMatrixData_->World = worldMatrix_;
 		TransformMatrixData_->WVP = WVPMatrix_;
 		TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
-		model_->Update();
+		AnimationUpdate();
 	} 
 	else { //Skeletonがない場合
-		if (model_->GetDuration() != 0.0f) {
+		if (animation_->duration != 0.0f) {
 			WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 			TransformMatrixData_->World = model_->GetLocalMatrix() * worldMatrix_;
 			TransformMatrixData_->WVP = model_->GetLocalMatrix() * WVPMatrix_;
 			TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
-			model_->Update();
+			AnimationUpdate();
 		} else {
 			WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 			TransformMatrixData_->World = worldMatrix_;
 			TransformMatrixData_->WVP = model_->GetModelData()->rootNode.localMatrix * WVPMatrix_;
 			TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
-			model_->Update();
+			AnimationUpdate();
 		}
-		
 	}
+}
+
+void Object3d::AnimationUpdate() {
+
+	//アニメーションの時間を進める
+	animationTime_ += 1.0f / 60.0f;
+
+	//スケルトン・スキンクラスターの更新
+	model_->Update(animation_, animationTime_);
+
+	//最後まで行ったら最初からリピート再生する
+	animationTime_ = std::fmod(animationTime_, animation_->duration);
 }
 
 //=============================================================================
@@ -131,12 +142,10 @@ void Object3d::Draw() {
 	//wvp用のCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
-
 	if(model_ != nullptr) {
 		model_->Draw();
 	}
 }
-
 
 void Object3d::DisPatch() {
 	if (model_ != nullptr) {
@@ -156,6 +165,9 @@ Vector3 Object3d::GetCenterPosition() const {
 	return worldPos;
 }
 
-void Object3d::CopyModel(const std::string& filePath) {
-	model_ = std::make_unique<Model>(ModelManager::GetInstance()->FindModel(filePath));
+void Object3d::SetAnimation(Animation* animation) {
+	if (animation) {
+		animation_ = new Animation(*animation);
+	}
+	animationTime_ = 0.0f;
 }

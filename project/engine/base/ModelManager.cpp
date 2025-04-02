@@ -41,7 +41,7 @@ void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::s
 
 	//モデルの生成とファイル読み込み、初期化
 	ModelData* modelData = LoadModelFile(modelDirectoryPath, filePath);
-	std::unique_ptr<Model> model = std::make_unique<Model>();
+	std::shared_ptr<Model> model = std::make_shared<Model>();
 	model->Initialize(modelCommon_, modelData);
 
 	//モデルをコンテナに追加
@@ -56,6 +56,19 @@ Model* ModelManager::FindModel(const std::string& filePath) {
 		return models_.at(filePath).get();
 	}
 
+	//ファイル名一致なし
+	return nullptr;
+}
+
+std::unique_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
+	
+	//読み込み済みモデルを検索
+	if (models_.contains(filePath)) {
+		//読み込みモデルを戻り値としてreturn
+		std::unique_ptr<Model> model = std::make_unique<Model>();
+		model->Initialize(modelCommon_, models_.at(filePath)->GetModelData());
+		return model;
+	}
 	//ファイル名一致なし
 	return nullptr;
 }

@@ -69,14 +69,14 @@ void GamePlayScene::Initialize() {
 	samplePlayer_ = std::make_unique<SampleCharacter>();
 	samplePlayer_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
 	samplePlayer_->SetCharacterType(CharacterType::PLAYER);
-	samplePlayer_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf","damage"));
+	samplePlayer_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf","damage"));
 
 	//SampleEnemy
 	sampleEnemy_ = std::make_unique<SampleCharacter>();
 	sampleEnemy_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
 	sampleEnemy_->SetCharacterType(CharacterType::ENEMY);
 	sampleEnemy_->SetTranslate({ 0.0f,0.0f,15.0f });
-	sampleEnemy_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
+	sampleEnemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
 }
 
 //====================================================================
@@ -94,10 +94,10 @@ void GamePlayScene::Finalize() {
 //====================================================================
 void GamePlayScene::Update() {
 #ifdef _DEBUG
-	drawTestModel_->UpdateImGui(0);
 	
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();
+	samplePlayer_->UpdateImGui();
 
 #endif // DEBUG
 

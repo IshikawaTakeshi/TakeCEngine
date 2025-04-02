@@ -56,7 +56,7 @@ private:
 	std::unique_ptr<ParticleEmitter> particleEmitter1_ = nullptr;
 	std::unique_ptr<ParticleEmitter> particleEmitter2_ = nullptr;
 
-	std::unique_ptr<Object3d> drawTestModel_ = nullptr;
+	//std::unique_ptr<Object3d> drawTestModel_ = nullptr;
 
 	//スプライト
 	std::unique_ptr<Sprite> sprite_ = nullptr;

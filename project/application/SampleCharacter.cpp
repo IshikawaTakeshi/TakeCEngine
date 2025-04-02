@@ -68,6 +68,10 @@ void SampleCharacter::Update() {
 
 }
 
+void SampleCharacter::UpdateImGui() {
+	object3d_->UpdateImGui(0);
+}
+
 void SampleCharacter::Draw() {
 
 	object3d_->Draw();
