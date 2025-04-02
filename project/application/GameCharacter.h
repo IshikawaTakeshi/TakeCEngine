@@ -28,7 +28,7 @@ public:
 
 	virtual CharacterType GetCharacterType() { return characterType_; }
 
-	Model* GetModel() { return object3d_->GetModel(); }
+	Object3d* GetObject3d() { return object3d_.get(); }
 
 	virtual void SetCharacterType(CharacterType type) { characterType_ = type; }
 

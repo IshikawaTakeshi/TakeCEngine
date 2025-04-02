@@ -10,10 +10,11 @@
 #include <fstream>
 #include <sstream>
 
+Model::Model() {}
+
 Model::~Model() {
 
 	mesh_.reset();
-	delete animation_;
 }
 
 //=============================================================================
@@ -82,20 +83,16 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 // 更新処理
 //=============================================================================
 
-void Model::Update() {
+void Model::Update(Animation* animation,float animationTime) {
 
 	//アニメーションがない場合は何もしない
-	if (animation_->duration == 0.0f) {
+	if (animation->duration == 0.0f) {
 		return;
 	}
 
-	//60fpsで進める
-	//MEMO: 計測した時間を使って可変フレーム対応するのが望ましい
-	animationTime_ += 1.0f / 60.0f;
-
 	if (haveSkeleton_) {
 		//アニメーションの更新とボーンへの適用
-		skeleton_->ApplyAnimation(animation_, animationTime_);
+		skeleton_->ApplyAnimation(animation, animationTime);
 
 		//スケルトンの更新
 		skeleton_->Update();
@@ -105,23 +102,13 @@ void Model::Update() {
 	} else {
 
 		//rootNodeのAnimationを取得
-		NodeAnimation& rootNodeAnimation = animation_->nodeAnimations[modelData_->rootNode.name];
-		translate_ = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime_);
-		rotate_ = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime_);
-		scale_ = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime_);
+		NodeAnimation& rootNodeAnimation = animation->nodeAnimations[modelData_->rootNode.name];
+		translate_ = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
+		rotate_ = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
+		scale_ = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
 		localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
 	}
-	//最後まで行ったら最初からリピート再生する
-	animationTime_ = std::fmod(animationTime_, animation_->duration);
 }
-
-//=============================================================================
-// スケルトンの更新
-//=============================================================================
-
-//void Model::UpdateSkeleton() {
-//
-//}
 
 //=============================================================================
 // 描画処理
@@ -187,14 +174,15 @@ void Model::DisPatch() {
 
 	//skinninginfo
 	commandList->SetComputeRootConstantBufferView(0, skinCluster_.skinningInfoResource->GetGPUVirtualAddress());
+	SrvManager* pSrvManager = modelCommon_->GetSrvManager();
 	//parette
-	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(1, skinCluster_.paletteIndex);
+	pSrvManager->SetComputeRootDescriptorTable(1, skinCluster_.paletteIndex);
 	//inputVertex
-	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(2, inputIndex_);
+	pSrvManager->SetComputeRootDescriptorTable(2, inputIndex_);
 	//influence
-	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(3, skinCluster_.influenceIndex);
+	pSrvManager->SetComputeRootDescriptorTable(3, skinCluster_.influenceIndex);
 	//outputVertex
-	modelCommon_->GetSrvManager()->SetComputeRootDescriptorTable(4, uavIndex_);
+	pSrvManager->SetComputeRootDescriptorTable(4, uavIndex_);
 
 	//DisPatch
 	commandList->Dispatch(UINT(modelData_->skinningInfoData.numVertices + 1023) / 1024, 1, 1);
@@ -232,6 +220,7 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount_, 0, 0);
+
 }
 
 void Model::DrawForGPUParticle(UINT instanceCount) {
