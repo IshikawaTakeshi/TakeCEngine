@@ -237,10 +237,3 @@ void Model::DrawForGPUParticle(UINT instanceCount) {
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount, 0, 0);
 }
-
-void Model::SetAnimation(Animation* animation) {
-	if (animation) {
-		animation_ = new Animation(*animation);
-	}
-	animationTime_ = 0.0f;
-}
