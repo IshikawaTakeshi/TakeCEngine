@@ -65,7 +65,7 @@ void SkyBox::Update() {
 
 	WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 	TransformMatrixData_->World = worldMatrix_;
-	TransformMatrixData_->WVP = model_->GetModelData().rootNode.localMatrix * WVPMatrix_;
+	TransformMatrixData_->WVP = model_->GetModelData()->rootNode.localMatrix * WVPMatrix_;
 	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 }
 

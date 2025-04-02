@@ -28,7 +28,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(ModelCommon* ModelCommon,ModelData& modelData);
+	void Initialize(ModelCommon* ModelCommon,ModelData* modelData);
 
 	/// <summary>
 	/// 更新処理
@@ -70,24 +70,24 @@ public: //ゲッター
 	Skeleton* GetSkeleton() { return skeleton_.get(); }
 
 	//ModelDataの取得
-	ModelData& GetModelData() { return modelData_; }
+	ModelData* GetModelData() { return modelData_; }
 
 	//ModelCommonの取得
 	ModelCommon* GetModelCommon() { return modelCommon_; }
 
 	//Animationの取得
-	Animation& GetAnimation() { return animation_; }
+	Animation* GetAnimation() { return animation_; }
 
-	float GetDuration() { return animation_.duration; }
+	float GetDuration() { return animation_->duration; }
 
 
 	//テクスチャファイルパスの取得
-	const std::string& GetTextureFilePath() const { return modelData_.material.textureFilePath; }
+	const std::string& GetTextureFilePath() const { return modelData_->material.textureFilePath; }
 
 	//ローカル行列の取得
 	const Matrix4x4& GetLocalMatrix() const { return localMatrix_; }
 
-	float GetAnimationTime() { return animationTime; }
+	float GetAnimationTime() { return animationTime_; }
 
 public: //セッター
 
@@ -97,7 +97,7 @@ public: //セッター
 	//ModelCommonの設定
 	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
 
-	void SetAnimation(Animation animation);
+	void SetAnimation(Animation* animation);
 
 private:
 
@@ -111,8 +111,8 @@ private:
 	SkinCluster skinCluster_;
 
 	//構築するModelData
-	ModelData modelData_;
-	Animation animation_;
+	ModelData* modelData_;
+	Animation* animation_;
 
 	Vector3 translate_;
 	Quaternion rotate_;
@@ -120,7 +120,7 @@ private:
 	Matrix4x4 localMatrix_;
 
 	//再生中の時刻
-	float animationTime = 0.0f;
+	float animationTime_ = 0.0f;
 
 	uint32_t uavIndex_ = 0;
 

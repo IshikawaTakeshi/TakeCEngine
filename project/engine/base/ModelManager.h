@@ -47,7 +47,7 @@ public:
 	/// <summary>
 	/// modelファイルを読む関数
 	/// </summary>
-	ModelData LoadModelFile(const std::string& DirectoryPath, const std::string& filename);
+	ModelData* LoadModelFile(const std::string& DirectoryPath, const std::string& filename);
 
 	/// <summary>
 	/// ノードの読み込み

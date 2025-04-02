@@ -25,7 +25,7 @@ void Animator::LoadAnimation(const std::string& filePath) {
 	}
 
 	//アニメーションの生成とファイル読み込み、初期化
-	std::map<std::string, Animation> animation = LoadAnimationFile("Animation", filePath);
+	std::map<std::string, Animation*> animation = LoadAnimationFile("Animation", filePath);
 	//アニメーションをコンテナに追加
 	animations_.insert(std::make_pair(filePath, animation));
 }
@@ -34,7 +34,7 @@ void Animator::LoadAnimation(const std::string& filePath) {
 //	アニメーションの検索
 //=============================================================================
 
-Animation Animator::FindAnimation(const std::string& filePath, const std::string& animName) {
+Animation* Animator::FindAnimation(const std::string& filePath, const std::string& animName) {
 	//読み込み済みアニメーションを検索
 	if (animations_.contains(filePath)) {
 		if (animations_.at(filePath).contains(animName)) {
@@ -52,9 +52,8 @@ Animation Animator::FindAnimation(const std::string& filePath, const std::string
 //=============================================================================
 //	アニメーションファイルの読み込み
 //=============================================================================
-std::map<std::string, Animation> Animator::LoadAnimationFile(const std::string& directoryPath, const std::string& filename) {
-	std::map<std::string, Animation> animations;
-    Animation animation;
+std::map<std::string, Animation*> Animator::LoadAnimationFile(const std::string& directoryPath, const std::string& filename) {
+	std::map<std::string, Animation*> animations = {};
     Assimp::Importer importer;
     std::string filePath ="./Resources/" + directoryPath + "/" + filename;
     const aiScene* scene = importer.ReadFile(filePath.c_str(), 0);
@@ -66,12 +65,15 @@ std::map<std::string, Animation> Animator::LoadAnimationFile(const std::string& 
 	//複数のアニメーションの情報を取得
 	for (uint32_t animationIndex = 0; animationIndex < scene->mNumAnimations; ++animationIndex) {
 		aiAnimation* animationAssimp = scene->mAnimations[animationIndex];
-		animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
+		//animationインスタンスの生成
+		Animation* animation = new Animation();
+		//時間の単位を秒に変換
+		animation->duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond);
 
 		//assimpでは個々のNodeのAnimationをchannelと呼んでいるのでchannelを回してNodeAnimationの情報を取得する
 		for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
 			aiNodeAnim* NodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
-			NodeAnimation& nodeAnimation = animation.nodeAnimations[NodeAnimationAssimp->mNodeName.C_Str()];
+			NodeAnimation& nodeAnimation = animation->nodeAnimations[NodeAnimationAssimp->mNodeName.C_Str()];
 
 			//position, rotation, scaleのkeyflameを取得
 			//position
@@ -99,10 +101,13 @@ std::map<std::string, Animation> Animator::LoadAnimationFile(const std::string& 
 				nodeAnimation.scale.keyflames.push_back(keyflame);
 			}
 
+			//animation->nodeAnimations. = nodeAnimation;
 		}
 
 		//アニメーション名を取得
 		std::string animationName = animationAssimp->mName.C_Str();
+		animation->name = animationName;
+		
 		animations.insert(std::make_pair(animationName, animation));
 	}
 

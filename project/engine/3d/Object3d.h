@@ -1,9 +1,10 @@
 #pragma once
 #include <d3d12.h>
 #include <wrl.h>
-
+#include <memory>
 #include "ResourceDataStructure.h"
 
+#include "Animation/Animator.h"
 #include "Transform.h"
 #include "TransformMatrix.h"
 #include "PSOType.h"
@@ -48,11 +49,11 @@ public: //getter
 	Vector3 GetRotation() const { return transform_.rotate; }
 	Vector3 GetTranslate() const { return transform_.translate; }
 	Vector3 GetCenterPosition() const;
-	Model* GetModel() { return model_; }
+	Model* GetModel() { return model_.get(); }
 
 public: //setter
 
-	void SetModel(const std::string& filePath);
+	void CopyModel(const std::string& filePath);
 	void SetCamera(Camera* camera) { camera_ = camera; }
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	void SetRotation(const Vector3& rotation) { transform_.rotate = rotation; }
@@ -63,7 +64,7 @@ protected: // privateメンバ変数
 	Object3dCommon* object3dCommon_ = nullptr;
 
 	//モデル
-	Model* model_ = nullptr;
+	std::unique_ptr<Model> model_ = nullptr;
 
 	//TransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;

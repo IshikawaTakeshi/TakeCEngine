@@ -6,7 +6,7 @@
 
 void SkinCluster::Create(
 	const ComPtr<ID3D12Device>& device,SrvManager* srvManager,
-	Skeleton* skeleton, const ModelData& modelData) {
+	Skeleton* skeleton, const ModelData* modelData) {
 
 	//palette用のReosurce確保
 	//MEMO:sizeInBytesはWellForGPUのサイズ×ジョイント数
@@ -26,22 +26,22 @@ void SkinCluster::Create(
 
 	//influence用のResource確保
 	//VertexInfluence * std::vector<VertexData>
-	influenceResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData.vertices.size());
+	influenceResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData->vertices.size());
 	
 	//influenceのSRV作成
 	influenceIndex = srvManager->Allocate();
 	srvManager->CreateSRVforStructuredBuffer(
-		UINT(modelData.vertices.size()),sizeof(VertexInfluence),influenceResource.Get(),influenceIndex);
+		UINT(modelData->vertices.size()),sizeof(VertexInfluence),influenceResource.Get(),influenceIndex);
 
 	VertexInfluence* mappedInfluenceData = nullptr;
 	influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluenceData));
-	std::memset(mappedInfluenceData, 0, sizeof(VertexInfluence) * modelData.vertices.size());
-	mappedInfluences = { mappedInfluenceData, modelData.vertices.size() };
+	std::memset(mappedInfluenceData, 0, sizeof(VertexInfluence) * modelData->vertices.size());
+	mappedInfluences = { mappedInfluenceData, modelData->vertices.size() };
 
 	//skinningInfoResourceの作成
 	skinningInfoResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(SkinningInfo));
 	skinningInfoResource->Map(0, nullptr, reinterpret_cast<void**>(&skinningInfoData));
-	*skinningInfoData = modelData.skinningInfoData;
+	*skinningInfoData = modelData->skinningInfoData;
 
 	//InverseBindPoseMatricesの保存領域の作成
 	inverseBindPoseMatrices.resize(skeleton->GetJoints().size());
@@ -49,7 +49,7 @@ void SkinCluster::Create(
 		return MatrixMath::MakeIdentity4x4(); });
 
 	//ModelDataのSkinClusterの情報を元に、Influenceの中身を書き込む
-	for (const auto& jointWeight : modelData.skinClusterData) {
+	for (const auto& jointWeight : modelData->skinClusterData) {
 		auto it = skeleton->GetJointMap().find(jointWeight.first);
 
 		//Jointが見つからなかったらスキップ

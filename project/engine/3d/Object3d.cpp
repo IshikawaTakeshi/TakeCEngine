@@ -26,7 +26,9 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	object3dCommon_ = object3dCommon;
 
 	//モデルの設定
-	SetModel(filePath);
+	
+	model_ = std::make_unique<Model>();
+	CopyModel(filePath);
 	model_->GetMesh()->GetMaterial()->SetEnableLighting(true);
 
 	//TransformationMatrix用のResource生成
@@ -89,7 +91,7 @@ void Object3d::Update() {
 		} else {
 			WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 			TransformMatrixData_->World = worldMatrix_;
-			TransformMatrixData_->WVP = model_->GetModelData().rootNode.localMatrix * WVPMatrix_;
+			TransformMatrixData_->WVP = model_->GetModelData()->rootNode.localMatrix * WVPMatrix_;
 			TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 			model_->Update();
 		}
@@ -154,6 +156,6 @@ Vector3 Object3d::GetCenterPosition() const {
 	return worldPos;
 }
 
-void Object3d::SetModel(const std::string& filePath) {
-	model_ = ModelManager::GetInstance()->FindModel(filePath);
+void Object3d::CopyModel(const std::string& filePath) {
+	model_ = std::make_unique<Model>(ModelManager::GetInstance()->FindModel(filePath));
 }

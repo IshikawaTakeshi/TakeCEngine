@@ -17,6 +17,7 @@ struct NodeAnimation {
 };
 
 struct Animation {
+	std::string name;
 	float duration; //アニメーションの全体の尺(秒単位)
 	std::map<std::string, NodeAnimation> nodeAnimations;
 };

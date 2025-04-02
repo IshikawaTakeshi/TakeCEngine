@@ -69,14 +69,14 @@ void GamePlayScene::Initialize() {
 	samplePlayer_ = std::make_unique<SampleCharacter>();
 	samplePlayer_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
 	samplePlayer_->SetCharacterType(CharacterType::PLAYER);
-	samplePlayer_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf","clear"));
+	samplePlayer_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf","damage"));
 
 	//SampleEnemy
 	sampleEnemy_ = std::make_unique<SampleCharacter>();
-	sampleEnemy_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
+	sampleEnemy_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
 	sampleEnemy_->SetCharacterType(CharacterType::ENEMY);
 	sampleEnemy_->SetTranslate({ 0.0f,0.0f,15.0f });
-	sampleEnemy_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "dash"));
+	sampleEnemy_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
 }
 
 //====================================================================
@@ -159,7 +159,7 @@ void GamePlayScene::Draw() {
 	//当たり判定の描画前処理
 	CollisionManager::GetInstance()->PreDraw();
 	samplePlayer_->DrawCollider();
-	sampleEnemy_->DrawCollider();
+	//sampleEnemy_->DrawCollider();
 
 	//グリッド地面の描画
 	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 100);
