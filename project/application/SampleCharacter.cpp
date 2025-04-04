@@ -56,9 +56,6 @@ void SampleCharacter::Update() {
 			} 
 		}
 	}
-
-	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
-
 	//キー入力で移動
 	object3d_->Update();
 
