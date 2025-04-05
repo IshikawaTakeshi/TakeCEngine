@@ -31,6 +31,12 @@ public:
 
 	void DisPatchInitializeParticle();
 
+	uint32_t GetParticleUavIndex() const { return particleUavIndex_; }
+
+	uint32_t GetFreeCounterIndex() const { return freeCounterIndex_; }
+
+	ID3D12Resource* GetParticleUavResource() const { return particleUavResource_.Get(); }
+
 private:
 
 	ParticleCommon* particleCommon_ = nullptr;
@@ -43,7 +49,7 @@ private:
 
 	ParticleForCS* particleData_ = nullptr;
 	uint32_t particleUavIndex_ = 0;
-	uint32_t particleSrvIndex_ = 0;
+	uint32_t freeCounterIndex_ = 0;
 
 	//PerViewData
 	PerView* perViewData_ = nullptr;
@@ -52,4 +58,5 @@ private:
 
 	ComPtr<ID3D12Resource> particleUavResource_ = nullptr;
 	ComPtr<ID3D12Resource> perViewResource_ = nullptr;
+	ComPtr<ID3D12Resource> freeCounterResource_ = nullptr;
 };

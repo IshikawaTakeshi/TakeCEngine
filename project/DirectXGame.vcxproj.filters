@@ -231,7 +231,7 @@
     <ClCompile Include="engine\3d\AABB.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\Particle\ParticleEmitter.cpp">
+    <ClCompile Include="engine\3d\Particle\ParticleEmitter.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="engine\math\Quaternion.cpp">
@@ -461,7 +461,7 @@
     <ClInclude Include="engine\3d\AABB.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\Particle\ParticleEmitter.h">
+    <ClInclude Include="engine\3d\Particle\ParticleEmitter.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\Quaternion.h">
@@ -584,6 +584,9 @@
     <None Include="Resources\glTF\simpleSkin.gltf" />
     <None Include="Resources\shaders\SkyBox.hlsli" />
     <None Include="Resources\shaders\WireFrame\WireFrame.hlsli" />
+    <None Include="Resources\shaders\GPUParticle.hlsli" />
+    <None Include="Resources\shaders\ParticleEmitter.hlsli" />
+    <None Include="Resources\shaders\RandomGenerator.hlsli" />
     <None Include="Resources\glTF\player_animation.bin">
       <Filter>リソース ファイル</Filter>
     </None>
@@ -609,5 +612,6 @@
     <FxCompile Include="Resources\shaders\WireFrame\WireFrame.PS.hlsl" />
     <FxCompile Include="Resources\shaders\GPUParticle.VS.hlsl" />
     <FxCompile Include="Resources\shaders\GPUParticle.PS.hlsl" />
+    <FxCompile Include="Resources\shaders\EmitParticle.CS.hlsl" />
   </ItemGroup>
 </Project>

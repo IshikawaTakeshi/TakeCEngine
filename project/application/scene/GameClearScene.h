@@ -13,7 +13,7 @@
 #include "3d/Particle/Particle3d.h"
 #include "3d/Particle/ParticleCommon.h"
 #include "base/Particle/ParticleManager.h"
-#include "base/Particle/ParticleEmitter.h"
+#include "3d/Particle/ParticleEmitter.h"
 
 //===== Application =====//
 #include "application/SkyBox/SkyBox.h"

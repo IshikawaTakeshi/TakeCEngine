@@ -3,6 +3,8 @@
 
 #include "scene/AbstractSceneFactory.h"
 
+#include <chrono>
+
 class TakeCFrameWork {
 public:
 
@@ -28,6 +30,8 @@ public:
 
 	static WireFrame* GetWireFrame();
 
+	static float GetGameTime();
+
 protected:
 
 	std::unique_ptr<WinApp> winApp_ = nullptr;
@@ -45,6 +49,8 @@ protected:
 	static std::unique_ptr<ParticleManager> particleManager_;
 	static std::unique_ptr<WireFrame> wireFrame_;
 	
+	// ゲームの起動時間
+	static std::chrono::steady_clock::time_point gameTime_;
 	//終了フラグ
 	bool isEnd_ = false;
 };

@@ -1,5 +1,6 @@
 #pragma once
 #include "TakeCFrameWork.h"
+#include <chrono>
 
 class MyGame : public TakeCFrameWork {
 public:

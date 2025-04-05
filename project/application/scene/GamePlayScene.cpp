@@ -35,8 +35,14 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "player_animation.gltf");
 
+	//GPUパーティクルの初期化
 	gpuParticleGroup_ = std::make_unique<GPUParticle>();
 	gpuParticleGroup_->Initialize(ParticleCommon::GetInstance(), "cube.obj");
+
+	//ParticleEmitterの初期化
+	particleEmitter1_ = std::make_unique<ParticleEmitter>();
+	particleEmitter1_->InitializeEmitterSphere(
+		ParticleCommon::GetInstance()->GetDirectXCommon(), ParticleCommon::GetInstance()->GetSrvManager());
 
 	//Animation読み込み
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
@@ -48,12 +54,8 @@ void GamePlayScene::Initialize() {
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
-	//animationModel
-	//drawTestModel_ = std::make_unique<Object3d>();
-	//drawTestModel_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
-	//drawTestModel_->SetTranslate({ 0.0f,0.0f,0.0f });
-	//drawTestModel_->GetModel()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("running.gltf"));
 
+	//sprite
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
 
@@ -104,6 +106,9 @@ void GamePlayScene::Update() {
 	//SkyBoxの更新
 	skyBox_->Update();
 	
+	//ParticleEmitterの更新
+	particleEmitter1_->UpdateForGPU();
+	particleEmitter1_->EmitParticle(gpuParticleGroup_.get());
 	//GPUパーティクルの更新
 	gpuParticleGroup_->Update();
 
