@@ -81,13 +81,13 @@ private:
 
 	//球状エミッター情報
 	EmitterSphereInfo* emitterSphereInfo_ = nullptr;
-	//球状エミッターのリソース
-	ComPtr<ID3D12Resource> emitterSphereResource_;
-	uint32_t emitterSphereSrvIndex_;
-
+	uint32_t emitterSphereSrvIndex_ = 0;
 	//フレーム時間の情報
-	ComPtr<ID3D12Resource> perFrameResource_;
 	PerFrame* perFrameData_ = nullptr;
+
+
+	ComPtr<ID3D12Resource> emitterSphereResource_;
+	ComPtr<ID3D12Resource> perFrameResource_;
 
 	const float kDeltaTime_ = 1.0f / 60.0f; //1フレームの時間
 	bool isEmit_; //発生フラグ

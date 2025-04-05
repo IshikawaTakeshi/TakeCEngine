@@ -6,7 +6,7 @@ float Rand3dTo1d(float3 value,float3 dotDir = float3(12.9898, 78.233, 37.719)) {
 	
 	float randomValue = dot(smallValue, dotDir);
 	
-	randomValue = frac(randomValue * 143758.5453);
+	randomValue = frac(sin(randomValue) * 143758.5453);
 	
 	return randomValue;
 }

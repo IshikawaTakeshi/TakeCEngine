@@ -3,6 +3,7 @@
 #include "ModelManager.h"
 #include "DirectXCommon.h"
 #include "MatrixMath.h"
+#include "ImGuiManager.h"
 
 GPUParticle::~GPUParticle() {
 
@@ -22,29 +23,33 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 		particleCommon_->GetDirectXCommon()->GetDevice(),sizeof(ParticleForCS) * kNumMaxInstance_,
 		particleCommon_->GetDirectXCommon()->GetCommandList());
 
-
 	//PerViewResource生成
 	perViewResource_ = DirectXCommon::CreateBufferResource(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
 
+	//freeCounterResource生成
+	freeCounterResource_ = DirectXCommon::CreateBufferResourceUAV(
+		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(uint32_t),
+		particleCommon_->GetDirectXCommon()->GetCommandList());
+
 	//Mapping
 	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));
 
-	//SRVリソース
-	particleSrvIndex_ = particleCommon_->GetSrvManager()->Allocate();
-	particleCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
-		kNumMaxInstance_,
-		sizeof(ParticleForCS),
-		particleUavResource_.Get(),
-		particleSrvIndex_
-	);
-	//URVリソース
+	//particleURVリソース
 	particleUavIndex_ = particleCommon_->GetSrvManager()->Allocate();
 	particleCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
 		kNumMaxInstance_,
 		sizeof(ParticleForCS),
 		particleUavResource_.Get(),
 		particleUavIndex_
+	);
+	//freeCounterリソース
+	freeCounterIndex_ = particleCommon_->GetSrvManager()->Allocate();
+	particleCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
+		1,
+		sizeof(uint32_t),
+		freeCounterResource_.Get(),
+		freeCounterIndex_
 	);
 
 	//PerViewData初期化
@@ -58,7 +63,6 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 }
 
 void GPUParticle::Update() {
-
 
 	perViewData_->viewProjection = camera_->GetViewProjectionMatrix();
 	perViewData_->billboardMatrix = camera_->GetRotationMatrix();
@@ -93,6 +97,7 @@ void GPUParticle::DisPatchInitializeParticle() {
 	particleCommon_->GetDirectXCommon()->GetCommandList()->ResourceBarrier(1, &uavBarrier);
 
 	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(0, particleUavIndex_);
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(1, freeCounterIndex_);
 	particleCommon_->GetDirectXCommon()->GetCommandList()->Dispatch(1, 1, 1);
 	
 	//TransitionBarrierを張る

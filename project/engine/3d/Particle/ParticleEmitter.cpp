@@ -64,7 +64,7 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 
 	//EmitterSphereInfo初期化
 	emitterSphereInfo_->particleCount = 10;
-	emitterSphereInfo_->frequency = 0.5f;
+	emitterSphereInfo_->frequency = 0.1f;
 	emitterSphereInfo_->translate = Vector3(0.0f, 0.0f, 0.0f);
 	emitterSphereInfo_->radius = 1.0f;
 	emitterSphereInfo_->isEmit = 1;
@@ -154,7 +154,8 @@ void ParticleEmitter::EmitParticle(GPUParticle* gpuParticle) {
 	srvManager_->SetComputeRootDescriptorTable(1, emitterSphereSrvIndex_);
 	//2.Particle
 	srvManager_->SetComputeRootDescriptorTable(2, gpuParticle->GetParticleUavIndex());
-
+	//3.FreeCounter
+	srvManager_->SetComputeRootDescriptorTable(3, gpuParticle->GetFreeCounterIndex());
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(1, 1, 1);
 
