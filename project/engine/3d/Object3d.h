@@ -1,9 +1,10 @@
 #pragma once
 #include <d3d12.h>
 #include <wrl.h>
-
+#include <memory>
 #include "ResourceDataStructure.h"
 
+#include "Animation/Animator.h"
 #include "Transform.h"
 #include "TransformMatrix.h"
 #include "PSOType.h"
@@ -30,6 +31,8 @@ public:
 	/// </summary>
 	void Update();
 
+	void AnimationUpdate();
+
 	#ifdef _DEBUG
 	void UpdateImGui(int id);
 	#endif // _DEBUG
@@ -48,22 +51,30 @@ public: //getter
 	Vector3 GetRotation() const { return transform_.rotate; }
 	Vector3 GetTranslate() const { return transform_.translate; }
 	Vector3 GetCenterPosition() const;
-	Model* GetModel() { return model_; }
+	Model* GetModel() { return model_.get(); }
+
+	//Animationの取得
+	Animation* GetAnimation() { return animation_; }
+	float GetDuration() { return animation_->duration; }
+	float GetAnimationTime() { return animationTime_; }
 
 public: //setter
 
-	void SetModel(const std::string& filePath);
 	void SetCamera(Camera* camera) { camera_ = camera; }
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	void SetRotation(const Vector3& rotation) { transform_.rotate = rotation; }
 	void SetTranslate(const Vector3& position) { transform_.translate = position; }
+	void SetAnimation(Animation* animation);
 
 protected: // privateメンバ変数
 
 	Object3dCommon* object3dCommon_ = nullptr;
 
 	//モデル
-	Model* model_ = nullptr;
+	std::unique_ptr<Model> model_ = nullptr;
+
+	Animation* animation_;
+	float animationTime_ = 0.0f;
 
 	//TransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;

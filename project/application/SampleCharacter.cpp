@@ -56,9 +56,6 @@ void SampleCharacter::Update() {
 			} 
 		}
 	}
-
-	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
-
 	//キー入力で移動
 	object3d_->Update();
 
@@ -66,6 +63,10 @@ void SampleCharacter::Update() {
 	collider_->Update(object3d_.get());
 #endif // _DEBUG
 
+}
+
+void SampleCharacter::UpdateImGui() {
+	object3d_->UpdateImGui(0);
 }
 
 void SampleCharacter::Draw() {

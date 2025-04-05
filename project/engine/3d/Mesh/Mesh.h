@@ -44,8 +44,8 @@ public:
 	/// モデルの頂点バッファリソース初期化
 	/// </summary>
 	/// <param name="device"></param>
-	void InitializeInputVertexResourceModel(ID3D12Device* device, ModelData modelData);
-	void InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData modelData, ID3D12GraphicsCommandList* commandList);
+	void InitializeInputVertexResourceModel(ID3D12Device* device, ModelData* modelData);
+	void InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* modelData, ID3D12GraphicsCommandList* commandList);
 	//void InitializeSkinnedVertexResource(ID3D12Device* device, ModelData modelData);
 
 	/// <summary>
@@ -58,10 +58,10 @@ public:
 	/// </summary>
 	void InitializeIndexResourceSprite(ID3D12Device* device);
 
-	void InitializeIndexResourceModel(ID3D12Device* device, ModelData modelData);
+	void InitializeIndexResourceModel(ID3D12Device* device, ModelData* modelData);
 
 	//Map
-	void MapInputVertexResource(ModelData modelData);
+	void MapInputVertexResource(ModelData* modelData);
 
 public: //getter
 	

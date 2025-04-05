@@ -2040,8 +2040,8 @@
 				},
 				{
 					"sampler":94,
-					"target":{
 						"node":50,
+					"target":{
 						"path":"rotation"
 					}
 				},

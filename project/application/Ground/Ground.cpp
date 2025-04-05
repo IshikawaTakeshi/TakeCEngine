@@ -20,8 +20,8 @@
 #endif // DEBUG
 
 Ground::~Ground() {
+	object3dCommon_ = nullptr;
 	model_ = nullptr;
-
 }
 
 void Ground::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {

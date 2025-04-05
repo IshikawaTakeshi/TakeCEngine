@@ -49,10 +49,10 @@ void Skeleton::Draw() {
 
 }
 
-void Skeleton::ApplyAnimation(const Animation& animation, float animationTime) {
+void Skeleton::ApplyAnimation(Animation* animation, float animationTime) {
 	for (Joint& joint : joints) {
 		//対象のJointのAnimationがあれば、値の適用を行う。
-		if (auto it = animation.nodeAnimations.find(joint.name); it != animation.nodeAnimations.end()) {
+		if (auto it = animation->nodeAnimations.find(joint.name); it != animation->nodeAnimations.end()) {
 			const NodeAnimation& rootNodeAnimation = (*it).second;
 			joint.transform.scale = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
 			joint.transform.rotate = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);

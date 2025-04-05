@@ -284,6 +284,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <Image Include="Resources\uvChecker.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Animation\player_animation.bin" />
+    <None Include="Resources\Animation\player_animation.gltf" />
+    <None Include="Resources\glTF\player_animation.bin" />
+    <None Include="Resources\glTF\player_animation.gltf" />
     <None Include="Resources\glTF\simpleSkin.bin" />
     <None Include="Resources\glTF\simpleSkin.gltf" />
     <None Include="Resources\glTF\sneakWalk.bin" />

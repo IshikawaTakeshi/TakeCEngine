@@ -34,7 +34,7 @@ public:
 	/// <summary>
 	/// アニメーションの適用
 	/// </summary>
-	void ApplyAnimation(const Animation& animation,float animationTime);
+	void ApplyAnimation(Animation* animation,float animationTime);
 
 
 public: //getter

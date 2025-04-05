@@ -44,10 +44,12 @@ public:
 	/// <param name="filePath">モデルのファイルパス</param>
 	Model* FindModel(const std::string& filePath);
 
+	std::unique_ptr<Model> CopyModel(const std::string& filePath);
+
 	/// <summary>
 	/// modelファイルを読む関数
 	/// </summary>
-	ModelData LoadModelFile(const std::string& DirectoryPath, const std::string& filename);
+	ModelData* LoadModelFile(const std::string& DirectoryPath, const std::string& filename);
 
 	/// <summary>
 	/// ノードの読み込み
@@ -69,6 +71,6 @@ private:
 	ModelCommon* modelCommon_ = nullptr;
 
 	//モデルデータコンテナ
-	std::map<std::string, std::unique_ptr<Model>> models_;
+	std::map<std::string, std::shared_ptr<Model>> models_;
 };
 

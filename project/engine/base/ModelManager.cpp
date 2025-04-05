@@ -40,8 +40,8 @@ void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::s
 	}
 
 	//モデルの生成とファイル読み込み、初期化
-	ModelData modelData = LoadModelFile(modelDirectoryPath, filePath);
-	std::unique_ptr<Model> model = std::make_unique<Model>();
+	ModelData* modelData = LoadModelFile(modelDirectoryPath, filePath);
+	std::shared_ptr<Model> model = std::make_shared<Model>();
 	model->Initialize(modelCommon_, modelData);
 
 	//モデルをコンテナに追加
@@ -60,13 +60,26 @@ Model* ModelManager::FindModel(const std::string& filePath) {
 	return nullptr;
 }
 
+std::unique_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
+	
+	//読み込み済みモデルを検索
+	if (models_.contains(filePath)) {
+		//読み込みモデルを戻り値としてreturn
+		std::unique_ptr<Model> model = std::make_unique<Model>();
+		model->Initialize(modelCommon_, models_.at(filePath)->GetModelData());
+		return model;
+	}
+	//ファイル名一致なし
+	return nullptr;
+}
+
 //=============================================================================
 // Modelファイルを読む関数
 //=============================================================================
 
-ModelData ModelManager::LoadModelFile(const std::string& modelDirectoryPath, const std::string& filename) {
+ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, const std::string& filename) {
 
-	ModelData modelData;
+	ModelData* modelData = new ModelData();
 	Assimp::Importer importer;
 	std::string filePath = "./Resources/" + modelDirectoryPath + "/" + filename;
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
@@ -77,9 +90,9 @@ ModelData ModelManager::LoadModelFile(const std::string& modelDirectoryPath, con
 			aiMesh* mesh = scene->mMeshes[meshIndex];
 			assert(mesh->HasNormals()); //法線がない場合は現在エラー
 			assert(mesh->HasTextureCoords(0)); //UVがない場合は現在エラー
-			modelData.vertices.resize(mesh->mNumVertices);
+			modelData->vertices.resize(mesh->mNumVertices);
 			//Meshの頂点数の格納
-			modelData.skinningInfoData.numVertices = mesh->mNumVertices;
+			modelData->skinningInfoData.numVertices = mesh->mNumVertices;
 
 			//vertexの解析
 			for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
@@ -87,9 +100,9 @@ ModelData ModelManager::LoadModelFile(const std::string& modelDirectoryPath, con
 				aiVector3D& normal = mesh->mNormals[vertexIndex];
 				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
 
-				modelData.vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
-				modelData.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
-				modelData.vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
+				modelData->vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
+				modelData->vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
+				modelData->vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
 
 			}
 			//faceの解析
@@ -100,21 +113,21 @@ ModelData ModelManager::LoadModelFile(const std::string& modelDirectoryPath, con
 				//Indices解析
 				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
 					uint32_t indicesIndex = face.mIndices[element];
-					modelData.indices.push_back(indicesIndex);
+					modelData->indices.push_back(indicesIndex);
 				}
 			}
 
 			//boneの解析
 			//boneがない場合はスキップ
 			if (mesh->HasBones() == false) {
-				modelData.haveBone = false;
+				modelData->haveBone = false;
 				continue;
 			}
 			for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
-				modelData.haveBone = true;
+				modelData->haveBone = true;
 				aiBone* bone = mesh->mBones[boneIndex];
 				std::string jointwName = bone->mName.C_Str();
-				JointWeightData& jointWeightData = modelData.skinClusterData[jointwName];
+				JointWeightData& jointWeightData = modelData->skinClusterData[jointwName];
 
 				//BindPoseMatrixに戻す
 				aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
@@ -147,20 +160,20 @@ ModelData ModelManager::LoadModelFile(const std::string& modelDirectoryPath, con
 
 		aiString textureFilePath;
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath) == AI_SUCCESS) {
-			modelData.material.textureFilePath = std::string("./Resources/images/") + textureFilePath.C_Str();
+			modelData->material.textureFilePath = std::string("./Resources/images/") + textureFilePath.C_Str();
 		}
 
-		if (modelData.material.textureFilePath == "") { //テクスチャがない場合はデフォルトのテクスチャを設定
-			modelData.material.textureFilePath = "./Resources/images/uvChecker.png";
+		if (modelData->material.textureFilePath == "") { //テクスチャがない場合はデフォルトのテクスチャを設定
+			modelData->material.textureFilePath = "./Resources/images/uvChecker.png";
 		}
 
 		//環境マップテクスチャの設定
 		//MEMO: 画像はDDSファイルのみ対応
-		modelData.material.envMapFilePath = "./Resources/images/rostock_laage_airport_4k.dds";
+		modelData->material.envMapFilePath = "./Resources/images/rostock_laage_airport_4k.dds";
 	}
 
 	//rootNodeの解析
-	modelData.rootNode = ReadNode(scene->mRootNode);
+	modelData->rootNode = ReadNode(scene->mRootNode);
 
 	return modelData;
 }

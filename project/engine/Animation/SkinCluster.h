@@ -40,7 +40,7 @@ struct SkinCluster {
 	uint32_t influenceIndex;
 
 	void Create(const ComPtr<ID3D12Device>& device,SrvManager* srvManager,
-				Skeleton* skeleton,const ModelData& modelData);
+				Skeleton* skeleton,const ModelData* modelData);
 
 	void Update(Skeleton* skeleton);
 };
