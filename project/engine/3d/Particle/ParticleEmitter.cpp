@@ -7,8 +7,8 @@
 ParticleEmitter::~ParticleEmitter() {
 	dxCommon_ = nullptr;
 	srvManager_ = nullptr;
-	emitParticlePso_.reset();
 	emitParticleRootSignature_.Reset();
+	emitParticlePso_.reset();
 	emitterSphereResource_.Reset();
 }
 
@@ -153,8 +153,10 @@ void ParticleEmitter::EmitParticle(GPUParticle* gpuParticle) {
 	srvManager_->SetComputeRootDescriptorTable(1, emitterSphereSrvIndex_);
 	//2.Particle
 	srvManager_->SetComputeRootDescriptorTable(2, gpuParticle->GetParticleUavIndex());
-	//3.FreeCounter
-	srvManager_->SetComputeRootDescriptorTable(3, gpuParticle->GetFreeCounterIndex());
+	//3.FreeListIndex
+	srvManager_->SetComputeRootDescriptorTable(3, gpuParticle->GetFreeListIndexUavIndex());
+	//4.FreeList
+	srvManager_->SetComputeRootDescriptorTable(4, gpuParticle->GetFreeListUavIndex());
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(1, 1, 1);
 

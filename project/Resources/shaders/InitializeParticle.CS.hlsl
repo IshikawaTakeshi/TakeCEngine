@@ -1,18 +1,23 @@
 #include "GPUParticle.hlsli"
 
-RWStructuredBuffer<int> gFreeCounter : register(u1);
+RWStructuredBuffer<ParticleForCS> gParticles : register(u0);
+RWStructuredBuffer<int> gFreeListIndex : register(u1);
+RWStructuredBuffer<uint> gFreeList : register(u2);
 
 [numthreads(1024, 1, 1)]
-void main( uint3 DTid : SV_DispatchThreadID ) {
+void main(uint3 DTid : SV_DispatchThreadID) {
 	uint particleIndex = DTid.x;
 	
-	//particleIndexが最大数を超えた場合は何もしない
-	if (particleIndex > kMaxParticles) {
-		return;
+
+	if ( particleIndex < kMaxParticles ) {
+		
+		//particle初期化
+		gParticles[particleIndex] = (ParticleForCS)0;
+		gFreeList[particleIndex] = particleIndex;
 	}
 	
-	//カウンター初期化
-	if(particleIndex == 0) {
-		gFreeCounter[0] = 0;
+	//Indexが末尾を指すようにする
+	if ( particleIndex == 0 ) {
+		gFreeListIndex[0] = kMaxParticles - 1;
 	}
 }

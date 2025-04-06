@@ -82,9 +82,8 @@ void GamePlayScene::Initialize() {
 //====================================================================
 
 void GamePlayScene::Finalize() {
-	CollisionManager::GetInstance()->Finalize();           // 当たり判定の解放
+	CollisionManager::GetInstance()->Finalize(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
-	//AudioManager::GetInstance()->SoundUnload(&BGM); //音声データ解放
 }
 
 //====================================================================

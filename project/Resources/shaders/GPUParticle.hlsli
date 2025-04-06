@@ -19,4 +19,4 @@ struct PerView {
 	float4x4 billboardMatrix;
 };
 
-static const uint kMaxParticles = 10240;
+static const uint kMaxParticles = 1024;

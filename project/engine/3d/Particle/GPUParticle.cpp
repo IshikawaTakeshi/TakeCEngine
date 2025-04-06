@@ -11,7 +11,14 @@ GPUParticle::~GPUParticle() {
 
 	particleUavResource_.Reset();
 	perViewResource_.Reset();
+	perFrameResource_.Reset();
+	freeListIndexResource_.Reset();
+	freeListResource_.Reset();
 }
+
+//==================================================================================
+//		Initialize
+//==================================================================================
 
 void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& filePath) {
 
@@ -33,9 +40,14 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 	perFrameResource_ = DirectXCommon::CreateBufferResource(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerFrame));
 
-	//freeCounterResource生成
-	freeCounterResource_ = DirectXCommon::CreateBufferResourceUAV(
+	//freeListIndexResource生成
+	freeListIndexResource_ = DirectXCommon::CreateBufferResourceUAV(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(uint32_t),
+		particleCommon_->GetDirectXCommon()->GetCommandList());
+
+	//freeListResource生成
+	freeListResource_ = DirectXCommon::CreateBufferResourceUAV(
+		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(uint32_t) * kNumMaxInstance_,
 		particleCommon_->GetDirectXCommon()->GetCommandList());
 
 	//Mapping
@@ -50,13 +62,21 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 		particleUavResource_.Get(),
 		particleUavIndex_
 	);
-	//freeCounterリソース
-	freeCounterIndex_ = particleCommon_->GetSrvManager()->Allocate();
+	//freeListIndexリソース
+	freeListIndexUavIndex_ = particleCommon_->GetSrvManager()->Allocate();
 	particleCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
 		1,
 		sizeof(uint32_t),
-		freeCounterResource_.Get(),
-		freeCounterIndex_
+		freeListIndexResource_.Get(),
+		freeListIndexUavIndex_
+	);
+	//freeListリソース
+	freeListUavIndex_ = particleCommon_->GetSrvManager()->Allocate();
+	particleCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
+		kNumMaxInstance_,
+		sizeof(uint32_t),
+		freeListResource_.Get(),
+		freeListUavIndex_
 	);
 
 	//PerViewData初期化
@@ -72,6 +92,10 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 	DisPatchInitializeParticle();
 }
 
+//==================================================================================
+//		Update
+//==================================================================================
+
 void GPUParticle::Update() {
 
 	//cameraの情報取得
@@ -86,6 +110,10 @@ void GPUParticle::Update() {
 	perViewData_->billboardMatrix = camera_->GetRotationMatrix();
 }
 
+//==================================================================================
+//		Draw
+//==================================================================================
+
 void GPUParticle::Draw() {
 
 	//perViewResource
@@ -96,6 +124,10 @@ void GPUParticle::Draw() {
 
 	model_->DrawForGPUParticle(kNumMaxInstance_);
 }
+
+//==================================================================================
+//		DisPatchInitializeParticle
+//==================================================================================
 
 void GPUParticle::DisPatchInitializeParticle() {
 
@@ -114,7 +146,14 @@ void GPUParticle::DisPatchInitializeParticle() {
 	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
 	particleCommon_->GetDirectXCommon()->GetCommandList()->ResourceBarrier(1, &uavBarrier);
 
-	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(0, freeCounterIndex_);
+	//0.particleUAV
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(0, particleUavIndex_);
+	//1.freeList
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(2, freeListUavIndex_);
+	//2.freeListIndex
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(1, freeListIndexUavIndex_);
+
+	///=== Dispatch ===///
 	particleCommon_->GetDirectXCommon()->GetCommandList()->Dispatch(1, 1, 1);
 	
 	//TransitionBarrierを張る
@@ -125,6 +164,10 @@ void GPUParticle::DisPatchInitializeParticle() {
 	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 	particleCommon_->GetDirectXCommon()->GetCommandList()->ResourceBarrier(1, &uavBarrier);
 }
+
+//==================================================================================
+//		DisPatchUpdateParticle
+//==================================================================================
 
 void GPUParticle::DisPatchUpdateParticle() {
 
@@ -141,10 +184,14 @@ void GPUParticle::DisPatchUpdateParticle() {
 	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
 	particleCommon_->GetDirectXCommon()->GetCommandList()->ResourceBarrier(1, &uavBarrier);
 
-	//0.particleUAV
-	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(1, particleUavIndex_);
 	//1.perFrame
 	particleCommon_->GetDirectXCommon()->GetCommandList()->SetComputeRootConstantBufferView(0, perFrameResource_->GetGPUVirtualAddress());
+	//0.particleUAV
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(1, particleUavIndex_);
+	//2.freeList
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(3, freeListUavIndex_);
+	//3.freeListIndex
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(2, freeListIndexUavIndex_);
 
 	///=== Dispatch ===///
 	particleCommon_->GetDirectXCommon()->GetCommandList()->Dispatch(1, 1, 1);
