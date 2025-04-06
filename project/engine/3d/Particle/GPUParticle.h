@@ -35,7 +35,9 @@ public:
 
 	uint32_t GetParticleUavIndex() const { return particleUavIndex_; }
 
-	uint32_t GetFreeCounterIndex() const { return freeCounterIndex_; }
+	uint32_t GetFreeListIndexUavIndex() const { return freeListIndexUavIndex_; }
+
+	uint32_t GetFreeListUavIndex() const { return freeListUavIndex_; }
 
 	ID3D12Resource* GetParticleUavResource() const { return particleUavResource_.Get(); }
 
@@ -51,7 +53,8 @@ private:
 
 	ParticleForCS* particleData_ = nullptr;
 	uint32_t particleUavIndex_ = 0;
-	uint32_t freeCounterIndex_ = 0;
+	uint32_t freeListIndexUavIndex_ = 0;
+	uint32_t freeListUavIndex_ = 0;
 
 	//PerViewData
 	PerView* perViewData_ = nullptr;
@@ -62,6 +65,7 @@ private:
 
 	ComPtr<ID3D12Resource> particleUavResource_ = nullptr;
 	ComPtr<ID3D12Resource> perViewResource_ = nullptr;
-	ComPtr<ID3D12Resource> freeCounterResource_ = nullptr;
+	ComPtr<ID3D12Resource> freeListResource_ = nullptr;
+	ComPtr<ID3D12Resource> freeListIndexResource_ = nullptr;
 	ComPtr<ID3D12Resource> perFrameResource_ = nullptr;
 };
