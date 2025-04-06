@@ -68,6 +68,14 @@ class PSO {
 
 public:
 
+	enum class BlendState {
+		NORMAL,
+		ADD,
+		SUBTRACT,
+		MULTIPLY,
+		SCREEN,
+	};
+
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///			publicメンバ関数
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +102,8 @@ public:
 	void CreateBlendStateForParticle();
 	void CreateBlendStateForSprite();
 
+	void InitializeBlendState(BlendState blendState);
+
 	/// <summary>
 	/// ラスタライザステート初期化
 	/// </summary>
@@ -106,6 +116,7 @@ public:
 		ID3D12Device* device,
 		D3D12_FILL_MODE fillMode,
 		D3D12_DEPTH_WRITE_MASK depthWriteMask,
+		BlendState blendState = BlendState::NORMAL,
 		D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
 	);
 

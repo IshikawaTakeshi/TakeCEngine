@@ -81,7 +81,7 @@ void Camera::Update() {
 
 	transform_.rotate = QuaternionMath::Normalize(transform_.rotate); // クォータニオンを正規化して数値誤差を防ぐ
 
-
+	rotationMatrix_ = MatrixMath::MakeRotateMatrix(transform_.rotate);
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 
 	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);

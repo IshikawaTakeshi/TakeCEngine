@@ -32,12 +32,12 @@ void GamePlayScene::Initialize() {
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	//Model読み込み
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "player_animation.gltf");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 
 	//GPUパーティクルの初期化
 	gpuParticleGroup_ = std::make_unique<GPUParticle>();
-	gpuParticleGroup_->Initialize(ParticleCommon::GetInstance(), "cube.obj");
+	gpuParticleGroup_->Initialize(ParticleCommon::GetInstance(), "plane.obj");
 
 	//ParticleEmitterの初期化
 	particleEmitter1_ = std::make_unique<ParticleEmitter>();
@@ -95,6 +95,7 @@ void GamePlayScene::Update() {
 	
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();
+	ParticleCommon::GetInstance()->UpdateImGui();
 	samplePlayer_->UpdateImGui();
 
 #endif // DEBUG

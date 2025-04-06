@@ -32,6 +32,8 @@ public:
 
 	static float GetGameTime();
 
+	static const float GetDeltaTime() { return kDeltaTime; }
+
 protected:
 
 	std::unique_ptr<WinApp> winApp_ = nullptr;
@@ -51,6 +53,8 @@ protected:
 	
 	// ゲームの起動時間
 	static std::chrono::steady_clock::time_point gameTime_;
+	// ゲームの経過時間
+	static const float kDeltaTime;
 	//終了フラグ
 	bool isEnd_ = false;
 };

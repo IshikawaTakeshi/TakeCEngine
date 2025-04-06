@@ -27,6 +27,8 @@ public:
 
 	void DispatchForGPUParticle();
 
+	void DispatchUpdateParticle();
+
 	//================================================================================================
 	// 	   getter
 	//================================================================================================
@@ -67,6 +69,7 @@ private:
 	std::unique_ptr<PSO> graphicPso_ = nullptr;
 	std::unique_ptr<PSO> graphicPsoForGPUParticle_ = nullptr;
 	std::unique_ptr<PSO> computePsoForGPUParticle_ = nullptr;
+	std::unique_ptr<PSO> psoUpdateParticle_ = nullptr;
 
 	SrvManager* srvManager_ = nullptr;
 
@@ -74,6 +77,7 @@ private:
 	ComPtr<ID3D12RootSignature> graphicRootSignature_ = nullptr;
 	ComPtr<ID3D12RootSignature> graphicRootSignatureForGPUParticle_ = nullptr;
 	ComPtr<ID3D12RootSignature> computeRootSignatureForGPUParticle_ = nullptr;
+	ComPtr<ID3D12RootSignature> rootSignatureUpdateParticle_ = nullptr;
 
 	//defaultCamera
 	Camera* defaultCamera_ = nullptr;

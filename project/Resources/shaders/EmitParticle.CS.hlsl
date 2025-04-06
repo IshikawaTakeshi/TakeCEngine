@@ -37,7 +37,7 @@ void main(uint3 DTid : SV_DispatchThreadID) {
 				gParticles[particleIndex].scale = float3(1.0f, 1.0f, 1.0f);
 				gParticles[particleIndex].color.rgb = randomGenerator.Generate3d();
 				gParticles[particleIndex].color.a = 1.0f;
-				gParticles[particleIndex].velocity = randomGenerator.Generate3d();
+				gParticles[particleIndex].velocity = randomGenerator.Generate3d() * 3.0f - 1.0f;
 				gParticles[particleIndex].lifetime = 10.0f;
 			}
 			

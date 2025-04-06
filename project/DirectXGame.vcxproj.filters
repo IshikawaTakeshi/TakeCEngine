@@ -613,5 +613,6 @@
     <FxCompile Include="Resources\shaders\GPUParticle.VS.hlsl" />
     <FxCompile Include="Resources\shaders\GPUParticle.PS.hlsl" />
     <FxCompile Include="Resources\shaders\EmitParticle.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\UpdateParticle.CS.hlsl" />
   </ItemGroup>
 </Project>
