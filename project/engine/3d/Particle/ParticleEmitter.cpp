@@ -71,14 +71,14 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 
 	//PerFrameData初期化
 	perFrameData_->gameTime = TakeCFrameWork::GetGameTime();
-	perFrameData_->deltaTime = 1.0f / 60.0f;
+	perFrameData_->deltaTime = TakeCFrameWork::GetDeltaTime();
 }
 
 void ParticleEmitter::Update() {
 
 	//エミッターの更新
 	if (!isEmit_) return;
-	frequencyTime_ += kDeltaTime_;
+	frequencyTime_ += TakeCFrameWork::GetDeltaTime();
 	if (frequency_ <= frequencyTime_) {
 		Emit();
 		frequencyTime_ -= frequency_; //余計に過ぎた時間も加味して頻度計算する
@@ -89,7 +89,6 @@ void ParticleEmitter::UpdateForGPU() {
 
 	//時間の取得及び更新
 	perFrameData_->gameTime = TakeCFrameWork::GetGameTime();
-	perFrameData_->deltaTime = kDeltaTime_;
 
 	emitterSphereInfo_->frequencyTime += perFrameData_->deltaTime;
 	if(emitterSphereInfo_->frequency <= emitterSphereInfo_->frequencyTime){

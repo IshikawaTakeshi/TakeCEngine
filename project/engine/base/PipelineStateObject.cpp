@@ -323,6 +323,28 @@ void PSO::CreateBlendStateForSprite() {
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 }
 
+void PSO::InitializeBlendState(BlendState blendState) {
+	switch (blendState) {
+	case PSO::BlendState::NORMAL:
+		CreateBlendStateForObject3d();
+		break;
+	case PSO::BlendState::ADD:
+		CreateBlendStateForParticle();
+		break;
+	case PSO::BlendState::SUBTRACT:
+		CreateBlendStateForParticle();
+		break;
+	case PSO::BlendState::MULTIPLY:
+		CreateBlendStateForParticle();
+		break;
+	case PSO::BlendState::SCREEN:
+		CreateBlendStateForParticle();
+		break;
+	default:
+		break;
+	}
+}
+
 //=============================================================================
 // RasterizerStateの生成
 //=============================================================================
@@ -339,6 +361,7 @@ void PSO::CreateGraphicPSO(
 	ID3D12Device* device,
 	D3D12_FILL_MODE fillMode,
 	D3D12_DEPTH_WRITE_MASK depthWriteMask,
+	BlendState blendState,
 	D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType) {
 
 	device_ = device;
@@ -350,7 +373,7 @@ void PSO::CreateGraphicPSO(
 	/// ルートシグネチャ初期化
 	graphicRootSignature_ = CreateRootSignature(device_, shaderResourceInfo);
 	/// ブレンドステート初期化
-	CreateBlendStateForObject3d();
+	InitializeBlendState(blendState);
 	/// ラスタライザステート初期化
 	CreateRasterizerState(fillMode);
 #pragma region SetDepthStencilDesc

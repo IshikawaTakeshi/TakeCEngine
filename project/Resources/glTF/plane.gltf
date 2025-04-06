@@ -56,8 +56,8 @@
 	"images":[
 		{
 			"mimeType":"image/png",
-			"name":"uvChecker",
-			"uri":"uvChecker.png"
+			"name":"circle",
+			"uri":"circle.png"
 		}
 	],
 	"accessors":[

@@ -62,7 +62,7 @@ private:
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 viewProjectionMatrix_;
-	//累積回転行列
+	//回転行列
 	Matrix4x4 rotationMatrix_;
 	//Matrix4x4 rotationMatrixDelta_;
 	

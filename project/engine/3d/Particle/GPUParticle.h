@@ -31,6 +31,8 @@ public:
 
 	void DisPatchInitializeParticle();
 
+	void DisPatchUpdateParticle();
+
 	uint32_t GetParticleUavIndex() const { return particleUavIndex_; }
 
 	uint32_t GetFreeCounterIndex() const { return freeCounterIndex_; }
@@ -53,10 +55,13 @@ private:
 
 	//PerViewData
 	PerView* perViewData_ = nullptr;
+	//PerFrameData
+	PerFrame* perFrameData_ = nullptr;
 
 	static const uint32_t kNumMaxInstance_ = 1024;
 
 	ComPtr<ID3D12Resource> particleUavResource_ = nullptr;
 	ComPtr<ID3D12Resource> perViewResource_ = nullptr;
 	ComPtr<ID3D12Resource> freeCounterResource_ = nullptr;
+	ComPtr<ID3D12Resource> perFrameResource_ = nullptr;
 };

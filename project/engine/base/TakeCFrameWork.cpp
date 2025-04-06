@@ -8,6 +8,7 @@ std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
 std::unique_ptr<Animator> TakeCFrameWork::animator_ = nullptr;
 std::unique_ptr<WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
 std::chrono::steady_clock::time_point TakeCFrameWork::gameTime_ = Clock::now();
+const float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
 
 //====================================================================
 //			初期化

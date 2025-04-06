@@ -89,7 +89,6 @@ private:
 	ComPtr<ID3D12Resource> emitterSphereResource_;
 	ComPtr<ID3D12Resource> perFrameResource_;
 
-	const float kDeltaTime_ = 1.0f / 60.0f; //1フレームの時間
 	bool isEmit_; //発生フラグ
 	EulerTransform transforms_;   //エミッターの位置
 	uint32_t particleCount_; //発生するParticleの数
