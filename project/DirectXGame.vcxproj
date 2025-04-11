@@ -117,7 +117,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Collision\BoxCollider.cpp" />
     <ClCompile Include="engine\2d\WireFrame.cpp" />
     <ClCompile Include="engine\Animation\Animator.cpp" />
-    <ClCompile Include="engine\3d\AABB.cpp" />
     <ClCompile Include="engine\Animation\Skeleton.cpp" />
     <ClCompile Include="engine\Animation\SkinCluster.cpp" />
     <ClCompile Include="engine\math\Easing.cpp" />
@@ -188,7 +187,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Collision\BoxCollider.h" />
     <ClInclude Include="engine\2d\WireFrame.h" />
     <ClInclude Include="engine\Animation\Animator.h" />
-    <ClInclude Include="engine\3d\AABB.h" />
     <ClInclude Include="engine\Animation\Keyflame.h" />
     <ClInclude Include="engine\Animation\NodeAnimation.h" />
     <ClInclude Include="engine\Animation\Skeleton.h" />
