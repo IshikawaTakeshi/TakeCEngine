@@ -72,6 +72,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> DXC::CompileShader(
 		L"-Zi",L"-Qembed_debug", //デバッグ用の情報を埋め込む
 		L"-Od", //最適化を外しておく
 		L"-Zpr", //メモリレイアウトは行優先
+		L"-I", L"Resources/shaders",
 	};
 
 	//実際にShaderをコンパイルする

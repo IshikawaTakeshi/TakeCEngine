@@ -66,7 +66,11 @@ void SampleCharacter::Update() {
 }
 
 void SampleCharacter::UpdateImGui() {
+#ifdef _DEBUG
+
 	object3d_->UpdateImGui(0);
+#endif // _DEBUG
+
 }
 
 void SampleCharacter::Draw() {
