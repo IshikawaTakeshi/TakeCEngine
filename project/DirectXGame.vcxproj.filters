@@ -273,10 +273,10 @@
     <ClCompile Include="engine\base\TakeCFrameWork.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Sphere.cpp">
+    <ClCompile Include="engine\3d\Primitive\Sphere.cpp">
       <Filter>ソース ファイル\engine\3d\primitive</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Triangle.cpp">
+    <ClCompile Include="engine\3d\Primitive\Triangle.cpp">
       <Filter>ソース ファイル\engine\3d\primitive</Filter>
     </ClCompile>
     <ClCompile Include="application\Collision\Collider.cpp">
@@ -569,10 +569,10 @@
     <ClInclude Include="engine\base\ImGuiManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Sphere.h">
+    <ClInclude Include="engine\3d\Primitive\Sphere.h">
       <Filter>ヘッダー ファイル\engine\3d\primitive</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Triangle.h">
+    <ClInclude Include="engine\3d\Primitive\Triangle.h">
       <Filter>ヘッダー ファイル\engine\3d\primitive</Filter>
     </ClInclude>
     <ClInclude Include="engine\camera\CameraManager.h">

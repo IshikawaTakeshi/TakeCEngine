@@ -17,7 +17,7 @@
 
 
 Particle3d::~Particle3d() {
-	instancingResource_.Reset();
+	particleResource_.Reset();
 }
 
 //=============================================================================
@@ -30,38 +30,49 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 
 	//モデルの読み込み
 	SetModel(filePath);
-	
+
 	//instancing用のResource生成
-	instancingResource_ = 
+	particleResource_ =
 		DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
 
-	//SRVのインデックスを取得
-	instancingSrvIndex_ = particleCommon_->GetSrvManager()->Allocate();
+	//perViewResource生成
+	perViewResource_ = DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
+	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));
 
 	//SRVの生成
+	particleSrvIndex_ = particleCommon_->GetSrvManager()->Allocate();
 	particleCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
 		kNumMaxInstance_,
 		sizeof(ParticleForGPU),
-		instancingResource_.Get(),
-		instancingSrvIndex_
+		particleResource_.Get(),
+		particleSrvIndex_
 	);
+
+	//perviewInit
+	perViewData_->viewProjection = MatrixMath::MakeIdentity4x4();
+	perViewData_->billboardMatrix = MatrixMath::MakeIdentity4x4();
 
 	//Acceleration初期化
 	accelerationField_.acceleration_ = { 0.0f,-9.8f,0.0f };
 	accelerationField_.aabb_.min = { -3.0f,-3.0f,-3.0f };
-	accelerationField_.aabb_.max =  { 3.0f, 3.0f, 3.0f };
+	accelerationField_.aabb_.max = { 3.0f, 3.0f, 3.0f };
 
 	//Mapping
-	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
-	//単位行列を書き込んでおく
-	for (uint32_t i = 0; i < kNumMaxInstance_; i++) {
-		instancingData_[i].WVP = MatrixMath::MakeIdentity4x4();
-		instancingData_[i].World = MatrixMath::MakeIdentity4x4();
-		instancingData_[i].Color = { 1.0f,1.0f,1.0f,1.0f };
-	}
+	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
 
 	//カメラのセット
 	camera_ = particleCommon_->GetDefaultCamera();
+
+	//属性初期化
+	particleAttributes_.scale = { 0.1f,3.0f,1.0f };
+	particleAttributes_.positionRange = { 2.0f,2.0f };
+	particleAttributes_.scaleRange = { 2.0f,3.0f };
+	particleAttributes_.rotateRange = { -std::numbers::pi_v<float>, std::numbers::pi_v<float> };
+	particleAttributes_.velocityRange = { 0.0f,0.0f };
+	particleAttributes_.colorRange = { 0.0f,1.0f };
+	particleAttributes_.lifetimeRange = { 2.0f,2.0f };
+	particleAttributes_.editColor = true;
+	particleAttributes_.color = { 0.9f,0.3f,0.9f };
 }
 
 //=============================================================================
@@ -69,67 +80,54 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 //=============================================================================
 
 void Particle3d::Update() {
-
-	//ランダムエンジンの初期化
+	// ランダムエンジンの初期化  
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
 	numInstance_ = 0;
 	for (std::list<Particle>::iterator particleIterator = particles_.begin();
 		particleIterator != particles_.end(); ) {
-		
-		//MEMO:Particleの総出現数だけ繰り返す
+
+		// MEMO: Particleの総出現数だけ繰り返す  
 		if (numInstance_ < kNumMaxInstance_) {
 
-			//寿命が来たら削除
+			// 寿命が来たら削除  
 			if ((*particleIterator).lifeTime_ <= (*particleIterator).currentTime_) {
-				particleIterator = particles_.erase(particleIterator); 
+				particleIterator = particles_.erase(particleIterator);
 				continue;
 			}
 
-			//加速フィールドの位置更新
-			if(IsCollision(accelerationField_.aabb_, (*particleIterator).transforms_.translate)) {
-				(*particleIterator).velocity_ += accelerationField_.acceleration_ * kDeltaTime_;
-			}
+			// 加速フィールドの位置更新  
+			//if (IsCollision(accelerationField_.aabb_, (*particleIterator).transforms_.translate)) {
+			//	(*particleIterator).velocity_ += accelerationField_.acceleration_ * kDeltaTime_;
+			//}
 
-			//particle1つの位置更新
+			// particle1つの位置更新  
 			EmitMove(particleIterator);
-			//EmitMove(particleIterator);
 			float alpha = 1.0f - ((*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 
-			//行列の更新
-			worldMatrix_ = MatrixMath::MakeAffineMatrix(
-				(*particleIterator).transforms_.scale,
-				(*particleIterator).transforms_.rotate,
-				(*particleIterator).transforms_.translate
-			);
+			
+			particleData_[numInstance_].color = {
+				(*particleIterator).color_.x,
+				(*particleIterator).color_.y,
+				(*particleIterator).color_.z,
+				alpha
+			};
+			particleData_[numInstance_].scale = (*particleIterator).transforms_.scale;
+			particleData_[numInstance_].rotate = (*particleIterator).transforms_.rotate;
+			particleData_[numInstance_].translate = (*particleIterator).transforms_.translate;
+			particleData_[numInstance_].velocity = (*particleIterator).velocity_;
+			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTime_;
+			particleData_[numInstance_].currentTime = (*particleIterator).currentTime_;
 
-			//ビルボードの処理
-			if (particleAttributes_.isBillboard) {
-				Matrix4x4 translateMatrix = MatrixMath::MakeTranslateMatrix((*particleIterator).transforms_.translate);
-				Matrix4x4 scaleMatrix = MatrixMath::MakeScaleMatrix((*particleIterator).transforms_.scale);
-				worldMatrix_ = translateMatrix * CameraManager::GetInstance()->GetActiveCamera()->GetRotationMatrix() * scaleMatrix;
-			}
+			// データをGPUに転送  
+			perViewData_->viewProjection = camera_->GetViewProjectionMatrix();
+			perViewData_->billboardMatrix = camera_->GetRotationMatrix();
 
-			//wvpの更新
-			if (camera_) {
-				const Matrix4x4& viewProjectionMatrix = MatrixMath::MakeRotateYMatrix(0) *
-					CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
-				WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
 
-			} else {
-				WVPMatrix_ = worldMatrix_;
-			}
-
-			//インスタンシングデータをGPUに転送
-			instancingData_[numInstance_].WVP = model_->GetModelData()->rootNode.localMatrix * WVPMatrix_;
-			instancingData_[numInstance_].World = model_->GetModelData()->rootNode.localMatrix * worldMatrix_;
-			instancingData_[numInstance_].Color = (*particleIterator).color_;
-			instancingData_[numInstance_].Color.w = alpha;
-
-			++numInstance_; //次のインスタンスに進める
+			++numInstance_; // 次のインスタンスに進める  
 		}
-		++particleIterator; //次のイテレータに進める
+		++particleIterator; // 次のイテレータに進める  
 	}
 }
 
@@ -143,18 +141,11 @@ void Particle3d::UpdateImGui() {
 	ImGui::Text("ParticleCount:%d", numInstance_);
 	particleCommon_->GetGraphicPSO()->UpdateImGui();
 	ImGui::Separator();
-	ImGui::Text("ParticleAttributes");
-	if(ImGui::Button("SoapBubble")) {
-		SetAttributesSoapBubble();
-	}else if(ImGui::Button("Fire")) {
-		SetAttributesFire();
-	}
 	ImGui::DragFloat3("Scale", &particleAttributes_.scale.x, 0.01f);
 	ImGui::DragFloat2("PositionRange", &particleAttributes_.positionRange.min, 0.01f);
 	ImGui::DragFloat2("VelocityRange", &particleAttributes_.velocityRange.min, 0.01f);
 	ImGui::DragFloat2("ColorRange", &particleAttributes_.colorRange.min, 0.01f);
 	ImGui::DragFloat2("LifetimeRange", &particleAttributes_.lifetimeRange.min, 0.01f);
-	ImGui::Checkbox("Billboard", &particleAttributes_.isBillboard);
 	ImGui::Checkbox("EditColor", &particleAttributes_.editColor);
 	if (particleAttributes_.editColor) {
 		ImGui::ColorEdit3("Color", &particleAttributes_.color.x);
@@ -176,8 +167,8 @@ void Particle3d::UpdateImGui() {
 
 void Particle3d::Draw() {
 
-	//instancing用のDataを読むためにStructuredBufferのSRVを設定する
-	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(1, instancingSrvIndex_);
+	particleCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, perViewResource_->GetGPUVirtualAddress());
+	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(3, particleSrvIndex_);
 
 	model_->DrawForParticle(numInstance_);
 }
@@ -188,6 +179,10 @@ void Particle3d::Draw() {
 
 Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
 
+	//スケールをランダムに設定
+	std::uniform_real_distribution<float> distScale(particleAttributes_.scaleRange.min, particleAttributes_.scaleRange.max);
+	//回転をランダムに設定
+	std::uniform_real_distribution<float> distRotate(particleAttributes_.rotateRange.min, particleAttributes_.rotateRange.max);
 	//位置をランダムに設定
 	std::uniform_real_distribution<float> distPosition(particleAttributes_.positionRange.min, particleAttributes_.positionRange.max);
 	//速度をランダムに設定
@@ -198,8 +193,8 @@ Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine, const Vector3& 
 	std::uniform_real_distribution<float> distTime(particleAttributes_.lifetimeRange.min, particleAttributes_.lifetimeRange.max);
 
 	Particle particle;
-	particle.transforms_.scale = { particleAttributes_.scale.x,particleAttributes_.scale.y,particleAttributes_.scale.z };
-	particle.transforms_.rotate = { 0.0f,0.0f,0.0f };
+	particle.transforms_.scale = { particleAttributes_.scale.x,distScale(randomEngine),particleAttributes_.scale.z};
+	particle.transforms_.rotate = { 0.0f,0.0f,distRotate(randomEngine)};
 
 	Vector3 randomTranslate = { distPosition(randomEngine),distPosition(randomEngine),distPosition(randomEngine) };
 	particle.transforms_.translate = translate + randomTranslate;
@@ -222,14 +217,14 @@ Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine, const Vector3& 
 // パーティクルの発生
 //=============================================================================
 
-std::list<Particle> Particle3d::Emit(const Vector3& emitterPos,uint32_t particleCount) {
+std::list<Particle> Particle3d::Emit(const Vector3& emitterPos, uint32_t particleCount) {
 	//ランダムエンジン
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
 	std::list<Particle> particles;
 	for (uint32_t index = 0; index < particleCount; ++index) {
-		particles.push_back(MakeNewParticle(randomEngine,emitterPos));
+		particles.push_back(MakeNewParticle(randomEngine, emitterPos));
 	}
 	return particles;
 }
@@ -260,7 +255,7 @@ bool Particle3d::IsCollision(const AABB& aabb, const Vector3& point) {
 //=============================================================================
 
 void Particle3d::SpliceParticles(std::list<Particle> particles) {
-	particles_.splice(particles_.end(),particles);
+	particles_.splice(particles_.end(), particles);
 }
 
 //=============================================================================
@@ -271,70 +266,7 @@ void Particle3d::EmitMove(std::list<Particle>::iterator particleIterator) {
 	//particle1つの位置更新
 	(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
 	(*particleIterator).currentTime_ += kDeltaTime_; //経過時間の更新
-	
-}
 
-//void Particle3d::ConvergenceMove(std::list<Particle>::iterator particleIterator) {
-//    // マウスの座標を取得する
-//    Vector2 mousePosition = Input::GetInstance()->GetCursorPosition();
-//
-//    // パーティクルの現在位置とマウスの座標の差を計算する
-//	Vector3 direction = Vector3{ mousePosition.x,mousePosition.y,0.0f } - (*particleIterator).transforms_.translate;
-//
-//    // パーティクルをマウスの座標に収束させる移動量を計算する
-//    Vector3 moveAmount = direction * kDeltaTime_;
-//
-//    // パーティクルの位置を更新する
-//    (*particleIterator).transforms_.translate += moveAmount;
-//}
-
-//=============================================================================
-// パーティクルの属性を設定(シャボン玉)
-//=============================================================================
-
-void Particle3d::SetAttributesSoapBubble() {
-	particleAttributes_.scale = { 1.0f,1.0f,1.0f };
-	particleAttributes_.positionRange = { -2.0f,2.0f };
-	particleAttributes_.velocityRange = { -7.1f,3.1f };
-	particleAttributes_.colorRange = { 0.0f,1.0f };
-	particleAttributes_.lifetimeRange = { 1.0f,2.0f };
-	particleAttributes_.isBillboard = false;
-	particleAttributes_.editColor = true;
-	particleAttributes_.color = { 0.1f,0.8f,0.9f };
-}
-
-//=============================================================================
-// パーティクルの属性を設定(松明の火)
-//=============================================================================
-
-void Particle3d::SetAttributesFire() {
-	particleAttributes_.scale = { 1.0f,1.0f,1.0f };
-	particleAttributes_.positionRange = { -0.1f,1.0f };
-	particleAttributes_.velocityRange = { -1.1f,1.1f };
-	particleAttributes_.colorRange = { 0.0f,1.0f };
-	particleAttributes_.lifetimeRange = { 1.0f,3.0f };
-	particleAttributes_.isBillboard = true;
-	particleAttributes_.editColor = true;
-	particleAttributes_.color = { 1.0f,0.14f,0.0f };
-	accelerationField_.acceleration_ = { 0.0f,3.7f,0.0f };
-	accelerationField_.aabb_.min = { -10.3f,-10.3f,-10.3f };
-	accelerationField_.aabb_.max = { 10.3f,10.3f,10.3f };
-	accelerationField_.position_ = { 4.0f,0.0f,0.0f };
-}
-
-void Particle3d::SetAttributesHadouken() {
-	particleAttributes_.scale = { 1.0f,1.0f,1.0f };
-	particleAttributes_.positionRange = { -0.1f,1.0f };
-	particleAttributes_.velocityRange = { -1.1f,1.1f };
-	particleAttributes_.colorRange = { 0.0f,1.0f };
-	particleAttributes_.lifetimeRange = { 0.1f,0.3f };
-	particleAttributes_.isBillboard = true;
-	particleAttributes_.editColor = true;
-	particleAttributes_.color = { 0.0f,0.9f,0.2f };
-	accelerationField_.acceleration_ = { 0.0f,3.7f,0.0f };
-	accelerationField_.aabb_.min = { -10.3f,-10.3f,-10.3f };
-	accelerationField_.aabb_.max = { 10.3f,10.3f,10.3f };
-	accelerationField_.position_ = { 4.0f,0.0f,0.0f };
 }
 
 //=============================================================================
@@ -344,7 +276,3 @@ void Particle3d::SetAttributesHadouken() {
 void Particle3d::SetModel(const std::string& filePath) {
 	model_ = ModelManager::GetInstance()->FindModel(filePath);
 }
-
-//void Particle3d::SetModelTexture(const std::string& texturefilePath) {
-//	//model_->GetMesh()->GetMaterial()->
-//}

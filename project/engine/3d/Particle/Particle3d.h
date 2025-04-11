@@ -8,6 +8,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <random>
+#include <numbers>
 #include <list>
 
 //Particle1個分のデータ
@@ -28,14 +29,12 @@ struct AttributeRange {
 struct ParticleAttributes {
 	Vector3 scale = { 1.0f,1.0f,1.0f };
 	Vector3 color = { 1.0f,1.0f,1.0f };
+	AttributeRange scaleRange = { 0.1f,3.0f };
+	AttributeRange rotateRange = { -std::numbers::pi_v<float>, std::numbers::pi_v<float> };
 	AttributeRange positionRange = {-1.0f, 1.0f};
 	AttributeRange velocityRange = { -1.0f,1.0f };
 	AttributeRange colorRange = { 0.0f,1.0f };
 	AttributeRange lifetimeRange = { 1.0f,3.0f };
-	//進行方向に向けるフラグ
-	bool isalignToDirection = false;
-	//Billboardかどうか
-	bool isBillboard = false;
 	//色を編集するかどうか
 	bool editColor = false;
 };
@@ -95,20 +94,6 @@ public:
 
 	void EmitMove(std::list<Particle>::iterator particleIterator);
 
-	//void ConvergenceMove(std::list<Particle>::iterator particleIterator);
-
-	/// <summary>
-	/// パーティクルの属性を設定(シャボン玉)
-	/// </summary>
-	void SetAttributesSoapBubble();
-
-	/// <summary>
-	/// パーティクルの属性を設定(松明の火)
-	/// </summary>
-	void SetAttributesFire();
-
-	void SetAttributesHadouken();
-
 public: //getter
 
 public: //setter
@@ -120,7 +105,7 @@ public: //setter
 private: // privateメンバ変数
 
 	//Particleの総数
-	static const uint32_t kNumMaxInstance_ = 1000; 
+	static const uint32_t kNumMaxInstance_ = 1024; 
 	//1フレームの時間
 	const float kDeltaTime_ = 1.0f / 60.0f;
 	//描画するインスタンス数
@@ -135,7 +120,6 @@ private: // privateメンバ変数
 	
 private:
 
-	
 	//ParticleCommon
 	ParticleCommon* particleCommon_ = nullptr;
 
@@ -146,9 +130,11 @@ private:
 	Model* model_ = nullptr;
 
 	//instancing用のデータ
-	ParticleForGPU* instancingData_ = nullptr;
-	uint32_t instancingSrvIndex_ = 0;
-	ComPtr<ID3D12Resource> instancingResource_;
+	ParticleForGPU* particleData_ = nullptr;
+	PerView* perViewData_ = nullptr;
+	uint32_t particleSrvIndex_ = 0;
+	ComPtr<ID3D12Resource> particleResource_;
+	ComPtr<ID3D12Resource> perViewResource_;
 	//Matrix
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 WVPMatrix_;

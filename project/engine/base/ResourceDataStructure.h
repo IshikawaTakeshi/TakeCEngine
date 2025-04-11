@@ -87,9 +87,13 @@ struct ModelData {
 
 //パーティクル用の行列,色データ
 struct ParticleForGPU {
-	Matrix4x4 WVP;
-	Matrix4x4 World;
-	Vector4 Color;
+	Vector3 translate;
+	Vector3 rotate;
+	Vector3 scale;
+	Vector3 velocity;
+	Vector4 color;
+	float lifeTime;
+	float currentTime;
 };
 //View情報
 struct PerView {

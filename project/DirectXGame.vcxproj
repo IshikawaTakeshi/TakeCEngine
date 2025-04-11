@@ -158,9 +158,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
     <ClCompile Include="engine\math\MatrixMath.cpp" />
-    <ClCompile Include="engine\3d\Sphere.cpp" />
+    <ClCompile Include="engine\3d\Primitive\Sphere.cpp" />
     <ClCompile Include="engine\base\TextureManager.cpp" />
-    <ClCompile Include="engine\3d\Triangle.cpp" />
+    <ClCompile Include="engine\3d\Primitive\Triangle.cpp" />
     <ClCompile Include="engine\base\WinApp.cpp" />
     <ClCompile Include="engine\math\Vector3.cpp" />
     <ClCompile Include="application\MyGame.cpp" />
@@ -243,10 +243,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\TransformMatrix.h" />
     <ClInclude Include="engine\base\PipelineStateObject.h" />
     <ClInclude Include="engine\base\ResourceDataStructure.h" />
-    <ClInclude Include="engine\3d\Sphere.h" />
+    <ClInclude Include="engine\3d\Primitive\Sphere.h" />
     <ClInclude Include="engine\base\TextureManager.h" />
     <ClInclude Include="engine\math\Transform.h" />
-    <ClInclude Include="engine\3d\Triangle.h" />
+    <ClInclude Include="engine\3d\Primitive\Triangle.h" />
     <ClInclude Include="engine\math\Vector2.h" />
     <ClInclude Include="engine\math\Vector3.h" />
     <ClInclude Include="engine\math\Vector4.h" />

@@ -34,9 +34,6 @@ public:
 
 	void Emit(const std::string& name, const Vector3& emitPosition, uint32_t count);
 
-	void SetParticleAttribute(const std::string& name);
-
-
 private:
 
 	std::unordered_map<std::string, std::unique_ptr<Particle3d>> particleGroups_;

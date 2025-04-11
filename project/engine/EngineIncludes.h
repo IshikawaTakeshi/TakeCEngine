@@ -17,7 +17,7 @@
 #include "Object3d.h"
 #include "SpriteCommon.h"
 #include "Sprite.h"
-#include "Sphere.h"
+#include "primitive/Sphere.h"
 #include "SrvManager.h"
 #include "scene/SceneManager.h"
 #include "3d/Particle/ParticleCommon.h"

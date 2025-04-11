@@ -35,14 +35,13 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("gltf", "player_animation.gltf");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 
-	//GPUパーティクルの初期化
-	gpuParticleGroup_ = std::make_unique<GPUParticle>();
-	gpuParticleGroup_->Initialize(ParticleCommon::GetInstance(), "plane.obj");
+	//CreateParticle
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"HitEffect", "plane.obj");
 
 	//ParticleEmitterの初期化
 	particleEmitter1_ = std::make_unique<ParticleEmitter>();
-	particleEmitter1_->InitializeEmitterSphere(
-		ParticleCommon::GetInstance()->GetDirectXCommon(), ParticleCommon::GetInstance()->GetSrvManager());
+	particleEmitter1_->Initialize("emitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} }, 3, 1.5f);
+	particleEmitter1_->SetParticleName("HitEffect");
 
 	//Animation読み込み
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
@@ -59,9 +58,6 @@ void GamePlayScene::Initialize() {
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
 
-	//CreateParticle
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"PlayerBullet", "sphere.obj");
-	//TakeCFrameWork::GetParticleManager()->SetParticleAttribute("PlayerBullet");
 
 	//SampleCharacter
 	samplePlayer_ = std::make_unique<SampleCharacter>();
@@ -96,21 +92,19 @@ void GamePlayScene::Update() {
 	Object3dCommon::GetInstance()->UpdateImGui();
 	ParticleCommon::GetInstance()->UpdateImGui();
 	samplePlayer_->UpdateImGui();
+	particleEmitter1_->UpdateImGui();
 
 #endif // DEBUG
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
-	//drawTestModel_->Update();
-
 	//SkyBoxの更新
 	skyBox_->Update();
 	
+	//particleManager更新
+	TakeCFrameWork::GetParticleManager()->Update();
 	//ParticleEmitterの更新
-	particleEmitter1_->UpdateForGPU();
-	particleEmitter1_->EmitParticle(gpuParticleGroup_.get());
-	//GPUパーティクルの更新
-	gpuParticleGroup_->Update();
+	particleEmitter1_->Update();
 
 	sprite_->Update();
 
@@ -154,7 +148,7 @@ void GamePlayScene::Draw() {
 
 	Object3dCommon::GetInstance()->PreDraw();
 	//drawTestModel_->Draw();
-	samplePlayer_->Draw();
+	//samplePlayer_->Draw();
 	sampleEnemy_->Draw();
 	
 	//当たり判定の描画前処理
@@ -167,12 +161,12 @@ void GamePlayScene::Draw() {
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 10);
 	
-	//ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
-	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
+	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
+	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
 
 	//GPUパーティクルの描画
-	ParticleCommon::GetInstance()->PreDrawForGPUParticle();
-	gpuParticleGroup_->Draw();
+	//ParticleCommon::GetInstance()->PreDrawForGPUParticle();
+
 }
 
 void GamePlayScene::CheckAllCollisions() {
