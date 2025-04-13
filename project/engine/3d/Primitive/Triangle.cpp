@@ -1,7 +1,11 @@
 #include "Triangle.h"
-#include "DirectXCommon.h"
+
 #include "MatrixMath.h"
 #include "TextureManager.h"
+
+
+#include <cassert>
+#include <iostream>
 
 #ifdef _DEBUG
 #include "ImGuiManager.h"
@@ -9,7 +13,6 @@
 
 Triangle::~Triangle() {
 
-	materialResource_.Reset();
 	wvpResource_.Reset();
 	vertexResource_.Reset();
 }
@@ -46,13 +49,7 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 	);
 
 	//ViewProjectionの初期化
-	viewMatrix_ = MatrixMath::Inverse(cameraView);
-	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
-		0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f
-	);
-	worldViewProjectionMatrix_ = MatrixMath::Multiply(
-		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	*TransformMatrixData_ = worldViewProjectionMatrix_;
+
 }
 
 void Triangle::Update() {
@@ -61,9 +58,7 @@ void Triangle::Update() {
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 
 	//wvpの更新
-	worldViewProjectionMatrix_ = MatrixMath::Multiply(
-		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
-	*TransformMatrixData_ = worldViewProjectionMatrix_;
+	
 }
 
 #ifdef _DEBUG
@@ -74,7 +69,7 @@ void Triangle::UpdateImGui(int id) {
 	std::string label = "Window::Triangle";
 	label += "##" + std::to_string(id);
 	ImGui::Begin(label.c_str());
-	ImGui::ColorEdit4("triangleColor", &materialData_->x);
+
 	ImGui::Selectable("TextureTable", botton);
 	ImGui::DragFloat3("TriangleScale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat3("TriangleRotate", &transform_.rotate.x, 0.01f);
@@ -83,16 +78,7 @@ void Triangle::UpdateImGui(int id) {
 }
 #endif // DEBUG
 
-void Triangle::InitializeMaterialData(DirectXCommon* dxCommon) {
-	//マテリアル用リソース作成
-	materialResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(Vector4));
-	//materialにデータを書き込む
-	materialData_ = nullptr;
-	//書き込むためのアドレスを取得
-	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-	//色を書き込む
-	*materialData_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-}
+
 
 void Triangle::Draw(DirectXCommon* dxCommon) {
 
@@ -100,7 +86,7 @@ void Triangle::Draw(DirectXCommon* dxCommon) {
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
-	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+	
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
