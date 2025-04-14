@@ -21,7 +21,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView);
+	void Initialize(DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// 更新処理
@@ -39,11 +39,6 @@ public:
 	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() {
 		return vertexBufferViews_;
 	}
-
-	/// <summary>
-	/// MaterialData初期化
-	/// </summary>
-	void InitializeMaterialData(DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// MaterialData初期化

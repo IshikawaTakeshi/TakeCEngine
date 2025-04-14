@@ -171,6 +171,11 @@ void Mesh::InitializeVertexResourceTriangle(ID3D12Device* device) {
 
 }
 
+void Mesh::InitializeVertexResourceRing(ID3D12Device* device, const uint32_t divide, const float outerRadius, const float innerRadius) {
+
+
+}
+
 //=============================================================================
 // objモデルの頂点バッファリソース初期化
 //=============================================================================

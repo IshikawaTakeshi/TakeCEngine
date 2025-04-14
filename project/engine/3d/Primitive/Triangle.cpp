@@ -17,7 +17,7 @@ Triangle::~Triangle() {
 	vertexResource_.Reset();
 }
 
-void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
+void Triangle::Initialize(DirectXCommon* dxCommon) {
 
 
 	//======================= transformationMatrix用のVertexResource ===========================//
@@ -30,11 +30,6 @@ void Triangle::Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView) {
 
 	//単位行列を書き込んでおく
 	*TransformMatrixData_ = MatrixMath::MakeIdentity4x4();
-
-
-	//======================= MatrialResource ===========================//
-
-	InitializeMaterialData(dxCommon);
 
 	//======================= Transform・各行列の初期化 ===========================//
 

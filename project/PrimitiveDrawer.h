@@ -19,9 +19,9 @@ public:
 	~PrimitiveDrawer() = default;
 	void Initialize(DirectXCommon* dxCommon);
 	void Update();
-
-
 	void Draw();
+
+	void CreateRing(const uint32_t divide,const float outerRadius, const float innerRadius, const Vector3& center, const Vector4& color);
 
 private:
 
@@ -30,6 +30,8 @@ private:
 	std::unique_ptr<PSO> pso_;
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 
-	
+	uint32_t ringVertexIndex_ = 0;
+	uint32_t ringIndex_ = 0;
+	const uint32_t kMaxVertexCount_ = 10240;
 };
 
