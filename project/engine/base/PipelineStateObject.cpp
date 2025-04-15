@@ -313,9 +313,9 @@ void PSO::CreateGraphicPSO(
 	HRESULT result = S_FALSE;
 	itemCurrentIdx = 0;
 	//シェーダー情報を読み込む
-	ShaderResourceMap shaderResourceInfo = LoadShaderResourceInfo({ graphicShaderData_.vertexBlob,graphicShaderData_.pixelBlob });
+	graphicBindResourceInfo_ = LoadShaderResourceInfo({ graphicShaderData_.vertexBlob,graphicShaderData_.pixelBlob });
 	/// ルートシグネチャ初期化
-	graphicRootSignature_ = CreateRootSignature(device_, shaderResourceInfo);
+	graphicRootSignature_ = CreateRootSignature(device_, graphicBindResourceInfo_);
 	/// ブレンドステート初期化
 	InitializeBlendState(blendState);
 	/// ラスタライザステート初期化
@@ -336,9 +336,9 @@ void PSO::CreateGraphicPSO(
 void PSO::CreateComputePSO(ID3D12Device* device) {
 	HRESULT result = S_FALSE;
 	//シェーダー情報を読み込む
-	ShaderResourceMap shaderResourceInfo = LoadShaderResourceInfo({ computeShaderBlob_ });
+	computeBindResourceInfo_ = LoadShaderResourceInfo({ computeShaderBlob_ });
 	/// ルートシグネチャ初期化
-	computeRootSignature_ = CreateRootSignature(device, shaderResourceInfo);
+	computeRootSignature_ = CreateRootSignature(device, computeBindResourceInfo_);
 	/// ComputePipelineStateDescの設定
 	SetComputePipelineStateDesc();
 	//実際に生成
@@ -428,6 +428,38 @@ bool PSO::UpdateImGuiCombo() {
 	return changed;
 }
 
+int32_t PSO::GetGraphicBindResourceIndex(const std::string& name) {
+
+	int index = 0;
+
+	for (const auto& resource : graphicBindResourceInfo_) {
+		if (resource.second.name == name) {
+			return index;
+		}
+		index++;
+	}
+
+	//見つからなかった場合
+	assert(false && StringUtility::ConvertString(L"Failed to find bind resource index for name: " + StringUtility::ConvertString(name)).c_str());
+	return -1;
+}
+
+int32_t PSO::GetComputeBindResourceIndex(const std::string& name) {
+
+	int index = 0;
+
+	for (const auto& resource : computeBindResourceInfo_) {
+		if (resource.second.name == name) {
+			return index;
+		}
+		index++;
+	}
+
+	//見つからなかった場合
+	assert(false && StringUtility::ConvertString(L"Failed to find bind resource index for name: " + StringUtility::ConvertString(name)).c_str());
+	return -1;
+}
+
 void PSO::SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type) {
 
 	//DepthStencilの設定
@@ -435,7 +467,7 @@ void PSO::SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type) {
 	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	// RootSignature
-	graphicsPipelineStateDesc_.pRootSignature = graphicRootSignature_.Get(); 
+	graphicsPipelineStateDesc_.pRootSignature = graphicRootSignature_.Get();
 
 	// InputLayout
 	graphicsPipelineStateDesc_.InputLayout = inputLayoutDesc_;
@@ -449,10 +481,10 @@ void PSO::SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type) {
 	graphicShaderData_.pixelBlob->GetBufferSize() };
 
 	// blendState
-	graphicsPipelineStateDesc_.BlendState = blendDesc_; 
+	graphicsPipelineStateDesc_.BlendState = blendDesc_;
 
 	// rasterizerState
-	graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc_; 
+	graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc_;
 
 	//書き込むRTVの情報
 	graphicsPipelineStateDesc_.NumRenderTargets = 1;
@@ -466,7 +498,7 @@ void PSO::SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type) {
 }
 
 void PSO::SetComputePipelineStateDesc() {
-	computePipelineStateDesc_.CS = { 
+	computePipelineStateDesc_.CS = {
 		computeShaderBlob_->GetBufferPointer(),
 		computeShaderBlob_->GetBufferSize()
 	};

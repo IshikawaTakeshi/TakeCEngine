@@ -28,6 +28,22 @@ void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager)
 	CreateRingVertexData();
 }
 
+void PrimitiveDrawer::Finalize() {
+
+	if (ringData_) {
+		ringData_->primitiveData_.vertexResource_->Release();
+		delete ringData_;
+		ringData_ = nullptr;
+	}
+
+	wvpResource_->Release();
+
+	rootSignature_ = nullptr;
+	pso_.reset();
+	srvManager_ = nullptr;
+	dxCommon_ = nullptr;
+}
+
 void PrimitiveDrawer::Update() {
 
 	TransformMatrixData_->WVP = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
@@ -86,7 +102,7 @@ void PrimitiveDrawer::Draw() {
 	//1.materialResource
 	commandList->SetGraphicsRootConstantBufferView(1, ringData_->material_->GetMaterialResource()->GetGPUVirtualAddress());
 	//2.textureSRV
-	srvManager_->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(ringData_->material_->GetTextureFilePath()));
+	srvManager_->SetGraphicsRootDescriptorTable(6, TextureManager::GetInstance()->GetSrvIndex(ringData_->material_->GetTextureFilePath()));
 	//描画
 	commandList->DrawInstanced(ringVertexIndex_, ringVertexIndex_ / ringVertexCount_, 0, 0);
 

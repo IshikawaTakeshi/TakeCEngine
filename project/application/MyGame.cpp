@@ -61,7 +61,7 @@ void MyGame::Update() {
 
 	//FrameWorkの更新
 	TakeCFrameWork::Update();
-
+	TakeCFrameWork::GetPrimitiveDrawer()->Update();
 	TakeCFrameWork::GetWireFrame()->Update();
 }
 

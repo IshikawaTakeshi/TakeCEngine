@@ -21,7 +21,7 @@ public:
 	
 public:
 
-	//Ring全体のデータ
+	// Ring全体のデータ
 	struct RingData {
 		PrimitiveMesh primitiveData_;
 		VertexData* vertexData_ = nullptr;
@@ -29,14 +29,28 @@ public:
 	};
 
 public:
-
+	// 初期化
 	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
+
+	/// 終了処理
+	void Finalize();
+
+	//更新処理
 	void Update();
 
+	/// <summary>
+	/// リングの描画
+	/// </summary>
+	/// <param name="outerRadius">外側の半径</param>
+	/// <param name="innerRadius">内側の半径</param>
+	/// <param name="center">中心点</param>
+	/// <param name="color">カラー</param>
 	void DrawRing(const float outerRadius, const float innerRadius, const Vector3& center, const Vector4& color);
 
+	// 描画処理
 	void Draw();
 
+	// リングの頂点データの作成関数
 	void CreateRingVertexData();
 
 
