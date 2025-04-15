@@ -147,6 +147,8 @@ void GamePlayScene::Draw() {
 	//drawTestModel_->Draw();
 	//samplePlayer_->Draw();
 	sampleEnemy_->Draw();
+	//TakeCFrameWork::GetPrimitiveDrawer()->DrawRing(3.0f, 1.0f, { 0.0f,0.0f,0.0f }, { 1.0f,1.0f,1.0f,1.0f });
+	//TakeCFrameWork::GetPrimitiveDrawer()->Draw();
 	
 	//当たり判定の描画前処理
 	CollisionManager::GetInstance()->PreDraw();
