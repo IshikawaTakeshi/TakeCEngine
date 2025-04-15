@@ -1,10 +1,12 @@
 #include "PrimitiveDrawer.h"
 #include "CameraManager.h"
+#include "TextureManager.h"
 #include <numbers>
 
-void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon) {
+void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager) {
 
 	dxCommon_ = dxCommon;
+	srvManager_ = srvManager;
 	//PSOの生成
 	pso_ = std::make_unique<PSO>();
 	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.VS.hlsl");
@@ -64,6 +66,32 @@ void PrimitiveDrawer::DrawRing(const float outerRadius, const float innerRadius,
 	ringData_->material_->SetMaterialColor(color);
 }
 
+void PrimitiveDrawer::Draw() {
+
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+	//--------------------------------------------------
+	//		ringの描画
+	//--------------------------------------------------
+
+	commandList->SetGraphicsRootSignature(rootSignature_.Get());
+
+	commandList->SetPipelineState(pso_->GetGraphicPipelineState());
+
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//VBVを設定
+	commandList->IASetVertexBuffers(0, 1, &ringData_->primitiveData_.vertexBufferView_);
+	//0.wvpResource
+	commandList->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
+	//1.materialResource
+	commandList->SetGraphicsRootConstantBufferView(1, ringData_->material_->GetMaterialResource()->GetGPUVirtualAddress());
+	//2.textureSRV
+	srvManager_->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(ringData_->material_->GetTextureFilePath()));
+	//描画
+	commandList->DrawInstanced(ringVertexIndex_, ringVertexIndex_ / ringVertexCount_, 0, 0);
+
+}
+
 void PrimitiveDrawer::CreateRingVertexData() {
 
 	UINT size = sizeof(VertexData) * ringDivide_ * kMaxVertexCount_;
@@ -78,5 +106,5 @@ void PrimitiveDrawer::CreateRingVertexData() {
 	ringData_->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&ringData_->vertexData_));
 
 	ringData_->material_ = new Material();
-	ringData_->material_->Initialize(dxCommon_, "Resources/texture/white.png");
+	ringData_->material_->Initialize(dxCommon_, "Resources/images/white.png");
 }

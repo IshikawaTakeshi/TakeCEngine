@@ -176,6 +176,11 @@ Animator* TakeCFrameWork::GetAnimator() {
 	return animator_.get();
 }
 
+PrimitiveDrawer* TakeCFrameWork::GetPrimitiveDrawer() {
+	assert(primitiveDrawer_ != nullptr);
+	return primitiveDrawer_.get();
+}
+
 //====================================================================
 //			ワイヤーフレーム管理クラスの取得
 //====================================================================

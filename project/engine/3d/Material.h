@@ -45,6 +45,8 @@ public: //ゲッター
 
 	MaterialData* GetMaterialData() { return materialData_; }
 
+	const std::string& GetTextureFilePath() const { return textureFilePath_; }
+
 public: //セッター
 
 	/// <summary>
@@ -75,7 +77,6 @@ private:
 	//uvTransform
 	EulerTransform uvTransform_;
 
-
+	std::string textureFilePath_;
 
 };
-

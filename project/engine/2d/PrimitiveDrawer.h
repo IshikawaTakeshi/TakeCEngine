@@ -1,6 +1,7 @@
 #pragma once
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
+#include "SrvManager.h"
 #include "Material.h"
 #include "TransformMatrix.h"
 #include "ResourceDataStructure.h"
@@ -29,7 +30,7 @@ public:
 
 public:
 
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
 	void Update();
 
 	void DrawRing(const float outerRadius, const float innerRadius, const Vector3& center, const Vector4& color);
@@ -43,6 +44,7 @@ public:
 private:
 
 	DirectXCommon* dxCommon_ = nullptr;
+	SrvManager* srvManager_ = nullptr;
 
 	std::unique_ptr<PSO> pso_;
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
@@ -56,7 +58,7 @@ private:
 	uint32_t ringDivide_ = 32;
 	uint32_t ringVertexIndex_ = 0;
 	uint32_t ringIndexIndex_ = 0;
-	uint32_t ringVertexCount_ = 0;
+	uint32_t ringVertexCount_ = ringDivide_;
 	const uint32_t kMaxVertexCount_ = 32000;
 };
 
