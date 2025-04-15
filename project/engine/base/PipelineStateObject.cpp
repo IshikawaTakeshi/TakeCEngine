@@ -227,72 +227,6 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 	return rootSignature;
 }
 
-
-//void PSO::CreateRootSignatureForParticle(ID3D12Device* device) {
-//
-//	HRESULT result = S_FALSE;
-//	//デスクリプション
-//	descriptionRootSignature_.Flags =
-//		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-//
-//	//ディスクリプターレンジ
-//	//.0 particle/Texture
-//	descriptorRangeForInstancing_[0].BaseShaderRegister = 0;
-//	descriptorRangeForInstancing_[0].NumDescriptors = 1;
-//	descriptorRangeForInstancing_[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-//	descriptorRangeForInstancing_[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-//
-//	//ルートパラメータ。複数設定できるので配列。
-//	//.0 Material
-//	rootParametersForParticle_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-//	rootParametersForParticle_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-//	rootParametersForParticle_[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
-//	//.1 Particle
-//	rootParametersForParticle_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-//	rootParametersForParticle_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-//	rootParametersForParticle_[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_;
-//	rootParametersForParticle_[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_);
-//	//.2 Texture
-//	rootParametersForParticle_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
-//	rootParametersForParticle_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-//	rootParametersForParticle_[2].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_; //Tableの中身の配列を指定
-//	rootParametersForParticle_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_); //Tableで利用する数
-//
-//	descriptionRootSignature_.pParameters = rootParametersForParticle_; //rootParameter配列へのポインタ
-//	descriptionRootSignature_.NumParameters = _countof(rootParametersForParticle_); //配列の長さ
-//
-//	//Samplerの設定
-//	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
-//	staticSamplers_[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
-//	staticSamplers_[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-//	staticSamplers_[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-//	staticSamplers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; //比較しない
-//	staticSamplers_[0].MaxLOD = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
-//	staticSamplers_[0].ShaderRegister = 0; //レジスタ番号0を使う
-//	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-//
-//	descriptionRootSignature_.pStaticSamplers = staticSamplers_;
-//	descriptionRootSignature_.NumStaticSamplers = _countof(staticSamplers_);
-//
-//	//シリアライズ
-//	signatureBlob_ = nullptr;
-//	errorBlob_ = nullptr;
-//
-//	result = D3D12SerializeRootSignature(&descriptionRootSignature_,
-//		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
-//	if (FAILED(result)) {
-//		Logger::Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
-//		assert(false);
-//	}
-//	//バイナリをもとに生成
-//	graphicRootSignature_ = nullptr;
-//	result = device->CreateRootSignature(0, signatureBlob_->GetBufferPointer(),
-//		signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&graphicRootSignature_)
-//	);
-//	assert(SUCCEEDED(result));
-//}
-
-
 //=============================================================================
 // BlendStateの生成
 //=============================================================================
@@ -321,6 +255,13 @@ void PSO::CreateBlendStateForParticle() {
 
 void PSO::CreateBlendStateForSprite() {
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc_.RenderTarget[0].BlendEnable = true;
+	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 }
 
 void PSO::InitializeBlendState(BlendState blendState) {
@@ -339,6 +280,9 @@ void PSO::InitializeBlendState(BlendState blendState) {
 		break;
 	case PSO::BlendState::SCREEN:
 		CreateBlendStateForParticle();
+		break;
+	case PSO::BlendState::SPRITE:
+		CreateBlendStateForSprite();
 		break;
 	default:
 		break;

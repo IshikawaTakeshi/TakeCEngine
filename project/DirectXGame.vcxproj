@@ -175,7 +175,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\SkyBox\SkyBox.cpp" />
     <ClCompile Include="application\Collision\SphereCollider.cpp" />
     <ClCompile Include="application\SampleCharacter.cpp" />
-    <ClCompile Include="PrimitiveDrawer.cpp" />
+    <ClCompile Include="engine\2d\PrimitiveDrawer.cpp" />
     <ClCompile Include="engine\3d\Primitive\Ring.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -235,7 +235,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\base\Particle\ParticleManager.h" />
     <ClInclude Include="application\GameCharacter.h" />
     <ClInclude Include="engine\3d\Particle\GPUParticle.h" />
-    <ClInclude Include="PrimitiveDrawer.h" />
+    <ClInclude Include="engine\2d\PrimitiveDrawer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\base\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

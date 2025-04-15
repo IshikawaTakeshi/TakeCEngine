@@ -93,6 +93,7 @@ void GamePlayScene::Update() {
 	ParticleCommon::GetInstance()->UpdateImGui();
 	samplePlayer_->UpdateImGui();
 	particleEmitter1_->UpdateImGui();
+	sprite_->UpdateImGui(0);
 
 #endif // DEBUG
 
@@ -136,10 +137,6 @@ void GamePlayScene::Draw() {
 
 	//skyBox_->Draw();    //天球の描画
 
-	//スプライトの描画前処理
-	SpriteCommon::GetInstance()->PreDraw();
-	sprite_->Draw();    //スプライトの描画
-
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance()->DisPatch();
 	//drawTestModel_->DisPatch();
@@ -160,9 +157,15 @@ void GamePlayScene::Draw() {
 	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 100);
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 10);
-	
+	TakeCFrameWork::GetWireFrame()->Draw();
+
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
+
+
+	//スプライトの描画前処理
+	SpriteCommon::GetInstance()->PreDraw();
+	sprite_->Draw();    //スプライトの描画
 
 	//GPUパーティクルの描画
 	//ParticleCommon::GetInstance()->PreDrawForGPUParticle();

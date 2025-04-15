@@ -86,8 +86,7 @@ void MyGame::Draw() {
 	srvManager_->SetDescriptorHeap();       //SRV描画前処理
 	
 	sceneManager_->Draw();
-	TakeCFrameWork::GetWireFrame()->Draw();
-
+	
 	//描画後処理
 	directXCommon_->PostDraw();
 }
