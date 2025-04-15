@@ -101,8 +101,11 @@ void Object3dCommon::UpdateImGui() {
 void Object3dCommon::Finalize() {
 	directionalLightResource_.Reset();
 	pointLightResource_.Reset();
+	spotLightResource_.Reset();
+	graphicRootSignature_.Reset();
+	computeRootSignature_.Reset();
+	pso_.reset();
 	dxCommon_ = nullptr;
-
 	delete instance_;
 	instance_ = nullptr;
 }
@@ -118,17 +121,11 @@ void Object3dCommon::PreDraw() {
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//DirectionalLight
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso_->GetGraphicBindResourceIndex("gDirectionalLight"), directionalLightResource_->GetGPUVirtualAddress());
 	//カメラ情報のCBufferの場所を指定
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(
 		pso_->GetGraphicBindResourceIndex("gCamera"), CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
 
-	//pointLightのCBuffer
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso_->GetGraphicBindResourceIndex("gPointLight"), pointLightResource_->GetGPUVirtualAddress());
-	//spotLightのCBuffer
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso_->GetGraphicBindResourceIndex("gSpotLight"), spotLightResource_->GetGPUVirtualAddress());
-
+	SetGraphicCBufferViewLghiting(pso_.get());
 }
 
 void Object3dCommon::DisPatch() {
@@ -137,4 +134,14 @@ void Object3dCommon::DisPatch() {
 	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetComputePipelineState());
 	//ルートシグネチャ設定
 	dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignature_.Get());
+}
+
+void Object3dCommon::SetGraphicCBufferViewLghiting(PSO* pso) {
+	//DirectionalLight
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gDirectionalLight"), directionalLightResource_->GetGPUVirtualAddress());
+	//pointLightのCBuffer
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gPointLight"), pointLightResource_->GetGPUVirtualAddress());
+	//spotLightのCBuffer
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gSpotLight"), spotLightResource_->GetGPUVirtualAddress());
+
 }
