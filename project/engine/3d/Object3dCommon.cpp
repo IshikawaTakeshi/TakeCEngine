@@ -121,10 +121,7 @@ void Object3dCommon::PreDraw() {
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//カメラ情報のCBufferの場所を指定
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(
-		pso_->GetGraphicBindResourceIndex("gCamera"), CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
-
+	SetCBufferViewCamera(pso_.get());
 	SetGraphicCBufferViewLghiting(pso_.get());
 }
 
@@ -143,5 +140,12 @@ void Object3dCommon::SetGraphicCBufferViewLghiting(PSO* pso) {
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gPointLight"), pointLightResource_->GetGPUVirtualAddress());
 	//spotLightのCBuffer
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gSpotLight"), spotLightResource_->GetGPUVirtualAddress());
+
+}
+
+void Object3dCommon::SetCBufferViewCamera(PSO* pso) {
+	//カメラ情報のCBufferの場所を指定
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(
+		pso->GetGraphicBindResourceIndex("gCamera"), CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
 
 }

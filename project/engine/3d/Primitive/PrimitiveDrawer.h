@@ -38,6 +38,8 @@ public:
 	//更新処理
 	void Update();
 
+	void UpdateImGui();
+
 	/// <summary>
 	/// リングの描画
 	/// </summary>
@@ -67,6 +69,7 @@ private:
 	ComPtr<ID3D12Resource> wvpResource_;
 	//TransformationMatrix用の頂点データ
 	TransformMatrix* TransformMatrixData_ = nullptr;
+	EulerTransform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	RingData* ringData_ = nullptr;
 	uint32_t ringDivide_ = 32;

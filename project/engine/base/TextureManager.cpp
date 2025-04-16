@@ -65,7 +65,7 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	std::wstring filePathW = StringUtility::ConvertString(filePath);
 	HRESULT hr;
 	if (filePathW.empty()) {
-		hr = DirectX::LoadFromWICFile(L"Resources/black.png", DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+		hr = DirectX::LoadFromWICFile(L"Resources/images/white1x1.png", DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 		assert(SUCCEEDED(hr));
 
 	} else if(filePathW.ends_with(L".dds")){
@@ -83,6 +83,9 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	//圧縮フォーマットかどうかの判定
 	if (DirectX::IsCompressed(image.GetMetadata().format)) {
 		mipImages = std::move(image); //圧縮フォーマットの場合はそのまま使う
+
+	} else if (image.GetMetadata().width == 1 && image.GetMetadata().height == 1) {
+		mipImages = std::move(image); // 1x1はミップマップ不要
 
 	} else { //非圧縮フォーマットの場合はミップマップを作成
 

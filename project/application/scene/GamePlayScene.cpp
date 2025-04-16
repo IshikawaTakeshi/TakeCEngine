@@ -91,6 +91,7 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();
 	ParticleCommon::GetInstance()->UpdateImGui();
+	TakeCFrameWork::GetPrimitiveDrawer()->UpdateImGui();
 	samplePlayer_->UpdateImGui();
 	particleEmitter1_->UpdateImGui();
 	sprite_->UpdateImGui(0);
@@ -147,8 +148,9 @@ void GamePlayScene::Draw() {
 	//drawTestModel_->Draw();
 	//samplePlayer_->Draw();
 	sampleEnemy_->Draw();
-	//TakeCFrameWork::GetPrimitiveDrawer()->DrawRing(3.0f, 1.0f, { 0.0f,0.0f,0.0f }, { 1.0f,1.0f,1.0f,1.0f });
-	//TakeCFrameWork::GetPrimitiveDrawer()->Draw();
+	//プリミティブ描画
+	TakeCFrameWork::GetPrimitiveDrawer()->DrawRing(3.0f, 0.1f, { 0.0f,0.0f,0.0f }, { 1.0f,1.0f,1.0f,1.0f });
+	TakeCFrameWork::GetPrimitiveDrawer()->Draw();
 	
 	//当たり判定の描画前処理
 	CollisionManager::GetInstance()->PreDraw();

@@ -17,6 +17,7 @@ void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath, 
 	InitializeMaterialResource(dxCommon->GetDevice());
 
 	textureFilePath_ = filePath;
+	envMapFilePath_ = envMapfilePath;
 	//テクスチャ初期化
 	TextureManager::GetInstance()->LoadTexture(filePath);
 	if(envMapfilePath != ""){

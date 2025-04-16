@@ -66,6 +66,8 @@ public:
 
 	void SetGraphicCBufferViewLghiting(PSO* pso);
 
+	void SetCBufferViewCamera(PSO* pso);
+
 private:
 
 	Object3dCommon() = default;

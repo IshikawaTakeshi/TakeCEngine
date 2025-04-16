@@ -24,7 +24,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath = "");
+	void Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath = "Resources/images/white.png");
 
 	/// <summary>
 	/// 更新処理
@@ -46,6 +46,8 @@ public: //ゲッター
 	MaterialData* GetMaterialData() { return materialData_; }
 
 	const std::string& GetTextureFilePath() const { return textureFilePath_; }
+
+	const std::string& GetEnvMapFilePath() const { return envMapFilePath_; }
 
 public: //セッター
 
@@ -78,5 +80,6 @@ private:
 	EulerTransform uvTransform_;
 
 	std::string textureFilePath_;
+	std::string envMapFilePath_;
 
 };

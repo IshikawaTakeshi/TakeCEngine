@@ -618,6 +618,12 @@
     <Image Include="Resources\uvChecker.png">
       <Filter>リソース ファイル\image</Filter>
     </Image>
+    <Image Include="Resources\images\gradationLine.png">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="Resources\images\simpleCircle.png">
+      <Filter>リソース ファイル</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\GPUParticle.hlsli">
