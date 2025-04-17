@@ -32,14 +32,14 @@ void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager)
 void PrimitiveDrawer::Finalize() {
 
 	if (ringData_) {
-		ringData_->primitiveData_.vertexResource_->Release();
+		ringData_->primitiveData_.vertexResource_.Reset();
 		delete ringData_;
 		ringData_ = nullptr;
 	}
 
-	wvpResource_->Release();
+	wvpResource_.Reset();
 
-	rootSignature_ = nullptr;
+	rootSignature_.Reset();
 	pso_.reset();
 	srvManager_ = nullptr;
 	dxCommon_ = nullptr;
