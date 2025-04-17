@@ -4,6 +4,7 @@
 #include "Object3dCommon.h"
 #include "ImGuiManager.h"
 #include "MatrixMath.h"
+#include "Particle/Particle3d.h"
 #include <numbers>
 
 void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager) {
@@ -12,15 +13,30 @@ void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager)
 	srvManager_ = srvManager;
 	//PSOの生成
 	pso_ = std::make_unique<PSO>();
-	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.VS.hlsl");
-	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.PS.hlsl");
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/Particle.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/Particle.PS.hlsl");
 	//PSOの生成
-	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL);
+	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO,PSO::BlendState::ADD);
 	rootSignature_ = pso_->GetGraphicRootSignature();
 
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
 
+	//particleResource
+	srvIndex_ = srvManager_->Allocate();
+	particleResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleForGPU));
+	srvManager_->CreateSRVforStructuredBuffer(
+		1,
+		sizeof(ParticleForGPU),
+		particleResource_.Get(),
+		srvIndex_
+	);
+	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
+	particleData_ = new ParticleForGPU();
+	//perview
+	perviewResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(PerView));
+	perviewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));
+	perViewData_ = new PerView();
 	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 	TransformMatrixData_->World = MatrixMath::MakeIdentity4x4();
 	TransformMatrixData_->WorldInverseTranspose = MatrixMath::MakeIdentity4x4();
@@ -55,6 +71,10 @@ void PrimitiveDrawer::Update() {
 	);
 	TransformMatrixData_->WVP = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
 	TransformMatrixData_->WorldInverseTranspose = MatrixMath::InverseTranspose(TransformMatrixData_->World);
+
+	//perview
+	perViewData_->viewProjection = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+	perViewData_->billboardMatrix = CameraManager::GetInstance()->GetActiveCamera()->GetRotationMatrix();
 }
 
 void PrimitiveDrawer::UpdateImGui() {
@@ -104,6 +124,13 @@ void PrimitiveDrawer::DrawRing(const float outerRadius, const float innerRadius,
 	}
 
 	ringData_->material_->SetMaterialColor(color);
+
+	particleData_[0].translate = { center.x, center.y, center.z };
+	particleData_[0].rotate = { 0.0f, 0.0f, 0.0f };
+	particleData_[0].scale = { outerRadius, outerRadius, outerRadius };
+	particleData_[0].color = { color.x, color.y, color.z };
+	particleData_[0].lifeTime = 100.0f;
+	particleData_[0].currentTime = 0.0f;
 }
 
 void PrimitiveDrawer::Draw() {
@@ -122,18 +149,23 @@ void PrimitiveDrawer::Draw() {
 	//VBVを設定
 	commandList->IASetVertexBuffers(0, 1, &ringData_->primitiveData_.vertexBufferView_);
 	// wvpResource
-	commandList->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
+	//commandList->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 	// materialResource
 	commandList->SetGraphicsRootConstantBufferView(pso_->GetGraphicBindResourceIndex("gMaterial"), ringData_->material_->GetMaterialResource()->GetGPUVirtualAddress());
 	// texture
 	srvManager_->SetGraphicsRootDescriptorTable(pso_->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData_->material_->GetTextureFilePath()));
 	// envMapTexture
-	srvManager_->SetGraphicsRootDescriptorTable(pso_->GetGraphicBindResourceIndex("gEnvMapTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData_->material_->GetEnvMapFilePath()));
+	//srvManager_->SetGraphicsRootDescriptorTable(pso_->GetGraphicBindResourceIndex("gEnvMapTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData_->material_->GetEnvMapFilePath()));
 	//cameraResource
-	commandList->SetGraphicsRootConstantBufferView(pso_->GetGraphicBindResourceIndex("gCamera"), CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
+	//commandList->SetGraphicsRootConstantBufferView(pso_->GetGraphicBindResourceIndex("gCamera"), CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
+
+	srvManager_->SetGraphicsRootDescriptorTable(pso_->GetGraphicBindResourceIndex("gParticle"),srvIndex_);
+
+	//perviewResource
+	commandList->SetGraphicsRootConstantBufferView(pso_->GetGraphicBindResourceIndex("gPerView"), perviewResource_->GetGPUVirtualAddress());
 
 	//lightingResource
-	Object3dCommon::GetInstance()->SetGraphicCBufferViewLghiting(pso_.get());
+	//Object3dCommon::GetInstance()->SetGraphicCBufferViewLghiting(pso_.get());
 	//描画
 	commandList->DrawInstanced(ringVertexIndex_, ringVertexIndex_ / ringVertexCount_, 0, 0);
 

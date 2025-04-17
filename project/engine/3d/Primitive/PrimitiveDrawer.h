@@ -67,6 +67,12 @@ private:
 
 	//TransformationMatrix用の頂点リソース
 	ComPtr<ID3D12Resource> wvpResource_;
+
+	uint32_t srvIndex_ = 0;
+	ComPtr<ID3D12Resource> particleResource_;
+	ParticleForGPU* particleData_ = nullptr;
+	ComPtr<ID3D12Resource> perviewResource_;
+	PerView* perViewData_ = nullptr;
 	//TransformationMatrix用の頂点データ
 	TransformMatrix* TransformMatrixData_ = nullptr;
 	EulerTransform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
