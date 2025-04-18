@@ -28,7 +28,7 @@ public:
 
 	void UpdateImGui();
 
-	void Draw();
+	void Draw(bool primitiveDraw);
 
 	void Finalize();
 

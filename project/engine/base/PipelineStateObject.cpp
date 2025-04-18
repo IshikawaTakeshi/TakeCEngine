@@ -440,7 +440,7 @@ int32_t PSO::GetGraphicBindResourceIndex(const std::string& name) {
 	}
 
 	//見つからなかった場合
-	assert(false && StringUtility::ConvertString(L"Failed to find bind resource index for name: " + StringUtility::ConvertString(name)).c_str());
+	assert(false && L"Failed to find bind resource index for name");
 	return -1;
 }
 

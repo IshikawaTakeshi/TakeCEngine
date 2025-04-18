@@ -78,6 +78,8 @@ public:
 	/// </summary>
 	void Draw();
 
+	void DrawPrimitive();
+
 	/// <summary>
 	/// パーティクルの生成
 	/// </summary>

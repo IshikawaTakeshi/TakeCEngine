@@ -149,8 +149,8 @@ void GamePlayScene::Draw() {
 	//samplePlayer_->Draw();
 	sampleEnemy_->Draw();
 	//プリミティブ描画
-	TakeCFrameWork::GetPrimitiveDrawer()->DrawRing(3.0f, 0.1f, { 0.0f,0.0f,0.0f }, { 1.0f,1.0f,1.0f,1.0f });
-	TakeCFrameWork::GetPrimitiveDrawer()->Draw();
+	//TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(3.0f, 0.1f, { 0.0f,0.0f,0.0f }, { 1.0f,1.0f,1.0f,1.0f });
+	//TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(true);
 	
 	//当たり判定の描画前処理
 	CollisionManager::GetInstance()->PreDraw();
@@ -164,7 +164,7 @@ void GamePlayScene::Draw() {
 	TakeCFrameWork::GetWireFrame()->Draw();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
-	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
+	TakeCFrameWork::GetParticleManager()->Draw(true); //パーティクルの描画
 
 
 	//スプライトの描画前処理

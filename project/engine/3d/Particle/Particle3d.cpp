@@ -12,6 +12,7 @@
 #include "ModelCommon.h"
 #include "ParticleCommon.h"
 #include "TextureManager.h"
+#include "engine/base/TakeCFrameWork.h"
 #include "Input.h"
 #include <numbers>
 
@@ -167,10 +168,21 @@ void Particle3d::UpdateImGui() {
 
 void Particle3d::Draw() {
 
-	particleCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, perViewResource_->GetGPUVirtualAddress());
-	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(3, particleSrvIndex_);
+	particleCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(particleCommon_->GetGraphicPSO()->GetGraphicBindResourceIndex("gPerView"), perViewResource_->GetGPUVirtualAddress());
+	
+	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(particleCommon_->GetGraphicPSO()->GetGraphicBindResourceIndex("gParticle"), particleSrvIndex_);
 
 	model_->DrawForParticle(numInstance_);
+}
+
+void Particle3d::DrawPrimitive() {
+	// perViewResource
+	particleCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(particleCommon_->GetGraphicPSO()->GetGraphicBindResourceIndex("gPerView"), perViewResource_->GetGPUVirtualAddress());
+	// particleResource
+	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(particleCommon_->GetGraphicPSO()->GetGraphicBindResourceIndex("gParticle"), particleSrvIndex_);
+
+	//プリミティブの描画
+	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(particleCommon_->GetGraphicPSO(), numInstance_);
 }
 
 //=============================================================================
@@ -208,6 +220,10 @@ Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine, const Vector3& 
 	} else {
 		particle.color_ = { distColor(randomEngine),distColor(randomEngine),distColor(randomEngine),1.0f };
 	}
+
+	//リングの生成
+	TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(2.0f,0.1f,particle.transforms_.translate, particle.color_); 
+
 	particle.lifeTime_ = distTime(randomEngine);
 	particle.currentTime_ = 0.0f;
 	return particle;

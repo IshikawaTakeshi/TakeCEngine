@@ -47,10 +47,10 @@ public:
 	/// <param name="innerRadius">内側の半径</param>
 	/// <param name="center">中心点</param>
 	/// <param name="color">カラー</param>
-	void DrawRing(const float outerRadius, const float innerRadius, const Vector3& center, const Vector4& color);
+	void GenerateRing(const float outerRadius, const float innerRadius, const Vector3& center, const Vector4& color);
 
 	// 描画処理
-	void Draw();
+	void DrawParticle(PSO* pso,UINT instanceCount);
 
 	// リングの頂点データの作成関数
 	void CreateRingVertexData();
@@ -62,8 +62,8 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
 
-	std::unique_ptr<PSO> pso_;
-	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+	//std::unique_ptr<PSO> pso_;
+	//ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 
 	//TransformationMatrix用の頂点リソース
 	ComPtr<ID3D12Resource> wvpResource_;

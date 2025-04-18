@@ -55,9 +55,15 @@ void ParticleManager::UpdateImGui() {
 // 描画処理
 //================================================================================================
 
-void ParticleManager::Draw() {
+void ParticleManager::Draw(bool primitiveDraw) {
 	for (auto& [name, particleGroup] : particleGroups_) {
-		particleGroup->Draw();
+		if(primitiveDraw) {
+			particleGroup->DrawPrimitive();
+		}
+		else {
+			//描画
+			particleGroup->Draw();
+		}
 	}
 }
 
