@@ -65,13 +65,13 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	camera_ = particleCommon_->GetDefaultCamera();
 
 	//属性初期化
-	particleAttributes_.scale = { 0.1f,3.0f,1.0f };
+	particleAttributes_.scale = { 1.0f,1.0f,1.0f };
 	particleAttributes_.positionRange = { 2.0f,2.0f };
-	particleAttributes_.scaleRange = { 2.0f,3.0f };
+	particleAttributes_.scaleRange = { 1.0f,1.0f };
 	particleAttributes_.rotateRange = { -std::numbers::pi_v<float>, std::numbers::pi_v<float> };
-	particleAttributes_.velocityRange = { 0.0f,0.0f };
+	particleAttributes_.velocityRange = { 0.0f,1.0f };
 	particleAttributes_.colorRange = { 0.0f,1.0f };
-	particleAttributes_.lifetimeRange = { 2.0f,2.0f };
+	particleAttributes_.lifetimeRange = { 5.0f,5.0f };
 	particleAttributes_.editColor = true;
 	particleAttributes_.color = { 0.9f,0.3f,0.9f };
 }
@@ -121,10 +121,12 @@ void Particle3d::Update() {
 			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTime_;
 			particleData_[numInstance_].currentTime = (*particleIterator).currentTime_;
 
+
 			// データをGPUに転送  
 			perViewData_->viewProjection = camera_->GetViewProjectionMatrix();
 			perViewData_->billboardMatrix = camera_->GetRotationMatrix();
 
+			
 
 			++numInstance_; // 次のインスタンスに進める  
 		}
@@ -220,12 +222,14 @@ Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine, const Vector3& 
 	} else {
 		particle.color_ = { distColor(randomEngine),distColor(randomEngine),distColor(randomEngine),1.0f };
 	}
-
+	
 	//リングの生成
 	TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(2.0f,0.1f,particle.transforms_.translate, particle.color_); 
 
+	
 	particle.lifeTime_ = distTime(randomEngine);
 	particle.currentTime_ = 0.0f;
+
 	return particle;
 }
 

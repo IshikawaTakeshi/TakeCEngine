@@ -40,7 +40,7 @@ void GamePlayScene::Initialize() {
 
 	//ParticleEmitterの初期化
 	particleEmitter1_ = std::make_unique<ParticleEmitter>();
-	particleEmitter1_->Initialize("emitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} }, 3, 1.5f);
+	particleEmitter1_->Initialize("emitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} }, 1, 1.0f);
 	particleEmitter1_->SetParticleName("HitEffect");
 
 	//Animation読み込み

@@ -154,10 +154,7 @@ void PrimitiveDrawer::DrawParticle(PSO* pso,UINT instanceCount) {
 	srvManager_->SetGraphicsRootDescriptorTable(pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData_->material_->GetTextureFilePath()));
 	
 	//描画
-	commandList->DrawInstanced(ringVertexIndex_, ringVertexIndex_ / ringVertexCount_, 0, 0);
-	instanceCount;
-	//描画後のリセット
-	ringVertexIndex_ = 0;
+	commandList->DrawInstanced(ringVertexIndex_, instanceCount, 0, 0);
 }
 
 void PrimitiveDrawer::CreateRingVertexData() {

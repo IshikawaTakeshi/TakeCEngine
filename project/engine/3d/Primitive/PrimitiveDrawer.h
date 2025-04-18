@@ -55,7 +55,7 @@ public:
 	// リングの頂点データの作成関数
 	void CreateRingVertexData();
 
-
+	void ResetVertexIndex() { ringVertexIndex_ = 0; }
 
 private:
 
@@ -81,7 +81,7 @@ private:
 	uint32_t ringDivide_ = 32;
 	uint32_t ringVertexIndex_ = 0;
 	uint32_t ringIndexIndex_ = 0;
-	uint32_t ringVertexCount_ = ringDivide_;
+	uint32_t ringVertexCount_ = ringDivide_ * 6;
 	const uint32_t kMaxVertexCount_ = 32000;
 };
 
