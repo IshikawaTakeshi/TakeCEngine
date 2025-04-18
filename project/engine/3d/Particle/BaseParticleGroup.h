@@ -5,7 +5,7 @@
 #include "DirectXCommon.h"
 #include "math/AABB.h"
 #include "3d/Model.h"
-#include "camera/CameraManager.h"
+
 
 #include <d3d12.h>
 #include <wrl.h>
@@ -46,12 +46,28 @@ class BaseParticleGroup {
 public:
 	BaseParticleGroup() = default;
 	~BaseParticleGroup() = default;
-	virtual void Initialize(ParticleCommon* particleCommon);
-	virtual void Finalize();
 
-	void Update();
-	void Draw(PSO* pso, UINT instanceCount);
+	virtual void Initialize(ParticleCommon* particleCommon, const std::string& filePath) = 0;
 
+	virtual void Update() = 0;
+
+	virtual void UpdateImGui() = 0;
+
+	virtual void Draw();
+
+	/// <summary>
+	/// パーティクルの生成
+	/// </summary>
+	Particle MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate);
+
+	/// <summary>
+	/// パーティクルの発生
+	/// </summary>
+	std::list<Particle> Emit(const Vector3& emitterPos, uint32_t particleCount);
+
+	//bool IsCollision(const AABB& aabb, const Vector3& point);
+
+	void SpliceParticles(std::list<Particle> particles);
 
 protected:
 
@@ -75,7 +91,7 @@ protected:
 	ParticleCommon* particleCommon_ = nullptr;
 
 	//モデル
-	Model* model_ = nullptr;
+	//Model* model_ = nullptr;
 
 	//instancing用のデータ
 	ParticleForGPU* particleData_ = nullptr;
@@ -83,8 +99,7 @@ protected:
 	uint32_t particleSrvIndex_ = 0;
 	ComPtr<ID3D12Resource> particleResource_;
 	ComPtr<ID3D12Resource> perViewResource_;
-	//Matrix
-	Matrix4x4 worldMatrix_;
-	Matrix4x4 WVPMatrix_;
+
+	std::string textrueFilePath_;
 };
 
