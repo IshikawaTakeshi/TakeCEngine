@@ -55,9 +55,6 @@ private:
 
 	//パーティクル発生器
 	std::unique_ptr<ParticleEmitter> particleEmitter1_ = nullptr;
-	std::unique_ptr<ParticleEmitter> particleEmitter2_ = nullptr;
-
-	//std::unique_ptr<Object3d> drawTestModel_ = nullptr;
 
 	//スプライト
 	std::unique_ptr<Sprite> sprite_ = nullptr;
@@ -65,6 +62,4 @@ private:
 	//サンプルキャラクター
 	std::unique_ptr<SampleCharacter> samplePlayer_ = nullptr;
 	std::unique_ptr<SampleCharacter> sampleEnemy_ = nullptr;
-
-	std::unique_ptr<GPUParticle> gpuParticleGroup_ = nullptr;
 };

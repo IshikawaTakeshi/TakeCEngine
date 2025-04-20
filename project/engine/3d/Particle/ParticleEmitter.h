@@ -68,7 +68,7 @@ public:
 
 private:
 	//Particleの総数
-	static const uint32_t kNumMaxInstance_ = 100;
+	static const uint32_t kNumMaxInstance_ = 1024;
 
 	//DirectXCommon
 	DirectXCommon* dxCommon_;

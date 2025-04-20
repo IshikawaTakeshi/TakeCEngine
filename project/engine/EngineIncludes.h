@@ -17,12 +17,13 @@
 #include "Object3d.h"
 #include "SpriteCommon.h"
 #include "Sprite.h"
-#include "Sphere.h"
+#include "primitive/Sphere.h"
 #include "SrvManager.h"
 #include "scene/SceneManager.h"
 #include "3d/Particle/ParticleCommon.h"
 #include "base/Particle/ParticleManager.h"
 #include "Animation/Animator.h"
+#include "3d/Primitive/PrimitiveDrawer.h"
 #include "2d/WireFrame.h"
 
 //DirectXTex

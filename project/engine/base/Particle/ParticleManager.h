@@ -28,14 +28,11 @@ public:
 
 	void UpdateImGui();
 
-	void Draw();
+	void Draw(bool primitiveDraw);
 
 	void Finalize();
 
 	void Emit(const std::string& name, const Vector3& emitPosition, uint32_t count);
-
-	void SetParticleAttribute(const std::string& name);
-
 
 private:
 

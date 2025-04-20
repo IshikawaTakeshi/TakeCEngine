@@ -51,7 +51,7 @@ ConstantBuffer<SpotLight> gSpotLight : register(b4);
 //テクスチャ
 Texture2D<float4> gTexture : register(t0);
 //環境マップ用テクスチャ
-TextureCube<float4> gEnvironmentTexture : register(t1);
+TextureCube<float4> gEnvMapTexture : register(t1);
 //サンプラー
 SamplerState gSampler : register(s0);
 
@@ -66,8 +66,6 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 	float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
 	
 	if (textureColor.a < 0.5f) { discard; }
-
-	if (output.color.a == 0.0f) { discard; }
 
 	//Lightingの計算
 	if (gMaterial.enableLighting == 1) {
@@ -107,7 +105,7 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 		//環境マップの計算
 		float3 cameraToPosition = normalize(input.worldPosition - gCamera.worldPosition);
 		float3 reflectedVector = reflect(cameraToPosition, normalize(input.normal));
-		float4 environmentColor = gEnvironmentTexture.Sample(gSampler, reflectedVector);
+		float4 environmentColor = gEnvMapTexture.Sample(gSampler, reflectedVector);
 		
 		//Diffuse_Reflection
 		float3 diffuseDir = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
@@ -127,8 +125,9 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 		output.color.a = gMaterial.color.a * textureColor.a;
 		
 	}else if (gMaterial.enableLighting == 0) { //Lightingしない場合。前回まで同じ計算
-		output.color = gMaterial.color * textureColor;
-		output.color.rgb = saturate(input.normal);
+		output.color.rgb = gMaterial.color.rgb * textureColor.rgb;
+		output.color.a = gMaterial.color.a * textureColor.a;
+		//output.color.rgb = saturate(input.normal);
 	}
 	
 	return output;

@@ -4,8 +4,9 @@
 //Clockの宣言
 using Clock = std::chrono::high_resolution_clock;
 
-std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
 std::unique_ptr<Animator> TakeCFrameWork::animator_ = nullptr;
+std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
+std::unique_ptr<PrimitiveDrawer> TakeCFrameWork::primitiveDrawer_ = nullptr;
 std::unique_ptr<WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
 std::chrono::steady_clock::time_point TakeCFrameWork::gameTime_ = Clock::now();
 const float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
@@ -63,6 +64,10 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//ParticleManager
 	particleManager_ = std::make_unique<ParticleManager>();
 
+	//PrimitiveDrawer
+	primitiveDrawer_ = std::make_unique<PrimitiveDrawer>();
+	primitiveDrawer_->Initialize(directXCommon_.get(), srvManager_.get());
+
 	//WireFrame
 	wireFrame_ = std::make_unique<WireFrame>();
 	wireFrame_->Initialize(directXCommon_.get());
@@ -91,7 +96,7 @@ void TakeCFrameWork::Finalize() {
 	ModelManager::GetInstance()->Finalize();
 	CameraManager::GetInstance()->Finalize();
 	particleManager_->Finalize();
-
+	primitiveDrawer_->Finalize();
 	particleCommon_->Finalize();
 	object3dCommon_->Finalize();
 	spriteCommon_->Finalize();
@@ -174,6 +179,11 @@ ParticleManager* TakeCFrameWork::GetParticleManager() {
 Animator* TakeCFrameWork::GetAnimator() {
 	assert(animator_ != nullptr);
 	return animator_.get();
+}
+
+PrimitiveDrawer* TakeCFrameWork::GetPrimitiveDrawer() {
+	assert(primitiveDrawer_ != nullptr);
+	return primitiveDrawer_.get();
 }
 
 //====================================================================

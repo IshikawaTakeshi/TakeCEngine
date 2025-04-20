@@ -26,20 +26,10 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
 
 	//Model読み込み
-	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
-
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "cube.obj");
+	LoadModel();
 
 	//Animation読み込み
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
+	LoadAnimation();
 
 	CollisionManager::GetInstance()->Initialize(directXCommon_.get());
 
@@ -71,7 +61,7 @@ void MyGame::Update() {
 
 	//FrameWorkの更新
 	TakeCFrameWork::Update();
-
+	TakeCFrameWork::GetPrimitiveDrawer()->Update();
 	TakeCFrameWork::GetWireFrame()->Update();
 }
 
@@ -86,8 +76,7 @@ void MyGame::Draw() {
 	srvManager_->SetDescriptorHeap();       //SRV描画前処理
 	
 	sceneManager_->Draw();
-	TakeCFrameWork::GetWireFrame()->Draw();
-
+	
 	//描画後処理
 	directXCommon_->PostDraw();
 }

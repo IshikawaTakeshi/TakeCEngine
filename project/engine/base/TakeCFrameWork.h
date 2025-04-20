@@ -28,6 +28,8 @@ public:
 
 	static Animator* GetAnimator();
 
+	static PrimitiveDrawer* GetPrimitiveDrawer();
+
 	static WireFrame* GetWireFrame();
 
 	static float GetGameTime();
@@ -49,6 +51,7 @@ protected:
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;
 	static std::unique_ptr<Animator> animator_;
 	static std::unique_ptr<ParticleManager> particleManager_;
+	static std::unique_ptr<PrimitiveDrawer> primitiveDrawer_;
 	static std::unique_ptr<WireFrame> wireFrame_;
 	
 	// ゲームの起動時間

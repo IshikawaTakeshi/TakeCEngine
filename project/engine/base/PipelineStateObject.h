@@ -74,6 +74,7 @@ public:
 		SUBTRACT,
 		MULTIPLY,
 		SCREEN,
+		SPRITE,
 	};
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -132,6 +133,9 @@ public:
 	///			getter
 	///////////////////////////////////////////////////////////////////////////////////////////
 
+	// 名前から bindResources のインデックスを取得する
+	int32_t GetGraphicBindResourceIndex(const std::string& name);
+	int32_t GetComputeBindResourceIndex(const std::string& name);
 
 	/// <summary>
 	/// rootSignatureの取得
@@ -154,8 +158,9 @@ private:
 	///			privateメンバ変数
 	///////////////////////////////////////////////////////////////////////////////////////////
 
-	//rootSignature
-	D3D12_ROOT_PARAMETER rootParametersForParticle_[3] = {};
+
+	ShaderResourceMap graphicBindResourceInfo_;
+	ShaderResourceMap computeBindResourceInfo_;
 
 	std::vector<std::string> semanticName_;
 

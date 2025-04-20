@@ -1,19 +1,14 @@
 #pragma once
-#include <d3d12.h>
-#include <dxgi1_6.h>
-
-#include <dxcapi.h>
-
-#include <wrl.h>
-#include <cassert>
-#include <string>
-#include <vector>
-#include <iostream>
-#include <memory>
-
+#include "DirectXCommon.h"
 #include "Matrix4x4.h"
 #include "Transform.h"
+#include "Material.h"
 #include "ResourceDataStructure.h"
+
+#include <string>
+#include <vector>
+#include <memory>
+
 
 class DirectXCommon;
 class Texture;
@@ -26,7 +21,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon,Matrix4x4 cameraView);
+	void Initialize(DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// 更新処理
@@ -44,11 +39,6 @@ public:
 	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() {
 		return vertexBufferViews_;
 	}
-
-	/// <summary>
-	/// MaterialData初期化
-	/// </summary>
-	void InitializeMaterialData(DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// MaterialData初期化
@@ -72,33 +62,28 @@ public:
 
 private:
 
+
+
+	//マテリアル
+	std::unique_ptr<Material> material_ = nullptr;
+
 	//頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
-	//TransformationMatrix用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
 	//頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViews_{};
+	//TransformationMatrix用の頂点リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
 
 	//CPU用のTransform
 	EulerTransform transform_{};
 	//行列
 	Matrix4x4 worldMatrix_;
-	Matrix4x4 viewMatrix_;
-	Matrix4x4 projectionMatrix_;
-	Matrix4x4 worldViewProjectionMatrix_;
+	Matrix4x4 WVPMatrix_;
 
 	//頂点データ
 	VertexData* vertexData_ = nullptr;
 	//TransformationMatrix用の頂点データ
 	Matrix4x4* TransformMatrixData_ = nullptr;
 
-	//マテリアルリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
-	Vector4* materialData_;
-
-	//Texture
-	Texture* Texture_ = nullptr;
-
-	uint32_t textureIndex_ = 0;
 };
 

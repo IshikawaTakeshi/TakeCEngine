@@ -273,10 +273,10 @@
     <ClCompile Include="engine\base\TakeCFrameWork.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Sphere.cpp">
+    <ClCompile Include="engine\3d\Primitive\Sphere.cpp">
       <Filter>ソース ファイル\engine\3d\primitive</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Triangle.cpp">
+    <ClCompile Include="engine\3d\Primitive\Triangle.cpp">
       <Filter>ソース ファイル\engine\3d\primitive</Filter>
     </ClCompile>
     <ClCompile Include="application\Collision\Collider.cpp">
@@ -332,6 +332,15 @@
     </ClCompile>
     <ClCompile Include="application\SkyBox\SkyBox.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\Primitive\PrimitiveDrawer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\Primitive\Ring.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\Particle\BaseParticleGroup.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -569,14 +578,23 @@
     <ClInclude Include="engine\base\ImGuiManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Sphere.h">
+    <ClInclude Include="engine\3d\Primitive\Sphere.h">
       <Filter>ヘッダー ファイル\engine\3d\primitive</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Triangle.h">
+    <ClInclude Include="engine\3d\Primitive\Triangle.h">
       <Filter>ヘッダー ファイル\engine\3d\primitive</Filter>
     </ClInclude>
     <ClInclude Include="engine\camera\CameraManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\Primitive\PrimitiveDrawer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\Primitive\Ring.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\Particle\BaseParticleGroup.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -605,6 +623,12 @@
     </Image>
     <Image Include="Resources\uvChecker.png">
       <Filter>リソース ファイル\image</Filter>
+    </Image>
+    <Image Include="Resources\images\gradationLine.png">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="Resources\images\simpleCircle.png">
+      <Filter>リソース ファイル</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
