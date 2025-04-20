@@ -61,7 +61,9 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	particleAttributes_.editColor = true;
 	particleAttributes_.color = { 0.9f,0.3f,0.9f };
 	//モデルの読み込み
-	SetModel(filePath);
+	//SetModel(filePath);
+	TakeCFrameWork::GetPrimitiveDrawer()->CreateRingVertexData();
+
 }
 
 //=============================================================================

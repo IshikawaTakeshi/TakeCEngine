@@ -54,10 +54,6 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 		particle.color_ = { distColor(randomEngine),distColor(randomEngine),distColor(randomEngine),1.0f };
 	}
 
-	//リングの生成
-	TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(2.0f,0.1f,particle.transforms_.translate, particle.color_); 
-
-
 	particle.lifeTime_ = distTime(randomEngine);
 	particle.currentTime_ = 0.0f;
 
@@ -82,7 +78,7 @@ std::list<Particle> BaseParticleGroup::Emit(const Vector3& emitterPos, uint32_t 
 //=============================================================================
 // パーティクルの配列の結合処理
 //=============================================================================
-
-void Particle3d::SpliceParticles(std::list<Particle> particles) {
+void BaseParticleGroup::SpliceParticles(std::list<Particle> particles) {
 	particles_.splice(particles_.end(), particles);
 }
+
