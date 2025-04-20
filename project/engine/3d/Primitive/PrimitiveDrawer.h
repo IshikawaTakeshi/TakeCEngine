@@ -47,7 +47,7 @@ public:
 	/// <param name="innerRadius">内側の半径</param>
 	/// <param name="center">中心点</param>
 	/// <param name="color">カラー</param>
-	void GenerateRing(const float outerRadius, const float innerRadius, const Vector3& center, const Vector4& color);
+	void GenerateRing(const float outerRadius, const float innerRadius);
 
 	// 描画処理
 	void DrawParticle(PSO* pso,UINT instanceCount);
@@ -55,7 +55,7 @@ public:
 	// リングの頂点データの作成関数
 	void CreateRingVertexData();
 
-
+	void ResetVertexIndex() { ringVertexIndex_ = 0; }
 
 private:
 
@@ -80,8 +80,8 @@ private:
 	RingData* ringData_ = nullptr;
 	uint32_t ringDivide_ = 32;
 	uint32_t ringVertexIndex_ = 0;
-	uint32_t ringIndexIndex_ = 0;
-	uint32_t ringVertexCount_ = ringDivide_;
+	uint32_t ringInstanceIndex_ = 0;
+	uint32_t ringVertexCount_ = ringDivide_ * 6;
 	const uint32_t kMaxVertexCount_ = 32000;
 };
 
