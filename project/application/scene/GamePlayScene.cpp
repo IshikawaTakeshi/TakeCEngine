@@ -14,18 +14,20 @@
 void GamePlayScene::Initialize() {
 
 	//Camera0
-	camera0_ = std::make_shared<Camera>();
-	camera0_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	camera0_->SetTranslate({ 0.0f,20.0f,-50.0f });
-	camera0_->SetRotate({ 0.15f,0.0f,0.0f });
-	CameraManager::GetInstance()->AddCamera("Camera0", *camera0_);
+	gameCamera_ = std::make_shared<Camera>();
+	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
+	gameCamera_->SetIsDebug(false);
+	gameCamera_->SetTranslate({ 5.0f,0.0f,-10.0f });
+	gameCamera_->SetRotate({ 0.0f,-1.4f,0.0f });
+	CameraManager::GetInstance()->AddCamera("gameCamera", *gameCamera_);
 
 	//Camera1
-	camera1_ = std::make_shared<Camera>();
-	camera1_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	camera1_->SetTranslate({ 5.0f,0.0f,-1.0f });
-	camera1_->SetRotate({ 0.0f,-1.4f,0.0f });
-	CameraManager::GetInstance()->AddCamera("Camera1", *camera1_);
+	debugCamera_ = std::make_shared<Camera>();
+	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
+	debugCamera_->SetTranslate({ 5.0f,0.0f,-1.0f });
+	debugCamera_->SetRotate({ 0.0f,-1.4f,0.0f });
+	debugCamera_->SetIsDebug(true);
+	CameraManager::GetInstance()->AddCamera("debugCamera", *debugCamera_);
 
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
@@ -58,12 +60,10 @@ void GamePlayScene::Initialize() {
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
 
-
-	//SampleCharacter
-	samplePlayer_ = std::make_unique<SampleCharacter>();
-	samplePlayer_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
-	samplePlayer_->SetCharacterType(CharacterType::PLAYER);
-	samplePlayer_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf","damage"));
+	//player
+	player_ = std::make_unique<Player>();
+	player_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
+	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
 
 	//SampleEnemy
 	sampleEnemy_ = std::make_unique<SampleCharacter>();
@@ -92,7 +92,7 @@ void GamePlayScene::Update() {
 	Object3dCommon::GetInstance()->UpdateImGui();
 	ParticleCommon::GetInstance()->UpdateImGui();
 	TakeCFrameWork::GetPrimitiveDrawer()->UpdateImGui();
-	samplePlayer_->UpdateImGui();
+	
 	particleEmitter1_->UpdateImGui();
 	sprite_->UpdateImGui(0);
 
@@ -111,7 +111,7 @@ void GamePlayScene::Update() {
 	sprite_->Update();
 
 	//SampleCharacter
-	samplePlayer_->Update();
+	player_->Update();
 	sampleEnemy_->Update();
 
 	//当たり判定の更新
@@ -140,13 +140,11 @@ void GamePlayScene::Draw() {
 
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance()->DisPatch();
-	//drawTestModel_->DisPatch();
-	samplePlayer_->SkinningDisPatch();
+	player_->GetObject3d()->DisPatch();
 	sampleEnemy_->SkinningDisPatch();
 
 	Object3dCommon::GetInstance()->PreDraw();
-	//drawTestModel_->Draw();
-	//samplePlayer_->Draw();
+	player_->Draw();
 	sampleEnemy_->Draw();
 	//プリミティブ描画
 	//TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(3.0f, 0.1f, { 0.0f,0.0f,0.0f }, { 1.0f,1.0f,1.0f,1.0f });
@@ -154,8 +152,6 @@ void GamePlayScene::Draw() {
 	
 	//当たり判定の描画前処理
 	CollisionManager::GetInstance()->PreDraw();
-	samplePlayer_->DrawCollider();
-	//sampleEnemy_->DrawCollider();
 
 	//グリッド地面の描画
 	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 100);
@@ -180,7 +176,7 @@ void GamePlayScene::CheckAllCollisions() {
 
 	CollisionManager::GetInstance()->ClearGameCharacter();
 
-	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(samplePlayer_.get()));
+	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
 
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(sampleEnemy_.get()));
 

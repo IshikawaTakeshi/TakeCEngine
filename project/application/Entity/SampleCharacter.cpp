@@ -22,40 +22,6 @@ void SampleCharacter::Initialize(Object3dCommon* object3dCommon, const std::stri
 
 void SampleCharacter::Update() {
 
-
-	if(characterType_ == CharacterType::PLAYER) {
-		XINPUT_STATE joystickState;
-		if (Input::GetInstance()->GetJoystickState(0, joystickState)) { // 0番のジョイスティックを使用
-			// 左スティックの入力値（-32768 ～ 32767 の範囲）
-			float x = static_cast<float>(joystickState.Gamepad.sThumbLX);
-			float y = static_cast<float>(joystickState.Gamepad.sThumbLY);
-
-			// スティックのデッドゾーン処理（XINPUT ゲームパッドの仕様に準拠）
-			constexpr float DEADZONE = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
-			float magnitude = sqrtf(x * x + y * y);
-
-			if (magnitude > DEADZONE) {
-				// デッドゾーンを補正して 0.0f ~ 1.0f の範囲に正規化
-				float normalizedX = x / 32768.0f;
-				float normalizedY = y / 32768.0f;
-
-				// 移動速度を適用
-				constexpr float SPEED = 1.0f;
-				object3d_->SetTranslate({
-					object3d_->GetTranslate().x + normalizedX * SPEED,
-					object3d_->GetTranslate().y,
-					object3d_->GetTranslate().z
-					});
-
-				object3d_->SetTranslate({
-					object3d_->GetTranslate().x,
-					object3d_->GetTranslate().y,
-					object3d_->GetTranslate().z + normalizedY * SPEED
-					});
-				
-			} 
-		}
-	}
 	//キー入力で移動
 	object3d_->Update();
 
