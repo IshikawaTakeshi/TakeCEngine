@@ -22,7 +22,7 @@
 //app
 #include "application/Ground/Ground.h"
 #include "application/HPBar/HPBar.h"
-#include "application/SampleCharacter.h"
+#include "application/Entity/SampleCharacter.h"
 
 
 class GamePlayScene : public BaseScene {
