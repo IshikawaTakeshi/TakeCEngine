@@ -12,7 +12,7 @@ void Camera::Initialize(ID3D12Device* device) {
 	
 	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	offset_ = { 0.0f, 0.0f, -5.0f };
-	offsetDelta_ = { 0.0f, 0.0f, -55.0f };
+	offsetDelta_ = { 0.0f, 0.0f, -70.0f };
 	fovX_ = 0.45f;
 	aspectRatio_ = float(WinApp::kClientWidth / 2) / float(WinApp::kClientHeight / 2);
 	nearClip_ = 0.1f;
@@ -21,9 +21,10 @@ void Camera::Initialize(ID3D12Device* device) {
 	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(fovX_, aspectRatio_, nearClip_, farClip_);
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
-
 	rotationMatrix_ = MatrixMath::MakeIdentity4x4();
-	//rotationMatrixDelta_ = MatrixMath::MakeIdentity4x4();
+
+	targetPosition_ = new Vector3();
+	targetRotation_ = new Vector3();
 
 	cameraResource_ = DirectXCommon::CreateBufferResource(device, sizeof(CameraForGPU));
 	cameraForGPU_ = nullptr;
@@ -40,45 +41,14 @@ void Camera::Update() {
 
 	if (isDebug_) {
 
-
-		// クォータニオンで回転を管理
-		Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
-
-		if (Input::GetInstance()->IsPressMouse(1)) {
-			// マウス入力による回転計算
-			float deltaPitch = (float)Input::GetInstance()->GetMouseMove().lY * 0.001f; // X軸回転
-			float deltaYaw = (float)Input::GetInstance()->GetMouseMove().lX * 0.001f;   // Y軸回転
-
-			// クォータニオンを用いた回転計算
-			Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
-				Vector3(0, 1, 0), deltaYaw);
-			Quaternion pitchRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
-				QuaternionMath::RotateVector(Vector3(1, 0, 0), yawRotation * transform_.rotate), deltaPitch);
-
-			//回転の補間
-			rotationDelta = pitchRotation * yawRotation;
-		}
-
-		// 累積回転を更新
-		transform_.rotate = rotationDelta * transform_.rotate;
-		//transform_.rotate = QuaternionMath::Normalize(transform_.rotate); // クォータニオンを正規化して数値誤差を防ぐ
-
-		if (Input::GetInstance()->IsPressMouse(2)) {
-			offsetDelta_.x += (float)Input::GetInstance()->GetMouseMove().lX * 0.01f;
-			offsetDelta_.y -= (float)Input::GetInstance()->GetMouseMove().lY * 0.01f;
-		}
-
-		// オフセットを考慮したワールド行列の計算
-		offsetDelta_.z += (float)Input::GetInstance()->GetWheel() * 0.01f;
+		UpdateDebugCamera();
 		
+	} else {
+
+		UpdateGameCamera();
 	}
 
-	offset_ = offsetDelta_;
-
-	// 回転を適用
-	offset_ = QuaternionMath::RotateVector(offset_, transform_.rotate);
-	transform_.translate = offset_;
-
+	
 	transform_.rotate = QuaternionMath::Normalize(transform_.rotate); // クォータニオンを正規化して数値誤差を防ぐ
 
 	rotationMatrix_ = MatrixMath::MakeRotateMatrix(transform_.rotate);
@@ -132,9 +102,79 @@ void Camera::ShakeCamera() {
 #ifdef _DEBUG
 void Camera::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
-	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
+	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("offset", &offset_.x, 0.01f);
 	ImGui::DragFloat("FovX", &fovX_, 0.01f);
+}
+
+void Camera::UpdateDebugCamera() {
+
+	// クォータニオンで回転を管理
+	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
+
+	if (Input::GetInstance()->IsPressMouse(1)) {
+		// マウス入力による回転計算
+		float deltaPitch = (float)Input::GetInstance()->GetMouseMove().lY * 0.001f; // X軸回転
+		float deltaYaw = (float)Input::GetInstance()->GetMouseMove().lX * 0.001f;   // Y軸回転
+
+		// クォータニオンを用いた回転計算
+		Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
+			Vector3(0, 1, 0), deltaYaw);
+		Quaternion pitchRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
+			QuaternionMath::RotateVector(Vector3(1, 0, 0), yawRotation * transform_.rotate), deltaPitch);
+
+		//回転の補間
+		rotationDelta = pitchRotation * yawRotation;
+	}
+
+	// 累積回転を更新
+	transform_.rotate = rotationDelta * transform_.rotate;
+
+	if (Input::GetInstance()->IsPressMouse(2)) {
+		offsetDelta_.x += (float)Input::GetInstance()->GetMouseMove().lX * 0.01f;
+		offsetDelta_.y -= (float)Input::GetInstance()->GetMouseMove().lY * 0.01f;
+	}
+
+	// オフセットを考慮したワールド行列の計算
+	offsetDelta_.z += (float)Input::GetInstance()->GetWheel() * 0.01f;
+
+	// 回転を適用
+	offset_ = offsetDelta_;
+	offset_ = QuaternionMath::RotateVector(offset_, transform_.rotate);
+	transform_.translate = offset_;
+
+}
+
+void Camera::UpdateGameCamera() {
+	
+	// クォータニオンで回転を管理
+	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
+
+	//スティックによる回転計算
+	float deltaPitch = stick_.y * 0.02f; // X軸回転
+	float deltaYaw = stick_.x * 0.02f;   // Y軸回転
+
+	yawRot_ += deltaYaw;
+	pitchRot_ += deltaPitch;
+
+	// クォータニオンを用いた回転計算
+	Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
+		Vector3(0, 1, 0), yawRot_);
+	Quaternion pitchRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
+		QuaternionMath::RotateVector(Vector3(1, 0, 0), yawRotation), pitchRot_);
+
+	//回転の合成
+	rotationDelta = pitchRotation * yawRotation;
+
+	// オフセットに回転を適用
+	offset_ = offsetDelta_;
+	offset_ = QuaternionMath::RotateVector(offset_, rotationDelta);
+
+	//カメラ位置の計算
+	Vector3 tagetPosition_ = *targetPosition_ + offset_;
+
+	transform_.translate = Easing::Lerp(transform_.translate, tagetPosition_, followSpeed_);
+	transform_.rotate = Easing::Slerp(transform_.rotate, rotationDelta, followSpeed_);
 }
 
 #endif // DEBUG

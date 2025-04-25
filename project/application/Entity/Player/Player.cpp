@@ -5,17 +5,24 @@
 #include "3d/Object3dCommon.h"
 #include "Model.h"
 #include "Input.h"
+#include "camera/CameraManager.h"
+#include "engine/base/TakeCFrameWork.h"
 
 void Player::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
 	//キャラクタータイプ設定
 	characterType_ = CharacterType::PLAYER;
+
+	behaviorRequest_ = Behavior::RUNNING;
 	//オブジェクト初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
 	//コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
+
+	camera_ = CameraManager::GetInstance()->GetActiveCamera();
+	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
 void Player::Update() {
@@ -57,9 +64,32 @@ void Player::Update() {
 		break;
 	}
 
+	//カメラの設定
+	camera_->SetTargetPos(transform_.translate);
+	camera_->SetTargetRot(transform_.rotate);
+
+	object3d_->SetTranslate(transform_.translate);
+	object3d_->SetRotation(transform_.rotate);
+	object3d_->Update();
+	collider_->Update(object3d_.get());
 }
 
-void Player::Draw() {}
+void Player::Draw() {
+	object3d_->Draw();
+}
+
+void Player::DrawCollider() {
+#ifdef _DEBUG
+	collider_->DrawCollider();
+#endif
+}
+
+void Player::OnCollisionAction(GameCharacter* other) {
+
+	if (other->GetCharacterType() == CharacterType::ENEMY) {
+		//衝突時の処理
+	}
+}
 
 void Player::InitRunning() {}
 
@@ -70,19 +100,38 @@ void Player::InitDash() {}
 void Player::UpdateRunning() {
 
 	//左スティック
-	StickState leftJoystickState = Input::GetInstance()->GetLeftStickState(0);
+	StickState leftStick= Input::GetInstance()->GetLeftStickState(0);
 	//右スティック 
-	StickState rightJoystickState = Input::GetInstance()->GetRightStickState(0);
-	//左スティックの移動量を取得
-	float leftX = leftJoystickState.x;
-	float leftY = leftJoystickState.y;
-	
+	StickState rightStick = Input::GetInstance()->GetRightStickState(0);
+
+	//カメラの回転を設定
+	camera_->SetStick({ rightStick.x, rightStick.y });
+
+	//カメラの方向から移動方向の計算
+	Vector3 forward = QuaternionMath::RotateVector(Vector3(0, 0, 1), camera_->GetRotate());
+	Vector3 right = QuaternionMath::RotateVector(Vector3(1, 0, 0), camera_->GetRotate());
+	moveDirection_ = forward * leftStick.y + right * leftStick.x;
+
+	//移動時の加速度の計算
+	velocity_.x += moveDirection_.x * moveSpeed_ * deltaTime_;
+	velocity_.z += moveDirection_.z * moveSpeed_ * deltaTime_;
+	if (velocity_.x > kMaxMoveSpeed_) {
+		velocity_.x = kMaxMoveSpeed_;
+	}
+	if (velocity_.z > kMaxMoveSpeed_) {
+		velocity_.z = kMaxMoveSpeed_;
+	}
+
+	//速度の減速処理
+	velocity_.x /= deceleration_;
+	velocity_.z /= deceleration_;
+
 	//移動処理
-	object3d_->SetTranslate({
-		object3d_->GetTranslate().x + leftX * 0.1f,
-		object3d_->GetTranslate().y,
-		object3d_->GetTranslate().z + leftY * 0.1f
-		});
+	transform_.translate = {
+		transform_.translate.x + velocity_.x * deltaTime_,
+		transform_.translate.y,
+		transform_.translate.z + velocity_.z * deltaTime_
+	};
 }
 
 void Player::UpdateAttack() {}

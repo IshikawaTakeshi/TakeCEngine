@@ -1,5 +1,6 @@
 #pragma once
 #include "application/Entity/GameCharacter.h"
+#include "camera/Camera.h"
 #include <optional>
 
 class Player : public GameCharacter {
@@ -35,9 +36,26 @@ private:
 
 private:
 
+	//カメラ
+	Camera* camera_ = nullptr;
+
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 
 	Behavior behavior_ = Behavior::IDLE;
+
+	//移動ベクトル
+	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
+	//減速率
+	float deceleration_ = 1.1f;
+	//移動方向
+	Vector3 moveDirection_ = { 0.0f,0.0f,1.0f };
+
+	EulerTransform transform_ = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} };
+
+	const float moveSpeed_ = 200.0f;
+	const float kMaxMoveSpeed_ = 50.0f;
+
+	float deltaTime_ = 0.0f;
 
 	bool isJumping_ = false;
 	bool isDashing_ = false;

@@ -1,6 +1,7 @@
 #pragma once
 #include "Transform.h"
 #include "Matrix4x4.h"
+#include "Vector2.h"
 #include <string>
 #include <d3d12.h>
 #include <wrl.h>
@@ -23,7 +24,10 @@ public:
 	void UpdateImGui();
 #endif // DEBUG
 
-	
+private:
+
+	void UpdateDebugCamera();
+	void UpdateGameCamera();
 
 public: //getter
 	
@@ -47,8 +51,12 @@ public: //setter
 	void SetNearClip(const float nearClip) { nearClip_ = nearClip; }
 	void SetFarClip(const float farClip) { farClip_ = farClip; }
 	void SetIsShaking(const bool isShaking) { isShaking_ = isShaking; }
+	void SetIsDebug(bool isDebug){ isDebug_ = isDebug; }
 	void SetShake(float duration, float range);
 
+	void SetStick(const Vector2& stick) { stick_ = stick; }
+	void SetTargetPos(const Vector3& target) { *targetPosition_ = target; }
+	void SetTargetRot(const Vector3& targetRot) { *targetRotation_ = targetRot; }
 private:
 
 	//バッファリソース
@@ -64,7 +72,14 @@ private:
 	Matrix4x4 viewProjectionMatrix_;
 	//回転行列
 	Matrix4x4 rotationMatrix_;
-	//Matrix4x4 rotationMatrixDelta_;
+
+	//スティック情報
+	Vector2 stick_;
+
+	//追従対象
+	Vector3* targetPosition_;
+	Vector3* targetRotation_;
+	float followSpeed_ = 0.1f;
 	
 	//水平方向視野角
 	float fovX_;
@@ -74,6 +89,8 @@ private:
 	float nearClip_;
 	//farクリップ距離
 	float farClip_;
+	float yawRot_ = 0.0f;
+	float pitchRot_ = 0.0f;
 
 	float pitch_ = 0.0f;
 	bool isDebug_ = false;

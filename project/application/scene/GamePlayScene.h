@@ -23,6 +23,7 @@
 #include "application/Ground/Ground.h"
 #include "application/HPBar/HPBar.h"
 #include "application/Entity/SampleCharacter.h"
+#include "application/Entity/Player/Player.h"
 
 
 class GamePlayScene : public BaseScene {
@@ -48,8 +49,8 @@ private:
 	//AudioManager::SoundData BGM;
 	bool isSoundPlay = false;
 	// カメラ
-	std::shared_ptr<Camera> camera0_ = nullptr;
-	std::shared_ptr<Camera> camera1_ = nullptr;
+	std::shared_ptr<Camera> gameCamera_ = nullptr;
+	std::shared_ptr<Camera> debugCamera_ = nullptr;
 	//SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 
@@ -60,6 +61,7 @@ private:
 	std::unique_ptr<Sprite> sprite_ = nullptr;
 
 	//サンプルキャラクター
-	std::unique_ptr<SampleCharacter> samplePlayer_ = nullptr;
 	std::unique_ptr<SampleCharacter> sampleEnemy_ = nullptr;
+
+	std::unique_ptr<Player> player_ = nullptr;
 };
