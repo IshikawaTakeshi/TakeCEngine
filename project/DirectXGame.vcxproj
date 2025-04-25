@@ -120,6 +120,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\Animation\Animator.cpp" />
     <ClCompile Include="engine\Animation\Skeleton.cpp" />
     <ClCompile Include="engine\Animation\SkinCluster.cpp" />
+    <ClCompile Include="engine\io\Gamepad.cpp" />
     <ClCompile Include="engine\math\Easing.cpp" />
     <ClCompile Include="engine\math\Quaternion.cpp" />
     <ClCompile Include="application\scene\AbstractSceneFactory.cpp" />
@@ -154,7 +155,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\TakeCFrameWork.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="engine\base\ImGuiManager.cpp" />
-    <ClCompile Include="application\GameCharacter.cpp" />
+    <ClCompile Include="application\Entity\GameCharacter.cpp" />
     <ClCompile Include="engine\3d\Particle\GPUParticle.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
@@ -175,9 +176,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\Particle\ParticleManager.cpp" />
     <ClCompile Include="application\SkyBox\SkyBox.cpp" />
     <ClCompile Include="application\Collision\SphereCollider.cpp" />
-    <ClCompile Include="application\SampleCharacter.cpp" />
+    <ClCompile Include="application\Entity\SampleCharacter.cpp" />
     <ClCompile Include="engine\3d\Primitive\PrimitiveDrawer.cpp" />
     <ClCompile Include="engine\3d\Primitive\Ring.cpp" />
+    <ClCompile Include="application\Entity\Player\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Collision\Collider.h" />
@@ -196,6 +198,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Animation\Skeleton.h" />
     <ClInclude Include="engine\Animation\SkinCluster.h" />
     <ClInclude Include="engine\base\PSOType.h" />
+    <ClInclude Include="engine\io\Gamepad.h" />
+    <ClInclude Include="engine\io\InputData.h" />
     <ClInclude Include="engine\math\AABB.h" />
     <ClInclude Include="engine\math\Easing.h" />
     <ClInclude Include="engine\math\OBB.h" />
@@ -235,9 +239,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Particle\ParticleCommon.h" />
     <ClInclude Include="engine\3d\Particle\ParticleEmitter.h" />
     <ClInclude Include="engine\base\Particle\ParticleManager.h" />
-    <ClInclude Include="application\GameCharacter.h" />
+    <ClInclude Include="application\Entity\GameCharacter.h" />
     <ClInclude Include="engine\3d\Particle\GPUParticle.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveDrawer.h" />
+    <ClInclude Include="application\Entity\Player\Player.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\base\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />
@@ -262,7 +267,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\SkyBox\SkyBox.h" />
     <ClInclude Include="application\Collision\SphereCollider.h" />
-    <ClInclude Include="application\SampleCharacter.h" />
+    <ClInclude Include="application\Entity\SampleCharacter.h" />
     <ClInclude Include="engine\3d\Primitive\Ring.h" />
   </ItemGroup>
   <ItemGroup>

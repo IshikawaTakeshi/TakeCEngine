@@ -5,8 +5,10 @@
 #include <wrl.h>
 #include <cstdint>
 #include <vector>
+#include <memory>
 
 #include "Vector2.h"
+#include "Gamepad.h"
 
 class WinApp;
 class Input {
@@ -17,25 +19,27 @@ public:
 		LONG lZ;
 	};
 
-	enum class PadType {
-		DirectInput,
-		XInput,
-	};
+	//enum class PadType {
+	//	DirectInput,
+	//	XInput,
+	//};
 
-	// variantがC++17から
-	union State {
-		XINPUT_STATE xInput_;
-		DIJOYSTATE2 directInput_;
-	};
 
-	struct Joystick {
-		Microsoft::WRL::ComPtr<IDirectInputDevice8> device_;
-		int32_t deadZoneL_;
-		int32_t deadZoneR_;
-		PadType type_;
-		State state_;
-		State statePre_;
-	};
+	//union State {
+	//	XINPUT_STATE xInput_;         // XInput の生の入力データ
+	//	DIJOYSTATE2 directInput_;     // DirectInput の生の入力データ
+	//	Vector2 processedLeftStick_;  // デッドゾーン処理後の左スティック
+	//	Vector2 processedRightStick_; // デッドゾーン処理後の右スティック
+	//};
+
+	//struct Joystick {
+	//	Microsoft::WRL::ComPtr<IDirectInputDevice8> device_;
+	//	int32_t deadZoneL_;
+	//	int32_t deadZoneR_;
+	//	PadType type_;
+	//	State state_;
+	//	State statePre_;
+	//};
 
 public:
 
@@ -73,52 +77,7 @@ public:
 
 	bool TriggerKey(BYTE keyNumber);
 
-	/// <summary>
-	/// 現在のジョイスティック状態を取得する
-	/// </summary>
-	/// <param name="stickNo">ジョイスティック番号</param>
-	/// <param name="out">現在のジョイスティック状態</param>
-	/// <returns>正しく取得できたか</returns>
-	bool GetJoystickState(int32_t stickNo, DIJOYSTATE2& out) const;
-
-	/// <summary>
-	/// 前回のジョイスティック状態を取得する
-	/// </summary>
-	/// <param name="stickNo">ジョイスティック番号</param>
-	/// <param name="out">前回のジョイスティック状態</param>
-	/// <returns>正しく取得できたか</returns>
-	bool GetJoystickStatePrevious(int32_t stickNo, DIJOYSTATE2& out) const;
-
-	/// <summary>
-	/// 現在のジョイスティック状態を取得する
-	/// </summary>
-	/// <param name="stickNo">ジョイスティック番号</param>
-	/// <param name="out">現在のジョイスティック状態</param>
-	/// <returns>正しく取得できたか</returns>
-	bool GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const;
-
-	/// <summary>
-	/// 前回のジョイスティック状態を取得する
-	/// </summary>
-	/// <param name="stickNo">ジョイスティック番号</param>
-	/// <param name="out">前回のジョイスティック状態</param>
-	/// <returns>正しく取得できたか</returns>
-	bool GetJoystickStatePrevious(int32_t stickNo, XINPUT_STATE& out) const;
-
-	/// <summary>
-	/// デッドゾーンを設定する
-	/// </summary>
-	/// <param name="stickNo">ジョイスティック番号</param>
-	/// <param name="deadZoneL">デッドゾーン左スティック 0~32768</param>
-	/// <param name="deadZoneR">デッドゾーン右スティック 0~32768</param>
-	/// <returns>正しく取得できたか</returns>
-	void SetJoystickDeadZone(int32_t stickNo, int32_t deadZoneL, int32_t deadZoneR);
-
-	/// <summary>
-	/// 接続されているジョイスティック数を取得する
-	/// </summary>
-	/// <returns>接続されているジョイスティック数</returns>
-	size_t GetNumberOfJoysticks();
+	
 
 	/// <summary>
 	/// 全マウス情報取得
@@ -158,6 +117,39 @@ public:
 	/// <returns>マウスの位置</returns>
 	const Vector2& GetCursorPosition() const;
 
+	//====================================================================
+	//		GamePad
+	//====================================================================
+
+	//ゲームパッドの状態を取得(XInput)
+	//bool GetJoystickState(int stickNo, XINPUT_STATE& out) const;
+
+	////ゲームパッドの状態を取得(DirectInput)
+	//bool GetJoystickState(int stickNo, DIJOYSTATE2& out) const;
+
+	////前回のゲームパッドの状態を取得(XInput)
+	//bool GetJoystickStatePrevious(int stickNo, XINPUT_STATE& out) const;
+
+	////前回のゲームパッドの状態を取得(DirectInput)
+	//bool GetJoystickStatePrevious(int stickNo, DIJOYSTATE2& out) const;
+
+	//ゲームパッドの押下チェック
+	bool PushButton(int stickNo, GamepadButtonType button) const;
+
+	bool TriggerButton(int stickNo, GamepadButtonType button) const;
+
+	bool ReleaseButton(int stickNo, GamepadButtonType button) const;
+
+	//ボタンの押し込み量を取得
+	float GetTriggerValue(int stickNo, GamepadButtonType button) const;
+
+	//スティックの状況を取得
+	StickState GetLeftStickState(int stickNo) const;
+
+	StickState GetRightStickState(int stickNo) const;
+
+	float GetStickValue(int stickNo, GamepadValueType valueType) const;
+
 private:
 
 	Input() = default;
@@ -173,9 +165,9 @@ private:
 	ComPtr<IDirectInput8> directInput_ = nullptr;
 	ComPtr<IDirectInputDevice8> keyboardDevice_ = nullptr;
 	ComPtr<IDirectInputDevice8> mouseDevice_ = nullptr;
-	std::vector<Joystick> devJoysticks_;
-	
 
+	std::unique_ptr<GamePad> gamePad_;
+	
 	//WindowsAPI
 	WinApp* winApp_ = nullptr;
 	//ウィンドウハンドル
