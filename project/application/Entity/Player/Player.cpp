@@ -64,7 +64,12 @@ void Player::Update() {
 		break;
 	}
 
+	//カメラの設定
+	camera_->SetTargetPos(transform_.translate);
+	camera_->SetTargetRot(transform_.rotate);
 
+	object3d_->SetTranslate(transform_.translate);
+	object3d_->SetRotation(transform_.rotate);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 }
@@ -102,10 +107,6 @@ void Player::UpdateRunning() {
 	//カメラの回転を設定
 	camera_->SetStick({ rightStick.x, rightStick.y });
 
-	//右スティックの移動量を取得
-	//float rightX = rightJoystickState.x;
-	//float rightY = rightJoystickState.y;
-
 	//カメラの方向から移動方向の計算
 	Vector3 forward = QuaternionMath::RotateVector(Vector3(0, 0, 1), camera_->GetRotate());
 	Vector3 right = QuaternionMath::RotateVector(Vector3(1, 0, 0), camera_->GetRotate());
@@ -125,13 +126,12 @@ void Player::UpdateRunning() {
 	velocity_.x /= deceleration_;
 	velocity_.z /= deceleration_;
 
-
 	//移動処理
-	object3d_->SetTranslate({
-		object3d_->GetTranslate().x + velocity_.x,
-		object3d_->GetTranslate().y,
-		object3d_->GetTranslate().z + velocity_.z
-		});
+	transform_.translate = {
+		transform_.translate.x + velocity_.x * deltaTime_,
+		transform_.translate.y,
+		transform_.translate.z + velocity_.z * deltaTime_
+	};
 }
 
 void Player::UpdateAttack() {}

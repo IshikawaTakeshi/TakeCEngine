@@ -12,7 +12,7 @@ void Camera::Initialize(ID3D12Device* device) {
 	
 	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	offset_ = { 0.0f, 0.0f, -5.0f };
-	offsetDelta_ = { 0.0f, 0.0f, -55.0f };
+	offsetDelta_ = { 0.0f, 0.0f, -70.0f };
 	fovX_ = 0.45f;
 	aspectRatio_ = float(WinApp::kClientWidth / 2) / float(WinApp::kClientHeight / 2);
 	nearClip_ = 0.1f;
@@ -22,6 +22,9 @@ void Camera::Initialize(ID3D12Device* device) {
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(fovX_, aspectRatio_, nearClip_, farClip_);
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
 	rotationMatrix_ = MatrixMath::MakeIdentity4x4();
+
+	targetPosition_ = new Vector3();
+	targetRotation_ = new Vector3();
 
 	cameraResource_ = DirectXCommon::CreateBufferResource(device, sizeof(CameraForGPU));
 	cameraForGPU_ = nullptr;
@@ -99,7 +102,7 @@ void Camera::ShakeCamera() {
 #ifdef _DEBUG
 void Camera::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
-	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
+	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("offset", &offset_.x, 0.01f);
 	ImGui::DragFloat("FovX", &fovX_, 0.01f);
 }
@@ -126,7 +129,6 @@ void Camera::UpdateDebugCamera() {
 
 	// 累積回転を更新
 	transform_.rotate = rotationDelta * transform_.rotate;
-	//transform_.rotate = QuaternionMath::Normalize(transform_.rotate); // クォータニオンを正規化して数値誤差を防ぐ
 
 	if (Input::GetInstance()->IsPressMouse(2)) {
 		offsetDelta_.x += (float)Input::GetInstance()->GetMouseMove().lX * 0.01f;
@@ -149,14 +151,17 @@ void Camera::UpdateGameCamera() {
 	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
 
 	//スティックによる回転計算
-	float deltaPitch = stick_.y * 0.01f; // X軸回転
-	float deltaYaw = stick_.x * 0.01f;   // Y軸回転
+	float deltaPitch = stick_.y * 0.02f; // X軸回転
+	float deltaYaw = stick_.x * 0.02f;   // Y軸回転
+
+	yawRot_ += deltaYaw;
+	pitchRot_ += deltaPitch;
 
 	// クォータニオンを用いた回転計算
 	Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
-		Vector3(0, 1, 0), deltaYaw);
+		Vector3(0, 1, 0), yawRot_);
 	Quaternion pitchRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
-		QuaternionMath::RotateVector(Vector3(1, 0, 0), yawRotation * transform_.rotate), deltaPitch);
+		QuaternionMath::RotateVector(Vector3(1, 0, 0), yawRotation), pitchRot_);
 
 	//回転の合成
 	rotationDelta = pitchRotation * yawRotation;
@@ -170,7 +175,6 @@ void Camera::UpdateGameCamera() {
 
 	transform_.translate = Easing::Lerp(transform_.translate, tagetPosition_, followSpeed_);
 	transform_.rotate = Easing::Slerp(transform_.rotate, rotationDelta, followSpeed_);
-
 }
 
 #endif // DEBUG

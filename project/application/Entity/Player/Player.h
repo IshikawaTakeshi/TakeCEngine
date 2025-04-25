@@ -52,8 +52,8 @@ private:
 
 	EulerTransform transform_ = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} };
 
-	const float moveSpeed_ = 4.0f;
-	const float kMaxMoveSpeed_ = 10.0f;
+	const float moveSpeed_ = 200.0f;
+	const float kMaxMoveSpeed_ = 50.0f;
 
 	float deltaTime_ = 0.0f;
 

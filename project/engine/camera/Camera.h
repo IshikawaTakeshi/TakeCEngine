@@ -55,8 +55,8 @@ public: //setter
 	void SetShake(float duration, float range);
 
 	void SetStick(const Vector2& stick) { stick_ = stick; }
-	void SetTargetPos(Vector3* target) { targetPosition_ = target; }
-	void SetTargetRot(Vector3* targetRot) { targetRotation_ = targetRot; }
+	void SetTargetPos(const Vector3& target) { *targetPosition_ = target; }
+	void SetTargetRot(const Vector3& targetRot) { *targetRotation_ = targetRot; }
 private:
 
 	//バッファリソース
@@ -89,6 +89,8 @@ private:
 	float nearClip_;
 	//farクリップ距離
 	float farClip_;
+	float yawRot_ = 0.0f;
+	float pitchRot_ = 0.0f;
 
 	float pitch_ = 0.0f;
 	bool isDebug_ = false;
