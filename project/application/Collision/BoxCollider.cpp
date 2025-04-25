@@ -6,7 +6,7 @@
 #include "ModelManager.h"
 #include "CameraManager.h"
 #include "DirectXCommon.h"
-#include "GameCharacter.h"
+#include "application/Entity/GameCharacter.h"
 #include "TakeCFrameWork.h"
 
 #include <cmath>

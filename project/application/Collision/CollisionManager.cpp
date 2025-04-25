@@ -2,7 +2,7 @@
 #include "Collider.h"
 #include "Vector3Math.h"
 #include "DirectXCommon.h"
-#include "GameCharacter.h"
+#include "application/Entity/GameCharacter.h"
 #include "Collision/BoxCollider.h"
 #include "Collision/SphereCollider.h"
 
