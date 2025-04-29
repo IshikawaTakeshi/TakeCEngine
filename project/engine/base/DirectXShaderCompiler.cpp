@@ -1,6 +1,6 @@
 #include "DirectXShaderCompiler.h"
-#include "Logger.h"
-#include "StringUtility.h"
+#include "Utility/Logger.h"
+#include "Utility/StringUtility.h"
 #include <cassert>
 #include <format>
 

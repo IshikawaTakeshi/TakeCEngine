@@ -5,7 +5,7 @@
 //Include
 #include "D3DResourceLeakChecker.h"
 #include "WinApp.h"
-#include "Logger.h"
+#include "Utility/Logger.h"
 #include "DirectXCommon.h"
 #include "Input.h"
 #include "TextureManager.h"
@@ -22,6 +22,8 @@
 #include "scene/SceneManager.h"
 #include "3d/Particle/ParticleCommon.h"
 #include "base/Particle/ParticleManager.h"
+#include "PostEffect/PostEffectManager.h"
+#include "Utility/ResourceBarrier.h"
 #include "Animation/Animator.h"
 #include "3d/Primitive/PrimitiveDrawer.h"
 #include "2d/WireFrame.h"
