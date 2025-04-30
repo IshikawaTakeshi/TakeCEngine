@@ -138,7 +138,7 @@
     <ClCompile Include="engine\io\Input.cpp">
       <Filter>ソース ファイル\engine\input</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\Logger.cpp">
+    <ClCompile Include="engine\Utility\Logger.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\D3DResourceLeakChecker.cpp">
@@ -165,7 +165,7 @@
     <ClCompile Include="engine\math\Matrix4x4.cpp">
       <Filter>ソース ファイル\engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\StringUtility.cpp">
+    <ClCompile Include="engine\Utility\StringUtility.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\math\Vector3.cpp">
@@ -348,6 +348,18 @@
     <ClCompile Include="engine\io\Gamepad.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\PostEffect\PostEffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\PostEffect\PostEffectManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Utility\ResourceBarrier.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\RtvManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\base\DirectXCommon.h">
@@ -359,13 +371,13 @@
     <ClInclude Include="engine\base\D3DResourceLeakChecker.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\Logger.h">
+    <ClInclude Include="engine\Utility\Logger.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
     <ClInclude Include="engine\base\PipelineStateObject.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\StringUtility.h">
+    <ClInclude Include="engine\Utility\StringUtility.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
     <ClInclude Include="engine\base\WinApp.h">
@@ -611,6 +623,18 @@
     <ClInclude Include="engine\io\InputData.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="engine\PostEffect\PostEffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\PostEffect\PostEffectManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Utility\ResourceBarrier.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\RtvManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
@@ -704,6 +728,7 @@
     <None Include="Resources\glTF\walk.gltf">
       <Filter>リソース ファイル\gltf</Filter>
     </None>
+    <None Include="Resources\shaders\PostEffect\CopyImage.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\EmitParticle.CS.hlsl">
@@ -757,5 +782,7 @@
     <FxCompile Include="Resources\shaders\WireFrame\WireFrame.VS.hlsl">
       <Filter>shaderFile\2d</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\CopyImage.VS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\CopyImage.PS.hlsl" />
   </ItemGroup>
 </Project>

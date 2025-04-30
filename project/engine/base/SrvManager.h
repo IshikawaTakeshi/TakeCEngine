@@ -1,9 +1,7 @@
 #pragma once
+#include "base/DirectXCommon.h"
 #include <cstdint>
-#include <wrl.h>
-#include <d3d12.h>
 
-class DirectXCommon;
 class SrvManager {
 public:
 
@@ -32,6 +30,8 @@ public:
 	/// SRV生成（テクスチャ用）
 	/// </summary>
 	void CreateSRVforTexture2D(bool isCubeMap, DXGI_FORMAT Format, UINT MipLevels, ID3D12Resource* pResource, uint32_t srvIndex);
+
+	void CreateSRVforRenderTexture(	ID3D12Resource* pResource, uint32_t srvIndex);
 
 	/// <summary>
 	/// SRV生成（Structured Buffer用）

@@ -52,6 +52,7 @@ protected:
 	static std::unique_ptr<Animator> animator_;
 	static std::unique_ptr<ParticleManager> particleManager_;
 	static std::unique_ptr<PrimitiveDrawer> primitiveDrawer_;
+	static std::unique_ptr<PostEffectManager> postEffectManager_;
 	static std::unique_ptr<WireFrame> wireFrame_;
 	
 	// ゲームの起動時間
@@ -61,4 +62,3 @@ protected:
 	//終了フラグ
 	bool isEnd_ = false;
 };
-

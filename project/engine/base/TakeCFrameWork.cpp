@@ -7,6 +7,7 @@ using Clock = std::chrono::high_resolution_clock;
 std::unique_ptr<Animator> TakeCFrameWork::animator_ = nullptr;
 std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
 std::unique_ptr<PrimitiveDrawer> TakeCFrameWork::primitiveDrawer_ = nullptr;
+std::unique_ptr<PostEffectManager> TakeCFrameWork::postEffectManager_= nullptr;
 std::unique_ptr<WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
 std::chrono::steady_clock::time_point TakeCFrameWork::gameTime_ = Clock::now();
 const float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
@@ -24,10 +25,13 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	////DirectX初期化
 	directXCommon_ = std::make_unique<DirectXCommon>();
 	directXCommon_->Initialize(winApp_.get());
-
 	//SrvManager
 	srvManager_ = std::make_unique<SrvManager>();
 	srvManager_->Initialize(directXCommon_.get());
+
+	//ResourceBarrier
+	ResourceBarrier::GetInstance()->Initialize(directXCommon_.get());
+
 
 	//入力初期化
 	input_ = Input::GetInstance();
@@ -68,6 +72,10 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	primitiveDrawer_ = std::make_unique<PrimitiveDrawer>();
 	primitiveDrawer_->Initialize(directXCommon_.get(), srvManager_.get());
 
+	//PostEffectManager
+	postEffectManager_ = std::make_unique<PostEffectManager>();
+	postEffectManager_->Initialize(directXCommon_.get(), srvManager_.get());
+
 	//WireFrame
 	wireFrame_ = std::make_unique<WireFrame>();
 	wireFrame_->Initialize(directXCommon_.get());
@@ -95,6 +103,8 @@ void TakeCFrameWork::Finalize() {
 	TextureManager::GetInstance()->Finalize();
 	ModelManager::GetInstance()->Finalize();
 	CameraManager::GetInstance()->Finalize();
+	ResourceBarrier::GetInstance()->Finalize();
+	postEffectManager_->Finalize();
 	particleManager_->Finalize();
 	primitiveDrawer_->Finalize();
 	particleCommon_->Finalize();

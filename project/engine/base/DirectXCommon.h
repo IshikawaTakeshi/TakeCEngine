@@ -5,21 +5,17 @@
 
 #include <wrl.h>
 #include <string>
-#include <vector>
 #include <iostream>
 #include <array>
 #include <chrono>
 #include <memory>
 
-#include "DirectXShaderCompiler.h"
-#include "WinApp.h"
-#include "Matrix4x4.h"
-#include "ResourceDataStructure.h"
+#include "base/DirectXShaderCompiler.h"
+#include "base/WinApp.h"
+#include "base/ResourceDataStructure.h"
+#include "base/RtvManager.h"
 
-
-class PSO;
 class DirectXCommon {
-
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	///			エイリアステンプレート
@@ -80,6 +76,8 @@ public:
 	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(
 		D3D12_DESCRIPTOR_HEAP_TYPE heapType,UINT numDescriptors, bool shaderVisible);
 
+	ComPtr<ID3D12Resource> CreateRenderTextureResource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4& clearColor);
+
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	///			Getter
@@ -94,23 +92,17 @@ public:
 	/// dsvHeapの取得
 	ID3D12DescriptorHeap* GetDsvHeap() { return dsvHeap_.Get(); }
 
-	/// rtvHeapの取得
-	ID3D12DescriptorHeap* GetRtvHeap() { return rtvHeap_.Get(); }
-
-	/// BufferCountの取得
-	UINT GetBufferCount() { return swapChainDesc_.BufferCount; }
-
-	/// rtvDescの取得
-	DXGI_FORMAT GetRtvFormat() { return rtvDesc_.Format; }
-
 	/// Dxcの取得
 	DXC* GetDXC() { return dxc_.get(); }
 
-	/// RTVのデスクリプタサイズ取得
-	uint32_t GetDescriptorSizeRTV() { return descriptorSizeRTV_; }
+	/// RTVManagerの取得
+	RtvManager* GetRtvManager() { return rtvManager_.get(); }
 
 	/// DSVのデスクリプタサイズ取得
 	uint32_t GetDescriptorSizeDSV() { return descriptorSizeDSV_; }
+
+	/// BufferCountの取得
+	const UINT& GetBufferCount() { return swapChainDesc_.BufferCount; }
 
 	/// CPUディスクリプタハンドルの取得
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
@@ -118,7 +110,9 @@ public:
 	/// GPUディスクリプタハンドルの取得
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
 
+	const D3D12_VIEWPORT& GetViewport() { return viewport_; }
 
+	const D3D12_RECT& GetScissorRect() { return scissorRect_; }
 
 private:
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -135,42 +129,34 @@ private:
 	ComPtr<IDXGIAdapter4> useAdapter_ = nullptr;
 	//D3D12Device
 	ComPtr<ID3D12Device> device_ = nullptr;
-	//コマンドキュー
+	
+	//command
 	ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
-	//コマンドアロケータ
 	ComPtr<ID3D12CommandAllocator> commandAllocator_ = nullptr;
-	//コマンドリスト
 	ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
-	//スワップチェーン
+
+	//swapChain
 	ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 	std::array<ComPtr<ID3D12Resource>,2> swapChainResources_;
-	//深度ステンシルバッファ
-	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
 
+	//rtvManager
+	std::unique_ptr<RtvManager> rtvManager_ = nullptr;
+	uint32_t swapchainRtvIndex_[2];
 
-	//ディスクリプタヒープの生成
-	ComPtr<ID3D12DescriptorHeap> rtvHeap_ = nullptr;
-	
+	//depthStencil
 	ComPtr<ID3D12DescriptorHeap> dsvHeap_ = nullptr;
-
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
-	//RTVHandleの要素数
-	static inline const uint32_t rtvCount_ = 2;
-	//RTVを2つ作るのでディスクリプタを2つ用意
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[rtvCount_] = {};
-	//DSVを設定
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
-	//フェンス
+	uint32_t descriptorSizeDSV_;
+
+	//fence
 	ComPtr<ID3D12Fence> fence_ = nullptr;
 	uint64_t fenceVal_;
 	HANDLE fenceEvent_;
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_{};
 
-	
-	uint32_t descriptorSizeRTV_;
-	uint32_t descriptorSizeDSV_;
 
 	// ビューポート
 	D3D12_VIEWPORT viewport_{};
@@ -178,7 +164,7 @@ private:
 	D3D12_RECT scissorRect_{};
 
 	//画面の色
-	float clearColor[4] = { 0.1f, 0.4f, 0.5f, 1.0f }; // 青っぽい色
+	float clearColor_[4] = { 0.3f, 0.3f, 0.3f, 1.0f }; // 青っぽい色
 
 	//記録時間(FPS固定)
 	std::chrono::steady_clock::time_point reference_;
@@ -226,7 +212,7 @@ private:
 	/// <summary>
 	/// ディスクリプタヒープ生成
 	/// </summary>
-	void CreateDescriptorHeaps();
+	void CreateDSV();
 
 	/// <summary>
 	/// レンダーターゲットのクリア
@@ -259,7 +245,7 @@ private:
 	void UpdateFixFPS();
 
 	
-
+	void SetBarrier(D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState,ID3D12Resource* resource);
 
 };
 
