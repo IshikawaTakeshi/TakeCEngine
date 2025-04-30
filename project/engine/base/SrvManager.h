@@ -1,9 +1,7 @@
 #pragma once
+#include "base/DirectXCommon.h"
 #include <cstdint>
-#include <wrl.h>
-#include <d3d12.h>
 
-class DirectXCommon;
 class SrvManager {
 public:
 

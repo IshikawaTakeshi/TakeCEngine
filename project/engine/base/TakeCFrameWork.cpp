@@ -25,13 +25,13 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	////DirectX初期化
 	directXCommon_ = std::make_unique<DirectXCommon>();
 	directXCommon_->Initialize(winApp_.get());
+	//SrvManager
+	srvManager_ = std::make_unique<SrvManager>();
+	srvManager_->Initialize(directXCommon_.get());
 
 	//ResourceBarrier
 	ResourceBarrier::GetInstance()->Initialize(directXCommon_.get());
 
-	//SrvManager
-	srvManager_ = std::make_unique<SrvManager>();
-	srvManager_->Initialize(directXCommon_.get());
 
 	//入力初期化
 	input_ = Input::GetInstance();

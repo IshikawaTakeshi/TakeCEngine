@@ -8,10 +8,13 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
 
-	rtvHandle_ = dxCommon_->GetRtvHeap()->GetCPUDescriptorHandleForHeapStart();
+	rtvHandle_ = dxCommon_->GetRtvManager()->GetRtvHeap()->GetCPUDescriptorHandleForHeapStart();
 
 	//rtvDescの初期化
-	rtvDesc_= dxCommon_->GetRTVDesc();
+	rtvDesc_ = {};
+	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+
 	//RenderTextureResourceの生成
 	renderTextureResource_ = dxCommon_->CreateRenderTextureResource(
 		dxCommon_->GetDevice(),WinApp::kClientWidth,WinApp::kClientHeight,DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,kRenderTargetClearColor_);

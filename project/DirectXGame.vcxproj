@@ -183,6 +183,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\PostEffect\PostEffect.cpp" />
     <ClCompile Include="engine\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="engine\Utility\ResourceBarrier.cpp" />
+    <ClCompile Include="engine\base\RtvManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Collision\Collider.h" />
@@ -275,6 +276,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\SampleCharacter.h" />
     <ClInclude Include="engine\3d\Primitive\Ring.h" />
     <ClInclude Include="engine\Utility\ResourceBarrier.h" />
+    <ClInclude Include="engine\base\RtvManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

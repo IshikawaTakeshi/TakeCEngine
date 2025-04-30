@@ -5,19 +5,17 @@
 
 #include <wrl.h>
 #include <string>
-#include <vector>
 #include <iostream>
 #include <array>
 #include <chrono>
 #include <memory>
 
-#include "DirectXShaderCompiler.h"
-#include "WinApp.h"
-#include "Matrix4x4.h"
-#include "ResourceDataStructure.h"
+#include "base/DirectXShaderCompiler.h"
+#include "base/WinApp.h"
+#include "base/ResourceDataStructure.h"
+#include "base/RtvManager.h"
 
 class DirectXCommon {
-
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	///			エイリアステンプレート
@@ -94,23 +92,17 @@ public:
 	/// dsvHeapの取得
 	ID3D12DescriptorHeap* GetDsvHeap() { return dsvHeap_.Get(); }
 
-	/// rtvHeapの取得
-	ID3D12DescriptorHeap* GetRtvHeap() { return rtvHeap_.Get(); }
-
-	/// BufferCountの取得
-	UINT GetBufferCount() { return swapChainDesc_.BufferCount; }
-
-	/// rtvDescの取得
-	D3D12_RENDER_TARGET_VIEW_DESC GetRTVDesc() { return rtvDesc_; }
-
 	/// Dxcの取得
 	DXC* GetDXC() { return dxc_.get(); }
 
-	/// RTVのデスクリプタサイズ取得
-	uint32_t GetDescriptorSizeRTV() { return descriptorSizeRTV_; }
+	/// RTVManagerの取得
+	RtvManager* GetRtvManager() { return rtvManager_.get(); }
 
 	/// DSVのデスクリプタサイズ取得
 	uint32_t GetDescriptorSizeDSV() { return descriptorSizeDSV_; }
+
+	/// BufferCountの取得
+	const UINT& GetBufferCount() { return swapChainDesc_.BufferCount; }
 
 	/// CPUディスクリプタハンドルの取得
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
@@ -143,21 +135,20 @@ private:
 	ComPtr<ID3D12CommandAllocator> commandAllocator_ = nullptr;
 	ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
 
-	//rtvHeap
-	ComPtr<ID3D12DescriptorHeap> rtvHeap_ = nullptr;
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
-	static inline const uint32_t rtvCount_ = 2; //RTVHandleの要素数
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[rtvCount_] = {}; //RTVを要素数の分だけ用意
-
 	//swapChain
 	ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 	std::array<ComPtr<ID3D12Resource>,2> swapChainResources_;
 
+	//rtvManager
+	std::unique_ptr<RtvManager> rtvManager_ = nullptr;
+	uint32_t swapchainRtvIndex_[2];
+
 	//depthStencil
 	ComPtr<ID3D12DescriptorHeap> dsvHeap_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
+	uint32_t descriptorSizeDSV_;
 
 	//fence
 	ComPtr<ID3D12Fence> fence_ = nullptr;
@@ -166,9 +157,6 @@ private:
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_{};
 
-	
-	uint32_t descriptorSizeRTV_;
-	uint32_t descriptorSizeDSV_;
 
 	// ビューポート
 	D3D12_VIEWPORT viewport_{};
@@ -224,7 +212,7 @@ private:
 	/// <summary>
 	/// ディスクリプタヒープ生成
 	/// </summary>
-	void CreateDescriptorHeaps();
+	void CreateDSV();
 
 	/// <summary>
 	/// レンダーターゲットのクリア

@@ -2,6 +2,7 @@
 
 #include "Utility/Logger.h"
 #include "Utility/StringUtility.h"
+#include "Utility/ResourceBarrier.h"
 #include "ImGuiManager.h"
 #include <format>
 #include <cassert>
@@ -26,9 +27,7 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	//システムタイマーの分解能を上げる
 	timeBeginPeriod(1);
 
-	//null検出
-	assert(winApp);
-	//メンバ変数に記録	
+	//winapp初期化
 	winApp_ = winApp;
 
 	//DXGIデバイス初期化
@@ -39,8 +38,13 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	CreateSwapChain();
 	//深度ステンシルテクスチャの生成
 	CreateDepthStencilTextureResource(device_, WinApp::kClientWidth, WinApp::kClientHeight);
-	//ディスクリプタヒープ生成
-	CreateDescriptorHeaps();
+	//DSV生成
+	CreateDSV();
+
+	//rtvManager初期化
+	rtvManager_ = std::make_unique<RtvManager>();
+	rtvManager_->Initialize(this);
+
 	// RTVの初期化
 	InitializeRenderTargetView();
 	// DSVの初期化
@@ -70,11 +74,7 @@ void DirectXCommon::Finalize() {
 	commandList_.Reset();
 	commandAllocator_.Reset();
 	commandQueue_.Reset();
-
-
 	dsvHeap_.Reset();
-	rtvHeap_.Reset();
-
 	swapChainResources_[0].Reset();
 	swapChainResources_[1].Reset();
 	swapChain_.Reset();
@@ -101,10 +101,11 @@ void DirectXCommon::ClearRenderTarget() {
 	//バリア設定
 	SetBarrier(D3D12_RESOURCE_STATE_PRESENT,D3D12_RESOURCE_STATE_RENDER_TARGET,swapChainResources_[bbIndex].Get());
 
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = rtvManager_->GetRtvDescriptorHandleCPU(bbIndex);
 	//描画先のRTVを設定する
-	commandList_->OMSetRenderTargets(1, &rtvHandles_[bbIndex], false, nullptr);
+	commandList_->OMSetRenderTargets(1, &handleCPU, false, nullptr);
 	// 全画面クリア
-	commandList_->ClearRenderTargetView(rtvHandles_[bbIndex], clearColor_, 0, nullptr);
+	commandList_->ClearRenderTargetView(handleCPU, clearColor_, 0, nullptr);
 	// Viewportを設定
 	commandList_->RSSetViewports(1, &viewport_);
 	// Scissorの設定
@@ -380,14 +381,11 @@ void DirectXCommon::CreateDepthStencilTextureResource(const Microsoft::WRL::ComP
 // 各デスクリプタヒープ生成
 //==============================================================================================
 
-void DirectXCommon::CreateDescriptorHeaps() {
+void DirectXCommon::CreateDSV() {
 
 	//ディスクリプタヒープのサイズを取得
-	descriptorSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	descriptorSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
-	// RTV用のディスクリプタヒープ生成
-	rtvHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, rtvCount_, false);
 	//DSV用のディスクリプタヒープ生成。DSVはShader内で触るものではないので、ShaderVisibleはfalse
 	dsvHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 
@@ -412,19 +410,11 @@ void DirectXCommon::InitializeRenderTargetView() {
 	result = swapChain_->GetBuffer(1, IID_PPV_ARGS(&swapChainResources_[1]));
 	assert(SUCCEEDED(result));
 
-	// レンダーターゲットビューの設定
-	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; // 出力結果をSRGBに変換して書き込む
-	rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; // 2dテクスチャとして書き込む
-
-	// ディスクリプタの先頭を取得する
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = rtvHeap_->GetCPUDescriptorHandleForHeapStart();
 
 	for (int i = 0; i < 2; ++i) {
 		// 作る場所をこちらで指定してあげる必要がある
-		rtvHandles_[i] = rtvStartHandle;
-		device_->CreateRenderTargetView(swapChainResources_[i].Get(),&rtvDesc_,rtvHandles_[i]);
-		// 次のディスクリプタハンドルを得る
-		rtvStartHandle.ptr += device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		swapchainRtvIndex_[i] = rtvManager_->Allocate();
+		rtvManager_->CreateRTV(swapChainResources_[i].Get(), swapchainRtvIndex_[i]);
 	}
 }
 
