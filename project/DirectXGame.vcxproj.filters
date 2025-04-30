@@ -728,6 +728,7 @@
     <None Include="Resources\glTF\walk.gltf">
       <Filter>リソース ファイル\gltf</Filter>
     </None>
+    <None Include="Resources\shaders\PostEffect\CopyImage.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\EmitParticle.CS.hlsl">
@@ -781,5 +782,7 @@
     <FxCompile Include="Resources\shaders\WireFrame\WireFrame.VS.hlsl">
       <Filter>shaderFile\2d</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\CopyImage.VS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\CopyImage.PS.hlsl" />
   </ItemGroup>
 </Project>

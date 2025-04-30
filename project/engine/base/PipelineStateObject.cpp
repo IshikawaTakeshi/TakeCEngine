@@ -43,9 +43,22 @@ void PSO::CompileComputeShader(DXC* dxc_, const std::wstring& filePath) {
 	);
 }
 
+//=============================================================================
+// 入力レイアウトの情報を取得する関数
+//=============================================================================
+
 void PSO::ExtractInputLayout(ID3D12ShaderReflection* shaderReflection) {
 	D3D12_SHADER_DESC shaderDesc;
 	shaderReflection->GetDesc(&shaderDesc);
+
+	//InputLayoutが存在しない場合
+	if(shaderDesc.InputParameters == 0) {
+		inputElementDescs_.clear();
+		semanticName_.clear();
+		inputLayoutDesc_.pInputElementDescs = nullptr;
+		inputLayoutDesc_.NumElements = 0;
+		return;
+	}
 
 	inputElementDescs_.resize(shaderDesc.InputParameters);
 	semanticName_.resize(shaderDesc.InputParameters);
@@ -74,7 +87,7 @@ void PSO::ExtractInputLayout(ID3D12ShaderReflection* shaderReflection) {
 }
 
 //=============================================================================
-// シェーダー情報からRootSignatureの生成
+// シェーダーを読み込んでリソース情報を取得する関数
 //=============================================================================
 
 ShaderResourceMap PSO::LoadShaderResourceInfo(
@@ -142,6 +155,10 @@ ShaderResourceMap PSO::LoadShaderResourceInfo(
 	}
 	return { bindResources };
 }
+
+//=============================================================================
+// シェーダー情報からRootSignatureの生成
+//=============================================================================
 
 ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, ShaderResourceMap resourceMap) {
 
@@ -299,7 +316,7 @@ void PSO::CreateRasterizerState(D3D12_FILL_MODE fillMode) {
 }
 
 //=============================================================================
-// PSOの生成
+// graphicPSOの生成
 //=============================================================================
 void PSO::CreateGraphicPSO(
 	ID3D12Device* device,
@@ -315,7 +332,7 @@ void PSO::CreateGraphicPSO(
 	//シェーダー情報を読み込む
 	graphicBindResourceInfo_ = LoadShaderResourceInfo({ graphicShaderData_.vertexBlob,graphicShaderData_.pixelBlob });
 	/// ルートシグネチャ初期化
-	graphicRootSignature_ = CreateRootSignature(device_, graphicBindResourceInfo_);
+	graphicRootSignature_ = CreateRootSignature(device, graphicBindResourceInfo_);
 	/// ブレンドステート初期化
 	InitializeBlendState(blendState);
 	/// ラスタライザステート初期化
@@ -333,6 +350,10 @@ void PSO::CreateGraphicPSO(
 		IID_PPV_ARGS(&graphicPipelineState_));
 	assert(SUCCEEDED(result));
 }
+//=============================================================================
+// ComputePSOの生成
+//=============================================================================
+
 void PSO::CreateComputePSO(ID3D12Device* device) {
 	HRESULT result = S_FALSE;
 	//シェーダー情報を読み込む
@@ -345,6 +366,33 @@ void PSO::CreateComputePSO(ID3D12Device* device) {
 	computePipelineState_ = nullptr;
 	result = device->CreateComputePipelineState(&computePipelineStateDesc_,
 		IID_PPV_ARGS(&computePipelineState_));
+	assert(SUCCEEDED(result));
+}
+//=============================================================================
+// graphicPSOの生成(RenderTexture用)
+//=============================================================================
+void PSO::CreateRenderTexturePSO(ID3D12Device* device) {
+
+	HRESULT result = S_FALSE;
+
+	device_ = device;
+
+	graphicBindResourceInfo_ = LoadShaderResourceInfo({ graphicShaderData_.vertexBlob,graphicShaderData_.pixelBlob });
+	graphicRootSignature_ = CreateRootSignature(device, graphicBindResourceInfo_);
+
+	InitializeBlendState(BlendState::NORMAL);
+	CreateRasterizerState(D3D12_FILL_MODE_SOLID);
+
+	//DepthStencilの設定
+	//MEMO:全画面に処理をするのでDepthが不要になる
+	depthStencilDesc_.DepthEnable = false;
+
+	//GraphicPipelineStateDescの設定
+	SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
+	//実際に生成
+	graphicPipelineState_ = nullptr;
+	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
+		IID_PPV_ARGS(&graphicPipelineState_));
 	assert(SUCCEEDED(result));
 }
 

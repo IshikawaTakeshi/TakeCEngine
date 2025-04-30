@@ -2,6 +2,7 @@
 #include "base/DirectXCommon.h"
 #include "base/SrvManager.h"
 #include "base/RtvManager.h"
+#include "base/PipelineStateObject.h"
 #include <string>
 
 class PostEffectManager {
@@ -14,7 +15,15 @@ public:
 	/// </summary>
 	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
 
+	/// <summary>
+	/// 終了・開放処理
+	/// </summary>
 	void Finalize();
+
+	/// <summary>
+	///	描画処理
+	/// </summary>
+	void Draw();
 
 	/// <summary>
 	/// 描画前処理
@@ -43,7 +52,10 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_{};
 	//SRVManagerで使用するDiscriptorHandleのインデックス
 	uint32_t srvIndex_ = 0;
-
+	//DSVハンドル
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
 
+	//RenderTexture描画パイプライン
+	std::unique_ptr<PSO> renderTexturePSO_ = nullptr;
+	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 };

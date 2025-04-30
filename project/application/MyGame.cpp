@@ -69,13 +69,19 @@ void MyGame::Update() {
 
 void MyGame::Draw() {
 
-	 //描画前処理
+	//ポストエフェクト描画前処理
 	postEffectManager_->PreDraw();
-	srvManager_->SetDescriptorHeap(); //SRV描画前処理
-	
+	//SRV描画前処理
+	srvManager_->SetDescriptorHeap(); 
+	//シーン描画
 	sceneManager_->Draw();
-	postEffectManager_->PostDraw(); //ポストエフェクト描画後処理
+	 //描画前処理
 	directXCommon_->PreDraw();
+
+	//ポストエフェクト描画
+	postEffectManager_->Draw();
+	//ポストエフェクト描画後処理
+	postEffectManager_->PostDraw(); 
 	
 	//描画後処理
 	directXCommon_->PostDraw();

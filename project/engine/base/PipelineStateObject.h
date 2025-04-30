@@ -84,16 +84,17 @@ public:
 	PSO() = default;
 	~PSO();
 
+	//vertexShaderをコンパイル
 	void CompileVertexShader(DXC* dxc_, const std::wstring& filePath);
-
+	//pixelShaderをコンパイル
 	void CompilePixelShader(DXC* dxc_, const std::wstring& filePath);
-
+	//computeShaderをコンパイル
 	void CompileComputeShader(DXC* dxc_, const std::wstring& filePath);
-
+	//シェーダーからリソース情報を取得
 	ShaderResourceMap LoadShaderResourceInfo(const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
-
+	//シェーダー情報からRootSignatureを生成
 	ComPtr<ID3D12RootSignature> CreateRootSignature(ID3D12Device* device, ShaderResourceMap resourceMap);
-
+	//入力レイアウトの情報を取得
 	void ExtractInputLayout(ID3D12ShaderReflection* shaderReflection);
 
 	/// <summary>
@@ -111,7 +112,7 @@ public:
 	void CreateRasterizerState(D3D12_FILL_MODE fillMode);
 
 	/// <summary>
-	/// PSO生成
+	/// graphicPSO生成
 	/// </summary>
 	void CreateGraphicPSO(
 		ID3D12Device* device,
@@ -120,8 +121,12 @@ public:
 		BlendState blendState = BlendState::NORMAL,
 		D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
 	);
-
+	/// <summary>
+	/// computePSO生成
+	/// </summary>
 	void CreateComputePSO(ID3D12Device* device);
+
+	void CreateRenderTexturePSO(ID3D12Device* device);
 
 	void UpdateImGui();
 
@@ -151,13 +156,18 @@ public:
 
 private:
 
+	///////////////////////////////////////////////////////////////////////////////////////////
+	///			setter
+	///////////////////////////////////////////////////////////////////////////////////////////
+
 	void SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type);
 	void SetComputePipelineStateDesc();
+
+private:
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///			privateメンバ変数
 	///////////////////////////////////////////////////////////////////////////////////////////
-
 
 	ShaderResourceMap graphicBindResourceInfo_;
 	ShaderResourceMap computeBindResourceInfo_;
@@ -172,8 +182,6 @@ private:
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	//InputLayout
 	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_ = {};
-	std::array<D3D12_INPUT_ELEMENT_DESC,2> inputElementDescsForSkyBox_ = {};
-	std::array < D3D12_INPUT_ELEMENT_DESC,3> inputElementDescsForSkinningObject_ = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};

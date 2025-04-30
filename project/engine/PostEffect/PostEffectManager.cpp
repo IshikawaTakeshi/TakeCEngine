@@ -3,6 +3,9 @@
 #include "Utility/ResourceBarrier.h"
 #include "Utility/Logger.h"
 
+//====================================================================
+//	初期化
+//====================================================================
 
 void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 
@@ -11,9 +14,10 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	//RTVManagerの取得
 	rtvManager_ = dxCommon_->GetRtvManager();
 
+	//rtvIndexの取得	
 	rtvIndex_ = rtvManager_->Allocate();
+	//RTVのハンドルを取得
 	rtvHandle_ = rtvManager_->GetRtvDescriptorHandleCPU(rtvIndex_);
-
 	//rtvDescの初期化
 	rtvDesc_ = {};
 	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
@@ -28,7 +32,19 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	//SRVの生成
 	srvIndex_ = srvManager_->Allocate();
 	srvManager_->CreateSRVforRenderTexture(renderTextureResource_.Get(), srvIndex_);
+
+	//PSO初期化
+	renderTexturePSO_ = std::make_unique<PSO>();
+	renderTexturePSO_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/PostEffect/CopyImage.VS.hlsl");
+	renderTexturePSO_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/PostEffect/CopyImage.PS.hlsl");
+	renderTexturePSO_->CreateRenderTexturePSO(dxCommon_->GetDevice());
+
+	rootSignature_ = renderTexturePSO_->GetGraphicRootSignature();
 }
+
+//====================================================================
+// 終了処理
+//====================================================================
 
 void PostEffectManager::Finalize() {
 	renderTextureResource_.Reset();
@@ -36,8 +52,11 @@ void PostEffectManager::Finalize() {
 	dxCommon_ = nullptr;
 }
 
-void PostEffectManager::PreDraw() {
+//====================================================================
+// 描画前処理
+//====================================================================
 
+void PostEffectManager::PreDraw() {
 
 	ResourceBarrier::GetInstance()->Transition(
 		D3D12_RESOURCE_STATE_GENERIC_READ,
@@ -46,6 +65,7 @@ void PostEffectManager::PreDraw() {
 
 	//深度ステンシルビューの設定
 	dsvHandle_ = dxCommon_->GetDsvHeap()->GetCPUDescriptorHandleForHeapStart();
+
 	//描画先のRTVとDSVを設定する
 	dxCommon_->GetCommandList()->OMSetRenderTargets(1, &rtvHandle_, false, &dsvHandle_);
 	// 全画面クリア
@@ -58,10 +78,38 @@ void PostEffectManager::PreDraw() {
 	dxCommon_->GetCommandList()->RSSetScissorRects(1, &dxCommon_->GetScissorRect());
 }
 
-void PostEffectManager::PostDraw() {
+//======================================================================
+// 描画処理
+//======================================================================
 
+void PostEffectManager::Draw() {
+
+	//// RENDER_TARGET >> PIXEL_SHADER_RESOURCE
 	ResourceBarrier::GetInstance()->Transition(
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		renderTextureResource_.Get());
+
+	//ルートシグネチャの設定
+	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
+	//PSOの設定
+	dxCommon_->GetCommandList()->SetPipelineState(renderTexturePSO_->GetGraphicPipelineState());
+	//プリミティブトポロジー設定
+	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//gTexture
+	srvManager_->SetGraphicsRootDescriptorTable(renderTexturePSO_->GetGraphicBindResourceIndex("gTexture"),srvIndex_);
+	//描画コマンドを発行
+	dxCommon_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
+}
+
+//======================================================================
+// 描画後処理
+//======================================================================
+
+void PostEffectManager::PostDraw() {
+	//PIXCEL_SHADER_RESOURCE >> GENERIC_READ
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		renderTextureResource_.Get());
 }
