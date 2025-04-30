@@ -1,6 +1,6 @@
 #include "TextureManager.h"
-#include "SrvManager.h"
-#include "StringUtility.h"
+#include "base/SrvManager.h"
+#include "Utility/StringUtility.h"
 #include "TransformMatrix.h"
 #include <cassert>
 

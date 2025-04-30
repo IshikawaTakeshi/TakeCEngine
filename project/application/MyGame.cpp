@@ -1,10 +1,8 @@
 #include "MyGame.h"
 #include "scene/SceneFactory.h"
-#include "Logger.h"
-#include "StringUtility.h"
+#include "Utility/Logger.h"
+#include "Utility/StringUtility.h"
 #include "Collision/CollisionManager.h"
-
-
 
 //====================================================================
 //			初期化
@@ -71,11 +69,19 @@ void MyGame::Update() {
 
 void MyGame::Draw() {
 
+	//ポストエフェクト描画前処理
+	postEffectManager_->PreDraw();
+	//SRV描画前処理
+	srvManager_->SetDescriptorHeap(); 
+	//シーン描画
+	sceneManager_->Draw();
 	 //描画前処理
 	directXCommon_->PreDraw();
-	srvManager_->SetDescriptorHeap();       //SRV描画前処理
-	
-	sceneManager_->Draw();
+
+	//ポストエフェクト描画
+	postEffectManager_->Draw();
+	//ポストエフェクト描画後処理
+	postEffectManager_->PostDraw(); 
 	
 	//描画後処理
 	directXCommon_->PostDraw();

@@ -70,7 +70,7 @@ void GamePlayScene::Initialize() {
 	sampleEnemy_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
 	sampleEnemy_->SetCharacterType(CharacterType::ENEMY);
 	sampleEnemy_->SetTranslate({ 0.0f,0.0f,15.0f });
-	sampleEnemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
+	sampleEnemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "damage"));
 }
 
 //====================================================================

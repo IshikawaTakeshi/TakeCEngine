@@ -25,7 +25,7 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, SrvManage
 	ImGui_ImplDX12_Init(
 		dxCommon_->GetDevice(),
 		static_cast<int>(dxCommon_->GetBufferCount()),
-		dxCommon_->GetRtvFormat(),
+		dxCommon_->GetRtvManager()->GetRtvDesc().Format,
 		srvManager_->GetSrvHeap(),
 		srvManager_->GetSrvDescriptorHandleCPU(useSrvIndex),
 		srvManager_->GetSrvDescriptorHandleGPU(useSrvIndex)
