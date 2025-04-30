@@ -1,6 +1,7 @@
 #pragma once
-#include "DirectXCommon.h"
-#include "SrvManager.h"
+#include "base/DirectXCommon.h"
+#include "base/SrvManager.h"
+#include "base/RtvManager.h"
 #include <string>
 
 class PostEffectManager {
@@ -29,6 +30,7 @@ private:
 
 	DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
 	SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
+	RtvManager* rtvManager_ = nullptr; //RtvManagerのポインタ
 
 	//clearValue
 	const Vector4 kRenderTargetClearColor_ = { 0.3f, 0.3f, 0.3f, 1.0f };
@@ -36,10 +38,11 @@ private:
 	//RTV
 	ComPtr<ID3D12Resource> renderTextureResource_;
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
-	uint32_t srvHandle_ = 0;
-	//RTVHandleの要素数
-	static inline const uint32_t rtvCount_ = 2; 
+	//RTVManagerで使用するDiscriptorHandleのインデックス
+	uint32_t rtvIndex_ = 0;
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_{};
+	//SRVManagerで使用するDiscriptorHandleのインデックス
+	uint32_t srvIndex_ = 0;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
 

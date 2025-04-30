@@ -94,14 +94,15 @@ void DirectXCommon::Finalize() {
 
 void DirectXCommon::ClearRenderTarget() {
 
-
 	//書き込むバックバッファのインデックスを取得
 	UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();
 
 	//バリア設定
 	SetBarrier(D3D12_RESOURCE_STATE_PRESENT,D3D12_RESOURCE_STATE_RENDER_TARGET,swapChainResources_[bbIndex].Get());
 
+	//CPUハンドルの取得
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = rtvManager_->GetRtvDescriptorHandleCPU(bbIndex);
+
 	//描画先のRTVを設定する
 	commandList_->OMSetRenderTargets(1, &handleCPU, false, nullptr);
 	// 全画面クリア
@@ -559,7 +560,7 @@ ComPtr<ID3D12Resource> DirectXCommon::CreateRenderTextureResource(ComPtr<ID3D12D
 
 	//実際に頂点リソースを作る
 	result = device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE,
-		&resourceDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,IID_PPV_ARGS(&resource));
+		&resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, &clearValue,IID_PPV_ARGS(&resource));
 	assert(SUCCEEDED(result));
 
 	return resource;

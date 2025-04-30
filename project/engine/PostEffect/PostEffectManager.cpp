@@ -3,12 +3,16 @@
 #include "Utility/ResourceBarrier.h"
 #include "Utility/Logger.h"
 
+
 void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
+	//RTVManagerの取得
+	rtvManager_ = dxCommon_->GetRtvManager();
 
-	rtvHandle_ = dxCommon_->GetRtvManager()->GetRtvHeap()->GetCPUDescriptorHandleForHeapStart();
+	rtvIndex_ = rtvManager_->Allocate();
+	rtvHandle_ = rtvManager_->GetRtvDescriptorHandleCPU(rtvIndex_);
 
 	//rtvDescの初期化
 	rtvDesc_ = {};
@@ -22,8 +26,8 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	dxCommon_->GetDevice()->CreateRenderTargetView(renderTextureResource_.Get(), &rtvDesc_, rtvHandle_);
 
 	//SRVの生成
-	srvHandle_ = srvManager_->Allocate();
-	srvManager_->CreateSRVforRenderTexture(renderTextureResource_.Get(), srvHandle_);
+	srvIndex_ = srvManager_->Allocate();
+	srvManager_->CreateSRVforRenderTexture(renderTextureResource_.Get(), srvIndex_);
 }
 
 void PostEffectManager::Finalize() {
@@ -36,7 +40,7 @@ void PostEffectManager::PreDraw() {
 
 
 	ResourceBarrier::GetInstance()->Transition(
-		D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		renderTextureResource_.Get());
 
@@ -58,6 +62,6 @@ void PostEffectManager::PostDraw() {
 
 	ResourceBarrier::GetInstance()->Transition(
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
 		renderTextureResource_.Get());
 }
