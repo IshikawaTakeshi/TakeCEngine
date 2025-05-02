@@ -35,7 +35,7 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 
 	//PSO初期化
 	renderTexturePSO_ = std::make_unique<PSO>();
-	renderTexturePSO_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/PostEffect/CopyImage.VS.hlsl");
+	renderTexturePSO_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/PostEffect/FullScreen.VS.hlsl");
 	renderTexturePSO_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/PostEffect/CopyImage.PS.hlsl");
 	renderTexturePSO_->CreateRenderTexturePSO(dxCommon_->GetDevice());
 
@@ -58,8 +58,9 @@ void PostEffectManager::Finalize() {
 
 void PostEffectManager::PreDraw() {
 
+	//NON_PIXEL_SHADER_RESOURCE >> RENDER_TARGET
 	ResourceBarrier::GetInstance()->Transition(
-		D3D12_RESOURCE_STATE_GENERIC_READ,
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		renderTextureResource_.Get());
 
@@ -76,6 +77,7 @@ void PostEffectManager::PreDraw() {
 	dxCommon_->GetCommandList()->RSSetViewports(1, &dxCommon_->GetViewport());
 	// Scissorの設定
 	dxCommon_->GetCommandList()->RSSetScissorRects(1, &dxCommon_->GetScissorRect());
+
 }
 
 //======================================================================
@@ -84,21 +86,21 @@ void PostEffectManager::PreDraw() {
 
 void PostEffectManager::Draw() {
 
-	//// RENDER_TARGET >> PIXEL_SHADER_RESOURCE
+	// RENDER_TARGET >> PIXEL_SHADER_RESOURCE
 	ResourceBarrier::GetInstance()->Transition(
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		renderTextureResource_.Get());
+		D3D12_RESOURCE_STATE_RENDER_TARGET,         //stateBefore
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, //stateAfter
+		renderTextureResource_.Get());              //currentResource
 
-	//ルートシグネチャの設定
+	// ルートシグネチャの設定
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
-	//PSOの設定
+	// PSOの設定
 	dxCommon_->GetCommandList()->SetPipelineState(renderTexturePSO_->GetGraphicPipelineState());
-	//プリミティブトポロジー設定
+	// プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//gTexture
-	srvManager_->SetGraphicsRootDescriptorTable(renderTexturePSO_->GetGraphicBindResourceIndex("gTexture"),srvIndex_);
-	//描画コマンドを発行
+	// gTexture
+	srvManager_->SetGraphicsRootDescriptorTable(renderTexturePSO_->GetGraphicBindResourceIndex("gTexture"),postEffects_);
+	// 描画コマンドを発行
 	dxCommon_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }
 
@@ -112,4 +114,27 @@ void PostEffectManager::PostDraw() {
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		renderTextureResource_.Get());
+}
+
+void PostEffectManager::AllDispatch() {
+
+	for (auto& postEffect : postEffects_) {
+		postEffect.second->DisPatch(uavIndex_);
+	}
+}
+
+void PostEffectManager::AddEffect(const std::string& name, const std::wstring& csFilePath) {
+
+	//読み込み済みかどうか検索
+	if(postEffects_.contains(name)){
+		Logger::Log("PostEffectManager::AddEffect() : PostEffect is already loaded.");
+		return;
+	}
+
+	//PostEffectの初期化
+	std::unique_ptr<PostEffect> postEffect = std::make_unique<PostEffect>();
+	postEffect->Initialize(dxCommon_, srvManager_, csFilePath, kRenderTargetClearColor_);
+
+	//PostEffectのコンテナに追加
+	postEffects_.insert(std::make_pair(name, std::move(postEffect)));
 }

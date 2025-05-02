@@ -3,7 +3,9 @@
 #include "base/SrvManager.h"
 #include "base/RtvManager.h"
 #include "base/PipelineStateObject.h"
+#include "PostEffect/PostEffect.h"
 #include <string>
+#include <map>
 
 class PostEffectManager {
 public:
@@ -35,6 +37,13 @@ public:
 	/// </summary>
 	void PostDraw();
 
+	/// <summary>
+	/// 全PostEffectのCSによる処理
+	/// </summary>
+	void AllDispatch();
+
+	void AddEffect(const std::string& name, const std::wstring& csFilePath);
+
 private:
 
 	DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
@@ -52,10 +61,14 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_{};
 	//SRVManagerで使用するDiscriptorHandleのインデックス
 	uint32_t srvIndex_ = 0;
+	uint32_t uavIndex_ = 0;
 	//DSVハンドル
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
 
 	//RenderTexture描画パイプライン
 	std::unique_ptr<PSO> renderTexturePSO_ = nullptr;
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+
+	//postEffectのコンテナ
+	std::map<std::string, std::unique_ptr<PostEffect>> postEffects_;
 };

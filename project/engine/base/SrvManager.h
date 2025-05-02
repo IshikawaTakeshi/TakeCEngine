@@ -43,6 +43,8 @@ public:
 	/// </summary>
 	void CreateUAVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource, uint32_t uavIndex);
 
+	void CreateUAVforRenderTexture(ID3D12Resource* pResource, uint32_t uavIndex);
+
 	//テクスチャ確保可能チェック
 	bool CheckTextureAllocate();
 

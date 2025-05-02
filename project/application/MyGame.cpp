@@ -29,6 +29,8 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//Animation読み込み
 	LoadAnimation();
 
+	postEffectManager_->AddEffect("grayScale", L"Resources/shaders/PostEffect/GrayScale.CS.hlsl");
+
 	CollisionManager::GetInstance()->Initialize(directXCommon_.get());
 
 	//最初のシーンを設定
@@ -78,6 +80,8 @@ void MyGame::Draw() {
 	 //描画前処理
 	directXCommon_->PreDraw();
 
+	//postEffect計算処理
+	postEffectManager_->AllDispatch();
 	//ポストエフェクト描画
 	postEffectManager_->Draw();
 	//ポストエフェクト描画後処理

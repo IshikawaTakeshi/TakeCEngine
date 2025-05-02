@@ -174,58 +174,65 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 		if (key.type == D3D_SIT_CBUFFER) {
 			// 定数バッファ
 			D3D12_ROOT_PARAMETER rootParam = {};
-			rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-			rootParam.ShaderVisibility = key.visibility;
+			rootParam.ParameterType             = D3D12_ROOT_PARAMETER_TYPE_CBV;
+			rootParam.ShaderVisibility          = key.visibility;
 			rootParam.Descriptor.ShaderRegister = key.bindPoint;
-			//rootParam.Descriptor.RegisterSpace = key.space;
 			rootParameters.push_back(rootParam);
+
 		} else if (key.type == D3D_SIT_TEXTURE || key.type == D3D_SIT_STRUCTURED) {
 			// テクスチャやストラクチャードバッファ
 			D3D12_DESCRIPTOR_RANGE range = {};
-			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-			range.NumDescriptors = 1;
-			range.BaseShaderRegister = key.bindPoint;
-			//range.RegisterSpace = key.space;
+			range.RangeType                         = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+			range.NumDescriptors                    = 1;
+			range.BaseShaderRegister                = key.bindPoint;
 			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 			descriptorRanges.push_back(range);
+
 			D3D12_ROOT_PARAMETER rootParam = {};
-			rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-			rootParam.ShaderVisibility = key.visibility;
-			rootParam.DescriptorTable.pDescriptorRanges = &descriptorRanges.back();
+			rootParam.ParameterType                       = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+			rootParam.ShaderVisibility                    = key.visibility;
+			rootParam.DescriptorTable.pDescriptorRanges   = &descriptorRanges.back();
 			rootParam.DescriptorTable.NumDescriptorRanges = 1;
 			rootParameters.push_back(rootParam);
-		} else if (key.type == D3D_SIT_UAV_RWSTRUCTURED) {
+
+		} else if (key.type == D3D_SIT_UAV_RWSTRUCTURED || key.type == D3D_SIT_UAV_RWTYPED) {
 			// RWStructuredBuffer
 			D3D12_DESCRIPTOR_RANGE range = {};
-			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
-			range.NumDescriptors = 1;
-			range.BaseShaderRegister = key.bindPoint;
+			range.RangeType                         = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+			range.NumDescriptors                    = 1;
+			range.BaseShaderRegister                = key.bindPoint;
 			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 			descriptorRanges.push_back(range);
+
 			D3D12_ROOT_PARAMETER rootParam = {};
-			rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-			rootParam.ShaderVisibility = key.visibility;
-			rootParam.DescriptorTable.pDescriptorRanges = &descriptorRanges.back();
+			rootParam.ParameterType                       = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+			rootParam.ShaderVisibility                    = key.visibility;
+			rootParam.DescriptorTable.pDescriptorRanges   = &descriptorRanges.back();
 			rootParam.DescriptorTable.NumDescriptorRanges = 1;
 			rootParameters.push_back(rootParam);
 		}
 	}
-	rootSigDesc.pParameters = rootParameters.data();
+	// ルートパラメータの数を設定
+	rootSigDesc.pParameters   = rootParameters.data();
 	rootSigDesc.NumParameters = static_cast<UINT>(rootParameters.size());
+
 	//Samplerの設定
-	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
-	staticSamplers_[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
-	staticSamplers_[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers_[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; //比較しない
-	staticSamplers_[0].MaxLOD = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
-	staticSamplers_[0].ShaderRegister = 0; //レジスタ番号0を使う
+	staticSamplers_[0].Filter           = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
+	staticSamplers_[0].AddressU         = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
+	staticSamplers_[0].AddressV         = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers_[0].AddressW         = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers_[0].ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER; //比較しない
+	staticSamplers_[0].MaxLOD           = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
+	staticSamplers_[0].ShaderRegister   = 0; //レジスタ番号0を使う
 	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootSigDesc.pStaticSamplers = staticSamplers_;
+
+	rootSigDesc.pStaticSamplers   = staticSamplers_;
 	rootSigDesc.NumStaticSamplers = _countof(staticSamplers_);
+
 	// ルートシグネチャをシリアライズして作成
 	signatureBlob_ = nullptr;
-	errorBlob_ = nullptr;
+	errorBlob_     = nullptr;
+
 	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc,
 		D3D_ROOT_SIGNATURE_VERSION_1,
 		&signatureBlob_, &errorBlob_);
@@ -250,35 +257,35 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 
 void PSO::CreateBlendStateForObject3d() {
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-	blendDesc_.RenderTarget[0].BlendEnable = true;
-	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ZERO;
-	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	blendDesc_.RenderTarget[0].BlendEnable           = true;
+	blendDesc_.RenderTarget[0].SrcBlend              = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].BlendOp               = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].DestBlend             = D3D12_BLEND_ZERO;
+	blendDesc_.RenderTarget[0].SrcBlendAlpha         = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].BlendOpAlpha          = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].DestBlendAlpha        = D3D12_BLEND_ZERO;
 }
 
 void PSO::CreateBlendStateForParticle() {
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-	blendDesc_.RenderTarget[0].BlendEnable = true;
-	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	blendDesc_.RenderTarget[0].BlendEnable           = true;
+	blendDesc_.RenderTarget[0].SrcBlend              = D3D12_BLEND_SRC_ALPHA;
+	blendDesc_.RenderTarget[0].BlendOp               = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].DestBlend             = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].SrcBlendAlpha         = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].BlendOpAlpha          = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].DestBlendAlpha        = D3D12_BLEND_ZERO;
 }
 
 void PSO::CreateBlendStateForSprite() {
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-	blendDesc_.RenderTarget[0].BlendEnable = true;
-	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
-	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].BlendEnable           = true;
+	blendDesc_.RenderTarget[0].SrcBlend              = D3D12_BLEND_SRC_ALPHA;
+	blendDesc_.RenderTarget[0].DestBlend             = D3D12_BLEND_INV_SRC_ALPHA;
+	blendDesc_.RenderTarget[0].BlendOp               = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].SrcBlendAlpha         = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].DestBlendAlpha        = D3D12_BLEND_ZERO;
+	blendDesc_.RenderTarget[0].BlendOpAlpha          = D3D12_BLEND_OP_ADD;
 }
 
 void PSO::InitializeBlendState(BlendState blendState) {
