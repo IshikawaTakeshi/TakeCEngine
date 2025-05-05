@@ -29,8 +29,6 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//Animation読み込み
 	LoadAnimation();
 
-	postEffectManager_->AddEffect("grayScale", L"Resources/shaders/PostEffect/GrayScale.CS.hlsl");
-
 	CollisionManager::GetInstance()->Initialize(directXCommon_.get());
 
 	//最初のシーンを設定

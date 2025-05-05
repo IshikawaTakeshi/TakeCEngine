@@ -15,19 +15,23 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager,const std::wstring& CSFilePath,const Vector4& clearColor);
+	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager,const std::wstring& CSFilePath,ComPtr<ID3D12Resource> inputResource,uint32_t srvIndex);
 
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void DisPatch(uint32_t outputTextureUavIndex);
+	void DisPatch();
 
 public:
 
-	uint32_t GetInputTextureSrvIndex() const { return inputTexSrvIndex_; } //inputRenderTextureのSRVインデックスを取得
-
-	uint32_t GetOutputTextureUavIndex() const { return outputTexUavIndex_; } //outputRenderTextureのUAVインデックスを取得
-
+	//inputRenderTextureのSRVインデックスを取得
+	uint32_t GetInputTextureSrvIndex() const { return inputTexSrvIndex_; } 
+	//outputRenderTextureのUAVインデックスを取得
+	uint32_t GetOutputTextureUavIndex() const { return outputTexUavIndex_; } 
+	//inputRenderTextureのポインタを取得
+	ComPtr<ID3D12Resource> GetInputTextureResource() const { return inputResource_; } 
+	//outputRenderTextureのポインタを取得
+	ComPtr<ID3D12Resource> GetOutputTextureResource() const { return outputResource_; } 
 
 private:
 

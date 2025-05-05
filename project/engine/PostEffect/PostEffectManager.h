@@ -44,6 +44,8 @@ public:
 
 	void AddEffect(const std::string& name, const std::wstring& csFilePath);
 
+	uint32_t GetRenderTextureSrvIndex() { return renderTextureSrvIndex_; }
+
 private:
 
 	DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
@@ -60,8 +62,7 @@ private:
 	uint32_t rtvIndex_ = 0;
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_{};
 	//SRVManagerで使用するDiscriptorHandleのインデックス
-	uint32_t srvIndex_ = 0;
-	uint32_t uavIndex_ = 0;
+	uint32_t renderTextureSrvIndex_ = 0;
 	//DSVハンドル
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
 
