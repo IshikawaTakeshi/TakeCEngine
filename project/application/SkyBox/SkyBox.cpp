@@ -8,6 +8,8 @@
 #include "TakeCFrameWork.h"
 
 SkyBox::~SkyBox() {
+	pso_.reset();
+	rootSignature_.Reset();
 	wvpResource_.Reset();
 	model_ = nullptr;
 }

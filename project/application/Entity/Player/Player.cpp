@@ -8,6 +8,12 @@
 #include "camera/CameraManager.h"
 #include "engine/base/TakeCFrameWork.h"
 
+Player::~Player() {
+	object3d_.reset();
+	collider_.reset();
+	camera_ = nullptr;
+}
+
 void Player::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
 	//キャラクタータイプ設定
