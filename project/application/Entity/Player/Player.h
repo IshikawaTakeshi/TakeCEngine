@@ -6,7 +6,7 @@
 class Player : public GameCharacter {
 public:
 	Player() = default;
-	~Player() override = default;
+	~Player() override;
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
 	void Update() override;
 	void Draw() override;

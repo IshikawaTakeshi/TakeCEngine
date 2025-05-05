@@ -20,6 +20,8 @@ public:
 	/// </summary>
 	void Initialize(DirectXCommon* directXCommon);
 
+	void Finalize();
+
 	/// <summary>
 	/// RTVインデックスの取得
 	/// </summary>

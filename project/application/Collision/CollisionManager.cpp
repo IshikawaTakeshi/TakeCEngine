@@ -49,6 +49,8 @@ void CollisionManager::PreDraw() {
 //=============================================================================
 
 void CollisionManager::Finalize() {
+	pso_.reset();
+	rootSignature_.Reset();
 	delete instance_;
 	instance_ = nullptr;
 }

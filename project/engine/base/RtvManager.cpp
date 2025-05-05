@@ -19,6 +19,15 @@ void RtvManager::Initialize(DirectXCommon* directXCommon) {
 	rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 }
 
+void RtvManager::Finalize() {
+	//ディスクリプタヒープの開放
+	descriptorHeap_.Reset();
+	//DirectXCommonのポインタをnullptrに
+	dxCommon_ = nullptr;
+	//使用中のインデックスを0に戻す
+	useIndex_ = 0;
+}
+
 //===================================================================================================
 // RTVインデックスの取得
 //===================================================================================================
