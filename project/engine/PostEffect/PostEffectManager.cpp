@@ -44,6 +44,7 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	rootSignature_ = renderTexturePSO_->GetGraphicRootSignature();
 
 	AddEffect("grayScale", L"Resources/shaders/PostEffect/GrayScale.CS.hlsl");
+	AddEffect("vignette", L"Resources/shaders/PostEffect/Vignette.CS.hlsl");
 }
 
 //====================================================================

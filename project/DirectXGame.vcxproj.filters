@@ -785,5 +785,6 @@
     <FxCompile Include="Resources\shaders\PostEffect\FullScreen.VS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\CopyImage.PS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\GrayScale.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\Vignette.CS.hlsl" />
   </ItemGroup>
 </Project>
