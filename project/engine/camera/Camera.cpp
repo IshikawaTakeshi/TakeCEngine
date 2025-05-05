@@ -6,7 +6,9 @@
 #include "Input.h"
 #include "math/Easing.h"
 
-Camera::~Camera() {}
+Camera::~Camera() {
+	cameraResource_.Reset();
+}
 
 void Camera::Initialize(ID3D12Device* device) {
 	
@@ -27,6 +29,7 @@ void Camera::Initialize(ID3D12Device* device) {
 	targetRotation_ = new Vector3();
 
 	cameraResource_ = DirectXCommon::CreateBufferResource(device, sizeof(CameraForGPU));
+	cameraResource_->SetName(L"Camera::cameraResource_");
 	cameraForGPU_ = nullptr;
 	cameraResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraForGPU_));
 	cameraForGPU_->worldPosition = transform_.translate;

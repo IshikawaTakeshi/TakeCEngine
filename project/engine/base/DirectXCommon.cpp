@@ -75,6 +75,7 @@ void DirectXCommon::Finalize() {
 	commandAllocator_.Reset();
 	commandQueue_.Reset();
 	dsvHeap_.Reset();
+	rtvManager_->Finalize();
 	swapChainResources_[0].Reset();
 	swapChainResources_[1].Reset();
 	swapChain_.Reset();

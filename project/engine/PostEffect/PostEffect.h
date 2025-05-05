@@ -10,7 +10,7 @@
 class PostEffect {
 public:
 	PostEffect() = default;
-	~PostEffect() = default;
+	~PostEffect();
 
 	/// <summary>
 	/// 初期化

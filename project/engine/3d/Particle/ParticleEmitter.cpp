@@ -10,6 +10,7 @@ ParticleEmitter::~ParticleEmitter() {
 	emitParticleRootSignature_.Reset();
 	emitParticlePso_.reset();
 	emitterSphereResource_.Reset();
+	perFrameResource_.Reset();
 }
 
 //================================================================================================
@@ -46,9 +47,11 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 	//EmitterSphereResource生成
 	emitterSphereResource_ = 
 		DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(EmitterSphereInfo));
+	emitterSphereResource_->SetName(L"EmitterSphereInfo::emitterSphereResource_");
 	//PerFrameResource生成
 	perFrameResource_ = 
 		DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(PerFrame));
+	perFrameResource_->SetName(L"EmitterSphereInfo::perFrameResource_");
 
 	//Mapping
 	emitterSphereResource_->Map(0, nullptr, reinterpret_cast<void**>(&emitterSphereInfo_));

@@ -67,6 +67,9 @@ void ParticleCommon::Finalize() {
 
 	rootSignatureUpdateParticle_.Reset();
 	psoUpdateParticle_.reset();
+
+	/*srvManager_ = nullptr;
+	dxCommon_ = nullptr;*/
 }
 
 void ParticleCommon::PreDraw() {

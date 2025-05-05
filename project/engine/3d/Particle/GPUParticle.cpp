@@ -8,7 +8,7 @@
 #include "TakeCFrameWork.h"
 
 GPUParticle::~GPUParticle() {
-
+	model_ = nullptr;
 	particleUavResource_.Reset();
 	perViewResource_.Reset();
 	perFrameResource_.Reset();
@@ -31,24 +31,29 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 	particleUavResource_ = DirectXCommon::CreateBufferResourceUAV(
 		particleCommon_->GetDirectXCommon()->GetDevice(),sizeof(ParticleForCS) * kNumMaxInstance_,
 		particleCommon_->GetDirectXCommon()->GetCommandList());
+	particleUavResource_->SetName(L"GPUParticle::particleUavResource_");
 
 	//PerViewResource生成
 	perViewResource_ = DirectXCommon::CreateBufferResource(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
+	perViewResource_->SetName(L"GPUParticle::perViewResource_");
 
 	//PerFrameResource生成
 	perFrameResource_ = DirectXCommon::CreateBufferResource(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerFrame));
+	perFrameResource_->SetName(L"GPUParticle::perFrameResource_");
 
 	//freeListIndexResource生成
 	freeListIndexResource_ = DirectXCommon::CreateBufferResourceUAV(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(uint32_t),
 		particleCommon_->GetDirectXCommon()->GetCommandList());
+	freeListIndexResource_->SetName(L"GPUParticle::freeListIndexResource_");
 
 	//freeListResource生成
 	freeListResource_ = DirectXCommon::CreateBufferResourceUAV(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(uint32_t) * kNumMaxInstance_,
 		particleCommon_->GetDirectXCommon()->GetCommandList());
+	freeListResource_->SetName(L"GPUParticle::freeListResource_");
 
 	//Mapping
 	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));

@@ -27,11 +27,6 @@ public:
 	void Update();
 
 	/// <summary>
-	/// directionalLightData初期化
-	/// </summary>
-	void InitializeDirectionalLightData(DirectXCommon* dxCommon);
-
-	/// <summary>
 	/// 描画処理
 	/// </summary>
 	void Draw(DirectXCommon* dxCommon);

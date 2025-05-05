@@ -80,6 +80,11 @@ void GamePlayScene::Initialize() {
 void GamePlayScene::Finalize() {
 	CollisionManager::GetInstance()->Finalize(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
+	player_.reset();
+	sampleEnemy_.reset();
+	particleEmitter1_.reset();
+	sprite_.reset();
+	skyBox_.reset();
 }
 
 //====================================================================

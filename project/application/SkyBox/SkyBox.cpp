@@ -8,8 +8,11 @@
 #include "TakeCFrameWork.h"
 
 SkyBox::~SkyBox() {
+	pso_.reset();
+	rootSignature_.Reset();
 	wvpResource_.Reset();
 	model_ = nullptr;
+	dxCommon_ = nullptr;
 }
 
 void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename) {
@@ -30,6 +33,7 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename
 
 	//TransformationMatrix用のResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
+	wvpResource_->SetName(L"SkyBox::wvpResource_");
 	//TransformationMatrix用
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
 	//単位行列を書き込んでおく

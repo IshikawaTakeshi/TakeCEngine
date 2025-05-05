@@ -53,12 +53,6 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 	//単位行列を書き込んでおく
 	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
-
-	//======================= DirectionalLightResource ===========================//
-
-	InitializeDirectionalLightData(dxCommon);
-
-
 	//======================= Transform・各行列の初期化 ===========================//
 
 	//CPUで動かす用のTransform
@@ -107,20 +101,6 @@ void Sphere::Update() {
 #endif // _DEBUG
 }
 
-void Sphere::InitializeDirectionalLightData(DirectXCommon* dxCommon) {
-
-	//平行光源用Resourceの作成
-	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DirectionalLightData));
-	directionalLightData_ = nullptr;
-	//データを書き込むためのアドレスを取得
-	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
-	//光源の色を書き込む
-	directionalLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
-	//光源の方向を書き込む
-	directionalLightData_->direction_ = { 0.0f,-1.0f,0.0f };
-	//光源の輝度書き込む
-	directionalLightData_->intensity_ = 1.0f;
-}
 
 void Sphere::Draw(DirectXCommon* dxCommon) {
 

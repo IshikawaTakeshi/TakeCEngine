@@ -52,6 +52,10 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 
 void PostEffectManager::Finalize() {
 	renderTextureResource_.Reset();
+	renderTexturePSO_.reset();
+	rootSignature_.Reset();
+	postEffects_.clear();
+	rtvManager_ = nullptr;
 	srvManager_ = nullptr;
 	dxCommon_ = nullptr;
 }
