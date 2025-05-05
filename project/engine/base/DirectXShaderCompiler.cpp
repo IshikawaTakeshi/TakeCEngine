@@ -57,7 +57,10 @@ Microsoft::WRL::ComPtr<IDxcBlob> DXC::CompileShader(
 	shaderSource_ = nullptr;
 	result = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource_);
 	//読めなかったら止める
-	assert(SUCCEEDED(result));
+	if(FAILED(result)) {
+		Logger::Log(StringUtility::ConvertString(std::format(L"Failed to load file, path:{}\n", filePath)));
+		assert(false);
+	}
 
 	//読み込んだファイルの内容を設定する
 	DxcBuffer shaderSourceBuffer;

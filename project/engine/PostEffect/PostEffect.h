@@ -1,24 +1,52 @@
 #pragma once
-#include "DirectXCommon.h"
+#include "base/DirectXCommon.h"
+#include "base/SrvManager.h"
+#include "base/RtvManager.h"
+#include "base/PipelineStateObject.h"
 #include <string>
-class PsotEffect {
+
+
+
+class PostEffect {
 public:
-	PsotEffect() = default;
-	~PsotEffect();
+	PostEffect() = default;
+	~PostEffect() = default;
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath = "Resources/images/white.png");
+	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager,const std::wstring& CSFilePath,ComPtr<ID3D12Resource> inputResource,uint32_t srvIndex);
 
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void UpdateMaterialImGui();
+	void DisPatch();
 
-	/// <summary>
-	/// マテリアルリソース初期化
-	/// </summary>
-	void InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> device);
+public:
+
+	//inputRenderTextureのSRVインデックスを取得
+	uint32_t GetInputTextureSrvIndex() const { return inputTexSrvIndex_; } 
+	//outputRenderTextureのUAVインデックスを取得
+	uint32_t GetOutputTextureUavIndex() const { return outputTexUavIndex_; } 
+	//inputRenderTextureのポインタを取得
+	ComPtr<ID3D12Resource> GetInputTextureResource() const { return inputResource_; } 
+	//outputRenderTextureのポインタを取得
+	ComPtr<ID3D12Resource> GetOutputTextureResource() const { return outputResource_; } 
+
+private:
+
+	DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
+	SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
+
+	//RenderTextureリソース
+	ComPtr<ID3D12Resource> inputResource_;
+	ComPtr<ID3D12Resource> outputResource_;
+	uint32_t inputTexSrvIndex_ = 0;
+	uint32_t outputTexUavIndex_ = 0;
+
+	//computeパイプライン
+	std::unique_ptr<PSO> computePSO_ = nullptr;
+	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+
+	std::wstring csFilePath_ = L"";
 };
-

@@ -78,6 +78,8 @@ void MyGame::Draw() {
 	 //描画前処理
 	directXCommon_->PreDraw();
 
+	//postEffect計算処理
+	postEffectManager_->AllDispatch();
 	//ポストエフェクト描画
 	postEffectManager_->Draw();
 	//ポストエフェクト描画後処理
