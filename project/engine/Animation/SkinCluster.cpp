@@ -11,6 +11,7 @@ void SkinCluster::Create(
 	//palette用のReosurce確保
 	//MEMO:sizeInBytesはWellForGPUのサイズ×ジョイント数
 	paletteResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(WellForGPU) * skeleton->GetJoints().size());
+	paletteResource->SetName(L"SkinCluster::paletteResource");
 	
 	//paletteのSRVのIndexを取得
 	paletteIndex = srvManager->Allocate();
@@ -27,6 +28,7 @@ void SkinCluster::Create(
 	//influence用のResource確保
 	//VertexInfluence * std::vector<VertexData>
 	influenceResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData->vertices.size());
+	influenceResource->SetName(L"SkinCluster::influenceResource");
 	
 	//influenceのSRV作成
 	influenceIndex = srvManager->Allocate();

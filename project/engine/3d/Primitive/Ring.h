@@ -15,7 +15,7 @@ public:
 	void Initialize(DirectXCommon* dxCommon);
 	void Update();
 	void Draw();
-	void CreateRing(const uint32_t divide, const float outerRadius, const float innerRadius, const Vector3& center, const Vector4& color);
+	//void CreateRing(const uint32_t divide, const float outerRadius, const float innerRadius, const Vector3& center, const Vector4& color);
 
 private:
 

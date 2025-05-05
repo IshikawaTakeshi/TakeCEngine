@@ -39,6 +39,7 @@ void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void TextureManager::Finalize() {
+	srvManager_ = nullptr;
 	dxCommon_ = nullptr;
 	textureDatas_.clear();
 	delete instance_;

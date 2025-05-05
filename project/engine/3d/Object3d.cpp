@@ -16,6 +16,7 @@
 
 Object3d::~Object3d() {
 	wvpResource_.Reset();
+	model_ = nullptr;
 }
 
 //=============================================================================
@@ -31,6 +32,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 
 	//TransformationMatrix用のResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
+	wvpResource_->SetName(L"Object3d::wvpResource_");
 	//TransformationMatrix用
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
 	//CPUで動かす用のTransform

@@ -14,7 +14,9 @@
 
 
 Particle3d::~Particle3d() {
+	model_ = nullptr;
 	particleResource_.Reset();
+	perViewResource_.Reset();
 }
 
 //=============================================================================
@@ -29,10 +31,12 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	//instancing用のResource生成
 	particleResource_ =
 		DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
+	particleResource_->SetName(L"Particle3d::particleResource_");
 
 	//perViewResource生成
 	perViewResource_ = DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
 	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));
+	perViewResource_->SetName(L"Particle3d::perViewResource_");
 
 	//SRVの生成
 	particleSrvIndex_ = particleCommon_->GetSrvManager()->Allocate();

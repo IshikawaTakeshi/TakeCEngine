@@ -112,6 +112,7 @@ void PrimitiveDrawer::CreateRingVertexData() {
 
 	//bufferをカウント分確保
 	ringData_->primitiveData_.vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
+	ringData_->primitiveData_.vertexResource_->SetName(L"Ring::vertexResource_");
 	//bufferview設定
 	ringData_->primitiveData_.vertexBufferView_.BufferLocation = ringData_->primitiveData_.vertexResource_->GetGPUVirtualAddress();
 	ringData_->primitiveData_.vertexBufferView_.StrideInBytes = sizeof(VertexData);

@@ -62,6 +62,7 @@ void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> d
 
 	//マテリアル用リソース作成
 	materialResource_ = DirectXCommon::CreateBufferResource(device.Get(), sizeof(MaterialData));
+	materialResource_->SetName(L"Material::materialResource_");
 	//materialにデータを書き込む
 	materialData_ = nullptr;
 	//書き込むためのアドレスを取得

@@ -37,6 +37,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 #pragma region "Lighting"
 	//平行光源用Resourceの作成
 	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(DirectionalLightData));
+	directionalLightResource_->SetName(L"Object3dCommon::directionalLightResource_");
 	directionalLightData_ = nullptr;
 	//データを書き込むためのアドレスを取得
 	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
@@ -49,6 +50,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 
 	//PointLight用のResourceの作成
 	pointLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(PointLightData));
+	pointLightResource_->SetName(L"Object3dCommon::pointLightResource_");
 	pointLightData_ = nullptr;
 	pointLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&pointLightData_));
 	pointLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
@@ -59,6 +61,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 
 	//SpotLight用のResourceの作成
 	spotLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(SpotLightData));
+	spotLightResource_->SetName(L"Object3dCommon::spotLightResource_");
 	spotLightData_ = nullptr;
 	spotLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&spotLightData_));
 	spotLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };

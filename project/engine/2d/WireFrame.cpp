@@ -29,6 +29,7 @@ void WireFrame::Initialize(DirectXCommon* directXCommon) {
 
 	//TransformationMatrix用のResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(WireFrameTransFormMatrixData));
+	wvpResource_->SetName(L"WireFrame::wvpResource_");
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
 }
 
@@ -236,7 +237,10 @@ void WireFrame::Reset() {
 
 void WireFrame::Finalize() {
 
-	delete lineData_;
+	pso_.reset();
+	rootSignature_.Reset();
+	wvpResource_.Reset();
+	lineData_->vertexResource_.Reset();
 }
 
 void WireFrame::CreateVertexData() {
@@ -245,6 +249,7 @@ void WireFrame::CreateVertexData() {
 
 	//頂点バッファの生成
 	lineData_->vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), vertexBufferSize);
+	lineData_->vertexResource_->SetName(L"WireFrame::VertexBuffer");
 
 	//頂点バッファのビュー設定
 	lineData_->vertexBufferViews_.BufferLocation = lineData_->vertexResource_->GetGPUVirtualAddress();

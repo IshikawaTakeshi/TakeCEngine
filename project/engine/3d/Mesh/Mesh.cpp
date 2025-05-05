@@ -6,6 +6,7 @@
 Mesh::~Mesh() {
 	material_.reset();
 	inputVertexResource_.Reset();
+	outputVertexResource_.Reset();
 	indexResource_.Reset();
 }
 
@@ -196,6 +197,7 @@ void Mesh::InitializeInputVertexResourceModel(ID3D12Device* device, ModelData* m
 void Mesh::InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* modelData, ID3D12GraphicsCommandList* commandList) {
 	//頂点リソースを作る
 	outputVertexResource_ = DirectXCommon::CreateBufferResourceUAV(device, sizeof(VertexData) * modelData->vertices.size(),commandList);
+	outputVertexResource_->SetName(L"Mesh::outputVertexResource_");
 	//頂点バッファビューを作る
 	vertexBufferViews_[0].BufferLocation = outputVertexResource_->GetGPUVirtualAddress();
 	vertexBufferViews_[0].SizeInBytes = UINT(sizeof(VertexData) * modelData->vertices.size());
