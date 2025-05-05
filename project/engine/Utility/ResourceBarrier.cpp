@@ -1,4 +1,6 @@
 #include "ResourceBarrier.h"
+#include <cassert>
+#include <format>
 
 ResourceBarrier* ResourceBarrier::instance_ = nullptr;
 
@@ -20,6 +22,12 @@ void ResourceBarrier::Finalize() {
 }
 
 void ResourceBarrier::Transition(D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState, ID3D12Resource* resource) {
+
+	// 現在の状態が一致しているか確認
+	auto it = resourceStates_.find(resource);
+	if (it != resourceStates_.end()) {
+		assert(it->second == beforeState && "Resource state mismatch in ResourceBarrier::Transition");
+	}
 	//リソースバリアの設定
 	D3D12_RESOURCE_BARRIER barrier = {};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -30,4 +38,7 @@ void ResourceBarrier::Transition(D3D12_RESOURCE_STATES beforeState, D3D12_RESOUR
 
 	//コマンドリストにリソースバリアを設定
 	dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
+
+	// 状態を更新
+	resourceStates_[resource] = afterState;
 }

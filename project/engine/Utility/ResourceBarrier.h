@@ -1,5 +1,7 @@
 #pragma once
 #include "base/DirectXCommon.h"
+#include "base/ResourceDataStructure.h"
+#include <unordered_map>
 
 class ResourceBarrier {
 public:
@@ -27,4 +29,7 @@ private:
 	static ResourceBarrier* instance_;
 
 	DirectXCommon* dxCommon_ = nullptr;
+	
+	//リソースごとの状態を管理するためのマップ
+	std::unordered_map<ID3D12Resource*, D3D12_RESOURCE_STATES> resourceStates_;
 };

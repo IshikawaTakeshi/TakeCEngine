@@ -130,6 +130,15 @@ void SrvManager::CreateUAVforStructuredBuffer(UINT numElements, UINT stride, ID3
 	dxCommon_->GetDevice()->CreateUnorderedAccessView(pResource, nullptr, &uavDesc, GetSrvDescriptorHandleCPU(uavIndex));
 }
 
+void SrvManager::CreateUAVforRenderTexture(ID3D12Resource* pResource, uint32_t uavIndex) {
+	
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc{};
+	uavDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+
+	dxCommon_->GetDevice()->CreateUnorderedAccessView(pResource, nullptr, &uavDesc, GetSrvDescriptorHandleCPU(uavIndex));
+}
+
 //================================================================================================
 // SRVの設定
 //================================================================================================
