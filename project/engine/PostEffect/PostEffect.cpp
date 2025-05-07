@@ -1,5 +1,6 @@
 #include "PostEffect.h"
 #include "Utility/ResourceBarrier.h"
+#include "ImGuiManager.h"
 #include <cassert>
 
 PostEffect::~PostEffect() {
@@ -11,7 +12,7 @@ PostEffect::~PostEffect() {
 	dxCommon_ = nullptr;
 }
 
-void PostEffect::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager,const std::wstring& CSFilePath,ComPtr<ID3D12Resource> inputResource,uint32_t srvIndex) {
+void PostEffect::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath, ComPtr<ID3D12Resource> inputResource, uint32_t srvIndex) {
 
 	dxCommon_ = dxCommon;
 	//SRVManagerの取得
@@ -34,11 +35,24 @@ void PostEffect::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager,const
 	//outputRenderTexture
 	outputTexUavIndex_ = srvManager_->Allocate();
 	outputResource_ = dxCommon_->CreateTextureResourceUAV(
-		dxCommon_->GetDevice(),WinApp::kClientWidth,WinApp::kClientHeight,DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
+		dxCommon_->GetDevice(), WinApp::kClientWidth, WinApp::kClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 	outputResource_->SetName(L"outputRenderTexture_");
 
 	//UAVの生成
 	srvManager_->CreateUAVforRenderTexture(outputResource_.Get(), outputTexUavIndex_);
+	//grayScaleTypeResource
+	grayScaleTypeResource_ = dxCommon_->CreateBufferResource(dxCommon_->GetDevice(), sizeof(int32_t));
+	grayScaleTypeResource_->SetName(L"grayScaleTypeResource_");
+	//Mapping
+	grayScaleTypeResource_->Map(0, nullptr, reinterpret_cast<void**>(&grayScaleType_));
+	*grayScaleType_ = 0;
+}
+
+void PostEffect::UpdateImGui() {
+	ImGui::Begin("GrayScale");
+	ImGui::Text("GrayScaleType");
+	ImGui::SliderInt("GrayScaleType0", grayScaleType_, 0, 2);
+	ImGui::End();
 }
 
 void PostEffect::DisPatch() {
@@ -56,6 +70,8 @@ void PostEffect::DisPatch() {
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gInputTexture"), inputTexSrvIndex_);
 	//outputTex
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gOutputTexture"), outputTexUavIndex_);
+	//grayScaleType
+	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(computePSO_->GetComputeBindResourceIndex("gType"), grayScaleTypeResource_->GetGPUVirtualAddress());
 
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kClientWidth / 8, WinApp::kClientHeight / 8, 1);
