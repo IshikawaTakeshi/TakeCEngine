@@ -59,6 +59,7 @@ void GamePlayScene::Initialize() {
 	//sprite
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
+	sprite_->SetTextureLeftTop({ 235.0f,40.0f });
 
 	//player
 	player_ = std::make_unique<Player>();

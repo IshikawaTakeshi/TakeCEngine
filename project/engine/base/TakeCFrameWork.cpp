@@ -147,6 +147,7 @@ void TakeCFrameWork::Update() {
 
 	//シーンの更新
 	sceneManager_->Update();
+	postEffectManager_->UpdateImGui();
 
 #ifdef _DEBUG
 	imguiManager_->End();
