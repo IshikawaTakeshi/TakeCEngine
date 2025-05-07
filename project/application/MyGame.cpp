@@ -69,8 +69,7 @@ void MyGame::Update() {
 
 void MyGame::Draw() {
 
-	//ポストエフェクト描画前処理
-	postEffectManager_->PreDraw();
+	postEffectManager_->ClearRenderTarget(); //ポストエフェクトのRTVクリア
 	//SRV描画前処理
 	srvManager_->SetDescriptorHeap(); 
 	//シーン描画
@@ -80,6 +79,8 @@ void MyGame::Draw() {
 
 	//postEffect計算処理
 	postEffectManager_->AllDispatch();
+	//ポストエフェクト描画前処理
+	postEffectManager_->PreDraw();
 	//ポストエフェクト描画
 	postEffectManager_->Draw();
 	//ポストエフェクト描画後処理

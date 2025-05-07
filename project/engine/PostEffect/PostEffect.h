@@ -15,8 +15,9 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager,const std::wstring& CSFilePath,ComPtr<ID3D12Resource> inputResource,uint32_t srvIndex);
+	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath, ComPtr<ID3D12Resource> inputResource, uint32_t srvIndex);
 
+	void UpdateImGui();
 	/// <summary>
 	/// 更新処理
 	/// </summary>
@@ -25,13 +26,13 @@ public:
 public:
 
 	//inputRenderTextureのSRVインデックスを取得
-	uint32_t GetInputTextureSrvIndex() const { return inputTexSrvIndex_; } 
+	uint32_t GetInputTextureSrvIndex() const { return inputTexSrvIndex_; }
 	//outputRenderTextureのUAVインデックスを取得
-	uint32_t GetOutputTextureUavIndex() const { return outputTexUavIndex_; } 
+	uint32_t GetOutputTextureUavIndex() const { return outputTexUavIndex_; }
 	//inputRenderTextureのポインタを取得
-	ComPtr<ID3D12Resource> GetInputTextureResource() const { return inputResource_; } 
+	ComPtr<ID3D12Resource> GetInputTextureResource() const { return inputResource_; }
 	//outputRenderTextureのポインタを取得
-	ComPtr<ID3D12Resource> GetOutputTextureResource() const { return outputResource_; } 
+	ComPtr<ID3D12Resource> GetOutputTextureResource() const { return outputResource_; }
 
 private:
 
@@ -41,6 +42,8 @@ private:
 	//RenderTextureリソース
 	ComPtr<ID3D12Resource> inputResource_;
 	ComPtr<ID3D12Resource> outputResource_;
+	ComPtr<ID3D12Resource> grayScaleTypeResource_;
+	int32_t* grayScaleType_;
 	uint32_t inputTexSrvIndex_ = 0;
 	uint32_t outputTexUavIndex_ = 0;
 

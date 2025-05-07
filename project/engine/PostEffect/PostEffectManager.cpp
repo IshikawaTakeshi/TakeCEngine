@@ -47,6 +47,13 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	AddEffect("vignette", L"Resources/shaders/PostEffect/Vignette.CS.hlsl");
 }
 
+void PostEffectManager::UpdateImGui() {
+
+	for (auto& postEffect : postEffects_) {
+		postEffect.second->UpdateImGui();
+	}
+}
+
 //====================================================================
 // 終了処理
 //====================================================================
@@ -65,9 +72,8 @@ void PostEffectManager::Finalize() {
 // 描画前処理
 //====================================================================
 
-void PostEffectManager::PreDraw() {
 
-
+void PostEffectManager::ClearRenderTarget() {
 	//深度ステンシルビューの設定
 	dsvHandle_ = dxCommon_->GetDsvHeap()->GetCPUDescriptorHandleForHeapStart();
 
@@ -81,7 +87,10 @@ void PostEffectManager::PreDraw() {
 	dxCommon_->GetCommandList()->RSSetViewports(1, &dxCommon_->GetViewport());
 	// Scissorの設定
 	dxCommon_->GetCommandList()->RSSetScissorRects(1, &dxCommon_->GetScissorRect());
+}
+void PostEffectManager::PreDraw() {
 
+	
 }
 
 //======================================================================
@@ -138,6 +147,7 @@ void PostEffectManager::Draw() {
 	// 描画コマンドを発行
 	dxCommon_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }
+
 
 //======================================================================
 // 描画後処理

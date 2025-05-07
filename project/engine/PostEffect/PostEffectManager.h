@@ -17,6 +17,8 @@ public:
 	/// </summary>
 	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
 
+	void UpdateImGui();
+
 	/// <summary>
 	/// 終了・開放処理
 	/// </summary>
@@ -26,6 +28,8 @@ public:
 	///	描画処理
 	/// </summary>
 	void Draw();
+
+	void ClearRenderTarget();
 
 	/// <summary>
 	/// 描画前処理
@@ -53,7 +57,7 @@ private:
 	RtvManager* rtvManager_ = nullptr; //RtvManagerのポインタ
 
 	//clearValue
-	const Vector4 kRenderTargetClearColor_ = { 0.3f, 0.3f, 0.3f, 1.0f };
+	const Vector4 kRenderTargetClearColor_ = { 0.3f, 0.5f, 0.3f, 1.0f };
 	const float clearValue_[4] = { kRenderTargetClearColor_.x, kRenderTargetClearColor_.y, kRenderTargetClearColor_.z, kRenderTargetClearColor_.w };
 	//RTV
 	ComPtr<ID3D12Resource> renderTextureResource_;
