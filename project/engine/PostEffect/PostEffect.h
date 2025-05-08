@@ -15,13 +15,14 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath, ComPtr<ID3D12Resource> inputResource, uint32_t srvIndex);
+	virtual void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,const std::wstring& CSFilePath,
+		ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource,uint32_t outputSrvIdx);
 
-	void UpdateImGui();
+	virtual void UpdateImGui();
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void DisPatch();
+	virtual void DisPatch();
 
 public:
 
@@ -29,12 +30,14 @@ public:
 	uint32_t GetInputTextureSrvIndex() const { return inputTexSrvIndex_; }
 	//outputRenderTextureのUAVインデックスを取得
 	uint32_t GetOutputTextureUavIndex() const { return outputTexUavIndex_; }
+	//outputRenderTextureのSRVインデックスを取得
+	uint32_t GetOutputTextureSrvIndex() const { return outputTexSrvIndex_; }
 	//inputRenderTextureのポインタを取得
 	ComPtr<ID3D12Resource> GetInputTextureResource() const { return inputResource_; }
 	//outputRenderTextureのポインタを取得
 	ComPtr<ID3D12Resource> GetOutputTextureResource() const { return outputResource_; }
 
-private:
+protected:
 
 	DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
 	SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
@@ -42,10 +45,11 @@ private:
 	//RenderTextureリソース
 	ComPtr<ID3D12Resource> inputResource_;
 	ComPtr<ID3D12Resource> outputResource_;
-	ComPtr<ID3D12Resource> grayScaleTypeResource_;
-	int32_t* grayScaleType_;
+	//ComPtr<ID3D12Resource> grayScaleTypeResource_;
+	//int32_t* grayScaleType_;
 	uint32_t inputTexSrvIndex_ = 0;
 	uint32_t outputTexUavIndex_ = 0;
+	uint32_t outputTexSrvIndex_ = 0;
 
 	//computeパイプライン
 	std::unique_ptr<PSO> computePSO_ = nullptr;

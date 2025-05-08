@@ -12,7 +12,9 @@ PostEffect::~PostEffect() {
 	dxCommon_ = nullptr;
 }
 
-void PostEffect::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath, ComPtr<ID3D12Resource> inputResource, uint32_t srvIndex) {
+void PostEffect::Initialize(
+	DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
+	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource,uint32_t outputSrvIdx) {
 
 	dxCommon_ = dxCommon;
 	//SRVManagerの取得
@@ -28,31 +30,28 @@ void PostEffect::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, con
 
 
 	//inputRenderTexture
-	inputTexSrvIndex_ = srvIndex;
+	inputTexSrvIndex_ = inputSrvIdx;
 	inputResource_ = inputResource;
 	inputResource_->SetName(L"inputRenderTexture_");
 
 	//outputRenderTexture
-	outputTexUavIndex_ = srvManager_->Allocate();
-	outputResource_ = dxCommon_->CreateTextureResourceUAV(
+	outputTexSrvIndex_ = outputSrvIdx;
+	outputResource_ = outputResource;
+		dxCommon_->CreateTextureResourceUAV(
 		dxCommon_->GetDevice(), WinApp::kClientWidth, WinApp::kClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 	outputResource_->SetName(L"outputRenderTexture_");
 
 	//UAVの生成
+	outputTexUavIndex_ = srvManager_->Allocate();
 	srvManager_->CreateUAVforRenderTexture(outputResource_.Get(), outputTexUavIndex_);
-	//grayScaleTypeResource
-	grayScaleTypeResource_ = dxCommon_->CreateBufferResource(dxCommon_->GetDevice(), sizeof(int32_t));
-	grayScaleTypeResource_->SetName(L"grayScaleTypeResource_");
-	//Mapping
-	grayScaleTypeResource_->Map(0, nullptr, reinterpret_cast<void**>(&grayScaleType_));
-	*grayScaleType_ = 0;
+
+	//SRVの生成
+	outputTexSrvIndex_ = srvManager_->Allocate();
+	srvManager_->CreateSRVforRenderTexture(outputResource_.Get(), outputTexSrvIndex_);
 }
 
 void PostEffect::UpdateImGui() {
-	ImGui::Begin("GrayScale");
-	ImGui::Text("GrayScaleType");
-	ImGui::SliderInt("GrayScaleType0", grayScaleType_, 0, 2);
-	ImGui::End();
+	
 }
 
 void PostEffect::DisPatch() {
@@ -71,7 +70,7 @@ void PostEffect::DisPatch() {
 	//outputTex
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gOutputTexture"), outputTexUavIndex_);
 	//grayScaleType
-	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(computePSO_->GetComputeBindResourceIndex("gType"), grayScaleTypeResource_->GetGPUVirtualAddress());
+	//dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(computePSO_->GetComputeBindResourceIndex("gType"), grayScaleTypeResource_->GetGPUVirtualAddress());
 
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kClientWidth / 8, WinApp::kClientHeight / 8, 1);

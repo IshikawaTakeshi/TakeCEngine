@@ -74,6 +74,14 @@ private:
 	std::unique_ptr<PSO> renderTexturePSO_ = nullptr;
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 
+	ComPtr<ID3D12Resource> renderTextureResourceA_ = nullptr;
+	UINT renderTextureSrvIndexA_ = 0;
+
+	ComPtr<ID3D12Resource> renderTextureResourceB_ = nullptr;
+	UINT renderTextureSrvIndexB_ = 0;
+
+	bool currentWriteBufferIsA_ = true;
+
 	//postEffectのコンテナ
 	std::map<std::string, std::unique_ptr<PostEffect>> postEffects_;
 };

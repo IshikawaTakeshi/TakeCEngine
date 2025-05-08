@@ -2,6 +2,8 @@
 #include "engine/base/WinApp.h"
 #include "Utility/ResourceBarrier.h"
 #include "Utility/Logger.h"
+#include "PostEffect/GrayScale.h"
+#include "PostEffect/Vignette.h"
 
 //====================================================================
 //	初期化
@@ -161,44 +163,71 @@ void PostEffectManager::PostDraw() {
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		renderTextureResource_.Get());
 
-	//コンテナの末尾のリソース状態を変更する
+	//コンテナの全ての出力リソース状態を変更する
 	//PIXEL_SHADER_RESOURCE >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-		postEffects_.rbegin()->second->GetOutputTextureResource().Get());
+	for (auto& postEffect : postEffects_) {
+		ResourceBarrier::GetInstance()->Transition(
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+			postEffect.second->GetOutputTextureResource().Get());
+	}
 }
-
 
 void PostEffectManager::AddEffect(const std::string& name, const std::wstring& csFilePath) {
 
-	//読み込み済みかどうか検索
-	if(postEffects_.contains(name)){
+	// 読み込み済みかどうか検索
+	if (postEffects_.contains(name)) {
 		Logger::Log("PostEffectManager::AddEffect() : PostEffect is already loaded.");
 		return;
 	}
 
-	//PostEffectの初期化
-	std::unique_ptr<PostEffect> postEffect = std::make_unique<PostEffect>();
+	std::unique_ptr<PostEffect> postEffect;
 
-	//最初のeffctはrenderTextureResource_を使用する
-	if (postEffects_.empty()) {
-
-		postEffect->Initialize(
-			dxCommon_, srvManager_, csFilePath,
-			renderTextureResource_,
-			renderTextureSrvIndex_);
-
+	// PostEffectの初期化
+	if (name == "grayScale") {
+		postEffect = std::make_unique<GrayScale>();
+	} else if (name == "vignette") {
+		postEffect = std::make_unique<Vignette>();
 	} else {
-		//最後のPostEffectの出力を次のPostEffectの入力にする
-		const auto& prevEffect = postEffects_.rbegin()->second;
-		postEffect->Initialize(
-			dxCommon_, srvManager_, csFilePath,
-			prevEffect->GetOutputTextureResource(),
-			prevEffect->GetOutputTextureUavIndex());
+		Logger::Log("PostEffectManager::AddEffect() : PostEffect is not found.");
+		return;
 	}
 
+	// 入出力テクスチャを決定（Ping-Pong切り替え）
+	ComPtr<ID3D12Resource> inputResource = nullptr;
+	UINT inputSrvIndex = 0;
+	ComPtr<ID3D12Resource> outputResource = nullptr;
+	UINT outputSrvIndex = 0;
 
-	//PostEffectのコンテナに追加
+	if (postEffects_.empty()) {
+		// 最初の入力は通常の描画結果（renderTextureResource_）
+		inputResource = renderTextureResource_;
+		inputSrvIndex = renderTextureSrvIndex_;
+	}
+	else {
+		// 直前の出力を次の入力に
+		const auto& prevEffect = postEffects_.rbegin()->second;
+		inputResource = prevEffect->GetOutputTextureResource();
+		inputSrvIndex = prevEffect->GetOutputTextureSrvIndex();
+	}
+
+	// Ping-Pongバッファを交互に切り替える
+	if (currentWriteBufferIsA_) {
+		outputResource = renderTextureResourceB_;
+		outputSrvIndex = renderTextureSrvIndexB_;
+		currentWriteBufferIsA_ = false;
+	}
+	else {
+		outputResource = renderTextureResourceA_;
+		outputSrvIndex = renderTextureSrvIndexA_;
+		currentWriteBufferIsA_ = true;
+	}
+
+	// PostEffectの初期化（Ping-Pongバッファ指定）
+	postEffect->Initialize(dxCommon_, srvManager_, csFilePath,
+		inputResource, inputSrvIndex,
+		outputResource, outputSrvIndex);
+
+	// PostEffectのコンテナに追加
 	postEffects_.insert(std::make_pair(name, std::move(postEffect)));
 }
