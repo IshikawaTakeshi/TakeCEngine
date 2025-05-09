@@ -29,6 +29,8 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//Animation読み込み
 	LoadAnimation();
 
+	postEffectManager_->InitializeEffect("grayScale", L"Resources/shaders/PostEffect/GrayScale.CS.hlsl");
+
 	CollisionManager::GetInstance()->Initialize(directXCommon_.get());
 
 	//最初のシーンを設定
@@ -61,6 +63,7 @@ void MyGame::Update() {
 	TakeCFrameWork::Update();
 	TakeCFrameWork::GetPrimitiveDrawer()->Update();
 	TakeCFrameWork::GetWireFrame()->Update();
+
 }
 
 //====================================================================
@@ -69,7 +72,8 @@ void MyGame::Update() {
 
 void MyGame::Draw() {
 
-	postEffectManager_->ClearRenderTarget(); //ポストエフェクトのRTVクリア
+	//renderTextureの描画前処理
+	renderTexture_->PreDraw();
 	//SRV描画前処理
 	srvManager_->SetDescriptorHeap(); 
 	//シーン描画
@@ -81,10 +85,13 @@ void MyGame::Draw() {
 	postEffectManager_->AllDispatch();
 	//ポストエフェクト描画前処理
 	postEffectManager_->PreDraw();
+	renderTexture_->Draw();
 	//ポストエフェクト描画
-	postEffectManager_->Draw();
+	//postEffectManager_->Draw();
 	//ポストエフェクト描画後処理
-	postEffectManager_->PostDraw(); 
+	//postEffectManager_->PostDraw(); 
+	//renderTexture描画後処理
+	renderTexture_->PostDraw();
 	
 	//描画後処理
 	directXCommon_->PostDraw();

@@ -14,7 +14,7 @@ PostEffect::~PostEffect() {
 
 void PostEffect::Initialize(
 	DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
-	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource,uint32_t outputSrvIdx) {
+	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource,uint32_t outputSrvIdx,uint32_t outputUavIdx) {
 
 	dxCommon_ = dxCommon;
 	//SRVManagerの取得
@@ -36,18 +36,9 @@ void PostEffect::Initialize(
 
 	//outputRenderTexture
 	outputTexSrvIndex_ = outputSrvIdx;
+	outputTexUavIndex_ = outputUavIdx;
 	outputResource_ = outputResource;
-		dxCommon_->CreateTextureResourceUAV(
-		dxCommon_->GetDevice(), WinApp::kClientWidth, WinApp::kClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 	outputResource_->SetName(L"outputRenderTexture_");
-
-	//UAVの生成
-	outputTexUavIndex_ = srvManager_->Allocate();
-	srvManager_->CreateUAVforRenderTexture(outputResource_.Get(), outputTexUavIndex_);
-
-	//SRVの生成
-	outputTexSrvIndex_ = srvManager_->Allocate();
-	srvManager_->CreateSRVforRenderTexture(outputResource_.Get(), outputTexSrvIndex_);
 }
 
 void PostEffect::UpdateImGui() {
@@ -69,9 +60,6 @@ void PostEffect::DisPatch() {
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gInputTexture"), inputTexSrvIndex_);
 	//outputTex
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gOutputTexture"), outputTexUavIndex_);
-	//grayScaleType
-	//dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(computePSO_->GetComputeBindResourceIndex("gType"), grayScaleTypeResource_->GetGPUVirtualAddress());
-
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kClientWidth / 8, WinApp::kClientHeight / 8, 1);
 

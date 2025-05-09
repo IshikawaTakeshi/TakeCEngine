@@ -153,6 +153,10 @@ void Model::DrawSkyBox() {
 	commandList->DrawIndexedInstanced(UINT(modelData_->indices.size()), 1, 0, 0, 0);
 }
 
+//=============================================================================
+// スキンメッシュの計算処理
+//=============================================================================
+
 void Model::DisPatch() {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();

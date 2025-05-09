@@ -366,6 +366,9 @@
     <ClCompile Include="engine\PostEffect\Vignette.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\PostEffect\RenderTexture.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\base\DirectXCommon.h">
@@ -472,9 +475,6 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>externals\imgui\include</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\EngineIncludes.h">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\AABB.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
@@ -645,6 +645,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\PostEffect\Vignette.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\PostEffect\RenderTexture.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

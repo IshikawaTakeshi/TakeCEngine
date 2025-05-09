@@ -3,10 +3,10 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
-void Vignette::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,
-	const std::wstring& CSFilePath, ComPtr<ID3D12Resource> inputResource, uint32_t srvIndex) {
+void Vignette::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
+	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource,uint32_t outputSrvIdx,uint32_t outputUavIdx) {
 
-	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, srvIndex);
+	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx,outputResource,outputSrvIdx,outputUavIdx);
 
 	//VignetteScaleResource
 	vignetteInfoResource_ = dxCommon_->CreateBufferResource(dxCommon_->GetDevice(), sizeof(VignetteInfo));

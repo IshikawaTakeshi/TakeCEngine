@@ -15,7 +15,8 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath, ComPtr<ID3D12Resource> inputResource, uint32_t srvIndex) override;
+	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
+		ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource,uint32_t outputSrvIdx,uint32_t outputUavIdx) override;
 	void UpdateImGui() override;
 	/// <summary>
 	/// 更新処理

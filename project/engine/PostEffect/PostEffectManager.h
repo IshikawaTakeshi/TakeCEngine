@@ -1,11 +1,15 @@
 #pragma once
 #include "base/DirectXCommon.h"
 #include "base/SrvManager.h"
-#include "base/RtvManager.h"
 #include "base/PipelineStateObject.h"
 #include "PostEffect/PostEffect.h"
 #include <string>
 #include <map>
+
+enum IntermediateResourceType {
+	FRONT,
+	BACK,
+};
 
 class PostEffectManager {
 public:
@@ -27,9 +31,7 @@ public:
 	/// <summary>
 	///	描画処理
 	/// </summary>
-	void Draw();
-
-	void ClearRenderTarget();
+	void Draw(PSO* pso);
 
 	/// <summary>
 	/// 描画前処理
@@ -46,41 +48,33 @@ public:
 	/// </summary>
 	void AllDispatch();
 
-	void AddEffect(const std::string& name, const std::wstring& csFilePath);
+	void ApplyEffect(const std::string& name);
 
-	uint32_t GetRenderTextureSrvIndex() { return renderTextureSrvIndex_; }
+	void InitializeEffect(const std::string& name, const std::wstring& csFilePath);
+
+	void SetRenderTextureResource(ComPtr<ID3D12Resource> renderTextureResource) {
+		renderTextureResource_ = renderTextureResource;
+	}
+
+	void SetRenderTextureSrvIndex(uint32_t srvIndex) {
+		renderTextureSrvIndex_ = srvIndex;
+	}
 
 private:
 
 	DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
 	SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
-	RtvManager* rtvManager_ = nullptr; //RtvManagerのポインタ
 
-	//clearValue
-	const Vector4 kRenderTargetClearColor_ = { 0.3f, 0.5f, 0.3f, 1.0f };
-	const float clearValue_[4] = { kRenderTargetClearColor_.x, kRenderTargetClearColor_.y, kRenderTargetClearColor_.z, kRenderTargetClearColor_.w };
-	//RTV
-	ComPtr<ID3D12Resource> renderTextureResource_;
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
-	//RTVManagerで使用するDiscriptorHandleのインデックス
-	uint32_t rtvIndex_ = 0;
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_{};
-	//SRVManagerで使用するDiscriptorHandleのインデックス
+	//srv/uavとして利用する中間リソース
+	ComPtr<ID3D12Resource> intermediateResource_[2];
+	uint32_t srvIndex_[2] = {};
+	uint32_t uavIndex_[2] = {};
+
+	ComPtr<ID3D12Resource> renderTextureResource_; 
 	uint32_t renderTextureSrvIndex_ = 0;
-	//DSVハンドル
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
 
-	//RenderTexture描画パイプライン
-	std::unique_ptr<PSO> renderTexturePSO_ = nullptr;
-	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
-
-	ComPtr<ID3D12Resource> renderTextureResourceA_ = nullptr;
-	UINT renderTextureSrvIndexA_ = 0;
-
-	ComPtr<ID3D12Resource> renderTextureResourceB_ = nullptr;
-	UINT renderTextureSrvIndexB_ = 0;
-
-	bool currentWriteBufferIsA_ = true;
+	// Ping-Pongバッファの切り替えフラグ
+	bool currentWriteBufferIsA_ = true; 
 
 	//postEffectのコンテナ
 	std::map<std::string, std::unique_ptr<PostEffect>> postEffects_;
