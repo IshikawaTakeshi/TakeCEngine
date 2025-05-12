@@ -30,6 +30,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	LoadAnimation();
 
 	postEffectManager_->InitializeEffect("grayScale", L"Resources/shaders/PostEffect/GrayScale.CS.hlsl");
+	postEffectManager_->InitializeEffect("vignette", L"Resources/shaders/PostEffect/Vignette.CS.hlsl");
 
 	CollisionManager::GetInstance()->Initialize(directXCommon_.get());
 
@@ -83,13 +84,8 @@ void MyGame::Draw() {
 
 	//postEffect計算処理
 	postEffectManager_->AllDispatch();
-	//ポストエフェクト描画前処理
-	postEffectManager_->PreDraw();
+	//RenderTexture描画
 	renderTexture_->Draw();
-	//ポストエフェクト描画
-	//postEffectManager_->Draw();
-	//ポストエフェクト描画後処理
-	//postEffectManager_->PostDraw(); 
 	//renderTexture描画後処理
 	renderTexture_->PostDraw();
 	

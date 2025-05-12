@@ -37,7 +37,7 @@ void RenderTexture::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, 
 
 	//SRVの生成
 	srvIndex_ = srvManager_->Allocate();
-	srvManager_->CreateSRVforRenderTexture(renderTextureResource_.Get(), srvIndex_);
+	srvManager_->CreateSRVforRenderTexture(renderTextureResource_.Get(),DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, srvIndex_);
 
 	//RTVのハンドルの取得
 	rtvHandle_ = rtvManager_->GetRtvDescriptorHandleCPU(rtvIndex_);
@@ -93,8 +93,6 @@ void RenderTexture::PreDraw() {
 
 void RenderTexture::Draw() {
 
-	postEffectManager_->AllDispatch();
-
 	// RENDER_TARGET >> PIXEL_SHADER_RESOURCE
 	ResourceBarrier::GetInstance()->Transition(
 		D3D12_RESOURCE_STATE_RENDER_TARGET,         //stateBefore
@@ -110,6 +108,8 @@ void RenderTexture::Draw() {
 
 	// ポストエフェクトのリソース
 	postEffectManager_->Draw(renderTexturePSO_.get());
+	//srvManager_->SetGraphicsRootDescriptorTable(
+		//renderTexturePSO_->GetGraphicBindResourceIndex("gTexture"), srvIndex_);
 	// 描画コマンドを発行
 	dxCommon_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }

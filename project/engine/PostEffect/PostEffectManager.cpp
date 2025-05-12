@@ -15,18 +15,19 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	srvManager_ = srvManager;
 
 	//中間リソースの生成
-	intermediateResource_[FRONT] = dxCommon_->CreateTextureResource(
+	intermediateResource_[FRONT] = dxCommon_->CreateTextureResourceUAV(
 		dxCommon_->GetDevice(), WinApp::kClientWidth, WinApp::kClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 	intermediateResource_[FRONT]->SetName(L"intermediateResource_A");
-	intermediateResource_[BACK] = dxCommon_->CreateTextureResource(
+	intermediateResource_[BACK] = dxCommon_->CreateTextureResourceUAV(
 		dxCommon_->GetDevice(), WinApp::kClientWidth, WinApp::kClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 	intermediateResource_[BACK]->SetName(L"intermediateResource_B");
+
 }
 
 void PostEffectManager::UpdateImGui() {
 
 	for (auto& postEffect : postEffects_) {
-		postEffect.second->UpdateImGui();
+		postEffect.postEffect->UpdateImGui();
 	}
 }
 
@@ -60,21 +61,21 @@ void PostEffectManager::PreDraw() {
 
 void PostEffectManager::AllDispatch() {
 
-	//// RENDER_TARGET >> NON_PIXEL_SHADER_RESOURCE
-	//ResourceBarrier::GetInstance()->Transition(
-	//	D3D12_RESOURCE_STATE_RENDER_TARGET,         //stateBefore
-	//	D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, //stateAfter
-	//	renderTextureResource_.Get());              //currentResource
+	// RENDER_TARGET >> NON_PIXEL_SHADER_RESOURCE
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_RENDER_TARGET,         //stateBefore
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, //stateAfter
+		renderTextureResource_.Get());              //currentResource
 
 	for (auto& postEffect : postEffects_) {
-		postEffect.second->DisPatch();
+		postEffect.postEffect->DisPatch();
 	}
 
-	////PIXCEL_SHADER_RESOURCE >> RENDER_TARGET
-	//ResourceBarrier::GetInstance()->Transition(
-	//	D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-	//	D3D12_RESOURCE_STATE_RENDER_TARGET,
-	//	renderTextureResource_.Get());
+	//NON_PIXCEL_SHADER_RESOURCE >> RENDER_TARGET
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		renderTextureResource_.Get());
 }
 
 //======================================================================
@@ -85,7 +86,7 @@ void PostEffectManager::Draw(PSO* pso) {
 
 	// gTexture
 	srvManager_->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),postEffects_.rbegin()->second->GetOutputTextureUavIndex());
+		pso->GetGraphicBindResourceIndex("gTexture"),postEffects_.back().postEffect->GetOutputTextureSrvIndex());
 }
 
 
@@ -97,31 +98,33 @@ void PostEffectManager::PostDraw() {
 
 	//コンテナの全ての出力リソース状態を変更する
 	//PIXEL_SHADER_RESOURCE >> NON_PIXEL_SHADER_RESOURCE
-	for (auto& postEffect : postEffects_) {
-		ResourceBarrier::GetInstance()->Transition(
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-			D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-			postEffect.second->GetOutputTextureResource().Get());
-	}
+	//for (auto& postEffect : postEffects_) {
+	//	ResourceBarrier::GetInstance()->Transition(
+	//		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+	//		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+	//		postEffect.second->GetOutputTextureResource().Get());
+	//}
 }
 
 void PostEffectManager::ApplyEffect(const std::string& name) {
 
 	// 読み込み済みかどうか検索
-	if (postEffects_.contains(name)) {
-		Logger::Log("PostEffectManager::AddEffect() : PostEffect is already loaded.");
-		return;
+	for (const auto& postEffect : postEffects_) {
+		if (postEffect.name == name) {
+			postEffect.postEffect->DisPatch();
+			return;
+		}
 	}
-
-	
 }
 
 void PostEffectManager::InitializeEffect(const std::string& name, const std::wstring& csFilePath) {
 
 	// 読み込み済みかどうか検索
-	if (postEffects_.contains(name)) {
-		Logger::Log("PostEffectManager::AddEffect() : PostEffect is already loaded.");
-		return;
+	for (const auto& postEffect : postEffects_) {
+		if (postEffect.name == name) {
+			Logger::Log("PostEffectManager::InitializeEffect() : PostEffect is already initialized.");
+			return;
+		}
 	}
 
 	std::unique_ptr<PostEffect> postEffect;
@@ -129,9 +132,8 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 	// 入出力テクスチャを決定（Ping-Pong切り替え）
 	ComPtr<ID3D12Resource> inputResource = nullptr;
 	uint32_t inputSrvIndex = 0;
+	uint32_t inputUavIndex = 0;
 	ComPtr<ID3D12Resource> outputResource = nullptr;
-	uint32_t outputSrvIndex = 0;
-	uint32_t outputUavIndex = 0;
 
 	// PostEffectの初期化
 	if (name == "grayScale") {
@@ -144,30 +146,29 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 	}
 
 	if (postEffects_.empty()) {
+
 		// 最初の入力は通常の描画結果（renderTextureResource_）
 		inputResource = renderTextureResource_;
 		inputSrvIndex = renderTextureSrvIndex_;
 	}
 	else {
 		// 直前の出力を次の入力に
-		const auto& prevEffect = postEffects_.rbegin()->second;
+		const auto& prevEffect = postEffects_.back().postEffect;
 		inputResource = prevEffect->GetOutputTextureResource();
 		inputSrvIndex = prevEffect->GetOutputTextureSrvIndex();
 	}
 
 	//ping-pong状態で出力リソースとインデックスを決定
-	uint32_t bufferIndex = currentWriteBufferIsA_ ? FRONT : BACK;
-	outputSrvIndex = srvManager_->Allocate();
-	outputUavIndex = srvManager_->Allocate();
-
+	IntermediateResourceType bufferIndex = currentWriteBufferIsA_ ? FRONT : BACK;
 	outputResource = intermediateResource_[bufferIndex];
 
 	// PostEffectの初期化（Ping-Pongバッファ指定）
 	postEffect->Initialize(dxCommon_, srvManager_, csFilePath,
-		inputResource, inputSrvIndex,outputResource,outputSrvIndex,outputUavIndex);
+		inputResource, inputSrvIndex,inputUavIndex,outputResource);
 
-	currentWriteBufferIsA_ = !currentWriteBufferIsA_; // Ping-Pongバッファの切り替え
 
 	// PostEffectのコンテナに追加
-	postEffects_[name] = std::move(postEffect);
+	postEffects_.push_back({ name, std::move(postEffect) });
+	// Ping-Pongバッファの切り替え
+	currentWriteBufferIsA_ = !currentWriteBufferIsA_; 
 }

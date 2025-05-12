@@ -4,9 +4,9 @@
 #include <cassert>
 
 void GrayScale::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
-	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource,uint32_t outputSrvIdx,uint32_t outputUavIdx) {
+	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,uint32_t inputUavIdx,ComPtr<ID3D12Resource> outputResource) {
 
-	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx,outputResource,outputSrvIdx,outputUavIdx);
+	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx,inputUavIdx,outputResource);
 
 	//grayScaleTypeResource
 	grayScaleTypeResource_ = dxCommon_->CreateBufferResource(dxCommon_->GetDevice(), sizeof(int32_t));
@@ -51,10 +51,4 @@ void GrayScale::DisPatch() {
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());
-
-	//NON_PIXEL_SHADER_RESOURCE >> PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
-		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		inputResource_.Get());
 }

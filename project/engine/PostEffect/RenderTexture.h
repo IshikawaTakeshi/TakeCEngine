@@ -27,7 +27,7 @@ private:
 	PostEffectManager* postEffectManager_ = nullptr; //PostEffectManagerのポインタ
 	//clearValue
 	//clearValue
-	const Vector4 kRenderTargetClearColor_ = { 0.3f, 0.5f, 0.3f, 1.0f };
+	const Vector4 kRenderTargetClearColor_ = { 0.1f, 0.25f, 0.5f, 1.0f };
 	const float clearValue_[4] = { kRenderTargetClearColor_.x, kRenderTargetClearColor_.y, kRenderTargetClearColor_.z, kRenderTargetClearColor_.w };
 
 	//RTVのハンドル

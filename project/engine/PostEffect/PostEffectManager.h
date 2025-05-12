@@ -4,11 +4,16 @@
 #include "base/PipelineStateObject.h"
 #include "PostEffect/PostEffect.h"
 #include <string>
-#include <map>
+#include <vector>
 
 enum IntermediateResourceType {
 	FRONT,
 	BACK,
+};
+
+struct NamedPostEffect {
+	std::string name;
+	std::unique_ptr<PostEffect> postEffect;
 };
 
 class PostEffectManager {
@@ -77,5 +82,5 @@ private:
 	bool currentWriteBufferIsA_ = true; 
 
 	//postEffectのコンテナ
-	std::map<std::string, std::unique_ptr<PostEffect>> postEffects_;
+	std::vector<NamedPostEffect> postEffects_;
 };

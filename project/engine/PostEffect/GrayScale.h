@@ -8,7 +8,7 @@ public:
 	/// 初期化
 	/// </summary>
 	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
-		ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource,uint32_t outputSrvIdx,uint32_t outputUavIdx) override;
+		ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,uint32_t inputUavInIdx,ComPtr<ID3D12Resource> outputResource) override;
 	
 	
 	void UpdateImGui() override;

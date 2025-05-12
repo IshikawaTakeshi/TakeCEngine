@@ -27,5 +27,6 @@ void main( uint3 DTid : SV_DispatchThreadID ){
 	float vignette = pow(1.0f - distance * gVignetteInfo.scale, gVignetteInfo.power);
 	vignette = saturate(vignette);
 	
-	gOutputTexture[DTid.xy] = color * vignette;
+	float4 resultColor = color * vignette;
+	gOutputTexture[DTid.xy] = resultColor;
 }
