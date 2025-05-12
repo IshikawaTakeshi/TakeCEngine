@@ -4,6 +4,7 @@
 #include "Utility/Logger.h"
 #include "PostEffect/GrayScale.h"
 #include "PostEffect/Vignette.h"
+#include "PostEffect/BoxFilter.h"
 
 //====================================================================
 //	初期化
@@ -132,7 +133,6 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 	// 入出力テクスチャを決定（Ping-Pong切り替え）
 	ComPtr<ID3D12Resource> inputResource = nullptr;
 	uint32_t inputSrvIndex = 0;
-	uint32_t inputUavIndex = 0;
 	ComPtr<ID3D12Resource> outputResource = nullptr;
 
 	// PostEffectの初期化
@@ -140,8 +140,10 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 		postEffect = std::make_unique<GrayScale>();
 	} else if (name == "vignette") {
 		postEffect = std::make_unique<Vignette>();
+	} else if (name == "BoxFilter") {
+		postEffect = std::make_unique<BoxFilter>();
 	} else {
-		Logger::Log("PostEffectManager::AddEffect() : PostEffect is not found.");
+		Logger::Log("PostEffectManager::InitializeEffect() : PostEffect is not found.");
 		return;
 	}
 
@@ -164,7 +166,7 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 
 	// PostEffectの初期化（Ping-Pongバッファ指定）
 	postEffect->Initialize(dxCommon_, srvManager_, csFilePath,
-		inputResource, inputSrvIndex,inputUavIndex,outputResource);
+		inputResource, inputSrvIndex,outputResource);
 
 
 	// PostEffectのコンテナに追加

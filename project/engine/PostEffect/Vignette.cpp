@@ -4,9 +4,9 @@
 #include <cassert>
 
 void Vignette::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
-	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,uint32_t inputUavIdx, ComPtr<ID3D12Resource> outputResource) {
+	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
-	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx,inputUavIdx,outputResource);
+	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx,outputResource);
 
 	//VignetteScaleResource
 	vignetteInfoResource_ = dxCommon_->CreateBufferResource(dxCommon_->GetDevice(), sizeof(VignetteInfo));
