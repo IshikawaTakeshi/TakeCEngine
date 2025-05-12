@@ -360,6 +360,15 @@
     <ClCompile Include="engine\base\RtvManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\PostEffect\GrayScale.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\PostEffect\Vignette.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\PostEffect\RenderTexture.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\base\DirectXCommon.h">
@@ -466,9 +475,6 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>externals\imgui\include</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\EngineIncludes.h">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\AABB.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
@@ -635,6 +641,15 @@
     <ClInclude Include="engine\base\RtvManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="engine\PostEffect\GrayScale.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\PostEffect\Vignette.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\PostEffect\RenderTexture.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
@@ -785,5 +800,6 @@
     <FxCompile Include="Resources\shaders\PostEffect\FullScreen.VS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\CopyImage.PS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\GrayScale.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\Vignette.CS.hlsl" />
   </ItemGroup>
 </Project>
