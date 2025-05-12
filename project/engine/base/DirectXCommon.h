@@ -167,7 +167,7 @@ private:
 	D3D12_RECT scissorRect_{};
 
 	//画面の色
-	float clearColor_[4] = { 0.3f, 0.5f, 0.3f, 1.0f }; // 青っぽい色
+	float clearColor_[4] = { 0.1f, 0.25f, 0.5f, 1.0f }; // 青っぽい色
 
 	//記録時間(FPS固定)
 	std::chrono::steady_clock::time_point reference_;

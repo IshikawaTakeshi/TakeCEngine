@@ -117,7 +117,7 @@ void GamePlayScene::Update() {
 	sprite_->Update();
 
 	//SampleCharacter
-	player_->Update();
+	//player_->Update();
 	sampleEnemy_->Update();
 
 	//当たり判定の更新
@@ -150,7 +150,7 @@ void GamePlayScene::Draw() {
 	sampleEnemy_->SkinningDisPatch();
 
 	Object3dCommon::GetInstance()->PreDraw();
-	player_->Draw();
+	//player_->Draw();
 	sampleEnemy_->Draw();
 	//プリミティブ描画
 	//TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(3.0f, 0.1f, { 0.0f,0.0f,0.0f }, { 1.0f,1.0f,1.0f,1.0f });
