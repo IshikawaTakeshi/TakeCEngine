@@ -31,7 +31,7 @@ public:
 	/// </summary>
 	void CreateSRVforTexture2D(bool isCubeMap, DXGI_FORMAT Format, UINT MipLevels, ID3D12Resource* pResource, uint32_t srvIndex);
 
-	void CreateSRVforRenderTexture(	ID3D12Resource* pResource, uint32_t srvIndex);
+	void CreateSRVforRenderTexture(	ID3D12Resource* pResource,DXGI_FORMAT Format, uint32_t srvIndex);
 
 	/// <summary>
 	/// SRV生成（Structured Buffer用）
@@ -43,7 +43,7 @@ public:
 	/// </summary>
 	void CreateUAVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource, uint32_t uavIndex);
 
-	void CreateUAVforRenderTexture(ID3D12Resource* pResource, uint32_t uavIndex);
+	void CreateUAVforRenderTexture(ID3D12Resource* pResource,DXGI_FORMAT Format, uint32_t uavIndex);
 
 	//テクスチャ確保可能チェック
 	bool CheckTextureAllocate();

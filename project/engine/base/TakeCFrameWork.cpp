@@ -32,7 +32,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//ResourceBarrier
 	ResourceBarrier::GetInstance()->Initialize(directXCommon_.get());
 
-
+	
 	//入力初期化
 	input_ = Input::GetInstance();
 	input_->Initialize(winApp_.get());
@@ -75,6 +75,10 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//PostEffectManager
 	postEffectManager_ = std::make_unique<PostEffectManager>();
 	postEffectManager_->Initialize(directXCommon_.get(), srvManager_.get());
+
+	//RenderTexture
+	renderTexture_ = std::make_unique<RenderTexture>();
+	renderTexture_->Initialize(directXCommon_.get(), srvManager_.get(),postEffectManager_.get());
 
 	//WireFrame
 	wireFrame_ = std::make_unique<WireFrame>();
