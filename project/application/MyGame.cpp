@@ -29,6 +29,8 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//Animation読み込み
 	LoadAnimation();
 
+	postEffectManager_->InitializeEffect("RadialBluer", L"Resources/shaders/PostEffect/RadialBlur.CS.hlsl");
+	postEffectManager_->InitializeEffect("BoxFilter", L"Resources/shaders/PostEffect/BoxFilter.CS.hlsl");
 	postEffectManager_->InitializeEffect("grayScale", L"Resources/shaders/PostEffect/GrayScale.CS.hlsl");
 	postEffectManager_->InitializeEffect("vignette", L"Resources/shaders/PostEffect/Vignette.CS.hlsl");
 

@@ -14,7 +14,7 @@ PostEffect::~PostEffect() {
 
 void PostEffect::Initialize(
 	DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
-	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,uint32_t inputUavIndex,ComPtr<ID3D12Resource> outputResource) {
+	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource) {
 
 	dxCommon_ = dxCommon;
 	//SRVManagerの取得
@@ -31,7 +31,6 @@ void PostEffect::Initialize(
 
 	//inputRenderTexture
 	inputTexSrvIndex_ = inputSrvIdx;
-	inputTexUavIndex_ = inputUavIndex;
 	inputResource_ = inputResource;
 	inputResource_->SetName(L"inputRenderTexture_");
 

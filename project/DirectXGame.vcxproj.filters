@@ -369,6 +369,12 @@
     <ClCompile Include="engine\PostEffect\RenderTexture.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\PostEffect\BoxFilter.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\PostEffect\RadialBluer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\base\DirectXCommon.h">
@@ -650,6 +656,12 @@
     <ClInclude Include="engine\PostEffect\RenderTexture.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="engine\PostEffect\BoxFilter.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\PostEffect\RadialBluer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
@@ -744,6 +756,7 @@
       <Filter>リソース ファイル\gltf</Filter>
     </None>
     <None Include="Resources\shaders\PostEffect\FullScreen.hlsli" />
+    <None Include="Resources\shaders\PostEffect\BoxFilter.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\EmitParticle.CS.hlsl">
@@ -801,5 +814,7 @@
     <FxCompile Include="Resources\shaders\PostEffect\CopyImage.PS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\GrayScale.CS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\Vignette.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\BoxFilter.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\RadialBlur.CS.hlsl" />
   </ItemGroup>
 </Project>

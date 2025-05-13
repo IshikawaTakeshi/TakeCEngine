@@ -39,7 +39,7 @@ void PSO::CompilePixelShader(DXC* dxc_, const std::wstring& filePath) {
 void PSO::CompileComputeShader(DXC* dxc_, const std::wstring& filePath) {
 	//コンピュートシェーダーのコンパイル
 	computeShaderBlob_ = dxc_->CompileShader(
-		filePath, L"cs_6_0", dxc_->GetDxcUtils().Get(), dxc_->GetDxcCompiler().Get(), dxc_->GetIncludeHandler().Get()
+		filePath, L"cs_6_6", dxc_->GetDxcUtils().Get(), dxc_->GetDxcCompiler().Get(), dxc_->GetIncludeHandler().Get()
 	);
 }
 
@@ -141,8 +141,15 @@ ShaderResourceMap PSO::LoadShaderResourceInfo(
 			shaderReflection->GetResourceBindingDesc(i, &bindDesc);
 			ShaderResourceKey key = { bindDesc.Type,visibility, bindDesc.BindPoint, bindDesc.Space };
 			if (bindResources.find(key) == bindResources.end()) {
-				//サンプラーの場合はスキップ
+				//サンプラーの場合はvisibilityのみ設定
 				if (bindDesc.Type == D3D_SIT_SAMPLER) {
+					if (visibility == D3D12_SHADER_VISIBILITY_ALL) {
+						key.visibility = D3D12_SHADER_VISIBILITY_ALL;
+
+					} else if(visibility == D3D12_SHADER_VISIBILITY_PIXEL){
+						key.visibility = D3D12_SHADER_VISIBILITY_PIXEL;
+						continue;
+					}
 					continue;
 				}
 				bindResources[key] = { key, bindDesc.Name };
@@ -224,7 +231,7 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 	staticSamplers_[0].ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER; //比較しない
 	staticSamplers_[0].MaxLOD           = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
 	staticSamplers_[0].ShaderRegister   = 0; //レジスタ番号0を使う
-	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+
 
 	rootSigDesc.pStaticSamplers   = staticSamplers_;
 	rootSigDesc.NumStaticSamplers = _countof(staticSamplers_);
