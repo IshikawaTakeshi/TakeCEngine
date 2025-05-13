@@ -5,6 +5,7 @@
 #include "PostEffect/GrayScale.h"
 #include "PostEffect/Vignette.h"
 #include "PostEffect/BoxFilter.h"
+#include "PostEffect/RadialBluer.h"
 
 //====================================================================
 //	初期化
@@ -142,6 +143,8 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 		postEffect = std::make_unique<Vignette>();
 	} else if (name == "BoxFilter") {
 		postEffect = std::make_unique<BoxFilter>();
+	} else if (name == "RadialBluer") {
+		postEffect = std::make_unique<RadialBluer>();
 	} else {
 		Logger::Log("PostEffectManager::InitializeEffect() : PostEffect is not found.");
 		return;
