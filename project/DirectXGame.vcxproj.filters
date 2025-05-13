@@ -750,6 +750,7 @@
       <Filter>リソース ファイル\gltf</Filter>
     </None>
     <None Include="Resources\shaders\PostEffect\FullScreen.hlsli" />
+    <None Include="Resources\shaders\PostEffect\BoxFilter.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\EmitParticle.CS.hlsl">

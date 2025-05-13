@@ -29,9 +29,9 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//Animation読み込み
 	LoadAnimation();
 
+	postEffectManager_->InitializeEffect("BoxFilter", L"Resources/shaders/PostEffect/BoxFilter.CS.hlsl");
 	postEffectManager_->InitializeEffect("grayScale", L"Resources/shaders/PostEffect/GrayScale.CS.hlsl");
 	postEffectManager_->InitializeEffect("vignette", L"Resources/shaders/PostEffect/Vignette.CS.hlsl");
-	postEffectManager_->InitializeEffect("BoxFilter", L"Resources/shaders/PostEffect/BoxFilter.CS.hlsl");
 
 	CollisionManager::GetInstance()->Initialize(directXCommon_.get());
 
