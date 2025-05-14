@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ゲームクラスの生成
 	std::unique_ptr<TakeCFrameWork> game = std::make_unique<MyGame>();
 	//ゲームの実行
-	game->Run(L"hona_Shooting");
+	game->Run(L"TakeCEngine");
 	//leakCheckerの解放
 	delete leakCheck;
 	

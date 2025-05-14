@@ -24,7 +24,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath = "Resources/images/white.png");
+	void Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath);
 
 	/// <summary>
 	/// 更新処理

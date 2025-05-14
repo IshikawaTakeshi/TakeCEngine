@@ -53,18 +53,22 @@ void GamePlayScene::Initialize() {
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
+	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_pool.obj");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//sprite
 	sprite_ = std::make_unique<Sprite>();
-	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/rick.png");
+	sprite_->Initialize(SpriteCommon::GetInstance(), "rick.png");
 	sprite_->SetTextureLeftTop({ 235.0f,40.0f });
 
 	//player
 	player_ = std::make_unique<Player>();
 	player_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
+
+	//cubeObject
+	cubeObject_ = std::make_unique<Object3d>();
+	cubeObject_->Initialize(Object3dCommon::GetInstance(), "cube.obj");
 
 	//SampleEnemy
 	sampleEnemy_ = std::make_unique<SampleCharacter>();
@@ -99,6 +103,8 @@ void GamePlayScene::Update() {
 	ParticleCommon::GetInstance()->UpdateImGui();
 	TakeCFrameWork::GetPrimitiveDrawer()->UpdateImGui();
 	
+	cubeObject_->UpdateImGui(0);
+	sampleEnemy_->UpdateImGui();
 	particleEmitter1_->UpdateImGui();
 	sprite_->UpdateImGui(0);
 
@@ -119,6 +125,9 @@ void GamePlayScene::Update() {
 	//SampleCharacter
 	//player_->Update();
 	sampleEnemy_->Update();
+
+	//cubeObject
+	cubeObject_->Update();
 
 	//当たり判定の更新
 	CheckAllCollisions();
@@ -142,7 +151,7 @@ void GamePlayScene::Update() {
 
 void GamePlayScene::Draw() {
 
-	//skyBox_->Draw();    //天球の描画
+	skyBox_->Draw();    //天球の描画
 
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance()->DisPatch();
@@ -152,26 +161,24 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->PreDraw();
 	//player_->Draw();
 	sampleEnemy_->Draw();
-	//プリミティブ描画
-	//TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(3.0f, 0.1f, { 0.0f,0.0f,0.0f }, { 1.0f,1.0f,1.0f,1.0f });
-	//TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(true);
-	
+	cubeObject_->Draw();
+
 	//当たり判定の描画前処理
 	CollisionManager::GetInstance()->PreDraw();
 
 	//グリッド地面の描画
-	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 100);
+	//TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 100);
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
-		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 10);
+		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
 	TakeCFrameWork::GetWireFrame()->Draw();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
-	TakeCFrameWork::GetParticleManager()->Draw(true); //パーティクルの描画
+	//TakeCFrameWork::GetParticleManager()->Draw(true); //パーティクルの描画
 
 
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
-	sprite_->Draw();    //スプライトの描画
+	//sprite_->Draw();    //スプライトの描画
 
 	//GPUパーティクルの描画
 	//ParticleCommon::GetInstance()->PreDrawForGPUParticle();

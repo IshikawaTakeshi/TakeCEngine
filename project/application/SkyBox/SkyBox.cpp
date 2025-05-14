@@ -91,7 +91,4 @@ void SkyBox::Draw() {
 	if (model_ != nullptr) {
 		model_->DrawSkyBox();
 	}
-
-	TakeCFrameWork::GetWireFrame()->DrawGridBox({
-		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 10);
 }

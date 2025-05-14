@@ -13,7 +13,7 @@ void GrayScale::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, cons
 	grayScaleTypeResource_->SetName(L"grayScaleTypeResource_");
 	//Mapping
 	grayScaleTypeResource_->Map(0, nullptr, reinterpret_cast<void**>(&grayScaleTypeData_));
-	*grayScaleTypeData_ = 0;
+	*grayScaleTypeData_ = 2;
 }
 
 void GrayScale::UpdateImGui() {

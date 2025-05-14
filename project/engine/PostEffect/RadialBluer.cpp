@@ -16,7 +16,7 @@ void RadialBluer::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, co
 
 	radialBlurInfo_->center = Vector2(0.5f, 0.5f);
 	radialBlurInfo_->blurWidth = 0.01f;
-	radialBlurInfo_->enable = true;
+	radialBlurInfo_->enable = false;
 }
 
 void RadialBluer::UpdateImGui() {
