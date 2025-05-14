@@ -10,7 +10,7 @@ RWTexture2D<float4> gOutputTexture : register(u0);
 SamplerState gSampler : register(s0);
 ConstantBuffer<DissolveInfo> gDissolveInfo : register(b0);
 
-[numthreads(8, 8, 1)]
+[numthreads(2, 2, 1)]
 void main( uint3 DTid : SV_DispatchThreadID ) {
 	
 	float width, height;
@@ -19,13 +19,22 @@ void main( uint3 DTid : SV_DispatchThreadID ) {
 	float3 resultColor = float3(0.0f, 0.0f, 0.0f);
 	
 	float mask = gMaskTexture.Sample(gSampler, uv).r;
-	
-	//maskの値が0.5f以下の場合はdiscard
+
+	if ( mask <= 0.0f ) {
+		gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
+		return;
+	}
 	if (mask <= gDissolveInfo.threshold) {
 		gOutputTexture[DTid.xy] = float4(0.0f, 1.0f, 0.0f, 1.0f);
 		return;
 	}
 	
+	
 	resultColor = gInputTexture.Sample(gSampler, uv).rgb;
+	
+	//簡単なEdge検出
+	float edge = 1.0f - smoothstep(gDissolveInfo.threshold, gDissolveInfo.threshold + 0.03f, mask);
+	resultColor += edge * float3(1.0f, 0.0f, 0.0f);
+	
 	gOutputTexture[DTid.xy] = float4(resultColor, 1.0f);
 }

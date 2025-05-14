@@ -15,7 +15,7 @@ void Dissolve::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 	dissolveInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&dissolveInfoData_));
 	dissolveInfoData_->threshold = 0.5f;
 
-	maskTextureFilePath_ = "monoTile.png";
+	maskTextureFilePath_ = "cloudNoise.png";
 	TextureManager::GetInstance()->LoadTexture(maskTextureFilePath_);
 }
 
@@ -48,7 +48,7 @@ void Dissolve::DisPatch() {
 	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(
 		computePSO_->GetComputeBindResourceIndex("gDissolveInfo"), dissolveInfoResource_->GetGPUVirtualAddress());
 	//Dispatch
-	dxCommon_->GetCommandList()->Dispatch(WinApp::kClientWidth / 8, WinApp::kClientHeight / 8, 1);
+	dxCommon_->GetCommandList()->Dispatch(WinApp::kClientWidth / 2, WinApp::kClientHeight / 2, 1);
 
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
 	ResourceBarrier::GetInstance()->Transition(

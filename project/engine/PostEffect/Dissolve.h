@@ -3,6 +3,7 @@
 
 struct DissolveInfo {
 	float threshold;
+	float padding[3];
 };
 
 class Dissolve : public PostEffect {
