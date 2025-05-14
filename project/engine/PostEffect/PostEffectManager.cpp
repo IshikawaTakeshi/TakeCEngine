@@ -2,8 +2,9 @@
 #include "engine/base/WinApp.h"
 #include "Utility/ResourceBarrier.h"
 #include "Utility/Logger.h"
-#include "PostEffect/GrayScale.h"
+#include "PostEffect/Dissolve.h"
 #include "PostEffect/Vignette.h"
+#include "PostEffect/GrayScale.h"
 #include "PostEffect/BoxFilter.h"
 #include "PostEffect/RadialBluer.h"
 
@@ -43,20 +44,6 @@ void PostEffectManager::Finalize() {
 	dxCommon_ = nullptr;
 }
 
-//====================================================================
-// 描画前処理
-//====================================================================
-
-void PostEffectManager::PreDraw() {
-
-	//コンテナの末尾のリソース状態を変更する
-	//NON_PIXEL_SHADER_RESOURCE >> PIXEL_SHADER_RESOURCE
-	/*ResourceBarrier::GetInstance()->Transition(
-		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		postEffects_.rbegin()->second->GetOutputTextureResource().Get());*/
-}
-
 //======================================================================
 // ComputeShaderによる全PostEffectの処理
 //======================================================================
@@ -91,23 +78,6 @@ void PostEffectManager::Draw(PSO* pso) {
 		pso->GetGraphicBindResourceIndex("gTexture"),postEffects_.back().postEffect->GetOutputTextureSrvIndex());
 }
 
-
-//======================================================================
-// 描画後処理
-//======================================================================
-
-void PostEffectManager::PostDraw() {
-
-	//コンテナの全ての出力リソース状態を変更する
-	//PIXEL_SHADER_RESOURCE >> NON_PIXEL_SHADER_RESOURCE
-	//for (auto& postEffect : postEffects_) {
-	//	ResourceBarrier::GetInstance()->Transition(
-	//		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-	//		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-	//		postEffect.second->GetOutputTextureResource().Get());
-	//}
-}
-
 void PostEffectManager::ApplyEffect(const std::string& name) {
 
 	// 読み込み済みかどうか検索
@@ -137,14 +107,16 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 	ComPtr<ID3D12Resource> outputResource = nullptr;
 
 	// PostEffectの初期化
-	if (name == "grayScale") {
+	if (name == "GrayScale") {
 		postEffect = std::make_unique<GrayScale>();
-	} else if (name == "vignette") {
+	} else if (name == "Vignette") {
 		postEffect = std::make_unique<Vignette>();
 	} else if (name == "BoxFilter") {
 		postEffect = std::make_unique<BoxFilter>();
 	} else if (name == "RadialBluer") {
 		postEffect = std::make_unique<RadialBluer>();
+	} else if (name == "Dissolve") {
+		postEffect = std::make_unique<Dissolve>();
 	} else {
 		Logger::Log("PostEffectManager::InitializeEffect() : PostEffect is not found.");
 		return;

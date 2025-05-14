@@ -39,16 +39,6 @@ public:
 	void Draw(PSO* pso);
 
 	/// <summary>
-	/// 描画前処理
-	/// </summary>
-	void PreDraw();
-
-	/// <summary>
-	/// 描画後処理
-	/// </summary>
-	void PostDraw();
-
-	/// <summary>
 	/// 全PostEffectのCSによる処理
 	/// </summary>
 	void AllDispatch();

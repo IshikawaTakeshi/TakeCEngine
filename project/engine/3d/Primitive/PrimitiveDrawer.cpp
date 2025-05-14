@@ -123,7 +123,7 @@ void PrimitiveDrawer::CreateRingVertexData() {
 	GenerateRing(1.0f, 0.1f);
 
 	ringData_->material_ = new Material();
-	ringData_->material_->Initialize(dxCommon_, "Resources/images/gradationLine.png");
+	ringData_->material_->Initialize(dxCommon_, "gradationLine.png","rostock_laage_airport_4k.dds");
 	ringData_->material_->SetEnableLighting(false);
 	ringData_->material_->SetEnvCoefficient(0.0f);
 

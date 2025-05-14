@@ -29,12 +29,6 @@ void Vignette::UpdateImGui() {
 
 void Vignette::DisPatch() {
 
-	//PIXEL_SHADER_RESOURCE >> NON_PIXEL_SHADER_RESOURCE
-	//ResourceBarrier::GetInstance()->Transition(
-	//	D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-	//	D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-	//	inputResource_.Get());
-
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance()->Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,

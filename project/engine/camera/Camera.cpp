@@ -108,6 +108,7 @@ void Camera::UpdateImGui() {
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("offset", &offset_.x, 0.01f);
 	ImGui::DragFloat("FovX", &fovX_, 0.01f);
+	ImGui::Checkbox("isDebug", &isDebug_);
 }
 
 void Camera::UpdateDebugCamera() {

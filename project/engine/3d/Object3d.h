@@ -75,6 +75,7 @@ protected: // privateメンバ変数
 
 	Animation* animation_;
 	float animationTime_ = 0.0f;
+	bool isAnimation_ = true;
 
 	//TransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;

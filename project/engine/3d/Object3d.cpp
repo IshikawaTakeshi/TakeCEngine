@@ -52,6 +52,9 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	//カメラのセット
 	camera_ = object3dCommon_->GetDefaultCamera();
 
+
+	animation_ = new Animation();
+	animation_->duration = 0.0f;
 	animationTime_ = 0.0f;
 }
 
@@ -103,7 +106,10 @@ void Object3d::Update() {
 void Object3d::AnimationUpdate() {
 
 	//アニメーションの時間を進める
-	animationTime_ += 1.0f / 60.0f;
+	if (isAnimation_ == true) {
+
+		animationTime_ += 1.0f / 60.0f;
+	}
 
 	//スケルトン・スキンクラスターの更新
 	model_->Update(animation_, animationTime_);
@@ -126,6 +132,7 @@ void Object3d::UpdateImGui(int id) {
 		ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 		ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
+		ImGui::Checkbox("isAnimation", &isAnimation_);
 		model_->GetMesh()->GetMaterial()->UpdateMaterialImGui();
 		ImGui::TreePop();
 	}

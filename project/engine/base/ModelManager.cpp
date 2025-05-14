@@ -31,21 +31,21 @@ void ModelManager::Finalize() {
 	instance_ = nullptr;
 }
 
-void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::string& filePath) {
+void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::string& modelFile,const std::string& envMapFile) {
 
 	//読み込み済みモデルの検索
-	if (models_.contains(filePath)) {
+	if (models_.contains(modelFile)) {
 		//すでに読み込み済みならreturn
 		return;
 	}
 
 	//モデルの生成とファイル読み込み、初期化
-	ModelData* modelData = LoadModelFile(modelDirectoryPath, filePath);
+	ModelData* modelData = LoadModelFile(modelDirectoryPath, modelFile,envMapFile);
 	std::shared_ptr<Model> model = std::make_shared<Model>();
 	model->Initialize(modelCommon_, modelData);
 
 	//モデルをコンテナに追加
-	models_.insert(std::make_pair(filePath, std::move(model)));
+	models_.insert(std::make_pair(modelFile, std::move(model)));
 }
 
 Model* ModelManager::FindModel(const std::string& filePath) {
@@ -77,11 +77,11 @@ std::unique_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
 // Modelファイルを読む関数
 //=============================================================================
 
-ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, const std::string& filename) {
+ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, const std::string& modelFile,const std::string& envMapFile) {
 
 	ModelData* modelData = new ModelData();
 	Assimp::Importer importer;
-	std::string filePath = "./Resources/" + modelDirectoryPath + "/" + filename;
+	std::string filePath = "./Resources/" + modelDirectoryPath + "/" + modelFile;
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 
 	if (scene->HasMeshes()) {
@@ -160,16 +160,19 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 
 		aiString textureFilePath;
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath) == AI_SUCCESS) {
-			modelData->material.textureFilePath = std::string("./Resources/images/") + textureFilePath.C_Str();
+			modelData->material.textureFilePath = textureFilePath.C_Str();
 		}
 
 		if (modelData->material.textureFilePath == "") { //テクスチャがない場合はデフォルトのテクスチャを設定
-			modelData->material.textureFilePath = "./Resources/images/uvChecker.png";
+			modelData->material.textureFilePath = "white1x1.png";
 		}
 
 		//環境マップテクスチャの設定
 		//MEMO: 画像はDDSファイルのみ対応
-		modelData->material.envMapFilePath = "./Resources/images/rostock_laage_airport_4k.dds";
+		if (envMapFile != "") {
+			assert(envMapFile.find(".dds") != std::string::npos); //DDSファイル以外はエラー)
+			modelData->material.envMapFilePath = envMapFile;
+		}
 	}
 
 	//rootNodeの解析

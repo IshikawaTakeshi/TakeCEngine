@@ -51,14 +51,16 @@ Microsoft::WRL::ComPtr<IDxcBlob> DXC::CompileShader(
 
 	HRESULT result = S_FALSE;
 
+	std::wstring fullPath = L"Resources/shaders/" + filePath;
+
 	//これからシェーダーをコンパイルする旨をログに出す
-	Logger::Log(StringUtility::ConvertString(std::format(L"Begin CompileShader, path:{},profile{}\n", filePath, profile)));
+	Logger::Log(StringUtility::ConvertString(std::format(L"Begin CompileShader, path:{},profile{}\n", fullPath, profile)));
 	//hlslファイルを読み込む
 	shaderSource_ = nullptr;
-	result = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource_);
+	result = dxcUtils->LoadFile(fullPath.c_str(), nullptr, &shaderSource_);
 	//読めなかったら止める
 	if(FAILED(result)) {
-		Logger::Log(StringUtility::ConvertString(std::format(L"Failed to load file, path:{}\n", filePath)));
+		Logger::Log(StringUtility::ConvertString(std::format(L"Failed to load file, path:{}\n", fullPath)));
 		assert(false);
 	}
 

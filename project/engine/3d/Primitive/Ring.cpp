@@ -7,8 +7,8 @@ void Ring::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	//PSOの生成
 	pso_ = std::make_unique<PSO>();
-	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.VS.hlsl");
-	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.PS.hlsl");
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Object3d.PS.hlsl");
 	//PSOの生成
 	pso_->CreateGraphicPSO(
 		dxCommon_->GetDevice(),
@@ -17,7 +17,7 @@ void Ring::Initialize(DirectXCommon* dxCommon) {
 
 	//Meshの生成
 	mesh_ = std::make_unique<Mesh>();
-	mesh_->InitializeMesh(dxCommon_,"Resources/images/uvChecker.png");
+	mesh_->InitializeMesh(dxCommon_,"uvChecker.png");
 
 
 	rootSignature_ = pso_->GetGraphicRootSignature();
