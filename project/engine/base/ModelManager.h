@@ -36,7 +36,7 @@ public:
 	/// モデルの読み込み
 	/// </summary>
 	/// <param name="filePath">モデルのファイルパス</param>
-	void LoadModel(const std::string& modelDirectoryPath, const std::string& filePath);
+	void LoadModel(const std::string& modelDirectoryPath, const std::string& modelFile,const std::string& envMapFile = "rostock_laage_airport_4k.dds");
 
 	/// <summary>
 	/// モデルの検索
@@ -49,7 +49,7 @@ public:
 	/// <summary>
 	/// modelファイルを読む関数
 	/// </summary>
-	ModelData* LoadModelFile(const std::string& DirectoryPath, const std::string& filename);
+	ModelData* LoadModelFile(const std::string& DirectoryPath, const std::string& modelFile,const std::string& envMapFile);
 
 	/// <summary>
 	/// ノードの読み込み

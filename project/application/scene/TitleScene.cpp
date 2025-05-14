@@ -23,7 +23,7 @@ void TitleScene::Initialize() {
 
 	// Sprite
 	sprite_ = std::make_shared<Sprite>();
-	sprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/TitleText.png");
+	sprite_->Initialize(SpriteCommon::GetInstance(), "TitleText.png");
 	sprite_->AdjustTextureSize();
 	sprite_->SetPosition({ 512.0f, 256.0f});
 

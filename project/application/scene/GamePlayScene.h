@@ -64,4 +64,6 @@ private:
 	std::unique_ptr<SampleCharacter> sampleEnemy_ = nullptr;
 
 	std::unique_ptr<Player> player_ = nullptr;
+
+	std::unique_ptr<Object3d> cubeObject_ = nullptr;
 };

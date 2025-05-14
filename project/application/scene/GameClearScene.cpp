@@ -45,7 +45,7 @@ void GameClearScene::Initialize() {
 
 	//whiteOutSprite
 	whiteOutSprite_ = std::make_unique<Sprite>();
-	whiteOutSprite_->Initialize(SpriteCommon::GetInstance(), "Resources/images/backHp.png");
+	whiteOutSprite_->Initialize(SpriteCommon::GetInstance(), "backHp.png");
 	whiteOutSprite_->SetPosition({ 640.0f, 360.0f });
 	whiteOutSprite_->SetSize({ 0.0f, 0.0f });
 	whiteOutSprite_->SetAnchorPoint({ 0.5f, 0.5f });

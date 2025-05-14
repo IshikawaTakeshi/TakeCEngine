@@ -30,7 +30,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	LoadAnimation();
 
 	postEffectManager_->InitializeEffect("RadialBluer", L"Resources/shaders/PostEffect/RadialBlur.CS.hlsl");
-	postEffectManager_->InitializeEffect("BoxFilter", L"Resources/shaders/PostEffect/BoxFilter.CS.hlsl");
+	//postEffectManager_->InitializeEffect("BoxFilter", L"Resources/shaders/PostEffect/BoxFilter.CS.hlsl");
 	postEffectManager_->InitializeEffect("grayScale", L"Resources/shaders/PostEffect/GrayScale.CS.hlsl");
 	postEffectManager_->InitializeEffect("vignette", L"Resources/shaders/PostEffect/Vignette.CS.hlsl");
 
@@ -102,14 +102,16 @@ void MyGame::Draw() {
 void MyGame::LoadModel() {
 	//gltf
 	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf","skyBox_blueSky.dds");
 	//obj
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_airport.obj","rostock_laage_airport_4k.dds");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_blueSky.obj","skyBox_blueSky.dds");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_pool.obj","pool_4k.dds");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "cube.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "cube.obj","pool_4k.dds");
 }
 
 //====================================================================
