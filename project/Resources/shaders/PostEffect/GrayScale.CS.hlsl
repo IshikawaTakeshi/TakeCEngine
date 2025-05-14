@@ -1,4 +1,4 @@
-#include "FullScreen.hlsli"
+#include "PostEffect/FullScreen.hlsli"
 
 struct GrayScaleType {
 	int type;

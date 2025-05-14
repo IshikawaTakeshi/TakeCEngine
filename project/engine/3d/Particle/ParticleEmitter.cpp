@@ -38,7 +38,7 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 
 	//PSO生成
 	emitParticlePso_ = std::make_unique<PSO>();
-	emitParticlePso_->CompileComputeShader(dxCommon_->GetDXC(), L"Resources/shaders/EmitParticle.CS.hlsl");
+	emitParticlePso_->CompileComputeShader(dxCommon_->GetDXC(), L"EmitParticle.CS.hlsl");
 	emitParticlePso_->CreateComputePSO(dxCommon_->GetDevice());
 
 	//RootSignature生成

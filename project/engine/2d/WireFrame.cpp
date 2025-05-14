@@ -8,8 +8,8 @@ void WireFrame::Initialize(DirectXCommon* directXCommon) {
 	dxCommon_ = directXCommon;
 
 	pso_ = std::make_unique<PSO>();
-	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/WireFrame/WireFrame.VS.hlsl");
-	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/WireFrame/WireFrame.PS.hlsl");
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"WireFrame/WireFrame.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"WireFrame/WireFrame.PS.hlsl");
 
 	//線描画用のPSOの生成
 	pso_->CreateGraphicPSO(

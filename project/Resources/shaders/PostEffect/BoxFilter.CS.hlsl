@@ -1,5 +1,5 @@
-#include "FullScreen.hlsli"
-#include "BoxFilter.hlsli"
+#include "PostEffect/FullScreen.hlsli"
+#include "PostEffect/BoxFilter.hlsli"
 
 Texture2D<float4> gInputTexture : register(t0);
 RWTexture2D<float4> gOutputTexture : register(u0);

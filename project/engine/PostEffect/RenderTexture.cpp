@@ -46,8 +46,8 @@ void RenderTexture::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, 
 
 	//PSO初期化
 	renderTexturePSO_ = std::make_unique<PSO>();
-	renderTexturePSO_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/PostEffect/FullScreen.VS.hlsl");
-	renderTexturePSO_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/PostEffect/CopyImage.PS.hlsl");
+	renderTexturePSO_->CompileVertexShader(dxCommon_->GetDXC(), L"PostEffect/FullScreen.VS.hlsl");
+	renderTexturePSO_->CompilePixelShader(dxCommon_->GetDXC(), L"PostEffect/CopyImage.PS.hlsl");
 	renderTexturePSO_->CreateRenderTexturePSO(dxCommon_->GetDevice());
 	rootSignature_ = renderTexturePSO_->GetGraphicRootSignature();
 
@@ -83,8 +83,6 @@ void RenderTexture::ClearRenderTarget() {
 void RenderTexture::PreDraw() {
 
 	ClearRenderTarget();
-
-	postEffectManager_->PreDraw();
 }
 
 //=======================================================================
@@ -126,6 +124,4 @@ void RenderTexture::PostDraw() {
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		renderTextureResource_.Get());
-
-	postEffectManager_->PostDraw();
 }

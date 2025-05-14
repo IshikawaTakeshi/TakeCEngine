@@ -7,8 +7,8 @@ void Ring::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	//PSOの生成
 	pso_ = std::make_unique<PSO>();
-	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.VS.hlsl");
-	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Resources/shaders/Object3d.PS.hlsl");
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Object3d.PS.hlsl");
 	//PSOの生成
 	pso_->CreateGraphicPSO(
 		dxCommon_->GetDevice(),
