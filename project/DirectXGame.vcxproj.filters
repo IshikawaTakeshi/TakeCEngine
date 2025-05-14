@@ -375,6 +375,9 @@
     <ClCompile Include="engine\PostEffect\RadialBluer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\PostEffect\Dissolve.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\base\DirectXCommon.h">
@@ -662,6 +665,9 @@
     <ClInclude Include="engine\PostEffect\RadialBluer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="engine\PostEffect\Dissolve.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
@@ -816,5 +822,6 @@
     <FxCompile Include="Resources\shaders\PostEffect\Vignette.CS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\BoxFilter.CS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\RadialBlur.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\Dissolve.CS.hlsl" />
   </ItemGroup>
 </Project>

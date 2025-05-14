@@ -1,4 +1,4 @@
-#include "FullScreen.hlsli"
+#include "PostEffect/FullScreen.hlsli"
 
 struct RadialBlurInfo {
 	float2 center; 
