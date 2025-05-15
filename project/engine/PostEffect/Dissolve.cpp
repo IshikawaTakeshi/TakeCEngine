@@ -14,6 +14,7 @@ void Dissolve::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 	dissolveInfoResource_->SetName(L"Dissolve::dissolveInfoResource_");
 	dissolveInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&dissolveInfoData_));
 	dissolveInfoData_->threshold = 0.5f;
+	dissolveInfoData_->isDissolve = false;
 
 	maskTextureFilePath_ = "cloudNoise.png";
 	TextureManager::GetInstance()->LoadTexture(maskTextureFilePath_);
@@ -23,6 +24,7 @@ void Dissolve::UpdateImGui() {
 
 	ImGui::Begin("Dissolve");
 	ImGui::SliderFloat("DissolveThreshold", &dissolveInfoData_->threshold, 0.0f, 1.0f);
+	ImGui::Checkbox("Dissolve", &dissolveInfoData_->isDissolve);
 	ImGui::End();
 }
 

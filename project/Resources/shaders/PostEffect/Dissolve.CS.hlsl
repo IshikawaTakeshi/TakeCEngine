@@ -2,6 +2,7 @@
 
 struct DissolveInfo {
 	float threshold; //閾値
+	bool isDissolve;
 };
 
 Texture2D<float4> gInputTexture : register(t0);
@@ -18,8 +19,11 @@ void main( uint3 DTid : SV_DispatchThreadID ) {
 	float2 uv = DTid.xy / float2(width, height);
 	float3 resultColor = float3(0.0f, 0.0f, 0.0f);
 	
+	if (gDissolveInfo.isDissolve == false) {
+		gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
+		return;
+	}
 	float mask = gMaskTexture.Sample(gSampler, uv).r;
-
 	if ( mask <= 0.0f ) {
 		gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
 		return;
@@ -28,7 +32,6 @@ void main( uint3 DTid : SV_DispatchThreadID ) {
 		gOutputTexture[DTid.xy] = float4(0.0f, 1.0f, 0.0f, 1.0f);
 		return;
 	}
-	
 	
 	resultColor = gInputTexture.Sample(gSampler, uv).rgb;
 	

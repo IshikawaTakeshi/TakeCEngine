@@ -104,6 +104,7 @@ void GamePlayScene::Update() {
 	TakeCFrameWork::GetPrimitiveDrawer()->UpdateImGui();
 	
 	cubeObject_->UpdateImGui(0);
+	player_->UpdateImGui();
 	sampleEnemy_->UpdateImGui();
 	particleEmitter1_->UpdateImGui();
 	sprite_->UpdateImGui(0);
@@ -123,7 +124,7 @@ void GamePlayScene::Update() {
 	sprite_->Update();
 
 	//SampleCharacter
-	//player_->Update();
+	player_->Update();
 	sampleEnemy_->Update();
 
 	//cubeObject
@@ -159,7 +160,7 @@ void GamePlayScene::Draw() {
 	sampleEnemy_->SkinningDisPatch();
 
 	Object3dCommon::GetInstance()->PreDraw();
-	//player_->Draw();
+	player_->Draw();
 	sampleEnemy_->Draw();
 	cubeObject_->Draw();
 

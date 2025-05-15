@@ -40,7 +40,7 @@ namespace QuaternionMath {
 	//Quaternionの回転結果をベクトルで返す
 	Vector3 RotateVector(const Vector3& vector,const Quaternion& quaternion);
 
-	//Quaternionから4x4行列に変換
-
+	//QuaternionからVector3のオイラー角に変換
+	Vector3 toEuler(const Quaternion& q);
 	
 }
