@@ -158,7 +158,7 @@ void Object3d::Draw() {
 
 void Object3d::DisPatch() {
 	if (model_ != nullptr) {
-		model_->DisPatch();
+		model_->DisPatch(object3dCommon_->GetPSO());
 	}
 }
 

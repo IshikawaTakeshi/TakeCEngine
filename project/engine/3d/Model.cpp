@@ -170,10 +170,10 @@ void Model::DisPatch(PSO* skinningPso) {
 		skinCluster_.skinningInfoResource->GetGPUVirtualAddress());
 
 	SrvManager* pSrvManager = modelCommon_->GetSrvManager();
-	//parette
-	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gParette"), skinCluster_.paletteIndex);
+	//palette
+	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gPalette"), skinCluster_.paletteIndex);
 	//inputVertex
-	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gPInputVertices"), inputIndex_);
+	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gInputVertices"), inputIndex_);
 	//influence
 	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gInfluences"), skinCluster_.influenceIndex);
 	//outputVertex
