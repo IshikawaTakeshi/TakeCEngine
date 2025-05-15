@@ -1,5 +1,6 @@
 #include "Quaternion.h"
 #include <cmath>
+#include <numbers>
 
 Quaternion QuaternionMath::Multiply(const Quaternion& q1, const Quaternion& q2) {
 	Quaternion result;
@@ -90,6 +91,28 @@ Vector3 QuaternionMath::RotateVector(const Vector3& vector, const Quaternion& qu
 	result.y = v2.y;
 	result.z = v2.z;
 	return result;
+}
+
+Vector3 QuaternionMath::toEuler(const Quaternion& q) {
+	Vector3 angles;
+	// X軸（ピッチ）
+	float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+	float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+	angles.x = std::atan2(sinr_cosp, cosr_cosp);
+
+	// Y軸（ヨー）
+	float sinp = 2 * (q.w * q.y - q.z * q.x);
+	if (std::abs(sinp) >= 1)
+		angles.y = std::copysign(std::numbers::pi_v<float> / 2, sinp); // クランプ（ジンバルロック）
+	else
+		angles.y = std::asin(sinp);
+
+	// Z軸（ロール）
+	float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+	float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+	angles.z = std::atan2(siny_cosp, cosy_cosp);
+
+	return angles;
 }
 
 Quaternion operator*(const Quaternion& q, float s) {

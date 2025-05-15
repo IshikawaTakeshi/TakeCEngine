@@ -9,6 +9,7 @@ public:
 	~Player() override;
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
 	void Update() override;
+	void UpdateImGui();
 	void Draw() override;
 	void DrawCollider() override;
 	void OnCollisionAction(GameCharacter* other) override;
@@ -50,7 +51,7 @@ private:
 	//移動方向
 	Vector3 moveDirection_ = { 0.0f,0.0f,1.0f };
 
-	EulerTransform transform_ = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} };
+	QuaternionTransform transform_ = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,0.0f} };
 
 	const float moveSpeed_ = 200.0f;
 	const float kMaxMoveSpeed_ = 50.0f;
