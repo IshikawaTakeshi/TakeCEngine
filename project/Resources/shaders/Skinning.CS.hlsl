@@ -19,43 +19,43 @@ struct SkinningInfomation {
 	uint numVertices;
 };
 
-StructuredBuffer<Well> gMatrixPalette : register(t0);
+StructuredBuffer<Well> gPalette : register(t0);
 StructuredBuffer<Vertex> gInputVertices : register(t1);
 
-StructuredBuffer<VertexInfluence> gVertexInfluences : register(t2);
+StructuredBuffer<VertexInfluence> gInfluences : register(t2);
 
-RWStructuredBuffer<Vertex> gSkinnedVertices : register(u0);
+RWStructuredBuffer<Vertex> gOutputVertices : register(u0);
 
-ConstantBuffer<SkinningInfomation> gVertexInformation : register(b0);
+ConstantBuffer<SkinningInfomation> gSkinningInfo : register(b0);
 
 [numthreads(1024, 1, 1)]
 void main(uint3 DTid : SV_DispatchThreadID) {
 	
 	uint vertexIndex = DTid.x;
-	if (vertexIndex < gVertexInformation.numVertices) {
+	if (vertexIndex < gSkinningInfo.numVertices) {
 	
 		Vertex input = gInputVertices[vertexIndex];
-	VertexInfluence influence = gVertexInfluences[vertexIndex];
+	VertexInfluence influence = gInfluences[vertexIndex];
 		
 		//Skinning後の頂点の計算
 		Vertex skinned;
 		skinned.texcoord = input.texcoord;
 		
 		//位置の変換
-		skinned.position = mul(input.position, gMatrixPalette[influence.jointIndices.x].skeletonSpaceMatrix) * influence.weight.x;
-		skinned.position += mul(input.position, gMatrixPalette[influence.jointIndices.y].skeletonSpaceMatrix) * influence.weight.y;
-		skinned.position += mul(input.position, gMatrixPalette[influence.jointIndices.z].skeletonSpaceMatrix) * influence.weight.z;
-		skinned.position += mul(input.position, gMatrixPalette[influence.jointIndices.w].skeletonSpaceMatrix) * influence.weight.w;
+		skinned.position = mul(input.position, gPalette[influence.jointIndices.x].skeletonSpaceMatrix) * influence.weight.x;
+		skinned.position += mul(input.position, gPalette[influence.jointIndices.y].skeletonSpaceMatrix) * influence.weight.y;
+		skinned.position += mul(input.position, gPalette[influence.jointIndices.z].skeletonSpaceMatrix) * influence.weight.z;
+		skinned.position += mul(input.position, gPalette[influence.jointIndices.w].skeletonSpaceMatrix) * influence.weight.w;
 		skinned.position.w = 1.0f;
 	
 	//法線の変換
-		skinned.normal = mul(input.normal, (float3x3) gMatrixPalette[influence.jointIndices.x].skeletonSpaceInvTransposeMatrix) * influence.weight.x;
-		skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[influence.jointIndices.y].skeletonSpaceInvTransposeMatrix) * influence.weight.y;
-		skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[influence.jointIndices.z].skeletonSpaceInvTransposeMatrix) * influence.weight.z;
-		skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[influence.jointIndices.w].skeletonSpaceInvTransposeMatrix) * influence.weight.w;
+		skinned.normal = mul(input.normal, (float3x3) gPalette[influence.jointIndices.x].skeletonSpaceInvTransposeMatrix) * influence.weight.x;
+		skinned.normal += mul(input.normal, (float3x3) gPalette[influence.jointIndices.y].skeletonSpaceInvTransposeMatrix) * influence.weight.y;
+		skinned.normal += mul(input.normal, (float3x3) gPalette[influence.jointIndices.z].skeletonSpaceInvTransposeMatrix) * influence.weight.z;
+		skinned.normal += mul(input.normal, (float3x3) gPalette[influence.jointIndices.w].skeletonSpaceInvTransposeMatrix) * influence.weight.w;
 	//正規化しておく
 		skinned.normal = normalize(skinned.normal);
 		
-		gSkinnedVertices[vertexIndex] = skinned;
+		gOutputVertices[vertexIndex] = skinned;
 	}
 }

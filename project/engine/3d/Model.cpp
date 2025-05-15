@@ -1,11 +1,11 @@
 #include "Model.h"
-#include "DirectXCommon.h"
-#include "Material.h"
-#include "MatrixMath.h"
-#include "SrvManager.h"
-#include "TextureManager.h"
-#include "ModelCommon.h"
-#include "Mesh/Mesh.h"
+#include "base/DirectXCommon.h"
+#include "base/TextureManager.h"
+#include "3d/Material.h"
+
+#include "3d/Mesh/Mesh.h"
+#include "math/MatrixMath.h"
+#include "Utility/ResourceBarrier.h"
 
 #include <fstream>
 #include <sstream>
@@ -48,7 +48,6 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 
 	//inputVertexResource
 	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
-	//mesh_->MapInputVertexResource(modelData_);
 	//indexResource
 	mesh_->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 
@@ -66,8 +65,6 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 			sizeof(VertexData),
 			mesh_->GetInputVertexResource(),
 			inputIndex_);
-
-		
 
 		//UAVの設定
 		uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
@@ -157,53 +154,39 @@ void Model::DrawSkyBox() {
 // スキンメッシュの計算処理
 //=============================================================================
 
-void Model::DisPatch() {
+void Model::DisPatch(PSO* skinningPso) {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	// UAV から Vertex Buffer へのバリア
-	D3D12_RESOURCE_BARRIER uavBarrier = {};
-	//今回のバリアはTransition
-	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	//Noneにしておく
-	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	//バリアを張る対象のリソース。現在のバックバッファに対して行う
-	uavBarrier.Transition.pResource = mesh_->GetOutputVertexResource();
-	//遷移前(現在)のResourceState
-	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-	//遷移後のResourceState
-	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-	//TransitionBarrierを張る
-	commandList->ResourceBarrier(1, &uavBarrier);
+	// VERTEX_AND_CONSTANT_BUFFER >> UNORDERED_ACCESS
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		mesh_->GetOutputVertexResource());
 
 	//skinninginfo
-	commandList->SetComputeRootConstantBufferView(0, skinCluster_.skinningInfoResource->GetGPUVirtualAddress());
+	commandList->SetComputeRootConstantBufferView(
+		skinningPso->GetComputeBindResourceIndex("gSkinningInfo"),
+		skinCluster_.skinningInfoResource->GetGPUVirtualAddress());
+
 	SrvManager* pSrvManager = modelCommon_->GetSrvManager();
 	//parette
-	pSrvManager->SetComputeRootDescriptorTable(1, skinCluster_.paletteIndex);
+	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gParette"), skinCluster_.paletteIndex);
 	//inputVertex
-	pSrvManager->SetComputeRootDescriptorTable(2, inputIndex_);
+	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gPInputVertices"), inputIndex_);
 	//influence
-	pSrvManager->SetComputeRootDescriptorTable(3, skinCluster_.influenceIndex);
+	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gInfluences"), skinCluster_.influenceIndex);
 	//outputVertex
-	pSrvManager->SetComputeRootDescriptorTable(4, uavIndex_);
+	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gOutputVertices"), uavIndex_);
 
 	//DisPatch
 	commandList->Dispatch(UINT(modelData_->skinningInfoData.numVertices + 1023) / 1024, 1, 1);
 
-
-	//今回のバリアはTransition
-	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	//Noneにしておく
-	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	//バリアを張る対象のリソース。現在のバックバッファに対して行う
-	uavBarrier.Transition.pResource = mesh_->GetOutputVertexResource();
-	//遷移前(現在)のResourceState
-	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-	//遷移後のResourceState
-	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-	//TransitionBarrierを張る
-	commandList->ResourceBarrier(1, &uavBarrier);
+	//UNORDERED_ACCESS >> VERTEX_AND_CONSTANT_BUFFER
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		mesh_->GetOutputVertexResource());
 }
 
 
