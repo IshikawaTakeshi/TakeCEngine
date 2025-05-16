@@ -384,7 +384,13 @@
     <ClCompile Include="application\Weapon\Rifle.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="application\Weapon\Bullet.cpp">
+    <ClCompile Include="application\Weapon\Bullet\Bullet.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Weapon\Bullet\BulletPool.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -683,7 +689,13 @@
     <ClInclude Include="application\Weapon\Rifle.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="application\Weapon\Bullet.h">
+    <ClInclude Include="application\Weapon\Bullet\Bullet.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Weapon\Bullet\BulletPool.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

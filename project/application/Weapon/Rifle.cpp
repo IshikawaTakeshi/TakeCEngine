@@ -18,7 +18,6 @@ void Rifle::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	bulletCount_ = 30;
 	maxBulletCount_ = 30;
 
-
 }
 
 void Rifle::Update() {
@@ -31,4 +30,7 @@ void Rifle::Draw() {
 	object3d_->Draw();
 }
 
-void Rifle::Attack() {}
+void Rifle::Attack() {
+
+
+}

@@ -6,6 +6,7 @@ enum class CharacterType {
 	NONE,
 	PLAYER,
 	ENEMY,
+	BULLET,
 };
 
 class GameCharacter {

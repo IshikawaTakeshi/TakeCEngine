@@ -29,7 +29,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 
-	camera_ = CameraManager::GetInstance()->GetActiveCamera();
+	camera_ = object3dCommon->GetDefaultCamera();
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 

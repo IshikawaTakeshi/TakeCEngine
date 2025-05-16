@@ -1,0 +1,41 @@
+#pragma once
+#include "3d/Object3d.h"
+#include "3d/Object3dCommon.h"
+#include "Entity/GameCharacter.h"
+#include <cstdint>
+#include <string>
+#include <memory>
+
+class Bullet : public GameCharacter {
+public:
+	Bullet() = default;
+	~Bullet() = default;
+	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath)override;
+	void Update() override;
+	void UpdateImGui();
+	void Draw() override;
+	void DrawCollider() override;
+	void OnCollisionAction(GameCharacter* other) override;
+
+	void BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos);
+
+public:
+
+	bool GetIsActive() { return isActive_; }
+
+private:
+	enum class BulletType {
+		NONE,
+		BULLET,
+		EXPLOSION,
+	};
+
+private:
+
+	EulerTransform transform_{};
+	float deltaTime_ = 0.0f;
+	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
+	float speed_ = 0.0f;
+	bool isActive_ = false;
+};
+

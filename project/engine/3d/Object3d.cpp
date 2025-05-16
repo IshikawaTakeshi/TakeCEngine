@@ -5,8 +5,6 @@
 #include "Mesh/Mesh.h"
 #include "TextureManager.h"
 #include "ModelManager.h"
-#include "Model.h"
-#include "Camera.h"
 #include "CameraManager.h"
 #include "ImGuiManager.h"
 

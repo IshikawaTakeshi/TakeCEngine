@@ -5,6 +5,12 @@
 #include <string>
 #include <memory>
 
+enum class WeaponType {
+	//武器の種類
+	WEAPON_TYPE_RIFLE = 0,
+	WEAPON_TYPE_MAX,
+};
+
 //武器インターフェース
 class IWeapon {
 public:
