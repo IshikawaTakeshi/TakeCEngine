@@ -3,7 +3,6 @@
 
 void BulletPool::Initialize(size_t size) {
 
-	pool_.resize(size);
 	for (int i = 0; i < size; i++) {
 		pool_.emplace_back(std::make_unique<Bullet>());
 	}
@@ -37,7 +36,7 @@ void BulletPool::DrawAllBullet() {
 
 	for (const auto& bullet : pool_) {
 		if (bullet->GetIsActive()) {
-			bullet->Draw();;
+			bullet->Draw();
 		}
 	}
 }

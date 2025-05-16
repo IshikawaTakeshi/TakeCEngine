@@ -1,5 +1,6 @@
 #pragma once
 #include "application/Entity/GameCharacter.h"
+#include "Weapon/BaseWeapon.h"
 #include "camera/Camera.h"
 #include <optional>
 
@@ -13,6 +14,8 @@ public:
 	void Draw() override;
 	void DrawCollider() override;
 	void OnCollisionAction(GameCharacter* other) override;
+
+	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& weaponFilePath);
 
 private:
 
@@ -39,10 +42,12 @@ private:
 
 	//カメラ
 	Camera* camera_ = nullptr;
-
+	//状態遷移リクエスト
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
-
+	//プレイヤーの状態
 	Behavior behavior_ = Behavior::IDLE;
+	//プレイヤーの武器
+	std::unique_ptr<BaseWeapon> weapon_ = nullptr;
 
 	//移動ベクトル
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };

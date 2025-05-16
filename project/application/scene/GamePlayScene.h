@@ -66,4 +66,6 @@ private:
 	std::unique_ptr<Player> player_ = nullptr;
 
 	std::unique_ptr<Object3d> cubeObject_ = nullptr;
+
+	std::unique_ptr<BulletManager> bulletManager_ = nullptr;
 };

@@ -20,6 +20,6 @@ public:
 private:
 
 	Object3dCommon* object3dCommon_ = nullptr;
-	std::string bulletFilePath_ = nullptr;
+	std::string bulletFilePath_;
 	BulletPool bulletPool_;
 };

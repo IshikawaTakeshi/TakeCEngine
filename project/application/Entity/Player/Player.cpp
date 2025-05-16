@@ -10,6 +10,8 @@
 #include "Vector3Math.h"
 #include "math/Easing.h"
 
+#include "Weapon/Rifle.h"
+
 Player::~Player() {
 	object3d_.reset();
 	collider_.reset();
@@ -31,6 +33,14 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 	camera_ = object3dCommon->GetDefaultCamera();
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+}
+
+void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& weaponFilePath) {
+
+	//武器の初期化
+	weapon_ = std::make_unique<Rifle>();
+	weapon_->Initialize(object3dCommon, bulletManager, weaponFilePath);
+	weapon_->SetOwnerObject(object3d_.get());
 }
 
 void Player::Update() {
@@ -82,6 +92,8 @@ void Player::Update() {
 	object3d_->SetRotation(eulerRotate);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
+
+	weapon_->Update();
 }
 
 void Player::UpdateImGui() {
@@ -95,6 +107,7 @@ void Player::UpdateImGui() {
 
 void Player::Draw() {
 	object3d_->Draw();
+	weapon_->Draw();
 }
 
 void Player::DrawCollider() {
@@ -109,6 +122,7 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		//衝突時の処理
 	}
 }
+
 
 void Player::InitRunning() {}
 
@@ -166,7 +180,17 @@ void Player::UpdateRunning() {
 	};
 }
 
-void Player::UpdateAttack() {}
+//===================================================================================
+//　攻撃処理
+//===================================================================================
+
+void Player::UpdateAttack() {
+
+	if (Input::GetInstance()->PushButton(0,GamepadButtonType::RT)) {
+		//攻撃の初期化
+		weapon_->Attack();
+	}
+}
 
 void Player::UpdateDamage() {}
 

@@ -61,9 +61,14 @@ void GamePlayScene::Initialize() {
 	sprite_->Initialize(SpriteCommon::GetInstance(), "rick.png");
 	sprite_->SetTextureLeftTop({ 235.0f,40.0f });
 
+	//BulletManager
+	bulletManager_ = std::make_unique<BulletManager>();
+	bulletManager_->Initialize(Object3dCommon::GetInstance(), 100); //弾の最大数:100
+
 	//player
 	player_ = std::make_unique<Player>();
 	player_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
+	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "cube.obj");
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
 
 	//cubeObject
@@ -130,6 +135,9 @@ void GamePlayScene::Update() {
 	//cubeObject
 	cubeObject_->Update();
 
+	//弾の更新
+	bulletManager_->UpdateBullet();
+
 	//当たり判定の更新
 	CheckAllCollisions();
 
@@ -163,12 +171,13 @@ void GamePlayScene::Draw() {
 	player_->Draw();
 	sampleEnemy_->Draw();
 	cubeObject_->Draw();
+	bulletManager_->DrawBullet();
 
 	//当たり判定の描画前処理
 	CollisionManager::GetInstance()->PreDraw();
 
 	//グリッド地面の描画
-	//TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 100);
+	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 100);
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
 	TakeCFrameWork::GetWireFrame()->Draw();

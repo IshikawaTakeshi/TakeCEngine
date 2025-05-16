@@ -1,18 +1,19 @@
 #pragma once
-#include "Weapon/IWeapon.h"
+#include "Weapon/BaseWeapon.h"
 #include "Weapon/Bullet/Bullet.h"
 
-class Rifle : public IWeapon {
+class Rifle : public BaseWeapon {
 public:
 	Rifle() = default;
 	~Rifle();
 
-	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
+	void Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& filePath) override;
 	void Update() override;
 	void Draw() override;
 	void Attack() override;
 	int32_t GetWeaponType() const override { return weaponType_; }
-	void SetOwner(int32_t owner) override { owner_ = owner; }
+	void SetOwnerObject(Object3d* owner) override { ownerObject_ = owner; }
+	void SetTarget(const Vector3& targetPos) override { targetPos_ = targetPos; }
 
 private:
 	

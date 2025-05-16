@@ -66,6 +66,11 @@ void Object3d::Update() {
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 
+	//親子付け処理
+	if (parent_) {
+		worldMatrix_ = MatrixMath::Multiply(worldMatrix_, parent_->worldMatrix_);
+	}
+
 	//wvpの更新
 	if (camera_) {
 		const Matrix4x4& viewProjectionMatrix =
