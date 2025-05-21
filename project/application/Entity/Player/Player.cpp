@@ -41,6 +41,7 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bull
 	weapon_ = std::make_unique<Rifle>();
 	weapon_->Initialize(object3dCommon, bulletManager, weaponFilePath);
 	weapon_->SetOwnerObject(object3d_.get());
+
 }
 
 void Player::Update() {
@@ -81,6 +82,8 @@ void Player::Update() {
 	default:
 		break;
 	}
+
+	UpdateAttack();
 
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(transform_.rotate);
