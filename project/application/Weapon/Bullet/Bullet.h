@@ -37,5 +37,7 @@ private:
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
 	float speed_ = 0.0f;
 	bool isActive_ = false;
+
+	float lifeTime_ = 0.0f;
 };
 

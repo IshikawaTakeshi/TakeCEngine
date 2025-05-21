@@ -68,7 +68,7 @@ void GamePlayScene::Initialize() {
 	//player
 	player_ = std::make_unique<Player>();
 	player_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
-	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "cube.obj");
+	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
 
 	//cubeObject
