@@ -7,6 +7,7 @@
 #include "PostEffect/GrayScale.h"
 #include "PostEffect/BoxFilter.h"
 #include "PostEffect/RadialBluer.h"
+#include "PostEffect/LuminanceBasedOutline.h"
 
 //====================================================================
 //	初期化
@@ -117,6 +118,8 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 		postEffect = std::make_unique<RadialBluer>();
 	} else if (name == "Dissolve") {
 		postEffect = std::make_unique<Dissolve>();
+	} else if (name == "LuminanceBasedOutline") {
+		postEffect = std::make_unique<LuminanceBasedOutline>();
 	} else {
 		Logger::Log("PostEffectManager::InitializeEffect() : PostEffect is not found.");
 		return;
