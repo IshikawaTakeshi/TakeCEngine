@@ -378,6 +378,9 @@
     <ClCompile Include="engine\PostEffect\Dissolve.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\PostEffect\LuminanceBasedOutline.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\base\DirectXCommon.h">
@@ -668,6 +671,9 @@
     <ClInclude Include="engine\PostEffect\Dissolve.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="engine\PostEffect\LuminanceBasedOutline.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
@@ -763,6 +769,7 @@
     </None>
     <None Include="Resources\shaders\PostEffect\FullScreen.hlsli" />
     <None Include="Resources\shaders\PostEffect\BoxFilter.hlsli" />
+    <None Include="Resources\shaders\PostEffect\Outline.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\EmitParticle.CS.hlsl">
@@ -823,5 +830,6 @@
     <FxCompile Include="Resources\shaders\PostEffect\BoxFilter.CS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\RadialBlur.CS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\Dissolve.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\LuminanceBasedOutline.CS.hlsl" />
   </ItemGroup>
 </Project>
