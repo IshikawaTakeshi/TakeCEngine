@@ -117,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Collision\BoxCollider.cpp" />
     <ClCompile Include="application\Weapon\Bullet\Bullet.cpp" />
     <ClCompile Include="application\Weapon\Bullet\BulletManager.cpp" />
+    <ClCompile Include="application\Entity\Enemy\Enemy.cpp" />
     <ClCompile Include="engine\PostEffect\Dissolve.cpp" />
     <ClCompile Include="engine\PostEffect\BoxFilter.cpp" />
     <ClCompile Include="engine\3d\Particle\BaseParticleGroup.cpp" />
@@ -207,6 +208,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Collision\BoxCollider.h" />
     <ClInclude Include="application\Weapon\Bullet\Bullet.h" />
     <ClInclude Include="application\Weapon\Bullet\BulletManager.h" />
+    <ClInclude Include="application\Entity\Enemy\Enemy.h" />
     <ClInclude Include="engine\PostEffect\Dissolve.h" />
     <ClInclude Include="engine\PostEffect\BoxFilter.h" />
     <ClInclude Include="engine\3d\Particle\BaseParticleGroup.h" />

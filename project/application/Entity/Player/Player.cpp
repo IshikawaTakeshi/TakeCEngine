@@ -120,6 +120,7 @@ void Player::OnCollisionAction(GameCharacter* other) {
 
 	if (other->GetCharacterType() == CharacterType::ENEMY) {
 		//衝突時の処理
+		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
 	}
 }
 
