@@ -155,9 +155,7 @@ void Player::UpdateRunning() {
 		
 		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.1f);
 		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
-
 	}
-
 
 	//移動時の加速度の計算
 	velocity_.x += moveDirection_.x * moveSpeed_ * deltaTime_;

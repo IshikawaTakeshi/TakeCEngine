@@ -14,7 +14,7 @@ void Camera::Initialize(ID3D12Device* device) {
 	
 	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	offset_ = { 0.0f, 0.0f, -5.0f };
-	offsetDelta_ = { 0.0f, 0.0f, -70.0f };
+	offsetDelta_ = { 0.0f, 0.0f, -50.0f };
 	fovX_ = 0.45f;
 	aspectRatio_ = float(WinApp::kClientWidth / 2) / float(WinApp::kClientHeight / 2);
 	nearClip_ = 0.1f;
@@ -107,6 +107,7 @@ void Camera::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("offset", &offset_.x, 0.01f);
+	ImGui::DragFloat3("offsetDelta", &offsetDelta_.x, 0.01f);
 	ImGui::DragFloat("FovX", &fovX_, 0.01f);
 	ImGui::Checkbox("isDebug", &isDebug_);
 }
@@ -151,6 +152,39 @@ void Camera::UpdateDebugCamera() {
 
 void Camera::UpdateGameCamera() {
 	
+	if (cameraStateRequest_) {
+		switch (cameraState_) {
+		case Camera::GameCameraState::FOLLOW:
+			InitializeCameraFollow();
+			break;
+		case Camera::GameCameraState::LOOKAT:
+			InitializeCameraLookAt();
+			break;
+		default:
+			break;
+		}
+
+		cameraStateRequest_ = std::nullopt;
+	}
+
+	switch (cameraState_) {
+	case Camera::GameCameraState::FOLLOW:
+		UpdateCameraFollow();
+		break;
+	case Camera::GameCameraState::LOOKAT:
+		UpdateCameraLookAt();
+		break;
+	default:
+		break;
+	}
+}
+
+void Camera::InitializeCameraFollow() {}
+
+void Camera::InitializeCameraLookAt() {}
+
+void Camera::UpdateCameraFollow() {
+
 	// クォータニオンで回転を管理
 	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
 
@@ -179,6 +213,32 @@ void Camera::UpdateGameCamera() {
 
 	transform_.translate = Easing::Lerp(transform_.translate, tagetPosition_, followSpeed_);
 	transform_.rotate = Easing::Slerp(transform_.rotate, rotationDelta, followSpeed_);
+}
+
+void Camera::UpdateCameraLookAt() {
+
+	// クォータニオンで回転を管理
+	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
+	//ターゲットの位置を使って方向を求める
+	Vector3 camraDirection = *targetPosition_ - transform_.translate;
+
+	//回転計算
+	float deltaPitch = camraDirection.y * 0.02f; // X軸回転
+	float deltaYaw = camraDirection.x * 0.02f;   // Y軸回転
+	// クォータニオンを用いた回転計算
+	Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
+		Vector3(0, 1, 0), deltaYaw);
+	Quaternion pitchRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
+		QuaternionMath::RotateVector(Vector3(1, 0, 0), yawRotation), deltaPitch);
+
+	//オフセットに回転を適用
+	offset_ = offsetDelta_;
+	offset_ = QuaternionMath::RotateVector(offset_, pitchRotation * yawRotation);
+	//カメラ位置の計算
+	Vector3 tagetPosition_ = *targetPosition_ + offset_;
+	transform_.translate = Easing::Lerp(transform_.translate, tagetPosition_, followSpeed_);
+	transform_.rotate = Easing::Slerp(transform_.rotate, pitchRotation * yawRotation, followSpeed_);
+
 }
 
 #endif // DEBUG

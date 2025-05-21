@@ -5,6 +5,7 @@
 #include <string>
 #include <d3d12.h>
 #include <wrl.h>
+#include <optional>
 
 //定数バッファ用の構造体
 struct CameraForGPU {
@@ -26,8 +27,19 @@ public:
 
 private:
 
+	enum class GameCameraState {
+		FOLLOW,
+		LOOKAT,
+	};
+
 	void UpdateDebugCamera();
 	void UpdateGameCamera();
+
+	void InitializeCameraFollow();
+	void InitializeCameraLookAt();
+
+	void UpdateCameraFollow();
+	void UpdateCameraLookAt();
 
 public: //getter
 	
@@ -40,6 +52,8 @@ public: //getter
 	const Quaternion& GetRotate()const { return transform_.rotate; }
 	const bool& GetIsShaking() const { return isShaking_; }
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetCameraResource() const { return cameraResource_; }
+
+	const GameCameraState& GetCameraState() const { return cameraState_; }
 
 public: //setter
 
@@ -75,6 +89,11 @@ private:
 
 	//スティック情報
 	Vector2 stick_;
+
+	//カメラの状態リクエスト
+	std::optional<GameCameraState> cameraStateRequest_ = std::nullopt;
+	//カメラの状態
+	GameCameraState cameraState_ = GameCameraState::FOLLOW;
 
 	//追従対象
 	Vector3* targetPosition_;
