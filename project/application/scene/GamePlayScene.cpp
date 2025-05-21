@@ -71,16 +71,15 @@ void GamePlayScene::Initialize() {
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "cube.obj");
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
 
+	//Enemy
+	enemy_ = std::make_unique<Enemy>();
+	enemy_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
+	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "cube.obj");
+	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
+
 	//cubeObject
 	cubeObject_ = std::make_unique<Object3d>();
 	cubeObject_->Initialize(Object3dCommon::GetInstance(), "cube.obj");
-
-	//SampleEnemy
-	sampleEnemy_ = std::make_unique<SampleCharacter>();
-	sampleEnemy_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
-	sampleEnemy_->SetCharacterType(CharacterType::ENEMY);
-	sampleEnemy_->SetTranslate({ 0.0f,0.0f,15.0f });
-	sampleEnemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "damage"));
 }
 
 //====================================================================
@@ -91,7 +90,6 @@ void GamePlayScene::Finalize() {
 	CollisionManager::GetInstance()->Finalize(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	player_.reset();
-	sampleEnemy_.reset();
 	particleEmitter1_.reset();
 	sprite_.reset();
 	skyBox_.reset();
@@ -110,7 +108,7 @@ void GamePlayScene::Update() {
 	
 	cubeObject_->UpdateImGui(0);
 	player_->UpdateImGui();
-	sampleEnemy_->UpdateImGui();
+	enemy_->UpdateImGui();
 	particleEmitter1_->UpdateImGui();
 	sprite_->UpdateImGui(0);
 
@@ -128,9 +126,10 @@ void GamePlayScene::Update() {
 
 	sprite_->Update();
 
-	//SampleCharacter
+	//player
 	player_->Update();
-	sampleEnemy_->Update();
+	//enemy
+	enemy_->Update();
 
 	//cubeObject
 	cubeObject_->Update();
@@ -162,19 +161,24 @@ void GamePlayScene::Draw() {
 
 	skyBox_->Draw();    //天球の描画
 
+#pragma region Object3d描画
+
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance()->DisPatch();
 	player_->GetObject3d()->DisPatch();
-	sampleEnemy_->SkinningDisPatch();
-
+	enemy_->GetObject3d()->DisPatch();
 	Object3dCommon::GetInstance()->PreDraw();
 	player_->Draw();
-	sampleEnemy_->Draw();
+	enemy_->Draw();
 	cubeObject_->Draw();
 	bulletManager_->DrawBullet();
 
+#pragma endregion
+
 	//当たり判定の描画前処理
 	CollisionManager::GetInstance()->PreDraw();
+	player_->DrawCollider();
+	enemy_->DrawCollider();
 
 	//グリッド地面の描画
 	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 100);
@@ -186,9 +190,11 @@ void GamePlayScene::Draw() {
 	//TakeCFrameWork::GetParticleManager()->Draw(true); //パーティクルの描画
 
 
+#pragma region スプライト描画
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
 	//sprite_->Draw();    //スプライトの描画
+#pragma endregion
 
 	//GPUパーティクルの描画
 	//ParticleCommon::GetInstance()->PreDrawForGPUParticle();
@@ -201,7 +207,7 @@ void GamePlayScene::CheckAllCollisions() {
 
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
 
-	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(sampleEnemy_.get()));
+	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
 
 	CollisionManager::GetInstance()->CheckAllCollisionsForGameCharacter();
 }
