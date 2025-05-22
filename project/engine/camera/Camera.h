@@ -39,7 +39,7 @@ private:
 	void InitializeCameraLookAt();
 
 	void UpdateCameraFollow();
-	void UpdateCameraLookAt();
+	void UpdateCameraLockOn();
 
 public: //getter
 	
@@ -69,8 +69,9 @@ public: //setter
 	void SetShake(float duration, float range);
 
 	void SetStick(const Vector2& stick) { stick_ = stick; }
-	void SetTargetPos(const Vector3& target) { *targetPosition_ = target; }
-	void SetTargetRot(const Vector3& targetRot) { *targetRotation_ = targetRot; }
+	void SetFollowTargetPos(const Vector3& target) { *followTargetPosition_ = target; }
+	void SetFollowTargetRot(const Vector3& targetRot) { *followTargetRotation_ = targetRot; }
+	void SetFocusTargetPos(const Vector3& target) { *focusTargetPosition_ = target; }
 private:
 
 	//バッファリソース
@@ -96,9 +97,12 @@ private:
 	GameCameraState cameraState_ = GameCameraState::FOLLOW;
 
 	//追従対象
-	Vector3* targetPosition_;
-	Vector3* targetRotation_;
+	Vector3* followTargetPosition_;
+	Vector3* followTargetRotation_;
 	float followSpeed_ = 0.1f;
+
+	//補足対象
+	Vector3* focusTargetPosition_;
 	
 	//水平方向視野角
 	float fovX_;

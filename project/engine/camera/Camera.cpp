@@ -5,6 +5,7 @@
 #include "ImGuiManager.h"
 #include "Input.h"
 #include "math/Easing.h"
+#include "math/Vector3Math.h"
 
 Camera::~Camera() {
 	cameraResource_.Reset();
@@ -25,8 +26,9 @@ void Camera::Initialize(ID3D12Device* device) {
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
 	rotationMatrix_ = MatrixMath::MakeIdentity4x4();
 
-	targetPosition_ = new Vector3();
-	targetRotation_ = new Vector3();
+	followTargetPosition_ = new Vector3();
+	followTargetRotation_ = new Vector3();
+	focusTargetPosition_ = new Vector3();
 
 	cameraResource_ = DirectXCommon::CreateBufferResource(device, sizeof(CameraForGPU));
 	cameraResource_->SetName(L"Camera::cameraResource_");
@@ -153,6 +155,8 @@ void Camera::UpdateDebugCamera() {
 void Camera::UpdateGameCamera() {
 	
 	if (cameraStateRequest_) {
+		cameraState_ = cameraStateRequest_.value();
+
 		switch (cameraState_) {
 		case Camera::GameCameraState::FOLLOW:
 			InitializeCameraFollow();
@@ -172,16 +176,24 @@ void Camera::UpdateGameCamera() {
 		UpdateCameraFollow();
 		break;
 	case Camera::GameCameraState::LOOKAT:
-		UpdateCameraLookAt();
+		UpdateCameraLockOn();
 		break;
 	default:
 		break;
 	}
 }
 
-void Camera::InitializeCameraFollow() {}
+void Camera::InitializeCameraFollow() {
 
-void Camera::InitializeCameraLookAt() {}
+	followSpeed_ = 0.1f;
+	offset_ = offsetDelta_;
+}
+
+void Camera::InitializeCameraLookAt() {
+
+	followSpeed_ = 0.4f;
+	offsetDelta_ = Vector3(0.0f, 5.0f, -50.0f);
+}
 
 void Camera::UpdateCameraFollow() {
 
@@ -209,36 +221,39 @@ void Camera::UpdateCameraFollow() {
 	offset_ = QuaternionMath::RotateVector(offset_, rotationDelta);
 
 	//カメラ位置の計算
-	Vector3 tagetPosition_ = *targetPosition_ + offset_;
+	Vector3 tagetPosition_ = *followTargetPosition_ + offset_;
 
 	transform_.translate = Easing::Lerp(transform_.translate, tagetPosition_, followSpeed_);
 	transform_.rotate = Easing::Slerp(transform_.rotate, rotationDelta, followSpeed_);
+
+	//Rスティック押し込みでカメラの状態変更
+	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::RightStick)) {
+		cameraStateRequest_ = GameCameraState::LOOKAT;
+	}
 }
 
-void Camera::UpdateCameraLookAt() {
+void Camera::UpdateCameraLockOn() {
 
-	// クォータニオンで回転を管理
-	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
-	//ターゲットの位置を使って方向を求める
-	Vector3 camraDirection = *targetPosition_ - transform_.translate;
+	// ターゲット方向を正規化
+	Vector3 toTarget = Vector3Math::Normalize(*focusTargetPosition_ - transform_.translate);
 
-	//回転計算
-	float deltaPitch = camraDirection.y * 0.02f; // X軸回転
-	float deltaYaw = camraDirection.x * 0.02f;   // Y軸回転
-	// クォータニオンを用いた回転計算
-	Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
-		Vector3(0, 1, 0), deltaYaw);
-	Quaternion pitchRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
-		QuaternionMath::RotateVector(Vector3(1, 0, 0), yawRotation), deltaPitch);
+	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
+	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
 
-	//オフセットに回転を適用
+	// 回転補間
+	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
+
+	// 高さを持った固定オフセット
 	offset_ = offsetDelta_;
-	offset_ = QuaternionMath::RotateVector(offset_, pitchRotation * yawRotation);
-	//カメラ位置の計算
-	Vector3 tagetPosition_ = *targetPosition_ + offset_;
-	transform_.translate = Easing::Lerp(transform_.translate, tagetPosition_, followSpeed_);
-	transform_.rotate = Easing::Slerp(transform_.rotate, pitchRotation * yawRotation, followSpeed_);
 
+	// ターゲットからの相対位置に補間移動
+	Vector3 desiredPosition = *followTargetPosition_ + QuaternionMath::RotateVector(offset_, transform_.rotate);
+	transform_.translate = Easing::Lerp(transform_.translate, desiredPosition, followSpeed_);
+
+	// 状態切り替え
+	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RightStick)) {
+		cameraStateRequest_ = GameCameraState::FOLLOW;
+	}
 }
 
 #endif // DEBUG
