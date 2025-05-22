@@ -3,6 +3,7 @@
 #include "camera/CameraManager.h"
 #include "base/TakeCFrameWork.h"
 #include "math/Vector3Math.h"
+#include "math/Easing.h"
 
 //========================================================================================================
 // object3d,colliderの初期化
@@ -20,7 +21,8 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
-	speed_ = 5.0f;
+	speed_ = 500.0f;
+
 }
 
 //========================================================================================================
@@ -30,7 +32,15 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 void Bullet::Update() {
 
 	//移動処理
-	transform_.translate += velocity_ * deltaTime_;
+	//transform_.translate += velocity_ * deltaTime_;
+	//弾の移動の補間
+	transform_.translate = Easing::Lerp(transform_.translate, transform_.translate + velocity_, deltaTime_);
+
+	//ライフタイムの減少
+	lifeTime_ -= deltaTime_;
+	if (lifeTime_ <= 0.0f) {
+		isActive_ = false;
+	}
 
 	object3d_->SetTranslate(transform_.translate);
 	object3d_->Update();
@@ -82,4 +92,6 @@ void Bullet::BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos)
 
 	//速度の設定
 	velocity_ = direction * speed_;
+	lifeTime_ = 2.0f;
+	isActive_ = true;
 }
