@@ -40,7 +40,7 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bull
 	//武器の初期化
 	weapon_ = std::make_unique<Rifle>();
 	weapon_->Initialize(object3dCommon, bulletManager, weaponFilePath);
-	weapon_->SetOwnerObject(object3d_.get());
+	weapon_->SetOwnerObject(this);
 
 }
 

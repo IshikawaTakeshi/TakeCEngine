@@ -1,6 +1,7 @@
 #pragma once
 #include "Object3d.h"
 #include "Object3dCommon.h"
+#include "Entity/GameCharacter.h"
 #include "Weapon/Bullet/BulletManager.h"
 #include <cstdint>
 #include <string>
@@ -24,7 +25,7 @@ public:
 	//武器タイプの取得
 	virtual int32_t GetWeaponType() const = 0;
 	//所有者の設定
-	virtual void SetOwnerObject(Object3d* owener) { ownerObject_ = owener; }
+	virtual void SetOwnerObject(GameCharacter* owener) { ownerObject_ = owener; }
 
 	virtual void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
 
@@ -44,7 +45,7 @@ protected:
 	std::unique_ptr<Object3d> object3d_ = nullptr;
 
 	//武器の所有者オブジェクト
-	Object3d* ownerObject_ = nullptr;
+	GameCharacter* ownerObject_ = nullptr;
 	//攻撃対象の座標
 	Vector3 targetPos_;
 

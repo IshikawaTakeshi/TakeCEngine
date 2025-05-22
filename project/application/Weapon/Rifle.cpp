@@ -44,7 +44,7 @@ void Rifle::Attack() {
 		return;
 	}
 
-	bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_);
+	bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,ownerObject_->GetCharacterType());
 
 	//弾数の減少
 	bulletCount_--;
@@ -56,7 +56,7 @@ void Rifle::Attack() {
 	//攻撃力の設定
 }
 
-void Rifle::SetOwnerObject(Object3d* owner) {
+void Rifle::SetOwnerObject(GameCharacter* owner) {
 	BaseWeapon::SetOwnerObject(owner);
-	object3d_->SetParent(owner);
+	object3d_->SetParent(owner->GetObject3d());
 }

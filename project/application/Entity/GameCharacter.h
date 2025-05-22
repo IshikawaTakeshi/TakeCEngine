@@ -5,8 +5,9 @@
 enum class CharacterType {
 	NONE,
 	PLAYER,
+	PLAYER_BULLET,
 	ENEMY,
-	BULLET,
+	ENEMY_BULLET,
 };
 
 class GameCharacter {

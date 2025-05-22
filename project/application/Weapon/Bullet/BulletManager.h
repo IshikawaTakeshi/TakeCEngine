@@ -15,7 +15,7 @@ public:
 	void UpdateBullet();
 	void DrawBullet();
 
-	void ShootBullet(const Vector3& weaponPos,const Vector3& targetPos);
+	void ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type);
 
 private:
 

@@ -11,8 +11,6 @@
 
 void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
-	//キャラクタータイプ設定
-	characterType_ = CharacterType::PLAYER;
 	//オブジェクト初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
@@ -82,9 +80,10 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 // 弾の座標、速度の初期化
 //========================================================================================================
 
-void Bullet::BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos) {
+void Bullet::BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type) {
 
 	transform_.translate = weaponPos;
+	characterType_ = type;
 
 	//ターゲットまでの方向を求める
 	Vector3 direction = targetPos - transform_.translate;
