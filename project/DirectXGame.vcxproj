@@ -191,6 +191,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\PostEffect\Vignette.cpp" />
     <ClCompile Include="engine\PostEffect\RenderTexture.cpp" />
     <ClCompile Include="engine\PostEffect\RadialBluer.cpp" />
+    <ClCompile Include="engine\3d\Particle\PrimitiveParticle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Collision\Collider.h" />
@@ -261,6 +262,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\PostEffect\RenderTexture.h" />
     <ClInclude Include="engine\PostEffect\RadialBluer.h" />
     <ClInclude Include="engine\PostEffect\LuminanceBasedOutline.h" />
+    <ClInclude Include="engine\3d\Particle\PrimitiveParticle.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

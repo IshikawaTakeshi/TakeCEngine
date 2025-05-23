@@ -6,7 +6,7 @@
 // 初期化
 //================================================================================================
 
-void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon,const std::string& name, const std::string& filePath) {
+void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& name, ParticleModelType modelType, const std::string& filePath) {
 
 	if (particleGroups_.contains(name)) {
 		//既に同名のparticleGroupが存在する場合は生成しない
@@ -14,9 +14,16 @@ void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon,const s
 	}
 
 	//particleGroupの生成
-	std::unique_ptr<Particle3d> particleGroup = std::make_unique<Particle3d>();
-	particleGroup->Initialize(particleCommon,filePath);
-	particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
+	if (modelType == ParticleModelType::ExternalModel) {
+
+		std::unique_ptr<BaseParticleGroup> particleGroup = std::make_unique<Particle3d>();
+		particleGroup->Initialize(particleCommon, filePath);
+		particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
+	} else {
+		std::unique_ptr<BaseParticleGroup> particleGroup = std::make_unique<PrimitiveParticle>(PRIMITIVE_PLANE);
+		particleGroup->Initialize(particleCommon, filePath);
+		particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
+	}
 }
 
 //================================================================================================
@@ -40,7 +47,7 @@ void ParticleManager::UpdateImGui() {
 	ImGui::Text("ParticleGroup Count : %d", particleGroups_.size());
 	ImGui::Separator();
 	for (const auto& [name, particleGroup] : particleGroups_) {
-		
+
 		if (ImGui::TreeNode(name.c_str())) {
 			particleGroup->UpdateImGui();
 			ImGui::TreePop();
@@ -55,15 +62,9 @@ void ParticleManager::UpdateImGui() {
 // 描画処理
 //================================================================================================
 
-void ParticleManager::Draw(bool primitiveDraw) {
+void ParticleManager::Draw() {
 	for (auto& [name, particleGroup] : particleGroups_) {
-		if(primitiveDraw) {
-			particleGroup->DrawPrimitive();
-		}
-		else {
-			//描画
-			particleGroup->Draw();
-		}
+		particleGroup->Draw();
 	}
 }
 

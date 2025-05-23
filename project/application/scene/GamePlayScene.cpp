@@ -38,7 +38,7 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 
 	//CreateParticle
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"HitEffect", "plane.obj");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"HitEffect",ParticleModelType::Primitive, "uvChecker.png");
 
 	//ParticleEmitterの初期化
 	particleEmitter1_ = std::make_unique<ParticleEmitter>();
@@ -173,7 +173,7 @@ void GamePlayScene::Draw() {
 	TakeCFrameWork::GetWireFrame()->Draw();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
-	//TakeCFrameWork::GetParticleManager()->Draw(true); //パーティクルの描画
+	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
 
 
 	//スプライトの描画前処理

@@ -45,7 +45,7 @@ class ParticleCommon;
 class BaseParticleGroup {
 public:
 	BaseParticleGroup() = default;
-	~BaseParticleGroup() = default;
+	virtual ~BaseParticleGroup() = default;
 
 	virtual void Initialize(ParticleCommon* particleCommon, const std::string& filePath) = 0;
 
