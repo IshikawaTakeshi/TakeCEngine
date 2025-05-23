@@ -38,11 +38,22 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 
 	//CreateParticle
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"HitEffect", "plane.obj");
+	ParticleAttributes particleAttributes;
+	particleAttributes.scale = { 1.0f,1.0f,1.0f };
+	particleAttributes.positionRange = { 0.0f,0.0f };
+	particleAttributes.scaleRange = { 1.0f,1.0f };
+	particleAttributes.rotateRange = { -1.0f,1.0f };
+	particleAttributes.velocityRange = { 0.0f,0.0f };
+	particleAttributes.colorRange = { 0.0f,1.0f };
+	particleAttributes.lifetimeRange = { 1.0f,1.0f };
+	particleAttributes.editColor = true;
+	particleAttributes.color = { 0.0f,1.0f,1.0f };
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"HitEffect",ParticleModelType::Primitive, "white1x1.png");
+	TakeCFrameWork::GetParticleManager()->SetAttributes("HitEffect", particleAttributes);
 
 	//ParticleEmitterの初期化
 	particleEmitter1_ = std::make_unique<ParticleEmitter>();
-	particleEmitter1_->Initialize("emitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} }, 1, 1.0f);
+	particleEmitter1_->Initialize("emitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,2.0f,0.0f} }, 1, 0.5f);
 	particleEmitter1_->SetParticleName("HitEffect");
 
 	//Animation読み込み
@@ -173,7 +184,7 @@ void GamePlayScene::Draw() {
 	TakeCFrameWork::GetWireFrame()->Draw();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
-	//TakeCFrameWork::GetParticleManager()->Draw(true); //パーティクルの描画
+	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
 
 
 	//スプライトの描画前処理

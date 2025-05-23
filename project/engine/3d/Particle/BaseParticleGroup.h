@@ -45,7 +45,7 @@ class ParticleCommon;
 class BaseParticleGroup {
 public:
 	BaseParticleGroup() = default;
-	~BaseParticleGroup() = default;
+	virtual ~BaseParticleGroup() = default;
 
 	virtual void Initialize(ParticleCommon* particleCommon, const std::string& filePath) = 0;
 
@@ -68,6 +68,8 @@ public:
 	//bool IsCollision(const AABB& aabb, const Vector3& point);
 
 	void SpliceParticles(std::list<Particle> particles);
+
+	virtual void SetAttributes(const ParticleAttributes& attributes) { particleAttributes_ = attributes; }
 
 protected:
 

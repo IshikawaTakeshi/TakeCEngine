@@ -10,7 +10,12 @@ void LuminanceBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvM
 
 }
 
-void LuminanceBasedOutline::UpdateImGui() {}
+void LuminanceBasedOutline::UpdateImGui() {
+
+#ifdef _DEBUG
+	
+#endif // _DEBUG
+}
 
 void LuminanceBasedOutline::DisPatch() {
 
