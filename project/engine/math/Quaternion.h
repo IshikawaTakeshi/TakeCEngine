@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector3.h"
+#include "Matrix4x4.h"
 
 struct Quaternion {
 	float x;
@@ -36,6 +37,10 @@ namespace QuaternionMath {
 	Quaternion Inverse(const Quaternion& q);
 	//任意軸回転クォータニオン
 	Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle);
+
+	Quaternion LookRotation(const Vector3& forward, const Vector3& up);
+
+	Quaternion FromMatrix(const Matrix4x4& m);
 
 	//Quaternionの回転結果をベクトルで返す
 	Vector3 RotateVector(const Vector3& vector,const Quaternion& quaternion);

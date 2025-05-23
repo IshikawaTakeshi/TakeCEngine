@@ -5,6 +5,7 @@
 #include "ImGuiManager.h"
 #include "Input.h"
 #include "math/Easing.h"
+#include "math/Vector3Math.h"
 
 Camera::~Camera() {
 	cameraResource_.Reset();
@@ -14,7 +15,7 @@ void Camera::Initialize(ID3D12Device* device) {
 	
 	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	offset_ = { 0.0f, 0.0f, -5.0f };
-	offsetDelta_ = { 0.0f, 0.0f, -70.0f };
+	offsetDelta_ = { 0.0f, 0.0f, -50.0f };
 	fovX_ = 0.45f;
 	aspectRatio_ = float(WinApp::kClientWidth / 2) / float(WinApp::kClientHeight / 2);
 	nearClip_ = 0.1f;
@@ -25,8 +26,9 @@ void Camera::Initialize(ID3D12Device* device) {
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
 	rotationMatrix_ = MatrixMath::MakeIdentity4x4();
 
-	targetPosition_ = new Vector3();
-	targetRotation_ = new Vector3();
+	followTargetPosition_ = new Vector3();
+	followTargetRotation_ = new Vector3();
+	focusTargetPosition_ = new Vector3();
 
 	cameraResource_ = DirectXCommon::CreateBufferResource(device, sizeof(CameraForGPU));
 	cameraResource_->SetName(L"Camera::cameraResource_");
@@ -107,6 +109,9 @@ void Camera::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("offset", &offset_.x, 0.01f);
+	ImGui::DragFloat3("offsetDelta", &offsetDelta_.x, 0.01f);
+	ImGui::DragFloat("yawRot", &yawRot_, 0.01f);
+	ImGui::DragFloat("pitchRot", &pitchRot_, 0.01f);
 	ImGui::DragFloat("FovX", &fovX_, 0.01f);
 	ImGui::Checkbox("isDebug", &isDebug_);
 }
@@ -151,6 +156,49 @@ void Camera::UpdateDebugCamera() {
 
 void Camera::UpdateGameCamera() {
 	
+	if (cameraStateRequest_) {
+		cameraState_ = cameraStateRequest_.value();
+
+		switch (cameraState_) {
+		case Camera::GameCameraState::FOLLOW:
+			InitializeCameraFollow();
+			break;
+		case Camera::GameCameraState::LOOKAT:
+			InitializeCameraLookAt();
+			break;
+		default:
+			break;
+		}
+
+		cameraStateRequest_ = std::nullopt;
+	}
+
+	switch (cameraState_) {
+	case Camera::GameCameraState::FOLLOW:
+		UpdateCameraFollow();
+		break;
+	case Camera::GameCameraState::LOOKAT:
+		UpdateCameraLockOn();
+		break;
+	default:
+		break;
+	}
+}
+
+void Camera::InitializeCameraFollow() {
+
+	followSpeed_ = 0.1f;
+	offset_ = offsetDelta_;
+}
+
+void Camera::InitializeCameraLookAt() {
+
+	followSpeed_ = 0.4f;
+	offsetDelta_ = Vector3(0.0f, 5.0f, -50.0f);
+}
+
+void Camera::UpdateCameraFollow() {
+
 	// クォータニオンで回転を管理
 	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
 
@@ -175,10 +223,44 @@ void Camera::UpdateGameCamera() {
 	offset_ = QuaternionMath::RotateVector(offset_, rotationDelta);
 
 	//カメラ位置の計算
-	Vector3 tagetPosition_ = *targetPosition_ + offset_;
+	Vector3 tagetPosition_ = *followTargetPosition_ + offset_;
 
 	transform_.translate = Easing::Lerp(transform_.translate, tagetPosition_, followSpeed_);
 	transform_.rotate = Easing::Slerp(transform_.rotate, rotationDelta, followSpeed_);
+
+	//Rスティック押し込みでカメラの状態変更
+	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::RightStick)) {
+		cameraStateRequest_ = GameCameraState::LOOKAT;
+	}
+}
+
+void Camera::UpdateCameraLockOn() {
+
+	// ターゲット方向を正規化
+	Vector3 toTarget = Vector3Math::Normalize(*focusTargetPosition_ - transform_.translate);
+
+	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
+	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
+
+	//Vector3 euler = QuaternionMath::toEuler(transform_.rotate);
+	//yawRot_ = euler.y;
+	//pitchRot_ = euler.x;
+	// 回転補間
+	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
+
+	// 高さを持った固定オフセット
+	offset_ = offsetDelta_;
+
+	// ターゲットからの相対位置に補間移動
+	Vector3 desiredPosition = *followTargetPosition_ + QuaternionMath::RotateVector(offset_, transform_.rotate);
+	transform_.translate = Easing::Lerp(transform_.translate, desiredPosition, followSpeed_);
+
+
+
+	// 状態切り替え
+	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RightStick)) {
+		cameraStateRequest_ = GameCameraState::FOLLOW;
+	}
 }
 
 #endif // DEBUG

@@ -1,4 +1,6 @@
 #include "Quaternion.h"
+#include "Vector3Math.h"
+#include "MatrixMath.h"
 #include <cmath>
 #include <numbers>
 
@@ -80,6 +82,58 @@ Quaternion QuaternionMath::MakeRotateAxisAngleQuaternion(const Vector3& axis, fl
 	return result;
 }
 
+Quaternion QuaternionMath::LookRotation(const Vector3& forward, const Vector3& up) {
+	Vector3 zAxis = Vector3Math::Normalize(forward);
+	Vector3 xAxis = Vector3Math::Normalize(Vector3Math::Cross(up, zAxis));
+	Vector3 yAxis = Vector3Math::Cross(zAxis, xAxis);
+
+	// 回転行列を作成
+	Matrix4x4 rotationMatrix = {
+		xAxis.x, yAxis.x, zAxis.x, 0.0f,
+		xAxis.y, yAxis.y, zAxis.y, 0.0f,
+		xAxis.z, yAxis.z, zAxis.z, 0.0f,
+		0.0f,    0.0f,    0.0f,    1.0f
+	};
+
+	// 回転行列からクォータニオンを作成
+	return QuaternionMath::FromMatrix(rotationMatrix);
+}
+
+Quaternion QuaternionMath::FromMatrix(const Matrix4x4& m) {
+	Quaternion q;
+	float trace = m.m[0][0] + m.m[1][1] + m.m[2][2];
+
+	if (trace > 0.0f) {
+		float s = sqrtf(trace + 1.0f) * 2.0f; // 4 * q.w
+		q.w = 0.25f * s;
+		q.x = (m.m[2][1] - m.m[1][2]) / s;
+		q.y = (m.m[0][2] - m.m[2][0]) / s;
+		q.z = (m.m[1][0] - m.m[0][1]) / s;
+	} else {
+		if (m.m[0][0] > m.m[1][1] && m.m[0][0] > m.m[2][2]) {
+			float s = sqrtf(1.0f + m.m[0][0] - m.m[1][1] - m.m[2][2]) * 2.0f;
+			q.w = (m.m[2][1] - m.m[1][2]) / s;
+			q.x = 0.25f * s;
+			q.y = (m.m[0][1] + m.m[1][0]) / s;
+			q.z = (m.m[0][2] + m.m[2][0]) / s;
+		} else if (m.m[1][1] > m.m[2][2]) {
+			float s = sqrtf(1.0f + m.m[1][1] - m.m[0][0] - m.m[2][2]) * 2.0f;
+			q.w = (m.m[0][2] - m.m[2][0]) / s;
+			q.x = (m.m[0][1] + m.m[1][0]) / s;
+			q.y = 0.25f * s;
+			q.z = (m.m[1][2] + m.m[2][1]) / s;
+		} else {
+			float s = sqrtf(1.0f + m.m[2][2] - m.m[0][0] - m.m[1][1]) * 2.0f;
+			q.w = (m.m[1][0] - m.m[0][1]) / s;
+			q.x = (m.m[0][2] + m.m[2][0]) / s;
+			q.y = (m.m[1][2] + m.m[2][1]) / s;
+			q.z = 0.25f * s;
+		}
+	}
+
+	return q;
+}
+
 Vector3 QuaternionMath::RotateVector(const Vector3& vector, const Quaternion& quaternion) {
 	Vector3 result;
 	Quaternion q = quaternion;
@@ -94,25 +148,28 @@ Vector3 QuaternionMath::RotateVector(const Vector3& vector, const Quaternion& qu
 }
 
 Vector3 QuaternionMath::toEuler(const Quaternion& q) {
-	Vector3 angles;
-	// X軸（ピッチ）
-	float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
-	float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
-	angles.x = std::atan2(sinr_cosp, cosr_cosp);
+	Vector3 euler;
 
-	// Y軸（ヨー）
-	float sinp = 2 * (q.w * q.y - q.z * q.x);
+	// Pitch（X軸）
+	float sinp = -2.0f * (q.y * q.z - q.w * q.x);
 	if (std::abs(sinp) >= 1)
-		angles.y = std::copysign(std::numbers::pi_v<float> / 2, sinp); // クランプ（ジンバルロック）
+		euler.x = (float)(std::copysign(std::numbers::pi_v<float> / 2, sinp)); // クランプ
 	else
-		angles.y = std::asin(sinp);
+		euler.x = std::asin(sinp);
 
-	// Z軸（ロール）
-	float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
-	float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
-	angles.z = std::atan2(siny_cosp, cosy_cosp);
+	// Yaw（Y軸）
+	euler.y = std::atan2(
+		2.0f * (q.x * q.z + q.w * q.y),
+		q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z
+	);
 
-	return angles;
+	// Roll（Z軸） ← 通常ロックオンカメラでは無視
+	euler.z = std::atan2(
+		2.0f * (q.x * q.y + q.w * q.z),
+		q.w * q.w + q.x * q.x - q.y * q.y - q.z * q.z
+	);
+
+	return euler; // (pitch, yaw, roll)
 }
 
 Quaternion operator*(const Quaternion& q, float s) {

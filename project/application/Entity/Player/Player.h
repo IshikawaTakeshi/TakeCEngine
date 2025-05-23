@@ -17,6 +17,10 @@ public:
 
 	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& weaponFilePath);
 
+public:
+
+	void SetFocusTargetPos(const Vector3& targetPos) { focusTargetPos_ = targetPos; }
+
 private:
 
 	enum class Behavior {
@@ -48,6 +52,9 @@ private:
 	Behavior behavior_ = Behavior::IDLE;
 	//プレイヤーの武器
 	std::unique_ptr<BaseWeapon> weapon_ = nullptr;
+
+	//補足対象の座標
+	Vector3 focusTargetPos_ = { 0.0f,0.0f,0.0f };
 
 	//移動ベクトル
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };

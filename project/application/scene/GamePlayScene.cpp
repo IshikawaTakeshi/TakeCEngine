@@ -127,6 +127,7 @@ void GamePlayScene::Update() {
 	sprite_->Update();
 
 	//player
+	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
 	player_->Update();
 	//enemy
 	enemy_->Update();

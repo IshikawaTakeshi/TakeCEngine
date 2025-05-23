@@ -17,11 +17,20 @@ public:
 	void DrawCollider() override;
 	void OnCollisionAction(GameCharacter* other) override;
 
-	void BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos);
+	void BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type);
 
 public:
 
+	EulerTransform GetTransform() const { return transform_; }
 	bool GetIsActive() { return isActive_; }
+
+public:
+
+	void SetIsActive(bool isActive) { isActive_ = isActive; }
+	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
+	void SetSpeed(float speed) { speed_ = speed; }
+	void SetLifeTime(float lifeTime) { lifeTime_ = lifeTime; }
+	void SetTransform(const EulerTransform& transform) { transform_ = transform; }
 
 private:
 	enum class BulletType {

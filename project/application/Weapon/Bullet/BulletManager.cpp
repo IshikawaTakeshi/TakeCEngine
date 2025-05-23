@@ -41,11 +41,11 @@ void BulletManager::DrawBullet() {
 // 弾の初期化
 //========================================================================================================
 
-void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPos) {
+void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type) {
 
 	Bullet* bullet = bulletPool_.GetBullet();
 	if (bullet) {
 		bullet->Initialize(object3dCommon_, bulletFilePath_);
-		bullet->BulletInitialize(weaponPos, targetPos);
+		bullet->BulletInitialize(weaponPos, targetPos,type);
 	}
 }

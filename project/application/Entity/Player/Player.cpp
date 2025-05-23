@@ -40,7 +40,7 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bull
 	//武器の初期化
 	weapon_ = std::make_unique<Rifle>();
 	weapon_->Initialize(object3dCommon, bulletManager, weaponFilePath);
-	weapon_->SetOwnerObject(object3d_.get());
+	weapon_->SetOwnerObject(this);
 
 }
 
@@ -88,8 +88,9 @@ void Player::Update() {
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(transform_.rotate);
 	//カメラの設定
-	camera_->SetTargetPos(transform_.translate);
-	camera_->SetTargetRot(eulerRotate);
+	camera_->SetFollowTargetPos(transform_.translate);
+	camera_->SetFollowTargetRot(eulerRotate);
+	camera_->SetFocusTargetPos(focusTargetPos_);
 
 	object3d_->SetTranslate(transform_.translate);
 	object3d_->SetRotation(eulerRotate);
@@ -158,9 +159,7 @@ void Player::UpdateRunning() {
 		
 		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.1f);
 		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
-
 	}
-
 
 	//移動時の加速度の計算
 	velocity_.x += moveDirection_.x * moveSpeed_ * deltaTime_;
