@@ -7,6 +7,12 @@
 #include "ResourceDataStructure.h"
 #include <memory>
 
+enum PrimitiveType {
+	PRIMITIVE_RING,
+	PRIMITIVE_PLANE,
+	PRIMITIVE_COUNT
+};
+
 struct PrimitiveMesh {
 	ComPtr<ID3D12Resource> vertexResource_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
@@ -23,6 +29,13 @@ public:
 
 	// Ring全体のデータ
 	struct RingData {
+		PrimitiveMesh primitiveData_;
+		VertexData* vertexData_ = nullptr;
+		Material* material_ = nullptr;
+	};
+
+	//plane全体のデータ
+	struct PlaneData {
 		PrimitiveMesh primitiveData_;
 		VertexData* vertexData_ = nullptr;
 		Material* material_ = nullptr;
@@ -49,11 +62,23 @@ public:
 	/// <param name="color">カラー</param>
 	void GenerateRing(const float outerRadius, const float innerRadius);
 
+	void GeneratePlane(const float width, const float height);
+
 	// 描画処理
 	void DrawParticle(PSO* pso,UINT instanceCount);
 
+	void CreateVertexData(PrimitiveType type);
+
 	// リングの頂点データの作成関数
 	void CreateRingVertexData();
+
+	void CreatePlaneVertexData();
+
+	void CreateMatrialData(PrimitiveType type, const std::string& textureFilePath);
+
+	void CreateRingMaterial(const std::string& textureFilePath);
+
+	void CreatePlaneMaterial(const std::string& textureFilePath);
 
 	void ResetVertexIndex() { ringVertexIndex_ = 0; }
 
@@ -82,6 +107,11 @@ private:
 	uint32_t ringVertexIndex_ = 0;
 	uint32_t ringInstanceIndex_ = 0;
 	uint32_t ringVertexCount_ = ringDivide_ * 6;
+
+	PlaneData* planeData_ = nullptr;
+	uint32_t planeVertexIndex_ = 0;
+	uint32_t planeVertexCount_ = 0;
+
 	const uint32_t kMaxVertexCount_ = 32000;
 };
 

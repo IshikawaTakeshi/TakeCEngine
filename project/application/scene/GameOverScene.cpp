@@ -126,5 +126,5 @@ void GameOverScene::Draw() {
 	GameOverText_->Draw();
 	
 	ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理
-	TakeCFrameWork::GetParticleManager()->Draw(true); // パーティクルの描画
+	TakeCFrameWork::GetParticleManager()->Draw(); // パーティクルの描画
 }
