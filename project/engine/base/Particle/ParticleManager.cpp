@@ -86,3 +86,13 @@ void ParticleManager::Emit(const std::string& name, const Vector3& emitPosition,
 	//particleGroupsに発生させたパーティクルを登録させる
 	particleGroups_.at(name)->SpliceParticles(particleGroups_.at(name)->Emit(emitPosition, count));
 }
+
+void ParticleManager::SetAttributes(const std::string& name, const ParticleAttributes& attributes) {
+
+	//存在しない場合は処理しない
+	if (!particleGroups_.contains(name)) {
+		return;
+	}
+	//particleGroupsに発生させたパーティクルを登録させる
+	particleGroups_.at(name)->SetAttributes(attributes);
+}

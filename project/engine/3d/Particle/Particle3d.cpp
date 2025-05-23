@@ -50,6 +50,7 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	//perviewInit
 	perViewData_->viewProjection = MatrixMath::MakeIdentity4x4();
 	perViewData_->billboardMatrix = MatrixMath::MakeIdentity4x4();
+	perViewData_->isBillboard = true;
 
 	//Mapping
 	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));

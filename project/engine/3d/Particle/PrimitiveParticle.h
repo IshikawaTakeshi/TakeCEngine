@@ -26,6 +26,8 @@ public:
 
 	void SpliceParticles(std::list<Particle> particles);
 
+	void SetAttributes(const ParticleAttributes& attributes) override { particleAttributes_ = attributes; }
+
 private:
 
 	PrimitiveType type_ = PRIMITIVE_RING;

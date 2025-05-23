@@ -69,6 +69,8 @@ public:
 
 	void SpliceParticles(std::list<Particle> particles);
 
+	virtual void SetAttributes(const ParticleAttributes& attributes) { particleAttributes_ = attributes; }
+
 protected:
 
 	//Particleの総数

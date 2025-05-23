@@ -39,6 +39,7 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 	//perviewInit
 	perViewData_->viewProjection = MatrixMath::MakeIdentity4x4();
 	perViewData_->billboardMatrix = MatrixMath::MakeIdentity4x4();
+	perViewData_->isBillboard = false;
 	//Mapping
 	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
 

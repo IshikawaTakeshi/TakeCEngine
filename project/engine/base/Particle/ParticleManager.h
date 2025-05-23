@@ -38,6 +38,8 @@ public:
 
 	void Emit(const std::string& name, const Vector3& emitPosition, uint32_t count);
 
+	void SetAttributes(const std::string& name, const ParticleAttributes& attributes);
+
 
 private:
 
