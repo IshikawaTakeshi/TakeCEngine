@@ -40,3 +40,12 @@ void BulletPool::DrawAllBullet() {
 		}
 	}
 }
+
+void BulletPool::DrawAllCollider() {
+
+	for (const auto& bullet : pool_) {
+		if (bullet->GetIsActive()) {
+			bullet->DrawCollider();
+		}
+	}
+}

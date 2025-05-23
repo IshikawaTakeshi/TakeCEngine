@@ -180,6 +180,7 @@ void GamePlayScene::Draw() {
 	CollisionManager::GetInstance()->PreDraw();
 	player_->DrawCollider();
 	enemy_->DrawCollider();
+	bulletManager_->DrawCollider();
 
 	//グリッド地面の描画
 	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 100);

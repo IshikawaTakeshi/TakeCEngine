@@ -14,6 +14,7 @@ public:
 	void Finalize();
 	void UpdateBullet();
 	void DrawBullet();
+	void DrawCollider();
 
 	void ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type);
 
