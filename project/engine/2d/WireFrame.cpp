@@ -97,7 +97,7 @@ void WireFrame::DrawSphere(const Vector3& center, float radius, const Vector4& c
 
 	Matrix4x4 worldMatrix = MatrixMath::MakeAffineMatrix(Vector3(radius, radius, radius), Vector3(0.0f, 0.0f, 0.0f), center);
 
-	for (uint32_t i = 0; i + 2 < spheres_.size(); i += 1) {
+	for (uint32_t i = 0; i + 2 < spheres_.size(); i += 3) {
 		Vector3 a = spheres_[i];
 		Vector3 b = spheres_[i + 1];
 		Vector3 c = spheres_[i + 2];
