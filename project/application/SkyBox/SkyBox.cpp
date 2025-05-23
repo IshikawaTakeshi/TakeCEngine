@@ -40,7 +40,7 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename
 	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
 	//CPUで動かす用のTransform
-	transform_ = { {5.0f,5.0f,5.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform_ = { {50.0f,50.0f,50.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	//アフィン行列
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(

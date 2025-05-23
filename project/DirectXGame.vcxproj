@@ -115,6 +115,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\GameClearScene.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\Collision\BoxCollider.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\Bullet.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\BulletManager.cpp" />
+    <ClCompile Include="application\Entity\Enemy\Enemy.cpp" />
     <ClCompile Include="engine\PostEffect\Dissolve.cpp" />
     <ClCompile Include="engine\PostEffect\BoxFilter.cpp" />
     <ClCompile Include="engine\3d\Particle\BaseParticleGroup.cpp" />
@@ -192,6 +195,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\PostEffect\RenderTexture.cpp" />
     <ClCompile Include="engine\PostEffect\RadialBluer.cpp" />
     <ClCompile Include="engine\3d\Particle\PrimitiveParticle.cpp" />
+    <ClCompile Include="application\Weapon\BaseWeapon.cpp" />
+    <ClCompile Include="application\Weapon\Rifle.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\BulletPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Collision\Collider.h" />
@@ -202,6 +208,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\GameClearScene.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
     <ClInclude Include="application\Collision\BoxCollider.h" />
+    <ClInclude Include="application\Weapon\Bullet\Bullet.h" />
+    <ClInclude Include="application\Weapon\Bullet\BulletManager.h" />
+    <ClInclude Include="application\Entity\Enemy\Enemy.h" />
     <ClInclude Include="engine\PostEffect\Dissolve.h" />
     <ClInclude Include="engine\PostEffect\BoxFilter.h" />
     <ClInclude Include="engine\3d\Particle\BaseParticleGroup.h" />
@@ -263,6 +272,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\PostEffect\RadialBluer.h" />
     <ClInclude Include="engine\PostEffect\LuminanceBasedOutline.h" />
     <ClInclude Include="engine\3d\Particle\PrimitiveParticle.h" />
+    <ClInclude Include="application\Weapon\Bullet\BulletPool.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />
@@ -292,6 +302,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Utility\ResourceBarrier.h" />
     <ClInclude Include="engine\base\RtvManager.h" />
     <ClInclude Include="engine\PostEffect\Vignette.h" />
+    <ClInclude Include="application\Weapon\BaseWeapon.h" />
+    <ClInclude Include="application\Weapon\Rifle.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

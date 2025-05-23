@@ -1,5 +1,6 @@
 #pragma once
 #include "TakeCFrameWork.h"
+#include "Weapon/Bullet/BulletManager.h"
 #include <chrono>
 
 class MyGame : public TakeCFrameWork {
@@ -20,6 +21,9 @@ public:
 	//描画処理
 	void Draw()override;
 
+public:
+
+
 private:
 
 	void LoadModel();
@@ -29,4 +33,5 @@ private:
 private:
 
 	std::shared_ptr<BaseScene> currentScene_;
+
 };

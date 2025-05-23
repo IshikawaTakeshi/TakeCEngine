@@ -24,6 +24,7 @@
 #include "application/HPBar/HPBar.h"
 #include "application/Entity/SampleCharacter.h"
 #include "application/Entity/Player/Player.h"
+#include "application/Entity/Enemy/Enemy.h"
 
 
 class GamePlayScene : public BaseScene {
@@ -60,10 +61,13 @@ private:
 	//スプライト
 	std::unique_ptr<Sprite> sprite_ = nullptr;
 
-	//サンプルキャラクター
-	std::unique_ptr<SampleCharacter> sampleEnemy_ = nullptr;
 
+	//player
 	std::unique_ptr<Player> player_ = nullptr;
+	//enemy
+	std::unique_ptr<Enemy> enemy_ = nullptr;
 
 	std::unique_ptr<Object3d> cubeObject_ = nullptr;
+
+	std::unique_ptr<BulletManager> bulletManager_ = nullptr;
 };

@@ -1,13 +1,14 @@
 #pragma once
-#include "application/Entity/GameCharacter.h"
+#include "Entity/GameCharacter.h"
 #include "Weapon/BaseWeapon.h"
 #include "camera/Camera.h"
 #include <optional>
 
-class Player : public GameCharacter {
+class Enemy : public GameCharacter {
+
 public:
-	Player() = default;
-	~Player() override;
+	Enemy() = default;
+	~Enemy() override;
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
 	void Update() override;
 	void UpdateImGui();
@@ -16,10 +17,6 @@ public:
 	void OnCollisionAction(GameCharacter* other) override;
 
 	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& weaponFilePath);
-
-public:
-
-	void SetFocusTargetPos(const Vector3& targetPos) { focusTargetPos_ = targetPos; }
 
 private:
 
@@ -44,8 +41,6 @@ private:
 
 private:
 
-	//カメラ
-	Camera* camera_ = nullptr;
 	//状態遷移リクエスト
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 	//プレイヤーの状態
@@ -53,8 +48,8 @@ private:
 	//プレイヤーの武器
 	std::unique_ptr<BaseWeapon> weapon_ = nullptr;
 
-	//補足対象の座標
-	Vector3 focusTargetPos_ = { 0.0f,0.0f,0.0f };
+	//標的
+	Vector3 targetPos_ = { 0.0f,0.0f,0.0f };
 
 	//移動ベクトル
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
@@ -73,6 +68,5 @@ private:
 	bool isJumping_ = false;
 	bool isDashing_ = false;
 	bool onGround_ = false;
-
 };
 
