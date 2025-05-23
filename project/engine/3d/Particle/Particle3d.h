@@ -34,6 +34,8 @@ public:
 
 	void DrawPrimitive();
 
+	void SetAttributes(const ParticleAttributes& attributes) override { particleAttributes_ = attributes; }
+
 	/// <summary>
 	/// パーティクルの生成
 	/// </summary>

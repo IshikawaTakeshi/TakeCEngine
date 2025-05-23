@@ -13,6 +13,7 @@ void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager)
 	srvManager_ = srvManager;
 
 	ringData_ = new RingData();
+	planeData_ = new PlaneData();
 }
 
 void PrimitiveDrawer::Finalize() {
@@ -21,6 +22,12 @@ void PrimitiveDrawer::Finalize() {
 		ringData_->primitiveData_.vertexResource_.Reset();
 		delete ringData_;
 		ringData_ = nullptr;
+	}
+
+	if (planeData_) {
+		planeData_->primitiveData_.vertexResource_.Reset();
+		delete planeData_;
+		planeData_ = nullptr;
 	}
 
 	//wvpResource_.Reset();
@@ -86,6 +93,34 @@ void PrimitiveDrawer::GenerateRing(const float outerRadius, const float innerRad
 	ringInstanceIndex_ += 1;
 }
 
+void PrimitiveDrawer::GeneratePlane(const float width, const float height) {
+	
+	//Planeの頂点データを生成(6頂点分)
+	planeData_->vertexData_[0].position = { -width,  height,0.0f, 1.0f }; //左下
+	planeData_->vertexData_[1].position = { -width, -height,0.0f, 1.0f }; //左上
+	planeData_->vertexData_[2].position = {  width,  height,0.0f, 1.0f }; //右下
+	planeData_->vertexData_[3].position = { -width, -height,0.0f, 1.0f }; //左上
+	planeData_->vertexData_[4].position = {  width, -height,0.0f, 1.0f }; //右上
+	planeData_->vertexData_[5].position = {  width,  height,0.0f, 1.0f }; //右下
+	//PlaneのUV座標を生成
+	planeData_->vertexData_[0].texcoord = { 0.0f, 1.0f };
+	planeData_->vertexData_[1].texcoord = { 0.0f, 0.0f };
+	planeData_->vertexData_[2].texcoord = { 1.0f, 1.0f };
+	planeData_->vertexData_[3].texcoord = { 0.0f, 0.0f };
+	planeData_->vertexData_[4].texcoord = { 1.0f, 0.0f };
+	planeData_->vertexData_[5].texcoord = { 1.0f, 1.0f };
+	//Planeの法線を生成
+	planeData_->vertexData_[0].normal = { 0.0f, 0.0f, -1.0f };
+	planeData_->vertexData_[1].normal = { 0.0f, 0.0f, -1.0f };
+	planeData_->vertexData_[2].normal = { 0.0f, 0.0f, -1.0f };
+	planeData_->vertexData_[3].normal = { 0.0f, 0.0f, -1.0f };
+	planeData_->vertexData_[4].normal = { 0.0f, 0.0f, -1.0f };
+	planeData_->vertexData_[5].normal = { 0.0f, 0.0f, -1.0f };
+
+	//Planeの頂点の
+	planeVertexCount_ += 6;
+}
+
 void PrimitiveDrawer::DrawParticle(PSO* pso,UINT instanceCount) {
 
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
@@ -94,17 +129,53 @@ void PrimitiveDrawer::DrawParticle(PSO* pso,UINT instanceCount) {
 	//		ringの描画
 	//--------------------------------------------------
 
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//VertexBufferView
-	commandList->IASetVertexBuffers(0, 1, &ringData_->primitiveData_.vertexBufferView_);
-	// materialResource
-	commandList->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gMaterial"), ringData_->material_->GetMaterialResource()->GetGPUVirtualAddress());
-	// texture
-	srvManager_->SetGraphicsRootDescriptorTable(pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData_->material_->GetTextureFilePath()));
-	
-	//描画
-	commandList->DrawInstanced(ringVertexCount_, instanceCount, 0, 0);
+	if (ringVertexIndex_ != 0) {
+
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//VertexBufferView
+		commandList->IASetVertexBuffers(0, 1, &ringData_->primitiveData_.vertexBufferView_);
+		// materialResource
+		commandList->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gMaterial"), ringData_->material_->GetMaterialResource()->GetGPUVirtualAddress());
+		// texture
+		srvManager_->SetGraphicsRootDescriptorTable(pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData_->material_->GetTextureFilePath()));
+
+		//描画
+		commandList->DrawInstanced(ringVertexCount_, instanceCount, 0, 0);
+	}
+
+	//--------------------------------------------------
+	//		planeの描画
+	//--------------------------------------------------
+
+	if (planeVertexCount_ != 0) {
+
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		//VertexBufferView
+		commandList->IASetVertexBuffers(0, 1, &planeData_->primitiveData_.vertexBufferView_);
+		// materialResource
+		commandList->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gMaterial"), planeData_->material_->GetMaterialResource()->GetGPUVirtualAddress());
+		// texture
+		srvManager_->SetGraphicsRootDescriptorTable(pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(planeData_->material_->GetTextureFilePath()));
+		//描画
+		commandList->DrawInstanced(planeVertexCount_, instanceCount, 0, 0);
+	}
 }
+
+void PrimitiveDrawer::CreateVertexData(PrimitiveType type) {
+
+	switch (type) {
+	case PrimitiveType::PRIMITIVE_RING:
+		CreateRingVertexData();
+		break;
+	case PrimitiveType::PRIMITIVE_PLANE:
+		CreatePlaneVertexData();
+		break;
+	default:
+		break;
+	}
+}
+
 
 void PrimitiveDrawer::CreateRingVertexData() {
 
@@ -121,11 +192,52 @@ void PrimitiveDrawer::CreateRingVertexData() {
 	ringData_->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&ringData_->vertexData_));
 
 	GenerateRing(1.0f, 0.1f);
+}
+
+void PrimitiveDrawer::CreatePlaneVertexData() {
+
+	UINT size = sizeof(VertexData) * 6;
+	//bufferをカウント分確保
+	planeData_->primitiveData_.vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
+	planeData_->primitiveData_.vertexResource_->SetName(L"Plane::vertexResource_");
+	//bufferview設定
+	planeData_->primitiveData_.vertexBufferView_.BufferLocation = planeData_->primitiveData_.vertexResource_->GetGPUVirtualAddress();
+	planeData_->primitiveData_.vertexBufferView_.StrideInBytes = sizeof(VertexData);
+	planeData_->primitiveData_.vertexBufferView_.SizeInBytes = size;
+	//mapping
+	planeData_->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&planeData_->vertexData_));
+
+	GeneratePlane(1.0f, 1.0f);
+}
+
+void PrimitiveDrawer::CreateMatrialData(PrimitiveType type, const std::string& textureFilePath) {
+
+	switch (type) {
+	case PrimitiveType::PRIMITIVE_RING:
+		CreateRingMaterial(textureFilePath);
+		break;
+	case PrimitiveType::PRIMITIVE_PLANE:
+		CreatePlaneMaterial(textureFilePath);
+		break;
+	default:
+		break;
+	}
+}
+
+void PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath) {
 
 	ringData_->material_ = new Material();
-	ringData_->material_->Initialize(dxCommon_, "gradationLine.png","rostock_laage_airport_4k.dds");
+	ringData_->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
 	ringData_->material_->SetEnableLighting(false);
 	ringData_->material_->SetEnvCoefficient(0.0f);
+	ringData_->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
+}
 
-	ringData_->material_->SetMaterialColor({1.0f,1.0f,1.0f,1.0f});
+void PrimitiveDrawer::CreatePlaneMaterial(const std::string& textureFilePath) {
+
+	planeData_->material_ = new Material();
+	planeData_->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
+	planeData_->material_->SetEnableLighting(false);
+	planeData_->material_->SetEnvCoefficient(0.0f);
+	planeData_->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
 }
