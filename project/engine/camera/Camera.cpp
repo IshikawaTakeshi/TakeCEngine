@@ -110,6 +110,8 @@ void Camera::UpdateImGui() {
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("offset", &offset_.x, 0.01f);
 	ImGui::DragFloat3("offsetDelta", &offsetDelta_.x, 0.01f);
+	ImGui::DragFloat("yawRot", &yawRot_, 0.01f);
+	ImGui::DragFloat("pitchRot", &pitchRot_, 0.01f);
 	ImGui::DragFloat("FovX", &fovX_, 0.01f);
 	ImGui::Checkbox("isDebug", &isDebug_);
 }
@@ -240,6 +242,9 @@ void Camera::UpdateCameraLockOn() {
 	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
 	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
 
+	//Vector3 euler = QuaternionMath::toEuler(transform_.rotate);
+	//yawRot_ = euler.y;
+	//pitchRot_ = euler.x;
 	// 回転補間
 	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
 
@@ -249,6 +254,8 @@ void Camera::UpdateCameraLockOn() {
 	// ターゲットからの相対位置に補間移動
 	Vector3 desiredPosition = *followTargetPosition_ + QuaternionMath::RotateVector(offset_, transform_.rotate);
 	transform_.translate = Easing::Lerp(transform_.translate, desiredPosition, followSpeed_);
+
+
 
 	// 状態切り替え
 	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RightStick)) {
