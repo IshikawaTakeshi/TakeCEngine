@@ -90,6 +90,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController_;
 	
 	//描画位置のオフセット
-	float offsetX_ = 100.0f;
+	float offsetX_ = 0.0f;
 	float offsetY_ = 0.0f;
 };
