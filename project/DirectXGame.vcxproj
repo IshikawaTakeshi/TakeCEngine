@@ -115,6 +115,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\GameClearScene.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\Collision\BoxCollider.cpp" />
+    <ClCompile Include="engine\base\JsonLoader.cpp" />
     <ClCompile Include="application\Weapon\Bullet\Bullet.cpp" />
     <ClCompile Include="application\Weapon\Bullet\BulletManager.cpp" />
     <ClCompile Include="application\Entity\Enemy\Enemy.cpp" />
@@ -208,6 +209,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\GameClearScene.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
     <ClInclude Include="application\Collision\BoxCollider.h" />
+    <ClInclude Include="engine\base\JsonLoader.h" />
     <ClInclude Include="application\Weapon\Bullet\Bullet.h" />
     <ClInclude Include="application\Weapon\Bullet\BulletManager.h" />
     <ClInclude Include="application\Entity\Enemy\Enemy.h" />

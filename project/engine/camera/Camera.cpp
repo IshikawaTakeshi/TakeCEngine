@@ -17,7 +17,7 @@ void Camera::Initialize(ID3D12Device* device) {
 	offset_ = { 0.0f, 0.0f, -5.0f };
 	offsetDelta_ = { 0.0f, 0.0f, -50.0f };
 	fovX_ = 0.45f;
-	aspectRatio_ = float(WinApp::kClientWidth / 2) / float(WinApp::kClientHeight / 2);
+	aspectRatio_ = float(WinApp::kScreenWidth / 2) / float(WinApp::kScreenHeight / 2);
 	nearClip_ = 0.1f;
 	farClip_ = 1000.0f;
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);

@@ -7,10 +7,12 @@
 class WinApp {
 public:
 
+	// ゲームスクリーンのサイズ
+	static const int32_t kScreenWidth = 1024;
+	static const int32_t kScreenHeight = 600;
 	//クライアント領域のサイズ
-	static const int32_t kClientWidth = 1280;
-	static const int32_t kClientHeight = 720;
-
+	static const int32_t kWindowWidth = 1880; 
+	static const int32_t kWindowHeight = 920;
 
 	WinApp();
 	~WinApp();
@@ -62,9 +64,22 @@ public:
 
 	const RECT& GetWindowRect() const { return wrc_; }
 
+	const float& GetOffsetX() const { return offsetX_; }
+
+	const float& GetOffsetY() const { return offsetY_; }
+
+	/// <summary>
+	/// ビューポートの取得
+	/// </summary>
+	D3D12_VIEWPORT GetViewport() const;
+
+	/// <summary>
+	/// ウィンドウのクライアント領域のサイズを取得
+	/// </summary>
+	D3D12_RECT GetScissorRect() const;
+
 private:
 
-	
 	//ウィンドウクラス
 	WNDCLASS wc_;
 
@@ -74,6 +89,7 @@ private:
 	//debugController
 	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController_;
 	
-	
+	//描画位置のオフセット
+	float offsetX_ = 100.0f;
+	float offsetY_ = 0.0f;
 };
-
