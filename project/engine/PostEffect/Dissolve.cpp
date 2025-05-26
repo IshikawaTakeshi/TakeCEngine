@@ -48,7 +48,7 @@ void Dissolve::DisPatch() {
 	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(
 		computePSO_->GetComputeBindResourceIndex("gDissolveInfo"), dissolveInfoResource_->GetGPUVirtualAddress());
 	//Dispatch
-	dxCommon_->GetCommandList()->Dispatch(WinApp::kClientWidth / 2, WinApp::kClientHeight / 2, 1);
+	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 2, WinApp::kScreenHeight / 2, 1);
 
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
 	ResourceBarrier::GetInstance()->Transition(

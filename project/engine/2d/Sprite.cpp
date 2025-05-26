@@ -70,7 +70,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	//ViewProjectionの初期化
 	viewMatrix_ = MatrixMath::MakeIdentity4x4();
 	projectionMatrix_ = MatrixMath::MakeOrthographicMatrix(
-		0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f);
+		0.0f, 0.0f, float(WinApp::kScreenWidth), float(WinApp::kScreenHeight), 0.0f, 100.0f);
 	worldViewProjectionMatrix_ = worldMatrix_ * viewMatrix_ * projectionMatrix_;
 	wvpData_->WVP = worldViewProjectionMatrix_;
 	wvpData_->World = worldMatrix_;

@@ -44,7 +44,7 @@ void GrayScale::DisPatch() {
 	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(computePSO_->GetComputeBindResourceIndex("gType"), grayScaleTypeResource_->GetGPUVirtualAddress());
 
 	//Dispatch
-	dxCommon_->GetCommandList()->Dispatch(WinApp::kClientWidth / 8, WinApp::kClientHeight / 8, 1);
+	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 8, WinApp::kScreenHeight / 8, 1);
 
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
 	ResourceBarrier::GetInstance()->Transition(

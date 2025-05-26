@@ -68,7 +68,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 	//ViewProjectionの初期化
 	viewMatrix_ = MatrixMath::Inverse(cameraView);
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
-		0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f
+		0.45f, float(WinApp::kScreenWidth) / float(WinApp::kScreenHeight), 0.1f, 100.0f
 	);
 }
 
