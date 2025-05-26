@@ -5,8 +5,6 @@
 #include "Mesh/Mesh.h"
 #include "TextureManager.h"
 #include "ModelManager.h"
-#include "Model.h"
-#include "Camera.h"
 #include "CameraManager.h"
 #include "ImGuiManager.h"
 
@@ -67,6 +65,11 @@ void Object3d::Update() {
 
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+
+	//親子付け処理
+	if (parent_) {
+		worldMatrix_ = MatrixMath::Multiply(worldMatrix_, parent_->worldMatrix_);
+	}
 
 	//wvpの更新
 	if (camera_) {
@@ -158,7 +161,7 @@ void Object3d::Draw() {
 
 void Object3d::DisPatch() {
 	if (model_ != nullptr) {
-		model_->DisPatch();
+		model_->DisPatch(object3dCommon_->GetPSO());
 	}
 }
 

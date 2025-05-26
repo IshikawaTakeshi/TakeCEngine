@@ -5,6 +5,7 @@
 #include <string>
 #include <d3d12.h>
 #include <wrl.h>
+#include <optional>
 
 //定数バッファ用の構造体
 struct CameraForGPU {
@@ -26,8 +27,19 @@ public:
 
 private:
 
+	enum class GameCameraState {
+		FOLLOW,
+		LOOKAT,
+	};
+
 	void UpdateDebugCamera();
 	void UpdateGameCamera();
+
+	void InitializeCameraFollow();
+	void InitializeCameraLookAt();
+
+	void UpdateCameraFollow();
+	void UpdateCameraLockOn();
 
 public: //getter
 	
@@ -40,6 +52,8 @@ public: //getter
 	const Quaternion& GetRotate()const { return transform_.rotate; }
 	const bool& GetIsShaking() const { return isShaking_; }
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetCameraResource() const { return cameraResource_; }
+
+	const GameCameraState& GetCameraState() const { return cameraState_; }
 
 public: //setter
 
@@ -55,8 +69,9 @@ public: //setter
 	void SetShake(float duration, float range);
 
 	void SetStick(const Vector2& stick) { stick_ = stick; }
-	void SetTargetPos(const Vector3& target) { *targetPosition_ = target; }
-	void SetTargetRot(const Vector3& targetRot) { *targetRotation_ = targetRot; }
+	void SetFollowTargetPos(const Vector3& target) { *followTargetPosition_ = target; }
+	void SetFollowTargetRot(const Vector3& targetRot) { *followTargetRotation_ = targetRot; }
+	void SetFocusTargetPos(const Vector3& target) { *focusTargetPosition_ = target; }
 private:
 
 	//バッファリソース
@@ -76,10 +91,18 @@ private:
 	//スティック情報
 	Vector2 stick_;
 
+	//カメラの状態リクエスト
+	std::optional<GameCameraState> cameraStateRequest_ = std::nullopt;
+	//カメラの状態
+	GameCameraState cameraState_ = GameCameraState::FOLLOW;
+
 	//追従対象
-	Vector3* targetPosition_;
-	Vector3* targetRotation_;
+	Vector3* followTargetPosition_;
+	Vector3* followTargetRotation_;
 	float followSpeed_ = 0.1f;
+
+	//補足対象
+	Vector3* focusTargetPosition_;
 	
 	//水平方向視野角
 	float fovX_;

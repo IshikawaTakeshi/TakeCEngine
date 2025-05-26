@@ -3,14 +3,14 @@
 #include <wrl.h>
 #include <memory>
 #include "ResourceDataStructure.h"
-
+#include "camera/Camera.h"
+#include "3d/Model.h"
 #include "Animation/Animator.h"
 #include "Transform.h"
 #include "TransformMatrix.h"
 #include "PSOType.h"
 
-class Model;
-class Camera;
+
 class Object3dCommon;
 class Object3d {
 public:
@@ -65,10 +65,14 @@ public: //setter
 	void SetRotation(const Vector3& rotation) { transform_.rotate = rotation; }
 	void SetTranslate(const Vector3& position) { transform_.translate = position; }
 	void SetAnimation(Animation* animation);
+	void SetParent(Object3d* parent) { parent_ = parent; }
 
 protected: // privateメンバ変数
 
 	Object3dCommon* object3dCommon_ = nullptr;
+
+	//ペアレント
+	const Object3d* parent_ = nullptr;
 
 	//モデル
 	std::unique_ptr<Model> model_ = nullptr;
