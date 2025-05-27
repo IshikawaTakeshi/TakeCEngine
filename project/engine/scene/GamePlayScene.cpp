@@ -116,6 +116,7 @@ void GamePlayScene::Update() {
 	Object3dCommon::GetInstance()->UpdateImGui();
 	ParticleCommon::GetInstance()->UpdateImGui();
 	//TakeCFrameWork::GetPrimitiveDrawer()->UpdateImGui();
+	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 	
 	cubeObject_->UpdateImGui(0);
 	player_->UpdateImGui();

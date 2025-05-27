@@ -87,6 +87,17 @@ void ParticleManager::Emit(const std::string& name, const Vector3& emitPosition,
 	particleGroups_.at(name)->SpliceParticles(particleGroups_.at(name)->Emit(emitPosition, count));
 }
 
+BaseParticleGroup* ParticleManager::GetParticleGroup(const std::string& name) {
+
+	if (particleGroups_.contains(name)) {
+		return particleGroups_.at(name).get();
+	}
+
+	assert(false && "ParticleGroup not found! Please check the name.");
+	return nullptr;
+}
+
+
 void ParticleManager::SetAttributes(const std::string& name, const ParticleAttributes& attributes) {
 
 	//存在しない場合は処理しない

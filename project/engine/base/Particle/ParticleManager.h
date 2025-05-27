@@ -38,6 +38,8 @@ public:
 
 	void Emit(const std::string& name, const Vector3& emitPosition, uint32_t count);
 
+	BaseParticleGroup* GetParticleGroup(const std::string& name);
+
 	void SetAttributes(const std::string& name, const ParticleAttributes& attributes);
 
 

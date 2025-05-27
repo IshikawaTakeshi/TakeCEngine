@@ -82,3 +82,7 @@ void BaseParticleGroup::SpliceParticles(std::list<Particle> particles) {
 	particles_.splice(particles_.end(), particles);
 }
 
+void BaseParticleGroup::SetEmitterPosition(const Vector3& position) {
+	emitterPos_ = position;
+}
+
