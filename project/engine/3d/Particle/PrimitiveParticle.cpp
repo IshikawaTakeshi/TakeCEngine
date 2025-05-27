@@ -96,7 +96,27 @@ void PrimitiveParticle::Update() {
 	}
 }
 
-void PrimitiveParticle::UpdateImGui() {}
+void PrimitiveParticle::UpdateImGui() {
+
+	if (type_ == PRIMITIVE_PLANE) {
+		ImGui::Begin("PlaneParticle");
+		ImGui::Text("Plane Instance Count : %d", numInstance_);
+		ImGui::DragFloat2("PlaneScale", &particleAttributes_.scaleRange.min, 0.01f);
+		ImGui::DragFloat2("RotateRange", &particleAttributes_.rotateRange.min, 0.01f);
+		ImGui::DragFloat2("PositionRange", &particleAttributes_.positionRange.min, 0.01f);
+		ImGui::DragFloat2("VelocityRange", &particleAttributes_.velocityRange.min, 0.01f);
+		ImGui::DragFloat2("ColorRange", &particleAttributes_.colorRange.min, 0.01f);
+	} else if (type_ == PRIMITIVE_RING) {
+		ImGui::Begin("RingParticle");
+		ImGui::Text("Ring Instance Count : %d", numInstance_);
+		ImGui::DragFloat3("RingScale", &particleAttributes_.scale.x, 0.01f);
+		ImGui::DragFloat2("RotateRange", &particleAttributes_.rotateRange.min, 0.01f);
+		ImGui::DragFloat2("PositionRange", &particleAttributes_.positionRange.min, 0.01f);
+		ImGui::DragFloat2("VelocityRange", &particleAttributes_.velocityRange.min, 0.01f);
+		ImGui::DragFloat2("ColorRange", &particleAttributes_.colorRange.min, 0.01f);
+	}
+	ImGui::End();
+}
 
 void PrimitiveParticle::Draw() {
 

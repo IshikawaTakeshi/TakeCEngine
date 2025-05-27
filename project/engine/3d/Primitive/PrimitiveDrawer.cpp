@@ -46,6 +46,11 @@ void PrimitiveDrawer::Update() {
 void PrimitiveDrawer::UpdateImGui() {
 
 	ImGui::Begin("PrimitiveDrawer");
+	if (ringInstanceIndex_ != 0) {
+		ImGui::Text("Ring Instance Count : %d", ringInstanceIndex_);
+	} else {
+		ImGui::Text("Ring Instance Count : 0");
+	}
 	ImGui::DragFloat3("RingScale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat3("RingRotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("RingTranslate", &transform_.translate.x, 0.01f);
@@ -129,7 +134,7 @@ void PrimitiveDrawer::DrawParticle(PSO* pso,UINT instanceCount) {
 	//		ringの描画
 	//--------------------------------------------------
 
-	if (ringVertexIndex_ != 0) {
+	if (ringInstanceIndex_ != 0) {
 
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		//VertexBufferView
