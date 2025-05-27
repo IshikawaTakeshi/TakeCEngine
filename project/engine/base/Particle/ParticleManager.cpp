@@ -6,7 +6,8 @@
 // 初期化
 //================================================================================================
 
-void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& name, ParticleModelType modelType, const std::string& filePath) {
+void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& name,
+	ParticleModelType modelType, const std::string& filePath,PrimitiveType primitiveType) {
 
 	if (particleGroups_.contains(name)) {
 		//既に同名のparticleGroupが存在する場合は生成しない
@@ -20,7 +21,7 @@ void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const 
 		particleGroup->Initialize(particleCommon, filePath);
 		particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
 	} else {
-		std::unique_ptr<BaseParticleGroup> particleGroup = std::make_unique<PrimitiveParticle>(PRIMITIVE_PLANE);
+		std::unique_ptr<BaseParticleGroup> particleGroup = std::make_unique<PrimitiveParticle>(primitiveType);
 		particleGroup->Initialize(particleCommon, filePath);
 		particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
 	}
