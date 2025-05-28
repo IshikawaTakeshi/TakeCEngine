@@ -32,6 +32,8 @@ public:
 		PrimitiveMesh primitiveData_;
 		VertexData* vertexData_ = nullptr;
 		Material* material_ = nullptr;
+		float outerRadius_ = 1.0f; // 外側の半径
+		float innerRadius_ = 0.1f; // 内側の半径
 	};
 
 	//plane全体のデータ

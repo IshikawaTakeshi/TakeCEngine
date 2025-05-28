@@ -13,6 +13,8 @@ void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager)
 	srvManager_ = srvManager;
 
 	ringData_ = new RingData();
+	ringData_->outerRadius_ = 1.0f; // 外側の半径
+	ringData_->innerRadius_ = 0.5f; // 内側の半径
 	planeData_ = new PlaneData();
 }
 
@@ -51,9 +53,8 @@ void PrimitiveDrawer::UpdateImGui() {
 	} else {
 		ImGui::Text("Ring Instance Count : 0");
 	}
-	ImGui::DragFloat3("RingScale", &transform_.scale.x, 0.01f);
-	ImGui::DragFloat3("RingRotate", &transform_.rotate.x, 0.01f);
-	ImGui::DragFloat3("RingTranslate", &transform_.translate.x, 0.01f);
+	ImGui::DragFloat("RingOuterRadius", &ringData_->outerRadius_, 0.01f);
+	ImGui::DragFloat("RingInnerRadius", &ringData_->innerRadius_, 0.01f);
 	ringData_->material_->UpdateMaterialImGui();
 	ImGui::End();
 }
@@ -196,7 +197,7 @@ void PrimitiveDrawer::CreateRingVertexData() {
 	//mapping
 	ringData_->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&ringData_->vertexData_));
 
-	GenerateRing(1.0f, 0.1f);
+	GenerateRing(ringData_->outerRadius_, ringData_->innerRadius_);
 }
 
 void PrimitiveDrawer::CreatePlaneVertexData() {

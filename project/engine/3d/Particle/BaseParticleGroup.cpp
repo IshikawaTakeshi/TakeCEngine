@@ -38,7 +38,7 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 	std::uniform_real_distribution<float> distTime(particleAttributes_.lifetimeRange.min, particleAttributes_.lifetimeRange.max);
 
 	Particle particle;
-	particle.transforms_.scale = { particleAttributes_.scale.x,distScale(randomEngine),particleAttributes_.scale.z};
+	particle.transforms_.scale = { particleAttributes_.scale.x,particleAttributes_.scale.y,particleAttributes_.scale.z};
 	particle.transforms_.rotate = { 0.0f,0.0f,distRotate(randomEngine)};
 
 	Vector3 randomTranslate = { distPosition(randomEngine),distPosition(randomEngine),distPosition(randomEngine) };
