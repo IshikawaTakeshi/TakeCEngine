@@ -19,6 +19,12 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
+	particleEmitters_.resize(5);
+	//パーティクルエミッターの初期化
+	for (int i = 0; i < particleEmitters_.size(); i++) {
+		particleEmitters_[i] = std::make_unique<ParticleEmitter>();
+	}
+
 	speed_ = 500.0f;
 
 }
@@ -43,6 +49,12 @@ void Bullet::Update() {
 	object3d_->SetTranslate(transform_.translate);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
+
+	//パーティクルエミッターの更新
+	for (auto& emitter : particleEmitters_) {
+		emitter->Update();
+		emitter->SetTranslate(transform_.translate);
+	}
 }
 
 void Bullet::UpdateImGui() {}
@@ -71,9 +83,30 @@ void Bullet::DrawCollider() {
 
 void Bullet::OnCollisionAction(GameCharacter* other) {
 
-	if (other->GetCharacterType() == CharacterType::ENEMY) {
-		
+	if (characterType_ == CharacterType::PLAYER_BULLET) {
+		if (other->GetCharacterType() == CharacterType::ENEMY) {
+			//敵に当たった場合の処理
+			//敵のHPを減らす
+			//enemy_->TakeDamage(damage_);
+
+			//パーティクル射出
+			for (auto& emitter : particleEmitters_) {
+				
+				emitter->SetIsEmit(true);
+				emitter->Emit();
+			}
+			isActive_ = false; //弾を無効化
+		}
+	} else if (characterType_ == CharacterType::ENEMY_BULLET) {
+		//敵の弾の場合の処理
+		if (other->GetCharacterType() == CharacterType::PLAYER) {
+			//プレイヤーに当たった場合の処理
+			
+			//player_->TakeDamage(damage_);
+			isActive_ = false; //弾を無効化
+		}
 	}
+
 }
 
 //========================================================================================================

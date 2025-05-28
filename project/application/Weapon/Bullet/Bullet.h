@@ -2,6 +2,7 @@
 #include "3d/Object3d.h"
 #include "3d/Object3dCommon.h"
 #include "Entity/GameCharacter.h"
+#include "3d/Particle/ParticleEmitter.h"
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -46,7 +47,8 @@ private:
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
 	float speed_ = 0.0f;
 	bool isActive_ = false;
-
 	float lifeTime_ = 0.0f;
+
+	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitters_;
 };
 
