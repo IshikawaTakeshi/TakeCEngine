@@ -50,6 +50,7 @@ private:
 	float speed_ = 0.0f;
 	bool isActive_ = false;
 	float lifeTime_ = 0.0f;
+	float bulletradius_ = 1.0f; //弾の半径
 
 	std::unique_ptr<ParticleEmitter> particleEmitter_;
 };

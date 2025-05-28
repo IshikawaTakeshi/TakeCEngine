@@ -20,7 +20,7 @@ void SphereCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObje
 	transform_.translate = collisionObject->GetCenterPosition();
 	if (radius_ == 0.0f) {
 
-		radius_ = collisionObject->GetScale().Length() / 2.0f;
+		radius_ = 1.0f;
 	}
 
 	color_ = { 1.0f,1.0f,1.0f,1.0f };
@@ -93,7 +93,7 @@ bool SphereCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 		float clampedDistance = std::min(distance, otherBox->GetOBB().halfSize.Dot(otherBox->GetOBB().axis[i]));
 		clampedDistance = std::max(-otherBox->GetOBB().halfSize.Dot(otherBox->GetOBB().axis[i]), clampedDistance);
 
-		closestPoint = closestPoint + otherBox->GetOBB().axis[i] * distance;
+		closestPoint = closestPoint + otherBox->GetOBB().axis[i] * clampedDistance;
 	}
 
 	Vector3 diff = transform_.translate - closestPoint;

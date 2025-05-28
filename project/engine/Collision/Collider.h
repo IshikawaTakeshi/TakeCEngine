@@ -67,7 +67,7 @@ public:
 	/// <summary>
 	/// 半径の設定
 	/// </summary>
-	void SetRadius(const float& radius) { radius_ = radius; }
+	virtual void SetRadius(const float& radius) { radius_ = radius; }
 
 	/// <summary>
 	/// 種別IDの設定
