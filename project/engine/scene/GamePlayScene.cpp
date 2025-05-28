@@ -238,17 +238,17 @@ void GamePlayScene::CheckAllCollisions() {
 
 	CollisionManager::GetInstance()->ClearGameCharacter();
 
-	const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
+	//const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
 
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
 
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
 
-	for (const auto& bullet : bullets) {
+	/*for (const auto& bullet : bullets) {
 		if (bullet->GetIsActive()) {
 			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
 		}
-	}
+	}*/
 
 
 	CollisionManager::GetInstance()->CheckAllCollisionsForGameCharacter();
