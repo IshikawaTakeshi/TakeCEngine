@@ -67,7 +67,7 @@ public:
 	void GeneratePlane(const float width, const float height);
 
 	// 描画処理
-	void DrawParticle(PSO* pso,UINT instanceCount);
+	void DrawParticle(PSO* pso,UINT instanceCount,PrimitiveType type);
 
 	void CreateVertexData(PrimitiveType type);
 

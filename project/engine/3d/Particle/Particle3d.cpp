@@ -156,12 +156,7 @@ void Particle3d::Draw() {
 	model_->DrawForParticle(numInstance_);
 }
 
-void Particle3d::DrawPrimitive() {
-	
-	BaseParticleGroup::Draw();
-	//プリミティブの描画
-	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(particleCommon_->GetGraphicPSO(), numInstance_);
-}
+
 
 //=============================================================================
 // パーティクルの生成
