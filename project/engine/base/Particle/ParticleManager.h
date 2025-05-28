@@ -3,6 +3,7 @@
 #include "3d/Particle/Particle3d.h"
 #include "3d/Particle/PrimitiveParticle.h"
 #include "3d/Particle/ParticleCommon.h"
+#include "3d/Particle/ParticleEmitterAllocater.h"
 #include <list>
 #include <wrl.h>
 #include <unordered_map>
@@ -20,6 +21,17 @@ public:
 	ParticleManager() = default;
 	~ParticleManager() = default;
 
+	// 初期化
+	void Initialize();
+	// 更新処理
+	void Update();
+	// ImGuiの更新処理
+	void UpdateImGui();
+	// 描画処理
+	void Draw();
+	// 終了処理
+	void Finalize();
+
 	/// <summary>
 	/// パーティクルグループの生成
 	/// </summary>
@@ -29,15 +41,9 @@ public:
 	void CreateParticleGroup(ParticleCommon* particleCommon,const std::string& name,ParticleModelType modelType,
 		const std::string& filePath,PrimitiveType primitiveType = PRIMITIVE_PLANE);
 
-	void Update();
-
-	void UpdateImGui();
-
-	void Draw();
-
-	void Finalize();
-
 	void Emit(const std::string& name, const Vector3& emitPosition, uint32_t count);
+
+	uint32_t EmitterAllocate();
 
 	BaseParticleGroup* GetParticleGroup(const std::string& name);
 
@@ -45,6 +51,8 @@ public:
 
 
 private:
+
+	std::unique_ptr<ParticleEmitterAllocater> emitterAllocater_;
 
 	std::unordered_map<std::string, std::unique_ptr<BaseParticleGroup>> particleGroups_;
 

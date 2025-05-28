@@ -119,6 +119,7 @@
     <ClCompile Include="application\Weapon\BaseWeapon.cpp" />
     <ClCompile Include="application\Weapon\Rifle.cpp" />
     <ClCompile Include="application\Weapon\Bullet\BulletPool.cpp" />
+    <ClCompile Include="engine\3d\Particle\ParticleEmitterAllocater.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Collision\Collider.h" />
@@ -226,6 +227,7 @@
     <ClInclude Include="engine\PostEffect\Vignette.h" />
     <ClInclude Include="application\Weapon\BaseWeapon.h" />
     <ClInclude Include="application\Weapon\Rifle.h" />
+    <ClInclude Include="engine\3d\Particle\ParticleEmitterAllocater.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

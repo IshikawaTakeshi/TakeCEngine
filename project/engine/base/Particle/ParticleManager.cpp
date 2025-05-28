@@ -6,30 +6,14 @@
 // 初期化
 //================================================================================================
 
-void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& name,
-	ParticleModelType modelType, const std::string& filePath,PrimitiveType primitiveType) {
-
-	if (particleGroups_.contains(name)) {
-		//既に同名のparticleGroupが存在する場合は生成しない
-		return;
-	}
-
-	//particleGroupの生成
-	if (modelType == ParticleModelType::ExternalModel) {
-
-		std::unique_ptr<BaseParticleGroup> particleGroup = std::make_unique<Particle3d>();
-		particleGroup->Initialize(particleCommon, filePath);
-		particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
-	} else {
-		std::unique_ptr<BaseParticleGroup> particleGroup = std::make_unique<PrimitiveParticle>(primitiveType);
-		particleGroup->Initialize(particleCommon, filePath);
-		particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
-	}
+void ParticleManager::Initialize() {
+	emitterAllocater_ = std::make_unique<ParticleEmitterAllocater>();
 }
 
 //================================================================================================
 // 更新処理
 //================================================================================================
+
 
 void ParticleManager::Update() {
 	for (auto& [name, particleGroup] : particleGroups_) {
@@ -69,9 +53,39 @@ void ParticleManager::Draw() {
 	}
 }
 
+//================================================================================================
+// 終了処理
+//================================================================================================
+
 void ParticleManager::Finalize() {
 	particleGroups_.clear();
 }
+
+//================================================================================================
+// パーティクルグループの生成
+//================================================================================================
+
+void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& name,
+	ParticleModelType modelType, const std::string& filePath,PrimitiveType primitiveType) {
+
+	if (particleGroups_.contains(name)) {
+		//既に同名のparticleGroupが存在する場合は生成しない
+		return;
+	}
+
+	//particleGroupの生成
+	if (modelType == ParticleModelType::ExternalModel) {
+
+		std::unique_ptr<BaseParticleGroup> particleGroup = std::make_unique<Particle3d>();
+		particleGroup->Initialize(particleCommon, filePath);
+		particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
+	} else {
+		std::unique_ptr<BaseParticleGroup> particleGroup = std::make_unique<PrimitiveParticle>(primitiveType);
+		particleGroup->Initialize(particleCommon, filePath);
+		particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
+	}
+}
+
 
 //================================================================================================
 // パーティクルの発生
@@ -86,6 +100,10 @@ void ParticleManager::Emit(const std::string& name, const Vector3& emitPosition,
 
 	//particleGroupsに発生させたパーティクルを登録させる
 	particleGroups_.at(name)->SpliceParticles(particleGroups_.at(name)->Emit(emitPosition, count));
+}
+
+uint32_t ParticleManager::EmitterAllocate() {
+	return emitterAllocater_->Allocate();
 }
 
 BaseParticleGroup* ParticleManager::GetParticleGroup(const std::string& name) {
