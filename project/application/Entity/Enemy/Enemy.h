@@ -2,6 +2,7 @@
 #include "Entity/GameCharacter.h"
 #include "Weapon/BaseWeapon.h"
 #include "camera/Camera.h"
+#include "3d/Particle/ParticleEmitter.h"
 #include <optional>
 
 class Enemy : public GameCharacter {
@@ -47,10 +48,11 @@ private:
 	Behavior behavior_ = Behavior::IDLE;
 	//プレイヤーの武器
 	std::unique_ptr<BaseWeapon> weapon_ = nullptr;
+	//particleEmitter
+	std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
 
 	//標的
 	Vector3 targetPos_ = { 0.0f,0.0f,0.0f };
-
 	//移動ベクトル
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
 	//減速率
@@ -64,9 +66,12 @@ private:
 	const float kMaxMoveSpeed_ = 50.0f;
 
 	float deltaTime_ = 0.0f;
+	uint32_t hitPoint_ = 100; //体力
 
 	bool isJumping_ = false;
 	bool isDashing_ = false;
 	bool onGround_ = false;
+
+	
 };
 

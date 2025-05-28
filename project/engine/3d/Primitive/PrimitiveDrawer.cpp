@@ -18,13 +18,13 @@ void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager)
 
 void PrimitiveDrawer::Finalize() {
 
-	if (ringData_) {
+	if (ringData_ && ringInstanceIndex_ > 0) {
 		ringData_->primitiveData_.vertexResource_.Reset();
 		delete ringData_;
 		ringData_ = nullptr;
 	}
 
-	if (planeData_) {
+	if (planeData_ && planeVertexCount_ > 0) {
 		planeData_->primitiveData_.vertexResource_.Reset();
 		delete planeData_;
 		planeData_ = nullptr;
@@ -40,7 +40,7 @@ void PrimitiveDrawer::Finalize() {
 
 void PrimitiveDrawer::Update() {
 
-	if (ringData_) {
+	if (ringInstanceIndex_ > 0) {
 		//ringData_->vertexData_[ringVertexIndex].position = {ringData_->outerRadius_ * -sin,ringData_->outerRadius_ * cos, 0.0f, 1.0f }; // outer[i]
 		//ringData_->vertexData_[ringVertexIndex + 1].position = {ringData_->innerRadius_ * -sin,     ringData_->innerRadius_ * cos,    0.0f, 1.0f }; // inner[i]
 		//ringData_->vertexData_[ringVertexIndex + 2].position = {ringData_->innerRadius_ * -sinNext, ringData_->innerRadius_ * cosNext,0.0f, 1.0f }; // inner[i+1]
@@ -50,7 +50,7 @@ void PrimitiveDrawer::Update() {
 
 		ringData_->material_->Update();
 	}
-	if (planeData_) {
+	if (planeVertexCount_ > 0) {
 		
 	}
 
@@ -141,45 +141,60 @@ void PrimitiveDrawer::GeneratePlane(const float width, const float height) {
 	planeVertexCount_ += 6;
 }
 
-void PrimitiveDrawer::DrawParticle(PSO* pso,UINT instanceCount) {
+void PrimitiveDrawer::DrawParticle(PSO* pso,UINT instanceCount,PrimitiveType type) {
 
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
-	//--------------------------------------------------
-	//		ringの描画
-	//--------------------------------------------------
+	
+	switch (type) {
+	case PRIMITIVE_RING:
 
-	if (ringInstanceIndex_ != 0) {
+		//--------------------------------------------------
+		//		ringの描画
+		//--------------------------------------------------
 
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		//VertexBufferView
-		commandList->IASetVertexBuffers(0, 1, &ringData_->primitiveData_.vertexBufferView_);
-		// materialResource
-		commandList->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gMaterial"), ringData_->material_->GetMaterialResource()->GetGPUVirtualAddress());
-		// texture
-		srvManager_->SetGraphicsRootDescriptorTable(pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData_->material_->GetTextureFilePath()));
+		if (ringInstanceIndex_ != 0) {
 
-		//描画
-		commandList->DrawInstanced(ringVertexCount_, instanceCount, 0, 0);
+			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			//VertexBufferView
+			commandList->IASetVertexBuffers(0, 1, &ringData_->primitiveData_.vertexBufferView_);
+			// materialResource
+			commandList->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gMaterial"), ringData_->material_->GetMaterialResource()->GetGPUVirtualAddress());
+			// texture
+			srvManager_->SetGraphicsRootDescriptorTable(pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData_->material_->GetTextureFilePath()));
+
+			//描画
+			commandList->DrawInstanced(ringVertexCount_, instanceCount, 0, 0);
+		}
+		break;
+	case PRIMITIVE_PLANE:
+
+		//--------------------------------------------------
+		//		planeの描画
+		//--------------------------------------------------
+
+		if (planeVertexCount_ != 0) {
+
+			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			//VertexBufferView
+			commandList->IASetVertexBuffers(0, 1, &planeData_->primitiveData_.vertexBufferView_);
+			// materialResource
+			commandList->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gMaterial"), planeData_->material_->GetMaterialResource()->GetGPUVirtualAddress());
+			// texture
+			srvManager_->SetGraphicsRootDescriptorTable(pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(planeData_->material_->GetTextureFilePath()));
+			//描画
+			commandList->DrawInstanced(planeVertexCount_, instanceCount, 0, 0);
+		}
+		break;
+	case PRIMITIVE_COUNT:
+		break;
+	default:
+		break;
 	}
+	
 
-	//--------------------------------------------------
-	//		planeの描画
-	//--------------------------------------------------
-
-	if (planeVertexCount_ != 0) {
-
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		//VertexBufferView
-		commandList->IASetVertexBuffers(0, 1, &planeData_->primitiveData_.vertexBufferView_);
-		// materialResource
-		commandList->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gMaterial"), planeData_->material_->GetMaterialResource()->GetGPUVirtualAddress());
-		// texture
-		srvManager_->SetGraphicsRootDescriptorTable(pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(planeData_->material_->GetTextureFilePath()));
-		//描画
-		commandList->DrawInstanced(planeVertexCount_, instanceCount, 0, 0);
-	}
+	
 }
 
 void PrimitiveDrawer::CreateVertexData(PrimitiveType type) {
@@ -216,7 +231,7 @@ void PrimitiveDrawer::CreateRingVertexData() {
 
 void PrimitiveDrawer::CreatePlaneVertexData() {
 
-	UINT size = sizeof(VertexData) * 6;
+	UINT size = sizeof(VertexData) * 6 * kMaxVertexCount_;
 	//bufferをカウント分確保
 	planeData_->primitiveData_.vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
 	planeData_->primitiveData_.vertexResource_->SetName(L"Plane::vertexResource_");

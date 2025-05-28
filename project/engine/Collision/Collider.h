@@ -67,7 +67,7 @@ public:
 	/// <summary>
 	/// 半径の設定
 	/// </summary>
-	void SetRadius(float radius) { radius_ = radius; }
+	virtual void SetRadius(const float& radius) { radius_ = radius; }
 
 	/// <summary>
 	/// 種別IDの設定
@@ -94,7 +94,7 @@ protected:
 	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
 
 	//衝突半径
-	float radius_ = 0.9f;
+	float radius_ = 1.0f;
 	//種別ID
 	uint32_t typeID_ = 0u;
 };

@@ -2,6 +2,7 @@
 #include "3d/Object3d.h"
 #include "3d/Object3dCommon.h"
 #include "Entity/GameCharacter.h"
+#include "3d/Particle/ParticleEmitter.h"
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -18,6 +19,8 @@ public:
 	void OnCollisionAction(GameCharacter* other) override;
 
 	void BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type);
+
+	void EmitterInitialize(uint32_t count, float frequency);
 
 public:
 
@@ -46,7 +49,9 @@ private:
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
 	float speed_ = 0.0f;
 	bool isActive_ = false;
-
 	float lifeTime_ = 0.0f;
+	float bulletradius_ = 1.0f; //弾の半径
+
+	std::unique_ptr<ParticleEmitter> particleEmitter_;
 };
 
