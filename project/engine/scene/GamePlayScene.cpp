@@ -48,7 +48,7 @@ void GamePlayScene::Initialize() {
 	particleAttributes.lifetimeRange = { 1.0f,1.0f };
 	particleAttributes.editColor = true;
 	particleAttributes.color = { 0.0f,1.0f,1.0f };
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"HitEffect",ParticleModelType::Primitive, "white1x1.png");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"HitEffect",ParticleModelType::Primitive, "white1x1.png",PRIMITIVE_RING);
 	TakeCFrameWork::GetParticleManager()->SetAttributes("HitEffect", particleAttributes);
 
 	//ParticleEmitterの初期化
@@ -115,7 +115,7 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();
 	ParticleCommon::GetInstance()->UpdateImGui();
-	//TakeCFrameWork::GetPrimitiveDrawer()->UpdateImGui();
+	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 	
 	cubeObject_->UpdateImGui(0);
 	player_->UpdateImGui();

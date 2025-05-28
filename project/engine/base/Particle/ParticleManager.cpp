@@ -6,7 +6,8 @@
 // 初期化
 //================================================================================================
 
-void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& name, ParticleModelType modelType, const std::string& filePath) {
+void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& name,
+	ParticleModelType modelType, const std::string& filePath,PrimitiveType primitiveType) {
 
 	if (particleGroups_.contains(name)) {
 		//既に同名のparticleGroupが存在する場合は生成しない
@@ -20,7 +21,7 @@ void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const 
 		particleGroup->Initialize(particleCommon, filePath);
 		particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
 	} else {
-		std::unique_ptr<BaseParticleGroup> particleGroup = std::make_unique<PrimitiveParticle>(PRIMITIVE_PLANE);
+		std::unique_ptr<BaseParticleGroup> particleGroup = std::make_unique<PrimitiveParticle>(primitiveType);
 		particleGroup->Initialize(particleCommon, filePath);
 		particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
 	}
@@ -86,6 +87,17 @@ void ParticleManager::Emit(const std::string& name, const Vector3& emitPosition,
 	//particleGroupsに発生させたパーティクルを登録させる
 	particleGroups_.at(name)->SpliceParticles(particleGroups_.at(name)->Emit(emitPosition, count));
 }
+
+BaseParticleGroup* ParticleManager::GetParticleGroup(const std::string& name) {
+
+	if (particleGroups_.contains(name)) {
+		return particleGroups_.at(name).get();
+	}
+
+	assert(false && "ParticleGroup not found! Please check the name.");
+	return nullptr;
+}
+
 
 void ParticleManager::SetAttributes(const std::string& name, const ParticleAttributes& attributes) {
 

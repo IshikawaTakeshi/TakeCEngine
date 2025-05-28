@@ -55,4 +55,8 @@ private:
 private:
 	//モデル
 	Model* model_ = nullptr;
+
+private:
+
+	void UpdateMovement(std::list<Particle>::iterator particleIterator);
 };
