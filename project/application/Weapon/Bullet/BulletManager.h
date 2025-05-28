@@ -18,6 +18,8 @@ public:
 
 	void ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type);
 
+	std::vector<Bullet*> GetAllBullets();
+
 private:
 
 	Object3dCommon* object3dCommon_ = nullptr;

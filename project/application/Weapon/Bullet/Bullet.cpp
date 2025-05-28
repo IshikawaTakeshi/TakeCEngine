@@ -17,16 +17,11 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//コライダー初期化
 	collider_ = std::make_unique<SphereCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
+	collider_->SetRadius(0.5f); // 半径を設定
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
-	particleEmitters_.resize(5);
-	//パーティクルエミッターの初期化
-	for (int i = 0; i < particleEmitters_.size(); i++) {
-		particleEmitters_[i] = std::make_unique<ParticleEmitter>();
-	}
-
+	particleEmitter_ = std::make_unique<ParticleEmitter>();
 	speed_ = 500.0f;
-
 }
 
 //========================================================================================================
@@ -51,10 +46,9 @@ void Bullet::Update() {
 	collider_->Update(object3d_.get());
 
 	//パーティクルエミッターの更新
-	for (auto& emitter : particleEmitters_) {
-		emitter->Update();
-		emitter->SetTranslate(transform_.translate);
-	}
+	particleEmitter_->Update(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("HitEffect")->SetEmitterPosition(transform_.translate);
+
 }
 
 void Bullet::UpdateImGui() {}
@@ -90,11 +84,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 			//enemy_->TakeDamage(damage_);
 
 			//パーティクル射出
-			for (auto& emitter : particleEmitters_) {
-				
-				emitter->SetIsEmit(true);
-				emitter->Emit();
-			}
+			//particleEmitter_->Emit();
 			isActive_ = false; //弾を無効化
 		}
 	} else if (characterType_ == CharacterType::ENEMY_BULLET) {
@@ -126,4 +116,11 @@ void Bullet::BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos,
 	velocity_ = direction * speed_;
 	lifeTime_ = 2.0f;
 	isActive_ = true;
+}
+
+void Bullet::EmitterInitialize(uint32_t count, float frequency) {
+
+	std::string name = "BulletEmitter_" + std::to_string(reinterpret_cast<std::uintptr_t>(this));
+	particleEmitter_->Initialize(name, transform_, count, frequency);
+	particleEmitter_->SetParticleName("HitEffect2");
 }

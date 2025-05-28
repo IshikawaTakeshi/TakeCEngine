@@ -36,6 +36,11 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 
+	//emiiter設定
+	particleEmitter_ = std::make_unique<ParticleEmitter>();
+	particleEmitter_->Initialize("EnemyEmitter",{ {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,2.0f,0.0f} }, 1, 0.5f);
+	particleEmitter_->SetParticleName("DamageEffectSpark");
+
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
@@ -102,6 +107,10 @@ void Enemy::Update() {
 	collider_->Update(object3d_.get());
 
 	weapon_->Update();
+
+	//パーティクルエミッターの更新
+	particleEmitter_->Update(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageEffectSpark")->SetEmitterPosition(transform_.translate);
 }
 
 void Enemy::UpdateImGui() {
@@ -143,6 +152,15 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 
 	if (other->GetCharacterType() == CharacterType::PLAYER) {
 		//衝突時の処理
+
+		//particleEmitter_->Emit();
+		hitPoint_--;
+	}
+
+	if (other->GetCharacterType()  == CharacterType::PLAYER_BULLET) {
+		//プレイヤーの弾に当たった場合の処理
+		particleEmitter_->Emit();
+		hitPoint_--;
 	}
 }
 

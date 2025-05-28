@@ -36,7 +36,7 @@ void GamePlayScene::Initialize() {
 	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "player_animation.gltf");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
-
+#pragma region CreateParticle
 	//CreateParticle
 	ParticleAttributes particleAttributes;
 	particleAttributes.scale = { 1.0f,1.0f,1.0f };
@@ -63,10 +63,21 @@ void GamePlayScene::Initialize() {
 	particleAttributes2.color = { 1.0f,1.0f,1.0f };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "HitEffect2", ParticleModelType::Primitive, "white1x1.png", PRIMITIVE_PLANE);
 	TakeCFrameWork::GetParticleManager()->SetAttributes("HitEffect2", particleAttributes2);
-	//ParticleEmitterの初期化
-	particleEmitter1_ = std::make_unique<ParticleEmitter>();
-	particleEmitter1_->Initialize("emitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,2.0f,0.0f} }, 1, 0.5f);
-	particleEmitter1_->SetParticleName("HitEffect");
+
+	ParticleAttributes damageEffectAttributes;
+	damageEffectAttributes.scale = { 1.0f,1.0f,1.0f };
+	damageEffectAttributes.positionRange = { 0.0f,0.0f };
+	damageEffectAttributes.scaleRange = { 1.0f,1.0f };
+	damageEffectAttributes.rotateRange = { -1.0f,1.0f };
+	damageEffectAttributes.velocityRange = { -10.0f,10.0f };
+	damageEffectAttributes.lifetimeRange = { 1.0f,1.0f };
+	damageEffectAttributes.editColor = true;
+	damageEffectAttributes.color = { 0.4f,0.1f,1.0f };
+	damageEffectAttributes.isTraslate_ = true;
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DamageEffectSpark", ParticleModelType::Primitive, "white1x1.png", PRIMITIVE_PLANE);
+	TakeCFrameWork::GetParticleManager()->SetAttributes("DamageEffectSpark", damageEffectAttributes);
+
+#pragma endregion
 
 	//Animation読み込み
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
@@ -93,6 +104,7 @@ void GamePlayScene::Initialize() {
 	player_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
+	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
 
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
@@ -113,7 +125,6 @@ void GamePlayScene::Finalize() {
 	CollisionManager::GetInstance()->Finalize(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	player_.reset();
-	particleEmitter1_.reset();
 	sprite_.reset();
 	skyBox_.reset();
 }
@@ -132,7 +143,6 @@ void GamePlayScene::Update() {
 	cubeObject_->UpdateImGui(0);
 	player_->UpdateImGui();
 	enemy_->UpdateImGui();
-	particleEmitter1_->UpdateImGui();
 	sprite_->UpdateImGui(0);
 
 #endif // DEBUG
@@ -144,8 +154,6 @@ void GamePlayScene::Update() {
 	
 	//particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
-	//ParticleEmitterの更新
-	particleEmitter1_->Update();
 
 	sprite_->Update();
 
@@ -230,9 +238,18 @@ void GamePlayScene::CheckAllCollisions() {
 
 	CollisionManager::GetInstance()->ClearGameCharacter();
 
+	const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
+
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
 
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
+
+	for (const auto& bullet : bullets) {
+		if (bullet->GetIsActive()) {
+			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
+		}
+	}
+
 
 	CollisionManager::GetInstance()->CheckAllCollisionsForGameCharacter();
 }

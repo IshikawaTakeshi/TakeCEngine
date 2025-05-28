@@ -44,7 +44,13 @@ void Rifle::Attack() {
 		return;
 	}
 
-	bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,ownerObject_->GetCharacterType());
+	if (ownerObject_->GetCharacterType() == CharacterType::PLAYER){
+		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, CharacterType::PLAYER_BULLET);
+	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
+		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, CharacterType::ENEMY_BULLET);
+	} else {
+		return; // キャラクタータイプが不明な場合は攻撃しない
+	}
 
 	//弾数の減少
 	bulletCount_--;

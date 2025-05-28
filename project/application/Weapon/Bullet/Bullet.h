@@ -20,6 +20,8 @@ public:
 
 	void BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type);
 
+	void EmitterInitialize(uint32_t count, float frequency);
+
 public:
 
 	EulerTransform GetTransform() const { return transform_; }
@@ -49,6 +51,6 @@ private:
 	bool isActive_ = false;
 	float lifeTime_ = 0.0f;
 
-	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitters_;
+	std::unique_ptr<ParticleEmitter> particleEmitter_;
 };
 

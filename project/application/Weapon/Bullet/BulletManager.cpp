@@ -49,8 +49,20 @@ void BulletManager::DrawCollider() {
 void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type) {
 
 	Bullet* bullet = bulletPool_.GetBullet();
-	if (bullet) {
+	if (bullet->GetIsActive()) {
 		bullet->Initialize(object3dCommon_, bulletFilePath_);
 		bullet->BulletInitialize(weaponPos, targetPos,type);
+		bullet->EmitterInitialize(10, 0.1f); // 10個のパーティクルを0.1秒間隔で発生させる
 	}
+}
+
+std::vector<Bullet*> BulletManager::GetAllBullets() {
+	
+	std::vector<Bullet*> bullets;
+	for (const auto& bullet : bulletPool_.GetPool()) {
+		if (bullet->GetIsActive()) {
+			bullets.push_back(bullet);
+		}
+	}
+	return bullets;
 }
