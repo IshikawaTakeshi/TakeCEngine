@@ -18,7 +18,10 @@ void SphereCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObje
 	dxCommon_ = dxCommon;
 
 	transform_.translate = collisionObject->GetCenterPosition();
-	radius_ = collisionObject->GetScale().Length() / 2.0f;
+	if (radius_ == 0.0f) {
+
+		radius_ = collisionObject->GetScale().Length() / 2.0f;
+	}
 
 	color_ = { 1.0f,1.0f,1.0f,1.0f };
 

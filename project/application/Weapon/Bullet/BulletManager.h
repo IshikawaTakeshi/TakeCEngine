@@ -24,5 +24,5 @@ private:
 
 	Object3dCommon* object3dCommon_ = nullptr;
 	std::string bulletFilePath_;
-	BulletPool bulletPool_;
+	std::unique_ptr<BulletPool> bulletPool_;
 };

@@ -12,15 +12,23 @@
 void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
 	//オブジェクト初期化
-	object3d_ = std::make_unique<Object3d>();
+	if (!object3d_) {
+		object3d_ = std::make_unique<Object3d>();
+	}
 	object3d_->Initialize(object3dCommon, filePath);
 	//コライダー初期化
-	collider_ = std::make_unique<SphereCollider>();
-	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
-	collider_->SetRadius(0.5f); // 半径を設定
+	if (!collider_) {
+		collider_ = std::make_unique<SphereCollider>();
+		collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
+	}
+	collider_->SetRadius(10.5f); // 半径を設定
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
-	particleEmitter_ = std::make_unique<ParticleEmitter>();
+	if (!particleEmitter_) {
+		particleEmitter_ = std::make_unique<ParticleEmitter>();
+	}
+
+	transform_.translate = { 0.0f, 100.0f, 0.0f };
 	speed_ = 500.0f;
 }
 
@@ -51,7 +59,9 @@ void Bullet::Update() {
 
 }
 
-void Bullet::UpdateImGui() {}
+void Bullet::UpdateImGui() {
+	
+}
 
 //========================================================================================================
 // 描画処理
@@ -91,7 +101,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 		//敵の弾の場合の処理
 		if (other->GetCharacterType() == CharacterType::PLAYER) {
 			//プレイヤーに当たった場合の処理
-			
+
 			//player_->TakeDamage(damage_);
 			isActive_ = false; //弾を無効化
 		}
@@ -103,7 +113,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 // 弾の座標、速度の初期化
 //========================================================================================================
 
-void Bullet::BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type) {
+void Bullet::BulletInitialize(const Vector3& weaponPos, const Vector3& targetPos, CharacterType type) {
 
 	transform_.translate = weaponPos;
 	characterType_ = type;

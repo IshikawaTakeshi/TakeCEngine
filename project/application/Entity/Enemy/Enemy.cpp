@@ -38,7 +38,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 
 	//emiiter設定
 	particleEmitter_ = std::make_unique<ParticleEmitter>();
-	particleEmitter_->Initialize("EnemyEmitter",{ {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,2.0f,0.0f} }, 1, 0.5f);
+	particleEmitter_->Initialize("EnemyEmitter",{ {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 1, 0.5f);
 	particleEmitter_->SetParticleName("DamageEffectSpark");
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();

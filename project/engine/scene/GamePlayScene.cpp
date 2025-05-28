@@ -214,7 +214,7 @@ void GamePlayScene::Draw() {
 	bulletManager_->DrawCollider();
 
 	//グリッド地面の描画
-	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 100);
+	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 50);
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
 	TakeCFrameWork::GetWireFrame()->Draw();
