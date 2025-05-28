@@ -20,6 +20,10 @@ WinApp::~WinApp() {
 
 }
 
+//=====================================================================
+//			初期化
+//=====================================================================
+
 void WinApp::Initialize(const wchar_t title[]) {
 
 	HRESULT hr;
@@ -55,11 +59,19 @@ void WinApp::Initialize(const wchar_t title[]) {
 
 }
 
+//=====================================================================
+//			終了・開放処理
+//=====================================================================
+
 void WinApp::Finalize() {
 
 	CloseWindow(hwnd_);
 	CoUninitialize();
 }
+
+//=======================================================================
+//			メッセージの処理
+//=======================================================================
 
 bool WinApp::ProcessMessage() {
 
@@ -79,8 +91,39 @@ bool WinApp::ProcessMessage() {
 	return false;
 }
 
+//=======================================================================
+//			ビューポートの取得
+//=======================================================================
 
+D3D12_VIEWPORT WinApp::GetViewport() const {
+	D3D12_VIEWPORT viewport = {};
+	viewport.TopLeftX = offsetX_;
+	viewport.TopLeftY = offsetY_;
+	viewport.Width = static_cast<float>(kScreenWidth);
+	viewport.Height = static_cast<float>(kScreenHeight);
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	return viewport;
+}
+
+//=======================================================================
+//			ウィンドウのクライアント領域のサイズを取得
+//=======================================================================
+
+D3D12_RECT WinApp::GetScissorRect() const {
+	
+	D3D12_RECT scissorRect = {};
+	scissorRect.left = static_cast<LONG>(offsetX_);
+	scissorRect.top = static_cast<LONG>(offsetY_);
+	scissorRect.right = static_cast<LONG>(kScreenWidth + offsetX_);
+	scissorRect.bottom = static_cast<LONG>(kScreenHeight + offsetY_);
+	return scissorRect;
+}
+
+//=======================================================================
 //ウィンドウプロシージャ
+//=======================================================================
+
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 #ifdef _DEBUG
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam)) {
@@ -102,10 +145,14 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+//=======================================================================
+//			ゲームウィンドウの作成
+//=======================================================================
+
 void WinApp::CreateGameWindow(const wchar_t title[]) {
 
 	//ウィンドウサイズを表す構造体にクライアント領域を入れる
-	wrc_ = { 0,0,kClientWidth,kClientHeight };
+	wrc_ = { 0,0,kWindowWidth,kWindowHeight };
 
 	//クライアント領域を元に実際のサイズにwrc_を変更してもらう
 	AdjustWindowRect(&wrc_, WS_OVERLAPPEDWINDOW, false);

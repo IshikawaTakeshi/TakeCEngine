@@ -20,10 +20,10 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 
 	//中間リソースの生成
 	intermediateResource_[FRONT] = dxCommon_->CreateTextureResourceUAV(
-		dxCommon_->GetDevice(), WinApp::kClientWidth, WinApp::kClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
+		dxCommon_->GetDevice(), WinApp::kScreenWidth, WinApp::kScreenHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 	intermediateResource_[FRONT]->SetName(L"intermediateResource_A");
 	intermediateResource_[BACK] = dxCommon_->CreateTextureResourceUAV(
-		dxCommon_->GetDevice(), WinApp::kClientWidth, WinApp::kClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
+		dxCommon_->GetDevice(), WinApp::kScreenWidth, WinApp::kScreenHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 	intermediateResource_[BACK]->SetName(L"intermediateResource_B");
 
 }

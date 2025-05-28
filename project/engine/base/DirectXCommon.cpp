@@ -37,7 +37,7 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	// スワップチェーンの生成
 	CreateSwapChain();
 	//深度ステンシルテクスチャの生成
-	CreateDepthStencilTextureResource(device_, WinApp::kClientWidth, WinApp::kClientHeight);
+	CreateDepthStencilTextureResource(device_, WinApp::kScreenWidth, WinApp::kScreenHeight);
 	//DSV生成
 	CreateDSV();
 
@@ -326,8 +326,8 @@ void DirectXCommon::CreateSwapChain() {
 	HRESULT result = S_FALSE;
 
 	// 各種設定をしてスワップチェーンを生成
-	swapChainDesc_.Width = WinApp::kClientWidth;
-	swapChainDesc_.Height = WinApp::kClientHeight;
+	swapChainDesc_.Width = winApp_->kWindowWidth;
+	swapChainDesc_.Height = winApp_->kWindowHeight;
 	swapChainDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 色情報の書式
 	swapChainDesc_.SampleDesc.Count = 1;                 // マルチサンプルしない
 	swapChainDesc_.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // バックバッファとして使えるように
@@ -740,17 +740,9 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResourceUAV(ID
 }
 
 void DirectXCommon::InitViewport() {
-	viewport_.Width = WinApp::kClientWidth;
-	viewport_.Height = WinApp::kClientHeight;
-	viewport_.TopLeftX = 0;
-	viewport_.TopLeftY = 0;
-	viewport_.MinDepth = 0.0f;
-	viewport_.MaxDepth = 1.0f;
+	viewport_ = winApp_->GetViewport();
 }
 
 void DirectXCommon::InitScissorRect() {
-	scissorRect_.left = 0;
-	scissorRect_.right = WinApp::kClientWidth;
-	scissorRect_.top = 0;
-	scissorRect_.bottom = WinApp::kClientHeight;
+	scissorRect_ = winApp_->GetScissorRect();
 }

@@ -1,13 +1,14 @@
 #include "PrimitiveParticle.h"
-#include "DirectXCommon.h"
-#include "ModelManager.h"
-#include "math/MatrixMath.h"
-#include "Vector3Math.h"
-#include "camera/CameraManager.h"
+#include "base/DirectXCommon.h"
+#include "base/ModelManager.h"
 #include "base/SrvManager.h"
 #include "base/TextureManager.h"
-#include "3d/Particle/ParticleCommon.h"
 #include "base/TakeCFrameWork.h"
+#include "math/MatrixMath.h"
+#include "math/Vector3Math.h"
+#include "math/Easing.h"
+#include "camera/CameraManager.h"
+#include "3d/Particle/ParticleCommon.h"
 #include <numbers>
 
 PrimitiveParticle::PrimitiveParticle(PrimitiveType type) {
@@ -67,9 +68,7 @@ void PrimitiveParticle::Update() {
 			}
 
 			// particle1つの位置更新  
-			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
-			//経過時間の更新
-			(*particleIterator).currentTime_ += kDeltaTime_; 
+			UpdateMovement(particleIterator);
 			//alphaの計算
 			float alpha = 1.0f - ((*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 
@@ -96,7 +95,27 @@ void PrimitiveParticle::Update() {
 	}
 }
 
-void PrimitiveParticle::UpdateImGui() {}
+void PrimitiveParticle::UpdateImGui() {
+
+	if (type_ == PRIMITIVE_PLANE) {
+		ImGui::Begin("PlaneParticle");
+		ImGui::Text("Plane Instance Count : %d", numInstance_);
+		ImGui::DragFloat2("PlaneScale", &particleAttributes_.scaleRange.min, 0.01f);
+		ImGui::DragFloat2("RotateRange", &particleAttributes_.rotateRange.min, 0.01f);
+		ImGui::DragFloat2("PositionRange", &particleAttributes_.positionRange.min, 0.01f);
+		ImGui::DragFloat2("VelocityRange", &particleAttributes_.velocityRange.min, 0.01f);
+		ImGui::DragFloat2("ColorRange", &particleAttributes_.colorRange.min, 0.01f);
+	} else if (type_ == PRIMITIVE_RING) {
+		ImGui::Begin("RingParticle");
+		ImGui::Text("Ring Instance Count : %d", numInstance_);
+		ImGui::DragFloat3("RingScale", &particleAttributes_.scale.x, 0.01f);
+		ImGui::DragFloat2("RotateRange", &particleAttributes_.rotateRange.min, 0.01f);
+		ImGui::DragFloat2("PositionRange", &particleAttributes_.positionRange.min, 0.01f);
+		ImGui::DragFloat2("VelocityRange", &particleAttributes_.velocityRange.min, 0.01f);
+		ImGui::DragFloat2("ColorRange", &particleAttributes_.colorRange.min, 0.01f);
+	}
+	ImGui::End();
+}
 
 void PrimitiveParticle::Draw() {
 
@@ -119,4 +138,39 @@ std::list<Particle> PrimitiveParticle::Emit(const Vector3& emitterPos, uint32_t 
 void PrimitiveParticle::SpliceParticles(std::list<Particle> particles) {
 
 	BaseParticleGroup::SpliceParticles(particles);
+}
+
+void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIterator) {
+
+	//particle1つの位置更新
+
+	if (particleAttributes_.isTraslate_) {
+		if (particleAttributes_.enableFollowEmitter_) {
+			//エミッターに追従する場合
+			(*particleIterator).transforms_.translate = emitterPos_;
+		} else {
+			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
+
+		}
+	}
+
+	if (particleAttributes_.isScale_) {
+		//スケールの更新
+		(*particleIterator).transforms_.scale.x = Easing::Lerp(
+			particleAttributes_.scaleRange.min,
+			particleAttributes_.scaleRange.max,
+			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+
+		(*particleIterator).transforms_.scale.y = Easing::Lerp(
+			particleAttributes_.scaleRange.min,
+			particleAttributes_.scaleRange.max,
+			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+		(*particleIterator).transforms_.scale.z = Easing::Lerp(
+			particleAttributes_.scaleRange.min,
+			particleAttributes_.scaleRange.max,
+			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+	}
+
+	(*particleIterator).currentTime_ += kDeltaTime_; //経過時間の更新
+
 }

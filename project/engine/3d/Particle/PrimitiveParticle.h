@@ -31,5 +31,9 @@ public:
 private:
 
 	PrimitiveType type_ = PRIMITIVE_RING;
+
+private:
+
+	void UpdateMovement(std::list<Particle>::iterator particleIterator);
 };
 

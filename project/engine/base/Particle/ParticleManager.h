@@ -26,7 +26,8 @@ public:
 	/// <param name="particleCommon">パーティクル共通情報</param>
 	/// <param name="name">グループ名(固有名)</param>
 	/// <param name="filePath">objファイルパス</param>
-	void CreateParticleGroup(ParticleCommon* particleCommon,const std::string& name,ParticleModelType modelType, const std::string& filePath);
+	void CreateParticleGroup(ParticleCommon* particleCommon,const std::string& name,ParticleModelType modelType,
+		const std::string& filePath,PrimitiveType primitiveType = PRIMITIVE_PLANE);
 
 	void Update();
 
@@ -37,6 +38,8 @@ public:
 	void Finalize();
 
 	void Emit(const std::string& name, const Vector3& emitPosition, uint32_t count);
+
+	BaseParticleGroup* GetParticleGroup(const std::string& name);
 
 	void SetAttributes(const std::string& name, const ParticleAttributes& attributes);
 
