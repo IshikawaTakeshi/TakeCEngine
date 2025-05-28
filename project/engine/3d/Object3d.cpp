@@ -104,6 +104,11 @@ void Object3d::Update() {
 			AnimationUpdate();
 		}
 	}
+
+	//materialの更新
+	if (model_->GetMesh() && model_->GetMesh()->GetMaterial()) {
+		model_->GetMesh()->GetMaterial()->Update();
+	}
 }
 
 void Object3d::AnimationUpdate() {

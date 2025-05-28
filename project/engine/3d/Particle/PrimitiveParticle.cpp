@@ -113,6 +113,7 @@ void PrimitiveParticle::UpdateImGui() {
 		ImGui::DragFloat2("PositionRange", &particleAttributes_.positionRange.min, 0.01f);
 		ImGui::DragFloat2("VelocityRange", &particleAttributes_.velocityRange.min, 0.01f);
 		ImGui::DragFloat2("ColorRange", &particleAttributes_.colorRange.min, 0.01f);
+		TakeCFrameWork::GetPrimitiveDrawer()->UpdateImGui();
 	}
 	ImGui::End();
 }

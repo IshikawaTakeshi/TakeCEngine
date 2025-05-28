@@ -48,9 +48,21 @@ void GamePlayScene::Initialize() {
 	particleAttributes.lifetimeRange = { 1.0f,1.0f };
 	particleAttributes.editColor = true;
 	particleAttributes.color = { 0.0f,1.0f,1.0f };
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"HitEffect",ParticleModelType::Primitive, "white1x1.png",PRIMITIVE_RING);
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"HitEffect",ParticleModelType::Primitive, "gradationLine.png",PRIMITIVE_RING);
 	TakeCFrameWork::GetParticleManager()->SetAttributes("HitEffect", particleAttributes);
 
+	ParticleAttributes particleAttributes2;
+	particleAttributes2.scale = { 1.0f,1.0f,1.0f };
+	particleAttributes2.positionRange = { 0.0f,0.0f };
+	particleAttributes2.scaleRange = { 1.0f,1.0f };
+	particleAttributes2.rotateRange = { -1.0f,1.0f };
+	particleAttributes2.velocityRange = { 0.0f,0.0f };
+	particleAttributes2.colorRange = { 0.0f,1.0f };
+	particleAttributes2.lifetimeRange = { 1.0f,1.0f };
+	particleAttributes2.editColor = true;
+	particleAttributes2.color = { 1.0f,1.0f,1.0f };
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "HitEffect2", ParticleModelType::Primitive, "white1x1.png", PRIMITIVE_PLANE);
+	TakeCFrameWork::GetParticleManager()->SetAttributes("HitEffect2", particleAttributes2);
 	//ParticleEmitterの初期化
 	particleEmitter1_ = std::make_unique<ParticleEmitter>();
 	particleEmitter1_->Initialize("emitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,2.0f,0.0f} }, 1, 0.5f);

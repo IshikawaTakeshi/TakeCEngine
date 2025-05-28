@@ -44,6 +44,10 @@ void Camera::Initialize(ID3D12Device* device) {
 
 void Camera::Update() {
 
+	if (Input::GetInstance()->TriggerKey(DIK_F1)) {
+		isDebug_ = !isDebug_;
+	}
+
 	if (isDebug_) {
 
 		UpdateDebugCamera();
@@ -52,7 +56,6 @@ void Camera::Update() {
 
 		UpdateGameCamera();
 	}
-
 	
 	transform_.rotate = QuaternionMath::Normalize(transform_.rotate); // クォータニオンを正規化して数値誤差を防ぐ
 

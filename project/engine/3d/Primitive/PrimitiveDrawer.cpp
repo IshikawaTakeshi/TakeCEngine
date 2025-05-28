@@ -13,8 +13,6 @@ void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager)
 	srvManager_ = srvManager;
 
 	ringData_ = new RingData();
-	ringData_->outerRadius_ = 1.0f; // 外側の半径
-	ringData_->innerRadius_ = 0.5f; // 内側の半径
 	planeData_ = new PlaneData();
 }
 
@@ -42,7 +40,20 @@ void PrimitiveDrawer::Finalize() {
 
 void PrimitiveDrawer::Update() {
 
-	
+	if (ringData_) {
+		//ringData_->vertexData_[ringVertexIndex].position = {ringData_->outerRadius_ * -sin,ringData_->outerRadius_ * cos, 0.0f, 1.0f }; // outer[i]
+		//ringData_->vertexData_[ringVertexIndex + 1].position = {ringData_->innerRadius_ * -sin,     ringData_->innerRadius_ * cos,    0.0f, 1.0f }; // inner[i]
+		//ringData_->vertexData_[ringVertexIndex + 2].position = {ringData_->innerRadius_ * -sinNext, ringData_->innerRadius_ * cosNext,0.0f, 1.0f }; // inner[i+1]
+		//ringData_->vertexData_[ringVertexIndex + 3].position = ringData_->vertexData_[ringVertexIndex].position; // outer[i]
+		//ringData_->vertexData_[ringVertexIndex + 4].position = ringData_->vertexData_[ringVertexIndex + 2].position; // inner[i+1]
+		//ringData_->vertexData_[ringVertexIndex + 5].position = { ringData_->outerRadius_ * -sinNext, ringData_->outerRadius_ * cosNext, 0.0f, 1.0f }; // outer[i+1]
+
+		ringData_->material_->Update();
+	}
+	if (planeData_) {
+		
+	}
+
 }
 
 void PrimitiveDrawer::UpdateImGui() {
@@ -62,6 +73,8 @@ void PrimitiveDrawer::UpdateImGui() {
 void PrimitiveDrawer::GenerateRing(const float outerRadius, const float innerRadius) {
 
 	const float radianPerDivide = (2.0f * std::numbers::pi_v<float>) / static_cast<float>(ringDivide_);
+	ringData_->outerRadius_ = outerRadius;
+	ringData_->innerRadius_ = innerRadius;
 	uint32_t ringVertexIndex = 0;
 
 	for (uint32_t index = 0; index < ringDivide_; ++index) {
@@ -72,12 +85,12 @@ void PrimitiveDrawer::GenerateRing(const float outerRadius, const float innerRad
 		float uv = static_cast<float>(index) / static_cast<float>(ringDivide_);
 		float uvNext = static_cast<float>(index + 1) / static_cast<float>(ringDivide_);
 
-		ringData_->vertexData_[ringVertexIndex].position = {outerRadius * -sin,outerRadius * cos, 0.0f, 1.0f }; // outer[i]
-		ringData_->vertexData_[ringVertexIndex + 1].position = {innerRadius * -sin,     innerRadius * cos,    0.0f, 1.0f }; // inner[i]
-		ringData_->vertexData_[ringVertexIndex + 2].position = {innerRadius * -sinNext, innerRadius * cosNext,0.0f, 1.0f }; // inner[i+1]
+		ringData_->vertexData_[ringVertexIndex].position = {ringData_->outerRadius_ * -sin,ringData_->outerRadius_ * cos, 0.0f, 1.0f }; // outer[i]
+		ringData_->vertexData_[ringVertexIndex + 1].position = {ringData_->innerRadius_ * -sin,     ringData_->innerRadius_ * cos,    0.0f, 1.0f }; // inner[i]
+		ringData_->vertexData_[ringVertexIndex + 2].position = {ringData_->innerRadius_ * -sinNext, ringData_->innerRadius_ * cosNext,0.0f, 1.0f }; // inner[i+1]
 		ringData_->vertexData_[ringVertexIndex + 3].position = ringData_->vertexData_[ringVertexIndex].position; // outer[i]
 		ringData_->vertexData_[ringVertexIndex + 4].position = ringData_->vertexData_[ringVertexIndex + 2].position; // inner[i+1]
-		ringData_->vertexData_[ringVertexIndex + 5].position = { outerRadius * -sinNext, outerRadius * cosNext, 0.0f, 1.0f }; // outer[i+1]
+		ringData_->vertexData_[ringVertexIndex + 5].position = { ringData_->outerRadius_ * -sinNext, ringData_->outerRadius_ * cosNext, 0.0f, 1.0f }; // outer[i+1]
 
 		ringData_->vertexData_[ringVertexIndex].texcoord = { uv, 0.0f };     // outer[i]
 		ringData_->vertexData_[ringVertexIndex + 1].texcoord = { uv, 1.0f };     // inner[i]
@@ -96,6 +109,7 @@ void PrimitiveDrawer::GenerateRing(const float outerRadius, const float innerRad
 		ringVertexIndex += 6;
 	}
 
+	ringVertexCount_ += ringDivide_ * 6;
 	ringInstanceIndex_ += 1;
 }
 
@@ -237,6 +251,7 @@ void PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath) {
 	ringData_->material_->SetEnableLighting(false);
 	ringData_->material_->SetEnvCoefficient(0.0f);
 	ringData_->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
+	ringData_->material_->SetUvScale({ 2.5f, 0.5f,1.0f }); // UVスケールを設定
 }
 
 void PrimitiveDrawer::CreatePlaneMaterial(const std::string& textureFilePath) {

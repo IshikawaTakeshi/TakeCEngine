@@ -33,6 +33,14 @@ void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath, 
 	};
 }
 
+void Material::Update() {
+
+	Matrix4x4 scaleMatrix = MatrixMath::MakeScaleMatrix(uvTransform_.scale);
+	Matrix4x4 rotateMatrix = MatrixMath::MakeRotateZMatrix(uvTransform_.rotate.z);
+	Matrix4x4 translateMatrix = MatrixMath::MakeTranslateMatrix(uvTransform_.translate);
+	materialData_->uvTransform = MatrixMath::Multiply(MatrixMath::Multiply(scaleMatrix, rotateMatrix), translateMatrix);
+}
+
 void Material::UpdateMaterialImGui() {
 #ifdef _DEBUG
 	//ImGuiの更新
