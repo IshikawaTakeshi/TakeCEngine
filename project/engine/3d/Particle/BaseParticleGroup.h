@@ -37,8 +37,11 @@ struct ParticleAttributes {
 	AttributeRange velocityRange = { -1.0f,1.0f };
 	AttributeRange colorRange = { 0.0f,1.0f };
 	AttributeRange lifetimeRange = { 1.0f,3.0f };
-	//色を編集するかどうか
-	bool editColor = false;
+	bool isBillboard = false; //Billboardかどうか
+	bool editColor = false; //色を編集するかどうか
+	bool isTraslate_ = false; //位置を更新するかどうか
+	bool isScale_ = false;    //スケールを更新するかどうか
+	bool enableFollowEmitter_ = false; //エミッターに追従するかどうか
 };
 
 class ParticleCommon;
@@ -71,6 +74,8 @@ public:
 
 	virtual void SetAttributes(const ParticleAttributes& attributes) { particleAttributes_ = attributes; }
 
+	void SetEmitterPosition(const Vector3& position);
+
 protected:
 
 	//Particleの総数
@@ -92,8 +97,8 @@ protected:
 	//ParticleCommon
 	ParticleCommon* particleCommon_ = nullptr;
 
-	//モデル
-	//Model* model_ = nullptr;
+	//エミッターの座標
+	Vector3 emitterPos_ = { 0.0f, 0.0f, 0.0f };
 
 	//instancing用のデータ
 	ParticleForGPU* particleData_ = nullptr;

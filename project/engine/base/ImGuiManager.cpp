@@ -36,6 +36,10 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, SrvManage
 
 	// Dockingを有効にする
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; 
+	// デフォルトのフォントを設定
+	io.Fonts->AddFontDefault();
+	//ウィンドウ全体に描画できるようにする
+	io.DisplaySize = ImVec2(static_cast<float>(WinApp::kWindowWidth), static_cast<float>(WinApp::kWindowHeight));
 }
 
 void ImGuiManager::Finalize() {

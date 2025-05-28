@@ -28,7 +28,7 @@ void RenderTexture::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, 
 
 	//RenderTextureResourceの生成
 	renderTextureResource_ = dxCommon_->CreateRenderTextureResource(
-		dxCommon_->GetDevice(),WinApp::kClientWidth,WinApp::kClientHeight,DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,kRenderTargetClearColor_);
+		dxCommon_->GetDevice(),WinApp::kScreenWidth,WinApp::kScreenHeight,DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,kRenderTargetClearColor_);
 	renderTextureResource_->SetName(L"renderTextureResource_front");
 
 	//RTVの生成

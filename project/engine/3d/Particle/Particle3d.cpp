@@ -1,14 +1,15 @@
 #include "Particle3d.h"
-#include "DirectXCommon.h"
-#include "ModelManager.h"
+#include "base/DirectXCommon.h"
+#include "base/ModelManager.h"
+#include "base/SrvManager.h"
+#include "base/TextureManager.h"
+#include "base/TakeCFrameWork.h"
 #include "math/MatrixMath.h"
-#include "Vector3Math.h"
-#include "Model.h"
-#include "CameraManager.h"
-#include "SrvManager.h"
+#include "math/Vector3Math.h"
+#include "math/Easing.h"
+#include "3d/Model.h"
+#include "camera/CameraManager.h"
 #include "ParticleCommon.h"
-#include "TextureManager.h"
-#include "engine/base/TakeCFrameWork.h"
 #include "Input.h"
 #include <numbers>
 
@@ -94,9 +95,7 @@ void Particle3d::Update() {
 			}
 
 			// particle1つの位置更新  
-			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
-			//経過時間の更新
-			(*particleIterator).currentTime_ += kDeltaTime_; 
+			UpdateMovement(particleIterator);
 			//alphaの計算
 			float alpha = 1.0f - ((*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 
@@ -196,4 +195,31 @@ void Particle3d::SpliceParticles(std::list<Particle> particles) {
 
 void Particle3d::SetModel(const std::string& filePath) {
 	model_ = ModelManager::GetInstance()->FindModel(filePath);
+}
+
+void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) {
+	//particle1つの位置更新
+
+	if (particleAttributes_.isTraslate_) {
+		if (particleAttributes_.enableFollowEmitter_) {
+			//エミッターに追従する場合
+			(*particleIterator).transforms_.translate = emitterPos_;
+		} else {
+			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
+			
+		}
+	}
+
+	if (particleAttributes_.isScale_) {
+		//スケールの更新
+		(*particleIterator).transforms_.scale.x = Easing::Lerp(
+			particleAttributes_.scaleRange.min,
+			particleAttributes_.scaleRange.max,
+			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+
+		(*particleIterator).transforms_.scale.y = (*particleIterator).transforms_.scale.x;
+		(*particleIterator).transforms_.scale.z = (*particleIterator).transforms_.scale.x;
+	}
+
+	(*particleIterator).currentTime_ += kDeltaTime_; //経過時間の更新
 }

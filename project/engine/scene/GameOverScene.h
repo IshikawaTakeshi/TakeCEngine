@@ -13,10 +13,8 @@
 #include "3d/Particle/ParticleCommon.h"
 #include "base/Particle/ParticleManager.h"
 #include "3d/Particle/ParticleEmitter.h"
-
-//===== Application =====//
-#include "application/SkyBox/SkyBox.h"
-#include "application/Ground/Ground.h"
+#include "SkyBox/SkyBox.h"
+#include "Ground/Ground.h"
 
 
 class GameOverScene : public BaseScene {

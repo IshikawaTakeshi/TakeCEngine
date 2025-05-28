@@ -14,9 +14,7 @@
 #include "3d/Particle/ParticleCommon.h"
 #include "base/Particle/ParticleManager.h"
 #include "3d/Particle/ParticleEmitter.h"
-
-//===== Application =====//
-#include "application/SkyBox/SkyBox.h"
+#include "SkyBox/SkyBox.h"
 
 class GameClearScene : public BaseScene {
 public:
