@@ -6,6 +6,8 @@
 #include "TransformMatrix.h"
 #include "ResourceDataStructure.h"
 #include <memory>
+#include <cstdint>
+#include <unordered_map>
 
 enum PrimitiveType {
 	PRIMITIVE_RING,
@@ -41,6 +43,8 @@ public:
 		PrimitiveMesh primitiveData_;
 		VertexData* vertexData_ = nullptr;
 		Material* material_ = nullptr;
+		float width_;
+		float height_;
 	};
 
 public:
@@ -62,61 +66,50 @@ public:
 	/// <param name="innerRadius">内側の半径</param>
 	/// <param name="center">中心点</param>
 	/// <param name="color">カラー</param>
-	void GenerateRing(const float outerRadius, const float innerRadius);
+	uint32_t GenerateRing(const float outerRadius, const float innerRadius, const std::string& textureFilePath);
 
-	void GeneratePlane(const float width, const float height);
+	uint32_t GeneratePlane(const float width, const float height, const std::string& textureFilePath);
 
 	// 描画処理
-	void DrawParticle(PSO* pso,UINT instanceCount,PrimitiveType type);
+	void DrawParticle(PSO* pso,UINT instanceCount,PrimitiveType type,uint32_t handle);
 
-	void CreateVertexData(PrimitiveType type);
+	//void CreateVertexData(PrimitiveType type);
 
 	// リングの頂点データの作成関数
-	void CreateRingVertexData();
+	void CreateRingVertexData(RingData* ringData);
 
-	void CreatePlaneVertexData();
+	void CreatePlaneVertexData(PlaneData* planeData);
 
-	void CreateMatrialData(PrimitiveType type, const std::string& textureFilePath);
+	//void CreateMatrialData(PrimitiveType type, const std::string& textureFilePath);
 
-	void CreateRingMaterial(const std::string& textureFilePath);
+	void CreateRingMaterial(const std::string& textureFilePath,RingData* ringData);
 
-	void CreatePlaneMaterial(const std::string& textureFilePath);
+	void CreatePlaneMaterial(const std::string& textureFilePath,PlaneData* planeData);
 
 	void ResetVertexIndex() { ringVertexIndex_ = 0; }
 
-	Material* GetRingMaterial() { return ringData_->material_; }
+	/*Material* GetRingMaterial() { return ringData_->material_; }
 
-	Material* GetPlaneMaterial() { return planeData_->material_; }
+	Material* GetPlaneMaterial() { return planeData_->material_; }*/
 
 private:
 
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
 
-	//std::unique_ptr<PSO> pso_;
-	//ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
-
-	//TransformationMatrix用の頂点リソース
-	ComPtr<ID3D12Resource> wvpResource_;
-
-	uint32_t srvIndex_ = 0;
-	ComPtr<ID3D12Resource> particleResource_;
-	ParticleForGPU* particleData_ = nullptr;
-	ComPtr<ID3D12Resource> perviewResource_;
-	PerView* perViewData_ = nullptr;
-	//TransformationMatrix用の頂点データ
 	TransformMatrix* TransformMatrixData_ = nullptr;
 	EulerTransform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
-	RingData* ringData_ = nullptr;
+	std::unordered_map<uint32_t,std::unique_ptr<RingData>> ringDatas_;
 	uint32_t ringDivide_ = 32;
 	uint32_t ringVertexIndex_ = 0;
-	uint32_t ringInstanceIndex_ = 0;
-	uint32_t ringVertexCount_ = ringDivide_ * 6;
+	uint32_t ringVertexCount_ = 0;
+	uint32_t ringHandle_ = 0;
 
-	PlaneData* planeData_ = nullptr;
+	std::unordered_map<uint32_t,std::unique_ptr<PlaneData>> planeDatas_;
 	uint32_t planeVertexIndex_ = 0;
 	uint32_t planeVertexCount_ = 0;
+	uint32_t planeHandle_ = 0;
 
 	const uint32_t kMaxVertexCount_ = 32000;
 };

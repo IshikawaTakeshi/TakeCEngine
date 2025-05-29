@@ -35,11 +35,18 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
+	collider_->SetHalfSize({ 1.0f, 2.0f, 1.0f }); // コライダーの半径を設定
 
 	//emiiter設定
-	particleEmitter_ = std::make_unique<ParticleEmitter>();
-	particleEmitter_->Initialize("EnemyEmitter",{ {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 1, 0.5f);
-	particleEmitter_->SetParticleName("DamageEffectSpark");
+	//emitter0
+	particleEmitter_.resize(2);
+	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
+	particleEmitter_[0]->Initialize("EnemyEmitter0",{ {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 20, 1.0f);
+	particleEmitter_[0]->SetParticleName("DamageEffectSpark");
+	//emitter1
+	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
+	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 5, 1.0f);
+	particleEmitter_[1]->SetParticleName("CircleEffect");
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
@@ -109,8 +116,11 @@ void Enemy::Update() {
 	weapon_->Update();
 
 	//パーティクルエミッターの更新
-	particleEmitter_->Update(transform_.translate);
+	for (auto& emitter : particleEmitter_) {
+		emitter->Update(transform_.translate);
+	}
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageEffectSpark")->SetEmitterPosition(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("CircleEffect")->SetEmitterPosition(transform_.translate);
 }
 
 void Enemy::UpdateImGui() {
@@ -159,7 +169,9 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 
 	if (other->GetCharacterType()  == CharacterType::PLAYER_BULLET) {
 		//プレイヤーの弾に当たった場合の処理
-		particleEmitter_->Emit();
+		for (auto& emitter : particleEmitter_) {
+			emitter->Emit();
+		}
 		hitPoint_--;
 	}
 }

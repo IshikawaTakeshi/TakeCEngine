@@ -49,7 +49,7 @@ private:
 	//プレイヤーの武器
 	std::unique_ptr<BaseWeapon> weapon_ = nullptr;
 	//particleEmitter
-	std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
+	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
 
 	//標的
 	Vector3 targetPos_ = { 0.0f,0.0f,0.0f };

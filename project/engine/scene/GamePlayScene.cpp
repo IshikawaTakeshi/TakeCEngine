@@ -52,7 +52,7 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetParticleManager()->SetAttributes("HitEffect", particleAttributes);
 
 	ParticleAttributes particleAttributes2;
-	particleAttributes2.scale = { 1.0f,1.0f,1.0f };
+	particleAttributes2.scale = { 10.0f,1.0f,1.0f };
 	particleAttributes2.positionRange = { 0.0f,0.0f };
 	particleAttributes2.scaleRange = { 1.0f,1.0f };
 	particleAttributes2.rotateRange = { -1.0f,1.0f };
@@ -60,21 +60,21 @@ void GamePlayScene::Initialize() {
 	particleAttributes2.colorRange = { 0.0f,1.0f };
 	particleAttributes2.lifetimeRange = { 1.0f,1.0f };
 	particleAttributes2.editColor = true;
-	particleAttributes2.color = { 1.0f,1.0f,1.0f };
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "HitEffect2", ParticleModelType::Primitive, "white1x1.png", PRIMITIVE_PLANE);
-	TakeCFrameWork::GetParticleManager()->SetAttributes("HitEffect2", particleAttributes2);
+	particleAttributes2.color = { 0.0f,1.0f,0.0f };
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "CircleEffect", ParticleModelType::Primitive, "circle.png", PRIMITIVE_PLANE);
+	TakeCFrameWork::GetParticleManager()->SetAttributes("CircleEffect", particleAttributes2);
 
 	ParticleAttributes damageEffectAttributes;
-	damageEffectAttributes.scale = { 1.0f,1.0f,1.0f };
+	damageEffectAttributes.scale = { 5.0f,5.0f,1.0f };
 	damageEffectAttributes.positionRange = { 0.0f,0.0f };
 	damageEffectAttributes.scaleRange = { 1.0f,1.0f };
-	damageEffectAttributes.rotateRange = { -1.0f,1.0f };
-	damageEffectAttributes.velocityRange = { -10.0f,10.0f };
-	damageEffectAttributes.lifetimeRange = { 1.0f,1.0f };
+	damageEffectAttributes.rotateRange = { -3.14f,3.14f };
+	damageEffectAttributes.velocityRange = { 0.0f,0.0f };
+	damageEffectAttributes.lifetimeRange = { 0.1f,0.5f };
 	damageEffectAttributes.editColor = true;
 	damageEffectAttributes.color = { 0.4f,0.1f,1.0f };
 	damageEffectAttributes.isTraslate_ = true;
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DamageEffectSpark", ParticleModelType::Primitive, "white1x1.png", PRIMITIVE_PLANE);
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DamageEffectSpark", ParticleModelType::Primitive, "Spark.png", PRIMITIVE_PLANE);
 	TakeCFrameWork::GetParticleManager()->SetAttributes("DamageEffectSpark", damageEffectAttributes);
 
 #pragma endregion

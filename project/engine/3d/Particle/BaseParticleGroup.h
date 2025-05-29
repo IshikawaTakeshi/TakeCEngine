@@ -33,6 +33,7 @@ struct ParticleAttributes {
 	Vector3 color = { 1.0f,1.0f,1.0f };
 	AttributeRange scaleRange = { 0.1f,3.0f };
 	AttributeRange rotateRange = { -std::numbers::pi_v<float>, std::numbers::pi_v<float> };
+	AttributeRange angleRange = { 0.0f, 0.0f };
 	AttributeRange positionRange = {-1.0f, 1.0f};
 	AttributeRange velocityRange = { -1.0f,1.0f };
 	AttributeRange colorRange = { 0.0f,1.0f };

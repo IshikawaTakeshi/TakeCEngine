@@ -44,8 +44,12 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 	//Mapping
 	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
 
-	TakeCFrameWork::GetPrimitiveDrawer()->CreateVertexData(type_);
-	TakeCFrameWork::GetPrimitiveDrawer()->CreateMatrialData(type_, filePath);
+	if (type_ == PRIMITIVE_RING) {
+		//プリミティブの初期化
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(1.0f, 0.5f, filePath);
+	} else if (type_ == PRIMITIVE_PLANE) {
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(1.0f, 1.0f, filePath);
+	}
 }
 
 void PrimitiveParticle::Update() {
@@ -123,7 +127,7 @@ void PrimitiveParticle::Draw() {
 
 	BaseParticleGroup::Draw();
 	//プリミティブの描画
-	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(particleCommon_->GetGraphicPSO(), numInstance_,type_);
+	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(particleCommon_->GetGraphicPSO(), numInstance_,type_,primitiveHandle_);
 }
 
 Particle PrimitiveParticle::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
