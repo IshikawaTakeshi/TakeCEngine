@@ -12,6 +12,7 @@
 enum PrimitiveType {
 	PRIMITIVE_RING,
 	PRIMITIVE_PLANE,
+	PRIMITIVE_SPHERE,
 	PRIMITIVE_COUNT
 };
 
@@ -47,6 +48,14 @@ public:
 		float height_;
 	};
 
+	//sphere全体のデータ
+	struct SphereData {
+		PrimitiveMesh primitiveData_;
+		VertexData* vertexData_ = nullptr;
+		Material* material_ = nullptr;
+		float radius_;
+	};
+
 public:
 	// 初期化
 	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
@@ -70,6 +79,8 @@ public:
 
 	uint32_t GeneratePlane(const float width, const float height, const std::string& textureFilePath);
 
+	uint32_t GenerateSphere(const float radius, const std::string& textureFilePath);
+
 	// 描画処理
 	void DrawParticle(PSO* pso,UINT instanceCount,PrimitiveType type,uint32_t handle);
 
@@ -80,11 +91,15 @@ public:
 
 	void CreatePlaneVertexData(PlaneData* planeData);
 
-	//void CreateMatrialData(PrimitiveType type, const std::string& textureFilePath);
+	void CreateSphereVertexData(SphereData* sphereData);
+
+	void CreateSphereIndexData(SphereData* sphereData);
 
 	void CreateRingMaterial(const std::string& textureFilePath,RingData* ringData);
 
 	void CreatePlaneMaterial(const std::string& textureFilePath,PlaneData* planeData);
+
+	void CreateSphereMaterial(const std::string& textureFilePath, SphereData* sphereData);
 
 	void ResetVertexIndex() { ringVertexIndex_ = 0; }
 
@@ -110,6 +125,13 @@ private:
 	uint32_t planeVertexIndex_ = 0;
 	uint32_t planeVertexCount_ = 0;
 	uint32_t planeHandle_ = 0;
+
+	std::unordered_map<uint32_t, std::unique_ptr<SphereData>> sphereDatas_;
+	uint32_t sphereDivide_ = 16; // 球の分割数
+	uint32_t sphereVertexIndex_ = 0;
+	uint32_t sphereVertexCount_ = 0;
+	uint32_t sphereIndexCount_ = 0;
+	uint32_t sphereHandle_ = 0;
 
 	const uint32_t kMaxVertexCount_ = 32000;
 };

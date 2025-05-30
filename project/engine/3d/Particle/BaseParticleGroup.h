@@ -41,7 +41,7 @@ struct ParticleAttributes {
 	bool isBillboard = false; //Billboardかどうか
 	bool editColor = false; //色を編集するかどうか
 	bool isTraslate_ = false; //位置を更新するかどうか
-	bool isScale_ = false;    //スケールを更新するかどうか
+	uint32_t isScale_;    //スケールを更新するかどうか
 	bool enableFollowEmitter_ = false; //エミッターに追従するかどうか
 };
 

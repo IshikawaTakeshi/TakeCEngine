@@ -39,14 +39,19 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 
 	//emiiter設定
 	//emitter0
-	particleEmitter_.resize(2);
+	particleEmitter_.resize(3);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0",{ {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 20, 1.0f);
+	particleEmitter_[0]->Initialize("EnemyEmitter0",{ {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 5, 1.0f);
 	particleEmitter_[0]->SetParticleName("DamageEffectSpark");
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 5, 1.0f);
+	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 10, 1.0f);
 	particleEmitter_[1]->SetParticleName("CircleEffect");
+	//emitter2
+	particleEmitter_[2] = std::make_unique<ParticleEmitter>();
+	particleEmitter_[2]->Initialize("EnemyEmitter2", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 10, 1.0f);
+	particleEmitter_[2]->SetParticleName("ExplosionEffect");
+
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
@@ -98,8 +103,22 @@ void Enemy::Update() {
 	case Enemy::Behavior::DASH:
 		UpdateDash();
 		break;
+	case Enemy::Behavior::CHARGEATTACK:
+		//UpdateAttack();
+		break;
+	case Enemy::Behavior::HEAVYDAMAGE:
+
 	default:
 		break;
+	}
+
+	//ダメージエフェクトの更新
+	if (isDamaged_) {
+		damageEffectTime_ -= deltaTime_;
+		particleEmitter_[0]->Emit();
+		if (damageEffectTime_ <= 0.0f) {
+			isDamaged_ = false;
+		}
 	}
 
 	//Quaternionからオイラー角に変換
@@ -121,6 +140,7 @@ void Enemy::Update() {
 	}
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageEffectSpark")->SetEmitterPosition(transform_.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("CircleEffect")->SetEmitterPosition(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("ExplosionEffect")->SetEmitterPosition(transform_.translate);
 }
 
 void Enemy::UpdateImGui() {
@@ -169,9 +189,10 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 
 	if (other->GetCharacterType()  == CharacterType::PLAYER_BULLET) {
 		//プレイヤーの弾に当たった場合の処理
-		for (auto& emitter : particleEmitter_) {
-			emitter->Emit();
-		}
+		particleEmitter_[1]->Emit();
+		particleEmitter_[2]->Emit();
+		isDamaged_ = true;
+		damageEffectTime_ = 0.5f;
 		hitPoint_--;
 	}
 }
@@ -185,7 +206,10 @@ void Enemy::InitJump() {}
 
 void Enemy::InitDash() {}
 
+void Enemy::InitHeavyDamage() {}
+
 void Enemy::UpdateRunning() {
+
 
 }
 
@@ -196,3 +220,7 @@ void Enemy::UpdateDamage() {}
 void Enemy::UpdateJump() {}
 
 void Enemy::UpdateDash() {}
+
+void Enemy::UpdateHeavyDamage() {
+
+}

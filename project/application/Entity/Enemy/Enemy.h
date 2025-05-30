@@ -33,12 +33,14 @@ private:
 	void InitRunning();
 	void InitJump();
 	void InitDash();
+	void InitHeavyDamage();
 
 	void UpdateRunning();
 	void UpdateAttack();
 	void UpdateDamage();
 	void UpdateJump();
 	void UpdateDash();
+	void UpdateHeavyDamage();
 
 private:
 
@@ -68,10 +70,13 @@ private:
 	float deltaTime_ = 0.0f;
 	uint32_t hitPoint_ = 100; //体力
 
+	//ダメージを受けた時のエフェクト適用時間
+	float damageEffectTime_ = 0.0f;
+
 	bool isJumping_ = false;
 	bool isDashing_ = false;
 	bool onGround_ = false;
-
+	bool isDamaged_ = false; //ダメージを受けたかどうか
 	
 };
 

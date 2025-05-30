@@ -38,8 +38,6 @@ uint32_t PrimitiveDrawer::GenerateRing(const float outerRadius, const float inne
 	ring->outerRadius_ = outerRadius;
 	CreateRingVertexData(ring.get());
 	CreateRingMaterial(textureFilePath, ring.get());
-
-
 	uint32_t useHandle = ringHandle_++;
 	ringDatas_[useHandle] = std::move(ring);
 	return useHandle;
@@ -52,9 +50,19 @@ uint32_t PrimitiveDrawer::GeneratePlane(const float width, const float height, c
 	plane->height_ = height;
 	CreatePlaneVertexData(plane.get());
 	CreatePlaneMaterial(textureFilePath, plane.get());
-
 	uint32_t useHandle = planeHandle_++;
 	planeDatas_[useHandle] = std::move(plane);
+	return useHandle;
+}
+
+uint32_t PrimitiveDrawer::GenerateSphere(const float radius, const std::string& textureFilePath) {
+	
+	auto sphere = std::make_unique<SphereData>();
+	sphere->radius_ = radius;
+	CreateSphereVertexData(sphere.get());
+	CreateSphereMaterial(textureFilePath, sphere.get());
+	uint32_t useHandle = sphereHandle_++;
+	sphereDatas_[useHandle] = std::move(sphere);
 	return useHandle;
 }
 
@@ -103,23 +111,54 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 		auto itPlane = planeDatas_.find(handle);
 		if (itPlane == planeDatas_.end()) return;
 
-		auto& planeData_ = itPlane->second;
+		auto& planeData = itPlane->second;
 
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		//VertexBufferView
-		commandList->IASetVertexBuffers(0, 1, &planeData_->primitiveData_.vertexBufferView_);
+		commandList->IASetVertexBuffers(0, 1, &planeData->primitiveData_.vertexBufferView_);
 		// materialResource
 		commandList->SetGraphicsRootConstantBufferView(
-			pso->GetGraphicBindResourceIndex("gMaterial"), planeData_->material_->GetMaterialResource()->GetGPUVirtualAddress());
+			pso->GetGraphicBindResourceIndex("gMaterial"), planeData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(planeData_->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(planeData->material_->GetTextureFilePath()));
 		//描画
 		commandList->DrawInstanced(planeVertexCount_, instanceCount, 0, 0);
 
 		break;
 	}
+	case PRIMITIVE_SPHERE:
+	{
+		//--------------------------------------------------
+		//		sphereの描画
+		//--------------------------------------------------
+
+		auto itSphere = sphereDatas_.find(handle);
+		if (itSphere == sphereDatas_.end()) return;
+
+		auto& sphereData = itSphere->second;
+
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		//VertexBufferView
+		commandList->IASetVertexBuffers(0, 1, &sphereData->primitiveData_.vertexBufferView_);
+		// materialResource
+		commandList->SetGraphicsRootConstantBufferView(
+			pso->GetGraphicBindResourceIndex("gMaterial"), sphereData->material_->GetMaterialResource()->GetGPUVirtualAddress());
+		// texture
+		srvManager_->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(sphereData->material_->GetTextureFilePath()));
+
+		//IBVの設定
+		//commandList->IASetIndexBuffer(&sphereData->primitiveData_.indexBufferView_);
+
+		//描画
+		commandList->DrawInstanced(sphereVertexCount_, instanceCount, 0, 0);
+
+		break;
+	}
+
 	case PRIMITIVE_COUNT:
 		break;
 	default:
@@ -219,6 +258,94 @@ void PrimitiveDrawer::CreatePlaneVertexData(PlaneData* planeData) {
 	planeVertexCount_ += 6;
 }
 
+void PrimitiveDrawer::CreateSphereVertexData(SphereData* sphereData) {
+
+	auto CreateSphereVertex = [&](const Vector3& pos, uint32_t lonIndex, uint32_t latIndex, uint32_t kSubdivision, float radius) {
+		VertexData v{};
+		v.position = { pos.x, pos.y, pos.z, 1.0f };
+		v.normal = { pos.x / radius, pos.y / radius, pos.z / radius };
+		v.texcoord.x = static_cast<float>(lonIndex) / static_cast<float>(kSubdivision);
+		v.texcoord.y = 1.0f - (static_cast<float>(latIndex) / static_cast<float>(kSubdivision));
+		return v;
+	};
+
+	const uint32_t kSubdivision = sphereDivide_;
+	const float kLatEvery = std::numbers::pi_v<float> / static_cast<float>(kSubdivision);         // 緯度刻み
+	const float kLonEvery = 2.0f * std::numbers::pi_v<float> / static_cast<float>(kSubdivision);  // 経度刻み
+
+	// 頂点数 = 1マス6頂点 × マス数
+	uint32_t vertexCount = kSubdivision * kSubdivision * 6;
+	UINT size = static_cast<UINT>(sizeof(VertexData) * vertexCount);
+
+	// bufferを確保
+	sphereData->primitiveData_.vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
+	sphereData->primitiveData_.vertexResource_->SetName(L"Sphere::vertexResource_");
+
+	// bufferview設定
+	sphereData->primitiveData_.vertexBufferView_.BufferLocation = sphereData->primitiveData_.vertexResource_->GetGPUVirtualAddress();
+	sphereData->primitiveData_.vertexBufferView_.StrideInBytes = sizeof(VertexData);
+	sphereData->primitiveData_.vertexBufferView_.SizeInBytes = size;
+
+	// mapping
+	sphereData->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&sphereData->vertexData_));
+
+	VertexData* vertexData = sphereData->vertexData_;
+	uint32_t vertexIndex = 0;
+
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		float lat = -std::numbers::pi_v<float> / 2.0f + kLatEvery * latIndex;
+
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+			float lon = lonIndex * kLonEvery;
+
+			// 各点の緯度・経度
+			float latNext = lat + kLatEvery;
+			float lonNext = lon + kLonEvery;
+
+			// a: 左下
+			Vector3 aPos = {
+				sphereData->radius_ * cosf(lat) * cosf(lon),
+				sphereData->radius_ * sinf(lat),
+				sphereData->radius_ * cosf(lat) * sinf(lon)
+			};
+
+			// b: 左上
+			Vector3 bPos = {
+				sphereData->radius_ * cosf(latNext) * cosf(lon),
+				sphereData->radius_ * sinf(latNext),
+				sphereData->radius_ * cosf(latNext) * sinf(lon)
+			};
+
+			// c: 右下
+			Vector3 cPos = {
+				sphereData->radius_ * cosf(lat) * cosf(lonNext),
+				sphereData->radius_ * sinf(lat),
+				sphereData->radius_ * cosf(lat) * sinf(lonNext)
+			};
+
+			// d: 右上
+			Vector3 dPos = {
+				sphereData->radius_ * cosf(latNext) * cosf(lonNext),
+				sphereData->radius_ * sinf(latNext),
+				sphereData->radius_ * cosf(latNext) * sinf(lonNext)
+			};
+
+			// 三角形1 (a, b, c)
+			vertexData[vertexIndex++] = CreateSphereVertex(aPos, lonIndex,     latIndex,     kSubdivision, sphereData->radius_);
+			vertexData[vertexIndex++] = CreateSphereVertex(bPos, lonIndex,     latIndex + 1, kSubdivision, sphereData->radius_);
+			vertexData[vertexIndex++] = CreateSphereVertex(cPos, lonIndex + 1, latIndex,     kSubdivision, sphereData->radius_);
+
+			// 三角形2 (b, d, c)
+			vertexData[vertexIndex++] = CreateSphereVertex(bPos, lonIndex,     latIndex + 1, kSubdivision, sphereData->radius_);
+			vertexData[vertexIndex++] = CreateSphereVertex(dPos, lonIndex + 1, latIndex + 1, kSubdivision, sphereData->radius_);
+			vertexData[vertexIndex++] = CreateSphereVertex(cPos, lonIndex + 1, latIndex,     kSubdivision, sphereData->radius_);
+		}
+	}
+
+	sphereVertexCount_ += vertexIndex;
+}
+
+
 void PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath, RingData* ringData) {
 
 	ringData->material_ = new Material();
@@ -236,4 +363,13 @@ void PrimitiveDrawer::CreatePlaneMaterial(const std::string& textureFilePath, Pl
 	planeData->material_->SetEnableLighting(false);
 	planeData->material_->SetEnvCoefficient(0.0f);
 	planeData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
+}
+
+void PrimitiveDrawer::CreateSphereMaterial(const std::string& textureFilePath, SphereData* sphereData) {
+
+	sphereData->material_ = new Material();
+	sphereData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
+	sphereData->material_->SetEnableLighting(false);
+	sphereData->material_->SetEnvCoefficient(0.0f);
+	sphereData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
 }
