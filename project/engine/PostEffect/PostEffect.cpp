@@ -56,33 +56,4 @@ void PostEffect::UpdateImGui() {
 }
 
 void PostEffect::DisPatch() {
-
-	////NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
-	//ResourceBarrier::GetInstance()->Transition(
-	//	D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-	//	D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-	//	outputResource_.Get());
-
-	////Computeパイプラインのセット
-	//dxCommon_->GetCommandList()->SetComputeRootSignature(rootSignature_.Get());
-	//dxCommon_->GetCommandList()->SetPipelineState(computePSO_->GetComputePipelineState());
-	////inputTex
-	//srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gInputTexture"), inputTexSrvIndex_);
-	////outputTex
-	//srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gOutputTexture"), outputTexUavIndex_);
-
-	////Dispatch
-	//dxCommon_->GetCommandList()->Dispatch(WinApp::kClientWidth / 8, WinApp::kClientHeight / 8, 1);
-
-	////UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
-	//ResourceBarrier::GetInstance()->Transition(
-	//	D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-	//	D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-	//	outputResource_.Get());
-
-	////NON_PIXEL_SHADER_RESOURCE >> PIXEL_SHADER_RESOURCE
-	//ResourceBarrier::GetInstance()->Transition(
-	//	D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-	//	D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-	//	inputResource_.Get());
 }

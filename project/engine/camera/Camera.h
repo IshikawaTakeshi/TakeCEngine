@@ -21,9 +21,7 @@ public:
 
 	void ShakeCamera();
 
-#ifdef _DEBUG
 	void UpdateImGui();
-#endif // DEBUG
 
 private:
 

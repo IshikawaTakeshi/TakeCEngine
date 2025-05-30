@@ -107,8 +107,8 @@ void Camera::ShakeCamera() {
 	}
 }
 
-#ifdef _DEBUG
 void Camera::UpdateImGui() {
+#ifdef _DEBUG
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("offset", &offset_.x, 0.01f);
@@ -117,6 +117,7 @@ void Camera::UpdateImGui() {
 	ImGui::DragFloat("pitchRot", &pitchRot_, 0.01f);
 	ImGui::DragFloat("FovX", &fovX_, 0.01f);
 	ImGui::Checkbox("isDebug", &isDebug_);
+#endif // DEBUG
 }
 
 void Camera::UpdateDebugCamera() {
@@ -267,7 +268,7 @@ void Camera::UpdateCameraLockOn() {
 }
 
 
-#endif // DEBUG
+
 
 void Camera::SetRotate(const Vector3& rotate) {
 	transform_.rotate = { rotate.x, rotate.y, rotate.z,1.0f };

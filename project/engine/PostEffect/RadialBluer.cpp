@@ -20,12 +20,15 @@ void RadialBluer::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, co
 }
 
 void RadialBluer::UpdateImGui() {
+#ifdef _DEBUG
 
 	ImGui::Begin("RadialBluer");
 	ImGui::SliderFloat2("Center", &radialBlurInfo_->center.x, 0.0f, 1.0f, "%.5f");
 	ImGui::SliderFloat("BlurWidth", &radialBlurInfo_->blurWidth, 0.0f, 1.0f, "%.5f");
 	ImGui::Checkbox("Enable", &radialBlurInfo_->enable);
 	ImGui::End();
+
+#endif // _DEBUG
 }
 
 void RadialBluer::DisPatch() {
