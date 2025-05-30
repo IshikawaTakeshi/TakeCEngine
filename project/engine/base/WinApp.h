@@ -7,13 +7,20 @@
 class WinApp {
 public:
 
-	// ゲームスクリーンのサイズ
-	static const int32_t kScreenWidth = 1024;
-	static const int32_t kScreenHeight = 600;
-	//クライアント領域のサイズ
-	static const int32_t kWindowWidth = 1880; 
-	static const int32_t kWindowHeight = 920;
-
+// ゲームスクリーンのサイズ
+#ifdef _DEBUG
+static const int32_t kScreenWidth = 1024;
+static const int32_t kScreenHeight = 600;
+// クライアント領域のサイズ（デバッグ用）
+static const int32_t kWindowWidth = 1880;
+static const int32_t kWindowHeight = 920;
+#else
+static const int32_t kScreenWidth = 1880;
+static const int32_t kScreenHeight = 920;
+// クライアント領域のサイズ（リリース用）
+static const int32_t kWindowWidth = 1880;
+static const int32_t kWindowHeight = 920;
+#endif
 	WinApp();
 	~WinApp();
 
