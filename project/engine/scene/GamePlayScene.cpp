@@ -45,7 +45,7 @@ void GamePlayScene::Initialize() {
 	particleAttributes.rotateRange = { -1.0f,1.0f };
 	particleAttributes.velocityRange = { 0.0f,0.0f };
 	particleAttributes.colorRange = { 0.0f,1.0f };
-	particleAttributes.lifetimeRange = { 1.0f,1.0f };
+	particleAttributes.lifetimeRange = { 0.1f,0.5f };
 	particleAttributes.editColor = true;
 	particleAttributes.color = { 0.0f,1.0f,1.0f };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"HitEffect",ParticleModelType::Primitive, "gradationLine.png",PRIMITIVE_RING);
@@ -58,9 +58,10 @@ void GamePlayScene::Initialize() {
 	particleAttributes2.rotateRange = { -1.0f,1.0f };
 	particleAttributes2.velocityRange = { 0.0f,0.0f };
 	particleAttributes2.colorRange = { 0.0f,1.0f };
-	particleAttributes2.lifetimeRange = { 1.0f,1.0f };
+	particleAttributes2.lifetimeRange = { 0.1f,0.5f };
 	particleAttributes2.editColor = true;
 	particleAttributes2.color = { 0.0f,1.0f,0.0f };
+	particleAttributes2.isBillboard = true;
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "CircleEffect", ParticleModelType::Primitive, "circle.png", PRIMITIVE_PLANE);
 	TakeCFrameWork::GetParticleManager()->SetAttributes("CircleEffect", particleAttributes2);
 
@@ -74,6 +75,7 @@ void GamePlayScene::Initialize() {
 	damageEffectAttributes.editColor = true;
 	damageEffectAttributes.color = { 0.4f,0.1f,1.0f };
 	damageEffectAttributes.isTraslate_ = true;
+	damageEffectAttributes.isBillboard = true;
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DamageEffectSpark", ParticleModelType::Primitive, "Spark.png", PRIMITIVE_PLANE);
 	TakeCFrameWork::GetParticleManager()->SetAttributes("DamageEffectSpark", damageEffectAttributes);
 

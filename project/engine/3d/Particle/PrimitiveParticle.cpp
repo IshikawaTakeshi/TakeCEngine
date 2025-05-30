@@ -40,7 +40,7 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 	//perviewInit
 	perViewData_->viewProjection = MatrixMath::MakeIdentity4x4();
 	perViewData_->billboardMatrix = MatrixMath::MakeIdentity4x4();
-	perViewData_->isBillboard = false;
+
 	//Mapping
 	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
 
@@ -91,7 +91,9 @@ void PrimitiveParticle::Update() {
 
 			// データをGPUに転送  
 			perViewData_->viewProjection = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
-			perViewData_->billboardMatrix = CameraManager::GetInstance()->GetActiveCamera()->GetRotationMatrix();
+			perViewData_->billboardMatrix = MatrixMath::DirectionToDirection(
+				particleData_[numInstance_].translate, CameraManager::GetInstance()->GetActiveCamera()->GetTranslate()
+			);
 
 			++numInstance_; // 次のインスタンスに進める  
 		}
@@ -109,6 +111,7 @@ void PrimitiveParticle::UpdateImGui() {
 		ImGui::DragFloat2("PositionRange", &particleAttributes_.positionRange.min, 0.01f);
 		ImGui::DragFloat2("VelocityRange", &particleAttributes_.velocityRange.min, 0.01f);
 		ImGui::DragFloat2("ColorRange", &particleAttributes_.colorRange.min, 0.01f);
+		ImGui::Checkbox("isBillboard", &particleAttributes_.isBillboard);
 	} else if (type_ == PRIMITIVE_RING) {
 		ImGui::Begin("RingParticle");
 		ImGui::Text("Ring Instance Count : %d", numInstance_);
@@ -117,6 +120,7 @@ void PrimitiveParticle::UpdateImGui() {
 		ImGui::DragFloat2("PositionRange", &particleAttributes_.positionRange.min, 0.01f);
 		ImGui::DragFloat2("VelocityRange", &particleAttributes_.velocityRange.min, 0.01f);
 		ImGui::DragFloat2("ColorRange", &particleAttributes_.colorRange.min, 0.01f);
+		ImGui::Checkbox("isBillboard", &particleAttributes_.isBillboard);
 		TakeCFrameWork::GetPrimitiveDrawer()->UpdateImGui();
 	}
 	ImGui::End();

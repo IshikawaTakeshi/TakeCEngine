@@ -3,7 +3,7 @@
 struct PerView {
 	float4x4 viewProjection;
 	float4x4 billboardMatrix;
-	bool useBillboard;
+	bool isBillboard;
 };
 
 StructuredBuffer<ParticleForGPU> gParticle : register(t0);
@@ -21,7 +21,7 @@ VertexShaderOutput main(VertexShaderInput input, uint instanceId : SV_InstanceID
 
 	float4x4 worldMatrix;
 
-	if (gPerView.useBillboard) {
+	if (gPerView.isBillboard) {
 		// ビルボード処理
 		worldMatrix = gPerView.billboardMatrix;
 		worldMatrix[0] *= particle.scale.x;
