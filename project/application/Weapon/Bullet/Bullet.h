@@ -20,7 +20,7 @@ public:
 
 	void BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type);
 
-	void EmitterInitialize(uint32_t count, float frequency);
+	//void EmitterInitialize(uint32_t count, float frequency);
 
 public:
 
@@ -52,6 +52,6 @@ private:
 	float lifeTime_ = 0.0f;
 	float bulletradius_ = 1.0f; //弾の半径
 
-	std::unique_ptr<ParticleEmitter> particleEmitter_;
+	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
 };
 

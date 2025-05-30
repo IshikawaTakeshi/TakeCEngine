@@ -22,11 +22,18 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 		collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	}
 	collider_->SetRadius(bulletradius_); // 半径を設定
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	//emiiter設定
+	//emitter0
+	particleEmitter_.resize(2);
+	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
+	particleEmitter_[0]->Initialize("EnemyEmitter0",{ {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 5, 0.001f);
+	particleEmitter_[0]->SetParticleName("BulletLight");
+	//emitter1
+	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
+	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 8, 0.001f);
+	particleEmitter_[1]->SetParticleName("SmokeEffect");
 
-	if (!particleEmitter_) {
-		particleEmitter_ = std::make_unique<ParticleEmitter>();
-	}
+	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
 	transform_.translate = { 0.0f, 100.0f, 0.0f };
 	speed_ = 400.0f;
@@ -52,8 +59,12 @@ void Bullet::Update() {
 	collider_->Update(object3d_.get());
 
 	//パーティクルエミッターの更新
-	particleEmitter_->Update(transform_.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("HitEffect")->SetEmitterPosition(transform_.translate);
+	particleEmitter_[0]->Update(transform_.translate);
+	//particleEmitter_[0]->Emit();
+	particleEmitter_[1]->Update(transform_.translate);
+	particleEmitter_[1]->Emit();
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BulletLight")->SetEmitterPosition(transform_.translate);
 
 }
 
@@ -126,9 +137,9 @@ void Bullet::BulletInitialize(const Vector3& weaponPos, const Vector3& targetPos
 	isActive_ = true;
 }
 
-void Bullet::EmitterInitialize(uint32_t count, float frequency) {
-
-	std::string name = "BulletEmitter_" + std::to_string(reinterpret_cast<std::uintptr_t>(this));
-	particleEmitter_->Initialize(name, transform_, count, frequency);
-	particleEmitter_->SetParticleName("HitEffect2");
-}
+//void Bullet::EmitterInitialize(uint32_t count, float frequency) {
+//
+//	std::string name = "BulletEmitter_" + std::to_string(reinterpret_cast<std::uintptr_t>(this));
+//	particleEmitter_->Initialize(name, transform_, count, frequency);
+//	particleEmitter_->SetParticleName("HitEffect2");
+//}

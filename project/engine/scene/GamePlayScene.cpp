@@ -39,43 +39,79 @@ void GamePlayScene::Initialize() {
 #pragma region CreateParticle
 	//CreateParticle
 	ParticleAttributes particleAttributes;
-	particleAttributes.scale = { 1.0f,1.0f,1.0f };
-	particleAttributes.positionRange = { 0.0f,0.0f };
-	particleAttributes.scaleRange = { 1.0f,1.0f };
+	particleAttributes.scale = { 0.2f,0.2f,1.0f };
+	particleAttributes.positionRange = { -0.5f,0.5f };
+	particleAttributes.scaleRange = { 0.1f,3.0f };
 	particleAttributes.rotateRange = { -1.0f,1.0f };
 	particleAttributes.velocityRange = { 0.0f,0.0f };
 	particleAttributes.colorRange = { 0.0f,1.0f };
-	particleAttributes.lifetimeRange = { 1.0f,1.0f };
+	particleAttributes.lifetimeRange = { 0.1f,0.3f };
 	particleAttributes.editColor = true;
-	particleAttributes.color = { 0.0f,1.0f,1.0f };
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"HitEffect",ParticleModelType::Primitive, "gradationLine.png",PRIMITIVE_RING);
-	TakeCFrameWork::GetParticleManager()->SetAttributes("HitEffect", particleAttributes);
+	particleAttributes.color = { 0.8f,0.8f,1.0f };
+	particleAttributes.isBillboard = true;
+	particleAttributes.isScale_ = true;
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"SmokeEffect",ParticleModelType::Primitive, "Spark.png",PRIMITIVE_PLANE);
+	TakeCFrameWork::GetParticleManager()->SetAttributes("SmokeEffect", particleAttributes);
 
 	ParticleAttributes particleAttributes2;
-	particleAttributes2.scale = { 1.0f,1.0f,1.0f };
+	particleAttributes2.scale = { 100.0f,3.0f,1.0f };
 	particleAttributes2.positionRange = { 0.0f,0.0f };
-	particleAttributes2.scaleRange = { 1.0f,1.0f };
-	particleAttributes2.rotateRange = { -1.0f,1.0f };
+	particleAttributes2.scaleRange = { 20.0f,100.0f };
+	particleAttributes2.rotateRange = { 0.0f,0.0f };
 	particleAttributes2.velocityRange = { 0.0f,0.0f };
 	particleAttributes2.colorRange = { 0.0f,1.0f };
-	particleAttributes2.lifetimeRange = { 1.0f,1.0f };
+	particleAttributes2.lifetimeRange = { 0.1f,0.5f };
 	particleAttributes2.editColor = true;
-	particleAttributes2.color = { 1.0f,1.0f,1.0f };
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "HitEffect2", ParticleModelType::Primitive, "white1x1.png", PRIMITIVE_PLANE);
-	TakeCFrameWork::GetParticleManager()->SetAttributes("HitEffect2", particleAttributes2);
+	particleAttributes2.color = { 0.5f,0.3f,1.0f };
+	particleAttributes2.isBillboard = true;
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "CircleEffect", ParticleModelType::Primitive, "Cross.png", PRIMITIVE_PLANE);
+	TakeCFrameWork::GetParticleManager()->SetAttributes("CircleEffect", particleAttributes2);
 
 	ParticleAttributes damageEffectAttributes;
-	damageEffectAttributes.scale = { 1.0f,1.0f,1.0f };
-	damageEffectAttributes.positionRange = { 0.0f,0.0f };
-	damageEffectAttributes.scaleRange = { 1.0f,1.0f };
-	damageEffectAttributes.rotateRange = { -1.0f,1.0f };
-	damageEffectAttributes.velocityRange = { -10.0f,10.0f };
-	damageEffectAttributes.lifetimeRange = { 1.0f,1.0f };
+	damageEffectAttributes.scale = { 10.0f,10.0f,1.0f };
+	damageEffectAttributes.positionRange = { -1.0f,1.0f };
+	damageEffectAttributes.scaleRange = { 1.0f,10.0f };
+	damageEffectAttributes.rotateRange = { -3.14f,3.14f };
+	damageEffectAttributes.velocityRange = { 0.0f,0.0f };
+	damageEffectAttributes.lifetimeRange = { 0.05f,0.05f };
 	damageEffectAttributes.editColor = true;
 	damageEffectAttributes.color = { 0.4f,0.1f,1.0f };
 	damageEffectAttributes.isTraslate_ = true;
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DamageEffectSpark", ParticleModelType::Primitive, "white1x1.png", PRIMITIVE_PLANE);
+	damageEffectAttributes.isScale_ = 2;
+	damageEffectAttributes.isBillboard = true;
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DamageEffectSpark", ParticleModelType::Primitive, "Spark.png", PRIMITIVE_PLANE);
 	TakeCFrameWork::GetParticleManager()->SetAttributes("DamageEffectSpark", damageEffectAttributes);
+
+	ParticleAttributes bulletLightAttributes;
+	bulletLightAttributes.scale = { 5.1f,5.1f,0.1f };
+	bulletLightAttributes.positionRange = { 0.0f,0.0f };
+	bulletLightAttributes.scaleRange = { 0.1f,5.1f };
+	bulletLightAttributes.rotateRange = { -3.14f,3.14f };
+	bulletLightAttributes.velocityRange = { 0.0f,0.0f };
+	bulletLightAttributes.lifetimeRange = { 0.5f,0.8f };
+	bulletLightAttributes.editColor = true;
+	bulletLightAttributes.color = { 0.8f,0.8f,1.0f };
+	bulletLightAttributes.isTraslate_ = true;
+	bulletLightAttributes.isScale_ = 2; //縮小せる
+	bulletLightAttributes.isBillboard = true;
+	//bulletLightAttributes.enableFollowEmitter_ = true;
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "BulletLight", ParticleModelType::Primitive, "Circle.png", PRIMITIVE_PLANE);
+	TakeCFrameWork::GetParticleManager()->SetAttributes("BulletLight", bulletLightAttributes);
+
+	ParticleAttributes ExplosionAttributes;
+	ExplosionAttributes.scale = { 1.0f,1.0f,1.0f };
+	ExplosionAttributes.positionRange = { 0.0f,0.0f };
+	ExplosionAttributes.scaleRange = { 0.1f,23.0f };
+	ExplosionAttributes.rotateRange = { -3.14f,3.14f };
+	ExplosionAttributes.velocityRange = { 0.0f,0.0f };
+	ExplosionAttributes.lifetimeRange = { 0.1f,0.5f };
+	ExplosionAttributes.editColor = true;
+	ExplosionAttributes.color = { 0.8f,0.8f,1.0f };
+	ExplosionAttributes.isTraslate_ = true;
+	ExplosionAttributes.isScale_ = 1; //拡大させる
+	ExplosionAttributes.isBillboard = false;
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "ExplosionEffect", ParticleModelType::Primitive, "Spark2.png", PRIMITIVE_SPHERE);
+	TakeCFrameWork::GetParticleManager()->SetAttributes("ExplosionEffect", ExplosionAttributes);
 
 #pragma endregion
 

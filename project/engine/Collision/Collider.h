@@ -69,6 +69,8 @@ public:
 	/// </summary>
 	virtual void SetRadius(const float& radius) { radius_ = radius; }
 
+	virtual void SetHalfSize(const Vector3& halfSize) { halfSize_ = halfSize; }
+
 	/// <summary>
 	/// 種別IDの設定
 	/// </summary>
@@ -95,6 +97,7 @@ protected:
 
 	//衝突半径
 	float radius_ = 1.0f;
+	Vector3 halfSize_ = { 1.0f,1.0f,1.0f };
 	//種別ID
 	uint32_t typeID_ = 0u;
 };

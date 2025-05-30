@@ -266,6 +266,7 @@ void Camera::UpdateCameraLockOn() {
 	}
 }
 
+
 #endif // DEBUG
 
 void Camera::SetRotate(const Vector3& rotate) {
