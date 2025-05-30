@@ -32,8 +32,6 @@ public:
 	/// </summary>
 	void Draw() override;
 
-	void DrawPrimitive();
-
 	void SetAttributes(const ParticleAttributes& attributes) override { particleAttributes_ = attributes; }
 
 	/// <summary>

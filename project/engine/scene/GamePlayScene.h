@@ -55,9 +55,6 @@ private:
 	//SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 
-	//パーティクル発生器
-	std::unique_ptr<ParticleEmitter> particleEmitter1_ = nullptr;
-
 	//スプライト
 	std::unique_ptr<Sprite> sprite_ = nullptr;
 

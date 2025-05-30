@@ -21,6 +21,8 @@ public:
 	//半径の取得
 	float GetRadius() const { return radius_; }
 
+	void SetRadius(const float& radius) override { radius_ = radius; }
+
 	//OBBとの衝突判定
 	bool CheckCollisionOBB(BoxCollider* otherBox);
 

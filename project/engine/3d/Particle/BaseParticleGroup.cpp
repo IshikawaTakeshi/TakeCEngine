@@ -57,6 +57,10 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 	particle.lifeTime_ = distTime(randomEngine);
 	particle.currentTime_ = 0.0f;
 
+	if (particleAttributes_.isBillboard == true) {
+		perViewData_->isBillboard = true;
+	}
+
 	return particle;
 }
 

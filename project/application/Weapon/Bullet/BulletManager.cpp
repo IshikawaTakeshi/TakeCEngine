@@ -5,8 +5,8 @@
 //========================================================================================================
 
 void BulletManager::Initialize(Object3dCommon* object3dCommon,size_t size) {
-
-	bulletPool_.Initialize(size);
+	bulletPool_ = std::make_unique<BulletPool>();
+	bulletPool_->Initialize(size);
 	object3dCommon_ = object3dCommon;
 	bulletFilePath_ = "cube.obj";
 }
@@ -17,7 +17,7 @@ void BulletManager::Initialize(Object3dCommon* object3dCommon,size_t size) {
 
 void BulletManager::Finalize() {
 
-	bulletPool_.Finalize();
+	bulletPool_->Finalize();
 	object3dCommon_ = nullptr;
 }
 
@@ -26,7 +26,7 @@ void BulletManager::Finalize() {
 //========================================================================================================
 
 void BulletManager::UpdateBullet() {
-	bulletPool_.UpdateAllBullet();
+	bulletPool_->UpdateAllBullet();
 }
 
 //========================================================================================================
@@ -34,12 +34,12 @@ void BulletManager::UpdateBullet() {
 //========================================================================================================
 
 void BulletManager::DrawBullet() {
-	bulletPool_.DrawAllBullet();
+	bulletPool_->DrawAllBullet();
 }
 
 void BulletManager::DrawCollider() {
 
-	bulletPool_.DrawAllCollider();
+	bulletPool_->DrawAllCollider();
 }
 
 //========================================================================================================
@@ -48,9 +48,19 @@ void BulletManager::DrawCollider() {
 
 void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type) {
 
-	Bullet* bullet = bulletPool_.GetBullet();
-	if (bullet) {
-		bullet->Initialize(object3dCommon_, bulletFilePath_);
-		bullet->BulletInitialize(weaponPos, targetPos,type);
+	Bullet* bullet = bulletPool_->GetBullet();
+	bullet->Initialize(object3dCommon_, bulletFilePath_);
+	bullet->BulletInitialize(weaponPos, targetPos,type);
+	//bullet->EmitterInitialize(10, 0.1f); // 10個のパーティクルを0.1秒間隔で発生させる
+}
+
+std::vector<Bullet*> BulletManager::GetAllBullets() {
+	
+	std::vector<Bullet*> bullets;
+	for (const auto& bullet : bulletPool_->GetPool()) {
+		if (bullet->GetIsActive()) {
+			bullets.push_back(bullet);
+		}
 	}
+	return bullets;
 }

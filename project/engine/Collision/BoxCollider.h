@@ -21,6 +21,8 @@ public:
 
 	Vector3 GetWorldPos() override;
 
+	void SetHalfSize(const Vector3& halfSize) override;
+
 	OBB GetOBB() { return obb_; }
 
 	Matrix4x4 GetRotateMatrix() { return rotateMatrix_; }

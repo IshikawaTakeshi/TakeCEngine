@@ -63,7 +63,7 @@ private:
 	//移動方向
 	Vector3 moveDirection_ = { 0.0f,0.0f,1.0f };
 
-	QuaternionTransform transform_ = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,0.0f} };
+	QuaternionTransform transform_;
 
 	const float moveSpeed_ = 200.0f;
 	const float kMaxMoveSpeed_ = 50.0f;
