@@ -22,6 +22,10 @@ public:
 
 	void DrawAllBullet();
 
+	void DrawAllCollider();
+
+	std::vector<Bullet*> GetPool();
+
 private:
 
 	std::vector<std::unique_ptr<Bullet>> pool_;

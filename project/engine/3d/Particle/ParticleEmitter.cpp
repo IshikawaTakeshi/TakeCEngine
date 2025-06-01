@@ -1,7 +1,8 @@
 #include "ParticleEmitter.h"
-#include "TakeCFrameWork.h"
-#include "ImGuiManager.h"
-#include "SrvManager.h"
+#include "base/TakeCFrameWork.h"
+#include "base/ImGuiManager.h"
+#include "base/SrvManager.h"
+#include "math/Easing.h"
 #include "3d/Particle/GPUParticle.h"
 
 ParticleEmitter::~ParticleEmitter() {
@@ -28,7 +29,7 @@ void ParticleEmitter::Initialize(const std::string& emitterName, EulerTransform 
 	particleCount_ = count;
 	frequency_ = frequency;
 	frequencyTime_ = 0.0f;
-	isEmit_ = true;
+	isEmit_ = false;
 }
 
 void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManager* srvManager) {
@@ -78,7 +79,9 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 	perFrameData_->deltaTime = TakeCFrameWork::GetDeltaTime();
 }
 
-void ParticleEmitter::Update() {
+void ParticleEmitter::Update(const Vector3& translate) {
+
+	transforms_.translate = translate;
 
 	//エミッターの更新
 	if (!isEmit_) return;
@@ -171,4 +174,11 @@ void ParticleEmitter::EmitParticle(GPUParticle* gpuParticle) {
 	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
 	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 	dxCommon_->GetCommandList()->ResourceBarrier(1, &uavBarrier);
+}
+
+void ParticleEmitter::SetParticleName(const std::string& particleName) {
+
+
+
+	particleName_ = particleName;
 }

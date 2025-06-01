@@ -26,6 +26,8 @@ public:
 	/// </summary>
 	void Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath);
 
+	void Update();
+
 	/// <summary>
 	/// 更新処理
 	/// </summary>
@@ -55,6 +57,12 @@ public: //セッター
 	///uvTransformのセッター
 	/// </summary>
 	void SetUvTransform(const EulerTransform& uvTransform) { uvTransform_ = uvTransform; }
+
+	void SetUvScale(Vector3 scale) { uvTransform_.scale = scale; }
+
+	void SetUvRotate(Vector3 rotate) { uvTransform_.rotate = rotate; }
+
+	void SetUvTranslate(Vector3 translate) { uvTransform_.translate = translate; }
 
 	/// <summary>
 	/// マテリアルデータのセッター

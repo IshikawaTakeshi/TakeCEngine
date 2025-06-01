@@ -16,6 +16,7 @@ void Vignette::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 }
 
 void Vignette::UpdateImGui() {
+#ifdef _DEBUG
 
 	ImGui::Begin("Vignette");
 	ImGui::Text("VignetteScale");
@@ -25,6 +26,8 @@ void Vignette::UpdateImGui() {
 	ImGui::Text("VignetteFlag");
 	ImGui::Checkbox("VignetteFlag", &vignetteInfoData_->flag);
 	ImGui::End();
+#endif // _DEBUG
+
 }
 
 void Vignette::DisPatch() {

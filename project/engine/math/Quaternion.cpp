@@ -148,28 +148,25 @@ Vector3 QuaternionMath::RotateVector(const Vector3& vector, const Quaternion& qu
 }
 
 Vector3 QuaternionMath::toEuler(const Quaternion& q) {
-	Vector3 euler;
+	Vector3 angles;
+	// X軸（ピッチ）
+	float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+	float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+	angles.x = std::atan2(sinr_cosp, cosr_cosp);
 
-	// Pitch（X軸）
-	float sinp = -2.0f * (q.y * q.z - q.w * q.x);
+	// Y軸（ヨー）
+	float sinp = 2 * (q.w * q.y - q.z * q.x);
 	if (std::abs(sinp) >= 1)
-		euler.x = (float)(std::copysign(std::numbers::pi_v<float> / 2, sinp)); // クランプ
+		angles.y = std::copysign(std::numbers::pi_v<float> / 2, sinp); // クランプ（ジンバルロック）
 	else
-		euler.x = std::asin(sinp);
+		angles.y = std::asin(sinp);
 
-	// Yaw（Y軸）
-	euler.y = std::atan2(
-		2.0f * (q.x * q.z + q.w * q.y),
-		q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z
-	);
+	// Z軸（ロール）
+	float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+	float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+	angles.z = std::atan2(siny_cosp, cosy_cosp);
 
-	// Roll（Z軸） ← 通常ロックオンカメラでは無視
-	euler.z = std::atan2(
-		2.0f * (q.x * q.y + q.w * q.z),
-		q.w * q.w + q.x * q.x - q.y * q.y - q.z * q.z
-	);
-
-	return euler; // (pitch, yaw, roll)
+	return angles;
 }
 
 Quaternion operator*(const Quaternion& q, float s) {

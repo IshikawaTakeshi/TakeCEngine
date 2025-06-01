@@ -38,7 +38,7 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void Update();
+	void Update(const Vector3& translate);
 
 	void UpdateForGPU();
 
@@ -56,7 +56,7 @@ public:
 
 	void EmitParticle(GPUParticle* gpuParticle);
 
-	void SetParticleName(const std::string& particleName) {particleName_ = particleName; }
+	void SetParticleName(const std::string& particleName);
 
 	void SetTranslate(const Vector3& translate) {transforms_.translate = translate; }
 

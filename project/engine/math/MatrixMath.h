@@ -50,6 +50,7 @@ namespace MatrixMath {
 	//Quaternionを使った回転行列
 	Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion);
 
+
 	//3次元アフィン変換行列
 	Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 

@@ -11,6 +11,9 @@ void BoxFilter::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, cons
 }
 
 void BoxFilter::UpdateImGui() {
+#ifdef _DEBUG
+
+#endif // _DEBUG
 
 }
 

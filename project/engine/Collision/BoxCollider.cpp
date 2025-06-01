@@ -34,7 +34,7 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 	obb_.axis[2].y = rotateMatrix_.m[2][1];
 	obb_.axis[2].z = rotateMatrix_.m[2][2];
 
-	obb_.halfSize = collisionObject->GetScale() / 2.0f;
+	obb_.halfSize = halfSize_;
 
 	//CPUで動かす用のTransform
 	transform_ = {
@@ -58,8 +58,6 @@ void BoxCollider::Update(Object3d* collisionObject) {
 
 	transform_ = collisionObject->GetTransform();
 	obb_.center = collisionObject->GetCenterPosition();
-
-	obb_.halfSize = transform_.scale / 2.0f;
 
 	Matrix4x4 scaleMat = MatrixMath::MakeScaleMatrix(transform_.scale);
 
@@ -111,6 +109,12 @@ void BoxCollider::DrawCollider() {
 Vector3 BoxCollider::GetWorldPos() {
 	
 	return obb_.center;
+}
+
+void BoxCollider::SetHalfSize(const Vector3& halfSize) {
+
+	halfSize_ = halfSize;
+	obb_.halfSize = halfSize_;
 }
 
 //=============================================================================

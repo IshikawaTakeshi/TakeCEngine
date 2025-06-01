@@ -14,12 +14,15 @@ public:
 	void Finalize();
 	void UpdateBullet();
 	void DrawBullet();
+	void DrawCollider();
 
 	void ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type);
+
+	std::vector<Bullet*> GetAllBullets();
 
 private:
 
 	Object3dCommon* object3dCommon_ = nullptr;
 	std::string bulletFilePath_;
-	BulletPool bulletPool_;
+	std::unique_ptr<BulletPool> bulletPool_;
 };
