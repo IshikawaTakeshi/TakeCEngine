@@ -581,4 +581,19 @@ void JsonLoader::AddItem(const std::string& groupName, const std::string& key, c
 		SetValue(groupName, key, value);
 	}
 }
+void JsonLoader::To_Json(json& j, const ParticleAttributes& attributes) const {
+
+	j["scale"] = json::array({ attributes.scale.x, attributes.scale.y, attributes.scale.z });
+	j["color"] = json::array({ attributes.color.x, attributes.color.y, attributes.color.z });
+
+	j["positionRange"] = json::object({{"min", attributes.positionRange.min, attributes.positionRange.max };
+	j["scaleRange"]    = json::object({{"min", attributes.scaleRange.min, attributes.scaleRange.max };
+	j["rotateRange"]   = json::object({{"min", attributes.rotateRange.min, attributes.rotateRange.max };
+	j["velocityRange"] = json::object({{"min", attributes.velocityRange.min, attributes.velocityRange.max };
+	j["colorRange"]    = json::object({{"min", attributes.colorRange.min, attributes.colorRange.max };
+	j["lifetimeRange"] = json::object({{"min", attributes.lifetimeRange.min, attributes.lifetimeRange.max };
+	j["editColor"] = attributes.editColor;
+	j["isBillboard"] = attributes.isBillboard;
+	j["scaleSetting_"] = attributes.scaleSetting_;
+}
 #pragma endregion
