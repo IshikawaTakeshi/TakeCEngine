@@ -205,7 +205,7 @@ void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) 
 		}
 	}
 
-	if (particleAttributes_.isScale_) {
+	if (particleAttributes_.scaleSetting_) {
 		//スケールの更新
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
 			particleAttributes_.scaleRange.min,

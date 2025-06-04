@@ -1,4 +1,5 @@
 #pragma once
+#include "Particle/BaseParticleGroup.h"
 #include <iostream>
 #include <variant>
 #include <string>
@@ -12,8 +13,8 @@ public:
 
 	using json = nlohmann::json;
 
-	//シングルトンインスタンスの取得
-	static JsonLoader* GetInstance();
+	JsonLoader() = default;
+	~JsonLoader() = default;
 
 	/// <summary>
 	/// グループの作成
@@ -38,14 +39,28 @@ public:
 	/// <param name="groupName">グループ名</param>
 	void LoadFile(const std::string& groupName);
 
-	/// <summary>
-	/// 更新処理
-	/// </summary>
-	void Update();
+	//=============================================================================================
+	/// Particle Preset Functions
+	//=============================================================================================
 
-	/////////////////////////////////////////////////////////////////////////////////////////////
+	// パーティクルプリセットの保存
+	void SaveParticlePreset(const std::string& presetName, const ParticleAttributes& attributes);
+
+	// パーティクルプリセットの読み込み
+	ParticleAttributes LoadParticlePreset(const std::string& presetName) const;
+
+	// パーティクルプリセットの削除
+	void DeleteParticlePreset(const std::string& presetName);
+
+	// パーティクルプリセットの一覧を取得
+	std::vector<std::string> GetParticlePresetNames() const;
+
+	// パーティクルプリセットが存在するかチェック
+	bool IsParticlePresetExists(const std::string& presetName) const;
+
+	//=============================================================================================
 	///			getter
-	/////////////////////////////////////////////////////////////////////////////////////////////
+	//=============================================================================================
 
 	//値の取得(int)
 	int32_t GetIntValue(const std::string& groupName, const std::string& key) const;
@@ -58,9 +73,9 @@ public:
 	//値の取得(bool)
 	bool GetBoolValue(const std::string& groupName, const std::string& key) const;
 
-	/////////////////////////////////////////////////////////////////////////////////////////////
+	//=============================================================================================
 	///			setter
-	/////////////////////////////////////////////////////////////////////////////////////////////
+	//=============================================================================================
 
 	//値のセット(int32_t)
 	void SetValue(const std::string& groupName, const std::string& key, int32_t value);
@@ -75,9 +90,9 @@ public:
 
 
 
-	/////////////////////////////////////////////////////////////////////////////////////////////
+	//=============================================================================================
 	///			AddItem
-	/////////////////////////////////////////////////////////////////////////////////////////////
+	//=============================================================================================
 
 	//項目の追加(int32_t)
 	void AddItem(const std::string& groupName, const std::string& key, const int32_t& value);
@@ -90,13 +105,6 @@ public:
 	//項目の追加(bool)
 	void AddItem(const std::string& groupName, const std::string& key, const bool& value);
 
-
-private:
-
-	JsonLoader() = default;
-	~JsonLoader() = default;
-	JsonLoader(const JsonLoader&) = delete;
-	JsonLoader& operator=(const JsonLoader&) = delete;
 
 private:
 
@@ -116,5 +124,8 @@ private:
 	std::map<std::string, Group> datas_;
 	//グローバル変数の保存先ファイルパス
 	const std::string kDirectoryPath = "Resources/JsonLoader/";
+	
+	//パーティクルプリセットの保存先
+	const std::string kParticlePresetPath = "Resources/JsonLoader/ParticlePresets/";
 };
 

@@ -27,6 +27,12 @@ struct AttributeRange {
 	float max;
 };
 
+enum class ScaleSetting {
+	None = 0, //スケールの更新なし
+	ScaleUp = 1, //スケールの更新(拡大)
+	ScaleDown = 2, //スケールの更新(縮小)
+};
+
 // パーティクルの属性を保持する構造体
 struct ParticleAttributes {
 	Vector3 scale = { 1.0f,1.0f,1.0f };
@@ -41,7 +47,7 @@ struct ParticleAttributes {
 	bool isBillboard = false; //Billboardかどうか
 	bool editColor = false; //色を編集するかどうか
 	bool isTraslate_ = false; //位置を更新するかどうか
-	uint32_t isScale_;    //スケールを更新するかどうか
+	uint32_t scaleSetting_;    //スケールの更新処理方法
 	bool enableFollowEmitter_ = false; //エミッターに追従するかどうか
 };
 

@@ -27,6 +27,7 @@
 #include "scene/AbstractSceneFactory.h"
 #include "Utility/Logger.h"
 #include "Utility/ResourceBarrier.h"
+#include "Utility/JsonLoader.h"
 
 //DirectXTex
 #include <dxgidebug.h>
@@ -59,6 +60,8 @@ public:
 
 	static Animator* GetAnimator();
 
+	static JsonLoader* GetJsonLoader();
+
 	static PrimitiveDrawer* GetPrimitiveDrawer();
 
 	static WireFrame* GetWireFrame();
@@ -82,6 +85,7 @@ protected:
 	ImGuiManager* imguiManager_ = nullptr;
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;
 	static std::unique_ptr<Animator> animator_;
+	static std::unique_ptr<JsonLoader> jsonLoader_;
 	static std::unique_ptr<ParticleManager> particleManager_;
 	static std::unique_ptr<PrimitiveDrawer> primitiveDrawer_;
 	static std::unique_ptr<PostEffectManager> postEffectManager_;

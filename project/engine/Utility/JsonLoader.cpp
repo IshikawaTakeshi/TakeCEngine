@@ -5,15 +5,6 @@
 #include <imgui.h>
 
 //////////////////////////////////////////////////////////////////////////////////////
-///			シングルトンインスタンスの取得
-//////////////////////////////////////////////////////////////////////////////////////
-
-JsonLoader* JsonLoader::GetInstance() {
-	static JsonLoader instance;
-	return &instance;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////
 ///			グループの作成
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -248,96 +239,105 @@ void JsonLoader::LoadFile(const std::string& groupName) {
 	}
 }
 
+void JsonLoader::SaveParticlePreset(const std::string& presetName, const ParticleAttributes& attributes) {
+	
+	std::filesystem::path dirctory(kParticlePresetPath);
+	//ディレクトリがなければ作成する
+	if (!std::filesystem::exists(dirctory)) {
+		std::filesystem::create_directory(dirctory);
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////////////////
 ///			更新処理
 //////////////////////////////////////////////////////////////////////////////////////
 
-void JsonLoader::Update() {
-
-	if (!ImGui::Begin("JsonLoader",nullptr,ImGuiWindowFlags_MenuBar)) {
-		ImGui::End();
-		return;
-	}
-	if (!ImGui::BeginMenuBar()) return;
-
-	//各グループについて
-	for (std::map<std::string, Group>::iterator itGroup = datas_.begin();
-		itGroup != datas_.end(); ++itGroup) {
-
-		//グループ名の取得
-		const std::string& groupName = itGroup->first;
-		//グループ名の参照を取得
-		Group& group = itGroup->second;
-
-		if (!ImGui::BeginMenu(groupName.c_str())) continue;
-
-		//各項目について
-		for (std::map<std::string, Item>::iterator itItem = group.begin();
-			itItem != group.end(); ++itItem) {
-
-			//項目名の取得
-			const std::string& itemName = itItem->first;
-			//項目の参照を取得
-			Item& item = itItem->second;
-
-			//項目の型によって処理を分岐
-			//=======================================================
-			// int32_t型を保持している場合
-			//=======================================================
-			if (std::holds_alternative<int32_t>(item)) {
-				int32_t* ptr = std::get_if<int32_t>(&item);
-				ImGui::SliderInt(itemName.c_str(), ptr,0,100);
-			}
-
-			//=======================================================
-			// uint32_t型を保持している場合
-			//=======================================================
-			else if (std::holds_alternative<uint32_t>(item)) {
-				uint32_t* ptr = std::get_if<uint32_t>(&item);
-				ImGui::SliderInt(itemName.c_str(), reinterpret_cast<int*>(ptr), 0, 100);
-			}
-
-			//=======================================================
-			// float型を保持している場合
-			//=======================================================
-			else if (std::holds_alternative<float>(item)) {
-				float* ptr = std::get_if<float>(&item);
-				ImGui::SliderFloat(itemName.c_str(), ptr,0.0f,100.0f);
-			}
-			
-			//=======================================================
-			// Vector3型を保持している場合
-			//=======================================================
-			else if (std::holds_alternative<Vector3>(item)) {
-				Vector3* ptr = std::get_if<Vector3>(&item);
-				ImGui::SliderFloat3(itemName.c_str(),reinterpret_cast<float*>(ptr),-10.0f,10.0f );
-			}
-
-			//=======================================================
-			// bool型を保持している場合
-			//=======================================================
-			else if (std::holds_alternative<bool>(item)) {
-				bool* ptr = std::get_if<bool>(&item);
-				ImGui::Checkbox(itemName.c_str(), ptr);
-			}
-		}
-
-		//改行
-		ImGui::Text("\n");
-		//セーブボタン
-		if (ImGui::Button("Save")) {
-			SaveFile(groupName);
-			std::string message = std::format("{}.json saved.", groupName);
-			MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
-		}
-
-		ImGui::EndMenu();
-	}
-
-	ImGui::EndMenuBar();
-	ImGui::End();
-
-}
+//void JsonLoader::Update() {
+//
+//	if (!ImGui::Begin("JsonLoader",nullptr,ImGuiWindowFlags_MenuBar)) {
+//		ImGui::End();
+//		return;
+//	}
+//	if (!ImGui::BeginMenuBar()) return;
+//
+//	//各グループについて
+//	for (std::map<std::string, Group>::iterator itGroup = datas_.begin();
+//		itGroup != datas_.end(); ++itGroup) {
+//
+//		//グループ名の取得
+//		const std::string& groupName = itGroup->first;
+//		//グループ名の参照を取得
+//		Group& group = itGroup->second;
+//
+//		if (!ImGui::BeginMenu(groupName.c_str())) continue;
+//
+//		//各項目について
+//		for (std::map<std::string, Item>::iterator itItem = group.begin();
+//			itItem != group.end(); ++itItem) {
+//
+//			//項目名の取得
+//			const std::string& itemName = itItem->first;
+//			//項目の参照を取得
+//			Item& item = itItem->second;
+//
+//			//項目の型によって処理を分岐
+//			//=======================================================
+//			// int32_t型を保持している場合
+//			//=======================================================
+//			if (std::holds_alternative<int32_t>(item)) {
+//				int32_t* ptr = std::get_if<int32_t>(&item);
+//				ImGui::SliderInt(itemName.c_str(), ptr,0,100);
+//			}
+//
+//			//=======================================================
+//			// uint32_t型を保持している場合
+//			//=======================================================
+//			else if (std::holds_alternative<uint32_t>(item)) {
+//				uint32_t* ptr = std::get_if<uint32_t>(&item);
+//				ImGui::SliderInt(itemName.c_str(), reinterpret_cast<int*>(ptr), 0, 100);
+//			}
+//
+//			//=======================================================
+//			// float型を保持している場合
+//			//=======================================================
+//			else if (std::holds_alternative<float>(item)) {
+//				float* ptr = std::get_if<float>(&item);
+//				ImGui::SliderFloat(itemName.c_str(), ptr,0.0f,100.0f);
+//			}
+//			
+//			//=======================================================
+//			// Vector3型を保持している場合
+//			//=======================================================
+//			else if (std::holds_alternative<Vector3>(item)) {
+//				Vector3* ptr = std::get_if<Vector3>(&item);
+//				ImGui::SliderFloat3(itemName.c_str(),reinterpret_cast<float*>(ptr),-10.0f,10.0f );
+//			}
+//
+//			//=======================================================
+//			// bool型を保持している場合
+//			//=======================================================
+//			else if (std::holds_alternative<bool>(item)) {
+//				bool* ptr = std::get_if<bool>(&item);
+//				ImGui::Checkbox(itemName.c_str(), ptr);
+//			}
+//		}
+//
+//		//改行
+//		ImGui::Text("\n");
+//		//セーブボタン
+//		if (ImGui::Button("Save")) {
+//			SaveFile(groupName);
+//			std::string message = std::format("{}.json saved.", groupName);
+//			MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
+//		}
+//
+//		ImGui::EndMenu();
+//	}
+//
+//	ImGui::EndMenuBar();
+//	ImGui::End();
+//
+//}
 
 #pragma region GetValue
 

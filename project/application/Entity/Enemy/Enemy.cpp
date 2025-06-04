@@ -136,7 +136,8 @@ void Enemy::Update() {
 
 	//パーティクルエミッターの更新
 	for (auto& emitter : particleEmitter_) {
-		emitter->Update(transform_.translate);
+		emitter->SetTranslate(transform_.translate);
+		emitter->Update();
 	}
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageEffectSpark")->SetEmitterPosition(transform_.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("CircleEffect")->SetEmitterPosition(transform_.translate);

@@ -38,7 +38,7 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void Update(const Vector3& translate);
+	void Update();
 
 	void UpdateForGPU();
 
@@ -56,14 +56,24 @@ public:
 
 	void EmitParticle(GPUParticle* gpuParticle);
 
+public:
+
+	const std::string& GetEmitterName() const { return emitterName_; }
+	const bool IsEmit() const { return isEmit_; }
+	const EulerTransform& GetTransforms() const { return transforms_; }
+	const uint32_t GetParticleCount() const { return particleCount_; }
+	const float GetFrequency() const { return frequency_; }
+
+public:
+
 	void SetParticleName(const std::string& particleName);
 
 	void SetTranslate(const Vector3& translate) {transforms_.translate = translate; }
+	void SetRotate(const Vector3& rotate) { transforms_.rotate = rotate; }
+	void SetScale(const Vector3& scale) { transforms_.scale = scale; }
 
 	void SetIsEmit(bool isEmit) { isEmit_ = isEmit; }
-
 	void SetFrequency(float frequency) { frequency_ = frequency; }
-
 	void SetParticleCount(uint32_t count) { particleCount_ = count; }
 
 private:

@@ -59,9 +59,12 @@ void Bullet::Update() {
 	collider_->Update(object3d_.get());
 
 	//パーティクルエミッターの更新
-	particleEmitter_[0]->Update(transform_.translate);
-	//particleEmitter_[0]->Emit();
-	particleEmitter_[1]->Update(transform_.translate);
+	particleEmitter_[0]->SetTranslate(transform_.translate);
+	particleEmitter_[0]->Update();
+
+	particleEmitter_[1]->SetTranslate(transform_.translate);
+	particleEmitter_[1]->Update();
+	//MEMO: パーティクルの毎フレーム発生
 	particleEmitter_[1]->Emit();
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(transform_.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BulletLight")->SetEmitterPosition(transform_.translate);

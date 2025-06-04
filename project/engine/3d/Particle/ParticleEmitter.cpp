@@ -79,9 +79,7 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 	perFrameData_->deltaTime = TakeCFrameWork::GetDeltaTime();
 }
 
-void ParticleEmitter::Update(const Vector3& translate) {
-
-	transforms_.translate = translate;
+void ParticleEmitter::Update() {
 
 	//エミッターの更新
 	if (!isEmit_) return;
