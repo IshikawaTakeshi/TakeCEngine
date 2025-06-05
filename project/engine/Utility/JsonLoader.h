@@ -110,14 +110,26 @@ public:
 	//===============================================================================================
 
 	// JSON形式に変換(ParticleAttributes)
-	void To_Json(json& j, const ParticleAttributes& attributes) const;
+	void to_json(json& j, const ParticleAttributes& attributes) const;
+
+	// JSON形式に変換(AttributeRange)
+	void to_json(json& j, const AttributeRange& attributeRange) const;
+
+	// JSON形式に変換(Vector3)
+	void to_json(json& j, const Vector3& v) const;
 
 	//===============================================================================================
 	///			from_json
 	//===============================================================================================
 
 	// JSON形式から変換(ParticleAttributes)
-	void From_Json(const json& j, ParticleAttributes& attributes) const;
+	void from_json(const json& j, ParticleAttributes& attributes) const;
+
+	// JSON形式から変換(AttributeRange)
+	void from_json(const json& j, AttributeRange& attributeRange) const;
+
+	// JSON形式から変換(Vector3)
+	void from_json(const json& j, Vector3& v) const;
 
 private:
 

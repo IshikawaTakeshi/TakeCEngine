@@ -581,19 +581,55 @@ void JsonLoader::AddItem(const std::string& groupName, const std::string& key, c
 		SetValue(groupName, key, value);
 	}
 }
-void JsonLoader::To_Json(json& j, const ParticleAttributes& attributes) const {
+
+void JsonLoader::to_json(json& j, const ParticleAttributes& attributes) const {
 
 	j["scale"] = json::array({ attributes.scale.x, attributes.scale.y, attributes.scale.z });
 	j["color"] = json::array({ attributes.color.x, attributes.color.y, attributes.color.z });
 
-	j["positionRange"] = json::object({{"min", attributes.positionRange.min, attributes.positionRange.max };
-	j["scaleRange"]    = json::object({{"min", attributes.scaleRange.min, attributes.scaleRange.max };
-	j["rotateRange"]   = json::object({{"min", attributes.rotateRange.min, attributes.rotateRange.max };
-	j["velocityRange"] = json::object({{"min", attributes.velocityRange.min, attributes.velocityRange.max };
-	j["colorRange"]    = json::object({{"min", attributes.colorRange.min, attributes.colorRange.max };
-	j["lifetimeRange"] = json::object({{"min", attributes.lifetimeRange.min, attributes.lifetimeRange.max };
+	j["positionRange"] = json::object({ {"min", attributes.positionRange.min, attributes.positionRange.max } });
+	j["scaleRange"] = json::object({ {"min", attributes.scaleRange.min, attributes.scaleRange.max } });
+	j["rotateRange"] = json::object({ {"min", attributes.rotateRange.min, attributes.rotateRange.max } });
+	j["velocityRange"] = json::object({ {"min", attributes.velocityRange.min, attributes.velocityRange.max } });
+	j["colorRange"] = json::object({ {"min", attributes.colorRange.min, attributes.colorRange.max } });
+	j["lifetimeRange"] = json::object({ {"min", attributes.lifetimeRange.min, attributes.lifetimeRange.max } });
 	j["editColor"] = attributes.editColor;
 	j["isBillboard"] = attributes.isBillboard;
 	j["scaleSetting_"] = attributes.scaleSetting_;
+
+}
+void JsonLoader::to_json(json& j, const AttributeRange& attributeRange) const {
+	j = json{
+		{"min",attributeRange.min},
+		{"max",attributeRange.max}
+	};
+}
+void JsonLoader::to_json(json& j, const Vector3& v) const {
+	j = json{
+		{"x", v.x},
+		{"y", v.y},
+		{"z", v.z}
+	};
+}
+
+void JsonLoader::from_json(const json& j, ParticleAttributes& attributes) const {
+
+	j.at("scale").get_to(attributes.scale);
+}
+
+void JsonLoader::from_json(const json& j, AttributeRange& attributeRange) const {
+
+	j.at("min").get_to(attributeRange.min);
+	j.at("max").get_to(attributeRange.max);
+}
+void JsonLoader::from_json(const json& j, Vector3& v) const {
+
+	if (j.is_array() && j.size() == 3) {
+		j.at("x").get_to(v.x);
+		j.at("y").get_to(v.y);
+		j.at("z").get_to(v.z);
+	} else {
+		assert(false && "Invalid Vector3 JSON format");
+	}
 }
 #pragma endregion
