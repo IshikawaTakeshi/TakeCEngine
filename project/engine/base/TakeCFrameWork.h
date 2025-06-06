@@ -14,6 +14,7 @@
 #include "3d/Object3dCommon.h"
 #include "3d/Primitive/PrimitiveDrawer.h"
 #include "3d/Particle/ParticleCommon.h"
+#include "3d/Particle/ParticleEditor.h"
 #include "2d/SpriteCommon.h"
 #include "2d/WireFrame.h"
 #include "Animation/Animator.h"

@@ -72,6 +72,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//ParticleManager
 	particleManager_ = std::make_unique<ParticleManager>();
 
+	
 	//PrimitiveDrawer
 	primitiveDrawer_ = std::make_unique<PrimitiveDrawer>();
 	primitiveDrawer_->Initialize(directXCommon_.get(), srvManager_.get());
@@ -93,6 +94,8 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	imguiManager_ = new ImGuiManager();
 	imguiManager_->Initialize(winApp_.get(), directXCommon_.get(), srvManager_.get());
 #endif
+
+	//sceneManager
 	sceneManager_ = SceneManager::GetInstance();
 
 }

@@ -202,6 +202,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\Bullet\BulletPool.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleEmitterAllocater.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleEditor.cpp" />
+    <ClCompile Include="engine\scene\ParticleEditScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\3d\Particle\ParticleAttribute.h" />
@@ -281,6 +282,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\Bullet\BulletPool.h" />
     <ClInclude Include="engine\3d\Particle\ParticleEmitterAllocater.h" />
     <ClInclude Include="engine\3d\Particle\ParticleEditor.h" />
+    <ClInclude Include="engine\scene\ParticleEditScene.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

@@ -47,7 +47,7 @@ public:
 	/// </summary>
 	void UpdateImGui();
 
-	//void DrawEmitRange();
+	void DrawWireFrame();
 
 	/// <summary>
 	/// パーティクルの発生

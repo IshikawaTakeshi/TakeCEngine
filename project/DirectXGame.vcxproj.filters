@@ -122,6 +122,7 @@
     <ClCompile Include="engine\3d\Particle\ParticleEmitterAllocater.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleEditor.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
+    <ClCompile Include="engine\scene\ParticleEditScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Collision\Collider.h" />
@@ -232,6 +233,7 @@
     <ClInclude Include="engine\3d\Particle\ParticleEmitterAllocater.h" />
     <ClInclude Include="engine\3d\Particle\ParticleEditor.h" />
     <ClInclude Include="engine\3d\Particle\ParticleAttribute.h" />
+    <ClInclude Include="engine\scene\ParticleEditScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

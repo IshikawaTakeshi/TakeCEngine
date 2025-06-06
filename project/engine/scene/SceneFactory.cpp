@@ -3,6 +3,7 @@
 #include "GamePlayScene.h"
 #include "GameOverScene.h"
 #include "GameClearScene.h"
+#include "ParticleEditScene.h"
 
 std::shared_ptr<BaseScene> SceneFactory::CreateScene(const std::string& sceneName) {
 
@@ -16,6 +17,9 @@ std::shared_ptr<BaseScene> SceneFactory::CreateScene(const std::string& sceneNam
 		newScene = std::make_shared<GameOverScene>();
 	} else if (sceneName == "GAMECLEAR") {
 		newScene = std::make_shared<GameClearScene>();
-	}
+	} else if (sceneName == "PARTICLEEDITOR") {
+		newScene = std::make_shared<ParticleEditScene>();
+	} 
+	//初期化
 	return newScene;
 }

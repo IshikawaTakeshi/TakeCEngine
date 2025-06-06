@@ -28,12 +28,14 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 
 void ParticleEditor::Update() {
 
+	particleManager_->Update();
+
 	// プレビューエミッターの更新
 	previewEmitter_->SetTranslate(emitterTransform_.translate);
 	previewEmitter_->SetRotate(emitterTransform_.rotate);
 	previewEmitter_->SetScale(emitterTransform_.scale);
 	previewEmitter_->SetIsEmit(autoEmit_);
-
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup(currentGroupName_)->SetEmitterPosition(emitterTransform_.translate);
 	previewEmitter_->Update();
 
 }
@@ -88,6 +90,18 @@ void ParticleEditor::UpdateImGui() {
 		ImGui::EndTabBar();
 	}
 	ImGui::End();
+}
+
+void ParticleEditor::Finalize() {
+
+	// プレビューエミッターの解放
+	previewEmitter_.reset();
+}
+
+void ParticleEditor::Draw() {
+
+	particleCommon_->PreDraw();
+	TakeCFrameWork::GetParticleManager()->Draw();
 }
 
 void ParticleEditor::DrawParticleAttributesEditor() {
