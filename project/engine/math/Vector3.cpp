@@ -43,6 +43,14 @@ Vector3 operator/(const Vector3& v, float s) {
 	return s / v;
 }
 
+void to_json(nlohmann::json& j, const Vector3& v) {
+	j = json{
+		{"x", v.x},
+		{"y", v.y},
+		{"z", v.z}
+	};
+}
+
 void from_json(const nlohmann::json& j, Vector3& v) {
 
 	if (j.is_array() && j.size() == 3) {

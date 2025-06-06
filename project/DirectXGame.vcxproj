@@ -108,6 +108,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
     <ClCompile Include="engine\Collision\Collider.cpp" />
     <ClCompile Include="engine\Collision\CollisionManager.cpp" />
     <ClCompile Include="application\Ground\Ground.cpp" />
@@ -203,6 +204,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Particle\ParticleEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\3d\Particle\ParticleAttribute.h" />
     <ClInclude Include="engine\Collision\Collider.h" />
     <ClInclude Include="engine\Collision\CollisionManager.h" />
     <ClInclude Include="engine\Collision\CollisionTypeIdDef.h" />

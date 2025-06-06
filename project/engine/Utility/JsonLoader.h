@@ -53,7 +53,7 @@ public:
 	void DeleteParticlePreset(const std::string& presetName);
 
 	// パーティクルプリセットの一覧を取得
-	std::vector<std::string> GetParticlePresetNames() const;
+	std::vector<std::string> GetParticlePresetList() const;
 
 	// パーティクルプリセットが存在するかチェック
 	bool IsParticlePresetExists(const std::string& presetName) const;
@@ -105,45 +105,13 @@ public:
 	//項目の追加(bool)
 	void AddItem(const std::string& groupName, const std::string& key, const bool& value);
 
-	//===============================================================================================
-	//			to_json
-	//===============================================================================================
-
-	// JSON形式に変換(ParticleAttributes)
-	void to_json(json& j, const ParticleAttributes& attributes) const;
-
-	// JSON形式に変換(AttributeRange)
-	void to_json(json& j, const AttributeRange& attributeRange) const;
-
-	// JSON形式に変換(Vector3)
-	void to_json(json& j, const Vector3& v) const;
-
-	//===============================================================================================
-	///			from_json
-	//===============================================================================================
-
-	// JSON形式から変換(ParticleAttributes)
-	void from_json(const json& j, ParticleAttributes& attributes) const;
-
-	// JSON形式から変換(AttributeRange)
-	void from_json(const json& j, AttributeRange& attributeRange) const;
-
-	// JSON形式から変換(Vector3)
-	void from_json(const json& j, Vector3& v) const;
-
 private:
 
 	//項目
 	using Item = std::variant<int32_t,uint32_t, float, Vector3,bool>;
-	//struct Item {
-	//	std::variant<int32_t, float, Vector3> value;
-	//};
 
 	//グループ
 	using Group = std::map<std::string, Item>;
-	/*struct Group {
-		std::map<std::string, Item> items;
-	};*/
 
 	//全データ
 	std::map<std::string, Group> datas_;

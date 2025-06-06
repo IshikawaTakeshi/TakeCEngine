@@ -48,7 +48,7 @@ void ParticleEditor::UpdateImGui() {
 	}
 
 	// メニューバーの作成
-	if (ImGui::BeginMenuBar) {
+	if (ImGui::BeginMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Save Preset")) {
 				// プリセットの保存
@@ -238,28 +238,53 @@ void ParticleEditor::DrawPresetManager() {
 
 void ParticleEditor::SavePreset(const std::string& presetName) {
 
-	if (presetName.empty()) {
-		ImGui::Text("Preset name cannot be empty.");
+	if (presetName.empty() || presets_.find(presetName) != presets_.end()) {
+		ImGui::Text("Preset already exists or name is empty: %s", presetName.c_str());
 		return;
 	}
-
-	presets_[presetName] = currentAttributes_;
-	if (std::find(presetNames_.begin(), presetNames_.end(), presetName) == presetNames_.end()) {
-		presetNames_.push_back(presetName);
-	}
-
+	// 現在の属性をプリセットとして保存
+	TakeCFrameWork::GetJsonLoader()->SaveParticlePreset(presetName, currentAttributes_);
+	// プリセット名を更新
+	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetParticlePresetList();
 
 }
 
 void ParticleEditor::LoadPreset(const std::string& presetName) {
 
-	auto it = presets_.find(presetName);
+	if (presetName.empty() || presets_.find(presetName) == presets_.end()) {
+		ImGui::Text("Preset not found: %s", presetName.c_str());
+		return;
+	}
 
+	//JSONからプリセットを読み込む
+	currentAttributes_ = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset(presetName);
+
+	// 現在のグループに属性を適用
+	particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
 }
 
-void ParticleEditor::DeletePreset(const std::string& presetName) {}
+void ParticleEditor::DeletePreset(const std::string& presetName) {
+	// プリセットが存在するか確認
+	if (presetName.empty() || presets_.find(presetName) == presets_.end()) {
+		ImGui::Text("Preset not found: %s", presetName.c_str());
+		return;
+	}
+
+	// プリセットを削除
+	TakeCFrameWork::GetJsonLoader()->DeleteParticlePreset(presetName);
+
+	//プリセット名更新
+	RefreshPresetList();
+}
 
 void ParticleEditor::LoadDefaultPreset() {
+	// デフォルトプリセットの読み込み
+	currentAttributes_ = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset("DefaultPreset");
+	// 現在のグループに属性を適用
+	particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
+}
 
-
+void ParticleEditor::RefreshPresetList() {
+	// プリセット名のリストを更新
+	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetParticlePresetList();
 }

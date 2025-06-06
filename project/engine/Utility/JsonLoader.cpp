@@ -239,6 +239,10 @@ void JsonLoader::LoadFile(const std::string& groupName) {
 	}
 }
 
+//===============================================================================================
+///			パーティクルプリセットの保存
+//===============================================================================================
+
 void JsonLoader::SaveParticlePreset(const std::string& presetName, const ParticleAttributes& attributes) {
 	
 	std::filesystem::path dirctory(kParticlePresetPath);
@@ -246,6 +250,93 @@ void JsonLoader::SaveParticlePreset(const std::string& presetName, const Particl
 	if (!std::filesystem::exists(dirctory)) {
 		std::filesystem::create_directory(dirctory);
 	}
+
+	// JSONオブジェクトに変換
+	json presetJson = attributes;
+	std::string filePath = kParticlePresetPath + presetName + ".json";
+	std::ofstream ofs(filePath);
+
+	//ファイルオープンが失敗した場合
+	if (ofs.fail()) {
+		std::string message = "Failed open particle preset file for write:" + presetName;
+		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
+		assert(0);
+		return;
+	}
+
+	// JSONファイルに書き込む
+	ofs << std::setw(4) << presetJson << std::endl;
+	// ファイルを閉じる
+	ofs.close();
+}
+
+//===============================================================================================
+///			パーティクルプリセットの読み込み
+//===============================================================================================
+
+ParticleAttributes JsonLoader::LoadParticlePreset(const std::string& presetName) const {
+	
+	std::string filePath = kParticlePresetPath + presetName + ".json";
+
+	std::ifstream ifs(filePath);
+
+	//ファイルオープンが失敗した場合
+	if (ifs.fail()) {
+		std::string message = "Failed open particle preset file for read:" + presetName;
+		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
+		assert(0);
+		return ParticleAttributes();
+	}
+
+	// JSONファイルから読み込む
+	json presetJson;
+	ifs >> presetJson;
+	ifs.close();
+
+	// JSONからParticleAttributesに変換
+	return presetJson.get<ParticleAttributes>();
+}
+
+void JsonLoader::DeleteParticlePreset(const std::string& presetName) {
+
+	std::string filePath = kParticlePresetPath + presetName + ".json";
+	//ファイルが存在する場合
+	if (std::filesystem::exists(filePath)) {
+		//ファイルを削除
+		std::filesystem::remove(filePath);
+	} else {
+		std::string message = "Particle preset not found: " + presetName;
+		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
+		assert(0);
+	}
+}
+
+std::vector<std::string> JsonLoader::GetParticlePresetList() const {
+	
+	std::vector<std::string> presetList;
+
+	std::filesystem::path dir(kParticlePresetPath);
+	//ディレクトリが存在しない場合は空のベクターを返す
+	if (!std::filesystem::exists(dir)) {
+		return presetList;
+	}
+
+	for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+		//ファイル拡張子が.jsonである場合
+		if (entry.path().extension() == ".json") {
+			//ファイル名を取得してリストに追加
+			presetList.push_back(entry.path().stem().string());
+		}
+	}
+
+	return presetList;
+}
+
+bool JsonLoader::IsParticlePresetExists(const std::string& presetName) const {
+	
+	std::string filePath = kParticlePresetPath + presetName + ".json";
+	//ファイルが存在するかチェック
+	return std::filesystem::exists(filePath);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -579,57 +670,6 @@ void JsonLoader::AddItem(const std::string& groupName, const std::string& key, c
 	//項目が未登録の場合
 	if (datas_[groupName].find(key) == datas_[groupName].end()) {
 		SetValue(groupName, key, value);
-	}
-}
-
-void JsonLoader::to_json(json& j, const ParticleAttributes& attributes) const {
-
-	j["scale"] = json::array({ attributes.scale.x, attributes.scale.y, attributes.scale.z });
-	j["color"] = json::array({ attributes.color.x, attributes.color.y, attributes.color.z });
-
-	j["positionRange"] = json::object({ {"min", attributes.positionRange.min, attributes.positionRange.max } });
-	j["scaleRange"] = json::object({ {"min", attributes.scaleRange.min, attributes.scaleRange.max } });
-	j["rotateRange"] = json::object({ {"min", attributes.rotateRange.min, attributes.rotateRange.max } });
-	j["velocityRange"] = json::object({ {"min", attributes.velocityRange.min, attributes.velocityRange.max } });
-	j["colorRange"] = json::object({ {"min", attributes.colorRange.min, attributes.colorRange.max } });
-	j["lifetimeRange"] = json::object({ {"min", attributes.lifetimeRange.min, attributes.lifetimeRange.max } });
-	j["editColor"] = attributes.editColor;
-	j["isBillboard"] = attributes.isBillboard;
-	j["scaleSetting_"] = attributes.scaleSetting_;
-
-}
-void JsonLoader::to_json(json& j, const AttributeRange& attributeRange) const {
-	j = json{
-		{"min",attributeRange.min},
-		{"max",attributeRange.max}
-	};
-}
-void JsonLoader::to_json(json& j, const Vector3& v) const {
-	j = json{
-		{"x", v.x},
-		{"y", v.y},
-		{"z", v.z}
-	};
-}
-
-void JsonLoader::from_json(const json& j, ParticleAttributes& attributes) const {
-
-	j.at("scale").get_to(attributes.scale);
-}
-
-void JsonLoader::from_json(const json& j, AttributeRange& attributeRange) const {
-
-	j.at("min").get_to(attributeRange.min);
-	j.at("max").get_to(attributeRange.max);
-}
-void JsonLoader::from_json(const json& j, Vector3& v) const {
-
-	if (j.is_array() && j.size() == 3) {
-		j.at("x").get_to(v.x);
-		j.at("y").get_to(v.y);
-		j.at("z").get_to(v.z);
-	} else {
-		assert(false && "Invalid Vector3 JSON format");
 	}
 }
 #pragma endregion

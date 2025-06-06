@@ -121,6 +121,7 @@
     <ClCompile Include="application\Weapon\Bullet\BulletPool.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleEmitterAllocater.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleEditor.cpp" />
+    <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Collision\Collider.h" />
@@ -230,6 +231,7 @@
     <ClInclude Include="application\Weapon\Rifle.h" />
     <ClInclude Include="engine\3d\Particle\ParticleEmitterAllocater.h" />
     <ClInclude Include="engine\3d\Particle\ParticleEditor.h" />
+    <ClInclude Include="engine\3d\Particle\ParticleAttribute.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

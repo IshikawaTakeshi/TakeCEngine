@@ -24,6 +24,7 @@ public:
 	void LoadPreset(const std::string& presetName);
 	void DeletePreset(const std::string& presetName);
 	void LoadDefaultPreset();
+	void RefreshPresetList();
 
 private:
 
