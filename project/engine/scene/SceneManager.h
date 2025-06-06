@@ -15,6 +15,8 @@ public:
 
 	void Update();
 
+	void UpdateImGui();
+
 	void Draw();
 
 	void ChangeScene(const std::string& sceneName);

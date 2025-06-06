@@ -130,11 +130,11 @@ void Object3d::AnimationUpdate() {
 // ImGuiの更新
 //=============================================================================
 
-#ifdef _DEBUG
-void Object3d::UpdateImGui(int id) {
+void Object3d::UpdateImGui(const std::string& name) {
 
+#ifdef _DEBUG
 	//ImGuiの更新
-	std::string windowName = "Object3d" + std::to_string(id);
+	std::string windowName = "Object3d" + name;
 	ImGui::Begin("Object3d");
 	if (ImGui::TreeNode(windowName.c_str())) {
 		ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
@@ -145,8 +145,8 @@ void Object3d::UpdateImGui(int id) {
 		ImGui::TreePop();
 	}
 	ImGui::End();
-}
 #endif // _DEBUG
+}
 
 //=============================================================================
 // 描画

@@ -56,10 +56,6 @@ void HPBar::Draw() {
 
 #ifdef _DEBUG
 
-void HPBar::ImGuiDebug(int id) { backgroundSprite_->UpdateImGui(id); }
-
-void HPBar::ImGuibugeDebug(int id) { bugeSprite_->UpdateImGui(id); }
-
 #endif // DEBUG
 
 void HPBar::SetPosition(const Vector2& position) {

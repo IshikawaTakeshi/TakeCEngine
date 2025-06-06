@@ -41,6 +41,12 @@ void SceneManager::Update() {
 	}
 }
 
+void SceneManager::UpdateImGui() {
+#ifdef _DEBUG
+	currentScene_->UpdateImGui();
+#endif // _DEBUG
+}
+
 //================================================================
 //	次のシーンに切り替え
 //================================================================

@@ -169,19 +169,6 @@ void GamePlayScene::Finalize() {
 //			更新処理
 //====================================================================
 void GamePlayScene::Update() {
-#ifdef _DEBUG
-	
-	CameraManager::GetInstance()->UpdateImGui();
-	Object3dCommon::GetInstance()->UpdateImGui();
-	ParticleCommon::GetInstance()->UpdateImGui();
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
-	
-	cubeObject_->UpdateImGui(0);
-	player_->UpdateImGui();
-	enemy_->UpdateImGui();
-	sprite_->UpdateImGui(0);
-
-#endif // DEBUG
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
@@ -219,6 +206,19 @@ void GamePlayScene::Update() {
 		//AudioManager::GetInstance()->SoundUnload(&BGM);
 		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
 	}
+}
+
+void GamePlayScene::UpdateImGui() {
+
+	CameraManager::GetInstance()->UpdateImGui();
+	Object3dCommon::GetInstance()->UpdateImGui();
+	ParticleCommon::GetInstance()->UpdateImGui();
+	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+
+	cubeObject_->UpdateImGui("cube");
+	player_->UpdateImGui();
+	enemy_->UpdateImGui();
+	sprite_->UpdateImGui("gameScene");
 }
 
 //====================================================================
