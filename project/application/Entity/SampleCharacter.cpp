@@ -34,7 +34,7 @@ void SampleCharacter::Update() {
 void SampleCharacter::UpdateImGui() {
 #ifdef _DEBUG
 
-	object3d_->UpdateImGui(4);
+	object3d_->UpdateImGui("SampleChar");
 #endif // _DEBUG
 
 }

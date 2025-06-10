@@ -153,7 +153,7 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 		}
 	}
 
-	if (particleAttributes_.isScale_ == 1) {
+	if (particleAttributes_.scaleSetting_ == static_cast<uint32_t>(ScaleSetting::ScaleUp)) {
 		//スケールの更新(拡大)
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
 			particleAttributes_.scaleRange.min,
@@ -169,7 +169,7 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 			particleAttributes_.scaleRange.max,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 
-	} else if (particleAttributes_.isScale_ == 2) {
+	} else if (particleAttributes_.scaleSetting_ == static_cast<uint32_t>(ScaleSetting::ScaleDown)) {
 		//スケールの更新(縮小)
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
 			particleAttributes_.scaleRange.max,

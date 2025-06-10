@@ -54,13 +54,6 @@ void GameOverScene::Finalize() {
 
 void GameOverScene::Update() {
 
-#ifdef _DEBUG
-	CameraManager::GetInstance()->UpdateImGui();
-	Object3dCommon::GetInstance()->UpdateImGui();	
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
-
-#endif // DEBUG
-
 	if (!isSoundPlay) {
 		//AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), gameOverBGM);
 		isSoundPlay = true;
@@ -116,6 +109,14 @@ void GameOverScene::Update() {
 	// パーティクルの更新
 	TakeCFrameWork::GetParticleManager()->Update();
 
+}
+
+void GameOverScene::UpdateImGui() {
+	ImGui::Begin("GameOverScene");
+	CameraManager::GetInstance()->UpdateImGui();
+	Object3dCommon::GetInstance()->UpdateImGui();	
+	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	ImGui::End();
 }
 
 void GameOverScene::Draw() {

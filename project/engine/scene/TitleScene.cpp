@@ -44,13 +44,6 @@ void TitleScene::Finalize() {
 }
 
 void TitleScene::Update() {
-#ifdef _DEBUG
-	//ImGuiの更新
-	CameraManager::GetInstance()->UpdateImGui();
-	sprite_->UpdateImGui(0);
-	titleObject->UpdateImGui(0);
-#endif // DEBUG
-
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
@@ -63,6 +56,14 @@ void TitleScene::Update() {
 		//シーン切り替え依頼
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 	}
+}
+
+void TitleScene::UpdateImGui() {
+
+	//ImGuiの更新
+	CameraManager::GetInstance()->UpdateImGui();
+	sprite_->UpdateImGui("title");
+	titleObject->UpdateImGui("title");
 }
 
 void TitleScene::Draw() {

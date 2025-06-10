@@ -34,7 +34,7 @@ public:
 	void AnimationUpdate();
 
 	#ifdef _DEBUG
-	void UpdateImGui(int id);
+	void UpdateImGui(const std::string& name);
 	#endif // _DEBUG
 
 	/// <summary>

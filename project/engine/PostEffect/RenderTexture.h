@@ -19,6 +19,12 @@ public:
 
 	void PostDraw();
 
+	ComPtr<ID3D12Resource> GetRenderTextureResource() const {
+		return renderTextureResource_;
+	}
+
+	uint32_t GetSrvIndex() const {return srvIndex_;}
+
 private:
 
 	DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
@@ -41,8 +47,6 @@ private:
 
 	ComPtr<ID3D12Resource> renderTextureResource_; 
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_;
-
-
 
 	std::unique_ptr<PSO> renderTexturePSO_; //PSO
 	ComPtr<ID3D12RootSignature> rootSignature_; //ルートシグネチャ

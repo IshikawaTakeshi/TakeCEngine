@@ -12,7 +12,6 @@
 //====================================================================
 
 void GamePlayScene::Initialize() {
-
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
 	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
@@ -49,7 +48,7 @@ void GamePlayScene::Initialize() {
 	particleAttributes.editColor = true;
 	particleAttributes.color = { 0.8f,0.8f,1.0f };
 	particleAttributes.isBillboard = true;
-	particleAttributes.isScale_ = true;
+	particleAttributes.scaleSetting_ = true;
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"SmokeEffect",ParticleModelType::Primitive, "Spark.png",PRIMITIVE_PLANE);
 	TakeCFrameWork::GetParticleManager()->SetAttributes("SmokeEffect", particleAttributes);
 
@@ -77,7 +76,7 @@ void GamePlayScene::Initialize() {
 	damageEffectAttributes.editColor = true;
 	damageEffectAttributes.color = { 0.4f,0.1f,1.0f };
 	damageEffectAttributes.isTraslate_ = true;
-	damageEffectAttributes.isScale_ = 2;
+	damageEffectAttributes.scaleSetting_ = 2;
 	damageEffectAttributes.isBillboard = true;
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DamageEffectSpark", ParticleModelType::Primitive, "Spark.png", PRIMITIVE_PLANE);
 	TakeCFrameWork::GetParticleManager()->SetAttributes("DamageEffectSpark", damageEffectAttributes);
@@ -92,7 +91,7 @@ void GamePlayScene::Initialize() {
 	bulletLightAttributes.editColor = true;
 	bulletLightAttributes.color = { 0.8f,0.8f,1.0f };
 	bulletLightAttributes.isTraslate_ = true;
-	bulletLightAttributes.isScale_ = 2; //縮小せる
+	bulletLightAttributes.scaleSetting_ = 2; //縮小せる
 	bulletLightAttributes.isBillboard = true;
 	//bulletLightAttributes.enableFollowEmitter_ = true;
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "BulletLight", ParticleModelType::Primitive, "Circle.png", PRIMITIVE_PLANE);
@@ -108,7 +107,7 @@ void GamePlayScene::Initialize() {
 	ExplosionAttributes.editColor = true;
 	ExplosionAttributes.color = { 0.8f,0.8f,1.0f };
 	ExplosionAttributes.isTraslate_ = true;
-	ExplosionAttributes.isScale_ = 1; //拡大させる
+	ExplosionAttributes.scaleSetting_ = 1; //拡大させる
 	ExplosionAttributes.isBillboard = false;
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "ExplosionEffect", ParticleModelType::Primitive, "Spark2.png", PRIMITIVE_SPHERE);
 	TakeCFrameWork::GetParticleManager()->SetAttributes("ExplosionEffect", ExplosionAttributes);
@@ -158,7 +157,7 @@ void GamePlayScene::Initialize() {
 //====================================================================
 
 void GamePlayScene::Finalize() {
-	CollisionManager::GetInstance()->Finalize(); // 当たり判定の解放
+	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	player_.reset();
 	sprite_.reset();
@@ -169,19 +168,6 @@ void GamePlayScene::Finalize() {
 //			更新処理
 //====================================================================
 void GamePlayScene::Update() {
-#ifdef _DEBUG
-	
-	CameraManager::GetInstance()->UpdateImGui();
-	Object3dCommon::GetInstance()->UpdateImGui();
-	ParticleCommon::GetInstance()->UpdateImGui();
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
-	
-	cubeObject_->UpdateImGui(0);
-	player_->UpdateImGui();
-	enemy_->UpdateImGui();
-	sprite_->UpdateImGui(0);
-
-#endif // DEBUG
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
@@ -219,6 +205,19 @@ void GamePlayScene::Update() {
 		//AudioManager::GetInstance()->SoundUnload(&BGM);
 		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
 	}
+}
+
+void GamePlayScene::UpdateImGui() {
+
+	CameraManager::GetInstance()->UpdateImGui();
+	Object3dCommon::GetInstance()->UpdateImGui();
+	ParticleCommon::GetInstance()->UpdateImGui();
+	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+
+	cubeObject_->UpdateImGui("cube");
+	player_->UpdateImGui();
+	enemy_->UpdateImGui();
+	sprite_->UpdateImGui("gameScene");
 }
 
 //====================================================================

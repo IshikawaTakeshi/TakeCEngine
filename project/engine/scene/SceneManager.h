@@ -15,6 +15,8 @@ public:
 
 	void Update();
 
+	void UpdateImGui();
+
 	void Draw();
 
 	void ChangeScene(const std::string& sceneName);
@@ -41,4 +43,7 @@ private:
 	std::shared_ptr<BaseScene> nextScene_ = nullptr;
 	//シーンファクトリー(借りてくる)
 	AbstractSceneFactory* sceneFactory_ = nullptr;
+
+	//ImGuiCombo用インデックス
+	uint32_t itemCurrentIdx = 0;
 };

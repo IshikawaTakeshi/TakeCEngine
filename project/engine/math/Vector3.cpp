@@ -43,6 +43,25 @@ Vector3 operator/(const Vector3& v, float s) {
 	return s / v;
 }
 
+void to_json(nlohmann::json& j, const Vector3& v) {
+	j = json{
+		{"x", v.x},
+		{"y", v.y},
+		{"z", v.z}
+	};
+}
+
+void from_json(const nlohmann::json& j, Vector3& v) {
+
+	if (j.is_array() && j.size() == 3) {
+		j.at(0).get_to(v.x);
+		j.at(1).get_to(v.y);
+		j.at(2).get_to(v.z);
+	} else {
+		throw std::invalid_argument("Invalid JSON format for Vector3");
+	}
+}
+
 
 //===============================================================
 //		複合代入演算子

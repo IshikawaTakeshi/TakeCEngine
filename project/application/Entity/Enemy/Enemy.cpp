@@ -136,7 +136,8 @@ void Enemy::Update() {
 
 	//パーティクルエミッターの更新
 	for (auto& emitter : particleEmitter_) {
-		emitter->Update(transform_.translate);
+		emitter->SetTranslate(transform_.translate);
+		emitter->Update();
 	}
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageEffectSpark")->SetEmitterPosition(transform_.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("CircleEffect")->SetEmitterPosition(transform_.translate);
@@ -150,7 +151,7 @@ void Enemy::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
-	object3d_->UpdateImGui(1);
+	object3d_->UpdateImGui("Enemy");
 	ImGui::End();
 #endif // _DEBUG
 }

@@ -106,8 +106,6 @@ void RenderTexture::Draw() {
 
 	// ポストエフェクトのリソース
 	postEffectManager_->Draw(renderTexturePSO_.get());
-	//srvManager_->SetGraphicsRootDescriptorTable(
-		//renderTexturePSO_->GetGraphicBindResourceIndex("gTexture"), srvIndex_);
 	// 描画コマンドを発行
 	dxCommon_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }
