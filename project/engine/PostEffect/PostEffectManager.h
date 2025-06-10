@@ -55,6 +55,8 @@ public:
 		renderTextureSrvIndex_ = srvIndex;
 	}
 
+	uint32_t GetFinalOutputSrvIndex() const;
+
 private:
 
 	DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
@@ -67,6 +69,7 @@ private:
 
 	ComPtr<ID3D12Resource> renderTextureResource_; 
 	uint32_t renderTextureSrvIndex_ = 0;
+	uint32_t finalOutputSrvIndex_ = 0;
 
 	// Ping-Pongバッファの切り替えフラグ
 	bool currentWriteBufferIsA_ = true; 

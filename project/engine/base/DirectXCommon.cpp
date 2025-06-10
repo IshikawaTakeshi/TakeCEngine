@@ -131,13 +131,13 @@ void DirectXCommon::PostDraw() {
 	//書き込むバックバッファのインデックスを取得
 	UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();
 
-#ifdef _DEBUG
-	//ImGuiの内部コマンドを生成する
-	ImGui::Render();
-
-	//実際のcommandListのImGuiの描画コマンドを積む
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList_.Get());
-#endif // DEBUG
+//#ifdef _DEBUG
+//	//ImGuiの内部コマンドを生成する
+//	ImGui::Render();
+//
+//	//実際のcommandListのImGuiの描画コマンドを積む
+//	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList_.Get());
+//#endif // DEBUG
 
 	//画面に描く処理はすべて終わり、画面に移すので、状態を遷移
 	//RenderTargetからPresentにする

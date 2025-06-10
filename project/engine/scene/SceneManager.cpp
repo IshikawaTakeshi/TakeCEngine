@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include "base/ImGuiManager.h"
 #include <cassert>
 
 SceneManager* SceneManager::instance_ = nullptr;
@@ -43,7 +44,57 @@ void SceneManager::Update() {
 
 void SceneManager::UpdateImGui() {
 #ifdef _DEBUG
+
+	//コンボボックスの項目
+	std::vector<std::string> items = { "GAMEPLAY","TITLE", "GAMEOVER","GAMECLEAR","PARTICLEEDITOR"};
+	//現在の項目
+	std::string& currentItem = items[itemCurrentIdx];
+	//変更があったかどうか
+	bool changed = false;
+
+	//コンボボックスの表示
+	ImGui::Begin("SceneManager");
+	ImGui::Text("currentScene : %s", currentItem.c_str());
+	if (ImGui::BeginCombo("changeScene", currentItem.c_str())) {
+		for (int n = 0; n < items.size(); n++) {
+			const bool is_selected = (currentItem == items[n]);
+			if (ImGui::Selectable(items[n].c_str(), is_selected)) {
+				currentItem = items[itemCurrentIdx];
+				itemCurrentIdx = n;
+				changed = true;
+			}
+			// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+			if (is_selected) {
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+
+		currentItem = items[itemCurrentIdx];
+		ImGui::EndCombo();
+	}
 	currentScene_->UpdateImGui();
+	ImGui::End();
+
+	//変更があった場合
+	if (changed) {
+		switch (itemCurrentIdx) {
+		case 0:
+			nextScene_ = sceneFactory_->CreateScene("GAMEPLAY");
+			break;
+		case 1:
+			nextScene_ = sceneFactory_->CreateScene("TITLE");
+			break;
+		case 2:
+			nextScene_ = sceneFactory_->CreateScene("GAMEOVER");
+			break;
+		case 3:
+			nextScene_ = sceneFactory_->CreateScene("GAMECLEAR");
+			break;
+		case 4:
+			nextScene_ = sceneFactory_->CreateScene("PARTICLEEDITOR");
+			break;
+		}
+	}
 #endif // _DEBUG
 }
 

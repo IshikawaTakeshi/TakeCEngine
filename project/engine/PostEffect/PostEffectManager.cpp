@@ -152,3 +152,7 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 	// Ping-Pongバッファの切り替え
 	currentWriteBufferIsA_ = !currentWriteBufferIsA_; 
 }
+
+uint32_t PostEffectManager::GetFinalOutputSrvIndex() const {
+	return postEffects_.back().postEffect->GetOutputTextureSrvIndex();
+}

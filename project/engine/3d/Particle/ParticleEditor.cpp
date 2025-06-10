@@ -10,7 +10,7 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 	particleCommon_ = particleCommon;
 	//デフォルトのパーティクルグループを作成
 	currentGroupName_ = "DefaultGroup";
-	particleManager_->CreateParticleGroup(particleCommon_,currentGroupName_, ParticleModelType::Primitive, "DefaultTexture.png", PRIMITIVE_PLANE);
+	particleManager_->CreateParticleGroup(particleCommon_,currentGroupName_, ParticleModelType::Primitive, "white1x1.png", PRIMITIVE_PLANE);
 
 	// エディター専用エミッターの初期化
 	previewEmitter_ = std::make_unique<ParticleEmitter>();
@@ -23,7 +23,7 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 	previewEmitter_->SetParticleName(currentGroupName_);
 
 	//デフォルトプリセットの読み込み
-	LoadDefaultPreset();
+	//LoadDefaultPreset();
 }
 
 void ParticleEditor::Update() {
@@ -73,7 +73,7 @@ void ParticleEditor::UpdateImGui() {
 			ImGui::EndTabItem();
 		}
 		// エミッターコントロール
-		if (ImGui::BeginTabBar("Emitter Controls")) {
+		if (ImGui::BeginTabItem("Emitter Controls")) {
 			DrawEmitterControls();
 			ImGui::EndTabItem();
 		}

@@ -19,19 +19,29 @@ void ParticleEditScene::Initialize() {
 	particleEditor_ = std::make_unique<ParticleEditor>();
 	particleEditor_->Initialize(TakeCFrameWork::GetParticleManager(), ParticleCommon::GetInstance());
 
+	//SkyBox
+	skyBox_ = std::make_unique<SkyBox>();
+	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_pool.obj");
+	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
+
 }
 
 void ParticleEditScene::Finalize() {
 
 	// カメラのリセット
 	CameraManager::GetInstance()->ResetCameras();
+
 	// ParticleManagerのリセット
 	//TakeCFrameWork::GetParticleManager()
+
 	// ParticleEditorの解放
 	particleEditor_->Finalize();
 }
 
 void ParticleEditScene::Update() {
+
+	
+	skyBox_->Update();
 
 	// カメラの更新
 	previewCamera_->Update();
@@ -50,6 +60,8 @@ void ParticleEditScene::UpdateImGui() {
 }
 
 void ParticleEditScene::Draw() {
+
+	skyBox_->Draw();
 	// ParticleEditorの描画
 	particleEditor_->Draw();
 }
