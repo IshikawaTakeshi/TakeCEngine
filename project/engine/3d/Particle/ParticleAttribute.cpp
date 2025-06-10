@@ -5,12 +5,12 @@ void to_json(nlohmann::json& j, const ParticleAttributes& attributes){
 	j["scale"] = json::array({ attributes.scale.x, attributes.scale.y, attributes.scale.z });
 	j["color"] = json::array({ attributes.color.x, attributes.color.y, attributes.color.z });
 
-	j["positionRange"] = json::object({ {"min", attributes.positionRange.min, attributes.positionRange.max } });
-	j["scaleRange"] = json::object({ {"min", attributes.scaleRange.min, attributes.scaleRange.max } });
-	j["rotateRange"] = json::object({ {"min", attributes.rotateRange.min, attributes.rotateRange.max } });
-	j["velocityRange"] = json::object({ {"min", attributes.velocityRange.min, attributes.velocityRange.max } });
-	j["colorRange"] = json::object({ {"min", attributes.colorRange.min, attributes.colorRange.max } });
-	j["lifetimeRange"] = json::object({ {"min", attributes.lifetimeRange.min, attributes.lifetimeRange.max } });
+	j["positionRange"] = json{ {"min", attributes.positionRange.min},{"max", attributes.positionRange.max }};
+	j["scaleRange"] = json{ {"min", attributes.scaleRange.min},{"max", attributes.scaleRange.max } };
+	j["rotateRange"] = json{ {"min", attributes.rotateRange.min},{"max", attributes.rotateRange.max } };
+	j["velocityRange"] = json{ { "min", attributes.velocityRange.min},{"max", attributes.velocityRange.max } };
+	j["colorRange"] = json{ { "min", attributes.colorRange.min},{"max", attributes.colorRange.max } };
+	j["lifetimeRange"] = json{ { "min", attributes.lifetimeRange.min },{"max", attributes.lifetimeRange.max } };
 	j["editColor"] = attributes.editColor;
 	j["isBillboard"] = attributes.isBillboard;
 	j["scaleSetting_"] = attributes.scaleSetting_;

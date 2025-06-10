@@ -248,7 +248,7 @@ void JsonLoader::SaveParticlePreset(const std::string& presetName, const Particl
 	std::filesystem::path dirctory(kParticlePresetPath);
 	//ディレクトリがなければ作成する
 	if (!std::filesystem::exists(dirctory)) {
-		std::filesystem::create_directory(dirctory);
+		std::filesystem::create_directories(dirctory);
 	}
 
 	// JSONオブジェクトに変換

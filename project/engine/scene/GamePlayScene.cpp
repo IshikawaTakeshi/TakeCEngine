@@ -12,7 +12,6 @@
 //====================================================================
 
 void GamePlayScene::Initialize() {
-
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
 	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
@@ -158,7 +157,7 @@ void GamePlayScene::Initialize() {
 //====================================================================
 
 void GamePlayScene::Finalize() {
-	CollisionManager::GetInstance()->Finalize(); // 当たり判定の解放
+	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	player_.reset();
 	sprite_.reset();

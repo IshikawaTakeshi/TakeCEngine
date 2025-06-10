@@ -66,7 +66,7 @@ void ImGuiManager::DrawDebugScreen() {
 	ImGui::Begin("ImGuiManager");
 	ImGui::Image(
 		ImTextureID(srvManager_->GetSrvDescriptorHandleGPU(renderTextureIndex_).ptr),
-		ImVec2(static_cast<float>(WinApp::kWindowWidth), static_cast<float>(WinApp::kWindowHeight)),
+		ImVec2(static_cast<float>(WinApp::kScreenWidth), static_cast<float>(WinApp::kScreenHeight)),
 		ImVec2(0, 0), // UV座標の左上
 		ImVec2(1, 1)  // UV座標の右下
 	);
