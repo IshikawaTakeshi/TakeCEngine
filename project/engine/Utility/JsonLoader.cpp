@@ -1,5 +1,6 @@
 #include "JsonLoader.h"
 #include "Windows.h"
+#include "scene/LevelData.h"
 #include <fstream>
 #include <cassert>
 #include <imgui.h>
@@ -168,73 +169,64 @@ void JsonLoader::LoadFile(const std::string& groupName) {
 
 	}
 
-	json root;
-	//json文字列からjsonのデータ構造に展開
-	ifs >> root;
-	//ファイルを閉じる
-	ifs.close();
+	// JSONファイルから解凍したデータ
+	json deserializedJson;
 
-	//グループを検索
-	json::iterator itGroup = root.find(groupName);
-	//未登録の場合はassert
-	assert(itGroup != root.end());
+	//解凍する
+	ifs >> deserializedJson;
 
-	//*   各アイテムについて   *//
+	//正しいレベルデータファイルかチェック
+	assert(deserializedJson.is_object());
+	assert(deserializedJson.contains("name"));
+	assert(deserializedJson["name"].is_string());
 
-	for(json::iterator itItem = itGroup->begin();
-		itItem != itGroup->end(); ++itItem) {
-	
-		//アイテム名の取得
-		const std::string& itemName = itItem.key();
+	//"name"を文字列として取得
+	std::string name = deserializedJson["name"].get<std::string>();
+	//正しいレベルデータファイルかチェック
+	assert(name.compare("scene") == 0);	
 
-		//=======================================
-		//int32_t型の値を保持している場合
-		//=======================================
-		if (itItem->is_number_integer()) {
-			//int32_t型の値を取得
-			int32_t value = itItem->get<int32_t>();
-			//グループに追加
-			SetValue(groupName, itemName, value);
-		}
+	//TODO:レベルデータ格納用インスタンスを生成
+	LevelData* levelData = new LevelData();
 
-		//=======================================
-		// uint32_t型の値を保持している場合
-		//=======================================
-		else if (itItem->is_number_unsigned()) {
-			//uint32_t型の値を取得
-			uint32_t value = itItem->get<uint32_t>();
-			//グループに追加
-			SetValue(groupName, itemName, value);
-		}
+	//"object"の全オブジェクト走査
+	for (nlohmann::json& object : deserializedJson["objects"]) {
+		assert(object.contains("type"));
 
-		//=======================================
-		//float型の値を保持している場合
-		//=======================================
-		else if (itItem->is_number_float()) {
-			//float型の値を取得
-			double value = itItem->get<double>();
-			//グループに追加
-			SetValue(groupName, itemName, static_cast<float>(value));
-		}
+		//種類を取得
+		std::string type = object["type"].get<std::string>();
 
-		//=======================================
-		//要素数3の配列を保持している場合(Vector3)
-		//=======================================
-		else if (itItem->is_array() && itItem->size() == 3) {
-			//float型のjson配列を取得
-			Vector3 value = {itItem->at(0), itItem->at(1), itItem->at(2)};
-			//グループに追加
-			SetValue(groupName, itemName, value);
-		}
+		//種類によって処理を分岐
+		//MESH
+		if (type.compare("MESH") == 0) {
+			levelData->objects.emplace_back(Object3d());
+			Object3d& object3d = levelData->objects.back();
 
-		//=======================================
-		//bool型の値を保持している場合
-		//=======================================
-		else if (itItem->is_boolean()) {
-			//bool型の値を取得
-			bool value = itItem->get<bool>();
-			//グループに追加
-			SetValue(groupName, itemName, value);
+			//モデルファイル名
+			if (object.contains("file_name")) {
+				object3d.SetModelFilePath(object["file_name"].get<std::string>());
+			}
+
+			//トランスフォーム情報
+			nlohmann::json& transform = object["transform"];
+			//translation
+			object3d.SetTranslate(Vector3(
+				transform["translation"][0].get<float>(),
+				transform["translation"][1].get<float>(),
+				transform["translation"][2].get<float>()
+			));
+			//rotation
+			object3d.SetRotation(Vector3(
+				-transform["rotation"][0].get<float>(),
+				-transform["rotation"][1].get<float>(),
+				-transform["rotation"][2].get<float>()
+			));
+			//scale
+			object3d.SetScale(Vector3(
+				transform["scale"][0].get<float>(),
+				transform["scale"][1].get<float>(),
+				transform["scale"][2].get<float>()
+			));
+
 		}
 	}
 }

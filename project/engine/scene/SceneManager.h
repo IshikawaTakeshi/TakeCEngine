@@ -2,6 +2,7 @@
 #include <memory>
 #include "BaseScene.h"
 #include "AbstractSceneFactory.h"
+#include "scene//LevelData.h"
 
 ////////////////////
 ///	シーン管理クラス
@@ -46,4 +47,6 @@ private:
 
 	//ImGuiCombo用インデックス
 	uint32_t itemCurrentIdx = 0;
+
+	LevelData levelData_; // レベルデータの格納
 };

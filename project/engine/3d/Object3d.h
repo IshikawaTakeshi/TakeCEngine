@@ -66,6 +66,7 @@ public: //setter
 	void SetTranslate(const Vector3& position) { transform_.translate = position; }
 	void SetAnimation(Animation* animation);
 	void SetParent(Object3d* parent) { parent_ = parent; }
+	void SetModelFilePath(const std::string& filePath) { modelFilePath_ = filePath; }
 
 protected: // privateメンバ変数
 
@@ -76,6 +77,8 @@ protected: // privateメンバ変数
 
 	//モデル
 	std::unique_ptr<Model> model_ = nullptr;
+	//モデルファイルパス
+	std::string modelFilePath_;
 
 	Animation* animation_;
 	float animationTime_ = 0.0f;

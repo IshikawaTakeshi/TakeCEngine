@@ -25,7 +25,8 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	object3dCommon_ = object3dCommon;
 
 	//モデルの設定
-	model_ = ModelManager::GetInstance()->CopyModel(filePath);
+	modelFilePath_ = filePath;
+	model_ = ModelManager::GetInstance()->CopyModel(modelFilePath_);
 	model_->GetMesh()->GetMaterial()->SetEnableLighting(true);
 
 	//TransformationMatrix用のResource生成
