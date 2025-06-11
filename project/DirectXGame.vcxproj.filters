@@ -234,6 +234,7 @@
     <ClInclude Include="engine\3d\Particle\ParticleEditor.h" />
     <ClInclude Include="engine\3d\Particle\ParticleAttribute.h" />
     <ClInclude Include="engine\scene\ParticleEditScene.h" />
+    <ClInclude Include="engine\scene\LevelData.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

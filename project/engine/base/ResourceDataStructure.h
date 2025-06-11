@@ -76,6 +76,7 @@ struct SkinningInfo {
 
 //モデル1個分のデータ
 struct ModelData {
+	std::string fileName; //モデル名
 	std::map<std::string, JointWeightData> skinClusterData;
 	std::vector<VertexData> vertices;
 	SkinningInfo skinningInfoData;

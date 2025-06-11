@@ -1,5 +1,6 @@
 #pragma once
 #include "Particle/BaseParticleGroup.h"
+#include "scene/LevelData.h"
 #include <iostream>
 #include <variant>
 #include <string>
@@ -37,7 +38,7 @@ public:
 	/// ファイルから読み込む
 	/// </summary>
 	/// <param name="groupName">グループ名</param>
-	void LoadFile(const std::string& groupName);
+	LevelData* LoadLevelFile(const std::string& groupName);
 
 	//=============================================================================================
 	/// Particle Preset Functions

@@ -67,7 +67,7 @@ private:
 	//enemy
 	std::unique_ptr<Enemy> enemy_ = nullptr;
 
-	std::unique_ptr<Object3d> cubeObject_ = nullptr;
-
 	std::unique_ptr<BulletManager> bulletManager_ = nullptr;
+
+	std::vector<std::unique_ptr<Object3d>> levelObjects_;
 };

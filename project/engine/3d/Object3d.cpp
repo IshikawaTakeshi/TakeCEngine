@@ -25,7 +25,8 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	object3dCommon_ = object3dCommon;
 
 	//モデルの設定
-	model_ = ModelManager::GetInstance()->CopyModel(filePath);
+	modelFilePath_ = filePath;
+	model_ = ModelManager::GetInstance()->CopyModel(modelFilePath_);
 	model_->GetMesh()->GetMaterial()->SetEnableLighting(true);
 
 	//TransformationMatrix用のResource生成
@@ -166,7 +167,9 @@ void Object3d::Draw() {
 
 void Object3d::DisPatch() {
 	if (model_ != nullptr) {
-		model_->DisPatch(object3dCommon_->GetPSO());
+		if (model_->GetSkeleton()) {
+			model_->DisPatch(object3dCommon_->GetPSO());
+		}
 	}
 }
 

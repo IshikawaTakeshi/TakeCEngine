@@ -214,6 +214,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\scene\GameClearScene.h" />
     <ClInclude Include="engine\scene\GameOverScene.h" />
     <ClInclude Include="engine\Collision\BoxCollider.h" />
+    <ClInclude Include="engine\scene\LevelData.h" />
     <ClInclude Include="engine\Utility\JsonLoader.h" />
     <ClInclude Include="application\Weapon\Bullet\Bullet.h" />
     <ClInclude Include="application\Weapon\Bullet\BulletManager.h" />

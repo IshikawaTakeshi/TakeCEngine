@@ -2,6 +2,7 @@
 #include <memory>
 #include "BaseScene.h"
 #include "AbstractSceneFactory.h"
+#include "scene//LevelData.h"
 
 ////////////////////
 ///	シーン管理クラス
@@ -23,9 +24,13 @@ public:
 
 	void ChangeToNextScene();
 
+	void LoadLevelData(const std::string& sceneName);
+
 	//========================================================================
 	//	アクセッサ
 	//========================================================================
+
+	std::vector<std::unique_ptr<Object3d>>& GetLevelObjects() { return levelObjects_; }
 
 	void SetSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; }
 
@@ -46,4 +51,8 @@ private:
 
 	//ImGuiCombo用インデックス
 	uint32_t itemCurrentIdx = 0;
+	// レベルデータの格納
+	LevelData* levelData_; 
+	// レベル内のオブジェクトのリスト
+	std::vector<std::unique_ptr<Object3d>> levelObjects_;
 };
