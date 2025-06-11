@@ -84,6 +84,8 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 	std::string filePath = "./Resources/" + modelDirectoryPath + "/" + modelFile;
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 
+	modelData->fileName = modelFile;
+
 	if (scene->HasMeshes()) {
 		//Meshの解析
 		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {

@@ -1,5 +1,8 @@
 #include "SceneManager.h"
 #include "base/ImGuiManager.h"
+#include "base//ModelManager.h"
+#include "base/TakeCFrameWork.h"
+#include "3d/Object3dCommon.h"
 #include <cassert>
 
 SceneManager* SceneManager::instance_ = nullptr;
@@ -120,6 +123,25 @@ void SceneManager::ChangeToNextScene() {
 	currentScene_->Initialize();
 }
 
+void SceneManager::LoadLevelData(const std::string& sceneName) {
+
+	levelData_ = TakeCFrameWork::GetJsonLoader()->LoadLevelFile(sceneName);
+
+	for (auto& objectData : levelData_->objects) {
+		Model* model = nullptr;
+		model = ModelManager::GetInstance()->FindModel(objectData.file_name);
+
+		std::unique_ptr<Object3d> newObject = std::make_unique<Object3d>();
+		newObject->Initialize(Object3dCommon::GetInstance(), objectData.file_name);
+
+		newObject->SetTranslate(objectData.translation);
+		newObject->SetRotation(objectData.rotation);
+		newObject->SetScale(objectData.scale);
+
+		levelObjects_.push_back(std::move(newObject));
+	}
+}
+
 //========================================================================
 //	描画処理
 //========================================================================
@@ -136,5 +158,10 @@ void SceneManager::ChangeScene(const std::string& sceneName) {
 	assert(sceneFactory_ != nullptr);
 	assert(nextScene_ == nullptr);
 
+	// 既存のオブジェクトをクリア
+	levelObjects_.clear();
+	// レベルデータの読み込み
+	LoadLevelData("levelData_gameScene");
+	// 新しいシーンを作成
 	nextScene_ = sceneFactory_->CreateScene(sceneName);
 }

@@ -114,6 +114,13 @@ void GamePlayScene::Initialize() {
 
 #pragma endregion
 
+	//levelObjectの初期化
+	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
+
+	for (auto& object : levelObjects_) {
+		object->SetCamera(Object3dCommon::GetInstance()->GetDefaultCamera());
+	}
+
 	//Animation読み込み
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
 	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
@@ -146,10 +153,6 @@ void GamePlayScene::Initialize() {
 	enemy_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
 	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "cube.obj");
 	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
-
-	//cubeObject
-	cubeObject_ = std::make_unique<Object3d>();
-	cubeObject_->Initialize(Object3dCommon::GetInstance(), "cube.obj");
 }
 
 //====================================================================
@@ -185,11 +188,12 @@ void GamePlayScene::Update() {
 	//enemy
 	enemy_->Update();
 
-	//cubeObject
-	cubeObject_->Update();
-
 	//弾の更新
 	bulletManager_->UpdateBullet();
+
+	for (auto& object : levelObjects_) {
+		object->Update();
+	}
 
 	//当たり判定の更新
 	CheckAllCollisions();
@@ -214,9 +218,11 @@ void GamePlayScene::UpdateImGui() {
 	ParticleCommon::GetInstance()->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
-	cubeObject_->UpdateImGui("cube");
 	player_->UpdateImGui();
 	enemy_->UpdateImGui();
+	for (int i = 0; i < levelObjects_.size(); i++) {
+		levelObjects_[i]->UpdateImGui(std::to_string(i));
+	}
 	sprite_->UpdateImGui("gameScene");
 }
 
@@ -234,11 +240,18 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->DisPatch();
 	player_->GetObject3d()->DisPatch();
 	enemy_->GetObject3d()->DisPatch();
+
+	for (auto& object : levelObjects_) {
+		object->DisPatch();
+	}
+
 	Object3dCommon::GetInstance()->PreDraw();
 	player_->Draw();
 	enemy_->Draw();
-	cubeObject_->Draw();
 	bulletManager_->DrawBullet();
+	for (auto& object : levelObjects_) {
+		object->Draw();
+	}
 
 #pragma endregion
 
