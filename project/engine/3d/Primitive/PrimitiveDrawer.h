@@ -1,20 +1,14 @@
 #pragma once
-#include "DirectXCommon.h"
-#include "PipelineStateObject.h"
-#include "SrvManager.h"
-#include "Material.h"
+#include "base/DirectXCommon.h"
+#include "base/PipelineStateObject.h"
+#include "base/SrvManager.h"
+#include "3d/Material.h"
 #include "TransformMatrix.h"
 #include "ResourceDataStructure.h"
+#include "Primitive/PrimitiveType.h"
 #include <memory>
 #include <cstdint>
 #include <unordered_map>
-
-enum PrimitiveType {
-	PRIMITIVE_RING,
-	PRIMITIVE_PLANE,
-	PRIMITIVE_SPHERE,
-	PRIMITIVE_COUNT
-};
 
 struct PrimitiveMesh {
 	ComPtr<ID3D12Resource> vertexResource_ = nullptr;

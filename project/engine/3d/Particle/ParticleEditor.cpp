@@ -26,8 +26,8 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 	//エミッターに発生させるパーティクルを設定
 	previewEmitter_->SetParticleName(currentGroupName_);
 
-	//デフォルトプリセットの読み込み
-	//LoadDefaultPreset();
+	//全プリセットの読み込み
+	LoadAllPresets();
 }
 
 //======================================================================
@@ -139,8 +139,7 @@ void ParticleEditor::Draw() {
 
 void ParticleEditor::DrawParticleAttributesEditor() {
 
-	ImGui::Text("Particle Attributes");
-	ImGui::Separator();
+	ImGui::SeparatorText("Particle Attributes");
 
 	//Scale
 	ImGui::SliderInt("Scale Setting", reinterpret_cast<int*>(&currentAttributes_.scaleSetting_), 0, 2, "None: %d, Scale Up: %d, Scale Down: %d");
@@ -176,6 +175,9 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 		// 現在のグループに属性を適用
 		particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
 	}
+
+	//テクスチャファイルの設定
+
 }
 
 //======================================================================
@@ -184,7 +186,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 
 void ParticleEditor::DrawEmitterControls() {
 
-	ImGui::Text("Emitter COntrols");
+	ImGui::Text("Emitter Controls");
 	ImGui::Separator();
 
 	//エミッターTrasformの表示
@@ -259,6 +261,11 @@ void ParticleEditor::DrawPresetManager() {
 	static char presetNameBuffer[64] = "";
 	ImGui::InputText("Preset Name", presetNameBuffer, sizeof(presetNameBuffer));
 
+	if (ImGui::Button("Refresh Preset List")) {
+		// プリセット名のリストを更新
+		RefreshPresetList();
+	}
+
 	// プリセットの保存
 	if (ImGui::Button("Save current as Preset")) {
 
@@ -281,7 +288,6 @@ void ParticleEditor::DrawPresetManager() {
 		}
 
 		if (isSelected) {
-			ImGui::SameLine();
 			// 選択されたプリセットを読み込む
 			if (ImGui::Button(("Load##" + presetName).c_str())) {
 				LoadPreset(presetName);
@@ -306,7 +312,7 @@ void ParticleEditor::SavePreset(const std::string& presetName) {
 		return;
 	}
 	// 現在の属性をプリセットとして保存
-	TakeCFrameWork::GetJsonLoader()->SaveParticlePreset(presetName, currentAttributes_);
+	TakeCFrameWork::GetJsonLoader()->SaveParticleAttribute(presetName, currentAttributes_);
 	// プリセット名を更新
 	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetParticlePresetList();
 
@@ -324,7 +330,7 @@ void ParticleEditor::LoadPreset(const std::string& presetName) {
 	}
 
 	//JSONからプリセットを読み込む
-	currentAttributes_ = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset(presetName);
+	currentAttributes_ = TakeCFrameWork::GetJsonLoader()->LoadParticleAttribute(presetName);
 
 	// 現在のグループに属性を適用
 	particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
@@ -354,7 +360,7 @@ void ParticleEditor::DeletePreset(const std::string& presetName) {
 
 void ParticleEditor::LoadDefaultPreset() {
 	// デフォルトプリセットの読み込み
-	currentAttributes_ = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset("DefaultPreset");
+	currentAttributes_ = TakeCFrameWork::GetJsonLoader()->LoadParticleAttribute("DefaultPreset");
 	// 現在のグループに属性を適用
 	particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
 }
@@ -365,6 +371,17 @@ void ParticleEditor::LoadDefaultPreset() {
 
 void ParticleEditor::LoadAllPresets() {
 
+	//プリセットのリストを取得
+	RefreshPresetList();
+
+	// 各プリセットを読み込み
+	for (const std::string& presetName : presetNames_) {
+		// プリセットを読み込む
+		presets_[presetName] = TakeCFrameWork::GetJsonLoader()->LoadParticleAttribute(presetName);
+	}
+
+	// デバッグ出力（必要に応じて削除）
+	OutputDebugStringA(("Loaded " + std::to_string(presets_.size()) + " presets from folder\n").c_str());
 }
 
 //=======================================================================

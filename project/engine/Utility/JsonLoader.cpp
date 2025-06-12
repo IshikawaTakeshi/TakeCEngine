@@ -95,7 +95,7 @@ LevelData* JsonLoader::LoadLevelFile(const std::string& groupName) {
 ///			パーティクルプリセットの保存
 //===============================================================================================
 
-void JsonLoader::SaveParticlePreset(const std::string& presetName, const ParticleAttributes& attributes) {
+void JsonLoader::SaveParticleAttribute(const std::string& presetName, const ParticleAttributes& attributes) {
 	
 	std::filesystem::path dirctory(kParticlePresetPath);
 	//ディレクトリがなければ作成する
@@ -122,11 +122,35 @@ void JsonLoader::SaveParticlePreset(const std::string& presetName, const Particl
 	ofs.close();
 }
 
+void JsonLoader::SaveParticlePreset(const std::string& presetName, const ParticlePreset& preset) {
+
+	std::filesystem::path dirctory(kParticlePresetPath);
+	//ディレクトリがなければ作成する
+	if (!std::filesystem::exists(dirctory)) {
+		std::filesystem::create_directories(dirctory);
+	}
+	// JSONオブジェクトに変換
+	json presetJson = preset;
+	std::string filePath = kParticlePresetPath + presetName + ".json";
+	std::ofstream ofs(filePath);
+	//ファイルオープンが失敗した場合
+	if (ofs.fail()) {
+		std::string message = "Failed open particle preset file for write:" + presetName;
+		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
+		assert(0);
+		return;
+	}
+	// JSONファイルに書き込む
+	ofs << std::setw(4) << presetJson << std::endl;
+	// ファイルを閉じる
+	ofs.close();
+}
+
 //===============================================================================================
 ///			パーティクルプリセットの読み込み
 //===============================================================================================
 
-ParticleAttributes JsonLoader::LoadParticlePreset(const std::string& presetName) const {
+ParticleAttributes JsonLoader::LoadParticleAttribute(const std::string& presetName) const {
 	
 	std::string filePath = kParticlePresetPath + presetName + ".json";
 
@@ -147,6 +171,25 @@ ParticleAttributes JsonLoader::LoadParticlePreset(const std::string& presetName)
 
 	// JSONからParticleAttributesに変換
 	return presetJson.get<ParticleAttributes>();
+}
+
+ParticlePreset JsonLoader::LoadParticlePreset(const std::string& presetName) const {
+	
+	std::string filePath = kParticlePresetPath + presetName + ".json";
+	std::ifstream ifs(filePath);
+	//ファイルオープンが失敗した場合
+	if (ifs.fail()) {
+		std::string message = "Failed open particle preset file for read:" + presetName;
+		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
+		assert(0);
+		return ParticlePreset();
+	}
+	// JSONファイルから読み込む
+	json presetJson;
+	ifs >> presetJson;
+	ifs.close();
+	// JSONからParticlePresetに変換
+	return presetJson.get<ParticlePreset>();
 }
 
 //================================================================================================
