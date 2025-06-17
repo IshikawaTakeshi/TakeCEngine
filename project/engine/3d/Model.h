@@ -37,9 +37,9 @@ public:
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void Draw();
+	void Draw(PSO* graphicPso);
 
-	void DrawSkyBox();
+	void DrawSkyBox(PSO* graphicPso);
 
 	void DisPatch(PSO* skinningPso);
 
@@ -75,7 +75,7 @@ public: //ゲッター
 	ModelCommon* GetModelCommon() { return modelCommon_; }
 
 	//テクスチャファイルパスの取得
-	const std::string& GetTextureFilePath() const { return modelData_->material.textureFilePath; }
+	const std::string& GetTextureFilePath(const uint32_t& materialNum) const;
 
 	//ローカル行列の取得
 	const Matrix4x4& GetLocalMatrix() const { return localMatrix_; }

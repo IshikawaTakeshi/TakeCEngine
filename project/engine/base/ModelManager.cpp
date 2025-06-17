@@ -1,9 +1,10 @@
 #include "ModelManager.h"
-#include "Model.h"
-#include "ModelCommon.h"
-#include "DirectXCommon.h"
-#include "SrvManager.h"
-#include "MatrixMath.h"
+#include "3d/Model.h"
+#include "3d/ModelCommon.h"
+#include "base/DirectXCommon.h"
+#include "base/SrvManager.h"
+#include "base/TextureManager.h"
+#include "math/MatrixMath.h"
 
 #include <cassert>
 
@@ -93,9 +94,9 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 			assert(mesh->HasNormals()); //法線がない場合は現在エラー
 			
 
-			modelData->vertices.resize(mesh->mNumVertices);
+			modelData->meshes[meshIndex].vertices.resize(mesh->mNumVertices);
 			//Meshの頂点数の格納
-			modelData->skinningInfoData.numVertices = mesh->mNumVertices;
+			modelData->meshes[meshIndex].skinningInfoData.numVertices = mesh->mNumVertices;
 
 			//vertexの解析
 			for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
@@ -103,14 +104,14 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 				aiVector3D& normal = mesh->mNormals[vertexIndex];
 				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
 
-				modelData->vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
-				modelData->vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
+				modelData->meshes[meshIndex].vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
+				modelData->meshes[meshIndex].vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
 				
 				// UVがある場合は値を、無い場合は(0,0)を設定
 				if (mesh->HasTextureCoords(0)) {
-					modelData->vertices[vertexIndex].texcoord = { texcoord.x, texcoord.y };
+					modelData->meshes[meshIndex].vertices[vertexIndex].texcoord = { texcoord.x, texcoord.y };
 				} else {
-					modelData->vertices[vertexIndex].texcoord = { 0.0f, 0.0f };
+					modelData->meshes[meshIndex].vertices[vertexIndex].texcoord = { 0.0f, 0.0f };
 				}
 			}
 			//faceの解析
@@ -121,7 +122,7 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 				//Indices解析
 				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
 					uint32_t indicesIndex = face.mIndices[element];
-					modelData->indices.push_back(indicesIndex);
+					modelData->meshes[meshIndex].indices.push_back(indicesIndex);
 				}
 			}
 
@@ -163,23 +164,30 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 	//materialの解析
 	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
 		aiMaterial* material = scene->mMaterials[materialIndex];
-		unsigned int textureCount = material->GetTextureCount(aiTextureType_DIFFUSE);
-		textureCount;
+		aiString aiTexturePath;
 
-		aiString textureFilePath;
-		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath) == AI_SUCCESS) {
-			modelData->material.textureFilePath = textureFilePath.C_Str();
+		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexturePath) == AI_SUCCESS) {
+			std::string textureFilePath = aiTexturePath.C_Str();
+
+			if (!textureFilePath.empty() && textureFilePath[0] == '*') {
+				//埋め込みテクスチャの場合
+				int texIdx = std::stoi(textureFilePath.c_str() + 1);
+				const aiTexture* embeddedTexture = scene->mTextures[texIdx];
+				modelData->materials[materialIndex].textureFilePath = embeddedTexture->mFilename.C_Str();
+				TextureManager::GetInstance()
+			}
+			modelData->materials[materialIndex].textureFilePath = aiTexturePath.C_Str();
 		}
 
-		if (modelData->material.textureFilePath == "") { //テクスチャがない場合はデフォルトのテクスチャを設定
-			modelData->material.textureFilePath = "white1x1.png";
+		if (modelData->materials[materialIndex].textureFilePath == "") { //テクスチャがない場合はデフォルトのテクスチャを設定
+			modelData->materials[materialIndex].textureFilePath = "white1x1.png";
 		}
 
 		//環境マップテクスチャの設定
 		//MEMO: 画像はDDSファイルのみ対応
 		if (envMapFile != "") {
 			assert(envMapFile.find(".dds") != std::string::npos); //DDSファイル以外はエラー)
-			modelData->material.envMapFilePath = envMapFile;
+			modelData->materials[materialIndex].envMapFilePath = envMapFile;
 		}
 	}
 

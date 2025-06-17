@@ -181,7 +181,6 @@ void Mesh::InitializeInputVertexResourceModel(ID3D12Device* device, ModelData* m
 
 	//頂点リソースを作る
 	inputVertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * modelData->vertices.size());
-	
 
 	//頂点バッファビューを作る
 	vertexBufferViews_[0].BufferLocation = inputVertexResource_->GetGPUVirtualAddress();

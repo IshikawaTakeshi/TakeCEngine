@@ -11,6 +11,11 @@
 #include <memory>
 #include <unordered_map>
 
+//assimp
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include "DirectXCommon.h"
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
@@ -52,6 +57,11 @@ public:
 	/// <param name="filePath">テクスチャファイルのパス</param>
 	/// <returns>画像イメージデータ</returns>
 	void LoadTexture(const std::string& filePath);
+
+	/// <summary>
+	/// 埋め込みテクスチャの読み込み
+	/// </summary>
+	void LoadEmbeddedTexture(const aiTexture* aiTexture);
 
 	/// <summary>
 	/// テクスチャリソースの作成

@@ -123,6 +123,67 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///			埋め込みテクスチャの読み込み
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void TextureManager::LoadEmbeddedTexture(const aiTexture* aiTexture) {
+
+	//埋め込みテクスチャのファイル名を取得
+	std::string textureFilePath = aiTexture->mFilename.C_Str();
+	if (textureFilePath.empty()) {
+		textureFilePath = "white1x1.png"; //埋め込みテクスチャがない場合はデフォルトのテクスチャを設定
+	}
+
+	//読み込み済みテクスチャを検索
+	if (textureDatas_.contains(textureFilePath)) {
+		return;
+	}
+
+	//テクスチャファイルを読み込んでプログラムで扱えるようにする
+	DirectX::ScratchImage image{};
+	HRESULT hr = DirectX::LoadFromWICMemory(
+		aiTexture->pcData,
+		aiTexture->mWidth,
+		DirectX::WIC_FLAGS_FORCE_SRGB,
+		nullptr,
+		image);
+	assert(SUCCEEDED(hr));
+
+	//ミップマップの作成
+	DirectX::ScratchImage mipImages{};
+	if (image.GetMetadata().width == 1 && image.GetMetadata().height == 1) {
+		mipImages = std::move(image); // 1x1はミップマップ不要
+	} else { //非圧縮フォーマットの場合はミップマップを作成
+		hr = DirectX::GenerateMipMaps(
+			image.GetImages(),
+			image.GetImageCount(),
+			image.GetMetadata(),
+			DirectX::TEX_FILTER_SRGB,
+			0, mipImages);
+		assert(SUCCEEDED(hr));
+	}
+	
+	//テクスチャデータを追加して書き込む
+	TextureData& textureData = textureDatas_[textureFilePath];
+
+	//テクスチャデータの設定
+	textureData.metadata = mipImages.GetMetadata();
+	textureData.resource = CreateTextureResource(textureData.metadata);
+	textureData.intermediateResource = UploadTextureData(textureData.resource, mipImages);
+
+	//テクスチャデータの要素数番号をSRVのインデックスとして設定
+	textureData.srvIndex = srvManager_->Allocate();
+	//metadataを基にSRVの設定
+	srvManager_->CreateSRVforTexture2D(
+		textureData.metadata.IsCubemap(),
+		textureData.metadata.format,
+		UINT(textureData.metadata.mipLevels),
+		textureData.resource.Get(),
+		textureData.srvIndex
+	);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///			テクスチャリソースの作成
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

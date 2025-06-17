@@ -43,8 +43,8 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 	mesh_ = std::make_unique<Mesh>();
 	mesh_->InitializeMesh(
 		modelCommon_->GetDirectXCommon(),
-		modelData_->material.textureFilePath,
-		modelData_->material.envMapFilePath);
+		modelData_->materials[].textureFilePath,
+		modelData_->materials[].envMapFilePath);
 
 	//inputVertexResource
 	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
@@ -61,7 +61,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 		//SRVの設定
 		inputIndex_ = modelCommon_->GetSrvManager()->Allocate();
 		modelCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
-			modelData_->skinningInfoData.numVertices,
+			modelData_->meshes[].skinningInfoData.numVertices,
 			sizeof(VertexData),
 			mesh_->GetInputVertexResource(),
 			inputIndex_);
@@ -69,7 +69,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 		//UAVの設定
 		uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
 		modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
-			modelData_->skinningInfoData.numVertices,
+			modelData_->meshes[].skinningInfoData.numVertices,
 			sizeof(VertexData),
 			mesh_->GetOutputVertexResource(),
 			uavIndex_);
@@ -111,7 +111,7 @@ void Model::Update(Animation* animation,float animationTime) {
 // 描画処理
 //=============================================================================
 
-void Model::Draw() {
+void Model::Draw(PSO* graphicPso) {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
@@ -120,18 +120,24 @@ void Model::Draw() {
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(
+		graphicPso->GetGraphicBindResourceIndex("gMaterial"),
+		mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//textureSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(6, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+		graphicPso->GetGraphicBindResourceIndex("gTexture"),
+		TextureManager::GetInstance()->GetSrvIndex(modelData_->materials[].textureFilePath));
 	//envMapSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.envMapFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+		graphicPso->GetGraphicBindResourceIndex("gEnvMapTexture"),
+		TextureManager::GetInstance()->GetSrvIndex(modelData_->materials[].envMapFilePath));
 	//IBVの設定
 	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	//DrawCall
-	commandList->DrawIndexedInstanced(UINT(modelData_->indices.size()), 1, 0, 0, 0);
+	commandList->DrawIndexedInstanced(UINT(modelData_->meshes[].indices.size()), 1, 0, 0, 0);
 }
 
-void Model::DrawSkyBox() {
+void Model::DrawSkyBox(PSO* graphicPso) {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
@@ -140,14 +146,18 @@ void Model::DrawSkyBox() {
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(
+		graphicPso->GetGraphicBindResourceIndex("gMaterial"),
+		mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//TextureSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+		graphicPso->GetGraphicBindResourceIndex("gTexture"),
+		TextureManager::GetInstance()->GetSrvIndex(modelData_->meshes[].material.textureFilePath));
 
 	//IBVの設定
 	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	//DrawCall
-	commandList->DrawIndexedInstanced(UINT(modelData_->indices.size()), 1, 0, 0, 0);
+	commandList->DrawIndexedInstanced(UINT(modelData_->meshes[].indices.size()), 1, 0, 0, 0);
 }
 
 //=============================================================================
@@ -180,7 +190,7 @@ void Model::DisPatch(PSO* skinningPso) {
 	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gOutputVertices"), uavIndex_);
 
 	//DisPatch
-	commandList->Dispatch(UINT(modelData_->skinningInfoData.numVertices + 1023) / 1024, 1, 1);
+	commandList->Dispatch(UINT(modelData_->meshes[].skinningInfoData.numVertices + 1023) / 1024, 1, 1);
 
 	//UNORDERED_ACCESS >> VERTEX_AND_CONSTANT_BUFFER
 	ResourceBarrier::GetInstance()->Transition(
@@ -194,33 +204,50 @@ void Model::DisPatch(PSO* skinningPso) {
 // パーティクル用描画処理
 //=============================================================================
 
-void Model::DrawForParticle(UINT instanceCount_) {
+void Model::DrawForParticle(PSO* graphicPso, UINT instanceCount_) {
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
 	// VBVを設定
 	mesh_->SetVertexBuffers(commandList, 0);
-	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
+	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
+	//gMaterial
+	commandList->SetGraphicsRootConstantBufferView(
+		graphicPso->GetGraphicBindResourceIndex("gMaterial"),
+		mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	//gTexture
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+		graphicPso->GetGraphicBindResourceIndex("gTexture"),
+		TextureManager::GetInstance()->GetSrvIndex(modelData_->materials[].textureFilePath));
 	//DrawCall
-	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount_, 0, 0);
+	commandList->DrawInstanced(UINT(modelData_->meshes[].vertices.size()), instanceCount_, 0, 0);
 
 }
 
-void Model::DrawForGPUParticle(UINT instanceCount) {
+void Model::DrawForGPUParticle(PSO* graphicPso,UINT instanceCount) {
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
 	// VBVを設定
 	mesh_->SetVertexBuffers(commandList, 0);
-	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
+	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
+	//gMaterial
+	commandList->SetGraphicsRootConstantBufferView(
+		graphicPso->GetGraphicBindResourceIndex("gMaterial"),
+		mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	//gTexture
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+		graphicPso->GetGraphicBindResourceIndex("gTexture"),
+		TextureManager::GetInstance()->GetSrvIndex(modelData_->materials[].textureFilePath));
 	//DrawCall
-	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount, 0, 0);
+	commandList->DrawInstanced(UINT(modelData_->meshes[].vertices.size()), instanceCount, 0, 0);
+}
+
+const std::string& Model::GetTextureFilePath(const uint32_t& materialNum) const {
+	
+	if (materialNum < modelData_->materials.size()) {
+		return modelData_->materials[materialNum].textureFilePath;
+	}
+	//0番のテクスチャパスを返す
+	return modelData_->materials[0].textureFilePath; 
 }
