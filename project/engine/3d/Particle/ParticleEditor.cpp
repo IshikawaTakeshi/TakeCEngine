@@ -3,6 +3,10 @@
 #include "base/TakeCFrameWork.h"
 #include <cassert>
 
+//======================================================================
+//			初期化
+//======================================================================
+
 void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon* particleCommon) {
 
 	// ParticleManager初期化
@@ -22,11 +26,20 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 	//エミッターに発生させるパーティクルを設定
 	previewEmitter_->SetParticleName(currentGroupName_);
 
-	//デフォルトプリセットの読み込み
-	//LoadDefaultPreset();
+	//全プリセットの読み込み
+	LoadAllPresets();
 }
 
+//======================================================================
+//			更新処理
+//======================================================================
+
 void ParticleEditor::Update() {
+
+	if (autoApply_) {
+		//属性を自動的に適用する場合、現在の属性をグループに適用
+		particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
+	}
 
 	particleManager_->Update();
 
@@ -39,6 +52,10 @@ void ParticleEditor::Update() {
 	previewEmitter_->Update();
 
 }
+
+//======================================================================
+//			ImGui更新処理
+//======================================================================
 
 void ParticleEditor::UpdateImGui() {
 
@@ -68,23 +85,27 @@ void ParticleEditor::UpdateImGui() {
 	//タブ形式のUIの作成
 	if (ImGui::BeginTabBar("ParticleEditorTabs")) {
 		// パーティクル属性エディター
-		if (ImGui::BeginTabItem("Attributes Editor")) {
+		if (ImGui::BeginTabItem("Particle Attributes")) {
+
+			//属性の編集
+			ImGui::SeparatorText("Attributes Setting");
 			DrawParticleAttributesEditor();
-			ImGui::EndTabItem();
-		}
-		// エミッターコントロール
-		if (ImGui::BeginTabItem("Emitter Controls")) {
+
+			// エミッターコントロール
+			ImGui::SeparatorText("Emitter Controls");
 			DrawEmitterControls();
+
 			ImGui::EndTabItem();
 		}
-		// プレビュー設定
-		if (ImGui::BeginTabItem("Preview Settings")) {
-			DrawPreviewSettings();
-			ImGui::EndTabItem();
-		}
+
 		//プリセット管理
 		if (ImGui::BeginTabItem("Preset Manager")) {
+
+			// プレビュー設定
+			DrawPreviewSettings();
+			// プリセットマネージャー
 			DrawPresetManager();
+
 			ImGui::EndTabItem();
 		}
 		ImGui::EndTabBar();
@@ -92,11 +113,19 @@ void ParticleEditor::UpdateImGui() {
 	ImGui::End();
 }
 
+//======================================================================
+//			終了処理
+//======================================================================
+
 void ParticleEditor::Finalize() {
 
 	// プレビューエミッターの解放
 	previewEmitter_.reset();
 }
+
+//======================================================================
+//			描画処理
+//======================================================================
 
 void ParticleEditor::Draw() {
 
@@ -104,10 +133,13 @@ void ParticleEditor::Draw() {
 	TakeCFrameWork::GetParticleManager()->Draw();
 }
 
+//======================================================================
+//			プリセットの保存
+//======================================================================
+
 void ParticleEditor::DrawParticleAttributesEditor() {
 
-	ImGui::Text("Particle Attributes");
-	ImGui::Separator();
+	ImGui::SeparatorText("Particle Attributes");
 
 	//Scale
 	ImGui::SliderInt("Scale Setting", reinterpret_cast<int*>(&currentAttributes_.scaleSetting_), 0, 2, "None: %d, Scale Up: %d, Scale Down: %d");
@@ -143,11 +175,18 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 		// 現在のグループに属性を適用
 		particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
 	}
+
+	//テクスチャファイルの設定
+
 }
+
+//======================================================================
+//			エミッターコントロールの描画
+//======================================================================
 
 void ParticleEditor::DrawEmitterControls() {
 
-	ImGui::Text("Emitter COntrols");
+	ImGui::Text("Emitter Controls");
 	ImGui::Separator();
 
 	//エミッターTrasformの表示
@@ -175,6 +214,10 @@ void ParticleEditor::DrawEmitterControls() {
 		previewEmitter_->UpdateImGui();
 	}
 }
+
+//======================================================================
+//			プレビュー設定の描画
+//======================================================================
 
 void ParticleEditor::DrawPreviewSettings() {
 
@@ -205,6 +248,10 @@ void ParticleEditor::DrawPreviewSettings() {
 	}
 }
 
+//=======================================================================
+//			プリセットマネージャーの描画
+//=======================================================================
+
 void ParticleEditor::DrawPresetManager() {
 
 	ImGui::Text("Preset Manager");
@@ -213,6 +260,11 @@ void ParticleEditor::DrawPresetManager() {
 	// プリセット名の入力
 	static char presetNameBuffer[64] = "";
 	ImGui::InputText("Preset Name", presetNameBuffer, sizeof(presetNameBuffer));
+
+	if (ImGui::Button("Refresh Preset List")) {
+		// プリセット名のリストを更新
+		RefreshPresetList();
+	}
 
 	// プリセットの保存
 	if (ImGui::Button("Save current as Preset")) {
@@ -236,7 +288,6 @@ void ParticleEditor::DrawPresetManager() {
 		}
 
 		if (isSelected) {
-			ImGui::SameLine();
 			// 選択されたプリセットを読み込む
 			if (ImGui::Button(("Load##" + presetName).c_str())) {
 				LoadPreset(presetName);
@@ -250,6 +301,10 @@ void ParticleEditor::DrawPresetManager() {
 	}
 }
 
+//========================================================================
+//			プリセットの保存、読み込み、削除
+//========================================================================
+
 void ParticleEditor::SavePreset(const std::string& presetName) {
 
 	if (presetName.empty() || presets_.find(presetName) != presets_.end()) {
@@ -257,11 +312,15 @@ void ParticleEditor::SavePreset(const std::string& presetName) {
 		return;
 	}
 	// 現在の属性をプリセットとして保存
-	TakeCFrameWork::GetJsonLoader()->SaveParticlePreset(presetName, currentAttributes_);
+	TakeCFrameWork::GetJsonLoader()->SaveParticleAttribute(presetName, currentAttributes_);
 	// プリセット名を更新
 	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetParticlePresetList();
 
 }
+
+//=======================================================================
+//			プリセットの読み込み、削除、デフォルトプリセットの読み込み
+//========================================================================
 
 void ParticleEditor::LoadPreset(const std::string& presetName) {
 
@@ -271,11 +330,15 @@ void ParticleEditor::LoadPreset(const std::string& presetName) {
 	}
 
 	//JSONからプリセットを読み込む
-	currentAttributes_ = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset(presetName);
+	currentAttributes_ = TakeCFrameWork::GetJsonLoader()->LoadParticleAttribute(presetName);
 
 	// 現在のグループに属性を適用
 	particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
 }
+
+//========================================================================
+//			プリセットの削除
+//========================================================================
 
 void ParticleEditor::DeletePreset(const std::string& presetName) {
 	// プリセットが存在するか確認
@@ -291,12 +354,39 @@ void ParticleEditor::DeletePreset(const std::string& presetName) {
 	RefreshPresetList();
 }
 
+//=======================================================================
+//			デフォルトプリセットの読み込み
+//========================================================================
+
 void ParticleEditor::LoadDefaultPreset() {
 	// デフォルトプリセットの読み込み
-	currentAttributes_ = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset("DefaultPreset");
+	currentAttributes_ = TakeCFrameWork::GetJsonLoader()->LoadParticleAttribute("DefaultPreset");
 	// 現在のグループに属性を適用
 	particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
 }
+
+//=======================================================================
+//			全てのプリセットを読み込み
+//========================================================================
+
+void ParticleEditor::LoadAllPresets() {
+
+	//プリセットのリストを取得
+	RefreshPresetList();
+
+	// 各プリセットを読み込み
+	for (const std::string& presetName : presetNames_) {
+		// プリセットを読み込む
+		presets_[presetName] = TakeCFrameWork::GetJsonLoader()->LoadParticleAttribute(presetName);
+	}
+
+	// デバッグ出力（必要に応じて削除）
+	OutputDebugStringA(("Loaded " + std::to_string(presets_.size()) + " presets from folder\n").c_str());
+}
+
+//=======================================================================
+//			プリセット名のリストを更新
+//========================================================================
 
 void ParticleEditor::RefreshPresetList() {
 	// プリセット名のリストを更新

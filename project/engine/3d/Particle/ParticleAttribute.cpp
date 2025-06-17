@@ -11,9 +11,13 @@ void to_json(nlohmann::json& j, const ParticleAttributes& attributes){
 	j["velocityRange"] = json{ { "min", attributes.velocityRange.min},{"max", attributes.velocityRange.max } };
 	j["colorRange"] = json{ { "min", attributes.colorRange.min},{"max", attributes.colorRange.max } };
 	j["lifetimeRange"] = json{ { "min", attributes.lifetimeRange.min },{"max", attributes.lifetimeRange.max } };
+	j["frequency"] = attributes.frequency;
+	j["emitCount"] = attributes.emitCount;
 	j["editColor"] = attributes.editColor;
 	j["isBillboard"] = attributes.isBillboard;
 	j["scaleSetting_"] = attributes.scaleSetting_;
+	j["isTraslate_"] = attributes.isTraslate_;
+	j["enableFollowEmitter_"] = attributes.enableFollowEmitter_;
 }
 
 void to_json(nlohmann::json& j, const AttributeRange& attributeRange) {
@@ -24,13 +28,20 @@ void to_json(nlohmann::json& j, const AttributeRange& attributeRange) {
 	};
 }
 
+void to_json(json& j, const ParticlePreset& preset) {
+
+	j["name"] = preset.attributesMap.first;
+	j["textureFilePath"] = preset.textureFilePath;
+	j["attributes"] = preset.attributesMap.second;
+	j["primitiveType"] = preset.primitiveType;
+}
+
 void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
 
 	j.at("scale").get_to(attributes.scale);
 	j.at("color").get_to(attributes.color);
 	j.at("scaleRange").get_to(attributes.scaleRange);
 	j.at("rotateRange").get_to(attributes.rotateRange);
-	j.at("angleRange").get_to(attributes.angleRange);
 	j.at("positionRange").get_to(attributes.positionRange);
 	j.at("velocityRange").get_to(attributes.velocityRange);
 	j.at("colorRange").get_to(attributes.colorRange);
@@ -46,7 +57,14 @@ void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
 
 void from_json(const nlohmann::json& j, AttributeRange& attributeRange) {
 
-
 	j.at("min").get_to(attributeRange.min);
 	j.at("max").get_to(attributeRange.max);
+}
+
+void from_json(const json& j, ParticlePreset& preset) {
+
+	j.at("name").get_to(preset.attributesMap.first);
+	j.at("textureFilePath").get_to(preset.textureFilePath);
+	j.at("attributes").get_to(preset.attributesMap.second);
+	j.at("primitiveType").get_to(preset.primitiveType);
 }

@@ -1,8 +1,10 @@
 #pragma once
-#include "Vector3.h"
+#include "math/Vector3.h"
+#include "Primitive/PrimitiveType.h"
 #include <json.hpp>
 #include <numbers>
 #include <cstdint>
+#include <unordered_map>
 
 struct AttributeRange {
 	float min;
@@ -21,7 +23,6 @@ struct ParticleAttributes {
 	Vector3 color = { 1.0f,1.0f,1.0f };
 	AttributeRange scaleRange = { 0.1f,3.0f };
 	AttributeRange rotateRange = { -std::numbers::pi_v<float>, std::numbers::pi_v<float> };
-	AttributeRange angleRange = { 0.0f, 0.0f };
 	AttributeRange positionRange = {-1.0f, 1.0f};
 	AttributeRange velocityRange = { -1.0f,1.0f };
 	AttributeRange colorRange = { 0.0f,1.0f };
@@ -35,14 +36,20 @@ struct ParticleAttributes {
 	bool enableFollowEmitter_ = false; //エミッターに追従するかどうか
 };
 
+struct ParticlePreset {
+	std::pair<std::string, ParticleAttributes> attributesMap; //属性のマップ
+	std::string textureFilePath; //テクスチャファイル名
+	PrimitiveType primitiveType; //プリミティブの種類
+};
+
 using json = nlohmann::json;
 
-// JSON形式に変換(ParticleAttributes)
+// JSON形式に変換
 void to_json(json& j, const ParticleAttributes& attributes);
-
-// JSON形式に変換(AttributeRange)
 void to_json(json& j, const AttributeRange& attributeRange);
+void to_json(json& j, const ParticlePreset& preset);
 
+// JSONから変換
 void from_json(const json& j, ParticleAttributes& attributes);
-
 void from_json(const json& j, AttributeRange& attributeRange);
+void from_json(const json& j, ParticlePreset& preset);

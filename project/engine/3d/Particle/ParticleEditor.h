@@ -24,6 +24,7 @@ public:
 	void LoadPreset(const std::string& presetName);
 	void DeletePreset(const std::string& presetName);
 	void LoadDefaultPreset();
+	void LoadAllPresets();
 	void RefreshPresetList();
 
 private:
@@ -52,6 +53,7 @@ private:
 	uint32_t emitCount_ = 10;
 	float emitFrequency_ = 0.1f;
 	bool autoEmit_ = false;
+	bool autoApply_ = true; //属性を自動的に適用するかどうか
 
 	// プリセット管理
 	std::vector<std::string> presetNames_;
