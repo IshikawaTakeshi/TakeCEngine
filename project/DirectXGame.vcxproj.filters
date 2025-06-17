@@ -123,6 +123,7 @@
     <ClCompile Include="engine\3d\Particle\ParticleEditor.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
     <ClCompile Include="engine\scene\ParticleEditScene.cpp" />
+    <ClCompile Include="engine\3d\Primitive\PrimitiveType.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Collision\Collider.h" />

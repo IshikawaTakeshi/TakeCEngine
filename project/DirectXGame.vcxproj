@@ -109,6 +109,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
+    <ClCompile Include="engine\3d\Primitive\PrimitiveType.cpp" />
     <ClCompile Include="engine\Collision\Collider.cpp" />
     <ClCompile Include="engine\Collision\CollisionManager.cpp" />
     <ClCompile Include="application\Ground\Ground.cpp" />

@@ -31,10 +31,7 @@ void GamePlayScene::Initialize() {
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
-	//Model読み込み
-	ModelManager::GetInstance()->LoadModel("gltf","walk.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "player_animation.gltf");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
+
 #pragma region CreateParticle
 	//CreateParticle
 	ParticleAttributes particleAttributes;
@@ -143,16 +140,16 @@ void GamePlayScene::Initialize() {
 
 	//player
 	player_ = std::make_unique<Player>();
-	player_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
+	player_->Initialize(Object3dCommon::GetInstance(), "plane.gltf");
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
-	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
+	//player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
 
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
-	enemy_->Initialize(Object3dCommon::GetInstance(), "player_animation.gltf");
+	enemy_->Initialize(Object3dCommon::GetInstance(), "plane.gltf");
 	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "cube.obj");
-	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
+	//enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
 }
 
 //====================================================================

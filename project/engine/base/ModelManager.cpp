@@ -91,7 +91,8 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 			aiMesh* mesh = scene->mMeshes[meshIndex];
 			assert(mesh->HasNormals()); //法線がない場合は現在エラー
-			assert(mesh->HasTextureCoords(0)); //UVがない場合は現在エラー
+			
+
 			modelData->vertices.resize(mesh->mNumVertices);
 			//Meshの頂点数の格納
 			modelData->skinningInfoData.numVertices = mesh->mNumVertices;
@@ -104,8 +105,13 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 
 				modelData->vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
 				modelData->vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
-				modelData->vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
-
+				
+				// UVがある場合は値を、無い場合は(0,0)を設定
+				if (mesh->HasTextureCoords(0)) {
+					modelData->vertices[vertexIndex].texcoord = { texcoord.x, texcoord.y };
+				} else {
+					modelData->vertices[vertexIndex].texcoord = { 0.0f, 0.0f };
+				}
 			}
 			//faceの解析
 			for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
