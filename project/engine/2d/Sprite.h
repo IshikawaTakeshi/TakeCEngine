@@ -107,7 +107,7 @@ private:
 	SpriteCommon* spriteCommon_ = nullptr;
 
 	//メッシュ
-	std::unique_ptr<Mesh> mesh_ = nullptr;
+	std::unique_ptr<ModelMesh> mesh_ = nullptr;
 
 	//filePath
 	std::string filePath_;

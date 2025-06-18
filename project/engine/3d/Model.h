@@ -38,32 +38,19 @@ public:
 	/// 描画処理
 	/// </summary>
 	void Draw(PSO* graphicPso);
-
 	void DrawSkyBox(PSO* graphicPso);
-
 	void DisPatch(PSO* skinningPso);
-
-	//void DisPatchForASkinningModel();
-
 
 	/// <summary>
 	/// パーティクル描画
 	/// </summary>
 	/// <param name="instanceCount_"></param>
-	void DrawForParticle(UINT instanceCount_);
+	void DrawForParticle(PSO* graphicPso,UINT instanceCount_);
 
-	void DrawForGPUParticle(UINT instanceCount);
-
-	/// <summary>
-	/// アニメーションの適用
-	/// </summary>
-	//void ApplyAnimation();
+	void DrawForGPUParticle(PSO* graphicPso,UINT instanceCount);
 
 
 public: //ゲッター
-
-	//メッシュの取得
-	Mesh* GetMesh() { return mesh_.get(); }
 
 	//スケルトンの取得
 	Skeleton* GetSkeleton() { return skeleton_.get(); }
@@ -82,9 +69,6 @@ public: //ゲッター
 
 public: //セッター
 
-	//メッシュの設定
-	void SetMesh(Mesh* mesh) { mesh_.reset(mesh); }
-
 	//ModelCommonの設定
 	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
 
@@ -92,8 +76,6 @@ private:
 
 	ModelCommon* modelCommon_ = nullptr;
 
-	//メッシュ
-	std::unique_ptr<Mesh> mesh_ = nullptr;
 	//スケルトン
 	std::unique_ptr<Skeleton> skeleton_;
 	//スキンクラスター
@@ -101,7 +83,6 @@ private:
 
 	//構築するModelData
 	ModelData* modelData_;
-	//Animation* animation_;
 
 	Vector3 translate_;
 	Quaternion rotate_;

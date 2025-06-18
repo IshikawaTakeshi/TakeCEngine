@@ -6,24 +6,30 @@
 #include <memory>
 
 class DirectXCommon;
-class Mesh {
+//==================================================================
+// サブメッシュ管理クラス
+//==================================================================
+class ModelMesh {
 public:
 
-	Mesh() = default;
-	~Mesh();
+	//球体の分割数
+	static inline const uint32_t kSubdivision = 16;
 
-	void InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath,const std::string& envMapfilePath = "");
+	struct SubMesh {
+		uint32_t vertexStart = 0; //頂点の開始インデックス
+		uint32_t vertexCount = 0; //頂点数
+		uint32_t indexStartIndex = 0; //インデックスの開始インデックス
+		uint32_t indexCount = 0; //インデックス数
+		std::vector<VertexData> vertices; //頂点データ
+		std::vector<uint32_t> indices; //インデックスデータ
+		std::unique_ptr<Material> material_;
+	};
+public:
 
-	/// <summary>
-		/// 描画処理時に使用する頂点バッファを設定
-		/// </summary>
-		/// <param name="commandList"></param>
-		/// <param name="startSlot"></param>
-	void SetVertexBuffers(ID3D12GraphicsCommandList* commandList, UINT startSlot);
+	ModelMesh() = default;
+	~ModelMesh();
 
-	void SetSkinnedVertexBuffer(ID3D12GraphicsCommandList* commandList, UINT startSlot);
-
-	void AddVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vbv);
+	void InitializeMesh(DirectXCommon* dxCommon, ModelData* modelData);
 
 	/// <summary>
 	/// 球体の頂点バッファリソース初期化
@@ -46,7 +52,6 @@ public:
 	/// <param name="device"></param>
 	void InitializeInputVertexResourceModel(ID3D12Device* device, ModelData* modelData);
 	void InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* modelData, ID3D12GraphicsCommandList* commandList);
-	//void InitializeSkinnedVertexResource(ID3D12Device* device, ModelData modelData);
 
 	/// <summary>
 	/// 球体のIndexResource初期化
@@ -68,36 +73,28 @@ public: //getter
 	/// 頂点リソースの取得
 	ID3D12Resource* GetInputVertexResource() { return inputVertexResource_.Get(); }
 	ID3D12Resource* GetOutputVertexResource() { return outputVertexResource_.Get(); }
-	//ID3D12Resource* GetSkinnedVertexResource() { return skinnedVertexResource_.Get(); }
-
 	/// 頂点数リソースの取得
 	ID3D12Resource* GetVertexCountResource() { return vertexCountResource_.Get(); }
 
 	/// 頂点バッファビューの取得
-	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView(int num) const { return vertexBufferViews_[num]; }
+	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return vertexBufferView_; }
 
 	/// インデックスバッファビューの取得
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() { return indexBufferView_; }
 
-	/// マテリアルの取得
-	Material* GetMaterial() { return material_.get(); }
-
-public:
-
-	//球体の分割数
-	static inline const uint32_t kSubdivision = 16;
+	std::vector<SubMesh>& GetSubMeshes() { return subMeshes_; }
 
 protected:
 
-	//マテリアル
-	std::unique_ptr<Material> material_ = nullptr;
+	std::vector<SubMesh> subMeshes_;     //サブメッシュのコンテナ
+
+	uint32_t vertexOffset_ = 0; //頂点オフセット
+	uint32_t indexOffset_ = 0;  //インデックスオフセット
 
 	//頂点バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> inputVertexResource_;
 	Microsoft::WRL::ComPtr<ID3D12Resource> outputVertexResource_;
-	//Microsoft::WRL::ComPtr<ID3D12Resource> skinnedVertexResource_;
-	std::vector<D3D12_VERTEX_BUFFER_VIEW> vertexBufferViews_;
-	D3D12_VERTEX_BUFFER_VIEW skinnedVBV_{};
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
 
 	//頂点数リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexCountResource_;

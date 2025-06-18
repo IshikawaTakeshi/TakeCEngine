@@ -34,7 +34,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	spriteCommon_ = spriteCommon;
 	
 	//メッシュ初期化
-	mesh_ = std::make_unique<Mesh>();
+	mesh_ = std::make_unique<ModelMesh>();
 	mesh_->InitializeMesh(spriteCommon_->GetDirectXCommon(),filePath);
 	//vertexResource初期化
 	mesh_->InitializeVertexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice(),anchorPoint_);

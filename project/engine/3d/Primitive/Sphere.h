@@ -39,7 +39,7 @@ public: //セッター
 private:
 
 	//メッシュ
-	std::unique_ptr<Mesh> mesh_;
+	std::unique_ptr<ModelMesh> mesh_;
 
 	//filePath
 	std::string filePath_;

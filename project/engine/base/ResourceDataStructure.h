@@ -4,6 +4,7 @@
 #include "Vector4.h"
 #include "Matrix4x4.h"
 #include "Transform.h"
+#include "3d/Mesh/Mesh.h"
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -45,13 +46,6 @@ struct SpotLightData {
 	float penumbraAngle_; //影のぼかし角度
 };
 
-//モデル1個分のマテリアルデータ
-struct ModelMaterialData {
-
-	std::string textureFilePath; //テクスチャファイルのパス
-	std::string envMapFilePath; //環境マップのパス
-	uint32_t srvIndex; //テクスチャのインデックス
-};
 
 struct Node {
 	QuaternionTransform transform;
@@ -71,21 +65,19 @@ struct JointWeightData {
 };
 
 struct SkinningInfo {
-	uint32_t numVertices;
+	uint32_t VertexCount;
+	uint32_t indexCount; //インデックスの数
 };
 
 //モデル1個分のデータ
-struct ModelMesh {
-	std::vector<VertexData> vertices;
-	SkinningInfo skinningInfoData;
-	std::vector<uint32_t> indices;
-};
-
 struct ModelData {
 	std::string fileName; //モデル名
+
+	std::vector<VertexData> allVertices; //全頂点データ
+	std::vector<uint32_t> allIndices;    //全インデックスデータ
 	std::map<std::string, JointWeightData> skinClusterData;
-	std::vector<ModelMesh> meshes; //メッシュデータ
-	std::vector<ModelMaterialData> materials;
+	SkinningInfo skinningInfoData;
+	std::unique_ptr<ModelMesh> mesh; //メッシュデータ
 	Node rootNode;
 	bool haveBone = false;
 };

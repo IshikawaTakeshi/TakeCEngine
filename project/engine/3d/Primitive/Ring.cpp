@@ -16,7 +16,7 @@ void Ring::Initialize(DirectXCommon* dxCommon) {
 		D3D12_DEPTH_WRITE_MASK_ALL);
 
 	//Meshの生成
-	mesh_ = std::make_unique<Mesh>();
+	mesh_ = std::make_unique<ModelMesh>();
 	mesh_->InitializeMesh(dxCommon_,"uvChecker.png");
 
 

@@ -27,6 +27,11 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 	//objファイル読み込み
 	modelData_ = modelData;
 
+	for (auto& mesh : modelData_->mesh->GetSubMeshes()) {
+		//メッシュの初期化
+		
+	}
+
 	//Skeleton作成
 	if (modelData_->haveBone) {
 		skeleton_ = std::make_unique<Skeleton>();
@@ -38,13 +43,6 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 		skeleton_ = nullptr;
 		haveSkeleton_ = false;
 	}
-
-	//メッシュ初期化
-	mesh_ = std::make_unique<Mesh>();
-	mesh_->InitializeMesh(
-		modelCommon_->GetDirectXCommon(),
-		modelData_->materials[].textureFilePath,
-		modelData_->materials[].envMapFilePath);
 
 	//inputVertexResource
 	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
@@ -61,7 +59,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 		//SRVの設定
 		inputIndex_ = modelCommon_->GetSrvManager()->Allocate();
 		modelCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
-			modelData_->meshes[].skinningInfoData.numVertices,
+			modelData_->mesh[].skinningInfoData.VertexCount,
 			sizeof(VertexData),
 			mesh_->GetInputVertexResource(),
 			inputIndex_);
@@ -69,7 +67,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 		//UAVの設定
 		uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
 		modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
-			modelData_->meshes[].skinningInfoData.numVertices,
+			modelData_->mesh[].skinningInfoData.VertexCount,
 			sizeof(VertexData),
 			mesh_->GetOutputVertexResource(),
 			uavIndex_);
@@ -134,7 +132,7 @@ void Model::Draw(PSO* graphicPso) {
 	//IBVの設定
 	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	//DrawCall
-	commandList->DrawIndexedInstanced(UINT(modelData_->meshes[].indices.size()), 1, 0, 0, 0);
+	commandList->DrawIndexedInstanced(UINT(modelData_->mesh[].indices.size()), 1, 0, 0, 0);
 }
 
 void Model::DrawSkyBox(PSO* graphicPso) {
@@ -152,12 +150,12 @@ void Model::DrawSkyBox(PSO* graphicPso) {
 	//TextureSRV
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
 		graphicPso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance()->GetSrvIndex(modelData_->meshes[].material.textureFilePath));
+		TextureManager::GetInstance()->GetSrvIndex(modelData_->mesh[].material.textureFilePath));
 
 	//IBVの設定
 	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	//DrawCall
-	commandList->DrawIndexedInstanced(UINT(modelData_->meshes[].indices.size()), 1, 0, 0, 0);
+	commandList->DrawIndexedInstanced(UINT(modelData_->mesh[].indices.size()), 1, 0, 0, 0);
 }
 
 //=============================================================================
@@ -190,7 +188,7 @@ void Model::DisPatch(PSO* skinningPso) {
 	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gOutputVertices"), uavIndex_);
 
 	//DisPatch
-	commandList->Dispatch(UINT(modelData_->meshes[].skinningInfoData.numVertices + 1023) / 1024, 1, 1);
+	commandList->Dispatch(UINT(modelData_->mesh[].skinningInfoData.VertexCount + 1023) / 1024, 1, 1);
 
 	//UNORDERED_ACCESS >> VERTEX_AND_CONSTANT_BUFFER
 	ResourceBarrier::GetInstance()->Transition(
@@ -220,7 +218,7 @@ void Model::DrawForParticle(PSO* graphicPso, UINT instanceCount_) {
 		graphicPso->GetGraphicBindResourceIndex("gTexture"),
 		TextureManager::GetInstance()->GetSrvIndex(modelData_->materials[].textureFilePath));
 	//DrawCall
-	commandList->DrawInstanced(UINT(modelData_->meshes[].vertices.size()), instanceCount_, 0, 0);
+	commandList->DrawInstanced(UINT(modelData_->mesh[].allVertices.size()), instanceCount_, 0, 0);
 
 }
 
@@ -240,7 +238,7 @@ void Model::DrawForGPUParticle(PSO* graphicPso,UINT instanceCount) {
 		graphicPso->GetGraphicBindResourceIndex("gTexture"),
 		TextureManager::GetInstance()->GetSrvIndex(modelData_->materials[].textureFilePath));
 	//DrawCall
-	commandList->DrawInstanced(UINT(modelData_->meshes[].vertices.size()), instanceCount, 0, 0);
+	commandList->DrawInstanced(UINT(modelData_->mesh[].allVertices.size()), instanceCount, 0, 0);
 }
 
 const std::string& Model::GetTextureFilePath(const uint32_t& materialNum) const {

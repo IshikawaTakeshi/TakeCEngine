@@ -25,7 +25,7 @@ private:
 	EulerTransform transform_;
 
 	//頂点リソース
-	std::unique_ptr<Mesh> mesh_ = nullptr;
+	std::unique_ptr<ModelMesh> mesh_ = nullptr;
 	//wvpResource
 	ComPtr<ID3D12Resource> wvpResource_ = nullptr;
 	TransformMatrix* TransformMatrixData_ = nullptr;

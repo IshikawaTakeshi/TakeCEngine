@@ -86,6 +86,7 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 
 	modelData->fileName = modelFile;
+	modelData->mesh = std::make_unique<ModelMesh>();
 
 	if (scene->HasMeshes()) {
 		//Meshの解析
@@ -94,9 +95,9 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 			assert(mesh->HasNormals()); //法線がない場合は現在エラー
 			
 
-			modelData->meshes[meshIndex].vertices.resize(mesh->mNumVertices);
+			modelData->mesh->GetSubMeshes()[meshIndex].vertices.resize(mesh->mNumVertices);
 			//Meshの頂点数の格納
-			modelData->meshes[meshIndex].skinningInfoData.numVertices = mesh->mNumVertices;
+			modelData->skinningInfoData.VertexCount = mesh->mNumVertices;
 
 			//vertexの解析
 			for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
@@ -104,14 +105,14 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 				aiVector3D& normal = mesh->mNormals[vertexIndex];
 				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
 
-				modelData->meshes[meshIndex].vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
-				modelData->meshes[meshIndex].vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
+				modelData->mesh->GetSubMeshes()[meshIndex].vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
+				modelData->mesh->GetSubMeshes()[meshIndex].vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
 				
 				// UVがある場合は値を、無い場合は(0,0)を設定
 				if (mesh->HasTextureCoords(0)) {
-					modelData->meshes[meshIndex].vertices[vertexIndex].texcoord = { texcoord.x, texcoord.y };
+					modelData->mesh->GetSubMeshes()[meshIndex].vertices[vertexIndex].texcoord = { texcoord.x, texcoord.y };
 				} else {
-					modelData->meshes[meshIndex].vertices[vertexIndex].texcoord = { 0.0f, 0.0f };
+					modelData->mesh->GetSubMeshes()[meshIndex].vertices[vertexIndex].texcoord = { 0.0f, 0.0f };
 				}
 			}
 			//faceの解析
@@ -122,7 +123,7 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 				//Indices解析
 				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
 					uint32_t indicesIndex = face.mIndices[element];
-					modelData->meshes[meshIndex].indices.push_back(indicesIndex);
+					modelData->mesh->GetSubMeshes()[meshIndex].indices.push_back(indicesIndex);
 				}
 			}
 
@@ -158,6 +159,9 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 					jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight, bone->mWeights[weightIndex].mVertexId });
 				}
 			}
+
+
+
 		}
 	}
 
@@ -169,25 +173,31 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexturePath) == AI_SUCCESS) {
 			std::string textureFilePath = aiTexturePath.C_Str();
 
+			modelData->mesh->GetSubMeshes()[materialIndex].material_ = std::make_unique<Material>();
+
 			if (!textureFilePath.empty() && textureFilePath[0] == '*') {
 				//埋め込みテクスチャの場合
 				int texIdx = std::stoi(textureFilePath.c_str() + 1);
 				const aiTexture* embeddedTexture = scene->mTextures[texIdx];
-				modelData->materials[materialIndex].textureFilePath = embeddedTexture->mFilename.C_Str();
-				TextureManager::GetInstance()
+				modelData->mesh->GetSubMeshes()[materialIndex].material_->SetTextureFilePath(embeddedTexture->mFilename.C_Str());
+				TextureManager::GetInstance()->LoadEmbeddedTexture(embeddedTexture);
+			} else {
+				//外部テクスチャの場合
+				modelData->mesh->GetSubMeshes()[materialIndex].material_->SetTextureFilePath(textureFilePath);
+				TextureManager::GetInstance()->LoadTexture(textureFilePath);
 			}
-			modelData->materials[materialIndex].textureFilePath = aiTexturePath.C_Str();
 		}
 
-		if (modelData->materials[materialIndex].textureFilePath == "") { //テクスチャがない場合はデフォルトのテクスチャを設定
-			modelData->materials[materialIndex].textureFilePath = "white1x1.png";
+		//テクスチャがない場合はデフォルトのテクスチャを設定
+		if (modelData->mesh->GetSubMeshes()[materialIndex].material_->GetTextureFilePath() == "") { 
+			modelData->mesh->GetSubMeshes()[materialIndex].material_->SetTextureFilePath("white1x1.png");
 		}
 
 		//環境マップテクスチャの設定
 		//MEMO: 画像はDDSファイルのみ対応
 		if (envMapFile != "") {
 			assert(envMapFile.find(".dds") != std::string::npos); //DDSファイル以外はエラー)
-			modelData->materials[materialIndex].envMapFilePath = envMapFile;
+			modelData->mesh->GetSubMeshes()[materialIndex].material_->SetEnvMapFilePath(envMapFile);
 		}
 	}
 

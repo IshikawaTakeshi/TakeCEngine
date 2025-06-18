@@ -3,37 +3,22 @@
 #include "TextureManager.h"
 #include <numbers>
 
-Mesh::~Mesh() {
-	material_.reset();
+ModelMesh::~ModelMesh() {
+	subMeshes_.clear();
 	inputVertexResource_.Reset();
 	outputVertexResource_.Reset();
 	indexResource_.Reset();
 }
 
-void Mesh::InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath) {
+void ModelMesh::InitializeMesh(DirectXCommon* dxCommon, ModelData* modelData) {
 
-	material_ = std::make_unique<Material>();
-	material_->Initialize(dxCommon, filePath,envMapfilePath);
-	vertexBufferViews_.resize(1);
+
+	for (auto& subMesh : subMeshes_) {
+		subMesh.material_ = std::make_unique<Material>();
+	}
 }
 
-
-void Mesh::SetVertexBuffers(ID3D12GraphicsCommandList* commandList, UINT startSlot) {
-	//頂点バッファビューの設定
-	assert(vertexBufferViews_.size() > 0);
-	commandList->IASetVertexBuffers(startSlot, static_cast<UINT>(vertexBufferViews_.size()), vertexBufferViews_.data());
-}
-
-void Mesh::SetSkinnedVertexBuffer(ID3D12GraphicsCommandList* commandList, UINT startSlot) {
-
-	commandList->IASetVertexBuffers(startSlot, 1, &skinnedVBV_);
-}
-
-void Mesh::AddVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vbv) {
-	vertexBufferViews_.push_back(vbv);
-}
-
-void Mesh::InitializeVertexResourceSphere(ID3D12Device* device) {
+void ModelMesh::InitializeVertexResourceSphere(ID3D12Device* device) {
 
 	// 頂点数の設定
 	uint32_t vertexCount = (kSubdivision * kSubdivision) * 6;
@@ -45,11 +30,11 @@ void Mesh::InitializeVertexResourceSphere(ID3D12Device* device) {
 	inputVertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * vertexCount);
 
 	// リソースの先頭のアドレスから使う
-	vertexBufferViews_[0].BufferLocation = inputVertexResource_->GetGPUVirtualAddress();
+	vertexBufferView_.BufferLocation = inputVertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferViews_[0].SizeInBytes = sizeof(VertexData) * vertexCount;
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * vertexCount;
 	// 1頂点あたりのサイズ
-	vertexBufferViews_[0].StrideInBytes = sizeof(VertexData);
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
 	//頂点データ
 	VertexData* vertexData;
@@ -113,15 +98,15 @@ void Mesh::InitializeVertexResourceSphere(ID3D12Device* device) {
 
 }
 
-void Mesh::InitializeVertexResourceSprite(ID3D12Device* device, Vector2 anchorPoint) {
+void ModelMesh::InitializeVertexResourceSprite(ID3D12Device* device, Vector2 anchorPoint) {
 
 
 	//VertexResource生成
 	inputVertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * 4);
 	//頂点バッファビューの作成
-	vertexBufferViews_[0].BufferLocation = inputVertexResource_->GetGPUVirtualAddress();
-	vertexBufferViews_[0].SizeInBytes = sizeof(VertexData) * 4;
-	vertexBufferViews_[0].StrideInBytes = sizeof(VertexData);
+	vertexBufferView_.BufferLocation = inputVertexResource_->GetGPUVirtualAddress();
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 4;
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
 	//頂点データ
 	VertexData* vertexData;
@@ -143,17 +128,17 @@ void Mesh::InitializeVertexResourceSprite(ID3D12Device* device, Vector2 anchorPo
 	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
 }
 
-void Mesh::InitializeVertexResourceTriangle(ID3D12Device* device) {
+void ModelMesh::InitializeVertexResourceTriangle(ID3D12Device* device) {
 
 	//VertexResource生成
 	inputVertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * 3);
 
 	// リソースの先頭のアドレスから使う
-	vertexBufferViews_[0].BufferLocation = inputVertexResource_->GetGPUVirtualAddress();
+	vertexBufferView_.BufferLocation = inputVertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferViews_[0].SizeInBytes = sizeof(VertexData) * 3;
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 3;
 	// 1頂点あたりのサイズ
-	vertexBufferViews_[0].StrideInBytes = sizeof(VertexData);
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
 	//頂点データ
 	VertexData* vertexData;
@@ -176,34 +161,34 @@ void Mesh::InitializeVertexResourceTriangle(ID3D12Device* device) {
 // objモデルの頂点バッファリソース初期化
 //=============================================================================
 
-void Mesh::InitializeInputVertexResourceModel(ID3D12Device* device, ModelData* modelData) {
+void ModelMesh::InitializeInputVertexResourceModel(ID3D12Device* device, ModelData* modelData) {
 
 
 	//頂点リソースを作る
-	inputVertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * modelData->vertices.size());
+	inputVertexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(VertexData) * modelData->allVertices.size());
 
 	//頂点バッファビューを作る
-	vertexBufferViews_[0].BufferLocation = inputVertexResource_->GetGPUVirtualAddress();
-	vertexBufferViews_[0].SizeInBytes = UINT(sizeof(VertexData) * modelData->vertices.size());
-	vertexBufferViews_[0].StrideInBytes = sizeof(VertexData);
+	vertexBufferView_.BufferLocation = inputVertexResource_->GetGPUVirtualAddress();
+	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData->allVertices.size());
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
 	//リソースにデータを書き込む
 	VertexData* vertexData;
 	inputVertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	std::memcpy(vertexData, modelData->vertices.data(), sizeof(VertexData) * modelData->vertices.size());
+	std::memcpy(vertexData, modelData->allVertices.data(), sizeof(VertexData) * modelData->allVertices.size());
 }
 
-void Mesh::InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* modelData, ID3D12GraphicsCommandList* commandList) {
+void ModelMesh::InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* modelData, ID3D12GraphicsCommandList* commandList) {
 	//頂点リソースを作る
-	outputVertexResource_ = DirectXCommon::CreateBufferResourceUAV(device, sizeof(VertexData) * modelData->vertices.size(),commandList);
+	outputVertexResource_ = DirectXCommon::CreateBufferResourceUAV(device, sizeof(VertexData) * modelData->allVertices.size(),commandList);
 	outputVertexResource_->SetName(L"Mesh::outputVertexResource_");
 	//頂点バッファビューを作る
-	vertexBufferViews_[0].BufferLocation = outputVertexResource_->GetGPUVirtualAddress();
-	vertexBufferViews_[0].SizeInBytes = UINT(sizeof(VertexData) * modelData->vertices.size());
-	vertexBufferViews_[0].StrideInBytes = sizeof(VertexData);
+	vertexBufferView_.BufferLocation = outputVertexResource_->GetGPUVirtualAddress();
+	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData->allVertices.size());
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 }
 
-void Mesh::InitializeIndexResourceSphere(ID3D12Device* device) {
+void ModelMesh::InitializeIndexResourceSphere(ID3D12Device* device) {
 
 	// インデックスバッファのサイズを設定
 	uint32_t indexCount = (kSubdivision * kSubdivision) * 6;
@@ -235,7 +220,7 @@ void Mesh::InitializeIndexResourceSphere(ID3D12Device* device) {
 	}
 }
 
-void Mesh::InitializeIndexResourceSprite(ID3D12Device* device) {
+void ModelMesh::InitializeIndexResourceSprite(ID3D12Device* device) {
 
 	//リソースの作成
 	indexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(uint32_t) * 6);
@@ -257,21 +242,21 @@ void Mesh::InitializeIndexResourceSprite(ID3D12Device* device) {
 // モデルのIndexResourceの初期化
 //================================================================================================
 
-void Mesh::InitializeIndexResourceModel(ID3D12Device* device, ModelData* modelData) {
+void ModelMesh::InitializeIndexResourceModel(ID3D12Device* device, ModelData* modelData) {
 
-	indexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(uint32_t) * modelData->indices.size());
+	indexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(uint32_t) * modelData->allIndices.size());
 	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
-	indexBufferView_.SizeInBytes = UINT(sizeof(uint32_t) * modelData->indices.size());
+	indexBufferView_.SizeInBytes = UINT(sizeof(uint32_t) * modelData->allIndices.size());
 	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
 
 	uint32_t* indexData = nullptr;
 	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
-	std::memcpy(indexData, modelData->indices.data(), sizeof(uint32_t) * modelData->indices.size());
+	std::memcpy(indexData, modelData->allIndices.data(), sizeof(uint32_t) * modelData->allIndices.size());
 }
 
-void Mesh::MapInputVertexResource(ModelData* modelData) {
+void ModelMesh::MapInputVertexResource(ModelData* modelData) {
 	//リソースにデータを書き込む
 	VertexData* vertexData;
 	inputVertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	std::memcpy(vertexData, modelData->vertices.data(), sizeof(VertexData) * modelData->vertices.size());
+	std::memcpy(vertexData, modelData->allVertices.data(), sizeof(VertexData) * modelData->allVertices.size());
 }

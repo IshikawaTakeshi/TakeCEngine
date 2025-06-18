@@ -57,25 +57,21 @@ public: //セッター
 	///uvTransformのセッター
 	/// </summary>
 	void SetUvTransform(const EulerTransform& uvTransform) { uvTransform_ = uvTransform; }
-
 	void SetUvScale(Vector3 scale) { uvTransform_.scale = scale; }
-
 	void SetUvRotate(Vector3 rotate) { uvTransform_.rotate = rotate; }
-
 	void SetUvTranslate(Vector3 translate) { uvTransform_.translate = translate; }
 
 	/// <summary>
 	/// マテリアルデータのセッター
 	/// </summary>
 	void SetMaterialData(MaterialData* materialData) { materialData_ = materialData; }
-
 	void SetEnableLighting(bool enable) { materialData_->enableLighting = enable; }
-
 	void SetMaterialColor(Vector4 color) { materialData_->color = color; }
-
 	void SetShininess(float shininess) { materialData_->shininess = shininess; }
-
 	void SetEnvCoefficient(float envCoefficient) { materialData_->envCoefficient = envCoefficient; }
+
+	void SetTextureFilePath(const std::string& filePath) { textureFilePath_ = filePath; }
+	void SetEnvMapFilePath(const std::string& filePath) { envMapFilePath_ = filePath; }
 
 private:
 
