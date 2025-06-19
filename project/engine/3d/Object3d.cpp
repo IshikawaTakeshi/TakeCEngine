@@ -29,9 +29,9 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	//モデルの読み込み
 
 	model_ = ModelManager::GetInstance()->CopyModel(modelFilePath_);
-	for (auto& mesh : model_->GetModelData()->mesh->GetSubMeshes()) {
-		mesh.material_->Initialize(object3dCommon_->GetDirectXCommon());
-		mesh.material_->SetEnableLighting(true);
+	for (auto& mesh : model_->GetModelData()->mesh.GetSubMeshes()) {
+		mesh.material_.Initialize(object3dCommon_->GetDirectXCommon());
+		mesh.material_.SetEnableLighting(true);
 	}
 
 	//TransformationMatrix用のResource生成
@@ -112,8 +112,8 @@ void Object3d::Update() {
 	}
 
 	//materialの更新
-	for (auto& mesh : model_->GetModelData()->mesh->GetSubMeshes()) {
-		mesh.material_->Update();
+	for (auto& mesh : model_->GetModelData()->mesh.GetSubMeshes()) {
+		mesh.material_.Update();
 	}
 }
 

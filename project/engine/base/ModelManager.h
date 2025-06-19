@@ -49,7 +49,7 @@ public:
 	/// <summary>
 	/// modelファイルを読む関数
 	/// </summary>
-	ModelData* LoadModelFile(const std::string& DirectoryPath, const std::string& modelFile,const std::string& envMapFile);
+	std::unique_ptr<ModelData> LoadModelFile(const std::string& DirectoryPath, const std::string& modelFile,const std::string& envMapFile);
 
 	/// <summary>
 	/// ノードの読み込み

@@ -24,7 +24,7 @@ public:
 		uint32_t indexCount = 0; //インデックス数
 		std::vector<VertexData> vertices; //頂点データ
 		std::vector<uint32_t> indices; //インデックスデータ
-		std::unique_ptr<Material> material_;
+		Material material_;
 	};
 public:
 
@@ -73,19 +73,22 @@ public:
 public: //getter
 	
 	/// 頂点リソースの取得
-	ID3D12Resource* GetInputVertexResource() { return inputVertexResource_.Get(); }
-	ID3D12Resource* GetOutputVertexResource() { return outputVertexResource_.Get(); }
+	ID3D12Resource* GetInputVertexResource() const { return inputVertexResource_.Get(); }
+	ID3D12Resource* GetOutputVertexResource() const { return outputVertexResource_.Get(); }
 	/// 頂点数リソースの取得
-	ID3D12Resource* GetVertexCountResource() { return vertexCountResource_.Get(); }
+	ID3D12Resource* GetVertexCountResource() const { return vertexCountResource_.Get(); }
 
 	/// 頂点バッファビューの取得
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return vertexBufferView_; }
 
 	/// インデックスバッファビューの取得
-	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() { return indexBufferView_; }
+	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const { return indexBufferView_; }
 
 	std::vector<SubMesh>& GetSubMeshes() { return subMeshes_; }
+
 	std::vector<VertexData>& GetAllVertices() { return allVertices; }
+	const std::vector<VertexData>& GetAllVertices() const { return allVertices; }
+
 	std::vector<uint32_t>& GetAllIndices() { return allIndices; }
 
 protected:

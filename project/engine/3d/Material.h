@@ -44,9 +44,9 @@ public: //ゲッター
 	/// <summary>
 	/// マテリアルリソースの取得
 	/// </summary>
-	ID3D12Resource* GetMaterialResource() { return materialResource_.Get(); }
+	ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
 
-	MaterialData* GetMaterialData() { return materialData_; }
+	MaterialData* GetMaterialData() const { return materialData_; }
 
 	const std::string& GetTextureFilePath() const { return textureFilePath_; }
 

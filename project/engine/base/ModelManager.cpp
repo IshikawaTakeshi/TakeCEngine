@@ -37,9 +37,11 @@ void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::s
 	}
 
 	//モデルの生成とファイル読み込み、初期化
-	ModelData* modelData = LoadModelFile(modelDirectoryPath, modelFile,envMapFile);
+	std::unique_ptr<ModelData> modelData = std::make_unique<ModelData>();
+	modelData = LoadModelFile(modelDirectoryPath, modelFile,envMapFile);
+
 	std::shared_ptr<Model> model = std::make_shared<Model>();
-	model->Initialize(modelCommon_, modelData);
+	model->Initialize(modelCommon_, std::move(modelData));
 
 	//モデルをコンテナに追加
 	models_.insert(std::make_pair(modelFile, std::move(model)));
@@ -63,7 +65,7 @@ std::unique_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
 	if (models_.contains(filePath)) {
 		//読み込みモデルを戻り値としてreturn
 		std::unique_ptr<Model> model = std::make_unique<Model>();
-		model->Initialize(modelCommon_, models_.at(filePath)->GetModelData());
+		model->Initialize(modelCommon_, models_.at(filePath)GetModelData());
 		return model;
 	}
 	//ファイル名一致なし
@@ -74,16 +76,22 @@ std::unique_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
 // Modelファイルを読む関数
 //=============================================================================
 
-ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, const std::string& modelFile,const std::string& envMapFile) {
+std::unique_ptr<ModelData> ModelManager::LoadModelFile(const std::string& modelDirectoryPath, const std::string& modelFile,const std::string& envMapFile) {
 
-	ModelData* modelData = new ModelData();
+	auto modelData = std::make_unique<ModelData>();
 	Assimp::Importer importer;
-	std::string filePath = "./Resources/" + modelDirectoryPath + "/" + modelFile;
-	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
+
+	// パス構築
+	std::filesystem::path filePath = std::filesystem::path("./Resources") / modelDirectoryPath / modelFile;
+	const aiScene* scene = importer.ReadFile(filePath.string(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
+
+	// エラーチェック
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+		throw std::runtime_error("Failed to load model: " + std::string(importer.GetErrorString()));
+	}
 
 	modelData->fileName = modelFile;
-	modelData->mesh = std::make_unique<ModelMesh>();
-
+	
 	if (scene->HasMeshes()) {
 
 		uint32_t vertexOffset = 0;
@@ -98,7 +106,7 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 
 			
 			
-			modelData->mesh->GetSubMeshes().resize(scene->mNumMeshes);
+			modelData->mesh.GetSubMeshes().resize(scene->mNumMeshes);
 			vertices.resize(mesh->mNumVertices);
 			//Meshの頂点数の格納
 			modelData->skinningInfoData.VertexCount = mesh->mNumVertices;
@@ -132,25 +140,25 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 			}
 
 			//頂点情報をまとめる
-			modelData->mesh->GetAllVertices().insert(
-				modelData->mesh->GetAllVertices().end(),
+			modelData->mesh.GetAllVertices().insert(
+				modelData->mesh.GetAllVertices().end(),
 				vertices.begin(),
 				vertices.end()
 			);
 			//インデックス情報をまとめる
-			modelData->mesh->GetAllIndices().insert(
-				modelData->mesh->GetAllIndices().end(),
+			modelData->mesh.GetAllIndices().insert(
+				modelData->mesh.GetAllIndices().end(),
 				indices.begin(),
 				indices.end()
 			);
-			modelData->mesh->GetSubMeshes()[meshIndex].vertexStart = vertexOffset;
-			modelData->mesh->GetSubMeshes()[meshIndex].vertexCount = uint32_t(vertices.size());
-			modelData->mesh->GetSubMeshes()[meshIndex].indexStart = indexOffset;
-			modelData->mesh->GetSubMeshes()[meshIndex].indexCount = uint32_t(indices.size());
+			modelData->mesh.GetSubMeshes()[meshIndex].vertexStart = vertexOffset;
+			modelData->mesh.GetSubMeshes()[meshIndex].vertexCount = uint32_t(vertices.size());
+			modelData->mesh.GetSubMeshes()[meshIndex].indexStart = indexOffset;
+			modelData->mesh.GetSubMeshes()[meshIndex].indexCount = uint32_t(indices.size());
 
 			//オフセットの更新
-			vertexOffset += modelData->mesh->GetSubMeshes()[meshIndex].vertexCount;
-			indexOffset += modelData->mesh->GetSubMeshes()[meshIndex].indexCount;
+			vertexOffset += modelData->mesh.GetSubMeshes()[meshIndex].vertexCount;
+			indexOffset += modelData->mesh.GetSubMeshes()[meshIndex].indexCount;
 
 			//boneの解析
 			//boneがない場合はスキップ
@@ -191,38 +199,48 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 
 	//materialの解析
 	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials - 1; ++materialIndex) {
+		if (materialIndex >= scene->mNumMeshes) break; // 境界チェック
+
 		aiMaterial* material = scene->mMaterials[materialIndex];
 		aiString aiTexturePath;
 
-		modelData->mesh->GetSubMeshes()[materialIndex].material_ = std::make_unique<Material>();
-
+		
+		// マテリアル名の設定
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexturePath) == AI_SUCCESS) {
 			std::string textureFilePath = aiTexturePath.C_Str();
 
-
 			if (!textureFilePath.empty() && textureFilePath[0] == '*') {
-				//埋め込みテクスチャの場合
-				int texIdx = std::stoi(textureFilePath.c_str() + 1);
-				const aiTexture* embeddedTexture = scene->mTextures[texIdx];
-				modelData->mesh->GetSubMeshes()[materialIndex].material_->SetTextureFilePath(embeddedTexture->mFilename.C_Str());
-				TextureManager::GetInstance()->LoadEmbeddedTexture(embeddedTexture);
+				// 埋め込みテクスチャの場合の処理
+				try {
+					int texIdx = std::stoi(textureFilePath.c_str() + 1);
+					if (texIdx >= 0 && texIdx < static_cast<int>(scene->mNumTextures)) {
+						const aiTexture* embeddedTexture = scene->mTextures[texIdx];
+						modelData->mesh.GetSubMeshes()[materialIndex].material_.SetTextureFilePath(embeddedTexture->mFilename.C_Str());
+						TextureManager::GetInstance()->LoadEmbeddedTexture(embeddedTexture);
+					}
+				}
+				catch (const std::exception&) {
+					// 変換エラーの場合はデフォルトテクスチャを使用
+					modelData->mesh.GetSubMeshes()[materialIndex].material_.SetTextureFilePath("white1x1.png");
+				}
+				
 			} else {
 				//外部テクスチャの場合
-				modelData->mesh->GetSubMeshes()[materialIndex].material_->SetTextureFilePath(textureFilePath);
+				modelData->mesh.GetSubMeshes()[materialIndex].material_.SetTextureFilePath(textureFilePath);
 				TextureManager::GetInstance()->LoadTexture(textureFilePath);
 			}
 		}
 
 		//テクスチャがない場合はデフォルトのテクスチャを設定
-		if (modelData->mesh->GetSubMeshes()[materialIndex].material_->GetTextureFilePath() == "") { 
-			modelData->mesh->GetSubMeshes()[materialIndex].material_->SetTextureFilePath("white1x1.png");
+		if (modelData->mesh.GetSubMeshes()[materialIndex].material_.GetTextureFilePath().empty()) { 
+			modelData->mesh.GetSubMeshes()[materialIndex].material_.SetTextureFilePath("white1x1.png");
 		}
 
 		//環境マップテクスチャの設定
 		//MEMO: 画像はDDSファイルのみ対応
-		if (envMapFile != "") {
+		if (!envMapFile.empty()) {
 			assert(envMapFile.find(".dds") != std::string::npos); //DDSファイル以外はエラー)
-			modelData->mesh->GetSubMeshes()[materialIndex].material_->SetEnvMapFilePath(envMapFile);
+			modelData->mesh.GetSubMeshes()[materialIndex].material_.SetEnvMapFilePath(envMapFile);
 		}
 	}
 

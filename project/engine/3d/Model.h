@@ -21,11 +21,9 @@
 //モデル1個分のデータ
 struct ModelData {
 	std::string fileName; //モデル名
-
-	
 	std::map<std::string, JointWeightData> skinClusterData;
 	SkinningInfo skinningInfoData;
-	std::unique_ptr<ModelMesh> mesh; //メッシュデータ
+	ModelMesh mesh; //メッシュデータ
 	Node rootNode;
 	bool haveBone = false;
 };
@@ -39,7 +37,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(ModelCommon* ModelCommon,ModelData* modelData);
+	void Initialize(ModelCommon* ModelCommon,std::unique_ptr<ModelData> modelData);
 
 	/// <summary>
 	/// 更新処理
@@ -69,7 +67,7 @@ public: //ゲッター
 	Skeleton* GetSkeleton() { return skeleton_.get(); }
 
 	//ModelDataの取得
-	ModelData* GetModelData() { return modelData_; }
+	ModelData* GetModelData() { return modelData_.get(); }
 
 	//ModelCommonの取得
 	ModelCommon* GetModelCommon() { return modelCommon_; }
@@ -95,7 +93,7 @@ private:
 	SkinCluster skinCluster_;
 
 	//構築するModelData
-	ModelData* modelData_;
+	std::unique_ptr<ModelData> modelData_;
 
 	Vector3 translate_;
 	Quaternion rotate_;
