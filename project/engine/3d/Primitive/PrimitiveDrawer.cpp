@@ -66,6 +66,17 @@ uint32_t PrimitiveDrawer::GenerateSphere(const float radius, const std::string& 
 	return useHandle;
 }
 
+uint32_t PrimitiveDrawer::GenerateBox(const Vector3& size, const std::string& textureFilePath) {
+	
+	auto box = std::make_unique<BoxData>();
+	box->size_ = size;
+	CreateBoxVertexData(box.get());
+	CreateBoxMaterial(textureFilePath, box.get());
+	uint32_t useHandle = boxHandle_++;
+	boxDatas_[useHandle] = std::move(box);
+	return useHandle;
+}
+
 void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType type, uint32_t handle) {
 
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
@@ -165,6 +176,191 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 		assert(0 && "未対応の PrimitiveType が指定されました");
 		break;
 	}
+}
+
+void PrimitiveDrawer::DrawObject(PSO* pso, PrimitiveType type, uint32_t handle) {
+
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+
+	switch (type) {
+	case PRIMITIVE_RING:
+	{
+
+		//--------------------------------------------------
+		//		ringの描画
+		//--------------------------------------------------
+
+		auto itRing = ringDatas_.find(handle);
+		if (itRing == ringDatas_.end()) {
+			return; // handleが無効な場合は何もしない
+		}
+
+		auto& ringData = itRing->second;
+
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//VertexBufferView
+		commandList->IASetVertexBuffers(0, 1, &ringData->primitiveData_.vertexBufferView_);
+		// materialResource
+		commandList->SetGraphicsRootConstantBufferView(
+			pso->GetGraphicBindResourceIndex("gMaterial"), ringData->material_->GetMaterialResource()->GetGPUVirtualAddress());
+		// texture
+		srvManager_->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData->material_->GetTextureFilePath()));
+		//envMap
+		srvManager_->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gEnvMapTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData->material_->GetEnvMapFilePath()));
+		//描画
+		commandList->DrawInstanced(ringVertexCount_, 1, 0, 0);
+
+		break;
+	}
+	case PRIMITIVE_PLANE:
+	{
+
+		//--------------------------------------------------
+		//		planeの描画
+		//--------------------------------------------------
+
+		auto itPlane = planeDatas_.find(handle);
+		if (itPlane == planeDatas_.end()) return;
+
+		auto& planeData = itPlane->second;
+
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		//VertexBufferView
+		commandList->IASetVertexBuffers(0, 1, &planeData->primitiveData_.vertexBufferView_);
+		// materialResource
+		commandList->SetGraphicsRootConstantBufferView(
+			pso->GetGraphicBindResourceIndex("gMaterial"), planeData->material_->GetMaterialResource()->GetGPUVirtualAddress());
+		// texture
+		srvManager_->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(planeData->material_->GetTextureFilePath()));
+		//envMap
+		srvManager_->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gEnvMapTexture"), TextureManager::GetInstance()->GetSrvIndex(planeData->material_->GetEnvMapFilePath()));
+		
+		//描画
+		commandList->DrawInstanced(planeVertexCount_, 1, 0, 0);
+
+		break;
+	}
+	case PRIMITIVE_SPHERE:
+	{
+		//--------------------------------------------------
+		//		sphereの描画
+		//--------------------------------------------------
+
+		auto itSphere = sphereDatas_.find(handle);
+		if (itSphere == sphereDatas_.end()) return;
+
+		auto& sphereData = itSphere->second;
+
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		//VertexBufferView
+		commandList->IASetVertexBuffers(0, 1, &sphereData->primitiveData_.vertexBufferView_);
+		// materialResource
+		commandList->SetGraphicsRootConstantBufferView(
+			pso->GetGraphicBindResourceIndex("gMaterial"), sphereData->material_->GetMaterialResource()->GetGPUVirtualAddress());
+		// texture
+		srvManager_->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(sphereData->material_->GetTextureFilePath()));
+		//envMap
+		srvManager_->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gEnvMapTexture"), TextureManager::GetInstance()->GetSrvIndex(sphereData->material_->GetEnvMapFilePath()));
+		
+		//描画
+		commandList->DrawInstanced(sphereVertexCount_, 1, 0, 0);
+
+		break;
+	}
+
+	case PRIMITIVE_BOX:
+	{
+		//--------------------------------------------------
+		//		boxの描画
+		//--------------------------------------------------
+		auto itBox = boxDatas_.find(handle);
+		if (itBox == boxDatas_.end()) return;
+		auto& boxData = itBox->second;
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//VertexBufferView
+		commandList->IASetVertexBuffers(0, 1, &boxData->primitiveData_.vertexBufferView_);
+		// materialResource
+		commandList->SetGraphicsRootConstantBufferView(
+			pso->GetGraphicBindResourceIndex("gMaterial"), boxData->material_->GetMaterialResource()->GetGPUVirtualAddress());
+		// texture
+		srvManager_->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(boxData->material_->GetTextureFilePath()));
+		commandList->DrawInstanced(boxVertexCount_, 1, 0, 0);
+		//envMap
+		srvManager_->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gEnvMapTexture"), TextureManager::GetInstance()->GetSrvIndex(boxData->material_->GetEnvMapFilePath()));
+		//描画
+		commandList->DrawInstanced(boxVertexCount_, 1, 0, 0);
+
+		break;
+	}
+
+	case PRIMITIVE_COUNT:
+		break;
+	default:
+		assert(0 && "未対応の PrimitiveType が指定されました");
+		break;
+	}
+}
+
+void PrimitiveDrawer::DrawSprite(PSO* pso, uint32_t handle) {
+
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+	//--------------------------------------------------
+	//		planeの描画
+	//--------------------------------------------------
+
+	auto itPlane = planeDatas_.find(handle);
+	if (itPlane == planeDatas_.end()) return;
+
+	auto& planeData = itPlane->second;
+
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//VertexBufferView
+	commandList->IASetVertexBuffers(0, 1, &planeData->primitiveData_.vertexBufferView_);
+	// materialResource
+	commandList->SetGraphicsRootConstantBufferView(
+		pso->GetGraphicBindResourceIndex("gMaterial"), planeData->material_->GetMaterialResource()->GetGPUVirtualAddress());
+	// texture
+	srvManager_->SetGraphicsRootDescriptorTable(
+		pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(planeData->material_->GetTextureFilePath()));
+
+	//描画
+	commandList->DrawInstanced(planeVertexCount_, 1, 0, 0);
+}
+
+void PrimitiveDrawer::DrawSkyBox(PSO* pso, uint32_t handle) {
+
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+
+	//--------------------------------------------------
+	//		boxの描画
+	//--------------------------------------------------
+	auto itBox = boxDatas_.find(handle);
+	if (itBox == boxDatas_.end()) return;
+	auto& boxData = itBox->second;
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//VertexBufferView
+	commandList->IASetVertexBuffers(0, 1, &boxData->primitiveData_.vertexBufferView_);
+	// materialResource
+	commandList->SetGraphicsRootConstantBufferView(
+		pso->GetGraphicBindResourceIndex("gMaterial"), boxData->material_->GetMaterialResource()->GetGPUVirtualAddress());
+	// texture
+	srvManager_->SetGraphicsRootDescriptorTable(
+		pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(boxData->material_->GetTextureFilePath()));
+	commandList->DrawInstanced(boxVertexCount_, 1, 0, 0);
 }
 
 void PrimitiveDrawer::CreateRingVertexData(RingData* ringData) {
@@ -345,6 +541,106 @@ void PrimitiveDrawer::CreateSphereVertexData(SphereData* sphereData) {
 	sphereVertexCount_ += vertexIndex;
 }
 
+void PrimitiveDrawer::CreateBoxVertexData(BoxData* boxData) {
+
+	// 立方体の8頂点
+		// 中心が原点、サイズはboxData->size_ (x, y, z)
+		float hx = boxData->size_.x * 0.5f;
+	float hy = boxData->size_.y * 0.5f;
+	float hz = boxData->size_.z * 0.5f;
+
+	// 8 corners
+	Vector3 p[8] = {
+		{-hx, -hy, -hz}, // 0: 左下手前
+		{-hx, +hy, -hz}, // 1: 左上手前
+		{+hx, +hy, -hz}, // 2: 右上手前
+		{+hx, -hy, -hz}, // 3: 右下手前
+		{-hx, -hy, +hz}, // 4: 左下奥
+		{-hx, +hy, +hz}, // 5: 左上奥
+		{+hx, +hy, +hz}, // 6: 右上奥
+		{+hx, -hy, +hz}  // 7: 右下奥
+	};
+
+	// 各面2三角形×6面=12三角形=36頂点
+	// 頂点データ
+	static const struct {
+		int i0, i1, i2, i3;
+		Vector3 normal;
+	} faces[6] = {
+		// 前面(-Z)
+		{ 0, 1, 2, 3, { 0.0f,  0.0f, -1.0f } },
+		// 背面(+Z)
+		{ 7, 6, 5, 4, { 0.0f,  0.0f,  1.0f } },
+		// 左面(-X)
+		{ 4, 5, 1, 0, { -1.0f, 0.0f,  0.0f } },
+		// 右面(+X)
+		{ 3, 2, 6, 7, { 1.0f,  0.0f,  0.0f } },
+		// 上面(+Y)
+		{ 1, 5, 6, 2, { 0.0f,  1.0f,  0.0f } },
+		// 下面(-Y)
+		{ 4, 0, 3, 7, { 0.0f, -1.0f,  0.0f } }
+	};
+
+	// UV: (左下, 左上, 右上, 右下)
+	Vector2 uvs[4] = {
+		{0.0f, 1.0f}, // 左下
+		{0.0f, 0.0f}, // 左上
+		{1.0f, 0.0f}, // 右上
+		{1.0f, 1.0f}  // 右下
+	};
+
+	const UINT kVertexCount = 36;
+	UINT size = sizeof(VertexData) * kVertexCount * kMaxVertexCount_;
+	boxData->primitiveData_.vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
+	boxData->primitiveData_.vertexResource_->SetName(L"Box::vertexResource_");
+	boxData->primitiveData_.vertexBufferView_.BufferLocation = boxData->primitiveData_.vertexResource_->GetGPUVirtualAddress();
+	boxData->primitiveData_.vertexBufferView_.StrideInBytes = sizeof(VertexData);
+	boxData->primitiveData_.vertexBufferView_.SizeInBytes = size;
+	boxData->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&boxData->vertexData_));
+
+	VertexData* vtx = boxData->vertexData_;
+	uint32_t idx = 0;
+	for (int f = 0; f < 6; ++f) {
+		// 2 triangles per face (0,1,2) (0,2,3)
+		int i0 = faces[f].i0, i1 = faces[f].i1, i2 = faces[f].i2, i3 = faces[f].i3;
+		Vector3 normal = faces[f].normal;
+
+		// 1st triangle
+		vtx[idx].position = { p[i0].x, p[i0].y, p[i0].z, 1.0f };
+		vtx[idx].texcoord = uvs[0];
+		vtx[idx].normal = normal;
+		++idx;
+
+		vtx[idx].position = { p[i1].x, p[i1].y, p[i1].z, 1.0f };
+		vtx[idx].texcoord = uvs[1];
+		vtx[idx].normal = normal;
+		++idx;
+
+		vtx[idx].position = { p[i2].x, p[i2].y, p[i2].z, 1.0f };
+		vtx[idx].texcoord = uvs[2];
+		vtx[idx].normal = normal;
+		++idx;
+
+		// 2nd triangle
+		vtx[idx].position = { p[i0].x, p[i0].y, p[i0].z, 1.0f };
+		vtx[idx].texcoord = uvs[0];
+		vtx[idx].normal = normal;
+		++idx;
+
+		vtx[idx].position = { p[i2].x, p[i2].y, p[i2].z, 1.0f };
+		vtx[idx].texcoord = uvs[2];
+		vtx[idx].normal = normal;
+		++idx;
+
+		vtx[idx].position = { p[i3].x, p[i3].y, p[i3].z, 1.0f };
+		vtx[idx].texcoord = uvs[3];
+		vtx[idx].normal = normal;
+		++idx;
+	}
+
+	boxVertexCount_ += idx; // = 36
+}
+
 
 void PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath, RingData* ringData) {
 
@@ -372,4 +668,18 @@ void PrimitiveDrawer::CreateSphereMaterial(const std::string& textureFilePath, S
 	sphereData->material_->SetEnableLighting(false);
 	sphereData->material_->SetEnvCoefficient(0.0f);
 	sphereData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
+}
+
+void PrimitiveDrawer::CreateBoxMaterial(const std::string& textureFilePath, BoxData* boxData) {
+
+	boxData->material_ = new Material();
+	boxData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
+	boxData->material_->SetEnableLighting(false);
+	boxData->material_->SetEnvCoefficient(0.0f);
+	boxData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
+}
+
+void PrimitiveDrawer::MappingPlaneVertexData(VertexData* vertexData, uint32_t primitiveHandle) {
+
+	planeDatas_[primitiveHandle]->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 }

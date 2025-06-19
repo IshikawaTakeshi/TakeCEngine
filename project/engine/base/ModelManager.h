@@ -1,5 +1,9 @@
 #pragma once
 #include "ResourceDataStructure.h"
+#include "3d/Model.h"
+#include "3d/ModelCommon.h"
+#include "base/DirectXCommon.h"
+#include "base/SrvManager.h"
 
 //assimp
 #include <assimp/Importer.hpp>
@@ -10,10 +14,6 @@
 #include <string>
 #include <memory>
 
-class Model;
-class ModelCommon;
-class SrvManager;
-class DirectXCommon;
 class ModelManager {
 public:
 	
@@ -73,4 +73,3 @@ private:
 	//モデルデータコンテナ
 	std::map<std::string, std::shared_ptr<Model>> models_;
 };
-

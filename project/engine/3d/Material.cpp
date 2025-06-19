@@ -33,6 +33,24 @@ void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath, 
 	};
 }
 
+void Material::Initialize(DirectXCommon* dxCommon) {
+
+	InitializeMaterialResource(dxCommon->GetDevice());
+	//テクスチャ初期化
+	TextureManager::GetInstance()->LoadTexture(textureFilePath_);
+	//環境マップの初期化
+	if (!envMapFilePath_.empty()) {
+		TextureManager::GetInstance()->LoadTexture(envMapFilePath_);
+	}
+
+	//uvTransform
+	uvTransform_ = {
+		{1.0f,1.0f,1.0f},
+		{0.0f,0.0f,0.0f},
+		{0.0f,0.0f,0.0f}
+	};
+}
+
 void Material::Update() {
 
 	Matrix4x4 scaleMatrix = MatrixMath::MakeScaleMatrix(uvTransform_.scale);

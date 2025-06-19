@@ -1,29 +1,14 @@
 #include "Sprite.h"
-#include "SpriteCommon.h"
-#include "DirectXCommon.h"
+#include "2d/SpriteCommon.h"
 #include "Material.h"
-#include "MatrixMath.h"
-#include "TextureManager.h"
-
-#pragma region imgui
-#ifdef _DEBUG
-
-#include "../externals/imgui/imgui.h"
-#include "../externals/imgui/imgui_impl_dx12.h"
-#include "../externals/imgui/imgui_impl_win32.h"
-#endif // DEBUG
-
-#pragma endregion
-
+#include "math/MatrixMath.h"
+#include "base/DirectXCommon.h"
+#include "base/TextureManager.h"
+#include "base/TakeCFrameWork.h"
 
 Sprite::~Sprite() {
-	
-	
 	wvpResource_.Reset();
-	mesh_.reset();
 	spriteCommon_ = nullptr;
-	
-	
 }
 
 #pragma region 初期化処理
@@ -34,12 +19,11 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	spriteCommon_ = spriteCommon;
 	
 	//メッシュ初期化
-	mesh_ = std::make_unique<ModelMesh>();
-	mesh_->InitializeMesh(spriteCommon_->GetDirectXCommon(),filePath);
+	//Todo: primitiveDrawerからのメッシュ生成に変更
+	
 	//vertexResource初期化
-	mesh_->InitializeVertexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice(),anchorPoint_);
-	//IndexResource初期化
-	mesh_->InitializeIndexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice());
+	primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(1.0f, 1.0f, filePath);
+	vertexData_ = new VertexData();
 
 	//テクスチャ番号の検索と記録
 	filePath_ = filePath;
@@ -117,7 +101,6 @@ void Sprite::UpdateImGui(const std::string& name) {
 		ImGui::Checkbox("isFlipX", &isFlipX_);
 		ImGui::Checkbox("isFlipY", &isFlipY_);
 		ImGui::Checkbox("adjustSwitch", &adjustSwitch_);
-		mesh_->GetMaterial()->UpdateMaterialImGui();
 		ImGui::TreePop();
 	}
 	ImGui::End();
@@ -125,9 +108,9 @@ void Sprite::UpdateImGui(const std::string& name) {
 #endif // DEBUG
 
 void Sprite::UpdateVertexData() {
-	//頂点データ
-	VertexData* vertexData;
-	mesh_->GetInputVertexResource()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+
+	//TODO: primitiveDrawerからvertexResourceをMappingするように変更
+	TakeCFrameWork::GetPrimitiveDrawer()->MappingPlaneVertexData(vertexData_, primitiveHandle_);
 	//anchorPoint
 	float left = 0.0f - anchorPoint_.x;
 	float right = 1.0f - anchorPoint_.x;
@@ -152,14 +135,14 @@ void Sprite::UpdateVertexData() {
 	}
 
 	//1枚目の三角形
-	vertexData[0].position = { left,bottom,0.0f,1.0f }; //左下
-	vertexData[1].position = { left,top,0.0f,1.0f }; //左上
-	vertexData[2].position = { right,bottom,0.0f,1.0f }; //右下
-	vertexData[3].position = { right,top,0.0f,1.0f }; //右上
-	vertexData[0].texcoord = { tex_left,tex_bottom };
-	vertexData[1].texcoord = { tex_left,tex_top };
-	vertexData[2].texcoord = { tex_right,tex_bottom };
-	vertexData[3].texcoord = { tex_right,tex_top };
+	vertexData_[0].position = { left,bottom,0.0f,1.0f }; //左下
+	vertexData_[1].position = { left,top,0.0f,1.0f }; //左上
+	vertexData_[2].position = { right,bottom,0.0f,1.0f }; //右下
+	vertexData_[3].position = { right,top,0.0f,1.0f }; //右上
+	vertexData_[0].texcoord = { tex_left,tex_bottom };
+	vertexData_[1].texcoord = { tex_left,tex_top };
+	vertexData_[2].texcoord = { tex_right,tex_bottom };
+	vertexData_[3].texcoord = { tex_right,tex_top };
 }
 
 void Sprite::AdjustTextureSize() {
@@ -179,18 +162,13 @@ void Sprite::AdjustTextureSize() {
 
 #pragma region 描画処理
 void Sprite::Draw() {
-	//spriteの描画。
-	mesh_->SetVertexBuffers(spriteCommon_->GetDirectXCommon()->GetCommandList(), 0);
-	//TransformationMatrixCBufferの場所の設定
-	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
-	//materialCBufferの場所を指定
-	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(
-		1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(filePath_));
-	//IBVの設定
-	spriteCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
-	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	spriteCommon_->GetDirectXCommon()->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
+	ID3D12GraphicsCommandList* commandList = spriteCommon_->GetDirectXCommon()->GetCommandList();
+
+	//TransformationMatrix
+	commandList->SetGraphicsRootConstantBufferView(
+		spriteCommon_->GetPSO()->GetGraphicBindResourceIndex("gTransformationMatrix"), wvpResource_->GetGPUVirtualAddress());
+
+	TakeCFrameWork::GetPrimitiveDrawer()->DrawSprite(spriteCommon_->GetPSO(), primitiveHandle_);
 }
 #pragma endregion

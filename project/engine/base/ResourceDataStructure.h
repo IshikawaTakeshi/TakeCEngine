@@ -1,10 +1,9 @@
 #pragma once
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
+#include "math/Vector2.h"
+#include "math/Vector3.h"
+#include "math/Vector4.h"
 #include "Matrix4x4.h"
 #include "Transform.h"
-#include "3d/Mesh/Mesh.h"
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -67,19 +66,6 @@ struct JointWeightData {
 struct SkinningInfo {
 	uint32_t VertexCount;
 	uint32_t indexCount; //インデックスの数
-};
-
-//モデル1個分のデータ
-struct ModelData {
-	std::string fileName; //モデル名
-
-	std::vector<VertexData> allVertices; //全頂点データ
-	std::vector<uint32_t> allIndices;    //全インデックスデータ
-	std::map<std::string, JointWeightData> skinClusterData;
-	SkinningInfo skinningInfoData;
-	std::unique_ptr<ModelMesh> mesh; //メッシュデータ
-	Node rootNode;
-	bool haveBone = false;
 };
 
 //パーティクル用の行列,色データ

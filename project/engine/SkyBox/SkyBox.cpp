@@ -1,17 +1,17 @@
 #include "SkyBox.h"
-#include "Camera.h"
-#include "CameraManager.h"
-#include "PipelineStateObject.h"
-#include "Model.h"
-#include "ModelManager.h"
+#include "camera/Camera.h"
+#include "camera/CameraManager.h"
+#include "base/PipelineStateObject.h"
+#include "base/ModelManager.h"
+#include "base/TakeCFrameWork.h"
+#include "3d/Primitive/PrimitiveDrawer.h"
+#include "3d/Model.h"
 #include "math/MatrixMath.h"
-#include "TakeCFrameWork.h"
 
 SkyBox::~SkyBox() {
 	pso_.reset();
 	rootSignature_.Reset();
 	wvpResource_.Reset();
-	model_ = nullptr;
 	dxCommon_ = nullptr;
 }
 
@@ -27,10 +27,6 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename
 
 	//RootSignatureの生成
 	rootSignature_ = pso_->GetGraphicRootSignature();
-
-	//モデルの生成
-	model_ = ModelManager::GetInstance()->FindModel(filename);
-
 	//TransformationMatrix用のResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
 	wvpResource_->SetName(L"SkyBox::wvpResource_");
@@ -51,6 +47,9 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename
 
 	//カメラのセット
 	camera_ = CameraManager::GetInstance()->GetActiveCamera();
+
+	//プリミティブタイプ設定
+	primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateBox({500.0f,500.0f,500.0f}, filename);
 }
 
 void SkyBox::Update() {
@@ -69,7 +68,7 @@ void SkyBox::Update() {
 
 	WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 	TransformMatrixData_->World = worldMatrix_;
-	TransformMatrixData_->WVP = model_->GetModelData()->rootNode.localMatrix * WVPMatrix_;
+	TransformMatrixData_->WVP = WVPMatrix_;
 	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 }
 
@@ -88,7 +87,5 @@ void SkyBox::Draw() {
 	//TransformationMatrix
 	commandList->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
-	if (model_ != nullptr) {
-		model_->DrawSkyBox();
-	}
+	TakeCFrameWork::GetPrimitiveDrawer()->DrawSkyBox(pso_.get(), primitiveHandle_);
 }

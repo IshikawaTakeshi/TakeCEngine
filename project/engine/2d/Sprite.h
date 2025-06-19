@@ -106,9 +106,6 @@ private:
 	//SpriteCommon
 	SpriteCommon* spriteCommon_ = nullptr;
 
-	//メッシュ
-	std::unique_ptr<ModelMesh> mesh_ = nullptr;
-
 	//filePath
 	std::string filePath_;
 
@@ -116,6 +113,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
 	//sprite用のTransformationMatrix用の頂点データ
 	TransformMatrix* wvpData_ = nullptr;
+	//頂点データ
+	VertexData* vertexData_ = {};
 
 	//Transform
 	EulerTransform transform_{};
@@ -136,4 +135,6 @@ private:
 
 	Vector2 textureLeftTop_ = { 0.0f,0.0f  }; //テクスチャの左上座標
 	Vector2 textureSize_ = { 100.0f,100.0f }; //テクスチャの切り出しサイズ
+
+	uint32_t primitiveHandle_ = 0; //プリミティブのハンドル
 };

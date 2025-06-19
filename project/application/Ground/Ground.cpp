@@ -26,13 +26,14 @@ Ground::~Ground() {
 
 void Ground::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
+	//Todo: primitiveDrawerからのメッシュ生成に変更
 
 	Object3d::Initialize(object3dCommon, filePath);
 
 	transform_.translate = { 0.0f, -1.0f, 0.0f };
 	//transform_.scale = { 0.1f, .0f, 100.0f };
-	model_->GetMesh()->GetMaterial()->SetEnableLighting(false);
-	model_->GetMesh()->GetMaterial()->SetEnvCoefficient(0.0f);
+	//model_->GetMesh()->GetMaterial()->SetEnableLighting(false);
+	//model_->GetMesh()->GetMaterial()->SetEnvCoefficient(0.0f);
 }
 
 void Ground::Update() {
@@ -60,7 +61,7 @@ void Ground::ImGuiDebug() {
 
 	ImGui::DragFloat3("translate", &transform_.translate.x, 0.01f);
 
-	ImGui::ColorEdit4("color", &model_->GetMesh()->GetMaterial()->GetMaterialData()->color.x);
+	//ImGui::ColorEdit4("color", &model_->GetMesh()->GetMaterial()->GetMaterialData()->color.x);
 
 	ImGui::End();
 

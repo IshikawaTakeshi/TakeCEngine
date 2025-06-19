@@ -26,8 +26,13 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 
 	//モデルの設定
 	modelFilePath_ = filePath;
+	//モデルの読み込み
+
 	model_ = ModelManager::GetInstance()->CopyModel(modelFilePath_);
-	model_->GetMesh()->GetMaterial()->SetEnableLighting(true);
+	for (auto& mesh : model_->GetModelData()->mesh->GetSubMeshes()) {
+		mesh.material_->Initialize(object3dCommon_->GetDirectXCommon());
+		mesh.material_->SetEnableLighting(true);
+	}
 
 	//TransformationMatrix用のResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
@@ -107,8 +112,8 @@ void Object3d::Update() {
 	}
 
 	//materialの更新
-	if (model_->GetMesh() && model_->GetMesh()->GetMaterial()) {
-		model_->GetMesh()->GetMaterial()->Update();
+	for (auto& mesh : model_->GetModelData()->mesh->GetSubMeshes()) {
+		mesh.material_->Update();
 	}
 }
 
@@ -142,7 +147,6 @@ void Object3d::UpdateImGui(const std::string& name) {
 		ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 		ImGui::Checkbox("isAnimation", &isAnimation_);
-		model_->GetMesh()->GetMaterial()->UpdateMaterialImGui();
 		ImGui::TreePop();
 	}
 	ImGui::End();

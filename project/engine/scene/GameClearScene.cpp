@@ -34,7 +34,7 @@ void GameClearScene::Initialize() {
 	//SkyBox
 	skybox_ = std::make_unique<SkyBox>();
 	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
-	skybox_->SetMaterialColor({ 0.0f,0.0f,0.0f,1.0f });
+	//skybox_->SetMaterialColor({ 0.0f,0.0f,0.0f,1.0f });
 
 	//GameClearText
 	GameClearText_ = std::make_unique<Object3d>();

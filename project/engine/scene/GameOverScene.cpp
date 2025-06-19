@@ -34,7 +34,7 @@ void GameOverScene::Initialize() {
 	//SkyBox
 	skybox_ = std::make_unique<SkyBox>();
 	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
-	skybox_->SetMaterialColor({ 0.0f,0.0f,0.0f,0.0f });
+	//skybox_->SetMaterialColor({ 0.0f,0.0f,0.0f,0.0f });
 	// ground
 
 	GameOverText_ = std::make_unique<Object3d>();

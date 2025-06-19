@@ -9,6 +9,7 @@
 #include "Skeleton.h"
 #include "SrvManager.h"
 
+
 //最大の影響ボーン数
 const uint32_t kNumMaxInfluence = 5;
 
@@ -22,6 +23,7 @@ struct WellForGPU {
 	Matrix4x4 skeletonSpaceInvTransposeMatrix; //法線用
 };
 
+struct ModelData;
 struct SkinCluster {
 
 	std::vector<Matrix4x4> inverseBindPoseMatrices;

@@ -11,10 +11,24 @@
 #include "base/SrvManager.h"
 #include "base/DirectXCommon.h"
 #include "3d/ModelCommon.h"
+#include "3d/Mesh/Mesh.h"
 
 #include <d3d12.h>
 #include <wrl.h>
 #include <memory>
+
+
+//モデル1個分のデータ
+struct ModelData {
+	std::string fileName; //モデル名
+
+	
+	std::map<std::string, JointWeightData> skinClusterData;
+	SkinningInfo skinningInfoData;
+	std::unique_ptr<ModelMesh> mesh; //メッシュデータ
+	Node rootNode;
+	bool haveBone = false;
+};
 
 class Model {
 public:
@@ -38,7 +52,6 @@ public:
 	/// 描画処理
 	/// </summary>
 	void Draw(PSO* graphicPso);
-	void DrawSkyBox(PSO* graphicPso);
 	void DisPatch(PSO* skinningPso);
 
 	/// <summary>

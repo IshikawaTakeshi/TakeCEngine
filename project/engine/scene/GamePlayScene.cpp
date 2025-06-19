@@ -126,8 +126,8 @@ void GamePlayScene::Initialize() {
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_pool.obj");
-	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
+	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
+	//skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//sprite
 	sprite_ = std::make_unique<Sprite>();
@@ -188,9 +188,9 @@ void GamePlayScene::Update() {
 	//弾の更新
 	bulletManager_->UpdateBullet();
 
-	for (auto& object : levelObjects_) {
+	/*for (auto& object : levelObjects_) {
 		object->Update();
-	}
+	}*/
 
 	//当たり判定の更新
 	CheckAllCollisions();
@@ -238,17 +238,18 @@ void GamePlayScene::Draw() {
 	player_->GetObject3d()->DisPatch();
 	enemy_->GetObject3d()->DisPatch();
 
-	for (auto& object : levelObjects_) {
+	/*for (auto& object : levelObjects_) {
 		object->DisPatch();
-	}
+	}*/
 
 	Object3dCommon::GetInstance()->PreDraw();
 	player_->Draw();
 	enemy_->Draw();
 	bulletManager_->DrawBullet();
-	for (auto& object : levelObjects_) {
+
+	/*for (auto& object : levelObjects_) {
 		object->Draw();
-	}
+	}*/
 
 #pragma endregion
 

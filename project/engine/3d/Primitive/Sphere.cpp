@@ -31,7 +31,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 
 	//======================= MaterialResource ===========================//
 
-	mesh_->GetMaterial()->GetMaterialResource();
+	//mesh_->GetMaterial()->GetMaterialResource();
 
 	//======================= IndexResource ===========================//
 
@@ -104,14 +104,14 @@ void Sphere::Update() {
 
 void Sphere::Draw(DirectXCommon* dxCommon) {
 
-	mesh_->SetVertexBuffers(dxCommon->GetCommandList(),0);
+	//mesh_->SetVertexBuffers(dxCommon->GetCommandList(),0);
 
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	//dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//materialCBufferの場所を指定
-	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(
-		0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	//dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(
+		//0, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。

@@ -51,6 +51,8 @@ public:
 
 	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
 
+	PSO* GetPSO() const { return pso_.get(); }
+
 public:
 
 	/////////////////////////////////////////////////////////////////////////////////////

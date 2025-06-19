@@ -30,7 +30,6 @@ public:
 	/// </summary>
 	void Draw();
 
-	void SetMaterialColor(const Vector4& color) { model_->GetMesh()->GetMaterial()->SetMaterialColor(color); }
 
 private: // privateメンバ変数
 
@@ -40,9 +39,6 @@ private: // privateメンバ変数
 	std::unique_ptr<PSO> pso_ = nullptr;
 	//RootSignature
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
-
-	//モデル
-	Model* model_ = nullptr;
 
 	//TransformationMatrix用の頂点リソース
 	ComPtr<ID3D12Resource> wvpResource_;
@@ -57,5 +53,8 @@ private: // privateメンバ変数
 	Matrix4x4 WorldInverseTransposeMatrix_;
 	//Camera
 	Camera* camera_ = nullptr;
+
+	// プリミティブのハンドル
+	uint32_t primitiveHandle_ = 0; 
 };
 

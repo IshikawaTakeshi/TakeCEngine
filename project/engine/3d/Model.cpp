@@ -2,8 +2,6 @@
 #include "base/DirectXCommon.h"
 #include "base/TextureManager.h"
 #include "3d/Material.h"
-
-#include "3d/Mesh/Mesh.h"
 #include "math/MatrixMath.h"
 #include "Utility/ResourceBarrier.h"
 
@@ -14,7 +12,6 @@ Model::Model() {}
 
 Model::~Model() {
 
-	mesh_.reset();
 }
 
 //=============================================================================
@@ -26,11 +23,6 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 
 	//objファイル読み込み
 	modelData_ = modelData;
-
-	for (auto& mesh : modelData_->mesh->GetSubMeshes()) {
-		//メッシュの初期化
-		
-	}
 
 	//Skeleton作成
 	if (modelData_->haveBone) {
@@ -45,31 +37,30 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 	}
 
 	//inputVertexResource
-	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+	modelData_->mesh->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice());
 	//indexResource
-	mesh_->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+	modelData_->mesh->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice());
 
 	if (modelData_->haveBone) {
 		//outputVertexResource
-		mesh_->InitializeOutputVertexResourceModel(
+		modelData_->mesh->InitializeOutputVertexResourceModel(
 			modelCommon_->GetDirectXCommon()->GetDevice(),
-			modelData_,
 			modelCommon_->GetDirectXCommon()->GetCommandList());
 
 		//SRVの設定
 		inputIndex_ = modelCommon_->GetSrvManager()->Allocate();
 		modelCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
-			modelData_->mesh[].skinningInfoData.VertexCount,
+			modelData_->skinningInfoData.VertexCount,
 			sizeof(VertexData),
-			mesh_->GetInputVertexResource(),
+			modelData_->mesh->GetInputVertexResource(),
 			inputIndex_);
 
 		//UAVの設定
 		uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
 		modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
-			modelData_->mesh[].skinningInfoData.VertexCount,
+			modelData_->skinningInfoData.VertexCount,
 			sizeof(VertexData),
-			mesh_->GetOutputVertexResource(),
+			modelData_->mesh->GetOutputVertexResource(),
 			uavIndex_);
 	} 
 }
@@ -114,48 +105,31 @@ void Model::Draw(PSO* graphicPso) {
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
 	// VBVを設定
-	mesh_->SetVertexBuffers(commandList, 0);
+	commandList->IASetVertexBuffers(0, 1, &modelData_->mesh->GetVertexBufferView());
+
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(
-		graphicPso->GetGraphicBindResourceIndex("gMaterial"),
-		mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//textureSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
-		graphicPso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance()->GetSrvIndex(modelData_->materials[].textureFilePath));
-	//envMapSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
-		graphicPso->GetGraphicBindResourceIndex("gEnvMapTexture"),
-		TextureManager::GetInstance()->GetSrvIndex(modelData_->materials[].envMapFilePath));
-	//IBVの設定
-	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
-	//DrawCall
-	commandList->DrawIndexedInstanced(UINT(modelData_->mesh[].indices.size()), 1, 0, 0, 0);
-}
 
-void Model::DrawSkyBox(PSO* graphicPso) {
+	for (const auto& mesh : modelData_->mesh->GetSubMeshes()) {
 
-	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
+		//materialCBufferの場所を指定
+		commandList->SetGraphicsRootConstantBufferView(
+			graphicPso->GetGraphicBindResourceIndex("gMaterial"),
+			mesh.material_->GetMaterialResource()->GetGPUVirtualAddress());
+		//textureSRV
+		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+			graphicPso->GetGraphicBindResourceIndex("gTexture"),
+			TextureManager::GetInstance()->GetSrvIndex(mesh.material_->GetTextureFilePath()));
+		//envMapSRV
+		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+			graphicPso->GetGraphicBindResourceIndex("gEnvMapTexture"),
+			TextureManager::GetInstance()->GetSrvIndex(mesh.material_->GetEnvMapFilePath()));
+		//IBVの設定
+		modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&modelData_->mesh->GetIndexBufferView());
 
-	// VBVを設定
-	mesh_->SetVertexBuffers(commandList, 0);
-	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(
-		graphicPso->GetGraphicBindResourceIndex("gMaterial"),
-		mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//TextureSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
-		graphicPso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance()->GetSrvIndex(modelData_->mesh[].material.textureFilePath));
-
-	//IBVの設定
-	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
-	//DrawCall
-	commandList->DrawIndexedInstanced(UINT(modelData_->mesh[].indices.size()), 1, 0, 0, 0);
+		//DrawCall
+		commandList->DrawIndexedInstanced(UINT(mesh.indexCount), 1, UINT(mesh.indexStart), UINT(mesh.vertexStart), 0);
+	}
 }
 
 //=============================================================================
@@ -170,7 +144,7 @@ void Model::DisPatch(PSO* skinningPso) {
 	ResourceBarrier::GetInstance()->Transition(
 		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-		mesh_->GetOutputVertexResource());
+		modelData_->mesh->GetOutputVertexResource());
 
 	//skinninginfo
 	commandList->SetComputeRootConstantBufferView(
@@ -188,13 +162,13 @@ void Model::DisPatch(PSO* skinningPso) {
 	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gOutputVertices"), uavIndex_);
 
 	//DisPatch
-	commandList->Dispatch(UINT(modelData_->mesh[].skinningInfoData.VertexCount + 1023) / 1024, 1, 1);
+	commandList->Dispatch(UINT(modelData_->skinningInfoData.VertexCount + 1023) / 1024, 1, 1);
 
 	//UNORDERED_ACCESS >> VERTEX_AND_CONSTANT_BUFFER
 	ResourceBarrier::GetInstance()->Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
-		mesh_->GetOutputVertexResource());
+		modelData_->mesh->GetOutputVertexResource());
 }
 
 
@@ -205,47 +179,68 @@ void Model::DisPatch(PSO* skinningPso) {
 void Model::DrawForParticle(PSO* graphicPso, UINT instanceCount_) {
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	// VBVを設定
-	mesh_->SetVertexBuffers(commandList, 0);
+	// VBVを設定	
+	commandList->IASetVertexBuffers(0, 1, &modelData_->mesh->GetVertexBufferView());
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//gMaterial
-	commandList->SetGraphicsRootConstantBufferView(
-		graphicPso->GetGraphicBindResourceIndex("gMaterial"),
-		mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//gTexture
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
-		graphicPso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance()->GetSrvIndex(modelData_->materials[].textureFilePath));
-	//DrawCall
-	commandList->DrawInstanced(UINT(modelData_->mesh[].allVertices.size()), instanceCount_, 0, 0);
 
+	for (const auto& mesh : modelData_->mesh->GetSubMeshes()) {
+
+		//materialCBufferの場所を指定
+		commandList->SetGraphicsRootConstantBufferView(
+			graphicPso->GetGraphicBindResourceIndex("gMaterial"),
+			mesh.material_->GetMaterialResource()->GetGPUVirtualAddress());
+		//textureSRV
+		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+			graphicPso->GetGraphicBindResourceIndex("gTexture"),
+			TextureManager::GetInstance()->GetSrvIndex(mesh.material_->GetTextureFilePath()));
+		//envMapSRV
+		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+			graphicPso->GetGraphicBindResourceIndex("gEnvMapTexture"),
+			TextureManager::GetInstance()->GetSrvIndex(mesh.material_->GetEnvMapFilePath()));
+		//IBVの設定
+		modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&modelData_->mesh->GetIndexBufferView());
+
+		//DrawCall
+		commandList->DrawIndexedInstanced(UINT(mesh.indexCount), instanceCount_, UINT(mesh.indexStart), UINT(mesh.vertexStart), 0);
+	}
 }
 
 void Model::DrawForGPUParticle(PSO* graphicPso,UINT instanceCount) {
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
 	// VBVを設定
-	mesh_->SetVertexBuffers(commandList, 0);
+	commandList->IASetVertexBuffers(0, 1, &modelData_->mesh->GetVertexBufferView());
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//gMaterial
-	commandList->SetGraphicsRootConstantBufferView(
-		graphicPso->GetGraphicBindResourceIndex("gMaterial"),
-		mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//gTexture
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
-		graphicPso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance()->GetSrvIndex(modelData_->materials[].textureFilePath));
-	//DrawCall
-	commandList->DrawInstanced(UINT(modelData_->mesh[].allVertices.size()), instanceCount, 0, 0);
+
+	for (const auto& mesh : modelData_->mesh->GetSubMeshes()) {
+
+		//materialCBufferの場所を指定
+		commandList->SetGraphicsRootConstantBufferView(
+			graphicPso->GetGraphicBindResourceIndex("gMaterial"),
+			mesh.material_->GetMaterialResource()->GetGPUVirtualAddress());
+		//textureSRV
+		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+			graphicPso->GetGraphicBindResourceIndex("gTexture"),
+			TextureManager::GetInstance()->GetSrvIndex(mesh.material_->GetTextureFilePath()));
+		//envMapSRV
+		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+			graphicPso->GetGraphicBindResourceIndex("gEnvMapTexture"),
+			TextureManager::GetInstance()->GetSrvIndex(mesh.material_->GetEnvMapFilePath()));
+		//IBVの設定
+		modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&modelData_->mesh->GetIndexBufferView());
+
+		//DrawCall
+		commandList->DrawIndexedInstanced(UINT(mesh.indexCount), instanceCount, UINT(mesh.indexStart), UINT(mesh.vertexStart), 0);
+	}
 }
 
 const std::string& Model::GetTextureFilePath(const uint32_t& materialNum) const {
 	
-	if (materialNum < modelData_->materials.size()) {
-		return modelData_->materials[materialNum].textureFilePath;
+	if (materialNum < modelData_->mesh->GetSubMeshes().size()) {
+		return modelData_->mesh->GetSubMeshes()[materialNum].material_->GetTextureFilePath();
 	}
 	//0番のテクスチャパスを返す
-	return modelData_->materials[0].textureFilePath; 
+	return modelData_->mesh->GetSubMeshes()[0].material_->GetTextureFilePath();
 }

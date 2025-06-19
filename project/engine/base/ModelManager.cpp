@@ -1,8 +1,4 @@
 #include "ModelManager.h"
-#include "3d/Model.h"
-#include "3d/ModelCommon.h"
-#include "base/DirectXCommon.h"
-#include "base/SrvManager.h"
 #include "base/TextureManager.h"
 #include "math/MatrixMath.h"
 
@@ -89,13 +85,21 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 	modelData->mesh = std::make_unique<ModelMesh>();
 
 	if (scene->HasMeshes()) {
+
+		uint32_t vertexOffset = 0;
+		uint32_t indexOffset = 0;
+		std::vector<VertexData> vertices = {};
+		std::vector<uint32_t> indices = {};
+
 		//Meshの解析
 		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 			aiMesh* mesh = scene->mMeshes[meshIndex];
 			assert(mesh->HasNormals()); //法線がない場合は現在エラー
-			
 
-			modelData->mesh->GetSubMeshes()[meshIndex].vertices.resize(mesh->mNumVertices);
+			
+			
+			modelData->mesh->GetSubMeshes().resize(scene->mNumMeshes);
+			vertices.resize(mesh->mNumVertices);
 			//Meshの頂点数の格納
 			modelData->skinningInfoData.VertexCount = mesh->mNumVertices;
 
@@ -105,14 +109,14 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 				aiVector3D& normal = mesh->mNormals[vertexIndex];
 				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
 
-				modelData->mesh->GetSubMeshes()[meshIndex].vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
-				modelData->mesh->GetSubMeshes()[meshIndex].vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
+				vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
+				vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
 				
 				// UVがある場合は値を、無い場合は(0,0)を設定
 				if (mesh->HasTextureCoords(0)) {
-					modelData->mesh->GetSubMeshes()[meshIndex].vertices[vertexIndex].texcoord = { texcoord.x, texcoord.y };
+					vertices[vertexIndex].texcoord = { texcoord.x, texcoord.y };
 				} else {
-					modelData->mesh->GetSubMeshes()[meshIndex].vertices[vertexIndex].texcoord = { 0.0f, 0.0f };
+					vertices[vertexIndex].texcoord = { 0.0f, 0.0f };
 				}
 			}
 			//faceの解析
@@ -123,9 +127,30 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 				//Indices解析
 				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
 					uint32_t indicesIndex = face.mIndices[element];
-					modelData->mesh->GetSubMeshes()[meshIndex].indices.push_back(indicesIndex);
+					indices.push_back(indicesIndex);
 				}
 			}
+
+			//頂点情報をまとめる
+			modelData->mesh->GetAllVertices().insert(
+				modelData->mesh->GetAllVertices().end(),
+				vertices.begin(),
+				vertices.end()
+			);
+			//インデックス情報をまとめる
+			modelData->mesh->GetAllIndices().insert(
+				modelData->mesh->GetAllIndices().end(),
+				indices.begin(),
+				indices.end()
+			);
+			modelData->mesh->GetSubMeshes()[meshIndex].vertexStart = vertexOffset;
+			modelData->mesh->GetSubMeshes()[meshIndex].vertexCount = uint32_t(vertices.size());
+			modelData->mesh->GetSubMeshes()[meshIndex].indexStart = indexOffset;
+			modelData->mesh->GetSubMeshes()[meshIndex].indexCount = uint32_t(indices.size());
+
+			//オフセットの更新
+			vertexOffset += modelData->mesh->GetSubMeshes()[meshIndex].vertexCount;
+			indexOffset += modelData->mesh->GetSubMeshes()[meshIndex].indexCount;
 
 			//boneの解析
 			//boneがない場合はスキップ
@@ -160,20 +185,20 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 				}
 			}
 
-
-
+	
 		}
 	}
 
 	//materialの解析
-	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
+	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials - 1; ++materialIndex) {
 		aiMaterial* material = scene->mMaterials[materialIndex];
 		aiString aiTexturePath;
+
+		modelData->mesh->GetSubMeshes()[materialIndex].material_ = std::make_unique<Material>();
 
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexturePath) == AI_SUCCESS) {
 			std::string textureFilePath = aiTexturePath.C_Str();
 
-			modelData->mesh->GetSubMeshes()[materialIndex].material_ = std::make_unique<Material>();
 
 			if (!textureFilePath.empty() && textureFilePath[0] == '*') {
 				//埋め込みテクスチャの場合

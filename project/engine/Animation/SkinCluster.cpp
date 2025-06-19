@@ -1,6 +1,7 @@
 #include "SkinCluster.h"
 #include "DirectXCommon.h"
 #include "MatrixMath.h"
+#include "3d/Model.h"
 #include <algorithm>
 #include <cassert>
 
@@ -27,18 +28,18 @@ void SkinCluster::Create(
 
 	//influence用のResource確保
 	//VertexInfluence * std::vector<VertexData>
-	influenceResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData->allVertices.size());
+	influenceResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData->mesh->GetAllVertices().size());
 	influenceResource->SetName(L"SkinCluster::influenceResource");
 	
 	//influenceのSRV作成
 	influenceIndex = srvManager->Allocate();
 	srvManager->CreateSRVforStructuredBuffer(
-		UINT(modelData->allVertices.size()),sizeof(VertexInfluence),influenceResource.Get(),influenceIndex);
+		UINT(modelData->mesh->GetAllVertices().size()), sizeof(VertexInfluence), influenceResource.Get(), influenceIndex);
 
 	VertexInfluence* mappedInfluenceData = nullptr;
 	influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluenceData));
-	std::memset(mappedInfluenceData, 0, sizeof(VertexInfluence) * modelData->allVertices.size());
-	mappedInfluences = { mappedInfluenceData, modelData->allVertices.size() };
+	std::memset(mappedInfluenceData, 0, sizeof(VertexInfluence) * modelData->mesh->GetAllVertices().size());
+	mappedInfluences = { mappedInfluenceData, modelData->mesh->GetAllVertices().size() };
 
 	//skinningInfoResourceの作成
 	skinningInfoResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(SkinningInfo));

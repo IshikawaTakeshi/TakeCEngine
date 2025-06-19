@@ -4,7 +4,9 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <memory>
+#include <vector>
 
+struct ModelData;
 class DirectXCommon;
 //==================================================================
 // サブメッシュ管理クラス
@@ -18,7 +20,7 @@ public:
 	struct SubMesh {
 		uint32_t vertexStart = 0; //頂点の開始インデックス
 		uint32_t vertexCount = 0; //頂点数
-		uint32_t indexStartIndex = 0; //インデックスの開始インデックス
+		uint32_t indexStart = 0; //インデックスの開始インデックス
 		uint32_t indexCount = 0; //インデックス数
 		std::vector<VertexData> vertices; //頂点データ
 		std::vector<uint32_t> indices; //インデックスデータ
@@ -50,8 +52,8 @@ public:
 	/// モデルの頂点バッファリソース初期化
 	/// </summary>
 	/// <param name="device"></param>
-	void InitializeInputVertexResourceModel(ID3D12Device* device, ModelData* modelData);
-	void InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* modelData, ID3D12GraphicsCommandList* commandList);
+	void InitializeInputVertexResourceModel(ID3D12Device* device);
+	void InitializeOutputVertexResourceModel(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 
 	/// <summary>
 	/// 球体のIndexResource初期化
@@ -63,10 +65,10 @@ public:
 	/// </summary>
 	void InitializeIndexResourceSprite(ID3D12Device* device);
 
-	void InitializeIndexResourceModel(ID3D12Device* device, ModelData* modelData);
+	void InitializeIndexResourceModel(ID3D12Device* device);
 
 	//Map
-	void MapInputVertexResource(ModelData* modelData);
+	void MapInputVertexResource();
 
 public: //getter
 	
@@ -83,13 +85,14 @@ public: //getter
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() { return indexBufferView_; }
 
 	std::vector<SubMesh>& GetSubMeshes() { return subMeshes_; }
+	std::vector<VertexData>& GetAllVertices() { return allVertices; }
+	std::vector<uint32_t>& GetAllIndices() { return allIndices; }
 
 protected:
 
+	std::vector<VertexData> allVertices; //全頂点データ
+	std::vector<uint32_t> allIndices;    //全インデックスデータ
 	std::vector<SubMesh> subMeshes_;     //サブメッシュのコンテナ
-
-	uint32_t vertexOffset_ = 0; //頂点オフセット
-	uint32_t indexOffset_ = 0;  //インデックスオフセット
 
 	//頂点バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> inputVertexResource_;

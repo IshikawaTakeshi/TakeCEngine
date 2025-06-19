@@ -153,7 +153,7 @@ void Particle3d::Draw() {
 
 	BaseParticleGroup::Draw();
 
-	model_->DrawForParticle(numInstance_);
+	model_->DrawForParticle(particleCommon_->GetGraphicPSO(), numInstance_);
 }
 
 

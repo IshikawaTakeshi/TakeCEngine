@@ -127,7 +127,7 @@ void GPUParticle::Draw() {
 	//particleResource
 	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(3, particleUavIndex_);
 
-	model_->DrawForGPUParticle(kNumMaxInstance_);
+	model_->DrawForGPUParticle(particleCommon_->GetGraphicPSO(), kNumMaxInstance_);
 }
 
 //==================================================================================
