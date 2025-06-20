@@ -12,7 +12,7 @@ public:
 
 	void Finalize();
 
-	void LoadAnimation(const std::string& filePath);
+	void LoadAnimation(const std::string& directory,const std::string& filePath);
 
 	Animation* FindAnimation(const std::string& filePath,const std::string& animName);
 

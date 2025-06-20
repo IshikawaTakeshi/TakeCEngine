@@ -68,6 +68,9 @@ public:
 	//Map
 	void MapInputVertexResource();
 
+	std::vector<D3D12_VERTEX_BUFFER_VIEW> CreateSubMeshVBVs() const;
+	std::vector<D3D12_INDEX_BUFFER_VIEW> CreateSubMeshIBVs() const;
+
 public: //getter
 	
 	/// 頂点リソースの取得
@@ -77,10 +80,9 @@ public: //getter
 	ID3D12Resource* GetVertexCountResource() const { return vertexCountResource_.Get(); }
 
 	/// 頂点バッファビューの取得
-	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return vertexBufferView_; }
-
+	const std::vector<D3D12_VERTEX_BUFFER_VIEW>& GetVBVs() const { return VBVs_; }
 	/// インデックスバッファビューの取得
-	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const { return indexBufferView_; }
+	const std::vector<D3D12_INDEX_BUFFER_VIEW>& GetIBVs() const { return IBVs_; }
 
 	std::vector<SubMesh>& GetSubMeshes() { return subMeshes_; }
 
@@ -98,12 +100,12 @@ protected:
 	//頂点バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> inputVertexResource_;
 	Microsoft::WRL::ComPtr<ID3D12Resource> outputVertexResource_;
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
+	std::vector<D3D12_VERTEX_BUFFER_VIEW> VBVs_;
 
 	//頂点数リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexCountResource_;
 
 	//IndexBufferView用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
+	std::vector<D3D12_INDEX_BUFFER_VIEW> IBVs_;
 };

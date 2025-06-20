@@ -264,7 +264,7 @@ uint32_t TextureManager::GetSrvIndex(const std::string& filePath) {
 	if (textureDatas_.contains(filePath)) {
 		return textureDatas_.at(filePath).srvIndex;
 	}
-	assert(false);
+	//assert(false);
 	return 0;
 }
 

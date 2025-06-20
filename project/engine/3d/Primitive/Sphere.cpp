@@ -119,7 +119,7 @@ void Sphere::Draw(DirectXCommon* dxCommon) {
 	//Lighting用のCBufferの場所を指定
 	dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//IBVの設定
-	dxCommon->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
+	//9dxCommon->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	// 描画！(DrawCall/ドローコール)
 	dxCommon->GetCommandList()->DrawIndexedInstanced(mesh_->kSubdivision * mesh_->kSubdivision * 6, 1, 0, 0, 0);
 }

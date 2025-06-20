@@ -108,6 +108,7 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
+	object3d_->UpdateImGui("Player");
 	ImGui::End();
 }
 

@@ -104,31 +104,34 @@ void Model::Draw(PSO* graphicPso) {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	// VBVを設定
-	commandList->IASetVertexBuffers(0, 1, &modelData_->mesh.GetVertexBufferView());
+	auto vbvs = modelData_->mesh.CreateSubMeshVBVs();
+	auto ibvs = modelData_->mesh.CreateSubMeshIBVs();
 
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	for (const auto& mesh : modelData_->mesh.GetSubMeshes()) {
+	for (size_t i = 0; i < modelData_->mesh.GetSubMeshes().size(); ++i) {
+
+		// VBVを設定
+		commandList->IASetVertexBuffers(0, 1, &vbvs[i]);
 
 		//materialCBufferの場所を指定
 		commandList->SetGraphicsRootConstantBufferView(
 			graphicPso->GetGraphicBindResourceIndex("gMaterial"),
-			mesh.material_.GetMaterialResource()->GetGPUVirtualAddress());
+			modelData_->mesh.GetSubMeshes()[i].material_.GetMaterialResource()->GetGPUVirtualAddress());
 		//textureSRV
 		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
 			graphicPso->GetGraphicBindResourceIndex("gTexture"),
-			TextureManager::GetInstance()->GetSrvIndex(mesh.material_.GetTextureFilePath()));
+			TextureManager::GetInstance()->GetSrvIndex(modelData_->mesh.GetSubMeshes()[i].material_.GetTextureFilePath()));
 		//envMapSRV
 		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
 			graphicPso->GetGraphicBindResourceIndex("gEnvMapTexture"),
-			TextureManager::GetInstance()->GetSrvIndex(mesh.material_.GetEnvMapFilePath()));
+			TextureManager::GetInstance()->GetSrvIndex(modelData_->mesh.GetSubMeshes()[i].material_.GetEnvMapFilePath()));
 		//IBVの設定
-		modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&modelData_->mesh.GetIndexBufferView());
+		modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&ibvs[i]);
 
 		//DrawCall
-		commandList->DrawIndexedInstanced(UINT(mesh.indexCount), 1, UINT(mesh.indexStart), INT(mesh.vertexStart), 0);
+		commandList->DrawIndexedInstanced(modelData_->mesh.GetSubMeshes()[i].indexCount, 1, 0, 0, 0);
 	}
 }
 
@@ -179,60 +182,66 @@ void Model::DisPatch(PSO* skinningPso) {
 void Model::DrawForParticle(PSO* graphicPso, UINT instanceCount_) {
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	// VBVを設定	
-	commandList->IASetVertexBuffers(0, 1, &modelData_->mesh.GetVertexBufferView());
+	auto vbvs = modelData_->mesh.CreateSubMeshVBVs();
+	auto ibvs = modelData_->mesh.CreateSubMeshIBVs();
+
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	for (const auto& mesh : modelData_->mesh.GetSubMeshes()) {
+	for (size_t i = 0; i < modelData_->mesh.GetSubMeshes().size(); ++i) {
+		// VBVを設定	
+		commandList->IASetVertexBuffers(0, 1, &vbvs[i]);
 
 		//materialCBufferの場所を指定
 		commandList->SetGraphicsRootConstantBufferView(
 			graphicPso->GetGraphicBindResourceIndex("gMaterial"),
-			mesh.material_.GetMaterialResource()->GetGPUVirtualAddress());
+			modelData_->mesh.GetSubMeshes()[i].material_.GetMaterialResource()->GetGPUVirtualAddress());
 		//textureSRV
 		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
 			graphicPso->GetGraphicBindResourceIndex("gTexture"),
-			TextureManager::GetInstance()->GetSrvIndex(mesh.material_.GetTextureFilePath()));
+			TextureManager::GetInstance()->GetSrvIndex(modelData_->mesh.GetSubMeshes()[i].material_.GetTextureFilePath()));
 		//envMapSRV
 		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
 			graphicPso->GetGraphicBindResourceIndex("gEnvMapTexture"),
-			TextureManager::GetInstance()->GetSrvIndex(mesh.material_.GetEnvMapFilePath()));
+			TextureManager::GetInstance()->GetSrvIndex(modelData_->mesh.GetSubMeshes()[i].material_.GetEnvMapFilePath()));
 		//IBVの設定
-		modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&modelData_->mesh.GetIndexBufferView());
+		modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&ibvs[i]);
 
 		//DrawCall
-		commandList->DrawIndexedInstanced(UINT(mesh.indexCount), instanceCount_, UINT(mesh.indexStart), UINT(mesh.vertexStart), 0);
+		commandList->DrawIndexedInstanced(modelData_->mesh.GetSubMeshes()[i].indexCount, instanceCount_, 0, 0, 0);
 	}
 }
 
 void Model::DrawForGPUParticle(PSO* graphicPso,UINT instanceCount) {
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	// VBVを設定
-	commandList->IASetVertexBuffers(0, 1, &modelData_->mesh.GetVertexBufferView());
+	auto vbvs = modelData_->mesh.CreateSubMeshVBVs();
+	auto ibvs = modelData_->mesh.CreateSubMeshIBVs();
+
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	for (const auto& mesh : modelData_->mesh.GetSubMeshes()) {
+	for (size_t i = 0; i < modelData_->mesh.GetSubMeshes().size(); ++i) {
+		// VBVを設定
+		commandList->IASetVertexBuffers(0, 1, &vbvs[i]);
 
 		//materialCBufferの場所を指定
 		commandList->SetGraphicsRootConstantBufferView(
 			graphicPso->GetGraphicBindResourceIndex("gMaterial"),
-			mesh.material_.GetMaterialResource()->GetGPUVirtualAddress());
+			modelData_->mesh.GetSubMeshes()[i].material_.GetMaterialResource()->GetGPUVirtualAddress());
 		//textureSRV
 		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
 			graphicPso->GetGraphicBindResourceIndex("gTexture"),
-			TextureManager::GetInstance()->GetSrvIndex(mesh.material_.GetTextureFilePath()));
+			TextureManager::GetInstance()->GetSrvIndex(modelData_->mesh.GetSubMeshes()[i].material_.GetTextureFilePath()));
 		//envMapSRV
 		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
 			graphicPso->GetGraphicBindResourceIndex("gEnvMapTexture"),
-			TextureManager::GetInstance()->GetSrvIndex(mesh.material_.GetEnvMapFilePath()));
+			TextureManager::GetInstance()->GetSrvIndex(modelData_->mesh.GetSubMeshes()[i].material_.GetEnvMapFilePath()));
 		//IBVの設定
-		modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&modelData_->mesh.GetIndexBufferView());
+		modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&ibvs[i]);
 
 		//DrawCall
-		commandList->DrawIndexedInstanced(UINT(mesh.indexCount), instanceCount, UINT(mesh.indexStart), UINT(mesh.vertexStart), 0);
+		commandList->DrawIndexedInstanced(modelData_->mesh.GetSubMeshes()[i].indexCount, instanceCount, 0, 0, 0);
 	}
 }
 

@@ -221,7 +221,7 @@ std::unique_ptr<ModelData> ModelManager::LoadModelFile(const std::string& modelD
 
 		//テクスチャがない場合はデフォルトのテクスチャを設定
 		if (modelData->mesh.GetSubMeshes()[materialIndex].material_.GetTextureFilePath().empty()) { 
-			modelData->mesh.GetSubMeshes()[materialIndex].material_.SetTextureFilePath("white1x1.png");
+			modelData->mesh.GetSubMeshes()[materialIndex].material_.SetTextureFilePath("uvChecker.png");
 		}
 
 		//環境マップテクスチャの設定

@@ -16,7 +16,7 @@ void Animator::Finalize() {
 	animations_.clear();
 }
 
-void Animator::LoadAnimation(const std::string& filePath) {
+void Animator::LoadAnimation(const std::string& directory,const std::string& filePath) {
 
 	//読み込み済みアニメーションを検索
 	if (animations_.contains(filePath)) {
@@ -25,7 +25,7 @@ void Animator::LoadAnimation(const std::string& filePath) {
 	}
 
 	//アニメーションの生成とファイル読み込み、初期化
-	std::map<std::string, Animation*> animation = LoadAnimationFile("Animation", filePath);
+	std::map<std::string, Animation*> animation = LoadAnimationFile(directory, filePath);
 	//アニメーションをコンテナに追加
 	animations_.insert(std::make_pair(filePath, animation));
 }
