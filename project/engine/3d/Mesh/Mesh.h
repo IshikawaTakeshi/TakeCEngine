@@ -31,8 +31,6 @@ public:
 	ModelMesh() = default;
 	~ModelMesh();
 
-	void InitializeMesh(DirectXCommon* dxCommon, ModelData* modelData);
-
 	/// <summary>
 	/// 球体の頂点バッファリソース初期化
 	/// </summary>

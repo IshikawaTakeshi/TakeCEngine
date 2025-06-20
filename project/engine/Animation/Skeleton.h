@@ -36,6 +36,7 @@ public:
 	/// </summary>
 	void ApplyAnimation(Animation* animation,float animationTime);
 
+	std::unique_ptr<Skeleton> Clone() const;
 
 public: //getter
 	

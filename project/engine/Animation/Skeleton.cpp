@@ -61,6 +61,13 @@ void Skeleton::ApplyAnimation(Animation* animation, float animationTime) {
 	}
 }
 
+std::unique_ptr<Skeleton> Skeleton::Clone() const  {
+	auto cloneSkeleton = std::make_unique<Skeleton>();
+	cloneSkeleton->root = root;
+	cloneSkeleton->jointMap = jointMap;
+	cloneSkeleton->joints = joints;
+	return cloneSkeleton;
+}
 int32_t Skeleton::CreateJoint(const Node& node, const std::optional<int32_t>& parent) {
 	Joint joint;
 	joint.name = node.name;

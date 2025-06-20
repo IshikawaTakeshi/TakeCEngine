@@ -52,7 +52,7 @@ private:
 
 private:
 	//モデル
-	Model* model_ = nullptr;
+	std::unique_ptr<Model> model_ = nullptr;
 
 private:
 

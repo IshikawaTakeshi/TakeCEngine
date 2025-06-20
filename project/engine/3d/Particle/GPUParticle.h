@@ -49,7 +49,7 @@ private:
 	Camera* camera_ = nullptr;
 
 	//モデル
-	Model* model_ = nullptr;
+	std::unique_ptr<Model> model_ = nullptr;
 
 	ParticleForCS* particleData_ = nullptr;
 	uint32_t particleUavIndex_ = 0;

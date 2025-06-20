@@ -140,15 +140,15 @@ void GamePlayScene::Initialize() {
 
 	//player
 	player_ = std::make_unique<Player>();
-	player_->Initialize(Object3dCommon::GetInstance(), "plane.gltf");
+	player_->Initialize(Object3dCommon::GetInstance(), "Deer.gltf");
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
 	//player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
 
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
-	enemy_->Initialize(Object3dCommon::GetInstance(), "plane.gltf");
-	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "cube.obj");
+	enemy_->Initialize(Object3dCommon::GetInstance(), "BrainStem.gltf");
+	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
 	//enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
 }
 

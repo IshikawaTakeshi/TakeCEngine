@@ -8,7 +8,7 @@
 
 Material::~Material() {
 
-	materialResource_.Reset();
+	//materialResource_.Reset();
 }
 
 void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath) {

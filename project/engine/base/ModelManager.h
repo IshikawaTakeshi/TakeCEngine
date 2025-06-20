@@ -42,9 +42,7 @@ public:
 	/// モデルの検索
 	/// </summary>
 	/// <param name="filePath">モデルのファイルパス</param>
-	Model* FindModel(const std::string& filePath);
-
-	std::unique_ptr<Model> CopyModel(const std::string& filePath);
+	std::unique_ptr<Model> FindModel(const std::string& filePath);
 
 	/// <summary>
 	/// modelファイルを読む関数

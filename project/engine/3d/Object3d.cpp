@@ -28,7 +28,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	modelFilePath_ = filePath;
 	//モデルの読み込み
 
-	model_ = ModelManager::GetInstance()->CopyModel(modelFilePath_);
+	model_ = ModelManager::GetInstance()->FindModel(modelFilePath_);
 	for (auto& mesh : model_->GetModelData()->mesh.GetSubMeshes()) {
 		mesh.material_.Initialize(object3dCommon_->GetDirectXCommon());
 		mesh.material_.SetEnableLighting(true);

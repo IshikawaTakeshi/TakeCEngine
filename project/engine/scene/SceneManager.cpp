@@ -128,7 +128,7 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 	levelData_ = TakeCFrameWork::GetJsonLoader()->LoadLevelFile(sceneName);
 
 	for (auto& objectData : levelData_->objects) {
-		Model* model = nullptr;
+		std::unique_ptr<Model> model = nullptr;
 		model = ModelManager::GetInstance()->FindModel(objectData.file_name);
 
 		std::unique_ptr<Object3d> newObject = std::make_unique<Object3d>();

@@ -26,6 +26,17 @@ struct ModelData {
 	ModelMesh mesh; //メッシュデータ
 	Node rootNode;
 	bool haveBone = false;
+
+	std::unique_ptr<ModelData> Clone() const {
+		auto clonedData = std::make_unique<ModelData>();
+		clonedData->fileName = fileName;
+		clonedData->skinClusterData = skinClusterData;
+		clonedData->skinningInfoData = skinningInfoData;
+		clonedData->mesh = mesh; // ModelMeshはコピー可能
+		clonedData->rootNode = rootNode; // Nodeもコピー可能
+		clonedData->haveBone = haveBone;
+		return clonedData;
+	}
 };
 
 class Model {
@@ -60,6 +71,8 @@ public:
 
 	void DrawForGPUParticle(PSO* graphicPso,UINT instanceCount);
 
+	std::unique_ptr<Model> Clone() const;
+
 
 public: //ゲッター
 
@@ -68,6 +81,7 @@ public: //ゲッター
 
 	//ModelDataの取得
 	ModelData* GetModelData() { return modelData_.get(); }
+	std::unique_ptr<ModelData>& GetModelDataPtr() { return modelData_; }
 
 	//ModelCommonの取得
 	ModelCommon* GetModelCommon() { return modelCommon_; }

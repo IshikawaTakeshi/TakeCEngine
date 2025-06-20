@@ -47,30 +47,18 @@ void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::s
 	models_.insert(std::make_pair(modelFile, std::move(model)));
 }
 
-Model* ModelManager::FindModel(const std::string& filePath) {
+std::unique_ptr<Model> ModelManager::FindModel(const std::string& filePath) {
 
 	//読み込み済みモデルを検索
 	if (models_.contains(filePath)) {
 		//読み込みモデルを戻り値としてreturn
-		return models_.at(filePath).get();
+		return models_[filePath]->Clone();
 	}
 
 	//ファイル名一致なし
 	return nullptr;
 }
 
-std::unique_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
-	
-	//読み込み済みモデルを検索
-	if (models_.contains(filePath)) {
-		//読み込みモデルを戻り値としてreturn
-		std::unique_ptr<Model> model = std::make_unique<Model>();
-		model->Initialize(modelCommon_, models_.at(filePath)GetModelData());
-		return model;
-	}
-	//ファイル名一致なし
-	return nullptr;
-}
 
 //=============================================================================
 // Modelファイルを読む関数

@@ -128,7 +128,7 @@ void Model::Draw(PSO* graphicPso) {
 		modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&modelData_->mesh.GetIndexBufferView());
 
 		//DrawCall
-		commandList->DrawIndexedInstanced(UINT(mesh.indexCount), 1, UINT(mesh.indexStart), UINT(mesh.vertexStart), 0);
+		commandList->DrawIndexedInstanced(UINT(mesh.indexCount), 1, UINT(mesh.indexStart), INT(mesh.vertexStart), 0);
 	}
 }
 
@@ -234,6 +234,28 @@ void Model::DrawForGPUParticle(PSO* graphicPso,UINT instanceCount) {
 		//DrawCall
 		commandList->DrawIndexedInstanced(UINT(mesh.indexCount), instanceCount, UINT(mesh.indexStart), UINT(mesh.vertexStart), 0);
 	}
+}
+
+std::unique_ptr<Model> Model::Clone() const {
+	auto cloneModel = std::make_unique<Model>();
+
+	//モデルデータのクローン
+	cloneModel->modelData_ = modelData_->Clone();
+	//スケルトンのクローン
+	if (skeleton_) {
+		cloneModel->skeleton_ = skeleton_->Clone();
+	} else {
+		cloneModel->skeleton_ = nullptr;
+	}
+	//スキンクラスターのクローン
+	cloneModel->skinCluster_ = skinCluster_;
+	cloneModel->modelCommon_ = modelCommon_;
+	cloneModel->haveSkeleton_ = haveSkeleton_;
+	cloneModel->translate_ = translate_;
+	cloneModel->rotate_ = rotate_;
+	cloneModel->scale_ = scale_;
+	cloneModel->localMatrix_ = localMatrix_;
+	return cloneModel;
 }
 
 const std::string& Model::GetTextureFilePath(const uint32_t& materialNum) const {
