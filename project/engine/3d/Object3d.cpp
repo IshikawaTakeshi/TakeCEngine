@@ -13,7 +13,6 @@
 #include <cassert>
 
 Object3d::~Object3d() {
-	wvpResource_.Reset();
 	model_ = nullptr;
 }
 

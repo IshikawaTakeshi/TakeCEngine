@@ -28,7 +28,7 @@ public:
 	struct RingData {
 		PrimitiveMesh primitiveData_;
 		VertexData* vertexData_ = nullptr;
-		Material* material_ = nullptr;
+		std::unique_ptr<Material> material_;
 		float outerRadius_ = 1.0f; // 外側の半径
 		float innerRadius_ = 0.01f; // 内側の半径
 	};
@@ -37,7 +37,7 @@ public:
 	struct PlaneData {
 		PrimitiveMesh primitiveData_;
 		VertexData* vertexData_ = nullptr;
-		Material* material_ = nullptr;
+		std::unique_ptr<Material> material_ = nullptr;
 		Vector2 anchorPoint_ = { 0.0f, 0.0f }; // アンカーポイント
 		float width_;
 		float height_;
@@ -47,7 +47,7 @@ public:
 	struct SphereData {
 		PrimitiveMesh primitiveData_;
 		VertexData* vertexData_ = nullptr;
-		Material* material_ = nullptr;
+		std::unique_ptr<Material> material_ = nullptr;
 		float radius_;
 	};
 
@@ -55,7 +55,7 @@ public:
 	struct BoxData {
 		PrimitiveMesh primitiveData_;
 		VertexData* vertexData_ = nullptr;
-		Material* material_ = nullptr;
+		std::unique_ptr<Material> material_ = nullptr;
 		Vector3 size_;
 	};
 

@@ -644,7 +644,7 @@ void PrimitiveDrawer::CreateBoxVertexData(BoxData* boxData) {
 
 void PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath, RingData* ringData) {
 
-	ringData->material_ = new Material();
+	ringData->material_ = std::make_unique<Material>();
 	ringData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
 	ringData->material_->SetEnableLighting(false);
 	ringData->material_->SetEnvCoefficient(0.0f);
@@ -654,7 +654,7 @@ void PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath, Rin
 
 void PrimitiveDrawer::CreatePlaneMaterial(const std::string& textureFilePath, PlaneData* planeData) {
 
-	planeData->material_ = new Material();
+	planeData->material_ = std::make_unique<Material>();
 	planeData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
 	planeData->material_->SetEnableLighting(false);
 	planeData->material_->SetEnvCoefficient(0.0f);
@@ -663,7 +663,7 @@ void PrimitiveDrawer::CreatePlaneMaterial(const std::string& textureFilePath, Pl
 
 void PrimitiveDrawer::CreateSphereMaterial(const std::string& textureFilePath, SphereData* sphereData) {
 
-	sphereData->material_ = new Material();
+	sphereData->material_ = std::make_unique<Material>();
 	sphereData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
 	sphereData->material_->SetEnableLighting(false);
 	sphereData->material_->SetEnvCoefficient(0.0f);
@@ -672,7 +672,7 @@ void PrimitiveDrawer::CreateSphereMaterial(const std::string& textureFilePath, S
 
 void PrimitiveDrawer::CreateBoxMaterial(const std::string& textureFilePath, BoxData* boxData) {
 
-	boxData->material_ = new Material();
+	boxData->material_ = std::make_unique<Material>();
 	boxData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
 	boxData->material_->SetEnableLighting(false);
 	boxData->material_->SetEnvCoefficient(0.0f);

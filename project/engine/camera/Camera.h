@@ -6,6 +6,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <optional>
+#include <memory>
 
 //定数バッファ用の構造体
 struct CameraForGPU {
@@ -15,7 +16,9 @@ struct CameraForGPU {
 class Camera {
 public:
 	Camera() = default;
-	~Camera();
+	Camera(const Camera& other) = default;
+	Camera(Camera&& other) = default;
+	~Camera() = default;
 	void Initialize(ID3D12Device* device);
 	void Update();
 
@@ -67,14 +70,14 @@ public: //setter
 	void SetShake(float duration, float range);
 
 	void SetStick(const Vector2& stick) { stick_ = stick; }
-	void SetFollowTargetPos(const Vector3& target) { *followTargetPosition_ = target; }
-	void SetFollowTargetRot(const Vector3& targetRot) { *followTargetRotation_ = targetRot; }
-	void SetFocusTargetPos(const Vector3& target) { *focusTargetPosition_ = target; }
+	void SetFollowTargetPos(const Vector3& target);
+	void SetFollowTargetRot(const Vector3& targetRot);
+	void SetFocusTargetPos(const Vector3& target);
 private:
 
 	//バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource_;
-	CameraForGPU* cameraForGPU_;
+	CameraForGPU cameraForGPU_;
 
 	QuaternionTransform transform_;
 	Vector3 offset_;
@@ -95,12 +98,12 @@ private:
 	GameCameraState cameraState_ = GameCameraState::FOLLOW;
 
 	//追従対象
-	Vector3* followTargetPosition_;
-	Vector3* followTargetRotation_;
+	Vector3 followTargetPosition_;
+	Vector3 followTargetRotation_;
 	float followSpeed_ = 0.1f;
 
 	//補足対象
-	Vector3* focusTargetPosition_;
+	Vector3 focusTargetPosition_;
 	
 	//水平方向視野角
 	float fovX_;

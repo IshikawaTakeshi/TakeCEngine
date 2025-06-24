@@ -23,7 +23,7 @@ void Model::Initialize(ModelCommon* ModelCommon, std::unique_ptr<ModelData> mode
 
 	//objファイル読み込み
 	modelData_ = std::move(modelData);
-
+	
 	//Skeleton作成
 	if (modelData_->haveBone) {
 		skeleton_ = std::make_unique<Skeleton>();
@@ -40,6 +40,8 @@ void Model::Initialize(ModelCommon* ModelCommon, std::unique_ptr<ModelData> mode
 	modelData_->mesh.InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice());
 	//indexResource
 	modelData_->mesh.InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice());
+	//bufferViewの初期化
+	modelData_->mesh.InitBufferViews();
 
 	if (modelData_->haveBone) {
 		//outputVertexResource
@@ -104,16 +106,17 @@ void Model::Draw(PSO* graphicPso) {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	auto vbvs = modelData_->mesh.CreateSubMeshVBVs();
-	auto ibvs = modelData_->mesh.CreateSubMeshIBVs();
+	auto vbvs = modelData_->mesh.GetVBVs();
+	auto ibvs = modelData_->mesh.GetIBVs();
 
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	//vbv設定
+	//commandList->IASetVertexBuffers(0, UINT(vbvs.size()), vbvs.data());
+
 	for (size_t i = 0; i < modelData_->mesh.GetSubMeshes().size(); ++i) {
 
-		// VBVを設定
-		commandList->IASetVertexBuffers(0, 1, &vbvs[i]);
 
 		//materialCBufferの場所を指定
 		commandList->SetGraphicsRootConstantBufferView(
@@ -128,6 +131,7 @@ void Model::Draw(PSO* graphicPso) {
 			graphicPso->GetGraphicBindResourceIndex("gEnvMapTexture"),
 			TextureManager::GetInstance()->GetSrvIndex(modelData_->mesh.GetSubMeshes()[i].material_.GetEnvMapFilePath()));
 		//IBVの設定
+		commandList->IASetVertexBuffers(0, 1, &vbvs[i]);
 		modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&ibvs[i]);
 
 		//DrawCall

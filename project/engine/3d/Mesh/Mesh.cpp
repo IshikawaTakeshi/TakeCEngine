@@ -12,6 +12,27 @@ ModelMesh::~ModelMesh() {
 	indexResource_.Reset();
 }
 
+void ModelMesh::InitBufferViews() {
+	// 頂点バッファビューの初期化
+	for (const auto& sub : subMeshes_) {
+		D3D12_VERTEX_BUFFER_VIEW vbv = {};
+		//vbv.BufferLocation = inputVertexResource_->GetGPUVirtualAddress() + sub.vertexStart;
+		vbv.BufferLocation = inputVertexResource_->GetGPUVirtualAddress() + sub.vertexStart * sizeof(VertexData);
+		vbv.SizeInBytes = sub.vertexCount * sizeof(VertexData);
+		vbv.StrideInBytes = sizeof(VertexData);
+		VBVs_.push_back(vbv);
+	}
+	// インデックスバッファビューの初期化
+	for (const auto& sub : subMeshes_) {
+		D3D12_INDEX_BUFFER_VIEW ibv = {};
+		//ibv.BufferLocation = indexResource_->GetGPUVirtualAddress();
+		ibv.BufferLocation = indexResource_->GetGPUVirtualAddress() + sub.indexStart * sizeof(uint32_t);
+		ibv.SizeInBytes = sub.indexCount * sizeof(uint32_t);
+		ibv.Format = DXGI_FORMAT_R32_UINT; // 32ビット整数のインデックス
+		IBVs_.push_back(ibv);
+	}
+}
+
 void ModelMesh::InitializeVertexResourceSphere(ID3D12Device* device) {
 
 	// 頂点数の設定

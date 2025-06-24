@@ -31,6 +31,8 @@ public:
 	ModelMesh() = default;
 	~ModelMesh();
 
+	void InitBufferViews();
+
 	/// <summary>
 	/// 球体の頂点バッファリソース初期化
 	/// </summary>

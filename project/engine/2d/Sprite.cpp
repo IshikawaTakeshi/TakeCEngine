@@ -7,7 +7,6 @@
 #include "base/TakeCFrameWork.h"
 
 Sprite::~Sprite() {
-	wvpResource_.Reset();
 	spriteCommon_ = nullptr;
 }
 

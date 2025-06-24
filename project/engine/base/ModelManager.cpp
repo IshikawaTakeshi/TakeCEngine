@@ -38,7 +38,7 @@ void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::s
 
 	//モデルの生成とファイル読み込み、初期化
 	std::unique_ptr<ModelData> modelData = std::make_unique<ModelData>();
-	modelData = LoadModelFile(modelDirectoryPath, modelFile,envMapFile);
+	modelData = std::move(LoadModelFile(modelDirectoryPath, modelFile,envMapFile));
 
 	std::shared_ptr<Model> model = std::make_shared<Model>();
 	model->Initialize(modelCommon_, std::move(modelData));
@@ -81,35 +81,32 @@ std::unique_ptr<ModelData> ModelManager::LoadModelFile(const std::string& modelD
 	modelData->fileName = modelFile;
 	
 	if (scene->HasMeshes()) {
-
+		//SubMeshのサイズ設定
+		modelData->mesh.GetSubMeshes().resize(scene->mNumMeshes);
 		uint32_t vertexOffset = 0;
 		uint32_t indexOffset = 0;
-		std::vector<VertexData> vertices = {};
-		std::vector<uint32_t> indices = {};
+		
+		//全ての頂点数の合算値
+		uint32_t totalVertices = 0;
 
 		//Meshの解析
 		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 			aiMesh* mesh = scene->mMeshes[meshIndex];
 			assert(mesh->HasNormals()); //法線がない場合は現在エラー
-
-			
-			
-			modelData->mesh.GetSubMeshes().resize(scene->mNumMeshes);
-			vertices.resize(mesh->mNumVertices);
-			//Meshの頂点数の格納
-			modelData->skinningInfoData.VertexCount = mesh->mNumVertices;
+			std::vector<VertexData> vertices(mesh->mNumVertices);
+			std::vector<uint32_t> indices;
 
 			//vertexの解析
 			for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
 				aiVector3D& position = mesh->mVertices[vertexIndex];
 				aiVector3D& normal = mesh->mNormals[vertexIndex];
-				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
 
 				vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
 				vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
 				
 				// UVがある場合は値を、無い場合は(0,0)を設定
 				if (mesh->HasTextureCoords(0)) {
+					aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
 					vertices[vertexIndex].texcoord = { texcoord.x, texcoord.y };
 				} else {
 					vertices[vertexIndex].texcoord = { 0.0f, 0.0f };
@@ -122,31 +119,35 @@ std::unique_ptr<ModelData> ModelManager::LoadModelFile(const std::string& modelD
 
 				//Indices解析
 				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
-					uint32_t indicesIndex = face.mIndices[element];
-					indices.push_back(indicesIndex);
+					//MEMO: vertexOffsetを加算するとローカルのindicesがズレたので加算しないようにする
+					indices.push_back(face.mIndices[element]);
 				}
 			}
 
 			//頂点情報をまとめる
 			modelData->mesh.GetAllVertices().insert(
 				modelData->mesh.GetAllVertices().end(),
-				vertices.begin(),
-				vertices.end()
+				vertices.begin(),vertices.end()
 			);
 			//インデックス情報をまとめる
 			modelData->mesh.GetAllIndices().insert(
 				modelData->mesh.GetAllIndices().end(),
-				indices.begin(),
-				indices.end()
+				indices.begin(),indices.end()
 			);
-			modelData->mesh.GetSubMeshes()[meshIndex].vertexStart = vertexOffset;
-			modelData->mesh.GetSubMeshes()[meshIndex].vertexCount = uint32_t(vertices.size());
-			modelData->mesh.GetSubMeshes()[meshIndex].indexStart = indexOffset;
-			modelData->mesh.GetSubMeshes()[meshIndex].indexCount = uint32_t(indices.size());
+
+			//SubMeshの情報を設定
+			auto& subMesh = modelData->mesh.GetSubMeshes()[meshIndex];
+			subMesh.vertexStart = vertexOffset;
+			subMesh.vertexCount = uint32_t(vertices.size());
+			subMesh.indexStart = indexOffset;
+			subMesh.indexCount = uint32_t(indices.size());
+			subMesh.vertices = std::move(vertices);
+			subMesh.indices = std::move(indices);
 
 			//オフセットの更新
 			vertexOffset += modelData->mesh.GetSubMeshes()[meshIndex].vertexCount;
 			indexOffset += modelData->mesh.GetSubMeshes()[meshIndex].indexCount;
+			totalVertices += mesh->mNumVertices;
 
 			//boneの解析
 			//boneがない場合はスキップ
@@ -183,6 +184,9 @@ std::unique_ptr<ModelData> ModelManager::LoadModelFile(const std::string& modelD
 
 	
 		}
+
+		//全体頂点数の設定
+		modelData->skinningInfoData.VertexCount = totalVertices;
 	}
 
 	//materialの解析
@@ -191,12 +195,11 @@ std::unique_ptr<ModelData> ModelManager::LoadModelFile(const std::string& modelD
 
 		aiMaterial* material = scene->mMaterials[materialIndex];
 		aiString aiTexturePath;
-
+		
 		
 		// マテリアル名の設定
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexturePath) == AI_SUCCESS) {
 			std::string textureFilePath = aiTexturePath.C_Str();
-
 			if (!textureFilePath.empty() && textureFilePath[0] == '*') {
 				// 埋め込みテクスチャの場合の処理
 				try {
@@ -211,7 +214,7 @@ std::unique_ptr<ModelData> ModelManager::LoadModelFile(const std::string& modelD
 					// 変換エラーの場合はデフォルトテクスチャを使用
 					modelData->mesh.GetSubMeshes()[materialIndex].material_.SetTextureFilePath("white1x1.png");
 				}
-				
+
 			} else {
 				//外部テクスチャの場合
 				modelData->mesh.GetSubMeshes()[materialIndex].material_.SetTextureFilePath(textureFilePath);
@@ -230,12 +233,15 @@ std::unique_ptr<ModelData> ModelManager::LoadModelFile(const std::string& modelD
 			assert(envMapFile.find(".dds") != std::string::npos); //DDSファイル以外はエラー)
 			modelData->mesh.GetSubMeshes()[materialIndex].material_.SetEnvMapFilePath(envMapFile);
 		}
+
+		//マテリアルの初期化
+		modelData->mesh.GetSubMeshes()[materialIndex].material_.Initialize(modelCommon_->GetDirectXCommon(), modelData->mesh.GetSubMeshes()[materialIndex].material_.GetTextureFilePath(), modelData->mesh.GetSubMeshes()[materialIndex].material_.GetEnvMapFilePath());
 	}
 
 	//rootNodeの解析
 	modelData->rootNode = ReadNode(scene->mRootNode);
 
-	return modelData;
+	return std::move(modelData);
 }
 
 //=============================================================================
