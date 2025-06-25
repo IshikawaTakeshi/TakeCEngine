@@ -144,14 +144,14 @@ void GamePlayScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize(Object3dCommon::GetInstance(), "Deer.gltf");
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
-	//player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("Deer.gltf", "Idle"));
+	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("Deer.gltf", "Idle"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
 
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize(Object3dCommon::GetInstance(), "BrainStem.gltf");
 	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
-//	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("BrainStem.gltf", "Anim_0"));
+	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("BrainStem.gltf", "Anim_0"));
 }
 
 //====================================================================
@@ -237,8 +237,8 @@ void GamePlayScene::Draw() {
 
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance()->DisPatch();
-	//player_->GetObject3d()->DisPatch();
-	//enemy_->GetObject3d()->DisPatch();
+	player_->GetObject3d()->DisPatch();
+	enemy_->GetObject3d()->DisPatch();
 
 	/*for (auto& object : levelObjects_) {
 		object->DisPatch();
