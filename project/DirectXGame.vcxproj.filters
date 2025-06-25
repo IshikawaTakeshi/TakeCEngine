@@ -237,6 +237,7 @@
     <ClInclude Include="engine\scene\ParticleEditScene.h" />
     <ClInclude Include="engine\scene\LevelData.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveType.h" />
+    <ClInclude Include="engine\Animation\VertexInfluence.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

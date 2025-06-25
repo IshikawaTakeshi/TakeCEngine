@@ -8,15 +8,7 @@
 #include "ResourceDataStructure.h"
 #include "Skeleton.h"
 #include "SrvManager.h"
-
-
-//最大の影響ボーン数
-const uint32_t kNumMaxInfluence = 5;
-
-struct VertexInfluence {
-	std::array<float, kNumMaxInfluence> weights;
-	std::array<int32_t, kNumMaxInfluence> jointIndices;
-};
+#include "Animation/VertexInfluence.h"
 
 struct WellForGPU {
 	Matrix4x4 skeletonSpaceMatrix; //位置用

@@ -28,7 +28,7 @@ void SkinCluster::Create(
 
 	//influence用のResource確保
 	//VertexInfluence * std::vector<VertexData>
-	influenceResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData->mesh.GetAllVertices().size());
+	influenceResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData->influences.size());
 	influenceResource->SetName(L"SkinCluster::influenceResource");
 	
 	//influenceのSRV作成
@@ -38,8 +38,13 @@ void SkinCluster::Create(
 
 	VertexInfluence* mappedInfluenceData = nullptr;
 	influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluenceData));
-	std::memset(mappedInfluenceData, 0, sizeof(VertexInfluence) * modelData->mesh.GetAllVertices().size());
-	mappedInfluences = { mappedInfluenceData, modelData->mesh.GetAllVertices().size() };
+	std::memset(mappedInfluenceData, 0, sizeof(VertexInfluence) * modelData->influences.size());
+	mappedInfluences = { mappedInfluenceData, modelData->influences.size() };
+	
+	//mappedInfluencesにmodeldataのinfluencesをコピー
+	for (size_t i = 0; i < modelData->influences.size(); ++i) {
+		mappedInfluences[i] = modelData->influences[i];
+	}
 
 	//skinningInfoResourceの作成
 	skinningInfoResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(SkinningInfo));
@@ -54,25 +59,8 @@ void SkinCluster::Create(
 	//ModelDataのSkinClusterの情報を元に、Influenceの中身を書き込む
 	for (const auto& jointWeight : modelData->skinClusterData) {
 		auto it = skeleton->GetJointMap().find(jointWeight.first);
-
-		//Jointが見つからなかったらスキップ
-		if (it == skeleton->GetJointMap().end()) {
-			continue;
-		}
-
-		inverseBindPoseMatrices[(*it).second] = jointWeight.second.inverseBindPoseMatrix;
-		for (const auto& vertexWeight : jointWeight.second.vertexWeights) {
-			auto& currentInfluence = mappedInfluences[vertexWeight.vertexIndex];
-			for (uint32_t i = 0; i < kNumMaxInfluence; i++) {
-
-				//Weightが0.0fの場合、WeightとJointのIndexを書き込む
-				if (currentInfluence.weights[i] == 0.0f) {
-					currentInfluence.weights[i] = vertexWeight.weight;
-					currentInfluence.jointIndices[i] = (*it).second;
-					break;
-				}
-			}
-		}
+		if (it == skeleton->GetJointMap().end()) continue;
+		inverseBindPoseMatrices[it->second] = jointWeight.second.inverseBindPoseMatrix;
 	}
 }
 

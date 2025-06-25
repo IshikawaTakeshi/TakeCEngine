@@ -53,6 +53,8 @@ struct Node {
 	std::vector<Node> children;
 };
 
+
+
 struct VertexWeightData {
 	float weight;
 	uint32_t vertexIndex;

@@ -114,6 +114,7 @@ void Player::UpdateImGui() {
 
 void Player::Draw() {
 	object3d_->Draw();
+	object3d_->GetModel()->GetSkeleton()->Draw();
 	weapon_->Draw();
 }
 

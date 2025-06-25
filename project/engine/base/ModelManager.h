@@ -49,11 +49,19 @@ public:
 	/// </summary>
 	std::unique_ptr<ModelData> LoadModelFile(const std::string& DirectoryPath, const std::string& modelFile,const std::string& envMapFile);
 
+private:
+
 	/// <summary>
 	/// ノードの読み込み
 	/// </summary>
 	Node ReadNode(aiNode* rootNode);
 
+	// メッシュ・頂点・インデックス情報の読み込み
+	void LoadMeshesAndSkinCluster(const aiScene* scene, ModelData* modelData);
+
+	// マテリアル・テクスチャ情報の読み込み
+	void LoadMaterials(const aiScene* scene, ModelData* modelData, const std::string& envMapFile);
+	
 private:
 
 	ModelManager() = default;

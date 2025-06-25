@@ -6,12 +6,12 @@
 #include "Animation/Animator.h"
 #include "Animation/Skeleton.h"
 #include "Animation/SkinCluster.h"
-#include "Mesh/Mesh.h"
+#include "3d/Mesh/Mesh.h"
 #include "base/PipelineStateObject.h"
 #include "base/SrvManager.h"
 #include "base/DirectXCommon.h"
 #include "3d/ModelCommon.h"
-#include "3d/Mesh/Mesh.h"
+#include "Animation/VertexInfluence.h"
 
 #include <d3d12.h>
 #include <wrl.h>
@@ -22,6 +22,7 @@
 struct ModelData {
 	std::string fileName; //モデル名
 	std::map<std::string, JointWeightData> skinClusterData;
+	std::vector<VertexInfluence> influences;
 	SkinningInfo skinningInfoData;
 	ModelMesh mesh; //メッシュデータ
 	Node rootNode;

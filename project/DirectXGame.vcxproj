@@ -208,6 +208,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClInclude Include="engine\3d\Particle\ParticleAttribute.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveType.h" />
+    <ClInclude Include="engine\Animation\VertexInfluence.h" />
     <ClInclude Include="engine\Collision\Collider.h" />
     <ClInclude Include="engine\Collision\CollisionManager.h" />
     <ClInclude Include="engine\Collision\CollisionTypeIdDef.h" />

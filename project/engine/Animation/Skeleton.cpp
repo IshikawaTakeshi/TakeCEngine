@@ -1,5 +1,6 @@
 #include "Skeleton.h"
-#include "MatrixMath.h"
+#include "math/MatrixMath.h"
+#include "base/TakeCFrameWork.h"
 
 void Skeleton::Create(const Node& rootNode) {
 
@@ -46,7 +47,23 @@ void Skeleton::Update() {
 
 void Skeleton::Draw() {
 
+	//jointの描画
+	for (const Joint& joint : joints) {
+		//親がいない場合はルートJointなので球で描画
+		if (!joint.parent) {
+			TakeCFrameWork::GetWireFrame()->DrawSphere(
+				{ joint.skeletonSpaceMatrix.m[3][0], joint.skeletonSpaceMatrix.m[3][1], joint.skeletonSpaceMatrix.m[3][2] },
+				0.1f, {1.0f,1.0f,0.1f,1.0f});
+		} else {
+			//親がいる場合は親との線を描画
+			const Joint& parentJoint = joints[*joint.parent];
+			TakeCFrameWork::GetWireFrame()->DrawLine(
+				{ parentJoint.skeletonSpaceMatrix.m[3][0], parentJoint.skeletonSpaceMatrix.m[3][1], parentJoint.skeletonSpaceMatrix.m[3][2] },
+				{ joint.skeletonSpaceMatrix.m[3][0], joint.skeletonSpaceMatrix.m[3][1], joint.skeletonSpaceMatrix.m[3][2] },
+				{ 1.0f,1.0f,1.0f,1.0f });
 
+		}
+	}
 }
 
 void Skeleton::ApplyAnimation(Animation* animation, float animationTime) {

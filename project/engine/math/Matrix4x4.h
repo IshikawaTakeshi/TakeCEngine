@@ -8,6 +8,8 @@ struct Matrix4x4 final {
 	Matrix4x4 operator+=(const Matrix4x4& matrix);
 	Matrix4x4 operator-=(const Matrix4x4& matrix);
 	Matrix4x4 operator*=(const Matrix4x4& matrix);
+	bool operator==(const Matrix4x4& rhs) const;
+	bool operator!=(const Matrix4x4& rhs) const;
 };
 
 Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2);

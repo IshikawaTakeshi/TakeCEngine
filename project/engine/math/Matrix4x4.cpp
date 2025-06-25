@@ -46,3 +46,16 @@ Matrix4x4 Matrix4x4::operator*=(const Matrix4x4& matrix) {
 
 	return *this;
 }
+
+bool Matrix4x4::operator==(const Matrix4x4& rhs) const {
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			if (m[i][j] != rhs.m[i][j]) return false;
+		}
+	}
+	return true;
+}
+
+bool Matrix4x4::operator!=(const Matrix4x4& rhs) const {
+	return !(*this == rhs);
+}
