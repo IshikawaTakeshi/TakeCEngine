@@ -268,6 +268,9 @@ std::unique_ptr<Model> Model::Clone() const {
 	cloneModel->rotate_ = rotate_;
 	cloneModel->scale_ = scale_;
 	cloneModel->localMatrix_ = localMatrix_;
+	cloneModel->inputIndex_ = inputIndex_;
+	cloneModel->uavIndex_ = uavIndex_;
+	
 	return cloneModel;
 }
 
