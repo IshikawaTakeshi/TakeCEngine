@@ -209,8 +209,7 @@ private:
 	/// <summary>
 	/// 深度バッファの生成
 	/// </summary>
-	void CreateDepthStencilTextureResource(
-		const Microsoft::WRL::ComPtr<ID3D12Device>& device, int32_t width, int32_t height);
+	void CreateDepthStencilTextureResource(int32_t width, int32_t height);
 
 	/// <summary>
 	/// ディスクリプタヒープ生成

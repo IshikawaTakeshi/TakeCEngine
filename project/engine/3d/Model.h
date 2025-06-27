@@ -82,7 +82,6 @@ public: //ゲッター
 
 	//ModelDataの取得
 	ModelData* GetModelData() { return modelData_.get(); }
-	std::unique_ptr<ModelData>& GetModelDataPtr() { return modelData_; }
 
 	//ModelCommonの取得
 	ModelCommon* GetModelCommon() { return modelCommon_; }

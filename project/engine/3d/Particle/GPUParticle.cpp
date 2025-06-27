@@ -25,7 +25,7 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 	particleCommon_ = particleCommon;
 
 	//モデルの読み込み
-	model_ = ModelManager::GetInstance()->FindModel(filePath);
+	model_ = ModelManager::GetInstance()->CreateModelInstance(filePath);
 
 	//ParticleResource生成
 	particleUavResource_ = DirectXCommon::CreateBufferResourceUAV(

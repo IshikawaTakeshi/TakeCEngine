@@ -129,7 +129,7 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 
 	for (auto& objectData : levelData_->objects) {
 		std::unique_ptr<Model> model = nullptr;
-		model = ModelManager::GetInstance()->FindModel(objectData.file_name);
+		model = ModelManager::GetInstance()->CreateModelInstance(objectData.file_name);
 
 		std::unique_ptr<Object3d> newObject = std::make_unique<Object3d>();
 		newObject->Initialize(Object3dCommon::GetInstance(), objectData.file_name);

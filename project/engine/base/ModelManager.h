@@ -39,10 +39,10 @@ public:
 	void LoadModel(const std::string& modelDirectoryPath, const std::string& modelFile,const std::string& envMapFile = "rostock_laage_airport_4k.dds");
 
 	/// <summary>
-	/// モデルの検索
+	/// モデルインスタンスを生成する関数
 	/// </summary>
 	/// <param name="filePath">モデルのファイルパス</param>
-	std::unique_ptr<Model> FindModel(const std::string& filePath);
+	std::unique_ptr<Model> CreateModelInstance(const std::string& filePath);
 
 	/// <summary>
 	/// modelファイルを読む関数
@@ -77,5 +77,5 @@ private:
 	ModelCommon* modelCommon_ = nullptr;
 
 	//モデルデータコンテナ
-	std::map<std::string, std::shared_ptr<Model>> models_;
+	std::map<std::string, std::unique_ptr<Model>> models_;
 };

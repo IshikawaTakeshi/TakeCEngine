@@ -119,13 +119,13 @@ void GamePlayScene::Initialize() {
 	}
 
 	//Animation読み込み
-	TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","Idle.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","running.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","throwAttack.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","player_animation.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","BrainStem.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","Deer.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","walk.gltf");
+	//TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","Idle.gltf");
+	//TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","running.gltf");
+	//TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","throwAttack.gltf");
+	//TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","player_animation.gltf");
+	//TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","BrainStem.gltf");
+	//TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","Deer.gltf");
+	//TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","walk.gltf");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -142,17 +142,17 @@ void GamePlayScene::Initialize() {
 	bulletManager_->Initialize(Object3dCommon::GetInstance(), 100); //弾の最大数:100
 
 	//player
-	player_ = std::make_unique<Player>();
-	player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
-	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
-	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("walk.gltf",  "Armature|mixamo.com|Layer0"));
-	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
+	//player_ = std::make_unique<Player>();
+	//player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
+	//player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
+	//player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("walk.gltf",  "Armature|mixamo.com|Layer0"));
+	//player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
 
-	//Enemy
-	enemy_ = std::make_unique<Enemy>();
-	enemy_->Initialize(Object3dCommon::GetInstance(), "BrainStem.gltf");
-	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
-	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("BrainStem.gltf", "Anim_0"));
+	////Enemy
+	//enemy_ = std::make_unique<Enemy>();
+	//enemy_->Initialize(Object3dCommon::GetInstance(), "BrainStem.gltf");
+	//enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
+	//enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("BrainStem.gltf", "Anim_0"));
 }
 
 //====================================================================
@@ -183,20 +183,20 @@ void GamePlayScene::Update() {
 	sprite_->Update();
 
 	//player
-	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
-	player_->Update();
+	//player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
+	//player_->Update();
 	//enemy
-	enemy_->Update();
+	//enemy_->Update();
 
 	//弾の更新
-	bulletManager_->UpdateBullet();
+	//bulletManager_->UpdateBullet();
 
 	/*for (auto& object : levelObjects_) {
 		object->Update();
 	}*/
 
 	//当たり判定の更新
-	CheckAllCollisions();
+	//CheckAllCollisions();
 
   //パーティクルの更新
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
@@ -218,8 +218,8 @@ void GamePlayScene::UpdateImGui() {
 	ParticleCommon::GetInstance()->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 
-	player_->UpdateImGui();
-	enemy_->UpdateImGui();
+	//player_->UpdateImGui();
+	//enemy_->UpdateImGui();
 	for (int i = 0; i < levelObjects_.size(); i++) {
 		levelObjects_[i]->UpdateImGui(std::to_string(i));
 	}
@@ -238,17 +238,17 @@ void GamePlayScene::Draw() {
 
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance()->DisPatch();
-	player_->GetObject3d()->DisPatch();
-	enemy_->GetObject3d()->DisPatch();
+	//player_->GetObject3d()->DisPatch();
+	//->GetObject3d()->DisPatch();
 
 	/*for (auto& object : levelObjects_) {
 		object->DisPatch();
 	}*/
 
 	Object3dCommon::GetInstance()->PreDraw();
-	player_->Draw();
-	enemy_->Draw();
-	bulletManager_->DrawBullet();
+	//player_->Draw();
+	//enemy_->Draw();
+	//bulletManager_->DrawBullet();
 
 	/*for (auto& object : levelObjects_) {
 		object->Draw();
@@ -258,9 +258,9 @@ void GamePlayScene::Draw() {
 
 	//当たり判定の描画前処理
 	CollisionManager::GetInstance()->PreDraw();
-	player_->DrawCollider();
-	enemy_->DrawCollider();
-	bulletManager_->DrawCollider();
+	//player_->DrawCollider();
+	//enemy_->DrawCollider();
+	//bulletManager_->DrawCollider();
 
 	//グリッド地面の描画
 	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 50);

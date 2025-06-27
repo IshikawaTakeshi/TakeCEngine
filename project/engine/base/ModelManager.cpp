@@ -50,28 +50,20 @@ void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::s
 	}
 
 	//モデルの生成とファイル読み込み、初期化
-	std::unique_ptr<ModelData> modelData = std::make_unique<ModelData>();
-	modelData = std::move(LoadModelFile(modelDirectoryPath, modelFile, envMapFile));
+	std::unique_ptr<ModelData> modelData = LoadModelFile(modelDirectoryPath, modelFile, envMapFile);
 
-	std::shared_ptr<Model> model = std::make_shared<Model>();
+	std::unique_ptr<Model> model = std::make_unique<Model>();
 	model->Initialize(modelCommon_, std::move(modelData));
 
 	//モデルをコンテナに追加
 	models_.insert(std::make_pair(modelFile, std::move(model)));
 }
 
-std::unique_ptr<Model> ModelManager::FindModel(const std::string& filePath) {
 
-	//読み込み済みモデルを検索
-	if (models_.contains(filePath)) {
-		//読み込みモデルを戻り値としてreturn
-		return models_[filePath]->Clone();
-	}
-
-	//ファイル名一致なし
-	return nullptr;
+std::unique_ptr<Model> ModelManager::CreateModelInstance(const std::string& filePath) {
+	Model* baseModel = models_[filePath].get();
+	return baseModel->Clone();
 }
-
 
 //=============================================================================
 // Modelファイルを読む関数

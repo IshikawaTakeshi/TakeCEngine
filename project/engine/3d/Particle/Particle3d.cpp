@@ -189,7 +189,7 @@ void Particle3d::SpliceParticles(std::list<Particle> particles) {
 //=============================================================================
 
 void Particle3d::SetModel(const std::string& filePath) {
-	model_ = ModelManager::GetInstance()->FindModel(filePath);
+	model_ = ModelManager::GetInstance()->CreateModelInstance(filePath);
 }
 
 void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) {

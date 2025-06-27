@@ -52,7 +52,7 @@ public: //getter
 	const Vector3& GetTranslate() const { return transform_.translate; }
 	const Quaternion& GetRotate()const { return transform_.rotate; }
 	const bool& GetIsShaking() const { return isShaking_; }
-	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetCameraResource() const { return cameraResource_; }
+	Microsoft::WRL::ComPtr<ID3D12Resource> GetCameraResource() const { return cameraResource_; }
 
 	const GameCameraState& GetCameraState() const { return cameraState_; }
 

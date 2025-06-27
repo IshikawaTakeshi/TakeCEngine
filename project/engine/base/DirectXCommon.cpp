@@ -37,7 +37,7 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	// スワップチェーンの生成
 	CreateSwapChain();
 	//深度ステンシルテクスチャの生成
-	CreateDepthStencilTextureResource(device_, WinApp::kScreenWidth, WinApp::kScreenHeight);
+	CreateDepthStencilTextureResource(WinApp::kScreenWidth, WinApp::kScreenHeight);
 	//DSV生成
 	CreateDSV();
 
@@ -336,7 +336,7 @@ void DirectXCommon::CreateSwapChain() {
 //		深度バッファ生成
 //==============================================================================================
 
-void DirectXCommon::CreateDepthStencilTextureResource(const Microsoft::WRL::ComPtr<ID3D12Device>& device, int32_t width, int32_t height) {
+void DirectXCommon::CreateDepthStencilTextureResource(int32_t width, int32_t height) {
 
 	//生成するResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
@@ -360,7 +360,7 @@ void DirectXCommon::CreateDepthStencilTextureResource(const Microsoft::WRL::ComP
 
 	//Resoureの生成
 	HRESULT hr;
-	hr = device->CreateCommittedResource(
+	hr = device_->CreateCommittedResource(
 		&heapProperties, //Heapの設定
 		D3D12_HEAP_FLAG_NONE, //Heapの特殊な設定
 		&resourceDesc, //Resourceの設定

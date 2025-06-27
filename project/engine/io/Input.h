@@ -19,28 +19,6 @@ public:
 		LONG lZ;
 	};
 
-	//enum class PadType {
-	//	DirectInput,
-	//	XInput,
-	//};
-
-
-	//union State {
-	//	XINPUT_STATE xInput_;         // XInput の生の入力データ
-	//	DIJOYSTATE2 directInput_;     // DirectInput の生の入力データ
-	//	Vector2 processedLeftStick_;  // デッドゾーン処理後の左スティック
-	//	Vector2 processedRightStick_; // デッドゾーン処理後の右スティック
-	//};
-
-	//struct Joystick {
-	//	Microsoft::WRL::ComPtr<IDirectInputDevice8> device_;
-	//	int32_t deadZoneL_;
-	//	int32_t deadZoneR_;
-	//	PadType type_;
-	//	State state_;
-	//	State statePre_;
-	//};
-
 public:
 
 	//エイリアステンプレート
