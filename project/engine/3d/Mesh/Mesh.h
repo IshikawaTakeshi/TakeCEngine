@@ -78,8 +78,6 @@ public: //getter
 	/// 頂点リソースの取得
 	ID3D12Resource* GetInputVertexResource() const { return inputVertexResource_.Get(); }
 	ID3D12Resource* GetOutputVertexResource() const { return outputVertexResource_.Get(); }
-	/// 頂点数リソースの取得
-	ID3D12Resource* GetVertexCountResource() const { return vertexCountResource_.Get(); }
 
 	/// 頂点バッファビューの取得
 	const std::vector<D3D12_VERTEX_BUFFER_VIEW>& GetVBVs() const { return VBVs_; }
@@ -103,9 +101,6 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D12Resource> inputVertexResource_;
 	Microsoft::WRL::ComPtr<ID3D12Resource> outputVertexResource_;
 	std::vector<D3D12_VERTEX_BUFFER_VIEW> VBVs_;
-
-	//頂点数リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexCountResource_;
 
 	//IndexBufferView用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;

@@ -67,7 +67,6 @@ struct JointWeightData {
 
 struct SkinningInfo {
 	uint32_t VertexCount;
-	uint32_t indexCount; //インデックスの数
 };
 
 //パーティクル用の行列,色データ

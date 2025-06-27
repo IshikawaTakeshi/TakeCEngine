@@ -163,7 +163,7 @@ void GamePlayScene::Finalize() {
 	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	//player_.reset();
-	sprite_.reset();
+	//sprite_.reset();
 	skyBox_.reset();
 }
 

@@ -161,7 +161,7 @@ void SceneManager::ChangeScene(const std::string& sceneName) {
 	// 既存のオブジェクトをクリア
 	levelObjects_.clear();
 	// レベルデータの読み込み
-	LoadLevelData("levelData_gameScene");
+	//LoadLevelData("levelData_gameScene");
 	// 新しいシーンを作成
 	nextScene_ = sceneFactory_->CreateScene(sceneName);
 }
