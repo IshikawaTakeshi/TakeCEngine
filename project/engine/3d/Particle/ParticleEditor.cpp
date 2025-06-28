@@ -142,7 +142,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::SeparatorText("Particle Attributes");
 
 	//Scale
-	ImGui::SliderInt("Scale Setting", reinterpret_cast<int*>(&currentAttributes_.scaleSetting_), 0, 2, "None: %d, Scale Up: %d, Scale Down: %d");
+	//ImGui::SliderInt("Scale Setting", reinterpret_cast<int*>(&currentAttributes_.scaleSetting_), 0, 2, "None: %d, Scale Up: %d, Scale Down: %d");
 	ImGui::DragFloat3("Scale", &currentAttributes_.scale.x, 0.01f, 0.0f, 10.0f);
 	ImGui::DragFloat2("Scale Range", &currentAttributes_.scaleRange.min, 0.01f, 0.0f, 10.0f);
 
@@ -195,7 +195,7 @@ void ParticleEditor::DrawEmitterControls() {
 	ImGui::DragFloat3("Emitter Scale", &emitterTransform_.scale.x, 0.01f, 0.0f, 10.0f);
 
 	//エミッターの発生設定
-	ImGui::SliderInt("Emit Count", reinterpret_cast<int*>(&emitCount_), 1, 100, "Count: %d");
+	//ImGui::SliderInt("Emit Count", reinterpret_cast<int*>(&emitCount_), 1, 100, "Count: %d");
 	ImGui::SliderFloat("Emit Frequency", &emitFrequency_, 0.0f, 1.0f, "Frequency: %.2f");
 
 	//自動発生のチェックボックス

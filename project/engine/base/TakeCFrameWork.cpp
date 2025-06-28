@@ -106,31 +106,31 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 void TakeCFrameWork::Finalize() {
 #ifdef _DEBUG
-	imguiManager_->Finalize();
+	//imguiManager_->Finalize();
 #endif
 
-	wireFrame_->Finalize();
+	//wireFrame_->Finalize();
 	animator_->Finalize();
-	TextureManager::GetInstance()->Finalize();
+	//TextureManager::GetInstance()->Finalize();
 	ModelManager::GetInstance()->Finalize();
 	CameraManager::GetInstance()->Finalize();
-	ResourceBarrier::GetInstance()->Finalize();
-	postEffectManager_->Finalize();
-	particleManager_->Finalize();
-	primitiveDrawer_->Finalize();
-	particleCommon_->Finalize();
-	object3dCommon_->Finalize();
-	spriteCommon_->Finalize();
+	//ResourceBarrier::GetInstance()->Finalize();
+	//postEffectManager_->Finalize();
+	//particleManager_->Finalize();
+	//primitiveDrawer_->Finalize();
+	//particleCommon_->Finalize();
+	//object3dCommon_->Finalize();
+	//spriteCommon_->Finalize();
 	sceneFactory_.reset();
-	//Audioの開放
+	////Audioの開放
 	audio_->Finalize();
 	//入力の開放
 	input_->Finalize();
 	//SrvManagerの開放
 	srvManager_.reset();
 	//directXCommonの開放
-	directXCommon_->Finalize();
-	directXCommon_.reset();
+	//directXCommon_->Finalize();
+	//directXCommon_.reset();
 
 	//winAppの開放
 	winApp_->Finalize();

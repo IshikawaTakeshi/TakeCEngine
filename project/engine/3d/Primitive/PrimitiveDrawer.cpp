@@ -16,6 +16,10 @@ void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 
 void PrimitiveDrawer::Finalize() {
 
+	planeDatas_.clear();
+	sphereDatas_.clear();
+	ringDatas_.clear();
+	boxDatas_.clear();
 	srvManager_ = nullptr;
 	dxCommon_ = nullptr;
 }

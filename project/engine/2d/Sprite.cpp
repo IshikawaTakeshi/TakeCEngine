@@ -85,6 +85,9 @@ void Sprite::Update() {
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
 	wvpData_->WVP = worldViewProjectionMatrix_;
 	wvpData_->World = worldMatrix_;
+
+	//TODO: primitiveDrawerからvertexResourceをMappingするように変更
+	TakeCFrameWork::GetPrimitiveDrawer()->MappingPlaneVertexData(vertexData_, primitiveHandle_);
 }
 
 #ifdef _DEBUG
@@ -108,8 +111,7 @@ void Sprite::UpdateImGui(const std::string& name) {
 
 void Sprite::UpdateVertexData() {
 
-	//TODO: primitiveDrawerからvertexResourceをMappingするように変更
-	TakeCFrameWork::GetPrimitiveDrawer()->MappingPlaneVertexData(vertexData_, primitiveHandle_);
+	
 	//anchorPoint
 	float left = 0.0f - anchorPoint_.x;
 	float right = 1.0f - anchorPoint_.x;

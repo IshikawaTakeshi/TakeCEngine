@@ -24,7 +24,7 @@ public:
 
 	void DrawAllCollider();
 
-	std::vector<Bullet*> GetPool();
+	const std::vector<std::unique_ptr<Bullet>>& GetPool();
 
 private:
 

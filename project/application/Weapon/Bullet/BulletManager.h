@@ -18,7 +18,7 @@ public:
 
 	void ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type);
 
-	std::vector<Bullet*> GetAllBullets();
+	const std::vector<std::unique_ptr<Bullet>>&  GetAllBullets() const;
 
 private:
 

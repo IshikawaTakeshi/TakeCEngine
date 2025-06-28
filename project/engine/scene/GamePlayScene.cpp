@@ -241,18 +241,11 @@ void GamePlayScene::Draw() {
 	//player_->GetObject3d()->DisPatch();
 	//->GetObject3d()->DisPatch();
 
-	/*for (auto& object : levelObjects_) {
-		object->DisPatch();
-	}*/
-
 	Object3dCommon::GetInstance()->PreDraw();
 	//player_->Draw();
 	//enemy_->Draw();
 	//bulletManager_->DrawBullet();
 
-	/*for (auto& object : levelObjects_) {
-		object->Draw();
-	}*/
 
 #pragma endregion
 
@@ -287,7 +280,7 @@ void GamePlayScene::CheckAllCollisions() {
 
 	CollisionManager::GetInstance()->ClearGameCharacter();
 
-	const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
+	const std::vector<std::unique_ptr<Bullet>>& bullets = bulletManager_->GetAllBullets();
 
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
 
@@ -295,7 +288,7 @@ void GamePlayScene::CheckAllCollisions() {
 
 	for (const auto& bullet : bullets) {
 		if (bullet->GetIsActive()) {
-			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
+			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet.get()));
 		}
 	}
 
