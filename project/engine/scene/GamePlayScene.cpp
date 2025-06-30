@@ -13,12 +13,12 @@
 
 void GamePlayScene::Initialize() {
 	//Camera0
-	gameCamera_ = std::make_shared<Camera>();
-	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	gameCamera_->SetIsDebug(false);
-	gameCamera_->SetTranslate({ 5.0f,0.0f,-10.0f });
-	gameCamera_->SetRotate({ 0.0f,-1.4f,0.0f });
-	CameraManager::GetInstance()->AddCamera("gameCamera", *gameCamera_);
+	//gameCamera_ = std::make_shared<Camera>();
+	//gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
+	//gameCamera_->SetIsDebug(false);
+	//gameCamera_->SetTranslate({ 5.0f,0.0f,-10.0f });
+	//gameCamera_->SetRotate({ 0.0f,-1.4f,0.0f });
+	//CameraManager::GetInstance()->AddCamera("gameCamera", *gameCamera_);
 
 	//Camera1
 	debugCamera_ = std::make_shared<Camera>();
@@ -112,11 +112,11 @@ void GamePlayScene::Initialize() {
 #pragma endregion
 
 	//levelObjectの初期化
-	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
+	//levelObjects_ = std::move(sceneManager_->GetLevelObjects());
 
-	for (auto& object : levelObjects_) {
-		object->SetCamera(Object3dCommon::GetInstance()->GetDefaultCamera());
-	}
+	//for (auto& object : levelObjects_) {
+	//	object->SetCamera(Object3dCommon::GetInstance()->GetDefaultCamera());
+	//}
 
 	//Animation読み込み
 	//TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","Idle.gltf");
@@ -130,7 +130,6 @@ void GamePlayScene::Initialize() {
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
-	//skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//sprite
 	sprite_ = std::make_unique<Sprite>();
@@ -138,8 +137,8 @@ void GamePlayScene::Initialize() {
 	sprite_->SetTextureLeftTop({ 235.0f,40.0f });
 
 	//BulletManager
-	bulletManager_ = std::make_unique<BulletManager>();
-	bulletManager_->Initialize(Object3dCommon::GetInstance(), 100); //弾の最大数:100
+	//bulletManager_ = std::make_unique<BulletManager>();
+	//bulletManager_->Initialize(Object3dCommon::GetInstance(), 100); //弾の最大数:100
 
 	//player
 	//player_ = std::make_unique<Player>();
@@ -164,7 +163,7 @@ void GamePlayScene::Finalize() {
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	//player_.reset();
 	//sprite_.reset();
-	skyBox_.reset();
+	//skyBox_.reset();
 }
 
 //====================================================================
@@ -220,10 +219,10 @@ void GamePlayScene::UpdateImGui() {
 
 	//player_->UpdateImGui();
 	//enemy_->UpdateImGui();
-	for (int i = 0; i < levelObjects_.size(); i++) {
-		levelObjects_[i]->UpdateImGui(std::to_string(i));
-	}
-	sprite_->UpdateImGui("gameScene");
+	//for (int i = 0; i < levelObjects_.size(); i++) {
+	//	levelObjects_[i]->UpdateImGui(std::to_string(i));
+	//}
+	//sprite_->UpdateImGui("gameScene");
 }
 
 //====================================================================
@@ -256,10 +255,10 @@ void GamePlayScene::Draw() {
 	//bulletManager_->DrawCollider();
 
 	//グリッド地面の描画
-	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 50);
-	TakeCFrameWork::GetWireFrame()->DrawGridBox({
-		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
-	TakeCFrameWork::GetWireFrame()->Draw();
+	//TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 50);
+	//TakeCFrameWork::GetWireFrame()->DrawGridBox({
+	//	{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
+	//TakeCFrameWork::GetWireFrame()->Draw();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
@@ -280,17 +279,17 @@ void GamePlayScene::CheckAllCollisions() {
 
 	CollisionManager::GetInstance()->ClearGameCharacter();
 
-	const std::vector<std::unique_ptr<Bullet>>& bullets = bulletManager_->GetAllBullets();
+	//const std::vector<std::unique_ptr<Bullet>>& bullets = bulletManager_->GetAllBullets();
 
-	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
+	//CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
 
-	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
+	//CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
 
-	for (const auto& bullet : bullets) {
-		if (bullet->GetIsActive()) {
-			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet.get()));
-		}
-	}
+	//for (const auto& bullet : bullets) {
+	//	if (bullet->GetIsActive()) {
+	//		CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet.get()));
+	//	}
+	//}
 
 
 	CollisionManager::GetInstance()->CheckAllCollisionsForGameCharacter();

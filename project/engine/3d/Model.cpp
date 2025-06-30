@@ -135,7 +135,7 @@ void Model::Draw(PSO* graphicPso) {
 		modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&ibvs[i]);
 
 		//DrawCall
-		commandList->DrawIndexedInstanced(modelData_->mesh.GetSubMeshes()[i].indexCount, 1, 0, 0, 0);
+		commandList->DrawIndexedInstanced(modelData_->mesh.GetSubMeshes()[i].indexCount, 1, modelData_->mesh.GetSubMeshes()[i].indexStart, 0, 0);
 	}
 }
 

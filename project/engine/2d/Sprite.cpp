@@ -31,11 +31,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 
 	//スプライト用のTransformationMatrix用のVertexResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(spriteCommon->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
-
-	//TransformationMatrix用
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
-
-	//単位行列を書き込んでおく
 	wvpData_->WVP = MatrixMath::MakeIdentity4x4();
 
 	//======================= Transform・各行列の初期化 ===========================//
@@ -111,6 +107,8 @@ void Sprite::UpdateImGui(const std::string& name) {
 
 void Sprite::UpdateVertexData() {
 
+	//頂点データ
+	TakeCFrameWork::GetPrimitiveDrawer()->MappingPlaneVertexData(vertexData_, primitiveHandle_);
 	
 	//anchorPoint
 	float left = 0.0f - anchorPoint_.x;
