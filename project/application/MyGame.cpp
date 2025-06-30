@@ -103,21 +103,21 @@ void MyGame::Draw() {
 
 void MyGame::LoadModel() {
 	//gltf
-	//ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf","skyBox_blueSky.dds");
-	//ModelManager::GetInstance()->LoadModel("gltf", "player_4month.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf", "BrainStem.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf", "player_animation.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf","skyBox_blueSky.dds");
+	ModelManager::GetInstance()->LoadModel("gltf", "player_4month.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "BrainStem.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "player_animation.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "Deer.gltf");
 	////obj
-	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
-	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_airport.obj","rostock_laage_airport_4k.dds");
-	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_blueSky.obj","skyBox_blueSky.dds");
-	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_pool.obj","pool_4k.dds");
-	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
-	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
-	//ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "cube.obj","pool_4k.dds");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_airport.obj","rostock_laage_airport_4k.dds");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_blueSky.obj","skyBox_blueSky.dds");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_pool.obj","pool_4k.dds");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
+	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "cube.obj","pool_4k.dds");
 }
 
 //====================================================================
