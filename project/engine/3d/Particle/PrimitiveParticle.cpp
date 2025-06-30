@@ -15,8 +15,6 @@ PrimitiveParticle::PrimitiveParticle(PrimitiveType type) {
 	type_ = type;
 }
 
-PrimitiveParticle::~PrimitiveParticle() {}
-
 void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::string& filePath) {
 
 	particleCommon_ = particleCommon;

@@ -29,7 +29,7 @@ public:
 public:
 
 	ModelMesh() = default;
-	~ModelMesh();
+	~ModelMesh() = default;
 
 	void InitBufferViews();
 

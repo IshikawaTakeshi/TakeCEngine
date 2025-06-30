@@ -22,6 +22,9 @@ struct Joint {
 class Skeleton {
 public:
 
+	Skeleton() = default;
+	~Skeleton() = default;
+
 	/// <summary>
 	/// Skeletonの作成
 	/// </summary>

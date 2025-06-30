@@ -13,7 +13,7 @@ public:
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 	SkyBox() = default;
-	~SkyBox();
+	~SkyBox() = default;
 
 	/// <summary>
 	/// 初期化

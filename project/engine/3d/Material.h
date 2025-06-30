@@ -19,7 +19,7 @@ class Material {
 public:
 
 	Material() = default;
-	~Material();
+	~Material() = default;
 
 	/// <summary>
 	/// 初期化

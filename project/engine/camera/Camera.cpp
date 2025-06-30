@@ -7,38 +7,6 @@
 #include "math/Easing.h"
 #include "math/Vector3Math.h"
 
-//Camera::Camera(const Camera& other) {
-//	transform_ = other.transform_;
-//	offset_ = other.offset_;
-//	offsetDelta_ = other.offsetDelta_;
-//	fovX_ = other.fovX_;
-//	aspectRatio_ = float(WinApp::kScreenWidth / 2) / float(WinApp::kScreenHeight / 2);
-//	nearClip_ = 0.1f;
-//	farClip_ = 1000.0f;
-//	worldMatrix_ = other.worldMatrix_;
-//	viewMatrix_ = other.viewMatrix_;
-//	projectionMatrix_ = other.projectionMatrix_;
-//	viewProjectionMatrix_ = other.viewProjectionMatrix_;
-//	rotationMatrix_ = other.rotationMatrix_;
-//	focusTargetPosition_ = other.focusTargetPosition_;
-//	isShaking_ = other.isShaking_;
-//	shakeDuration_ = other.shakeDuration_;
-//	shakeRange_ = other.shakeRange_;
-//	originalPosition_ = other.originalPosition_;
-//	yawRot_ = other.yawRot_;
-//	pitchRot_ = other.pitchRot_;
-//	isDebug_ = other.isDebug_;
-//	stick_ = other.stick_;
-//	cameraStateRequest_ = other.cameraStateRequest_;
-//	cameraState_ = other.cameraState_;
-//	followTargetPosition_ = other.followTargetPosition_;
-//	followTargetRotation_ = other.followTargetRotation_;
-//}
-//
-//Camera::~Camera() {
-//	//cameraResource_.Reset();
-//}
-
 void Camera::Initialize(ID3D12Device* device) {
 	
 	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };

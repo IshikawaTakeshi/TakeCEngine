@@ -53,7 +53,7 @@ private:
 	//AudioManager::SoundData BGM;
 	bool isSoundPlay = false;
 	// カメラ
-	std::shared_ptr<Camera> gameCamera_ = nullptr;
+	//std::shared_ptr<Camera> gameCamera_ = nullptr;
 	std::shared_ptr<Camera> debugCamera_ = nullptr;
 	//SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
@@ -63,11 +63,11 @@ private:
 
 
 	//player
-	std::unique_ptr<Player> player_ = nullptr;
+	//std::unique_ptr<Player> player_ = nullptr;
 	//enemy
-	std::unique_ptr<Enemy> enemy_ = nullptr;
+	//std::unique_ptr<Enemy> enemy_ = nullptr;
 
-	std::unique_ptr<BulletManager> bulletManager_ = nullptr;
+	//std::unique_ptr<BulletManager> bulletManager_ = nullptr;
 
-	std::vector<std::unique_ptr<Object3d>> levelObjects_;
+	//std::vector<std::unique_ptr<Object3d>> levelObjects_;
 };

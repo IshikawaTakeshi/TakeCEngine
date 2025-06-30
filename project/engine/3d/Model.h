@@ -43,8 +43,8 @@ struct ModelData {
 class Model {
 public:
 
-	Model();
-	~Model();
+	Model() = default;
+	~Model() = default;
 
 	/// <summary>
 	/// 初期化

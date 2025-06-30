@@ -8,7 +8,7 @@ class RenderTexture {
 public:
 
 	RenderTexture() = default;
-	~RenderTexture();
+	~RenderTexture() = default;
 	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, PostEffectManager* postEffectManager);
 
 	void ClearRenderTarget();

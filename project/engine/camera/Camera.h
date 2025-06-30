@@ -16,9 +16,9 @@ struct CameraForGPU {
 class Camera {
 public:
 	Camera() = default;
+	~Camera() = default;
 	Camera(const Camera& other) = default;
 	Camera(Camera&& other) = default;
-	~Camera() = default;
 	void Initialize(ID3D12Device* device);
 	void Update();
 
