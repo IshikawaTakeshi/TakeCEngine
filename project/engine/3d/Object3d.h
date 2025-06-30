@@ -19,7 +19,7 @@ public:
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 	Object3d() = default;
-	~Object3d();
+	~Object3d() = default;
 
 	/// <summary>
 	/// 初期化

@@ -4,10 +4,6 @@
 #include "Utility/Logger.h"
 #include "PostEffect/PostEffectManager.h"
 
-RenderTexture::~RenderTexture() {
-
-}
-
 //======================================================================
 // 初期化
 //======================================================================

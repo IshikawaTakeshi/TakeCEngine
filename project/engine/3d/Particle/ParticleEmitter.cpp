@@ -6,15 +6,6 @@
 #include "3d/Particle/GPUParticle.h"
 #include "2d/WireFrame.h"
 
-ParticleEmitter::~ParticleEmitter() {
-	dxCommon_ = nullptr;
-	srvManager_ = nullptr;
-	emitParticleRootSignature_.Reset();
-	emitParticlePso_.reset();
-	emitterSphereResource_.Reset();
-	perFrameResource_.Reset();
-}
-
 //================================================================================================
 // 初期化
 //================================================================================================

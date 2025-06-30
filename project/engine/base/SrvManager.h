@@ -5,6 +5,9 @@
 class SrvManager {
 public:
 
+	SrvManager() = default;
+	~SrvManager() = default;
+
 	//エイリアステンプレート
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 

@@ -6,9 +6,6 @@
 #include "base/TextureManager.h"
 #include "base/TakeCFrameWork.h"
 
-Sprite::~Sprite() {
-	spriteCommon_ = nullptr;
-}
 
 #pragma region 初期化処理
 

@@ -5,13 +5,6 @@
 #include <numbers>
 #include <cassert>
 
-ModelMesh::~ModelMesh() {
-	subMeshes_.clear();
-	//inputVertexResource_.Reset();
-	//outputVertexResource_.Reset();
-	//indexResource_.Reset();
-}
-
 void ModelMesh::InitBufferViews() {
 	// 頂点バッファビューの初期化
 	for (const auto& sub : subMeshes_) {

@@ -25,7 +25,6 @@ SceneManager* SceneManager::GetInstance() {
 
 void SceneManager::Finalize() {
 	currentScene_->Finalize();
-	currentScene_.reset();
 	instance_ = nullptr;
 }
 

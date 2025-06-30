@@ -176,9 +176,7 @@ void GamePlayScene::Update() {
 	//SkyBoxの更新
 	skyBox_->Update();
 	
-	//particleManager更新
-	TakeCFrameWork::GetParticleManager()->Update();
-
+	
 	sprite_->Update();
 
 	//player
@@ -193,6 +191,9 @@ void GamePlayScene::Update() {
 	/*for (auto& object : levelObjects_) {
 		object->Update();
 	}*/
+
+	//particleManager更新
+	//TakeCFrameWork::GetParticleManager()->Update();
 
 	//当たり判定の更新
 	//CheckAllCollisions();
@@ -260,19 +261,15 @@ void GamePlayScene::Draw() {
 	//	{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
 	//TakeCFrameWork::GetWireFrame()->Draw();
 
-	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
-	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
+	//ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
+	//TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
 
 
 #pragma region スプライト描画
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
-	//sprite_->Draw();    //スプライトの描画
+	sprite_->Draw();    //スプライトの描画
 #pragma endregion
-
-	//GPUパーティクルの描画
-	//ParticleCommon::GetInstance()->PreDrawForGPUParticle();
-
 }
 
 void GamePlayScene::CheckAllCollisions() {

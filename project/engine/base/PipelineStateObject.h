@@ -82,7 +82,7 @@ public:
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	PSO() = default;
-	~PSO();
+	~PSO() = default;
 
 	//vertexShaderをコンパイル
 	void CompileVertexShader(DXC* dxc_, const std::wstring& filePath);

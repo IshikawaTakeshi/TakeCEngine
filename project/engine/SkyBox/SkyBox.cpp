@@ -8,10 +8,6 @@
 #include "3d/Model.h"
 #include "math/MatrixMath.h"
 
-SkyBox::~SkyBox() {
-	pso_.reset();
-	dxCommon_ = nullptr;
-}
 
 void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename) {
 

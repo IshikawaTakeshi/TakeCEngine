@@ -8,16 +8,6 @@
 #include <cassert>
 #include <list>
 
-PSO::~PSO() {
-
-	graphicRootSignature_.Reset();
-	if (errorBlob_) {
-		errorBlob_.Reset();
-	}
-	signatureBlob_.Reset();
-	graphicPipelineState_.Reset();
-}
-
 void PSO::CompileVertexShader(DXC* dxc_, const std::wstring& filePath) {
 
 	//頂点シェーダーのコンパイル

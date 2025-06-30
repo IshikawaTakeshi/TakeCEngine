@@ -22,7 +22,7 @@ class ParticleEmitter {
 public:
 
 	ParticleEmitter() = default;
-	~ParticleEmitter();
+	~ParticleEmitter() = default;
 
 	/// <summary>
 	/// 初期化

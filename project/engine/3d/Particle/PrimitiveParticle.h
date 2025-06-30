@@ -7,7 +7,7 @@ class PrimitiveParticle : public BaseParticleGroup {
 
 public:
 	PrimitiveParticle(PrimitiveType type);
-	~PrimitiveParticle();
+	~PrimitiveParticle() = default;
 
 	void Initialize(ParticleCommon* particleCommon, const std::string& filePath) override;
 	void Update() override;
