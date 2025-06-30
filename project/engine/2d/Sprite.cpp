@@ -83,8 +83,8 @@ void Sprite::Update() {
 	TakeCFrameWork::GetPrimitiveDrawer()->MappingPlaneVertexData(vertexData_, primitiveHandle_);
 }
 
-#ifdef _DEBUG
 void Sprite::UpdateImGui(const std::string& name) {
+#ifdef _DEBUG
 	//ImGuiの更新
 	std::string windowName = "Sprite" + name;
 	ImGui::Begin("Sprite");
@@ -99,8 +99,11 @@ void Sprite::UpdateImGui(const std::string& name) {
 		ImGui::TreePop();
 	}
 	ImGui::End();
+#else
+	//ImGuiの更新（デバッグビルド以外では何もしない）
+	(void)name; // name引数を使用しない警告を回避
+#endif // _DEBUG
 }
-#endif // DEBUG
 
 void Sprite::UpdateVertexData() {
 

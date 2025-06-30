@@ -146,6 +146,9 @@ void Object3d::UpdateImGui(const std::string& name) {
 		ImGui::TreePop();
 	}
 	ImGui::End();
+#else
+	//Debugビルド以外では何もしない
+	(void)name; //未使用変数の警告を回避
 #endif // _DEBUG
 }
 

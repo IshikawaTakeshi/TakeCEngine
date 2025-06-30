@@ -25,7 +25,6 @@ void GamePlayScene::Initialize() {
 	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
 	debugCamera_->SetTranslate({ 5.0f,0.0f,-1.0f });
 	debugCamera_->SetRotate({ 0.0f,-1.4f,0.0f });
-	debugCamera_->SetIsDebug(true);
 	CameraManager::GetInstance()->AddCamera("debugCamera", *debugCamera_);
 
 	//デフォルトカメラの設定
@@ -142,9 +141,9 @@ void GamePlayScene::Initialize() {
 
 	//player
 	player_ = std::make_unique<Player>();
-	player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
+	player_->Initialize(Object3dCommon::GetInstance(), "Deer.gltf");
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
-	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("walk.gltf",  "Armature|mixamo.com|Layer0"));
+	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("Deer.gltf",  "Idle"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
 
 	////Enemy
@@ -268,7 +267,7 @@ void GamePlayScene::Draw() {
 #pragma region スプライト描画
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
-	sprite_->Draw();    //スプライトの描画
+	//sprite_->Draw();    //スプライトの描画
 #pragma endregion
 }
 

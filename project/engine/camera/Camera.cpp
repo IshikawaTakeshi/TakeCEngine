@@ -29,6 +29,8 @@ void Camera::Initialize(ID3D12Device* device) {
 
 #ifdef _DEBUG
 	isDebug_ = true;
+#else
+	isDebug_ = false;
 #endif // _DEBUG
 
 }

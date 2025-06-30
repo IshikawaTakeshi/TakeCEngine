@@ -158,6 +158,8 @@ void TakeCFrameWork::Update() {
 
 	//シーンの更新
 	sceneManager_->Update();
+
+#ifdef _DEBUG
 	sceneManager_->UpdateImGui();
 	postEffectManager_->UpdateImGui();
 
@@ -165,7 +167,7 @@ void TakeCFrameWork::Update() {
 	imguiManager_->SetRenderTextureIndex(postEffectManager_->GetFinalOutputSrvIndex()); 
 
 	imguiManager_->DrawDebugScreen();
-#ifdef _DEBUG
+
 	imguiManager_->End();
 #endif // DEBUG
 }
