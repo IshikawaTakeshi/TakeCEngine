@@ -106,11 +106,11 @@ void Model::Draw(PSO* graphicPso) {
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//vbv設定
-	//commandList->IASetVertexBuffers(0, UINT(vbvs.size()), vbvs.data());
 
 	for (size_t i = 0; i < modelData_->mesh.GetSubMeshes().size(); ++i) {
 
+		//vbv設定
+		commandList->IASetVertexBuffers(0, 1, &vbvs[i]);
 
 		//materialCBufferの場所を指定
 		commandList->SetGraphicsRootConstantBufferView(

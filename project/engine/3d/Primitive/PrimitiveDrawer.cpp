@@ -20,8 +20,6 @@ void PrimitiveDrawer::Finalize() {
 	sphereDatas_.clear();
 	ringDatas_.clear();
 	boxDatas_.clear();
-	srvManager_ = nullptr;
-	dxCommon_ = nullptr;
 }
 
 void PrimitiveDrawer::Update() {
@@ -380,6 +378,7 @@ void PrimitiveDrawer::CreateRingVertexData(RingData* ringData) {
 	ringData->primitiveData_.vertexBufferView_.SizeInBytes = size;
 	//mapping
 	ringData->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&ringData->vertexData_));
+	memset(ringData->vertexData_, 0, size);
 
 	const float radianPerDivide = (2.0f * std::numbers::pi_v<float>) / static_cast<float>(ringDivide_);
 	uint32_t ringVertexIndex = 0;
@@ -431,6 +430,7 @@ void PrimitiveDrawer::CreatePlaneVertexData(PlaneData* planeData) {
 	planeData->primitiveData_.vertexBufferView_.SizeInBytes = size;
 	//mapping
 	planeData->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&planeData->vertexData_));
+	memset(planeData->vertexData_, 0, size);
 
 	//Planeの頂点データを生成(6頂点分)
 	planeData->vertexData_[0].position = { -planeData->width_,  planeData->height_,0.0f, 1.0f }; //左下
@@ -488,6 +488,7 @@ void PrimitiveDrawer::CreateSphereVertexData(SphereData* sphereData) {
 
 	// mapping
 	sphereData->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&sphereData->vertexData_));
+	memset(sphereData->vertexData_, 0, size);
 
 	VertexData* vertexData = sphereData->vertexData_;
 	uint32_t vertexIndex = 0;
@@ -601,6 +602,8 @@ void PrimitiveDrawer::CreateBoxVertexData(BoxData* boxData) {
 	boxData->primitiveData_.vertexBufferView_.StrideInBytes = sizeof(VertexData);
 	boxData->primitiveData_.vertexBufferView_.SizeInBytes = size;
 	boxData->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&boxData->vertexData_));
+	// ゼロクリア
+	memset(boxData->vertexData_, 0, sizeof(VertexData) * kVertexCount * kMaxVertexCount_);
 
 	VertexData* vtx = boxData->vertexData_;
 	uint32_t idx = 0;
@@ -646,7 +649,7 @@ void PrimitiveDrawer::CreateBoxVertexData(BoxData* boxData) {
 }
 
 
-void PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath, RingData* ringData) {
+void PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath,RingData* ringData) {
 
 	ringData->material_ = std::make_unique<Material>();
 	ringData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
@@ -656,7 +659,7 @@ void PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath, Rin
 	ringData->material_->SetUvScale({ 2.5f, 0.5f,1.0f }); // UVスケールを設定
 }
 
-void PrimitiveDrawer::CreatePlaneMaterial(const std::string& textureFilePath, PlaneData* planeData) {
+void PrimitiveDrawer::CreatePlaneMaterial(const std::string& textureFilePath,PlaneData* planeData) {
 
 	planeData->material_ = std::make_unique<Material>();
 	planeData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
@@ -665,7 +668,7 @@ void PrimitiveDrawer::CreatePlaneMaterial(const std::string& textureFilePath, Pl
 	planeData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
 }
 
-void PrimitiveDrawer::CreateSphereMaterial(const std::string& textureFilePath, SphereData* sphereData) {
+void PrimitiveDrawer::CreateSphereMaterial(const std::string& textureFilePath,SphereData* sphereData) {
 
 	sphereData->material_ = std::make_unique<Material>();
 	sphereData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
@@ -674,7 +677,7 @@ void PrimitiveDrawer::CreateSphereMaterial(const std::string& textureFilePath, S
 	sphereData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
 }
 
-void PrimitiveDrawer::CreateBoxMaterial(const std::string& textureFilePath, BoxData* boxData) {
+void PrimitiveDrawer::CreateBoxMaterial(const std::string& textureFilePath,BoxData* boxData) {
 
 	boxData->material_ = std::make_unique<Material>();
 	boxData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");

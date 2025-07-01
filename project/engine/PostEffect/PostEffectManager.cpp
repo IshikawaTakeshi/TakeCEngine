@@ -41,8 +41,6 @@ void PostEffectManager::UpdateImGui() {
 
 void PostEffectManager::Finalize() {
 	postEffects_.clear();
-	srvManager_ = nullptr;
-	dxCommon_ = nullptr;
 }
 
 //======================================================================

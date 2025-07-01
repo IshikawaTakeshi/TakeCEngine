@@ -26,7 +26,6 @@ void SpriteCommon::Initialize(DirectXCommon* directXCommon) {
 void SpriteCommon::Finalize() {
 	rootSignature_.Reset();
 	pso_.reset();
-	dxCommon_ = nullptr;
 	delete instance_;
 	instance_ = nullptr;
 }

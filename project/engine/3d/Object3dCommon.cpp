@@ -108,7 +108,6 @@ void Object3dCommon::Finalize() {
 	graphicRootSignature_.Reset();
 	computeRootSignature_.Reset();
 	pso_.reset();
-	dxCommon_ = nullptr;
 	delete instance_;
 	instance_ = nullptr;
 }

@@ -4,7 +4,7 @@
 
 
 
-const uint32_t SrvManager::kMaxSRVCount_ = 512;
+const uint32_t SrvManager::kMaxSRVCount_ = 5120;
 
 //================================================================================================
 // 初期化

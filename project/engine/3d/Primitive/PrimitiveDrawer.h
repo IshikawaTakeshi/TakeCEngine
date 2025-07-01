@@ -90,6 +90,8 @@ public:
 	void DrawSkyBox(PSO* pso, uint32_t handle);
 	//void CreateVertexData(PrimitiveType type);
 
+private:
+
 	// リングの頂点データの作成関数
 	void CreateRingVertexData(RingData* ringData);
 	void CreatePlaneVertexData(PlaneData* planeData);
@@ -98,8 +100,8 @@ public:
 
 	void CreateRingMaterial(const std::string& textureFilePath,RingData* ringData);
 	void CreatePlaneMaterial(const std::string& textureFilePath,PlaneData* planeData);
-	void CreateSphereMaterial(const std::string& textureFilePath, SphereData* sphereData);
-	void CreateBoxMaterial(const std::string& textureFilePath, BoxData* boxData);
+	void CreateSphereMaterial(const std::string& textureFilePath,SphereData* sphereData);
+	void CreateBoxMaterial(const std::string& textureFilePath,BoxData* boxData);
 
 	void ResetVertexIndex() { ringVertexIndex_ = 0; }
 

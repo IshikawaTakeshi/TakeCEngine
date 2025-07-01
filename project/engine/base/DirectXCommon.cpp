@@ -86,7 +86,6 @@ void DirectXCommon::Finalize() {
 	dxgiFactory_.Reset();
 
 	dxc_.reset();
-	winApp_ = nullptr;
 }
 
 //==============================================================================================

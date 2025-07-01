@@ -158,8 +158,8 @@ void TakeCFrameWork::Update() {
 
 	//シーンの更新
 	sceneManager_->Update();
-	sceneManager_->UpdateImGui();
-	postEffectManager_->UpdateImGui();
+	//sceneManager_->UpdateImGui();
+	//postEffectManager_->UpdateImGui();
 
 	//ImGuiのRenderTextureのSRVインデックスを設定
 	imguiManager_->SetRenderTextureIndex(postEffectManager_->GetFinalOutputSrvIndex()); 
