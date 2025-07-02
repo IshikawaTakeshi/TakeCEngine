@@ -11,9 +11,9 @@
 #include <unordered_map>
 
 struct PrimitiveMesh {
-	ComPtr<ID3D12Resource> vertexResource_ = nullptr;
+	ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
-	ComPtr<ID3D12Resource> indexResource_ = nullptr;
+	ComPtr<ID3D12Resource> indexBuffer_ = nullptr;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
 };
 

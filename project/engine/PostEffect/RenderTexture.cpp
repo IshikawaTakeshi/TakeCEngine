@@ -5,6 +5,9 @@
 #include "PostEffect/PostEffectManager.h"
 
 RenderTexture::~RenderTexture() {
+	rootSignature_.Reset();
+	renderTexturePSO_.reset();
+	renderTextureResource_.Reset();
 
 }
 

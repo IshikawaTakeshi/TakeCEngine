@@ -16,8 +16,25 @@ void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 
 void PrimitiveDrawer::Finalize() {
 
-	srvManager_ = nullptr;
-	dxCommon_ = nullptr;
+	// 各プリミティブデータの解放
+	for (auto& pair : ringDatas_) {
+		pair.second->primitiveData_.vertexBuffer_.Reset();
+		pair.second->primitiveData_.indexBuffer_.Reset();
+		delete pair.second->material_;
+	}
+	for (auto& pair : planeDatas_) {
+		pair.second->primitiveData_.vertexBuffer_.Reset();
+		pair.second->primitiveData_.indexBuffer_.Reset();
+		delete pair.second->material_;
+	}
+	for (auto& pair : sphereDatas_) {
+		pair.second->primitiveData_.vertexBuffer_.Reset();
+		pair.second->primitiveData_.indexBuffer_.Reset();
+		delete pair.second->material_;
+	}
+	ringDatas_.clear();
+	planeDatas_.clear();
+	sphereDatas_.clear();
 }
 
 void PrimitiveDrawer::Update() {
@@ -172,14 +189,14 @@ void PrimitiveDrawer::CreateRingVertexData(RingData* ringData) {
 	UINT size = sizeof(VertexData) * ringDivide_ * kMaxVertexCount_;
 
 	//bufferをカウント分確保
-	ringData->primitiveData_.vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
-	ringData->primitiveData_.vertexResource_->SetName(L"Ring::vertexResource_");
+	ringData->primitiveData_.vertexBuffer_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
+	ringData->primitiveData_.vertexBuffer_->SetName(L"Ring::vertexResource_");
 	//bufferview設定
-	ringData->primitiveData_.vertexBufferView_.BufferLocation = ringData->primitiveData_.vertexResource_->GetGPUVirtualAddress();
+	ringData->primitiveData_.vertexBufferView_.BufferLocation = ringData->primitiveData_.vertexBuffer_->GetGPUVirtualAddress();
 	ringData->primitiveData_.vertexBufferView_.StrideInBytes = sizeof(VertexData);
 	ringData->primitiveData_.vertexBufferView_.SizeInBytes = size;
 	//mapping
-	ringData->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&ringData->vertexData_));
+	ringData->primitiveData_.vertexBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&ringData->vertexData_));
 
 	const float radianPerDivide = (2.0f * std::numbers::pi_v<float>) / static_cast<float>(ringDivide_);
 	uint32_t ringVertexIndex = 0;
@@ -223,14 +240,14 @@ void PrimitiveDrawer::CreatePlaneVertexData(PlaneData* planeData) {
 
 	UINT size = sizeof(VertexData) * 6 * kMaxVertexCount_;
 	//bufferをカウント分確保
-	planeData->primitiveData_.vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
-	planeData->primitiveData_.vertexResource_->SetName(L"Plane::vertexResource_");
+	planeData->primitiveData_.vertexBuffer_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
+	planeData->primitiveData_.vertexBuffer_->SetName(L"Plane::vertexResource_");
 	//bufferview設定
-	planeData->primitiveData_.vertexBufferView_.BufferLocation = planeData->primitiveData_.vertexResource_->GetGPUVirtualAddress();
+	planeData->primitiveData_.vertexBufferView_.BufferLocation = planeData->primitiveData_.vertexBuffer_->GetGPUVirtualAddress();
 	planeData->primitiveData_.vertexBufferView_.StrideInBytes = sizeof(VertexData);
 	planeData->primitiveData_.vertexBufferView_.SizeInBytes = size;
 	//mapping
-	planeData->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&planeData->vertexData_));
+	planeData->primitiveData_.vertexBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&planeData->vertexData_));
 
 	//Planeの頂点データを生成(6頂点分)
 	planeData->vertexData_[0].position = { -planeData->width_,  planeData->height_,0.0f, 1.0f }; //左下
@@ -278,16 +295,16 @@ void PrimitiveDrawer::CreateSphereVertexData(SphereData* sphereData) {
 	UINT size = static_cast<UINT>(sizeof(VertexData) * vertexCount);
 
 	// bufferを確保
-	sphereData->primitiveData_.vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
-	sphereData->primitiveData_.vertexResource_->SetName(L"Sphere::vertexResource_");
+	sphereData->primitiveData_.vertexBuffer_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
+	sphereData->primitiveData_.vertexBuffer_->SetName(L"Sphere::vertexResource_");
 
 	// bufferview設定
-	sphereData->primitiveData_.vertexBufferView_.BufferLocation = sphereData->primitiveData_.vertexResource_->GetGPUVirtualAddress();
+	sphereData->primitiveData_.vertexBufferView_.BufferLocation = sphereData->primitiveData_.vertexBuffer_->GetGPUVirtualAddress();
 	sphereData->primitiveData_.vertexBufferView_.StrideInBytes = sizeof(VertexData);
 	sphereData->primitiveData_.vertexBufferView_.SizeInBytes = size;
 
 	// mapping
-	sphereData->primitiveData_.vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&sphereData->vertexData_));
+	sphereData->primitiveData_.vertexBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&sphereData->vertexData_));
 
 	VertexData* vertexData = sphereData->vertexData_;
 	uint32_t vertexIndex = 0;

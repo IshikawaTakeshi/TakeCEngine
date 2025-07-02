@@ -7,12 +7,10 @@
 #include "2d/WireFrame.h"
 
 ParticleEmitter::~ParticleEmitter() {
-	dxCommon_ = nullptr;
-	srvManager_ = nullptr;
-	emitParticleRootSignature_.Reset();
-	emitParticlePso_.reset();
 	emitterSphereResource_.Reset();
 	perFrameResource_.Reset();
+	emitParticleRootSignature_.Reset();
+	emitParticlePso_.reset();
 }
 
 //================================================================================================

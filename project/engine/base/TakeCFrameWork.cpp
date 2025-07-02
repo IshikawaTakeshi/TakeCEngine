@@ -116,6 +116,7 @@ void TakeCFrameWork::Finalize() {
 	CameraManager::GetInstance()->Finalize();
 	ResourceBarrier::GetInstance()->Finalize();
 	postEffectManager_->Finalize();
+	renderTexture_.reset();
 	particleManager_->Finalize();
 	primitiveDrawer_->Finalize();
 	particleCommon_->Finalize();

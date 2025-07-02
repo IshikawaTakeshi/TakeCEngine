@@ -240,7 +240,7 @@ void WireFrame::Finalize() {
 	pso_.reset();
 	rootSignature_.Reset();
 	wvpResource_.Reset();
-	lineData_->vertexResource_.Reset();
+	lineData_->vertexBuffer_.Reset();
 }
 
 void WireFrame::CreateVertexData() {
@@ -248,16 +248,16 @@ void WireFrame::CreateVertexData() {
 	UINT vertexBufferSize = sizeof(WireFrameVertexData) * kLineVertexCount_ * kMaxLineCount_;
 
 	//頂点バッファの生成
-	lineData_->vertexResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), vertexBufferSize);
-	lineData_->vertexResource_->SetName(L"WireFrame::VertexBuffer");
+	lineData_->vertexBuffer_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), vertexBufferSize);
+	lineData_->vertexBuffer_->SetName(L"WireFrame::VertexBuffer");
 
 	//頂点バッファのビュー設定
-	lineData_->vertexBufferViews_.BufferLocation = lineData_->vertexResource_->GetGPUVirtualAddress();
+	lineData_->vertexBufferViews_.BufferLocation = lineData_->vertexBuffer_->GetGPUVirtualAddress();
 	lineData_->vertexBufferViews_.StrideInBytes = sizeof(WireFrameVertexData);
 	lineData_->vertexBufferViews_.SizeInBytes = vertexBufferSize;
 
 	//頂点リソースのマップ
-	lineData_->vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&lineData_->vertexData_));
+	lineData_->vertexBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&lineData_->vertexData_));
 }
 
 void WireFrame::CalculateSphereVertexData() {

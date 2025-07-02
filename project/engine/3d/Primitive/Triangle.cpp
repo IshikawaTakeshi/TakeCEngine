@@ -14,7 +14,7 @@
 Triangle::~Triangle() {
 
 	wvpResource_.Reset();
-	vertexResource_.Reset();
+	vertexBuffer_.Reset();
 }
 
 void Triangle::Initialize(DirectXCommon* dxCommon) {

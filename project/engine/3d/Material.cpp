@@ -6,11 +6,6 @@
 
 #include <algorithm>
 
-Material::~Material() {
-
-	materialResource_.Reset();
-}
-
 void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath) {
 
 	//マテリアルリソース初期化

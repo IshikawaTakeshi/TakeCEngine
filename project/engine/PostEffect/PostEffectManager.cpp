@@ -40,9 +40,9 @@ void PostEffectManager::UpdateImGui() {
 //====================================================================
 
 void PostEffectManager::Finalize() {
+	intermediateResource_[FRONT].Reset();
+	intermediateResource_[BACK].Reset();
 	postEffects_.clear();
-	srvManager_ = nullptr;
-	dxCommon_ = nullptr;
 }
 
 //======================================================================

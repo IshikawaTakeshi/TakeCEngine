@@ -3,15 +3,6 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
-PostEffect::~PostEffect() {
-	computePSO_.reset();
-	rootSignature_.Reset();
-	inputResource_.Reset();
-	outputResource_.Reset();
-	srvManager_ = nullptr;
-	dxCommon_ = nullptr;
-}
-
 void PostEffect::Initialize(
 	DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource) {
