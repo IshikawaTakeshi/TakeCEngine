@@ -5,6 +5,9 @@
 #include "PostEffect/PostEffectManager.h"
 
 RenderTexture::~RenderTexture() {
+	rootSignature_.Reset();
+	renderTexturePSO_.reset();
+	renderTextureResource_.Reset();
 
 }
 
@@ -49,6 +52,7 @@ void RenderTexture::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, 
 	renderTexturePSO_->CompileVertexShader(dxCommon_->GetDXC(), L"PostEffect/FullScreen.VS.hlsl");
 	renderTexturePSO_->CompilePixelShader(dxCommon_->GetDXC(), L"PostEffect/CopyImage.PS.hlsl");
 	renderTexturePSO_->CreateRenderTexturePSO(dxCommon_->GetDevice());
+	renderTexturePSO_->SetGraphicPipelineName("RenderTexturePSO");
 	rootSignature_ = renderTexturePSO_->GetGraphicRootSignature();
 
 	//postEffectManagerにRenderTextureReosurceを渡す

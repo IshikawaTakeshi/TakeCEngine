@@ -7,12 +7,10 @@
 #include "2d/WireFrame.h"
 
 ParticleEmitter::~ParticleEmitter() {
-	dxCommon_ = nullptr;
-	srvManager_ = nullptr;
-	emitParticleRootSignature_.Reset();
-	emitParticlePso_.reset();
 	emitterSphereResource_.Reset();
 	perFrameResource_.Reset();
+	emitParticleRootSignature_.Reset();
+	emitParticlePso_.reset();
 }
 
 //================================================================================================
@@ -42,7 +40,7 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 	emitParticlePso_ = std::make_unique<PSO>();
 	emitParticlePso_->CompileComputeShader(dxCommon_->GetDXC(), L"EmitParticle.CS.hlsl");
 	emitParticlePso_->CreateComputePSO(dxCommon_->GetDevice());
-
+	emitParticlePso_->SetComputePipelineName("EmitParticlePSO");
 	//RootSignature生成
 	emitParticleRootSignature_ = emitParticlePso_->GetComputeRootSignature();
 

@@ -24,7 +24,7 @@ struct WireFrameTransFormMatrixData {
 };
 
 struct LineData {
-	ComPtr<ID3D12Resource> vertexResource_;
+	ComPtr<ID3D12Resource> vertexBuffer_;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViews_;
 	WireFrameVertexData* vertexData_ = nullptr;
 };

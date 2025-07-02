@@ -47,7 +47,7 @@ public:
 
 	BaseParticleGroup* GetParticleGroup(const std::string& name);
 
-	void SetAttributes(const std::string& name, const ParticleAttributes& attributes);
+	void SetPreset(const std::string& name, const ParticlePreset& preset);
 
 
 private:

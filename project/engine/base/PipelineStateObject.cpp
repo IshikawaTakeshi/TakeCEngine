@@ -281,7 +281,7 @@ void PSO::CreateBlendStateForParticle() {
 	blendDesc_.RenderTarget[0].DestBlend             = D3D12_BLEND_ONE;
 	blendDesc_.RenderTarget[0].SrcBlendAlpha         = D3D12_BLEND_ONE;
 	blendDesc_.RenderTarget[0].BlendOpAlpha          = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlendAlpha        = D3D12_BLEND_ZERO;
+	blendDesc_.RenderTarget[0].DestBlendAlpha        = D3D12_BLEND_INV_SRC_ALPHA;
 }
 
 void PSO::CreateBlendStateForSprite() {
@@ -567,4 +567,13 @@ void PSO::SetComputePipelineStateDesc() {
 
 	computePipelineStateDesc_.pRootSignature = computeRootSignature_.Get();
 
+}
+
+//パイプラインの名前を設定する
+void PSO::SetGraphicPipelineName(const std::string& name) {
+	graphicPipelineState_->SetName(StringUtility::ConvertString(name).c_str());
+}
+
+void PSO::SetComputePipelineName(const std::string& name) {
+	computePipelineState_->SetName(StringUtility::ConvertString(name).c_str());
 }

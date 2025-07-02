@@ -25,7 +25,6 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	intermediateResource_[BACK] = dxCommon_->CreateTextureResourceUAV(
 		dxCommon_->GetDevice(), WinApp::kScreenWidth, WinApp::kScreenHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 	intermediateResource_[BACK]->SetName(L"intermediateResource_B");
-
 }
 
 void PostEffectManager::UpdateImGui() {
@@ -40,9 +39,10 @@ void PostEffectManager::UpdateImGui() {
 //====================================================================
 
 void PostEffectManager::Finalize() {
+	intermediateResource_[FRONT].Reset();
+	intermediateResource_[BACK].Reset();
+	renderTextureResource_.Reset();
 	postEffects_.clear();
-	srvManager_ = nullptr;
-	dxCommon_ = nullptr;
 }
 
 //======================================================================

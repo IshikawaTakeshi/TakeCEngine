@@ -44,7 +44,7 @@ private:
 	std::unique_ptr<ParticleEmitter> previewEmitter_;
 
 	//エディター設定
-	ParticleAttributes currentAttributes_;
+	ParticlePreset currentPreset_;
 	std::string currentGroupName_;
 	std::string selectedPresetName_;
 
@@ -57,5 +57,5 @@ private:
 
 	// プリセット管理
 	std::vector<std::string> presetNames_;
-	std::map<std::string, ParticleAttributes> presets_;
+	std::map<std::string, ParticlePreset> presets_;
 };

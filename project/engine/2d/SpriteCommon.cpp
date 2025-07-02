@@ -19,7 +19,7 @@ void SpriteCommon::Initialize(DirectXCommon* directXCommon) {
 	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Sprite.VS.hlsl");
 	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Sprite.PS.hlsl");
 	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO);
-
+	pso_->SetGraphicPipelineName("SpritePSO");
 	rootSignature_ = pso_->GetGraphicRootSignature();
 }
 

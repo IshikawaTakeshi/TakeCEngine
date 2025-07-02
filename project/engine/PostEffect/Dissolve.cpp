@@ -9,6 +9,11 @@ void Dissolve::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 
 	//PostEffectの初期化
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx, outputResource);
+	//PSOの名前付け
+	computePSO_->SetComputePipelineName("DissolvePSO");
+	//Bufferの名前付け
+	inputResource_->SetName(L"Dissolve::inputResource_");
+	outputResource_->SetName(L"Dissolve::outputResource_");
 
 	dissolveInfoResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DissolveInfo));
 	dissolveInfoResource_->SetName(L"Dissolve::dissolveInfoResource_");

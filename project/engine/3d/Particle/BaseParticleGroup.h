@@ -51,7 +51,7 @@ public:
 
 	void SpliceParticles(std::list<Particle> particles);
 
-	virtual void SetAttributes(const ParticleAttributes& attributes) { particleAttributes_ = attributes; }
+	virtual void SetPreset(const ParticlePreset& preset);
 
 	void SetEmitterPosition(const Vector3& position);
 
@@ -69,7 +69,7 @@ protected:
 	//加速フィールド
 	//AccelerationField accelerationField_;
 	//パーティクルの属性
-	ParticleAttributes particleAttributes_;
+	ParticlePreset particlePreset_;
 
 protected:
 

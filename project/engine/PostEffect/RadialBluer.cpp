@@ -6,8 +6,13 @@
 void RadialBluer::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
-
+	//基底クラスの初期化
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx, outputResource);
+	//PSOの名前付け
+	computePSO_->SetComputePipelineName("RadialBluerPSO");
+	//Bufferの名前付け
+	inputResource_->SetName(L"RadialBluer::inputResource_");
+	outputResource_->SetName(L"RadialBluer::outputResource_");
 
 	blurInfoResource_ = dxCommon_->CreateBufferResource(dxCommon_->GetDevice(), sizeof(RadialBlurInfo));
 	blurInfoResource_->SetName(L"RadialBluer::blurInfoResource_");

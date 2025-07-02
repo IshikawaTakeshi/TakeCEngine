@@ -116,13 +116,12 @@ BaseParticleGroup* ParticleManager::GetParticleGroup(const std::string& name) {
 	return nullptr;
 }
 
-
-void ParticleManager::SetAttributes(const std::string& name, const ParticleAttributes& attributes) {
+void ParticleManager::SetPreset(const std::string& name, const ParticlePreset& preset) {
 
 	//存在しない場合は処理しない
 	if (!particleGroups_.contains(name)) {
 		return;
 	}
 	//particleGroupsに発生させたパーティクルを登録させる
-	particleGroups_.at(name)->SetAttributes(attributes);
+	particleGroups_.at(name)->SetPreset(preset);
 }
