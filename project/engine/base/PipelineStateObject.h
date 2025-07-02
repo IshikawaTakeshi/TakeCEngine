@@ -140,8 +140,8 @@ public:
 	/// <summary>
 	/// rootSignatureの取得
 	/// </summary>
-	ID3D12RootSignature* GetGraphicRootSignature() const { return graphicRootSignature_.Get(); }
-	ID3D12RootSignature* GetComputeRootSignature() const { return computeRootSignature_.Get(); }
+	const ComPtr<ID3D12RootSignature>& GetGraphicRootSignature() const { return graphicRootSignature_; }
+	const ComPtr<ID3D12RootSignature>& GetComputeRootSignature() const { return computeRootSignature_; }
 
 	/// <summary>
 	///graphicPipelineStateの取得

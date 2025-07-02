@@ -87,8 +87,6 @@ public:
 
 	void CreateSphereVertexData(SphereData* sphereData);
 
-	void CreateSphereIndexData(SphereData* sphereData);
-
 	void CreateRingMaterial(const std::string& textureFilePath,RingData* ringData);
 
 	void CreatePlaneMaterial(const std::string& textureFilePath,PlaneData* planeData);

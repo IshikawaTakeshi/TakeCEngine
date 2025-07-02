@@ -38,7 +38,7 @@ void ParticleEditor::Update() {
 
 	if (autoApply_) {
 		//属性を自動的に適用する場合、現在の属性をグループに適用
-		particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
+		particleManager_->SetPreset(currentGroupName_, currentPreset_);
 	}
 
 	particleManager_->Update();
@@ -139,41 +139,43 @@ void ParticleEditor::Draw() {
 
 void ParticleEditor::DrawParticleAttributesEditor() {
 
+	ParticleAttributes& attributes = currentPreset_.attributesMap.second;
+
 	ImGui::SeparatorText("Particle Attributes");
 
 	//Scale
-	ImGui::SliderInt("Scale Setting", reinterpret_cast<int*>(&currentAttributes_.scaleSetting_), 0, 2, "None: %d, Scale Up: %d, Scale Down: %d");
-	ImGui::DragFloat3("Scale", &currentAttributes_.scale.x, 0.01f, 0.0f, 10.0f);
-	ImGui::DragFloat2("Scale Range", &currentAttributes_.scaleRange.min, 0.01f, 0.0f, 10.0f);
+	ImGui::SliderInt("Scale Setting", reinterpret_cast<int*>(&attributes.scaleSetting_), 0, 2, "None: %d, Scale Up: %d, Scale Down: %d");
+	ImGui::DragFloat3("Scale", &attributes.scale.x, 0.01f, 0.0f, 10.0f);
+	ImGui::DragFloat2("Scale Range", &attributes.scaleRange.min, 0.01f, 0.0f, 10.0f);
 
 	//Rotate
-	ImGui::DragFloat2("Rotate Range", &currentAttributes_.rotateRange.min, 0.01f, -3.14f, 3.14f);
+	ImGui::DragFloat2("Rotate Range", &attributes.rotateRange.min, 0.01f, -3.14f, 3.14f);
 
 	//Translate,Velocity
-	ImGui::DragFloat2("Position Range", &currentAttributes_.positionRange.min, 0.01f, -10.0f, 10.0f);
-	if (currentAttributes_.isTraslate_) {
-		ImGui::DragFloat2("Velocity Range", &currentAttributes_.velocityRange.min, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat2("Position Range", &attributes.positionRange.min, 0.01f, -10.0f, 10.0f);
+	if (attributes.isTraslate_) {
+		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -10.0f, 10.0f);
 	}
 	
 	//Color
-	ImGui::Checkbox("Edit Color", &currentAttributes_.editColor);
-	if (currentAttributes_.editColor) {
-		ImGui::ColorEdit3("Color", &currentAttributes_.color.x);
-		ImGui::DragFloat2("Color Range", &currentAttributes_.colorRange.min, 0.01f, 0.0f, 1.0f);
+	ImGui::Checkbox("Edit Color", &attributes.editColor);
+	if (attributes.editColor) {
+		ImGui::ColorEdit3("Color", &attributes.color.x);
+		ImGui::DragFloat2("Color Range", &attributes.colorRange.min, 0.01f, 0.0f, 1.0f);
 	}
 	//lifetime
-	ImGui::DragFloat2("Lifetime Range", &currentAttributes_.lifetimeRange.min, 0.01f, 0.0f, 10.0f);
+	ImGui::DragFloat2("Lifetime Range", &attributes.lifetimeRange.min, 0.01f, 0.0f, 10.0f);
 
 	//Billboard
-	ImGui::Checkbox("Is Billboard", &currentAttributes_.isBillboard);
+	ImGui::Checkbox("Is Billboard", &attributes.isBillboard);
 	//Follow Emitter
-	ImGui::Checkbox("Enable Follow Emitter", &currentAttributes_.enableFollowEmitter_);
-	ImGui::Checkbox("TranslateUpdate", &currentAttributes_.isTraslate_);
+	ImGui::Checkbox("Enable Follow Emitter", &attributes.enableFollowEmitter_);
+	ImGui::Checkbox("TranslateUpdate", &attributes.isTraslate_);
 
 	//設定の適用
 	if (ImGui::Button("Apply Attributes")) {
 		// 現在のグループに属性を適用
-		particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
+		particleManager_->SetPreset(currentGroupName_, currentPreset_);
 	}
 
 	//テクスチャファイルの設定
@@ -312,7 +314,7 @@ void ParticleEditor::SavePreset(const std::string& presetName) {
 		return;
 	}
 	// 現在の属性をプリセットとして保存
-	TakeCFrameWork::GetJsonLoader()->SaveParticleAttribute(presetName, currentAttributes_);
+	TakeCFrameWork::GetJsonLoader()->SaveParticlePreset(presetName, currentPreset_);
 	// プリセット名を更新
 	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetParticlePresetList();
 
@@ -330,10 +332,10 @@ void ParticleEditor::LoadPreset(const std::string& presetName) {
 	}
 
 	//JSONからプリセットを読み込む
-	currentAttributes_ = TakeCFrameWork::GetJsonLoader()->LoadParticleAttribute(presetName);
+	currentPreset_ = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset(presetName);
 
 	// 現在のグループに属性を適用
-	particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
+	particleManager_->SetPreset(currentGroupName_, currentPreset_);
 }
 
 //========================================================================
@@ -360,9 +362,9 @@ void ParticleEditor::DeletePreset(const std::string& presetName) {
 
 void ParticleEditor::LoadDefaultPreset() {
 	// デフォルトプリセットの読み込み
-	currentAttributes_ = TakeCFrameWork::GetJsonLoader()->LoadParticleAttribute("DefaultPreset");
+	currentPreset_ = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset("DefaultPreset");
 	// 現在のグループに属性を適用
-	particleManager_->SetAttributes(currentGroupName_, currentAttributes_);
+	particleManager_->SetPreset(currentGroupName_, currentPreset_);
 }
 
 //=======================================================================
@@ -377,7 +379,7 @@ void ParticleEditor::LoadAllPresets() {
 	// 各プリセットを読み込み
 	for (const std::string& presetName : presetNames_) {
 		// プリセットを読み込む
-		presets_[presetName] = TakeCFrameWork::GetJsonLoader()->LoadParticleAttribute(presetName);
+		presets_[presetName] = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset(presetName);
 	}
 
 	// デバッグ出力（必要に応じて削除）

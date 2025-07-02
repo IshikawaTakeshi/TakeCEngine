@@ -147,7 +147,7 @@ void JsonLoader::SaveParticlePreset(const std::string& presetName, const Particl
 }
 
 //===============================================================================================
-///			パーティクルプリセットの読み込み
+///			パーティクル属性の読み込み
 //===============================================================================================
 
 ParticleAttributes JsonLoader::LoadParticleAttribute(const std::string& presetName) const {
@@ -172,6 +172,10 @@ ParticleAttributes JsonLoader::LoadParticleAttribute(const std::string& presetNa
 	// JSONからParticleAttributesに変換
 	return presetJson.get<ParticleAttributes>();
 }
+
+//===============================================================================================
+///			パーティクルプリセットの読み込み
+//===============================================================================================
 
 ParticlePreset JsonLoader::LoadParticlePreset(const std::string& presetName) const {
 	

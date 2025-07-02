@@ -32,7 +32,7 @@ public:
 	/// </summary>
 	void Draw() override;
 
-	void SetAttributes(const ParticleAttributes& attributes) override { particleAttributes_ = attributes; }
+	void SetPreset(const ParticlePreset& preset) override { particlePreset_ = preset; }
 
 	/// <summary>
 	/// パーティクルの生成

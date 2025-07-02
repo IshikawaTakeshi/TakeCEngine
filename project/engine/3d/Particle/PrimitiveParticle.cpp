@@ -104,16 +104,19 @@ void PrimitiveParticle::Update() {
 }
 
 void PrimitiveParticle::UpdateImGui() {
+#ifdef _DEBUG
+	ParticleAttributes& attributes = particlePreset_.attributesMap.second;
 
 	ImGui::Begin("Particle");
 	ImGui::Text("Instance Count : %d", numInstance_);
-	ImGui::DragFloat3("RingScale", &particleAttributes_.scale.x, 0.01f);
-	ImGui::DragFloat2("RotateRange", &particleAttributes_.rotateRange.min, 0.01f);
-	ImGui::DragFloat2("PositionRange", &particleAttributes_.positionRange.min, 0.01f);
-	ImGui::DragFloat2("VelocityRange", &particleAttributes_.velocityRange.min, 0.01f);
-	ImGui::DragFloat2("ColorRange", &particleAttributes_.colorRange.min, 0.01f);
-	ImGui::Checkbox("isBillboard", &particleAttributes_.isBillboard);
+	ImGui::DragFloat3("RingScale", &attributes.scale.x, 0.01f);
+	ImGui::DragFloat2("RotateRange", &attributes.rotateRange.min, 0.01f);
+	ImGui::DragFloat2("PositionRange", &attributes.positionRange.min, 0.01f);
+	ImGui::DragFloat2("VelocityRange", &attributes.velocityRange.min, 0.01f);
+	ImGui::DragFloat2("ColorRange", &attributes.colorRange.min, 0.01f);
+	ImGui::Checkbox("isBillboard", &attributes.isBillboard);
 	ImGui::End();
+#endif // _DEBUG
 }
 
 void PrimitiveParticle::Draw() {
@@ -142,9 +145,10 @@ void PrimitiveParticle::SpliceParticles(std::list<Particle> particles) {
 void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIterator) {
 
 	//particle1つの位置更新
+	ParticleAttributes& attributes = particlePreset_.attributesMap.second;
 
-	if (particleAttributes_.isTraslate_) {
-		if (particleAttributes_.enableFollowEmitter_) {
+	if (attributes.isTraslate_) {
+		if (attributes.enableFollowEmitter_) {
 			//エミッターに追従する場合
 			(*particleIterator).transforms_.translate = emitterPos_;
 		} else {
@@ -153,35 +157,35 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 		}
 	}
 
-	if (particleAttributes_.scaleSetting_ == static_cast<uint32_t>(ScaleSetting::ScaleUp)) {
+	if (attributes.scaleSetting_ == static_cast<uint32_t>(ScaleSetting::ScaleUp)) {
 		//スケールの更新(拡大)
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
-			particleAttributes_.scaleRange.min,
-			particleAttributes_.scaleRange.max,
+			attributes.scaleRange.min,
+			attributes.scaleRange.max,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 
 		(*particleIterator).transforms_.scale.y = Easing::Lerp(
-			particleAttributes_.scaleRange.min,
-			particleAttributes_.scaleRange.max,
+			attributes.scaleRange.min,
+			attributes.scaleRange.max,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 		(*particleIterator).transforms_.scale.z = Easing::Lerp(
-			particleAttributes_.scaleRange.min,
-			particleAttributes_.scaleRange.max,
+			attributes.scaleRange.min,
+			attributes.scaleRange.max,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 
-	} else if (particleAttributes_.scaleSetting_ == static_cast<uint32_t>(ScaleSetting::ScaleDown)) {
+	} else if (attributes.scaleSetting_ == static_cast<uint32_t>(ScaleSetting::ScaleDown)) {
 		//スケールの更新(縮小)
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
-			particleAttributes_.scaleRange.max,
-			particleAttributes_.scaleRange.min,
+			attributes.scaleRange.max,
+			attributes.scaleRange.min,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 		(*particleIterator).transforms_.scale.y = Easing::Lerp(
-			particleAttributes_.scaleRange.max,
-			particleAttributes_.scaleRange.min,
+			attributes.scaleRange.max,
+			attributes.scaleRange.min,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 		(*particleIterator).transforms_.scale.z = Easing::Lerp(
-			particleAttributes_.scaleRange.max,
-			particleAttributes_.scaleRange.min,
+			attributes.scaleRange.max,
+			attributes.scaleRange.min,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 	}
 

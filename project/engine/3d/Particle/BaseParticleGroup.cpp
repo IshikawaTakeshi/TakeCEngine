@@ -24,31 +24,33 @@ void BaseParticleGroup::Draw() {
 }
 
 Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
+
+	ParticleAttributes attributes = particlePreset_.attributesMap.second;
 	//スケールをランダムに設定
-	std::uniform_real_distribution<float> distScale(particleAttributes_.scaleRange.min, particleAttributes_.scaleRange.max);
+	std::uniform_real_distribution<float> distScale(attributes.scaleRange.min, attributes.scaleRange.max);
 	//回転をランダムに設定
-	std::uniform_real_distribution<float> distRotate(particleAttributes_.rotateRange.min, particleAttributes_.rotateRange.max);
+	std::uniform_real_distribution<float> distRotate(attributes.rotateRange.min, attributes.rotateRange.max);
 	//位置をランダムに設定
-	std::uniform_real_distribution<float> distPosition(particleAttributes_.positionRange.min, particleAttributes_.positionRange.max);
+	std::uniform_real_distribution<float> distPosition(attributes.positionRange.min, attributes.positionRange.max);
 	//速度をランダムに設定
-	std::uniform_real_distribution<float> distVelocity(particleAttributes_.velocityRange.min, particleAttributes_.velocityRange.max);
+	std::uniform_real_distribution<float> distVelocity(attributes.velocityRange.min, attributes.velocityRange.max);
 	//色をランダムに設定
-	std::uniform_real_distribution<float> distColor(particleAttributes_.colorRange.min, particleAttributes_.colorRange.max);
+	std::uniform_real_distribution<float> distColor(attributes.colorRange.min, attributes.colorRange.max);
 	//寿命をランダムに設定
-	std::uniform_real_distribution<float> distTime(particleAttributes_.lifetimeRange.min, particleAttributes_.lifetimeRange.max);
+	std::uniform_real_distribution<float> distTime(attributes.lifetimeRange.min, attributes.lifetimeRange.max);
 
 	Particle particle;
-	particle.transforms_.scale = { particleAttributes_.scale.x,particleAttributes_.scale.y,particleAttributes_.scale.z};
+	particle.transforms_.scale = { attributes.scale.x,attributes.scale.y,attributes.scale.z};
 	particle.transforms_.rotate = { 0.0f,0.0f,distRotate(randomEngine)};
 
 	Vector3 randomTranslate = { distPosition(randomEngine),distPosition(randomEngine),distPosition(randomEngine) };
 	particle.transforms_.translate = translate + randomTranslate;
 	particle.velocity_ = { distVelocity(randomEngine),distVelocity(randomEngine),distVelocity(randomEngine) };
-	if (particleAttributes_.editColor) {
+	if (attributes.editColor) {
 		particle.color_ = {
-			particleAttributes_.color.x,
-			particleAttributes_.color.y,
-			particleAttributes_.color.z,
+			attributes.color.x,
+			attributes.color.y,
+			attributes.color.z,
 			1.0f };
 	} else {
 		particle.color_ = { distColor(randomEngine),distColor(randomEngine),distColor(randomEngine),1.0f };
@@ -57,7 +59,7 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 	particle.lifeTime_ = distTime(randomEngine);
 	particle.currentTime_ = 0.0f;
 
-	if (particleAttributes_.isBillboard == true) {
+	if (attributes.isBillboard == true) {
 		perViewData_->isBillboard = true;
 	}
 
@@ -84,6 +86,10 @@ std::list<Particle> BaseParticleGroup::Emit(const Vector3& emitterPos, uint32_t 
 //=============================================================================
 void BaseParticleGroup::SpliceParticles(std::list<Particle> particles) {
 	particles_.splice(particles_.end(), particles);
+}
+
+void BaseParticleGroup::SetPreset(const ParticlePreset& preset) {
+	particlePreset_ = preset;
 }
 
 void BaseParticleGroup::SetEmitterPosition(const Vector3& position) {

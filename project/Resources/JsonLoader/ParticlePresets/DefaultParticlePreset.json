@@ -1,0 +1,48 @@
+{
+    "attributes": {
+        "color": [
+            0.0,
+            0.3921568691730499,
+            0.03921568766236305
+        ],
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "editColor": true,
+        "emitCount": 0,
+        "enableFollowEmitter_": false,
+        "frequency": 0.0,
+        "isBillboard": true,
+        "isTraslate_": true,
+        "lifetimeRange": {
+            "max": 1.0,
+            "min": 1.0
+        },
+        "positionRange": {
+            "max": 1.0,
+            "min": -1.0
+        },
+        "rotateRange": {
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
+        },
+        "scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "scaleRange": {
+            "max": 3.0,
+            "min": 0.5899999737739563
+        },
+        "scaleSetting_": 0,
+        "velocityRange": {
+            "max": 2.869999885559082,
+            "min": -3.890000104904175
+        }
+    },
+    "name": "",
+    "primitiveType": "PRIMITIVE_RING",
+    "textureFilePath": ""
+}

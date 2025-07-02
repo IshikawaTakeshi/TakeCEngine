@@ -46,8 +46,10 @@ void GamePlayScene::Initialize() {
 	particleAttributes.color = { 0.8f,0.8f,1.0f };
 	particleAttributes.isBillboard = true;
 	particleAttributes.scaleSetting_ = true;
+	ParticlePreset particlePreset;
+	particlePreset.attributesMap = { "SmokeEffect", particleAttributes };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"SmokeEffect",ParticleModelType::Primitive, "Spark.png",PRIMITIVE_PLANE);
-	TakeCFrameWork::GetParticleManager()->SetAttributes("SmokeEffect", particleAttributes);
+	TakeCFrameWork::GetParticleManager()->SetPreset("SmokeEffect", particlePreset);
 
 	ParticleAttributes particleAttributes2;
 	particleAttributes2.scale = { 100.0f,3.0f,1.0f };
@@ -60,8 +62,11 @@ void GamePlayScene::Initialize() {
 	particleAttributes2.editColor = true;
 	particleAttributes2.color = { 0.5f,0.3f,1.0f };
 	particleAttributes2.isBillboard = true;
+	particleAttributes2.scaleSetting_ = true;
+	ParticlePreset particlePreset2;
+	particlePreset2.attributesMap = { "CircleEffect", particleAttributes2 };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "CircleEffect", ParticleModelType::Primitive, "Cross.png", PRIMITIVE_PLANE);
-	TakeCFrameWork::GetParticleManager()->SetAttributes("CircleEffect", particleAttributes2);
+	TakeCFrameWork::GetParticleManager()->SetPreset("CircleEffect", particlePreset2);
 
 	ParticleAttributes damageEffectAttributes;
 	damageEffectAttributes.scale = { 10.0f,10.0f,1.0f };
@@ -75,8 +80,10 @@ void GamePlayScene::Initialize() {
 	damageEffectAttributes.isTraslate_ = true;
 	damageEffectAttributes.scaleSetting_ = 2;
 	damageEffectAttributes.isBillboard = true;
+	ParticlePreset damageEffectPreset;
+	damageEffectPreset.attributesMap = { "DamageEffectSpark", damageEffectAttributes };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DamageEffectSpark", ParticleModelType::Primitive, "Spark.png", PRIMITIVE_PLANE);
-	TakeCFrameWork::GetParticleManager()->SetAttributes("DamageEffectSpark", damageEffectAttributes);
+	TakeCFrameWork::GetParticleManager()->SetPreset("DamageEffectSpark", damageEffectPreset);
 
 	ParticleAttributes bulletLightAttributes;
 	bulletLightAttributes.scale = { 5.1f,5.1f,0.1f };
@@ -90,9 +97,10 @@ void GamePlayScene::Initialize() {
 	bulletLightAttributes.isTraslate_ = true;
 	bulletLightAttributes.scaleSetting_ = 2; //縮小せる
 	bulletLightAttributes.isBillboard = true;
-	//bulletLightAttributes.enableFollowEmitter_ = true;
+	ParticlePreset bulletLightPreset;
+	bulletLightPreset.attributesMap = { "BulletLight", bulletLightAttributes };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "BulletLight", ParticleModelType::Primitive, "Circle.png", PRIMITIVE_PLANE);
-	TakeCFrameWork::GetParticleManager()->SetAttributes("BulletLight", bulletLightAttributes);
+	TakeCFrameWork::GetParticleManager()->SetPreset("BulletLight", bulletLightPreset);
 
 	ParticleAttributes ExplosionAttributes;
 	ExplosionAttributes.scale = { 1.0f,1.0f,1.0f };
@@ -106,8 +114,10 @@ void GamePlayScene::Initialize() {
 	ExplosionAttributes.isTraslate_ = true;
 	ExplosionAttributes.scaleSetting_ = 1; //拡大させる
 	ExplosionAttributes.isBillboard = false;
+	ParticlePreset ExplosionPreset;
+	ExplosionPreset.attributesMap = { "ExplosionEffect", ExplosionAttributes };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "ExplosionEffect", ParticleModelType::Primitive, "Spark2.png", PRIMITIVE_SPHERE);
-	TakeCFrameWork::GetParticleManager()->SetAttributes("ExplosionEffect", ExplosionAttributes);
+	TakeCFrameWork::GetParticleManager()->SetPreset("ExplosionEffect", ExplosionPreset);
 
 #pragma endregion
 
