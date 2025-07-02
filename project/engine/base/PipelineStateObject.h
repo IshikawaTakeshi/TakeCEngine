@@ -90,12 +90,7 @@ public:
 	void CompilePixelShader(DXC* dxc_, const std::wstring& filePath);
 	//computeShaderをコンパイル
 	void CompileComputeShader(DXC* dxc_, const std::wstring& filePath);
-	//シェーダーからリソース情報を取得
-	ShaderResourceMap LoadShaderResourceInfo(const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
-	//シェーダー情報からRootSignatureを生成
-	ComPtr<ID3D12RootSignature> CreateRootSignature(ID3D12Device* device, ShaderResourceMap resourceMap);
-	//入力レイアウトの情報を取得
-	void ExtractInputLayout(ID3D12ShaderReflection* shaderReflection);
+	
 
 	/// <summary>
 	/// ブレンドステート初期化
@@ -154,11 +149,21 @@ public:
 	ID3D12PipelineState* GetGraphicPipelineState() const { return graphicPipelineState_.Get(); }
 	ID3D12PipelineState* GetComputePipelineState() const { return computePipelineState_.Get(); }
 
-private:
-
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///			setter
 	///////////////////////////////////////////////////////////////////////////////////////////
+
+	void SetGraphicPipelineName(const std::string& name);
+	void SetComputePipelineName(const std::string& name);
+
+private:
+
+	//シェーダーからリソース情報を取得
+	ShaderResourceMap LoadShaderResourceInfo(const std::vector<ComPtr<IDxcBlob>>& shaderBlobs);
+	//シェーダー情報からRootSignatureを生成
+	ComPtr<ID3D12RootSignature> CreateRootSignature(ID3D12Device* device, ShaderResourceMap resourceMap);
+	//入力レイアウトの情報を取得
+	void ExtractInputLayout(ID3D12ShaderReflection* shaderReflection);
 
 	void SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type);
 	void SetComputePipelineStateDesc();

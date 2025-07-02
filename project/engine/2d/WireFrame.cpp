@@ -19,6 +19,7 @@ void WireFrame::Initialize(DirectXCommon* directXCommon) {
 		PSO::BlendState::NORMAL,
 		D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE
 	);
+	pso_->SetGraphicPipelineName("WireFramePSO");
 
 	rootSignature_ = pso_->GetGraphicRootSignature();
 

@@ -7,6 +7,11 @@ void Vignette::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx,outputResource);
+	//PSOの名前付け
+	computePSO_->SetComputePipelineName("VignettePSO");
+	//Bufferの名前付け
+	inputResource_->SetName(L"Vignette::inputResource_");
+	outputResource_->SetName(L"Vignette::outputResource_");
 
 	//VignetteScaleResource
 	vignetteInfoResource_ = dxCommon_->CreateBufferResource(dxCommon_->GetDevice(), sizeof(VignetteInfo));

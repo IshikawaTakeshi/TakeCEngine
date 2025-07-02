@@ -568,3 +568,12 @@ void PSO::SetComputePipelineStateDesc() {
 	computePipelineStateDesc_.pRootSignature = computeRootSignature_.Get();
 
 }
+
+//パイプラインの名前を設定する
+void PSO::SetGraphicPipelineName(const std::string& name) {
+	graphicPipelineState_->SetName(StringUtility::ConvertString(name).c_str());
+}
+
+void PSO::SetComputePipelineName(const std::string& name) {
+	computePipelineState_->SetName(StringUtility::ConvertString(name).c_str());
+}

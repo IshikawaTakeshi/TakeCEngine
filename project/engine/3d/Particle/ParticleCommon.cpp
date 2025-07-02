@@ -24,28 +24,28 @@ void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 	graphicPso_->CompileVertexShader(dxCommon_->GetDXC(), L"Particle.VS.hlsl");
 	graphicPso_->CompilePixelShader(dxCommon_->GetDXC(), L"Particle.PS.hlsl");
 	graphicPso_->CreateGraphicPSO(dxCommon_->GetDevice(),D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO, PSO::BlendState::ADD);
-
+	graphicPso_->SetGraphicPipelineName("ParticlePSO");
 	graphicRootSignature_ = graphicPso_->GetGraphicRootSignature();
 
 	graphicPsoForGPUParticle_ = std::make_unique<PSO>();
 	graphicPsoForGPUParticle_->CompileVertexShader(dxCommon_->GetDXC(), L"GPUParticle.VS.hlsl");
 	graphicPsoForGPUParticle_->CompilePixelShader(dxCommon_->GetDXC(), L"GPUParticle.PS.hlsl");
 	graphicPsoForGPUParticle_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO,PSO::BlendState::ADD);
-
+	graphicPsoForGPUParticle_->SetGraphicPipelineName("GPUParticlePSO");
 	graphicRootSignatureForGPUParticle_ = graphicPsoForGPUParticle_->GetGraphicRootSignature();
 
 	//particle初期化用PSO
 	computePsoForGPUParticle_ = std::make_unique<PSO>();
 	computePsoForGPUParticle_->CompileComputeShader(dxCommon_->GetDXC(), L"InitializeParticle.CS.hlsl");
 	computePsoForGPUParticle_->CreateComputePSO(dxCommon_->GetDevice());
-
+	computePsoForGPUParticle_->SetComputePipelineName("InitializeParticlePSO");
 	computeRootSignatureForGPUParticle_ = computePsoForGPUParticle_->GetComputeRootSignature();
 
 	//update用PSO
 	psoUpdateParticle_ = std::make_unique<PSO>();
 	psoUpdateParticle_->CompileComputeShader(dxCommon_->GetDXC(), L"UpdateParticle.CS.hlsl");
 	psoUpdateParticle_->CreateComputePSO(dxCommon_->GetDevice());
-
+	psoUpdateParticle_->SetComputePipelineName("UpdateParticlePSO");
 	rootSignatureUpdateParticle_ = psoUpdateParticle_->GetComputeRootSignature();
 }
 

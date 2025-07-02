@@ -24,7 +24,7 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename
 	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"SkyBox.VS.hlsl");
 	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"SkyBox.PS.hlsl");
 	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL);
-
+	pso_->SetGraphicPipelineName("SkyBoxPSO");
 	//RootSignatureの生成
 	rootSignature_ = pso_->GetGraphicRootSignature();
 

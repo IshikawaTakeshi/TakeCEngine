@@ -27,10 +27,10 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
 	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Object3d.PS.hlsl");
 	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL);
-
+	pso_->SetGraphicPipelineName("Object3dPSO:graphic");
 	pso_->CompileComputeShader(dxCommon_->GetDXC(), L"Skinning.CS.hlsl");
 	pso_->CreateComputePSO(dxCommon_->GetDevice());
-
+	pso_->SetComputePipelineName("Object3dPSO:Conpute");
 	graphicRootSignature_ = pso_->GetGraphicRootSignature();
 	computeRootSignature_ = pso_->GetComputeRootSignature();
 

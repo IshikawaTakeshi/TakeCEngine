@@ -19,23 +19,15 @@ void PostEffect::Initialize(
 	computePSO_->CreateComputePSO(dxCommon_->GetDevice());
 	rootSignature_ = computePSO_->GetComputeRootSignature();
 
-
 	//inputRenderTexture
 	inputTexSrvIndex_ = inputSrvIdx;
 	inputResource_ = inputResource;
-	inputResource_->SetName(L"inputRenderTexture_");
-
 	//srv生成
 	srvManager_->CreateSRVforRenderTexture(inputResource_.Get(),DXGI_FORMAT_R8G8B8A8_UNORM, inputTexSrvIndex_);
-	//uav生成
-	//srvManager_->CreateUAVforRenderTexture(inputResource_.Get(), inputTexUavIndex_);
-
 	//outputRenderTexture
 	outputTexSrvIndex_ = srvManager_->Allocate();
 	outputTexUavIndex_ = srvManager_->Allocate();
 	outputResource_ = outputResource;
-	outputResource_->SetName(L"outputRenderTexture_");
-
 	//srv生成
 	srvManager_->CreateSRVforRenderTexture(outputResource_.Get(),DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, outputTexSrvIndex_);
 	//uav生成

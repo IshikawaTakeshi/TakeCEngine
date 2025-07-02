@@ -10,7 +10,7 @@ struct RadialBlurInfo {
 class RadialBluer : public PostEffect {
 public:
 	RadialBluer() = default;
-	~RadialBluer();
+	~RadialBluer() = default;
 	/// <summary>
 	/// 初期化
 	/// </summary>
