@@ -1,6 +1,7 @@
 #include "ParticleEditor.h"
 #include "base/ImGuiManager.h"
 #include "base/TakeCFrameWork.h"
+#include "base/TextureManager.h"
 #include <cassert>
 
 //======================================================================
@@ -28,6 +29,9 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 
 	//全プリセットの読み込み
 	LoadAllPresets();
+
+	//テクスチャ名一覧の取得
+	textureFileNames_ = TextureManager::GetInstance()->GetLoadedTextureFileNames();
 }
 
 //======================================================================
@@ -134,13 +138,15 @@ void ParticleEditor::Draw() {
 }
 
 //======================================================================
-//			プリセットの保存
+//			プリセットの編集
 //======================================================================
 
 void ParticleEditor::DrawParticleAttributesEditor() {
 
 	ParticleAttributes& attributes = currentPreset_.attributesMap.second;
 
+	//attributeの編集
+#pragma region coodinate attribute
 	ImGui::SeparatorText("Particle Attributes");
 
 	//Scale
@@ -177,9 +183,49 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 		// 現在のグループに属性を適用
 		particleManager_->SetPreset(currentGroupName_, currentPreset_);
 	}
+#pragma endregion
 
 	//テクスチャファイルの設定
+#pragma region texture setting
+	ImGui::SeparatorText("Texture Setting");
+	//テクスチャファイル名の選択
+	static int slectedTextureIndex = 0;
 
+	//今の設定がリストにあればインデックスを合わせる
+	auto it = std::find(textureFileNames_.begin(), textureFileNames_.end(), currentPreset_.textureFilePath);
+	if(it != textureFileNames_.end()) {
+		slectedTextureIndex = std::distance(textureFileNames_.begin(), it);
+	}
+
+	if(ImGui::BeginCombo("Texture File",textureFileNames_.empty() ? "None":textureFileNames_[slectedTextureIndex].c_str())) {
+		for (int i = 0; i < textureFileNames_.size(); ++i) {
+			bool isSelected = (slectedTextureIndex == i);
+			if (ImGui::Selectable(textureFileNames_[i].c_str(), isSelected)) {
+				slectedTextureIndex = i;
+				currentPreset_.textureFilePath = textureFileNames_[i];
+			}
+			if (isSelected) {
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	//プリミティブタイプの選択
+	ImGui::SeparatorText("Primitive Type");
+	/*if (ImGui::BeginCombo("Primitive Type", PrimitiveTypeToString(currentPreset_.primitiveType).c_str())) {
+		for (int i = 0; i < static_cast<int>(PrimitiveType::Count); ++i) {
+			const std::string typeName = PrimitiveTypeToString(static_cast<PrimitiveType>(i));
+			bool isSelected = (currentPreset_.primitiveType == static_cast<PrimitiveType>(i));
+			if (ImGui::Selectable(typeName.c_str(), isSelected)) {
+				currentPreset_.primitiveType = static_cast<PrimitiveType>(i);
+			}
+			if (isSelected) {
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}*/
 }
 
 //======================================================================

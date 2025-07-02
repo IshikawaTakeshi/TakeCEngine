@@ -19,20 +19,29 @@ public:
 	void Finalize();
 	void Draw();
 
+private:
 	//Preset Management
+	//プリセットを保存
 	void SavePreset(const std::string& presetName);
+	//プリセットを適用
 	void LoadPreset(const std::string& presetName);
+	//プリセットを削除
 	void DeletePreset(const std::string& presetName);
+
+	//デフォルトプリセットを読み込む
 	void LoadDefaultPreset();
+	//全てのプリセットを読み込む
 	void LoadAllPresets();
+	//プリセットリストを更新
 	void RefreshPresetList();
 
-private:
-
+	//UIの描画
 	void DrawParticleAttributesEditor();
 	void DrawEmitterControls();
 	void DrawPreviewSettings();
 	void DrawPresetManager();
+
+	void LoadTextureFileNames();
 
 private:
 
@@ -58,4 +67,6 @@ private:
 	// プリセット管理
 	std::vector<std::string> presetNames_;
 	std::map<std::string, ParticlePreset> presets_;
+	// テクスチャファイル名のリスト(参照渡し)
+	std::vector<std::string>& textureFileNames_; 
 };
