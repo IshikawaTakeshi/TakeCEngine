@@ -26,7 +26,7 @@ public:
 
 	void SpliceParticles(std::list<Particle> particles);
 
-	void SetPreset(const ParticlePreset& preset) override { particlePreset_ = preset; }
+	void SetPreset(const ParticlePreset& preset) override;
 
 private:
 

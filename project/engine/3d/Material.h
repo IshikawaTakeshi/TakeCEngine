@@ -43,9 +43,9 @@ public: //ゲッター
 	/// <summary>
 	/// マテリアルリソースの取得
 	/// </summary>
-	ID3D12Resource* GetMaterialResource() { return materialResource_.Get(); }
+	ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
 
-	MaterialData* GetMaterialData() { return materialData_; }
+	MaterialData* GetMaterialData() const { return materialData_; }
 
 	const std::string& GetTextureFilePath() const { return textureFilePath_; }
 
@@ -76,6 +76,10 @@ public: //セッター
 	void SetShininess(float shininess) { materialData_->shininess = shininess; }
 
 	void SetEnvCoefficient(float envCoefficient) { materialData_->envCoefficient = envCoefficient; }
+
+	void SetTextureFilePath(const std::string& filePath) { textureFilePath_ = filePath; }
+
+	void SetEnvMapFilePath(const std::string& filePath) { envMapFilePath_ = filePath; }
 
 private:
 

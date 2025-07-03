@@ -90,6 +90,7 @@ void BaseParticleGroup::SpliceParticles(std::list<Particle> particles) {
 
 void BaseParticleGroup::SetPreset(const ParticlePreset& preset) {
 	particlePreset_ = preset;
+	
 }
 
 void BaseParticleGroup::SetEmitterPosition(const Vector3& position) {

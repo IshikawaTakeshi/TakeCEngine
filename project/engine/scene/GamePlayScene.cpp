@@ -47,6 +47,7 @@ void GamePlayScene::Initialize() {
 	particleAttributes.isBillboard = true;
 	particleAttributes.scaleSetting_ = true;
 	ParticlePreset particlePreset;
+	particlePreset.textureFilePath = "Spark.png"; // テクスチャファイル名
 	particlePreset.attributesMap = { "SmokeEffect", particleAttributes };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"SmokeEffect",ParticleModelType::Primitive, "Spark.png",PRIMITIVE_PLANE);
 	TakeCFrameWork::GetParticleManager()->SetPreset("SmokeEffect", particlePreset);
@@ -64,6 +65,7 @@ void GamePlayScene::Initialize() {
 	particleAttributes2.isBillboard = true;
 	particleAttributes2.scaleSetting_ = true;
 	ParticlePreset particlePreset2;
+	particlePreset2.textureFilePath = "Cross.png"; // テクスチャファイル名
 	particlePreset2.attributesMap = { "CircleEffect", particleAttributes2 };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "CircleEffect", ParticleModelType::Primitive, "Cross.png", PRIMITIVE_PLANE);
 	TakeCFrameWork::GetParticleManager()->SetPreset("CircleEffect", particlePreset2);
@@ -81,6 +83,7 @@ void GamePlayScene::Initialize() {
 	damageEffectAttributes.scaleSetting_ = 2;
 	damageEffectAttributes.isBillboard = true;
 	ParticlePreset damageEffectPreset;
+	damageEffectPreset.textureFilePath = "Spark.png"; // テクスチャファイル名
 	damageEffectPreset.attributesMap = { "DamageEffectSpark", damageEffectAttributes };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DamageEffectSpark", ParticleModelType::Primitive, "Spark.png", PRIMITIVE_PLANE);
 	TakeCFrameWork::GetParticleManager()->SetPreset("DamageEffectSpark", damageEffectPreset);
@@ -98,6 +101,7 @@ void GamePlayScene::Initialize() {
 	bulletLightAttributes.scaleSetting_ = 2; //縮小せる
 	bulletLightAttributes.isBillboard = true;
 	ParticlePreset bulletLightPreset;
+	bulletLightPreset.textureFilePath = "Circle.png"; // テクスチャファイル名
 	bulletLightPreset.attributesMap = { "BulletLight", bulletLightAttributes };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "BulletLight", ParticleModelType::Primitive, "Circle.png", PRIMITIVE_PLANE);
 	TakeCFrameWork::GetParticleManager()->SetPreset("BulletLight", bulletLightPreset);
@@ -115,6 +119,7 @@ void GamePlayScene::Initialize() {
 	ExplosionAttributes.scaleSetting_ = 1; //拡大させる
 	ExplosionAttributes.isBillboard = false;
 	ParticlePreset ExplosionPreset;
+	ExplosionPreset.textureFilePath = "Spark2.png"; // テクスチャファイル名
 	ExplosionPreset.attributesMap = { "ExplosionEffect", ExplosionAttributes };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "ExplosionEffect", ParticleModelType::Primitive, "Spark2.png", PRIMITIVE_SPHERE);
 	TakeCFrameWork::GetParticleManager()->SetPreset("ExplosionEffect", ExplosionPreset);

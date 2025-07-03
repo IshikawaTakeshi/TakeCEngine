@@ -28,7 +28,6 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 
 	particleCommon_ = particleCommon;
 
-	textrueFilePath_ = filePath;
 	//instancing用のResource生成
 	particleResource_ =
 		DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
@@ -68,6 +67,7 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	attributes.lifetimeRange = { 5.0f,5.0f };
 	attributes.editColor = true;
 	attributes.color = { 0.9f,0.3f,0.9f };
+	particlePreset_.textureFilePath = filePath;
 	//モデルの読み込み
 	SetModel(filePath);
 	//TakeCFrameWork::GetPrimitiveDrawer()->CreateRingVertexData();

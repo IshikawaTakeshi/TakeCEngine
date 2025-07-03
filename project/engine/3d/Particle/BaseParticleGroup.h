@@ -85,6 +85,4 @@ protected:
 	uint32_t particleSrvIndex_ = 0;
 	ComPtr<ID3D12Resource> particleResource_;
 	ComPtr<ID3D12Resource> perViewResource_;
-
-	std::string textrueFilePath_;
 };

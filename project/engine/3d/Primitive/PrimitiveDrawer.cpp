@@ -390,3 +390,15 @@ void PrimitiveDrawer::CreateSphereMaterial(const std::string& textureFilePath, S
 	sphereData->material_->SetEnvCoefficient(0.0f);
 	sphereData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
 }
+
+PrimitiveDrawer::PlaneData* PrimitiveDrawer::GetPlaneData(uint32_t handle) {
+	return planeDatas_[handle].get();
+}
+
+PrimitiveDrawer::SphereData* PrimitiveDrawer::GetSphereData(uint32_t handle) {
+	return sphereDatas_[handle].get();
+}
+
+PrimitiveDrawer::RingData* PrimitiveDrawer::GetRingData(uint32_t handle) {
+	return ringDatas_[handle].get();
+}

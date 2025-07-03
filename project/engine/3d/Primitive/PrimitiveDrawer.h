@@ -95,9 +95,9 @@ public:
 
 	void ResetVertexIndex() { ringVertexIndex_ = 0; }
 
-	/*Material* GetRingMaterial() { return ringData_->material_; }
-
-	Material* GetPlaneMaterial() { return planeData_->material_; }*/
+	PlaneData* GetPlaneData(uint32_t handle);
+	SphereData* GetSphereData(uint32_t handle);
+	RingData* GetRingData(uint32_t handle);
 
 private:
 

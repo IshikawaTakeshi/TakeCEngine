@@ -15,6 +15,7 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 	particleCommon_ = particleCommon;
 	//デフォルトのパーティクルグループを作成
 	currentGroupName_ = "DefaultGroup";
+	currentPreset_.textureFilePath = "white1x1.png";
 	particleManager_->CreateParticleGroup(particleCommon_,currentGroupName_, ParticleModelType::Primitive, "white1x1.png", PRIMITIVE_PLANE);
 
 	// エディター専用エミッターの初期化
@@ -143,6 +144,9 @@ void ParticleEditor::Draw() {
 
 void ParticleEditor::DrawParticleAttributesEditor() {
 
+	//テクスチャが再ロードされたかチェック
+	TextureManager::GetInstance()->CheckAndReloadTextures();
+
 	ParticleAttributes& attributes = currentPreset_.attributesMap.second;
 
 	//attributeの編集
@@ -194,10 +198,12 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	//今の設定がリストにあればインデックスを合わせる
 	auto it = std::find(textureFileNames_.begin(), textureFileNames_.end(), currentPreset_.textureFilePath);
 	if(it != textureFileNames_.end()) {
-		slectedTextureIndex = std::distance(textureFileNames_.begin(), it);
+		slectedTextureIndex = static_cast<int>(std::distance(textureFileNames_.begin(), it));
 	}
 
+	
 	if(ImGui::BeginCombo("Texture File",textureFileNames_.empty() ? "None":textureFileNames_[slectedTextureIndex].c_str())) {
+		
 		for (int i = 0; i < textureFileNames_.size(); ++i) {
 			bool isSelected = (slectedTextureIndex == i);
 			if (ImGui::Selectable(textureFileNames_[i].c_str(), isSelected)) {
@@ -208,24 +214,14 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 				ImGui::SetItemDefaultFocus();
 			}
 		}
+		
+		
+
 		ImGui::EndCombo();
 	}
 
 	//プリミティブタイプの選択
 	ImGui::SeparatorText("Primitive Type");
-	/*if (ImGui::BeginCombo("Primitive Type", PrimitiveTypeToString(currentPreset_.primitiveType).c_str())) {
-		for (int i = 0; i < static_cast<int>(PrimitiveType::Count); ++i) {
-			const std::string typeName = PrimitiveTypeToString(static_cast<PrimitiveType>(i));
-			bool isSelected = (currentPreset_.primitiveType == static_cast<PrimitiveType>(i));
-			if (ImGui::Selectable(typeName.c_str(), isSelected)) {
-				currentPreset_.primitiveType = static_cast<PrimitiveType>(i);
-			}
-			if (isSelected) {
-				ImGui::SetItemDefaultFocus();
-			}
-		}
-		ImGui::EndCombo();
-	}*/
 }
 
 //======================================================================

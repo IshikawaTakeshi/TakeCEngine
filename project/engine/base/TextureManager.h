@@ -5,6 +5,7 @@
 
 #include <wrl.h>
 #include <cstdint>
+#include <ctime>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -80,7 +81,7 @@ private:
 	/// <summary>
 	/// ファイルの最終更新時刻を取得
 	/// </summary>
-	void GetFileLastWriteTime(const std::string& filePath);
+	time_t GetFileLastWriteTime(const std::string& filePath);
 public:
 
 	/////////////////////////////////////////////////////////////////////////////////////

@@ -54,6 +54,8 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");
 	}
+
+	particlePreset_.textureFilePath = filePath;
 }
 
 void PrimitiveParticle::Update() {
@@ -140,6 +142,23 @@ std::list<Particle> PrimitiveParticle::Emit(const Vector3& emitterPos, uint32_t 
 void PrimitiveParticle::SpliceParticles(std::list<Particle> particles) {
 
 	BaseParticleGroup::SpliceParticles(particles);
+}
+
+void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
+	particlePreset_ = preset;
+	//テクスチャファイルパスの設定
+	if (type_ == PRIMITIVE_RING) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetRingData(primitiveHandle_)->material_;
+		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+	}else if (type_ == PRIMITIVE_PLANE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetPlaneData(primitiveHandle_)->material_;
+		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+	} else if (type_ == PRIMITIVE_SPHERE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetSphereData(primitiveHandle_)->material_;
+		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+	} else {
+		assert(0 && "未対応の PrimitiveType が指定されました");
+	}
 }
 
 void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIterator) {

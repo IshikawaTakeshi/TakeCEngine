@@ -41,8 +41,6 @@ private:
 	void DrawPreviewSettings();
 	void DrawPresetManager();
 
-	void LoadTextureFileNames();
-
 private:
 
 	// パーティクルマネージャー
@@ -68,5 +66,5 @@ private:
 	std::vector<std::string> presetNames_;
 	std::map<std::string, ParticlePreset> presets_;
 	// テクスチャファイル名のリスト(参照渡し)
-	std::vector<std::string>& textureFileNames_; 
+	std::vector<std::string> textureFileNames_; 
 };

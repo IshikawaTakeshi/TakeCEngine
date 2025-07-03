@@ -5,7 +5,7 @@
 #include <cassert>
 #include <filesystem>
 #include <chrono>
-#include <ctime>
+
 
 TextureManager* TextureManager::instance_ = nullptr;
 
@@ -55,9 +55,19 @@ void TextureManager::Finalize() {
 //=============================================================================================
 
 void TextureManager::CheckAndReloadTextures() {
+
+	//テクスチャの更新チェック
 	for(auto& [filePath, textureData] : textureDatas_) {
 		std::string fullPath = "Resources/images/" + filePath;
-		time_t newTime = 
+		//ファイルの最終更新日時を取得
+		time_t newTime = GetFileLastWriteTime(fullPath);
+
+		if (fileUpdateTimes_[filePath] != newTime) {
+			//更新されていたら再読み込み
+			LoadTexture(filePath, true);
+			//更新日時を更新
+			fileUpdateTimes_[filePath] = newTime;
+		}
 	}
 }
 
@@ -259,10 +269,24 @@ std::vector<std::string> TextureManager::GetLoadedTextureFileNames() const {
 //			ファイルの最終更新日時を取得
 //============================================================================================
 
-void TextureManager::GetFileLastWriteTime(const std::string& filePath) {
+time_t TextureManager::GetFileLastWriteTime(const std::string& filePath) {
 	namespace fs = std::filesystem;
+	namespace chrono = std::chrono;
 	try {
+		if(!fs::exists(filePath)) {
+			return 0;
+		}
 
+		//ファイルの最終更新日時を取得
+		auto ftime = fs::last_write_time(filePath);
+		// std::filesystem::file_time_typeはクロックの型なので、system_clockに変換
+		auto sctp = chrono::clock_cast<chrono::system_clock>(ftime);
+		return chrono::system_clock::to_time_t(sctp);
+		
+
+	}catch (...) {
+		// エラー処理
+		assert(false && "ファイルの最終更新日時の取得に失敗しました。");
+		return 0;
 	}
-
 }
