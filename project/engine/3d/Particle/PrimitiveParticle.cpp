@@ -107,7 +107,7 @@ void PrimitiveParticle::Update() {
 
 void PrimitiveParticle::UpdateImGui() {
 #ifdef _DEBUG
-	ParticleAttributes& attributes = particlePreset_.attributesMap.second;
+	ParticleAttributes& attributes = particlePreset_.attribute;
 
 	ImGui::Begin("Particle");
 	ImGui::Text("Instance Count : %d", numInstance_);
@@ -165,7 +165,7 @@ void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
 void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIterator) {
 
 	//particle1つの位置更新
-	ParticleAttributes& attributes = particlePreset_.attributesMap.second;
+	ParticleAttributes& attributes = particlePreset_.attribute;
 
 	if (attributes.isTraslate_) {
 		if (attributes.enableFollowEmitter_) {

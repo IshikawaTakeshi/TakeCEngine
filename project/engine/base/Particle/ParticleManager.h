@@ -40,6 +40,8 @@ public:
 	void CreateParticleGroup(ParticleCommon* particleCommon,const std::string& name,
 		const std::string& filePath,PrimitiveType primitiveType = PRIMITIVE_PLANE);
 
+	void CreateParticleGroup(ParticleCommon* particleCommon, const std::string& presetJson);
+
 	void Emit(const std::string& name, const Vector3& emitPosition, uint32_t count);
 
 	uint32_t EmitterAllocate();

@@ -108,6 +108,20 @@ void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const 
 	particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
 }
 
+void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& presetJson) {
+	ParticlePreset preset = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset(presetJson);
+	if(particleGroups_.contains(preset.presetName)) {
+		//既に同名のparticleGroupが存在する場合は生成しない
+		return;
+	}
+
+	//particleGroupの生成
+	std::unique_ptr<PrimitiveParticle> particleGroup = std::make_unique<PrimitiveParticle>(preset.primitiveType);
+	particleGroup->Initialize(particleCommon, preset.textureFilePath);
+	particleGroup->SetPreset(preset);
+	particleGroups_.insert(std::make_pair(preset.presetName, std::move(particleGroup)));
+}
+
 
 //================================================================================================
 // パーティクルの発生

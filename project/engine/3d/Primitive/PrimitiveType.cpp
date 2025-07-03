@@ -25,14 +25,17 @@ void from_json(const nlohmann::json& j, PrimitiveType& type) {
 		if (j == "PRIMITIVE_RING") {
 			type = PRIMITIVE_RING;
 		}
+		break;
 	case PRIMITIVE_PLANE:
 		if (j == "PRIMITIVE_PLANE") {
 			type = PRIMITIVE_PLANE;
 		}
+		break;
 	case PRIMITIVE_SPHERE:
 		if (j == "PRIMITIVE_SPHERE") {
 			type = PRIMITIVE_SPHERE;
 		}
+		break;
 	default:
 		type = PRIMITIVE_COUNT; //不明なタイプ
 		break;

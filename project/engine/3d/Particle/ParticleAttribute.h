@@ -43,7 +43,8 @@ struct ParticleAttributes {
 };
 
 struct ParticlePreset {
-	std::pair<std::string, ParticleAttributes> attributesMap; //属性のマップ
+	std::string presetName; //プリセットの名前
+	ParticleAttributes attribute; //属性のマップ
 	std::string textureFilePath; //テクスチャファイル名
 	PrimitiveType primitiveType; //プリミティブの種類
 	Vector3 primitiveParameters = {1.0f,1.0f,1.0f}; //プリミティブのパラメータ

@@ -34,100 +34,16 @@ void GamePlayScene::Initialize() {
 
 #pragma region CreateParticle
 	//CreateParticle
-	ParticleAttributes particleAttributes;
-	particleAttributes.scale = { 0.2f,0.2f,1.0f };
-	particleAttributes.positionRange = { -0.5f,0.5f };
-	particleAttributes.scaleRange = { 0.1f,3.0f };
-	particleAttributes.rotateRange = { -1.0f,1.0f };
-	particleAttributes.velocityRange = { 0.0f,0.0f };
-	particleAttributes.colorRange = { 0.0f,1.0f };
-	particleAttributes.lifetimeRange = { 0.1f,0.3f };
-	particleAttributes.editColor = true;
-	particleAttributes.color = { 0.8f,0.8f,1.0f };
-	particleAttributes.isBillboard = true;
-	particleAttributes.scaleSetting_ = true;
-	ParticlePreset particlePreset;
-	particlePreset.textureFilePath = "Spark.png"; // テクスチャファイル名
-	particlePreset.attributesMap = { "SmokeEffect", particleAttributes };
-	particlePreset.primitiveType = PRIMITIVE_PLANE; // プリミティブタイプ
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"SmokeEffect", "Spark.png",PRIMITIVE_PLANE);
-	TakeCFrameWork::GetParticleManager()->SetPreset("SmokeEffect", particlePreset);
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"BulletLight.json");
 
-	ParticleAttributes particleAttributes2;
-	particleAttributes2.scale = { 100.0f,3.0f,1.0f };
-	particleAttributes2.positionRange = { 0.0f,0.0f };
-	particleAttributes2.scaleRange = { 20.0f,100.0f };
-	particleAttributes2.rotateRange = { 0.0f,0.0f };
-	particleAttributes2.velocityRange = { 0.0f,0.0f };
-	particleAttributes2.colorRange = { 0.0f,1.0f };
-	particleAttributes2.lifetimeRange = { 0.1f,0.5f };
-	particleAttributes2.editColor = true;
-	particleAttributes2.color = { 0.5f,0.3f,1.0f };
-	particleAttributes2.isBillboard = true;
-	particleAttributes2.scaleSetting_ = true;
-	ParticlePreset particlePreset2;
-	particlePreset2.textureFilePath = "Cross.png"; // テクスチャファイル名
-	particlePreset2.attributesMap = { "CircleEffect", particleAttributes2 };
-	particlePreset2.primitiveType = PRIMITIVE_PLANE; // プリミティブタイプ
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "CircleEffect", "Cross.png", PRIMITIVE_PLANE);
-	TakeCFrameWork::GetParticleManager()->SetPreset("CircleEffect", particlePreset2);
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "CrossEffect.json");
 
-	ParticleAttributes damageEffectAttributes;
-	damageEffectAttributes.scale = { 10.0f,10.0f,1.0f };
-	damageEffectAttributes.positionRange = { -1.0f,1.0f };
-	damageEffectAttributes.scaleRange = { 1.0f,10.0f };
-	damageEffectAttributes.rotateRange = { -3.14f,3.14f };
-	damageEffectAttributes.velocityRange = { 0.0f,0.0f };
-	damageEffectAttributes.lifetimeRange = { 0.05f,0.05f };
-	damageEffectAttributes.editColor = true;
-	damageEffectAttributes.color = { 0.4f,0.1f,1.0f };
-	damageEffectAttributes.isTraslate_ = true;
-	damageEffectAttributes.scaleSetting_ = 2;
-	damageEffectAttributes.isBillboard = true;
-	ParticlePreset damageEffectPreset;
-	damageEffectPreset.textureFilePath = "Spark.png"; // テクスチャファイル名
-	damageEffectPreset.attributesMap = { "DamageEffectSpark", damageEffectAttributes };
-	damageEffectPreset.primitiveType = PRIMITIVE_PLANE; // プリミティブタイプ
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DamageEffectSpark", "Spark.png", PRIMITIVE_PLANE);
-	TakeCFrameWork::GetParticleManager()->SetPreset("DamageEffectSpark", damageEffectPreset);
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"DamageSpark.json");
 
-	ParticleAttributes bulletLightAttributes;
-	bulletLightAttributes.scale = { 5.1f,5.1f,0.1f };
-	bulletLightAttributes.positionRange = { 0.0f,0.0f };
-	bulletLightAttributes.scaleRange = { 0.1f,5.1f };
-	bulletLightAttributes.rotateRange = { -3.14f,3.14f };
-	bulletLightAttributes.velocityRange = { 0.0f,0.0f };
-	bulletLightAttributes.lifetimeRange = { 0.5f,0.8f };
-	bulletLightAttributes.editColor = true;
-	bulletLightAttributes.color = { 0.8f,0.8f,1.0f };
-	bulletLightAttributes.isTraslate_ = true;
-	bulletLightAttributes.scaleSetting_ = 2; //縮小せる
-	bulletLightAttributes.isBillboard = true;
-	ParticlePreset bulletLightPreset;
-	bulletLightPreset.textureFilePath = "Circle.png"; // テクスチャファイル名
-	bulletLightPreset.attributesMap = { "BulletLight", bulletLightAttributes };
-	bulletLightPreset.primitiveType = PRIMITIVE_PLANE; // プリミティブタイプ
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "BulletLight","Circle.png", PRIMITIVE_PLANE);
-	TakeCFrameWork::GetParticleManager()->SetPreset("BulletLight", bulletLightPreset);
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "SmokeEffect.json");
 
-	ParticleAttributes ExplosionAttributes;
-	ExplosionAttributes.scale = { 1.0f,1.0f,1.0f };
-	ExplosionAttributes.positionRange = { 0.0f,0.0f };
-	ExplosionAttributes.scaleRange = { 0.1f,23.0f };
-	ExplosionAttributes.rotateRange = { -3.14f,3.14f };
-	ExplosionAttributes.velocityRange = { 0.0f,0.0f };
-	ExplosionAttributes.lifetimeRange = { 0.1f,0.5f };
-	ExplosionAttributes.editColor = true;
-	ExplosionAttributes.color = { 0.8f,0.8f,1.0f };
-	ExplosionAttributes.isTraslate_ = true;
-	ExplosionAttributes.scaleSetting_ = 1; //拡大させる
-	ExplosionAttributes.isBillboard = false;
-	ParticlePreset ExplosionPreset;
-	ExplosionPreset.textureFilePath = "Spark2.png"; // テクスチャファイル名
-	ExplosionPreset.attributesMap = { "ExplosionEffect", ExplosionAttributes };
-	ExplosionPreset.primitiveType = PRIMITIVE_SPHERE; // プリミティブタイプ
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "ExplosionEffect","Spark2.png", PRIMITIVE_SPHERE);
-	TakeCFrameWork::GetParticleManager()->SetPreset("ExplosionEffect", ExplosionPreset);
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "SparkExplosion.json");
+
 
 #pragma endregion
 

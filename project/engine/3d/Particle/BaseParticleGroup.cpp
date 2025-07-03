@@ -25,7 +25,7 @@ void BaseParticleGroup::Draw() {
 
 Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
 
-	ParticleAttributes attributes = particlePreset_.attributesMap.second;
+	ParticleAttributes attributes = particlePreset_.attribute;
 	//スケールをランダムに設定
 	std::uniform_real_distribution<float> distScale(attributes.scaleRange.min, attributes.scaleRange.max);
 	//回転をランダムに設定

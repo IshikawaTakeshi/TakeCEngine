@@ -16,7 +16,7 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 	//デフォルトのパーティクルグループを作成
 	currentGroupName_ = "DefaultGroup";
 	currentPreset_.textureFilePath = "white1x1.png";
-	currentPreset_.attributesMap.first = currentGroupName_;
+	currentPreset_.presetName = currentGroupName_;
 	currentPreset_.primitiveType = PRIMITIVE_PLANE;
 	particleManager_->CreateParticleGroup(particleCommon_,currentGroupName_, "white1x1.png", currentPreset_.primitiveType);
 
@@ -149,7 +149,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	//テクスチャが再ロードされたかチェック
 	TextureManager::GetInstance()->CheckAndReloadTextures();
 
-	ParticleAttributes& attributes = currentPreset_.attributesMap.second;
+	ParticleAttributes& attributes = currentPreset_.attribute;
 
 	//attributeの編集
 #pragma region coodinate attribute

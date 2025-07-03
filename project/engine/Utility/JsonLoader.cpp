@@ -131,7 +131,7 @@ void JsonLoader::SaveParticlePreset(const std::string& presetName, const Particl
 	}
 	// JSONオブジェクトに変換
 	json presetJson = preset;
-	std::string filePath = kParticlePresetPath + presetName + ".json";
+	std::string filePath = kParticlePresetPath + presetName;
 	std::ofstream ofs(filePath);
 	//ファイルオープンが失敗した場合
 	if (ofs.fail()) {
@@ -179,7 +179,7 @@ ParticleAttributes JsonLoader::LoadParticleAttribute(const std::string& presetNa
 
 ParticlePreset JsonLoader::LoadParticlePreset(const std::string& presetName) const {
 	
-	std::string filePath = kParticlePresetPath + presetName + ".json";
+	std::string filePath = kParticlePresetPath + presetName;
 	std::ifstream ifs(filePath);
 	//ファイルオープンが失敗した場合
 	if (ifs.fail()) {
