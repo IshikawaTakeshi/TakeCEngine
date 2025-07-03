@@ -51,6 +51,8 @@ public:
 
 	void SpliceParticles(std::list<Particle> particles);
 
+	const ParticlePreset& GetPreset() const { return particlePreset_; }
+
 	virtual void SetPreset(const ParticlePreset& preset);
 
 	void SetEmitterPosition(const Vector3& position);

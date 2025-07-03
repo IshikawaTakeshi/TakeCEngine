@@ -16,7 +16,9 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 	//デフォルトのパーティクルグループを作成
 	currentGroupName_ = "DefaultGroup";
 	currentPreset_.textureFilePath = "white1x1.png";
-	particleManager_->CreateParticleGroup(particleCommon_,currentGroupName_, ParticleModelType::Primitive, "white1x1.png", PRIMITIVE_PLANE);
+	currentPreset_.attributesMap.first = currentGroupName_;
+	currentPreset_.primitiveType = PRIMITIVE_PLANE;
+	particleManager_->CreateParticleGroup(particleCommon_,currentGroupName_, "white1x1.png", currentPreset_.primitiveType);
 
 	// エディター専用エミッターの初期化
 	previewEmitter_ = std::make_unique<ParticleEmitter>();
@@ -53,7 +55,7 @@ void ParticleEditor::Update() {
 	previewEmitter_->SetRotate(emitterTransform_.rotate);
 	previewEmitter_->SetScale(emitterTransform_.scale);
 	previewEmitter_->SetIsEmit(autoEmit_);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup(currentGroupName_)->SetEmitterPosition(emitterTransform_.translate);
+	particleManager_->GetParticleGroup(currentGroupName_)->SetEmitterPosition(emitterTransform_.translate);
 	previewEmitter_->Update();
 
 }
@@ -219,9 +221,31 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 
 		ImGui::EndCombo();
 	}
+#pragma endregion
 
 	//プリミティブタイプの選択
+
+#pragma region primitive type setting
 	ImGui::SeparatorText("Primitive Type");
+	static const char* PrimitiveTypeNames[] = {
+		"Ring", "Plane", "Sphere"
+	};
+
+	int currentType = static_cast<int>(currentPreset_.primitiveType);
+	if (ImGui::Combo("Primitive Type", &currentType, PrimitiveTypeNames, IM_ARRAYSIZE(PrimitiveTypeNames))) {
+		currentPreset_.primitiveType = static_cast<PrimitiveType>(currentType);
+		// プリミティブタイプが変更された場合、グループのプリミティブを更新
+		particleManager_->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType,currentPreset_.primitiveParameters);
+	}
+	ImGui::DragFloat3("Primitive Parameters", &currentPreset_.primitiveParameters.x, 0.01f, 0.0f, 10.0f);
+	if(ImGui::Button("Update Primitive")) {
+		// プリミティブの更新
+		particleManager_->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType,currentPreset_.primitiveParameters);
+	}
+
+
+#pragma endregion
+
 }
 
 //======================================================================

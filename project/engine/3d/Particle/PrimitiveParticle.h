@@ -28,12 +28,10 @@ public:
 
 	void SetPreset(const ParticlePreset& preset) override;
 
+	void SetPrimitiveHandle(uint32_t handle) { primitiveHandle_ = handle; }
+
 private:
-
-	PrimitiveType type_ = PRIMITIVE_RING;
-
 	uint32_t primitiveHandle_ = 0; // プリミティブのハンドル
-
 private:
 
 	void UpdateMovement(std::list<Particle>::iterator particleIterator);

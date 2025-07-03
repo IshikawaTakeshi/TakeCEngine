@@ -3,8 +3,14 @@
 #include "Primitive/PrimitiveType.h"
 #include <json.hpp>
 #include <numbers>
+#include <string>
 #include <cstdint>
 #include <unordered_map>
+
+enum class ParticleModelType {
+	Primitive,
+	ExternalModel
+};
 
 struct AttributeRange {
 	float min;
@@ -40,6 +46,7 @@ struct ParticlePreset {
 	std::pair<std::string, ParticleAttributes> attributesMap; //属性のマップ
 	std::string textureFilePath; //テクスチャファイル名
 	PrimitiveType primitiveType; //プリミティブの種類
+	Vector3 primitiveParameters = {1.0f,1.0f,1.0f}; //プリミティブのパラメータ
 };
 
 using json = nlohmann::json;

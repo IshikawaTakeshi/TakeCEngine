@@ -34,6 +34,7 @@ void to_json(json& j, const ParticlePreset& preset) {
 	j["textureFilePath"] = preset.textureFilePath;
 	j["attributes"] = preset.attributesMap.second;
 	j["primitiveType"] = preset.primitiveType;
+	j["primitiveParameters"] = preset.primitiveParameters;
 }
 
 void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
@@ -67,4 +68,5 @@ void from_json(const json& j, ParticlePreset& preset) {
 	j.at("textureFilePath").get_to(preset.textureFilePath);
 	j.at("attributes").get_to(preset.attributesMap.second);
 	j.at("primitiveType").get_to(preset.primitiveType);
+	j.at("primitiveParameters").get_to(preset.primitiveParameters);
 }

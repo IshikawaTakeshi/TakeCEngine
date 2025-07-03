@@ -41,11 +41,97 @@ void PrimitiveDrawer::Update() {
 
 }
 
-void PrimitiveDrawer::UpdateImGui() {
+void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type) {
 
-	ImGui::Begin("PrimitiveDrawer");
+	switch (type) {
+	case PRIMITIVE_RING:
+	{
+		auto it = ringDatas_.find(handle);
+		if (it != ringDatas_.end()) {
+			auto& ringData = it->second;
+			ImGui::Begin("Ring Data");
+			ImGui::Text("Outer Radius: %.2f", ringData->outerRadius_);
+			ImGui::Text("Inner Radius: %.2f", ringData->innerRadius_);
+			ImGui::End();
+		}
+		break;
+	}
+	case PRIMITIVE_PLANE:
+	{
+		auto it = planeDatas_.find(handle);
+		if (it != planeDatas_.end()) {
+			auto& planeData = it->second;
+			ImGui::Begin("Plane Data");
+			ImGui::Text("Width: %.2f", planeData->width_);
+			ImGui::Text("Height: %.2f", planeData->height_);
+			ImGui::End();
+		}
+		break;
+	}
+	case PRIMITIVE_SPHERE:
+	{
+		auto it = sphereDatas_.find(handle);
+		if (it != sphereDatas_.end()) {
+			auto& sphereData = it->second;
+			ImGui::Begin("Sphere Data");
+			ImGui::Text("Radius: %.2f", sphereData->radius_);
+			ImGui::End();
+		}
+		break;
+	}
+	default:
+		assert(0 && "未対応の PrimitiveType が指定されました");
+		break;
+	}
+}
 
-	ImGui::End();
+void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param) {
+
+	switch (type) {
+	case PRIMITIVE_RING:
+	{
+		auto it = ringDatas_.find(handle);
+		if (it != ringDatas_.end()) {
+			auto& ringData = it->second;
+			ringData->outerRadius_ = param.x;
+			ringData->innerRadius_ = param.y;
+			ImGui::Begin("Ring Data");
+			ImGui::Text("Outer Radius: %.2f", ringData->outerRadius_);
+			ImGui::Text("Inner Radius: %.2f", ringData->innerRadius_);
+			ImGui::End();
+		}
+		break;
+	}
+	case PRIMITIVE_PLANE:
+	{
+		auto it = planeDatas_.find(handle);
+		if (it != planeDatas_.end()) {
+			auto& planeData = it->second;
+			planeData->width_ = param.x;
+			planeData->height_ = param.y;
+			ImGui::Begin("Plane Data");
+			ImGui::Text("Width: %.2f", planeData->width_);
+			ImGui::Text("Height: %.2f", planeData->height_);
+			ImGui::End();
+		}
+		break;
+	}
+	case PRIMITIVE_SPHERE:
+	{
+		auto it = sphereDatas_.find(handle);
+		if (it != sphereDatas_.end()) {
+			auto& sphereData = it->second;
+			sphereData->radius_ = param.x;
+			ImGui::Begin("Sphere Data");
+			ImGui::Text("Radius: %.2f", sphereData->radius_);
+			ImGui::End();
+		}
+		break;
+	}
+	default:
+		assert(0 && "未対応の PrimitiveType が指定されました");
+		break;
+	}
 }
 
 uint32_t PrimitiveDrawer::GenerateRing(const float outerRadius, const float innerRadius, const std::string& textureFilePath) {

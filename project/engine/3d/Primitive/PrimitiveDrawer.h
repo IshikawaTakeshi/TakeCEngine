@@ -60,19 +60,14 @@ public:
 	//更新処理
 	void Update();
 
-	void UpdateImGui();
+	void UpdateImGui(uint32_t handle,PrimitiveType type);
+	void UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param);
 
-	/// <summary>
-	/// リングの描画
-	/// </summary>
-	/// <param name="outerRadius">外側の半径</param>
-	/// <param name="innerRadius">内側の半径</param>
-	/// <param name="center">中心点</param>
-	/// <param name="color">カラー</param>
+	//リングデータの生成
 	uint32_t GenerateRing(const float outerRadius, const float innerRadius, const std::string& textureFilePath);
-
+	// 平面データの生成
 	uint32_t GeneratePlane(const float width, const float height, const std::string& textureFilePath);
-
+	// 球データの生成
 	uint32_t GenerateSphere(const float radius, const std::string& textureFilePath);
 
 	// 描画処理
