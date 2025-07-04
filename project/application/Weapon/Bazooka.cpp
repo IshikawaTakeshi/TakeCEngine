@@ -1,41 +1,33 @@
-#include "Rifle.h"
+#include "Bazooka.h"
 #include "TakeCFrameWork.h"
 
-//最大弾数の設定
+void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) {
 
-
-Rifle::~Rifle() {}
-
-void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& filePath) {
-
+	//弾薬マネージャの設定
 	bulletManager_ = bulletManager;
-
-	//3dオブジェクトの初期化
+	//3Dオブジェクトの初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
-
 	//武器の初期化
-	weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
-	attackPower_ = 10;
-	attackInterval_ = kAttackInterval;
-	bulletCount_ = 30;
-	maxBulletCount_ = 30;
-	bulletSpeed_ = 400.0f; // 弾のスピードを設定
+	weaponType_ = WeaponType::WEAPON_TYPE_BAZOOKA;
+	attackPower_ = 50; // 攻撃力を設定
+	attackInterval_ = kAttackInterval; // 攻撃間隔を設定
+	bulletCount_ = 5; // 初期弾数を設定
+	maxBulletCount_ = 5; // 最大弾数を設定
+	bulletSpeed_ = 500.0f; // 弾のスピードを設定
 }
 
-void Rifle::Update() {
+void Bazooka::Update() {
 
 	//攻撃間隔の減少
 	attackInterval_ -= TakeCFrameWork::GetDeltaTime();
-
-
+	//3Dオブジェクトの更新
 	object3d_->Update();
 }
 
-void Rifle::UpdateImGui() {
-
-	ImGui::SeparatorText("Rifle Settings");
-	ImGui::Text("Weapon Type: Rifle");
+void Bazooka::UpdateImGui() {
+	ImGui::SeparatorText("Bazooka Settings");
+	ImGui::Text("Weapon Type: Bazooka");
 	ImGui::Text("Attack Power: %d", attackPower_);
 	ImGui::Text("Attack Interval: %.2f", attackInterval_);
 	ImGui::Text("Bullet Count: %d", bulletCount_);
@@ -43,12 +35,12 @@ void Rifle::UpdateImGui() {
 	ImGui::Text("Bullet Speed: %.2f", bulletSpeed_);
 }
 
-void Rifle::Draw() {
+void Bazooka::Draw() {
 
 	object3d_->Draw();
 }
 
-void Rifle::Attack() {
+void Bazooka::Attack() {
 
 	//攻撃間隔が経過している場合
 	if (attackInterval_ >= 0.0f) {
@@ -70,10 +62,13 @@ void Rifle::Attack() {
 	}
 	//攻撃間隔のリセット
 	attackInterval_ = kAttackInterval;
-	//攻撃力の設定
 }
 
-void Rifle::SetOwnerObject(GameCharacter* owner) {
-	BaseWeapon::SetOwnerObject(owner);
-	object3d_->SetParent(owner->GetObject3d());
+void Bazooka::SetOwnerObject(GameCharacter* owner) {
+
+	ownerObject_ = owner;
+	// 所有者の3Dオブジェクトを設定
+	if (ownerObject_) {
+		object3d_->SetParent(ownerObject_->GetObject3d());
+	}
 }

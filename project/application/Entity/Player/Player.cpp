@@ -11,6 +11,7 @@
 #include "math/Easing.h"
 
 #include "Weapon/Rifle.h"
+#include "Weapon/Bazooka.h"
 
 Player::~Player() {
 	object3d_.reset();
@@ -39,6 +40,11 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
 	transform_ = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
+
+	weapons_.resize(2); // 武器の数を2つに設定
+	weaponTypes_.resize(2);
+	weaponTypes_[0] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
+	weaponTypes_[1] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
 }
 
 //===================================================================================
@@ -48,10 +54,17 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& weaponFilePath) {
 
 	//武器の初期化
-	weapon_ = std::make_unique<Rifle>();
-	weapon_->Initialize(object3dCommon, bulletManager, weaponFilePath);
-	weapon_->SetOwnerObject(this);
-
+	for (int i = 0; i < weapons_.size(); i++) {
+		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
+			weapons_[i] = std::make_unique<Rifle>();
+			weapons_[i]->Initialize(object3dCommon, bulletManager, weaponFilePath);
+			weapons_[i]->SetOwnerObject(this);
+		}else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
+			weapons_[i] = std::make_unique<Bazooka>();
+			weapons_[i]->Initialize(object3dCommon, bulletManager, weaponFilePath);
+			weapons_[i]->SetOwnerObject(this);
+		}
+	}
 }
 
 //===================================================================================
@@ -146,7 +159,8 @@ void Player::Update() {
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
-	weapon_->Update();
+	weapons_[0]->Update();
+	weapons_[1]->Update(); // 2つ目の武器がある場合はここで更新
 }
 
 //===================================================================================
@@ -154,6 +168,7 @@ void Player::Update() {
 //===================================================================================
 
 void Player::UpdateImGui() {
+#ifdef _DEBUG
 
 	ImGui::Begin("Player");
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
@@ -163,7 +178,11 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat3("Velocity", &velocity_.x, 0.01f);
 	ImGui::DragFloat3("MoveDirection", &moveDirection_.x, 0.01f);
 	ImGui::Text("Behavior: %d", static_cast<int>(behavior_));
+	weapons_[0]->UpdateImGui();
+	weapons_[1]->UpdateImGui(); // 2つ目の武器がある場合はここで更新
 	ImGui::End();
+
+#endif // _DEBUG
 }
 
 //===================================================================================
@@ -172,7 +191,11 @@ void Player::UpdateImGui() {
 
 void Player::Draw() {
 	object3d_->Draw();
-	weapon_->Draw();
+	for(const auto& weapon : weapons_) {
+		if (weapon) {
+			weapon->Draw();
+		}
+	}
 }
 
 void Player::DrawCollider() {
@@ -255,7 +278,17 @@ void Player::UpdateAttack() {
 
 	if (Input::GetInstance()->PushButton(0,GamepadButtonType::RB)) {
 		//攻撃の初期化
-		weapon_->Attack();
+		if (weapons_[0]->IsChargeAttack() == true) {
+
+		} else {
+			// 通常攻撃
+			weapons_[0]->Attack();
+		}
+
+	}
+	if (Input::GetInstance()->PushButton(0, GamepadButtonType::LB)) {
+		//攻撃の初期化
+		weapons_[1]->Attack();
 	}
 }
 
@@ -308,7 +341,21 @@ void Player::InitDash() {
 
 }
 
+
 void Player::UpdateDash() {
+}
+
+
+//===================================================================================
+//　チャージ攻撃処理
+//===================================================================================
+void Player::InitChargeShoot() {
+
+	velocity_ = { 0.0f, 0.0f, 0.0f }; // チャージ攻撃時は移動速度をリセット
+}
+void Player::UpdateChargeShoot() {
+
+
 }
 
 //===================================================================================

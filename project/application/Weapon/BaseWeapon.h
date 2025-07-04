@@ -3,6 +3,7 @@
 #include "Object3dCommon.h"
 #include "Entity/GameCharacter.h"
 #include "Weapon/Bullet/BulletManager.h"
+#include "Weapon/WeaponType.h"
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -18,24 +19,20 @@ public:
 	virtual void Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) = 0;
 	//武器の更新
 	virtual void Update() = 0;
+	//ImGuiの更新
+	virtual void UpdateImGui() = 0;
 	//武器の描画
 	virtual void Draw() = 0;
 	//武器の攻撃
 	virtual void Attack() = 0;
 	//武器タイプの取得
-	virtual int32_t GetWeaponType() const = 0;
+	virtual const WeaponType& GetWeaponType() const = 0;
 	//所有者の設定
 	virtual void SetOwnerObject(GameCharacter* owener) { ownerObject_ = owener; }
 
 	virtual void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
 
-public:
-
-	enum class WeaponType {
-		//武器の種類
-		WEAPON_TYPE_RIFLE = 0,
-		WEAPON_TYPE_MAX,
-	};
+	virtual bool IsChargeAttack() const { return chargeAttack_; }
 
 protected:
 
@@ -50,7 +47,7 @@ protected:
 	Vector3 targetPos_;
 
 	//武器の種類
-	int32_t weaponType_ = -1;
+	WeaponType weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
 	//武器の攻撃力
 	int32_t attackPower_ = 0;
 	//攻撃間隔
@@ -59,4 +56,11 @@ protected:
 	int32_t bulletCount_ = 0;
 	//弾薬の最大数
 	int32_t maxBulletCount_;
+	//弾のスピード
+	float bulletSpeed_ = 0.0f;
+
+	// チャージ攻撃
+	bool chargeAttack_ = false;  // チャージ攻撃フラグ
+	float chargeTime_ = 0.0f;    // チャージ時間
+	float chargeMaxTime_ = 2.0f; // 最大チャージ時間
 };

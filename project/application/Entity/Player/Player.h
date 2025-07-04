@@ -1,6 +1,7 @@
 #pragma once
 #include "application/Entity/GameCharacter.h"
 #include "Weapon/BaseWeapon.h"
+#include "Weapon/WeaponType.h"
 #include "camera/Camera.h"
 #include <optional>
 
@@ -28,7 +29,7 @@ private:
 		RUNNING,
 		JUMP,
 		DASH,
-		CHARGEATTACK, //
+		CHARGESHOOT, //
 		HEAVYDAMAGE,
 		STEPBOOST,
 		FLOATING,
@@ -37,6 +38,7 @@ private:
 	void InitRunning();
 	void InitJump();
 	void InitDash();
+	void InitChargeShoot();
 	void InitStepBoost();
 	void InitFloating();
 
@@ -45,6 +47,7 @@ private:
 	void UpdateDamage();
 	void UpdateJump();
 	void UpdateDash();
+	void UpdateChargeShoot();
 	void UpdateStepBoost();
 	void UpdateFloating();
 
@@ -61,7 +64,8 @@ private:
 	Behavior behavior_ = Behavior::IDLE;
 	Behavior prevBehavior_ = Behavior::IDLE;
 	//プレイヤーの武器
-	std::unique_ptr<BaseWeapon> weapon_ = nullptr;
+	std::vector<std::unique_ptr<BaseWeapon>> weapons_;
+	std::vector<WeaponType> weaponTypes_;
 
 	//補足対象の座標
 	Vector3 focusTargetPos_ = { 0.0f,0.0f,0.0f };

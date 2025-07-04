@@ -9,9 +9,10 @@ public:
 
 	void Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& filePath) override;
 	void Update() override;
+	void UpdateImGui() override;
 	void Draw() override;
 	void Attack() override;
-	int32_t GetWeaponType() const override { return weaponType_; }
+	const WeaponType& GetWeaponType() const override { return weaponType_; }
 	void SetOwnerObject(GameCharacter* owner) override;
 	void SetTarget(const Vector3& targetPos) override { targetPos_ = targetPos; }
 
