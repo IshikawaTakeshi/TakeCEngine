@@ -106,6 +106,9 @@ void Enemy::UpdateAI(float deltaTime) {
 
 void Enemy::Update() {
 
+	// deltaTimeを更新
+	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+
 	// AI更新処理（既存の行動システムより優先）
 	if (aiStateMachine_) {
 		UpdateAI(deltaTime_);
@@ -193,6 +196,14 @@ void Enemy::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
+	
+	// AI状態情報を表示
+	if (aiStateMachine_) {
+		ImGui::Text("AI State: %s", aiStateMachine_->GetCurrentStateName().c_str());
+	} else {
+		ImGui::Text("AI State: Not initialized");
+	}
+	
 	object3d_->UpdateImGui("Enemy");
 	ImGui::End();
 #endif // _DEBUG
