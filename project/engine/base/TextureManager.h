@@ -5,6 +5,7 @@
 
 #include <wrl.h>
 #include <cstdint>
+#include <ctime>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -47,16 +48,22 @@ public:
 	void Finalize();
 
 	/// <summary>
+	/// テクスチャの更新チェックと再読み込み
+	/// </summary>
+	void CheckAndReloadTextures();
+
+	/// <summary>
 	/// テクスチャファイルの読み込み
 	/// </summary>
 	/// <param name="filePath">テクスチャファイルのパス</param>
 	/// <returns>画像イメージデータ</returns>
-	void LoadTexture(const std::string& filePath);
+	void LoadTexture(const std::string& filePath,bool forceReload);
+
+private:
 
 	/// <summary>
 	/// テクスチャリソースの作成
 	/// </summary>
-	/// <param name="device"></param>
 	/// <param name="metadata"></param>
 	/// <returns></returns>
 	[[nodiscard]]
@@ -71,6 +78,10 @@ public:
 	[[nodiscard]]
 	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 
+	/// <summary>
+	/// ファイルの最終更新時刻を取得
+	/// </summary>
+	time_t GetFileLastWriteTime(const std::string& filePath);
 public:
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -85,6 +96,9 @@ public:
 	const DirectX::TexMetadata& GetMetadata(const std::string& filePath);
 
 	SrvManager* GetSrvManager() { return srvManager_; }
+
+	//現在読み込み済みのファイル名一覧を取得する
+	std::vector<std::string> GetLoadedTextureFileNames() const;
 
 private:
 
@@ -123,10 +137,8 @@ private:
 
 	//テクスチャデータのリスト
 	std::unordered_map<std::string, TextureData> textureDatas_;
-
-
+	//テクスチャファイルの更新時刻を管理するマップ
+	std::unordered_map<std::string, time_t> fileUpdateTimes_;
 
 	SrvManager* srvManager_ = nullptr;
-
 };
-

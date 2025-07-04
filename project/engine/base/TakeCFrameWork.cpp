@@ -5,6 +5,7 @@
 using Clock = std::chrono::high_resolution_clock;
 
 std::unique_ptr<Animator> TakeCFrameWork::animator_ = nullptr;
+std::unique_ptr<JsonLoader> TakeCFrameWork::jsonLoader_ = nullptr;
 std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
 std::unique_ptr<PrimitiveDrawer> TakeCFrameWork::primitiveDrawer_ = nullptr;
 std::unique_ptr<PostEffectManager> TakeCFrameWork::postEffectManager_= nullptr;
@@ -41,6 +42,9 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	audio_ = AudioManager::GetInstance();
 	audio_->Initialize();
 
+	//JsonLoader
+	jsonLoader_ = std::make_unique<JsonLoader>();
+
 	//SpriteCommon
 	spriteCommon_ = SpriteCommon::GetInstance();
 	spriteCommon_->Initialize(directXCommon_.get());
@@ -68,6 +72,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//ParticleManager
 	particleManager_ = std::make_unique<ParticleManager>();
 
+	
 	//PrimitiveDrawer
 	primitiveDrawer_ = std::make_unique<PrimitiveDrawer>();
 	primitiveDrawer_->Initialize(directXCommon_.get(), srvManager_.get());
@@ -89,6 +94,8 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	imguiManager_ = new ImGuiManager();
 	imguiManager_->Initialize(winApp_.get(), directXCommon_.get(), srvManager_.get());
 #endif
+
+	//sceneManager
 	sceneManager_ = SceneManager::GetInstance();
 
 }
@@ -109,6 +116,7 @@ void TakeCFrameWork::Finalize() {
 	CameraManager::GetInstance()->Finalize();
 	ResourceBarrier::GetInstance()->Finalize();
 	postEffectManager_->Finalize();
+	renderTexture_.reset();
 	particleManager_->Finalize();
 	primitiveDrawer_->Finalize();
 	particleCommon_->Finalize();
@@ -151,8 +159,13 @@ void TakeCFrameWork::Update() {
 
 	//シーンの更新
 	sceneManager_->Update();
+	sceneManager_->UpdateImGui();
 	postEffectManager_->UpdateImGui();
 
+	//ImGuiのRenderTextureのSRVインデックスを設定
+	imguiManager_->SetRenderTextureIndex(postEffectManager_->GetFinalOutputSrvIndex()); 
+
+	imguiManager_->DrawDebugScreen();
 #ifdef _DEBUG
 	imguiManager_->End();
 #endif // DEBUG
@@ -194,6 +207,13 @@ ParticleManager* TakeCFrameWork::GetParticleManager() {
 Animator* TakeCFrameWork::GetAnimator() {
 	assert(animator_ != nullptr);
 	return animator_.get();
+}
+//====================================================================
+//			JSONローダーの取得
+//====================================================================
+JsonLoader* TakeCFrameWork::GetJsonLoader() {
+	assert(jsonLoader_ != nullptr);
+	return jsonLoader_.get();
 }
 
 PrimitiveDrawer* TakeCFrameWork::GetPrimitiveDrawer() {

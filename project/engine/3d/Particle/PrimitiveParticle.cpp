@@ -12,7 +12,7 @@
 #include <numbers>
 
 PrimitiveParticle::PrimitiveParticle(PrimitiveType type) {
-	type_ = type;
+	particlePreset_.primitiveType = type;
 }
 
 PrimitiveParticle::~PrimitiveParticle() {}
@@ -44,16 +44,18 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 	//Mapping
 	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
 
-	if (type_ == PRIMITIVE_RING) {
+	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
 		//プリミティブの初期化
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(1.0f, 0.5f, filePath);
-	} else if (type_ == PRIMITIVE_PLANE) {
+	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(1.0f, 1.0f, filePath);
-	} else if (type_ == PRIMITIVE_SPHERE) {
+	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(1.0f, filePath);
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");
 	}
+
+	particlePreset_.textureFilePath = filePath;
 }
 
 void PrimitiveParticle::Update() {
@@ -104,16 +106,19 @@ void PrimitiveParticle::Update() {
 }
 
 void PrimitiveParticle::UpdateImGui() {
+#ifdef _DEBUG
+	ParticleAttributes& attributes = particlePreset_.attribute;
 
 	ImGui::Begin("Particle");
 	ImGui::Text("Instance Count : %d", numInstance_);
-	ImGui::DragFloat3("RingScale", &particleAttributes_.scale.x, 0.01f);
-	ImGui::DragFloat2("RotateRange", &particleAttributes_.rotateRange.min, 0.01f);
-	ImGui::DragFloat2("PositionRange", &particleAttributes_.positionRange.min, 0.01f);
-	ImGui::DragFloat2("VelocityRange", &particleAttributes_.velocityRange.min, 0.01f);
-	ImGui::DragFloat2("ColorRange", &particleAttributes_.colorRange.min, 0.01f);
-	ImGui::Checkbox("isBillboard", &particleAttributes_.isBillboard);
+	ImGui::DragFloat3("RingScale", &attributes.scale.x, 0.01f);
+	ImGui::DragFloat2("RotateRange", &attributes.rotateRange.min, 0.01f);
+	ImGui::DragFloat2("PositionRange", &attributes.positionRange.min, 0.01f);
+	ImGui::DragFloat2("VelocityRange", &attributes.velocityRange.min, 0.01f);
+	ImGui::DragFloat2("ColorRange", &attributes.colorRange.min, 0.01f);
+	ImGui::Checkbox("isBillboard", &attributes.isBillboard);
 	ImGui::End();
+#endif // _DEBUG
 }
 
 void PrimitiveParticle::Draw() {
@@ -121,7 +126,8 @@ void PrimitiveParticle::Draw() {
 
 	BaseParticleGroup::Draw();
 	//プリミティブの描画
-	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(particleCommon_->GetGraphicPSO(), numInstance_, type_, primitiveHandle_);
+	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(
+		particleCommon_->GetGraphicPSO(), numInstance_, particlePreset_.primitiveType, primitiveHandle_);
 }
 
 Particle PrimitiveParticle::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
@@ -139,12 +145,30 @@ void PrimitiveParticle::SpliceParticles(std::list<Particle> particles) {
 	BaseParticleGroup::SpliceParticles(particles);
 }
 
+void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
+	particlePreset_ = preset;
+	//テクスチャファイルパスの設定
+	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetRingData(primitiveHandle_)->material_;
+		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+	}else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetPlaneData(primitiveHandle_)->material_;
+		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetSphereData(primitiveHandle_)->material_;
+		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+	} else {
+		assert(0 && "未対応の PrimitiveType が指定されました");
+	}
+}
+
 void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIterator) {
 
 	//particle1つの位置更新
+	ParticleAttributes& attributes = particlePreset_.attribute;
 
-	if (particleAttributes_.isTraslate_) {
-		if (particleAttributes_.enableFollowEmitter_) {
+	if (attributes.isTraslate_) {
+		if (attributes.enableFollowEmitter_) {
 			//エミッターに追従する場合
 			(*particleIterator).transforms_.translate = emitterPos_;
 		} else {
@@ -153,35 +177,35 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 		}
 	}
 
-	if (particleAttributes_.isScale_ == 1) {
+	if (attributes.scaleSetting_ == static_cast<uint32_t>(ScaleSetting::ScaleUp)) {
 		//スケールの更新(拡大)
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
-			particleAttributes_.scaleRange.min,
-			particleAttributes_.scaleRange.max,
+			attributes.scaleRange.min,
+			attributes.scaleRange.max,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 
 		(*particleIterator).transforms_.scale.y = Easing::Lerp(
-			particleAttributes_.scaleRange.min,
-			particleAttributes_.scaleRange.max,
+			attributes.scaleRange.min,
+			attributes.scaleRange.max,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 		(*particleIterator).transforms_.scale.z = Easing::Lerp(
-			particleAttributes_.scaleRange.min,
-			particleAttributes_.scaleRange.max,
+			attributes.scaleRange.min,
+			attributes.scaleRange.max,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 
-	} else if (particleAttributes_.isScale_ == 2) {
+	} else if (attributes.scaleSetting_ == static_cast<uint32_t>(ScaleSetting::ScaleDown)) {
 		//スケールの更新(縮小)
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
-			particleAttributes_.scaleRange.max,
-			particleAttributes_.scaleRange.min,
+			attributes.scaleRange.max,
+			attributes.scaleRange.min,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 		(*particleIterator).transforms_.scale.y = Easing::Lerp(
-			particleAttributes_.scaleRange.max,
-			particleAttributes_.scaleRange.min,
+			attributes.scaleRange.max,
+			attributes.scaleRange.min,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 		(*particleIterator).transforms_.scale.z = Easing::Lerp(
-			particleAttributes_.scaleRange.max,
-			particleAttributes_.scaleRange.min,
+			attributes.scaleRange.max,
+			attributes.scaleRange.min,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 	}
 

@@ -1,6 +1,6 @@
 #include "Vector3.h"
 #include "Vector3Math.h"
-
+#include "Utility/Logger.h"
 
 //===============================================================
 //		二項演算子
@@ -31,7 +31,7 @@ Vector3 operator*(const Vector3& v, float s) {
 }
 
 Vector3 operator*(const Vector3& v1, const Vector3& v2) {
-	
+
 	return Vector3Math::Multiply(v1, v2);
 }
 
@@ -41,6 +41,21 @@ Vector3 operator/(float s, const Vector3& v) {
 
 Vector3 operator/(const Vector3& v, float s) {
 	return s / v;
+}
+
+void to_json(nlohmann::json& j, const Vector3& v) {
+	j = json{
+		{"x", v.x},
+		{"y", v.y},
+		{"z", v.z}
+	};
+}
+
+void from_json(const nlohmann::json& j, Vector3& v) {
+
+	j.at("x").get_to(v.x);
+	j.at("y").get_to(v.y);
+	j.at("y").get_to(v.z);
 }
 
 

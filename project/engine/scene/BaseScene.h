@@ -1,4 +1,5 @@
 #pragma once
+#include "LevelData.h"
 class SceneManager;
 class BaseScene {
 public:
@@ -11,11 +12,13 @@ public:
 
 	virtual void Update() = 0;
 
+	virtual void UpdateImGui() = 0;
+
 	virtual void Draw() = 0;
 
 	virtual void SetSceneManager(SceneManager* sceneManager) {sceneManager_ = sceneManager; }
 
-private:
+protected:
 
 	//シーンマネージャー(このクラスで解放しないこと)
 	SceneManager* sceneManager_ = nullptr;

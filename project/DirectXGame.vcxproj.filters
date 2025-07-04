@@ -35,7 +35,7 @@
     <ClCompile Include="engine\scene\GameClearScene.cpp" />
     <ClCompile Include="engine\scene\GameOverScene.cpp" />
     <ClCompile Include="engine\Collision\BoxCollider.cpp" />
-    <ClCompile Include="engine\base\JsonLoader.cpp" />
+    <ClCompile Include="engine\Utility\JsonLoader.cpp" />
     <ClCompile Include="application\Weapon\Bullet\Bullet.cpp" />
     <ClCompile Include="application\Weapon\Bullet\BulletManager.cpp" />
     <ClCompile Include="application\Entity\Enemy\Enemy.cpp" />
@@ -119,6 +119,11 @@
     <ClCompile Include="application\Weapon\BaseWeapon.cpp" />
     <ClCompile Include="application\Weapon\Rifle.cpp" />
     <ClCompile Include="application\Weapon\Bullet\BulletPool.cpp" />
+    <ClCompile Include="engine\3d\Particle\ParticleEmitterAllocater.cpp" />
+    <ClCompile Include="engine\3d\Particle\ParticleEditor.cpp" />
+    <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
+    <ClCompile Include="engine\scene\ParticleEditScene.cpp" />
+    <ClCompile Include="engine\3d\Primitive\PrimitiveType.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Collision\Collider.h" />
@@ -129,7 +134,7 @@
     <ClInclude Include="engine\scene\GameClearScene.h" />
     <ClInclude Include="engine\scene\GameOverScene.h" />
     <ClInclude Include="engine\Collision\BoxCollider.h" />
-    <ClInclude Include="engine\base\JsonLoader.h" />
+    <ClInclude Include="engine\Utility\JsonLoader.h" />
     <ClInclude Include="application\Weapon\Bullet\Bullet.h" />
     <ClInclude Include="application\Weapon\Bullet\BulletManager.h" />
     <ClInclude Include="application\Entity\Enemy\Enemy.h" />
@@ -226,6 +231,12 @@
     <ClInclude Include="engine\PostEffect\Vignette.h" />
     <ClInclude Include="application\Weapon\BaseWeapon.h" />
     <ClInclude Include="application\Weapon\Rifle.h" />
+    <ClInclude Include="engine\3d\Particle\ParticleEmitterAllocater.h" />
+    <ClInclude Include="engine\3d\Particle\ParticleEditor.h" />
+    <ClInclude Include="engine\3d\Particle\ParticleAttribute.h" />
+    <ClInclude Include="engine\scene\ParticleEditScene.h" />
+    <ClInclude Include="engine\scene\LevelData.h" />
+    <ClInclude Include="engine\3d\Primitive\PrimitiveType.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

@@ -7,7 +7,11 @@ void GrayScale::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, cons
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource) {
 
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx,outputResource);
-
+	//PSOの名前付け
+	computePSO_->SetComputePipelineName("GrayScalePSO");
+	//Bufferの名前付け
+	inputResource_->SetName(L"GrayScale::inputResource_");
+	outputResource_->SetName(L"GrayScale::outputResource_");
 	//grayScaleTypeResource
 	grayScaleTypeResource_ = dxCommon_->CreateBufferResource(dxCommon_->GetDevice(), sizeof(int32_t));
 	grayScaleTypeResource_->SetName(L"grayScaleTypeResource_");

@@ -28,7 +28,6 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 
 	particleCommon_ = particleCommon;
 
-	textrueFilePath_ = filePath;
 	//instancing用のResource生成
 	particleResource_ =
 		DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
@@ -56,16 +55,19 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	//Mapping
 	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
 
+	ParticleAttributes& attributes = particlePreset_.attribute;
+
 	//属性初期化
-	particleAttributes_.scale = { 1.0f,1.0f,1.0f };
-	particleAttributes_.positionRange = { 2.0f,2.0f };
-	particleAttributes_.scaleRange = { 1.0f,1.0f };
-	particleAttributes_.rotateRange = { -std::numbers::pi_v<float>, std::numbers::pi_v<float> };
-	particleAttributes_.velocityRange = { 0.0f,1.0f };
-	particleAttributes_.colorRange = { 0.0f,1.0f };
-	particleAttributes_.lifetimeRange = { 5.0f,5.0f };
-	particleAttributes_.editColor = true;
-	particleAttributes_.color = { 0.9f,0.3f,0.9f };
+	attributes.scale = { 1.0f,1.0f,1.0f };
+	attributes.positionRange = { 2.0f,2.0f };
+	attributes.scaleRange = { 1.0f,1.0f };
+	attributes.rotateRange = { -std::numbers::pi_v<float>, std::numbers::pi_v<float> };
+	attributes.velocityRange = { 0.0f,1.0f };
+	attributes.colorRange = { 0.0f,1.0f };
+	attributes.lifetimeRange = { 5.0f,5.0f };
+	attributes.editColor = true;
+	attributes.color = { 0.9f,0.3f,0.9f };
+	particlePreset_.textureFilePath = filePath;
 	//モデルの読み込み
 	SetModel(filePath);
 	//TakeCFrameWork::GetPrimitiveDrawer()->CreateRingVertexData();
@@ -128,18 +130,21 @@ void Particle3d::Update() {
 
 void Particle3d::UpdateImGui() {
 #ifdef _DEBUG
+
+	ParticleAttributes& attributes = particlePreset_.attribute;
+
 	ImGui::Text("Particle3d");
 	ImGui::Text("ParticleCount:%d", numInstance_);
 	particleCommon_->GetGraphicPSO()->UpdateImGui();
 	ImGui::Separator();
-	ImGui::DragFloat3("Scale", &particleAttributes_.scale.x, 0.01f);
-	ImGui::DragFloat2("PositionRange", &particleAttributes_.positionRange.min, 0.01f);
-	ImGui::DragFloat2("VelocityRange", &particleAttributes_.velocityRange.min, 0.01f);
-	ImGui::DragFloat2("ColorRange", &particleAttributes_.colorRange.min, 0.01f);
-	ImGui::DragFloat2("LifetimeRange", &particleAttributes_.lifetimeRange.min, 0.01f);
-	ImGui::Checkbox("EditColor", &particleAttributes_.editColor);
-	if (particleAttributes_.editColor) {
-		ImGui::ColorEdit3("Color", &particleAttributes_.color.x);
+	ImGui::DragFloat3("Scale", &attributes.scale.x, 0.01f);
+	ImGui::DragFloat2("PositionRange", &attributes.positionRange.min, 0.01f);
+	ImGui::DragFloat2("VelocityRange", &attributes.velocityRange.min, 0.01f);
+	ImGui::DragFloat2("ColorRange", &attributes.colorRange.min, 0.01f);
+	ImGui::DragFloat2("LifetimeRange", &attributes.lifetimeRange.min, 0.01f);
+	ImGui::Checkbox("EditColor", &attributes.editColor);
+	if (attributes.editColor) {
+		ImGui::ColorEdit3("Color", &attributes.color.x);
 	}
 
 #endif // _DEBUG
@@ -194,9 +199,10 @@ void Particle3d::SetModel(const std::string& filePath) {
 
 void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) {
 	//particle1つの位置更新
+	ParticleAttributes& attributes = particlePreset_.attribute;
 
-	if (particleAttributes_.isTraslate_) {
-		if (particleAttributes_.enableFollowEmitter_) {
+	if (attributes.isTraslate_) {
+		if (attributes.enableFollowEmitter_) {
 			//エミッターに追従する場合
 			(*particleIterator).transforms_.translate = emitterPos_;
 		} else {
@@ -205,11 +211,11 @@ void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) 
 		}
 	}
 
-	if (particleAttributes_.isScale_) {
+	if (attributes.scaleSetting_) {
 		//スケールの更新
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
-			particleAttributes_.scaleRange.min,
-			particleAttributes_.scaleRange.max,
+			attributes.scaleRange.min,
+			attributes.scaleRange.max,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 
 		(*particleIterator).transforms_.scale.y = (*particleIterator).transforms_.scale.x;

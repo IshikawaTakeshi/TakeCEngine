@@ -62,11 +62,23 @@ void ImGuiManager::End() {
 	ImGui::Render();
 }
 
-void ImGuiManager::Draw() {
+void ImGuiManager::DrawDebugScreen() {
+	ImGui::Begin("ImGuiManager");
+	ImGui::Image(
+		ImTextureID(srvManager_->GetSrvDescriptorHandleGPU(renderTextureIndex_).ptr),
+		ImVec2(static_cast<float>(WinApp::kScreenWidth), static_cast<float>(WinApp::kScreenHeight)),
+		ImVec2(0, 0), // UV座標の左上
+		ImVec2(1, 1)  // UV座標の右下
+	);
+	ImGui::End();
+}
+
+void ImGuiManager::PostDraw() {
 
 	ID3D12GraphicsCommandList* commandList =  dxCommon_->GetCommandList();
-	ID3D12DescriptorHeap* ppHeaps[] = { srvManager_->GetSrvHeap() };
-	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	//ID3D12DescriptorHeap* ppHeaps[] = { srvManager_->GetSrvHeap() };
+
+	//commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
 	//実際のcommandListのImGuiの描画コマンドを積む
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);

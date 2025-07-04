@@ -103,6 +103,6 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexCountResource_;
 
 	//IndexBufferView用のリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexBuffer_;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 };

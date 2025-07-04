@@ -105,9 +105,9 @@ void Sprite::Update() {
 }
 
 #ifdef _DEBUG
-void Sprite::UpdateImGui(int id) {
+void Sprite::UpdateImGui(const std::string& name) {
 	//ImGuiの更新
-	std::string windowName = "Sprite" + std::to_string(id);
+	std::string windowName = "Sprite" + name;
 	ImGui::Begin("Sprite");
 	if (ImGui::TreeNode(windowName.c_str())) {
 		ImGui::DragFloat2("SpriteTranslate", &position_.x, 1);

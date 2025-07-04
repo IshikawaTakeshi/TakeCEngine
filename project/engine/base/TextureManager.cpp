@@ -3,6 +3,9 @@
 #include "Utility/StringUtility.h"
 #include "TransformMatrix.h"
 #include <cassert>
+#include <filesystem>
+#include <chrono>
+
 
 TextureManager* TextureManager::instance_ = nullptr;
 
@@ -47,14 +50,35 @@ void TextureManager::Finalize() {
 	
 }
 
+//=============================================================================================
+///			テクスチャの更新チェック
+//=============================================================================================
+
+void TextureManager::CheckAndReloadTextures() {
+
+	//テクスチャの更新チェック
+	for(auto& [filePath, textureData] : textureDatas_) {
+		std::string fullPath = "Resources/images/" + filePath;
+		//ファイルの最終更新日時を取得
+		time_t newTime = GetFileLastWriteTime(fullPath);
+
+		if (fileUpdateTimes_[filePath] != newTime) {
+			//更新されていたら再読み込み
+			LoadTexture(filePath, true);
+			//更新日時を更新
+			fileUpdateTimes_[filePath] = newTime;
+		}
+	}
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///			テクスチャファイルの読み込み
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void TextureManager::LoadTexture(const std::string& filePath) {
+void TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
 
 	//読み込み済みテクスチャを検索
-	if (textureDatas_.contains(filePath)) {
+	if (!forceReload && textureDatas_.contains(filePath)) {
 		return;
 	}
 
@@ -123,9 +147,9 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///=================================================================================================
 ///			テクスチャリソースの作成
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//==================================================================================================
 
 Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(const DirectX::TexMetadata& metadata) {
 
@@ -157,7 +181,12 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(con
 	return textureResource;
 }
 
-Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
+//============================================================================================
+//			テクスチャデータのアップロード
+//============================================================================================
+
+ComPtr<ID3D12Resource> TextureManager::UploadTextureData(
+	ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
 
 	//サブリソースの作成
 	std::vector<D3D12_SUBRESOURCE_DATA> subresources;
@@ -192,10 +221,18 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(Microso
 	return intermediateResource;
 }
 
+//============================================================================================
+///			テクスチャのSRVハンドルを取得
+//============================================================================================
+
 D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(const std::string& filePath) {
 	assert(textureDatas_.contains(filePath));
 	return textureDatas_.at(filePath).srvHandleGPU;
 }
+
+//============================================================================================
+// テクスチャのSRVハンドルを取得
+//============================================================================================
 
 uint32_t TextureManager::GetSrvIndex(const std::string& filePath) {
 
@@ -207,8 +244,49 @@ uint32_t TextureManager::GetSrvIndex(const std::string& filePath) {
 	return 0;
 }
 
+//============================================================================================
+// テクスチャのメタデータを取得
+//============================================================================================
+
 const DirectX::TexMetadata& TextureManager::GetMetadata(const std::string& filePath) {
 	assert(textureDatas_.contains(filePath));
 	return textureDatas_.at(filePath).metadata;
 }
 
+//=====================================================================
+// 読み込んだテクスチャのファイル名を取得
+//=====================================================================
+
+std::vector<std::string> TextureManager::GetLoadedTextureFileNames() const {
+	std::vector<std::string> fileNames;
+	for (const auto& pair : textureDatas_) {
+		fileNames.push_back(pair.first);
+	}
+	return fileNames;
+}
+
+//============================================================================================
+//			ファイルの最終更新日時を取得
+//============================================================================================
+
+time_t TextureManager::GetFileLastWriteTime(const std::string& filePath) {
+	namespace fs = std::filesystem;
+	namespace chrono = std::chrono;
+	try {
+		if(!fs::exists(filePath)) {
+			return 0;
+		}
+
+		//ファイルの最終更新日時を取得
+		auto ftime = fs::last_write_time(filePath);
+		// std::filesystem::file_time_typeはクロックの型なので、system_clockに変換
+		auto sctp = chrono::clock_cast<chrono::system_clock>(ftime);
+		return chrono::system_clock::to_time_t(sctp);
+		
+
+	}catch (...) {
+		// エラー処理
+		assert(false && "ファイルの最終更新日時の取得に失敗しました。");
+		return 0;
+	}
+}

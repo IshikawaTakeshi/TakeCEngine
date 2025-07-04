@@ -24,6 +24,9 @@ public:
 	//更新処理
 	void Update() override;
 
+	//ImGuiの更新処理
+	void UpdateImGui() override;
+
 	//描画処理
 	void Draw() override;
 

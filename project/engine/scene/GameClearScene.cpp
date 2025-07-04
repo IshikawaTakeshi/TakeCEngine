@@ -61,13 +61,6 @@ void GameClearScene::Finalize() {
 
 void GameClearScene::Update() {
 
-#ifdef _DEBUG
-	CameraManager::GetInstance()->UpdateImGui();
-	Object3dCommon::GetInstance()->UpdateImGui();
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
-
-#endif // DEBUG
-
 	// オーディオ再生
 	if (!isSoundPlay) {
 		//AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), gameClearBGM);
@@ -122,6 +115,14 @@ void GameClearScene::Update() {
 	default:
 		break;
 	}
+}
+
+void GameClearScene::UpdateImGui() {
+	ImGui::Begin("GameClearScene");
+	CameraManager::GetInstance()->UpdateImGui();
+	Object3dCommon::GetInstance()->UpdateImGui();
+	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	ImGui::End();
 }
 
 void GameClearScene::Draw() {

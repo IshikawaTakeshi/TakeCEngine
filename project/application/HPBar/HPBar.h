@@ -25,8 +25,8 @@ public:
 	/// <summary>
 	/// ImGui
 	/// </summary>
-	void ImGuiDebug(int id);
-	void ImGuibugeDebug(int id);
+	//void ImGuiDebug(int id);
+	//void ImGuibugeDebug(int id);
 
 	/// <summary>
 	/// 位置を設定

@@ -6,11 +6,6 @@
 
 #include <algorithm>
 
-Material::~Material() {
-
-	materialResource_.Reset();
-}
-
 void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath) {
 
 	//マテリアルリソース初期化
@@ -19,9 +14,9 @@ void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath, 
 	textureFilePath_ = filePath;
 	envMapFilePath_ = envMapfilePath;
 	//テクスチャ初期化
-	TextureManager::GetInstance()->LoadTexture(filePath);
+	TextureManager::GetInstance()->LoadTexture(filePath,false);
 	if(envMapfilePath != ""){
-		TextureManager::GetInstance()->LoadTexture(envMapfilePath);
+		TextureManager::GetInstance()->LoadTexture(envMapfilePath,false);
 	}
 
 

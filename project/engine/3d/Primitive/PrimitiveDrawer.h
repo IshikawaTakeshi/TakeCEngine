@@ -1,25 +1,19 @@
 #pragma once
-#include "DirectXCommon.h"
-#include "PipelineStateObject.h"
-#include "SrvManager.h"
-#include "Material.h"
+#include "base/DirectXCommon.h"
+#include "base/PipelineStateObject.h"
+#include "base/SrvManager.h"
+#include "3d/Material.h"
 #include "TransformMatrix.h"
 #include "ResourceDataStructure.h"
+#include "Primitive/PrimitiveType.h"
 #include <memory>
 #include <cstdint>
 #include <unordered_map>
 
-enum PrimitiveType {
-	PRIMITIVE_RING,
-	PRIMITIVE_PLANE,
-	PRIMITIVE_SPHERE,
-	PRIMITIVE_COUNT
-};
-
 struct PrimitiveMesh {
-	ComPtr<ID3D12Resource> vertexResource_ = nullptr;
+	ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
-	ComPtr<ID3D12Resource> indexResource_ = nullptr;
+	ComPtr<ID3D12Resource> indexBuffer_ = nullptr;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
 };
 
@@ -66,19 +60,14 @@ public:
 	//更新処理
 	void Update();
 
-	void UpdateImGui();
+	void UpdateImGui(uint32_t handle,PrimitiveType type);
+	void UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param);
 
-	/// <summary>
-	/// リングの描画
-	/// </summary>
-	/// <param name="outerRadius">外側の半径</param>
-	/// <param name="innerRadius">内側の半径</param>
-	/// <param name="center">中心点</param>
-	/// <param name="color">カラー</param>
+	//リングデータの生成
 	uint32_t GenerateRing(const float outerRadius, const float innerRadius, const std::string& textureFilePath);
-
+	// 平面データの生成
 	uint32_t GeneratePlane(const float width, const float height, const std::string& textureFilePath);
-
+	// 球データの生成
 	uint32_t GenerateSphere(const float radius, const std::string& textureFilePath);
 
 	// 描画処理
@@ -93,8 +82,6 @@ public:
 
 	void CreateSphereVertexData(SphereData* sphereData);
 
-	void CreateSphereIndexData(SphereData* sphereData);
-
 	void CreateRingMaterial(const std::string& textureFilePath,RingData* ringData);
 
 	void CreatePlaneMaterial(const std::string& textureFilePath,PlaneData* planeData);
@@ -103,9 +90,9 @@ public:
 
 	void ResetVertexIndex() { ringVertexIndex_ = 0; }
 
-	/*Material* GetRingMaterial() { return ringData_->material_; }
-
-	Material* GetPlaneMaterial() { return planeData_->material_; }*/
+	PlaneData* GetPlaneData(uint32_t handle);
+	SphereData* GetSphereData(uint32_t handle);
+	RingData* GetRingData(uint32_t handle);
 
 private:
 

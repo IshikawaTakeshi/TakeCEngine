@@ -5,12 +5,12 @@
 #include "DirectXCommon.h"
 #include "math/AABB.h"
 #include "3d/Model.h"
+#include "3d/Particle/ParticleAttribute.h"
 
 
 #include <d3d12.h>
 #include <wrl.h>
 #include <random>
-#include <numbers>
 #include <list>
 
 //Particle1個分のデータ
@@ -22,28 +22,6 @@ struct Particle {
 	float currentTime_;     //経過時間
 };
 
-struct AttributeRange {
-	float min;
-	float max;
-};
-
-// パーティクルの属性を保持する構造体
-struct ParticleAttributes {
-	Vector3 scale = { 1.0f,1.0f,1.0f };
-	Vector3 color = { 1.0f,1.0f,1.0f };
-	AttributeRange scaleRange = { 0.1f,3.0f };
-	AttributeRange rotateRange = { -std::numbers::pi_v<float>, std::numbers::pi_v<float> };
-	AttributeRange angleRange = { 0.0f, 0.0f };
-	AttributeRange positionRange = {-1.0f, 1.0f};
-	AttributeRange velocityRange = { -1.0f,1.0f };
-	AttributeRange colorRange = { 0.0f,1.0f };
-	AttributeRange lifetimeRange = { 1.0f,3.0f };
-	bool isBillboard = false; //Billboardかどうか
-	bool editColor = false; //色を編集するかどうか
-	bool isTraslate_ = false; //位置を更新するかどうか
-	uint32_t isScale_;    //スケールを更新するかどうか
-	bool enableFollowEmitter_ = false; //エミッターに追従するかどうか
-};
 
 class ParticleCommon;
 class BaseParticleGroup {
@@ -73,7 +51,9 @@ public:
 
 	void SpliceParticles(std::list<Particle> particles);
 
-	virtual void SetAttributes(const ParticleAttributes& attributes) { particleAttributes_ = attributes; }
+	const ParticlePreset& GetPreset() const { return particlePreset_; }
+
+	virtual void SetPreset(const ParticlePreset& preset);
 
 	void SetEmitterPosition(const Vector3& position);
 
@@ -91,7 +71,7 @@ protected:
 	//加速フィールド
 	//AccelerationField accelerationField_;
 	//パーティクルの属性
-	ParticleAttributes particleAttributes_;
+	ParticlePreset particlePreset_;
 
 protected:
 
@@ -107,7 +87,4 @@ protected:
 	uint32_t particleSrvIndex_ = 0;
 	ComPtr<ID3D12Resource> particleResource_;
 	ComPtr<ID3D12Resource> perViewResource_;
-
-	std::string textrueFilePath_;
 };
-

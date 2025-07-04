@@ -4,14 +4,13 @@
 #include "base/SrvManager.h"
 #include "math/Easing.h"
 #include "3d/Particle/GPUParticle.h"
+#include "2d/WireFrame.h"
 
 ParticleEmitter::~ParticleEmitter() {
-	dxCommon_ = nullptr;
-	srvManager_ = nullptr;
-	emitParticleRootSignature_.Reset();
-	emitParticlePso_.reset();
 	emitterSphereResource_.Reset();
 	perFrameResource_.Reset();
+	emitParticleRootSignature_.Reset();
+	emitParticlePso_.reset();
 }
 
 //================================================================================================
@@ -41,7 +40,7 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 	emitParticlePso_ = std::make_unique<PSO>();
 	emitParticlePso_->CompileComputeShader(dxCommon_->GetDXC(), L"EmitParticle.CS.hlsl");
 	emitParticlePso_->CreateComputePSO(dxCommon_->GetDevice());
-
+	emitParticlePso_->SetComputePipelineName("EmitParticlePSO");
 	//RootSignature生成
 	emitParticleRootSignature_ = emitParticlePso_->GetComputeRootSignature();
 
@@ -79,9 +78,11 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 	perFrameData_->deltaTime = TakeCFrameWork::GetDeltaTime();
 }
 
-void ParticleEmitter::Update(const Vector3& translate) {
+//==================================================================================
+// 更新処理
+//==================================================================================
 
-	transforms_.translate = translate;
+void ParticleEmitter::Update() {
 
 	//エミッターの更新
 	if (!isEmit_) return;
@@ -107,6 +108,10 @@ void ParticleEmitter::UpdateForGPU() {
 	}
 }
 
+//==================================================================================
+// ImGuiの更新
+//==================================================================================
+
 void ParticleEmitter::UpdateImGui() {
 
 	ImGui::Begin("ParticleEmitter");
@@ -125,9 +130,18 @@ void ParticleEmitter::UpdateImGui() {
 	ImGui::End();
 }
 
-//void ParticleEmitter::DrawEmitRange() {
-//	//model_->Draw();
-//}
+//==================================================================================
+// 描画処理
+//==================================================================================
+
+void ParticleEmitter::DrawWireFrame() {
+
+	//TakeCFrameWork::GetWireFrame()->DrawOBB(obb_, color_);
+}
+
+//==================================================================================
+// パーティクルの発生
+//==================================================================================
 
 void ParticleEmitter::Emit() {
 	TakeCFrameWork::GetParticleManager()->Emit(particleName_, transforms_.translate, particleCount_);
@@ -176,9 +190,10 @@ void ParticleEmitter::EmitParticle(GPUParticle* gpuParticle) {
 	dxCommon_->GetCommandList()->ResourceBarrier(1, &uavBarrier);
 }
 
+//==================================================================================
+// パーティクル名の設定
+//==================================================================================
+
 void ParticleEmitter::SetParticleName(const std::string& particleName) {
-
-
-
 	particleName_ = particleName;
 }

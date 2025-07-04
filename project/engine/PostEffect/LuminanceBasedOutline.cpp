@@ -7,7 +7,11 @@ void LuminanceBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvM
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx, outputResource);
-
+	//PSOの名前付け
+	computePSO_->SetComputePipelineName("LuminanceBasedOutlinePSO");
+	//Bufferの名前付け
+	inputResource_->SetName(L"LuminanceBasedOutline::inputResource_");
+	outputResource_->SetName(L"LuminanceBasedOutline::outputResource_");
 }
 
 void LuminanceBasedOutline::UpdateImGui() {

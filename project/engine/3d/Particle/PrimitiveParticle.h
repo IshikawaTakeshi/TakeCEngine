@@ -1,6 +1,6 @@
 #pragma once
 #include "3d/Particle/BaseParticleGroup.h"
-#include "Primitive/PrimitiveDrawer.h"
+#include "Primitive/PrimitiveType.h"
 
 
 class PrimitiveParticle : public BaseParticleGroup {
@@ -26,14 +26,12 @@ public:
 
 	void SpliceParticles(std::list<Particle> particles);
 
-	void SetAttributes(const ParticleAttributes& attributes) override { particleAttributes_ = attributes; }
+	void SetPreset(const ParticlePreset& preset) override;
+
+	void SetPrimitiveHandle(uint32_t handle) { primitiveHandle_ = handle; }
 
 private:
-
-	PrimitiveType type_ = PRIMITIVE_RING;
-
 	uint32_t primitiveHandle_ = 0; // プリミティブのハンドル
-
 private:
 
 	void UpdateMovement(std::list<Particle>::iterator particleIterator);

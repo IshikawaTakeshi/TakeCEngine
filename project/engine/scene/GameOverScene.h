@@ -30,6 +30,8 @@ public:
 	void Finalize() override;
 	//更新処理
 	void Update() override;
+
+	void UpdateImGui() override;
 	//描画処理
 	void Draw() override;
 private:

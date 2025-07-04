@@ -48,7 +48,7 @@ public:
 
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> GetVertexResource() {
-		return vertexResource_;
+		return vertexBuffer_;
 	}
 
 	/// <summary>
@@ -68,7 +68,7 @@ private:
 	std::unique_ptr<Material> material_ = nullptr;
 
 	//頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer_;
 	//頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViews_{};
 	//TransformationMatrix用の頂点リソース

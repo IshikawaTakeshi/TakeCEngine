@@ -7,7 +7,7 @@ Mesh::~Mesh() {
 	material_.reset();
 	inputVertexResource_.Reset();
 	outputVertexResource_.Reset();
-	indexResource_.Reset();
+	indexBuffer_.Reset();
 }
 
 void Mesh::InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath) {
@@ -208,16 +208,16 @@ void Mesh::InitializeIndexResourceSphere(ID3D12Device* device) {
 
 	// インデックスバッファのサイズを設定
 	uint32_t indexCount = (kSubdivision * kSubdivision) * 6;
-	indexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(uint32_t) * indexCount);
+	indexBuffer_ = DirectXCommon::CreateBufferResource(device, sizeof(uint32_t) * indexCount);
 
 	// インデックスバッファビューの設定
-	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
+	indexBufferView_.BufferLocation = indexBuffer_->GetGPUVirtualAddress();
 	indexBufferView_.SizeInBytes = sizeof(uint32_t) * indexCount;
 	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
 
 	// インデックスリソースにデータを書き込む
 	uint32_t* indexData = nullptr;
-	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	indexBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
 
 	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
 		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
@@ -239,9 +239,9 @@ void Mesh::InitializeIndexResourceSphere(ID3D12Device* device) {
 void Mesh::InitializeIndexResourceSprite(ID3D12Device* device) {
 
 	//リソースの作成
-	indexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(uint32_t) * 6);
+	indexBuffer_ = DirectXCommon::CreateBufferResource(device, sizeof(uint32_t) * 6);
 	//リソースの先頭のアドレスから使う
-	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
+	indexBufferView_.BufferLocation = indexBuffer_->GetGPUVirtualAddress();
 	//使用するリソースのサイズはインデックス6つ分のサイズ
 	indexBufferView_.SizeInBytes = sizeof(uint32_t) * 6;
 	//インデックスはuint32_tとする
@@ -249,7 +249,7 @@ void Mesh::InitializeIndexResourceSprite(ID3D12Device* device) {
 
 	//インデックスリソースにデータを書き込む
 	uint32_t* indexData = nullptr;
-	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	indexBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
 	indexData[0] = 0; indexData[1] = 1; indexData[2] = 2;
 	indexData[3] = 1; indexData[4] = 3; indexData[5] = 2;
 }
@@ -260,13 +260,13 @@ void Mesh::InitializeIndexResourceSprite(ID3D12Device* device) {
 
 void Mesh::InitializeIndexResourceModel(ID3D12Device* device, ModelData* modelData) {
 
-	indexResource_ = DirectXCommon::CreateBufferResource(device, sizeof(uint32_t) * modelData->indices.size());
-	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
+	indexBuffer_ = DirectXCommon::CreateBufferResource(device, sizeof(uint32_t) * modelData->indices.size());
+	indexBufferView_.BufferLocation = indexBuffer_->GetGPUVirtualAddress();
 	indexBufferView_.SizeInBytes = UINT(sizeof(uint32_t) * modelData->indices.size());
 	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
 
 	uint32_t* indexData = nullptr;
-	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	indexBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
 	std::memcpy(indexData, modelData->indices.data(), sizeof(uint32_t) * modelData->indices.size());
 }
 
