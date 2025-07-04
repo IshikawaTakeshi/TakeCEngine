@@ -85,6 +85,7 @@ void Player::Update() {
 		break;
 	}
 
+	UpdateStepBoost();
 	UpdateAttack();
 
 	//Quaternionからオイラー角に変換
@@ -108,6 +109,10 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
+	ImGui::Separator();
+	ImGui::DragFloat3("Velocity", &velocity_.x, 0.01f);
+	ImGui::DragFloat3("MoveDirection", &moveDirection_.x, 0.01f);
+
 	ImGui::End();
 }
 
@@ -202,3 +207,15 @@ void Player::UpdateDamage() {}
 void Player::UpdateJump() {}
 
 void Player::UpdateDash() {}
+
+void Player::UpdateStepBoost() {
+	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
+		//押されたときスティックを倒した方向に大きく移動する
+
+		float stepBoostSpeed = 500.0f; // ステップブーストの速度
+		//移動時の加速度の計算
+		velocity_.x += moveDirection_.x * stepBoostSpeed;
+		velocity_.z += moveDirection_.z * stepBoostSpeed;
+	}
+
+}

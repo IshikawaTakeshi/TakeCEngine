@@ -42,6 +42,8 @@ private:
 	void UpdateJump();
 	void UpdateDash();
 
+	void UpdateStepBoost();
+
 private:
 
 	//カメラ
