@@ -81,6 +81,11 @@ void GamePlayScene::Initialize() {
 	enemy_->Initialize(Object3dCommon::GetInstance(), "plane.gltf");
 	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "cube.obj");
 	//enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
+	
+	// Enemy AI初期化
+	enemy_->InitializeAI();
+	enemy_->SetPlayer(player_.get());
+}
 }
 
 //====================================================================

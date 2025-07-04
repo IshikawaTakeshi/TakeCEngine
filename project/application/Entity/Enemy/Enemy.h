@@ -5,6 +5,9 @@
 #include "3d/Particle/ParticleEmitter.h"
 #include <optional>
 
+class AIStateMachine;
+class Player;
+
 class Enemy : public GameCharacter {
 
 public:
@@ -18,6 +21,14 @@ public:
 	void OnCollisionAction(GameCharacter* other) override;
 
 	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& weaponFilePath);
+	
+	// AI関連のメソッド
+	void InitializeAI();
+	void SetPlayer(Player* player) { player_ = player; }
+	void UpdateAI(float deltaTime);
+	
+	// 武器アクセサー
+	BaseWeapon* GetWeapon() const { return weapon_.get(); }
 
 private:
 
@@ -77,6 +88,10 @@ private:
 	bool isDashing_ = false;
 	bool onGround_ = false;
 	bool isDamaged_ = false; //ダメージを受けたかどうか
+	
+	// AI関連のメンバ変数
+	std::unique_ptr<AIStateMachine> aiStateMachine_;
+	Player* player_ = nullptr; // プレイヤーへの参照（AIで使用）
 	
 };
 

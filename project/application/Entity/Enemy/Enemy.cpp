@@ -12,9 +12,17 @@
 
 #include "Weapon/Rifle.h"
 
+// AI関連のインクルード
+#include "AI/AIStateMachine.h"
+#include "AI/State/IdleState.h"
+#include "AI/State/ChaseState.h"
+#include "AI/State/AttackState.h"
+#include "AI/State/PatrolState.h"
+
 Enemy::~Enemy() {
 	object3d_.reset();
 	collider_.reset();
+	aiStateMachine_.reset();
 }
 
 //========================================================================================================
@@ -64,52 +72,86 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 	weapon_->SetOwnerObject(this);
 }
 
+void Enemy::InitializeAI() {
+	// AIステートマシンの初期化
+	aiStateMachine_ = std::make_unique<AIStateMachine>();
+	
+	// 各状態を追加
+	aiStateMachine_->AddState("Idle", std::make_unique<IdleState>());
+	aiStateMachine_->AddState("Chase", std::make_unique<ChaseState>());
+	aiStateMachine_->AddState("Attack", std::make_unique<AttackState>());
+	
+	// 巡回ポイントを設定してパトロール状態を追加
+	std::vector<Vector3> patrolPoints = {
+		{10.0f, 0.0f, 10.0f},
+		{-10.0f, 0.0f, 10.0f},
+		{-10.0f, 0.0f, -10.0f},
+		{10.0f, 0.0f, -10.0f}
+	};
+	aiStateMachine_->AddState("Patrol", std::make_unique<PatrolState>(patrolPoints));
+	
+	// 初期状態をIdleに設定
+	aiStateMachine_->ChangeState("Idle");
+}
+
+void Enemy::UpdateAI(float deltaTime) {
+	if (aiStateMachine_ && player_) {
+		aiStateMachine_->Update(this, player_, deltaTime);
+	}
+}
+
 //========================================================================================================
 // 更新処理
 //========================================================================================================
 
 void Enemy::Update() {
 
-	if (behaviorRequest_) {
+	// AI更新処理（既存の行動システムより優先）
+	if (aiStateMachine_) {
+		UpdateAI(deltaTime_);
+	} else {
+		// 既存の行動システム（AIが初期化されていない場合のフォールバック）
+		if (behaviorRequest_) {
 
-		behavior_ = behaviorRequest_.value();
+			behavior_ = behaviorRequest_.value();
 
-		switch (behavior_) {
-		case Behavior::IDLE:
-			break;
-		case Behavior::RUNNING:
-			InitRunning();
-			break;
-		case Behavior::JUMP:
-			InitJump();
-			break;
-		case Behavior::DASH:
-			InitDash();
-			break;
+			switch (behavior_) {
+			case Behavior::IDLE:
+				break;
+			case Behavior::RUNNING:
+				InitRunning();
+				break;
+			case Behavior::JUMP:
+				InitJump();
+				break;
+			case Behavior::DASH:
+				InitDash();
+				break;
+			}
+
+			behaviorRequest_ = std::nullopt;
 		}
 
-		behaviorRequest_ = std::nullopt;
-	}
+		switch (behavior_) {
+		case Enemy::Behavior::IDLE:
+			break;
+		case Enemy::Behavior::RUNNING:
+			UpdateRunning();
+			break;
+		case Enemy::Behavior::JUMP:
+			UpdateJump();
+			break;
+		case Enemy::Behavior::DASH:
+			UpdateDash();
+			break;
+		case Enemy::Behavior::CHARGEATTACK:
+			//UpdateAttack();
+			break;
+		case Enemy::Behavior::HEAVYDAMAGE:
 
-	switch (behavior_) {
-	case Enemy::Behavior::IDLE:
-		break;
-	case Enemy::Behavior::RUNNING:
-		UpdateRunning();
-		break;
-	case Enemy::Behavior::JUMP:
-		UpdateJump();
-		break;
-	case Enemy::Behavior::DASH:
-		UpdateDash();
-		break;
-	case Enemy::Behavior::CHARGEATTACK:
-		//UpdateAttack();
-		break;
-	case Enemy::Behavior::HEAVYDAMAGE:
-
-	default:
-		break;
+		default:
+			break;
+		}
 	}
 
 	//ダメージエフェクトの更新
