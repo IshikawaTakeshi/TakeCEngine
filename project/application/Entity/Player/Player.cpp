@@ -60,6 +60,11 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bull
 
 void Player::Update() {
 
+	//stepBoostのインターバルの更新
+	if(stepBoostIntervalTimer_ > 0.0f) {
+		stepBoostIntervalTimer_ -= deltaTime_;
+	}
+
 	// StepBoost入力判定を最初に追加
 	if (behavior_ == Behavior::RUNNING) {
 		
@@ -337,12 +342,14 @@ void Player::UpdateStepBoost() {
 			// ステップブーストが終了したらRUNNINGに戻す
 			behaviorRequest_ = Behavior::RUNNING;
 		}
+
+		// ステップブーストのインターバルをリセット
+		stepBoostIntervalTimer_ = stepBoostInterval_;
 	}
 }
 
-
 void Player::TriggerStepBoost() {
-
+	if (stepBoostIntervalTimer_ <= 0.0f) {
 		StickState leftStick = Input::GetInstance()->GetLeftStickState(0);
 		if (fabs(leftStick.x) > 0.2f || fabs(leftStick.y) > 0.2f) {
 			//方向ベクトル計算（カメラ考慮）
@@ -352,6 +359,7 @@ void Player::TriggerStepBoost() {
 			stepBoostDirection_ = Vector3Math::Normalize(stepBoostDirection_);
 			behaviorRequest_ = Behavior::STEPBOOST;
 		}
+	}
 }
 
 //===================================================================================
