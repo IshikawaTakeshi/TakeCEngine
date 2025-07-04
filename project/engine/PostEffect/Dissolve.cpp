@@ -22,7 +22,7 @@ void Dissolve::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 	dissolveInfoData_->isDissolve = false;
 
 	maskTextureFilePath_ = "cloudNoise.png";
-	TextureManager::GetInstance()->LoadTexture(maskTextureFilePath_);
+	TextureManager::GetInstance()->LoadTexture(maskTextureFilePath_,false);
 }
 
 void Dissolve::UpdateImGui() {

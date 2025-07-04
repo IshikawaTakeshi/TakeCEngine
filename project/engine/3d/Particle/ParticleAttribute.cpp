@@ -2,8 +2,8 @@
 
 void to_json(nlohmann::json& j, const ParticleAttributes& attributes){
 
-	j["scale"] = json::array({ attributes.scale.x, attributes.scale.y, attributes.scale.z });
-	j["color"] = json::array({ attributes.color.x, attributes.color.y, attributes.color.z });
+	j["scale"] = attributes.scale;
+	j["color"] = attributes.color;
 
 	j["positionRange"] = json{ {"min", attributes.positionRange.min},{"max", attributes.positionRange.max }};
 	j["scaleRange"] = json{ {"min", attributes.scaleRange.min},{"max", attributes.scaleRange.max } };
@@ -30,10 +30,11 @@ void to_json(nlohmann::json& j, const AttributeRange& attributeRange) {
 
 void to_json(json& j, const ParticlePreset& preset) {
 
-	j["name"] = preset.attributesMap.first;
+	j["name"] = preset.presetName;
 	j["textureFilePath"] = preset.textureFilePath;
-	j["attributes"] = preset.attributesMap.second;
+	j["attributes"] = preset.attribute;
 	j["primitiveType"] = preset.primitiveType;
+	j["primitiveParameters"] = preset.primitiveParameters;
 }
 
 void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
@@ -63,8 +64,9 @@ void from_json(const nlohmann::json& j, AttributeRange& attributeRange) {
 
 void from_json(const json& j, ParticlePreset& preset) {
 
-	j.at("name").get_to(preset.attributesMap.first);
+	j.at("name").get_to(preset.presetName);
 	j.at("textureFilePath").get_to(preset.textureFilePath);
-	j.at("attributes").get_to(preset.attributesMap.second);
+	j.at("attributes").get_to(preset.attribute);
 	j.at("primitiveType").get_to(preset.primitiveType);
+	j.at("primitiveParameters").get_to(preset.primitiveParameters);
 }

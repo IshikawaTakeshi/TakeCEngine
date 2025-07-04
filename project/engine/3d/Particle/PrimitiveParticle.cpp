@@ -12,7 +12,7 @@
 #include <numbers>
 
 PrimitiveParticle::PrimitiveParticle(PrimitiveType type) {
-	type_ = type;
+	particlePreset_.primitiveType = type;
 }
 
 PrimitiveParticle::~PrimitiveParticle() {}
@@ -44,16 +44,18 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 	//Mapping
 	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
 
-	if (type_ == PRIMITIVE_RING) {
+	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
 		//プリミティブの初期化
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(1.0f, 0.5f, filePath);
-	} else if (type_ == PRIMITIVE_PLANE) {
+	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(1.0f, 1.0f, filePath);
-	} else if (type_ == PRIMITIVE_SPHERE) {
+	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(1.0f, filePath);
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");
 	}
+
+	particlePreset_.textureFilePath = filePath;
 }
 
 void PrimitiveParticle::Update() {
@@ -105,7 +107,7 @@ void PrimitiveParticle::Update() {
 
 void PrimitiveParticle::UpdateImGui() {
 #ifdef _DEBUG
-	ParticleAttributes& attributes = particlePreset_.attributesMap.second;
+	ParticleAttributes& attributes = particlePreset_.attribute;
 
 	ImGui::Begin("Particle");
 	ImGui::Text("Instance Count : %d", numInstance_);
@@ -124,7 +126,8 @@ void PrimitiveParticle::Draw() {
 
 	BaseParticleGroup::Draw();
 	//プリミティブの描画
-	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(particleCommon_->GetGraphicPSO(), numInstance_, type_, primitiveHandle_);
+	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(
+		particleCommon_->GetGraphicPSO(), numInstance_, particlePreset_.primitiveType, primitiveHandle_);
 }
 
 Particle PrimitiveParticle::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
@@ -142,10 +145,27 @@ void PrimitiveParticle::SpliceParticles(std::list<Particle> particles) {
 	BaseParticleGroup::SpliceParticles(particles);
 }
 
+void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
+	particlePreset_ = preset;
+	//テクスチャファイルパスの設定
+	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetRingData(primitiveHandle_)->material_;
+		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+	}else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetPlaneData(primitiveHandle_)->material_;
+		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetSphereData(primitiveHandle_)->material_;
+		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+	} else {
+		assert(0 && "未対応の PrimitiveType が指定されました");
+	}
+}
+
 void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIterator) {
 
 	//particle1つの位置更新
-	ParticleAttributes& attributes = particlePreset_.attributesMap.second;
+	ParticleAttributes& attributes = particlePreset_.attribute;
 
 	if (attributes.isTraslate_) {
 		if (attributes.enableFollowEmitter_) {

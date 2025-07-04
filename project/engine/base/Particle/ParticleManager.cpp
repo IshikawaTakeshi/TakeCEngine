@@ -1,5 +1,6 @@
 #include "ParticleManager.h"
-#include"ImGuiManager.h"
+#include "base/ImGuiManager.h"
+#include "base/TakeCFrameWork.h"
 #include <cassert>
 
 //================================================================================================
@@ -61,12 +62,40 @@ void ParticleManager::Finalize() {
 	particleGroups_.clear();
 }
 
+void ParticleManager::UpdatePrimitiveType(const std::string& groupName, PrimitiveType type,const Vector3& param) {
+
+	if (!particleGroups_.contains(groupName)) {
+		assert(false && "ParticleGroup not found! Please check the name.");
+		return;
+	}
+
+	uint32_t newHandle = 0;
+	//指定されたグループのプリミティブタイプを更新
+	switch (type) {
+	case PRIMITIVE_RING:
+		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
+			param.x,param.y,particleGroups_.at(groupName)->GetPreset().textureFilePath);
+		break;
+	case PRIMITIVE_PLANE:
+		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
+			param.x, param.y, particleGroups_.at(groupName)->GetPreset().textureFilePath);
+		break;
+	case PRIMITIVE_SPHERE:
+		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
+			param.x, particleGroups_.at(groupName)->GetPreset().textureFilePath);
+		break;
+	default:
+		break;
+	}
+	particleGroups_.at(groupName)->SetPrimitiveHandle(newHandle);
+}
+
 //================================================================================================
 // パーティクルグループの生成
 //================================================================================================
 
 void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& name,
-	ParticleModelType modelType, const std::string& filePath,PrimitiveType primitiveType) {
+		const std::string& filePath,PrimitiveType primitiveType) {
 
 	if (particleGroups_.contains(name)) {
 		//既に同名のparticleGroupが存在する場合は生成しない
@@ -74,16 +103,23 @@ void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const 
 	}
 
 	//particleGroupの生成
-	if (modelType == ParticleModelType::ExternalModel) {
+	std::unique_ptr<PrimitiveParticle> particleGroup = std::make_unique<PrimitiveParticle>(primitiveType);
+	particleGroup->Initialize(particleCommon, filePath);
+	particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
+}
 
-		std::unique_ptr<BaseParticleGroup> particleGroup = std::make_unique<Particle3d>();
-		particleGroup->Initialize(particleCommon, filePath);
-		particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
-	} else {
-		std::unique_ptr<BaseParticleGroup> particleGroup = std::make_unique<PrimitiveParticle>(primitiveType);
-		particleGroup->Initialize(particleCommon, filePath);
-		particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
+void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& presetJson) {
+	ParticlePreset preset = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset(presetJson);
+	if(particleGroups_.contains(preset.presetName)) {
+		//既に同名のparticleGroupが存在する場合は生成しない
+		return;
 	}
+
+	//particleGroupの生成
+	std::unique_ptr<PrimitiveParticle> particleGroup = std::make_unique<PrimitiveParticle>(preset.primitiveType);
+	particleGroup->Initialize(particleCommon, preset.textureFilePath);
+	particleGroup->SetPreset(preset);
+	particleGroups_.insert(std::make_pair(preset.presetName, std::move(particleGroup)));
 }
 
 

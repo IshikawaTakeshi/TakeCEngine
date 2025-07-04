@@ -28,7 +28,6 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 
 	particleCommon_ = particleCommon;
 
-	textrueFilePath_ = filePath;
 	//instancing用のResource生成
 	particleResource_ =
 		DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
@@ -56,7 +55,7 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	//Mapping
 	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
 
-	ParticleAttributes& attributes = particlePreset_.attributesMap.second;
+	ParticleAttributes& attributes = particlePreset_.attribute;
 
 	//属性初期化
 	attributes.scale = { 1.0f,1.0f,1.0f };
@@ -68,6 +67,7 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	attributes.lifetimeRange = { 5.0f,5.0f };
 	attributes.editColor = true;
 	attributes.color = { 0.9f,0.3f,0.9f };
+	particlePreset_.textureFilePath = filePath;
 	//モデルの読み込み
 	SetModel(filePath);
 	//TakeCFrameWork::GetPrimitiveDrawer()->CreateRingVertexData();
@@ -131,7 +131,7 @@ void Particle3d::Update() {
 void Particle3d::UpdateImGui() {
 #ifdef _DEBUG
 
-	ParticleAttributes& attributes = particlePreset_.attributesMap.second;
+	ParticleAttributes& attributes = particlePreset_.attribute;
 
 	ImGui::Text("Particle3d");
 	ImGui::Text("ParticleCount:%d", numInstance_);
@@ -199,7 +199,7 @@ void Particle3d::SetModel(const std::string& filePath) {
 
 void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) {
 	//particle1つの位置更新
-	ParticleAttributes& attributes = particlePreset_.attributesMap.second;
+	ParticleAttributes& attributes = particlePreset_.attribute;
 
 	if (attributes.isTraslate_) {
 		if (attributes.enableFollowEmitter_) {

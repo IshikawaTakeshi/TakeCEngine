@@ -20,21 +20,14 @@ void to_json(nlohmann::json& j, const PrimitiveType& type) {
 
 void from_json(const nlohmann::json& j, PrimitiveType& type) {
 
-	switch (type) {
-	case PRIMITIVE_RING:
-		if (j == "PRIMITIVE_RING") {
-			type = PRIMITIVE_RING;
-		}
-	case PRIMITIVE_PLANE:
-		if (j == "PRIMITIVE_PLANE") {
-			type = PRIMITIVE_PLANE;
-		}
-	case PRIMITIVE_SPHERE:
-		if (j == "PRIMITIVE_SPHERE") {
-			type = PRIMITIVE_SPHERE;
-		}
-	default:
-		type = PRIMITIVE_COUNT; //不明なタイプ
-		break;
+	std::string str = j.get<std::string>();
+	if (str == "PRIMITIVE_RING") {
+		type = PRIMITIVE_RING;
+	} else if (str == "PRIMITIVE_PLANE") {
+		type = PRIMITIVE_PLANE;
+	} else if (str == "PRIMITIVE_SPHERE") {
+		type = PRIMITIVE_SPHERE;
+	} else {
+		type = PRIMITIVE_COUNT; // 不明なタイプ
 	}
 }

@@ -11,10 +11,7 @@
 #include <memory>
 #include <random>
 
-enum class ParticleModelType {
-	Primitive,
-	ExternalModel
-};
+
 
 class ParticleManager {
 public:
@@ -32,14 +29,18 @@ public:
 	// 終了処理
 	void Finalize();
 
+	void UpdatePrimitiveType(const std::string& groupName, PrimitiveType type,const Vector3& param);
+
 	/// <summary>
 	/// パーティクルグループの生成
 	/// </summary>
 	/// <param name="particleCommon">パーティクル共通情報</param>
 	/// <param name="name">グループ名(固有名)</param>
 	/// <param name="filePath">objファイルパス</param>
-	void CreateParticleGroup(ParticleCommon* particleCommon,const std::string& name,ParticleModelType modelType,
+	void CreateParticleGroup(ParticleCommon* particleCommon,const std::string& name,
 		const std::string& filePath,PrimitiveType primitiveType = PRIMITIVE_PLANE);
+
+	void CreateParticleGroup(ParticleCommon* particleCommon, const std::string& presetJson);
 
 	void Emit(const std::string& name, const Vector3& emitPosition, uint32_t count);
 
@@ -54,7 +55,7 @@ private:
 
 	std::unique_ptr<ParticleEmitterAllocater> emitterAllocater_;
 
-	std::unordered_map<std::string, std::unique_ptr<BaseParticleGroup>> particleGroups_;
+	std::unordered_map<std::string, std::unique_ptr<PrimitiveParticle>> particleGroups_;
 
 };
 

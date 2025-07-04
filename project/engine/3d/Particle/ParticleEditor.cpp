@@ -1,6 +1,7 @@
 #include "ParticleEditor.h"
 #include "base/ImGuiManager.h"
 #include "base/TakeCFrameWork.h"
+#include "base/TextureManager.h"
 #include <cassert>
 
 //======================================================================
@@ -14,7 +15,10 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 	particleCommon_ = particleCommon;
 	//デフォルトのパーティクルグループを作成
 	currentGroupName_ = "DefaultGroup";
-	particleManager_->CreateParticleGroup(particleCommon_,currentGroupName_, ParticleModelType::Primitive, "white1x1.png", PRIMITIVE_PLANE);
+	currentPreset_.textureFilePath = "white1x1.png";
+	currentPreset_.presetName = currentGroupName_;
+	currentPreset_.primitiveType = PRIMITIVE_PLANE;
+	particleManager_->CreateParticleGroup(particleCommon_,currentGroupName_, "white1x1.png", currentPreset_.primitiveType);
 
 	// エディター専用エミッターの初期化
 	previewEmitter_ = std::make_unique<ParticleEmitter>();
@@ -28,6 +32,9 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 
 	//全プリセットの読み込み
 	LoadAllPresets();
+
+	//テクスチャ名一覧の取得
+	textureFileNames_ = TextureManager::GetInstance()->GetLoadedTextureFileNames();
 }
 
 //======================================================================
@@ -48,7 +55,7 @@ void ParticleEditor::Update() {
 	previewEmitter_->SetRotate(emitterTransform_.rotate);
 	previewEmitter_->SetScale(emitterTransform_.scale);
 	previewEmitter_->SetIsEmit(autoEmit_);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup(currentGroupName_)->SetEmitterPosition(emitterTransform_.translate);
+	particleManager_->GetParticleGroup(currentGroupName_)->SetEmitterPosition(emitterTransform_.translate);
 	previewEmitter_->Update();
 
 }
@@ -134,13 +141,18 @@ void ParticleEditor::Draw() {
 }
 
 //======================================================================
-//			プリセットの保存
+//			プリセットの編集
 //======================================================================
 
 void ParticleEditor::DrawParticleAttributesEditor() {
 
-	ParticleAttributes& attributes = currentPreset_.attributesMap.second;
+	//テクスチャが再ロードされたかチェック
+	TextureManager::GetInstance()->CheckAndReloadTextures();
 
+	ParticleAttributes& attributes = currentPreset_.attribute;
+
+	//attributeの編集
+#pragma region coodinate attribute
 	ImGui::SeparatorText("Particle Attributes");
 
 	//Scale
@@ -177,8 +189,62 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 		// 現在のグループに属性を適用
 		particleManager_->SetPreset(currentGroupName_, currentPreset_);
 	}
+#pragma endregion
 
 	//テクスチャファイルの設定
+#pragma region texture setting
+	ImGui::SeparatorText("Texture Setting");
+	//テクスチャファイル名の選択
+	static int slectedTextureIndex = 0;
+
+	//今の設定がリストにあればインデックスを合わせる
+	auto it = std::find(textureFileNames_.begin(), textureFileNames_.end(), currentPreset_.textureFilePath);
+	if(it != textureFileNames_.end()) {
+		slectedTextureIndex = static_cast<int>(std::distance(textureFileNames_.begin(), it));
+	}
+
+	
+	if(ImGui::BeginCombo("Texture File",textureFileNames_.empty() ? "None":textureFileNames_[slectedTextureIndex].c_str())) {
+		
+		for (int i = 0; i < textureFileNames_.size(); ++i) {
+			bool isSelected = (slectedTextureIndex == i);
+			if (ImGui::Selectable(textureFileNames_[i].c_str(), isSelected)) {
+				slectedTextureIndex = i;
+				currentPreset_.textureFilePath = textureFileNames_[i];
+			}
+			if (isSelected) {
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		
+		
+
+		ImGui::EndCombo();
+	}
+#pragma endregion
+
+	//プリミティブタイプの選択
+
+#pragma region primitive type setting
+	ImGui::SeparatorText("Primitive Type");
+	static const char* PrimitiveTypeNames[] = {
+		"Ring", "Plane", "Sphere"
+	};
+
+	int currentType = static_cast<int>(currentPreset_.primitiveType);
+	if (ImGui::Combo("Primitive Type", &currentType, PrimitiveTypeNames, IM_ARRAYSIZE(PrimitiveTypeNames))) {
+		currentPreset_.primitiveType = static_cast<PrimitiveType>(currentType);
+		// プリミティブタイプが変更された場合、グループのプリミティブを更新
+		particleManager_->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType,currentPreset_.primitiveParameters);
+	}
+	ImGui::DragFloat3("Primitive Parameters", &currentPreset_.primitiveParameters.x, 0.01f, 0.0f, 10.0f);
+	if(ImGui::Button("Update Primitive")) {
+		// プリミティブの更新
+		particleManager_->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType,currentPreset_.primitiveParameters);
+	}
+
+
+#pragma endregion
 
 }
 

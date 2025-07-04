@@ -51,6 +51,8 @@ public:
 
 	void SpliceParticles(std::list<Particle> particles);
 
+	const ParticlePreset& GetPreset() const { return particlePreset_; }
+
 	virtual void SetPreset(const ParticlePreset& preset);
 
 	void SetEmitterPosition(const Vector3& position);
@@ -85,6 +87,4 @@ protected:
 	uint32_t particleSrvIndex_ = 0;
 	ComPtr<ID3D12Resource> particleResource_;
 	ComPtr<ID3D12Resource> perViewResource_;
-
-	std::string textrueFilePath_;
 };
