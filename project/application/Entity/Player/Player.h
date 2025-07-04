@@ -31,12 +31,14 @@ private:
 		CHARGEATTACK, //
 		HEAVYDAMAGE,
 		STEPBOOST,
+		FLOATING,
 	};
 
 	void InitRunning();
 	void InitJump();
 	void InitDash();
 	void InitStepBoost();
+	void InitFloating();
 
 	void UpdateRunning();
 	void UpdateAttack();
@@ -44,6 +46,10 @@ private:
 	void UpdateJump();
 	void UpdateDash();
 	void UpdateStepBoost();
+	void UpdateFloating();
+
+	// ステップブーストのBehavior切り替え処理
+	void TriggerStepBoost();
 
 private:
 
@@ -53,6 +59,7 @@ private:
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 	//プレイヤーの状態
 	Behavior behavior_ = Behavior::IDLE;
+	Behavior prevBehavior_ = Behavior::IDLE;
 	//プレイヤーの武器
 	std::unique_ptr<BaseWeapon> weapon_ = nullptr;
 
@@ -68,14 +75,21 @@ private:
 
 	QuaternionTransform transform_;
 
-	const float moveSpeed_ = 50.0f;
-	const float kMaxMoveSpeed_ = 50.0f;
+	const float moveSpeed_ = 200.0f;
+	const float kMaxMoveSpeed_ = 120.0f;
 
 	//QBInfo
 	Vector3 stepBoostDirection_ = { 0.0f,0.0f,0.0f }; // ステップブーストの方向
-	const float stepBoostSpeed_ = 200.0f;
-	const float stepBoostDuration_ = 0.3f; // ステップブーストの持続時間
+	const float stepBoostSpeed_ = 230.0f;
+	const float stepBoostDuration_ = 0.2f; // ステップブーストの持続時間
 	float stepBoostTimer_ = 0.0f; // ステップブーストのタイマー
+
+	//JumInfo
+	const float jumpHeight_ = 60.0f; // ジャンプの高さ
+	const float jumpSpeed_ = 50.0f; // ジャンプの速度
+	float jumpTimer_ = 0.0f; // ジャンプのタイマー
+	const float maxJumpTime_ = 0.5f; // ジャンプの最大時間
+	const float gravity_ = 30.8f; // 重力の強さ
 
 	float deltaTime_ = 0.0f;
 
