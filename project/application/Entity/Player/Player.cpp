@@ -48,6 +48,22 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bull
 
 void Player::Update() {
 
+	// StepBoost入力判定を最初に追加
+	if (behavior_ == Behavior::RUNNING) {
+		// LTボタン＋スティック入力で発動
+		if (Input::GetInstance()->PushButton(0, GamepadButtonType::LT)) {
+			StickState leftStick = Input::GetInstance()->GetLeftStickState(0);
+			if (fabs(leftStick.x) > 0.2f || fabs(leftStick.y) > 0.2f) {
+				//方向ベクトル計算（カメラ考慮）
+				Vector3 forward = QuaternionMath::RotateVector(Vector3(0.0f, 0.0f, 1.0f), camera_->GetRotate());
+				Vector3 right = QuaternionMath::RotateVector(Vector3(1, 0, 0), camera_->GetRotate());
+				stepBoostDirection_ = forward * leftStick.y + right * leftStick.x;
+				stepBoostDirection_ = Vector3Math::Normalize(stepBoostDirection_);
+				behaviorRequest_ = Behavior::STEPBOOST;
+			}
+		}
+	}
+
 	if (behaviorRequest_) {
 
 		behavior_ = behaviorRequest_.value();
@@ -63,6 +79,9 @@ void Player::Update() {
 			break;
 		case Behavior::DASH:
 			InitDash();
+			break;
+		case Behavior::STEPBOOST:
+			InitStepBoost();
 			break;
 		}
 
@@ -81,6 +100,8 @@ void Player::Update() {
 	case Player::Behavior::DASH:
 		UpdateDash();
 		break;
+	case Player::Behavior::STEPBOOST:
+		UpdateStepBoost();
 	default:
 		break;
 	}
@@ -140,7 +161,16 @@ void Player::InitRunning() {}
 
 void Player::InitJump() {}
 
-void Player::InitDash() {}
+void Player::InitDash() {
+	
+}
+
+void Player::InitStepBoost() {
+
+	stepBoostTimer_ = stepBoostDuration_;
+	velocity_.x = stepBoostDirection_.x * stepBoostSpeed_;
+	velocity_.z = stepBoostDirection_.z * stepBoostSpeed_;
+}
 
 void Player::UpdateRunning() {
 
@@ -184,10 +214,15 @@ void Player::UpdateRunning() {
 
 	//移動処理
 	transform_.translate = {
-		transform_.translate.x + velocity_.x * deltaTime_,
+		transform_.translate.x + velocity_.x,
 		transform_.translate.y,
-		transform_.translate.z + velocity_.z * deltaTime_
+		transform_.translate.z + velocity_.z
 	};
+
+	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
+		//ダッシュのリクエスト
+		behaviorRequest_ = Behavior::DASH;
+	}
 }
 
 //===================================================================================
@@ -206,16 +241,18 @@ void Player::UpdateDamage() {}
 
 void Player::UpdateJump() {}
 
-void Player::UpdateDash() {}
+void Player::UpdateDash() {
+}
 
 void Player::UpdateStepBoost() {
-	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
-		//押されたときスティックを倒した方向に大きく移動する
+	// ステップ中の移動
+	transform_.translate.x += velocity_.x * deltaTime_;
+	transform_.translate.z += velocity_.z * deltaTime_;
 
-		float stepBoostSpeed = 500.0f; // ステップブーストの速度
-		//移動時の加速度の計算
-		velocity_.x += moveDirection_.x * stepBoostSpeed;
-		velocity_.z += moveDirection_.z * stepBoostSpeed;
+	stepBoostTimer_ -= deltaTime_;
+	if (stepBoostTimer_ <= 0.0f) {
+		// ステップ終了でRUNNINGに戻る
+		behaviorRequest_ = Behavior::RUNNING;
+		velocity_ = {0.0f, 0.0f, 0.0f};
 	}
-
 }

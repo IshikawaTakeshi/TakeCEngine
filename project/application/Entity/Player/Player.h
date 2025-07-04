@@ -30,18 +30,19 @@ private:
 		DASH,
 		CHARGEATTACK, //
 		HEAVYDAMAGE,
+		STEPBOOST,
 	};
 
 	void InitRunning();
 	void InitJump();
 	void InitDash();
+	void InitStepBoost();
 
 	void UpdateRunning();
 	void UpdateAttack();
 	void UpdateDamage();
 	void UpdateJump();
 	void UpdateDash();
-
 	void UpdateStepBoost();
 
 private:
@@ -67,8 +68,14 @@ private:
 
 	QuaternionTransform transform_;
 
-	const float moveSpeed_ = 200.0f;
+	const float moveSpeed_ = 50.0f;
 	const float kMaxMoveSpeed_ = 50.0f;
+
+	//QBInfo
+	Vector3 stepBoostDirection_ = { 0.0f,0.0f,0.0f }; // ステップブーストの方向
+	const float stepBoostSpeed_ = 200.0f;
+	const float stepBoostDuration_ = 0.3f; // ステップブーストの持続時間
+	float stepBoostTimer_ = 0.0f; // ステップブーストのタイマー
 
 	float deltaTime_ = 0.0f;
 
