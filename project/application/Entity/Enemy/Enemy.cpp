@@ -42,15 +42,15 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	particleEmitter_.resize(3);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[0]->Initialize("EnemyEmitter0",{ {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 5, 1.0f);
-	particleEmitter_[0]->SetParticleName("DamageEffectSpark");
+	particleEmitter_[0]->SetParticleName("DamageSpark");
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 10, 1.0f);
-	particleEmitter_[1]->SetParticleName("CircleEffect");
+	particleEmitter_[1]->SetParticleName("CrossEffect");
 	//emitter2
 	particleEmitter_[2] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[2]->Initialize("EnemyEmitter2", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 10, 1.0f);
-	particleEmitter_[2]->SetParticleName("ExplosionEffect");
+	particleEmitter_[2]->SetParticleName("SparkExplosion");
 
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
@@ -139,9 +139,9 @@ void Enemy::Update() {
 		emitter->SetTranslate(transform_.translate);
 		emitter->Update();
 	}
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageEffectSpark")->SetEmitterPosition(transform_.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("CircleEffect")->SetEmitterPosition(transform_.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("ExplosionEffect")->SetEmitterPosition(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark")->SetEmitterPosition(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(transform_.translate);
 }
 
 void Enemy::UpdateImGui() {
