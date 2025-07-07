@@ -15,6 +15,10 @@ void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 	bulletCount_ = 5; // 初期弾数を設定
 	maxBulletCount_ = 5; // 最大弾数を設定
 	bulletSpeed_ = 500.0f; // 弾のスピードを設定
+
+	isChargeAttack_ = false; // バズーカはチャージ攻撃不可
+	isMoveShootable_ = false; // バズーカは移動撃ち不可
+	isStopShootOnly_ = true; // バズーカは停止撃ち専用
 }
 
 void Bazooka::Update() {
@@ -71,4 +75,19 @@ void Bazooka::SetOwnerObject(GameCharacter* owner) {
 	if (ownerObject_) {
 		object3d_->SetParent(ownerObject_->GetObject3d());
 	}
+}
+
+bool Bazooka::IsChargeAttack() const {
+	// バズーカはチャージ攻撃不可
+	return isChargeAttack_;
+}
+
+bool Bazooka::IsMoveShootable() const {
+	// バズーカは移動撃ち不可
+	return isMoveShootable_;
+}
+
+bool Bazooka::IsStopShootOnly() const {
+	// バズーカは停止撃ち専用
+	return isStopShootOnly_;
 }

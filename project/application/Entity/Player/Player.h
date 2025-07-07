@@ -29,7 +29,8 @@ private:
 		RUNNING,
 		JUMP,
 		DASH,
-		CHARGESHOOT, //
+		CHARGESHOOT, //チャージ攻撃中
+		CHARGESHOOT_STUN, // チャージショット後の硬直状態
 		HEAVYDAMAGE,
 		STEPBOOST,
 		FLOATING,
@@ -39,6 +40,7 @@ private:
 	void InitJump();
 	void InitDash();
 	void InitChargeShoot();
+	void InitChargeShootStun();
 	void InitStepBoost();
 	void InitFloating();
 
@@ -48,6 +50,7 @@ private:
 	void UpdateJump();
 	void UpdateDash();
 	void UpdateChargeShoot();
+	void UpdateChargeShootStun();
 	void UpdateStepBoost();
 	void UpdateFloating();
 
@@ -98,11 +101,13 @@ private:
 	const float maxJumpTime_ = 0.5f; // ジャンプの最大時間
 	const float gravity_ = 50.0f; // 重力の強さ
 
+	//チャージ攻撃後の硬直時間
+	float chargeAttackStunTimer_ = 0.0f;
+	const float chargeAttackStunDuration_ = 0.5f; // チャージ攻撃後の硬直時間
+
 	float deltaTime_ = 0.0f;
 
 	bool isJumping_ = false;
 	bool isDashing_ = false;
 	bool onGround_ = false;
-
 };
-

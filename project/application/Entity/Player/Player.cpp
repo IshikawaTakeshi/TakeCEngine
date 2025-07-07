@@ -117,6 +117,12 @@ void Player::Update() {
 		case Behavior::FLOATING:
 			InitFloating();
 			break;
+		case Behavior::CHARGESHOOT:
+			InitChargeShoot();
+			break;
+		case Behavior::CHARGESHOOT_STUN:
+			InitChargeShootStun();
+			break;
 		}
 
 		behaviorRequest_ = std::nullopt;
@@ -139,6 +145,12 @@ void Player::Update() {
 		break;
 	case Player::Behavior::FLOATING:
 		UpdateFloating();
+		break;
+	case Player::Behavior::CHARGESHOOT:
+		UpdateChargeShoot();
+		break;
+	case Player::Behavior::CHARGESHOOT_STUN:
+		UpdateChargeShootStun();
 		break;
 	default:
 		break;
@@ -277,18 +289,102 @@ void Player::UpdateRunning() {
 void Player::UpdateAttack() {
 
 	if (Input::GetInstance()->PushButton(0,GamepadButtonType::RB)) {
-		//攻撃の初期化
-		if (weapons_[0]->IsChargeAttack() == true) {
+		auto* weapon = weapons_[0].get();
+		
+		//チャージ攻撃可能な場合
+		if (weapon->IsChargeAttack()) {
+		
+			//武器のチャージ処理
+			weapon->Charge(deltaTime_);
 
+			if(Input::GetInstance()->ReleaseButton(0, GamepadButtonType::RB)) {
+				//チャージ攻撃実行
+				weapon->ChargeAttack();
+				if (weapon->IsStopShootOnly()) {
+					// 停止撃ち専用の場合はチャージ後に硬直状態へ
+					behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+				} else {
+					// 移動撃ち可能な場合はRUNNINGに戻す
+					behaviorRequest_ = Behavior::RUNNING;
+				}
+			} 
 		} else {
-			// 通常攻撃
-			weapons_[0]->Attack();
+			//チャージ攻撃不可:通常攻撃
+			if (weapon->IsStopShootOnly()) {
+				// 停止撃ち専用:硬直処理を行う
+				weapon->Attack();
+				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+			} else {
+				// 移動撃ち可能
+				weapon->Attack();
+			}
 		}
-
+	} else if (Input::GetInstance()->ReleaseButton(0, GamepadButtonType::RB)) {
+		// RBボタンが離された場合
+		auto* weapon = weapons_[0].get();
+		if (weapon->IsCharging()) {
+			// チャージ中の場合はチャージ攻撃を終了
+			weapon->ChargeAttack();
+			if (weapon->IsStopShootOnly()) {
+				// 停止撃ち専用の場合はチャージ後に硬直状態へ
+				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+			} else {
+				// ステップ終了時前回の状態に戻す
+				if (transform_.translate.y <= 0.0f) {
+					behaviorRequest_ = Behavior::RUNNING;
+				} else if (transform_.translate.y > 0.0f) {
+					behaviorRequest_ = Behavior::FLOATING;
+				} else {
+					// ステップブーストが終了したらRUNNINGに戻す
+					behaviorRequest_ = Behavior::RUNNING;
+				}
+			}
+		}
 	}
+
+
 	if (Input::GetInstance()->PushButton(0, GamepadButtonType::LB)) {
-		//攻撃の初期化
-		weapons_[1]->Attack();
+		auto* weapon = weapons_[1].get();
+		//チャージ攻撃可能な場合
+		if (weapon->IsChargeAttack()) {
+		
+			//武器のチャージ処理
+			weapon->Charge(deltaTime_);
+			if(Input::GetInstance()->ReleaseButton(0, GamepadButtonType::LB)) {
+				//チャージ攻撃実行
+				weapon->ChargeAttack();
+				if (weapon->IsStopShootOnly()) {
+					// 停止撃ち専用の場合はチャージ後に硬直状態へ
+					behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+				} else {
+					// 移動撃ち可能な場合はRUNNINGに戻す
+					behaviorRequest_ = Behavior::RUNNING;
+				}
+			} 
+		} else {
+			//チャージ攻撃不可:通常攻撃
+			if (weapon->IsStopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
+				// 停止撃ち専用:硬直処理を行う
+				behaviorRequest_ = Behavior::CHARGESHOOT;
+			} else {
+				// 移動撃ち可能
+				weapon->Attack();
+			}
+		}
+	} else if (Input::GetInstance()->ReleaseButton(0, GamepadButtonType::LB)) {
+		// LBボタンが離された場合
+		auto* weapon = weapons_[1].get();
+		if (weapon->IsCharging()) {
+			// チャージ中の場合はチャージ攻撃を終了
+			weapon->ChargeAttack();
+			if (weapon->IsStopShootOnly()) {
+				// 停止撃ち専用の場合はチャージ後に硬直状態へ
+				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+			} else {
+				// 移動撃ち可能な場合はRUNNINGに戻す
+				behaviorRequest_ = Behavior::RUNNING;
+			}
+		}
 	}
 }
 
@@ -351,11 +447,67 @@ void Player::UpdateDash() {
 //===================================================================================
 void Player::InitChargeShoot() {
 
-	velocity_ = { 0.0f, 0.0f, 0.0f }; // チャージ攻撃時は移動速度をリセット
 }
 void Player::UpdateChargeShoot() {
 
+	// 速度を大きく落としていき、停止させた後攻撃処理を入れる
+	velocity_.x *= 0.5f;
+	velocity_.z *= 0.5f;
+	if (std::abs(velocity_.x) < 0.01f && std::abs(velocity_.z) < 0.01f) {
+		// チャージ攻撃の実行
+		for (auto& weapon : weapons_) {
+			if (weapon->IsChargeAttack()) {
+				weapon->ChargeAttack();
 
+			}else {
+				// チャージ攻撃不可の場合は通常攻撃
+				weapon->Attack();
+			}
+
+			if (weapon->IsMoveShootable()) {
+				// ステップ終了時前回の状態に戻す
+				if (transform_.translate.y <= 0.0f) {
+					behaviorRequest_ = Behavior::RUNNING;
+				} else if (transform_.translate.y > 0.0f) {
+					behaviorRequest_ = Behavior::FLOATING;
+				} else {
+					// ステップブーストが終了したらRUNNINGに戻す
+					behaviorRequest_ = Behavior::RUNNING;
+				}
+			} else {
+				// 停止撃ち専用の場合はCHARGESHOOT_STUNに切り替え
+				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+			}
+		}
+	}
+
+	// 位置の更新（deltaTimeをここで適用）
+	transform_.translate.x += velocity_.x * deltaTime_;
+	transform_.translate.z += velocity_.z * deltaTime_;
+}
+
+//===================================================================================
+//　チャージ攻撃後の硬直処理
+//===================================================================================
+
+void Player::InitChargeShootStun() {
+	chargeAttackStunTimer_ = chargeAttackStunDuration_;
+}
+
+void Player::UpdateChargeShootStun() {
+
+	chargeAttackStunTimer_ -= deltaTime_;
+	if (chargeAttackStunTimer_ <= 0.0f) {
+		// ステップ終了時前回の状態に戻す
+		if (transform_.translate.y <= 0.0f) {
+			behaviorRequest_ = Behavior::RUNNING;
+		} else if (transform_.translate.y > 0.0f) {
+			behaviorRequest_ = Behavior::FLOATING;
+		} else {
+			// ステップブーストが終了したらRUNNINGに戻す
+			behaviorRequest_ = Behavior::RUNNING;
+		}
+	}
 }
 
 //===================================================================================
@@ -414,7 +566,7 @@ void Player::TriggerStepBoost() {
 //===================================================================================
 
 void Player::InitFloating() {
-
+	
 }
 
 void Player::UpdateFloating() {
