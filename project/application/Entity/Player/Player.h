@@ -1,6 +1,7 @@
 #pragma once
 #include "application/Entity/GameCharacter.h"
 #include "Weapon/BaseWeapon.h"
+#include "Weapon/WeaponType.h"
 #include "camera/Camera.h"
 #include <optional>
 
@@ -28,7 +29,8 @@ private:
 		RUNNING,
 		JUMP,
 		DASH,
-		CHARGEATTACK, //
+		CHARGESHOOT, //チャージ攻撃中
+		CHARGESHOOT_STUN, // チャージショット後の硬直状態
 		HEAVYDAMAGE,
 		STEPBOOST,
 		FLOATING,
@@ -37,6 +39,8 @@ private:
 	void InitRunning();
 	void InitJump();
 	void InitDash();
+	void InitChargeShoot();
+	void InitChargeShootStun();
 	void InitStepBoost();
 	void InitFloating();
 
@@ -45,6 +49,8 @@ private:
 	void UpdateDamage();
 	void UpdateJump();
 	void UpdateDash();
+	void UpdateChargeShoot();
+	void UpdateChargeShootStun();
 	void UpdateStepBoost();
 	void UpdateFloating();
 
@@ -61,7 +67,8 @@ private:
 	Behavior behavior_ = Behavior::IDLE;
 	Behavior prevBehavior_ = Behavior::IDLE;
 	//プレイヤーの武器
-	std::unique_ptr<BaseWeapon> weapon_ = nullptr;
+	std::vector<std::unique_ptr<BaseWeapon>> weapons_;
+	std::vector<WeaponType> weaponTypes_;
 
 	//補足対象の座標
 	Vector3 focusTargetPos_ = { 0.0f,0.0f,0.0f };
@@ -94,11 +101,13 @@ private:
 	const float maxJumpTime_ = 0.5f; // ジャンプの最大時間
 	const float gravity_ = 50.0f; // 重力の強さ
 
+	//チャージ攻撃後の硬直時間
+	float chargeAttackStunTimer_ = 0.0f;
+	const float chargeAttackStunDuration_ = 0.5f; // チャージ攻撃後の硬直時間
+
 	float deltaTime_ = 0.0f;
 
 	bool isJumping_ = false;
 	bool isDashing_ = false;
 	bool onGround_ = false;
-
 };
-

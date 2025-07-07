@@ -18,7 +18,7 @@ public:
 	void DrawCollider() override;
 	void OnCollisionAction(GameCharacter* other) override;
 
-	void BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos,CharacterType type);
+	void BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos,const float& speed,CharacterType type);
 
 	//void EmitterInitialize(uint32_t count, float frequency);
 

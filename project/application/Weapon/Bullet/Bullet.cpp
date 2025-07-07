@@ -36,7 +36,6 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
 	transform_.translate = { 0.0f, 100.0f, 0.0f };
-	speed_ = 400.0f;
 }
 
 //========================================================================================================
@@ -125,10 +124,11 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 // 弾の座標、速度の初期化
 //========================================================================================================
 
-void Bullet::BulletInitialize(const Vector3& weaponPos, const Vector3& targetPos, CharacterType type) {
+void Bullet::BulletInitialize(const Vector3& weaponPos, const Vector3& targetPos,const float& speed, CharacterType type) {
 
 	transform_.translate = weaponPos;
 	characterType_ = type;
+	speed_ = speed;
 
 	//ターゲットまでの方向を求める
 	Vector3 direction = targetPos - transform_.translate;

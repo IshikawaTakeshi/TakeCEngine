@@ -11,6 +11,7 @@
 #include "math/Easing.h"
 
 #include "Weapon/Rifle.h"
+#include "Weapon/Bazooka.h"
 
 Player::~Player() {
 	object3d_.reset();
@@ -39,6 +40,11 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
 	transform_ = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
+
+	weapons_.resize(2); // 武器の数を2つに設定
+	weaponTypes_.resize(2);
+	weaponTypes_[0] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
+	weaponTypes_[1] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
 }
 
 //===================================================================================
@@ -48,10 +54,17 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& weaponFilePath) {
 
 	//武器の初期化
-	weapon_ = std::make_unique<Rifle>();
-	weapon_->Initialize(object3dCommon, bulletManager, weaponFilePath);
-	weapon_->SetOwnerObject(this);
-
+	for (int i = 0; i < weapons_.size(); i++) {
+		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
+			weapons_[i] = std::make_unique<Rifle>();
+			weapons_[i]->Initialize(object3dCommon, bulletManager, weaponFilePath);
+			weapons_[i]->SetOwnerObject(this);
+		}else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
+			weapons_[i] = std::make_unique<Bazooka>();
+			weapons_[i]->Initialize(object3dCommon, bulletManager, weaponFilePath);
+			weapons_[i]->SetOwnerObject(this);
+		}
+	}
 }
 
 //===================================================================================
@@ -104,6 +117,12 @@ void Player::Update() {
 		case Behavior::FLOATING:
 			InitFloating();
 			break;
+		case Behavior::CHARGESHOOT:
+			InitChargeShoot();
+			break;
+		case Behavior::CHARGESHOOT_STUN:
+			InitChargeShootStun();
+			break;
 		}
 
 		behaviorRequest_ = std::nullopt;
@@ -127,6 +146,12 @@ void Player::Update() {
 	case Player::Behavior::FLOATING:
 		UpdateFloating();
 		break;
+	case Player::Behavior::CHARGESHOOT:
+		UpdateChargeShoot();
+		break;
+	case Player::Behavior::CHARGESHOOT_STUN:
+		UpdateChargeShootStun();
+		break;
 	default:
 		break;
 	}
@@ -146,7 +171,8 @@ void Player::Update() {
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
-	weapon_->Update();
+	weapons_[0]->Update();
+	weapons_[1]->Update(); // 2つ目の武器がある場合はここで更新
 }
 
 //===================================================================================
@@ -154,6 +180,7 @@ void Player::Update() {
 //===================================================================================
 
 void Player::UpdateImGui() {
+#ifdef _DEBUG
 
 	ImGui::Begin("Player");
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
@@ -163,7 +190,11 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat3("Velocity", &velocity_.x, 0.01f);
 	ImGui::DragFloat3("MoveDirection", &moveDirection_.x, 0.01f);
 	ImGui::Text("Behavior: %d", static_cast<int>(behavior_));
+	weapons_[0]->UpdateImGui();
+	weapons_[1]->UpdateImGui(); // 2つ目の武器がある場合はここで更新
 	ImGui::End();
+
+#endif // _DEBUG
 }
 
 //===================================================================================
@@ -172,7 +203,11 @@ void Player::UpdateImGui() {
 
 void Player::Draw() {
 	object3d_->Draw();
-	weapon_->Draw();
+	for(const auto& weapon : weapons_) {
+		if (weapon) {
+			weapon->Draw();
+		}
+	}
 }
 
 void Player::DrawCollider() {
@@ -254,8 +289,102 @@ void Player::UpdateRunning() {
 void Player::UpdateAttack() {
 
 	if (Input::GetInstance()->PushButton(0,GamepadButtonType::RB)) {
-		//攻撃の初期化
-		weapon_->Attack();
+		auto* weapon = weapons_[0].get();
+		
+		//チャージ攻撃可能な場合
+		if (weapon->IsChargeAttack()) {
+		
+			//武器のチャージ処理
+			weapon->Charge(deltaTime_);
+
+			if(Input::GetInstance()->ReleaseButton(0, GamepadButtonType::RB)) {
+				//チャージ攻撃実行
+				weapon->ChargeAttack();
+				if (weapon->IsStopShootOnly()) {
+					// 停止撃ち専用の場合はチャージ後に硬直状態へ
+					behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+				} else {
+					// 移動撃ち可能な場合はRUNNINGに戻す
+					behaviorRequest_ = Behavior::RUNNING;
+				}
+			} 
+		} else {
+			//チャージ攻撃不可:通常攻撃
+			if (weapon->IsStopShootOnly()) {
+				// 停止撃ち専用:硬直処理を行う
+				weapon->Attack();
+				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+			} else {
+				// 移動撃ち可能
+				weapon->Attack();
+			}
+		}
+	} else if (Input::GetInstance()->ReleaseButton(0, GamepadButtonType::RB)) {
+		// RBボタンが離された場合
+		auto* weapon = weapons_[0].get();
+		if (weapon->IsCharging()) {
+			// チャージ中の場合はチャージ攻撃を終了
+			weapon->ChargeAttack();
+			if (weapon->IsStopShootOnly()) {
+				// 停止撃ち専用の場合はチャージ後に硬直状態へ
+				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+			} else {
+				// ステップ終了時前回の状態に戻す
+				if (transform_.translate.y <= 0.0f) {
+					behaviorRequest_ = Behavior::RUNNING;
+				} else if (transform_.translate.y > 0.0f) {
+					behaviorRequest_ = Behavior::FLOATING;
+				} else {
+					// ステップブーストが終了したらRUNNINGに戻す
+					behaviorRequest_ = Behavior::RUNNING;
+				}
+			}
+		}
+	}
+
+
+	if (Input::GetInstance()->PushButton(0, GamepadButtonType::LB)) {
+		auto* weapon = weapons_[1].get();
+		//チャージ攻撃可能な場合
+		if (weapon->IsChargeAttack()) {
+		
+			//武器のチャージ処理
+			weapon->Charge(deltaTime_);
+			if(Input::GetInstance()->ReleaseButton(0, GamepadButtonType::LB)) {
+				//チャージ攻撃実行
+				weapon->ChargeAttack();
+				if (weapon->IsStopShootOnly()) {
+					// 停止撃ち専用の場合はチャージ後に硬直状態へ
+					behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+				} else {
+					// 移動撃ち可能な場合はRUNNINGに戻す
+					behaviorRequest_ = Behavior::RUNNING;
+				}
+			} 
+		} else {
+			//チャージ攻撃不可:通常攻撃
+			if (weapon->IsStopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
+				// 停止撃ち専用:硬直処理を行う
+				behaviorRequest_ = Behavior::CHARGESHOOT;
+			} else {
+				// 移動撃ち可能
+				weapon->Attack();
+			}
+		}
+	} else if (Input::GetInstance()->ReleaseButton(0, GamepadButtonType::LB)) {
+		// LBボタンが離された場合
+		auto* weapon = weapons_[1].get();
+		if (weapon->IsCharging()) {
+			// チャージ中の場合はチャージ攻撃を終了
+			weapon->ChargeAttack();
+			if (weapon->IsStopShootOnly()) {
+				// 停止撃ち専用の場合はチャージ後に硬直状態へ
+				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+			} else {
+				// 移動撃ち可能な場合はRUNNINGに戻す
+				behaviorRequest_ = Behavior::RUNNING;
+			}
+		}
 	}
 }
 
@@ -308,7 +437,77 @@ void Player::InitDash() {
 
 }
 
+
 void Player::UpdateDash() {
+}
+
+
+//===================================================================================
+//　チャージ攻撃処理
+//===================================================================================
+void Player::InitChargeShoot() {
+
+}
+void Player::UpdateChargeShoot() {
+
+	// 速度を大きく落としていき、停止させた後攻撃処理を入れる
+	velocity_.x *= 0.5f;
+	velocity_.z *= 0.5f;
+	if (std::abs(velocity_.x) < 0.01f && std::abs(velocity_.z) < 0.01f) {
+		// チャージ攻撃の実行
+		for (auto& weapon : weapons_) {
+			if (weapon->IsChargeAttack()) {
+				weapon->ChargeAttack();
+
+			}else {
+				// チャージ攻撃不可の場合は通常攻撃
+				weapon->Attack();
+			}
+
+			if (weapon->IsMoveShootable()) {
+				// ステップ終了時前回の状態に戻す
+				if (transform_.translate.y <= 0.0f) {
+					behaviorRequest_ = Behavior::RUNNING;
+				} else if (transform_.translate.y > 0.0f) {
+					behaviorRequest_ = Behavior::FLOATING;
+				} else {
+					// ステップブーストが終了したらRUNNINGに戻す
+					behaviorRequest_ = Behavior::RUNNING;
+				}
+			} else {
+				// 停止撃ち専用の場合はCHARGESHOOT_STUNに切り替え
+				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+			}
+		}
+	}
+
+	// 位置の更新（deltaTimeをここで適用）
+	transform_.translate.x += velocity_.x * deltaTime_;
+	transform_.translate.z += velocity_.z * deltaTime_;
+}
+
+//===================================================================================
+//　チャージ攻撃後の硬直処理
+//===================================================================================
+
+void Player::InitChargeShootStun() {
+	chargeAttackStunTimer_ = chargeAttackStunDuration_;
+}
+
+void Player::UpdateChargeShootStun() {
+
+	chargeAttackStunTimer_ -= deltaTime_;
+	if (chargeAttackStunTimer_ <= 0.0f) {
+		// ステップ終了時前回の状態に戻す
+		if (transform_.translate.y <= 0.0f) {
+			behaviorRequest_ = Behavior::RUNNING;
+		} else if (transform_.translate.y > 0.0f) {
+			behaviorRequest_ = Behavior::FLOATING;
+		} else {
+			// ステップブーストが終了したらRUNNINGに戻す
+			behaviorRequest_ = Behavior::RUNNING;
+		}
+	}
 }
 
 //===================================================================================
@@ -367,7 +566,7 @@ void Player::TriggerStepBoost() {
 //===================================================================================
 
 void Player::InitFloating() {
-
+	
 }
 
 void Player::UpdateFloating() {
