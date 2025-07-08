@@ -149,7 +149,7 @@ void GamePlayScene::UpdateImGui() {
 	player_->UpdateImGui();
 	enemy_->UpdateImGui();
 	for (int i = 0; i < levelObjects_.size(); i++) {
-		levelObjects_[i]->UpdateImGui(std::to_string(i));
+		levelObjects_[i]->UpdateImGui();
 	}
 	sprite_->UpdateImGui("gameScene");
 }
@@ -169,9 +169,9 @@ void GamePlayScene::Draw() {
 	player_->GetObject3d()->DisPatch();
 	enemy_->GetObject3d()->DisPatch();
 
-	for (auto& object : levelObjects_) {
-		object->DisPatch();
-	}
+	//for (auto& object : levelObjects_) {
+	//	object->DisPatch();
+	//}
 
 	Object3dCommon::GetInstance()->PreDraw();
 	player_->Draw();
@@ -188,6 +188,9 @@ void GamePlayScene::Draw() {
 	player_->DrawCollider();
 	enemy_->DrawCollider();
 	bulletManager_->DrawCollider();
+	for (auto& object : levelObjects_) {
+		object->DrawCollider();
+	}
 
 	//グリッド地面の描画
 	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 50);
@@ -215,15 +218,20 @@ void GamePlayScene::CheckAllCollisions() {
 	CollisionManager::GetInstance()->ClearGameCharacter();
 
 	const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
-
+	// プレイヤーの登録
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
-
+	// 敵キャラクターの登録
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
 
+	// プレイヤーの弾の登録
 	for (const auto& bullet : bullets) {
 		if (bullet->GetIsActive()) {
 			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
 		}
+	}
+	// レベルオブジェクトの登録
+	for (const auto& object : levelObjects_) {
+		CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(object.get()));
 	}
 
 

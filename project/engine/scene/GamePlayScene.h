@@ -16,13 +16,12 @@
 #include "3d/Particle/GPUParticle.h"
 #include "base/Particle/ParticleManager.h"
 #include "3d/Particle/ParticleEmitter.h"
-
+#include "engine/Entity/LevelObject/LevelObject.h"
 #include "Quaternion.h"
 
 //app
 #include "application/Ground/Ground.h"
 #include "application/HPBar/HPBar.h"
-#include "application/Entity/SampleCharacter.h"
 #include "application/Entity/Player/Player.h"
 #include "application/Entity/Enemy/Enemy.h"
 
@@ -44,6 +43,8 @@ public:
 
 	//描画処理
 	void Draw() override;
+
+private:
 
 	void CheckAllCollisions();
 
@@ -69,5 +70,5 @@ private:
 
 	std::unique_ptr<BulletManager> bulletManager_ = nullptr;
 
-	std::vector<std::unique_ptr<Object3d>> levelObjects_;
+	std::vector<std::unique_ptr<LevelObject>> levelObjects_;
 };

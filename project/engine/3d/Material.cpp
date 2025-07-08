@@ -76,5 +76,5 @@ void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> d
 	materialData_->uvTransform = MatrixMath::MakeIdentity4x4();
 	materialData_->enableLighting = false;
 	materialData_->shininess = 60.0f;
-	materialData_->envCoefficient = 0.5f;
+	materialData_->envCoefficient = 0.01f;
 }

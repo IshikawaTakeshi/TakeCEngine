@@ -42,7 +42,7 @@ LevelData* JsonLoader::LoadLevelFile(const std::string& groupName) {
 	//"name"を文字列として取得
 	std::string name = deserializedJson["name"].get<std::string>();
 	//正しいレベルデータファイルかチェック
-	assert(name.compare("scene") == 0);	
+	assert(name.compare("scene") == 0);
 
 	//TODO:レベルデータ格納用インスタンスを生成
 	LevelData* levelData = new LevelData();
@@ -58,11 +58,57 @@ LevelData* JsonLoader::LoadLevelFile(const std::string& groupName) {
 		//MESH
 		if (type.compare("MESH") == 0) {
 			levelData->objects.emplace_back(LevelData::ObjectData{});
-			LevelData::ObjectData& objectData= levelData->objects.back();
+			LevelData::ObjectData& objectData = levelData->objects.back();
+			objectData.name = object["name"].get<std::string>(); //名前を設定
+			objectData.type = type; //種類を設定
 
 			//モデルファイル名
 			if (object.contains("file_name")) {
 				objectData.file_name = object["file_name"].get<std::string>();
+			}
+
+			//コライダー情報
+			if (object.contains("collider")) {
+				const auto& colliderJson = object["collider"];
+				objectData.collider.isValid = true;
+				//type
+				if (colliderJson.contains("type")) {
+					objectData.collider.type = colliderJson["type"].get<std::string>();
+				}
+
+				//center
+				if (colliderJson.contains("center")) {
+					const auto& center = colliderJson["center"];
+					objectData.collider.center = Vector3(
+						center[0].get<float>(),
+						center[2].get<float>(),
+						center[1].get<float>()
+					);
+				}
+
+				if (objectData.collider.type == "BOX") {
+					//size
+					if (colliderJson.contains("size")) {
+						const auto& halfSize = colliderJson["size"];
+						objectData.collider.colliderData = LevelData::BoxCollider{
+							Vector3(
+								halfSize[0].get<float>(),
+								halfSize[2].get<float>(),
+								halfSize[1].get<float>()
+							)
+						};
+					}
+
+				} else if (objectData.collider.type == "SPHERE") {
+					//radius
+					if (colliderJson.contains("radius")) {
+						objectData.collider.colliderData = LevelData::SphereCollider{
+							colliderJson["radius"].get<float>()
+						};
+					}
+				} else {
+					assert(0); //未対応のコライダータイプ
+				}
 			}
 
 			//トランスフォーム情報
@@ -70,20 +116,20 @@ LevelData* JsonLoader::LoadLevelFile(const std::string& groupName) {
 			//translation
 			objectData.translation = Vector3(
 				transform["translation"][0].get<float>(),
-				transform["translation"][1].get<float>(),
-				transform["translation"][2].get<float>()
+				transform["translation"][2].get<float>(),
+				transform["translation"][1].get<float>()
 			);
 			//rotation
 			objectData.rotation = Vector3(
 				-transform["rotation"][0].get<float>(),
-				-transform["rotation"][1].get<float>(),
-				-transform["rotation"][2].get<float>()
+				-transform["rotation"][2].get<float>(),
+				-transform["rotation"][1].get<float>()
 			);
 			//scale
-			objectData.scale =  Vector3(
+			objectData.scale = Vector3(
 				transform["scaling"][0].get<float>(),
-				transform["scaling"][1].get<float>(),
-				transform["scaling"][2].get<float>()
+				transform["scaling"][2].get<float>(),
+				transform["scaling"][1].get<float>()
 			);
 		}
 	}
@@ -96,7 +142,7 @@ LevelData* JsonLoader::LoadLevelFile(const std::string& groupName) {
 //===============================================================================================
 
 void JsonLoader::SaveParticleAttribute(const std::string& presetName, const ParticleAttributes& attributes) {
-	
+
 	std::filesystem::path dirctory(kParticlePresetPath);
 	//ディレクトリがなければ作成する
 	if (!std::filesystem::exists(dirctory)) {
@@ -151,7 +197,7 @@ void JsonLoader::SaveParticlePreset(const std::string& presetName, const Particl
 //===============================================================================================
 
 ParticleAttributes JsonLoader::LoadParticleAttribute(const std::string& presetName) const {
-	
+
 	std::string filePath = kParticlePresetPath + presetName + ".json";
 
 	std::ifstream ifs(filePath);
@@ -178,7 +224,7 @@ ParticleAttributes JsonLoader::LoadParticleAttribute(const std::string& presetNa
 //===============================================================================================
 
 ParticlePreset JsonLoader::LoadParticlePreset(const std::string& presetName) const {
-	
+
 	std::string filePath = kParticlePresetPath + presetName;
 	std::ifstream ifs(filePath);
 	//ファイルオープンが失敗した場合
@@ -219,7 +265,7 @@ void JsonLoader::DeleteParticlePreset(const std::string& presetName) {
 //================================================================================================
 
 std::vector<std::string> JsonLoader::GetParticlePresetList() const {
-	
+
 	std::vector<std::string> presetList;
 
 	std::filesystem::path dir(kParticlePresetPath);
@@ -244,7 +290,7 @@ std::vector<std::string> JsonLoader::GetParticlePresetList() const {
 //================================================================================================
 
 bool JsonLoader::IsParticlePresetExists(const std::string& presetName) const {
-	
+
 	std::string filePath = kParticlePresetPath + presetName + ".json";
 	//ファイルが存在するかチェック
 	return std::filesystem::exists(filePath);

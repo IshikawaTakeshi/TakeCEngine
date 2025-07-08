@@ -6,7 +6,7 @@
 #include "ModelManager.h"
 #include "CameraManager.h"
 #include "DirectXCommon.h"
-#include "application/Entity/GameCharacter.h"
+#include "engine/Entity/GameCharacter.h"
 #include "TakeCFrameWork.h"
 
 #include <cmath>
@@ -19,7 +19,7 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 
 	dxCommon_ = dxCommon;
 
-	rotateMatrix_ = MatrixMath::MakeRotateMatrix(collisionObject->GetRotation());
+	rotateMatrix_ = MatrixMath::MakeRotateMatrix(collisionObject->GetRotate());
 
 	obb_.center = collisionObject->GetCenterPosition();
 	obb_.axis[0].x = rotateMatrix_.m[0][0];
@@ -39,7 +39,7 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 	//CPUで動かす用のTransform
 	transform_ = {
 		collisionObject->GetScale(),
-		collisionObject->GetRotation(),
+		collisionObject->GetRotate(),
 		obb_.center
 	};
 
@@ -75,12 +75,20 @@ void BoxCollider::Update(Object3d* collisionObject) {
 	obb_.axis[2].y = rotateMatrix_.m[2][1];
 	obb_.axis[2].z = rotateMatrix_.m[2][2];
 
-	color_ = { 1.0f,1.0f,1.0f,1.0f };
-
 	Matrix4x4 translateMat = MatrixMath::MakeTranslateMatrix(obb_.center);
 
 	//アフィン行列の更新
 	worldMatrix_ = scaleMat * rotateMatrix_ * translateMat;
+}
+void BoxCollider::UpdateImGui(const std::string& name) {
+#ifdef _DEBUG
+	std::string windowName = "BoxCollider" + name;
+	if (ImGui::TreeNode("BoxCollider")) {
+		ImGui::DragFloat3("HalfSize", &halfSize_.x, 0.01f);
+		ImGui::Text("OBB Center: %.2f, %.2f, %.2f", obb_.center.x, obb_.center.y, obb_.center.z);
+		ImGui::TreePop();
+	}
+#endif // _DEBUG
 }
 //=============================================================================
 // 衝突判定

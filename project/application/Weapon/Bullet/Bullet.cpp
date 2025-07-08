@@ -26,8 +26,8 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//emitter0
 	particleEmitter_.resize(2);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0",{ {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 5, 0.001f);
-	particleEmitter_[0]->SetParticleName("BulletLight");
+	particleEmitter_[0]->Initialize("EnemyEmitter0", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 5, 0.001f);
+	particleEmitter_[0]->SetParticleName("SparkExplosion");
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 8, 0.001f);
@@ -66,12 +66,12 @@ void Bullet::Update() {
 	//MEMO: パーティクルの毎フレーム発生
 	particleEmitter_[1]->Emit();
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(transform_.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BulletLight")->SetEmitterPosition(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(transform_.translate);
 
 }
 
 void Bullet::UpdateImGui() {
-	
+
 }
 
 //========================================================================================================
@@ -105,7 +105,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 			//enemy_->TakeDamage(damage_);
 
 			//パーティクル射出
-			//particleEmitter_->Emit();
+			particleEmitter_[0]->Emit();
 			isActive_ = false; //弾を無効化
 		}
 	} else if (characterType_ == CharacterType::ENEMY_BULLET) {
@@ -118,13 +118,23 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 		}
 	}
 
+	//レベルオブジェクトに当たった場合の処理
+	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
+		
+		//パーティクル射出
+		particleEmitter_[0]->Emit();
+
+		isActive_ = false; //弾を無効化
+	}
+
+
 }
 
 //========================================================================================================
 // 弾の座標、速度の初期化
 //========================================================================================================
 
-void Bullet::BulletInitialize(const Vector3& weaponPos, const Vector3& targetPos,const float& speed, CharacterType type) {
+void Bullet::BulletInitialize(const Vector3& weaponPos, const Vector3& targetPos, const float& speed, CharacterType type) {
 
 	transform_.translate = weaponPos;
 	characterType_ = type;

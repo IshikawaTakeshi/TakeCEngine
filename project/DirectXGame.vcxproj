@@ -164,10 +164,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\TakeCFrameWork.cpp" />
     <ClCompile Include="engine\scene\GamePlayScene.cpp" />
     <ClCompile Include="engine\base\ImGuiManager.cpp" />
-    <ClCompile Include="application\Entity\GameCharacter.cpp" />
+    <ClCompile Include="engine\Entity\GameCharacter.cpp" />
     <ClCompile Include="engine\3d\Particle\GPUParticle.cpp" />
     <ClCompile Include="engine\PostEffect\GrayScale.cpp" />
     <ClCompile Include="engine\PostEffect\LuminanceBasedOutline.cpp" />
+    <ClCompile Include="engine\Entity\LevelObject\LevelObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
     <ClCompile Include="engine\math\MatrixMath.cpp" />
@@ -187,7 +188,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\Particle\ParticleManager.cpp" />
     <ClCompile Include="engine\SkyBox\SkyBox.cpp" />
     <ClCompile Include="engine\Collision\SphereCollider.cpp" />
-    <ClCompile Include="application\Entity\SampleCharacter.cpp" />
+    <ClCompile Include="engine\Entity\SampleCharacter.cpp" />
     <ClCompile Include="engine\3d\Primitive\PrimitiveDrawer.cpp" />
     <ClCompile Include="engine\3d\Primitive\Ring.cpp" />
     <ClCompile Include="application\Entity\Player\Player.cpp" />
@@ -274,7 +275,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Particle\ParticleCommon.h" />
     <ClInclude Include="engine\3d\Particle\ParticleEmitter.h" />
     <ClInclude Include="engine\base\Particle\ParticleManager.h" />
-    <ClInclude Include="application\Entity\GameCharacter.h" />
+    <ClInclude Include="engine\Entity\GameCharacter.h" />
     <ClInclude Include="engine\3d\Particle\GPUParticle.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveDrawer.h" />
     <ClInclude Include="application\Entity\Player\Player.h" />
@@ -289,6 +290,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Particle\ParticleEmitterAllocater.h" />
     <ClInclude Include="engine\3d\Particle\ParticleEditor.h" />
     <ClInclude Include="engine\scene\ParticleEditScene.h" />
+    <ClInclude Include="engine\Entity\LevelObject\LevelObject.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />
@@ -313,7 +315,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\scene\SceneManager.h" />
     <ClInclude Include="engine\SkyBox\SkyBox.h" />
     <ClInclude Include="engine\Collision\SphereCollider.h" />
-    <ClInclude Include="application\Entity\SampleCharacter.h" />
+    <ClInclude Include="engine\Entity\SampleCharacter.h" />
     <ClInclude Include="engine\3d\Primitive\Ring.h" />
     <ClInclude Include="engine\Utility\ResourceBarrier.h" />
     <ClInclude Include="engine\base\RtvManager.h" />

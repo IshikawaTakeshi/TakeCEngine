@@ -130,12 +130,26 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 	for (auto& objectData : levelData_->objects) {
 		Model* model = nullptr;
 		model = ModelManager::GetInstance()->FindModel(objectData.file_name);
-
-		std::unique_ptr<Object3d> newObject = std::make_unique<Object3d>();
+		std::unique_ptr<LevelObject> newObject = std::make_unique<LevelObject>();
 		newObject->Initialize(Object3dCommon::GetInstance(), objectData.file_name);
+		newObject->SetName(objectData.name);
+		if (objectData.collider.isValid) {
 
+			// コライダーの種類によって初期化
+			std::visit([&](auto&& colliderData) {
+				// 型に応じてコライダーを初期化
+				using T = std::decay_t<decltype(colliderData)>;
+
+				// コライダーの型に応じて処理を分岐,廃棄する
+				if constexpr (std::is_same_v<T, LevelData::BoxCollider>) {
+					newObject->CollisionInitialize(colliderData);
+				} else if constexpr (std::is_same_v<T, LevelData::SphereCollider>) {
+					newObject->CollisionInitialize(colliderData);
+				}
+				}, objectData.collider.colliderData);
+		}
 		newObject->SetTranslate(objectData.translation);
-		newObject->SetRotation(objectData.rotation);
+		newObject->SetRotate(objectData.rotation);
 		newObject->SetScale(objectData.scale);
 
 		levelObjects_.push_back(std::move(newObject));

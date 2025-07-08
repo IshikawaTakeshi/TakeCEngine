@@ -3,6 +3,7 @@
 #include "BaseScene.h"
 #include "AbstractSceneFactory.h"
 #include "scene//LevelData.h"
+#include "engine/Entity/LevelObject/Levelobject.h"
 
 ////////////////////
 ///	シーン管理クラス
@@ -30,7 +31,7 @@ public:
 	//	アクセッサ
 	//========================================================================
 
-	std::vector<std::unique_ptr<Object3d>>& GetLevelObjects() { return levelObjects_; }
+	std::vector<std::unique_ptr<LevelObject>>& GetLevelObjects() { return levelObjects_; }
 
 	void SetSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; }
 
@@ -54,5 +55,5 @@ private:
 	// レベルデータの格納
 	LevelData* levelData_; 
 	// レベル内のオブジェクトのリスト
-	std::vector<std::unique_ptr<Object3d>> levelObjects_;
+	std::vector<std::unique_ptr<LevelObject>> levelObjects_;
 };

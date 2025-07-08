@@ -1,5 +1,5 @@
 #pragma once
-#include "application/Entity/GameCharacter.h"
+#include "engine/Entity/GameCharacter.h"
 #include "Weapon/BaseWeapon.h"
 #include "Weapon/WeaponType.h"
 #include "camera/Camera.h"

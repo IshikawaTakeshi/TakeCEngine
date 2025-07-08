@@ -19,6 +19,8 @@ public:
 
 	virtual void Update(Object3d* collisionObject) = 0;
 
+	virtual void UpdateImGui(const std::string& name) = 0;
+
 	virtual void DrawCollider() = 0;
 
 	/// <summary>

@@ -40,7 +40,7 @@ void GameOverScene::Initialize() {
 	GameOverText_ = std::make_unique<Object3d>();
 	GameOverText_->Initialize(Object3dCommon::GetInstance(), "GameOverText.obj");
 	GameOverText_->SetTranslate({ -15.0f, 0.0f, 0.0f });
-	GameOverText_->SetRotation({ 3.14f, 0.0f, 0.0f });
+	GameOverText_->SetRotate({ 3.14f, 0.0f, 0.0f });
 	GameOverText_->SetScale({ 2.5f, 2.5f, 1.0f });
 }
 

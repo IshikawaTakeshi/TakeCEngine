@@ -1,11 +1,11 @@
 #pragma once
 
-#include "base/PipelineStateObject.h"
+#include "engine/base/PipelineStateObject.h"
+#include "engine/Entity/GameCharacter.h"
 #include <list>
 #include <memory>
 class DirectXCommon;
 class Collider;
-class GameCharacter;
 class CollisionManager {
 
 
