@@ -3,12 +3,12 @@
     "objects": [
         {
             "type": "MESH",
-            "name": "Cube",
+            "name": "Cube.001",
             "transform": {
                 "translation": [
-                    -11.077747344970703,
-                    18.095685958862305,
-                    3.670717716217041
+                    -56.73774719238281,
+                    20.0,
+                    30.0
                 ],
                 "rotation": [
                     0.0,
@@ -16,12 +16,60 @@
                     0.0
                 ],
                 "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
+                    10.0,
+                    10.0,
+                    30.0
                 ]
             },
-            "file_name": "cube.obj"
+            "file_name": "cube.gltf",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    10.0,
+                    10.0,
+                    30.0
+                ]
+            }
+        },
+        {
+            "type": "MESH",
+            "name": "Cube.002",
+            "transform": {
+                "translation": [
+                    30.709537506103516,
+                    57.858299255371094,
+                    5.0
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    10.0,
+                    10.0,
+                    5.0
+                ]
+            },
+            "file_name": "cube.gltf",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    10.0,
+                    10.0,
+                    5.0
+                ]
+            }
         },
         {
             "type": "LIGHT",
@@ -67,12 +115,12 @@
         },
         {
             "type": "MESH",
-            "name": "Cube.001",
+            "name": "Cube.003",
             "transform": {
                 "translation": [
-                    7.669537544250488,
-                    25.13827133178711,
-                    5.452709197998047
+                    8.909538269042969,
+                    57.858299255371094,
+                    15.0
                 ],
                 "rotation": [
                     0.0,
@@ -80,21 +128,34 @@
                     0.0
                 ],
                 "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
+                    10.0,
+                    10.0,
+                    15.0
                 ]
             },
-            "file_name": "cube.obj"
+            "file_name": "cube.gltf",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
-            "name": "waist2",
+            "name": "Cube.004",
             "transform": {
                 "translation": [
-                    0.0,
-                    20.44597816467285,
-                    3.004800796508789
+                    -104.2977523803711,
+                    -33.34000015258789,
+                    30.0
                 ],
                 "rotation": [
                     0.0,
@@ -102,34 +163,25 @@
                     0.0
                 ],
                 "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
+                    10.0,
+                    10.0,
+                    30.0
                 ]
             },
-            "file_name": "player_4month.gltf"
-        },
-        {
-            "type": "MESH",
-            "name": "平面.001",
-            "transform": {
-                "translation": [
-                    -3.923172950744629,
-                    20.165668487548828,
-                    8.342144012451172
-                ],
-                "rotation": [
+            "file_name": "cube.gltf",
+            "collider": {
+                "type": "BOX",
+                "center": [
                     0.0,
-                    -0.0,
+                    0.0,
                     0.0
                 ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
                 ]
-            },
-            "file_name": "plane.gltf"
+            }
         }
     ]
 }

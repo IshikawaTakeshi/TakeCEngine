@@ -179,7 +179,7 @@ void Object3d::DisPatch() {
 
 Vector3 Object3d::GetCenterPosition() const {
 	
-	const Vector3 offset = { 0.0f,1.0f,0.0f };
+	const Vector3 offset = { 0.0f,0.0f,0.0f };
 
 	Vector3 worldPos = MatrixMath::Transform(offset, worldMatrix_);
 	return worldPos;

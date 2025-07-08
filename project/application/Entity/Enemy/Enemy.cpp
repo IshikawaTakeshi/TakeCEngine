@@ -128,7 +128,7 @@ void Enemy::Update() {
 	//camera_->SetTargetRot(eulerRotate);
 
 	object3d_->SetTranslate(transform_.translate);
-	object3d_->SetRotation(eulerRotate);
+	object3d_->SetRotate(eulerRotate);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 

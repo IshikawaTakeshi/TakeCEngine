@@ -1,13 +1,14 @@
 #pragma once
-#include "Object3d.h"
-#include "Collision/Collider.h"
+#include "engine/3d/Object3d.h"
+#include "engine/Collision/Collider.h"
 
-enum class CharacterType {
+enum CharacterType {
 	NONE,
 	PLAYER,
 	PLAYER_BULLET,
 	ENEMY,
 	ENEMY_BULLET,
+	LEVEL_OBJECT,
 };
 
 class GameCharacter {
@@ -34,7 +35,13 @@ public:
 
 	virtual void SetCharacterType(CharacterType type) { characterType_ = type; }
 
-	void SetTranslate(const Vector3& translate) { object3d_->SetTranslate(translate); }
+	virtual void SetTranslate(const Vector3& translate) { object3d_->SetTranslate(translate); }
+
+	virtual void SetRotate(const Vector3& rotate) { object3d_->SetRotate(rotate); }
+
+	virtual void SetScale(const Vector3& scale) { object3d_->SetScale(scale); }
+
+	virtual void SetCamera(Camera* camera) { object3d_->SetCamera(camera); }
 
 protected:
 
@@ -42,5 +49,5 @@ protected:
 
 	std::unique_ptr<Collider> collider_;
 
-	CharacterType characterType_ = CharacterType::NONE;
+	CharacterType characterType_;
 };

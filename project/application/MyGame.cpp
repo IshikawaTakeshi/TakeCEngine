@@ -107,7 +107,7 @@ void MyGame::LoadModel() {
 	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf","skyBox_blueSky.dds");
 	ModelManager::GetInstance()->LoadModel("gltf", "player_4month.gltf");
-	//ModelManager::GetInstance()->LoadModel("gltf", "Mecha_DoubleLeg.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "cube.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "player_animation.gltf");
 	//ModelManager::GetInstance()->LoadModel("gltf", "Deer.gltf");
 	//obj

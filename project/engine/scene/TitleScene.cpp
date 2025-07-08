@@ -31,7 +31,7 @@ void TitleScene::Initialize() {
 	startObject = std::make_unique<Object3d>();
 	startObject->Initialize(Object3dCommon::GetInstance(), "enterStartText.obj");
 	startObject->SetScale({ 0.8f, 0.8f, 0.8f });
-	startObject->SetRotation({ 0.0f, 0.0f, 3.14f });
+	startObject->SetRotate({ 0.0f, 0.0f, 3.14f });
 	startObject->SetTranslate({ -1.0f, -2.5f, 0.0f });
 }
 

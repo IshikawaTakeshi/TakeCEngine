@@ -4,7 +4,6 @@
 
 class SphereCollider;
 class BoxCollider : public Collider {
-
 public:
 
 
@@ -12,6 +11,8 @@ public:
 	void Initialize(DirectXCommon* dxCommon ,Object3d* collisionObject) override;
 
 	void Update(Object3d* collisionObject) override;
+
+	void UpdateImGui(const std::string& name) override;
 
 	//衝突判定
 	bool CheckCollision(Collider* other) override;

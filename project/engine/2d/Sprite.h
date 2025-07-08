@@ -68,7 +68,7 @@ public:
 
 	const Vector2& GetTranslate() const { return position_; }
 
-	const float GetRotation() const { return rotation_; }
+	const float GetRotate() const { return rotation_; }
 
 	const Vector2& GetSize() const { return size_; }
 
@@ -89,7 +89,7 @@ public:
 
 	void SetPosition(const Vector2& position) { position_ = position; }
 
-	void SetRotation(const float rotation) { rotation_ = rotation; }
+	void SetRotate(const float rotation) { rotation_ = rotation; }
 
 	void SetSize(const Vector2& size) { size_ = size; }
 
