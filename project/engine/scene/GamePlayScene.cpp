@@ -50,6 +50,7 @@ void GamePlayScene::Initialize() {
 	}
 
 	//Animation読み込み
+	TakeCFrameWork::GetAnimator()->LoadAnimation("walk.gltf");
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
 	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
 	TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
@@ -71,9 +72,9 @@ void GamePlayScene::Initialize() {
 
 	//player
 	player_ = std::make_unique<Player>();
-	player_->Initialize(Object3dCommon::GetInstance(), "plane.gltf");
+	player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
-	//player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
+	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("walk.gltf", "Armature|mixamo.com|Layer0"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
 
 	//Enemy

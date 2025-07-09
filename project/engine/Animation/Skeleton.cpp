@@ -1,5 +1,6 @@
 #include "Skeleton.h"
-#include "MatrixMath.h"
+#include "engine/math/MatrixMath.h"
+#include "engine/base/TakeCFrameWork.h"
 
 void Skeleton::Create(const Node& rootNode) {
 
@@ -44,9 +45,32 @@ void Skeleton::Update() {
 	}
 }
 
-void Skeleton::Draw() {
+void Skeleton::Draw(const Matrix4x4& worldMatrix) {
 
+	//jointの描画
+	for (const Joint& joint : joints) {
 
+		// ボーンのワールド行列を計算
+		Matrix4x4 jointWorldMatrix =joint.skeletonSpaceMatrix * worldMatrix;
+
+		// jointWorldMatrix からボーンの位置を取得して描画
+		// 例: Jointの原点（0,0,0）をjointWorldMatrixで変換してボーンのワールド位置に
+		Vector3 jointWorldPos = MatrixMath::Transform(
+			Vector3(0,0,0), jointWorldMatrix);
+		//親がいない場合はルートJointなので球で描画
+		if (!joint.parent) {
+			TakeCFrameWork::GetWireFrame()->DrawSphere(
+				{ joint.skeletonSpaceMatrix.m[3][0], joint.skeletonSpaceMatrix.m[3][1], joint.skeletonSpaceMatrix.m[3][2] },
+				0.1f, {1.0f,1.0f,0.1f,1.0f});
+		} else {
+			//親がいる場合は親との線を描画
+			if (joint.parent.has_value()) {
+				Vector3 parentWorldPos = MatrixMath::Transform(Vector3(0,0,0), joints[joint.parent.value()].skeletonSpaceMatrix * worldMatrix);
+				TakeCFrameWork::GetWireFrame()->DrawLine(jointWorldPos, parentWorldPos,{1.0f,1.0f,1.0f,1.0f}); // 仮想関数
+			}
+
+		}
+	}
 }
 
 void Skeleton::ApplyAnimation(Animation* animation, float animationTime) {

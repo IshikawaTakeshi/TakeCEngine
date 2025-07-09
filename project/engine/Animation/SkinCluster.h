@@ -10,7 +10,7 @@
 #include "SrvManager.h"
 
 //最大の影響ボーン数
-const uint32_t kNumMaxInfluence = 5;
+const uint32_t kNumMaxInfluence = 4;
 
 struct VertexInfluence {
 	std::array<float, kNumMaxInfluence> weights;

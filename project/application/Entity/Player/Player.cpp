@@ -213,6 +213,7 @@ void Player::Draw() {
 void Player::DrawCollider() {
 #ifdef _DEBUG
 	collider_->DrawCollider();
+	object3d_->GetModel()->GetSkeleton()->Draw(object3d_->GetWorldMatrix());
 #endif
 }
 

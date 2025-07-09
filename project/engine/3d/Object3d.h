@@ -47,6 +47,7 @@ public:
 public: //getter
 
 	const EulerTransform& GetTransform() const { return transform_; }
+	const Matrix4x4& GetWorldMatrix() const { return worldMatrix_; }
 	Vector3 GetScale() const { return transform_.scale; }
 	Vector3 GetRotate() const { return transform_.rotate; }
 	Vector3 GetTranslate() const { return transform_.translate; }
