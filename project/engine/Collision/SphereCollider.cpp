@@ -55,13 +55,11 @@ void SphereCollider::Update(Object3d* collisionObject) {
 void SphereCollider::UpdateImGui(const std::string& name) {
 #ifdef _DEBUG
 	std::string windowName = "SphereCollider" + name;
-	ImGui::Begin(windowName.c_str());
 	if (ImGui::TreeNode("SphereCollider")) {
 		ImGui::DragFloat("Radius", &radius_, 0.01f);
 		ImGui::Text("Position: %.2f, %.2f, %.2f", transform_.translate.x, transform_.translate.y, transform_.translate.z);
 		ImGui::TreePop();
 	}
-	ImGui::End();
 #endif // _DEBUG
 }
 

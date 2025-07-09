@@ -76,6 +76,27 @@ LevelData* JsonLoader::LoadLevelFile(const std::string& groupName) {
 					objectData.collider.type = colliderJson["type"].get<std::string>();
 				}
 
+				//トランスフォーム情報
+				nlohmann::json& transform = object["transform"];
+				//translation
+				objectData.translation = Vector3(
+					transform["translation"][0].get<float>(),
+					transform["translation"][2].get<float>(),
+					transform["translation"][1].get<float>()
+				);
+				//rotation
+				objectData.rotation = Vector3(
+					-transform["rotation"][0].get<float>(),
+					-transform["rotation"][2].get<float>(),
+					-transform["rotation"][1].get<float>()
+				);
+				//scale
+				objectData.scale = Vector3(
+					transform["scaling"][0].get<float>(),
+					transform["scaling"][2].get<float>(),
+					transform["scaling"][1].get<float>()
+				);
+
 				//center
 				if (colliderJson.contains("center")) {
 					const auto& center = colliderJson["center"];
@@ -89,12 +110,12 @@ LevelData* JsonLoader::LoadLevelFile(const std::string& groupName) {
 				if (objectData.collider.type == "BOX") {
 					//size
 					if (colliderJson.contains("size")) {
-						const auto& halfSize = colliderJson["size"];
+						const auto& size = colliderJson["size"];
 						objectData.collider.colliderData = LevelData::BoxCollider{
 							Vector3(
-								halfSize[0].get<float>(),
-								halfSize[2].get<float>(),
-								halfSize[1].get<float>()
+								size[0].get<float>() * transform["scaling"][0].get<float>(),
+								size[2].get<float>() * transform["scaling"][2].get<float>(),
+								size[1].get<float>() * transform["scaling"][1].get<float>()
 							)
 						};
 					}
@@ -103,7 +124,7 @@ LevelData* JsonLoader::LoadLevelFile(const std::string& groupName) {
 					//radius
 					if (colliderJson.contains("radius")) {
 						objectData.collider.colliderData = LevelData::SphereCollider{
-							colliderJson["radius"].get<float>()
+							colliderJson["radius"].get<float>()* transform["scaling"][0].get<float>()
 						};
 					}
 				} else {
@@ -111,26 +132,7 @@ LevelData* JsonLoader::LoadLevelFile(const std::string& groupName) {
 				}
 			}
 
-			//トランスフォーム情報
-			nlohmann::json& transform = object["transform"];
-			//translation
-			objectData.translation = Vector3(
-				transform["translation"][0].get<float>(),
-				transform["translation"][2].get<float>(),
-				transform["translation"][1].get<float>()
-			);
-			//rotation
-			objectData.rotation = Vector3(
-				-transform["rotation"][0].get<float>(),
-				-transform["rotation"][2].get<float>(),
-				-transform["rotation"][1].get<float>()
-			);
-			//scale
-			objectData.scale = Vector3(
-				transform["scaling"][0].get<float>(),
-				transform["scaling"][2].get<float>(),
-				transform["scaling"][1].get<float>()
-			);
+			
 		}
 	}
 
