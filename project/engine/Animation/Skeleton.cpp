@@ -45,6 +45,17 @@ void Skeleton::Update() {
 	}
 }
 
+void Skeleton::UpdateImGui() {
+#ifdef _DEBUG
+	for (Joint& joint : joints) {
+		ImGui::SeparatorText(joint.name.c_str());
+		ImGui::DragFloat3("Scale", &joint.transform.scale.x, 0.01f);
+		ImGui::DragFloat4("Rotate", &joint.transform.rotate.x, 0.01f);
+		ImGui::DragFloat3("Translate", &joint.transform.translate.x, 0.01f);
+	}
+#endif
+}
+
 void Skeleton::Draw(const Matrix4x4& worldMatrix) {
 
 	//jointの描画
@@ -60,7 +71,7 @@ void Skeleton::Draw(const Matrix4x4& worldMatrix) {
 		//親がいない場合はルートJointなので球で描画
 		if (!joint.parent) {
 			TakeCFrameWork::GetWireFrame()->DrawSphere(
-				{ joint.skeletonSpaceMatrix.m[3][0], joint.skeletonSpaceMatrix.m[3][1], joint.skeletonSpaceMatrix.m[3][2] },
+				jointWorldPos,
 				0.1f, {1.0f,1.0f,0.1f,1.0f});
 		} else {
 			//親がいる場合は親との線を描画
@@ -69,7 +80,15 @@ void Skeleton::Draw(const Matrix4x4& worldMatrix) {
 				TakeCFrameWork::GetWireFrame()->DrawLine(jointWorldPos, parentWorldPos,{1.0f,1.0f,1.0f,1.0f}); // 仮想関数
 			}
 
+			//子オブジェクトがいない場合は球で描画
+			if (joint.children.empty()) {
+				TakeCFrameWork::GetWireFrame()->DrawSphere(
+					jointWorldPos,
+					0.5f, {1.0f,0.1f,0.1f,1.0f});
+			}
 		}
+
+		
 	}
 }
 
@@ -83,6 +102,22 @@ void Skeleton::ApplyAnimation(Animation* animation, float animationTime) {
 			joint.transform.translate = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
 		}
 	}
+}
+
+std::optional<Joint> Skeleton::GetJointByName(const std::string& name) const {
+	auto it = jointMap.find(name);
+	if(it != jointMap.end()) {
+		return joints[it->second];
+	}
+	return std::nullopt; //見つからなかった場合はstd::nulloptを返す
+}
+
+std::optional<Matrix4x4> Skeleton::GetJointWorldMatrix(const std::string& jointName, const Matrix4x4& characterWorldMatrix) const {
+	auto it = jointMap.find(jointName);
+	if(it != jointMap.end()) {
+		return joints[it->second].skeletonSpaceMatrix * characterWorldMatrix;
+	}
+	return std::nullopt; //見つからなかった場合はstd::nulloptを返す
 }
 
 int32_t Skeleton::CreateJoint(const Node& node, const std::optional<int32_t>& parent) {

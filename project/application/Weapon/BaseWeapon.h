@@ -30,10 +30,11 @@ public:
 	virtual void Charge([[maybe_unused]] float deltaTime) {};
 	virtual void ChargeAttack() {};
 
+	virtual void AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName);
 	//武器タイプの取得
 	virtual const WeaponType& GetWeaponType() const = 0;
 
-	virtual float GetChargeTime() const { return chargeTime_; }
+	virtual float GetChargeTime() const;
 	virtual float GetAttackInterval() const { return attackInterval_; }
 	//所有者の設定
 	virtual void SetOwnerObject(GameCharacter* owener) { ownerObject_ = owener; }
@@ -54,6 +55,11 @@ protected:
 
 	//武器の3Dオブジェクト
 	std::unique_ptr<Object3d> object3d_ = nullptr;
+
+	//武器の親Joint名
+	std::string parentJointName_;
+	// 親スケルトン
+	Skeleton* parentSkeleton_ = nullptr; 
 
 	//武器の所有者オブジェクト
 	GameCharacter* ownerObject_ = nullptr;

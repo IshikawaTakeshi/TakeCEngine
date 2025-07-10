@@ -185,6 +185,11 @@ Vector3 Object3d::GetCenterPosition() const {
 	return worldPos;
 }
 
+void Object3d::SetWorldMatrix(const Matrix4x4& worldMatrix) {
+
+	worldMatrix_ = worldMatrix;
+}
+
 void Object3d::SetAnimation(Animation* animation) {
 	if (animation) {
 		animation_ = new Animation(*animation);

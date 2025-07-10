@@ -65,6 +65,7 @@ public: //setter
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	void SetRotate(const Vector3& rotation) { transform_.rotate = rotation; }
 	void SetTranslate(const Vector3& position) { transform_.translate = position; }
+	void SetWorldMatrix(const Matrix4x4& worldMatrix);
 	void SetAnimation(Animation* animation);
 	void SetParent(Object3d* parent) { parent_ = parent; }
 	void SetModelFilePath(const std::string& filePath) { modelFilePath_ = filePath; }
