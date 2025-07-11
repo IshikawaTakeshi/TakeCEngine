@@ -136,7 +136,7 @@ void ParticleEmitter::UpdateImGui() {
 
 void ParticleEmitter::DrawWireFrame() {
 
-	//TakeCFrameWork::GetWireFrame()->DrawOBB(obb_, color_);
+	TakeCFrameWork::GetWireFrame()->DrawSphere(transforms_.translate, 0.3f, { 1.0f, 0.0f, 1.0f, 1.0f });
 }
 
 //==================================================================================

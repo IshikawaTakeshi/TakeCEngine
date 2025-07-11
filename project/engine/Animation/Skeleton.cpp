@@ -62,33 +62,28 @@ void Skeleton::Draw(const Matrix4x4& worldMatrix) {
 	for (const Joint& joint : joints) {
 
 		// ボーンのワールド行列を計算
-		Matrix4x4 jointWorldMatrix =joint.skeletonSpaceMatrix * worldMatrix;
+		Matrix4x4 jointWorldMatrix = joint.skeletonSpaceMatrix * worldMatrix;
 
 		// jointWorldMatrix からボーンの位置を取得して描画
 		// 例: Jointの原点（0,0,0）をjointWorldMatrixで変換してボーンのワールド位置に
 		Vector3 jointWorldPos = MatrixMath::Transform(
-			Vector3(0,0,0), jointWorldMatrix);
+			Vector3(0, 0, 0), jointWorldMatrix);
 		//親がいない場合はルートJointなので球で描画
 		if (!joint.parent) {
 			TakeCFrameWork::GetWireFrame()->DrawSphere(
 				jointWorldPos,
-				0.1f, {1.0f,1.0f,0.1f,1.0f});
+				0.1f, { 1.0f,1.0f,0.1f,1.0f });
 		} else {
 			//親がいる場合は親との線を描画
 			if (joint.parent.has_value()) {
-				Vector3 parentWorldPos = MatrixMath::Transform(Vector3(0,0,0), joints[joint.parent.value()].skeletonSpaceMatrix * worldMatrix);
-				TakeCFrameWork::GetWireFrame()->DrawLine(jointWorldPos, parentWorldPos,{1.0f,1.0f,1.0f,1.0f}); // 仮想関数
+				Vector3 parentWorldPos = MatrixMath::Transform(Vector3(0, 0, 0), joints[joint.parent.value()].skeletonSpaceMatrix * worldMatrix);
+				TakeCFrameWork::GetWireFrame()->DrawLine(jointWorldPos, parentWorldPos, { 1.0f,1.0f,1.0f,1.0f }); // 仮想関数
 			}
 
-			//子オブジェクトがいない場合は球で描画
-			if (joint.children.empty()) {
-				TakeCFrameWork::GetWireFrame()->DrawSphere(
-					jointWorldPos,
-					0.5f, {1.0f,0.1f,0.1f,1.0f});
-			}
+			TakeCFrameWork::GetWireFrame()->DrawSphere(
+				jointWorldPos,
+				0.1f, { 1.0f,0.1f,0.1f,1.0f });
 		}
-
-		
 	}
 }
 
@@ -106,7 +101,7 @@ void Skeleton::ApplyAnimation(Animation* animation, float animationTime) {
 
 std::optional<Joint> Skeleton::GetJointByName(const std::string& name) const {
 	auto it = jointMap.find(name);
-	if(it != jointMap.end()) {
+	if (it != jointMap.end()) {
 		return joints[it->second];
 	}
 	return std::nullopt; //見つからなかった場合はstd::nulloptを返す
@@ -114,11 +109,24 @@ std::optional<Joint> Skeleton::GetJointByName(const std::string& name) const {
 
 std::optional<Matrix4x4> Skeleton::GetJointWorldMatrix(const std::string& jointName, const Matrix4x4& characterWorldMatrix) const {
 	auto it = jointMap.find(jointName);
-	if(it != jointMap.end()) {
+	if (it != jointMap.end()) {
 		return joints[it->second].skeletonSpaceMatrix * characterWorldMatrix;
 	}
 	return std::nullopt; //見つからなかった場合はstd::nulloptを返す
 }
+
+std::optional<Vector3> Skeleton::GetJointPosition(const std::string& jointName, const Matrix4x4& modelWorldMatrix) const {
+	auto it = jointMap.find(jointName);
+	if (it != jointMap.end()) {
+		int32_t index = it->second;
+		Matrix4x4 jointWorldMatrix = joints[index].skeletonSpaceMatrix * modelWorldMatrix;
+		Vector3 worldPos = { jointWorldMatrix.m[3][0], jointWorldMatrix.m[3][1], jointWorldMatrix.m[3][2] };
+		return worldPos; // Jointのワールド位置を返す
+	}
+
+	return std::nullopt;
+}
+
 
 int32_t Skeleton::CreateJoint(const Node& node, const std::optional<int32_t>& parent) {
 	Joint joint;

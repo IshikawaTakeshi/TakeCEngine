@@ -179,11 +179,11 @@ void JsonLoader::SaveParticlePreset(const std::string& presetName, const Particl
 	}
 	// JSONオブジェクトに変換
 	json presetJson = preset;
-	std::string filePath = kParticlePresetPath + presetName;
+	std::string filePath = kParticlePresetPath + presetName + ".json";
 	std::ofstream ofs(filePath);
 	//ファイルオープンが失敗した場合
 	if (ofs.fail()) {
-		std::string message = "Failed open particle preset file for write:" + presetName;
+		std::string message = "Failed open particle preset file for write:" + presetName + ".json";
 		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
 		assert(0);
 		return;

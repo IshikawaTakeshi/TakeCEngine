@@ -398,7 +398,7 @@ void ParticleEditor::LoadPreset(const std::string& presetName) {
 	}
 
 	//JSONからプリセットを読み込む
-	currentPreset_ = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset(presetName);
+	currentPreset_ = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset(presetName + ".json");
 
 	// 現在のグループに属性を適用
 	particleManager_->SetPreset(currentGroupName_, currentPreset_);
@@ -445,7 +445,7 @@ void ParticleEditor::LoadAllPresets() {
 	// 各プリセットを読み込み
 	for (const std::string& presetName : presetNames_) {
 		// プリセットを読み込む
-		presets_[presetName] = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset(presetName);
+		presets_[presetName] = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset(presetName + ".json");
 	}
 
 	// デバッグ出力（必要に応じて削除）
