@@ -1,5 +1,7 @@
 #include "Bazooka.h"
-#include "TakeCFrameWork.h"
+#include "base/TakeCFrameWork.h"
+#include "base/ImGuiManager.h"
+#include "math/MatrixMath.h"
 
 void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) {
 
@@ -8,6 +10,10 @@ void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 	//3Dオブジェクトの初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
+
+	// ライフルの色を設定
+	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
+
 	//武器の初期化
 	weaponType_ = WeaponType::WEAPON_TYPE_BAZOOKA;
 	attackPower_ = 50; // 攻撃力を設定
@@ -30,14 +36,9 @@ void Bazooka::Update() {
 	if (parentSkeleton_ && !parentJointName_.empty()) {
 		Matrix4x4 characterWorldMatrix = ownerObject_->GetObject3d()->GetWorldMatrix();
 		auto jointWorldMatrixOpt = parentSkeleton_->GetJointWorldMatrix(parentJointName_, characterWorldMatrix);
-
-		if(jointWorldMatrixOpt) {
-			//所有者の3Dオブジェクトに追従
-			object3d_->SetWorldMatrix(*jointWorldMatrixOpt);
-		}
+		object3d_->SetParent(jointWorldMatrixOpt ? *jointWorldMatrixOpt : MatrixMath::MakeIdentity4x4());
 	}
 
-	
 	//3Dオブジェクトの更新
 	object3d_->Update();
 }
@@ -49,7 +50,7 @@ void Bazooka::UpdateImGui() {
 		object3d_->GetTransform().translate.x, 
 		object3d_->GetTransform().translate.y, 
 		object3d_->GetTransform().translate.z);
-	ImGui::
+	
 	ImGui::Text("Attack Power: %d", attackPower_);
 	ImGui::Text("Attack Interval: %.2f", attackInterval_);
 	ImGui::Text("Bullet Count: %d", bulletCount_);

@@ -15,12 +15,18 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"Rifle"
+			"name":"Rifle",
+			"rotation":[
+				-0.7071068286895752,
+				0,
+				0,
+				0.7071068286895752
+			]
 		}
 	],
 	"meshes":[
 		{
-			"name":"\u7acb\u65b9\u4f53.006",
+			"name":"\u7acb\u65b9\u4f53.003",
 			"primitives":[
 				{
 					"attributes":{

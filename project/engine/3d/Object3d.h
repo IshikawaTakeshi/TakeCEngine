@@ -67,7 +67,7 @@ public: //setter
 	void SetTranslate(const Vector3& position) { transform_.translate = position; }
 	void SetWorldMatrix(const Matrix4x4& worldMatrix);
 	void SetAnimation(Animation* animation);
-	void SetParent(Object3d* parent) { parent_ = parent; }
+	void SetParent(const Matrix4x4& parent) { parentWorldMatrix_ = &parent; }
 	void SetModelFilePath(const std::string& filePath) { modelFilePath_ = filePath; }
 
 protected: // privateメンバ変数
@@ -75,7 +75,7 @@ protected: // privateメンバ変数
 	Object3dCommon* object3dCommon_ = nullptr;
 
 	//ペアレント
-	const Object3d* parent_ = nullptr;
+	const Matrix4x4* parentWorldMatrix_ = nullptr;
 
 	//モデル
 	std::unique_ptr<Model> model_ = nullptr;

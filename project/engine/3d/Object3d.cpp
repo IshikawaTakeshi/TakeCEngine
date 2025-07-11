@@ -68,8 +68,8 @@ void Object3d::Update() {
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 
 	//親子付け処理
-	if (parent_) {
-		worldMatrix_ = MatrixMath::Multiply(worldMatrix_, parent_->worldMatrix_);
+	if (parentWorldMatrix_) {
+		worldMatrix_ = MatrixMath::Multiply(worldMatrix_, *parentWorldMatrix_);
 	}
 
 	//wvpの更新
