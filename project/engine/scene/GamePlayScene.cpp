@@ -39,6 +39,9 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"DamageSpark.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "SmokeEffect.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "SparkExplosion.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "ItemPointEffect.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "WalkSmoke1.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "WalkSmoke2.json");
 
 #pragma endregion
 
@@ -106,8 +109,7 @@ void GamePlayScene::Update() {
 	//SkyBoxの更新
 	skyBox_->Update();
 	
-	//particleManager更新
-	TakeCFrameWork::GetParticleManager()->Update();
+	
 
 	sprite_->Update();
 
@@ -124,10 +126,13 @@ void GamePlayScene::Update() {
 		object->Update();
 	}
 
+	//particleManager更新
+	TakeCFrameWork::GetParticleManager()->Update();
+
 	//当たり判定の更新
 	CheckAllCollisions();
 
-  //パーティクルの更新
+
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
 		//シーン切り替え依頼
 		SceneManager::GetInstance()->ChangeScene("TITLE");
@@ -185,7 +190,6 @@ void GamePlayScene::Draw() {
 #pragma endregion
 
 	//当たり判定の描画前処理
-	CollisionManager::GetInstance()->PreDraw();
 	player_->DrawCollider();
 	enemy_->DrawCollider();
 	bulletManager_->DrawCollider();

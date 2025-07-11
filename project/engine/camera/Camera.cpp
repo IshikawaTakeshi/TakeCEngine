@@ -191,7 +191,7 @@ void Camera::UpdateGameCamera() {
 
 void Camera::InitializeCameraFollow() {
 
-	followSpeed_ = 0.1f;
+	followSpeed_ = 0.3f;
 	offset_ = offsetDelta_;
 }
 

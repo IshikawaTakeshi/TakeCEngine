@@ -52,6 +52,8 @@ public: //getter
 
 	std::optional<Matrix4x4> GetJointWorldMatrix(const std::string& jointName, const Matrix4x4& characterWorldMatrix) const;
 
+	std::optional<Vector3> GetJointPosition(const std::string& jointName, const Matrix4x4& modelWorldMatrix) const;
+
 private:
 
 	/// <summary>

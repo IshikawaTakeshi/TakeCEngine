@@ -97,7 +97,7 @@ private:
 	//追従対象
 	Vector3* followTargetPosition_;
 	Vector3* followTargetRotation_;
-	float followSpeed_ = 0.1f;
+	float followSpeed_ = 0.3f;
 
 	//補足対象
 	Vector3* focusTargetPosition_;
