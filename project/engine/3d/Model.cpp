@@ -84,6 +84,10 @@ void Model::Update(Animation* animation,float animationTime) {
 
 	//アニメーションがない場合は何もしない
 	if (animation->duration == 0.0f) {
+		//SkinClusterの更新
+		if (haveSkeleton_) {
+			skinCluster_.Update(skeleton_.get());
+		}
 		return;
 	}
 

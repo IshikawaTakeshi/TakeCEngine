@@ -106,10 +106,11 @@ void MyGame::LoadModel() {
 	//gltf
 	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf","skyBox_blueSky.dds");
-	ModelManager::GetInstance()->LoadModel("gltf", "player_4month.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "player_singleMesh.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "cube.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "player_animation.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "ICOBall.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "Rifle.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "Bazooka.gltf");
 	//obj
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
@@ -127,7 +128,7 @@ void MyGame::LoadModel() {
 
 void MyGame::LoadAnimation() {
 
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
+	//TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
+	//TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
+	//TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
 }

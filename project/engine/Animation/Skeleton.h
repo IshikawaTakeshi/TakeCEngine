@@ -29,6 +29,8 @@ public:
 
 	void Update();
 
+	void UpdateImGui();
+
 	void Draw(const Matrix4x4& worldMatrix);
 
 	/// <summary>
@@ -44,6 +46,11 @@ public: //getter
 	const std::vector<Joint>& GetJoints() { return joints; }
 
 	const std::map<std::string, int32_t>& GetJointMap() { return jointMap; }
+
+	// ジョイント名から値を取得
+	std::optional<Joint> GetJointByName(const std::string& name) const;
+
+	std::optional<Matrix4x4> GetJointWorldMatrix(const std::string& jointName, const Matrix4x4& characterWorldMatrix) const;
 
 private:
 

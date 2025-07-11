@@ -52,19 +52,22 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 //===================================================================================
 
 void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& weaponFilePath) {
-
+	weaponFilePath;
 	//武器の初期化
 	for (int i = 0; i < weapons_.size(); i++) {
 		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
 			weapons_[i] = std::make_unique<Rifle>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager, weaponFilePath);
+			weapons_[i]->Initialize(object3dCommon, bulletManager, "Rifle.gltf");
 			weapons_[i]->SetOwnerObject(this);
 		}else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
 			weapons_[i] = std::make_unique<Bazooka>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager, weaponFilePath);
+			weapons_[i]->Initialize(object3dCommon, bulletManager, "Bazooka.gltf");
 			weapons_[i]->SetOwnerObject(this);
 		}
 	}
+
+	weapons_[0]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
+	weapons_[1]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
 }
 
 //===================================================================================
@@ -171,6 +174,8 @@ void Player::Update() {
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
+	//weapons_[0]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
+	//weapons_[1]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
 	weapons_[0]->Update();
 	weapons_[1]->Update(); // 2つ目の武器がある場合はここで更新
 }
