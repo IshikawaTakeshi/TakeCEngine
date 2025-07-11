@@ -114,7 +114,8 @@ public:
 		D3D12_FILL_MODE fillMode,
 		D3D12_DEPTH_WRITE_MASK depthWriteMask,
 		BlendState blendState = BlendState::NORMAL,
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+		bool depthEnable = true
 	);
 	/// <summary>
 	/// computePSO生成

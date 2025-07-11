@@ -45,6 +45,11 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	weaponTypes_.resize(2);
 	weaponTypes_[0] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
 	weaponTypes_[1] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
+
+	//背部エミッターの初期化
+	backEmitter_ = std::make_unique<ParticleEmitter>();
+	backEmitter_->Initialize("PalyerBackpack",object3d_->GetTransform(),10,0.01f);
+	backEmitter_->SetParticleName("WalkSmoke2");
 }
 
 //===================================================================================
@@ -169,13 +174,17 @@ void Player::Update() {
 	camera_->SetFollowTargetRot(eulerRotate);
 	camera_->SetFocusTargetPos(focusTargetPos_);
 
+
 	object3d_->SetTranslate(transform_.translate);
 	object3d_->SetRotate(eulerRotate);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
-	//weapons_[0]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
-	//weapons_[1]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
+	std::optional<Vector3> backpackPosition = object3d_->GetModel()->GetSkeleton()->GetJointPosition("leg",object3d_->GetWorldMatrix());
+	backEmitter_->SetTranslate(backpackPosition.value());
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
+	backEmitter_->Update();
+
 	weapons_[0]->Update();
 	weapons_[1]->Update(); // 2つ目の武器がある場合はここで更新
 }
@@ -219,6 +228,7 @@ void Player::DrawCollider() {
 #ifdef _DEBUG
 	collider_->DrawCollider();
 	object3d_->GetModel()->GetSkeleton()->Draw(object3d_->GetWorldMatrix());
+	backEmitter_->DrawWireFrame();
 #endif
 }
 
@@ -267,6 +277,8 @@ void Player::UpdateRunning() {
 		
 		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.1f);
 		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
+		//パーティクルエミッターの更新
+		backEmitter_->Emit();
 
 	} else {
 		//速度の減速処理

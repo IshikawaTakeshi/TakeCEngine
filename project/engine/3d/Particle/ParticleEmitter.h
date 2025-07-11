@@ -1,6 +1,6 @@
 #pragma once
-#include "Transform.h"
-#include "PipelineStateObject.h"
+#include "engine/math/Transform.h"
+#include "engine/base/PipelineStateObject.h"
 #include "ResourceDataStructure.h"
 #include <cstdint>
 #include <memory>

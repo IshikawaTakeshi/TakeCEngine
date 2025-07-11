@@ -337,7 +337,7 @@ void PSO::CreateGraphicPSO(
 	D3D12_FILL_MODE fillMode,
 	D3D12_DEPTH_WRITE_MASK depthWriteMask,
 	BlendState blendState,
-	D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType) {
+	D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType,bool depthEnable) {
 
 	device_ = device;
 
@@ -352,7 +352,7 @@ void PSO::CreateGraphicPSO(
 	/// ラスタライザステート初期化
 	CreateRasterizerState(fillMode);
 #pragma region SetDepthStencilDesc
-	depthStencilDesc_.DepthEnable = true;                           //Depthの機能を有効化
+	depthStencilDesc_.DepthEnable = depthEnable;                           //Depthの機能を有効化
 	depthStencilDesc_.DepthWriteMask = depthWriteMask;              //Depthの書き込みマスク
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; //比較関数はLessEqual。近ければ描画される
 #pragma endregion

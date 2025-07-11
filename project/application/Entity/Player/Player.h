@@ -3,6 +3,7 @@
 #include "Weapon/BaseWeapon.h"
 #include "Weapon/WeaponType.h"
 #include "camera/Camera.h"
+#include "Particle/ParticleEmitter.h"
 #include <optional>
 
 class Player : public GameCharacter {
@@ -69,6 +70,9 @@ private:
 	//プレイヤーの武器
 	std::vector<std::unique_ptr<BaseWeapon>> weapons_;
 	std::vector<WeaponType> weaponTypes_;
+
+	//背部のパーティクルエミッター
+	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
 
 	//補足対象の座標
 	Vector3 focusTargetPos_ = { 0.0f,0.0f,0.0f };
