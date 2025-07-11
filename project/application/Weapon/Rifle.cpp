@@ -1,8 +1,7 @@
 #include "Rifle.h"
-#include "TakeCFrameWork.h"
-
-//最大弾数の設定
-
+#include "engine/base/TakeCFrameWork.h"
+#include "engine/base/ImGuiManager.h"
+#include "engine/math/MatrixMath.h"
 
 Rifle::~Rifle() {}
 
@@ -13,6 +12,9 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 	//3dオブジェクトの初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
+
+	// ライフルの色を設定
+	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
 
 	//武器の初期化
 	weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
@@ -55,6 +57,12 @@ void Rifle::Update() {
 		}
 	}
 
+	//親スケルトンのジョイントに追従させる
+	if (parentSkeleton_ && !parentJointName_.empty()) {
+		Matrix4x4 characterWorldMatrix = ownerObject_->GetObject3d()->GetWorldMatrix();
+		auto jointWorldMatrixOpt = parentSkeleton_->GetJointWorldMatrix(parentJointName_, characterWorldMatrix);
+		object3d_->SetParent(jointWorldMatrixOpt ? *jointWorldMatrixOpt : MatrixMath::MakeIdentity4x4());
+	}
 
 	object3d_->Update();
 }
@@ -167,8 +175,7 @@ void Rifle::ChargeAttack() {
 }
 
 void Rifle::SetOwnerObject(GameCharacter* owner) {
-	BaseWeapon::SetOwnerObject(owner);
-	object3d_->SetParent(owner->GetObject3d());
+	ownerObject_ = owner;
 }
 
 bool Rifle::IsChargeAttack() const {
