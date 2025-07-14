@@ -103,9 +103,11 @@ void Enemy::Update() {
 	case Enemy::Behavior::DASH:
 		UpdateDash();
 		break;
-	case Enemy::Behavior::CHARGEATTACK:
+	case Enemy::Behavior::CHARGESHOOT:
 		//UpdateAttack();
 		break;
+	case Enemy::Behavior::CHARGESHOOT_STUN:
+
 	case Enemy::Behavior::HEAVYDAMAGE:
 
 	default:
@@ -207,8 +209,6 @@ void Enemy::InitJump() {}
 
 void Enemy::InitDash() {}
 
-void Enemy::InitHeavyDamage() {}
-
 void Enemy::UpdateRunning() {
 
 
@@ -221,7 +221,3 @@ void Enemy::UpdateDamage() {}
 void Enemy::UpdateJump() {}
 
 void Enemy::UpdateDash() {}
-
-void Enemy::UpdateHeavyDamage() {
-
-}
