@@ -338,12 +338,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ResourceCompile Include="DirectXGame.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\06_img_02.jpg" />
     <Image Include="Resources\images\gradationLine.png" />
     <Image Include="Resources\images\simpleCircle.png" />
-    <Image Include="Resources\monsterBall.png" />
-    <Image Include="Resources\niwat.png" />
-    <Image Include="Resources\niwatori.jpg" />
     <Image Include="Resources\rick.png" />
     <Image Include="Resources\uvChecker.png" />
   </ItemGroup>
