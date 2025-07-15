@@ -34,14 +34,22 @@ public:
 	//武器タイプの取得
 	virtual const WeaponType& GetWeaponType() const = 0;
 
-	virtual float GetChargeTime() const;
 	virtual float GetAttackInterval() const { return attackInterval_; }
 	//所有者の設定
 	virtual void SetOwnerObject(GameCharacter* owener) { ownerObject_ = owener; }
 	//攻撃対象の座標を設定
 	virtual void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
+	//使用可能かどうか
+	virtual bool IsAvailable() const { return isAvailable_; }
 
-	virtual bool IsCharging() const { return isCharging_; }
+	// チャージ中かどうか
+	virtual bool IsCharging() const;
+	// チャージ時間を取得
+	virtual float GetChargeTime() const;
+	// 必要チャージ時間を取得
+	virtual float GetRequiredChargeTime() const;
+
+
 	//チャージ攻撃可能か
 	virtual bool IsChargeAttack() const = 0;
 	//移動撃ち可能か
@@ -78,11 +86,13 @@ protected:
 	int32_t maxBulletCount_;
 	//弾のスピード
 	float bulletSpeed_ = 0.0f;
+	//使用可能か
+	bool isAvailable_ = true; // 武器が使用可能かどうか
 
 	// チャージ攻撃
 	bool isCharging_ = false;  // チャージ攻撃フラグ
 	float chargeTime_ = 0.0f;    // チャージ時間
-	float chargeMaxTime_ = 2.0f; // 最大チャージ時間
+	float requiredChargeTime_ = 0.0f; // 必要チャージ時間
 
 	bool isChargeAttack_  = false; // チャージ攻撃フラグ
 	bool isMoveShootable_ = false; // 移動撃ち可能か

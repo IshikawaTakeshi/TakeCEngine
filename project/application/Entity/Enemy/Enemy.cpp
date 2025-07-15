@@ -1,16 +1,17 @@
 #include "Enemy.h"
-#include "Collision/BoxCollider.h"
-#include "Collision/SphereCollider.h"
-#include "3d/Object3d.h"
-#include "3d/Object3dCommon.h"
-#include "Model.h"
-#include "Input.h"
-#include "camera/CameraManager.h"
+#include "engine/Collision/BoxCollider.h"
+#include "engine/Collision/SphereCollider.h"
+#include "engine/3d/Object3d.h"
+#include "engine/3d/Object3dCommon.h"
+#include "engine/3d/Model.h"
+#include "engine/io/Input.h"
+#include "engine/camera/CameraManager.h"
 #include "engine/base/TakeCFrameWork.h"
 #include "Vector3Math.h"
 #include "math/Easing.h"
 
-#include "Weapon/Rifle.h"
+#include "application/Weapon/Rifle.h"
+#include "application/Weapon/Bazooka.h"
 
 Enemy::~Enemy() {
 	object3d_.reset();
@@ -35,7 +36,10 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
-	collider_->SetHalfSize({ 1.0f, 2.0f, 1.0f }); // コライダーの半径を設定
+	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
+
+	transform_ = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,30.0f} };
+	object3d_->SetScale(transform_.scale);
 
 	//emiiter設定
 	//emitter0
@@ -52,16 +56,30 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	particleEmitter_[2]->Initialize("EnemyEmitter2", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 10, 1.0f);
 	particleEmitter_[2]->SetParticleName("SparkExplosion");
 
+	weapons_.resize(2); // 武器の数を2つに設定
+	weaponTypes_.resize(2);
+	weaponTypes_[0] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
+	weaponTypes_[1] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
-void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& weaponFilePath) {
-
+void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
 	//武器の初期化
-	weapon_ = std::make_unique<Rifle>();
-	weapon_->Initialize(object3dCommon, bulletManager, weaponFilePath);
-	weapon_->SetOwnerObject(this);
+	for (int i = 0; i < weapons_.size(); i++) {
+		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
+			weapons_[i] = std::make_unique<Rifle>();
+			weapons_[i]->Initialize(object3dCommon, bulletManager, "Rifle.gltf");
+			weapons_[i]->SetOwnerObject(this);
+		}else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
+			weapons_[i] = std::make_unique<Bazooka>();
+			weapons_[i]->Initialize(object3dCommon, bulletManager, "Bazooka.gltf");
+			weapons_[i]->SetOwnerObject(this);
+		}
+	}
+
+	weapons_[0]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
+	weapons_[1]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
 }
 
 //========================================================================================================
@@ -70,9 +88,31 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 
 void Enemy::Update() {
 
+	//stepBoostのインターバルの更新
+	if(stepBoostIntervalTimer_ > 0.0f) {
+		stepBoostIntervalTimer_ -= deltaTime_;
+	}
+
+	// StepBoost入力判定を最初に追加
+	if (behavior_ == Behavior::RUNNING) {
+
+		//StepBoost遷移判定
+		// 
+		//if (Input::GetInstance()->PushButton(0, GamepadButtonType::LT)) {
+		//	TriggerStepBoost();
+		//}
+		//Jump遷移判定
+		//
+		//if(Input::GetInstance()->TriggerButton(0, GamepadButtonType::RT)) {
+		//	//ジャンプのリクエスト
+		//	behaviorRequest_ = Behavior::JUMP;
+		//}
+	}
+
 	if (behaviorRequest_) {
 
 		behavior_ = behaviorRequest_.value();
+		prevBehavior_ = behavior_;
 
 		switch (behavior_) {
 		case Behavior::IDLE:
@@ -85,6 +125,18 @@ void Enemy::Update() {
 			break;
 		case Behavior::DASH:
 			InitDash();
+			break;
+		case Behavior::STEPBOOST:
+			InitStepBoost();
+			break;
+		case Behavior::FLOATING:
+			InitFloating();
+			break;
+		case Behavior::CHARGESHOOT:
+			InitChargeShoot();
+			break;
+		case Behavior::CHARGESHOOT_STUN:
+			InitChargeShootStun();
 			break;
 		}
 
@@ -103,16 +155,24 @@ void Enemy::Update() {
 	case Enemy::Behavior::DASH:
 		UpdateDash();
 		break;
+	case Enemy::Behavior::STEPBOOST:
+		UpdateStepBoost();
+		break;
+	case Enemy::Behavior::FLOATING:
+		UpdateFloating();
+		break;
 	case Enemy::Behavior::CHARGESHOOT:
-		//UpdateAttack();
+		UpdateChargeShoot();
 		break;
 	case Enemy::Behavior::CHARGESHOOT_STUN:
-
-	case Enemy::Behavior::HEAVYDAMAGE:
-
+		UpdateChargeShootStun();
+		break;
 	default:
 		break;
 	}
+
+	//攻撃処理
+	UpdateAttack();
 
 	//ダメージエフェクトの更新
 	if (isDamaged_) {
@@ -125,16 +185,15 @@ void Enemy::Update() {
 
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(transform_.rotate);
-	//カメラの設定
-	//camera_->SetTargetPos(transform_.translate);
-	//camera_->SetTargetRot(eulerRotate);
-
 	object3d_->SetTranslate(transform_.translate);
 	object3d_->SetRotate(eulerRotate);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
-	weapon_->Update();
+	weapons_[0]->SetTarget(focusTargetPos_);
+	weapons_[0]->Update();
+	weapons_[1]->SetTarget(focusTargetPos_);
+	weapons_[1]->Update(); 
 
 	//パーティクルエミッターの更新
 	for (auto& emitter : particleEmitter_) {
@@ -166,13 +225,17 @@ void Enemy::UpdateImGui() {
 void Enemy::Draw() {
 
 	object3d_->Draw();
-	weapon_->Draw();
+	for(const auto& weapon : weapons_) {
+		weapon->Draw();
+	}
+
 }
 
 void Enemy::DrawCollider() {
 
 #ifdef _DEBUG
 	collider_->DrawCollider();
+
 #endif // _DEBUG
 
 }
@@ -193,31 +256,371 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 	if (other->GetCharacterType()  == CharacterType::PLAYER_BULLET) {
 		//プレイヤーの弾に当たった場合の処理
 		particleEmitter_[1]->Emit();
-		particleEmitter_[2]->Emit();
+		//particleEmitter_[2]->Emit();
 		isDamaged_ = true;
 		damageEffectTime_ = 0.5f;
 		hitPoint_--;
 	}
 }
 
+//===================================================================================
+//　走行処理
+//===================================================================================
+
 void Enemy::InitRunning() {
 
-	transform_.translate = { 0.0f,0.0f,0.0f };
 }
 
-void Enemy::InitJump() {}
-
-void Enemy::InitDash() {}
 
 void Enemy::UpdateRunning() {
 
+	// ターゲット方向を正規化
+	Vector3 toTarget = Vector3Math::Normalize(focusTargetPos_ - transform_.translate);
+
+	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
+	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
+
+	// 回転補間
+	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
+
+	// 移動方向の計算
+	// ターゲットの周囲を回るための目標座標を計算
+	orbitAngle_ += orbitSpeed_ * deltaTime_;  // 時間で角度加算
+	if (orbitAngle_ > 2 * std::numbers::pi_v<float>) orbitAngle_ -= 2 * std::numbers::pi_v<float>;
+	// ターゲットの周囲を回る座標を計算（XZ平面で円運動）
+	Vector3 orbitPos;
+	orbitPos.x = focusTargetPos_.x + orbitRadius_ * cos(orbitAngle_);
+	orbitPos.y = focusTargetPos_.y; // 高さはターゲットに合わせる（必要に応じて調整）
+	orbitPos.z = focusTargetPos_.z + orbitRadius_ * sin(orbitAngle_);
+	// 目的座標までの方向ベクトルを計算
+	toOrbitPos_ = orbitPos - transform_.translate;
+
+
+	if (moveDirection_.x != 0.0f || moveDirection_.z != 0.0f) {
+		//移動方向の正規化
+		moveDirection_ = Vector3Math::Normalize(toOrbitPos_);
+		//移動時の加速度の計算
+		velocity_.x += moveDirection_.x * moveSpeed_ * deltaTime_;
+		velocity_.z += moveDirection_.z * moveSpeed_ * deltaTime_;
+
+		float targetAngle = atan2(moveDirection_.x, moveDirection_.z);
+		Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
+
+		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.1f);
+		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
+
+	} else {
+		//速度の減速処理
+		velocity_.x /= deceleration_;
+		velocity_.z /= deceleration_;
+	}
+
+	//最大移動速度の制限
+	float speed = sqrt(velocity_.x * velocity_.x + velocity_.z * velocity_.z);
+	if (speed > kMaxMoveSpeed_) {
+		float scale = kMaxMoveSpeed_ / speed;
+		velocity_.x *= scale;
+		velocity_.z *= scale;
+	}
+
+	//移動処理
+	// 位置の更新（deltaTimeをここで適用）
+	transform_.translate.x += velocity_.x * deltaTime_;
+	transform_.translate.z += velocity_.z * deltaTime_;
+}
+
+//===================================================================================
+//　ジャンプ処理
+//===================================================================================
+
+void Enemy::InitJump() {}
+
+void Enemy::UpdateJump() {
+	// ジャンプ中の処理
+	if (isJumping_) {
+		// 上昇中
+		if (transform_.translate.y < jumpHeight_) {
+			velocity_.y += jumpSpeed_ * deltaTime_;
+		} else {
+			// 最大高度に達したら下降開始
+			isJumping_ = false;
+		}
+	} else {
+		// 下降中
+		if (transform_.translate.y > 0.0f) {
+			velocity_.y -= gravity_ * deltaTime_;
+		} else {
+			transform_.translate.y = 0.0f; // 地面に着地
+			isJumping_ = false;
+			behaviorRequest_ = Behavior::RUNNING; // ジャンプ終了後は走行状態に戻す
+		}
+	}
+	transform_.translate.y += velocity_.y * deltaTime_;
+}
+
+//===================================================================================
+//　ダッシュ処理
+//===================================================================================
+
+void Enemy::InitDash() {}
+
+void Enemy::UpdateDash() {
 
 }
 
-void Enemy::UpdateAttack() {}
+//===================================================================================
+// 攻撃処理
+//===================================================================================
 
-void Enemy::UpdateDamage() {}
 
-void Enemy::UpdateJump() {}
+void Enemy::UpdateAttack() {
 
-void Enemy::UpdateDash() {}
+	for (int i = 0; i < 1; ++i) {
+		auto* weapon = weapons_[i].get();
+
+		// AI判定で攻撃開始（チャージor通常）
+		if (ShouldStartAttack(i)) {
+			if (weapon->IsChargeAttack()) {
+				// チャージ開始
+				weapon->Charge(deltaTime_);
+				if (ShouldReleaseAttack(i)) {
+					// チャージ攻撃実行
+					weapon->ChargeAttack();
+					if (weapon->IsStopShootOnly()) {
+						behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+					} else {
+						behaviorRequest_ = Behavior::RUNNING;
+					}
+				}
+			} else {
+				// 通常攻撃
+				weapon->Attack();
+				if (weapon->IsStopShootOnly()) {
+					behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+				}
+				// 移動撃ちならRUNNING継続
+			}
+		} else if (ShouldReleaseAttack(i)) {
+			// 「離す」判定（チャージ終わり）
+			if (weapon->IsCharging()) {
+				weapon->ChargeAttack();
+				if (weapon->IsStopShootOnly()) {
+					behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+				} else {
+					behaviorRequest_ = Behavior::RUNNING;
+				}
+			}
+		}
+	}
+}
+
+
+//===================================================================================
+//　チャージ攻撃処理
+//===================================================================================
+void Enemy::InitChargeShoot() {
+
+}
+void Enemy::UpdateChargeShoot() {
+
+	// 速度を大きく落としていき、停止させた後攻撃処理を入れる
+	velocity_.x *= 0.5f;
+	velocity_.z *= 0.5f;
+	if (std::abs(velocity_.x) < 0.01f && std::abs(velocity_.z) < 0.01f) {
+		// チャージ攻撃の実行
+		for (auto& weapon : weapons_) {
+			if (weapon->IsChargeAttack()) {
+				weapon->ChargeAttack();
+
+			}else {
+				// チャージ攻撃不可の場合は通常攻撃
+				weapon->Attack();
+			}
+
+			if (weapon->IsMoveShootable()) {
+				// ステップ終了時前回の状態に戻す
+				if (transform_.translate.y <= 0.0f) {
+					behaviorRequest_ = Behavior::RUNNING;
+				} else if (transform_.translate.y > 0.0f) {
+					behaviorRequest_ = Behavior::FLOATING;
+				} else {
+					// ステップブーストが終了したらRUNNINGに戻す
+					behaviorRequest_ = Behavior::RUNNING;
+				}
+			} else {
+				// 停止撃ち専用の場合はCHARGESHOOT_STUNに切り替え
+				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+			}
+		}
+	}
+
+	// 位置の更新（deltaTimeをここで適用）
+	transform_.translate.x += velocity_.x * deltaTime_;
+	transform_.translate.z += velocity_.z * deltaTime_;
+}
+
+//===================================================================================
+//　チャージ攻撃後の硬直処理
+//===================================================================================
+
+void Enemy::InitChargeShootStun() {
+	chargeAttackStunTimer_ = chargeAttackStunDuration_;
+}
+
+void Enemy::UpdateChargeShootStun() {
+
+	chargeAttackStunTimer_ -= deltaTime_;
+	if (chargeAttackStunTimer_ <= 0.0f) {
+		// ステップ終了時前回の状態に戻す
+		if (transform_.translate.y <= 0.0f) {
+			behaviorRequest_ = Behavior::RUNNING;
+		} else if (transform_.translate.y > 0.0f) {
+			behaviorRequest_ = Behavior::FLOATING;
+		} else {
+			// ステップブーストが終了したらRUNNINGに戻す
+			behaviorRequest_ = Behavior::RUNNING;
+		}
+	}
+}
+
+//===================================================================================
+//　ステップブースト処理
+//===================================================================================
+
+
+void Enemy::InitStepBoost() {
+
+	//上昇速度を急激に遅くする
+	velocity_.y = 0.0f;
+
+	stepBoostTimer_ = stepBoostDuration_;
+	velocity_.x = stepBoostDirection_.x * stepBoostSpeed_;
+	velocity_.z = stepBoostDirection_.z * stepBoostSpeed_;
+}
+
+void Enemy::UpdateStepBoost() {
+	// ステップ中の移動
+	transform_.translate.x += velocity_.x * deltaTime_;
+	transform_.translate.z += velocity_.z * deltaTime_;
+
+	stepBoostTimer_ -= deltaTime_;
+	if (stepBoostTimer_ <= 0.0f) {
+		// ステップ終了時前回の状態に戻す
+		if (transform_.translate.y <= 0.0f) {
+			behaviorRequest_ = Behavior::RUNNING;
+		} else if (transform_.translate.y > 0.0f) {
+			behaviorRequest_ = Behavior::FLOATING;
+		} else {
+			// ステップブーストが終了したらRUNNINGに戻す
+			behaviorRequest_ = Behavior::RUNNING;
+		}
+
+		// ステップブーストのインターバルをリセット
+		stepBoostIntervalTimer_ = stepBoostInterval_;
+	}
+}
+
+void Enemy::TriggerStepBoost() {
+	if (stepBoostIntervalTimer_ <= 0.0f) {
+		StickState leftStick = Input::GetInstance()->GetLeftStickState(0);
+		if (fabs(leftStick.x) > 0.2f || fabs(leftStick.y) > 0.2f) {
+			//方向ベクトル計算（カメラ考慮）
+
+			stepBoostDirection_ = Vector3Math::Normalize(toOrbitPos_);
+			behaviorRequest_ = Behavior::STEPBOOST;
+		}
+	}
+}
+
+
+
+//===================================================================================
+// 浮遊時の処理
+//===================================================================================
+
+void Enemy::InitFloating() {
+
+}
+
+void Enemy::UpdateFloating() {
+
+	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
+
+	// --------------------------------
+	// TODO: Enemyの浮遊時の挙動を実装する
+	// --------------------------------
+	
+	//if (Input::GetInstance()->PushButton(0, GamepadButtonType::LT)) {
+	//	TriggerStepBoost();
+	//}
+	
+	// ターゲット方向を正規化
+	Vector3 toTarget = Vector3Math::Normalize(focusTargetPos_ - transform_.translate);
+
+	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
+	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
+
+	// 回転補間
+	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
+
+	// 移動方向の計算
+	// ターゲットの周囲を回るための目標座標を計算
+	orbitAngle_ += orbitSpeed_ * deltaTime_;  // 時間で角度加算
+	if (orbitAngle_ > 2 * std::numbers::pi_v<float>) orbitAngle_ -= 2 * std::numbers::pi_v<float>;
+	// ターゲットの周囲を回る座標を計算（XZ平面で円運動）
+	Vector3 orbitPos;
+	orbitPos.x = focusTargetPos_.x + orbitRadius_ * cos(orbitAngle_);
+	orbitPos.y = focusTargetPos_.y; // 高さはターゲットに合わせる（必要に応じて調整）
+	orbitPos.z = focusTargetPos_.z + orbitRadius_ * sin(orbitAngle_);
+	// 目的座標までの方向ベクトルを計算
+	toOrbitPos_ = orbitPos - transform_.translate;
+
+	if (moveDirection_.x != 0.0f || moveDirection_.z != 0.0f) {
+		moveDirection_ = Vector3Math::Normalize(toOrbitPos_);
+		//移動時の加速度の計算
+		velocity_.x += moveDirection_.x * moveSpeed_ * deltaTime_;
+		velocity_.z += moveDirection_.z * moveSpeed_ * deltaTime_;
+	} else {
+		velocity_.x /= deceleration_;
+		velocity_.z /= deceleration_;
+	}
+
+	//最大移動速度の制限
+	float speed = sqrt(velocity_.x * velocity_.x + velocity_.z * velocity_.z);
+	if (speed > kMaxMoveSpeed_) {
+		float scale = kMaxMoveSpeed_ / speed;
+		velocity_.x *= scale;
+		velocity_.z *= scale;
+	}
+
+	// 空中での重力（弱める場合はfloatingGravity_等を用意）
+	velocity_.y -= gravity_ * 2.0f * deltaTime_;
+	transform_.translate.x += velocity_.x * deltaTime_;
+	transform_.translate.z += velocity_.z * deltaTime_;
+	transform_.translate.y += velocity_.y * deltaTime_;
+
+	// 着地判定
+	if (transform_.translate.y <= 0.0f) {
+		transform_.translate.y = 0.0f;
+		behaviorRequest_ = Behavior::RUNNING;
+	}
+}
+
+//===================================================================================
+// 攻撃開始判定
+//===================================================================================
+
+bool Enemy::ShouldStartAttack(int weaponIndex) {
+	// 例: ターゲットとの距離が射程範囲でクールタイムが終わってたら攻撃
+	auto* weapon = weapons_[weaponIndex].get();
+	float distance = (focusTargetPos_ - transform_.translate).Length();
+	float range = orbitRadius_ * 3.5f;
+	bool cooldownReady = weapon->IsAvailable();
+	// 例: 一定確率で攻撃開始
+	return (distance <= range) && cooldownReady && (rand() % 100 < 10); // 10%の確率
+}
+
+bool Enemy::ShouldReleaseAttack(int weaponIndex) {
+	auto* weapon = weapons_[weaponIndex].get();
+	return weapon->GetChargeTime() >= weapon->GetRequiredChargeTime();
+}

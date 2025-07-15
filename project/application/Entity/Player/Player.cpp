@@ -35,11 +35,13 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
+	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
 
 	camera_ = object3dCommon->GetDefaultCamera();
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
-	transform_ = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
+	transform_ = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
+	object3d_->SetScale(transform_.scale);
 
 	weapons_.resize(2); // 武器の数を2つに設定
 	weaponTypes_.resize(2);
@@ -56,8 +58,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 // 武器の初期化処理
 //===================================================================================
 
-void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& weaponFilePath) {
-	weaponFilePath;
+void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager) {
 	//武器の初期化
 	for (int i = 0; i < weapons_.size(); i++) {
 		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
@@ -174,7 +175,6 @@ void Player::Update() {
 	camera_->SetFollowTargetRot(eulerRotate);
 	camera_->SetFocusTargetPos(focusTargetPos_);
 
-
 	object3d_->SetTranslate(transform_.translate);
 	object3d_->SetRotate(eulerRotate);
 	object3d_->Update();
@@ -185,7 +185,10 @@ void Player::Update() {
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
 	backEmitter_->Update();
 
+	weapons_[0]->SetTarget(focusTargetPos_);
 	weapons_[0]->Update();
+	// 2つ目の武器の更新
+	weapons_[1]->SetTarget(focusTargetPos_);
 	weapons_[1]->Update(); // 2つ目の武器がある場合はここで更新
 }
 

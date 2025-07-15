@@ -17,7 +17,7 @@ public:
 	void DrawCollider() override;
 	void OnCollisionAction(GameCharacter* other) override;
 
-	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& weaponFilePath);
+	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager);
 
 public:
 
@@ -75,7 +75,7 @@ private:
 	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
 
 	//補足対象の座標
-	Vector3 focusTargetPos_ = { 0.0f,0.0f,0.0f };
+	Vector3 focusTargetPos_ = { 0.0f,100.0f,0.0f };
 
 	//移動ベクトル
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
@@ -91,9 +91,9 @@ private:
 
 	//QBInfo
 	Vector3 stepBoostDirection_ = { 0.0f,0.0f,0.0f }; // ステップブーストの方向
-	const float stepBoostSpeed_ = 230.0f;
-	const float stepBoostDuration_ = 0.2f; // ステップブーストの持続時間
-	float stepBoostTimer_ = 0.0f; // ステップブーストのタイマー
+	const float stepBoostSpeed_ = 230.0f;             // ステップブーストの速度
+	const float stepBoostDuration_ = 0.2f;            // ステップブーストの持続時間
+	float stepBoostTimer_ = 0.0f;                     // ステップブーストのタイマー
 	//インターバル用
 	const float stepBoostInterval_ = 0.2f; // ステップブーストのインターバル
 	float stepBoostIntervalTimer_ = 0.0f; // ステップブーストのインターバルタイマー
@@ -105,10 +105,9 @@ private:
 	const float maxJumpTime_ = 0.5f; // ジャンプの最大時間
 	const float gravity_ = 50.0f; // 重力の強さ
 
-	//チャージ攻撃後の硬直時間
-	float chargeAttackStunTimer_ = 0.0f;
+	// チャージ攻撃後硬直用の変数
+	float chargeAttackStunTimer_ = 0.0f;          //チャージ攻撃後の硬直時間
 	const float chargeAttackStunDuration_ = 0.5f; // チャージ攻撃後の硬直時間
-
 	float deltaTime_ = 0.0f;
 
 	bool isJumping_ = false;

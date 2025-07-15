@@ -76,15 +76,15 @@ void GamePlayScene::Initialize() {
 	//player
 	player_ = std::make_unique<Player>();
 	player_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
-	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "axis.obj");
+	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
 
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
-	enemy_->Initialize(Object3dCommon::GetInstance(), "plane.gltf");
-	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get(), "cube.obj");
-	//enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_animation.gltf", "clear"));
+	enemy_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
+	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
+	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 }
 
 //====================================================================
@@ -108,16 +108,17 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->Update();
 	//SkyBoxの更新
 	skyBox_->Update();
-	
-	
-
+	//スプライトの更新
 	sprite_->Update();
+
+	
+	//enemy
+	enemy_->SetFocusTargetPos(player_->GetObject3d()->GetTranslate());
+	enemy_->Update();
 
 	//player
 	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
 	player_->Update();
-	//enemy
-	enemy_->Update();
 
 	//弾の更新
 	bulletManager_->UpdateBullet();

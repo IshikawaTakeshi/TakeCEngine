@@ -246,9 +246,6 @@ void Camera::UpdateCameraLockOn() {
 	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
 	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
 
-	//Vector3 euler = QuaternionMath::toEuler(transform_.rotate);
-	//yawRot_ = euler.y;
-	//pitchRot_ = euler.x;
 	// 回転補間
 	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
 

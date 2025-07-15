@@ -105,7 +105,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 			//enemy_->TakeDamage(damage_);
 
 			//パーティクル射出
-			particleEmitter_[0]->Emit();
+			//particleEmitter_[0]->Emit();
 			isActive_ = false; //弾を無効化
 		}
 	} else if (characterType_ == CharacterType::ENEMY_BULLET) {
@@ -122,7 +122,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
 		
 		//パーティクル射出
-		particleEmitter_[0]->Emit();
+		//particleEmitter_[0]->Emit();
 
 		isActive_ = false; //弾を無効化
 	}

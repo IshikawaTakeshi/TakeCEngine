@@ -17,7 +17,21 @@ public:
 	void DrawCollider() override;
 	void OnCollisionAction(GameCharacter* other) override;
 
-	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& weaponFilePath);
+	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager);
+
+public:
+
+	//setter
+	void SetFocusTargetPos(const Vector3& targetPos) { focusTargetPos_ = targetPos; }
+	//getter
+	const QuaternionTransform& GetTransform() const { return transform_; }
+	const Vector3& GetVelocity() const { return velocity_; }
+	const Vector3& GetMoveDirection() const { return moveDirection_; }
+	const Vector3& GetToOrbitPos() const { return toOrbitPos_; }
+	const uint32_t& GetHitPoint() const { return hitPoint_; }
+	const bool& IsJumping() const { return isJumping_; }
+	const bool& IsDashing() const { return isDashing_; }
+	const bool& IsDamaged() const { return isDamaged_; }
 
 private:
 
@@ -55,13 +69,21 @@ private:
 	void TriggerStepBoost();
 
 private:
+	// 攻撃開始判定
+	bool ShouldStartAttack(int weaponIndex);
+	// チャージ攻撃実行判定
+	bool ShouldReleaseAttack(int weaponIndex);
+
+private:
 
 	//状態遷移リクエスト
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
-	//プレイヤーの状態
+	//エネミーの状態
 	Behavior behavior_ = Behavior::IDLE;
-	//プレイヤーの武器
-	std::unique_ptr<BaseWeapon> weapon_ = nullptr;
+	Behavior prevBehavior_ = Behavior::IDLE;
+	//エネミーの武器
+	std::vector<std::unique_ptr<BaseWeapon>> weapons_;
+	std::vector<WeaponType> weaponTypes_;
 	//particleEmitter
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
 
@@ -71,37 +93,48 @@ private:
 	float deceleration_ = 1.1f;
 	//移動方向
 	Vector3 moveDirection_ = { 0.0f,0.0f,1.0f };
+
 	//補足対象の座標
 	Vector3 focusTargetPos_ = { 0.0f,0.0f,0.0f };
-
+	//補足スピード
+	float followSpeed_ = 0.3f;
+	//拡縮・回転・平行移動を含む変形情報
 	QuaternionTransform transform_ = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,0.0f} };
 
-	const float moveSpeed_ = 200.0f;
-	const float kMaxMoveSpeed_ = 50.0f;
+	//ゲーム内の1フレームの経過時間
+	float deltaTime_ = 0.0f;
+	//体力
+	uint32_t hitPoint_ = 100;
+
+	const float moveSpeed_ = 200.0f;    // 移動速度
+	const float kMaxMoveSpeed_ = 50.0f; // 最大移動速度
+
+	//ターゲットの周りを周回するための変数
+	float orbitAngle_ = 0.0f;              // 周回角度
+	float orbitRadius_ = 60.0f;             // 周回半径（ターゲットとの距離）
+	float orbitSpeed_ = 1.0f;              // 角速度（周る速さ）
+	Vector3 toOrbitPos_ = { 0.0f,0.0f,0.0f }; // 周回する座標
 
 	//QBInfo
 	Vector3 stepBoostDirection_ = { 0.0f,0.0f,0.0f }; // ステップブーストの方向
-	const float stepBoostSpeed_ = 230.0f;
-	const float stepBoostDuration_ = 0.2f; // ステップブーストの持続時間
-	float stepBoostTimer_ = 0.0f; // ステップブーストのタイマー
+	const float stepBoostSpeed_ = 230.0f;             // ステップブーストの速度
+	const float stepBoostDuration_ = 0.2f;            // ステップブーストの持続時間
+	float stepBoostTimer_ = 0.0f;                     // ステップブーストのタイマー
 	//インターバル用
 	const float stepBoostInterval_ = 0.2f; // ステップブーストのインターバル
-	float stepBoostIntervalTimer_ = 0.0f; // ステップブーストのインターバルタイマー
+	float stepBoostIntervalTimer_ = 0.0f;  // ステップブーストのインターバルタイマー
 
 	//JumInfo
 	const float jumpHeight_ = 80.0f; // ジャンプの高さ
-	const float jumpSpeed_ = 50.0f; // ジャンプの速度
-	float jumpTimer_ = 0.0f; // ジャンプのタイマー
+	const float jumpSpeed_ = 50.0f;  // ジャンプの速度
+	float jumpTimer_ = 0.0f;         // ジャンプのタイマー
 	const float maxJumpTime_ = 0.5f; // ジャンプの最大時間
-	const float gravity_ = 50.0f; // 重力の強さ
+	const float gravity_ = 50.0f;    // 重力の強さ
 
-	//チャージ攻撃後の硬直時間
-	float chargeAttackStunTimer_ = 0.0f;
+	// チャージ攻撃後硬直用の変数
+	float chargeAttackStunTimer_ = 0.0f;          //チャージ攻撃後の硬直時間
 	const float chargeAttackStunDuration_ = 0.5f; // チャージ攻撃後の硬直時間
 
-	float deltaTime_ = 0.0f;
-
-	uint32_t hitPoint_ = 100; //体力
 
 	//ダメージを受けた時のエフェクト適用時間
 	float damageEffectTime_ = 0.0f;

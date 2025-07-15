@@ -24,7 +24,7 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 	maxBulletCount_ = 30;
 	bulletSpeed_ = 400.0f; // 弾のスピードを設定
 
-	isChargeAttack_ = true; // ライフルはチャージ攻撃可能
+	isChargeAttack_ = false; // ライフルはチャージ攻撃可能
 	isMoveShootable_ = true; // ライフルは移動撃ち可能
 	isStopShootOnly_ = false; // ライフルは停止撃ち専用ではない
 }
@@ -71,7 +71,7 @@ void Rifle::UpdateImGui() {
 
 	ImGui::SeparatorText("Rifle");
 	ImGui::Text("Charge Time: %.2f", chargeTime_);
-	ImGui::Text("Charge Max Time: %.2f", chargeMaxTime_);
+	ImGui::Text("required Charge Time: %.2f", requiredChargeTime_);
 	ImGui::Text("Is Charging: %s", isCharging_ ? "Yes" : "No");
 	ImGui::SliderFloat("Bullet Speed", &bulletSpeed_, 100.0f, 1000.0f);
 	ImGui::SliderInt("Max Bullet Count", &maxBulletCount_, 1, 100);
@@ -137,10 +137,10 @@ void Rifle::Charge(float deltaTime) {
 	chargeTime_ += deltaTime;
 
 	// チャージ時間が最大に達した場合
-	if (chargeTime_ >= chargeMaxTime_) { 
+	if (chargeTime_ >= requiredChargeTime_) { 
 
 		// チャージ時間を最大に制限
-		chargeTime_ = chargeMaxTime_; 
+		chargeTime_ = requiredChargeTime_; 
 	}
 
 	//TODO: チャージ中のエフェクトやアニメーションをここで処理する
@@ -156,7 +156,7 @@ void Rifle::ChargeAttack() {
 	if(!isCharging_) return;
 	isCharging_ = false;
 
-	if (chargeTime_ >= chargeMaxTime_) {
+	if (chargeTime_ >= requiredChargeTime_) {
 		// 最大チャージ時間に達した場合の処理
 		//停止撃ちで三連射
 		isBursting_ = true;

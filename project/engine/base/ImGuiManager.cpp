@@ -63,7 +63,7 @@ void ImGuiManager::End() {
 }
 
 void ImGuiManager::DrawDebugScreen() {
-	ImGui::Begin("ImGuiManager");
+	ImGui::Begin("ImGuiManager::DebugScreen");
 	ImGui::Image(
 		ImTextureID(srvManager_->GetSrvDescriptorHandleGPU(renderTextureIndex_).ptr),
 		ImVec2(static_cast<float>(WinApp::kScreenWidth), static_cast<float>(WinApp::kScreenHeight)),

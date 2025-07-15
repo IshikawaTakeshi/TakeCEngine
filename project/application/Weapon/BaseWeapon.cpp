@@ -5,6 +5,17 @@ void BaseWeapon::AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jo
 	parentJointName_ = jointName;
 }
 
+bool BaseWeapon::IsCharging() const {
+	// チャージ中かどうかを返す
+	return isCharging_;
+}
+
 float BaseWeapon::GetChargeTime() const {
+	// チャージ時間を返す
 	return chargeTime_;
+}
+
+float BaseWeapon::GetRequiredChargeTime() const {
+	// 必要チャージ時間を返す
+	return requiredChargeTime_;
 }
