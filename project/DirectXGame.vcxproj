@@ -206,6 +206,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Particle\ParticleEmitterAllocater.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleEditor.cpp" />
     <ClCompile Include="engine\scene\ParticleEditScene.cpp" />
+    <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Weapon\Bazooka.h" />
@@ -322,6 +324,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\PostEffect\Vignette.h" />
     <ClInclude Include="application\Weapon\BaseWeapon.h" />
     <ClInclude Include="application\Weapon\Rifle.h" />
+    <ClInclude Include="application\Weapon\VerticalMissileLauncher.h" />
+    <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

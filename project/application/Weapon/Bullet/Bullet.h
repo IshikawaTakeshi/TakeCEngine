@@ -7,46 +7,45 @@
 #include <string>
 #include <memory>
 
+enum class BulletType {
+	NONE,
+	BULLET,
+	EXPLOSION,
+};
+
 class Bullet : public GameCharacter {
 public:
 	Bullet() = default;
 	~Bullet() = default;
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath)override;
 	void Update() override;
-	void UpdateImGui();
+	virtual void UpdateImGui();
 	void Draw() override;
 	void DrawCollider() override;
 	void OnCollisionAction(GameCharacter* other) override;
 
-	void BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos,const float& speed,CharacterType type);
-
-	//void EmitterInitialize(uint32_t count, float frequency);
+	virtual void Create(const Vector3& weaponPos,const Vector3& targetPos,const float& speed,CharacterType type);
 
 public:
 
-	EulerTransform GetTransform() const { return transform_; }
-	bool GetIsActive() { return isActive_; }
+	virtual EulerTransform GetTransform() const { return transform_; }
+	virtual bool GetIsActive() { return isActive_; }
 
 public:
 
-	void SetIsActive(bool isActive) { isActive_ = isActive; }
-	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
-	void SetSpeed(float speed) { speed_ = speed; }
-	void SetLifeTime(float lifeTime) { lifeTime_ = lifeTime; }
-	void SetTransform(const EulerTransform& transform) { transform_ = transform; }
+	virtual void SetIsActive(bool isActive) { isActive_ = isActive; }
+	virtual void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
+	virtual void SetSpeed(float speed) { speed_ = speed; }
+	virtual void SetLifeTime(float lifeTime) { lifeTime_ = lifeTime; }
+	virtual void SetTransform(const EulerTransform& transform) { transform_ = transform; }
 
-private:
-	enum class BulletType {
-		NONE,
-		BULLET,
-		EXPLOSION,
-	};
-
-private:
+protected:
 
 	EulerTransform transform_{};
 	float deltaTime_ = 0.0f;
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
+	Vector3 targetPos_ = { 0.0f,0.0f,0.0f };
+	Vector3 direction_ = { 0.0f,0.0f,0.0f };
 	float speed_ = 0.0f;
 	bool isActive_ = false;
 	float lifeTime_ = 0.0f;

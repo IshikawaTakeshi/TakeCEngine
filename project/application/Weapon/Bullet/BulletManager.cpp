@@ -50,7 +50,7 @@ void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPo
 
 	Bullet* bullet = bulletPool_->GetBullet();
 	bullet->Initialize(object3dCommon_, bulletFilePath_);
-	bullet->BulletInitialize(weaponPos, targetPos,speed,type);
+	bullet->Create(weaponPos, targetPos,speed,type);
 	//bullet->EmitterInitialize(10, 0.1f); // 10個のパーティクルを0.1秒間隔で発生させる
 }
 
