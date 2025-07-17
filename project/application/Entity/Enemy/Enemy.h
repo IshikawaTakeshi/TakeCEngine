@@ -4,6 +4,8 @@
 #include "camera/Camera.h"
 #include "3d/Particle/ParticleEmitter.h"
 #include <optional>
+#include <chrono>
+#include <random>
 
 class Enemy : public GameCharacter {
 
@@ -29,8 +31,6 @@ public:
 	const Vector3& GetMoveDirection() const { return moveDirection_; }
 	const Vector3& GetToOrbitPos() const { return toOrbitPos_; }
 	const uint32_t& GetHitPoint() const { return hitPoint_; }
-	const bool& IsJumping() const { return isJumping_; }
-	const bool& IsDashing() const { return isDashing_; }
 	const bool& IsDamaged() const { return isDamaged_; }
 
 private:
@@ -63,7 +63,7 @@ private:
 	void UpdateChargeShoot();
 	void UpdateChargeShootStun();
 	void UpdateStepBoost();
-	void UpdateFloating();
+	void UpdateFloating(std::mt19937 randomEngine);
 
 	// ステップブーストのBehavior切り替え処理
 	void TriggerStepBoost();
@@ -125,11 +125,13 @@ private:
 	float stepBoostIntervalTimer_ = 0.0f;  // ステップブーストのインターバルタイマー
 
 	//JumInfo
-	const float jumpHeight_ = 80.0f; // ジャンプの高さ
 	const float jumpSpeed_ = 50.0f;  // ジャンプの速度
 	float jumpTimer_ = 0.0f;         // ジャンプのタイマー
 	const float maxJumpTime_ = 0.5f; // ジャンプの最大時間
-	const float gravity_ = 50.0f;    // 重力の強さ
+	const float jumpDeceleration_ = 40.0f; // ジャンプ中の減速率
+	const float gravity_ = 9.8f;    // 重力の強さ
+	//落下速度
+	float fallSpeed_ = 40.0f; // 落下速度
 
 	// チャージ攻撃後硬直用の変数
 	float chargeAttackStunTimer_ = 0.0f;          //チャージ攻撃後の硬直時間
@@ -139,9 +141,14 @@ private:
 	//ダメージを受けた時のエフェクト適用時間
 	float damageEffectTime_ = 0.0f;
 
-	bool isJumping_ = false;
-	bool isDashing_ = false;
-	bool onGround_ = false;
+	//敵が攻撃する確率
+	const float attackProbability_ = 10.0f; // 10%の確率で攻撃
+	//ジャンプする確率
+	const float jumpProbability_ = 1.0f;
+
+	//状態遷移タイマー
+	float stateTransitionTimer_ = 0.0f; // 状態遷移のタイマー
+
 	bool isDamaged_ = false; //ダメージを受けたかどうか
 	
 };

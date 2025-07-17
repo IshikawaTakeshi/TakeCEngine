@@ -99,11 +99,16 @@ private:
 	float stepBoostIntervalTimer_ = 0.0f; // ステップブーストのインターバルタイマー
 
 	//JumInfo
-	const float jumpHeight_ = 80.0f; // ジャンプの高さ
+	//const float jumpHeight_ = 80.0f; // ジャンプの高さ
 	const float jumpSpeed_ = 50.0f; // ジャンプの速度
 	float jumpTimer_ = 0.0f; // ジャンプのタイマー
 	const float maxJumpTime_ = 0.5f; // ジャンプの最大時間
-	const float gravity_ = 50.0f; // 重力の強さ
+	const float jumpDeceleration_ = 40.0f; // ジャンプ中の減速率
+
+
+	const float gravity_ = 9.8f; // 重力の強さ
+	//落下速度
+	float fallSpeed_ = 40.0f; // 落下速度
 
 	// チャージ攻撃後硬直用の変数
 	float chargeAttackStunTimer_ = 0.0f;          //チャージ攻撃後の硬直時間
