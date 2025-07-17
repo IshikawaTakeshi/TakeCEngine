@@ -432,7 +432,7 @@ void Player::UpdateJump() {
 	transform_.translate.x += velocity_.x * deltaTime_;
 	transform_.translate.z += velocity_.z * deltaTime_;
 	// 重力の適用
-	velocity_.y -= gravity_ * deltaTime_;
+	velocity_.y -= (gravity_ + jumpDeceleration_) * deltaTime_;
 	transform_.translate.y += velocity_.y * deltaTime_;
 
 	 jumpTimer_ += deltaTime_;
@@ -625,8 +625,8 @@ void Player::UpdateFloating() {
 		velocity_.z *= scale;
 	}
 
-	// 空中での重力（弱める場合はfloatingGravity_等を用意）
-	velocity_.y -= gravity_ * 2.0f * deltaTime_;
+	// 空中での降下処理(fallSpeedを重力に加算)
+	velocity_.y -= (gravity_ + fallSpeed_) * deltaTime_;
 	transform_.translate.x += velocity_.x * deltaTime_;
 	transform_.translate.z += velocity_.z * deltaTime_;
 	transform_.translate.y += velocity_.y * deltaTime_;
