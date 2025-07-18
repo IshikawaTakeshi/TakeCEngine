@@ -2,13 +2,13 @@
 #include "Object3d.h"
 #include "Object3dCommon.h"
 #include "Entity/GameCharacter.h"
-#include "Weapon/Bullet/BulletManager.h"
 #include "Weapon/WeaponType.h"
 #include <cstdint>
 #include <string>
 #include <memory>
 
 //武器インターフェース
+class BulletManager;
 class BaseWeapon {
 public:
 
@@ -26,15 +26,20 @@ public:
 	//武器の攻撃
 	virtual void Attack() = 0;
 	//武器のチャージ処理
-	
 	virtual void Charge([[maybe_unused]] float deltaTime) {};
 	virtual void ChargeAttack() {};
 
 	virtual void AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName);
+
 	//武器タイプの取得
 	virtual const WeaponType& GetWeaponType() const = 0;
-
+	//攻撃間隔の取得
 	virtual float GetAttackInterval() const { return attackInterval_; }
+
+	virtual const Vector3& GetTranslate() const { return object3d_->GetTranslate(); }
+
+	virtual const Vector3& GetTragetPos() const { return targetPos_; }
+
 	//所有者の設定
 	virtual void SetOwnerObject(GameCharacter* owener) { ownerObject_ = owener; }
 	//攻撃対象の座標を設定

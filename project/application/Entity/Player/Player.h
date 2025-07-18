@@ -4,6 +4,8 @@
 #include "Weapon/WeaponType.h"
 #include "camera/Camera.h"
 #include "Particle/ParticleEmitter.h"
+#include "Weapon/Bullet/BulletManager.h"
+#include "engine/io/Gamepad.h"
 #include <optional>
 
 class Player : public GameCharacter {
@@ -57,6 +59,8 @@ private:
 
 	// ステップブーストのBehavior切り替え処理
 	void TriggerStepBoost();
+	//武器一つ当たりの攻撃処理
+	void WeaponAttack(int weaponIndex, GamepadButtonType buttonType);
 
 private:
 

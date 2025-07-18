@@ -12,6 +12,7 @@
 
 #include "Weapon/Rifle.h"
 #include "Weapon/Bazooka.h"
+#include "Weapon/VerticalMissileLauncher.h"
 
 Player::~Player() {
 	object3d_.reset();
@@ -43,10 +44,11 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	transform_ = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
 	object3d_->SetScale(transform_.scale);
 
-	weapons_.resize(2); // 武器の数を2つに設定
-	weaponTypes_.resize(2);
+	weapons_.resize(3);
+	weaponTypes_.resize(3);
 	weaponTypes_[0] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
 	weaponTypes_[1] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
+	weaponTypes_[2] = WeaponType::WEAPON_TYPE_VERTICAL_MISSILE; // 3つ目の武器は垂直ミサイル
 
 	//背部エミッターの初期化
 	backEmitter_ = std::make_unique<ParticleEmitter>();
@@ -69,11 +71,19 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bull
 			weapons_[i] = std::make_unique<Bazooka>();
 			weapons_[i]->Initialize(object3dCommon, bulletManager, "Bazooka.gltf");
 			weapons_[i]->SetOwnerObject(this);
+		}else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
+			//垂直ミサイルの武器を初期化
+			weapons_[i] = std::make_unique<VerticalMissileLauncher>();
+			weapons_[i]->Initialize(object3dCommon,bulletManager, "Bazooka.gltf");
+			weapons_[i]->SetOwnerObject(this);
+		} else {
+			weapons_[i] = nullptr; // 未使用の武器スロットはnullptrに設定
 		}
 	}
 
 	weapons_[0]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
 	weapons_[1]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
+	weapons_[2]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack"); // 3つ目の武器を背中に取り付け
 }
 
 //===================================================================================
@@ -185,11 +195,12 @@ void Player::Update() {
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
 	backEmitter_->Update();
 
-	weapons_[0]->SetTarget(focusTargetPos_);
-	weapons_[0]->Update();
-	// 2つ目の武器の更新
-	weapons_[1]->SetTarget(focusTargetPos_);
-	weapons_[1]->Update(); // 2つ目の武器がある場合はここで更新
+	for(const auto& weapon : weapons_) {
+		if (weapon) {
+			weapon->SetTarget(focusTargetPos_);
+			weapon->Update();
+		}
+	}
 }
 
 //===================================================================================
@@ -208,7 +219,8 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat3("MoveDirection", &moveDirection_.x, 0.01f);
 	ImGui::Text("Behavior: %d", static_cast<int>(behavior_));
 	weapons_[0]->UpdateImGui();
-	weapons_[1]->UpdateImGui(); // 2つ目の武器がある場合はここで更新
+	weapons_[1]->UpdateImGui();
+	weapons_[2]->UpdateImGui(); 
 	ImGui::End();
 
 #endif // _DEBUG
@@ -309,69 +321,21 @@ void Player::UpdateRunning() {
 
 void Player::UpdateAttack() {
 
-	if (Input::GetInstance()->PushButton(0,GamepadButtonType::RB)) {
-		auto* weapon = weapons_[0].get();
-		
+	WeaponAttack(0, GamepadButtonType::RB); // 1つ目の武器の攻撃
+	WeaponAttack(1, GamepadButtonType::LB); // 2つ目の武器の攻撃
+	WeaponAttack(2, GamepadButtonType::X); // 3つ目の武器の攻撃
+}
+
+void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
+
+	auto* weapon = weapons_[weaponIndex].get();
+	if (Input::GetInstance()->PushButton(0, buttonType)) {
 		//チャージ攻撃可能な場合
 		if (weapon->IsChargeAttack()) {
-		
+
 			//武器のチャージ処理
 			weapon->Charge(deltaTime_);
-
-			if(Input::GetInstance()->ReleaseButton(0, GamepadButtonType::RB)) {
-				//チャージ攻撃実行
-				weapon->ChargeAttack();
-				if (weapon->IsStopShootOnly()) {
-					// 停止撃ち専用の場合はチャージ後に硬直状態へ
-					behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
-				} else {
-					// 移動撃ち可能な場合はRUNNINGに戻す
-					behaviorRequest_ = Behavior::RUNNING;
-				}
-			} 
-		} else {
-			//チャージ攻撃不可:通常攻撃
-			if (weapon->IsStopShootOnly()) {
-				// 停止撃ち専用:硬直処理を行う
-				weapon->Attack();
-				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
-			} else {
-				// 移動撃ち可能
-				weapon->Attack();
-			}
-		}
-	} else if (Input::GetInstance()->ReleaseButton(0, GamepadButtonType::RB)) {
-		// RBボタンが離された場合
-		auto* weapon = weapons_[0].get();
-		if (weapon->IsCharging()) {
-			// チャージ中の場合はチャージ攻撃を終了
-			weapon->ChargeAttack();
-			if (weapon->IsStopShootOnly()) {
-				// 停止撃ち専用の場合はチャージ後に硬直状態へ
-				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
-			} else {
-				// ステップ終了時前回の状態に戻す
-				if (transform_.translate.y <= 0.0f) {
-					behaviorRequest_ = Behavior::RUNNING;
-				} else if (transform_.translate.y > 0.0f) {
-					behaviorRequest_ = Behavior::FLOATING;
-				} else {
-					// ステップブーストが終了したらRUNNINGに戻す
-					behaviorRequest_ = Behavior::RUNNING;
-				}
-			}
-		}
-	}
-
-
-	if (Input::GetInstance()->PushButton(0, GamepadButtonType::LB)) {
-		auto* weapon = weapons_[1].get();
-		//チャージ攻撃可能な場合
-		if (weapon->IsChargeAttack()) {
-		
-			//武器のチャージ処理
-			weapon->Charge(deltaTime_);
-			if(Input::GetInstance()->ReleaseButton(0, GamepadButtonType::LB)) {
+			if(Input::GetInstance()->ReleaseButton(0, buttonType)) {
 				//チャージ攻撃実行
 				weapon->ChargeAttack();
 				if (weapon->IsStopShootOnly()) {
@@ -392,9 +356,9 @@ void Player::UpdateAttack() {
 				weapon->Attack();
 			}
 		}
-	} else if (Input::GetInstance()->ReleaseButton(0, GamepadButtonType::LB)) {
+	} else if (Input::GetInstance()->ReleaseButton(0, buttonType)) {
 		// LBボタンが離された場合
-		auto* weapon = weapons_[1].get();
+
 		if (weapon->IsCharging()) {
 			// チャージ中の場合はチャージ攻撃を終了
 			weapon->ChargeAttack();
@@ -581,6 +545,8 @@ void Player::TriggerStepBoost() {
 		}
 	}
 }
+
+
 
 //===================================================================================
 // 浮遊時の処理

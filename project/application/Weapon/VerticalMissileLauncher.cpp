@@ -2,6 +2,7 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/base/ImGuiManager.h"
 #include "engine/math/MatrixMath.h"
+#include "application/Weapon/Bullet/BulletManager.h"
 
 void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) {
 	bulletManager_ = bulletManager;
@@ -30,6 +31,9 @@ void VerticalMissileLauncher::Update() {
 
 	//攻撃間隔の減少
 	attackInterval_ -= TakeCFrameWork::GetDeltaTime();
+
+	//ミサイルのターゲットの位置を更新
+	
 
 	//親スケルトンのジョイントに追従させる
 	if (parentSkeleton_ && !parentJointName_.empty()) {
@@ -78,9 +82,9 @@ void VerticalMissileLauncher::Attack() {
 	if (attackInterval_ <= 0.0f && bulletCount_ > 0) {
 		// 弾発射
 		if (ownerObject_->GetCharacterType() == CharacterType::PLAYER) {
-			bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, bulletSpeed_, CharacterType::PLAYER_BULLET);
+			bulletManager_->ShootMissile(this, bulletSpeed_, CharacterType::PLAYER_BULLET);
 		} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
-			bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, bulletSpeed_, CharacterType::ENEMY_BULLET);
+			bulletManager_->ShootMissile(this, bulletSpeed_, CharacterType::ENEMY_BULLET);
 		}
 		bulletCount_--;
 		if (bulletCount_ <= 0) {

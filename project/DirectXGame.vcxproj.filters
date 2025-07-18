@@ -372,6 +372,7 @@
     </ClCompile>
     <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp" />
     <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -716,6 +717,7 @@
     </ClInclude>
     <ClInclude Include="application\Weapon\VerticalMissileLauncher.h" />
     <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h" />
+    <ClInclude Include="application\Weapon\Bullet\MissilePool.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

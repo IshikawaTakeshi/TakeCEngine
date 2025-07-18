@@ -3,6 +3,7 @@
 #include "Weapon/BaseWeapon.h"
 #include "camera/Camera.h"
 #include "3d/Particle/ParticleEmitter.h"
+#include "application/Weapon/Bullet/BulletManager.h"
 #include <optional>
 #include <chrono>
 #include <random>

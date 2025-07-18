@@ -7,8 +7,11 @@
 void BulletManager::Initialize(Object3dCommon* object3dCommon,size_t size) {
 	bulletPool_ = std::make_unique<BulletPool>();
 	bulletPool_->Initialize(size);
+	missilePool_ = std::make_unique<MissilePool>();
+	missilePool_->Initialize(size); 
 	object3dCommon_ = object3dCommon;
 	bulletFilePath_ = "cube.obj";
+	missileFilePath_ = "cube.obj";
 }
 
 //========================================================================================================
@@ -18,6 +21,7 @@ void BulletManager::Initialize(Object3dCommon* object3dCommon,size_t size) {
 void BulletManager::Finalize() {
 
 	bulletPool_->Finalize();
+	missilePool_->Finalize();
 	object3dCommon_ = nullptr;
 }
 
@@ -29,17 +33,31 @@ void BulletManager::UpdateBullet() {
 	bulletPool_->UpdateAllBullet();
 }
 
+void BulletManager::UpdateMissile() {
+	
+	missilePool_->UpdateAllMissiles();
+}
+
+void BulletManager::Update() {
+	// 弾の更新
+	UpdateBullet();
+	// ミサイルの更新
+	UpdateMissile();
+}
+
 //========================================================================================================
 // 全弾の描画処理
 //========================================================================================================
 
-void BulletManager::DrawBullet() {
+void BulletManager::Draw() {
 	bulletPool_->DrawAllBullet();
+	//missilePool_->DrawAllMissiles();
 }
 
 void BulletManager::DrawCollider() {
 
 	bulletPool_->DrawAllCollider();
+	missilePool_->DrawAllCollider();
 }
 
 //========================================================================================================
@@ -54,6 +72,16 @@ void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPo
 	//bullet->EmitterInitialize(10, 0.1f); // 10個のパーティクルを0.1秒間隔で発生させる
 }
 
+void BulletManager::ShootMissile(BaseWeapon* ownerWeapon, const float& speed, CharacterType type) {
+
+	VerticalMissile* missile = missilePool_->GetMissile();
+	if (missile == nullptr) {
+		return; // ミサイルが取得できなかった場合は何もしない
+	}
+	missile->Initialize(object3dCommon_, missileFilePath_);
+	missile->Create(ownerWeapon, speed, type);
+}
+
 std::vector<Bullet*> BulletManager::GetAllBullets() {
 	
 	std::vector<Bullet*> bullets;
@@ -63,4 +91,15 @@ std::vector<Bullet*> BulletManager::GetAllBullets() {
 		}
 	}
 	return bullets;
+}
+
+std::vector<VerticalMissile*> BulletManager::GetAllMissiles() {
+	
+	std::vector<VerticalMissile*> missiles;
+	for (const auto& missile : missilePool_->GetPool()) {
+		if (missile->GetIsActive()) {
+			missiles.push_back(missile);
+		}
+	}
+	return missiles;
 }

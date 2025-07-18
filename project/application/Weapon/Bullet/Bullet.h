@@ -19,27 +19,28 @@ public:
 	~Bullet() = default;
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath)override;
 	void Update() override;
-	virtual void UpdateImGui();
+	void UpdateImGui();
 	void Draw() override;
 	void DrawCollider() override;
 	void OnCollisionAction(GameCharacter* other) override;
 
-	virtual void Create(const Vector3& weaponPos,const Vector3& targetPos,const float& speed,CharacterType type);
+	void Create(const Vector3& weaponPos,const Vector3& targetPos,const float& speed,CharacterType type);
 
 public:
 
-	virtual EulerTransform GetTransform() const { return transform_; }
-	virtual bool GetIsActive() { return isActive_; }
+	EulerTransform GetTransform() const { return transform_; }
+	bool GetIsActive() { return isActive_; }
 
 public:
 
-	virtual void SetIsActive(bool isActive) { isActive_ = isActive; }
-	virtual void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
-	virtual void SetSpeed(float speed) { speed_ = speed; }
-	virtual void SetLifeTime(float lifeTime) { lifeTime_ = lifeTime; }
-	virtual void SetTransform(const EulerTransform& transform) { transform_ = transform; }
+	void SetIsActive(bool isActive) { isActive_ = isActive; }
+	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
+	void SetTargetPos(const Vector3& targetPos) { targetPos_ = targetPos; }
+	void SetSpeed(float speed) { speed_ = speed; }
+	void SetLifeTime(float lifeTime) { lifeTime_ = lifeTime; }
+	void SetTransform(const EulerTransform& transform) { transform_ = transform; }
 
-protected:
+private:
 
 	EulerTransform transform_{};
 	float deltaTime_ = 0.0f;

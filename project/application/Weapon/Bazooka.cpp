@@ -2,6 +2,7 @@
 #include "base/TakeCFrameWork.h"
 #include "base/ImGuiManager.h"
 #include "math/MatrixMath.h"
+#include "application/Weapon/Bullet/BulletManager.h"
 
 void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) {
 

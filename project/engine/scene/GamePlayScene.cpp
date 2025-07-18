@@ -183,7 +183,7 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->PreDraw();
 	player_->Draw();
 	enemy_->Draw();
-	bulletManager_->DrawBullet();
+	bulletManager_->Draw();
 	for (auto& object : levelObjects_) {
 		object->Draw();
 	}
