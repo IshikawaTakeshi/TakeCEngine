@@ -81,6 +81,7 @@ void Object3d::Update() {
 		WVPMatrix_ = worldMatrix_;
 	}
 
+	worldPosition_ = MatrixMath::Transform({ 0.0f,0.0f,0.0f }, worldMatrix_);
 	
 	//Skeletonがある場合は更新
 	if (model_->GetSkeleton()) {
@@ -177,12 +178,9 @@ void Object3d::DisPatch() {
 // モデルの設定
 //=============================================================================
 
-Vector3 Object3d::GetCenterPosition() const {
-	
-	const Vector3 offset = { 0.0f,0.0f,0.0f };
+const Vector3& Object3d::GetCenterPosition() const {
 
-	Vector3 worldPos = MatrixMath::Transform(offset, worldMatrix_);
-	return worldPos;
+	return worldPosition_;
 }
 
 void Object3d::SetWorldMatrix(const Matrix4x4& worldMatrix) {

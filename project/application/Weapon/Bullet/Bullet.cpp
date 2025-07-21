@@ -35,6 +35,8 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
+	lifeTime_ = 2.0f; // 弾のライフタイムを設定
+
 	transform_.translate = { 0.0f, 100.0f, 0.0f };
 }
 
@@ -79,7 +81,7 @@ void Bullet::UpdateImGui() {
 //========================================================================================================
 
 void Bullet::Draw() {
-
+	if (!isActive_) return; // 弾が無効化されている場合は描画しない
 	object3d_->Draw();
 }
 
@@ -134,25 +136,16 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 // 弾の座標、速度の初期化
 //========================================================================================================
 
-void Bullet::BulletInitialize(const Vector3& weaponPos, const Vector3& targetPos, const float& speed, CharacterType type) {
+void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos, const float& speed, CharacterType type) {
 
 	transform_.translate = weaponPos;
 	characterType_ = type;
 	speed_ = speed;
-
+	targetPos_ = targetPos;
 	//ターゲットまでの方向を求める
-	Vector3 direction = targetPos - transform_.translate;
-	direction = Vector3Math::Normalize(direction);
+	direction_ =  Vector3Math::Normalize(targetPos_ - transform_.translate);
 
 	//速度の設定
-	velocity_ = direction * speed_;
-	lifeTime_ = 2.0f;
+	velocity_ = direction_ * speed_;
 	isActive_ = true;
 }
-
-//void Bullet::EmitterInitialize(uint32_t count, float frequency) {
-//
-//	std::string name = "BulletEmitter_" + std::to_string(reinterpret_cast<std::uintptr_t>(this));
-//	particleEmitter_->Initialize(name, transform_, count, frequency);
-//	particleEmitter_->SetParticleName("HitEffect2");
-//}

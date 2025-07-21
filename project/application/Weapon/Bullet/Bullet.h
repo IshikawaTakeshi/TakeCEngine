@@ -7,6 +7,12 @@
 #include <string>
 #include <memory>
 
+enum class BulletType {
+	NONE,
+	BULLET,
+	EXPLOSION,
+};
+
 class Bullet : public GameCharacter {
 public:
 	Bullet() = default;
@@ -18,9 +24,7 @@ public:
 	void DrawCollider() override;
 	void OnCollisionAction(GameCharacter* other) override;
 
-	void BulletInitialize(const Vector3& weaponPos,const Vector3& targetPos,const float& speed,CharacterType type);
-
-	//void EmitterInitialize(uint32_t count, float frequency);
+	void Create(const Vector3& weaponPos,const Vector3& targetPos,const float& speed,CharacterType type);
 
 public:
 
@@ -31,22 +35,18 @@ public:
 
 	void SetIsActive(bool isActive) { isActive_ = isActive; }
 	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
+	void SetTargetPos(const Vector3& targetPos) { targetPos_ = targetPos; }
 	void SetSpeed(float speed) { speed_ = speed; }
 	void SetLifeTime(float lifeTime) { lifeTime_ = lifeTime; }
 	void SetTransform(const EulerTransform& transform) { transform_ = transform; }
-
-private:
-	enum class BulletType {
-		NONE,
-		BULLET,
-		EXPLOSION,
-	};
 
 private:
 
 	EulerTransform transform_{};
 	float deltaTime_ = 0.0f;
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
+	Vector3 targetPos_ = { 0.0f,0.0f,0.0f };
+	Vector3 direction_ = { 0.0f,0.0f,0.0f };
 	float speed_ = 0.0f;
 	bool isActive_ = false;
 	float lifeTime_ = 0.0f;

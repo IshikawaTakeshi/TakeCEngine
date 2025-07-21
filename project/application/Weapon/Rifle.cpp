@@ -2,6 +2,7 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/base/ImGuiManager.h"
 #include "engine/math/MatrixMath.h"
+#include "application/Weapon/Bullet/BulletManager.h"
 
 Rifle::~Rifle() {}
 
