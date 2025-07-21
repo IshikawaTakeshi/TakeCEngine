@@ -32,7 +32,7 @@ public:
 
 private:
 
-	const float kAttackInterval = 0.1f; // 攻撃間隔定数
+	const float kAttackInterval = 5.0f; // 攻撃間隔定数
 
 	bool isBursting_ = false;                // 3連射中かどうか
 	int burstCount_ = 0;                     // 3連射のカウント

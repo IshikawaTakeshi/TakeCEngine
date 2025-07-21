@@ -17,7 +17,7 @@ void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletM
 	//武器の初期化
 	weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
 	attackPower_ = 10;
-	attackInterval_ = kAttackInterval;
+	attackInterval_ = 0.0f;
 	bulletCount_ = 30;
 	maxBulletCount_ = 30;
 	bulletSpeed_ = 500.0f; // 弾のスピードを設定
