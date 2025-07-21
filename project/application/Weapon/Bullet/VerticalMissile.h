@@ -61,7 +61,7 @@ private:
 	const float kMaxAltitude_ = 100.0f;
 
 	//ミサイルの上昇速度
-	const float kAscendSpeed_ = 50.0f;
+	const float kAscendSpeed_ = 140.0f;
 	//ミサイルの爆発半径
 	const float kExplosionRadius_ = 5.0f;
 	//ホーミングの度合い

@@ -121,7 +121,7 @@ void GamePlayScene::Update() {
 	player_->Update();
 
 	//弾の更新
-	bulletManager_->UpdateBullet();
+	bulletManager_->Update();
 
 	for (auto& object : levelObjects_) {
 		object->Update();
@@ -224,17 +224,27 @@ void GamePlayScene::CheckAllCollisions() {
 	CollisionManager::GetInstance()->ClearGameCharacter();
 
 	const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
+
+	const std::vector<VerticalMissile*>& missiles = bulletManager_->GetAllMissiles();
+
 	// プレイヤーの登録
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
 	// 敵キャラクターの登録
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
 
-	// プレイヤーの弾の登録
+	//弾の登録
 	for (const auto& bullet : bullets) {
 		if (bullet->GetIsActive()) {
 			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
 		}
 	}
+	//垂直ミサイルの登録
+	for( const auto& missile : missiles) {
+		if (missile->GetIsActive()) {
+			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(missile));
+		}
+	}
+
 	// レベルオブジェクトの登録
 	for (const auto& object : levelObjects_) {
 		CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(object.get()));

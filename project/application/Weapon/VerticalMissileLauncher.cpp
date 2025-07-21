@@ -32,8 +32,28 @@ void VerticalMissileLauncher::Update() {
 	//攻撃間隔の減少
 	attackInterval_ -= TakeCFrameWork::GetDeltaTime();
 
-	//ミサイルのターゲットの位置を更新
-	
+	if (isBursting_) {
+		burstInterval_ -= TakeCFrameWork::GetDeltaTime();
+		if (burstInterval_ <= 0.0f && burstCount_ > 0) {
+			// 弾発射
+			if (ownerObject_->GetCharacterType() == CharacterType::PLAYER) {
+				bulletManager_->ShootMissile(this, bulletSpeed_, CharacterType::PLAYER_BULLET);
+			} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
+				bulletManager_->ShootMissile(this, bulletSpeed_, CharacterType::ENEMY_BULLET);
+			}
+			bulletCount_--;
+			if (bulletCount_ <= 0) {
+				bulletCount_ = maxBulletCount_;
+			}
+
+			burstCount_--;
+			if (burstCount_ > 0) {
+				burstInterval_ = kBurstAttackInterval; // 次の弾発射までの間隔を設定
+			} else {
+				isBursting_ = false; // 三連射終了
+			}
+		}
+	}
 
 	//親スケルトンのジョイントに追従させる
 	if (parentSkeleton_ && !parentJointName_.empty()) {
@@ -81,11 +101,11 @@ void VerticalMissileLauncher::Attack() {
 
 	if (attackInterval_ <= 0.0f && bulletCount_ > 0) {
 		// 弾発射
-		if (ownerObject_->GetCharacterType() == CharacterType::PLAYER) {
-			bulletManager_->ShootMissile(this, bulletSpeed_, CharacterType::PLAYER_BULLET);
-		} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
-			bulletManager_->ShootMissile(this, bulletSpeed_, CharacterType::ENEMY_BULLET);
-		}
+		//停止撃ちで三連射
+		isBursting_ = true;
+		burstCount_ = kMaxBurstCount; // 3連射のカウントを初期化
+		burstInterval_ = 0.0f; // 3連射の間隔を初期化
+
 		bulletCount_--;
 		if (bulletCount_ <= 0) {
 			bulletCount_ = maxBulletCount_;

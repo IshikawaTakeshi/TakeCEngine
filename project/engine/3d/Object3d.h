@@ -51,7 +51,7 @@ public: //getter
 	const Vector3& GetScale() const { return transform_.scale; }
 	const Vector3& GetRotate() const { return transform_.rotate; }
 	const Vector3& GetTranslate() const { return transform_.translate; }
-	Vector3 GetCenterPosition() const;
+	const Vector3& GetCenterPosition() const;
 	Model* GetModel() { return model_.get(); }
 
 	//Animationの取得
@@ -93,6 +93,7 @@ protected: // privateメンバ変数
 
 	//Transform
 	EulerTransform transform_{};
+	Vector3 worldPosition_;
 	//TransformMatrix
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 WVPMatrix_;

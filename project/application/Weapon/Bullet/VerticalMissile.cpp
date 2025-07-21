@@ -33,11 +33,12 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 	particleEmitter_[1]->SetParticleName("SmokeEffect");
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	phase_ = VerticalMissilePhase::ASCENDING;
 
-	speed_ = 200.0f; // 初期速度を設定
-	isActive_ = true; // 初期状態でアクティブにする
+	speed_ = 140.0f; // 初期速度を設定
 	lifeTime_ = 5.0f; // ライフタイムを設定
 	bulletradius_ = 1.5f; // 弾の半径を設定
+	homingRate_ = 0.4f;
 }
 
 //====================================================================================
@@ -46,6 +47,12 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 
 void VerticalMissile::Update() {
 
+	//ライフタイムの減少
+	lifeTime_ -= deltaTime_;
+	if (lifeTime_ <= 0.0f || transform_.translate.y < 0.0f) {
+		isActive_ = false;
+	}
+
 	switch (phase_) {
 	case VerticalMissile::VerticalMissilePhase::ASCENDING:
 		// 上昇中の処理
@@ -53,16 +60,16 @@ void VerticalMissile::Update() {
 		if(transform_.translate.y >= altitude_) {
 			// 最大高度に達したらホーミングフェーズに移行
 			transform_.translate.y = altitude_; // 高度を制限
-			targetPos_ = ownerWeapon_->GetTragetPos(); // ターゲット位置を更新
+			
 			phase_ = VerticalMissile::VerticalMissilePhase::HOMING;
 		}
 
 		break;
 	case VerticalMissile::VerticalMissilePhase::HOMING:
 
+		targetPos_ = ownerWeapon_->GetTragetPos(); // ターゲット位置を更新
 		direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
-		velocity_ = velocity_ * (1.0f - homingRate_) + direction_ * homingRate_;
-		velocity_ = Vector3Math::Normalize(velocity_) * speed_;
+		velocity_ = direction_ * (1.0f - homingRate_) * speed_;
 		transform_.translate += velocity_ * TakeCFrameWork::GetDeltaTime();
 
 		break;
@@ -71,6 +78,21 @@ void VerticalMissile::Update() {
 	default:
 		break;
 	}
+
+	object3d_->SetTranslate(transform_.translate);
+	object3d_->Update();
+	collider_->Update(object3d_.get());
+
+	//パーティクルエミッターの更新
+	particleEmitter_[0]->SetTranslate(transform_.translate);
+	particleEmitter_[0]->Update();
+
+	particleEmitter_[1]->SetTranslate(transform_.translate);
+	particleEmitter_[1]->Update();
+	//MEMO: パーティクルの毎フレーム発生
+	particleEmitter_[1]->Emit();
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(transform_.translate);
 
 }
 
@@ -130,7 +152,7 @@ void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 void VerticalMissile::Create(BaseWeapon* ownerWeapon, const float& speed, CharacterType type) {
 
 	ownerWeapon_ = ownerWeapon; // 所有者の武器を設定
-	transform_.translate = ownerWeapon_->GetTranslate();
+	transform_.translate = ownerWeapon_->GetCenterPosition();
 	characterType_ = type;
 	speed_ = speed;
 	targetPos_ = ownerWeapon_->GetTragetPos();

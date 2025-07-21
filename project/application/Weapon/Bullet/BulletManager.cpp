@@ -11,7 +11,7 @@ void BulletManager::Initialize(Object3dCommon* object3dCommon,size_t size) {
 	missilePool_->Initialize(size); 
 	object3dCommon_ = object3dCommon;
 	bulletFilePath_ = "cube.obj";
-	missileFilePath_ = "cube.obj";
+	missileFilePath_ = "ICOBall.gltf";
 }
 
 //========================================================================================================
@@ -29,20 +29,11 @@ void BulletManager::Finalize() {
 // 全弾の更新処理
 //========================================================================================================
 
-void BulletManager::UpdateBullet() {
-	bulletPool_->UpdateAllBullet();
-}
-
-void BulletManager::UpdateMissile() {
-	
-	missilePool_->UpdateAllMissiles();
-}
-
 void BulletManager::Update() {
 	// 弾の更新
-	UpdateBullet();
+	bulletPool_->UpdateAllBullet();
 	// ミサイルの更新
-	UpdateMissile();
+	missilePool_->UpdateAllMissiles();
 }
 
 //========================================================================================================
@@ -51,7 +42,7 @@ void BulletManager::Update() {
 
 void BulletManager::Draw() {
 	bulletPool_->DrawAllBullet();
-	//missilePool_->DrawAllMissiles();
+	missilePool_->DrawAllMissiles();
 }
 
 void BulletManager::DrawCollider() {

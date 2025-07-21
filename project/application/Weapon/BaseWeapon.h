@@ -38,6 +38,8 @@ public:
 
 	virtual const Vector3& GetTranslate() const { return object3d_->GetTranslate(); }
 
+	virtual const Vector3& GetCenterPosition() const { return object3d_->GetCenterPosition(); }
+
 	virtual const Vector3& GetTragetPos() const { return targetPos_; }
 
 	//所有者の設定

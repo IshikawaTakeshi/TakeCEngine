@@ -16,8 +16,7 @@ public:
 
 	void Initialize(Object3dCommon* object3dCommon,size_t size);
 	void Finalize();
-	void UpdateBullet();
-	void UpdateMissile();
+	
 	void Update();
 	void Draw();
 	void DrawCollider();
@@ -27,6 +26,9 @@ public:
 
 	std::vector<Bullet*> GetAllBullets();
 	std::vector<VerticalMissile*> GetAllMissiles();
+
+private:
+
 
 private:
 
