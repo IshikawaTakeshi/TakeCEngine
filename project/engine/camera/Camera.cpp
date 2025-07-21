@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "math/Easing.h"
 #include "math/Vector3Math.h"
+#include "math/physics/Physics.h"
 
 Camera::~Camera() {
 	cameraResource_.Reset();
@@ -187,6 +188,19 @@ void Camera::UpdateGameCamera() {
 	default:
 		break;
 	}
+
+	////埋まり回避
+	//Vector3 nextPosition = *followTargetPosition_ + offset_;
+	//float distance = Vector3Math::Length(nextPosition - transform_.translate);
+	//direction_ = Vector3Math::Normalize(nextPosition - transform_.translate);
+
+	//Ray ray;
+	//ray.origin = transform_.translate;
+	//ray.direction = direction_;
+	//ray.distance = distance;
+	//RayCastHit hitInfo;
+	//if(Physics::Raycast(ray,&hitInfo,))
+	//
 }
 
 void Camera::InitializeCameraFollow() {

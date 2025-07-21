@@ -17,6 +17,8 @@ public:
 	//衝突判定
 	bool CheckCollision(Collider* other) override;
 
+	bool Intersects(const Ray& ray, RayCastHit& outHit) override;
+
 	//当たり判定範囲の描画
 	void DrawCollider() override;
 

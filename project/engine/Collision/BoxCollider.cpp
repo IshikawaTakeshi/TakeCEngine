@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "BoxCollider.h"
 #include "3d/Object3dCommon.h"
 #include "MatrixMath.h"
@@ -103,6 +104,39 @@ bool BoxCollider::CheckCollision(Collider* other) {
 		return sphere->CheckCollisionOBB(this);
 	}
 	return false;
+}
+
+bool BoxCollider::Intersects(const Ray& ray, RayCastHit& outHit) {
+	// OBBとレイの衝突判定
+	Vector3 invDir = { 1.0f / ray.direction.x, 1.0f / ray.direction.y, 1.0f / ray.direction.z };
+	Vector3 tMin = (obb_.center - obb_.halfSize) - ray.origin;
+	Vector3 tMax = (obb_.center + obb_.halfSize) - ray.origin;
+	float t1 = tMin.x * invDir.x;
+	float t2 = tMax.x * invDir.x;
+	float t3 = tMin.y * invDir.y;
+	float t4 = tMax.y * invDir.y;
+	float t5 = tMin.z * invDir.z;
+	float t6 = tMax.z * invDir.z;
+	float tMinX = std::min(t1, t2);
+	float tMaxX = std::max(t1, t2);
+	float tMinY = std::min(t3, t4);
+	float tMaxY = std::max(t3, t4);
+	float tMinZ = std::min(t5, t6);
+	float tMaxZ = std::max(t5, t6);
+	if (tMinX > tMaxY || tMinY > tMaxX || tMinX > tMaxZ || tMinZ > tMaxX) {
+		return false; // レイとOBBは交差しない
+	}
+	float tNear = std::max(tMinX, std::max(tMinY, tMinZ));
+	float tFar = std::min(tMaxX, std::min(tMaxY, tMaxZ));
+	if (tNear > tFar || tFar < 0) {
+		return false; // レイとOBBは交差しない
+	}
+	outHit.distance = tNear;
+	outHit.position = ray.origin + ray.direction * tNear;
+	outHit.normal = (outHit.position - obb_.center).Normalize(); // 衝突点からOBBの中心への法線ベクトル
+	return true; // レイとOBBは交差する
+
+
 }
 
 //=============================================================================

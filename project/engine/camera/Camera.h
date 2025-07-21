@@ -77,6 +77,7 @@ private:
 	CameraForGPU* cameraForGPU_;
 
 	QuaternionTransform transform_;
+	Vector3 direction_;
 	Vector3 offset_;
 	Vector3 offsetDelta_;
 	Matrix4x4 worldMatrix_;

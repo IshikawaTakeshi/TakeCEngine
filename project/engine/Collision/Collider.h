@@ -1,5 +1,6 @@
 #pragma once
-#include "Object3d.h"
+#include "engine/3d/Object3d.h"
+#include "engine/math/physics/Ray.h"
 #include <cstdint>
 #include <memory>
 
@@ -29,6 +30,8 @@ public:
 	/// <param name="other"></param>
 	/// <returns></returns>
 	virtual bool CheckCollision(Collider* other) = 0;
+
+	virtual bool Intersects(const Ray& ray, RayCastHit& outHit) = 0;
 
 
 public:
