@@ -1,11 +1,14 @@
+#define NOMINMAX
 #include "Camera.h"
-#include "MatrixMath.h"
-#include "WinApp.h"
-#include "DirectXCommon.h"
-#include "ImGuiManager.h"
-#include "Input.h"
+#include "base/WinApp.h"
+#include "base/DirectXCommon.h"
+#include "base/ImGuiManager.h"
+#include "io/Input.h"
+#include "Collision/CollisionManager.h"
+#include "math/MatrixMath.h"
 #include "math/Easing.h"
 #include "math/Vector3Math.h"
+#include "math/physics/Physics.h"
 
 Camera::~Camera() {
 	cameraResource_.Reset();
@@ -15,7 +18,7 @@ void Camera::Initialize(ID3D12Device* device) {
 	
 	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	offset_ = { 0.0f, 0.0f, -5.0f };
-	offsetDelta_ = { 0.0f, 0.0f, -50.0f };
+	offsetDelta_ = { 0.0f, 5.0f, -50.0f };
 	fovX_ = 0.45f;
 	aspectRatio_ = float(WinApp::kScreenWidth / 2) / float(WinApp::kScreenHeight / 2);
 	nearClip_ = 0.1f;
@@ -185,8 +188,13 @@ void Camera::UpdateGameCamera() {
 		UpdateCameraLockOn();
 		break;
 	default:
+
+		nextPosition_ = transform_.translate; // デフォルトの位置を保持
 		break;
 	}
+
+	
+	
 }
 
 void Camera::InitializeCameraFollow() {
@@ -223,14 +231,34 @@ void Camera::UpdateCameraFollow() {
 	rotationDelta = pitchRotation * yawRotation;
 
 	// オフセットに回転を適用
-	offset_ = offsetDelta_;
-	offset_ = QuaternionMath::RotateVector(offset_, rotationDelta);
-
+	offset_ = QuaternionMath::RotateVector(offsetDelta_, rotationDelta);
 	//カメラ位置の計算
 	Vector3 tagetPosition_ = *followTargetPosition_ + offset_;
+	nextPosition_ = Easing::Lerp(transform_.translate, tagetPosition_, followSpeed_);
 
-	transform_.translate = Easing::Lerp(transform_.translate, tagetPosition_, followSpeed_);
+	//埋まり回避
+	direction_ = Vector3Math::Normalize(nextPosition_ - *followTargetPosition_);
+	float distance = Vector3Math::Length(nextPosition_ - *followTargetPosition_);
+
+	Ray ray;
+	ray.origin = *followTargetPosition_;
+	ray.direction = direction_;
+	ray.distance = distance;
+	RayCastHit hitInfo;
+
+	//コライダーのマスク
+	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
+	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
+		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
+		transform_.translate = hitInfo.position - direction_ * margin;
+	} else {
+		// 衝突しなかった場合は、通常の位置に移動
+		transform_.translate = nextPosition_;
+	}
 	transform_.rotate = Easing::Slerp(transform_.rotate, rotationDelta, followSpeed_);
+	
+
 
 	//Rスティック押し込みでカメラの状態変更
 	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::RightStick)) {
@@ -246,16 +274,36 @@ void Camera::UpdateCameraLockOn() {
 	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
 	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
 
-	// 回転補間
-	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
-
 	// 高さを持った固定オフセット
 	offset_ = offsetDelta_;
 
 	// ターゲットからの相対位置に補間移動
 	Vector3 desiredPosition = *followTargetPosition_ + QuaternionMath::RotateVector(offset_, transform_.rotate);
-	transform_.translate = Easing::Lerp(transform_.translate, desiredPosition, followSpeed_);
+	nextPosition_ = Easing::Lerp(transform_.translate, desiredPosition, followSpeed_);
 
+	//埋まり回避
+	direction_ = Vector3Math::Normalize(nextPosition_ - *followTargetPosition_);
+	float distance = Vector3Math::Length(nextPosition_ - *followTargetPosition_);
+
+	Ray ray;
+	ray.origin = *followTargetPosition_;
+	ray.direction = direction_;
+	ray.distance = distance;
+	RayCastHit hitInfo;
+
+	//コライダーのマスク
+	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
+	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
+		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
+		transform_.translate = hitInfo.position - direction_ * margin;
+	} else {
+		// 衝突しなかった場合は、通常の位置に移動
+		transform_.translate = nextPosition_;
+	}
+
+	// 回転補間
+	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
 
 
 	// 状態切り替え

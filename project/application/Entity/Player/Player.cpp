@@ -37,6 +37,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
+	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Player));
 
 	camera_ = object3dCommon->GetDefaultCamera();
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
@@ -181,7 +182,7 @@ void Player::Update() {
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(transform_.rotate);
 	//カメラの設定
-	camera_->SetFollowTargetPos(transform_.translate);
+	camera_->SetFollowTargetPos(*object3d_->GetModel()->GetSkeleton()->GetJointPosition("neck",object3d_->GetWorldMatrix()));
 	camera_->SetFollowTargetRot(eulerRotate);
 	camera_->SetFocusTargetPos(focusTargetPos_);
 

@@ -115,6 +115,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\Collision\CollisionManager.cpp" />
     <ClCompile Include="application\Ground\Ground.cpp" />
     <ClCompile Include="application\HPBar\HPBar.cpp" />
+    <ClCompile Include="engine\math\physics\Physics.cpp" />
     <ClCompile Include="engine\scene\GameClearScene.cpp" />
     <ClCompile Include="engine\scene\GameOverScene.cpp" />
     <ClCompile Include="engine\Collision\BoxCollider.cpp" />
@@ -220,6 +221,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Collision\CollisionTypeIdDef.h" />
     <ClInclude Include="application\Ground\Ground.h" />
     <ClInclude Include="application\HPBar\HPBar.h" />
+    <ClInclude Include="engine\math\physics\Physics.h" />
+    <ClInclude Include="engine\math\physics\Ray.h" />
     <ClInclude Include="engine\scene\GameClearScene.h" />
     <ClInclude Include="engine\scene\GameOverScene.h" />
     <ClInclude Include="engine\Collision\BoxCollider.h" />

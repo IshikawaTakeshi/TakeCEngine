@@ -91,10 +91,45 @@ void SphereCollider::DrawCollider() {
 	TakeCFrameWork::GetWireFrame()->DrawSphere(transform_.translate, radius_, color_);
 }
 
+//=============================================================================
+// レイとの衝突判定
+//=============================================================================
+
+bool SphereCollider::Intersects(const Ray& ray, RayCastHit& outHit) {
+	Vector3 oc = ray.origin - transform_.translate; // 球の中心からレイの始点までのベクトル
+	float a = ray.direction.Dot(ray.direction);
+	float b = 2.0f * oc.Dot(ray.direction);
+	float c = oc.Dot(oc) - radius_ * radius_;
+	float discriminant = b * b - 4 * a * c;
+
+	if (discriminant < 0) return false; // レイと球は交差しない
+
+	float sqrtDiscriminant = std::sqrt(discriminant);
+	float t1 = (-b - sqrtDiscriminant) / (2.0f * a);
+	float t2 = (-b + sqrtDiscriminant) / (2.0f * a);
+
+	float t = t1;
+	if (t <0 || t > ray.distance) t = t2; // t1が負またはrayの距離より大きい場合、t2を使用
+	if (t < 0 || t > ray.distance) return false; // レイの範囲外
+
+	//衝突情報設定
+	outHit.isHit = true;
+	outHit.distance = t;
+	outHit.position = ray.origin + ray.direction * t;                     // 衝突位置
+	outHit.normal = (outHit.position - transform_.translate).Normalize(); // 衝突面の法線ベクトル
+	outHit.hitCollider = this;                                            // 衝突したコライダを設定
+	
+	// 衝突した
+	return true;
+}
+
 Vector3 SphereCollider::GetWorldPos() {
 	
 	return transform_.translate;
 }
+//=============================================================================
+// OBBとの衝突判定
+//=============================================================================
 
 bool SphereCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 	Vector3 closestPoint = otherBox->GetOBB().center;
@@ -115,6 +150,10 @@ bool SphereCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 
 	return false;
 }
+
+//=============================================================================
+// Sphereとの衝突判定
+//=============================================================================
 
 bool SphereCollider::CheckCollisionSphere(SphereCollider* sphere) {
 	Vector3 diff = transform_.translate - sphere->transform_.translate;

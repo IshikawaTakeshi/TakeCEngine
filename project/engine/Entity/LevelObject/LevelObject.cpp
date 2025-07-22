@@ -20,6 +20,7 @@ void LevelObject::CollisionInitialize(const LevelData::BoxCollider& boxInfo) {
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->SetHalfSize(boxInfo.size);
 	collider_->Initialize(object3dCommon_->GetDirectXCommon(), object3d_.get());
+	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Level_Object)); // レベルオブジェクトの衝突レイヤーを設定
 	//水色に設定
 	collider_->SetColor({ 0.0f, 1.0f, 1.0f, 1.0f }); // 水色
 }

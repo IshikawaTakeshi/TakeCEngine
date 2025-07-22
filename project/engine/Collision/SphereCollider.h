@@ -16,6 +16,8 @@ public:
 	//当たり判定範囲の描画
 	void DrawCollider() override;
 
+	bool Intersects(const Ray& ray, RayCastHit& outHit) override;
+
 	Vector3 GetWorldPos() override;
 
 	//半径の取得
