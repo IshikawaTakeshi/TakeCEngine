@@ -77,9 +77,11 @@ private:
 	CameraForGPU* cameraForGPU_;
 
 	QuaternionTransform transform_;
+	Vector3 nextPosition_;
 	Vector3 direction_;
 	Vector3 offset_;
 	Vector3 offsetDelta_;
+	Vector3 idealOffset_ = Vector3(0.0f, 0.0f, -50.0f); // 初期オフセット
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;

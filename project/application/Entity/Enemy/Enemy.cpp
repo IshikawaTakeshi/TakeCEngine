@@ -37,6 +37,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
+	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Enemy));
 
 	transform_ = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,30.0f} };
 	object3d_->SetScale(transform_.scale);
