@@ -11,7 +11,7 @@ enum class CollisionLayer {
 	Bullet = 1 << 2,
 	Level_Object = 1 << 3,
 	All = Player | Enemy | Bullet | Level_Object,
-	Ignoe = Player | Bullet, // PlayerとBulletは衝突しない
+	Ignoe = Player | Bullet | Enemy, // PlayerとBulletは衝突しない
 };
 
 class Model;

@@ -182,7 +182,7 @@ void Player::Update() {
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(transform_.rotate);
 	//カメラの設定
-	camera_->SetFollowTargetPos(transform_.translate);
+	camera_->SetFollowTargetPos(*object3d_->GetModel()->GetSkeleton()->GetJointPosition("neck",object3d_->GetWorldMatrix()));
 	camera_->SetFollowTargetRot(eulerRotate);
 	camera_->SetFocusTargetPos(focusTargetPos_);
 
