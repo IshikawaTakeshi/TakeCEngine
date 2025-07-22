@@ -130,9 +130,9 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 	for (auto& objectData : levelData_->objects) {
 		Model* model = nullptr;
 		model = ModelManager::GetInstance()->FindModel(objectData.file_name);
-		std::unique_ptr<LevelObject> newObject = std::make_unique<LevelObject>();
-		newObject->Initialize(Object3dCommon::GetInstance(), objectData.file_name);
-		newObject->SetName(objectData.name);
+		std::pair<std::string, std::unique_ptr<LevelObject>> newObject = { objectData.name, std::make_unique<LevelObject>() };
+		newObject.second->Initialize(Object3dCommon::GetInstance(), objectData.file_name);
+		newObject.second->SetName(objectData.name);
 		if (objectData.collider.isValid) {
 
 			// コライダーの種類によって初期化
@@ -142,17 +142,18 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 
 				// コライダーの型に応じて処理を分岐,廃棄する
 				if constexpr (std::is_same_v<T, LevelData::BoxCollider>) {
-					newObject->CollisionInitialize(colliderData);
+					newObject.second->CollisionInitialize(colliderData);
 				} else if constexpr (std::is_same_v<T, LevelData::SphereCollider>) {
-					newObject->CollisionInitialize(colliderData);
+					newObject.second->CollisionInitialize(colliderData);
 				}
 				}, objectData.collider.colliderData);
 		}
-		newObject->SetTranslate(objectData.translation);
-		newObject->SetRotate(objectData.rotation);
-		newObject->SetScale(objectData.scale);
+		newObject.second->SetTranslate(objectData.translation);
+		newObject.second->SetRotate(objectData.rotation);
+		newObject.second->SetScale(objectData.scale);
+		newObject.second->GetObject3d()->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.3f,0.3f,0.3f,1.0f });
 
-		levelObjects_.push_back(std::move(newObject));
+		levelObjects_.insert(std::move(newObject));
 	}
 }
 

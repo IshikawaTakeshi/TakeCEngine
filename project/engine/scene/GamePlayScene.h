@@ -70,5 +70,5 @@ private:
 
 	std::unique_ptr<BulletManager> bulletManager_ = nullptr;
 
-	std::vector<std::unique_ptr<LevelObject>> levelObjects_;
+	std::map<std::string,std::unique_ptr<LevelObject>> levelObjects_;
 };

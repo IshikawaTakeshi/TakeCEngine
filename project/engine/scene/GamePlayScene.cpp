@@ -49,7 +49,7 @@ void GamePlayScene::Initialize() {
 	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
 
 	for (auto& object : levelObjects_) {
-		object->SetCamera(Object3dCommon::GetInstance()->GetDefaultCamera());
+		object.second->SetCamera(Object3dCommon::GetInstance()->GetDefaultCamera());
 	}
 
 	//Animation読み込み
@@ -124,7 +124,7 @@ void GamePlayScene::Update() {
 	bulletManager_->Update();
 
 	for (auto& object : levelObjects_) {
-		object->Update();
+		object.second->Update();
 	}
 
 	//particleManager更新
@@ -155,8 +155,8 @@ void GamePlayScene::UpdateImGui() {
 
 	player_->UpdateImGui();
 	enemy_->UpdateImGui();
-	for (int i = 0; i < levelObjects_.size(); i++) {
-		levelObjects_[i]->UpdateImGui();
+	for(auto& object : levelObjects_) {
+		object.second->UpdateImGui();
 	}
 	sprite_->UpdateImGui("gameScene");
 }
@@ -185,7 +185,7 @@ void GamePlayScene::Draw() {
 	enemy_->Draw();
 	bulletManager_->Draw();
 	for (auto& object : levelObjects_) {
-		object->Draw();
+		object.second->Draw();
 	}
 
 #pragma endregion
@@ -195,7 +195,7 @@ void GamePlayScene::Draw() {
 	enemy_->DrawCollider();
 	bulletManager_->DrawCollider();
 	for (auto& object : levelObjects_) {
-		object->DrawCollider();
+		object.second->DrawCollider();
 	}
 
 	//グリッド地面の描画
@@ -247,7 +247,7 @@ void GamePlayScene::CheckAllCollisions() {
 
 	// レベルオブジェクトの登録
 	for (const auto& object : levelObjects_) {
-		CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(object.get()));
+		CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(object.second.get()));
 	}
 
 
