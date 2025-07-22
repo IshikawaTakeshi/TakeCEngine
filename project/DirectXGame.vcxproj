@@ -116,6 +116,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Ground\Ground.cpp" />
     <ClCompile Include="application\HPBar\HPBar.cpp" />
     <ClCompile Include="engine\math\physics\Physics.cpp" />
+    <ClCompile Include="engine\math\Vector2.cpp" />
     <ClCompile Include="engine\scene\GameClearScene.cpp" />
     <ClCompile Include="engine\scene\GameOverScene.cpp" />
     <ClCompile Include="engine\Collision\BoxCollider.cpp" />

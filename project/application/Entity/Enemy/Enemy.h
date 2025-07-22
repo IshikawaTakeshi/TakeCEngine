@@ -31,7 +31,8 @@ public:
 	const Vector3& GetVelocity() const { return velocity_; }
 	const Vector3& GetMoveDirection() const { return moveDirection_; }
 	const Vector3& GetToOrbitPos() const { return toOrbitPos_; }
-	const uint32_t& GetHitPoint() const { return hitPoint_; }
+	const float& GetHealth() const { return health_; }
+	const float& GetMaxHealth() const { return maxHealth_; }
 	const bool& IsDamaged() const { return isDamaged_; }
 
 private:
@@ -105,7 +106,8 @@ private:
 	//ゲーム内の1フレームの経過時間
 	float deltaTime_ = 0.0f;
 	//体力
-	uint32_t hitPoint_ = 100;
+	float health_ = 30000.0f; // 初期体力
+	const float maxHealth_ = 30000.0f; // 最大体力
 
 	const float moveSpeed_ = 200.0f;    // 移動速度
 	const float kMaxMoveSpeed_ = 50.0f; // 最大移動速度

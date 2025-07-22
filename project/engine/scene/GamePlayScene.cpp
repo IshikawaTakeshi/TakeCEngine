@@ -64,11 +64,6 @@ void GamePlayScene::Initialize() {
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_pool.obj");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
-	//sprite
-	sprite_ = std::make_unique<Sprite>();
-	sprite_->Initialize(SpriteCommon::GetInstance(), "rick.png");
-	sprite_->SetTextureLeftTop({ 235.0f,40.0f });
-
 	//BulletManager
 	bulletManager_ = std::make_unique<BulletManager>();
 	bulletManager_->Initialize(Object3dCommon::GetInstance(), 100); //弾の最大数:100
@@ -79,12 +74,19 @@ void GamePlayScene::Initialize() {
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
-
+	playerHpBar_ = std::make_unique<HPBar>();
+	playerHpBar_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
+	playerHpBar_->SetSize({ 200.0f, 10.0f }); // HPバーのサイズ
+	playerHpBar_->SetPosition({ 50.0f, 500.0f }); // HPバーの位置
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
 	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
 	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
+	enemyHpBar_ = std::make_unique<HPBar>();
+	enemyHpBar_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
+	enemyHpBar_->SetSize({ 500.0f, 10.0f }); // HPバーのサイズ
+	enemyHpBar_->SetPosition({ 250.0f, 35.0f }); // HPバーの位置
 }
 
 //====================================================================
@@ -95,7 +97,6 @@ void GamePlayScene::Finalize() {
 	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	player_.reset();
-	sprite_.reset();
 	skyBox_.reset();
 }
 
@@ -108,9 +109,6 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->Update();
 	//SkyBoxの更新
 	skyBox_->Update();
-	//スプライトの更新
-	sprite_->Update();
-
 	
 	//enemy
 	enemy_->SetFocusTargetPos(player_->GetObject3d()->GetTranslate());
@@ -119,6 +117,10 @@ void GamePlayScene::Update() {
 	//player
 	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
 	player_->Update();
+	//playerのHPバーの更新
+	playerHpBar_->Update(player_->GetHealth(), player_->GetMaxHealth());
+	//enemyのHPバーの更新
+	enemyHpBar_->Update(enemy_->GetHealth(), enemy_->GetMaxHealth());
 
 	//弾の更新
 	bulletManager_->Update();
@@ -155,10 +157,13 @@ void GamePlayScene::UpdateImGui() {
 
 	player_->UpdateImGui();
 	enemy_->UpdateImGui();
+	playerHpBar_->UpdateImGui("player");
+	enemyHpBar_->UpdateImGui("enemy");
+	ImGui::Begin("Level Objects");
 	for(auto& object : levelObjects_) {
 		object.second->UpdateImGui();
 	}
-	sprite_->UpdateImGui("gameScene");
+	ImGui::End();
 }
 
 //====================================================================
@@ -211,7 +216,9 @@ void GamePlayScene::Draw() {
 #pragma region スプライト描画
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
-	//sprite_->Draw();    //スプライトの描画
+	//HPバーの描画
+	playerHpBar_->Draw(); //プレイヤーのHPバーの描画
+	enemyHpBar_->Draw(); //敵のHPバーの描画
 #pragma endregion
 
 	//GPUパーティクルの描画

@@ -64,8 +64,7 @@ void LevelObject::Update() {
 void LevelObject::UpdateImGui() {
 	// ImGuiの更新
 	std::string windowName = "LevelObject" + name_;
-	ImGui::Begin(windowName.c_str());
-	if (ImGui::TreeNode("LevelObject")) {
+	if (ImGui::TreeNode(windowName.c_str())) {
 		ImGui::Text("Scale: %.2f, %.2f, %.2f", object3d_->GetScale().x, object3d_->GetScale().y, object3d_->GetScale().z);
 		ImGui::Text("Rotate: %.2f, %.2f, %.2f", object3d_->GetRotate().x, object3d_->GetRotate().y, object3d_->GetRotate().z);
 		ImGui::Text("Translate: %.2f, %.2f, %.2f", object3d_->GetTranslate().x, object3d_->GetTranslate().y, object3d_->GetTranslate().z);
@@ -77,7 +76,6 @@ void LevelObject::UpdateImGui() {
 		}
 		ImGui::TreePop();
 	}
-	ImGui::End();
 }
 
 void LevelObject::Draw() {

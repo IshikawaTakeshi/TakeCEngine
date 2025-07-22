@@ -23,6 +23,10 @@ public:
 
 public:
 
+	//体力の取得
+	float GetHealth() const { return health_; }
+	const float GetMaxHealth() const { return maxHealth_; }
+
 	void SetFocusTargetPos(const Vector3& targetPos) { focusTargetPos_ = targetPos; }
 
 private:
@@ -103,7 +107,6 @@ private:
 	float stepBoostIntervalTimer_ = 0.0f; // ステップブーストのインターバルタイマー
 
 	//JumInfo
-	//const float jumpHeight_ = 80.0f; // ジャンプの高さ
 	const float jumpSpeed_ = 50.0f; // ジャンプの速度
 	float jumpTimer_ = 0.0f; // ジャンプのタイマー
 	const float maxJumpTime_ = 0.5f; // ジャンプの最大時間
@@ -118,6 +121,10 @@ private:
 	float chargeAttackStunTimer_ = 0.0f;          //チャージ攻撃後の硬直時間
 	const float chargeAttackStunDuration_ = 0.5f; // チャージ攻撃後の硬直時間
 	float deltaTime_ = 0.0f;
+
+	//playerの体力
+	float health_ = 0.0f;
+	const float maxHealth_ = 10000.0f; // 最大体力
 
 	bool isJumping_ = false;
 	bool isDashing_ = false;
