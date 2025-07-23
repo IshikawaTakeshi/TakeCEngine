@@ -217,6 +217,7 @@ void Enemy::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
+	ImGui::DragFloat("health", &health_, 1.0f, 0.0f, maxHealth_);
 	ImGui::Text("Behavior: %d", static_cast<int>(behavior_));
 	object3d_->UpdateImGui("Enemy");
 	ImGui::End();
@@ -256,7 +257,7 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 		//衝突時の処理
 
 		//particleEmitter_->Emit();
-		hitPoint_--;
+		
 	}
 
 	if (other->GetCharacterType()  == CharacterType::PLAYER_BULLET) {
@@ -265,7 +266,6 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 		//particleEmitter_[2]->Emit();
 		isDamaged_ = true;
 		damageEffectTime_ = 0.5f;
-		hitPoint_--;
 	}
 }
 

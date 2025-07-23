@@ -23,6 +23,7 @@
 #include "application/Ground/Ground.h"
 #include "application/HPBar/HPBar.h"
 #include "application/Entity/Player/Player.h"
+#include "application/Entity/Player/PlayerReticle.h"
 #include "application/Entity/Enemy/Enemy.h"
 
 
@@ -59,14 +60,13 @@ private:
 	//SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 
-	//スプライト
-	std::unique_ptr<Sprite> sprite_ = nullptr;
-
-
 	//player
 	std::unique_ptr<Player> player_ = nullptr;
+	std::unique_ptr<HPBar> playerHpBar_ = nullptr;
+	std::unique_ptr<PlayerReticle> playerReticle_ = nullptr;
 	//enemy
 	std::unique_ptr<Enemy> enemy_ = nullptr;
+	std::unique_ptr<HPBar> enemyHpBar_ = nullptr;
 
 	std::unique_ptr<BulletManager> bulletManager_ = nullptr;
 

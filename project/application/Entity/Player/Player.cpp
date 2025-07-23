@@ -55,6 +55,9 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	backEmitter_ = std::make_unique<ParticleEmitter>();
 	backEmitter_->Initialize("PalyerBackpack",object3d_->GetTransform(),10,0.01f);
 	backEmitter_->SetParticleName("WalkSmoke2");
+
+	//体力の初期化
+	health_ = 10000.0f;
 }
 
 //===================================================================================
@@ -216,6 +219,7 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::Separator();
+	ImGui::DragFloat("Health", &health_, 1.0f, 0.0f, maxHealth_);
 	ImGui::DragFloat3("Velocity", &velocity_.x, 0.01f);
 	ImGui::DragFloat3("MoveDirection", &moveDirection_.x, 0.01f);
 	ImGui::Text("Behavior: %d", static_cast<int>(behavior_));

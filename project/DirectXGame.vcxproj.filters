@@ -374,6 +374,8 @@
     <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp" />
     <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp" />
     <ClCompile Include="engine\math\physics\Physics.cpp" />
+    <ClCompile Include="engine\math\Vector2.cpp" />
+    <ClCompile Include="application\Entity\Player\PlayerReticle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -721,6 +723,7 @@
     <ClInclude Include="application\Weapon\Bullet\MissilePool.h" />
     <ClInclude Include="engine\math\physics\Ray.h" />
     <ClInclude Include="engine\math\physics\Physics.h" />
+    <ClInclude Include="application\Entity\Player\PlayerReticle.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

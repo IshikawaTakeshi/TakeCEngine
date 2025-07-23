@@ -63,12 +63,14 @@ void ImGuiManager::End() {
 }
 
 void ImGuiManager::DrawDebugScreen() {
+	ImGui::SetNextWindowBgAlpha(1.0f); // 完全透明
 	ImGui::Begin("ImGuiManager::DebugScreen");
 	ImGui::Image(
 		ImTextureID(srvManager_->GetSrvDescriptorHandleGPU(renderTextureIndex_).ptr),
 		ImVec2(static_cast<float>(WinApp::kScreenWidth), static_cast<float>(WinApp::kScreenHeight)),
 		ImVec2(0, 0), // UV座標の左上
-		ImVec2(1, 1)  // UV座標の右下
+		ImVec2(1, 1),  // UV座標の右下
+		ImVec4(1, 1, 1, 1) // 色の設定（白）
 	);
 	ImGui::End();
 }
