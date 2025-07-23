@@ -152,6 +152,7 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 		newObject.second->SetRotate(objectData.rotation);
 		newObject.second->SetScale(objectData.scale);
 		newObject.second->GetObject3d()->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.3f,0.3f,0.3f,1.0f });
+		newObject.second->GetObject3d()->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.0f);
 
 		levelObjects_.insert(std::move(newObject));
 	}

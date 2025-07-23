@@ -74,10 +74,15 @@ void GamePlayScene::Initialize() {
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
+	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
 	playerHpBar_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
 	playerHpBar_->SetSize({ 200.0f, 10.0f }); // HPバーのサイズ
 	playerHpBar_->SetPosition({ 50.0f, 500.0f }); // HPバーの位置
+	//playerReticle
+	playerReticle_ = std::make_unique<PlayerReticle>();
+	playerReticle_->Initialize();
+
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
@@ -117,6 +122,10 @@ void GamePlayScene::Update() {
 	//player
 	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
 	player_->Update();
+
+	//playerReticleの更新
+	playerReticle_->Update(player_->GetFocusTargetPos());
+	
 	//playerのHPバーの更新
 	playerHpBar_->Update(player_->GetHealth(), player_->GetMaxHealth());
 	//enemyのHPバーの更新
@@ -159,6 +168,7 @@ void GamePlayScene::UpdateImGui() {
 	enemy_->UpdateImGui();
 	playerHpBar_->UpdateImGui("player");
 	enemyHpBar_->UpdateImGui("enemy");
+	playerReticle_->UpdateImGui();
 	ImGui::Begin("Level Objects");
 	for(auto& object : levelObjects_) {
 		object.second->UpdateImGui();
@@ -216,6 +226,9 @@ void GamePlayScene::Draw() {
 #pragma region スプライト描画
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
+
+	//プレイヤーのレティクルの描画
+	playerReticle_->Draw();
 	//HPバーの描画
 	playerHpBar_->Draw(); //プレイヤーのHPバーの描画
 	enemyHpBar_->Draw(); //敵のHPバーの描画

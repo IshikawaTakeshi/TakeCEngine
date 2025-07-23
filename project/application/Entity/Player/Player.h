@@ -26,6 +26,7 @@ public:
 	//体力の取得
 	float GetHealth() const { return health_; }
 	const float GetMaxHealth() const { return maxHealth_; }
+	const Vector3& GetFocusTargetPos() const { return focusTargetPos_; }
 
 	void SetFocusTargetPos(const Vector3& targetPos) { focusTargetPos_ = targetPos; }
 

@@ -211,6 +211,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp" />
     <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp" />
     <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp" />
+    <ClCompile Include="application\Entity\Player\PlayerReticle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Weapon\Bazooka.h" />
@@ -299,6 +300,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\scene\ParticleEditScene.h" />
     <ClInclude Include="engine\Entity\LevelObject\LevelObject.h" />
     <ClInclude Include="application\Weapon\Bullet\MissilePool.h" />
+    <ClInclude Include="application\Entity\Player\PlayerReticle.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />
