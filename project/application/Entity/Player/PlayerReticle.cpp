@@ -43,5 +43,7 @@ void PlayerReticle::Draw() {
 }	
 
 void PlayerReticle::UpdateImGui() {
+#ifdef _DEBUG
 	reticleSprite_->UpdateImGui("Reticle Sprite");
+#endif
 }

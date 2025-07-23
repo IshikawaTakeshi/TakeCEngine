@@ -11,6 +11,9 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 #endif // DEBUG
 #pragma endregion
 
+float WinApp::widthPercent_ = float(WinApp::kScreenWidth) / WinApp::kDebugScreenWidth_;
+float WinApp::heightPercent_ = float(WinApp::kScreenHeight) / WinApp::kDebugScreenHeight_;
+
 WinApp::WinApp() {}
 
 WinApp::~WinApp() {

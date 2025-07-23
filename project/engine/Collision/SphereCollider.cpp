@@ -52,7 +52,7 @@ void SphereCollider::Update(Object3d* collisionObject) {
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 }
 
-void SphereCollider::UpdateImGui(const std::string& name) {
+void SphereCollider::UpdateImGui([[maybe_unused]]const std::string& name) {
 #ifdef _DEBUG
 	std::string windowName = "SphereCollider" + name;
 	if (ImGui::TreeNode("SphereCollider")) {

@@ -37,7 +37,7 @@ void Bazooka::Update() {
 	if (parentSkeleton_ && !parentJointName_.empty()) {
 		Matrix4x4 characterWorldMatrix = ownerObject_->GetObject3d()->GetWorldMatrix();
 		auto jointWorldMatrixOpt = parentSkeleton_->GetJointWorldMatrix(parentJointName_, characterWorldMatrix);
-		object3d_->SetParent(jointWorldMatrixOpt ? *jointWorldMatrixOpt : MatrixMath::MakeIdentity4x4());
+		object3d_->SetParent(*jointWorldMatrixOpt);
 	}
 
 	//3Dオブジェクトの更新

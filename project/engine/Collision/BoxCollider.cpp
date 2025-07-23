@@ -81,7 +81,7 @@ void BoxCollider::Update(Object3d* collisionObject) {
 	//アフィン行列の更新
 	worldMatrix_ = scaleMat * rotateMatrix_ * translateMat;
 }
-void BoxCollider::UpdateImGui(const std::string& name) {
+void BoxCollider::UpdateImGui([[maybe_unused]]const std::string& name) {
 #ifdef _DEBUG
 	std::string windowName = "BoxCollider" + name;
 	if (ImGui::TreeNode("BoxCollider")) {

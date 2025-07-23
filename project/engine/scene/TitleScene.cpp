@@ -59,11 +59,12 @@ void TitleScene::Update() {
 }
 
 void TitleScene::UpdateImGui() {
-
+#ifdef _DEBUG
 	//ImGuiの更新
 	CameraManager::GetInstance()->UpdateImGui();
 	sprite_->UpdateImGui("title");
 	titleObject->UpdateImGui("title");
+#endif
 }
 
 void TitleScene::Draw() {

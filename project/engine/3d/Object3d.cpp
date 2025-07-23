@@ -132,7 +132,7 @@ void Object3d::AnimationUpdate() {
 // ImGuiの更新
 //=============================================================================
 
-void Object3d::UpdateImGui(const std::string& name) {
+void Object3d::UpdateImGui([[maybe_unused]]const std::string& name) {
 
 #ifdef _DEBUG
 	//ImGuiの更新

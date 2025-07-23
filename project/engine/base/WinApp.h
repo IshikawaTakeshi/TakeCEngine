@@ -9,18 +9,25 @@ public:
 
 // ゲームスクリーンのサイズ
 #ifdef _DEBUG
-static const int32_t kScreenWidth = 1024;
-static const int32_t kScreenHeight = 600;
+	static const int32_t kScreenWidth = 1024;
+	static const int32_t kScreenHeight = 600;
 // クライアント領域のサイズ（デバッグ用）
-static const int32_t kWindowWidth = 1880;
-static const int32_t kWindowHeight = 920;
+	static const int32_t kWindowWidth = 1880;
+	static const int32_t kWindowHeight = 920;
 #else
-static const int32_t kScreenWidth = 1880;
-static const int32_t kScreenHeight = 920;
+	static const int32_t kScreenWidth = 1880;
+	static const int32_t kScreenHeight = 920;
 // クライアント領域のサイズ（リリース用）
-static const int32_t kWindowWidth = 1880;
-static const int32_t kWindowHeight = 920;
+	static const int32_t kWindowWidth = 1880;
+	static const int32_t kWindowHeight = 920;
 #endif
+	static const uint32_t kDebugScreenWidth_ = 1024; // デバッグ用スクリーン幅
+	static const uint32_t kDebugScreenHeight_ = 600; // デバッグ用スクリーン高さ
+
+	//デバッグ時のスクリーンサイズと実際に使うスクリーンサイズの比率
+	static float widthPercent_;
+	static float heightPercent_;
+
 	WinApp();
 	~WinApp();
 
@@ -86,6 +93,8 @@ public:
 	D3D12_RECT GetScissorRect() const;
 
 private:
+
+	
 
 	//ウィンドウクラス
 	WNDCLASS wc_;

@@ -47,17 +47,13 @@ void HPBar::Update(float currentHP, float maxHP) {
 
 void HPBar::Draw() {
 	// 背景スプライトを描画
-	if (backgroundSprite_) {
-		backgroundSprite_->Draw();
-	}
+	backgroundSprite_->Draw();
 
 	// フォアグラウンドスプライトを描画
-	if (foregroundSprite_) {
-		foregroundSprite_->Draw();
-	}
+	foregroundSprite_->Draw();
 }
 
-void HPBar::UpdateImGui(std::string name) {
+void HPBar::UpdateImGui([[maybe_unused]]std::string name) {
 
 #ifdef _DEBUG
 	backgroundSprite_->UpdateImGui(name + "_Background");

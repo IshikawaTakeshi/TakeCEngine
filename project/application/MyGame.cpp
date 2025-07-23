@@ -92,8 +92,9 @@ void MyGame::Draw() {
 	renderTexture_->Draw();
 	//renderTexture描画後処理
 	renderTexture_->PostDraw();
-
+#ifdef _DEBUG
 	imguiManager_->PostDraw();
+#endif
 	//描画後処理
 	directXCommon_->PostDraw();
 }

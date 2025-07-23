@@ -29,7 +29,7 @@ public:
 	/// <summary>
 	/// ImGui
 	/// </summary>
-	void UpdateImGui(std::string name);
+	void UpdateImGui([[maybe_unused]]std::string name);
 
 	/// <summary>
 	/// 位置を設定

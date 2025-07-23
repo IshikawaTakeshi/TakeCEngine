@@ -70,7 +70,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	//ViewProjectionの初期化
 	viewMatrix_ = MatrixMath::MakeIdentity4x4();
 	projectionMatrix_ = MatrixMath::MakeOrthographicMatrix(
-		0.0f, 0.0f, float(WinApp::kScreenWidth), float(WinApp::kScreenHeight), 0.0f, 100.0f);
+		0.0f, 0.0f, WinApp::kScreenWidth, WinApp::kScreenHeight, 0.1f, 1000.0f);
 	worldViewProjectionMatrix_ = worldMatrix_ * viewMatrix_ * projectionMatrix_;
 	wvpData_->WVP = worldViewProjectionMatrix_;
 	wvpData_->World = worldMatrix_;
@@ -79,6 +79,14 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 
 #pragma region 更新処理
 void Sprite::Update() {
+
+	if(firstUpdate_) {
+		//初回更新時にサイズを相対サイズにする
+		SetSizeRelative();
+		position_.x *= WinApp::widthPercent_;
+		position_.y *= WinApp::heightPercent_;
+		firstUpdate_ = false;
+	}
 
 	transform_.translate = Vector3{ position_.x,position_.y,0.0f };
 	transform_.rotate = Vector3{ 0.0f,0.0f,rotation_ };
@@ -160,6 +168,11 @@ void Sprite::UpdateVertexData() {
 	vertexData[1].texcoord = { tex_left,tex_top };
 	vertexData[2].texcoord = { tex_right,tex_bottom };
 	vertexData[3].texcoord = { tex_right,tex_top };
+}
+
+void Sprite::SetSizeRelative() {
+	size_.x *= WinApp::widthPercent_;
+	size_.y *= WinApp::heightPercent_;
 }
 
 void Sprite::AdjustTextureSize() {

@@ -12,7 +12,7 @@ public:
 
 	void Update(Object3d* collisionObject) override;
 
-	void UpdateImGui(const std::string& name) override;
+	void UpdateImGui([[maybe_unused]]const std::string& name) override;
 
 	//衝突判定
 	bool CheckCollision(Collider* other) override;
