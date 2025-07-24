@@ -22,6 +22,7 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 		collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	}
 	collider_->SetRadius(bulletradius_); // 半径を設定
+	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Bullet)); // 種別IDを設定
 	//emiiter設定
 	//emitter0
 	particleEmitter_.resize(2);
@@ -122,7 +123,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 
 	//レベルオブジェクトに当たった場合の処理
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
-		
+
 		//パーティクル射出
 		//particleEmitter_[0]->Emit();
 
@@ -136,16 +137,64 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 // 弾の座標、速度の初期化
 //========================================================================================================
 
-void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos, const float& speed, CharacterType type) {
+void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos,float speed,float damage, CharacterType type) {
 
 	transform_.translate = weaponPos;
 	characterType_ = type;
+	damage_ = damage;
 	speed_ = speed;
 	targetPos_ = targetPos;
 	//ターゲットまでの方向を求める
-	direction_ =  Vector3Math::Normalize(targetPos_ - transform_.translate);
+	direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
 
 	//速度の設定
 	velocity_ = direction_ * speed_;
 	isActive_ = true;
 }
+
+//========================================================================================================
+// getter
+//========================================================================================================
+
+// Transformの取得
+const EulerTransform& Bullet::GetTransform() const { return transform_; }
+// 生存フラグの取得
+bool Bullet::GetIsActive() { return isActive_; }
+// 速度の取得
+const Vector3& Bullet::GetVelocity() const { return velocity_; }
+// ターゲット位置の取得
+const Vector3& Bullet::GetTargetPos() const { return targetPos_; }
+// 攻撃力の取得
+float Bullet::GetDamage() const { return damage_; }
+// 弾速の取得
+float Bullet::GetSpeed() const { return speed_; }
+// 弾の半径の取得
+float Bullet::GetBulletRadius() const { return bulletradius_; }
+// 寿命時間の取得
+float Bullet::GetLifeTime() const { return lifeTime_; }
+
+//========================================================================================================
+// setter
+//========================================================================================================
+
+	// 生存フラグを設定
+void Bullet::SetIsActive(bool isActive) { isActive_ = isActive; }
+
+// 速度を設定
+void Bullet::SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
+
+// ターゲット位置を設定
+void Bullet::SetTargetPos(const Vector3& targetPos) { targetPos_ = targetPos; }
+
+// 弾の半径を設定
+void Bullet::SetBulletRadius(float radius) {
+	bulletradius_ = radius;
+	// コライダーの半径も更新
+	collider_->SetRadius(bulletradius_);
+}
+
+// 弾速を設定
+void Bullet::SetSpeed(float speed) { speed_ = speed; }
+
+// 攻撃力を設定
+void Bullet::SetDamage(float damage) { damage_ = damage; }

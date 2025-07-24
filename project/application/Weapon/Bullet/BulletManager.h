@@ -21,8 +21,8 @@ public:
 	void Draw();
 	void DrawCollider();
 
-	void ShootBullet(const Vector3& weaponPos, const Vector3& targetPos, const float& speed, CharacterType type);
-	void ShootMissile(BaseWeapon* ownerWeapon, const float& speed, CharacterType type);
+	void ShootBullet(const Vector3& weaponPos, const Vector3& targetPos, const float& speed,float damage, CharacterType type);
+	void ShootMissile(BaseWeapon* ownerWeapon, const float& speed,float damage, CharacterType type);
 
 	std::vector<Bullet*> GetAllBullets();
 	std::vector<VerticalMissile*> GetAllMissiles();

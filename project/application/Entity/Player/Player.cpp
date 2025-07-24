@@ -262,6 +262,20 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		//衝突時の処理
 		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
 	}
+	if (other->GetCharacterType() == CharacterType::ENEMY_BULLET) {
+		//敵の弾に当たった場合
+		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+		//ダメージを受ける
+		Bullet* bullet = dynamic_cast<Bullet*>(other);
+		health_ -= bullet->GetDamage();
+	}
+	if(other->GetCharacterType() == CharacterType::ENEMY_MISSILE) {
+		//敵のミサイルに当たった場合
+		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+		//ダメージを受ける
+		VerticalMissile* missile = dynamic_cast<VerticalMissile*>(other);
+		health_ -= missile->GetDamage();
+	}
 }
 
 //===================================================================================

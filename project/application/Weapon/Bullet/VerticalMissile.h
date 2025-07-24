@@ -4,6 +4,7 @@
 #include "engine/3d/Object3d.h"
 #include "engine/3d/Object3dCommon.h"
 #include "engine/3d/Particle/ParticleEmitter.h"
+#include "Bullet.h"
 
 class VerticalMissile : public GameCharacter {
 public:
@@ -23,12 +24,28 @@ public:
 	void Draw() override;
 	void DrawCollider() override;
 	void OnCollisionAction(GameCharacter* other) override;
-	void Create(BaseWeapon* ownerWeapon, const float& speed, CharacterType type);
+	void Create(BaseWeapon* ownerWeapon, const float& speed,float damage, CharacterType type);
 
 public:
 
-	EulerTransform GetTransform() const { return transform_; }
-	bool GetIsActive() { return isActive_; }
+	//===========================================================================
+	// getter
+	//===========================================================================
+
+	const EulerTransform& GetTransform() const;
+	bool GetIsActive() const;
+	const Vector3& GetVelocity() const;
+	const Vector3& GetTargetPos() const;
+	float GetDamage() const;
+	float GetSpeed() const;
+	float GetBulletRadius() const;
+	float GetLifeTime() const;
+	const VerticalMissilePhase& GetPhase() const;
+
+
+	//============================================================================
+	// setter
+	//============================================================================
 
 	void SetIsActive(bool isActive) { isActive_ = isActive; }
 	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
@@ -45,9 +62,10 @@ private:
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
 	Vector3 targetPos_ = { 0.0f,0.0f,0.0f };
 	Vector3 direction_ = { 0.0f,0.0f,0.0f };
-	float speed_ = 0.0f;
-	bool isActive_ = false;
-	float lifeTime_ = 0.0f;
+	float speed_ = 0.0f; // 弾速
+	float damage_ = 0.0f; // 攻撃力
+	bool isActive_ = false; // 生存フラグ
+	float lifeTime_ = 0.0f; // 寿命時間
 	float bulletradius_ = 1.0f; //弾の半径
 
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
