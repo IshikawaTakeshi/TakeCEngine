@@ -1,5 +1,6 @@
 #include "PostEffectManager.h"
 #include "engine/base/WinApp.h"
+#include "engine/base/ImGuiManager.h"
 #include "Utility/ResourceBarrier.h"
 #include "Utility/Logger.h"
 #include "PostEffect/Dissolve.h"
@@ -28,10 +29,11 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 }
 
 void PostEffectManager::UpdateImGui() {
-
+	ImGui::Begin("PostEffectManager");
 	for (auto& postEffect : postEffects_) {
 		postEffect.postEffect->UpdateImGui();
 	}
+	ImGui::End();
 }
 
 //====================================================================

@@ -171,7 +171,7 @@ void GamePlayScene::UpdateImGui() {
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();
 	ParticleCommon::GetInstance()->UpdateImGui();
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	
 
 	player_->UpdateImGui();
 	enemy_->UpdateImGui();
