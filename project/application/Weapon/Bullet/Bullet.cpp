@@ -22,6 +22,7 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 		collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	}
 	collider_->SetRadius(bulletradius_); // 半径を設定
+	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Bullet)); // 種別IDを設定
 	//emiiter設定
 	//emitter0
 	particleEmitter_.resize(2);
@@ -34,6 +35,8 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	particleEmitter_[1]->SetParticleName("SmokeEffect");
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+
+	lifeTime_ = 2.0f; // 弾のライフタイムを設定
 
 	transform_.translate = { 0.0f, 100.0f, 0.0f };
 }
@@ -79,7 +82,7 @@ void Bullet::UpdateImGui() {
 //========================================================================================================
 
 void Bullet::Draw() {
-
+	if (!isActive_) return; // 弾が無効化されている場合は描画しない
 	object3d_->Draw();
 }
 
@@ -120,7 +123,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 
 	//レベルオブジェクトに当たった場合の処理
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
-		
+
 		//パーティクル射出
 		//particleEmitter_[0]->Emit();
 
@@ -134,25 +137,64 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 // 弾の座標、速度の初期化
 //========================================================================================================
 
-void Bullet::BulletInitialize(const Vector3& weaponPos, const Vector3& targetPos, const float& speed, CharacterType type) {
+void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos,float speed,float damage, CharacterType type) {
 
 	transform_.translate = weaponPos;
 	characterType_ = type;
+	damage_ = damage;
 	speed_ = speed;
-
+	targetPos_ = targetPos;
 	//ターゲットまでの方向を求める
-	Vector3 direction = targetPos - transform_.translate;
-	direction = Vector3Math::Normalize(direction);
+	direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
 
 	//速度の設定
-	velocity_ = direction * speed_;
-	lifeTime_ = 2.0f;
+	velocity_ = direction_ * speed_;
 	isActive_ = true;
 }
 
-//void Bullet::EmitterInitialize(uint32_t count, float frequency) {
-//
-//	std::string name = "BulletEmitter_" + std::to_string(reinterpret_cast<std::uintptr_t>(this));
-//	particleEmitter_->Initialize(name, transform_, count, frequency);
-//	particleEmitter_->SetParticleName("HitEffect2");
-//}
+//========================================================================================================
+// getter
+//========================================================================================================
+
+// Transformの取得
+const EulerTransform& Bullet::GetTransform() const { return transform_; }
+// 生存フラグの取得
+bool Bullet::GetIsActive() { return isActive_; }
+// 速度の取得
+const Vector3& Bullet::GetVelocity() const { return velocity_; }
+// ターゲット位置の取得
+const Vector3& Bullet::GetTargetPos() const { return targetPos_; }
+// 攻撃力の取得
+float Bullet::GetDamage() const { return damage_; }
+// 弾速の取得
+float Bullet::GetSpeed() const { return speed_; }
+// 弾の半径の取得
+float Bullet::GetBulletRadius() const { return bulletradius_; }
+// 寿命時間の取得
+float Bullet::GetLifeTime() const { return lifeTime_; }
+
+//========================================================================================================
+// setter
+//========================================================================================================
+
+	// 生存フラグを設定
+void Bullet::SetIsActive(bool isActive) { isActive_ = isActive; }
+
+// 速度を設定
+void Bullet::SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
+
+// ターゲット位置を設定
+void Bullet::SetTargetPos(const Vector3& targetPos) { targetPos_ = targetPos; }
+
+// 弾の半径を設定
+void Bullet::SetBulletRadius(float radius) {
+	bulletradius_ = radius;
+	// コライダーの半径も更新
+	collider_->SetRadius(bulletradius_);
+}
+
+// 弾速を設定
+void Bullet::SetSpeed(float speed) { speed_ = speed; }
+
+// 攻撃力を設定
+void Bullet::SetDamage(float damage) { damage_ = damage; }

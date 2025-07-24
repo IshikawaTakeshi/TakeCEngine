@@ -2,6 +2,7 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/base/ImGuiManager.h"
 #include "engine/math/MatrixMath.h"
+#include "application/Weapon/Bullet/BulletManager.h"
 
 Rifle::~Rifle() {}
 
@@ -18,7 +19,7 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 
 	//武器の初期化
 	weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
-	attackPower_ = 10;
+	damage_ = 90.0f;
 	attackInterval_ = kAttackInterval;
 	bulletCount_ = 30;
 	maxBulletCount_ = 30;
@@ -39,9 +40,9 @@ void Rifle::Update() {
 		if (burstInterval_ <= 0.0f && burstCount_ > 0) {
 			// 弾発射
 			if (ownerObject_->GetCharacterType() == CharacterType::PLAYER) {
-				bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, bulletSpeed_, CharacterType::PLAYER_BULLET);
+				bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, bulletSpeed_,damage_, CharacterType::PLAYER_BULLET);
 			} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
-				bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, bulletSpeed_, CharacterType::ENEMY_BULLET);
+				bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, bulletSpeed_,damage_, CharacterType::ENEMY_BULLET);
 			}
 			bulletCount_--;
 			if (bulletCount_ <= 0) {
@@ -61,7 +62,7 @@ void Rifle::Update() {
 	if (parentSkeleton_ && !parentJointName_.empty()) {
 		Matrix4x4 characterWorldMatrix = ownerObject_->GetObject3d()->GetWorldMatrix();
 		auto jointWorldMatrixOpt = parentSkeleton_->GetJointWorldMatrix(parentJointName_, characterWorldMatrix);
-		object3d_->SetParent(jointWorldMatrixOpt ? *jointWorldMatrixOpt : MatrixMath::MakeIdentity4x4());
+		object3d_->SetParent(*jointWorldMatrixOpt);
 	}
 
 	object3d_->Update();
@@ -78,7 +79,7 @@ void Rifle::UpdateImGui() {
 	ImGui::Separator();
 	if(ImGui::TreeNode("Rifle Settings")) {
 		ImGui::Text("Weapon Type: Rifle");
-		ImGui::Text("Attack Power: %d", attackPower_);
+		ImGui::Text("Attack Power: %d", damage_);
 		ImGui::Text("Attack Interval: %.2f", attackInterval_);
 		ImGui::Text("Bullet Count: %d", bulletCount_);
 		ImGui::Text("Max Bullet Count: %d", maxBulletCount_);
@@ -107,9 +108,9 @@ void Rifle::Attack() {
 	}
 
 	if (ownerObject_->GetCharacterType() == CharacterType::PLAYER){
-		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,bulletSpeed_, CharacterType::PLAYER_BULLET);
+		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,bulletSpeed_,damage_, CharacterType::PLAYER_BULLET);
 	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
-		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,bulletSpeed_, CharacterType::ENEMY_BULLET);
+		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,bulletSpeed_,damage_, CharacterType::ENEMY_BULLET);
 	} else {
 		return; // キャラクタータイプが不明な場合は攻撃しない
 	}

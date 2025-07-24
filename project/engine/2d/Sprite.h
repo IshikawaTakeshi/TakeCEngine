@@ -54,6 +54,8 @@ private:
 	//頂点データ更新
 	void UpdateVertexData();
 
+	void SetSizeRelative();
+
 	
 public:
 	//================================================================================================
@@ -101,6 +103,8 @@ public:
 
 	void SetTextureSize(const Vector2& textureSize) { textureSize_ = textureSize; }
 
+	void SetMaterialColor(const Vector4& color) { mesh_->GetMaterial()->SetMaterialColor(color); }
+
 private:
 
 	//SpriteCommon
@@ -133,6 +137,7 @@ private:
 	bool isFlipX_ = false; //左右フリップ
 	bool isFlipY_ = false; //上下フリップ
 	bool adjustSwitch_ = false; //テクスチャサイズ調整スイッチ
+	bool firstUpdate_ = true; //初回更新フラグ
 
 	Vector2 textureLeftTop_ = { 0.0f,0.0f  }; //テクスチャの左上座標
 	Vector2 textureSize_ = { 100.0f,100.0f }; //テクスチャの切り出しサイズ

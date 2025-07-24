@@ -4,6 +4,7 @@
 #include "DirectXCommon.h"
 #include "Collision/BoxCollider.h"
 #include "Collision/SphereCollider.h"
+#include "engine/math/physics/Physics.h"
 
 CollisionManager* CollisionManager::instance_ = nullptr;
 
@@ -55,54 +56,6 @@ void CollisionManager::Finalize() {
 }
 
 //=============================================================================
-// コライダーリストへの登録をする関数
-//=============================================================================
-
-void CollisionManager::RegisterCollider(Collider* collider) {
-
-	colliders_.push_back(collider);
-}
-
-//=============================================================================
-// コライダーリストをクリアする関数
-//=============================================================================
-
-void CollisionManager::ClearCollider() {
-
-	colliders_.clear();
-}
-
-//=============================================================================
-// 全てのコライダーの衝突判定を行う関数
-//=============================================================================
-
-void CollisionManager::CheckAllCollisions() {
-
-	//リスト内のペアを総当たり
-	std::list<Collider*>::iterator itrA = colliders_.begin();
-	for (; itrA != colliders_.end(); ++itrA) {
-
-		//イテレータAからコライダーAを取得する
-		Collider* colliderA = *itrA;
-
-		//イテレータA+1からコライダーBを取得する(重複判定の回避)
-		std::list<Collider*>::iterator itrB = itrA;
-		itrB++;
-
-		for (; itrB != colliders_.end(); ++itrB) {
-
-			//イテレータBからコライダーBを取得する
-			Collider* colliderB = *itrB;
-
-			//コライダーAとBの衝突判定
-			CheckCollisionPair(colliderA, colliderB);
-		}
-
-	}
-
-}
-
-//=============================================================================
 // コライダー2つ衝突判定と応答処理
 //=============================================================================
 
@@ -125,12 +78,12 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 }
 
 void CollisionManager::RegisterGameCharacter(GameCharacter* gameCharacter) {
-
+	colliders_.push_back(gameCharacter->GetCollider());
 	gameCharacters_.push_back(gameCharacter);
 }
 
 void CollisionManager::ClearGameCharacter() {
-
+	colliders_.clear();
 	gameCharacters_.clear();
 }
 
@@ -169,4 +122,24 @@ void CollisionManager::CheckCollisionPairForGameCharacter(GameCharacter* gameCha
 		//コライダーBの衝突処理
 		gameCharacterB->OnCollisionAction(gameCharacterA);
 	}
+}
+
+bool CollisionManager::RayCast(const Ray& ray, RayCastHit& outHit,uint32_t layerMask) {
+
+	bool result = false;
+	float closestDistance = ray.distance;
+	RayCastHit tempHit;
+	for (auto* collider : colliders_) {
+		// レイヤーマスクによる絞り込み
+		if (!(static_cast<uint32_t>(collider->GetCollisionLayerID()) & layerMask)) continue;
+
+		if (collider->Intersects(ray, tempHit)) {
+			if (tempHit.distance < closestDistance) {
+				closestDistance = tempHit.distance;
+				outHit = tempHit;
+				result = true;
+			}
+		}
+	}
+	return result;
 }

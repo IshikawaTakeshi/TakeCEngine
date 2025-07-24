@@ -1,7 +1,19 @@
 #pragma once
-#include "Object3d.h"
+#include "engine/3d/Object3d.h"
+#include "engine/math/physics/Ray.h"
 #include <cstdint>
 #include <memory>
+
+enum class CollisionLayer {
+	None = 0,
+	Player = 1 << 0,
+	Enemy = 1 << 1,
+	Bullet = 1 << 2,
+	Level_Object = 1 << 3,
+	Missile = 1 << 4,
+	All = Player | Enemy | Bullet | Level_Object | Missile,
+	Ignoe = Player | Bullet | Enemy | Missile, // PlayerとBulletとMissileは衝突しない
+};
 
 class Model;
 class DirectXCommon;
@@ -30,6 +42,8 @@ public:
 	/// <returns></returns>
 	virtual bool CheckCollision(Collider* other) = 0;
 
+	virtual bool Intersects(const Ray& ray, RayCastHit& outHit) = 0;
+
 
 public:
 
@@ -53,7 +67,7 @@ public:
 	/// <summary>
 	/// 種別IDの取得
 	/// </summary>
-	uint32_t GetTypeID() const { return typeID_; }
+	CollisionLayer GetCollisionLayerID() const { return layerID_; }
 
 public:
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +90,7 @@ public:
 	/// <summary>
 	/// 種別IDの設定
 	/// </summary>
-	void SetTypeID(uint32_t typeID) { typeID_ = typeID; }
+	void SetCollisionLayerID(uint32_t typeID) { layerID_ = static_cast<CollisionLayer>(typeID); }
 
 protected:
 
@@ -101,5 +115,5 @@ protected:
 	float radius_ = 1.0f;
 	Vector3 halfSize_ = { 1.0f,1.0f,1.0f };
 	//種別ID
-	uint32_t typeID_ = 0u;
+	CollisionLayer layerID_ = CollisionLayer::None;
 };

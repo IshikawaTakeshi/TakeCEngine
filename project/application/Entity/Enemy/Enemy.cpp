@@ -37,6 +37,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
+	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Enemy));
 
 	transform_ = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,30.0f} };
 	object3d_->SetScale(transform_.scale);
@@ -62,6 +63,9 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	weaponTypes_[1] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+
+	//体力の初期化
+	health_ = maxHealth_;
 }
 
 void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
@@ -88,6 +92,10 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 
 void Enemy::Update() {
 
+	// ランダムエンジンの初期化  
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
+
 	//stepBoostのインターバルの更新
 	if(stepBoostIntervalTimer_ > 0.0f) {
 		stepBoostIntervalTimer_ -= deltaTime_;
@@ -96,17 +104,17 @@ void Enemy::Update() {
 	// StepBoost入力判定を最初に追加
 	if (behavior_ == Behavior::RUNNING) {
 
-		//StepBoost遷移判定
-		// 
-		//if (Input::GetInstance()->PushButton(0, GamepadButtonType::LT)) {
-		//	TriggerStepBoost();
-		//}
-		//Jump遷移判定
-		//
-		//if(Input::GetInstance()->TriggerButton(0, GamepadButtonType::RT)) {
-		//	//ジャンプのリクエスト
-		//	behaviorRequest_ = Behavior::JUMP;
-		//}
+	
+			//1秒に1度確率で判定
+			if( randomEngine() % 100 < jumpProbability_) { // 1%の確率
+				if(randomEngine() % 2 == 0) {
+					//Jump遷移
+					behaviorRequest_ = Behavior::JUMP;
+				} else {
+					//StepBoost遷移
+					behaviorRequest_ = Behavior::STEPBOOST;
+				}
+			}
 	}
 
 	if (behaviorRequest_) {
@@ -138,6 +146,9 @@ void Enemy::Update() {
 		case Behavior::CHARGESHOOT_STUN:
 			InitChargeShootStun();
 			break;
+		case Behavior::DEAD:
+			InitDead();
+			break;
 		}
 
 		behaviorRequest_ = std::nullopt;
@@ -159,7 +170,7 @@ void Enemy::Update() {
 		UpdateStepBoost();
 		break;
 	case Enemy::Behavior::FLOATING:
-		UpdateFloating();
+		UpdateFloating(randomEngine);
 		break;
 	case Enemy::Behavior::CHARGESHOOT:
 		UpdateChargeShoot();
@@ -167,12 +178,19 @@ void Enemy::Update() {
 	case Enemy::Behavior::CHARGESHOOT_STUN:
 		UpdateChargeShootStun();
 		break;
+
+	case Enemy::Behavior::DEAD:
+		UpdateDead();
+		break;
+
 	default:
 		break;
 	}
 
 	//攻撃処理
-	UpdateAttack();
+	if (isAlive_ == true) {
+		UpdateAttack();
+	}
 
 	//ダメージエフェクトの更新
 	if (isDamaged_) {
@@ -181,6 +199,12 @@ void Enemy::Update() {
 		if (damageEffectTime_ <= 0.0f) {
 			isDamaged_ = false;
 		}
+	}
+
+	if(health_ <= 0.0f) {
+		//死亡状態のリクエスト
+		isAlive_ = false;
+		behaviorRequest_ = Behavior::DEAD;
 	}
 
 	//Quaternionからオイラー角に変換
@@ -212,6 +236,8 @@ void Enemy::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
+	ImGui::DragFloat("health", &health_, 1.0f, 0.0f, maxHealth_);
+	ImGui::Text("Behavior: %d", static_cast<int>(behavior_));
 	object3d_->UpdateImGui("Enemy");
 	ImGui::End();
 #endif // _DEBUG
@@ -247,19 +273,29 @@ void Enemy::DrawCollider() {
 void Enemy::OnCollisionAction(GameCharacter* other) {
 
 	if (other->GetCharacterType() == CharacterType::PLAYER) {
-		//衝突時の処理
 
-		//particleEmitter_->Emit();
-		hitPoint_--;
 	}
 
 	if (other->GetCharacterType()  == CharacterType::PLAYER_BULLET) {
+
+		Bullet* bullet = dynamic_cast<Bullet*>(other);
 		//プレイヤーの弾に当たった場合の処理
 		particleEmitter_[1]->Emit();
+		isDamaged_ = true;
+		//ダメージを受けた時のエフェクト時間を設定
+		damageEffectTime_ = 0.5f;
+		//体力を減らす
+		health_ -= bullet->GetDamage();
+	}
+	if(other->GetCharacterType() == CharacterType::PLAYER_MISSILE) {
+		//プレイヤーのミサイルに当たった場合の処理
 		//particleEmitter_[2]->Emit();
 		isDamaged_ = true;
+		//ダメージを受けた時のエフェクト時間を設定
 		damageEffectTime_ = 0.5f;
-		hitPoint_--;
+		//体力を減らす
+		VerticalMissile* missile = dynamic_cast<VerticalMissile*>(other);
+		health_ -= missile->GetDamage();
 	}
 }
 
@@ -333,29 +369,60 @@ void Enemy::UpdateRunning() {
 //　ジャンプ処理
 //===================================================================================
 
-void Enemy::InitJump() {}
+void Enemy::InitJump() {
+
+	//ジャンプの初期化
+	//ジャンプの速度を設定
+	velocity_.y = jumpSpeed_;
+
+	//ジャンプ中の移動方向を設定
+	// ターゲット方向を正規化
+	Vector3 toTarget = Vector3Math::Normalize(focusTargetPos_ - transform_.translate);
+
+	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
+	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
+
+	// 回転補間
+	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
+
+	// ターゲットの周囲を回るための目標座標を計算
+	orbitAngle_ += orbitSpeed_ * deltaTime_;
+	if (orbitAngle_ > 2 * std::numbers::pi_v<float>) orbitAngle_ -= 2 * std::numbers::pi_v<float>;
+
+	Vector3 orbitPos;
+	orbitPos.x = focusTargetPos_.x + orbitRadius_ * cos(orbitAngle_);
+	orbitPos.y = focusTargetPos_.y; // 高さはターゲットに合わせる（必要なら補正可）
+	orbitPos.z = focusTargetPos_.z + orbitRadius_ * sin(orbitAngle_);
+
+	// 目的座標までの方向ベクトル
+	toOrbitPos_ = orbitPos - transform_.translate;
+
+	// 移動方向の決定（XZのみでfloat時はほぼ水平移動を想定）
+	moveDirection_ = Vector3Math::Normalize(Vector3(toOrbitPos_.x, 0.0f, toOrbitPos_.z));
+	
+	transform_.translate.y += 0.1f; // 少し上に移動してジャンプ感を出す
+}
 
 void Enemy::UpdateJump() {
-	// ジャンプ中の処理
-	if (isJumping_) {
-		// 上昇中
-		if (transform_.translate.y < jumpHeight_) {
-			velocity_.y += jumpSpeed_ * deltaTime_;
-		} else {
-			// 最大高度に達したら下降開始
-			isJumping_ = false;
-		}
-	} else {
-		// 下降中
-		if (transform_.translate.y > 0.0f) {
-			velocity_.y -= gravity_ * deltaTime_;
-		} else {
-			transform_.translate.y = 0.0f; // 地面に着地
-			isJumping_ = false;
-			behaviorRequest_ = Behavior::RUNNING; // ジャンプ終了後は走行状態に戻す
-		}
-	}
+	// ジャンプ中の移動
+	transform_.translate.x += velocity_.x * deltaTime_;
+	transform_.translate.z += velocity_.z * deltaTime_;
+	// 重力の適用
+	velocity_.y -= (gravity_ + jumpDeceleration_) * deltaTime_;
 	transform_.translate.y += velocity_.y * deltaTime_;
+
+	jumpTimer_ += deltaTime_;
+	if (jumpTimer_ > maxJumpTime_) {
+		behaviorRequest_ = Behavior::FLOATING;
+		return;
+	}
+
+	// 地面に着地したらRUNNINGに戻る
+	if (transform_.translate.y <= 0.0f) {
+		transform_.translate.y = 0.0f; // 地面に合わせる
+		behaviorRequest_ = Behavior::RUNNING;
+		velocity_ = { 0.0f, 0.0f, 0.0f }; // ジャンプ中の速度をリセット
+	}
 }
 
 //===================================================================================
@@ -493,6 +560,31 @@ void Enemy::InitStepBoost() {
 	//上昇速度を急激に遅くする
 	velocity_.y = 0.0f;
 
+	//ジャンプ中の移動方向を設定
+	// ターゲット方向を正規化
+	Vector3 toTarget = Vector3Math::Normalize(focusTargetPos_ - transform_.translate);
+
+	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
+	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
+
+	// 回転補間
+	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
+
+	// ターゲットの周囲を回るための目標座標を計算
+	orbitAngle_ += orbitSpeed_ * deltaTime_;
+	if (orbitAngle_ > 2 * std::numbers::pi_v<float>) orbitAngle_ -= 2 * std::numbers::pi_v<float>;
+
+	Vector3 orbitPos;
+	orbitPos.x = focusTargetPos_.x + orbitRadius_ * cos(orbitAngle_);
+	orbitPos.y = focusTargetPos_.y; // 高さはターゲットに合わせる（必要なら補正可）
+	orbitPos.z = focusTargetPos_.z + orbitRadius_ * sin(orbitAngle_);
+
+	// 目的座標までの方向ベクトル
+	toOrbitPos_ = orbitPos - transform_.translate;
+
+	// 移動方向の決定（XZのみでfloat時はほぼ水平移動を想定）
+	stepBoostDirection_ = Vector3Math::Normalize(Vector3(toOrbitPos_.x, 0.0f, toOrbitPos_.z));
+
 	stepBoostTimer_ = stepBoostDuration_;
 	velocity_.x = stepBoostDirection_.x * stepBoostSpeed_;
 	velocity_.z = stepBoostDirection_.z * stepBoostSpeed_;
@@ -542,17 +634,17 @@ void Enemy::InitFloating() {
 
 }
 
-void Enemy::UpdateFloating() {
+void Enemy::UpdateFloating(std::mt19937 randomEngine) {
 
-	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
 
 	// --------------------------------
 	// TODO: Enemyの浮遊時の挙動を実装する
 	// --------------------------------
 	
-	//if (Input::GetInstance()->PushButton(0, GamepadButtonType::LT)) {
-	//	TriggerStepBoost();
-	//}
+	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
+	if (randomEngine() % 100 < 1.0f) {
+		behaviorRequest_ = Behavior::STEPBOOST;
+	}
 	
 	// ターゲット方向を正規化
 	Vector3 toTarget = Vector3Math::Normalize(focusTargetPos_ - transform_.translate);
@@ -593,8 +685,8 @@ void Enemy::UpdateFloating() {
 		velocity_.z *= scale;
 	}
 
-	// 空中での重力（弱める場合はfloatingGravity_等を用意）
-	velocity_.y -= gravity_ * 2.0f * deltaTime_;
+	// 空中での降下処理(fallSpeedを重力に加算)
+	velocity_.y -= (gravity_ + fallSpeed_) * deltaTime_;
 	transform_.translate.x += velocity_.x * deltaTime_;
 	transform_.translate.z += velocity_.z * deltaTime_;
 	transform_.translate.y += velocity_.y * deltaTime_;
@@ -604,6 +696,34 @@ void Enemy::UpdateFloating() {
 		transform_.translate.y = 0.0f;
 		behaviorRequest_ = Behavior::RUNNING;
 	}
+}
+
+//===================================================================================
+// 死亡時の処理
+//===================================================================================
+
+void Enemy::InitDead() {
+	isAlive_ = false; // 死亡フラグを立てる
+}
+
+void Enemy::UpdateDead() {
+
+	//空中にいる場合は落下処理
+	if (transform_.translate.y > 0.0f) {
+		// 空中での降下処理(fallSpeedを重力に加算)
+		velocity_.y -= (gravity_ + fallSpeed_) * deltaTime_;
+	} else {
+		// 地面に着地したら速度を0にする
+		velocity_.y = 0.0f;
+	}
+
+	//速度の減速処理
+	velocity_.x /= deceleration_;
+	velocity_.z /= deceleration_;
+
+	//位置の更新（deltaTimeをここで適用）
+	transform_.translate += velocity_ * deltaTime_;
+
 }
 
 //===================================================================================
@@ -617,10 +737,11 @@ bool Enemy::ShouldStartAttack(int weaponIndex) {
 	float range = orbitRadius_ * 3.5f;
 	bool cooldownReady = weapon->IsAvailable();
 	// 例: 一定確率で攻撃開始
-	return (distance <= range) && cooldownReady && (rand() % 100 < 10); // 10%の確率
+	return (distance <= range) && cooldownReady && (rand() % 100 < attackProbability_); // 10%の確率
 }
 
 bool Enemy::ShouldReleaseAttack(int weaponIndex) {
 	auto* weapon = weapons_[weaponIndex].get();
 	return weapon->GetChargeTime() >= weapon->GetRequiredChargeTime();
 }
+

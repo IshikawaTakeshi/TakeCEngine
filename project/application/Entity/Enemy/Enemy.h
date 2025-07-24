@@ -3,7 +3,10 @@
 #include "Weapon/BaseWeapon.h"
 #include "camera/Camera.h"
 #include "3d/Particle/ParticleEmitter.h"
+#include "application/Weapon/Bullet/BulletManager.h"
 #include <optional>
+#include <chrono>
+#include <random>
 
 class Enemy : public GameCharacter {
 
@@ -28,23 +31,25 @@ public:
 	const Vector3& GetVelocity() const { return velocity_; }
 	const Vector3& GetMoveDirection() const { return moveDirection_; }
 	const Vector3& GetToOrbitPos() const { return toOrbitPos_; }
-	const uint32_t& GetHitPoint() const { return hitPoint_; }
-	const bool& IsJumping() const { return isJumping_; }
-	const bool& IsDashing() const { return isDashing_; }
+	const float& GetHealth() const { return health_; }
+	const float& GetMaxHealth() const { return maxHealth_; }
 	const bool& IsDamaged() const { return isDamaged_; }
+	const bool& IsAlive() const { return isAlive_; }
 
 private:
 
+	//状態遷移の列挙型
 	enum class Behavior {
-		IDLE,
-		RUNNING,
-		JUMP,
-		DASH,
-		CHARGESHOOT, //チャージ攻撃中
+		IDLE,             // 待機状態
+		RUNNING,          // 移動状態
+		JUMP,             // ジャンプ状態
+		DASH,             // ダッシュ状態
+		CHARGESHOOT,      //チャージ攻撃中
 		CHARGESHOOT_STUN, // チャージショット後の硬直状態
-		HEAVYDAMAGE,
-		STEPBOOST,
-		FLOATING,
+		HEAVYDAMAGE,      // 大ダメージによる硬直状態
+		STEPBOOST,        // ステップブースト
+		FLOATING,         // 浮遊状態
+		DEAD,             // 死亡状態
 	};
 
 	void InitRunning();
@@ -54,6 +59,7 @@ private:
 	void InitChargeShootStun();
 	void InitStepBoost();
 	void InitFloating();
+	void InitDead();
 
 	void UpdateRunning();
 	void UpdateAttack();
@@ -63,7 +69,8 @@ private:
 	void UpdateChargeShoot();
 	void UpdateChargeShootStun();
 	void UpdateStepBoost();
-	void UpdateFloating();
+	void UpdateFloating(std::mt19937 randomEngine);
+	void UpdateDead();
 
 	// ステップブーストのBehavior切り替え処理
 	void TriggerStepBoost();
@@ -104,7 +111,8 @@ private:
 	//ゲーム内の1フレームの経過時間
 	float deltaTime_ = 0.0f;
 	//体力
-	uint32_t hitPoint_ = 100;
+	float health_ = 0.0f; // 初期体力
+	const float maxHealth_ = 10000.0f; // 最大体力
 
 	const float moveSpeed_ = 200.0f;    // 移動速度
 	const float kMaxMoveSpeed_ = 50.0f; // 最大移動速度
@@ -125,11 +133,13 @@ private:
 	float stepBoostIntervalTimer_ = 0.0f;  // ステップブーストのインターバルタイマー
 
 	//JumInfo
-	const float jumpHeight_ = 80.0f; // ジャンプの高さ
 	const float jumpSpeed_ = 50.0f;  // ジャンプの速度
 	float jumpTimer_ = 0.0f;         // ジャンプのタイマー
 	const float maxJumpTime_ = 0.5f; // ジャンプの最大時間
-	const float gravity_ = 50.0f;    // 重力の強さ
+	const float jumpDeceleration_ = 40.0f; // ジャンプ中の減速率
+	const float gravity_ = 9.8f;    // 重力の強さ
+	//落下速度
+	float fallSpeed_ = 40.0f; // 落下速度
 
 	// チャージ攻撃後硬直用の変数
 	float chargeAttackStunTimer_ = 0.0f;          //チャージ攻撃後の硬直時間
@@ -139,10 +149,15 @@ private:
 	//ダメージを受けた時のエフェクト適用時間
 	float damageEffectTime_ = 0.0f;
 
-	bool isJumping_ = false;
-	bool isDashing_ = false;
-	bool onGround_ = false;
+	//敵が攻撃する確率
+	const float attackProbability_ = 10.0f; // 10%の確率で攻撃
+	//ジャンプする確率
+	const float jumpProbability_ = 1.0f;
+
+	//状態遷移タイマー
+	float stateTransitionTimer_ = 0.0f; // 状態遷移のタイマー
+
 	bool isDamaged_ = false; //ダメージを受けたかどうか
-	
+	bool isAlive_ = true; //敵が生きているかどうか
 };
 

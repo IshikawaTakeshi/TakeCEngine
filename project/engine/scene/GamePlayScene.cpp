@@ -49,7 +49,7 @@ void GamePlayScene::Initialize() {
 	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
 
 	for (auto& object : levelObjects_) {
-		object->SetCamera(Object3dCommon::GetInstance()->GetDefaultCamera());
+		object.second->SetCamera(Object3dCommon::GetInstance()->GetDefaultCamera());
 	}
 
 	//Animation読み込み
@@ -64,11 +64,6 @@ void GamePlayScene::Initialize() {
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_pool.obj");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
-	//sprite
-	sprite_ = std::make_unique<Sprite>();
-	sprite_->Initialize(SpriteCommon::GetInstance(), "rick.png");
-	sprite_->SetTextureLeftTop({ 235.0f,40.0f });
-
 	//BulletManager
 	bulletManager_ = std::make_unique<BulletManager>();
 	bulletManager_->Initialize(Object3dCommon::GetInstance(), 100); //弾の最大数:100
@@ -79,12 +74,29 @@ void GamePlayScene::Initialize() {
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
+	// playerHpBar
+	playerHpBar_ = std::make_unique<HPBar>();
+	playerHpBar_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
+	playerHpBar_->SetSize({ 200.0f, 10.0f }); // HPバーのサイズ
+	playerHpBar_->SetPosition({ 50.0f, 500.0f }); // HPバーの位置
+	//playerReticle
+	playerReticle_ = std::make_unique<PlayerReticle>();
+	playerReticle_->Initialize();
+	//energyInfoUI
+	energyInfoUI_ = std::make_unique<EnergyInfoUI>();
+	energyInfoUI_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
+	energyInfoUI_->SetSize({ 500.0f, 10.0f }); // エネルギーUIのサイズ
+	energyInfoUI_->SetPosition({ 250.0f, 525.0f }); // エネルギーUIの位置
 
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
 	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
 	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
+	enemyHpBar_ = std::make_unique<HPBar>();
+	enemyHpBar_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
+	enemyHpBar_->SetSize({ 500.0f, 10.0f }); // HPバーのサイズ
+	enemyHpBar_->SetPosition({ 250.0f, 35.0f }); // HPバーの位置
 }
 
 //====================================================================
@@ -95,7 +107,6 @@ void GamePlayScene::Finalize() {
 	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	player_.reset();
-	sprite_.reset();
 	skyBox_.reset();
 }
 
@@ -108,9 +119,6 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->Update();
 	//SkyBoxの更新
 	skyBox_->Update();
-	//スプライトの更新
-	sprite_->Update();
-
 	
 	//enemy
 	enemy_->SetFocusTargetPos(player_->GetObject3d()->GetTranslate());
@@ -120,11 +128,23 @@ void GamePlayScene::Update() {
 	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
 	player_->Update();
 
+	//playerReticleの更新
+	playerReticle_->Update(player_->GetFocusTargetPos());
+	
+	//playerのHPバーの更新
+	playerHpBar_->Update(player_->GetHealth(), player_->GetMaxHealth());
+	//enemyのHPバーの更新
+	enemyHpBar_->Update(enemy_->GetHealth(), enemy_->GetMaxHealth());
+
+	//playerのエネルギーUIの更新
+	energyInfoUI_->SetOverHeatState(player_->GetIsOverHeated());
+	energyInfoUI_->Update(player_->GetEnergy(), player_->GetMaxEnergy());
+
 	//弾の更新
-	bulletManager_->UpdateBullet();
+	bulletManager_->Update();
 
 	for (auto& object : levelObjects_) {
-		object->Update();
+		object.second->Update();
 	}
 
 	//particleManager更新
@@ -155,10 +175,15 @@ void GamePlayScene::UpdateImGui() {
 
 	player_->UpdateImGui();
 	enemy_->UpdateImGui();
-	for (int i = 0; i < levelObjects_.size(); i++) {
-		levelObjects_[i]->UpdateImGui();
+	playerHpBar_->UpdateImGui("player");
+	enemyHpBar_->UpdateImGui("enemy");
+	playerReticle_->UpdateImGui();
+	energyInfoUI_->UpdateImGui("player");
+	ImGui::Begin("Level Objects");
+	for(auto& object : levelObjects_) {
+		object.second->UpdateImGui();
 	}
-	sprite_->UpdateImGui("gameScene");
+	ImGui::End();
 }
 
 //====================================================================
@@ -183,9 +208,9 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->PreDraw();
 	player_->Draw();
 	enemy_->Draw();
-	bulletManager_->DrawBullet();
+	bulletManager_->Draw();
 	for (auto& object : levelObjects_) {
-		object->Draw();
+		object.second->Draw();
 	}
 
 #pragma endregion
@@ -195,11 +220,9 @@ void GamePlayScene::Draw() {
 	enemy_->DrawCollider();
 	bulletManager_->DrawCollider();
 	for (auto& object : levelObjects_) {
-		object->DrawCollider();
+		object.second->DrawCollider();
 	}
 
-	//グリッド地面の描画
-	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 50);
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
 	TakeCFrameWork::GetWireFrame()->Draw();
@@ -211,7 +234,14 @@ void GamePlayScene::Draw() {
 #pragma region スプライト描画
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
-	//sprite_->Draw();    //スプライトの描画
+
+	//プレイヤーのレティクルの描画
+	playerReticle_->Draw();
+	//HPバーの描画
+	playerHpBar_->Draw(); //プレイヤーのHPバーの描画
+	enemyHpBar_->Draw();  //敵のHPバーの描画
+	//エネルギーUIの描画
+	energyInfoUI_->Draw();
 #pragma endregion
 
 	//GPUパーティクルの描画
@@ -224,20 +254,30 @@ void GamePlayScene::CheckAllCollisions() {
 	CollisionManager::GetInstance()->ClearGameCharacter();
 
 	const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
+
+	const std::vector<VerticalMissile*>& missiles = bulletManager_->GetAllMissiles();
+
 	// プレイヤーの登録
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
 	// 敵キャラクターの登録
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
 
-	// プレイヤーの弾の登録
+	//弾の登録
 	for (const auto& bullet : bullets) {
 		if (bullet->GetIsActive()) {
 			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
 		}
 	}
+	//垂直ミサイルの登録
+	for( const auto& missile : missiles) {
+		if (missile->GetIsActive()) {
+			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(missile));
+		}
+	}
+
 	// レベルオブジェクトの登録
 	for (const auto& object : levelObjects_) {
-		CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(object.get()));
+		CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(object.second.get()));
 	}
 
 

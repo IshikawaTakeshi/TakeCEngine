@@ -2,13 +2,13 @@
 #include "Object3d.h"
 #include "Object3dCommon.h"
 #include "Entity/GameCharacter.h"
-#include "Weapon/Bullet/BulletManager.h"
 #include "Weapon/WeaponType.h"
 #include <cstdint>
 #include <string>
 #include <memory>
 
 //武器インターフェース
+class BulletManager;
 class BaseWeapon {
 public:
 
@@ -26,21 +26,34 @@ public:
 	//武器の攻撃
 	virtual void Attack() = 0;
 	//武器のチャージ処理
-	
 	virtual void Charge([[maybe_unused]] float deltaTime) {};
 	virtual void ChargeAttack() {};
 
 	virtual void AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName);
+
+public:
+
+	//===========================================================================
+	// getter
+	//===========================================================================
+
 	//武器タイプの取得
 	virtual const WeaponType& GetWeaponType() const = 0;
-
+	//攻撃間隔の取得
 	virtual float GetAttackInterval() const { return attackInterval_; }
-	//所有者の設定
-	virtual void SetOwnerObject(GameCharacter* owener) { ownerObject_ = owener; }
-	//攻撃対象の座標を設定
-	virtual void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
-	//使用可能かどうか
-	virtual bool IsAvailable() const { return isAvailable_; }
+
+	virtual const Vector3& GetTranslate() const { return object3d_->GetTranslate(); }
+
+	virtual const Vector3& GetCenterPosition() const { return object3d_->GetCenterPosition(); }
+	//ターゲットの座標を取得
+	virtual const Vector3& GetTragetPos() const;
+
+	//弾速の取得
+	virtual float GetBulletSpeed() const;
+	//攻撃力の取得
+	virtual float GetAttackPower() const;
+	//弾数の取得
+	virtual int32_t GetBulletCount() const;
 
 	// チャージ中かどうか
 	virtual bool IsCharging() const;
@@ -57,7 +70,27 @@ public:
 	//停止撃ち専用か
 	virtual bool IsStopShootOnly() const = 0;
 
+	//=============================================================================
+	// setter
+	//=============================================================================
+
+	//所有者の設定
+	virtual void SetOwnerObject(GameCharacter* owener) { ownerObject_ = owener; }
+	//攻撃対象の座標を設定
+	virtual void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
+
+	//弾速の設定
+	virtual void SetBulletSpeed(float speed);
+	//攻撃力の設定
+	virtual void SetAttackPower(float power);
+	//弾数の設定
+	virtual void SetBulletCount(int32_t count);
+
+	//使用可能かどうか
+	virtual bool IsAvailable() const { return isAvailable_; }
+
 protected:
+
 	// 弾管理クラス
 	BulletManager* bulletManager_ = nullptr;
 
@@ -77,7 +110,7 @@ protected:
 	//武器の種類
 	WeaponType weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
 	//武器の攻撃力
-	int32_t attackPower_ = 0;
+	float damage_ = 0.0f;
 	//攻撃間隔
 	float attackInterval_ = 0.0f;
 	//弾数
