@@ -50,6 +50,8 @@ public:
 
 	bool GetIsOverHeated() const { return isOverheated_; }
 
+	bool GetIsAlive() const { return isAlive_; }
+
 	//================================================================================
 	// setter
 	//================================================================================
@@ -62,15 +64,16 @@ public:
 private:
 
 	enum class Behavior {
-		IDLE,
-		RUNNING,
-		JUMP,
-		DASH,
-		CHARGESHOOT, //チャージ攻撃中
+		IDLE,             // 待機状態
+		RUNNING,          // 移動状態
+		JUMP,             // ジャンプ状態
+		DASH,             // ダッシュ状態
+		CHARGESHOOT,      //チャージ攻撃中
 		CHARGESHOOT_STUN, // チャージショット後の硬直状態
-		HEAVYDAMAGE,
-		STEPBOOST,
-		FLOATING,
+		HEAVYDAMAGE,	  // 大ダメージによる硬直状態
+		STEPBOOST,        // ステップブースト
+		FLOATING,         // 浮遊状態
+		DEAD,             // 死亡状態
 	};
 
 	void InitRunning();
@@ -80,6 +83,7 @@ private:
 	void InitChargeShootStun();
 	void InitStepBoost();
 	void InitFloating();
+	void InitDead();
 
 	void UpdateRunning();
 	void UpdateAttack();
@@ -90,6 +94,7 @@ private:
 	void UpdateChargeShootStun();
 	void UpdateStepBoost();
 	void UpdateFloating();
+	void UpdateDead();
 
 	// ステップブーストのBehavior切り替え処理
 	void TriggerStepBoost();
@@ -140,10 +145,10 @@ private:
 	const float stepBoostSpeed_     = 230.0f;         // ステップブーストの速度
 	const float stepBoostDuration_  = 0.2f;           // ステップブーストの持続時間
 	float stepBoostTimer_           = 0.0f;           // ステップブーストのタイマー
-	float useEnergyStepBoost_ = 100.0f;         // ステップブーストに必要なエネルギー
+	float useEnergyStepBoost_ = 100.0f;               // ステップブーストに必要なエネルギー
 	//インターバル用
 	const float stepBoostInterval_ = 0.2f; // ステップブーストのインターバル
-	float stepBoostIntervalTimer_  = 0.0f;  // ステップブーストのインターバルタイマー
+	float stepBoostIntervalTimer_  = 0.0f; // ステップブーストのインターバルタイマー
 
 	//JumInfo
 	const float jumpSpeed_ = 50.0f;        // ジャンプの速度
@@ -174,7 +179,5 @@ private:
 	float overheatTimer_ = 0.0f;          // オーバーヒートのタイマー
 	const float overheatDuration_ = 3.0f; // オーバーヒートの持続時間
 
-	bool isJumping_ = false;
-	bool isDashing_ = false;
-	bool onGround_ = false;
+	bool isAlive_ = true; // プレイヤーが生存しているかどうか
 };
