@@ -75,6 +75,9 @@ private:
 	// ステップブーストのBehavior切り替え処理
 	void TriggerStepBoost();
 
+	//エネルギーの更新
+	void UpdateEnergy();
+
 private:
 	// 攻撃開始判定
 	bool ShouldStartAttack(int weaponIndex);
@@ -145,6 +148,17 @@ private:
 	float chargeAttackStunTimer_ = 0.0f;          //チャージ攻撃後の硬直時間
 	const float chargeAttackStunDuration_ = 0.5f; // チャージ攻撃後の硬直時間
 
+	//エネルギー(スタミナ)情報
+	float energy_ = 0.0f;                 // 現在のエネルギー
+	float maxEnergy_ = 1000.0f;           // 最大エネルギー
+	float energyRegenRate_ = 200.0f; // エネルギーの回復速度
+	//エネルギー使用のクールダウン
+	const float energyCooldown_ = 1.0f; // エネルギー使用後のクールダウン時間
+
+	//オーバーヒート情報
+	bool isOverheated_ = false;        // オーバーヒート中かどうか
+	float overheatTimer_ = 0.0f;          // オーバーヒートのタイマー
+	const float overheatDuration_ = 3.0f; // オーバーヒートの持続時間
 
 	//ダメージを受けた時のエフェクト適用時間
 	float damageEffectTime_ = 0.0f;
@@ -160,4 +174,3 @@ private:
 	bool isDamaged_ = false; //ダメージを受けたかどうか
 	bool isAlive_ = true; //敵が生きているかどうか
 };
-

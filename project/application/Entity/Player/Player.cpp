@@ -151,6 +151,9 @@ void Player::Update() {
 		case Behavior::CHARGESHOOT_STUN:
 			InitChargeShootStun();
 			break;
+		case Behavior::DEAD:
+			InitDead();
+			break;
 		}
 
 		behaviorRequest_ = std::nullopt;
@@ -180,12 +183,23 @@ void Player::Update() {
 	case Player::Behavior::CHARGESHOOT_STUN:
 		UpdateChargeShootStun();
 		break;
+	case Player::Behavior::DEAD:
+		UpdateDead();
+		break;
 	default:
 		break;
 	}
 
 	//攻撃処理
-	UpdateAttack();
+	if (isAlive_ == true) {
+		UpdateAttack();
+	}
+
+	if(health_ <= 0.0f) {
+		//死亡状態のリクエスト
+		isAlive_ = false;
+		behaviorRequest_ = Behavior::DEAD;
+	}
 
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(transform_.rotate);
@@ -647,6 +661,42 @@ void Player::UpdateFloating() {
 		transform_.translate.y = 0.0f;
 		behaviorRequest_ = Behavior::RUNNING;
 	}
+}
+
+//===================================================================================
+// 死亡時の処理
+//===================================================================================
+
+void Player::InitDead() {
+	isAlive_ = false; // 死亡フラグを立てる
+}
+
+void Player::UpdateDead() {
+
+	//左スティック
+	StickState leftStick= Input::GetInstance()->GetLeftStickState(0);
+	//右スティック 
+	StickState rightStick = Input::GetInstance()->GetRightStickState(0);
+
+	//カメラの回転を設定
+	camera_->SetStick({ rightStick.x, rightStick.y });
+
+	//空中にいる場合は落下処理
+	if (transform_.translate.y > 0.0f) {
+		// 空中での降下処理(fallSpeedを重力に加算)
+		velocity_.y -= (gravity_ + fallSpeed_) * deltaTime_;
+	} else {
+		// 地面に着地したら速度を0にする
+		velocity_.y = 0.0f;
+	}
+
+	//速度の減速処理
+	velocity_.x /= deceleration_;
+	velocity_.z /= deceleration_;
+
+	//位置の更新（deltaTimeをここで適用）
+	transform_.translate += velocity_ * deltaTime_;
+
 }
 
 //===================================================================================
