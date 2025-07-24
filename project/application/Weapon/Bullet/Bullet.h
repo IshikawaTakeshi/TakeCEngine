@@ -24,21 +24,51 @@ public:
 	void DrawCollider() override;
 	void OnCollisionAction(GameCharacter* other) override;
 
-	void Create(const Vector3& weaponPos,const Vector3& targetPos,const float& speed,CharacterType type);
+	void Create(const Vector3& weaponPos,const Vector3& targetPos,float speed,float damage,CharacterType type);
 
 public:
 
-	EulerTransform GetTransform() const { return transform_; }
-	bool GetIsActive() { return isActive_; }
+	//===========================================================================
+	// getter
+	//===========================================================================
+
+	//transformの取得
+	const EulerTransform& GetTransform() const;
+	//生存フラグの取得
+	bool GetIsActive();
+
+	//速度の取得
+	const Vector3& GetVelocity() const;
+	//ターゲット座標の取得
+	const Vector3& GetTargetPos() const;
+
+	//攻撃力の取得
+	float GetDamage() const;
+	//弾速の取得
+	float GetSpeed() const;
+	//弾の半径の取得
+	float GetBulletRadius() const;
+	//寿命時間の取得
+	float GetLifeTime() const;
 
 public:
 
-	void SetIsActive(bool isActive) { isActive_ = isActive; }
-	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
-	void SetTargetPos(const Vector3& targetPos) { targetPos_ = targetPos; }
-	void SetSpeed(float speed) { speed_ = speed; }
-	void SetLifeTime(float lifeTime) { lifeTime_ = lifeTime; }
+	//trasformの設定
 	void SetTransform(const EulerTransform& transform) { transform_ = transform; }
+	//生存フラグの設定
+	void SetIsActive(bool isActive);
+	//速度の設定
+	void SetVelocity(const Vector3& velocity);
+	//ターゲット座標の設定
+	void SetTargetPos(const Vector3& targetPos);
+	//弾速の設定
+	void SetSpeed(float speed);
+	//攻撃力の設定
+	void SetDamage(float damage);
+	//弾の半径を設定
+	void SetBulletRadius(float radius);
+	//寿命時間の設定
+	void SetLifeTime(float lifeTime) { lifeTime_ = lifeTime; }
 
 private:
 
@@ -47,10 +77,15 @@ private:
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
 	Vector3 targetPos_ = { 0.0f,0.0f,0.0f };
 	Vector3 direction_ = { 0.0f,0.0f,0.0f };
+	//攻撃力
+	float damage_ = 0.0f;
+	//弾速
 	float speed_ = 0.0f;
 	bool isActive_ = false;
+	//寿命時間
 	float lifeTime_ = 0.0f;
-	float bulletradius_ = 1.0f; //弾の半径
+	//弾の半径
+	float bulletradius_ = 1.0f;
 
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
 };

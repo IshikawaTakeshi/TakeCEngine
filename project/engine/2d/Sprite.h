@@ -103,6 +103,8 @@ public:
 
 	void SetTextureSize(const Vector2& textureSize) { textureSize_ = textureSize; }
 
+	void SetMaterialColor(const Vector4& color) { mesh_->GetMaterial()->SetMaterialColor(color); }
+
 private:
 
 	//SpriteCommon

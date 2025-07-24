@@ -16,7 +16,7 @@ void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletM
 
 	//武器の初期化
 	weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
-	attackPower_ = 10;
+	damage_ = 400.0f;
 	attackInterval_ = 0.0f;
 	bulletCount_ = 30;
 	maxBulletCount_ = 30;
@@ -37,9 +37,9 @@ void VerticalMissileLauncher::Update() {
 		if (burstInterval_ <= 0.0f && burstCount_ > 0) {
 			// 弾発射
 			if (ownerObject_->GetCharacterType() == CharacterType::PLAYER) {
-				bulletManager_->ShootMissile(this, bulletSpeed_, CharacterType::PLAYER_BULLET);
+				bulletManager_->ShootMissile(this, bulletSpeed_,damage_, CharacterType::PLAYER_MISSILE);
 			} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
-				bulletManager_->ShootMissile(this, bulletSpeed_, CharacterType::ENEMY_BULLET);
+				bulletManager_->ShootMissile(this, bulletSpeed_,damage_, CharacterType::ENEMY_MISSILE);
 			}
 			bulletCount_--;
 			if (bulletCount_ <= 0) {
@@ -77,7 +77,7 @@ void VerticalMissileLauncher::UpdateImGui() {
 	ImGui::Separator();
 	if (ImGui::TreeNode("VerticalMissile Settings")) {
 		ImGui::Text("Weapon Type: VerticalMissile");
-		ImGui::Text("Attack Power: %d", attackPower_);
+		ImGui::Text("Attack Power: %d", damage_);
 		ImGui::Text("Attack Interval: %.2f", attackInterval_);
 		ImGui::Text("Bullet Count: %d", bulletCount_);
 		ImGui::Text("Max Bullet Count: %d", maxBulletCount_);

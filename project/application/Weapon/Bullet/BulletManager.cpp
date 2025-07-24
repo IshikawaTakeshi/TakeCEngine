@@ -55,22 +55,21 @@ void BulletManager::DrawCollider() {
 // 弾の初期化
 //========================================================================================================
 
-void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,const float& speed,CharacterType type) {
+void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,const float& speed,float damage,CharacterType type) {
 
 	Bullet* bullet = bulletPool_->GetBullet();
 	bullet->Initialize(object3dCommon_, bulletFilePath_);
-	bullet->Create(weaponPos, targetPos,speed,type);
-	//bullet->EmitterInitialize(10, 0.1f); // 10個のパーティクルを0.1秒間隔で発生させる
+	bullet->Create(weaponPos, targetPos,speed,damage,type);
 }
 
-void BulletManager::ShootMissile(BaseWeapon* ownerWeapon, const float& speed, CharacterType type) {
+void BulletManager::ShootMissile(BaseWeapon* ownerWeapon, const float& speed,float damage, CharacterType type) {
 
 	VerticalMissile* missile = missilePool_->GetMissile();
 	if (missile == nullptr) {
 		return; // ミサイルが取得できなかった場合は何もしない
 	}
 	missile->Initialize(object3dCommon_, missileFilePath_);
-	missile->Create(ownerWeapon, speed, type);
+	missile->Create(ownerWeapon, speed,damage, type);
 }
 
 std::vector<Bullet*> BulletManager::GetAllBullets() {

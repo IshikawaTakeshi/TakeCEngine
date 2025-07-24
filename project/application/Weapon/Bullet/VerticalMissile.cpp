@@ -21,6 +21,7 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 		collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	}
 	collider_->SetRadius(bulletradius_); // 半径を設定
+	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Missile)); // 種別IDを設定
 	//emiiter設定
 	//emitter0
 	particleEmitter_.resize(2);
@@ -57,10 +58,10 @@ void VerticalMissile::Update() {
 	case VerticalMissile::VerticalMissilePhase::ASCENDING:
 		// 上昇中の処理
 		transform_.translate.y += kAscendSpeed_ * TakeCFrameWork::GetDeltaTime();
-		if(transform_.translate.y >= altitude_) {
+		if (transform_.translate.y >= altitude_) {
 			// 最大高度に達したらホーミングフェーズに移行
 			transform_.translate.y = altitude_; // 高度を制限
-			
+
 			phase_ = VerticalMissile::VerticalMissilePhase::HOMING;
 		}
 
@@ -118,20 +119,11 @@ void VerticalMissile::DrawCollider() {
 
 void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 
-	if (characterType_ == CharacterType::PLAYER_BULLET) {
-		if (other->GetCharacterType() == CharacterType::ENEMY) {
-			//敵に当たった場合の処理
-			//パーティクル射出
-			//particleEmitter_[0]->Emit();
-			isActive_ = false; //弾を無効化
-		}
-	} else if (characterType_ == CharacterType::ENEMY_BULLET) {
-		//敵の弾の場合の処理
-		if (other->GetCharacterType() == CharacterType::PLAYER) {
-			//プレイヤーに当たった場合の処理
+	//他のキャラクターと衝突した場合の処理
+	if (other->GetCharacterType() == CharacterType::PLAYER ||
+		other->GetCharacterType() == CharacterType::ENEMY) {
 
-			isActive_ = false; //弾を無効化
-		}
+		isActive_ = false; //弾を無効化
 	}
 
 	//レベルオブジェクトに当たった場合の処理
@@ -149,15 +141,40 @@ void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 // ミサイルの生成
 //====================================================================================
 
-void VerticalMissile::Create(BaseWeapon* ownerWeapon, const float& speed, CharacterType type) {
+void VerticalMissile::Create(BaseWeapon* ownerWeapon, const float& speed, float damage, CharacterType type) {
 
 	ownerWeapon_ = ownerWeapon; // 所有者の武器を設定
 	transform_.translate = ownerWeapon_->GetCenterPosition();
 	characterType_ = type;
 	speed_ = speed;
+	damage_ = damage;
 	targetPos_ = ownerWeapon_->GetTragetPos();
 	//ターゲットまでの方向を求める
-	direction_ =  Vector3Math::Normalize(targetPos_ - transform_.translate);
+	direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
 	altitude_ = transform_.translate.y + kMaxAltitude_; // 初期の上昇高度を設定
 	isActive_ = true;
 }
+
+
+//====================================================================================
+// getter
+//====================================================================================
+
+//transformの取得
+const EulerTransform& VerticalMissile::GetTransform() const { return transform_; }
+//弾が有効かどうか
+bool VerticalMissile::GetIsActive() const { return isActive_; }
+//弾の速度の取得
+const Vector3& VerticalMissile::GetVelocity() const { return velocity_; }
+//ターゲットの座標の取得
+const Vector3& VerticalMissile::GetTargetPos() const { return targetPos_; }
+//攻撃力の取得
+float VerticalMissile::GetDamage() const { return damage_; }
+//弾速の取得
+float VerticalMissile::GetSpeed() const { return speed_; }
+//弾の半径の取得
+float VerticalMissile::GetBulletRadius() const { return bulletradius_; }
+//寿命時間の取得
+float VerticalMissile::GetLifeTime() const { return lifeTime_; }
+//ミサイルのフェーズの取得
+const VerticalMissile::VerticalMissilePhase& VerticalMissile::GetPhase() const { return phase_; }

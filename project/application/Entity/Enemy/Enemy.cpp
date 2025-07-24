@@ -63,6 +63,9 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	weaponTypes_[1] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+
+	//体力の初期化
+	health_ = maxHealth_;
 }
 
 void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
@@ -143,6 +146,9 @@ void Enemy::Update() {
 		case Behavior::CHARGESHOOT_STUN:
 			InitChargeShootStun();
 			break;
+		case Behavior::DEAD:
+			InitDead();
+			break;
 		}
 
 		behaviorRequest_ = std::nullopt;
@@ -172,12 +178,19 @@ void Enemy::Update() {
 	case Enemy::Behavior::CHARGESHOOT_STUN:
 		UpdateChargeShootStun();
 		break;
+
+	case Enemy::Behavior::DEAD:
+		UpdateDead();
+		break;
+
 	default:
 		break;
 	}
 
 	//攻撃処理
-	UpdateAttack();
+	if (isAlive_ == true) {
+		UpdateAttack();
+	}
 
 	//ダメージエフェクトの更新
 	if (isDamaged_) {
@@ -186,6 +199,12 @@ void Enemy::Update() {
 		if (damageEffectTime_ <= 0.0f) {
 			isDamaged_ = false;
 		}
+	}
+
+	if(health_ <= 0.0f) {
+		//死亡状態のリクエスト
+		isAlive_ = false;
+		behaviorRequest_ = Behavior::DEAD;
 	}
 
 	//Quaternionからオイラー角に変換
@@ -254,18 +273,29 @@ void Enemy::DrawCollider() {
 void Enemy::OnCollisionAction(GameCharacter* other) {
 
 	if (other->GetCharacterType() == CharacterType::PLAYER) {
-		//衝突時の処理
 
-		//particleEmitter_->Emit();
-		
 	}
 
 	if (other->GetCharacterType()  == CharacterType::PLAYER_BULLET) {
+
+		Bullet* bullet = dynamic_cast<Bullet*>(other);
 		//プレイヤーの弾に当たった場合の処理
 		particleEmitter_[1]->Emit();
+		isDamaged_ = true;
+		//ダメージを受けた時のエフェクト時間を設定
+		damageEffectTime_ = 0.5f;
+		//体力を減らす
+		health_ -= bullet->GetDamage();
+	}
+	if(other->GetCharacterType() == CharacterType::PLAYER_MISSILE) {
+		//プレイヤーのミサイルに当たった場合の処理
 		//particleEmitter_[2]->Emit();
 		isDamaged_ = true;
+		//ダメージを受けた時のエフェクト時間を設定
 		damageEffectTime_ = 0.5f;
+		//体力を減らす
+		VerticalMissile* missile = dynamic_cast<VerticalMissile*>(other);
+		health_ -= missile->GetDamage();
 	}
 }
 
@@ -669,6 +699,34 @@ void Enemy::UpdateFloating(std::mt19937 randomEngine) {
 }
 
 //===================================================================================
+// 死亡時の処理
+//===================================================================================
+
+void Enemy::InitDead() {
+	isAlive_ = false; // 死亡フラグを立てる
+}
+
+void Enemy::UpdateDead() {
+
+	//空中にいる場合は落下処理
+	if (transform_.translate.y > 0.0f) {
+		// 空中での降下処理(fallSpeedを重力に加算)
+		velocity_.y -= (gravity_ + fallSpeed_) * deltaTime_;
+	} else {
+		// 地面に着地したら速度を0にする
+		velocity_.y = 0.0f;
+	}
+
+	//速度の減速処理
+	velocity_.x /= deceleration_;
+	velocity_.z /= deceleration_;
+
+	//位置の更新（deltaTimeをここで適用）
+	transform_.translate += velocity_ * deltaTime_;
+
+}
+
+//===================================================================================
 // 攻撃開始判定
 //===================================================================================
 
@@ -686,3 +744,4 @@ bool Enemy::ShouldReleaseAttack(int weaponIndex) {
 	auto* weapon = weapons_[weaponIndex].get();
 	return weapon->GetChargeTime() >= weapon->GetRequiredChargeTime();
 }
+

@@ -34,19 +34,22 @@ public:
 	const float& GetHealth() const { return health_; }
 	const float& GetMaxHealth() const { return maxHealth_; }
 	const bool& IsDamaged() const { return isDamaged_; }
+	const bool& IsAlive() const { return isAlive_; }
 
 private:
 
+	//状態遷移の列挙型
 	enum class Behavior {
-		IDLE,
-		RUNNING,
-		JUMP,
-		DASH,
-		CHARGESHOOT, //チャージ攻撃中
+		IDLE,             // 待機状態
+		RUNNING,          // 移動状態
+		JUMP,             // ジャンプ状態
+		DASH,             // ダッシュ状態
+		CHARGESHOOT,      //チャージ攻撃中
 		CHARGESHOOT_STUN, // チャージショット後の硬直状態
-		HEAVYDAMAGE,
-		STEPBOOST,
-		FLOATING,
+		HEAVYDAMAGE,      // 大ダメージによる硬直状態
+		STEPBOOST,        // ステップブースト
+		FLOATING,         // 浮遊状態
+		DEAD,             // 死亡状態
 	};
 
 	void InitRunning();
@@ -56,6 +59,7 @@ private:
 	void InitChargeShootStun();
 	void InitStepBoost();
 	void InitFloating();
+	void InitDead();
 
 	void UpdateRunning();
 	void UpdateAttack();
@@ -66,6 +70,7 @@ private:
 	void UpdateChargeShootStun();
 	void UpdateStepBoost();
 	void UpdateFloating(std::mt19937 randomEngine);
+	void UpdateDead();
 
 	// ステップブーストのBehavior切り替え処理
 	void TriggerStepBoost();
@@ -106,8 +111,8 @@ private:
 	//ゲーム内の1フレームの経過時間
 	float deltaTime_ = 0.0f;
 	//体力
-	float health_ = 30000.0f; // 初期体力
-	const float maxHealth_ = 30000.0f; // 最大体力
+	float health_ = 0.0f; // 初期体力
+	const float maxHealth_ = 10000.0f; // 最大体力
 
 	const float moveSpeed_ = 200.0f;    // 移動速度
 	const float kMaxMoveSpeed_ = 50.0f; // 最大移動速度
@@ -153,6 +158,6 @@ private:
 	float stateTransitionTimer_ = 0.0f; // 状態遷移のタイマー
 
 	bool isDamaged_ = false; //ダメージを受けたかどうか
-	
+	bool isAlive_ = true; //敵が生きているかどうか
 };
 

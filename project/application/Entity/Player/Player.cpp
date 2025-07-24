@@ -57,7 +57,9 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	backEmitter_->SetParticleName("WalkSmoke2");
 
 	//体力の初期化
-	health_ = 10000.0f;
+	health_ = maxHealth_;
+	//エネルギーの初期化
+	energy_ = maxEnergy_;
 }
 
 //===================================================================================
@@ -116,6 +118,9 @@ void Player::Update() {
 			behaviorRequest_ = Behavior::JUMP;
 		}
 	}
+
+	//エネルギーの更新
+	UpdateEnergy();
 
 	if (behaviorRequest_) {
 
@@ -220,6 +225,7 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::Separator();
 	ImGui::DragFloat("Health", &health_, 1.0f, 0.0f, maxHealth_);
+	ImGui::DragFloat("Energy", &energy_, 1.0f, 0.0f, maxEnergy_);
 	ImGui::DragFloat3("Velocity", &velocity_.x, 0.01f);
 	ImGui::DragFloat3("MoveDirection", &moveDirection_.x, 0.01f);
 	ImGui::Text("Behavior: %d", static_cast<int>(behavior_));
@@ -261,6 +267,20 @@ void Player::OnCollisionAction(GameCharacter* other) {
 	if (other->GetCharacterType() == CharacterType::ENEMY) {
 		//衝突時の処理
 		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+	}
+	if (other->GetCharacterType() == CharacterType::ENEMY_BULLET) {
+		//敵の弾に当たった場合
+		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+		//ダメージを受ける
+		Bullet* bullet = dynamic_cast<Bullet*>(other);
+		health_ -= bullet->GetDamage();
+	}
+	if(other->GetCharacterType() == CharacterType::ENEMY_MISSILE) {
+		//敵のミサイルに当たった場合
+		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+		//ダメージを受ける
+		VerticalMissile* missile = dynamic_cast<VerticalMissile*>(other);
+		health_ -= missile->GetDamage();
 	}
 }
 
@@ -383,6 +403,16 @@ void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
 //===================================================================================
 
 void Player::InitJump() {
+
+	//オーバーヒート状態のチェック
+	if (isOverheated_) {
+		// オーバーヒート中はジャンプできない
+		behaviorRequest_ = Behavior::RUNNING;
+		return;
+	}
+
+	// ジャンプのエネルギー消費
+	energy_ -= useEnergyJump_;
 
 	//ジャンプの初期化
 	//ジャンプの速度を設定
@@ -507,6 +537,16 @@ void Player::UpdateChargeShootStun() {
 
 void Player::InitStepBoost() {
 
+	// オーバーヒート状態のチェック
+	if (isOverheated_) {
+		// オーバーヒート中はステップブーストできない
+		behaviorRequest_ = Behavior::RUNNING;
+		return;
+	}
+
+	// ステップブーストのエネルギーを消費
+	energy_ -= useEnergyStepBoost_;
+
 	//上昇速度を急激に遅くする
 	velocity_.y = 0.0f;
 
@@ -606,5 +646,52 @@ void Player::UpdateFloating() {
 	if (transform_.translate.y <= 0.0f) {
 		transform_.translate.y = 0.0f;
 		behaviorRequest_ = Behavior::RUNNING;
+	}
+}
+
+//===================================================================================
+// エネルギーの更新処理
+//===================================================================================
+
+void Player::UpdateEnergy() {
+
+	//オーバーヒートしているかどうか
+	if(!isOverheated_) {
+
+		// エネルギーの回復
+		if (energy_ < maxEnergy_) {
+
+			//浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
+			if (behavior_ == Behavior::FLOATING || behavior_ == Behavior::JUMP ||
+				behavior_ == Behavior::STEPBOOST) {
+				return;
+			}
+
+			energy_ += energyRegenRate_ * deltaTime_;
+			if (energy_ > maxEnergy_) {
+				energy_ = maxEnergy_;
+			}
+		}
+		
+		if(energy_ <= 0.0f) {
+			// エネルギーが0以下になったらオーバーヒート状態にする
+			isOverheated_ = true;
+			overheatTimer_ = overheatDuration_; // オーバーヒートのタイマーを設定
+			energy_ = 0.0f; // エネルギーを0にする
+		}
+
+	} else {
+
+		// オーバーヒートの処理
+		if (overheatTimer_ > 0.0f) {
+			overheatTimer_ -= deltaTime_;
+			if (overheatTimer_ <= 0.0f) {
+				// オーバーヒートが終了したらエネルギーを半分回復
+				energy_ = maxEnergy_ / 2.0f;
+				// オーバーヒート状態を解除
+				isOverheated_ = false;
+			}
+		}
+
 	}
 }
