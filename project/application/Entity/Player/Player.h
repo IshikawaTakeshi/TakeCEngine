@@ -145,10 +145,10 @@ private:
 	const float stepBoostSpeed_     = 230.0f;         // ステップブーストの速度
 	const float stepBoostDuration_  = 0.2f;           // ステップブーストの持続時間
 	float stepBoostTimer_           = 0.0f;           // ステップブーストのタイマー
-	float useEnergyStepBoost_ = 100.0f;         // ステップブーストに必要なエネルギー
+	float useEnergyStepBoost_ = 100.0f;               // ステップブーストに必要なエネルギー
 	//インターバル用
 	const float stepBoostInterval_ = 0.2f; // ステップブーストのインターバル
-	float stepBoostIntervalTimer_  = 0.0f;  // ステップブーストのインターバルタイマー
+	float stepBoostIntervalTimer_  = 0.0f; // ステップブーストのインターバルタイマー
 
 	//JumInfo
 	const float jumpSpeed_ = 50.0f;        // ジャンプの速度

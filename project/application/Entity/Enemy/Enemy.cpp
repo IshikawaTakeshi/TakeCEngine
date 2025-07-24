@@ -117,6 +117,9 @@ void Enemy::Update() {
 			}
 	}
 
+	//エネルギーの更新
+	UpdateEnergy();
+
 	if (behaviorRequest_) {
 
 		behavior_ = behaviorRequest_.value();
@@ -236,7 +239,11 @@ void Enemy::UpdateImGui() {
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
-	ImGui::DragFloat("health", &health_, 1.0f, 0.0f, maxHealth_);
+	ImGui::Separator();
+	ImGui::DragFloat("Health", &health_, 1.0f, 0.0f, maxHealth_);
+	ImGui::DragFloat("Energy", &energy_, 1.0f, 0.0f, maxEnergy_);
+	ImGui::DragFloat3("Velocity", &velocity_.x, 0.01f);
+	ImGui::DragFloat3("MoveDirection", &moveDirection_.x, 0.01f);
 	ImGui::Text("Behavior: %d", static_cast<int>(behavior_));
 	object3d_->UpdateImGui("Enemy");
 	ImGui::End();
@@ -370,6 +377,16 @@ void Enemy::UpdateRunning() {
 //===================================================================================
 
 void Enemy::InitJump() {
+
+	//オーバーヒート状態のチェック
+	if (isOverheated_) {
+		// オーバーヒート中はジャンプできない
+		behaviorRequest_ = Behavior::RUNNING;
+		return;
+	}
+
+	// ジャンプのエネルギー消費
+	energy_ -= useEnergyJump_;
 
 	//ジャンプの初期化
 	//ジャンプの速度を設定
@@ -556,6 +573,16 @@ void Enemy::UpdateChargeShootStun() {
 
 
 void Enemy::InitStepBoost() {
+
+	// オーバーヒート状態のチェック
+	if (isOverheated_) {
+		// オーバーヒート中はステップブーストできない
+		behaviorRequest_ = Behavior::RUNNING;
+		return;
+	}
+
+	// ステップブーストのエネルギーを消費
+	energy_ -= useEnergyStepBoost_;
 
 	//上昇速度を急激に遅くする
 	velocity_.y = 0.0f;
@@ -745,3 +772,49 @@ bool Enemy::ShouldReleaseAttack(int weaponIndex) {
 	return weapon->GetChargeTime() >= weapon->GetRequiredChargeTime();
 }
 
+//===================================================================================
+// エネルギーの更新処理
+//===================================================================================
+
+void Enemy::UpdateEnergy() {
+
+	//オーバーヒートしているかどうか
+	if(!isOverheated_) {
+
+		// エネルギーの回復
+		if (energy_ < maxEnergy_) {
+
+			//浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
+			if (behavior_ == Behavior::FLOATING || behavior_ == Behavior::JUMP ||
+				behavior_ == Behavior::STEPBOOST) {
+				return;
+			}
+
+			energy_ += energyRegenRate_ * deltaTime_;
+			if (energy_ > maxEnergy_) {
+				energy_ = maxEnergy_;
+			}
+		}
+
+		if(energy_ <= 0.0f) {
+			// エネルギーが0以下になったらオーバーヒート状態にする
+			isOverheated_ = true;
+			overheatTimer_ = overheatDuration_; // オーバーヒートのタイマーを設定
+			energy_ = 0.0f; // エネルギーを0にする
+		}
+
+	} else {
+
+		// オーバーヒートの処理
+		if (overheatTimer_ > 0.0f) {
+			overheatTimer_ -= deltaTime_;
+			if (overheatTimer_ <= 0.0f) {
+				// オーバーヒートが終了したらエネルギーを半分回復
+				energy_ = maxEnergy_ / 2.0f;
+				// オーバーヒート状態を解除
+				isOverheated_ = false;
+			}
+		}
+
+	}
+}

@@ -131,16 +131,18 @@ private:
 	const float stepBoostSpeed_ = 230.0f;             // ステップブーストの速度
 	const float stepBoostDuration_ = 0.2f;            // ステップブーストの持続時間
 	float stepBoostTimer_ = 0.0f;                     // ステップブーストのタイマー
+	float useEnergyStepBoost_ = 100.0f;               // ステップブーストに必要なエネルギー
 	//インターバル用
 	const float stepBoostInterval_ = 0.2f; // ステップブーストのインターバル
 	float stepBoostIntervalTimer_ = 0.0f;  // ステップブーストのインターバルタイマー
 
 	//JumInfo
-	const float jumpSpeed_ = 50.0f;  // ジャンプの速度
-	float jumpTimer_ = 0.0f;         // ジャンプのタイマー
-	const float maxJumpTime_ = 0.5f; // ジャンプの最大時間
+	const float jumpSpeed_ = 50.0f;        // ジャンプの速度
+	float jumpTimer_ = 0.0f;               // ジャンプのタイマー
+	const float maxJumpTime_ = 0.5f;       // ジャンプの最大時間
 	const float jumpDeceleration_ = 40.0f; // ジャンプ中の減速率
-	const float gravity_ = 9.8f;    // 重力の強さ
+	const float gravity_ = 9.8f;           // 重力の強さ
+	float useEnergyJump_ = 100.0f;         // ジャンプに必要なエネルギー
 	//落下速度
 	float fallSpeed_ = 40.0f; // 落下速度
 
