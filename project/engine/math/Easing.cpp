@@ -43,6 +43,7 @@ float Easing::EaseOut(float x) {
 	return sinf((x * std::numbers::pi_v<float>) / 2.0f);
 }
 
+
 float Easing::EaseIn(float x) {
 	return 1.0f - cosf((x * std::numbers::pi_v<float>) / 2.0f);
 }

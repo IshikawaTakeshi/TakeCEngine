@@ -20,10 +20,11 @@
 
 //app
 #include "application/Ground/Ground.h"
-#include "application/HPBar/HPBar.h"
 #include "application/Entity/Player/Player.h"
-#include "application/Entity/Player/PlayerReticle.h"
 #include "application/Entity/Enemy/Enemy.h"
+#include "application/UI/HPBar.h"
+#include "application/UI/PlayerReticle.h"
+#include "application/UI/EnergyInfoUI.h"
 
 
 class GamePlayScene : public BaseScene {
@@ -54,39 +55,37 @@ public:
 
 private:
 
-	//状態遷移リクエスト
-	std::optional<SceneBehavior> behaviorRequest_ = std::nullopt;
-	//シーンの状態
-	SceneBehavior behavior_ = SceneBehavior::GAMEPLAY;
+	////ゲーム開始時の初期化
+	//void InitializeGameStart();
+	////ゲームプレイ時の初期化
+	//void InitializeGamePlay();
+	////ゲームオーバー時の初期化
+	//void InitializeGameOver();
+	////ゲームクリア時の初期化
+	//void InitializeGameClear();
+	////ポーズ時の初期化
+	//void InitializePause();
 
-	//ゲーム開始時の初期化
-	void InitializeGameStart();
-	//ゲームプレイ時の初期化
-	void InitializeGamePlay();
-	//ゲームオーバー時の初期化
-	void InitializeGameOver();
-	//ゲームクリア時の初期化
-	void InitializeGameClear();
-	//ポーズ時の初期化
-	void InitializePause();
+	////ゲーム開始時の更新
+	//void UpdateGameStart();
+	////ゲームプレイ時の更新
+	//void UpdateGamePlay();
+	////ゲームオーバー時の更新
+	//void UpdateGameOver();
+	////ゲームクリア時の更新
+	//void UpdateGameClear();
+	////ポーズ時の更新
+	//void UpdatePause();
 
-	//ゲーム開始時の更新
-	void UpdateGameStart();
-	//ゲームプレイ時の更新
-	void UpdateGamePlay();
-	//ゲームオーバー時の更新
-	void UpdateGameOver();
-	//ゲームクリア時の更新
-	void UpdateGameClear();
-	//ポーズ時の更新
-	void UpdatePause();
-
+	//全ての当たり判定のチェック
 	void CheckAllCollisions();
 
 private:
 
-
-
+	//状態遷移リクエスト
+	std::optional<SceneBehavior> behaviorRequest_ = std::nullopt;
+	//シーンの状態
+	SceneBehavior behavior_ = SceneBehavior::GAMEPLAY;
 
 	//サウンドデータ
 	//AudioManager::SoundData BGM;
@@ -101,6 +100,7 @@ private:
 	std::unique_ptr<Player> player_ = nullptr;
 	std::unique_ptr<HPBar> playerHpBar_ = nullptr;
 	std::unique_ptr<PlayerReticle> playerReticle_ = nullptr;
+	std::unique_ptr<EnergyInfoUI> energyInfoUI_ = nullptr;
 	//enemy
 	std::unique_ptr<Enemy> enemy_ = nullptr;
 	std::unique_ptr<HPBar> enemyHpBar_ = nullptr;

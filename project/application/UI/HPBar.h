@@ -39,8 +39,7 @@ public:
 	/// <summary>
 	/// サイズを設定
 	/// </summary>
-	void SetSize(const Vector2& size);;
-
+	void SetSize(const Vector2& size);
 
 	/// <summary>
 	/// 位置を取得
@@ -48,6 +47,7 @@ public:
 	Vector2 GetTranslate() const;
 
 private:
+
 	std::unique_ptr<Sprite> backgroundSprite_; // 背景スプライト
 	std::unique_ptr<Sprite> foregroundSprite_; // 前景スプライト
 	Vector2 position_ = { 0.0f, 0.0f };          // HPバーの位置

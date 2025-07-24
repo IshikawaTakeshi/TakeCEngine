@@ -120,8 +120,8 @@ void VerticalMissile::DrawCollider() {
 void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 
 	//他のキャラクターと衝突した場合の処理
-	if (characterType_ == CharacterType::PLAYER ||
-		characterType_ == CharacterType::ENEMY) {
+	if (other->GetCharacterType() == CharacterType::PLAYER ||
+		other->GetCharacterType() == CharacterType::ENEMY) {
 
 		isActive_ = false; //弾を無効化
 	}
