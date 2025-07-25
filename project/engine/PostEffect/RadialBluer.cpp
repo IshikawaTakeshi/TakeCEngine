@@ -30,9 +30,11 @@ void RadialBluer::UpdateImGui() {
 	if(ImGui::TreeNode("RadialBlur")){
 	ImGui::SliderFloat2("Center", &radialBlurInfo_->center.x, 0.0f, 1.0f, "%.5f");
 	ImGui::SliderFloat("BlurWidth", &radialBlurInfo_->blurWidth, 0.0f, 1.0f, "%.5f");
-	ImGui::Checkbox("Enable", &radialBlurInfo_->enable);
 	ImGui::TreePop();
 	}
+
+	ImGui::SameLine();
+	ImGui::Checkbox("Enable", &radialBlurInfo_->enable);
 
 #endif // _DEBUG
 }

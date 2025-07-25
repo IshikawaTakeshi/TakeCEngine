@@ -25,7 +25,11 @@ private:
 		SEPIA,
 		NONE,
 	};
-	int32_t* grayScaleTypeData_ = nullptr;
+	struct GrayScaleInfo {
+		int32_t grayScaleType; // グレースケールの種類
+		bool isActive = true; // グレースケールの有効無効
+	};
+	GrayScaleInfo* grayScaleInfoData_ = nullptr; // グレースケール情報データ
 	ComPtr<ID3D12Resource> grayScaleTypeResource_;
 
 };

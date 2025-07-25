@@ -31,9 +31,13 @@ void Dissolve::UpdateImGui() {
 	if(ImGui::TreeNode("Dissolve")) {
 		ImGui::Text("Dissolve");
 		ImGui::SliderFloat("DissolveThreshold", &dissolveInfoData_->threshold, 0.0f, 1.0f);
-		ImGui::Checkbox("Dissolve", &dissolveInfoData_->isDissolve);
 		ImGui::TreePop();
 	}
+
+	ImGui::SameLine();
+	ImGui::Checkbox("##Dissolve::isActive", &dissolveInfoData_->isDissolve);
+
+
 #endif // _DEBUG
 
 }

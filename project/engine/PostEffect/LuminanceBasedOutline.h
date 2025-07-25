@@ -24,7 +24,6 @@ private:
 	struct LuminanceBasedOutlineInfo {
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; // アウトラインの色
 		float weight = 6.0f; // 輪郭の強さ
-		float padding[2]; // パディング（16バイト境界のため）
 		bool isActive = true; // アウトラインの有効無効
 	};
 

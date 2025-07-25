@@ -13,25 +13,27 @@ void GrayScale::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, cons
 	inputResource_->SetName(L"GrayScale::inputResource_");
 	outputResource_->SetName(L"GrayScale::outputResource_");
 	//grayScaleTypeResource
-	grayScaleTypeResource_ = dxCommon_->CreateBufferResource(dxCommon_->GetDevice(), sizeof(int32_t));
+	grayScaleTypeResource_ = dxCommon_->CreateBufferResource(dxCommon_->GetDevice(), sizeof(GrayScaleInfo));
 	grayScaleTypeResource_->SetName(L"grayScaleTypeResource_");
 	//Mapping
-	grayScaleTypeResource_->Map(0, nullptr, reinterpret_cast<void**>(&grayScaleTypeData_));
-	*grayScaleTypeData_ = 2;
+	grayScaleTypeResource_->Map(0, nullptr, reinterpret_cast<void**>(&grayScaleInfoData_));
+	grayScaleInfoData_->grayScaleType = static_cast<int32_t>(GrayScaleType::GRAYSCALE);
 }
 
 void GrayScale::UpdateImGui() {
 #ifdef _DEBUG
 	if(ImGui::TreeNode("GrayScale")){
 		ImGui::Text("GrayScaleType");
-		ImGui::SliderInt("GrayScaleType", grayScaleTypeData_, 0, 2);
+		ImGui::SliderInt("GrayScaleType", &grayScaleInfoData_->grayScaleType, 0, 2);
 		ImGui::TreePop();
 	}
+
+	ImGui::SameLine();
+	ImGui::Checkbox("##GrayScale::isActive", &grayScaleInfoData_->isActive);
 #endif
 }
 
 void GrayScale::DisPatch() {
-
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance()->Transition(

@@ -29,14 +29,20 @@ void LuminanceBasedOutline::UpdateImGui() {
 	if (ImGui::TreeNode("LuminanceBasedOutline")) {
 		ImGui::SliderFloat("weight", &outlineInfoData_->weight, 0.0f, 10.0f);
 		ImGui::ColorEdit4("Color", &outlineInfoData_->color.x);
-		ImGui::Checkbox("isActive", &outlineInfoData_->isActive);
 		ImGui::TreePop();
 	}
+
+	ImGui::SameLine();
+	ImGui::Checkbox("##LumiBaseOutLine::isActive", &outlineInfoData_->isActive);
 	
 #endif // _DEBUG
 }
 
 void LuminanceBasedOutline::DisPatch() {
+
+	if (!outlineInfoData_->isActive) {
+		return; // アウトラインが無効な場合は処理をスキップ
+	}
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance()->Transition(

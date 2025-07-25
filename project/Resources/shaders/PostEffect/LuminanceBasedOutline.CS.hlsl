@@ -20,10 +20,10 @@ float Luminance(float3 v) {
 [numthreads(8, 8, 1)]
 void main( uint3 DTid : SV_DispatchThreadID ) {
 	
-	//if(gOutlineInfo.isActive == false) {
-	//	gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
-	//	return;
-	//}
+	if (gOutlineInfo.isActive == false) {
+		gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
+		return;
+	}
 	
 	float width, height;
 	gInputTexture.GetDimensions(width, height);
@@ -32,12 +32,10 @@ void main( uint3 DTid : SV_DispatchThreadID ) {
 	float3 resultColor = float3(0.0f, 0.0f, 0.0f);
 	
 	float2 difference = { 0.0f, 0.0f };
-	
-	//畳み込み
+
 	for (int x = 0; x < 3; x++) {
 		for (int y = 0; y < 3; y++) { // 3x3 kernel
-			
-			//現在のtextureのUV座標を取得
+
 			float2 offset = kIndex3x3[x][y] * uvStepSize;
 			float2 sampleUV = uv + offset;
 			
