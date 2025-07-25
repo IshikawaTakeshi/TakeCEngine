@@ -23,12 +23,14 @@ void DepthBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 
 	//depthテクスチャリソースを取得
 	depthTextureSrvIndex_ = srvManager_->Allocate();
-	srvManager_->CreateSRVforDepthTexture(dxCommon_->GetDepthStencilResource().Get(), DXGI_FORMAT_R32_FLOAT, depthTextureSrvIndex_);
+	srvManager_->CreateSRVforDepthTexture(dxCommon_->GetDepthStencilResource().Get(), depthTextureSrvIndex_);
 
 }
 
 void DepthBasedOutline::UpdateImGui() {
 #ifdef _DEBUG
+
+
 
 #endif // _DEBUG
 

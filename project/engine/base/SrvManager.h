@@ -38,7 +38,7 @@ public:
 	/// </summary>
 	void CreateSRVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource, uint32_t srvIndex);
 
-	void CreateSRVforDepthTexture(ID3D12Resource* pResource, DXGI_FORMAT Format, uint32_t srvIndex);
+	void CreateSRVforDepthTexture(ID3D12Resource* pResource, uint32_t srvIndex);
 
 	/// <summary>
 	/// UAV生成（RWStructured Buffer用）

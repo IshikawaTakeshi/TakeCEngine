@@ -116,7 +116,7 @@ void SrvManager::CreateSRVforStructuredBuffer(UINT numElements, UINT stride, ID3
 //================================================================================================
 // SRV生成（Depth Texture用）
 //================================================================================================
-void SrvManager::CreateSRVforDepthTexture(ID3D12Resource* pResource, DXGI_FORMAT Format, uint32_t srvIndex) {
+void SrvManager::CreateSRVforDepthTexture(ID3D12Resource* pResource, uint32_t srvIndex) {
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC depthTextureSrvDesc{};
 
