@@ -1,4 +1,5 @@
 #include "Object3d.hlsli"
+#include "CameraData.hlsli"
 
 struct Material {
 	float4 color; //カラー
@@ -33,16 +34,13 @@ struct SpotLight {
 	float penumbraAngle; //影のぼかし角度
 };
 
-struct Camera {
-	float3 worldPosition;
-};
 
 //マテリアル
 ConstantBuffer<Material> gMaterial : register(b0);
 //並行光源
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 //カメラ
-ConstantBuffer<Camera> gCamera : register(b2);
+ConstantBuffer<CameraData> gCamera : register(b2);
 //ポイントライト
 ConstantBuffer<PointLight> gPointLight : register(b3);
 //スポットライト
@@ -66,7 +64,7 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 	float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
 	
 	if (textureColor.a < 0.5f) { discard; }
-
+	
 	//Lightingの計算
 	if (gMaterial.enableLighting == 1) {
 		

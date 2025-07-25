@@ -1,5 +1,6 @@
 #include "PostEffectManager.h"
 #include "engine/base/WinApp.h"
+#include "engine/base/ImGuiManager.h"
 #include "Utility/ResourceBarrier.h"
 #include "Utility/Logger.h"
 #include "PostEffect/Dissolve.h"
@@ -8,6 +9,7 @@
 #include "PostEffect/BoxFilter.h"
 #include "PostEffect/RadialBluer.h"
 #include "PostEffect/LuminanceBasedOutline.h"
+#include "PostEffect/DepthBasedOutline.h"
 
 //====================================================================
 //	初期化
@@ -28,10 +30,11 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 }
 
 void PostEffectManager::UpdateImGui() {
-
+	ImGui::Begin("PostEffectManager");
 	for (auto& postEffect : postEffects_) {
 		postEffect.postEffect->UpdateImGui();
 	}
+	ImGui::End();
 }
 
 //====================================================================
@@ -120,10 +123,12 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 		postEffect = std::make_unique<Dissolve>();
 	} else if (name == "LuminanceBasedOutline") {
 		postEffect = std::make_unique<LuminanceBasedOutline>();
+	}else if(name == "DepthBasedOutline") {
+		postEffect = std::make_unique<DepthBasedOutline>();
 	} else {
 		Logger::Log("PostEffectManager::InitializeEffect() : PostEffect is not found.");
 		return;
-	}
+	} 
 
 	if (postEffects_.empty()) {
 

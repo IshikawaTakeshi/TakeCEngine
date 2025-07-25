@@ -1,57 +1,52 @@
 #include "PostEffect/Fullscreen.hlsli"
 #include "PostEffect/Outline.hlsli"
+#include "CameraData.hlsli"
 
-struct LuminanceBasedOutlineInfo {
+struct DepthBasedOutlineInfo {
 	float4 Color;
 	float weight;
 	bool isActive;
 };
 
 Texture2D<float4> gInputTexture : register(t0);
+Texture2D<float> gDepthTexture : register(t1);
 RWTexture2D<float4> gOutputTexture : register(u0);
 SamplerState gSampler : register(s0);
+SamplerState gSamplerPoint : register(s1);
 
-ConstantBuffer<LuminanceBasedOutlineInfo> gOutlineInfo : register(b0);
-
-float Luminance(float3 v) {
-	return dot(v, float3(0.2125f, 0.7154f, 0.0721f));
-}
+ConstantBuffer<DepthBasedOutlineInfo> gOutlineInfo : register(b0);
+ConstantBuffer<CameraData> gCameraInfo : register(b1);
 
 [numthreads(8, 8, 1)]
 void main( uint3 DTid : SV_DispatchThreadID ) {
 	
-	//if(gOutlineInfo.isActive == false) {
-	//	gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
-	//	return;
-	//}
+	if (gOutlineInfo.isActive == false) {
+		gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
+		return;
+	}
 	
 	float width, height;
 	gInputTexture.GetDimensions(width, height);
 	float2 uv = DTid.xy / float2(width, height);
 	float2 uvStepSize = float2(rcp(width), rcp(height));
 	float3 resultColor = float3(0.0f, 0.0f, 0.0f);
-	
 	float2 difference = { 0.0f, 0.0f };
-	
-	//畳み込み
+	// 畳み込み
 	for (int x = 0; x < 3; x++) {
 		for (int y = 0; y < 3; y++) { // 3x3 kernel
-			
-			//現在のtextureのUV座標を取得
+			// 現在のtextureのUV座標を取得
 			float2 offset = kIndex3x3[x][y] * uvStepSize;
 			float2 sampleUV = uv + offset;
-			
-			//色に1/9を掛ける
-			float3 fetchColor = gInputTexture.Sample(gSampler, sampleUV).rgb;
-			float luminance = Luminance(fetchColor);
-			difference.x += luminance * kPrewittHorizontalKernel[x][y];
-			difference.y += luminance * kPrewittVerticalKernel[x][y];
+			//ndc -> view
+			float ndcDepth = gDepthTexture.Sample(gSamplerPoint, sampleUV);
+			float4 viewSpace = mul(float4(0.0f, 0.0f, ndcDepth, 1.0f), gCameraInfo.projectionInverse);
+			float viewZ = viewSpace.z * rcp(viewSpace.w);
+			difference.x += viewZ * kPrewittHorizontalKernel[x][y];
+			difference.y += viewZ * kPrewittVerticalKernel[x][y];
 		}
 	}
-	
 	float weight = length(difference);
 	weight = saturate(weight * gOutlineInfo.weight);
-	
 	resultColor = lerp(gInputTexture.Sample(gSampler, uv).rgb, gOutlineInfo.Color.rgb, weight);
 	gOutputTexture[DTid.xy] = float4(resultColor, 1.0f);
 }
