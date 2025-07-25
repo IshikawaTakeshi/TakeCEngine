@@ -8,7 +8,6 @@
 #include "math/MatrixMath.h"
 #include "math/Easing.h"
 #include "math/Vector3Math.h"
-#include "math/physics/Physics.h"
 
 Camera::~Camera() {
 	cameraResource_.Reset();

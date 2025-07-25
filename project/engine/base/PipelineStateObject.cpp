@@ -202,6 +202,15 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 			rootParam.DescriptorTable.NumDescriptorRanges = 1;
 			rootParameters.push_back(rootParam);
 
+			//Samplerの設定
+			staticSamplers_[0].Filter           = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
+			staticSamplers_[0].AddressU         = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
+			staticSamplers_[0].AddressV         = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			staticSamplers_[0].AddressW         = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			staticSamplers_[0].ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER; //比較しない
+			staticSamplers_[0].MaxLOD           = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
+			staticSamplers_[0].ShaderRegister   = 0; //レジスタ番号0を使う
+
 		} else if (key.type == D3D_SIT_UAV_RWSTRUCTURED || key.type == D3D_SIT_UAV_RWTYPED) {
 			// RWStructuredBuffer
 			D3D12_DESCRIPTOR_RANGE range = {};
@@ -218,19 +227,14 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 			rootParam.DescriptorTable.NumDescriptorRanges = 1;
 			rootParameters.push_back(rootParam);
 		}
+
+		
 	}
 	// ルートパラメータの数を設定
 	rootSigDesc.pParameters   = rootParameters.data();
 	rootSigDesc.NumParameters = static_cast<UINT>(rootParameters.size());
 
-	//Samplerの設定
-	staticSamplers_[0].Filter           = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
-	staticSamplers_[0].AddressU         = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
-	staticSamplers_[0].AddressV         = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers_[0].AddressW         = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers_[0].ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER; //比較しない
-	staticSamplers_[0].MaxLOD           = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
-	staticSamplers_[0].ShaderRegister   = 0; //レジスタ番号0を使う
+	
 
 
 	rootSigDesc.pStaticSamplers   = staticSamplers_;

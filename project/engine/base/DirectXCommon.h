@@ -101,6 +101,9 @@ public:
 	/// RTVManagerの取得
 	RtvManager* GetRtvManager() { return rtvManager_.get(); }
 
+	///DepthStencilのリソース取得
+	ComPtr<ID3D12Resource> GetDepthStencilResource() { return depthStencilResource_; }
+
 	/// DSVのデスクリプタサイズ取得
 	uint32_t GetDescriptorSizeDSV() { return descriptorSizeDSV_; }
 

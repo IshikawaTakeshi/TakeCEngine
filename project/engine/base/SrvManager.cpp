@@ -112,6 +112,21 @@ void SrvManager::CreateSRVforStructuredBuffer(UINT numElements, UINT stride, ID3
 	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetSrvDescriptorHandleCPU(srvIndex));
 }
 
+
+//================================================================================================
+// SRV生成（Depth Texture用）
+//================================================================================================
+void SrvManager::CreateSRVforDepthTexture(ID3D12Resource* pResource, DXGI_FORMAT Format, uint32_t srvIndex) {
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC depthTextureSrvDesc{};
+
+	depthTextureSrvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	depthTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	depthTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	depthTextureSrvDesc.Texture2D.MipLevels = 1;
+	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &depthTextureSrvDesc, GetSrvDescriptorHandleCPU(srvIndex));
+}
+
 //================================================================================================
 // UAV生成（RWStructured Buffer用）
 //================================================================================================

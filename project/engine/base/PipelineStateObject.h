@@ -176,7 +176,7 @@ private:
 	ComPtr<ID3D12RootSignature> graphicRootSignature_;
 	ComPtr<ID3D12RootSignature> computeRootSignature_;
 
-	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
+	std::vector<D3D12_STATIC_SAMPLER_DESC> staticSamplers_{};
 	//InputLayout
 	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_ = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};

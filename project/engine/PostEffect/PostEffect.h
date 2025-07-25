@@ -5,8 +5,6 @@
 #include "base/PipelineStateObject.h"
 #include <string>
 
-
-
 class PostEffect {
 public:
 	PostEffect() = default;

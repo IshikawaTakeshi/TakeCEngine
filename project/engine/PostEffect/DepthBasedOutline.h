@@ -1,13 +1,10 @@
 #pragma once
-#include "PostEffect/PostEffect.h"
-
-
-class LuminanceBasedOutline : public PostEffect {
+#include "engine/PostEffect/PostEffect.h"
+class DepthBasedOutline : public PostEffect {
 public:
 
-	LuminanceBasedOutline() = default;
-	~LuminanceBasedOutline() = default;
-
+	DepthBasedOutline() = default;
+	~DepthBasedOutline() = default;
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -21,15 +18,16 @@ public:
 
 private:
 
-	struct LuminanceBasedOutlineInfo {
+	// 深度ベースのアウトライン情報
+	struct DepthBasedOutlineInfo {
 		float weight = 1.0f; // 輪郭の強さ
 		bool isActive = true; // アウトラインの有効無効
 		float padding; // パディング
 	};
 
-	LuminanceBasedOutlineInfo* outlineInfoData_ = nullptr; // アウトライン情報データ
-
+	DepthBasedOutlineInfo* outlineInfoData_ = nullptr; // アウトライン情報データ
 	ComPtr<ID3D12Resource> outlineInfoResource_; // アウトライン情報リソース
-
+	uint32_t depthTextureSrvIndex_ = 0; // 深度テクスチャのSRVインデックス
+	ComPtr<ID3D12Resource> depthTextureResource_; // 深度テクスチャリソース
 };
 
