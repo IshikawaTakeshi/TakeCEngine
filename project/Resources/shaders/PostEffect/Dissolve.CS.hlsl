@@ -14,15 +14,15 @@ ConstantBuffer<DissolveInfo> gDissolveInfo : register(b0);
 [numthreads(2, 2, 1)]
 void main( uint3 DTid : SV_DispatchThreadID ) {
 	
+	if (gDissolveInfo.isDissolve == false) {
+		gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
+		return;
+	}
 	float width, height;
 	gInputTexture.GetDimensions(width, height);
 	float2 uv = DTid.xy / float2(width, height);
 	float3 resultColor = float3(0.0f, 0.0f, 0.0f);
 	
-	if (gDissolveInfo.isDissolve == false) {
-		gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
-		return;
-	}
 	float mask = gMaskTexture.Sample(gSampler, uv).r;
 	if ( mask <= 0.0f ) {
 		gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];

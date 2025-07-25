@@ -1,5 +1,6 @@
 #pragma once
 #include "PostEffect/PostEffect.h"
+
 class BoxFilter : public PostEffect {
 public:
 	BoxFilter() = default;
@@ -13,6 +14,13 @@ public:
 	void DisPatch() override;
 
 private:
+
+	struct BoxFilterInfo {
+		bool isActive = true; // フィルターの有効無効
+	};
+	BoxFilterInfo* filterInfoData_ = nullptr; // フィルター情報データ
+
+	ComPtr<ID3D12Resource> filterInfoResource_; // フィルター情報リソース
 
 };
 

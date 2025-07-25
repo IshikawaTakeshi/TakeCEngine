@@ -1,12 +1,23 @@
 #include "PostEffect/FullScreen.hlsli"
 #include "PostEffect/BoxFilter.hlsli"
 
+struct BoxFilterInfo {
+	bool isActive;
+};
+
 Texture2D<float4> gInputTexture : register(t0);
 RWTexture2D<float4> gOutputTexture : register(u0);
 SamplerState gSampler : register(s0);
 
+ConstantBuffer<BoxFilterInfo> gBoxFilterInfo : register(b0);
+
 [numthreads(8, 8, 1)]
 void main( uint3 DTid : SV_DispatchThreadID ) {
+	
+	if(gBoxFilterInfo.isActive == false) {
+		gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
+		return;
+	}
 	
 	float width, height;
 	gInputTexture.GetDimensions(width, height);

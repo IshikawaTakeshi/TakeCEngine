@@ -12,13 +12,18 @@ void BoxFilter::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, cons
 	//Bufferの名前付け
 	inputResource_->SetName(L"BoxFilter::inputResource_");
 	outputResource_->SetName(L"BoxFilter::outputResource_");
+
+	filterInfoResource_ = dxCommon->CreateBufferResource(dxCommon->GetDevice(), sizeof(BoxFilterInfo));
+	filterInfoResource_->SetName(L"BoxFilter::filterInfoResource_");
+	filterInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&filterInfoData_));
 }
 
 void BoxFilter::UpdateImGui() {
 #ifdef _DEBUG
-
+	ImGui::Text("BoxFilter");
+	ImGui::SameLine();
+	ImGui::Checkbox("##BoxFilter::isActive", &filterInfoData_->isActive);
 #endif // _DEBUG
-
 }
 
 void BoxFilter::DisPatch() {
@@ -35,6 +40,9 @@ void BoxFilter::DisPatch() {
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gInputTexture"), inputTexSrvIndex_);
 	//outputTex
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gOutputTexture"), outputTexUavIndex_);
+	//filterInfo
+	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(
+		computePSO_->GetComputeBindResourceIndex("gBoxFilterInfo"), filterInfoResource_->GetGPUVirtualAddress());
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 8, WinApp::kScreenHeight / 8, 1);
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE

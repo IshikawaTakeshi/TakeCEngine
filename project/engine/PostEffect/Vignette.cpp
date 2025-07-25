@@ -18,21 +18,21 @@ void Vignette::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 	vignetteInfoResource_->SetName(L"Vignette::vignetteInfoResource_");
 	//Mapping
 	vignetteInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&vignetteInfoData_));
+	vignetteInfoData_->vignettePower = 0.5f; //Vignetteの強さ
+	vignetteInfoData_->vignetteScale = 1.5f; //Vignetteのスケール
 }
 
 void Vignette::UpdateImGui() {
 #ifdef _DEBUG
+	if (ImGui::TreeNode("Vignette")) {
+		ImGui::SliderFloat("VignetteScale", &vignetteInfoData_->vignetteScale, 0.0f, 3.0f, "%.5f");
+		ImGui::SliderFloat("VignettePower", &vignetteInfoData_->vignettePower, 0.1f, 1.0f);
+		ImGui::TreePop();
+	}
 
-	ImGui::Begin("Vignette");
-	ImGui::Text("VignetteScale");
-	ImGui::SliderFloat("VignetteScale", &vignetteInfoData_->vignetteScale, 0.0f, 3.0f,"%.5f");
-	ImGui::Text("VignettePower");
-	ImGui::SliderFloat("VignettePower", &vignetteInfoData_->vignettePower, 0.1f, 1.0f);
-	ImGui::Text("VignetteFlag");
-	ImGui::Checkbox("VignetteFlag", &vignetteInfoData_->flag);
-	ImGui::End();
+	ImGui::SameLine();
+	ImGui::Checkbox("##Vinette::isActive", &vignetteInfoData_->flag);
 #endif // _DEBUG
-
 }
 
 void Vignette::DisPatch() {

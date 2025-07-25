@@ -2,6 +2,7 @@
 
 struct GrayScaleType {
 	int type;
+	bool isActive;
 };
 
 Texture2D<float4> gInputTexture : register(t0);
@@ -10,6 +11,12 @@ ConstantBuffer<GrayScaleType> gType : register(b0);
 
 [numthreads(8, 8, 1)]
 void main( uint3 DTid : SV_DispatchThreadID ) {
+	
+
+	if (gType.isActive == false) {
+		gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
+		return;
+	}
 	
 	float4 color = gInputTexture[DTid.xy];
 	float gray = dot(color.rgb, float3(0.2125f, 0.7154f, 0.0721f));

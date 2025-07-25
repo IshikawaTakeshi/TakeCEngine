@@ -176,6 +176,7 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 	// ルートシグネチャのパラメータを構築
 	std::vector<D3D12_ROOT_PARAMETER> rootParameters;
 	std::list<D3D12_DESCRIPTOR_RANGE> descriptorRanges;
+
 	for (const auto& resource : resourceMap) {
 		const ShaderResourceKey& key = resource.second.key;
 		if (key.type == D3D_SIT_CBUFFER) {
@@ -186,19 +187,52 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 			rootParam.Descriptor.ShaderRegister = key.bindPoint;
 			rootParameters.push_back(rootParam);
 
-		} else if (key.type == D3D_SIT_TEXTURE || key.type == D3D_SIT_STRUCTURED) {
-			// テクスチャやストラクチャードバッファ
+		} else if (key.type == D3D_SIT_TEXTURE) {
+			// テクスチャ
 			D3D12_DESCRIPTOR_RANGE range = {};
-			range.RangeType                         = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-			range.NumDescriptors                    = 1;
-			range.BaseShaderRegister                = key.bindPoint;
+			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+			range.NumDescriptors = 1;
+			range.BaseShaderRegister = key.bindPoint;
 			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 			descriptorRanges.push_back(range);
 
 			D3D12_ROOT_PARAMETER rootParam = {};
-			rootParam.ParameterType                       = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-			rootParam.ShaderVisibility                    = key.visibility;
-			rootParam.DescriptorTable.pDescriptorRanges   = &descriptorRanges.back();
+			rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+			rootParam.ShaderVisibility = key.visibility;
+			rootParam.DescriptorTable.pDescriptorRanges = &descriptorRanges.back();
+			rootParam.DescriptorTable.NumDescriptorRanges = 1;
+			rootParameters.push_back(rootParam);
+
+			// サンプラーの設定
+			D3D12_STATIC_SAMPLER_DESC samplerDesc = {};
+			samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; // 0~1の範囲外をリピート
+			samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; // 比較しない
+			samplerDesc.MaxLOD = D3D12_FLOAT32_MAX; // ありったけのMipmapを使う
+			samplerDesc.ShaderRegister = key.bindPoint; // レジスタ番号を使用
+
+			if (resource.second.name.find("Depth") != std::string::npos) {
+				samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT; // 深度テクスチャはポイントフィルタ
+			} else {
+				samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; // バイリニアフィルタ
+			}
+
+			staticSamplers_.push_back(samplerDesc);
+
+		} else if( key.type == D3D_SIT_STRUCTURED){
+			// StructuredBuffer
+			D3D12_DESCRIPTOR_RANGE range = {};
+			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+			range.NumDescriptors = 1;
+			range.BaseShaderRegister = key.bindPoint;
+			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+			descriptorRanges.push_back(range);
+
+			D3D12_ROOT_PARAMETER rootParam = {};
+			rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+			rootParam.ShaderVisibility = key.visibility;
+			rootParam.DescriptorTable.pDescriptorRanges = &descriptorRanges.back();
 			rootParam.DescriptorTable.NumDescriptorRanges = 1;
 			rootParameters.push_back(rootParam);
 
@@ -219,22 +253,12 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 			rootParameters.push_back(rootParam);
 		}
 	}
-	// ルートパラメータの数を設定
+	// ルートパラメータのデータと数を設定
 	rootSigDesc.pParameters   = rootParameters.data();
 	rootSigDesc.NumParameters = static_cast<UINT>(rootParameters.size());
-
-	//Samplerの設定
-	staticSamplers_[0].Filter           = D3D12_FILTER_MIN_MAG_MIP_LINEAR; //バイナリフィルタ
-	staticSamplers_[0].AddressU         = D3D12_TEXTURE_ADDRESS_MODE_WRAP; //0~1の範囲外をリピート
-	staticSamplers_[0].AddressV         = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers_[0].AddressW         = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers_[0].ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER; //比較しない
-	staticSamplers_[0].MaxLOD           = D3D12_FLOAT32_MAX; //ありったけのMipmapを使う
-	staticSamplers_[0].ShaderRegister   = 0; //レジスタ番号0を使う
-
-
-	rootSigDesc.pStaticSamplers   = staticSamplers_;
-	rootSigDesc.NumStaticSamplers = _countof(staticSamplers_);
+	//サンプラーのデータと数を設定
+	rootSigDesc.pStaticSamplers   = staticSamplers_.data();
+	rootSigDesc.NumStaticSamplers = static_cast<UINT>(staticSamplers_.size());
 
 	// ルートシグネチャをシリアライズして作成
 	signatureBlob_ = nullptr;

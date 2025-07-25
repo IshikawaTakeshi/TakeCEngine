@@ -1,16 +1,12 @@
 #pragma once
-#include "Transform.h"
-#include "Matrix4x4.h"
-#include "Vector2.h"
+#include "engine/math/Transform.h"
+#include "engine/math/Matrix4x4.h"
+#include "engine/math/Vector2.h"
+#include "engine/camera/CameraForGPU.h"
 #include <string>
 #include <d3d12.h>
 #include <wrl.h>
 #include <optional>
-
-//定数バッファ用の構造体
-struct CameraForGPU {
-	Vector3 worldPosition;
-};
 
 class Camera {
 public:

@@ -1,5 +1,7 @@
 #pragma once
 #include "PostEffect/PostEffect.h"
+
+
 class LuminanceBasedOutline : public PostEffect {
 public:
 
@@ -18,6 +20,15 @@ public:
 	void DisPatch() override;
 
 private:
+
+	struct LuminanceBasedOutlineInfo {
+		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; // アウトラインの色
+		float weight = 6.0f; // 輪郭の強さ
+		bool isActive = true; // アウトラインの有効無効
+	};
+
+	LuminanceBasedOutlineInfo* outlineInfoData_ = nullptr; // アウトライン情報データ
+	ComPtr<ID3D12Resource> outlineInfoResource_; // アウトライン情報リソース
 
 };
 

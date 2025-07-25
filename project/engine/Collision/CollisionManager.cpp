@@ -4,7 +4,6 @@
 #include "DirectXCommon.h"
 #include "Collision/BoxCollider.h"
 #include "Collision/SphereCollider.h"
-#include "engine/math/physics/Physics.h"
 
 CollisionManager* CollisionManager::instance_ = nullptr;
 

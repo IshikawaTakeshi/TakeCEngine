@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -110,13 +110,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="application\Weapon\Bazooka.cpp" />
     <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
+    <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
     <ClCompile Include="engine\3d\Primitive\PrimitiveType.cpp" />
     <ClCompile Include="engine\Collision\Collider.cpp" />
     <ClCompile Include="engine\Collision\CollisionManager.cpp" />
     <ClCompile Include="application\Ground\Ground.cpp" />
     <ClCompile Include="application\UI\HPBar.cpp" />
-    <ClCompile Include="engine\math\physics\Physics.cpp" />
     <ClCompile Include="engine\math\Vector2.cpp" />
     <ClCompile Include="engine\scene\GameClearScene.cpp" />
     <ClCompile Include="engine\scene\GameOverScene.cpp" />
@@ -218,6 +218,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\Bazooka.h" />
     <ClInclude Include="application\Weapon\WeaponType.h" />
     <ClInclude Include="application\UI\EnergyInfoUI.h" />
+    <ClInclude Include="engine\camera\CameraForGPU.h" />
+    <ClInclude Include="engine\camera\PerView.h" />
+    <ClInclude Include="engine\math\physics\Ray.h" />
+    <ClInclude Include="engine\PostEffect\DepthBasedOutline.h" />
     <ClInclude Include="engine\3d\Particle\ParticleAttribute.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveType.h" />
     <ClInclude Include="engine\Collision\Collider.h" />
@@ -225,8 +229,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Collision\CollisionTypeIdDef.h" />
     <ClInclude Include="application\Ground\Ground.h" />
     <ClInclude Include="application\UI\HPBar.h" />
-    <ClInclude Include="engine\math\physics\Physics.h" />
-    <ClInclude Include="engine\math\physics\Ray.h" />
     <ClInclude Include="engine\scene\GameClearScene.h" />
     <ClInclude Include="engine\scene\GameOverScene.h" />
     <ClInclude Include="engine\Collision\BoxCollider.h" />
@@ -358,6 +360,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <Image Include="Resources\uvChecker.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\shaders\CameraData.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="Resources\shaders\PostEffect\BoxFilter.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -476,6 +482,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <FxCompile Include="Resources\shaders\PostEffect\CopyImage.PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\DepthBasedOutline.CS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
