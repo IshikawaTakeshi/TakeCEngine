@@ -18,6 +18,7 @@ void GrayScale::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, cons
 	//Mapping
 	grayScaleTypeResource_->Map(0, nullptr, reinterpret_cast<void**>(&grayScaleInfoData_));
 	grayScaleInfoData_->grayScaleType = static_cast<int32_t>(GrayScaleType::GRAYSCALE);
+	grayScaleInfoData_->isActive = true;
 }
 
 void GrayScale::UpdateImGui() {
