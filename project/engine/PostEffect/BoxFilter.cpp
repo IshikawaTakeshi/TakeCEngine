@@ -16,9 +16,15 @@ void BoxFilter::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, cons
 
 void BoxFilter::UpdateImGui() {
 #ifdef _DEBUG
-
+	if(ImGui::TreeNode("BoxFilter")) {
+		ImGui::Text("BoxFilter");
+		ImGui::Text("inputResource: %p", inputResource_.Get());
+		ImGui::Text("outputResource: %p", outputResource_.Get());
+		ImGui::Text("inputSrvIndex: %d", inputTexSrvIndex_);
+		ImGui::Text("outputUavIndex: %d", outputTexUavIndex_);
+		ImGui::TreePop();
+	}
 #endif // _DEBUG
-
 }
 
 void BoxFilter::DisPatch() {

@@ -1,6 +1,7 @@
 #include "DepthBasedOutline.h"
-#include "Utility/ResourceBarrier.h"
-#include "ImGuiManager.h"
+#include "engine/Utility/ResourceBarrier.h"
+#include "engine/base/ImGuiManager.h"
+#include "engine/camera/CameraManager.h"
 #include <cassert>
 
 void DepthBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,
@@ -15,22 +16,29 @@ void DepthBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	inputResource_->SetName(L"DepthBasedOutline::InputResource");
 	outputResource_->SetName(L"DepthBasedOutline::_OutputResource");
 
-	//アウトライン情報のリソースを作成
-	outlineInfoResource_ = dxCommon->CreateBufferResourceUAV(dxCommon->GetDevice(), sizeof(DepthBasedOutlineInfo), dxCommon->GetCommandList());
-	outlineInfoResource_->SetName(L"DepthBasedOutline::InfoResource");
-	//mapping
-	outlineInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&outlineInfoData_));
-
 	//depthテクスチャリソースを取得
 	depthTextureSrvIndex_ = srvManager_->Allocate();
 	srvManager_->CreateSRVforDepthTexture(dxCommon_->GetDepthStencilResource().Get(), depthTextureSrvIndex_);
 
+	//アウトライン情報のリソースを作成
+	outlineInfoResource_ = dxCommon->CreateBufferResource(dxCommon->GetDevice(), sizeof(DepthBasedOutlineInfo));
+	outlineInfoResource_->SetName(L"DepthBasedOutline::InfoResource");
+	outlineInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&outlineInfoData_));
+
+	outlineInfoData_->weight =1.0f; // 初期値の設定
+	outlineInfoData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f); // 初期色の設定
+	outlineInfoData_->isActive = true; // アウトラインを有効にする
 }
 
 void DepthBasedOutline::UpdateImGui() {
 #ifdef _DEBUG
 
-
+	if (ImGui::TreeNode("DepthBasedOutline")) {
+		ImGui::SliderFloat("weight", &outlineInfoData_->weight, 0.0f, 10.0f);
+		ImGui::ColorEdit4("Color", &outlineInfoData_->color.x);
+		ImGui::Checkbox("isActive", &outlineInfoData_->isActive);
+		ImGui::TreePop();
+	}
 
 #endif // _DEBUG
 
@@ -51,8 +59,17 @@ void DepthBasedOutline::DisPatch() {
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gInputTexture"), inputTexSrvIndex_);
 	//outputTex
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gOutputTexture"), outputTexUavIndex_);
+	//depthTexture
+	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gDepthTexture"), depthTextureSrvIndex_);
 	//OutlineInfo
-	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(computePSO_->GetComputeBindResourceIndex("gOutlineInfo"), outlineInfoResource_->GetGPUVirtualAddress());
+	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(
+		computePSO_->GetComputeBindResourceIndex("gOutlineInfo"),
+		outlineInfoResource_->GetGPUVirtualAddress());
+	//cameraInfo
+	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(
+		computePSO_->GetComputeBindResourceIndex("gCameraInfo"),
+		CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
+
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 8, WinApp::kScreenHeight / 8, 1);
 

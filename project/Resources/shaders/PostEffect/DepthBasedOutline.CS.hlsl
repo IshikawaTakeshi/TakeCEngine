@@ -1,10 +1,11 @@
-#include "../PostEffect/Fullscreen.hlsli"
-#include "../PostEffect/Outline.hlsli"
-#include "../CameraData.hlsli"
+#include "PostEffect/Fullscreen.hlsli"
+#include "PostEffect/Outline.hlsli"
+#include "CameraData.hlsli"
 
 struct DepthBasedOutlineInfo {
+	float4 Color;
 	float weight;
-	bool enable;
+	bool isActive;
 };
 
 Texture2D<float4> gInputTexture : register(t0);
@@ -12,13 +13,14 @@ Texture2D<float> gDepthTexture : register(t1);
 RWTexture2D<float4> gOutputTexture : register(u0);
 SamplerState gSampler : register(s0);
 SamplerState gSamplerPoint : register(s1);
+
 ConstantBuffer<DepthBasedOutlineInfo> gOutlineInfo : register(b0);
 ConstantBuffer<CameraData> gCameraInfo : register(b1);
 
 [numthreads(8, 8, 1)]
 void main( uint3 DTid : SV_DispatchThreadID ) {
 	
-	if (gOutlineInfo.enable == false) {
+	if (gOutlineInfo.isActive == false) {
 		gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
 		return;
 	}
@@ -43,8 +45,8 @@ void main( uint3 DTid : SV_DispatchThreadID ) {
 			difference.y += viewZ * kPrewittVerticalKernel[x][y];
 		}
 	}
-	gOutlineInfo.weight = length(difference);
-	gOutlineInfo.weight = saturate(gOutlineInfo.weight);
-	resultColor = (1.0f - gOutlineInfo.weight) * gInputTexture.Sample(gSampler, uv).rgb;
+	float weight = length(difference);
+	weight = saturate(weight * gOutlineInfo.weight);
+	resultColor = lerp(gInputTexture.Sample(gSampler, uv).rgb, gOutlineInfo.Color.rgb, weight);
 	gOutputTexture[DTid.xy] = float4(resultColor, 1.0f);
 }

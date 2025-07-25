@@ -6,4 +6,5 @@
 struct CameraForGPU {
 	Matrix4x4 ProjectionInverse; // 投影行列の逆行列
 	Vector3 worldPosition;
+	float padding;
 };

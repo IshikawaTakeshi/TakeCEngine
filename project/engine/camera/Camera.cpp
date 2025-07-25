@@ -76,6 +76,7 @@ void Camera::Update() {
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
 
 	cameraForGPU_->worldPosition = transform_.translate;
+	cameraForGPU_->ProjectionInverse = MatrixMath::Inverse(projectionMatrix_);
 }
 
 

@@ -21,12 +21,12 @@ void GrayScale::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, cons
 }
 
 void GrayScale::UpdateImGui() {
-	#ifdef _DEBUG
-
-	ImGui::Begin("GrayScale");
-	ImGui::Text("GrayScaleType");
-	ImGui::SliderInt("GrayScaleType", grayScaleTypeData_, 0, 2);
-	ImGui::End();
+#ifdef _DEBUG
+	if(ImGui::TreeNode("GrayScale")){
+		ImGui::Text("GrayScaleType");
+		ImGui::SliderInt("GrayScaleType", grayScaleTypeData_, 0, 2);
+		ImGui::TreePop();
+	}
 #endif
 }
 

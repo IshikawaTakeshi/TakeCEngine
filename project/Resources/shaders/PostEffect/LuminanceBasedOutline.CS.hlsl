@@ -1,9 +1,17 @@
 #include "PostEffect/Fullscreen.hlsli"
 #include "PostEffect/Outline.hlsli"
 
+struct LuminanceBasedOutlineInfo {
+	float4 Color;
+	float weight;
+	bool isActive;
+};
+
 Texture2D<float4> gInputTexture : register(t0);
 RWTexture2D<float4> gOutputTexture : register(u0);
 SamplerState gSampler : register(s0);
+
+ConstantBuffer<LuminanceBasedOutlineInfo> gOutlineInfo : register(b0);
 
 float Luminance(float3 v) {
 	return dot(v, float3(0.2125f, 0.7154f, 0.0721f));
@@ -11,6 +19,11 @@ float Luminance(float3 v) {
 
 [numthreads(8, 8, 1)]
 void main( uint3 DTid : SV_DispatchThreadID ) {
+	
+	//if(gOutlineInfo.isActive == false) {
+	//	gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
+	//	return;
+	//}
 	
 	float width, height;
 	gInputTexture.GetDimensions(width, height);
@@ -37,8 +50,8 @@ void main( uint3 DTid : SV_DispatchThreadID ) {
 	}
 	
 	float weight = length(difference);
-	weight = saturate(weight * 6.0f);
+	weight = saturate(weight * gOutlineInfo.weight);
 	
-	resultColor = (1.0f - weight) * gInputTexture.Sample(gSampler, uv).rgb;
+	resultColor = lerp(gInputTexture.Sample(gSampler, uv).rgb, gOutlineInfo.Color.rgb, weight);
 	gOutputTexture[DTid.xy] = float4(resultColor, 1.0f);
 }

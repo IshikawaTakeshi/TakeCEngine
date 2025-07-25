@@ -1,5 +1,6 @@
 #pragma once
 #include "engine/PostEffect/PostEffect.h"
+#include "engine/camera/CameraForGPU.h"
 class DepthBasedOutline : public PostEffect {
 public:
 
@@ -20,13 +21,14 @@ private:
 
 	// 深度ベースのアウトライン情報
 	struct DepthBasedOutlineInfo {
+		Vector4 color = { 0.0f, 0.0f, 0.0f, 1.0f }; // アウトラインの色
 		float weight = 1.0f; // 輪郭の強さ
 		bool isActive = true; // アウトラインの有効無効
-		float padding; // パディング
 	};
 
 	DepthBasedOutlineInfo* outlineInfoData_ = nullptr; // アウトライン情報データ
 	ComPtr<ID3D12Resource> outlineInfoResource_; // アウトライン情報リソース
+
 	uint32_t depthTextureSrvIndex_ = 0; // 深度テクスチャのSRVインデックス
 	ComPtr<ID3D12Resource> depthTextureResource_; // 深度テクスチャリソース
 };
