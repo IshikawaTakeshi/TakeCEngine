@@ -22,15 +22,16 @@ void Vignette::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 
 void Vignette::UpdateImGui() {
 #ifdef _DEBUG
-
-	ImGui::Begin("Vignette");
-	ImGui::Text("VignetteScale");
-	ImGui::SliderFloat("VignetteScale", &vignetteInfoData_->vignetteScale, 0.0f, 3.0f,"%.5f");
-	ImGui::Text("VignettePower");
-	ImGui::SliderFloat("VignettePower", &vignetteInfoData_->vignettePower, 0.1f, 1.0f);
-	ImGui::Text("VignetteFlag");
-	ImGui::Checkbox("VignetteFlag", &vignetteInfoData_->flag);
-	ImGui::End();
+	if (ImGui::TreeNode("Vignette")) {
+		ImGui::Text("VignetteScale");
+		ImGui::SliderFloat("VignetteScale", &vignetteInfoData_->vignetteScale, 0.0f, 3.0f, "%.5f");
+		ImGui::Text("VignettePower");
+		ImGui::SliderFloat("VignettePower", &vignetteInfoData_->vignettePower, 0.1f, 1.0f);
+		ImGui::Text("VignetteFlag");
+		ImGui::Checkbox("VignetteFlag", &vignetteInfoData_->flag);
+		ImGui::TreePop();
+	}
+	
 #endif // _DEBUG
 
 }

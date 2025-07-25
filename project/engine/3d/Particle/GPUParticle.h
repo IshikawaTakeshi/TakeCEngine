@@ -2,6 +2,7 @@
 #include "math/Vector3.h"
 #include "math/Vector4.h"
 #include "camera/Camera.h"
+#include "camera/PerView.h"
 #include "math/Matrix4x4.h"
 #include "3d/Model.h"
 #include "3d/Particle/ParticleCommon.h"

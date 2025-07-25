@@ -8,7 +8,6 @@
 #include "math/MatrixMath.h"
 #include "math/Easing.h"
 #include "math/Vector3Math.h"
-#include "math/physics/Physics.h"
 
 Camera::~Camera() {
 	cameraResource_.Reset();
@@ -77,6 +76,7 @@ void Camera::Update() {
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
 
 	cameraForGPU_->worldPosition = transform_.translate;
+	cameraForGPU_->ProjectionInverse = MatrixMath::Inverse(projectionMatrix_);
 }
 
 

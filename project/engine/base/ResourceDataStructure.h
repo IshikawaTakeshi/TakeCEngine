@@ -96,12 +96,6 @@ struct ParticleForGPU {
 	float lifeTime;
 	float currentTime;
 };
-//View情報
-struct PerView {
-	Matrix4x4 viewProjection;
-	Matrix4x4 billboardMatrix;
-	bool isBillboard;
-};
 
 //フレーム情報
 struct PerFrame {

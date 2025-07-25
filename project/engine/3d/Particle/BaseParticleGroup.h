@@ -6,7 +6,7 @@
 #include "math/AABB.h"
 #include "3d/Model.h"
 #include "3d/Particle/ParticleAttribute.h"
-
+#include "camera/PerView.h"
 
 #include <d3d12.h>
 #include <wrl.h>

@@ -76,6 +76,7 @@
     <FxCompile Include="Resources\shaders\PostEffect\Vignette.CS.hlsl">
       <Filter>Resources\shader</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\DepthBasedOutline.CS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -373,10 +374,10 @@
     <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp" />
     <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp" />
     <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp" />
-    <ClCompile Include="engine\math\physics\Physics.cpp" />
     <ClCompile Include="engine\math\Vector2.cpp" />
     <ClCompile Include="application\UI\PlayerReticle.cpp" />
     <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
+    <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -723,9 +724,11 @@
     <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h" />
     <ClInclude Include="application\Weapon\Bullet\MissilePool.h" />
     <ClInclude Include="engine\math\physics\Ray.h" />
-    <ClInclude Include="engine\math\physics\Physics.h" />
     <ClInclude Include="application\UI\PlayerReticle.h" />
     <ClInclude Include="application\UI\EnergyInfoUI.h" />
+    <ClInclude Include="engine\PostEffect\DepthBasedOutline.h" />
+    <ClInclude Include="engine\camera\PerView.h" />
+    <ClInclude Include="engine\camera\CameraForGPU.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -811,6 +814,7 @@
     <None Include="Resources\glTF\walk.fbx">
       <Filter>Resources\gltf</Filter>
     </None>
+    <None Include="Resources\shaders\CameraData.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">

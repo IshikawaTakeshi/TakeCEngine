@@ -28,10 +28,12 @@ void Dissolve::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 void Dissolve::UpdateImGui() {
 #ifdef _DEBUG
 
-	ImGui::Begin("Dissolve");
-	ImGui::SliderFloat("DissolveThreshold", &dissolveInfoData_->threshold, 0.0f, 1.0f);
-	ImGui::Checkbox("Dissolve", &dissolveInfoData_->isDissolve);
-	ImGui::End();
+	if(ImGui::TreeNode("Dissolve")) {
+		ImGui::Text("Dissolve");
+		ImGui::SliderFloat("DissolveThreshold", &dissolveInfoData_->threshold, 0.0f, 1.0f);
+		ImGui::Checkbox("Dissolve", &dissolveInfoData_->isDissolve);
+		ImGui::TreePop();
+	}
 #endif // _DEBUG
 
 }
