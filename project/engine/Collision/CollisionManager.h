@@ -2,6 +2,7 @@
 
 #include "engine/base/PipelineStateObject.h"
 #include "engine/Entity/GameCharacter.h"
+#include "engine/math/physics/Ray.h"
 #include <list>
 #include <memory>
 class DirectXCommon;
@@ -32,16 +33,6 @@ public:
 	void Finalize();
 
 	/// <summary>
-	/// コライダーリストへの登録をする関数
-	/// </summary>
-	void RegisterCollider(Collider* collider);
-
-	/// <summary>
-	/// コライダーリストをクリアする関数
-	/// </summary>
-	void ClearCollider();
-
-	/// <summary>
 	/// 全てのコライダーの衝突判定を行う関数
 	/// </summary>
 	void CheckAllCollisions();
@@ -62,6 +53,8 @@ public:
 
 	void CheckCollisionPairForGameCharacter(GameCharacter* gameCharacterA, GameCharacter* gameCharacterB);
 
+	bool RayCast(const Ray& ray, RayCastHit& outHit,uint32_t layerMask);
+
 private:
 
 	//シングルトンインスタンス
@@ -81,7 +74,7 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 
 	//コライダーリスト
-	std::list<Collider*> colliders_;
+	std::vector<Collider*> colliders_;
 
 	std::list<GameCharacter*> gameCharacters_;
 

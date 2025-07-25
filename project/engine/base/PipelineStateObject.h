@@ -36,15 +36,6 @@ struct ShaderResourceKey {
 	}
 };
 
-//struct ShaderResourceKeyHash {
-//	std::size_t operator()(const ShaderResourceKey& key) const {
-//		return std::hash<UINT>()(static_cast<UINT>(key.type)) ^
-//			std::hash<UINT>()(static_cast<UINT>(key.visibility)) ^
-//			std::hash<UINT>()(key.bindPoint) ^
-//			std::hash<UINT>()(key.space);
-//	}
-//};
-
 // リソース情報をまとめるデータ構造
 struct BindResourceInfo {
 	ShaderResourceKey key;

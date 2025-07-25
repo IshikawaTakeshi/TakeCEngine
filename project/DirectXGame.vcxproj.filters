@@ -193,7 +193,7 @@
     <ClCompile Include="application\Ground\Ground.cpp">
       <Filter>engine\3d\Ground</Filter>
     </ClCompile>
-    <ClCompile Include="application\HPBar\HPBar.cpp">
+    <ClCompile Include="application\UI\HPBar.cpp">
       <Filter>application\HPBar</Filter>
     </ClCompile>
     <ClCompile Include="engine\Utility\JsonLoader.cpp">
@@ -370,6 +370,13 @@
     <ClCompile Include="engine\3d\Primitive\Triangle.cpp">
       <Filter>engine\3d\Primitive</Filter>
     </ClCompile>
+    <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp" />
+    <ClCompile Include="engine\math\physics\Physics.cpp" />
+    <ClCompile Include="engine\math\Vector2.cpp" />
+    <ClCompile Include="application\UI\PlayerReticle.cpp" />
+    <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -496,7 +503,7 @@
     <ClInclude Include="application\Ground\Ground.h">
       <Filter>engine\3d\Ground</Filter>
     </ClInclude>
-    <ClInclude Include="application\HPBar\HPBar.h">
+    <ClInclude Include="application\UI\HPBar.h">
       <Filter>application\HPBar</Filter>
     </ClInclude>
     <ClInclude Include="engine\Utility\JsonLoader.h">
@@ -712,6 +719,13 @@
     <ClInclude Include="application\Weapon\WeaponType.h">
       <Filter>application\Weapon</Filter>
     </ClInclude>
+    <ClInclude Include="application\Weapon\VerticalMissileLauncher.h" />
+    <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h" />
+    <ClInclude Include="application\Weapon\Bullet\MissilePool.h" />
+    <ClInclude Include="engine\math\physics\Ray.h" />
+    <ClInclude Include="engine\math\physics\Physics.h" />
+    <ClInclude Include="application\UI\PlayerReticle.h" />
+    <ClInclude Include="application\UI\EnergyInfoUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

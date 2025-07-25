@@ -109,12 +109,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application\Weapon\Bazooka.cpp" />
+    <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
     <ClCompile Include="engine\3d\Primitive\PrimitiveType.cpp" />
     <ClCompile Include="engine\Collision\Collider.cpp" />
     <ClCompile Include="engine\Collision\CollisionManager.cpp" />
     <ClCompile Include="application\Ground\Ground.cpp" />
-    <ClCompile Include="application\HPBar\HPBar.cpp" />
+    <ClCompile Include="application\UI\HPBar.cpp" />
+    <ClCompile Include="engine\math\physics\Physics.cpp" />
+    <ClCompile Include="engine\math\Vector2.cpp" />
     <ClCompile Include="engine\scene\GameClearScene.cpp" />
     <ClCompile Include="engine\scene\GameOverScene.cpp" />
     <ClCompile Include="engine\Collision\BoxCollider.cpp" />
@@ -206,17 +209,24 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Particle\ParticleEmitterAllocater.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleEditor.cpp" />
     <ClCompile Include="engine\scene\ParticleEditScene.cpp" />
+    <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp" />
+    <ClCompile Include="application\UI\PlayerReticle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Weapon\Bazooka.h" />
     <ClInclude Include="application\Weapon\WeaponType.h" />
+    <ClInclude Include="application\UI\EnergyInfoUI.h" />
     <ClInclude Include="engine\3d\Particle\ParticleAttribute.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveType.h" />
     <ClInclude Include="engine\Collision\Collider.h" />
     <ClInclude Include="engine\Collision\CollisionManager.h" />
     <ClInclude Include="engine\Collision\CollisionTypeIdDef.h" />
     <ClInclude Include="application\Ground\Ground.h" />
-    <ClInclude Include="application\HPBar\HPBar.h" />
+    <ClInclude Include="application\UI\HPBar.h" />
+    <ClInclude Include="engine\math\physics\Physics.h" />
+    <ClInclude Include="engine\math\physics\Ray.h" />
     <ClInclude Include="engine\scene\GameClearScene.h" />
     <ClInclude Include="engine\scene\GameOverScene.h" />
     <ClInclude Include="engine\Collision\BoxCollider.h" />
@@ -291,6 +301,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Particle\ParticleEditor.h" />
     <ClInclude Include="engine\scene\ParticleEditScene.h" />
     <ClInclude Include="engine\Entity\LevelObject\LevelObject.h" />
+    <ClInclude Include="application\Weapon\Bullet\MissilePool.h" />
+    <ClInclude Include="application\UI\PlayerReticle.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />
@@ -322,6 +334,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\PostEffect\Vignette.h" />
     <ClInclude Include="application\Weapon\BaseWeapon.h" />
     <ClInclude Include="application\Weapon\Rifle.h" />
+    <ClInclude Include="application\Weapon\VerticalMissileLauncher.h" />
+    <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

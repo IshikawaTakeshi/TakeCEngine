@@ -12,6 +12,7 @@
 
 #include "Weapon/Rifle.h"
 #include "Weapon/Bazooka.h"
+#include "Weapon/VerticalMissileLauncher.h"
 
 Player::~Player() {
 	object3d_.reset();
@@ -35,29 +36,37 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
+	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
+	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Player));
 
 	camera_ = object3dCommon->GetDefaultCamera();
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
-	transform_ = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
+	transform_ = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
+	object3d_->SetScale(transform_.scale);
 
-	weapons_.resize(2); // 武器の数を2つに設定
-	weaponTypes_.resize(2);
+	weapons_.resize(3);
+	weaponTypes_.resize(3);
 	weaponTypes_[0] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
 	weaponTypes_[1] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
+	weaponTypes_[2] = WeaponType::WEAPON_TYPE_VERTICAL_MISSILE; // 3つ目の武器は垂直ミサイル
 
 	//背部エミッターの初期化
 	backEmitter_ = std::make_unique<ParticleEmitter>();
 	backEmitter_->Initialize("PalyerBackpack",object3d_->GetTransform(),10,0.01f);
 	backEmitter_->SetParticleName("WalkSmoke2");
+
+	//体力の初期化
+	health_ = maxHealth_;
+	//エネルギーの初期化
+	energy_ = maxEnergy_;
 }
 
 //===================================================================================
 // 武器の初期化処理
 //===================================================================================
 
-void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& weaponFilePath) {
-	weaponFilePath;
+void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager) {
 	//武器の初期化
 	for (int i = 0; i < weapons_.size(); i++) {
 		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
@@ -68,11 +77,19 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bull
 			weapons_[i] = std::make_unique<Bazooka>();
 			weapons_[i]->Initialize(object3dCommon, bulletManager, "Bazooka.gltf");
 			weapons_[i]->SetOwnerObject(this);
+		}else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
+			//垂直ミサイルの武器を初期化
+			weapons_[i] = std::make_unique<VerticalMissileLauncher>();
+			weapons_[i]->Initialize(object3dCommon,bulletManager, "Bazooka.gltf");
+			weapons_[i]->SetOwnerObject(this);
+		} else {
+			weapons_[i] = nullptr; // 未使用の武器スロットはnullptrに設定
 		}
 	}
 
 	weapons_[0]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
 	weapons_[1]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
+	weapons_[2]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack"); // 3つ目の武器を背中に取り付け
 }
 
 //===================================================================================
@@ -101,6 +118,9 @@ void Player::Update() {
 			behaviorRequest_ = Behavior::JUMP;
 		}
 	}
+
+	//エネルギーの更新
+	UpdateEnergy();
 
 	if (behaviorRequest_) {
 
@@ -131,6 +151,9 @@ void Player::Update() {
 		case Behavior::CHARGESHOOT_STUN:
 			InitChargeShootStun();
 			break;
+		case Behavior::DEAD:
+			InitDead();
+			break;
 		}
 
 		behaviorRequest_ = std::nullopt;
@@ -160,20 +183,30 @@ void Player::Update() {
 	case Player::Behavior::CHARGESHOOT_STUN:
 		UpdateChargeShootStun();
 		break;
+	case Player::Behavior::DEAD:
+		UpdateDead();
+		break;
 	default:
 		break;
 	}
 
 	//攻撃処理
-	UpdateAttack();
+	if (isAlive_ == true) {
+		UpdateAttack();
+	}
+
+	if(health_ <= 0.0f) {
+		//死亡状態のリクエスト
+		isAlive_ = false;
+		behaviorRequest_ = Behavior::DEAD;
+	}
 
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(transform_.rotate);
 	//カメラの設定
-	camera_->SetFollowTargetPos(transform_.translate);
+	camera_->SetFollowTargetPos(*object3d_->GetModel()->GetSkeleton()->GetJointPosition("neck",object3d_->GetWorldMatrix()));
 	camera_->SetFollowTargetRot(eulerRotate);
 	camera_->SetFocusTargetPos(focusTargetPos_);
-
 
 	object3d_->SetTranslate(transform_.translate);
 	object3d_->SetRotate(eulerRotate);
@@ -185,8 +218,12 @@ void Player::Update() {
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
 	backEmitter_->Update();
 
-	weapons_[0]->Update();
-	weapons_[1]->Update(); // 2つ目の武器がある場合はここで更新
+	for(const auto& weapon : weapons_) {
+		if (weapon) {
+			weapon->SetTarget(focusTargetPos_);
+			weapon->Update();
+		}
+	}
 }
 
 //===================================================================================
@@ -201,11 +238,14 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::Separator();
+	ImGui::DragFloat("Health", &health_, 1.0f, 0.0f, maxHealth_);
+	ImGui::DragFloat("Energy", &energy_, 1.0f, 0.0f, maxEnergy_);
 	ImGui::DragFloat3("Velocity", &velocity_.x, 0.01f);
 	ImGui::DragFloat3("MoveDirection", &moveDirection_.x, 0.01f);
 	ImGui::Text("Behavior: %d", static_cast<int>(behavior_));
 	weapons_[0]->UpdateImGui();
-	weapons_[1]->UpdateImGui(); // 2つ目の武器がある場合はここで更新
+	weapons_[1]->UpdateImGui();
+	weapons_[2]->UpdateImGui(); 
 	ImGui::End();
 
 #endif // _DEBUG
@@ -241,6 +281,20 @@ void Player::OnCollisionAction(GameCharacter* other) {
 	if (other->GetCharacterType() == CharacterType::ENEMY) {
 		//衝突時の処理
 		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+	}
+	if (other->GetCharacterType() == CharacterType::ENEMY_BULLET) {
+		//敵の弾に当たった場合
+		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+		//ダメージを受ける
+		Bullet* bullet = dynamic_cast<Bullet*>(other);
+		health_ -= bullet->GetDamage();
+	}
+	if(other->GetCharacterType() == CharacterType::ENEMY_MISSILE) {
+		//敵のミサイルに当たった場合
+		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+		//ダメージを受ける
+		VerticalMissile* missile = dynamic_cast<VerticalMissile*>(other);
+		health_ -= missile->GetDamage();
 	}
 }
 
@@ -306,69 +360,21 @@ void Player::UpdateRunning() {
 
 void Player::UpdateAttack() {
 
-	if (Input::GetInstance()->PushButton(0,GamepadButtonType::RB)) {
-		auto* weapon = weapons_[0].get();
-		
+	WeaponAttack(0, GamepadButtonType::RB); // 1つ目の武器の攻撃
+	WeaponAttack(1, GamepadButtonType::LB); // 2つ目の武器の攻撃
+	WeaponAttack(2, GamepadButtonType::X); // 3つ目の武器の攻撃
+}
+
+void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
+
+	auto* weapon = weapons_[weaponIndex].get();
+	if (Input::GetInstance()->PushButton(0, buttonType)) {
 		//チャージ攻撃可能な場合
 		if (weapon->IsChargeAttack()) {
-		
+
 			//武器のチャージ処理
 			weapon->Charge(deltaTime_);
-
-			if(Input::GetInstance()->ReleaseButton(0, GamepadButtonType::RB)) {
-				//チャージ攻撃実行
-				weapon->ChargeAttack();
-				if (weapon->IsStopShootOnly()) {
-					// 停止撃ち専用の場合はチャージ後に硬直状態へ
-					behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
-				} else {
-					// 移動撃ち可能な場合はRUNNINGに戻す
-					behaviorRequest_ = Behavior::RUNNING;
-				}
-			} 
-		} else {
-			//チャージ攻撃不可:通常攻撃
-			if (weapon->IsStopShootOnly()) {
-				// 停止撃ち専用:硬直処理を行う
-				weapon->Attack();
-				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
-			} else {
-				// 移動撃ち可能
-				weapon->Attack();
-			}
-		}
-	} else if (Input::GetInstance()->ReleaseButton(0, GamepadButtonType::RB)) {
-		// RBボタンが離された場合
-		auto* weapon = weapons_[0].get();
-		if (weapon->IsCharging()) {
-			// チャージ中の場合はチャージ攻撃を終了
-			weapon->ChargeAttack();
-			if (weapon->IsStopShootOnly()) {
-				// 停止撃ち専用の場合はチャージ後に硬直状態へ
-				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
-			} else {
-				// ステップ終了時前回の状態に戻す
-				if (transform_.translate.y <= 0.0f) {
-					behaviorRequest_ = Behavior::RUNNING;
-				} else if (transform_.translate.y > 0.0f) {
-					behaviorRequest_ = Behavior::FLOATING;
-				} else {
-					// ステップブーストが終了したらRUNNINGに戻す
-					behaviorRequest_ = Behavior::RUNNING;
-				}
-			}
-		}
-	}
-
-
-	if (Input::GetInstance()->PushButton(0, GamepadButtonType::LB)) {
-		auto* weapon = weapons_[1].get();
-		//チャージ攻撃可能な場合
-		if (weapon->IsChargeAttack()) {
-		
-			//武器のチャージ処理
-			weapon->Charge(deltaTime_);
-			if(Input::GetInstance()->ReleaseButton(0, GamepadButtonType::LB)) {
+			if(Input::GetInstance()->ReleaseButton(0, buttonType)) {
 				//チャージ攻撃実行
 				weapon->ChargeAttack();
 				if (weapon->IsStopShootOnly()) {
@@ -389,9 +395,9 @@ void Player::UpdateAttack() {
 				weapon->Attack();
 			}
 		}
-	} else if (Input::GetInstance()->ReleaseButton(0, GamepadButtonType::LB)) {
+	} else if (Input::GetInstance()->ReleaseButton(0, buttonType)) {
 		// LBボタンが離された場合
-		auto* weapon = weapons_[1].get();
+
 		if (weapon->IsCharging()) {
 			// チャージ中の場合はチャージ攻撃を終了
 			weapon->ChargeAttack();
@@ -412,6 +418,16 @@ void Player::UpdateAttack() {
 
 void Player::InitJump() {
 
+	//オーバーヒート状態のチェック
+	if (isOverheated_) {
+		// オーバーヒート中はジャンプできない
+		behaviorRequest_ = Behavior::RUNNING;
+		return;
+	}
+
+	// ジャンプのエネルギー消費
+	energy_ -= useEnergyJump_;
+
 	//ジャンプの初期化
 	//ジャンプの速度を設定
 	velocity_.y = jumpSpeed_;
@@ -429,7 +445,7 @@ void Player::UpdateJump() {
 	transform_.translate.x += velocity_.x * deltaTime_;
 	transform_.translate.z += velocity_.z * deltaTime_;
 	// 重力の適用
-	velocity_.y -= gravity_ * deltaTime_;
+	velocity_.y -= (gravity_ + jumpDeceleration_) * deltaTime_;
 	transform_.translate.y += velocity_.y * deltaTime_;
 
 	 jumpTimer_ += deltaTime_;
@@ -535,6 +551,16 @@ void Player::UpdateChargeShootStun() {
 
 void Player::InitStepBoost() {
 
+	// オーバーヒート状態のチェック
+	if (isOverheated_) {
+		// オーバーヒート中はステップブーストできない
+		behaviorRequest_ = Behavior::RUNNING;
+		return;
+	}
+
+	// ステップブーストのエネルギーを消費
+	energy_ -= useEnergyStepBoost_;
+
 	//上昇速度を急激に遅くする
 	velocity_.y = 0.0f;
 
@@ -579,6 +605,8 @@ void Player::TriggerStepBoost() {
 	}
 }
 
+
+
 //===================================================================================
 // 浮遊時の処理
 //===================================================================================
@@ -622,8 +650,8 @@ void Player::UpdateFloating() {
 		velocity_.z *= scale;
 	}
 
-	// 空中での重力（弱める場合はfloatingGravity_等を用意）
-	velocity_.y -= gravity_ * 2.0f * deltaTime_;
+	// 空中での降下処理(fallSpeedを重力に加算)
+	velocity_.y -= (gravity_ + fallSpeed_) * deltaTime_;
 	transform_.translate.x += velocity_.x * deltaTime_;
 	transform_.translate.z += velocity_.z * deltaTime_;
 	transform_.translate.y += velocity_.y * deltaTime_;
@@ -632,5 +660,88 @@ void Player::UpdateFloating() {
 	if (transform_.translate.y <= 0.0f) {
 		transform_.translate.y = 0.0f;
 		behaviorRequest_ = Behavior::RUNNING;
+	}
+}
+
+//===================================================================================
+// 死亡時の処理
+//===================================================================================
+
+void Player::InitDead() {
+	isAlive_ = false; // 死亡フラグを立てる
+}
+
+void Player::UpdateDead() {
+
+	//左スティック
+	StickState leftStick= Input::GetInstance()->GetLeftStickState(0);
+	//右スティック 
+	StickState rightStick = Input::GetInstance()->GetRightStickState(0);
+
+	//カメラの回転を設定
+	camera_->SetStick({ rightStick.x, rightStick.y });
+
+	//空中にいる場合は落下処理
+	if (transform_.translate.y > 0.0f) {
+		// 空中での降下処理(fallSpeedを重力に加算)
+		velocity_.y -= (gravity_ + fallSpeed_) * deltaTime_;
+	} else {
+		// 地面に着地したら速度を0にする
+		velocity_.y = 0.0f;
+	}
+
+	//速度の減速処理
+	velocity_.x /= deceleration_;
+	velocity_.z /= deceleration_;
+
+	//位置の更新（deltaTimeをここで適用）
+	transform_.translate += velocity_ * deltaTime_;
+
+}
+
+//===================================================================================
+// エネルギーの更新処理
+//===================================================================================
+
+void Player::UpdateEnergy() {
+
+	//オーバーヒートしているかどうか
+	if(!isOverheated_) {
+
+		// エネルギーの回復
+		if (energy_ < maxEnergy_) {
+
+			//浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
+			if (behavior_ == Behavior::FLOATING || behavior_ == Behavior::JUMP ||
+				behavior_ == Behavior::STEPBOOST) {
+				return;
+			}
+
+			energy_ += energyRegenRate_ * deltaTime_;
+			if (energy_ > maxEnergy_) {
+				energy_ = maxEnergy_;
+			}
+		}
+		
+		if(energy_ <= 0.0f) {
+			// エネルギーが0以下になったらオーバーヒート状態にする
+			isOverheated_ = true;
+			overheatTimer_ = overheatDuration_; // オーバーヒートのタイマーを設定
+			energy_ = 0.0f; // エネルギーを0にする
+		}
+
+	} else {
+
+		// オーバーヒートの処理
+		if (overheatTimer_ > 0.0f) {
+			overheatTimer_ -= deltaTime_;
+			if (overheatTimer_ <= 0.0f) {
+				// オーバーヒートが終了したらエネルギーを半分回復
+				energy_ = maxEnergy_ / 2.0f;
+				// オーバーヒート状態を解除
+				isOverheated_ = false;
+			}
+		}
+
 	}
 }

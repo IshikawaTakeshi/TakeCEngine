@@ -31,7 +31,7 @@ public:
 	//	アクセッサ
 	//========================================================================
 
-	std::vector<std::unique_ptr<LevelObject>>& GetLevelObjects() { return levelObjects_; }
+	std::map<std::string,std::unique_ptr<LevelObject>>& GetLevelObjects() { return levelObjects_; }
 
 	void SetSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; }
 
@@ -55,5 +55,5 @@ private:
 	// レベルデータの格納
 	LevelData* levelData_; 
 	// レベル内のオブジェクトのリスト
-	std::vector<std::unique_ptr<LevelObject>> levelObjects_;
+	std::map<std::string,std::unique_ptr<LevelObject>> levelObjects_;
 };

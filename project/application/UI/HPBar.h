@@ -1,6 +1,10 @@
 #pragma once
-#include "Sprite.h"
+#include "engine/math/Vector2.h"
 #include <memory>
+#include <string>
+
+class SpriteCommon;
+class Sprite;
 
 class HPBar {
 public:
@@ -10,7 +14,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(SpriteCommon* spriteCommon, const std::string& backgroundFilePath, const std::string& foregroundFilePath, const std::string&bugeFilePath);
+	void Initialize(SpriteCommon* spriteCommon, const std::string& backgroundFilePath, const std::string& foregroundFilePath);
 
 	/// <summary>
 	/// HPの更新
@@ -25,21 +29,17 @@ public:
 	/// <summary>
 	/// ImGui
 	/// </summary>
-	//void ImGuiDebug(int id);
-	//void ImGuibugeDebug(int id);
+	void UpdateImGui([[maybe_unused]]std::string name);
 
 	/// <summary>
 	/// 位置を設定
 	/// </summary>
 	void SetPosition(const Vector2& position);
-	void SetbugePosition(const Vector2& position);
 
 	/// <summary>
-/// サイズを設定
-/// </summary>
+	/// サイズを設定
+	/// </summary>
 	void SetSize(const Vector2& size);
-	void SetbugeSize(const Vector2& size);
-
 
 	/// <summary>
 	/// 位置を取得
@@ -47,8 +47,11 @@ public:
 	Vector2 GetTranslate() const;
 
 private:
+
 	std::unique_ptr<Sprite> backgroundSprite_; // 背景スプライト
-	std::unique_ptr<Sprite> foregroundSprite_; // フォアグラウンドスプライト
-	std::unique_ptr<Sprite> bugeSprite_;
+	std::unique_ptr<Sprite> foregroundSprite_; // 前景スプライト
 	Vector2 position_ = { 0.0f, 0.0f };          // HPバーの位置
+
+	// アウトライン（枠）の太さ
+	float margin_ = 2.0f;
 };

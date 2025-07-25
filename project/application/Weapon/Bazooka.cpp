@@ -2,6 +2,7 @@
 #include "base/TakeCFrameWork.h"
 #include "base/ImGuiManager.h"
 #include "math/MatrixMath.h"
+#include "application/Weapon/Bullet/BulletManager.h"
 
 void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) {
 
@@ -16,7 +17,7 @@ void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 
 	//武器の初期化
 	weaponType_ = WeaponType::WEAPON_TYPE_BAZOOKA;
-	attackPower_ = 50; // 攻撃力を設定
+	damage_ = 1500.0f; // 攻撃力を設定
 	attackInterval_ = kAttackInterval; // 攻撃間隔を設定
 	bulletCount_ = 5; // 初期弾数を設定
 	maxBulletCount_ = 5; // 最大弾数を設定
@@ -36,7 +37,7 @@ void Bazooka::Update() {
 	if (parentSkeleton_ && !parentJointName_.empty()) {
 		Matrix4x4 characterWorldMatrix = ownerObject_->GetObject3d()->GetWorldMatrix();
 		auto jointWorldMatrixOpt = parentSkeleton_->GetJointWorldMatrix(parentJointName_, characterWorldMatrix);
-		object3d_->SetParent(jointWorldMatrixOpt ? *jointWorldMatrixOpt : MatrixMath::MakeIdentity4x4());
+		object3d_->SetParent(*jointWorldMatrixOpt);
 	}
 
 	//3Dオブジェクトの更新
@@ -51,7 +52,7 @@ void Bazooka::UpdateImGui() {
 		object3d_->GetTransform().translate.y, 
 		object3d_->GetTransform().translate.z);
 	
-	ImGui::Text("Attack Power: %d", attackPower_);
+	ImGui::Text("Attack Power: %d", damage_);
 	ImGui::Text("Attack Interval: %.2f", attackInterval_);
 	ImGui::Text("Bullet Count: %d", bulletCount_);
 	ImGui::Text("Max Bullet Count: %d", maxBulletCount_);
@@ -71,9 +72,9 @@ void Bazooka::Attack() {
 	}
 
 	if (ownerObject_->GetCharacterType() == CharacterType::PLAYER){
-		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,bulletSpeed_, CharacterType::PLAYER_BULLET);
+		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,bulletSpeed_,damage_, CharacterType::PLAYER_BULLET);
 	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
-		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,bulletSpeed_, CharacterType::ENEMY_BULLET);
+		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,bulletSpeed_,damage_, CharacterType::ENEMY_BULLET);
 	} else {
 		return; // キャラクタータイプが不明な場合は攻撃しない
 	}
