@@ -16,10 +16,10 @@ void TitleScene::Initialize() {
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 
 	// Sprite
-	sprite_ = std::make_unique<Sprite>();
-	sprite_->Initialize(SpriteCommon::GetInstance(), "uvChecker.png");
-	sprite_->AdjustTextureSize();
-	sprite_->SetPosition({ 512.0f, 256.0f});
+	titleTextSprite_ = std::make_unique<Sprite>();
+	titleTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/TitleText.png");
+	titleTextSprite_->AdjustTextureSize();
+	titleTextSprite_->SetPosition({ 200.0f, 256.0f});
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -28,7 +28,7 @@ void TitleScene::Initialize() {
 }
 
 void TitleScene::Finalize() {
-	sprite_.reset();
+	titleTextSprite_.reset();
 	camera0_.reset();
 	camera1_.reset();
 	CameraManager::GetInstance()->ResetCameras();
@@ -43,7 +43,7 @@ void TitleScene::Update() {
 	//SkyBoxの更新
 	skyBox_->Update();
 
-	sprite_->Update();
+	titleTextSprite_->Update();
 
 	//シーン遷移
 	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::A)) {
@@ -56,7 +56,7 @@ void TitleScene::UpdateImGui() {
 #ifdef _DEBUG
 	//ImGuiの更新
 	CameraManager::GetInstance()->UpdateImGui();
-	sprite_->UpdateImGui("title");
+	titleTextSprite_->UpdateImGui("title");
 
 #endif
 }
@@ -67,7 +67,7 @@ void TitleScene::Draw() {
 	skyBox_->Draw();
 
 	SpriteCommon::GetInstance()->PreDraw();
-	sprite_->Draw();
+	titleTextSprite_->Draw();
 	Object3dCommon::GetInstance()->PreDraw();
 
 }

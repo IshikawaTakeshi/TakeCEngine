@@ -40,7 +40,7 @@ private:
 	//SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 	//スプライト
-	std::unique_ptr<Sprite> sprite_ = nullptr;
+	std::unique_ptr<Sprite> titleTextSprite_ = nullptr;
 
 };
 

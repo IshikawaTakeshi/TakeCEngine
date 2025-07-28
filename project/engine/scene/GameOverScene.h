@@ -43,4 +43,6 @@ private:
 	std::unique_ptr<Camera> gameOverCamera_ = nullptr;
 	// 天球
 	std::unique_ptr<SkyBox> skybox_ = nullptr;
+	// スプライト
+	std::unique_ptr<Sprite> gameOverTextSprite_ = nullptr;
 };
