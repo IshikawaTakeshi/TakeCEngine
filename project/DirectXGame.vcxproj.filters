@@ -378,6 +378,8 @@
     <ClCompile Include="application\UI\PlayerReticle.cpp" />
     <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
     <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp" />
+    <ClCompile Include="application\UI\GameClearUI.cpp" />
+    <ClCompile Include="engine\scene\SceneTransition.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -729,6 +731,8 @@
     <ClInclude Include="engine\PostEffect\DepthBasedOutline.h" />
     <ClInclude Include="engine\camera\PerView.h" />
     <ClInclude Include="engine\camera\CameraForGPU.h" />
+    <ClInclude Include="application\UI\GameClearUI.h" />
+    <ClInclude Include="engine\scene\SceneTransition.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

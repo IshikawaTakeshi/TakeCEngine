@@ -121,6 +121,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\scene\GameClearScene.cpp" />
     <ClCompile Include="engine\scene\GameOverScene.cpp" />
     <ClCompile Include="engine\Collision\BoxCollider.cpp" />
+    <ClCompile Include="engine\scene\SceneTransition.cpp" />
     <ClCompile Include="engine\Utility\JsonLoader.cpp" />
     <ClCompile Include="application\Weapon\Bullet\Bullet.cpp" />
     <ClCompile Include="application\Weapon\Bullet\BulletManager.cpp" />
@@ -172,6 +173,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\PostEffect\GrayScale.cpp" />
     <ClCompile Include="engine\PostEffect\LuminanceBasedOutline.cpp" />
     <ClCompile Include="engine\Entity\LevelObject\LevelObject.cpp" />
+    <ClCompile Include="application\UI\GameClearUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
     <ClCompile Include="engine\math\MatrixMath.cpp" />
@@ -233,6 +235,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\scene\GameOverScene.h" />
     <ClInclude Include="engine\Collision\BoxCollider.h" />
     <ClInclude Include="engine\scene\LevelData.h" />
+    <ClInclude Include="engine\scene\SceneTransition.h" />
     <ClInclude Include="engine\Utility\JsonLoader.h" />
     <ClInclude Include="application\Weapon\Bullet\Bullet.h" />
     <ClInclude Include="application\Weapon\Bullet\BulletManager.h" />
@@ -305,6 +308,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Entity\LevelObject\LevelObject.h" />
     <ClInclude Include="application\Weapon\Bullet\MissilePool.h" />
     <ClInclude Include="application\UI\PlayerReticle.h" />
+    <ClInclude Include="application\UI\GameClearUI.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

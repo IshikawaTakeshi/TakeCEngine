@@ -54,4 +54,10 @@ private:
 
 	// アウトライン（枠）の太さ
 	float margin_ = 2.0f;
+	
+	bool isActive_ = true; // アクティブ状態
+	float alpha_ = 1.0f; // アルファ値（透明度）
+	float fadeSpeed_ = 1.0f; // フェード速度
+	float timer_ = 0.0f; // タイマー
+
 };

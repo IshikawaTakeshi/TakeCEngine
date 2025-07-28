@@ -1,19 +1,19 @@
 #pragma once
 #include "BaseScene.h"
 
-#include "Audio.h"
-#include "Camera.h"
-#include "CameraManager.h"
-#include "Input.h"
-#include "ModelManager.h"
-#include "Sprite.h"
-#include "Object3d.h"
-#include "Object3dCommon.h"
-#include "SpriteCommon.h"
+#include "audio/Audio.h"
+#include "camera/Camera.h"
+#include "camera/CameraManager.h"
+#include "io/Input.h"
+#include "base/ModelManager.h"
+#include "2d/Sprite.h"
+#include "2d/SpriteCommon.h"
+#include "3d/Object3d.h"
+#include "3d/Object3dCommon.h"
+#include "engine/SkyBox/SkyBox.h"
 
 class TitleScene : public BaseScene {
 public:
-
 
 	//初期化
 	void Initialize() override;
@@ -32,16 +32,15 @@ public:
 
 private:
 
-
 	//サウンドデータ
 	//AudioManager::SoundData soundData1;
 	// カメラ
 	std::shared_ptr<Camera> camera0_ = nullptr;
 	std::shared_ptr<Camera> camera1_ = nullptr;
+	//SkyBox
+	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 	//スプライト
-	std::shared_ptr<Sprite> sprite_ = nullptr;
-	std::shared_ptr<Object3d> titleObject = nullptr;
-	std::unique_ptr<Object3d> startObject = nullptr;
+	std::unique_ptr<Sprite> sprite_ = nullptr;
 
 };
 

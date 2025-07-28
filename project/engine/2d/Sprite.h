@@ -65,6 +65,8 @@ public:
 	//トランスフォーム取得
 	EulerTransform GetTransform() { return transform_; }
 
+	const std::unique_ptr<Mesh>& GetMesh() const { return mesh_; }
+
 	//アンカーポイント取得
 	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
 
