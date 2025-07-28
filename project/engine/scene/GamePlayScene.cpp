@@ -339,7 +339,11 @@ void GamePlayScene::UpdateGamePlay() {
 //====================================================================
 // ゲームオーバー時の処理
 //====================================================================
-void GamePlayScene::InitializeGameOver() {}
+void GamePlayScene::InitializeGameOver() {
+
+	fadeTimer_ = 2.0f;
+	SceneManager::GetInstance()->ChangeScene("GAMEOVER", fadeTimer_);
+}
 
 void GamePlayScene::UpdateGameOver() {}
 //====================================================================

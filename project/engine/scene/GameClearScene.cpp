@@ -27,10 +27,9 @@ void GameClearScene::Initialize() {
 
 	//whiteOutSprite
 	clearTextSprite_ = std::make_unique<Sprite>();
-	clearTextSprite_->Initialize(SpriteCommon::GetInstance(), "uvChecker.png");
+	clearTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/GameClearText.png");
 	clearTextSprite_->SetPosition({ 640.0f, 360.0f });
-	clearTextSprite_->SetSize({ 100.0f, 100.0f });
-	clearTextSprite_->SetAnchorPoint({ 0.5f, 0.5f });
+	clearTextSprite_->AdjustTextureSize();
 
 }
 
@@ -65,11 +64,10 @@ void GameClearScene::Update() {
 }
 
 void GameClearScene::UpdateImGui() {
-	ImGui::Begin("GameClearScene");
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
-	ImGui::End();
+	clearTextSprite_->UpdateImGui("ClearText");
 }
 
 void GameClearScene::Draw() {

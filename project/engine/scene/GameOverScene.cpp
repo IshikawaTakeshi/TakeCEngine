@@ -19,32 +19,21 @@ void GameOverScene::Initialize() {
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 
-	//DirectionalLightの輝度を設定
-	Object3dCommon::GetInstance()->SetDirectionalLightIntensity(1.0f);
-	//pointLightの輝度を設定
-	Object3dCommon::GetInstance()->SetPointLightIntensity(0.0f);
-	Object3dCommon::GetInstance()->SetPointLightPosition({ 0.0f,2.2f,5.0f });
-	Object3dCommon::GetInstance()->SetPointLightColor({ 1.0f,0.8f,0.8f,1.0f });
-	Object3dCommon::GetInstance()->SetPointLightRadius(0.0f);
-
-	// Player
-	//player_ = std::make_unique<Player>();
-	//player_->Initialize(Object3dCommon::GetInstance(), "walk.gltf");
-
 	//SkyBox
 	skybox_ = std::make_unique<SkyBox>();
-	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox.obj");
-	skybox_->SetMaterialColor({ 0.0f,0.0f,0.0f,0.0f });
-	// ground
+	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_pool.obj");
 
-	GameOverText_ = std::make_unique<Object3d>();
-	GameOverText_->Initialize(Object3dCommon::GetInstance(), "GameOverText.obj");
-	GameOverText_->SetTranslate({ -15.0f, 0.0f, 0.0f });
-	GameOverText_->SetRotate({ 3.14f, 0.0f, 0.0f });
-	GameOverText_->SetScale({ 2.5f, 2.5f, 1.0f });
+	//Spriteの初期化
+	gameOverTextSprite_ = std::make_unique<Sprite>();
+	gameOverTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/GameOverText.png");
+	gameOverTextSprite_->SetPosition({ 50.0f, 50.0f });
+	gameOverTextSprite_->AdjustTextureSize();
+
 }
 
 void GameOverScene::Finalize() {
+
+	TakeCFrameWork::GetParticleManager()->Finalize();
 	
 	// サウンドデータの解放
 	AudioManager::GetInstance()->SoundUnload(&gameOverBGM);
@@ -64,67 +53,36 @@ void GameOverScene::Update() {
 	// 天球の更新
 	skybox_->Update();
 
-	// プレイヤーの更新
-	//player_->Update();
-	// 敵の更新
-	
-	GameOverText_->Update();
-
-	switch (phase_) {
-	case FIRST:
-
-		lerpTime_ += 0.01f;
-		Object3dCommon::GetInstance()->SetPointLightRadius(std::lerp(0.0f, 30.0f, lerpTime_));
-		if (lerpTime_ >= 1.0f) {
-			lerpTime_ = 0.0f;
-			phase_ = Phase::SECOND;
-		}
-		break;
-	case SECOND:
-
-		// シーン遷移
-		if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-			lerpTime_ = 0.0f;
-			changePhase_ = true;
-		}
-		if (changePhase_) {
-			lerpTime_ += 0.01f;
-			Object3dCommon::GetInstance()->SetPointLightRadius(std::lerp(30.0f, 0.0f, lerpTime_));
-			if (lerpTime_ >= 0.99f) {
-				phase_ = Phase::FINAL;
-			}
-		
-		}
-		break;
-	case FINAL:
-
-		// シーン切り替え依頼
-		AudioManager::GetInstance()->SoundUnload(&gameOverBGM);
-		SceneManager::GetInstance()->ChangeScene("TITLE");
-		break;
-	default:
-		break;
-	}
+	// スプライトの更新
+	gameOverTextSprite_->Update();
 
 	// パーティクルの更新
 	TakeCFrameWork::GetParticleManager()->Update();
+	
+		// シーン遷移
+	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::A)) {
 
+		// シーン切り替え依頼
+		AudioManager::GetInstance()->SoundUnload(&gameOverBGM);
+		SceneManager::GetInstance()->ChangeScene("TITLE",0.3f);
+	}
 }
 
 void GameOverScene::UpdateImGui() {
-	ImGui::Begin("GameOverScene");
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();	
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
-	ImGui::End();
+	gameOverTextSprite_->UpdateImGui("GameOverTextSprite");
+
 }
 
 void GameOverScene::Draw() {
 	skybox_->Draw();
 
 	SpriteCommon::GetInstance()->PreDraw(); // Spriteの描画前処理
+	gameOverTextSprite_->Draw(); // スプライトの描画
+
 	Object3dCommon::GetInstance()->PreDraw(); // Object3dの描画前処理
-	GameOverText_->Draw();
 	
 	ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); // パーティクルの描画
