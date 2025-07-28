@@ -104,6 +104,7 @@ void GamePlayScene::Initialize() {
 //====================================================================
 
 void GamePlayScene::Finalize() {
+	TakeCFrameWork::GetParticleManager()->Finalize(); //パーティクルマネージャーの解放
 	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	player_.reset();
@@ -128,18 +129,6 @@ void GamePlayScene::Update() {
 	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
 	player_->Update();
 
-	//playerReticleの更新
-	playerReticle_->Update(player_->GetFocusTargetPos());
-	
-	//playerのHPバーの更新
-	playerHpBar_->Update(player_->GetHealth(), player_->GetMaxHealth());
-	//enemyのHPバーの更新
-	enemyHpBar_->Update(enemy_->GetHealth(), enemy_->GetMaxHealth());
-
-	//playerのエネルギーUIの更新
-	energyInfoUI_->SetOverHeatState(player_->GetIsOverHeated());
-	energyInfoUI_->Update(player_->GetEnergy(), player_->GetMaxEnergy());
-
 	//弾の更新
 	bulletManager_->Update();
 
@@ -153,6 +142,64 @@ void GamePlayScene::Update() {
 	//当たり判定の更新
 	CheckAllCollisions();
 
+	if (behaviorRequest_) {
+
+		behavior_ = behaviorRequest_.value();
+
+		switch (behavior_) {
+		case SceneBehavior::GAMESTART:
+
+			InitializeGameStart();
+			break;
+		case SceneBehavior::GAMEPLAY:
+
+			InitializeGamePlay();
+			break;
+		case SceneBehavior::GAMEOVER:
+
+			InitializeGameOver();
+			break;
+		case SceneBehavior::GAMECLEAR:
+
+			InitializeGameClear();
+			break;
+		case SceneBehavior::PAUSE:
+
+			InitializePause();
+			break;
+		default:
+			break;
+		}
+
+		behaviorRequest_ = std::nullopt;
+	}
+	
+	switch (behavior_) {
+	case SceneBehavior::GAMESTART:
+
+		UpdateGameStart();
+		break;
+	case SceneBehavior::GAMEPLAY:
+
+		UpdateGamePlay();
+		break;
+	case SceneBehavior::GAMEOVER:
+
+		UpdateGameOver();
+		break;
+	case SceneBehavior::GAMECLEAR:
+
+		UpdateGameClear();
+		break;
+	case SceneBehavior::PAUSE:
+
+		UpdatePause();
+		break;
+	default:
+		break;
+	}
+
+
 
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
 		//シーン切り替え依頼
@@ -162,7 +209,8 @@ void GamePlayScene::Update() {
 		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 	} else if (Input::GetInstance()->TriggerKey(DIK_O)) {
 		//AudioManager::GetInstance()->SoundUnload(&BGM);
-		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+		fadeTimer_ = 2.0f;
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
 	}
 }
 
@@ -249,6 +297,74 @@ void GamePlayScene::Draw() {
 
 }
 
+//====================================================================
+// ゲームスタート時の処理
+//====================================================================
+
+void GamePlayScene::InitializeGameStart() {}
+
+void GamePlayScene::UpdateGameStart() {}
+
+//====================================================================
+// ゲームプレイ時の処理
+//====================================================================
+void GamePlayScene::InitializeGamePlay() {}
+
+void GamePlayScene::UpdateGamePlay() {
+
+	//playerReticleの更新
+	playerReticle_->Update(player_->GetFocusTargetPos());
+
+	//playerのHPバーの更新
+	playerHpBar_->Update(player_->GetHealth(), player_->GetMaxHealth());
+	//enemyのHPバーの更新
+	enemyHpBar_->Update(enemy_->GetHealth(), enemy_->GetMaxHealth());
+
+	//playerのエネルギーUIの更新
+	energyInfoUI_->SetOverHeatState(player_->GetIsOverHeated());
+	energyInfoUI_->Update(player_->GetEnergy(), player_->GetMaxEnergy());
+
+	if (player_->GetHealth() <= 0.0f) {
+		//プレイヤーのHPが0以下になったらゲームオーバー
+		behaviorRequest_ = SceneBehavior::GAMEOVER;
+
+	} else if (enemy_->GetHealth() <= 0.0f) {
+		//エネミーのHPが0以下になったらゲームクリア
+		behaviorRequest_ = SceneBehavior::GAMECLEAR;
+	}
+
+}
+
+
+//====================================================================
+// ゲームオーバー時の処理
+//====================================================================
+void GamePlayScene::InitializeGameOver() {}
+
+void GamePlayScene::UpdateGameOver() {}
+//====================================================================
+// ゲームクリア時の処理
+//====================================================================
+void GamePlayScene::InitializeGameClear() {
+
+	fadeTimer_ = 2.0f;
+	SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
+}
+
+void GamePlayScene::UpdateGameClear() {
+
+}
+
+//====================================================================
+// ポーズ時の処理
+//====================================================================
+void GamePlayScene::InitializePause() {}
+
+void GamePlayScene::UpdatePause() {}
+
+//====================================================================
+//			全ての当たり判定のチェック
+//====================================================================
 void GamePlayScene::CheckAllCollisions() {
 
 	CollisionManager::GetInstance()->ClearGameCharacter();

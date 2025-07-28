@@ -22,6 +22,7 @@ public:
 	void Draw();
 
 	void ChangeScene(const std::string& sceneName);
+	void ChangeScene(const std::string& sceneName, float transitionTime);
 
 	void ChangeToNextScene();
 
@@ -52,6 +53,8 @@ private:
 
 	//ImGuiCombo用インデックス
 	uint32_t itemCurrentIdx = 0;
+	// 遷移時間
+	float transitionTime_ = 0.5f;
 	// レベルデータの格納
 	LevelData* levelData_; 
 	// レベル内のオブジェクトのリスト

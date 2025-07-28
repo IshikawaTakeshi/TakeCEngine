@@ -25,6 +25,7 @@
 #include "PostEffect/PostEffectManager.h"
 #include "PostEffect/RenderTexture.h"
 #include "scene/SceneManager.h"
+#include "scene/SceneTransition.h"
 #include "scene/AbstractSceneFactory.h"
 #include "Utility/Logger.h"
 #include "Utility/ResourceBarrier.h"
@@ -83,6 +84,7 @@ protected:
 	Object3dCommon* object3dCommon_ = nullptr;
 	ParticleCommon* particleCommon_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
+	SceneTransition* sceneTransition_ = nullptr;
 	ImGuiManager* imguiManager_ = nullptr;
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;
 	static std::unique_ptr<Animator> animator_;

@@ -55,27 +55,27 @@ public:
 
 private:
 
-	////ゲーム開始時の初期化
-	//void InitializeGameStart();
-	////ゲームプレイ時の初期化
-	//void InitializeGamePlay();
-	////ゲームオーバー時の初期化
-	//void InitializeGameOver();
-	////ゲームクリア時の初期化
-	//void InitializeGameClear();
-	////ポーズ時の初期化
-	//void InitializePause();
+	//ゲーム開始時の初期化
+	void InitializeGameStart();
+	//ゲームプレイ時の初期化
+	void InitializeGamePlay();
+	//ゲームオーバー時の初期化
+	void InitializeGameOver();
+	//ゲームクリア時の初期化
+	void InitializeGameClear();
+	//ポーズ時の初期化
+	void InitializePause();
 
-	////ゲーム開始時の更新
-	//void UpdateGameStart();
-	////ゲームプレイ時の更新
-	//void UpdateGamePlay();
-	////ゲームオーバー時の更新
-	//void UpdateGameOver();
-	////ゲームクリア時の更新
-	//void UpdateGameClear();
-	////ポーズ時の更新
-	//void UpdatePause();
+	//ゲーム開始時の更新
+	void UpdateGameStart();
+	//ゲームプレイ時の更新
+	void UpdateGamePlay();
+	//ゲームオーバー時の更新
+	void UpdateGameOver();
+	//ゲームクリア時の更新
+	void UpdateGameClear();
+	//ポーズ時の更新
+	void UpdatePause();
 
 	//全ての当たり判定のチェック
 	void CheckAllCollisions();
@@ -108,4 +108,7 @@ private:
 	std::unique_ptr<BulletManager> bulletManager_ = nullptr;
 
 	std::map<std::string,std::unique_ptr<LevelObject>> levelObjects_;
+
+	//画面遷移時間
+	float fadeTimer_ = 0.0f;
 };
