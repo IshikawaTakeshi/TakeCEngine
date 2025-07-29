@@ -88,6 +88,9 @@ void GamePlayScene::Initialize() {
 	energyInfoUI_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
 	energyInfoUI_->SetSize({ 500.0f, 10.0f }); // エネルギーUIのサイズ
 	energyInfoUI_->SetPosition({ 250.0f, 525.0f }); // エネルギーUIの位置
+	//bulletCounterUI
+	bulletCounterUI_ = std::make_unique<BulletCounterUI>();
+	bulletCounterUI_->Initialize(SpriteCommon::GetInstance());
 
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
@@ -228,6 +231,7 @@ void GamePlayScene::UpdateImGui() {
 	enemyHpBar_->UpdateImGui("enemy");
 	playerReticle_->UpdateImGui();
 	energyInfoUI_->UpdateImGui("player");
+	bulletCounterUI_->UpdateImGui();
 	ImGui::Begin("Level Objects");
 	for(auto& object : levelObjects_) {
 		object.second->UpdateImGui();
@@ -291,6 +295,8 @@ void GamePlayScene::Draw() {
 	enemyHpBar_->Draw();  //敵のHPバーの描画
 	//エネルギーUIの描画
 	energyInfoUI_->Draw();
+	//弾カウンターUIの描画
+	bulletCounterUI_->Draw();
 #pragma endregion
 
 	//GPUパーティクルの描画
@@ -324,6 +330,8 @@ void GamePlayScene::UpdateGamePlay() {
 	//playerのエネルギーUIの更新
 	energyInfoUI_->SetOverHeatState(player_->GetIsOverHeated());
 	energyInfoUI_->Update(player_->GetEnergy(), player_->GetMaxEnergy());
+	//bulletCounterUIの更新
+	bulletCounterUI_->Update();
 
 	if (player_->GetHealth() <= 0.0f) {
 		//プレイヤーのHPが0以下になったらゲームオーバー

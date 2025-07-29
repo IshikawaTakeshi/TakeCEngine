@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <cstdint>
+#include <vector>
 
 class SpriteCommon;
 class Sprite;
@@ -38,5 +39,8 @@ private:
 
 	bool isReloading_ = false; // リロード中かどうかのフラグ
 	float reloadTimer_ = 0.0f; // リロードタイマー
+	//スプライトの間隔
+	float spriteSpace_ = 5.0f; // スプライト間の間隔
+	Vector2 bulletCounterPos_ = { 50.0f, 100.0f }; // スプライトの位置
 };
 
