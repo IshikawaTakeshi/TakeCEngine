@@ -46,6 +46,7 @@ void GamePlayScene::Initialize() {
 #pragma endregion
 
 	//levelObjectの初期化
+	sceneManager_->LoadLevelData("levelData_gameScene");
 	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
 
 	for (auto& object : levelObjects_) {

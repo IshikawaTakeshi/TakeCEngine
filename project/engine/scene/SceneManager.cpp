@@ -186,8 +186,7 @@ void SceneManager::ChangeScene(const std::string& sceneName) {
 
 	// 既存のオブジェクトをクリア
 	levelObjects_.clear();
-	// レベルデータの読み込み
-	LoadLevelData("levelData_gameScene");
+
 	// 新しいシーンを作成
 	if(nextScene_ == nullptr) {
 		SceneTransition::GetInstance()->Start(SceneTransition::TransitionState::FADE_OUT, transitionTime_);
@@ -200,8 +199,6 @@ void SceneManager::ChangeScene(const std::string& sceneName, float transitionTim
 
 	// 既存のオブジェクトをクリア
 	levelObjects_.clear();
-	// レベルデータの読み込み
-	LoadLevelData("levelData_gameScene");
 
 	if (nextScene_ == nullptr) {
 		SceneTransition::GetInstance()->Start(SceneTransition::TransitionState::FADE_OUT, transitionTime);
