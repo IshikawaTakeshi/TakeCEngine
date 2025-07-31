@@ -763,7 +763,7 @@ bool Enemy::ShouldStartAttack(int weaponIndex) {
 	auto* weapon = weapons_[weaponIndex].get();
 	float distance = (focusTargetPos_ - transform_.translate).Length();
 	float range = orbitRadius_ * 3.5f;
-	bool cooldownReady = weapon->IsAvailable();
+	bool cooldownReady = weapon->GetIsAvailable();
 	// 例: 一定確率で攻撃開始
 	return (distance <= range) && cooldownReady && (rand() % 100 < attackProbability_); // 10%の確率
 }

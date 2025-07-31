@@ -58,14 +58,16 @@ public:
 	virtual uint32_t GetMaxBulletCount() const;
 	//一度に撃てる弾容量の取得
 	virtual uint32_t GetMagazineCount() const;
-
 	// チャージ中かどうか
 	virtual bool IsCharging() const;
 	// チャージ時間を取得
 	virtual float GetChargeTime() const;
 	// 必要チャージ時間を取得
 	virtual float GetRequiredChargeTime() const;
-
+	//使用可能かどうか
+	virtual bool GetIsAvailable() const { return isAvailable_; }
+	//リロード中かどうか
+	virtual bool GetIsReloading() const { return isReloading_; }
 
 	//チャージ攻撃可能か
 	virtual bool IsChargeAttack() const = 0;
@@ -90,8 +92,6 @@ public:
 	//弾数の設定
 	virtual void SetBulletCount(int32_t count);
 
-	//使用可能かどうか
-	virtual bool IsAvailable() const { return isAvailable_; }
 
 protected:
 
@@ -120,7 +120,9 @@ protected:
 	//弾のスピード
 	float bulletSpeed_ = 0.0f;
 	//使用可能か
-	bool isAvailable_ = true; // 武器が使用可能かどうか
+	bool isAvailable_ = true;
+	//リロード中かどうか
+	bool isReloading_ = false;
 
 	uint32_t bulletCount_ = 0; // 現在の弾数
 	uint32_t magazineCount_ = 0; // マガジン内の弾数
