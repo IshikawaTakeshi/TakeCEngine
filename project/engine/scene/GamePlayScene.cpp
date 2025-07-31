@@ -46,6 +46,7 @@ void GamePlayScene::Initialize() {
 #pragma endregion
 
 	//levelObjectの初期化
+	sceneManager_->LoadLevelData("levelData_gameScene");
 	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
 
 	for (auto& object : levelObjects_) {
@@ -74,11 +75,22 @@ void GamePlayScene::Initialize() {
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
+	//Enemy
+	enemy_ = std::make_unique<Enemy>();
+	enemy_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
+	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
+	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
+
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
 	playerHpBar_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
 	playerHpBar_->SetSize({ 200.0f, 10.0f }); // HPバーのサイズ
 	playerHpBar_->SetPosition({ 50.0f, 500.0f }); // HPバーの位置
+	// enemyHpBar
+	enemyHpBar_ = std::make_unique<HPBar>();
+	enemyHpBar_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
+	enemyHpBar_->SetSize({ 500.0f, 10.0f }); // HPバーのサイズ
+	enemyHpBar_->SetPosition({ 250.0f, 35.0f }); // HPバーの位置
 	//playerReticle
 	playerReticle_ = std::make_unique<PlayerReticle>();
 	playerReticle_->Initialize();
@@ -87,16 +99,20 @@ void GamePlayScene::Initialize() {
 	energyInfoUI_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
 	energyInfoUI_->SetSize({ 500.0f, 10.0f }); // エネルギーUIのサイズ
 	energyInfoUI_->SetPosition({ 250.0f, 525.0f }); // エネルギーUIの位置
-
-	//Enemy
-	enemy_ = std::make_unique<Enemy>();
-	enemy_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
-	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
-	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
-	enemyHpBar_ = std::make_unique<HPBar>();
-	enemyHpBar_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
-	enemyHpBar_->SetSize({ 500.0f, 10.0f }); // HPバーのサイズ
-	enemyHpBar_->SetPosition({ 250.0f, 35.0f }); // HPバーの位置
+	//bulletCounterUI
+	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
+	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
+	bulletCounterUI_[0]->Initialize(SpriteCommon::GetInstance());
+	bulletCounterUI_[0]->SetBulletCounterPosition({ 750.0f, 500.0f });
+	bulletCounterUI_[1] = std::make_unique<BulletCounterUI>();
+	bulletCounterUI_[1]->Initialize(SpriteCommon::GetInstance());
+	bulletCounterUI_[1]->SetBulletCounterPosition({ 850.0f, 500.0f });
+	bulletCounterUI_[2] = std::make_unique<BulletCounterUI>();
+	bulletCounterUI_[2]->Initialize(SpriteCommon::GetInstance());
+	bulletCounterUI_[2]->SetBulletCounterPosition({ 750.0f, 550.0f });
+	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
+	bulletCounterUI_[3]->Initialize(SpriteCommon::GetInstance());
+	bulletCounterUI_[3]->SetBulletCounterPosition({ 850.0f, 550.0f });
 }
 
 //====================================================================
@@ -123,10 +139,10 @@ void GamePlayScene::Update() {
 	
 	//enemy
 	enemy_->SetFocusTargetPos(player_->GetObject3d()->GetTranslate());
-	enemy_->Update();
+	//enemy_->Update();
 
 	//player
-	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
+	//player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
 	player_->Update();
 
 	//弾の更新
@@ -227,6 +243,9 @@ void GamePlayScene::UpdateImGui() {
 	enemyHpBar_->UpdateImGui("enemy");
 	playerReticle_->UpdateImGui();
 	energyInfoUI_->UpdateImGui("player");
+	for(int i = 0; i < 4; i++) {
+		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
+	}
 	ImGui::Begin("Level Objects");
 	for(auto& object : levelObjects_) {
 		object.second->UpdateImGui();
@@ -255,7 +274,7 @@ void GamePlayScene::Draw() {
 
 	Object3dCommon::GetInstance()->PreDraw();
 	player_->Draw();
-	enemy_->Draw();
+	//enemy_->Draw();
 	bulletManager_->Draw();
 	for (auto& object : levelObjects_) {
 		object.second->Draw();
@@ -265,11 +284,8 @@ void GamePlayScene::Draw() {
 
 	//当たり判定の描画前処理
 	player_->DrawCollider();
-	enemy_->DrawCollider();
+	//enemy_->DrawCollider();
 	bulletManager_->DrawCollider();
-	for (auto& object : levelObjects_) {
-		object.second->DrawCollider();
-	}
 
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
@@ -290,6 +306,10 @@ void GamePlayScene::Draw() {
 	enemyHpBar_->Draw();  //敵のHPバーの描画
 	//エネルギーUIの描画
 	energyInfoUI_->Draw();
+	//弾カウンターUIの描画
+	for(auto& bulletUI : bulletCounterUI_) {
+		bulletUI->Draw();
+	}
 #pragma endregion
 
 	//GPUパーティクルの描画
@@ -323,6 +343,12 @@ void GamePlayScene::UpdateGamePlay() {
 	//playerのエネルギーUIの更新
 	energyInfoUI_->SetOverHeatState(player_->GetIsOverHeated());
 	energyInfoUI_->Update(player_->GetEnergy(), player_->GetMaxEnergy());
+	//bulletCounterUIの更新
+	for (int i = 0; i < 3; i++) {
+		bulletCounterUI_[i]->SetBulletCount(player_->GetWeapon(i)->GetBulletCount());
+		bulletCounterUI_[i]->SetMaxBulletCount(player_->GetWeapon(i)->GetMaxBulletCount());
+		bulletCounterUI_[i]->Update();
+	}
 
 	if (player_->GetHealth() <= 0.0f) {
 		//プレイヤーのHPが0以下になったらゲームオーバー

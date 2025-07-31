@@ -1,12 +1,14 @@
 #pragma once
 #include "engine/Entity/GameCharacter.h"
-#include "Weapon/BaseWeapon.h"
-#include "Weapon/WeaponType.h"
-#include "camera/Camera.h"
-#include "Particle/ParticleEmitter.h"
-#include "Weapon/Bullet/BulletManager.h"
 #include "engine/io/Gamepad.h"
+#include "engine/camera/Camera.h"
+#include "engine/3d/Particle/ParticleEmitter.h"
 #include <optional>
+
+#include "application/Weapon/BaseWeapon.h"
+#include "application/Weapon/WeaponType.h"
+#include "application/Weapon/Bullet/BulletManager.h"
+#include "application/Entity/GameCharacterBehavior.h"
 
 class Player : public GameCharacter {
 public:
@@ -26,6 +28,8 @@ public:
 	//==============================================================================
 	// getter
 	//==============================================================================
+
+	BaseWeapon* GetWeapon(int index) const;
 
 	//移動方向ベクトルの取得
 	const Vector3& GetMoveDirection() const { return moveDirection_; }
@@ -63,18 +67,7 @@ public:
 
 private:
 
-	enum class Behavior {
-		IDLE,             // 待機状態
-		RUNNING,          // 移動状態
-		JUMP,             // ジャンプ状態
-		DASH,             // ダッシュ状態
-		CHARGESHOOT,      //チャージ攻撃中
-		CHARGESHOOT_STUN, // チャージショット後の硬直状態
-		HEAVYDAMAGE,	  // 大ダメージによる硬直状態
-		STEPBOOST,        // ステップブースト
-		FLOATING,         // 浮遊状態
-		DEAD,             // 死亡状態
-	};
+
 
 	void InitRunning();
 	void InitJump();

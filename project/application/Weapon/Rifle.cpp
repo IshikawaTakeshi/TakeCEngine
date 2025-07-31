@@ -21,8 +21,9 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 	weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
 	damage_ = 90.0f;
 	attackInterval_ = kAttackInterval;
-	bulletCount_ = 30;
-	maxBulletCount_ = 30;
+	magazineCount_ = 30; // マガジン内の弾数を設定
+	bulletCount_ = magazineCount_;
+	maxBulletCount_ = 600;
 	bulletSpeed_ = 400.0f; // 弾のスピードを設定
 
 	isChargeAttack_ = false; // ライフルはチャージ攻撃可能
@@ -75,7 +76,6 @@ void Rifle::UpdateImGui() {
 	ImGui::Text("required Charge Time: %.2f", requiredChargeTime_);
 	ImGui::Text("Is Charging: %s", isCharging_ ? "Yes" : "No");
 	ImGui::SliderFloat("Bullet Speed", &bulletSpeed_, 100.0f, 1000.0f);
-	ImGui::SliderInt("Max Bullet Count", &maxBulletCount_, 1, 100);
 	ImGui::Separator();
 	if(ImGui::TreeNode("Rifle Settings")) {
 		ImGui::Text("Weapon Type: Rifle");
@@ -118,7 +118,7 @@ void Rifle::Attack() {
 	//弾数の減少
 	bulletCount_--;
 	if (bulletCount_ <= 0) {
-		bulletCount_ = maxBulletCount_;
+		bulletCount_ = magazineCount_;
 	}
 	//攻撃間隔のリセット
 	attackInterval_ = kAttackInterval;

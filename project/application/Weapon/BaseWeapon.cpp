@@ -6,19 +6,33 @@ void BaseWeapon::AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jo
 }
 
 const Vector3& BaseWeapon::GetTragetPos() const {
+	// ターゲットの座標を返す
 	return targetPos_;
 }
 
 float BaseWeapon::GetBulletSpeed() const {
+	// 弾速を返す
 	return bulletSpeed_;
 }
 
 float BaseWeapon::GetAttackPower() const {
+	// 攻撃力を返す
 	return damage_;
 }
 
-int32_t BaseWeapon::GetBulletCount() const {
+uint32_t BaseWeapon::GetBulletCount() const {
+	// 現在の弾数を返す
 	return bulletCount_;
+}
+
+uint32_t BaseWeapon::GetMaxBulletCount() const {
+	// 最大弾数を返す
+	return maxBulletCount_;
+}
+
+uint32_t BaseWeapon::GetMagazineCount() const {
+	// 一度に撃てる弾容量を返す
+	return magazineCount_;
 }
 
 bool BaseWeapon::IsCharging() const {

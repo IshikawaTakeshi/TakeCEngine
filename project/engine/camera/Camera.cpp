@@ -21,7 +21,7 @@ void Camera::Initialize(ID3D12Device* device) {
 	fovX_ = 0.45f;
 	aspectRatio_ = float(WinApp::kScreenWidth / 2) / float(WinApp::kScreenHeight / 2);
 	nearClip_ = 0.1f;
-	farClip_ = 1000.0f;
+	farClip_ = 2000.0f;
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(fovX_, aspectRatio_, nearClip_, farClip_);
@@ -147,8 +147,8 @@ void Camera::UpdateDebugCamera() {
 	transform_.rotate = rotationDelta * transform_.rotate;
 
 	if (Input::GetInstance()->IsPressMouse(2)) {
-		offsetDelta_.x += (float)Input::GetInstance()->GetMouseMove().lX * 0.01f;
-		offsetDelta_.y -= (float)Input::GetInstance()->GetMouseMove().lY * 0.01f;
+		offsetDelta_.x += (float)Input::GetInstance()->GetMouseMove().lX * 0.1f;
+		offsetDelta_.y -= (float)Input::GetInstance()->GetMouseMove().lY * 0.1f;
 	}
 
 	// オフセットを考慮したワールド行列の計算

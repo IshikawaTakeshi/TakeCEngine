@@ -30,6 +30,10 @@ private:
 
 	void LoadAnimation();
 
+	void LoadTexture();
+
+	void LoadSound();
+
 private:
 
 	std::shared_ptr<BaseScene> currentScene_;

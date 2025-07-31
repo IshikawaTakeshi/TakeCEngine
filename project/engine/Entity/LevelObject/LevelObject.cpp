@@ -97,4 +97,9 @@ void LevelObject::OnCollisionAction(GameCharacter* other) {
 	   other->GetCharacterType() == CharacterType::ENEMY_BULLET) {
 		isBlinking_ = true; // 点滅開始
 	} 
+
+	if(other->GetCharacterType() == CharacterType::PLAYER) {
+		// ここにレベルオブジェクトとプレイヤーまたは敵の衝突時の処理を追加
+		collider_->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f });
+	} 
 }

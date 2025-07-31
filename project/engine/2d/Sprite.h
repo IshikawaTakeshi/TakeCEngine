@@ -36,9 +36,7 @@ public:
 	/// </summary>
 	void Update();
 
-	#ifdef _DEBUG
-	void UpdateImGui(const std::string& name);
-	#endif // _DEBUG
+	void UpdateImGui([[maybe_unused]]const std::string& name);
 
 	/// <summary>
 	/// 描画処理

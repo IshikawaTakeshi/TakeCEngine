@@ -135,3 +135,12 @@ void MyGame::LoadAnimation() {
 	//TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
 	//TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
 }
+
+void MyGame::LoadTexture() {
+
+	TextureManager::GetInstance()->LoadTexture("UI/TitleText.png",false);
+	TextureManager::GetInstance()->LoadTexture("UI/GameClearText.png",false);
+	TextureManager::GetInstance()->LoadTexture("UI/GameOverText.png", false);
+	TextureManager::GetInstance()->LoadTexture("UI/reticle_focusTarget.png", false);
+	TextureManager::GetInstance()->LoadTexture("UI/numText.png", false);
+}
