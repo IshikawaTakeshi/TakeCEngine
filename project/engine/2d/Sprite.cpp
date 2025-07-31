@@ -112,8 +112,8 @@ void Sprite::Update() {
 	wvpData_->World = worldMatrix_;
 }
 
+void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 #ifdef _DEBUG
-void Sprite::UpdateImGui(const std::string& name) {
 	//ImGuiの更新
 	std::string windowName = "Sprite" + name;
 	ImGui::Begin("Sprite");
@@ -129,8 +129,8 @@ void Sprite::UpdateImGui(const std::string& name) {
 		ImGui::TreePop();
 	}
 	ImGui::End();
-}
 #endif // DEBUG
+}
 
 void Sprite::UpdateVertexData() {
 	//頂点データ

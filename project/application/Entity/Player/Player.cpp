@@ -92,6 +92,10 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bull
 	weapons_[2]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack"); // 3つ目の武器を背中に取り付け
 }
 
+BaseWeapon* Player::GetWeapon(int index) const {
+	return nullptr;
+}
+
 //===================================================================================
 // 全体の更新処理
 //===================================================================================

@@ -24,10 +24,13 @@ public:
 	uint32_t GetBulletCount() const;
 	uint32_t GetMaxBulletCount() const;
 
+	const Vector2& GetBulletCounterPosition() const;
+
 	void SetBulletCount(uint32_t count);
 	void SetMaxBulletCount(uint32_t count);
 	void SetReloadingState(bool isReloading);
 	void SetReloadTimer(float timer);
+	void SetBulletCounterPosition(const Vector2& position);
 
 private:
 

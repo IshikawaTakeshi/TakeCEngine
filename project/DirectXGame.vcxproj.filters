@@ -435,9 +435,6 @@
     <ClInclude Include="engine\Collision\CollisionManager.h">
       <Filter>engine\collision</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Collision\CollisionTypeIdDef.h">
-      <Filter>engine\collision</Filter>
-    </ClInclude>
     <ClInclude Include="engine\base\D3DResourceLeakChecker.h">
       <Filter>engine\base</Filter>
     </ClInclude>

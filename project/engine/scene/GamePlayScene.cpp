@@ -75,11 +75,22 @@ void GamePlayScene::Initialize() {
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
+	//Enemy
+	enemy_ = std::make_unique<Enemy>();
+	enemy_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
+	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
+	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
+
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
 	playerHpBar_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
 	playerHpBar_->SetSize({ 200.0f, 10.0f }); // HPバーのサイズ
 	playerHpBar_->SetPosition({ 50.0f, 500.0f }); // HPバーの位置
+	// enemyHpBar
+	enemyHpBar_ = std::make_unique<HPBar>();
+	enemyHpBar_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
+	enemyHpBar_->SetSize({ 500.0f, 10.0f }); // HPバーのサイズ
+	enemyHpBar_->SetPosition({ 250.0f, 35.0f }); // HPバーの位置
 	//playerReticle
 	playerReticle_ = std::make_unique<PlayerReticle>();
 	playerReticle_->Initialize();
@@ -89,18 +100,19 @@ void GamePlayScene::Initialize() {
 	energyInfoUI_->SetSize({ 500.0f, 10.0f }); // エネルギーUIのサイズ
 	energyInfoUI_->SetPosition({ 250.0f, 525.0f }); // エネルギーUIの位置
 	//bulletCounterUI
-	bulletCounterUI_ = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_->Initialize(SpriteCommon::GetInstance());
-
-	//Enemy
-	enemy_ = std::make_unique<Enemy>();
-	enemy_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
-	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
-	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
-	enemyHpBar_ = std::make_unique<HPBar>();
-	enemyHpBar_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
-	enemyHpBar_->SetSize({ 500.0f, 10.0f }); // HPバーのサイズ
-	enemyHpBar_->SetPosition({ 250.0f, 35.0f }); // HPバーの位置
+	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
+	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
+	bulletCounterUI_[0]->Initialize(SpriteCommon::GetInstance());
+	bulletCounterUI_[0]->SetBulletCounterPosition({ 750.0f, 500.0f });
+	bulletCounterUI_[1] = std::make_unique<BulletCounterUI>();
+	bulletCounterUI_[1]->Initialize(SpriteCommon::GetInstance());
+	bulletCounterUI_[1]->SetBulletCounterPosition({ 850.0f, 500.0f });
+	bulletCounterUI_[2] = std::make_unique<BulletCounterUI>();
+	bulletCounterUI_[2]->Initialize(SpriteCommon::GetInstance());
+	bulletCounterUI_[2]->SetBulletCounterPosition({ 750.0f, 550.0f });
+	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
+	bulletCounterUI_[3]->Initialize(SpriteCommon::GetInstance());
+	bulletCounterUI_[3]->SetBulletCounterPosition({ 850.0f, 550.0f });
 }
 
 //====================================================================
@@ -231,7 +243,9 @@ void GamePlayScene::UpdateImGui() {
 	enemyHpBar_->UpdateImGui("enemy");
 	playerReticle_->UpdateImGui();
 	energyInfoUI_->UpdateImGui("player");
-	bulletCounterUI_->UpdateImGui();
+	for(auto& bulletUI : bulletCounterUI_) {
+		bulletUI->UpdateImGui();
+	}
 	ImGui::Begin("Level Objects");
 	for(auto& object : levelObjects_) {
 		object.second->UpdateImGui();
@@ -272,9 +286,6 @@ void GamePlayScene::Draw() {
 	player_->DrawCollider();
 	//enemy_->DrawCollider();
 	bulletManager_->DrawCollider();
-	for (auto& object : levelObjects_) {
-		object.second->DrawCollider();
-	}
 
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
@@ -296,7 +307,9 @@ void GamePlayScene::Draw() {
 	//エネルギーUIの描画
 	energyInfoUI_->Draw();
 	//弾カウンターUIの描画
-	bulletCounterUI_->Draw();
+	for(auto& bulletUI : bulletCounterUI_) {
+		bulletUI->Draw();
+	}
 #pragma endregion
 
 	//GPUパーティクルの描画
@@ -331,7 +344,10 @@ void GamePlayScene::UpdateGamePlay() {
 	energyInfoUI_->SetOverHeatState(player_->GetIsOverHeated());
 	energyInfoUI_->Update(player_->GetEnergy(), player_->GetMaxEnergy());
 	//bulletCounterUIの更新
-	bulletCounterUI_->Update();
+	for (int i = 0; i < 4; i++) {
+		//bulletCounterUI_[i]->SetBulletCount();
+		bulletCounterUI_[i]->Update();
+	}
 
 	if (player_->GetHealth() <= 0.0f) {
 		//プレイヤーのHPが0以下になったらゲームオーバー

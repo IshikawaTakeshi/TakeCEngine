@@ -4,6 +4,7 @@
 #include "engine/base/ImGuiManager.h"
 #include "engine/math/Easing.h"
 #include "engine/base/TakeCFrameWork.h"
+#include "application/Weapon/BaseWeapon.h"
 
 void BulletCounterUI::Initialize(SpriteCommon* spriteCommon) {
 
@@ -24,11 +25,6 @@ void BulletCounterUI::Initialize(SpriteCommon* spriteCommon) {
 
 		bulletCounterSprite_.push_back(std::move(sprite));
 	}
-
-
-	//WeaponPositionSprite_[0] = std::make_unique<Sprite>();
-	//WeaponPositionSprite_[0]->Initialize(spriteCommon, "UI/WeaponPosition.png");
-	//WeaponPositionSprite_[0]->AdjustTextureSize();
 
 	reloadSprite_ = std::make_unique<Sprite>();
 	reloadSprite_->Initialize(spriteCommon, "UI/ReloadText.png");
@@ -80,11 +76,18 @@ void BulletCounterUI::UpdateImGui() {
 }
 
 uint32_t BulletCounterUI::GetBulletCount() const {
+	// 現在の弾数を返す
 	return bulletCount_;
 }
 
 uint32_t BulletCounterUI::GetMaxBulletCount() const {
+	// 最大弾数を返す
 	return maxBulletCount_;
+}
+
+const Vector2& BulletCounterUI::GetBulletCounterPosition() const {
+	// 弾数カウンターの位置を返す
+	return bulletCounterPos_;
 }
 
 void BulletCounterUI::SetBulletCount(uint32_t count) {
@@ -101,4 +104,15 @@ void BulletCounterUI::SetReloadingState(bool isReloading) {
 
 void BulletCounterUI::SetReloadTimer(float timer) {
 	reloadTimer_ = timer;
+}
+
+void BulletCounterUI::SetBulletCounterPosition(const Vector2& position) {
+
+	bulletCounterPos_ = position;
+	for (int i = 0; i < 3; ++i) {
+		bulletCounterSprite_[i]->SetPosition({
+			bulletCounterPos_.x + i * (bulletCounterSprite_[i]->GetSize().x - spriteSpace_),
+			bulletCounterPos_.y
+		});
+	}
 }

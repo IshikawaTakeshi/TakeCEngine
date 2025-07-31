@@ -53,7 +53,11 @@ public:
 	//攻撃力の取得
 	virtual float GetAttackPower() const;
 	//弾数の取得
-	virtual int32_t GetBulletCount() const;
+	virtual uint32_t GetBulletCount() const;
+	//最大弾数の取得
+	virtual uint32_t GetMaxBulletCount() const;
+	//一度に撃てる弾容量の取得
+	virtual uint32_t GetMagazineCount() const;
 
 	// チャージ中かどうか
 	virtual bool IsCharging() const;
@@ -113,14 +117,14 @@ protected:
 	float damage_ = 0.0f;
 	//攻撃間隔
 	float attackInterval_ = 0.0f;
-	//弾数
-	int32_t bulletCount_ = 0;
-	//弾薬の最大数
-	int32_t maxBulletCount_;
 	//弾のスピード
 	float bulletSpeed_ = 0.0f;
 	//使用可能か
 	bool isAvailable_ = true; // 武器が使用可能かどうか
+
+	uint32_t bulletCount_ = 0; // 現在の弾数
+	uint32_t magazineCount_ = 0; // マガジン内の弾数
+	uint32_t maxBulletCount_ = 0; // 最大弾数
 
 	// チャージ攻撃
 	bool isCharging_ = false;  // チャージ攻撃フラグ

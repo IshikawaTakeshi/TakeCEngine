@@ -102,7 +102,7 @@ private:
 	std::unique_ptr<HPBar> playerHpBar_ = nullptr;
 	std::unique_ptr<PlayerReticle> playerReticle_ = nullptr;
 	std::unique_ptr<EnergyInfoUI> energyInfoUI_ = nullptr;
-	std::unique_ptr<BulletCounterUI> bulletCounterUI_ = nullptr;
+	std::vector<std::unique_ptr<BulletCounterUI>> bulletCounterUI_;
 	//enemy
 	std::unique_ptr<Enemy> enemy_ = nullptr;
 	std::unique_ptr<HPBar> enemyHpBar_ = nullptr;

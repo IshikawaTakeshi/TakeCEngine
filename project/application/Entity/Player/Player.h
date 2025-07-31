@@ -27,6 +27,8 @@ public:
 	// getter
 	//==============================================================================
 
+	BaseWeapon* GetWeapon(int index) const;
+
 	//移動方向ベクトルの取得
 	const Vector3& GetMoveDirection() const { return moveDirection_; }
 	//移動ベクトルの取得

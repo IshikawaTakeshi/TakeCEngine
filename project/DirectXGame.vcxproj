@@ -230,7 +230,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Primitive\PrimitiveType.h" />
     <ClInclude Include="engine\Collision\Collider.h" />
     <ClInclude Include="engine\Collision\CollisionManager.h" />
-    <ClInclude Include="engine\Collision\CollisionTypeIdDef.h" />
     <ClInclude Include="application\Ground\Ground.h" />
     <ClInclude Include="application\UI\HPBar.h" />
     <ClInclude Include="engine\scene\GameClearScene.h" />

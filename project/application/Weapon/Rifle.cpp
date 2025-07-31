@@ -75,7 +75,6 @@ void Rifle::UpdateImGui() {
 	ImGui::Text("required Charge Time: %.2f", requiredChargeTime_);
 	ImGui::Text("Is Charging: %s", isCharging_ ? "Yes" : "No");
 	ImGui::SliderFloat("Bullet Speed", &bulletSpeed_, 100.0f, 1000.0f);
-	ImGui::SliderInt("Max Bullet Count", &maxBulletCount_, 1, 100);
 	ImGui::Separator();
 	if(ImGui::TreeNode("Rifle Settings")) {
 		ImGui::Text("Weapon Type: Rifle");
