@@ -26,6 +26,8 @@ void BulletCounterUI::Initialize(SpriteCommon* spriteCommon) {
 		bulletCounterSprite_.push_back(std::move(sprite));
 	}
 
+	digits_.resize(3, 0); // 初期化時に3桁の数字を保持するための配列
+
 	reloadSprite_ = std::make_unique<Sprite>();
 	reloadSprite_->Initialize(spriteCommon, "UI/ReloadText.png");
 	reloadSprite_->AdjustTextureSize();
@@ -37,12 +39,18 @@ void BulletCounterUI::Initialize(SpriteCommon* spriteCommon) {
 
 void BulletCounterUI::Update() {
 
+	digits_[0] = (bulletCount_ / 100) % 10; // 百の位
+	digits_[1] = (bulletCount_ / 10) % 10;  // 十の位
+	digits_[2] = bulletCount_ % 10;         // 一の位
+
 	for(int i = 0; i < 3; ++i) {
 		// スプライトの位置を更新
 		bulletCounterSprite_[i]->SetPosition({
 			bulletCounterPos_.x + i * (bulletCounterSprite_[i]->GetSize().x - spriteSpace_),
 			bulletCounterPos_.y
 		});
+
+		SetDigitUV(bulletCounterSprite_[i].get(), digits_[i]);
 
 		// スプライトのテクスチャを更新
 		bulletCounterSprite_[i]->Update();
@@ -57,10 +65,10 @@ void BulletCounterUI::Draw() {
 	reloadSprite_->Draw();
 }
 
-void BulletCounterUI::UpdateImGui() {
+void BulletCounterUI::UpdateImGui([[maybe_unused]] const std::string& name) {
 
 	for(int i = 0; i < 3; ++i) {
-		bulletCounterSprite_[i]->UpdateImGui("BulletCounterSprite" + std::to_string(i));
+		bulletCounterSprite_[i]->UpdateImGui(name + std::to_string(i));
 	}
 	ImGui::Begin("BulletCounterUI");
 	ImGui::Text("Bullet Count: %d", bulletCount_);
@@ -115,4 +123,14 @@ void BulletCounterUI::SetBulletCounterPosition(const Vector2& position) {
 			bulletCounterPos_.y
 		});
 	}
+}
+
+void BulletCounterUI::SetDigitUV(Sprite* sprite, int digit) {
+	// 0-9の10個の数字が横に並んでいる場合
+	float uvWidth =sprite->GetTextureSize().x;
+	float uvLeft = digit * uvWidth;
+	float uvTop = 0.0f;
+
+	// スプライトにUV座標を設定
+	sprite->SetTextureLeftTop({ uvLeft, uvTop });
 }

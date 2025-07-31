@@ -19,7 +19,7 @@ public:
 
 	void Draw();
 
-	void UpdateImGui();
+	void UpdateImGui([[maybe_unused]] const std::string& name);
 
 	uint32_t GetBulletCount() const;
 	uint32_t GetMaxBulletCount() const;
@@ -34,11 +34,17 @@ public:
 
 private:
 
+	void SetDigitUV(Sprite* sprite, int digit);
+
+private:
+
 	std::vector<std::unique_ptr<Sprite>> bulletCounterSprite_; // 弾数カウンターのスプライト
 	std::vector<std::unique_ptr<Sprite>> WeaponPositionSprite_; // 武器の位置を示すスプライト
 	std::unique_ptr<Sprite> reloadSprite_; // リロード中のスプライト
 	uint32_t bulletCount_ = 0; // 現在の弾数
 	uint32_t maxBulletCount_ = 100; // 最大弾数
+
+	std::vector<int> digits_;
 
 	bool isReloading_ = false; // リロード中かどうかのフラグ
 	float reloadTimer_ = 0.0f; // リロードタイマー

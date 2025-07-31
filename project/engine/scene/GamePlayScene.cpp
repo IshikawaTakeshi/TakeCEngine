@@ -243,8 +243,8 @@ void GamePlayScene::UpdateImGui() {
 	enemyHpBar_->UpdateImGui("enemy");
 	playerReticle_->UpdateImGui();
 	energyInfoUI_->UpdateImGui("player");
-	for(auto& bulletUI : bulletCounterUI_) {
-		bulletUI->UpdateImGui();
+	for(int i = 0; i < 4; i++) {
+		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
 	ImGui::Begin("Level Objects");
 	for(auto& object : levelObjects_) {
@@ -344,8 +344,9 @@ void GamePlayScene::UpdateGamePlay() {
 	energyInfoUI_->SetOverHeatState(player_->GetIsOverHeated());
 	energyInfoUI_->Update(player_->GetEnergy(), player_->GetMaxEnergy());
 	//bulletCounterUIの更新
-	for (int i = 0; i < 4; i++) {
-		//bulletCounterUI_[i]->SetBulletCount();
+	for (int i = 0; i < 3; i++) {
+		bulletCounterUI_[i]->SetBulletCount(player_->GetWeapon(i)->GetBulletCount());
+		bulletCounterUI_[i]->SetMaxBulletCount(player_->GetWeapon(i)->GetMaxBulletCount());
 		bulletCounterUI_[i]->Update();
 	}
 
