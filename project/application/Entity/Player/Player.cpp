@@ -1,18 +1,19 @@
 #include "Player.h"
-#include "Collision/BoxCollider.h"
-#include "Collision/SphereCollider.h"
-#include "3d/Object3d.h"
-#include "3d/Object3dCommon.h"
-#include "Model.h"
-#include "Input.h"
-#include "camera/CameraManager.h"
+#include "engine/Collision/BoxCollider.h"
+#include "engine/Collision/SphereCollider.h"
+#include "engine/3d/Object3d.h"
+#include "engine/3d/Object3dCommon.h"
+#include "engine/3d/Model.h"
+#include "engine/io/Input.h"
+#include "engine/camera/CameraManager.h"
 #include "engine/base/TakeCFrameWork.h"
-#include "Vector3Math.h"
-#include "math/Easing.h"
+#include "engine/math/Vector3Math.h"
+#include "engine/math/Easing.h"
 
-#include "Weapon/Rifle.h"
-#include "Weapon/Bazooka.h"
-#include "Weapon/VerticalMissileLauncher.h"
+#include "application/Weapon/Rifle.h"
+#include "application/Weapon/Bazooka.h"
+#include "application/Weapon/VerticalMissileLauncher.h"
+#include "application/Entity/WeaponUnit.h"
 
 Player::~Player() {
 	object3d_.reset();
@@ -47,9 +48,9 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 	weapons_.resize(3);
 	weaponTypes_.resize(3);
-	weaponTypes_[0] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
-	weaponTypes_[1] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
-	weaponTypes_[2] = WeaponType::WEAPON_TYPE_VERTICAL_MISSILE; // 3つ目の武器は垂直ミサイル
+	weaponTypes_[R_ARMS] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
+	weaponTypes_[L_ARMS] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
+	weaponTypes_[R_BACK] = WeaponType::WEAPON_TYPE_VERTICAL_MISSILE; // 3つ目の武器は垂直ミサイル
 
 	//背部エミッターの初期化
 	backEmitter_ = std::make_unique<ParticleEmitter>();
@@ -87,13 +88,13 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bull
 		}
 	}
 
-	weapons_[0]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
-	weapons_[1]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
-	weapons_[2]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack"); // 3つ目の武器を背中に取り付け
+	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
+	weapons_[L_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
+	weapons_[R_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack"); // 3つ目の武器を背中に取り付け
 }
 
 BaseWeapon* Player::GetWeapon(int index) const {
-	return nullptr;
+	return weapons_[index].get();
 }
 
 //===================================================================================
@@ -164,30 +165,30 @@ void Player::Update() {
 	}
 
 	switch (behavior_) {
-	case Player::Behavior::IDLE:
+	case Behavior::IDLE:
 		break;
-	case Player::Behavior::RUNNING:
+	case Behavior::RUNNING:
 		UpdateRunning();
 		break;
-	case Player::Behavior::JUMP:
+	case Behavior::JUMP:
 		UpdateJump();
 		break;
-	case Player::Behavior::DASH:
+	case Behavior::DASH:
 		UpdateDash();
 		break;
-	case Player::Behavior::STEPBOOST:
+	case Behavior::STEPBOOST:
 		UpdateStepBoost();
 		break;
-	case Player::Behavior::FLOATING:
+	case Behavior::FLOATING:
 		UpdateFloating();
 		break;
-	case Player::Behavior::CHARGESHOOT:
+	case Behavior::CHARGESHOOT:
 		UpdateChargeShoot();
 		break;
-	case Player::Behavior::CHARGESHOOT_STUN:
+	case Behavior::CHARGESHOOT_STUN:
 		UpdateChargeShootStun();
 		break;
-	case Player::Behavior::DEAD:
+	case Behavior::DEAD:
 		UpdateDead();
 		break;
 	default:
@@ -364,9 +365,9 @@ void Player::UpdateRunning() {
 
 void Player::UpdateAttack() {
 
-	WeaponAttack(0, GamepadButtonType::RB); // 1つ目の武器の攻撃
-	WeaponAttack(1, GamepadButtonType::LB); // 2つ目の武器の攻撃
-	WeaponAttack(2, GamepadButtonType::X); // 3つ目の武器の攻撃
+	WeaponAttack(R_ARMS, GamepadButtonType::RB); // 1つ目の武器の攻撃
+	WeaponAttack(L_ARMS, GamepadButtonType::LB); // 2つ目の武器の攻撃
+	WeaponAttack(R_BACK, GamepadButtonType::X); // 3つ目の武器の攻撃
 }
 
 void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {

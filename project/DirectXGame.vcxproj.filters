@@ -732,6 +732,8 @@
     <ClInclude Include="application\UI\GameClearUI.h" />
     <ClInclude Include="engine\scene\SceneTransition.h" />
     <ClInclude Include="application\UI\BulletCounterUI.h" />
+    <ClInclude Include="application\Entity\GameCharacterBehavior.h" />
+    <ClInclude Include="application\Entity\WeaponUnit.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

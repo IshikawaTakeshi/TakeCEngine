@@ -218,6 +218,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\UI\PlayerReticle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\Entity\GameCharacterBehavior.h" />
+    <ClInclude Include="application\Entity\WeaponUnit.h" />
     <ClInclude Include="application\Weapon\Bazooka.h" />
     <ClInclude Include="application\Weapon\WeaponType.h" />
     <ClInclude Include="application\UI\EnergyInfoUI.h" />

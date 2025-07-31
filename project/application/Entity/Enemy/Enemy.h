@@ -1,12 +1,14 @@
 #pragma once
-#include "Entity/GameCharacter.h"
-#include "Weapon/BaseWeapon.h"
-#include "camera/Camera.h"
-#include "3d/Particle/ParticleEmitter.h"
-#include "application/Weapon/Bullet/BulletManager.h"
+#include "engine/Entity/GameCharacter.h"
+#include "engine/camera/Camera.h"
+#include "engine/3d/Particle/ParticleEmitter.h"
 #include <optional>
 #include <chrono>
 #include <random>
+
+#include "application/Weapon/Bullet/BulletManager.h"
+#include "application/Weapon/BaseWeapon.h"
+#include "application/Entity/GameCharacterBehavior.h"
 
 class Enemy : public GameCharacter {
 

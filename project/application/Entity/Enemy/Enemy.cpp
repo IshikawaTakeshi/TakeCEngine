@@ -12,6 +12,7 @@
 
 #include "application/Weapon/Rifle.h"
 #include "application/Weapon/Bazooka.h"
+#include "application/Entity/WeaponUnit.h"
 
 Enemy::~Enemy() {
 	object3d_.reset();
@@ -59,8 +60,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 
 	weapons_.resize(2); // 武器の数を2つに設定
 	weaponTypes_.resize(2);
-	weaponTypes_[0] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
-	weaponTypes_[1] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
+	weaponTypes_[R_ARMS] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
+	weaponTypes_[L_ARMS] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
@@ -82,8 +83,8 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 		}
 	}
 
-	weapons_[0]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
-	weapons_[1]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
+	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
+	weapons_[L_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
 }
 
 //========================================================================================================
