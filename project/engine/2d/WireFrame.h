@@ -88,7 +88,7 @@ private:
 	Matrix4x4 worldViewProjectionMatrix_;
 
 	uint32_t lineIndex_ = 0;
-	const uint32_t kMaxLineCount_ = 1000000;
+	const uint32_t kMaxLineCount_ = 100000;
 	const uint32_t kLineVertexCount_ = 2;
 
 };
