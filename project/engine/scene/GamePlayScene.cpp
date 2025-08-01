@@ -139,10 +139,10 @@ void GamePlayScene::Update() {
 	
 	//enemy
 	enemy_->SetFocusTargetPos(player_->GetObject3d()->GetTranslate());
-	//enemy_->Update();
+	enemy_->Update();
 
 	//player
-	//player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
+	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
 	player_->Update();
 
 	//弾の更新
@@ -274,7 +274,7 @@ void GamePlayScene::Draw() {
 
 	Object3dCommon::GetInstance()->PreDraw();
 	player_->Draw();
-	//enemy_->Draw();
+	enemy_->Draw();
 	bulletManager_->Draw();
 	for (auto& object : levelObjects_) {
 		object.second->Draw();

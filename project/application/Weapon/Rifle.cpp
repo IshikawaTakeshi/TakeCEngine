@@ -16,7 +16,7 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 
 	// ライフルの色を設定
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
-
+	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.8f);
 	//武器の初期化
 	weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
 	damage_ = 90.0f;
