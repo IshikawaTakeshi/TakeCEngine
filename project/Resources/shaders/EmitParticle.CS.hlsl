@@ -5,6 +5,7 @@
 static const uint kMaxParticleEmitters = 2;
 
 StructuredBuffer<EmitterSphere> gEmitterSphere : register(t0);
+StructuredBuffer<ParticleAttributes> gAttributes : register(t1);
 RWStructuredBuffer<ParticleForCS> gParticles : register(u0);
 RWStructuredBuffer<int> gFreeListIndex : register(u1);
 RWStructuredBuffer<uint> gFreeList : register(u2);
@@ -37,11 +38,13 @@ void main(uint3 DTid : SV_DispatchThreadID) {
 				int particleIndex = gFreeList[freeListIndex];
 				//particle初期化
 				gParticles[particleIndex].translate = randomGenerator.Generate3d();
-				gParticles[particleIndex].scale = float3(1.0f, 1.0f, 1.0f);
+				gParticles[particleIndex].scale = randomGenerator.Generate3d()
+				* gAttributes[emitterIndex].scaleRange.y - gAttributes[emitterIndex].scaleRange.x;
 				gParticles[particleIndex].color.rgb = randomGenerator.Generate3d();
 				gParticles[particleIndex].color.a = 1.0f;
-				gParticles[particleIndex].velocity = randomGenerator.Generate3d() * 3.0f - 1.0f;
-				gParticles[particleIndex].lifetime = randomGenerator.Generate1d() * 2.0f + 1.0f;
+				gParticles[particleIndex].velocity = randomGenerator.Generate3d();
+				gParticles[particleIndex].lifetime = randomGenerator.Generate1d()
+				* 10.0f;
 				gParticles[particleIndex].currentTime = 0.0f;
 				
 			} else {

@@ -43,6 +43,16 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "WalkSmoke1.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "WalkSmoke2.json");
 
+	gpuParticle_ = std::make_unique<GPUParticle>();	
+	gpuParticle_->SetPreset(TakeCFrameWork::GetJsonLoader()->LoadParticlePreset("BulletLight.json"));
+	gpuParticle_->Initialize(ParticleCommon::GetInstance(), "Cross.png");
+	particleEmitter_ = std::make_unique<ParticleEmitter>();
+	particleEmitter_->InitializeEmitterSphere(
+		ParticleCommon::GetInstance()->GetDirectXCommon(),
+		ParticleCommon::GetInstance()->GetSrvManager()
+	);
+	particleEmitter_->SetEmitterName("CrossEffectGPU");
+
 #pragma endregion
 
 	//levelObjectの初期化
@@ -154,6 +164,9 @@ void GamePlayScene::Update() {
 
 	//particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
+	particleEmitter_->UpdateForGPU();
+	particleEmitter_->EmitParticle(gpuParticle_.get());
+	gpuParticle_->Update();
 
 	//当たり判定の更新
 	CheckAllCollisions();
@@ -236,7 +249,6 @@ void GamePlayScene::UpdateImGui() {
 	Object3dCommon::GetInstance()->UpdateImGui();
 	ParticleCommon::GetInstance()->UpdateImGui();
 	
-
 	player_->UpdateImGui();
 	enemy_->UpdateImGui();
 	playerHpBar_->UpdateImGui("player");
@@ -251,6 +263,8 @@ void GamePlayScene::UpdateImGui() {
 		object.second->UpdateImGui();
 	}
 	ImGui::End();
+
+	particleEmitter_->UpdateImGui();
 }
 
 //====================================================================
@@ -293,7 +307,9 @@ void GamePlayScene::Draw() {
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
-
+	//GPUパーティクルの描画
+	//ParticleCommon::GetInstance()->PreDrawForGPUParticle();
+	gpuParticle_->Draw();
 
 #pragma region スプライト描画
 	//スプライトの描画前処理
@@ -312,8 +328,7 @@ void GamePlayScene::Draw() {
 	}
 #pragma endregion
 
-	//GPUパーティクルの描画
-	//ParticleCommon::GetInstance()->PreDrawForGPUParticle();
+	
 
 }
 

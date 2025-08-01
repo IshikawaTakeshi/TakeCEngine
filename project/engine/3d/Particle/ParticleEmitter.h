@@ -67,6 +67,7 @@ public:
 public:
 
 	void SetParticleName(const std::string& particleName);
+	void SetEmitterName(const std::string& emitterName) { emitterName_ = emitterName; }
 
 	void SetTranslate(const Vector3& translate) {transforms_.translate = translate; }
 	void SetRotate(const Vector3& rotate) { transforms_.rotate = rotate; }

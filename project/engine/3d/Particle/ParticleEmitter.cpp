@@ -169,15 +169,23 @@ void ParticleEmitter::EmitParticle(GPUParticle* gpuParticle) {
 
 	//Resourceの設定
 	//0.PerFrame
-	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(0, perFrameResource_->GetGPUVirtualAddress());
+	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(
+		emitParticlePso_->GetComputeBindResourceIndex("gPerFrame"), perFrameResource_->GetGPUVirtualAddress());
 	//1.EmitterSphereInfo
-	srvManager_->SetComputeRootDescriptorTable(1, emitterSphereSrvIndex_);
+	srvManager_->SetComputeRootDescriptorTable(
+		emitParticlePso_->GetComputeBindResourceIndex("gEmitterSphere"), emitterSphereSrvIndex_);
 	//2.Particle
-	srvManager_->SetComputeRootDescriptorTable(2, gpuParticle->GetParticleUavIndex());
+	srvManager_->SetComputeRootDescriptorTable(
+		emitParticlePso_->GetComputeBindResourceIndex("gParticles"), gpuParticle->GetParticleUavIndex());
 	//3.FreeListIndex
-	srvManager_->SetComputeRootDescriptorTable(3, gpuParticle->GetFreeListIndexUavIndex());
+	srvManager_->SetComputeRootDescriptorTable(
+		emitParticlePso_->GetComputeBindResourceIndex("gFreeListIndex"), gpuParticle->GetFreeListIndexUavIndex());
 	//4.FreeList
-	srvManager_->SetComputeRootDescriptorTable(4, gpuParticle->GetFreeListUavIndex());
+	srvManager_->SetComputeRootDescriptorTable(
+		emitParticlePso_->GetComputeBindResourceIndex("gFreeList"), gpuParticle->GetFreeListUavIndex());
+	//particleAttributes
+	srvManager_->SetComputeRootDescriptorTable(
+		emitParticlePso_->GetComputeBindResourceIndex("gAttributes"), gpuParticle->GetAttributeSrvIndex());
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(1, 1, 1);
 

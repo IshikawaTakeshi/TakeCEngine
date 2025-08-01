@@ -215,6 +215,7 @@ void Player::Update() {
 
 	object3d_->SetTranslate(transform_.translate);
 	object3d_->SetRotate(eulerRotate);
+	object3d_->SetScale(transform_.scale);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 

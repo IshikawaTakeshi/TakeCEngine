@@ -1,6 +1,7 @@
 #include "GPUParticle.hlsli"
 #include "RandomGenerator.hlsli"
 
+StructuredBuffer<ParticleAttributes> gAttributes : register(t0);
 RWStructuredBuffer<ParticleForCS> gParticles : register(u0);
 RWStructuredBuffer<int> gFreeListIndex : register(u1);
 RWStructuredBuffer<uint> gFreeList : register(u2);
