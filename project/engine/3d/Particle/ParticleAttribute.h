@@ -26,7 +26,9 @@ enum class ScaleSetting {
 // パーティクルの属性を保持する構造体
 struct ParticleAttributes {
 	Vector3 scale = { 1.0f,1.0f,1.0f };
+	float padding;
 	Vector3 color = { 1.0f,1.0f,1.0f };
+	float padding2;
 	AttributeRange scaleRange = { 0.1f,3.0f };
 	AttributeRange rotateRange = { -std::numbers::pi_v<float>, std::numbers::pi_v<float> };
 	AttributeRange positionRange = {-1.0f, 1.0f};
@@ -35,10 +37,10 @@ struct ParticleAttributes {
 	AttributeRange lifetimeRange = { 1.0f,3.0f };
 	float frequency; //パーティクルの発生頻度
 	uint32_t emitCount; //1回あたりのパーティクル発生数
+	uint32_t scaleSetting_;    //スケールの更新処理方法
 	bool isBillboard = false; //Billboardかどうか
 	bool editColor = false; //色を編集するかどうか
 	bool isTraslate_ = false; //位置を更新するかどうか
-	uint32_t scaleSetting_;    //スケールの更新処理方法
 	bool enableFollowEmitter_ = false; //エミッターに追従するかどうか
 };
 

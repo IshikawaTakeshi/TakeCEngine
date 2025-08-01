@@ -104,7 +104,8 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 		kNumMaxInstance_, sizeof(ParticleAttributes),
 		attributeResource_.Get(), attributeSrvIndex_);
 
-	particleAttributes_ = &particlePreset_.attribute;
+	*particleAttributes_ = particlePreset_.attribute;
+	perViewData_->isBillboard = particlePreset_.attribute.isBillboard;
 
 
 	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
@@ -175,15 +176,38 @@ void GPUParticle::DisPatchInitializeParticle() {
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		particleUavResource_.Get());
 
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		freeListIndexResource_.Get());
+
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		freeListResource_.Get());
+
 	//0.particleUAV
-	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(0, particleUavIndex_);
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(
+		particleCommon_->GetComputePSOForGPUParticle()->GetComputeBindResourceIndex("gParticles"), particleUavIndex_);
 	//1.freeList
-	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(2, freeListUavIndex_);
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(
+		particleCommon_->GetComputePSOForGPUParticle()->GetComputeBindResourceIndex("gFreeList"),freeListUavIndex_);
 	//2.freeListIndex
-	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(1, freeListIndexUavIndex_);
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(
+		particleCommon_->GetComputePSOForGPUParticle()->GetComputeBindResourceIndex("gFreeListIndex"),freeListIndexUavIndex_);
 
 	///=== Dispatch ===///
 	particleCommon_->GetDirectXCommon()->GetCommandList()->Dispatch(1, 1, 1);
+
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		freeListResource_.Get());
+
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		freeListIndexResource_.Get());
 	
 	//UNORDERED_ACCESS -> VERTEX_AND_CONSTANT_BUFFER
 	ResourceBarrier::GetInstance()->Transition(
@@ -208,17 +232,43 @@ void GPUParticle::DisPatchUpdateParticle() {
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		particleUavResource_.Get());
 
-	//1.perFrame
-	particleCommon_->GetDirectXCommon()->GetCommandList()->SetComputeRootConstantBufferView(0, perFrameResource_->GetGPUVirtualAddress());
-	//0.particleUAV
-	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(1, particleUavIndex_);
-	//2.freeList
-	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(3, freeListUavIndex_);
-	//3.freeListIndex
-	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(2, freeListIndexUavIndex_);
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		freeListIndexResource_.Get());
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		freeListResource_.Get());
+
+	// perFrame
+	particleCommon_->GetDirectXCommon()->GetCommandList()->SetComputeRootConstantBufferView(
+		particleCommon_->GetPsoUpdateParticle()->GetComputeBindResourceIndex("gPerFrame"), perFrameResource_->GetGPUVirtualAddress());
+	//particleUAV
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(
+		particleCommon_->GetPsoUpdateParticle()->GetComputeBindResourceIndex("gParticles"), particleUavIndex_);
+	// freeList
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(
+		particleCommon_->GetPsoUpdateParticle()->GetComputeBindResourceIndex("gFreeList"), freeListUavIndex_);
+	// freeListIndex
+	particleCommon_->GetSrvManager()->SetComputeRootDescriptorTable(
+		particleCommon_->GetPsoUpdateParticle()->GetComputeBindResourceIndex("gFreeListIndex"), freeListIndexUavIndex_);
+
+	// attribute
+	particleCommon_->GetDirectXCommon()->GetCommandList()->SetComputeRootConstantBufferView(
+		particleCommon_->GetPsoUpdateParticle()->GetComputeBindResourceIndex("gAttributes"), attributeResource_->GetGPUVirtualAddress());
 
 	///=== Dispatch ===///
 	particleCommon_->GetDirectXCommon()->GetCommandList()->Dispatch(1, 1, 1);
+
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		freeListIndexResource_.Get());
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		freeListResource_.Get());
 
 	//UNORDERED_ACCESS -> VERTEX_AND_CONSTANT_BUFFER
 	ResourceBarrier::GetInstance()->Transition(

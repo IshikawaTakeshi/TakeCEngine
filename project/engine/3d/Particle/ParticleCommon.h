@@ -43,6 +43,8 @@ public:
 
 	PSO* GetComputePSOForGPUParticle() const { return computePsoForGPUParticle_.get(); }
 
+	PSO* GetPsoUpdateParticle() const { return psoUpdateParticle_.get(); }
+
 	Camera* GetDefaultCamera() const { return defaultCamera_; }
 
 

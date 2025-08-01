@@ -5,11 +5,11 @@
 static const uint kMaxParticleEmitters = 2;
 
 StructuredBuffer<EmitterSphere> gEmitterSphere : register(t0);
-StructuredBuffer<ParticleAttributes> gAttributes : register(t1);
 RWStructuredBuffer<ParticleForCS> gParticles : register(u0);
 RWStructuredBuffer<int> gFreeListIndex : register(u1);
 RWStructuredBuffer<uint> gFreeList : register(u2);
 ConstantBuffer<PerFrame> gPerFrame : register(b0);
+ConstantBuffer<ParticleAttributes> gAttributes : register(b1);
 
 //MEMO:複数のemitterを扱う場合は、適宜スレッド数を増やす
 [numthreads(2, 1, 1)]
@@ -37,14 +37,40 @@ void main(uint3 DTid : SV_DispatchThreadID) {
 				//射出するParticleのIndexを取得
 				int particleIndex = gFreeList[freeListIndex];
 				//particle初期化
-				gParticles[particleIndex].translate = randomGenerator.Generate3d();
-				gParticles[particleIndex].scale = randomGenerator.Generate3d()
-				* gAttributes[emitterIndex].scaleRange.y - gAttributes[emitterIndex].scaleRange.x;
-				gParticles[particleIndex].color.rgb = randomGenerator.Generate3d();
-				gParticles[particleIndex].color.a = 1.0f;
-				gParticles[particleIndex].velocity = randomGenerator.Generate3d();
-				gParticles[particleIndex].lifetime = randomGenerator.Generate1d()
-				* 10.0f;
+				gParticles[particleIndex].translate = lerp(
+					gAttributes.positionRange.x,
+					gAttributes.positionRange.y,
+					randomGenerator.Generate3d());
+				gParticles[particleIndex].scale = lerp(
+					gAttributes.scaleRange.x,
+					gAttributes.scaleRange.y,
+					randomGenerator.Generate3d());
+				if ( gAttributes.editColor ) {
+					gParticles[particleIndex].color.xyz = lerp(
+						gAttributes.colorRange.x,
+						gAttributes.colorRange.y,
+						randomGenerator.Generate3d());
+					gParticles[particleIndex].color.w = 1.0f;
+
+				} else {
+					//色を設定しない場合は、白色にする
+					gParticles[particleIndex].color =
+					float4(
+					gAttributes.color.x,
+					gAttributes.color.y,
+					gAttributes.color.z,
+					1.0f);
+					
+				}
+				gParticles[particleIndex].velocity = lerp(
+					gAttributes.velocityRange.x,
+					gAttributes.velocityRange.y,
+					randomGenerator.Generate3d());
+				gParticles[particleIndex].lifetime = lerp(
+					gAttributes.lifetimeRange.x,
+					gAttributes.lifetimeRange.y,
+					randomGenerator.Generate1d());
+				
 				gParticles[particleIndex].currentTime = 0.0f;
 				
 			} else {

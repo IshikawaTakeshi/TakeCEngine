@@ -44,7 +44,7 @@ public:
 	uint32_t GetAttributeSrvIndex() const { return attributeSrvIndex_; }
 
 	ID3D12Resource* GetParticleUavResource() const { return particleUavResource_.Get(); }
-
+	ID3D12Resource* GetAttributeResource() const { return attributeResource_.Get(); }
 	void SetPreset(const ParticlePreset& preset) {
 		particlePreset_ = preset;
 	}
@@ -71,7 +71,7 @@ private:
 	uint32_t attributeSrvIndex_ = 0;
 	uint32_t primitiveHandle_ = 0;
 
-	static const uint32_t kNumMaxInstance_ = 1024000;
+	static const uint32_t kNumMaxInstance_ = 1024;
 
 	ComPtr<ID3D12Resource> particleUavResource_ = nullptr;
 	ComPtr<ID3D12Resource> perViewResource_ = nullptr;

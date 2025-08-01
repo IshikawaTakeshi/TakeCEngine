@@ -1,11 +1,11 @@
 #include "GPUParticle.hlsli"
 #include "RandomGenerator.hlsli"
 
-StructuredBuffer<ParticleAttributes> gAttributes : register(t0);
 RWStructuredBuffer<ParticleForCS> gParticles : register(u0);
 RWStructuredBuffer<int> gFreeListIndex : register(u1);
 RWStructuredBuffer<uint> gFreeList : register(u2);
 ConstantBuffer<PerFrame> gPerFrame : register(b0);
+ConstantBuffer<ParticleAttributes> gAttributes : register(b1);
 
 [numthreads(1024, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID ){
@@ -17,7 +17,22 @@ void main( uint3 DTid : SV_DispatchThreadID ){
 	//}
 
 	gParticles[particleIndex].translate += gParticles[particleIndex].velocity;
-	gParticles[particleIndex].scale += gPerFrame.deltaTime;
+	
+	if ( gAttributes.scaleSetting == 1 ) {
+		gParticles[particleIndex].scale = lerp(
+		gAttributes.scaleRange.x,
+		gAttributes.scaleRange.y,
+		gParticles[particleIndex].currentTime / gParticles[particleIndex].lifetime);
+
+	}
+	else if ( gAttributes.scaleSetting == 2 ) {
+		
+		gParticles[particleIndex].scale = lerp(
+		gAttributes.scaleRange.y,
+		gAttributes.scaleRange.x,
+		gParticles[particleIndex].currentTime / gParticles[particleIndex].lifetime);
+	}
+	
 	gParticles[particleIndex].currentTime += gPerFrame.deltaTime;
 	
 	float alpha = 1.0f - (gParticles[particleIndex].currentTime / gParticles[particleIndex].lifetime);

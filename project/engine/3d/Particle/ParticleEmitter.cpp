@@ -5,6 +5,7 @@
 #include "math/Easing.h"
 #include "3d/Particle/GPUParticle.h"
 #include "2d/WireFrame.h"
+#include "Utility/ResourceBarrier.h"
 
 ParticleEmitter::~ParticleEmitter() {
 	emitterSphereResource_.Reset();
@@ -184,8 +185,8 @@ void ParticleEmitter::EmitParticle(GPUParticle* gpuParticle) {
 	srvManager_->SetComputeRootDescriptorTable(
 		emitParticlePso_->GetComputeBindResourceIndex("gFreeList"), gpuParticle->GetFreeListUavIndex());
 	//particleAttributes
-	srvManager_->SetComputeRootDescriptorTable(
-		emitParticlePso_->GetComputeBindResourceIndex("gAttributes"), gpuParticle->GetAttributeSrvIndex());
+	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(
+		emitParticlePso_->GetComputeBindResourceIndex("gAttributes"),gpuParticle->GetAttributeResource()->GetGPUVirtualAddress());
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(1, 1, 1);
 

@@ -24,7 +24,7 @@ VertexShaderOutput main(VertexShaderInput input, uint instanceId : SV_InstanceID
 	if (gPerView.isBillboard) {
     // スケーリング行列
 		float4x4 scaleMatrix = {
-			float4(particle.scale.x, 0.0f, 0.0f, 0.0f),
+		float4(particle.scale.x, 0.0f, 0.0f, 0.0f),
         float4(0.0f, particle.scale.y, 0.0f, 0.0f),
         float4(0.0f, 0.0f, particle.scale.z, 0.0f),
         float4(0.0f, 0.0f, 0.0f, 1.0f)
