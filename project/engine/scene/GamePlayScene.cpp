@@ -42,11 +42,13 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "ItemPointEffect.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "WalkSmoke1.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "WalkSmoke2.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "MissileSmoke.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "MissileExplosion.json");
 
 #pragma endregion
 
 	//levelObjectの初期化
-	sceneManager_->LoadLevelData("levelData_gameScene");
+	sceneManager_->LoadLevelData("levelData_gameScene_2");
 	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
 
 	for (auto& object : levelObjects_) {
