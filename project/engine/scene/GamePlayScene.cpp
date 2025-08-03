@@ -288,6 +288,9 @@ void GamePlayScene::Draw() {
 	player_->DrawCollider();
 	//enemy_->DrawCollider();
 	bulletManager_->DrawCollider();
+	for (auto& object : levelObjects_) {
+		object.second->DrawCollider();
+	}
 
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
