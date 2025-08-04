@@ -362,7 +362,7 @@ void GamePlayScene::UpdateGamePlay() {
 	//bulletCounterUIの更新
 	for (int i = 0; i < 3; i++) {
 		bulletCounterUI_[i]->SetBulletCount(player_->GetWeapon(i)->GetBulletCount());
-		bulletCounterUI_[i]->SetMaxBulletCount(player_->GetWeapon(i)->GetMaxBulletCount());
+		bulletCounterUI_[i]->SetRemainingBulletCount(player_->GetWeapon(i)->GetRemainingBulletCount());
 		bulletCounterUI_[i]->SetReloadingState(player_->GetWeapon(i)->GetIsReloading());
 		bulletCounterUI_[i]->Update();
 	}
