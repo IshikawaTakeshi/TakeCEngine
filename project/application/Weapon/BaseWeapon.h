@@ -47,6 +47,8 @@ public:
 	virtual const Vector3& GetCenterPosition() const { return object3d_->GetCenterPosition(); }
 	//ターゲットの座標を取得
 	virtual const Vector3& GetTragetPos() const;
+	//武器のユニットポジションを取得
+	virtual uint32_t GetUnitPosition() const;
 
 	//弾速の取得
 	virtual float GetBulletSpeed() const;
@@ -88,6 +90,8 @@ public:
 	virtual void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
 
 	virtual void SetRotate(const Vector3& rotate) { object3d_->SetRotate(rotate); }
+	//武器のユニットポジションを設定
+	virtual void SetUnitPosition(uint32_t position);
 
 	//弾速の設定
 	virtual void SetBulletSpeed(float speed);
@@ -128,6 +132,7 @@ protected:
 	//使用可能か
 	bool isAvailable_ = true;
 
+	uint32_t unitPosition_ = 0; // 武器のユニットポジション
 
 	//リロード中かどうか
 	bool isReloading_ = false;

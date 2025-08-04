@@ -10,6 +10,10 @@ const Vector3& BaseWeapon::GetTragetPos() const {
 	return targetPos_;
 }
 
+uint32_t BaseWeapon::GetUnitPosition() const {
+	return unitPosition_;
+}
+
 float BaseWeapon::GetBulletSpeed() const {
 	// 弾速を返す
 	return bulletSpeed_;
@@ -53,6 +57,10 @@ float BaseWeapon::GetChargeTime() const {
 float BaseWeapon::GetRequiredChargeTime() const {
 	// 必要チャージ時間を返す
 	return requiredChargeTime_;
+}
+
+void BaseWeapon::SetUnitPosition(uint32_t position) {
+	unitPosition_ = position;
 }
 
 void BaseWeapon::SetBulletSpeed(float speed) {

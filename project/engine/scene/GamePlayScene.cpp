@@ -114,13 +114,13 @@ void GamePlayScene::Initialize() {
 	//bulletCounterUI
 	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
 	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[0]->Initialize(SpriteCommon::GetInstance(), {750.0f,500.0f});
+	bulletCounterUI_[0]->Initialize(SpriteCommon::GetInstance(), {760.0f,470.0f});
 	bulletCounterUI_[1] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[1]->Initialize(SpriteCommon::GetInstance(), {850.0f,500.0f});
+	bulletCounterUI_[1]->Initialize(SpriteCommon::GetInstance(), {900.0f,470.0f});
 	bulletCounterUI_[2] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[2]->Initialize(SpriteCommon::GetInstance(), {750.0f,550.0f});
+	bulletCounterUI_[2]->Initialize(SpriteCommon::GetInstance(), {760.0f,540.0f});
 	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[3]->Initialize(SpriteCommon::GetInstance(), {850.0f,550.0f});
+	bulletCounterUI_[3]->Initialize(SpriteCommon::GetInstance(), {900.0f,540.0f});
 }
 
 //====================================================================
@@ -364,6 +364,7 @@ void GamePlayScene::UpdateGamePlay() {
 		bulletCounterUI_[i]->SetBulletCount(player_->GetWeapon(i)->GetBulletCount());
 		bulletCounterUI_[i]->SetRemainingBulletCount(player_->GetWeapon(i)->GetRemainingBulletCount());
 		bulletCounterUI_[i]->SetReloadingState(player_->GetWeapon(i)->GetIsReloading());
+		bulletCounterUI_[i]->SetWeaponIconUV(static_cast<int>(player_->GetWeapon(i)->GetUnitPosition()));
 		bulletCounterUI_[i]->Update();
 	}
 

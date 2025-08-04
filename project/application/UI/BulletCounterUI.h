@@ -30,6 +30,7 @@ public:
 	void SetRemainingBulletCount(uint32_t count);
 	void SetReloadingState(bool isReloading);
 	void SetBulletCounterPosition(const Vector2& position);
+	void SetWeaponIconUV(int weaponIndex);
 
 private:
 
@@ -41,6 +42,8 @@ private:
 	std::vector<std::unique_ptr<Sprite>> maxBulletCounterSprite_; // 最大弾数カウンターのスプライト
 	std::vector<std::unique_ptr<Sprite>> WeaponPositionSprite_;   // 武器の位置を示すスプライト
 	std::unique_ptr<Sprite> reloadSprite_; // リロード中のスプライト
+	std::unique_ptr<Sprite> separatorSprite_; // スプライトの間のセパレーター
+	std::unique_ptr<Sprite> weaponIconSprite_; // 武器アイコンのスプライト
 	uint32_t bulletCount_ = 0;             // 現在の弾数
 	uint32_t remainingBulletCount_ = 0; // 残りの弾数
 
@@ -48,8 +51,8 @@ private:
 	std::vector<int> maxBulletDigits_;
 	Vector2 bulletCounterPos_ = { 50.0f, 100.0f }; // スプライトの位置
 	Vector2 counterSpriteSize_ = { 28.0f, 28.0f }; // スプライトのサイズ
-
 	Vector2 reloadSpriteSize_ = { 50.0f, 32.0f };  // リロードスプライトのサイズ
+	Vector2 separatorSpriteSize_ = { 5.0f, 28.0f }; // セパレータースプライトのサイズ
 
 	bool isReloading_ = false; // リロード中かどうかのフラグ
 	//スプライトの間隔
