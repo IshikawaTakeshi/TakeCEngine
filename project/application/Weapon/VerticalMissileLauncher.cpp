@@ -73,6 +73,9 @@ void VerticalMissileLauncher::UpdateImGui() {
 	ImGui::Text("Required Charge Time: %.2f", requiredChargeTime_);
 	ImGui::Text("Is Charging: %s", isCharging_ ? "Yes" : "No");
 	ImGui::SliderFloat("Bullet Speed", &bulletSpeed_, 100.0f, 1000.0f);
+	Vector3 rotate = object3d_->GetTransform().rotate;
+	ImGui::DragFloat3("Launcher::Rotate", &rotate.x, 0.01f);
+	object3d_->SetRotate(rotate);
 	ImGui::Separator();
 	if (ImGui::TreeNode("VerticalMissile Settings")) {
 		ImGui::Text("Weapon Type: VerticalMissile");

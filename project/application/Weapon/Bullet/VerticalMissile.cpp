@@ -26,12 +26,12 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 	//emitter0
 	particleEmitter_.resize(2);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 5, 0.001f);
-	particleEmitter_[0]->SetParticleName("SparkExplosion");
+	particleEmitter_[0]->Initialize("EnemyEmitter0", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 30, 0.001f);
+	particleEmitter_[0]->SetParticleName("MissileExplosion");
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 8, 0.001f);
-	particleEmitter_[1]->SetParticleName("SmokeEffect");
+	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 10, 0.001f);
+	particleEmitter_[1]->SetParticleName("MissileSmoke");
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 	phase_ = VerticalMissilePhase::ASCENDING;
@@ -92,8 +92,8 @@ void VerticalMissile::Update() {
 	particleEmitter_[1]->Update();
 	//MEMO: パーティクルの毎フレーム発生
 	particleEmitter_[1]->Emit();
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(transform_.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("MissileSmoke")->SetEmitterPosition(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("MissileExplosion")->SetEmitterPosition(transform_.translate);
 
 }
 
@@ -130,7 +130,7 @@ void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
 
 		//パーティクル射出
-		//particleEmitter_[0]->Emit();
+		particleEmitter_[0]->Emit();
 
 		isActive_ = false; //弾を無効化
 	}

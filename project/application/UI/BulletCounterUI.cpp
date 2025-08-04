@@ -8,7 +8,7 @@
 
 void BulletCounterUI::Initialize(SpriteCommon* spriteCommon) {
 
-	bulletCounterPos_ = { 750.0f, 500.0f }; // スプライトの位置を設定
+	
 	for (int i = 0; i < 3; ++i) {
 		std::unique_ptr<Sprite> sprite;
 		sprite = std::make_unique<Sprite>();
@@ -44,12 +44,7 @@ void BulletCounterUI::Update() {
 	digits_[2] = bulletCount_ % 10;         // 一の位
 
 	for(int i = 0; i < 3; ++i) {
-		// スプライトの位置を更新
-		bulletCounterSprite_[i]->SetPosition({
-			bulletCounterPos_.x + i * (bulletCounterSprite_[i]->GetSize().x - spriteSpace_),
-			bulletCounterPos_.y
-		});
-
+		//数字がカウントされてるように見えるよう処理
 		SetDigitUV(bulletCounterSprite_[i].get(), digits_[i]);
 
 		// スプライトのテクスチャを更新

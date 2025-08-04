@@ -42,6 +42,8 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "ItemPointEffect.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "WalkSmoke1.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "WalkSmoke2.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "MissileSmoke.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "MissileExplosion.json");
 
 	gpuParticle_ = std::make_unique<GPUParticle>();	
 	gpuParticle_->SetPreset(TakeCFrameWork::GetJsonLoader()->LoadParticlePreset("BulletLight.json"));
@@ -56,7 +58,7 @@ void GamePlayScene::Initialize() {
 #pragma endregion
 
 	//levelObjectの初期化
-	sceneManager_->LoadLevelData("levelData_gameScene");
+	sceneManager_->LoadLevelData("levelData_gameScene_2");
 	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
 
 	for (auto& object : levelObjects_) {
@@ -72,7 +74,7 @@ void GamePlayScene::Initialize() {
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_pool.obj");
+	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.obj");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//BulletManager
@@ -149,10 +151,10 @@ void GamePlayScene::Update() {
 	
 	//enemy
 	enemy_->SetFocusTargetPos(player_->GetObject3d()->GetTranslate());
-	//enemy_->Update();
+	enemy_->Update();
 
 	//player
-	//player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
+	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
 	player_->Update();
 
 	//弾の更新
@@ -288,7 +290,7 @@ void GamePlayScene::Draw() {
 
 	Object3dCommon::GetInstance()->PreDraw();
 	player_->Draw();
-	//enemy_->Draw();
+	enemy_->Draw();
 	bulletManager_->Draw();
 	for (auto& object : levelObjects_) {
 		object.second->Draw();
@@ -300,6 +302,9 @@ void GamePlayScene::Draw() {
 	player_->DrawCollider();
 	//enemy_->DrawCollider();
 	bulletManager_->DrawCollider();
+	for (auto& object : levelObjects_) {
+		object.second->DrawCollider();
+	}
 
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);

@@ -85,6 +85,8 @@ public:
 	//攻撃対象の座標を設定
 	virtual void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
 
+	virtual void SetRotate(const Vector3& rotate) { object3d_->SetRotate(rotate); }
+
 	//弾速の設定
 	virtual void SetBulletSpeed(float speed);
 	//攻撃力の設定

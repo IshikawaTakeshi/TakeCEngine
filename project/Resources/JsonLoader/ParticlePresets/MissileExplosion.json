@@ -1,0 +1,53 @@
+{
+    "attributes": {
+        "color": {
+            "x": 0.5372549295425415,
+            "y": 0.1764705926179886,
+            "z": 0.1764705926179886
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "editColor": true,
+        "emitCount": 0,
+        "enableFollowEmitter_": true,
+        "frequency": 0.0,
+        "isBillboard": true,
+        "isTraslate_": true,
+        "lifetimeRange": {
+            "max": 2.619999885559082,
+            "min": 0.029999999329447746
+        },
+        "positionRange": {
+            "max": 1.4600000381469727,
+            "min": -1.7400000095367432
+        },
+        "rotateRange": {
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
+        },
+        "scale": {
+            "x": 10.0,
+            "y": 10.0,
+            "z": 8.880000114440918
+        },
+        "scaleRange": {
+            "max": 30.0,
+            "min": 0.10000000149011612
+        },
+        "scaleSetting_": 1,
+        "velocityRange": {
+            "max": 10.0,
+            "min": -1.0
+        }
+    },
+    "name": "MissileExplosion",
+    "primitiveParameters": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+    },
+    "primitiveType": "PRIMITIVE_PLANE",
+    "textureFilePath": "cloudNoise.png"
+}
