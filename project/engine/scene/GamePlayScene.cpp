@@ -45,15 +45,15 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "MissileSmoke.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "MissileExplosion.json");
 
-	gpuParticle_ = std::make_unique<GPUParticle>();	
-	gpuParticle_->SetPreset(TakeCFrameWork::GetJsonLoader()->LoadParticlePreset("BulletLight.json"));
-	gpuParticle_->Initialize(ParticleCommon::GetInstance(), "Cross.png");
-	particleEmitter_ = std::make_unique<ParticleEmitter>();
-	particleEmitter_->InitializeEmitterSphere(
-		ParticleCommon::GetInstance()->GetDirectXCommon(),
-		ParticleCommon::GetInstance()->GetSrvManager()
-	);
-	particleEmitter_->SetEmitterName("CrossEffectGPU");
+	//gpuParticle_ = std::make_unique<GPUParticle>();	
+	//gpuParticle_->SetPreset(TakeCFrameWork::GetJsonLoader()->LoadParticlePreset("BulletLight.json"));
+	//gpuParticle_->Initialize(ParticleCommon::GetInstance(), "Cross.png");
+	//particleEmitter_ = std::make_unique<ParticleEmitter>();
+	//particleEmitter_->InitializeEmitterSphere(
+	//	ParticleCommon::GetInstance()->GetDirectXCommon(),
+	//	ParticleCommon::GetInstance()->GetSrvManager()
+	//);
+	//particleEmitter_->SetEmitterName("CrossEffectGPU");
 
 #pragma endregion
 
@@ -166,9 +166,9 @@ void GamePlayScene::Update() {
 
 	//particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
-	particleEmitter_->UpdateForGPU();
-	particleEmitter_->EmitParticle(gpuParticle_.get());
-	gpuParticle_->Update();
+	//particleEmitter_->UpdateForGPU();
+	//particleEmitter_->EmitParticle(gpuParticle_.get());
+	//gpuParticle_->Update();
 
 	//当たり判定の更新
 	CheckAllCollisions();
@@ -266,7 +266,7 @@ void GamePlayScene::UpdateImGui() {
 	}
 	ImGui::End();
 
-	particleEmitter_->UpdateImGui();
+	//particleEmitter_->UpdateImGui();
 }
 
 //====================================================================
@@ -314,7 +314,7 @@ void GamePlayScene::Draw() {
 	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
 	//GPUパーティクルの描画
 	//ParticleCommon::GetInstance()->PreDrawForGPUParticle();
-	gpuParticle_->Draw();
+	//gpuParticle_->Draw();
 
 #pragma region スプライト描画
 	//スプライトの描画前処理

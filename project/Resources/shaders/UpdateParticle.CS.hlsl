@@ -7,7 +7,7 @@ RWStructuredBuffer<int> gFreeListIndex : register(u1);
 RWStructuredBuffer<uint> gFreeList : register(u2);
 ConstantBuffer<PerFrame> gPerFrame : register(b0);
 
-[numthreads(1024, 1, 1)]
+[numthreads(1, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID ){
 	uint particleIndex = DTid.x;
 	
@@ -17,7 +17,7 @@ void main( uint3 DTid : SV_DispatchThreadID ){
 	//}
 
 	gParticles[particleIndex].translate += gParticles[particleIndex].velocity;
-	gParticles[particleIndex].scale += gPerFrame.deltaTime;
+	gParticles[particleIndex].scale += gPerFrame.deltaTime * 2.0f;
 	gParticles[particleIndex].currentTime += gPerFrame.deltaTime;
 	
 	float alpha = 1.0f - (gParticles[particleIndex].currentTime / gParticles[particleIndex].lifetime);

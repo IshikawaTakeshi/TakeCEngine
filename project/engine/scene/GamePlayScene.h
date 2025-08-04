@@ -111,8 +111,8 @@ private:
 
 	std::map<std::string,std::unique_ptr<LevelObject>> levelObjects_;
 
-	std::unique_ptr<GPUParticle> gpuParticle_ = nullptr;
-	std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
+	//std::unique_ptr<GPUParticle> gpuParticle_ = nullptr;
+	//std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
 
 	//画面遷移時間
 	float fadeTimer_ = 0.0f;
