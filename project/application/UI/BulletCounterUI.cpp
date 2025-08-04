@@ -6,17 +6,19 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "application/Weapon/BaseWeapon.h"
 
-void BulletCounterUI::Initialize(SpriteCommon* spriteCommon) {
+void BulletCounterUI::Initialize(SpriteCommon* spriteCommon,const Vector2& position) {
 
-	
+	bulletCounterPos_ = position; // スプライトの位置
+	counterSpriteSize_ = { 28.0f, 28.0f }; // スプライトのサイズ
+	reloadSpriteSize_ = { 80.0f, 24.0f }; // リロードスプライトのサイズ
+
 	for (int i = 0; i < 3; ++i) {
 		std::unique_ptr<Sprite> sprite;
 		sprite = std::make_unique<Sprite>();
 		sprite->Initialize(spriteCommon, "UI/numText.png");
 		sprite->AdjustTextureSize();
 		sprite->SetTextureSize({ 72.0f,72.0f });
-		sprite->SetSize({ 32.0f, 32.0f }); // スプライトのサイズを設定
-
+		sprite->SetSize(counterSpriteSize_); // スプライトのサイズを設定
 		sprite->SetPosition({
 			bulletCounterPos_.x + i * (sprite->GetSize().x - spriteSpace_),
 			bulletCounterPos_.y  // 弾数カウンターの位置を設定
@@ -33,8 +35,9 @@ void BulletCounterUI::Initialize(SpriteCommon* spriteCommon) {
 	reloadSprite_->AdjustTextureSize();
 
 	// リロード中のスプライトの更新
-	reloadSprite_->SetPosition({ 50.0f, 150.0f });
-	reloadSprite_->SetSize({ 200.0f, 50.0f });
+	reloadSprite_->SetPosition(bulletCounterPos_);
+	reloadSprite_->SetSize(reloadSpriteSize_);
+	reloadSprite_->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f, 0.2f, 0.2f, 1.0f }); // 赤色に設定
 }
 
 void BulletCounterUI::Update() {
@@ -51,13 +54,19 @@ void BulletCounterUI::Update() {
 		bulletCounterSprite_[i]->Update();
 	}
 
+	reloadSprite_->Update();
+
 }
 
 void BulletCounterUI::Draw() {
-	for (int i = 0; i < 3; ++i) {
-		bulletCounterSprite_[i]->Draw();
+	if (isReloading_ == false) {
+		for (int i = 0; i < 3; ++i) {
+			bulletCounterSprite_[i]->Draw();
+		}
+	} else {
+
+		reloadSprite_->Draw();
 	}
-	reloadSprite_->Draw();
 }
 
 void BulletCounterUI::UpdateImGui([[maybe_unused]] const std::string& name) {
@@ -65,15 +74,11 @@ void BulletCounterUI::UpdateImGui([[maybe_unused]] const std::string& name) {
 	for(int i = 0; i < 3; ++i) {
 		bulletCounterSprite_[i]->UpdateImGui(name + std::to_string(i));
 	}
+	reloadSprite_->UpdateImGui(name + "_Reload");
 	ImGui::Begin("BulletCounterUI");
 	ImGui::Text("Bullet Count: %d", bulletCount_);
 	ImGui::Text("Max Bullet Count: %d", maxBulletCount_);
 	ImGui::Checkbox("Is Reloading", &isReloading_);
-	if (isReloading_) {
-		ImGui::Text("Reload Timer: %.2f", reloadTimer_);
-	} else {
-		ImGui::Text("Not Reloading");
-	}
 	ImGui::DragFloat("spriteSpace", &spriteSpace_, 0.1f, 0.0f, 20.0f);
 	ImGui::End();
 }
@@ -103,10 +108,6 @@ void BulletCounterUI::SetMaxBulletCount(uint32_t count) {
 
 void BulletCounterUI::SetReloadingState(bool isReloading) {
 	isReloading_ = isReloading;
-}
-
-void BulletCounterUI::SetReloadTimer(float timer) {
-	reloadTimer_ = timer;
 }
 
 void BulletCounterUI::SetBulletCounterPosition(const Vector2& position) {

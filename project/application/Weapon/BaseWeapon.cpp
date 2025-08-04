@@ -35,6 +35,11 @@ uint32_t BaseWeapon::GetMagazineCount() const {
 	return magazineCount_;
 }
 
+uint32_t BaseWeapon::GetRemainingBulletCount() const {
+	// 残弾数の取得
+	return remainingBulletCount_;
+}
+
 bool BaseWeapon::IsCharging() const {
 	// チャージ中かどうかを返す
 	return isCharging_;
@@ -63,4 +68,9 @@ void BaseWeapon::SetAttackPower(float power) {
 void BaseWeapon::SetBulletCount(int32_t count) {
 	// 弾数を設定
 	bulletCount_ = count;
+}
+
+void BaseWeapon::SetRemainingBulletCount(int32_t count) {
+	// 残弾数を設定
+	remainingBulletCount_ = count;
 }

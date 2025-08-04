@@ -13,7 +13,7 @@ public:
 	BulletCounterUI() = default;
 	~BulletCounterUI() = default;
 
-	void Initialize(SpriteCommon* spriteCommon);
+	void Initialize(SpriteCommon* spriteCommon,const Vector2& position);
 
 	void Update();
 
@@ -29,7 +29,6 @@ public:
 	void SetBulletCount(uint32_t count);
 	void SetMaxBulletCount(uint32_t count);
 	void SetReloadingState(bool isReloading);
-	void SetReloadTimer(float timer);
 	void SetBulletCounterPosition(const Vector2& position);
 
 private:
@@ -45,11 +44,13 @@ private:
 	uint32_t maxBulletCount_ = 100; // 最大弾数
 
 	std::vector<int> digits_;
+	Vector2 bulletCounterPos_ = { 50.0f, 100.0f }; // スプライトの位置
+	Vector2 counterSpriteSize_ = { 28.0f, 28.0f }; // スプライトのサイズ
+
+	Vector2 reloadSpriteSize_ = { 50.0f, 32.0f }; // リロードスプライトのサイズ
 
 	bool isReloading_ = false; // リロード中かどうかのフラグ
-	float reloadTimer_ = 0.0f; // リロードタイマー
 	//スプライトの間隔
 	float spriteSpace_ = 5.0f; // スプライト間の間隔
-	Vector2 bulletCounterPos_ = { 50.0f, 100.0f }; // スプライトの位置
 };
 

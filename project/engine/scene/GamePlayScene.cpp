@@ -101,30 +101,26 @@ void GamePlayScene::Initialize() {
 	// enemyHpBar
 	enemyHpBar_ = std::make_unique<HPBar>();
 	enemyHpBar_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
-	enemyHpBar_->SetSize({ 500.0f, 10.0f }); // HPバーのサイズ
-	enemyHpBar_->SetPosition({ 250.0f, 35.0f }); // HPバーの位置
+	enemyHpBar_->SetSize({ 400.0f, 10.0f }); // HPバーのサイズ
+	enemyHpBar_->SetPosition({ 300.0f, 35.0f }); // HPバーの位置
 	//playerReticle
 	playerReticle_ = std::make_unique<PlayerReticle>();
 	playerReticle_->Initialize();
 	//energyInfoUI
 	energyInfoUI_ = std::make_unique<EnergyInfoUI>();
 	energyInfoUI_->Initialize(SpriteCommon::GetInstance(), "black.png", "flontHp.png");
-	energyInfoUI_->SetSize({ 500.0f, 10.0f }); // エネルギーUIのサイズ
-	energyInfoUI_->SetPosition({ 250.0f, 525.0f }); // エネルギーUIの位置
+	energyInfoUI_->SetSize({ 400.0f, 10.0f }); // エネルギーUIのサイズ
+	energyInfoUI_->SetPosition({ 300.0f, 525.0f }); // エネルギーUIの位置
 	//bulletCounterUI
 	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
 	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[0]->Initialize(SpriteCommon::GetInstance());
-	bulletCounterUI_[0]->SetBulletCounterPosition({ 750.0f, 500.0f });
+	bulletCounterUI_[0]->Initialize(SpriteCommon::GetInstance(), {750.0f,500.0f});
 	bulletCounterUI_[1] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[1]->Initialize(SpriteCommon::GetInstance());
-	bulletCounterUI_[1]->SetBulletCounterPosition({ 850.0f, 500.0f });
+	bulletCounterUI_[1]->Initialize(SpriteCommon::GetInstance(), {850.0f,500.0f});
 	bulletCounterUI_[2] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[2]->Initialize(SpriteCommon::GetInstance());
-	bulletCounterUI_[2]->SetBulletCounterPosition({ 750.0f, 550.0f });
+	bulletCounterUI_[2]->Initialize(SpriteCommon::GetInstance(), {750.0f,550.0f});
 	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[3]->Initialize(SpriteCommon::GetInstance());
-	bulletCounterUI_[3]->SetBulletCounterPosition({ 850.0f, 550.0f });
+	bulletCounterUI_[3]->Initialize(SpriteCommon::GetInstance(), {850.0f,550.0f});
 }
 
 //====================================================================
@@ -302,9 +298,9 @@ void GamePlayScene::Draw() {
 	player_->DrawCollider();
 	//enemy_->DrawCollider();
 	bulletManager_->DrawCollider();
-	for (auto& object : levelObjects_) {
+	/*for (auto& object : levelObjects_) {
 		object.second->DrawCollider();
-	}
+	}*/
 
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
@@ -367,6 +363,7 @@ void GamePlayScene::UpdateGamePlay() {
 	for (int i = 0; i < 3; i++) {
 		bulletCounterUI_[i]->SetBulletCount(player_->GetWeapon(i)->GetBulletCount());
 		bulletCounterUI_[i]->SetMaxBulletCount(player_->GetWeapon(i)->GetMaxBulletCount());
+		bulletCounterUI_[i]->SetReloadingState(player_->GetWeapon(i)->GetIsReloading());
 		bulletCounterUI_[i]->Update();
 	}
 
