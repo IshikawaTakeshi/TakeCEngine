@@ -18,18 +18,44 @@ void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 
 	//武器の初期化
 	weaponType_ = WeaponType::WEAPON_TYPE_BAZOOKA;
-	damage_ = 1500.0f; // 攻撃力を設定
+	damage_ = 1500.0f;                 // 攻撃力を設定
 	attackInterval_ = kAttackInterval; // 攻撃間隔を設定
-	bulletCount_ = 5; // 初期弾数を設定
-	maxBulletCount_ = 5; // 最大弾数を設定
-	bulletSpeed_ = 500.0f; // 弾のスピードを設定
+	bulletSpeed_ = 500.0f;             // 弾のスピードを設定
 
-	isChargeAttack_ = false; // バズーカはチャージ攻撃不可
+	magazineCount_ = 5;                      // マガジン内の弾数を設定
+	bulletCount_ = magazineCount_;           // 初期弾数を設定
+	maxBulletCount_ = 50;                    // 最大弾数を設定
+	remainingBulletCount_ = maxBulletCount_; // 残弾数を最大弾数に設定
+
+	maxReloadTime_ = 4.0f;
+
+	isChargeAttack_ = false;  // バズーカはチャージ攻撃不可
 	isMoveShootable_ = false; // バズーカは移動撃ち不可
-	isStopShootOnly_ = true; // バズーカは停止撃ち専用
+	isStopShootOnly_ = true;  // バズーカは停止撃ち専用
 }
 
 void Bazooka::Update() {
+
+	if(remainingBulletCount_ <= 0 && bulletCount_ <= 0) {
+		isAvailable_ = false; // 弾がなくなったら使用不可
+		return;
+	}
+
+
+	//リロード中かどうか
+	if(isReloading_) {
+
+		reloadTime_ -= TakeCFrameWork::GetDeltaTime();
+
+		if( reloadTime_ <= 0.0f) {
+			reloadTime_ = 0.0f; // リロード時間をリセット
+			//リロード完了
+			isReloading_ = false;
+			bulletCount_ = magazineCount_; // 弾数をマガジン内の弾数にリセット
+			remainingBulletCount_ -= magazineCount_; // 残弾数を減らす
+		}
+
+	}
 
 	//攻撃間隔の減少
 	attackInterval_ -= TakeCFrameWork::GetDeltaTime();
@@ -67,6 +93,10 @@ void Bazooka::Draw() {
 
 void Bazooka::Attack() {
 
+	if (isReloading_ == true) {
+		return;
+	}
+
 	//攻撃間隔が経過している場合
 	if (attackInterval_ >= 0.0f) {
 		return;
@@ -80,10 +110,10 @@ void Bazooka::Attack() {
 		return; // キャラクタータイプが不明な場合は攻撃しない
 	}
 
-	//弾数の減少
 	bulletCount_--;
 	if (bulletCount_ <= 0) {
-		bulletCount_ = maxBulletCount_;
+		isReloading_ = true; // 弾がなくなったらリロード中にする
+		reloadTime_ = maxReloadTime_; // リロード時間をリセット
 	}
 	//攻撃間隔のリセット
 	attackInterval_ = kAttackInterval;

@@ -10,6 +10,10 @@ const Vector3& BaseWeapon::GetTragetPos() const {
 	return targetPos_;
 }
 
+uint32_t BaseWeapon::GetUnitPosition() const {
+	return unitPosition_;
+}
+
 float BaseWeapon::GetBulletSpeed() const {
 	// 弾速を返す
 	return bulletSpeed_;
@@ -35,6 +39,11 @@ uint32_t BaseWeapon::GetMagazineCount() const {
 	return magazineCount_;
 }
 
+uint32_t BaseWeapon::GetRemainingBulletCount() const {
+	// 残弾数の取得
+	return remainingBulletCount_;
+}
+
 bool BaseWeapon::IsCharging() const {
 	// チャージ中かどうかを返す
 	return isCharging_;
@@ -50,6 +59,10 @@ float BaseWeapon::GetRequiredChargeTime() const {
 	return requiredChargeTime_;
 }
 
+void BaseWeapon::SetUnitPosition(uint32_t position) {
+	unitPosition_ = position;
+}
+
 void BaseWeapon::SetBulletSpeed(float speed) {
 	// 弾速を設定
 	bulletSpeed_ = speed;
@@ -63,4 +76,9 @@ void BaseWeapon::SetAttackPower(float power) {
 void BaseWeapon::SetBulletCount(int32_t count) {
 	// 弾数を設定
 	bulletCount_ = count;
+}
+
+void BaseWeapon::SetRemainingBulletCount(int32_t count) {
+	// 残弾数を設定
+	remainingBulletCount_ = count;
 }
