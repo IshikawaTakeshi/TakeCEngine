@@ -111,6 +111,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\Bazooka.cpp" />
     <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
     <ClCompile Include="application\UI\BulletCounterUI.cpp" />
+    <ClCompile Include="application\Entity\Behavior\BaseBehavior.cpp" />
+    <ClCompile Include="application\Entity\Behavior\BehaviorRunning.cpp" />
     <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
     <ClCompile Include="engine\3d\Primitive\PrimitiveType.cpp" />
@@ -224,6 +226,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\WeaponType.h" />
     <ClInclude Include="application\UI\EnergyInfoUI.h" />
     <ClInclude Include="application\UI\BulletCounterUI.h" />
+    <ClInclude Include="application\Entity\Behavior\BaseBehavior.h" />
+    <ClInclude Include="application\Entity\Behavior\BehaviorRunning.h" />
     <ClInclude Include="engine\camera\CameraForGPU.h" />
     <ClInclude Include="engine\camera\PerView.h" />
     <ClInclude Include="engine\math\physics\Ray.h" />
