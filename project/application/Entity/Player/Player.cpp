@@ -627,11 +627,6 @@ void Player::InitFloating() {
 
 void Player::UpdateFloating() {
 
-	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
-	// LTボタン＋スティック入力で発動
-	if (Input::GetInstance()->PushButton(0, GamepadButtonType::LT)) {
-		TriggerStepBoost();
-	}
 	// スティックで水平方向に自由に動かす
 	StickState leftStick = Input::GetInstance()->GetLeftStickState(0);
 	StickState rightStick = Input::GetInstance()->GetRightStickState(0);
@@ -641,6 +636,8 @@ void Player::UpdateFloating() {
 	Vector3 forward = QuaternionMath::RotateVector(Vector3(0.0f, 0.0f, 1.0f), camera_->GetRotate());
 	Vector3 right = QuaternionMath::RotateVector(Vector3(1, 0, 0), camera_->GetRotate());
 	moveDirection_ = forward * leftStick.y + right * leftStick.x;
+
+	
 
 	if (moveDirection_.x != 0.0f || moveDirection_.z != 0.0f) {
 		moveDirection_ = Vector3Math::Normalize(moveDirection_);
@@ -670,6 +667,25 @@ void Player::UpdateFloating() {
 	if (transform_.translate.y <= 0.0f) {
 		transform_.translate.y = 0.0f;
 		behaviorRequest_ = Behavior::RUNNING;
+	}
+
+	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
+	// LTボタン＋スティック入力で発動
+	if (Input::GetInstance()->PushButton(0, GamepadButtonType::LT)) {
+		TriggerStepBoost();
+	}
+	//ジャンプボタンの追加入力でさらに上昇
+	if( Input::GetInstance()->PushButton(0, GamepadButtonType::RT)) {
+
+		if( isOverheated_) {
+			// オーバーヒート中はジャンプできない
+			return;
+		}
+
+		// ジャンプのエネルギー消費
+		energy_ -= useEnergyJump_ * deltaTime_;
+		// ジャンプの速度を設定
+		velocity_.y = jumpSpeed_;
 	}
 }
 
@@ -718,6 +734,13 @@ void Player::UpdateEnergy() {
 	//オーバーヒートしているかどうか
 	if(!isOverheated_) {
 
+		if(energy_ <= 0.0f) {
+			// エネルギーが0以下になったらオーバーヒート状態にする
+			isOverheated_ = true;
+			overheatTimer_ = overheatDuration_; // オーバーヒートのタイマーを設定
+			energy_ = 0.0f; // エネルギーを0にする
+		}
+
 		// エネルギーの回復
 		if (energy_ < maxEnergy_) {
 
@@ -733,12 +756,7 @@ void Player::UpdateEnergy() {
 			}
 		}
 		
-		if(energy_ <= 0.0f) {
-			// エネルギーが0以下になったらオーバーヒート状態にする
-			isOverheated_ = true;
-			overheatTimer_ = overheatDuration_; // オーバーヒートのタイマーを設定
-			energy_ = 0.0f; // エネルギーを0にする
-		}
+		
 
 	} else {
 

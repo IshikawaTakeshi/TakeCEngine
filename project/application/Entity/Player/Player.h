@@ -148,7 +148,7 @@ private:
 	float jumpTimer_ = 0.0f;               // ジャンプのタイマー
 	const float maxJumpTime_ = 0.5f;       // ジャンプの最大時間
 	const float jumpDeceleration_ = 40.0f; // ジャンプ中の減速率
-	float useEnergyJump_ = 100.0f;   // ジャンプに必要なエネルギー
+	float useEnergyJump_ = 150.0f;   // ジャンプに必要なエネルギー
 	//落下速度
 	float fallSpeed_ = 40.0f;
 
