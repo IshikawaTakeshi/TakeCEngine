@@ -665,14 +665,7 @@ void Enemy::InitFloating() {
 void Enemy::UpdateFloating(std::mt19937 randomEngine) {
 
 
-	// --------------------------------
-	// TODO: Enemyの浮遊時の挙動を実装する
-	// --------------------------------
 	
-	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
-	if (randomEngine() % 100 < 1.0f) {
-		behaviorRequest_ = Behavior::STEPBOOST;
-	}
 	
 	// ターゲット方向を正規化
 	Vector3 toTarget = Vector3Math::Normalize(focusTargetPos_ - transform_.translate);
@@ -723,6 +716,27 @@ void Enemy::UpdateFloating(std::mt19937 randomEngine) {
 	if (transform_.translate.y <= 0.0f) {
 		transform_.translate.y = 0.0f;
 		behaviorRequest_ = Behavior::RUNNING;
+	}
+
+	// --------------------------------
+	// TODO: Enemyの浮遊時の挙動を実装する
+	// --------------------------------
+
+	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
+	if (randomEngine() % 100 < 1.0f) {
+		behaviorRequest_ = Behavior::STEPBOOST;
+	}
+
+	//浮遊中、再上昇する場合
+	if(randomEngine() % 100 < 1.0f) {
+		if( isOverheated_) {
+			// オーバーヒート中はジャンプできない
+			return;
+		}
+		// ジャンプのエネルギー消費
+		energy_ -= useEnergyJump_ * deltaTime_;
+		// ジャンプの速度を設定
+		velocity_.y = jumpSpeed_;
 	}
 }
 
