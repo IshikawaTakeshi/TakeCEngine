@@ -1,15 +1,18 @@
 #pragma once
 #include "application/Entity/Behavior/BaseBehavior.h"
 
+class GameCharacter;
+class IMoveDirectionProvider;
 class BehaviorRunning : public BaseBehavior {
 public:
 
-	BehaviorRunning() = default;
+	BehaviorRunning(IMoveDirectionProvider* provider);
 	~BehaviorRunning() override = default;
 	void Initialize() override;
 	void Update() override;
-	void UpdateImGui() override;
-	void SetGameCharacter(GameCharacter* character) { gameCharacter_ = character; }
-	GameCharacter* GetGameCharacter() const { return gameCharacter_; }
+
+private:
+
+	IMoveDirectionProvider* moveDirectionProvider_; // 移動方向を提供するインターフェース
 };
 

@@ -339,6 +339,7 @@ void Enemy::UpdateRunning() {
 	// 目的座標までの方向ベクトルを計算
 	toOrbitPos_ = orbitPos - transform_.translate;
 
+	
 
 	if (moveDirection_.x != 0.0f || moveDirection_.z != 0.0f) {
 		//移動方向の正規化

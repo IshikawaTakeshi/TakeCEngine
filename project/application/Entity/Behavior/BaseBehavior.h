@@ -12,6 +12,4 @@ public:
 	virtual void Initialize() = 0;
 	// 更新
 	virtual void Update() = 0;
-	// ImGuiの更新
-	virtual void UpdateImGui() = 0;
 };

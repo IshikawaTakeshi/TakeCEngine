@@ -26,17 +26,28 @@ public:
 
 public:
 
-	//setter
-	void SetFocusTargetPos(const Vector3& targetPos) { focusTargetPos_ = targetPos; }
+	
 	//getter
 	const QuaternionTransform& GetTransform() const { return transform_; }
 	const Vector3& GetVelocity() const { return velocity_; }
 	const Vector3& GetMoveDirection() const { return moveDirection_; }
 	const Vector3& GetToOrbitPos() const { return toOrbitPos_; }
+	const Vector3& GetFocusTargetPos() const { return focusTargetPos_; }
 	const float& GetHealth() const { return health_; }
 	const float& GetMaxHealth() const { return maxHealth_; }
 	const bool& IsDamaged() const { return isDamaged_; }
 	const bool& IsAlive() const { return isAlive_; }
+
+	float GetOrbitAngle() const { return orbitAngle_; }
+	float GetOrbitRadius() const { return orbitRadius_; }
+	float GetOrbitSpeed() const { return orbitSpeed_; }
+
+	//setter
+	void SetFocusTargetPos(const Vector3& targetPos) { focusTargetPos_ = targetPos; }
+	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
+	void SetOrbitAngle(float angle) { orbitAngle_ = angle; }
+	void SetOrbitRadius(float radius) { orbitRadius_ = radius; }
+	void SetOrbitSpeed(float speed) { orbitSpeed_ = speed; }
 
 private:
 

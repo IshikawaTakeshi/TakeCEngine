@@ -9,6 +9,7 @@
 #include "application/Weapon/WeaponType.h"
 #include "application/Weapon/Bullet/BulletManager.h"
 #include "application/Entity/GameCharacterBehavior.h"
+#include "application/Entity/EntityInfo.h"
 
 class Player : public GameCharacter {
 public:
@@ -30,6 +31,11 @@ public:
 	//==============================================================================
 
 	BaseWeapon* GetWeapon(int index) const;
+
+	const GameCharcterInfo& GetCharacterInfo() const { return characterInfo_; }
+	GameCharcterInfo& GetCharacterInfo() { return characterInfo_; }
+
+	const Camera* GetCamera() const { return camera_; }
 
 	//移動方向ベクトルの取得
 	const Vector3& GetMoveDirection() const { return moveDirection_; }
@@ -113,6 +119,8 @@ private:
 	//背部のパーティクルエミッター
 	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
 
+	GameCharcterInfo characterInfo_; // プレイヤーの情報
+
 	//補足対象の座標
 	Vector3 focusTargetPos_ = { 0.0f,100.0f,0.0f };
 
@@ -153,7 +161,7 @@ private:
 	float fallSpeed_ = 40.0f;
 
 	// チャージ攻撃後硬直用の変数
-	float chargeAttackStunTimer_ = 0.0f;          //チャージ攻撃後の硬直時間
+	float chargeAttackStunTimer_ = 0.0f;    //チャージ攻撃後の硬直時間
 	float chargeAttackStunDuration_ = 0.5f; // チャージ攻撃後の硬直時間
 
 	//playerの体力

@@ -57,10 +57,31 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	backEmitter_->Initialize("PalyerBackpack",object3d_->GetTransform(),10,0.01f);
 	backEmitter_->SetParticleName("WalkSmoke2");
 
-	//体力の初期化
-	health_ = maxHealth_;
-	//エネルギーの初期化
-	energy_ = maxEnergy_;
+#pragma region charcterInfo
+
+	characterInfo_.deceleration = 1.1f; //減速率
+	characterInfo_.moveSpeed = 200.0f; //移動速度
+	characterInfo_.kMaxMoveSpeed = 120.0f; //移動速度の最大値
+	characterInfo_.gravity = 9.8f; // 重力の強さ
+	characterInfo_.maxHealth = 10000.0f; // 最大体力
+	characterInfo_.health = characterInfo_.maxHealth; // 初期体力
+	characterInfo_.stepBoostInfo.speed = 230.0f; // ステップブーストの速度
+	characterInfo_.stepBoostInfo.duration = 0.2f; // ステップブーストの持続時間
+	characterInfo_.stepBoostInfo.useEnergy = 100.0f; // ステップブーストに必要なエネルギー
+	characterInfo_.stepBoostInfo.interval = 0.2f; // ステップブーストのインターバル
+	characterInfo_.jumpInfo.speed = 50.0f; // ジャンプの速度
+	characterInfo_.jumpInfo.maxJumpTime = 0.5f; // ジャンプの最大時間
+	characterInfo_.jumpInfo.deceleration = 40.0f; // ジャンプ中の減速率
+	characterInfo_.jumpInfo.useEnergy = 150.0f; // ジャンプに必要なエネルギー
+	characterInfo_.chargeAttackStunInfo.stunDuration = 0.5f; // チャージ攻撃後の硬直時間
+	characterInfo_.energyInfo.maxEnergy = 1000.0f; // 最大エネルギー
+	characterInfo_.energyInfo.energy = characterInfo_.energyInfo.maxEnergy; // 初期エネルギー
+	characterInfo_.energyInfo.recoveryRate = 200.0f; // エネルギーの回復速度
+	characterInfo_.overHeatInfo.isOverheated = false; // オーバーヒート状態
+	characterInfo_.overHeatInfo.overheatTimer = 0.0f; // オーバーヒートタイマー
+	characterInfo_.overHeatInfo.overheatDuration = 3.0f; // オーバーヒートの持続時間
+
+#pragma endregion
 }
 
 //===================================================================================
