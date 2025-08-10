@@ -25,7 +25,7 @@ void DepthBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	outlineInfoResource_->SetName(L"DepthBasedOutline::InfoResource");
 	outlineInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&outlineInfoData_));
 
-	outlineInfoData_->weight =1.0f; // 初期値の設定
+	outlineInfoData_->weight = 0.1f; // 初期値の設定
 	outlineInfoData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f); // 初期色の設定
 	outlineInfoData_->isActive = true; // アウトラインを有効にする
 }

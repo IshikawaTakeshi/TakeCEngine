@@ -112,14 +112,16 @@ void Sprite::Update() {
 	wvpData_->World = worldMatrix_;
 }
 
+void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 #ifdef _DEBUG
-void Sprite::UpdateImGui(const std::string& name) {
 	//ImGuiの更新
 	std::string windowName = "Sprite" + name;
 	ImGui::Begin("Sprite");
 	if (ImGui::TreeNode(windowName.c_str())) {
 		ImGui::DragFloat2("SpriteTranslate", &position_.x, 1);
 		ImGui::DragFloat("SpriteRotation", &rotation_, 0.01f);
+		ImGui::DragFloat2("TextureLeftTop", &textureLeftTop_.x, 0.01f);
+		ImGui::DragFloat2("TextureSize", &textureSize_.x, 0.01f);
 		ImGui::DragFloat2("SpriteSize", &size_.x, 1);
 		ImGui::SliderFloat2("AnchorPoint", &anchorPoint_.x, -1.0f, 1.0f);
 		ImGui::Checkbox("isFlipX", &isFlipX_);
@@ -129,8 +131,8 @@ void Sprite::UpdateImGui(const std::string& name) {
 		ImGui::TreePop();
 	}
 	ImGui::End();
-}
 #endif // DEBUG
+}
 
 void Sprite::UpdateVertexData() {
 	//頂点データ

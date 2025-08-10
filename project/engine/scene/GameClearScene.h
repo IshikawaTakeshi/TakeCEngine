@@ -41,13 +41,11 @@ private:
 	bool isSoundPlay = false;
 	std::unique_ptr<Camera> gameClearCamera_ = nullptr;
 
-	// 天
+	// SkyBox
 	std::unique_ptr<SkyBox> skybox_ = nullptr;
 
-	//白飛びスプライト
-	std::unique_ptr<Sprite> whiteOutSprite_ = nullptr;
-
-	std::unique_ptr<Object3d> GameClearText_ = nullptr;
+	//スプライト
+	std::unique_ptr<Sprite> clearTextSprite_ = nullptr;
 
 	float lerpTime_ = 0.0f;
 

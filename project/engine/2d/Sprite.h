@@ -36,9 +36,7 @@ public:
 	/// </summary>
 	void Update();
 
-	#ifdef _DEBUG
-	void UpdateImGui(const std::string& name);
-	#endif // _DEBUG
+	void UpdateImGui([[maybe_unused]]const std::string& name);
 
 	/// <summary>
 	/// 描画処理
@@ -64,6 +62,8 @@ public:
 
 	//トランスフォーム取得
 	EulerTransform GetTransform() { return transform_; }
+
+	const std::unique_ptr<Mesh>& GetMesh() const { return mesh_; }
 
 	//アンカーポイント取得
 	const Vector2& GetAnchorPoint() const { return anchorPoint_; }

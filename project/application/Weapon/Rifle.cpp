@@ -16,14 +16,19 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 
 	// ライフルの色を設定
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
+	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.8f);
 
 	//武器の初期化
 	weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
 	damage_ = 90.0f;
 	attackInterval_ = kAttackInterval;
-	bulletCount_ = 30;
-	maxBulletCount_ = 30;
 	bulletSpeed_ = 400.0f; // 弾のスピードを設定
+	magazineCount_ = 30; // マガジン内の弾数を設定
+	bulletCount_ = magazineCount_;
+	maxBulletCount_ = 600;
+	remainingBulletCount_ = maxBulletCount_; // 残弾数を最大弾数に設定
+
+	maxReloadTime_ = 3.0f; // 最大リロード時間を設定
 
 	isChargeAttack_ = false; // ライフルはチャージ攻撃可能
 	isMoveShootable_ = true; // ライフルは移動撃ち可能
@@ -31,6 +36,26 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 }
 
 void Rifle::Update() {
+
+	if(remainingBulletCount_ <= 0 && bulletCount_ <= 0) {
+		isAvailable_ = false; // 弾がなくなったら使用不可
+		return;
+	}
+
+	//リロード中かどうか
+	if(isReloading_) {
+
+		reloadTime_ -= TakeCFrameWork::GetDeltaTime();
+
+		if( reloadTime_ <= 0.0f) {
+			reloadTime_ = 0.0f; // リロード時間をリセット
+			//リロード完了
+			isReloading_ = false;
+			bulletCount_ = magazineCount_; // 弾数をマガジン内の弾数にリセット
+			remainingBulletCount_ -= magazineCount_; // 残弾数を更新
+		}
+		
+	}
 
 	//攻撃間隔の減少
 	attackInterval_ -= TakeCFrameWork::GetDeltaTime();
@@ -44,9 +69,11 @@ void Rifle::Update() {
 			} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
 				bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, bulletSpeed_,damage_, CharacterType::ENEMY_BULLET);
 			}
+
 			bulletCount_--;
 			if (bulletCount_ <= 0) {
-				bulletCount_ = maxBulletCount_;
+				isReloading_ = true; // 弾がなくなったらリロード中にする
+				reloadTime_ = maxReloadTime_; // リロード時間をリセット
 			}
 
 			burstCount_--;
@@ -75,7 +102,6 @@ void Rifle::UpdateImGui() {
 	ImGui::Text("required Charge Time: %.2f", requiredChargeTime_);
 	ImGui::Text("Is Charging: %s", isCharging_ ? "Yes" : "No");
 	ImGui::SliderFloat("Bullet Speed", &bulletSpeed_, 100.0f, 1000.0f);
-	ImGui::SliderInt("Max Bullet Count", &maxBulletCount_, 1, 100);
 	ImGui::Separator();
 	if(ImGui::TreeNode("Rifle Settings")) {
 		ImGui::Text("Weapon Type: Rifle");
@@ -102,6 +128,10 @@ void Rifle::Draw() {
 
 void Rifle::Attack() {
 
+	if (isReloading_) {
+		return; // リロード中は攻撃しない
+	}
+
 	//攻撃間隔が経過している場合
 	if (attackInterval_ >= 0.0f) {
 		return;
@@ -115,10 +145,10 @@ void Rifle::Attack() {
 		return; // キャラクタータイプが不明な場合は攻撃しない
 	}
 
-	//弾数の減少
 	bulletCount_--;
 	if (bulletCount_ <= 0) {
-		bulletCount_ = maxBulletCount_;
+		isReloading_ = true; // 弾がなくなったらリロード中にする
+		reloadTime_ = maxReloadTime_; // リロード時間をリセット
 	}
 	//攻撃間隔のリセット
 	attackInterval_ = kAttackInterval;

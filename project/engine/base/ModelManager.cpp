@@ -68,9 +68,12 @@ std::unique_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
 		std::unique_ptr<Model> model = std::make_unique<Model>();
 		model->Initialize(modelCommon_, models_.at(filePath)->GetModelData());
 		return model;
+	} else {
+		std::unique_ptr<Model> model = std::make_unique<Model>();
+		model->Initialize(modelCommon_, models_.at("cube.gltf")->GetModelData());
+		return model;
 	}
-	//ファイル名一致なし
-	return nullptr;
+
 }
 
 //=============================================================================

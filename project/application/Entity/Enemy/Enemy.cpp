@@ -12,6 +12,7 @@
 
 #include "application/Weapon/Rifle.h"
 #include "application/Weapon/Bazooka.h"
+#include "application/Entity/WeaponUnit.h"
 
 Enemy::~Enemy() {
 	object3d_.reset();
@@ -59,8 +60,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 
 	weapons_.resize(2); // 武器の数を2つに設定
 	weaponTypes_.resize(2);
-	weaponTypes_[0] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
-	weaponTypes_[1] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
+	weaponTypes_[R_ARMS] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
+	weaponTypes_[L_ARMS] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
@@ -82,8 +83,8 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 		}
 	}
 
-	weapons_[0]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
-	weapons_[1]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
+	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
+	weapons_[L_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
 }
 
 //========================================================================================================
@@ -338,6 +339,7 @@ void Enemy::UpdateRunning() {
 	// 目的座標までの方向ベクトルを計算
 	toOrbitPos_ = orbitPos - transform_.translate;
 
+	
 
 	if (moveDirection_.x != 0.0f || moveDirection_.z != 0.0f) {
 		//移動方向の正規化
@@ -664,14 +666,7 @@ void Enemy::InitFloating() {
 void Enemy::UpdateFloating(std::mt19937 randomEngine) {
 
 
-	// --------------------------------
-	// TODO: Enemyの浮遊時の挙動を実装する
-	// --------------------------------
 	
-	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
-	if (randomEngine() % 100 < 1.0f) {
-		behaviorRequest_ = Behavior::STEPBOOST;
-	}
 	
 	// ターゲット方向を正規化
 	Vector3 toTarget = Vector3Math::Normalize(focusTargetPos_ - transform_.translate);
@@ -723,6 +718,27 @@ void Enemy::UpdateFloating(std::mt19937 randomEngine) {
 		transform_.translate.y = 0.0f;
 		behaviorRequest_ = Behavior::RUNNING;
 	}
+
+	// --------------------------------
+	// TODO: Enemyの浮遊時の挙動を実装する
+	// --------------------------------
+
+	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
+	if (randomEngine() % 100 < 1.0f) {
+		behaviorRequest_ = Behavior::STEPBOOST;
+	}
+
+	//浮遊中、再上昇する場合
+	if(randomEngine() % 100 < 1.0f) {
+		if( isOverheated_) {
+			// オーバーヒート中はジャンプできない
+			return;
+		}
+		// ジャンプのエネルギー消費
+		energy_ -= useEnergyJump_ * deltaTime_;
+		// ジャンプの速度を設定
+		velocity_.y = jumpSpeed_;
+	}
 }
 
 //===================================================================================
@@ -762,7 +778,7 @@ bool Enemy::ShouldStartAttack(int weaponIndex) {
 	auto* weapon = weapons_[weaponIndex].get();
 	float distance = (focusTargetPos_ - transform_.translate).Length();
 	float range = orbitRadius_ * 3.5f;
-	bool cooldownReady = weapon->IsAvailable();
+	bool cooldownReady = weapon->GetIsAvailable();
 	// 例: 一定確率で攻撃開始
 	return (distance <= range) && cooldownReady && (rand() % 100 < attackProbability_); // 10%の確率
 }

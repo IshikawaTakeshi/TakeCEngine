@@ -3,6 +3,7 @@
 #include "base//ModelManager.h"
 #include "base/TakeCFrameWork.h"
 #include "3d/Object3dCommon.h"
+#include "scene/SceneTransition.h"
 #include <cassert>
 
 SceneManager* SceneManager::instance_ = nullptr;
@@ -43,6 +44,8 @@ void SceneManager::Update() {
 	if (currentScene_) {
 		currentScene_->Update();
 	}
+
+	SceneTransition::GetInstance()->Update();
 }
 
 void SceneManager::UpdateImGui() {
@@ -106,21 +109,28 @@ void SceneManager::UpdateImGui() {
 //================================================================
 
 void SceneManager::ChangeToNextScene() {
-	// 旧シーンの終了
-	if (currentScene_) {
-		currentScene_->Finalize();
-		currentScene_.reset();
+
+	if (SceneTransition::GetInstance()->IsFinished()) {
+		// 旧シーンの終了
+		if (currentScene_) {
+			currentScene_->Finalize();
+			currentScene_.reset();
+		}
+
+		// 次のシーンに切り替え
+		currentScene_ = nextScene_;
+
+		// シーンマネージャーのセット
+		currentScene_->SetSceneManager(this);
+
+		// 次のシーンの初期化
+		currentScene_->Initialize();
+
+		// シーン遷移アニメーションの開始
+		SceneTransition::GetInstance()->Start(SceneTransition::TransitionState::FADE_IN, transitionTime_);
+
+		nextScene_ = nullptr;
 	}
-
-	// 次のシーンに切り替え
-	currentScene_ = nextScene_;
-	nextScene_ = nullptr;
-
-	// シーンマネージャーのセット
-	currentScene_->SetSceneManager(this);
-
-	// 次のシーンの初期化
-	currentScene_->Initialize();
 }
 
 void SceneManager::LoadLevelData(const std::string& sceneName) {
@@ -151,7 +161,7 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 		newObject.second->SetTranslate(objectData.translation);
 		newObject.second->SetRotate(objectData.rotation);
 		newObject.second->SetScale(objectData.scale);
-		newObject.second->GetObject3d()->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.3f,0.3f,0.3f,1.0f });
+		newObject.second->GetObject3d()->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 		newObject.second->GetObject3d()->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.0f);
 
 		levelObjects_.insert(std::move(newObject));
@@ -164,6 +174,7 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 
 void SceneManager::Draw() {
 	currentScene_->Draw();
+	SceneTransition::GetInstance()->Draw();
 }
 
 //========================================================================
@@ -172,12 +183,25 @@ void SceneManager::Draw() {
 
 void SceneManager::ChangeScene(const std::string& sceneName) {
 	assert(sceneFactory_ != nullptr);
-	assert(nextScene_ == nullptr);
 
 	// 既存のオブジェクトをクリア
 	levelObjects_.clear();
-	// レベルデータの読み込み
-	LoadLevelData("levelData_gameScene");
+
 	// 新しいシーンを作成
-	nextScene_ = sceneFactory_->CreateScene(sceneName);
+	if(nextScene_ == nullptr) {
+		SceneTransition::GetInstance()->Start(SceneTransition::TransitionState::FADE_OUT, transitionTime_);
+		nextScene_ = sceneFactory_->CreateScene(sceneName);
+	}
+}
+
+void SceneManager::ChangeScene(const std::string& sceneName, float transitionTime) {
+	assert(sceneFactory_ != nullptr);
+
+	// 既存のオブジェクトをクリア
+	levelObjects_.clear();
+
+	if (nextScene_ == nullptr) {
+		SceneTransition::GetInstance()->Start(SceneTransition::TransitionState::FADE_OUT, transitionTime);
+		nextScene_ = sceneFactory_->CreateScene(sceneName);
+	}
 }

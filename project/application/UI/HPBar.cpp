@@ -3,6 +3,7 @@
 #include "engine/2d/SpriteCommon.h"
 #include "engine/2d/Sprite.h"
 #include "engine/base/ImGuiManager.h"
+#include "engine/base/TakeCFrameWork.h"
 
 HPBar::~HPBar() {
 	// unique_ptr により自動解放されるため明示的に削除は不要
@@ -18,11 +19,14 @@ void HPBar::Initialize(SpriteCommon* spriteCommon, const std::string& background
 	foregroundSprite_->Initialize(spriteCommon, foregroundFilePath);
 
 	margin_ = 2.0f; // 枠の太さを設定
+
+	isActive_ = true; // 初期状態はアクティブ
+	alpha_ = 1.0f; // 初期のアルファ値（透明度）
+	fadeSpeed_ = 1.0f; // フェード速度を設定
 }
 
 void HPBar::Update(float currentHP, float maxHP) {
 	// HPの割合を計算
-
 	currentHP = std::max(0.0f, std::min(currentHP, maxHP));
 	float hpRatio = currentHP / maxHP;
 
@@ -41,11 +45,25 @@ void HPBar::Update(float currentHP, float maxHP) {
 	Vector2 fgPos = bgPos + Vector2{ margin_, margin_ };
 	foregroundSprite_->SetPosition(fgPos);
 
+	//isActiveがfalseになった時
+	if( !isActive_) {
+		// アルファ値を徐々に減少させる
+		alpha_ -= fadeSpeed_ * TakeCFrameWork::GetDeltaTime();
+		if (alpha_ <= 0.0f) {
+			alpha_ = 0.0f; // 最小値を0に制限
+			return; // アクティブでない場合は更新しない
+		}
+	} else {
+		alpha_ = 1.0f; // アクティブな場合はアルファ値を1に設定
+	}
+
 	backgroundSprite_->Update();
 	foregroundSprite_->Update();
 }
 
 void HPBar::Draw() {
+	if (!isActive_) return; // アクティブでない場合は描画しない
+
 	// 背景スプライトを描画
 	backgroundSprite_->Draw();
 

@@ -33,13 +33,19 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	postEffectManager_->InitializeEffect("Dissolve",    L"PostEffect/Dissolve.CS.hlsl");
 	postEffectManager_->InitializeEffect("RadialBluer", L"PostEffect/RadialBlur.CS.hlsl");
 	postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
-	postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
+	//postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
 	postEffectManager_->InitializeEffect("DepthBasedOutline",     L"PostEffect/DepthBasedOutline.CS.hlsl");
 
 	CollisionManager::GetInstance()->Initialize(directXCommon_.get());
 
 	//最初のシーンを設定
-	SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+#ifdef _DEBUG
+
+	SceneManager::GetInstance()->ChangeScene("GAMEPLAY",0.0f);
+#else
+	SceneManager::GetInstance()->ChangeScene("TITLE", 0.0f);
+#endif // _DEBUG
+
 
 	// 計測終了
 	auto end = Clock::now();
@@ -55,6 +61,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 
 void MyGame::Finalize() {
 	CollisionManager::GetInstance()->Finalize();
+	sceneTransition_->Finalize(); //シーン遷移の開放
 	sceneManager_->Finalize();  //シーンの開放
 	TakeCFrameWork::Finalize(); //FrameWorkの終了処理
 }
@@ -133,4 +140,13 @@ void MyGame::LoadAnimation() {
 	//TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
 	//TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
 	//TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
+}
+
+void MyGame::LoadTexture() {
+
+	TextureManager::GetInstance()->LoadTexture("UI/TitleText.png",false);
+	TextureManager::GetInstance()->LoadTexture("UI/GameClearText.png",false);
+	TextureManager::GetInstance()->LoadTexture("UI/GameOverText.png", false);
+	TextureManager::GetInstance()->LoadTexture("UI/reticle_focusTarget.png", false);
+	TextureManager::GetInstance()->LoadTexture("UI/numText.png", false);
 }

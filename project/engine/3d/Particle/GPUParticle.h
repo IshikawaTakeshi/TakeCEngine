@@ -7,6 +7,7 @@
 #include "3d/Model.h"
 #include "3d/Particle/ParticleCommon.h"
 #include "ResourceDataStructure.h"
+#include "3d/Particle/ParticleAttribute.h"
 #include <memory>
 
 struct ParticleForCS {
@@ -40,7 +41,13 @@ public:
 
 	uint32_t GetFreeListUavIndex() const { return freeListUavIndex_; }
 
+	uint32_t GetAttributeSrvIndex() const { return attributeSrvIndex_; }
+
 	ID3D12Resource* GetParticleUavResource() const { return particleUavResource_.Get(); }
+
+	void SetPreset(const ParticlePreset& preset) {
+		particlePreset_ = preset;
+	}
 
 private:
 
@@ -48,9 +55,6 @@ private:
 
 	//Camera
 	Camera* camera_ = nullptr;
-
-	//モデル
-	Model* model_ = nullptr;
 
 	ParticleForCS* particleData_ = nullptr;
 	uint32_t particleUavIndex_ = 0;
@@ -61,12 +65,18 @@ private:
 	PerView* perViewData_ = nullptr;
 	//PerFrameData
 	PerFrame* perFrameData_ = nullptr;
+	//PerticlePreset
+	ParticlePreset particlePreset_;
+	ParticleAttributes* particleAttributes_;
+	uint32_t attributeSrvIndex_ = 0;
+	uint32_t primitiveHandle_ = 0;
 
-	static const uint32_t kNumMaxInstance_ = 1024;
+	static const uint32_t kNumMaxInstance_ = 1024000;
 
 	ComPtr<ID3D12Resource> particleUavResource_ = nullptr;
 	ComPtr<ID3D12Resource> perViewResource_ = nullptr;
 	ComPtr<ID3D12Resource> freeListResource_ = nullptr;
 	ComPtr<ID3D12Resource> freeListIndexResource_ = nullptr;
 	ComPtr<ID3D12Resource> perFrameResource_ = nullptr;
+	ComPtr<ID3D12Resource> attributeResource_ = nullptr;
 };

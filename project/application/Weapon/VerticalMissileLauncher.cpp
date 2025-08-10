@@ -18,9 +18,14 @@ void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletM
 	weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
 	damage_ = 400.0f;
 	attackInterval_ = 0.0f;
-	bulletCount_ = 30;
-	maxBulletCount_ = 30;
 	bulletSpeed_ = 500.0f; // 弾のスピードを設定
+
+	maxBulletCount_ = 120;                   // 最大弾数
+	remainingBulletCount_ = maxBulletCount_; // 残弾数を最大弾数に設定
+	magazineCount_ = 3;                      // マガジン内の弾数
+	bulletCount_ = magazineCount_;           // 初期弾数をマガジン内の弾数に設定
+
+	maxReloadTime_ = 2.0f;
 
 	isChargeAttack_ = false; // ライフルはチャージ攻撃不可
 	isMoveShootable_ = true; // ライフルは移動撃ち可能
@@ -29,6 +34,24 @@ void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletM
 
 void VerticalMissileLauncher::Update() {
 
+	if(remainingBulletCount_ <= 0 && bulletCount_ <= 0) {
+		isAvailable_ = false; // 弾がなくなったら使用不可
+		return;
+	}
+
+	//リロード中かどうか
+	if(isReloading_ == true) {
+
+		reloadTime_ -= TakeCFrameWork::GetDeltaTime();
+
+		if( reloadTime_ <= 0.0f) {
+			reloadTime_ = 0.0f; // リロード時間をリセット
+			//リロード完了
+			isReloading_ = false;
+			bulletCount_ = magazineCount_; // 弾数をマガジン内の弾数にリセット
+			remainingBulletCount_ -= magazineCount_; // 残弾数を減らす
+		}
+	}
 	//攻撃間隔の減少
 	attackInterval_ -= TakeCFrameWork::GetDeltaTime();
 
@@ -43,7 +66,8 @@ void VerticalMissileLauncher::Update() {
 			}
 			bulletCount_--;
 			if (bulletCount_ <= 0) {
-				bulletCount_ = maxBulletCount_;
+				isReloading_ = true; // 弾がなくなったらリロード中にする
+				reloadTime_ = maxReloadTime_; // リロード時間をリセット
 			}
 
 			burstCount_--;
@@ -73,7 +97,9 @@ void VerticalMissileLauncher::UpdateImGui() {
 	ImGui::Text("Required Charge Time: %.2f", requiredChargeTime_);
 	ImGui::Text("Is Charging: %s", isCharging_ ? "Yes" : "No");
 	ImGui::SliderFloat("Bullet Speed", &bulletSpeed_, 100.0f, 1000.0f);
-	ImGui::SliderInt("Max Bullet Count", &maxBulletCount_, 1, 100);
+	Vector3 rotate = object3d_->GetTransform().rotate;
+	ImGui::DragFloat3("Launcher::Rotate", &rotate.x, 0.01f);
+	object3d_->SetRotate(rotate);
 	ImGui::Separator();
 	if (ImGui::TreeNode("VerticalMissile Settings")) {
 		ImGui::Text("Weapon Type: VerticalMissile");
@@ -99,6 +125,10 @@ void VerticalMissileLauncher::Draw() {
 
 void VerticalMissileLauncher::Attack() {
 
+	if (isReloading_ == true) {
+		return;
+	}
+
 	if (attackInterval_ <= 0.0f && bulletCount_ > 0) {
 		// 弾発射
 		//停止撃ちで三連射
@@ -106,12 +136,8 @@ void VerticalMissileLauncher::Attack() {
 		burstCount_ = kMaxBurstCount; // 3連射のカウントを初期化
 		burstInterval_ = 0.0f; // 3連射の間隔を初期化
 
-		bulletCount_--;
-		if (bulletCount_ <= 0) {
-			bulletCount_ = maxBulletCount_;
-		}
 		//攻撃間隔のリセット
-		attackInterval_ = kAttackInterval;
+		attackInterval_ = maxReloadTime_;
 	}
 }
 

@@ -47,21 +47,31 @@ public:
 	virtual const Vector3& GetCenterPosition() const { return object3d_->GetCenterPosition(); }
 	//ターゲットの座標を取得
 	virtual const Vector3& GetTragetPos() const;
+	//武器のユニットポジションを取得
+	virtual uint32_t GetUnitPosition() const;
 
 	//弾速の取得
 	virtual float GetBulletSpeed() const;
 	//攻撃力の取得
 	virtual float GetAttackPower() const;
 	//弾数の取得
-	virtual int32_t GetBulletCount() const;
-
+	virtual uint32_t GetBulletCount() const;
+	//最大弾数の取得
+	virtual uint32_t GetMaxBulletCount() const;
+	//一度に撃てる弾容量の取得
+	virtual uint32_t GetMagazineCount() const;
+	//残弾数の取得
+	virtual uint32_t GetRemainingBulletCount() const;
 	// チャージ中かどうか
 	virtual bool IsCharging() const;
 	// チャージ時間を取得
 	virtual float GetChargeTime() const;
 	// 必要チャージ時間を取得
 	virtual float GetRequiredChargeTime() const;
-
+	//使用可能かどうか
+	virtual bool GetIsAvailable() const { return isAvailable_; }
+	//リロード中かどうか
+	virtual bool GetIsReloading() const { return isReloading_; }
 
 	//チャージ攻撃可能か
 	virtual bool IsChargeAttack() const = 0;
@@ -79,15 +89,19 @@ public:
 	//攻撃対象の座標を設定
 	virtual void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
 
+	virtual void SetRotate(const Vector3& rotate) { object3d_->SetRotate(rotate); }
+	//武器のユニットポジションを設定
+	virtual void SetUnitPosition(uint32_t position);
+
 	//弾速の設定
 	virtual void SetBulletSpeed(float speed);
 	//攻撃力の設定
 	virtual void SetAttackPower(float power);
 	//弾数の設定
 	virtual void SetBulletCount(int32_t count);
+	//残弾数の設定
+	virtual void SetRemainingBulletCount(int32_t count);
 
-	//使用可能かどうか
-	virtual bool IsAvailable() const { return isAvailable_; }
 
 protected:
 
@@ -113,14 +127,23 @@ protected:
 	float damage_ = 0.0f;
 	//攻撃間隔
 	float attackInterval_ = 0.0f;
-	//弾数
-	int32_t bulletCount_ = 0;
-	//弾薬の最大数
-	int32_t maxBulletCount_;
 	//弾のスピード
 	float bulletSpeed_ = 0.0f;
 	//使用可能か
-	bool isAvailable_ = true; // 武器が使用可能かどうか
+	bool isAvailable_ = true;
+
+	uint32_t unitPosition_ = 0; // 武器のユニットポジション
+
+	//リロード中かどうか
+	bool isReloading_ = false;
+	//リロード時間
+	float reloadTime_ = 0.0f; // リロード時間
+	float maxReloadTime_ = 0.0f; // 最大リロード時間
+
+	uint32_t bulletCount_ = 0; // 現在の弾数
+	uint32_t magazineCount_ = 0; // マガジン内の弾数
+	uint32_t remainingBulletCount_ = 0; // 残弾数
+	uint32_t maxBulletCount_ = 0; // 最大弾数
 
 	// チャージ攻撃
 	bool isCharging_ = false;  // チャージ攻撃フラグ

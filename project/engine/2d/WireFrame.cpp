@@ -265,7 +265,7 @@ void WireFrame::CreateVertexData() {
 void WireFrame::CalculateSphereVertexData() {
 
 	const float pi = 3.1415926535897932f;
-	const uint32_t kSubdivision = 4; // 分割数
+	const uint32_t kSubdivision = 6; // 分割数
 	const float kLonEvery = 2.0f * pi / float(kSubdivision); // 経度の1分割の角度
 	const float kLatEvery = pi / float(kSubdivision); // 緯度の1分割の角度
 

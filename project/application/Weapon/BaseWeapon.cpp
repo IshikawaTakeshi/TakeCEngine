@@ -6,19 +6,42 @@ void BaseWeapon::AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jo
 }
 
 const Vector3& BaseWeapon::GetTragetPos() const {
+	// ターゲットの座標を返す
 	return targetPos_;
 }
 
+uint32_t BaseWeapon::GetUnitPosition() const {
+	return unitPosition_;
+}
+
 float BaseWeapon::GetBulletSpeed() const {
+	// 弾速を返す
 	return bulletSpeed_;
 }
 
 float BaseWeapon::GetAttackPower() const {
+	// 攻撃力を返す
 	return damage_;
 }
 
-int32_t BaseWeapon::GetBulletCount() const {
+uint32_t BaseWeapon::GetBulletCount() const {
+	// 現在の弾数を返す
 	return bulletCount_;
+}
+
+uint32_t BaseWeapon::GetMaxBulletCount() const {
+	// 最大弾数を返す
+	return maxBulletCount_;
+}
+
+uint32_t BaseWeapon::GetMagazineCount() const {
+	// 一度に撃てる弾容量を返す
+	return magazineCount_;
+}
+
+uint32_t BaseWeapon::GetRemainingBulletCount() const {
+	// 残弾数の取得
+	return remainingBulletCount_;
 }
 
 bool BaseWeapon::IsCharging() const {
@@ -36,6 +59,10 @@ float BaseWeapon::GetRequiredChargeTime() const {
 	return requiredChargeTime_;
 }
 
+void BaseWeapon::SetUnitPosition(uint32_t position) {
+	unitPosition_ = position;
+}
+
 void BaseWeapon::SetBulletSpeed(float speed) {
 	// 弾速を設定
 	bulletSpeed_ = speed;
@@ -49,4 +76,9 @@ void BaseWeapon::SetAttackPower(float power) {
 void BaseWeapon::SetBulletCount(int32_t count) {
 	// 弾数を設定
 	bulletCount_ = count;
+}
+
+void BaseWeapon::SetRemainingBulletCount(int32_t count) {
+	// 残弾数を設定
+	remainingBulletCount_ = count;
 }
