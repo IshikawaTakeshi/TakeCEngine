@@ -223,7 +223,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Provider\PlayerMoveDirectionProvider.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="application\Entity\EntityInfo.h" />
+    <ClInclude Include="application\Entity\GameCharacterInfo.h" />
     <ClInclude Include="application\Entity\GameCharacterBehavior.h" />
     <ClInclude Include="application\Entity\WeaponUnit.h" />
     <ClInclude Include="application\Weapon\Bazooka.h" />

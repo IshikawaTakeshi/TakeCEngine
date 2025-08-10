@@ -47,7 +47,6 @@ struct GameCharcterInfo {
 	Vector3 velocity;              // 速度
 	Vector3 moveDirection;        //移動方向
 	float deceleration = 1.1f;    //減速率
-	float gravity = 9.8f;         // 重力の強さ
 	float moveSpeed = 200.0f;     //移動速度
 	float kMaxMoveSpeed = 120.0f; //移動速度の最大値
 	float fallSpeed = 40.0f;      //落下速度

@@ -744,7 +744,7 @@
     <ClInclude Include="application\Provider\IMoveDirectionProvider.h" />
     <ClInclude Include="application\Provider\PlayerMoveDirectionProvider.h" />
     <ClInclude Include="EnemyDirectionProvider.h" />
-    <ClInclude Include="application\Entity\EntityInfo.h" />
+    <ClInclude Include="application\Entity\GameCharacterInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

@@ -3,48 +3,50 @@
 #include "engine/math/Vector3Math.h"
 #include "engine/math/Quaternion.h"
 #include "engine/math/Easing.h"
+#include "engine/base/TakeCFrameWork.h"
 
 BehaviorRunning::BehaviorRunning(IMoveDirectionProvider* provider) {
 	moveDirectionProvider_ = provider;
 }
 
 void BehaviorRunning::Initialize() {
+	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
-void BehaviorRunning::Update() {
+void BehaviorRunning::Update(GameCharcterInfo& characterInfo) {
 
 	//移動方向の正規化
-	if (moveDirection_.x != 0.0f || moveDirection_.z != 0.0f) {
-		moveDirection_ = Vector3Math::Normalize(moveDirection_);
+	if (characterInfo.moveDirection.x != 0.0f || characterInfo.moveDirection.z != 0.0f) {
+		characterInfo.moveDirection = Vector3Math::Normalize(characterInfo.moveDirection);
 		//移動時の加速度の計算
-		velocity_.x += moveDirection_.x * moveSpeed_ * deltaTime_;
-		velocity_.z += moveDirection_.z * moveSpeed_ * deltaTime_;
+		characterInfo.velocity.x += characterInfo.moveDirection.x * characterInfo.moveSpeed * deltaTime_;
+		characterInfo.velocity.z += characterInfo.moveDirection.z * characterInfo.moveSpeed * deltaTime_;
 
-		float targetAngle = atan2(moveDirection_.x, moveDirection_.z);
+		float targetAngle = atan2(characterInfo.moveDirection.x, characterInfo.moveDirection.z);
 		Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
 
-		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.1f);
-		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
+		characterInfo.transform.rotate = Easing::Slerp(characterInfo.transform.rotate, targetRotate, 0.1f);
+		characterInfo.transform.rotate = QuaternionMath::Normalize(characterInfo.transform.rotate);
 		//パーティクルエミッターの更新
 		//backEmitter_->Emit();
 
 	} else {
 		//速度の減速処理
-		velocity_.x /= deceleration_;
-		velocity_.z /= deceleration_;
+		characterInfo.velocity.x /= characterInfo.deceleration;
+		characterInfo.velocity.z /= characterInfo.deceleration;
 	}
 
 	//最大移動速度の制限
-	float speed = sqrt(velocity_.x * velocity_.x + velocity_.z * velocity_.z);
-	if (speed > kMaxMoveSpeed_) {
-		float scale = kMaxMoveSpeed_ / speed;
-		velocity_.x *= scale;
-		velocity_.z *= scale;
+	float speed = sqrt(characterInfo.velocity.x * characterInfo.velocity.x + characterInfo.velocity.z * characterInfo.velocity.z);
+	if (speed > characterInfo.kMaxMoveSpeed) {
+		float scale = characterInfo.kMaxMoveSpeed / speed;
+		characterInfo.velocity.x *= scale;
+		characterInfo.velocity.z *= scale;
 	}
 
 	//移動処理
 	// 位置の更新（deltaTimeをここで適用）
-	transform_.translate.x += velocity_.x * deltaTime_;
-	transform_.translate.z += velocity_.z * deltaTime_;
+	characterInfo.transform.translate.x += characterInfo.velocity.x * deltaTime_;
+	characterInfo.transform.translate.z += characterInfo.velocity.z * deltaTime_;
 
 }

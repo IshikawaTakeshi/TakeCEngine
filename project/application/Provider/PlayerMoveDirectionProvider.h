@@ -1,7 +1,7 @@
 #pragma once
 #include "application/Provider/IMoveDirectionProvider.h"
-#include "application/Entity/Player/Player.h"
 
+class Player; // 前方宣言
 class PlayerMoveDirectionProvider :
     public IMoveDirectionProvider {
 

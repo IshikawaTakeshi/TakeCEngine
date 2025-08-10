@@ -1,5 +1,6 @@
 #include "PlayerMoveDirectionProvider.h"
 #include "engine/io/Input.h"
+#include "application/Entity/Player/Player.h"
 
 Vector3 PlayerMoveDirectionProvider::GetMoveDirection() const {
 	//左スティック
