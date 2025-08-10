@@ -381,6 +381,11 @@
     <ClCompile Include="application\UI\GameClearUI.cpp" />
     <ClCompile Include="engine\scene\SceneTransition.cpp" />
     <ClCompile Include="application\UI\BulletCounterUI.cpp" />
+    <ClCompile Include="application\Entity\Behavior\BaseBehavior.cpp" />
+    <ClCompile Include="application\Entity\Behavior\BehaviorRunning.cpp" />
+    <ClCompile Include="application\Provider\IMoveDirectionProvider.cpp" />
+    <ClCompile Include="application\Provider\PlayerMoveDirectionProvider.cpp" />
+    <ClCompile Include="EnemyDirectionProvider.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -734,6 +739,12 @@
     <ClInclude Include="application\UI\BulletCounterUI.h" />
     <ClInclude Include="application\Entity\GameCharacterBehavior.h" />
     <ClInclude Include="application\Entity\WeaponUnit.h" />
+    <ClInclude Include="application\Entity\Behavior\BaseBehavior.h" />
+    <ClInclude Include="application\Entity\Behavior\BehaviorRunning.h" />
+    <ClInclude Include="application\Provider\IMoveDirectionProvider.h" />
+    <ClInclude Include="application\Provider\PlayerMoveDirectionProvider.h" />
+    <ClInclude Include="EnemyDirectionProvider.h" />
+    <ClInclude Include="application\Entity\GameCharacterInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
