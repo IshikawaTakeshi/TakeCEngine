@@ -42,7 +42,7 @@ struct OverHeatInfo {
 	
 };
 
-struct GameCharcterInfo {
+struct GameCharacterInfo {
 	QuaternionTransform transform; // 位置、回転、スケール
 	Vector3 velocity;              // 速度
 	Vector3 moveDirection;        //移動方向

@@ -9,11 +9,11 @@ BehaviorRunning::BehaviorRunning(IMoveDirectionProvider* provider) {
 	moveDirectionProvider_ = provider;
 }
 
-void BehaviorRunning::Initialize() {
+void BehaviorRunning::Initialize([[maybe_unused]]GameCharacterInfo& characterInfo) {
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
-void BehaviorRunning::Update(GameCharcterInfo& characterInfo) {
+void BehaviorRunning::Update(GameCharacterInfo& characterInfo) {
 
 	//移動方向の正規化
 	if (characterInfo.moveDirection.x != 0.0f || characterInfo.moveDirection.z != 0.0f) {

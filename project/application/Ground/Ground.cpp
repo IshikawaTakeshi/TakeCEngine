@@ -1,4 +1,3 @@
-#define NOMINMAX
 #include "Ground.h"
 #include "Input.h"
 #include "MatrixMath.h"

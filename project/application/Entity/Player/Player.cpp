@@ -63,7 +63,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 	moveDirectionProvider_ = std::make_unique<PlayerMoveDirectionProvider>(this);
 	ChangeBehavior(std::make_unique<BehaviorRunning>(moveDirectionProvider_.get()));
-	behaviorPtr_->Initialize();
+	behaviorPtr_->Initialize(characterInfo_);
 
 #pragma region charcterInfo
 

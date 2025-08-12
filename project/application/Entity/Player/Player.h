@@ -35,8 +35,8 @@ public:
 
 	BaseWeapon* GetWeapon(int index) const;
 
-	const GameCharcterInfo& GetCharacterInfo() const { return characterInfo_; }
-	GameCharcterInfo& GetCharacterInfo() { return characterInfo_; }
+	const GameCharacterInfo& GetCharacterInfo() const { return characterInfo_; }
+	GameCharacterInfo& GetCharacterInfo() { return characterInfo_; }
 
 	const Camera* GetCamera() const { return camera_; }
 
@@ -127,7 +127,7 @@ private:
 	//背部のパーティクルエミッター
 	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
 	// プレイヤーの情報
-	GameCharcterInfo characterInfo_;
+	GameCharacterInfo characterInfo_;
 	// フレーム時間
 	float deltaTime_ = 0.0f; 
 	float gravity_ = 9.8f;         // 重力の強さ
