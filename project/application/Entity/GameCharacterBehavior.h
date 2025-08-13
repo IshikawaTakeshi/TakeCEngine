@@ -1,5 +1,6 @@
 #pragma once
-enum class Behavior {
+enum class GameCharacterBehavior {
+	NONE = -1, // 行動なし
 	IDLE,             // 待機状態
 	RUNNING,          // 移動状態
 	JUMP,             // ジャンプ状態

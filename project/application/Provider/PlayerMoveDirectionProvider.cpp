@@ -8,6 +8,8 @@ Vector3 PlayerMoveDirectionProvider::GetMoveDirection() const {
 	//右スティック 
 	StickState rightStick = Input::GetInstance()->GetRightStickState(0);
 
+	//カメラのスティック入力をカメラに反映
+	player_->GetCamera()->SetStick({ rightStick.x, rightStick.y });
 	
 	//カメラの方向から移動方向の計算
 	Vector3 forward = QuaternionMath::RotateVector(Vector3(0.0f, 0.0f, 1.0f), player_->GetCamera()->GetRotate());

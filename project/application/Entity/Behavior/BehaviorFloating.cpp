@@ -3,28 +3,16 @@
 #include "engine/math/Vector3Math.h"
 
 
-void BehaviorFloating::Initialize([[maybe_unused]]GameCharacterInfo& characterInfo) {
+void BehaviorFloating::Initialize([[maybe_unused]]GameCharacterContext& characterInfo) {
 
 }
 
-void BehaviorFloating::Update(GameCharacterInfo& characterInfo) {
+void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 	Vector3& moveDirection_ = characterInfo.moveDirection; // 移動方向
 	Vector3& velocity_ = characterInfo.velocity; // 移動ベクトル
 	float moveSpeed_ = characterInfo.moveSpeed; // 移動速度
 	float deceleration_ = characterInfo.deceleration; // 減速率
 	float kMaxMoveSpeed_ = characterInfo.kMaxMoveSpeed; // 最大移動速度
-
-	// スティックで水平方向に自由に動かす
-	//StickState leftStick = Input::GetInstance()->GetLeftStickState(0);
-	//StickState rightStick = Input::GetInstance()->GetRightStickState(0);
-
-	//camera_->SetStick({ rightStick.x, rightStick.y });
-
-	//Vector3 forward = QuaternionMath::RotateVector(Vector3(0.0f, 0.0f, 1.0f), camera_->GetRotate());
-	//Vector3 right = QuaternionMath::RotateVector(Vector3(1, 0, 0), camera_->GetRotate());
-	//moveDirection_ = forward * leftStick.y + right * leftStick.x;
-
-
 
 	if (moveDirection_.x != 0.0f || moveDirection_.z != 0.0f) {
 		moveDirection_ = Vector3Math::Normalize(moveDirection_);
@@ -58,9 +46,9 @@ void BehaviorFloating::Update(GameCharacterInfo& characterInfo) {
 
 	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
 	// LTボタン＋スティック入力で発動
-	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
-		//TriggerStepBoost();
-	}
+	//if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
+	//	//TriggerStepBoost();
+	//}
 	//ジャンプボタンの追加入力でさらに上昇
 	//TODO: Enemyの浮遊の判断をどうするか
 	if( Input::GetInstance()->PushButton(0, GamepadButtonType::RT)) {
@@ -75,4 +63,12 @@ void BehaviorFloating::Update(GameCharacterInfo& characterInfo) {
 		// ジャンプの速度を設定
 		velocity_.y = characterInfo.jumpInfo.speed;
 	}
+}
+
+std::optional<Behavior> BehaviorFloating::TransitionNextBehavior(Behavior nextBehavior) {
+	if (nextBehavior != Behavior::NONE) {
+		// 次の行動がある場合はその行動を返す
+		return nextBehavior;
+	}
+	return std::nullopt; // 次の行動がない場合はnulloptを返す
 }

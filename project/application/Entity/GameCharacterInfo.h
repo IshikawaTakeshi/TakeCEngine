@@ -14,6 +14,7 @@ struct StepBoostInfo {
 	//インターバル用
 	float interval = 0.2f; // ステップブーストのインターバル
 	float intervalTimer  = 0.0f; // ステップブーストのインターバルタイマー
+	bool isBoosting = false; // ステップブーストするかどうか
 };
 
 struct JumpInfo {
@@ -22,11 +23,13 @@ struct JumpInfo {
 	float maxJumpTime = 0.5f;       // ジャンプの最大時間
 	float deceleration = 40.0f; // ジャンプ中の減速率
 	float useEnergy = 150.0f;         // ジャンプに必要なエネルギー
+	bool isJumping = false; // ジャンプするかどうか
 };
 
 struct ChargeAttackStunInfo {
 	float stunTimer = 0.0f;    //チャージ攻撃後の硬直時間
 	float stunDuration = 0.5f; // チャージ攻撃後の硬直時間
+	bool isStunned = false; // チャージ攻撃後に硬直しているかどうか
 };
 
 struct EnergyInfo {
@@ -34,15 +37,15 @@ struct EnergyInfo {
 	float maxEnergy = 1000.0f;         // 最大エネルギー
 	float recoveryRate = 200.0f;    // エネルギーの回復速度
 	const float energyCooldown = 1.0f; // エネルギー使用後のクールダウン時間
+	bool isEnergyDepleted = false; // エネルギーが枯渇しているかどうか
 };
 struct OverHeatInfo {
-	bool isOverheated = false;           // オーバーヒート中かどうか
 	float overheatTimer = 0.0f;          // オーバーヒートのタイマー
 	float overheatDuration = 3.0f; // オーバーヒートの持続時間
-	
+	bool isOverheated = false;           // オーバーヒート中かどうか
 };
 
-struct GameCharacterInfo {
+struct GameCharacterContext {
 	QuaternionTransform transform; // 位置、回転、スケール
 	Vector3 velocity;              // 速度
 	Vector3 moveDirection;        //移動方向
@@ -53,6 +56,9 @@ struct GameCharacterInfo {
 	float health = 0.0f;          // 現在の体力
 	float maxHealth = 10000.0f;   // 最大体力
 	bool isAlive = true;          //生存しているかどうか
+	bool isFloating = false; // 浮遊状態かどうか
+	bool isChargeShooting = false; // チャージショット中かどうか
+
 	StepBoostInfo stepBoostInfo;   // ステップブースト情報
 	JumpInfo jumpInfo;             // ジャンプ情報
 	ChargeAttackStunInfo chargeAttackStunInfo; // チャージ攻撃後の硬直情報

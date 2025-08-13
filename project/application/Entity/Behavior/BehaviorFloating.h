@@ -1,15 +1,14 @@
 #pragma once
 #include "application/Entity/Behavior/BaseBehavior.h"
-#include "application/Entity/GameCharacterInfo.h"
 
 class BehaviorFloating : public BaseBehavior {
 public:
 
 	BehaviorFloating() = default;
 	~BehaviorFloating() override = default;
-	void Initialize([[maybe_unused]]GameCharacterInfo& characterInfo) override;
-	void Update(GameCharacterInfo& characterInfo) override;
-
+	void Initialize([[maybe_unused]]GameCharacterContext& characterInfo) override;
+	void Update(GameCharacterContext& characterInfo) override;
+	std::optional<Behavior> TransitionNextBehavior(Behavior nextBehavior) override;
 private:
 
 	float deltaTime_ = 0.0f; // デルタタイム

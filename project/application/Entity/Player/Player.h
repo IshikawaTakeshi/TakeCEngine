@@ -35,10 +35,10 @@ public:
 
 	BaseWeapon* GetWeapon(int index) const;
 
-	const GameCharacterInfo& GetCharacterInfo() const { return characterInfo_; }
-	GameCharacterInfo& GetCharacterInfo() { return characterInfo_; }
+	const GameCharacterContext& GetCharacterInfo() const { return characterInfo_; }
+	GameCharacterContext& GetCharacterInfo() { return characterInfo_; }
 
-	const Camera* GetCamera() const { return camera_; }
+	Camera* GetCamera() const { return camera_; }
 
 	//移動方向ベクトルの取得
 	const Vector3& GetMoveDirection() const { return characterInfo_.moveDirection; }
@@ -112,10 +112,10 @@ private:
 	//カメラ
 	Camera* camera_ = nullptr;
 	//状態遷移リクエスト
-	std::optional<Behavior> behaviorRequest_ = std::nullopt;
+	std::optional<GameCharacterBehavior> behaviorRequest_ = std::nullopt;
 	//プレイヤーの状態
-	Behavior behavior_ = Behavior::IDLE;
-	Behavior prevBehavior_ = Behavior::IDLE;
+	GameCharacterBehavior behavior_ = GameCharacterBehavior::IDLE;
+	GameCharacterBehavior prevBehavior_ = GameCharacterBehavior::IDLE;
 
 	std::unique_ptr<BaseBehavior> behaviorPtr_ = nullptr;
 	std::unique_ptr<PlayerMoveDirectionProvider> moveDirectionProvider_ = nullptr;
@@ -127,7 +127,7 @@ private:
 	//背部のパーティクルエミッター
 	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
 	// プレイヤーの情報
-	GameCharacterInfo characterInfo_;
+	GameCharacterContext characterInfo_;
 	// フレーム時間
 	float deltaTime_ = 0.0f; 
 	float gravity_ = 9.8f;         // 重力の強さ

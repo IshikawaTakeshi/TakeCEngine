@@ -9,11 +9,11 @@ BehaviorRunning::BehaviorRunning(IMoveDirectionProvider* provider) {
 	moveDirectionProvider_ = provider;
 }
 
-void BehaviorRunning::Initialize([[maybe_unused]]GameCharacterInfo& characterInfo) {
+void BehaviorRunning::Initialize([[maybe_unused]]GameCharacterContext& characterInfo) {
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
-void BehaviorRunning::Update(GameCharacterInfo& characterInfo) {
+void BehaviorRunning::Update(GameCharacterContext& characterInfo) {
 
 	//移動方向の正規化
 	if (characterInfo.moveDirection.x != 0.0f || characterInfo.moveDirection.z != 0.0f) {
@@ -49,4 +49,17 @@ void BehaviorRunning::Update(GameCharacterInfo& characterInfo) {
 	characterInfo.transform.translate.x += characterInfo.velocity.x * deltaTime_;
 	characterInfo.transform.translate.z += characterInfo.velocity.z * deltaTime_;
 
+	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RT)) {
+		TransitionNextBehavior(GameCharacterBehavior::JUMP);
+	}
+
+}
+
+
+std::optional<Behavior> BehaviorRunning::TransitionNextBehavior(Behavior nextBehavior) {
+	if (nextBehavior != GameCharacterBehavior::NONE) {
+		// 次の行動がある場合はその行動を返す
+		return nextBehavior;
+	}
+	return std::nullopt; // 次の行動がない場合はnulloptを返す
 }
