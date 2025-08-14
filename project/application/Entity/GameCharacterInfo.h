@@ -56,7 +56,7 @@ struct GameCharacterContext {
 	float health = 0.0f;          // 現在の体力
 	float maxHealth = 10000.0f;   // 最大体力
 	bool isAlive = true;          //生存しているかどうか
-	bool isFloating = false; // 浮遊状態かどうか
+	bool onGround = true; // 地面にいるかどうか
 	bool isChargeShooting = false; // チャージショット中かどうか
 
 	StepBoostInfo stepBoostInfo;   // ステップブースト情報

@@ -389,7 +389,7 @@
     <ClCompile Include="application\Entity\Behavior\BehaviorFloating.cpp" />
     <ClCompile Include="application\Entity\Behavior\BehaviorJumping.cpp" />
     <ClCompile Include="application\Entity\Behavior\BehaviorManager.cpp" />
-    <ClCompile Include="BehaviorStepBoost.cpp" />
+    <ClCompile Include="application\Entity\Behavior\BehaviorStepBoost.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -752,7 +752,7 @@
     <ClInclude Include="application\Entity\Behavior\BehaviorFloating.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorJumping.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorManager.h" />
-    <ClInclude Include="BehaviorStepBoost.h" />
+    <ClInclude Include="application\Entity\Behavior\BehaviorStepBoost.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

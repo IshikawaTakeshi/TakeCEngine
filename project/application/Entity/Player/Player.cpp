@@ -146,7 +146,8 @@ void Player::Update() {
 	}
 
 	// StepBoost入力判定を最初に追加
-	if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING) {
+	if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING ||
+		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING) {
 		
 		//オーバーヒート状態のチェック
 		if (characterInfo_.overHeatInfo.isOverheated == false) {
@@ -158,9 +159,13 @@ void Player::Update() {
 			}
 			//Jump入力判定
 			//RTで発動
-			if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RT)) {
-				//ジャンプのリクエスト
-				behaviorManager_->RequestBehavior(GameCharacterBehavior::JUMP);
+			if(characterInfo_.onGround == true){
+			
+				if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RT)) {
+					//ジャンプのリクエスト
+					behaviorManager_->RequestBehavior(GameCharacterBehavior::JUMP);
+					characterInfo_.onGround = false; // ジャンプしたので地上ではない
+				}
 			}
 		}
 	}
@@ -545,74 +550,74 @@ void Player::UpdateDash() {
 ////===================================================================================
 //
 //
-//void Player::InitStepBoost() {
-//
-//	float speed = characterInfo_.stepBoostInfo.speed;
-//	float duration = characterInfo_.stepBoostInfo.duration;
-//	float useEnergy = characterInfo_.stepBoostInfo.useEnergy;
-//	
-//	Vector3 direction = characterInfo_.stepBoostInfo.direction;
-//
-//	// オーバーヒート状態のチェック
-//	if (characterInfo_.overHeatInfo.isOverheated) {
-//		// オーバーヒート中はステップブーストできない
-//		behaviorRequest_ = GameCharacterBehavior::RUNNING;
-//		return;
-//	}
-//
-//	// ステップブーストのエネルギーを消費
-//	characterInfo_.energyInfo.energy -= useEnergy;
-//
-//	//上昇速度を急激に遅くする
-//	characterInfo_.velocity.y = 0.0f;
-//
-//	characterInfo_.stepBoostInfo.boostTimer = duration;
-//	characterInfo_.velocity.x = direction.x * speed;
-//	characterInfo_.velocity.z = direction.z * speed;
-//}
-//
-//
-//void Player::UpdateStepBoost() {
-//
-//	float interval = characterInfo_.stepBoostInfo.interval;
-//
-//	// ステップ中の移動
-//	characterInfo_.transform.translate.x += characterInfo_.velocity.x * deltaTime_;
-//	characterInfo_.transform.translate.z += characterInfo_.velocity.z * deltaTime_;
-//
-//	characterInfo_.stepBoostInfo.boostTimer -= deltaTime_;
-//	if (characterInfo_.stepBoostInfo.boostTimer <= 0.0f) {
-//		// ステップ終了時前回の状態に戻す
-//		if (characterInfo_.transform.translate.y <= 0.0f) {
-//			behaviorRequest_ = GameCharacterBehavior::RUNNING;
-//		} else if (characterInfo_.transform.translate.y > 0.0f) {
-//			behaviorRequest_ = GameCharacterBehavior::FLOATING;
-//		} else {
-//			// ステップブーストが終了したらRUNNINGに戻す
-//			behaviorRequest_ = GameCharacterBehavior::RUNNING;
-//		}
-//
-//		// ステップブーストのインターバルをリセット
-//		characterInfo_.stepBoostInfo.intervalTimer = interval;
-//	}
-//}
-//
-//void Player::TriggerStepBoost() {
-//
-//	Vector3& direction = characterInfo_.stepBoostInfo.direction;
-//
-//	if (characterInfo_.stepBoostInfo.intervalTimer <= 0.0f) {
-//		StickState leftStick = Input::GetInstance()->GetLeftStickState(0);
-//		if (fabs(leftStick.x) > 0.2f || fabs(leftStick.y) > 0.2f) {
-//			//方向ベクトル計算（カメラ考慮）
-//			Vector3 forward = QuaternionMath::RotateVector(Vector3(0.0f, 0.0f, 1.0f), camera_->GetRotate());
-//			Vector3 right = QuaternionMath::RotateVector(Vector3(1, 0, 0), camera_->GetRotate());
-//			direction = forward * leftStick.y + right * leftStick.x;
-//			direction = Vector3Math::Normalize(direction);
-//			behaviorRequest_ = GameCharacterBehavior::STEPBOOST;
-//		}
-//	}
-//}
+void Player::InitStepBoost() {
+
+	float speed = characterInfo_.stepBoostInfo.speed;
+	float duration = characterInfo_.stepBoostInfo.duration;
+	float useEnergy = characterInfo_.stepBoostInfo.useEnergy;
+	
+	Vector3 direction = characterInfo_.stepBoostInfo.direction;
+
+	// オーバーヒート状態のチェック
+	if (characterInfo_.overHeatInfo.isOverheated) {
+		// オーバーヒート中はステップブーストできない
+		//behaviorRequest_ = GameCharacterBehavior::RUNNING;
+		return;
+	}
+
+	// ステップブーストのエネルギーを消費
+	characterInfo_.energyInfo.energy -= useEnergy;
+
+	//上昇速度を急激に遅くする
+	characterInfo_.velocity.y = 0.0f;
+
+	characterInfo_.stepBoostInfo.boostTimer = duration;
+	characterInfo_.velocity.x = direction.x * speed;
+	characterInfo_.velocity.z = direction.z * speed;
+}
+
+
+void Player::UpdateStepBoost() {
+
+	float interval = characterInfo_.stepBoostInfo.interval;
+
+	// ステップ中の移動
+	characterInfo_.transform.translate.x += characterInfo_.velocity.x * deltaTime_;
+	characterInfo_.transform.translate.z += characterInfo_.velocity.z * deltaTime_;
+
+	characterInfo_.stepBoostInfo.boostTimer -= deltaTime_;
+	if (characterInfo_.stepBoostInfo.boostTimer <= 0.0f) {
+		// ステップ終了時前回の状態に戻す
+		if (characterInfo_.transform.translate.y <= 0.0f) {
+			//behaviorRequest_ = GameCharacterBehavior::RUNNING;
+		} else if (characterInfo_.transform.translate.y > 0.0f) {
+			//behaviorRequest_ = GameCharacterBehavior::FLOATING;
+		} else {
+			// ステップブーストが終了したらRUNNINGに戻す
+			//behaviorRequest_ = GameCharacterBehavior::RUNNING;
+		}
+
+		// ステップブーストのインターバルをリセット
+		characterInfo_.stepBoostInfo.intervalTimer = interval;
+	}
+}
+
+void Player::TriggerStepBoost() {
+
+	Vector3& direction = characterInfo_.stepBoostInfo.direction;
+
+	if (characterInfo_.stepBoostInfo.intervalTimer <= 0.0f) {
+		StickState leftStick = Input::GetInstance()->GetLeftStickState(0);
+		if (fabs(leftStick.x) > 0.2f || fabs(leftStick.y) > 0.2f) {
+			//方向ベクトル計算（カメラ考慮）
+			Vector3 forward = QuaternionMath::RotateVector(Vector3(0.0f, 0.0f, 1.0f), camera_->GetRotate());
+			Vector3 right = QuaternionMath::RotateVector(Vector3(1, 0, 0), camera_->GetRotate());
+			direction = forward * leftStick.y + right * leftStick.x;
+			direction = Vector3Math::Normalize(direction);
+			//behaviorRequest_ = GameCharacterBehavior::STEPBOOST;
+		}
+	}
+}
 //
 //
 //

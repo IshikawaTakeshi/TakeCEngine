@@ -49,6 +49,7 @@ void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 	// 着地判定
 	if (characterInfo.transform.translate.y <= 0.0f) {
 		characterInfo.transform.translate.y = 0.0f;
+		characterInfo.onGround = true; // 地面に着地したと判断
 		nextBehavior_ = Behavior::RUNNING; // 着地したら走行に切り替え
 		isTransition_ = true; // 行動の切り替えフラグを立てる
 		return;

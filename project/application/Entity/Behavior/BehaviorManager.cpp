@@ -3,6 +3,7 @@
 #include "application/Entity/Behavior/BehaviorRunning.h"
 #include "application/Entity/Behavior/BehaviorJumping.h"
 #include "application/Entity/Behavior/BehaviorFloating.h"
+#include "application/Entity/Behavior/BehaviorStepBoost.h"
 #include "engine/base/TakeCFrameWork.h"
 
 //=====================================================================================
@@ -87,4 +88,5 @@ void BehaviorManager::CreateDefaultBehaviors() {
 	behaviors_.emplace(GameCharacterBehavior::RUNNING, std::make_unique<BehaviorRunning>(moveDirectionProvider_));
 	behaviors_.emplace(GameCharacterBehavior::JUMP, std::make_unique<BehaviorJumping>(moveDirectionProvider_));
 	behaviors_.emplace(GameCharacterBehavior::FLOATING, std::make_unique<BehaviorFloating>(moveDirectionProvider_));
+	behaviors_.emplace(GameCharacterBehavior::STEPBOOST, std::make_unique<BehaviorStepBoost>(moveDirectionProvider_));
 }
