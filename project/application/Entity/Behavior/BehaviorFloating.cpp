@@ -1,7 +1,15 @@
 #include "BehaviorFloating.h"
 #include "engine/io/Input.h"
 #include "engine/math/Vector3Math.h"
+#include "application/Provider/IMoveDirectionProvider.h"
+#include "engine/base/TakeCFrameWork.h"
 
+
+BehaviorFloating::BehaviorFloating(IMoveDirectionProvider* provider) {
+	moveDirectionProvider_ = provider;
+	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	gravity_ = 9.8f; // 重力の強さ
+}
 
 void BehaviorFloating::Initialize([[maybe_unused]]GameCharacterContext& characterInfo) {
 
@@ -41,7 +49,9 @@ void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 	// 着地判定
 	if (characterInfo.transform.translate.y <= 0.0f) {
 		characterInfo.transform.translate.y = 0.0f;
-		//behaviorRequest_ = Behavior::RUNNING;
+		nextBehavior_ = Behavior::RUNNING; // 着地したら走行に切り替え
+		isTransition_ = true; // 行動の切り替えフラグを立てる
+		return;
 	}
 
 	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
@@ -65,10 +75,11 @@ void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 	}
 }
 
-std::optional<Behavior> BehaviorFloating::TransitionNextBehavior(Behavior nextBehavior) {
+std::pair<bool,Behavior> BehaviorFloating::TransitionNextBehavior(Behavior nextBehavior) {
 	if (nextBehavior != Behavior::NONE) {
 		// 次の行動がある場合はその行動を返す
-		return nextBehavior;
+		return { isTransition_, nextBehavior };
 	}
-	return std::nullopt; // 次の行動がない場合はnulloptを返す
+
+	return { false, Behavior::NONE };
 }

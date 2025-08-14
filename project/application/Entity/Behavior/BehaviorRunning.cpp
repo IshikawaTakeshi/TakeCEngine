@@ -48,18 +48,14 @@ void BehaviorRunning::Update(GameCharacterContext& characterInfo) {
 	// 位置の更新（deltaTimeをここで適用）
 	characterInfo.transform.translate.x += characterInfo.velocity.x * deltaTime_;
 	characterInfo.transform.translate.z += characterInfo.velocity.z * deltaTime_;
-
-	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RT)) {
-		TransitionNextBehavior(GameCharacterBehavior::JUMP);
-	}
-
 }
 
 
-std::optional<Behavior> BehaviorRunning::TransitionNextBehavior(Behavior nextBehavior) {
-	if (nextBehavior != GameCharacterBehavior::NONE) {
+std::pair<bool,Behavior> BehaviorRunning::TransitionNextBehavior(Behavior nextBehavior) {
+	if (nextBehavior != Behavior::NONE) {
 		// 次の行動がある場合はその行動を返す
-		return nextBehavior;
+		return { isTransition_, nextBehavior };
 	}
-	return std::nullopt; // 次の行動がない場合はnulloptを返す
+
+	return { false, Behavior::NONE };
 }

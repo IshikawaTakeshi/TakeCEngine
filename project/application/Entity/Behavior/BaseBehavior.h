@@ -4,6 +4,7 @@
 #include "application/Entity/GameCharacterInfo.h"
 #include <optional>
 #include <string>
+#include <map>
 
 using Behavior = GameCharacterBehavior;
 
@@ -16,9 +17,17 @@ public:
 	// 更新
 	virtual void Update(GameCharacterContext& characterInfo) = 0;
 	// 遷移先のビヘイビアチェック
-	virtual std::optional<Behavior> TransitionNextBehavior(Behavior nextBehavior);
+	virtual std::pair<bool,Behavior> TransitionNextBehavior(Behavior nextBehavior);
+
+	bool GetIsTransition() const { return isTransition_; }
+	Behavior GetNextBehavior() const { return nextBehavior_; }
+	void SetIsTransition(bool isTransition) { isTransition_ = isTransition; }
+	void SetNextBehavior(Behavior nextBehavior) { nextBehavior_ = nextBehavior; }
 
 protected:
 
-	Behavior behaviorRequest_ = Behavior::NONE; // 現在のビヘイビア
+	bool isTransition_ = false; // 遷移フラグ
+	Behavior nextBehavior_ = Behavior::NONE; // 次のビヘイビア
+	// デルタタイム
+	float deltaTime_ = 0.0f; // デルタタイム
 };

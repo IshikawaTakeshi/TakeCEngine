@@ -3,16 +3,19 @@
 #include <memory>
 #include <unordered_map>
 
+class IMoveDirectionProvider;
 class BehaviorManager {
 public:
 	BehaviorManager() = default;
 	~BehaviorManager() = default;
 	// ビヘイビアの初期化
-	void Initialize();
+	void Initialize(IMoveDirectionProvider* moveDirectionProvider);
+	void InitializeBehaviors(GameCharacterContext& characterContext);
 	// ビヘイビアの更新
-	void Update();
+	void Update(GameCharacterContext& characterContext);
+	void UpdateImGui();
 	// ビヘイビアの遷移リクエスト
-	void RequestTransition(Behavior nextBehavior);
+	void RequestBehavior(Behavior nextBehavior);
 
 	Behavior GetCurrentBehaviorType() const { return currentBehaviorType_; }
 	Behavior GetNextBehaviorType() const { return nextBehavior_; }
@@ -20,7 +23,7 @@ public:
 private:
 
 	// 遷移先のビヘイビアを生成する
-	std::unique_ptr<BaseBehavior> CreateBehavior(Behavior behaviorType);
+	void CreateDefaultBehaviors();
 
 private:
 
@@ -32,6 +35,5 @@ private:
 	bool isChanged_ = false; // ビヘイビアが変更されたかどうか
 
 	IMoveDirectionProvider* moveDirectionProvider_ = nullptr;
-	GameCharacterContext& characterContext_; // キャラクターのコンテキスト情報
 };
 

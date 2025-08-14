@@ -117,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Provider\EnemyDirectionProvider.cpp" />
     <ClCompile Include="application\Entity\Behavior\BehaviorJumping.cpp" />
     <ClCompile Include="application\Entity\Behavior\BehaviorManager.cpp" />
+    <ClCompile Include="BehaviorStepBoost.cpp" />
     <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
     <ClCompile Include="engine\3d\Primitive\PrimitiveType.cpp" />
@@ -239,6 +240,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Provider\EnemyDirectionProvider.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorJumping.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorManager.h" />
+    <ClInclude Include="BehaviorStepBoost.h" />
     <ClInclude Include="engine\camera\CameraForGPU.h" />
     <ClInclude Include="engine\camera\PerView.h" />
     <ClInclude Include="engine\math\physics\Ray.h" />

@@ -1,17 +1,17 @@
 #pragma once
 #include "application/Entity/Behavior/BaseBehavior.h"
 
+class IMoveDirectionProvider; // 前方宣言
 class BehaviorJumping : public BaseBehavior {
 public:
 
-	BehaviorJumping() = default;
+	BehaviorJumping(IMoveDirectionProvider* provider);
 	~BehaviorJumping() override = default;
 	void Initialize([[maybe_unused]] GameCharacterContext& characterInfo) override;
 	void Update(GameCharacterContext& characterInfo) override;
-	std::optional<GameCharacterBehavior> TransitionNextBehavior(GameCharacterBehavior nextBehavior) override;
+	std::pair<bool,Behavior> TransitionNextBehavior(Behavior nextBehavior) override;
 
 private:
-
-	float deltaTime_ = 0.0f; // デルタタイム
+	IMoveDirectionProvider* moveDirectionProvider_; // 移動方向を提供するインターフェース
 	float gravity_ = 9.8f; // 重力の強さ
 };
