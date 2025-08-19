@@ -3,13 +3,13 @@
 #include <memory>
 #include <unordered_map>
 
-class IMoveDirectionProvider;
+class baseInputProvider;
 class BehaviorManager {
 public:
 	BehaviorManager() = default;
 	~BehaviorManager() = default;
 	// ビヘイビアの初期化
-	void Initialize(IMoveDirectionProvider* moveDirectionProvider);
+	void Initialize(baseInputProvider* moveDirectionProvider);
 	void InitializeBehaviors(GameCharacterContext& characterContext);
 	// ビヘイビアの更新
 	void Update(GameCharacterContext& characterContext);
@@ -34,6 +34,6 @@ private:
 	Behavior nextBehavior_ = Behavior::NONE; // 次のビヘイビア
 	bool isChanged_ = false; // ビヘイビアが変更されたかどうか
 
-	IMoveDirectionProvider* moveDirectionProvider_ = nullptr;
+	baseInputProvider* inputProvider_ = nullptr;
 };
 

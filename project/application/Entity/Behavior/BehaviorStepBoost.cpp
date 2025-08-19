@@ -1,12 +1,9 @@
 #include "BehaviorStepBoost.h"
-#include "application/Provider/IMoveDirectionProvider.h"
-#include "engine/math/Vector3Math.h"
-#include "engine/math/Quaternion.h"
-#include "engine/math/Easing.h"
+#include "application/Provider/BaseInputProvider.h"
 #include "engine/base/TakeCFrameWork.h"
 
-BehaviorStepBoost::BehaviorStepBoost(IMoveDirectionProvider* provider) {
-	moveDirectionProvider_ = provider;
+BehaviorStepBoost::BehaviorStepBoost(baseInputProvider* provider) {
+	inputProvider_ = provider;
 	deltaTime_ = TakeCFrameWork::GetDeltaTime(); // デルタタイムの取得
 }
 
@@ -16,7 +13,7 @@ void BehaviorStepBoost::Initialize(GameCharacterContext& characterInfo) {
 	float useEnergy = characterInfo.stepBoostInfo.useEnergy;
 
 
-	Vector3 direction = moveDirectionProvider_->GetMoveDirection();
+	Vector3 direction = inputProvider_->GetMoveDirection();
 
 	// オーバーヒート状態のチェック
 	if (characterInfo.overHeatInfo.isOverheated) {
@@ -60,13 +57,4 @@ void BehaviorStepBoost::Update(GameCharacterContext& characterInfo) {
 		// ステップブーストのインターバルをリセット
 		characterInfo.stepBoostInfo.intervalTimer = interval;
 	}
-}
-
-std::pair<bool, Behavior> BehaviorStepBoost::TransitionNextBehavior(Behavior nextBehavior) {
-	if (nextBehavior != Behavior::NONE) {
-		// 次の行動がある場合はその行動を返す
-		return { isTransition_, nextBehavior };
-	}
-
-	return { false, Behavior::NONE };
 }

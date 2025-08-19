@@ -1,9 +1,9 @@
 #include "BehaviorJumping.h"
 #include "engine/base/TakeCFrameWork.h"
-#include "application/Provider/IMoveDirectionProvider.h"
+#include "application/Provider/BaseInputProvider.h"
 
-BehaviorJumping::BehaviorJumping(IMoveDirectionProvider* provider) {
-	moveDirectionProvider_ = provider;
+BehaviorJumping::BehaviorJumping(baseInputProvider* provider) {
+	inputProvider_ = provider;
 	deltaTime_ = TakeCFrameWork::GetDeltaTime(); // デルタタイムの取得
 	
 }
@@ -54,13 +54,4 @@ void BehaviorJumping::Update(GameCharacterContext& characterInfo) {
 		nextBehavior_ = Behavior::RUNNING;
 		velocity = { 0.0f, 0.0f, 0.0f }; // ジャンプ中の速度をリセット
 	}
-}
-
-std::pair<bool,Behavior> BehaviorJumping::TransitionNextBehavior(Behavior nextBehavior) {
-	if (nextBehavior != Behavior::NONE) {
-		// 次の行動がある場合はその行動を返す
-		return { isTransition_, nextBehavior };
-	}
-
-	return { false, Behavior::NONE };
 }

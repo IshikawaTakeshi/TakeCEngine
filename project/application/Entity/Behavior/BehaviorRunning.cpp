@@ -1,12 +1,12 @@
 #include "BehaviorRunning.h"
-#include "application/Provider/IMoveDirectionProvider.h"
+#include "application/Provider/BaseInputProvider.h"
 #include "engine/math/Vector3Math.h"
 #include "engine/math/Quaternion.h"
 #include "engine/math/Easing.h"
 #include "engine/base/TakeCFrameWork.h"
 
-BehaviorRunning::BehaviorRunning(IMoveDirectionProvider* provider) {
-	moveDirectionProvider_ = provider;
+BehaviorRunning::BehaviorRunning(baseInputProvider* provider) {
+	inputProvider_ = provider;
 }
 
 void BehaviorRunning::Initialize([[maybe_unused]]GameCharacterContext& characterInfo) {
@@ -50,12 +50,3 @@ void BehaviorRunning::Update(GameCharacterContext& characterInfo) {
 	characterInfo.transform.translate.z += characterInfo.velocity.z * deltaTime_;
 }
 
-
-std::pair<bool,Behavior> BehaviorRunning::TransitionNextBehavior(Behavior nextBehavior) {
-	if (nextBehavior != Behavior::NONE) {
-		// 次の行動がある場合はその行動を返す
-		return { isTransition_, nextBehavior };
-	}
-
-	return { false, Behavior::NONE };
-}

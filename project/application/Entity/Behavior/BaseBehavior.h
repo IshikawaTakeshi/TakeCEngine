@@ -8,6 +8,7 @@
 
 using Behavior = GameCharacterBehavior;
 
+class baseInputProvider; // 前方宣言
 class BaseBehavior {
 public:
 	BaseBehavior() = default;
@@ -17,7 +18,7 @@ public:
 	// 更新
 	virtual void Update(GameCharacterContext& characterInfo) = 0;
 	// 遷移先のビヘイビアチェック
-	virtual std::pair<bool,Behavior> TransitionNextBehavior(Behavior nextBehavior);
+	std::pair<bool,Behavior> TransitionNextBehavior(Behavior nextBehavior);
 
 	bool GetIsTransition() const { return isTransition_; }
 	Behavior GetNextBehavior() const { return nextBehavior_; }
@@ -28,6 +29,7 @@ protected:
 
 	bool isTransition_ = false; // 遷移フラグ
 	Behavior nextBehavior_ = Behavior::NONE; // 次のビヘイビア
+	baseInputProvider* inputProvider_; // 移動方向を提供するインターフェース
 	// デルタタイム
 	float deltaTime_ = 0.0f; // デルタタイム
 };

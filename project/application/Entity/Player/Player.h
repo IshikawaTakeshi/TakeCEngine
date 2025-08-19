@@ -11,7 +11,7 @@
 #include "application/Weapon/Bullet/BulletManager.h"
 #include "application/Entity/GameCharacterBehavior.h"
 #include "application/Entity/GameCharacterInfo.h"
-#include "application/Provider/PlayerMoveDirectionProvider.h"
+#include "application/Provider/PlayerInputProvider.h"
 #include "application/Entity/Behavior/BehaviorManager.h"
 
 
@@ -35,6 +35,8 @@ public:
 	//==============================================================================
 
 	BaseWeapon* GetWeapon(int index) const;
+
+	std::vector<std::unique_ptr<BaseWeapon>>& GetWeapons();
 
 	const GameCharacterContext& GetCharacterInfo() const { return characterInfo_; }
 	GameCharacterContext& GetCharacterInfo() { return characterInfo_; }
@@ -101,6 +103,7 @@ private:
 	void TriggerStepBoost();
 	//武器一つ当たりの攻撃処理
 	void WeaponAttack(int weaponIndex, GamepadButtonType buttonType);
+	void WeaponChargeAttack(int weaponIndex);
 
 	//エネルギーの更新
 	void UpdateEnergy();
@@ -112,7 +115,7 @@ private:
 	//状態管理マネージャ
 	std::unique_ptr<BehaviorManager> behaviorManager_ = nullptr;
 	//プレイヤー入力プロバイダ
-	std::unique_ptr<PlayerMoveDirectionProvider> moveDirectionProvider_ = nullptr;
+	std::unique_ptr<PlayerInputProvider> inputProvider_ = nullptr;
 
 	//プレイヤーの武器
 	std::vector<std::unique_ptr<BaseWeapon>> weapons_;

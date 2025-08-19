@@ -1,12 +1,12 @@
 #include "BehaviorFloating.h"
 #include "engine/io/Input.h"
 #include "engine/math/Vector3Math.h"
-#include "application/Provider/IMoveDirectionProvider.h"
+#include "application/Provider/BaseInputProvider.h"
 #include "engine/base/TakeCFrameWork.h"
 
 
-BehaviorFloating::BehaviorFloating(IMoveDirectionProvider* provider) {
-	moveDirectionProvider_ = provider;
+BehaviorFloating::BehaviorFloating(baseInputProvider* provider) {
+	inputProvider_ = provider;
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 	gravity_ = 9.8f; // 重力の強さ
 }
@@ -74,13 +74,4 @@ void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 		// ジャンプの速度を設定
 		velocity_.y = characterInfo.jumpInfo.speed;
 	}
-}
-
-std::pair<bool,Behavior> BehaviorFloating::TransitionNextBehavior(Behavior nextBehavior) {
-	if (nextBehavior != Behavior::NONE) {
-		// 次の行動がある場合はその行動を返す
-		return { isTransition_, nextBehavior };
-	}
-
-	return { false, Behavior::NONE };
 }

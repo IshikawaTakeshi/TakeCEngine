@@ -1,17 +1,19 @@
 #include "BehaviorManager.h"
-#include "application/Provider/IMoveDirectionProvider.h"
+#include "application/Provider/BaseInputProvider.h"
 #include "application/Entity/Behavior/BehaviorRunning.h"
 #include "application/Entity/Behavior/BehaviorJumping.h"
 #include "application/Entity/Behavior/BehaviorFloating.h"
 #include "application/Entity/Behavior/BehaviorStepBoost.h"
+#include "application/Entity/Behavior/BehaviorChargeShoot.h"
+#include "application/Entity/Behavior/BehaviorChargeShootStun.h"
 #include "engine/base/TakeCFrameWork.h"
 
 //=====================================================================================
 // 初期化
 //=====================================================================================
 
-void BehaviorManager::Initialize(IMoveDirectionProvider* moveDirectionProvider) {
-	moveDirectionProvider_ = moveDirectionProvider;
+void BehaviorManager::Initialize(baseInputProvider* moveDirectionProvider) {
+	inputProvider_ = moveDirectionProvider;
 }
 
 void BehaviorManager::InitializeBehaviors(GameCharacterContext& characterContext) {
@@ -85,8 +87,10 @@ void BehaviorManager::RequestBehavior(Behavior nextBehavior) {
 //=====================================================================================
 
 void BehaviorManager::CreateDefaultBehaviors() {
-	behaviors_.emplace(GameCharacterBehavior::RUNNING, std::make_unique<BehaviorRunning>(moveDirectionProvider_));
-	behaviors_.emplace(GameCharacterBehavior::JUMP, std::make_unique<BehaviorJumping>(moveDirectionProvider_));
-	behaviors_.emplace(GameCharacterBehavior::FLOATING, std::make_unique<BehaviorFloating>(moveDirectionProvider_));
-	behaviors_.emplace(GameCharacterBehavior::STEPBOOST, std::make_unique<BehaviorStepBoost>(moveDirectionProvider_));
+	behaviors_.emplace(GameCharacterBehavior::RUNNING, std::make_unique<BehaviorRunning>(inputProvider_));
+	behaviors_.emplace(GameCharacterBehavior::JUMP, std::make_unique<BehaviorJumping>(inputProvider_));
+	behaviors_.emplace(GameCharacterBehavior::FLOATING, std::make_unique<BehaviorFloating>(inputProvider_));
+	behaviors_.emplace(GameCharacterBehavior::STEPBOOST, std::make_unique<BehaviorStepBoost>(inputProvider_));
+	behaviors_.emplace(GameCharacterBehavior::CHARGESHOOT, std::make_unique<BehaviorChargeShoot>(inputProvider_));
+	behaviors_.emplace(GameCharacterBehavior::CHARGESHOOT_STUN, std::make_unique<BehaviorChargeShootStun>(inputProvider_));
 }
