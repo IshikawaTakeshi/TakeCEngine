@@ -4,13 +4,32 @@
 #include "application/Entity/GameCharacterInfo.h"
 #include <optional>
 #include <string>
+#include <map>
 
+using Behavior = GameCharacterBehavior;
+
+class baseInputProvider; // 前方宣言
 class BaseBehavior {
 public:
 	BaseBehavior() = default;
 	virtual ~BaseBehavior() = default;
 	// 初期化
-	virtual void Initialize() = 0;
+	virtual void Initialize([[maybe_unused]]GameCharacterContext& characterInfo) = 0;
 	// 更新
-	virtual void Update(GameCharcterInfo& characterInfo) = 0;
+	virtual void Update(GameCharacterContext& characterInfo) = 0;
+	// 遷移先のビヘイビアチェック
+	std::pair<bool,Behavior> TransitionNextBehavior(Behavior nextBehavior);
+
+	bool GetIsTransition() const { return isTransition_; }
+	Behavior GetNextBehavior() const { return nextBehavior_; }
+	void SetIsTransition(bool isTransition) { isTransition_ = isTransition; }
+	void SetNextBehavior(Behavior nextBehavior) { nextBehavior_ = nextBehavior; }
+
+protected:
+
+	bool isTransition_ = false; // 遷移フラグ
+	Behavior nextBehavior_ = Behavior::NONE; // 次のビヘイビア
+	baseInputProvider* inputProvider_; // 移動方向を提供するインターフェース
+	// デルタタイム
+	float deltaTime_ = 0.0f; // デルタタイム
 };

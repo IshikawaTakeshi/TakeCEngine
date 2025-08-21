@@ -1,4 +1,3 @@
-#define NOMINMAX
 #include "BoxCollider.h"
 #include "3d/Object3dCommon.h"
 #include "MatrixMath.h"

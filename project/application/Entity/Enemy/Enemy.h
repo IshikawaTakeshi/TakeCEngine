@@ -52,7 +52,7 @@ public:
 private:
 
 	//状態遷移の列挙型
-	enum class Behavior {
+	enum class GameCharacterBehavior {
 		IDLE,             // 待機状態
 		RUNNING,          // 移動状態
 		JUMP,             // ジャンプ状態
@@ -100,10 +100,10 @@ private:
 private:
 
 	//状態遷移リクエスト
-	std::optional<Behavior> behaviorRequest_ = std::nullopt;
+	std::optional<GameCharacterBehavior> behaviorRequest_ = std::nullopt;
 	//エネミーの状態
-	Behavior behavior_ = Behavior::IDLE;
-	Behavior prevBehavior_ = Behavior::IDLE;
+	GameCharacterBehavior behavior_ = GameCharacterBehavior::IDLE;
+	GameCharacterBehavior prevBehavior_ = GameCharacterBehavior::IDLE;
 	//エネミーの武器
 	std::vector<std::unique_ptr<BaseWeapon>> weapons_;
 	std::vector<WeaponType> weaponTypes_;

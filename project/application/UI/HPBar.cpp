@@ -1,4 +1,3 @@
-#define NOMINMAX
 #include "HPBar.h"
 #include "engine/2d/SpriteCommon.h"
 #include "engine/2d/Sprite.h"
