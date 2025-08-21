@@ -388,8 +388,8 @@ void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
 			//チャージ攻撃不可:通常攻撃
 			if (weapon->IsStopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
 				// 停止撃ち専用:硬直処理を行う
-				//behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT);
-				
+				characterInfo_.isChargeShooting = true; // チャージ撃ち中フラグを立てる
+				chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
 
 			} else {
 				// 移動撃ち可能
@@ -409,6 +409,17 @@ void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
 				// 移動撃ち可能な場合はRUNNINGに戻す
 				behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
 			}
+		}
+	}
+
+	if(characterInfo_.isChargeShooting == true) {
+		// チャージ撃ち中の処理
+		chargeShootTimer_ -= deltaTime_;
+		if (chargeShootTimer_ <= 0.0f) {
+			weapon->Attack();
+			characterInfo_.isChargeShooting = false; // チャージ撃ち中フラグをリセット
+			chargeShootTimer_ = 0.0f; // タイマーをリセット
+			behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 		}
 	}
 }

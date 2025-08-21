@@ -12,7 +12,6 @@ public:
 	void RequestAttack() override;
 	void RequestChargeAttack() override;
 
-
 private:
 
 	Player* player_; // Playerオブジェクトへのポインタ

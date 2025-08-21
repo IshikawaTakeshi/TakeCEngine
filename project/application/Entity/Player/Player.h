@@ -130,4 +130,8 @@ private:
 	float gravity_ = 9.8f;         // 重力の強さ
 	//補足対象の座標
 	Vector3 focusTargetPos_ = { 0.0f,100.0f,0.0f };
+
+	
+	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
+	float chargeShootTimer_ = 0.0f; //停止撃ちまでの残り猶予時間
 };

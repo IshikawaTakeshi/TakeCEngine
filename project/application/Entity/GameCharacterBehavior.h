@@ -5,7 +5,6 @@ enum class GameCharacterBehavior {
 	RUNNING,          // 移動状態
 	JUMP,             // ジャンプ状態
 	DASH,             // ダッシュ状態
-	CHARGESHOOT,      //チャージ攻撃中
 	CHARGESHOOT_STUN, // チャージショット後の硬直状態
 	HEAVYDAMAGE,	  // 大ダメージによる硬直状態
 	STEPBOOST,        // ステップブースト

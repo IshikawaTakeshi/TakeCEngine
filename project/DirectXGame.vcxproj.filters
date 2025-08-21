@@ -146,9 +146,6 @@
     <ClCompile Include="application\Entity\Enemy\Enemy.cpp">
       <Filter>application\Entity\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Entity\GameCharacter.cpp">
-      <Filter>application\Entity</Filter>
-    </ClCompile>
     <ClCompile Include="engine\scene\GameClearScene.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
@@ -350,9 +347,6 @@
     <ClCompile Include="engine\math\Vector3Math.cpp">
       <Filter>engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Entity\SampleCharacter.cpp">
-      <Filter>application\Entity</Filter>
-    </ClCompile>
     <ClCompile Include="engine\3d\Primitive\Ring.cpp">
       <Filter>engine\3d\Primitive</Filter>
     </ClCompile>
@@ -391,7 +385,6 @@
     <ClCompile Include="application\Entity\Behavior\BehaviorStepBoost.cpp" />
     <ClCompile Include="application\Entity\Behavior\BehaviorDead.cpp" />
     <ClCompile Include="application\Entity\Behavior\BehaviorChargeShootStun.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorChargeShoot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -707,9 +700,6 @@
     <ClInclude Include="engine\math\Transform.h">
       <Filter>engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Entity\SampleCharacter.h">
-      <Filter>application\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="engine\3d\Primitive\Ring.h">
       <Filter>engine\3d\Primitive</Filter>
     </ClInclude>
@@ -757,7 +747,6 @@
     <ClInclude Include="application\Entity\Behavior\BehaviorStepBoost.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorDead.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorChargeShootStun.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorChargeShoot.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

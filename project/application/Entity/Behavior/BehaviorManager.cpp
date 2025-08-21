@@ -4,7 +4,6 @@
 #include "application/Entity/Behavior/BehaviorJumping.h"
 #include "application/Entity/Behavior/BehaviorFloating.h"
 #include "application/Entity/Behavior/BehaviorStepBoost.h"
-#include "application/Entity/Behavior/BehaviorChargeShoot.h"
 #include "application/Entity/Behavior/BehaviorChargeShootStun.h"
 #include "engine/base/TakeCFrameWork.h"
 
@@ -91,6 +90,5 @@ void BehaviorManager::CreateDefaultBehaviors() {
 	behaviors_.emplace(GameCharacterBehavior::JUMP, std::make_unique<BehaviorJumping>(inputProvider_));
 	behaviors_.emplace(GameCharacterBehavior::FLOATING, std::make_unique<BehaviorFloating>(inputProvider_));
 	behaviors_.emplace(GameCharacterBehavior::STEPBOOST, std::make_unique<BehaviorStepBoost>(inputProvider_));
-	behaviors_.emplace(GameCharacterBehavior::CHARGESHOOT, std::make_unique<BehaviorChargeShoot>(inputProvider_));
 	behaviors_.emplace(GameCharacterBehavior::CHARGESHOOT_STUN, std::make_unique<BehaviorChargeShootStun>(inputProvider_));
 }

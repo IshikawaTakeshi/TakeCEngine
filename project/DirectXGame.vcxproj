@@ -120,7 +120,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Entity\Behavior\BehaviorStepBoost.cpp" />
     <ClCompile Include="application\Entity\Behavior\BehaviorDead.cpp" />
     <ClCompile Include="application\Entity\Behavior\BehaviorChargeShootStun.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorChargeShoot.cpp" />
     <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
     <ClCompile Include="engine\3d\Primitive\PrimitiveType.cpp" />
@@ -179,7 +178,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\TakeCFrameWork.cpp" />
     <ClCompile Include="engine\scene\GamePlayScene.cpp" />
     <ClCompile Include="engine\base\ImGuiManager.cpp" />
-    <ClCompile Include="engine\Entity\GameCharacter.cpp" />
     <ClCompile Include="engine\3d\Particle\GPUParticle.cpp" />
     <ClCompile Include="engine\PostEffect\GrayScale.cpp" />
     <ClCompile Include="engine\PostEffect\LuminanceBasedOutline.cpp" />
@@ -204,7 +202,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\Particle\ParticleManager.cpp" />
     <ClCompile Include="engine\SkyBox\SkyBox.cpp" />
     <ClCompile Include="engine\Collision\SphereCollider.cpp" />
-    <ClCompile Include="engine\Entity\SampleCharacter.cpp" />
     <ClCompile Include="engine\3d\Primitive\PrimitiveDrawer.cpp" />
     <ClCompile Include="engine\3d\Primitive\Ring.cpp" />
     <ClCompile Include="application\Entity\Player\Player.cpp" />
@@ -245,7 +242,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Behavior\BehaviorStepBoost.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorDead.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorChargeShootStun.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorChargeShoot.h" />
     <ClInclude Include="engine\camera\CameraForGPU.h" />
     <ClInclude Include="engine\camera\PerView.h" />
     <ClInclude Include="engine\math\physics\Ray.h" />
@@ -360,7 +356,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\scene\SceneManager.h" />
     <ClInclude Include="engine\SkyBox\SkyBox.h" />
     <ClInclude Include="engine\Collision\SphereCollider.h" />
-    <ClInclude Include="engine\Entity\SampleCharacter.h" />
     <ClInclude Include="engine\3d\Primitive\Ring.h" />
     <ClInclude Include="engine\Utility\ResourceBarrier.h" />
     <ClInclude Include="engine\base\RtvManager.h" />
