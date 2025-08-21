@@ -1,4 +1,3 @@
-#define NOMINMAX
 #include "Camera.h"
 #include "base/WinApp.h"
 #include "base/DirectXCommon.h"

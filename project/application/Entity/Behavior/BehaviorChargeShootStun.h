@@ -1,15 +1,16 @@
 #pragma once
 #include "application/Entity/Behavior/BaseBehavior.h"
 
-class baseInputProvider;
-class BehaviorRunning : public BaseBehavior {
+class baseInputProvider; // 前方宣言
+class BehaviorChargeShootStun : public BaseBehavior {
 public:
 
-	BehaviorRunning(baseInputProvider* provider);
-	~BehaviorRunning() override = default;
+	BehaviorChargeShootStun(baseInputProvider* provider);
+	~BehaviorChargeShootStun() override = default;
 	void Initialize([[maybe_unused]]GameCharacterContext& characterInfo) override;
 	void Update(GameCharacterContext& characterInfo) override;
 
 private:
 
 };
+

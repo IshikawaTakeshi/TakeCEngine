@@ -1,19 +1,19 @@
 #include "BehaviorRunning.h"
-#include "application/Provider/IMoveDirectionProvider.h"
+#include "application/Provider/BaseInputProvider.h"
 #include "engine/math/Vector3Math.h"
 #include "engine/math/Quaternion.h"
 #include "engine/math/Easing.h"
 #include "engine/base/TakeCFrameWork.h"
 
-BehaviorRunning::BehaviorRunning(IMoveDirectionProvider* provider) {
-	moveDirectionProvider_ = provider;
+BehaviorRunning::BehaviorRunning(baseInputProvider* provider) {
+	inputProvider_ = provider;
 }
 
-void BehaviorRunning::Initialize() {
+void BehaviorRunning::Initialize([[maybe_unused]]GameCharacterContext& characterInfo) {
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
-void BehaviorRunning::Update(GameCharcterInfo& characterInfo) {
+void BehaviorRunning::Update(GameCharacterContext& characterInfo) {
 
 	//移動方向の正規化
 	if (characterInfo.moveDirection.x != 0.0f || characterInfo.moveDirection.z != 0.0f) {
@@ -48,5 +48,5 @@ void BehaviorRunning::Update(GameCharcterInfo& characterInfo) {
 	// 位置の更新（deltaTimeをここで適用）
 	characterInfo.transform.translate.x += characterInfo.velocity.x * deltaTime_;
 	characterInfo.transform.translate.z += characterInfo.velocity.z * deltaTime_;
-
 }
+

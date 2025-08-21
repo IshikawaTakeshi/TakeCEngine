@@ -30,7 +30,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//キャラクタータイプ設定
 	characterType_ = CharacterType::ENEMY;
 
-	behaviorRequest_ = Behavior::RUNNING;
+	behaviorRequest_ = GameCharacterBehavior::RUNNING;
 	//オブジェクト初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
@@ -103,17 +103,17 @@ void Enemy::Update() {
 	}
 
 	// StepBoost入力判定を最初に追加
-	if (behavior_ == Behavior::RUNNING) {
+	if (behavior_ == GameCharacterBehavior::RUNNING) {
 
 	
 			//1秒に1度確率で判定
 			if( randomEngine() % 100 < jumpProbability_) { // 1%の確率
 				if(randomEngine() % 2 == 0) {
 					//Jump遷移
-					behaviorRequest_ = Behavior::JUMP;
+					behaviorRequest_ = GameCharacterBehavior::JUMP;
 				} else {
 					//StepBoost遷移
-					behaviorRequest_ = Behavior::STEPBOOST;
+					behaviorRequest_ = GameCharacterBehavior::STEPBOOST;
 				}
 			}
 	}
@@ -127,30 +127,30 @@ void Enemy::Update() {
 		prevBehavior_ = behavior_;
 
 		switch (behavior_) {
-		case Behavior::IDLE:
+		case GameCharacterBehavior::IDLE:
 			break;
-		case Behavior::RUNNING:
+		case GameCharacterBehavior::RUNNING:
 			InitRunning();
 			break;
-		case Behavior::JUMP:
+		case GameCharacterBehavior::JUMP:
 			InitJump();
 			break;
-		case Behavior::DASH:
+		case GameCharacterBehavior::DASH:
 			InitDash();
 			break;
-		case Behavior::STEPBOOST:
+		case GameCharacterBehavior::STEPBOOST:
 			InitStepBoost();
 			break;
-		case Behavior::FLOATING:
+		case GameCharacterBehavior::FLOATING:
 			InitFloating();
 			break;
-		case Behavior::CHARGESHOOT:
+		case GameCharacterBehavior::CHARGESHOOT:
 			InitChargeShoot();
 			break;
-		case Behavior::CHARGESHOOT_STUN:
+		case GameCharacterBehavior::CHARGESHOOT_STUN:
 			InitChargeShootStun();
 			break;
-		case Behavior::DEAD:
+		case GameCharacterBehavior::DEAD:
 			InitDead();
 			break;
 		}
@@ -159,31 +159,31 @@ void Enemy::Update() {
 	}
 
 	switch (behavior_) {
-	case Enemy::Behavior::IDLE:
+	case Enemy::GameCharacterBehavior::IDLE:
 		break;
-	case Enemy::Behavior::RUNNING:
+	case Enemy::GameCharacterBehavior::RUNNING:
 		UpdateRunning();
 		break;
-	case Enemy::Behavior::JUMP:
+	case Enemy::GameCharacterBehavior::JUMP:
 		UpdateJump();
 		break;
-	case Enemy::Behavior::DASH:
+	case Enemy::GameCharacterBehavior::DASH:
 		UpdateDash();
 		break;
-	case Enemy::Behavior::STEPBOOST:
+	case Enemy::GameCharacterBehavior::STEPBOOST:
 		UpdateStepBoost();
 		break;
-	case Enemy::Behavior::FLOATING:
+	case Enemy::GameCharacterBehavior::FLOATING:
 		UpdateFloating(randomEngine);
 		break;
-	case Enemy::Behavior::CHARGESHOOT:
+	case Enemy::GameCharacterBehavior::CHARGESHOOT:
 		UpdateChargeShoot();
 		break;
-	case Enemy::Behavior::CHARGESHOOT_STUN:
+	case Enemy::GameCharacterBehavior::CHARGESHOOT_STUN:
 		UpdateChargeShootStun();
 		break;
 
-	case Enemy::Behavior::DEAD:
+	case Enemy::GameCharacterBehavior::DEAD:
 		UpdateDead();
 		break;
 
@@ -208,7 +208,7 @@ void Enemy::Update() {
 	if(health_ <= 0.0f) {
 		//死亡状態のリクエスト
 		isAlive_ = false;
-		behaviorRequest_ = Behavior::DEAD;
+		behaviorRequest_ = GameCharacterBehavior::DEAD;
 	}
 
 	//Quaternionからオイラー角に変換
@@ -383,7 +383,7 @@ void Enemy::InitJump() {
 	//オーバーヒート状態のチェック
 	if (isOverheated_) {
 		// オーバーヒート中はジャンプできない
-		behaviorRequest_ = Behavior::RUNNING;
+		behaviorRequest_ = GameCharacterBehavior::RUNNING;
 		return;
 	}
 
@@ -432,14 +432,14 @@ void Enemy::UpdateJump() {
 
 	jumpTimer_ += deltaTime_;
 	if (jumpTimer_ > maxJumpTime_) {
-		behaviorRequest_ = Behavior::FLOATING;
+		behaviorRequest_ = GameCharacterBehavior::FLOATING;
 		return;
 	}
 
 	// 地面に着地したらRUNNINGに戻る
 	if (transform_.translate.y <= 0.0f) {
 		transform_.translate.y = 0.0f; // 地面に合わせる
-		behaviorRequest_ = Behavior::RUNNING;
+		behaviorRequest_ = GameCharacterBehavior::RUNNING;
 		velocity_ = { 0.0f, 0.0f, 0.0f }; // ジャンプ中の速度をリセット
 	}
 }
@@ -473,16 +473,16 @@ void Enemy::UpdateAttack() {
 					// チャージ攻撃実行
 					weapon->ChargeAttack();
 					if (weapon->IsStopShootOnly()) {
-						behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+						behaviorRequest_ = GameCharacterBehavior::CHARGESHOOT_STUN;
 					} else {
-						behaviorRequest_ = Behavior::RUNNING;
+						behaviorRequest_ = GameCharacterBehavior::RUNNING;
 					}
 				}
 			} else {
 				// 通常攻撃
 				weapon->Attack();
 				if (weapon->IsStopShootOnly()) {
-					behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+					behaviorRequest_ = GameCharacterBehavior::CHARGESHOOT_STUN;
 				}
 				// 移動撃ちならRUNNING継続
 			}
@@ -491,9 +491,9 @@ void Enemy::UpdateAttack() {
 			if (weapon->IsCharging()) {
 				weapon->ChargeAttack();
 				if (weapon->IsStopShootOnly()) {
-					behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+					behaviorRequest_ = GameCharacterBehavior::CHARGESHOOT_STUN;
 				} else {
-					behaviorRequest_ = Behavior::RUNNING;
+					behaviorRequest_ = GameCharacterBehavior::RUNNING;
 				}
 			}
 		}
@@ -526,16 +526,16 @@ void Enemy::UpdateChargeShoot() {
 			if (weapon->IsMoveShootable()) {
 				// ステップ終了時前回の状態に戻す
 				if (transform_.translate.y <= 0.0f) {
-					behaviorRequest_ = Behavior::RUNNING;
+					behaviorRequest_ = GameCharacterBehavior::RUNNING;
 				} else if (transform_.translate.y > 0.0f) {
-					behaviorRequest_ = Behavior::FLOATING;
+					behaviorRequest_ = GameCharacterBehavior::FLOATING;
 				} else {
 					// ステップブーストが終了したらRUNNINGに戻す
-					behaviorRequest_ = Behavior::RUNNING;
+					behaviorRequest_ = GameCharacterBehavior::RUNNING;
 				}
 			} else {
 				// 停止撃ち専用の場合はCHARGESHOOT_STUNに切り替え
-				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+				behaviorRequest_ = GameCharacterBehavior::CHARGESHOOT_STUN;
 			}
 		}
 	}
@@ -559,12 +559,12 @@ void Enemy::UpdateChargeShootStun() {
 	if (chargeAttackStunTimer_ <= 0.0f) {
 		// ステップ終了時前回の状態に戻す
 		if (transform_.translate.y <= 0.0f) {
-			behaviorRequest_ = Behavior::RUNNING;
+			behaviorRequest_ = GameCharacterBehavior::RUNNING;
 		} else if (transform_.translate.y > 0.0f) {
-			behaviorRequest_ = Behavior::FLOATING;
+			behaviorRequest_ = GameCharacterBehavior::FLOATING;
 		} else {
 			// ステップブーストが終了したらRUNNINGに戻す
-			behaviorRequest_ = Behavior::RUNNING;
+			behaviorRequest_ = GameCharacterBehavior::RUNNING;
 		}
 	}
 }
@@ -579,7 +579,7 @@ void Enemy::InitStepBoost() {
 	// オーバーヒート状態のチェック
 	if (isOverheated_) {
 		// オーバーヒート中はステップブーストできない
-		behaviorRequest_ = Behavior::RUNNING;
+		behaviorRequest_ = GameCharacterBehavior::RUNNING;
 		return;
 	}
 
@@ -628,12 +628,12 @@ void Enemy::UpdateStepBoost() {
 	if (stepBoostTimer_ <= 0.0f) {
 		// ステップ終了時前回の状態に戻す
 		if (transform_.translate.y <= 0.0f) {
-			behaviorRequest_ = Behavior::RUNNING;
+			behaviorRequest_ = GameCharacterBehavior::RUNNING;
 		} else if (transform_.translate.y > 0.0f) {
-			behaviorRequest_ = Behavior::FLOATING;
+			behaviorRequest_ = GameCharacterBehavior::FLOATING;
 		} else {
 			// ステップブーストが終了したらRUNNINGに戻す
-			behaviorRequest_ = Behavior::RUNNING;
+			behaviorRequest_ = GameCharacterBehavior::RUNNING;
 		}
 
 		// ステップブーストのインターバルをリセット
@@ -648,7 +648,7 @@ void Enemy::TriggerStepBoost() {
 			//方向ベクトル計算（カメラ考慮）
 
 			stepBoostDirection_ = Vector3Math::Normalize(toOrbitPos_);
-			behaviorRequest_ = Behavior::STEPBOOST;
+			behaviorRequest_ = GameCharacterBehavior::STEPBOOST;
 		}
 	}
 }
@@ -716,7 +716,7 @@ void Enemy::UpdateFloating(std::mt19937 randomEngine) {
 	// 着地判定
 	if (transform_.translate.y <= 0.0f) {
 		transform_.translate.y = 0.0f;
-		behaviorRequest_ = Behavior::RUNNING;
+		behaviorRequest_ = GameCharacterBehavior::RUNNING;
 	}
 
 	// --------------------------------
@@ -725,7 +725,7 @@ void Enemy::UpdateFloating(std::mt19937 randomEngine) {
 
 	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
 	if (randomEngine() % 100 < 1.0f) {
-		behaviorRequest_ = Behavior::STEPBOOST;
+		behaviorRequest_ = GameCharacterBehavior::STEPBOOST;
 	}
 
 	//浮遊中、再上昇する場合
@@ -801,8 +801,8 @@ void Enemy::UpdateEnergy() {
 		if (energy_ < maxEnergy_) {
 
 			//浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
-			if (behavior_ == Behavior::FLOATING || behavior_ == Behavior::JUMP ||
-				behavior_ == Behavior::STEPBOOST) {
+			if (behavior_ == GameCharacterBehavior::FLOATING || behavior_ == GameCharacterBehavior::JUMP ||
+				behavior_ == GameCharacterBehavior::STEPBOOST) {
 				return;
 			}
 

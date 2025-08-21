@@ -1,4 +1,3 @@
-#define NOMINMAX
 #include "SphereCollider.h"
 #include "BoxCollider.h"
 #include "Model.h"
