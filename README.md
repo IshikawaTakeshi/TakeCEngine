@@ -9,6 +9,7 @@
 ## 作業種別
 - **Develop** : 大元バージョン
 - **Feature** : 要素の追加
+- **refactoring** : 要素のリファクタリング
 - **Engine** : エンジン更新
 - **Fix** : 修正
 - **Hotfix** : やばいバグ
