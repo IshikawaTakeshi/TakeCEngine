@@ -1,6 +1,7 @@
 #pragma once
 #include "engine/3d/Object3d.h"
 #include "engine/math/physics/Ray.h"
+#include "engine/Collision/SurfaceType.h"
 #include <cstdint>
 #include <memory>
 
@@ -44,30 +45,25 @@ public:
 
 	virtual bool Intersects(const Ray& ray, RayCastHit& outHit) = 0;
 
-
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///		getter
 	////////////////////////////////////////////////////////////////////////////////////////
 
-	/// <summary>
-	/// ワールド座標の取得
-	/// </summary>
+	// ワールド座標の取得
 	virtual Vector3 GetWorldPos() = 0;
 
-	Vector4 GetColor() const { return color_; }
+	Vector4 GetColor() const;
 
-	/// <summary>
-	/// 衝突半径の取得
-	///</summary>
-	float GetRadius() const { return radius_; }
+	// 衝突半径の取得
+	float GetRadius() const;
 
+	// 種別IDの取得
+	CollisionLayer GetCollisionLayerID();
 
-	/// <summary>
-	/// 種別IDの取得
-	/// </summary>
-	CollisionLayer GetCollisionLayerID() const { return layerID_; }
+	//SurfaceTypeの取得
+	SurfaceType GetSurfaceType() const;
 
 public:
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -108,8 +104,11 @@ protected:
 	//Transform
 	EulerTransform transform_{};
 
-	//
+	//カラー
 	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
+
+	//衝突時の情報
+	SurfaceType surfaceType_;
 
 	//衝突半径
 	float radius_ = 1.0f;
