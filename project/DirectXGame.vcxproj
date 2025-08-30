@@ -244,6 +244,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Behavior\BehaviorChargeShootStun.h" />
     <ClInclude Include="engine\camera\CameraForGPU.h" />
     <ClInclude Include="engine\camera\PerView.h" />
+    <ClInclude Include="engine\Collision\SurfaceType.h" />
     <ClInclude Include="engine\math\physics\Ray.h" />
     <ClInclude Include="engine\PostEffect\DepthBasedOutline.h" />
     <ClInclude Include="engine\3d\Particle\ParticleAttribute.h" />

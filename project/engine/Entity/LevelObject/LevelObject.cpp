@@ -100,6 +100,19 @@ void LevelObject::OnCollisionAction(GameCharacter* other) {
 
 	if(other->GetCharacterType() == CharacterType::PLAYER) {
 		// ここにレベルオブジェクトとプレイヤーまたは敵の衝突時の処理を追加
-		collider_->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f });
+		
+		//衝突面に応じて処理を分ける
+		if(other->GetCollider()->GetSurfaceType() == SurfaceType::TOP) {
+			//地面に接触した場合
+			collider_->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f }); // 緑色に変更
+		} else if(other->GetCollider()->GetSurfaceType() == SurfaceType::WALL) {
+			//壁に接触した場合]
+			collider_->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f }); // 赤色に変更
+		} else if(other->GetCollider()->GetSurfaceType() == SurfaceType::BOTTOM) {
+			//天井に接触した場合
+			collider_->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f }); // 青色に変更
+		} else {
+			collider_->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f }); // 黄色に変更
+		}
 	} 
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Collision/Collider.h"
+#include "engine/math/OBB.h"
 
 class BoxCollider;
 class SphereCollider : public Collider {
@@ -15,8 +16,10 @@ public:
 
 	//当たり判定範囲の描画
 	void DrawCollider() override;
-
+	// レイとの衝突判定
 	bool Intersects(const Ray& ray, RayCastHit& outHit) override;
+	//衝突面のタイプを判定
+	SurfaceType CheckSurfaceType() const;
 
 	Vector3 GetWorldPos() override;
 
@@ -32,6 +35,8 @@ public:
 	bool CheckCollisionSphere(SphereCollider* sphere);
 
 private:
+
+	Vector3 SphereCenterToOBBLocal(const OBB& obb, const Vector3& sphereCenter);
 
 	float radius_;
 };

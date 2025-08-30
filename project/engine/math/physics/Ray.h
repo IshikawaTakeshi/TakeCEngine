@@ -15,6 +15,4 @@ struct RayCastHit {
 	Vector3 normal; // ヒット面の法線ベクトル
 	float distance; // ヒットまでの距離
 	Collider* hitCollider; // ヒットしたコライダのポインタ
-
-	RayCastHit() : isHit(false), distance(0.0f), hitCollider(nullptr) {}
 };

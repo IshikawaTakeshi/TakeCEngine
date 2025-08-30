@@ -114,8 +114,14 @@ void CollisionManager::CheckCollisionPairForGameCharacter(GameCharacter* gameCha
 	//コライダーがnullptrだったらreturn
 	if (!colliderA || !colliderB) return;
 
+	if( gameCharacterA->GetCharacterType() == gameCharacterB->GetCharacterType()) {
+		//同じキャラクタータイプ同士の衝突は無視
+		return;
+	}
+
 	//コライダーAとBの衝突判定
 	if (colliderA->CheckCollision(colliderB)) {
+		
 		//コライダーAの衝突処理
 		gameCharacterA->OnCollisionAction(gameCharacterB);
 		//コライダーBの衝突処理

@@ -55,6 +55,8 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 }
 
 void BoxCollider::Update(Object3d* collisionObject) {
+	minAxis_ = { 0.0f,0.0f,0.0f };
+	minPenetration_ = 0.0f;
 
 	transform_ = collisionObject->GetTransform();
 	obb_.center = collisionObject->GetCenterPosition();
@@ -83,9 +85,12 @@ void BoxCollider::Update(Object3d* collisionObject) {
 void BoxCollider::UpdateImGui([[maybe_unused]]const std::string& name) {
 #ifdef _DEBUG
 	std::string windowName = "BoxCollider" + name;
+	std::vector<std::string> surfaceTypes = { "FLOOR", "WALL", "CEILING" };
 	if (ImGui::TreeNode("BoxCollider")) {
 		ImGui::DragFloat3("HalfSize", &halfSize_.x, 0.01f);
 		ImGui::Text("OBB Center: %.2f, %.2f, %.2f", obb_.center.x, obb_.center.y, obb_.center.z);
+		ImGui::Text("SurfaceType: %s", surfaceTypes[static_cast<int>(surfaceType_)].c_str());
+		ImGui::Text("MinAxis: %.2f, %.2f, %.2f", minAxis_.x, minAxis_.y, minAxis_.z);
 		ImGui::TreePop();
 	}
 #endif // _DEBUG
@@ -96,11 +101,18 @@ void BoxCollider::UpdateImGui([[maybe_unused]]const std::string& name) {
 
 bool BoxCollider::CheckCollision(Collider* other) {
 
+	bool result = false;
+
 	if (BoxCollider* box = dynamic_cast<BoxCollider*>(other)) {
-		return CheckCollisionOBB(box);
+		result = CheckCollisionOBB(box);
+		if (result == true) {
+			surfaceType_ = CheckSurfaceType(obb_.axis, minAxis_);
+		}
+		return result;
 	}
 	if (SphereCollider* sphere = dynamic_cast<SphereCollider*>(other)) {
-		return sphere->CheckCollisionOBB(this);
+		result = sphere->CheckCollisionOBB(this);
+		return result;
 	}
 	return false;
 }
@@ -147,16 +159,33 @@ void BoxCollider::DrawCollider() {
 	TakeCFrameWork::GetWireFrame()->DrawOBB(obb_, color_);
 }
 
-Vector3 BoxCollider::GetWorldPos() {
-	
-	return obb_.center;
+//=============================================================================
+// SurfaceTypeの取得
+//=============================================================================
+
+SurfaceType BoxCollider::CheckSurfaceType(const Vector3* Axis, const Vector3& normal) const {
+	float dotX = normal.Dot(Axis[0]);
+	float dotY = normal.Dot(Axis[1]);
+	float dotZ = normal.Dot(Axis[2]);
+
+	float absDotX = std::fabs(dotX);
+	float absDotY = std::fabs(dotY);
+	float absDotZ = std::fabs(dotZ);
+
+	// Y軸方向の衝突が最も大きい場合 (地面 or 天井)
+	if (absDotY >= absDotX && absDotY >= absDotZ) {
+		return dotY > 0 ? SurfaceType::TOP : SurfaceType::BOTTOM;
+	}
+	// X軸方向の衝突が最も大きい場合 (左右の壁)
+	else if (absDotX >= absDotY && absDotX >= absDotZ) {
+		return SurfaceType::WALL;
+	}
+	// Z軸方向の衝突が最も大きい場合 (前後の壁)
+	else {
+		return SurfaceType::WALL;
+	}
 }
 
-void BoxCollider::SetHalfSize(const Vector3& halfSize) {
-
-	halfSize_ = halfSize;
-	obb_.halfSize = halfSize_;
-}
 
 //=============================================================================
 // OBBとの衝突判定
@@ -167,7 +196,7 @@ bool BoxCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 	const Vector3* otherAxis = otherBox->obb_.axis;
 
 	//他OBBの中心から自OBBの中心へのベクトル
-	Vector3 T = otherBox->obb_.center - this->obb_.center;
+	Vector3 direction = otherBox->obb_.center - this->obb_.center;
 
 	//他OBBの座標を自OBBのローカル座標系へ変換
 	float rotation[3][3], absRotation[3][3];
@@ -180,8 +209,8 @@ bool BoxCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 	}
 
 	// 中心間距離を自OBBのローカル座標系で表現
-	float centerToCenter[3] = { T.Dot(thisAxis[0]), T.Dot(thisAxis[1]), T.Dot(thisAxis[2]) };
-
+	float centerToCenter[3] = { direction.Dot(thisAxis[0]), direction.Dot(thisAxis[1]), direction.Dot(thisAxis[2]) };
+	minPenetration_ = FLT_MAX;
 
 	// 1. 自OBBの各軸を分離軸として判定
 	for (int i = 0; i < 3; i++) {
@@ -195,7 +224,23 @@ bool BoxCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 			otherBox->obb_.halfSize.y * absRotation[i][1] +
 			otherBox->obb_.halfSize.z * absRotation[i][2];
 
-		if (std::fabs(centerToCenter[i]) > selfProjection + otherProjection) return false;
+		// 他OBBの中心から自OBBの中心への距離
+		float dist = std::fabs(centerToCenter[i]);
+
+		// 分離軸としての判定
+		if (dist > selfProjection + otherProjection) return false;
+		// 貫通量の計算と最小貫通量の更新
+		float penetration = (selfProjection + otherProjection) - dist;
+		if (penetration < minPenetration_) {
+			minPenetration_ = penetration;
+			minAxis_ = thisAxis[i];
+
+			// 中心間の方向ベクトルと軸の向きを合わせる
+			if (centerToCenter[i] < 0) {
+				minAxis_ = -minAxis_;
+			}
+		}
+		
 	}
 
 	// 2. 他OBBの各軸を分離軸として判定
@@ -210,7 +255,22 @@ bool BoxCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 			otherBox->obb_.halfSize.y * std::fabs(otherAxis[i].Dot(otherAxis[1])) +
 			otherBox->obb_.halfSize.z * std::fabs(otherAxis[i].Dot(otherAxis[2]));
 
-		if (std::fabs(T.Dot(otherAxis[i])) > selfProjection + otherProjection) return false;
+		// 他OBBの中心から自OBBの中心への距離
+		float dist = std::fabs(direction.Dot(otherAxis[i]));
+		// 分離軸としての判定
+		if (dist > selfProjection + otherProjection) return false;
+
+		// 貫通量の計算と最小貫通量の更新
+		float penetration = (selfProjection + otherProjection) - dist;
+		if (penetration < minPenetration_) {
+			minPenetration_ = penetration;
+			minAxis_ = otherAxis[i];
+			// 中心間の方向ベクトルと軸の向きを合わせる
+			if (direction.Dot(otherAxis[i]) < 0) {
+				minAxis_ = -minAxis_;
+			}
+		}
+		
 	}
 
 	// 3. OBBの交差軸 (Aの3軸 × Bの3軸) を分離軸として判定
@@ -233,11 +293,39 @@ bool BoxCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 				otherBox->obb_.halfSize.y * std::fabs(otherAxis[1].Dot(axis)) +
 				otherBox->obb_.halfSize.z * std::fabs(otherAxis[2].Dot(axis));
 
-			float t = std::fabs(T.Dot(axis));
-			if (t > selfProjection + otherProjection) return false;
+			// 交差軸に投影した中心間距離
+			float dist = std::fabs(direction.Dot(axis));
+			// 分離軸としての判定
+			if (dist > selfProjection + otherProjection) return false;
+
+			float penetration = (selfProjection + otherProjection) - dist;
+			if (penetration < minPenetration_) {
+				minPenetration_ = penetration;
+				minAxis_ = axis;
+
+				// 中心間の方向ベクトルと軸の向きを合わせる
+				if (direction.Dot(axis) < 0) {
+					minAxis_ = -minAxis_;
+				}
+			}
+			
 		}
 	}
 
 	// すべての軸で分離ができなかった場合、衝突
+	//minAxisの正規化
+	minAxis_ = minAxis_.Normalize();
+
 	return true;
+}
+
+//ワールド座標の取得
+Vector3 BoxCollider::GetWorldPos() {
+	return obb_.center;
+}
+
+//半径の取得
+void BoxCollider::SetHalfSize(const Vector3& halfSize) {
+	halfSize_ = halfSize;
+	obb_.halfSize = halfSize_;
 }

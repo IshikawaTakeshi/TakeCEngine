@@ -257,9 +257,9 @@ void GamePlayScene::UpdateImGui() {
 		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
 	ImGui::Begin("Level Objects");
-	for(auto& object : levelObjects_) {
+	/*for(auto& object : levelObjects_) {
 		object.second->UpdateImGui();
-	}
+	}*/
 	ImGui::End();
 
 	//particleEmitter_->UpdateImGui();
@@ -298,9 +298,9 @@ void GamePlayScene::Draw() {
 	player_->DrawCollider();
 	//enemy_->DrawCollider();
 	bulletManager_->DrawCollider();
-	/*for (auto& object : levelObjects_) {
+	for (auto& object : levelObjects_) {
 		object.second->DrawCollider();
-	}*/
+	}
 
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
@@ -417,27 +417,27 @@ void GamePlayScene::CheckAllCollisions() {
 
 	CollisionManager::GetInstance()->ClearGameCharacter();
 
-	const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
+	//const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
 
-	const std::vector<VerticalMissile*>& missiles = bulletManager_->GetAllMissiles();
+//const std::vector<VerticalMissile*>& missiles = bulletManager_->GetAllMissiles();
 
 	// プレイヤーの登録
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
 	// 敵キャラクターの登録
-	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
+	//CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
 
-	//弾の登録
-	for (const auto& bullet : bullets) {
-		if (bullet->GetIsActive()) {
-			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
-		}
-	}
-	//垂直ミサイルの登録
-	for( const auto& missile : missiles) {
-		if (missile->GetIsActive()) {
-			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(missile));
-		}
-	}
+	////弾の登録
+	//for (const auto& bullet : bullets) {
+	//	if (bullet->GetIsActive()) {
+	//		CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
+	//	}
+	//}
+	////垂直ミサイルの登録
+	//for( const auto& missile : missiles) {
+	//	if (missile->GetIsActive()) {
+	//		CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(missile));
+	//	}
+	//}
 
 	// レベルオブジェクトの登録
 	for (const auto& object : levelObjects_) {

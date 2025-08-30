@@ -122,6 +122,14 @@ bool SphereCollider::Intersects(const Ray& ray, RayCastHit& outHit) {
 	return true;
 }
 
+//=============================================================================
+// 衝突面のタイプを判定
+//=============================================================================
+
+SurfaceType SphereCollider::CheckSurfaceType() const {
+	return SurfaceType::WALL; // 球は特定の面を持たないため、WALLを返す
+}
+
 Vector3 SphereCollider::GetWorldPos() {
 	
 	return transform_.translate;
@@ -131,12 +139,13 @@ Vector3 SphereCollider::GetWorldPos() {
 //=============================================================================
 
 bool SphereCollider::CheckCollisionOBB(BoxCollider* otherBox) {
-	Vector3 closestPoint = otherBox->GetOBB().center;
+	OBB obb = otherBox->GetOBB();
+	Vector3 closestPoint = obb.center;
 
 	for (int i = 0; i < 3; i++) {
-		float distance = Vector3(transform_.translate - otherBox->GetOBB().center).Dot(otherBox->GetOBB().axis[i]);
-		float clampedDistance = std::min(distance, otherBox->GetOBB().halfSize.Dot(otherBox->GetOBB().axis[i]));
-		clampedDistance = std::max(-otherBox->GetOBB().halfSize.Dot(otherBox->GetOBB().axis[i]), clampedDistance);
+		float distance = Vector3(transform_.translate - obb.center).Dot(obb.axis[i]);
+		float clampedDistance = std::min(distance, obb.halfSize.Dot(obb.axis[i]));
+		clampedDistance = std::max(-obb.halfSize.Dot(obb.axis[i]), clampedDistance);
 
 		closestPoint = closestPoint + otherBox->GetOBB().axis[i] * clampedDistance;
 	}
@@ -159,4 +168,13 @@ bool SphereCollider::CheckCollisionSphere(SphereCollider* sphere) {
 	float distanceSquared = diff.Dot(diff);
 	float radiusSum = radius_ + sphere->radius_;
 	return distanceSquared <= (radiusSum * radiusSum);
+}
+
+Vector3 SphereCollider::SphereCenterToOBBLocal(const OBB& obb, const Vector3& sphereCenter) {
+	Vector3 local;
+	Vector3 rel = sphereCenter - obb.center;
+	local.x = rel.Dot(obb.axis[0]);
+	local.y = rel.Dot(obb.axis[1]);
+	local.z = rel.Dot(obb.axis[2]);
+	return local;
 }
