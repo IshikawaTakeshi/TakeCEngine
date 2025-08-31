@@ -45,16 +45,6 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "MissileSmoke.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "MissileExplosion.json");
 
-	//gpuParticle_ = std::make_unique<GPUParticle>();	
-	//gpuParticle_->SetPreset(TakeCFrameWork::GetJsonLoader()->LoadParticlePreset("BulletLight.json"));
-	//gpuParticle_->Initialize(ParticleCommon::GetInstance(), "Cross.png");
-	//particleEmitter_ = std::make_unique<ParticleEmitter>();
-	//particleEmitter_->InitializeEmitterSphere(
-	//	ParticleCommon::GetInstance()->GetDirectXCommon(),
-	//	ParticleCommon::GetInstance()->GetSrvManager()
-	//);
-	//particleEmitter_->SetEmitterName("CrossEffectGPU");
-
 #pragma endregion
 
 	//levelObjectの初期化
@@ -360,7 +350,7 @@ void GamePlayScene::UpdateGamePlay() {
 	energyInfoUI_->SetOverHeatState(player_->GetIsOverHeated());
 	energyInfoUI_->Update(player_->GetEnergy(), player_->GetMaxEnergy());
 	//bulletCounterUIの更新
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		bulletCounterUI_[i]->SetBulletCount(player_->GetWeapon(i)->GetBulletCount());
 		bulletCounterUI_[i]->SetRemainingBulletCount(player_->GetWeapon(i)->GetRemainingBulletCount());
 		bulletCounterUI_[i]->SetReloadingState(player_->GetWeapon(i)->GetIsReloading());
@@ -417,27 +407,27 @@ void GamePlayScene::CheckAllCollisions() {
 
 	CollisionManager::GetInstance()->ClearGameCharacter();
 
-	//const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
+	const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
 
-//const std::vector<VerticalMissile*>& missiles = bulletManager_->GetAllMissiles();
+	const std::vector<VerticalMissile*>& missiles = bulletManager_->GetAllMissiles();
 
 	// プレイヤーの登録
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
 	// 敵キャラクターの登録
-	//CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
+	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
 
-	////弾の登録
-	//for (const auto& bullet : bullets) {
-	//	if (bullet->GetIsActive()) {
-	//		CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
-	//	}
-	//}
-	////垂直ミサイルの登録
-	//for( const auto& missile : missiles) {
-	//	if (missile->GetIsActive()) {
-	//		CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(missile));
-	//	}
-	//}
+	//弾の登録
+	for (const auto& bullet : bullets) {
+		if (bullet->GetIsActive()) {
+			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
+		}
+	}
+	//垂直ミサイルの登録
+	for( const auto& missile : missiles) {
+		if (missile->GetIsActive()) {
+			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(missile));
+		}
+	}
 
 	// レベルオブジェクトの登録
 	for (const auto& object : levelObjects_) {

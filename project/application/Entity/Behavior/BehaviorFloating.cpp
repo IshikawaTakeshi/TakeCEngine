@@ -46,6 +46,13 @@ void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 	characterInfo.transform.translate.z += velocity_.z * deltaTime_;
 	characterInfo.transform.translate.y += velocity_.y * deltaTime_;
 
+	// 地面に着地したらRUNNINGに戻る
+	if(characterInfo.onGround == true) {
+		isTransition_ = true;
+		nextBehavior_ = GameCharacterBehavior::RUNNING;
+		return;
+	}
+
 	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
 	// LTボタン＋スティック入力で発動
 	//if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {

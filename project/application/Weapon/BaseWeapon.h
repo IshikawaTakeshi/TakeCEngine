@@ -150,7 +150,7 @@ protected:
 	float chargeTime_ = 0.0f;    // チャージ時間
 	float requiredChargeTime_ = 0.0f; // 必要チャージ時間
 
-	bool isChargeAttack_  = false; // チャージ攻撃フラグ
-	bool isMoveShootable_ = false; // 移動撃ち可能か
+	bool canChargeAttack_  = false; // チャージ攻撃フラグ
+	bool canMoveShootable_ = false; // 移動撃ち可能か
 	bool isStopShootOnly_ = false; // 停止撃ち専用か
 };
