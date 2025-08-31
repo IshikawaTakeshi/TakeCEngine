@@ -373,7 +373,7 @@ void Player::UpdateAttack() {
 	WeaponAttack(R_ARMS, GamepadButtonType::RB); // 1つ目の武器の攻撃
 	WeaponAttack(L_ARMS, GamepadButtonType::LB); // 2つ目の武器の攻撃
 	WeaponAttack(R_BACK, GamepadButtonType::X); // 3つ目の武器の攻撃
-	WeaponAttack(L_BACK, GamepadButtonType::A); // 4つ目の武器の攻撃
+	WeaponAttack(L_BACK, GamepadButtonType::Y); // 4つ目の武器の攻撃
 
 
 	//チャージ攻撃可能なユニットの処理

@@ -17,14 +17,14 @@ void GamePlayScene::Initialize() {
 	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
 	gameCamera_->SetIsDebug(false);
 	gameCamera_->SetTranslate({ 5.0f,0.0f,-10.0f });
-	gameCamera_->SetRotate({ 0.0f,-1.4f,0.0f });
+	gameCamera_->SetRotate({ 0.0f,-1.4f,0.0f,1.0f });
 	CameraManager::GetInstance()->AddCamera("gameCamera", *gameCamera_);
 
 	//Camera1
 	debugCamera_ = std::make_shared<Camera>();
 	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
 	debugCamera_->SetTranslate({ 5.0f,0.0f,-1.0f });
-	debugCamera_->SetRotate({ 0.0f,-1.4f,0.0f });
+	debugCamera_->SetRotate({ 0.0f,-1.4f,0.0f,1.0f });
 	debugCamera_->SetIsDebug(true);
 	CameraManager::GetInstance()->AddCamera("debugCamera", *debugCamera_);
 
@@ -111,6 +111,13 @@ void GamePlayScene::Initialize() {
 	bulletCounterUI_[2]->Initialize(SpriteCommon::GetInstance(), {760.0f,540.0f});
 	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[3]->Initialize(SpriteCommon::GetInstance(), {900.0f,540.0f});
+
+	//操作説明UI
+	instructionSprite_ = std::make_unique<Sprite>();
+	instructionSprite_->Initialize(SpriteCommon::GetInstance(), "UI/OperationInstructions.png");
+	instructionSprite_->SetPosition({ 0.0f, 100.0f });
+	instructionSprite_->AdjustTextureSize();
+	instructionSprite_->SetSize({ 250.0f, 200.0f });
 }
 
 //====================================================================
@@ -246,6 +253,7 @@ void GamePlayScene::UpdateImGui() {
 	for(int i = 0; i < 4; i++) {
 		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
+	instructionSprite_->UpdateImGui("instruction");
 	ImGui::Begin("Level Objects");
 	/*for(auto& object : levelObjects_) {
 		object.second->UpdateImGui();
@@ -317,6 +325,9 @@ void GamePlayScene::Draw() {
 	for(auto& bulletUI : bulletCounterUI_) {
 		bulletUI->Draw();
 	}
+
+	//操作説明UIの描画
+	instructionSprite_->Draw();
 #pragma endregion
 
 	
@@ -357,6 +368,9 @@ void GamePlayScene::UpdateGamePlay() {
 		bulletCounterUI_[i]->SetWeaponIconUV(static_cast<int>(player_->GetWeapon(i)->GetUnitPosition()));
 		bulletCounterUI_[i]->Update();
 	}
+
+	//instructionSpriteの更新
+	instructionSprite_->Update();
 
 	if (player_->GetHealth() <= 0.0f) {
 		//プレイヤーのHPが0以下になったらゲームオーバー

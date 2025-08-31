@@ -13,7 +13,7 @@ void GameOverScene::Initialize() {
 	gameOverCamera_ = std::make_unique<Camera>();
 	gameOverCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
 	gameOverCamera_->SetTranslate({ 0.0f, 20.0f, -60.0f });
-	gameOverCamera_->SetRotate({ 0.16f, 0.0f, 0.0f });
+	gameOverCamera_->SetRotate({ 0.9f, -0.01f, 0.03f,0.36f });
 	CameraManager::GetInstance()->AddCamera("GameOverCamera", *gameOverCamera_);
 	// デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
