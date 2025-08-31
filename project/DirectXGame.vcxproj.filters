@@ -747,6 +747,7 @@
     <ClInclude Include="application\Entity\Behavior\BehaviorStepBoost.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorDead.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorChargeShootStun.h" />
+    <ClInclude Include="engine\Collision\SurfaceType.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

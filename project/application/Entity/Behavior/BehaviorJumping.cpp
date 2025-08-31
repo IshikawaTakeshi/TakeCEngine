@@ -45,13 +45,4 @@ void BehaviorJumping::Update(GameCharacterContext& characterInfo) {
 		nextBehavior_ = Behavior::FLOATING;
 		return;
 	}
-
-	// 地面に着地したらRUNNINGに戻る
-	if (characterInfo.transform.translate.y <= 0.0f) {
-		characterInfo.transform.translate.y = 0.0f; // 地面に合わせる
-		characterInfo.onGround = true; // 地面にいる状態を更新
-		isTransition_ = true;
-		nextBehavior_ = Behavior::RUNNING;
-		velocity = { 0.0f, 0.0f, 0.0f }; // ジャンプ中の速度をリセット
-	}
 }

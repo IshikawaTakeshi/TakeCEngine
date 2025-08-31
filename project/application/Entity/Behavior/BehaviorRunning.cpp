@@ -46,7 +46,7 @@ void BehaviorRunning::Update(GameCharacterContext& characterInfo) {
 
 	//移動処理
 	// 位置の更新（deltaTimeをここで適用）
-	characterInfo.transform.translate.x += characterInfo.velocity.x * deltaTime_;
-	characterInfo.transform.translate.z += characterInfo.velocity.z * deltaTime_;
+	characterInfo.transform.translate += characterInfo.velocity * deltaTime_;
+
 }
 

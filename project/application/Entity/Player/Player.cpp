@@ -72,11 +72,11 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	characterInfo_.maxHealth = 10000.0f; // 最大体力
 	characterInfo_.health = characterInfo_.maxHealth; // 初期体力
 	characterInfo_.stepBoostInfo.speed = 230.0f; // ステップブーストの速度
-	characterInfo_.stepBoostInfo.duration = 0.2f; // ステップブーストの持続時間
+	characterInfo_.stepBoostInfo.duration = 0.3f; // ステップブーストの持続時間
 	characterInfo_.stepBoostInfo.useEnergy = 100.0f; // ステップブーストに必要なエネルギー
 	characterInfo_.stepBoostInfo.interval = 0.2f; // ステップブーストのインターバル
 	characterInfo_.jumpInfo.speed = 50.0f; // ジャンプの速度
-	characterInfo_.jumpInfo.maxJumpTime = 0.5f; // ジャンプの最大時間
+	characterInfo_.jumpInfo.maxJumpTime = 0.3f; // ジャンプの最大時間
 	characterInfo_.jumpInfo.deceleration = 40.0f; // ジャンプ中の減速率
 	characterInfo_.jumpInfo.useEnergy = 150.0f; // ジャンプに必要なエネルギー
 	characterInfo_.chargeAttackStunInfo.stunDuration = 0.5f; // チャージ攻撃後の硬直時間
@@ -142,6 +142,7 @@ std::vector<std::unique_ptr<BaseWeapon>>& Player::GetWeapons() {
 //===================================================================================
 
 void Player::Update() {
+	
 
 	//stepBoostのインターバルの更新
 	characterInfo_.stepBoostInfo.interval = 0.2f; // ステップブーストのインターバル
@@ -159,7 +160,6 @@ void Player::Update() {
 			// LTボタン＋スティック入力で発動
 			if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
 				behaviorManager_->RequestBehavior(GameCharacterBehavior::STEPBOOST);
-				//TriggerStepBoost();
 			}
 			//Jump入力判定
 			//RTで発動
@@ -174,12 +174,26 @@ void Player::Update() {
 		}
 	}
 
+	
+
 	//エネルギーの更新
 	UpdateEnergy();
 
+	//移動方向の取得
 	characterInfo_.moveDirection = inputProvider_->GetMoveDirection();
+	//Behaviorの更新
 	behaviorManager_->Update(characterInfo_);
 
+	// 地面に着地したらRUNNINGに戻る
+	if( characterInfo_.onGround == true && 
+		(behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::JUMP || 
+		 behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING)) {
+		behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+	}else if(characterInfo_.onGround == false && 
+		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING) {
+		//空中にいる場合はFLOATINGに切り替え
+		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
+	}
 
 	//攻撃処理
 	if (characterInfo_.isAlive == true) {
@@ -191,6 +205,8 @@ void Player::Update() {
 		characterInfo_.isAlive = false;
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::DEAD);
 	}
+
+	characterInfo_.onGround = false; // 毎フレームリセット
 
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(characterInfo_.transform.rotate);
@@ -234,7 +250,9 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat("Energy", &characterInfo_.energyInfo.energy, 1.0f, 0.0f, characterInfo_.energyInfo.maxEnergy);
 	ImGui::DragFloat3("Velocity", &characterInfo_.velocity.x, 0.01f);
 	ImGui::DragFloat3("MoveDirection", &characterInfo_.moveDirection.x, 0.01f);
+	ImGui::Checkbox("OnGround", &characterInfo_.onGround);
 	behaviorManager_->UpdateImGui();
+	collider_->UpdateImGui("Player");
 	weapons_[0]->UpdateImGui();
 	weapons_[1]->UpdateImGui();
 	weapons_[2]->UpdateImGui(); 
@@ -288,69 +306,57 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		VerticalMissile* missile = dynamic_cast<VerticalMissile*>(other);
 		characterInfo_.health -= missile->GetDamage();
 	}
-}
+	
+	if(other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
+	
+		//playerのColliderが接触している面で判断する
+		if(collider_->GetSurfaceType() == SurfaceType::BOTTOM) {
 
-//===================================================================================
-//　移動処理
-//===================================================================================
+			//playerが下面で接触している場合は地面にいると判定
+			characterInfo_.onGround = true;
+			if (BoxCollider* box = dynamic_cast<BoxCollider*>(collider_.get())) {
+				Vector3 normal = box->GetMinAxis();
+				float penetrationDepth = box->GetMinPenetration();
+
+				//貫通している分だけ押し戻す
+				characterInfo_.transform.translate += -normal * penetrationDepth;
+
+				//接触面方向の速度を打ち消す
+				float velocityAlongNormal = Vector3Math::Dot(characterInfo_.velocity, normal);
+				characterInfo_.velocity -= normal * velocityAlongNormal;
+			
+			}
 
 
+			collider_->SetColor({ 0.0f,1.0f,0.0f,1.0f }); // コライダーの色を緑に変更
 
-void Player::InitRunning() {}
+		} else if(collider_->GetSurfaceType() == SurfaceType::WALL) {
 
-void Player::UpdateRunning() {
+			//側面で接触した場合
+			if (BoxCollider* box = dynamic_cast<BoxCollider*>(collider_.get())) {
+				Vector3 normal = box->GetMinAxis();
+				float penetrationDepth = box->GetMinPenetration();
 
-	Vector3& moveDirection = characterInfo_.moveDirection; // 移動方向
-	Vector3& velocity = characterInfo_.velocity; // 移動ベクトル
-	float moveSpeed = characterInfo_.moveSpeed; // 移動速度
-	float deceleration = characterInfo_.deceleration; // 減速率
+				//貫通している分だけ押し戻す
+				characterInfo_.transform.translate += -normal * penetrationDepth;
 
-	//左スティック
-	StickState leftStick= Input::GetInstance()->GetLeftStickState(0);
-	//右スティック 
-	StickState rightStick = Input::GetInstance()->GetRightStickState(0);
-
-	//カメラの回転を設定
-	camera_->SetStick({ rightStick.x, rightStick.y });
-
-	//カメラの方向から移動方向の計算
-	Vector3 forward = QuaternionMath::RotateVector(Vector3(0.0f, 0.0f, 1.0f), camera_->GetRotate());
-	Vector3 right = QuaternionMath::RotateVector(Vector3(1, 0, 0), camera_->GetRotate());
-	moveDirection = forward * leftStick.y + right * leftStick.x;
-
-	//移動方向の正規化
-	if (moveDirection.x != 0.0f || moveDirection.z != 0.0f) {
-		moveDirection = Vector3Math::Normalize(moveDirection);
-		//移動時の加速度の計算
-		velocity.x += moveDirection.x * moveSpeed * deltaTime_;
-		velocity.z += moveDirection.z * moveSpeed * deltaTime_;
+				//接触面方向の速度を打ち消す
+				float dot = Vector3Math::Dot(characterInfo_.velocity, normal);
+				characterInfo_.velocity -= normal * dot;
+				
+			}
 		
-		float targetAngle = atan2(moveDirection.x, moveDirection.z);
-		Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
-		
-		characterInfo_.transform.rotate = Easing::Slerp(characterInfo_.transform.rotate, targetRotate, 0.1f);
-		characterInfo_.transform.rotate = QuaternionMath::Normalize(characterInfo_.transform.rotate);
-		//パーティクルエミッターの更新
-		backEmitter_->Emit();
+			collider_->SetColor({ 0.0f,0.0f,1.0f,1.0f }); // コライダーの色を青に変更
 
-	} else {
-		//速度の減速処理
-		characterInfo_.velocity.x /= deceleration;
-		characterInfo_.velocity.z /= deceleration;
+		} else if(collider_->GetSurfaceType() == SurfaceType::TOP) {
+			//天井に接触した場合
+			if(characterInfo_.velocity.y > 0.0f) {
+				characterInfo_.velocity.y = 0.0f;
+			}
+
+			collider_->SetColor({ 1.0f,1.0f,0.0f,1.0f }); // コライダーの色を黄色に変更
+		}
 	}
-
-	//最大移動速度の制限
-	float speed = sqrt(velocity.x * velocity.x + velocity.z * velocity.z);
-	if (speed > characterInfo_.kMaxMoveSpeed) {
-		float scale = characterInfo_.kMaxMoveSpeed / speed;
-		velocity.x *= scale;
-		velocity.z *= scale;
-	}
-
-	//移動処理
-	// 位置の更新（deltaTimeをここで適用）
-	characterInfo_.transform.translate.x += velocity.x * deltaTime_;
-	characterInfo_.transform.translate.z += velocity.z * deltaTime_;
 }
 
 //===================================================================================
@@ -424,377 +430,6 @@ void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
 	}
 }
 
-void Player::WeaponChargeAttack(int weaponIndex) {
-
-	Vector3& velocity_ = characterInfo_.velocity; // 移動ベクトル
-
-	// 速度を大きく落としていき、停止させた後攻撃処理を入れる
-	velocity_.x *= 0.5f;
-	velocity_.z *= 0.5f;
-	if (std::abs(velocity_.x) < 0.01f && std::abs(velocity_.z) < 0.01f) {
-		// チャージ攻撃の実行
-		auto* weapon = weapons_[weaponIndex].get();
-			if (weapon->IsChargeAttack()) {
-				weapon->ChargeAttack();
-
-			}else {
-				// チャージ攻撃不可の場合は通常攻撃
-				weapon->Attack();
-			}
-
-			if (weapon->IsMoveShootable()) {
-				// ステップ終了時前回の状態に戻す
-				if (characterInfo_.transform.translate.y <= 0.0f) {
-					behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
-				} else if (characterInfo_.transform.translate.y > 0.0f) {
-					behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
-				} else {
-					behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
-				}
-			} else {
-				// 停止撃ち専用の場合はCHARGESHOOT_STUNに切り替え
-				behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
-			}
-		
-	}
-
-	// 位置の更新（deltaTimeをここで適用）
-	characterInfo_.transform.translate.x += velocity_.x * deltaTime_;
-	characterInfo_.transform.translate.z += velocity_.z * deltaTime_;
-}
-
-//===================================================================================
-//　ジャンプ処理
-//===================================================================================
-
-void Player::InitJump() {
-
-	//オーバーヒート状態のチェック
-	if (characterInfo_.overHeatInfo.isOverheated) {
-		// オーバーヒート中はジャンプできない
-		//behaviorRequest_ = GameCharacterBehavior::RUNNING;
-		return;
-	}
-
-	// ジャンプのエネルギー消費
-	characterInfo_.energyInfo.energy -= characterInfo_.jumpInfo.useEnergy;
-
-	//ジャンプの初期化
-	//ジャンプの速度を設定
-	characterInfo_.velocity.y = characterInfo_.jumpInfo.speed;
-	//ジャンプ中の移動方向を設定
-	StickState leftStick = Input::GetInstance()->GetLeftStickState(0);
-	Vector3 forward = QuaternionMath::RotateVector(Vector3(0.0f, 0.0f, 1.0f), camera_->GetRotate());
-	Vector3 right = QuaternionMath::RotateVector(Vector3(1, 0, 0), camera_->GetRotate());
-	characterInfo_.moveDirection = forward * leftStick.y + right * leftStick.x;
-	
-}
-
-void Player::UpdateJump() {
-
-	Vector3& velocity = characterInfo_.velocity; // 移動ベクトル
-
-	// ジャンプ中の移動
-	characterInfo_.transform.translate.x += velocity.x * deltaTime_;
-	characterInfo_.transform.translate.z += velocity.z * deltaTime_;
-	// 重力の適用
-	velocity.y -= (gravity_ + characterInfo_.jumpInfo.deceleration) * deltaTime_;
-	characterInfo_.transform.translate.y += velocity.y * deltaTime_;
-
-	characterInfo_.jumpInfo.jumpTimer += deltaTime_;
-	 if (characterInfo_.jumpInfo.jumpTimer > characterInfo_.jumpInfo.maxJumpTime) {
-	     //behaviorRequest_ = GameCharacterBehavior::FLOATING;
-	     return;
-	 }
-
-	// 地面に着地したらRUNNINGに戻る
-	if (characterInfo_.transform.translate.y <= 0.0f) {
-		characterInfo_.transform.translate.y = 0.0f; // 地面に合わせる
-		//behaviorRequest_ = GameCharacterBehavior::RUNNING;
-		velocity = { 0.0f, 0.0f, 0.0f }; // ジャンプ中の速度をリセット
-	}
-}
-
-//===================================================================================
-//　ダッシュ処理
-//===================================================================================
-
-
-void Player::InitDash() {
-
-}
-
-
-void Player::UpdateDash() {
-}
-
-
-//===================================================================================
-//　チャージ攻撃処理
-//===================================================================================
-void Player::InitChargeShoot() {
-
-}
-void Player::UpdateChargeShoot() {
-
-	Vector3& velocity_ = characterInfo_.velocity; // 移動ベクトル
-
-	// 速度を大きく落としていき、停止させた後攻撃処理を入れる
-	velocity_.x *= 0.5f;
-	velocity_.z *= 0.5f;
-	if (std::abs(velocity_.x) < 0.01f && std::abs(velocity_.z) < 0.01f) {
-		// チャージ攻撃の実行
-		for (auto& weapon : weapons_) {
-			if (weapon->IsChargeAttack()) {
-				weapon->ChargeAttack();
-
-			}else {
-				// チャージ攻撃不可の場合は通常攻撃
-				weapon->Attack();
-			}
-
-			if (weapon->IsMoveShootable()) {
-				// ステップ終了時前回の状態に戻す
-				if (characterInfo_.transform.translate.y <= 0.0f) {
-					//behaviorRequest_ = GameCharacterBehavior::RUNNING;
-				} else if (characterInfo_.transform.translate.y > 0.0f) {
-					//behaviorRequest_ = GameCharacterBehavior::FLOATING;
-				} else {
-					// ステップブーストが終了したらRUNNINGに戻す
-					//behaviorRequest_ = GameCharacterBehavior::RUNNING;
-				}
-			} else {
-				// 停止撃ち専用の場合はCHARGESHOOT_STUNに切り替え
-				//behaviorRequest_ = GameCharacterBehavior::CHARGESHOOT_STUN;
-			}
-		}
-	}
-
-	// 位置の更新（deltaTimeをここで適用）
-	characterInfo_.transform.translate.x += velocity_.x * deltaTime_;
-	characterInfo_.transform.translate.z += velocity_.z * deltaTime_;
-}
-
-//===================================================================================
-//　チャージ攻撃後の硬直処理
-//===================================================================================
-
-void Player::InitChargeShootStun() {
-	characterInfo_.chargeAttackStunInfo.stunTimer = characterInfo_.chargeAttackStunInfo.stunDuration;
-}
-
-void Player::UpdateChargeShootStun() {
-
-	float& stunTimer_ = characterInfo_.chargeAttackStunInfo.stunTimer;
-
-	stunTimer_ -= deltaTime_;
-	if (stunTimer_ <= 0.0f) {
-		// ステップ終了時前回の状態に戻す
-		if (characterInfo_.transform.translate.y <= 0.0f) {
-			//behaviorRequest_ = GameCharacterBehavior::RUNNING;
-		} else if (characterInfo_.transform.translate.y > 0.0f) {
-			//behaviorRequest_ = GameCharacterBehavior::FLOATING;
-		} else {
-			// ステップブーストが終了したらRUNNINGに戻す
-			//behaviorRequest_ = GameCharacterBehavior::RUNNING;
-		}
-	}
-}
-
-//===================================================================================
-//　ステップブースト処理
-//===================================================================================
-
-
-void Player::InitStepBoost() {
-
-	float speed = characterInfo_.stepBoostInfo.speed;
-	float duration = characterInfo_.stepBoostInfo.duration;
-	float useEnergy = characterInfo_.stepBoostInfo.useEnergy;
-	
-	Vector3 direction = characterInfo_.stepBoostInfo.direction;
-
-	// オーバーヒート状態のチェック
-	if (characterInfo_.overHeatInfo.isOverheated) {
-		// オーバーヒート中はステップブーストできない
-		//behaviorRequest_ = GameCharacterBehavior::RUNNING;
-		return;
-	}
-
-	// ステップブーストのエネルギーを消費
-	characterInfo_.energyInfo.energy -= useEnergy;
-
-	//上昇速度を急激に遅くする
-	characterInfo_.velocity.y = 0.0f;
-
-	characterInfo_.stepBoostInfo.boostTimer = duration;
-	characterInfo_.velocity.x = direction.x * speed;
-	characterInfo_.velocity.z = direction.z * speed;
-}
-
-
-void Player::UpdateStepBoost() {
-
-	float interval = characterInfo_.stepBoostInfo.interval;
-
-	// ステップ中の移動
-	characterInfo_.transform.translate.x += characterInfo_.velocity.x * deltaTime_;
-	characterInfo_.transform.translate.z += characterInfo_.velocity.z * deltaTime_;
-
-	characterInfo_.stepBoostInfo.boostTimer -= deltaTime_;
-	if (characterInfo_.stepBoostInfo.boostTimer <= 0.0f) {
-		// ステップ終了時前回の状態に戻す
-		if (characterInfo_.transform.translate.y <= 0.0f) {
-			//behaviorRequest_ = GameCharacterBehavior::RUNNING;
-		} else if (characterInfo_.transform.translate.y > 0.0f) {
-			//behaviorRequest_ = GameCharacterBehavior::FLOATING;
-		} else {
-			// ステップブーストが終了したらRUNNINGに戻す
-			//behaviorRequest_ = GameCharacterBehavior::RUNNING;
-		}
-
-		// ステップブーストのインターバルをリセット
-		characterInfo_.stepBoostInfo.intervalTimer = interval;
-	}
-}
-
-void Player::TriggerStepBoost() {
-
-	Vector3& direction = characterInfo_.stepBoostInfo.direction;
-
-	if (characterInfo_.stepBoostInfo.intervalTimer <= 0.0f) {
-		StickState leftStick = Input::GetInstance()->GetLeftStickState(0);
-		if (fabs(leftStick.x) > 0.2f || fabs(leftStick.y) > 0.2f) {
-			//方向ベクトル計算（カメラ考慮）
-			Vector3 forward = QuaternionMath::RotateVector(Vector3(0.0f, 0.0f, 1.0f), camera_->GetRotate());
-			Vector3 right = QuaternionMath::RotateVector(Vector3(1, 0, 0), camera_->GetRotate());
-			direction = forward * leftStick.y + right * leftStick.x;
-			direction = Vector3Math::Normalize(direction);
-			//behaviorRequest_ = GameCharacterBehavior::STEPBOOST;
-		}
-	}
-}
-//
-//
-//
-////===================================================================================
-//// 浮遊時の処理
-////===================================================================================
-//
-//void Player::InitFloating() {
-//	
-//}
-//
-//void Player::UpdateFloating() {
-//
-//	Vector3& moveDirection_ = characterInfo_.moveDirection; // 移動方向
-//	Vector3& velocity_ = characterInfo_.velocity; // 移動ベクトル
-//	float moveSpeed_ = characterInfo_.moveSpeed; // 移動速度
-//	float deceleration_ = characterInfo_.deceleration; // 減速率
-//	float kMaxMoveSpeed_ = characterInfo_.kMaxMoveSpeed; // 最大移動速度
-//
-//	// スティックで水平方向に自由に動かす
-//	StickState leftStick = Input::GetInstance()->GetLeftStickState(0);
-//	StickState rightStick = Input::GetInstance()->GetRightStickState(0);
-//
-//	camera_->SetStick({ rightStick.x, rightStick.y });
-//
-//	Vector3 forward = QuaternionMath::RotateVector(Vector3(0.0f, 0.0f, 1.0f), camera_->GetRotate());
-//	Vector3 right = QuaternionMath::RotateVector(Vector3(1, 0, 0), camera_->GetRotate());
-//	moveDirection_ = forward * leftStick.y + right * leftStick.x;
-//
-//	
-//
-//	if (moveDirection_.x != 0.0f || moveDirection_.z != 0.0f) {
-//		moveDirection_ = Vector3Math::Normalize(moveDirection_);
-//		//移動時の加速度の計算
-//		velocity_.x += moveDirection_.x * moveSpeed_ * deltaTime_;
-//		velocity_.z += moveDirection_.z * moveSpeed_ * deltaTime_;
-//	} else {
-//		velocity_.x /= deceleration_;
-//		velocity_.z /= deceleration_;
-//	}
-//
-//	//最大移動速度の制限
-//	float speed = sqrt(velocity_.x * velocity_.x + velocity_.z * velocity_.z);
-//	if (speed > kMaxMoveSpeed_) {
-//		float scale = kMaxMoveSpeed_ / speed;
-//		velocity_.x *= scale;
-//		velocity_.z *= scale;
-//	}
-//
-//	// 空中での降下処理(fallSpeedを重力に加算)
-//	velocity_.y -= (gravity_ + characterInfo_.fallSpeed) * deltaTime_;
-//	characterInfo_.transform.translate.x += velocity_.x * deltaTime_;
-//	characterInfo_.transform.translate.z += velocity_.z * deltaTime_;
-//	characterInfo_.transform.translate.y += velocity_.y * deltaTime_;
-//
-//	// 着地判定
-//	if (characterInfo_.transform.translate.y <= 0.0f) {
-//		characterInfo_.transform.translate.y = 0.0f;
-//		behaviorRequest_ = GameCharacterBehavior::RUNNING;
-//	}
-//
-//	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
-//	// LTボタン＋スティック入力で発動
-//	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
-//		TriggerStepBoost();
-//	}
-//	//ジャンプボタンの追加入力でさらに上昇
-//	if( Input::GetInstance()->PushButton(0, GamepadButtonType::RT)) {
-//
-//		if( characterInfo_.overHeatInfo.isOverheated) {
-//			// オーバーヒート中はジャンプできない
-//			return;
-//		}
-//
-//		// ジャンプのエネルギー消費
-//		characterInfo_.energyInfo.energy -= characterInfo_.jumpInfo.useEnergy * deltaTime_;
-//		// ジャンプの速度を設定
-//		velocity_.y = characterInfo_.jumpInfo.speed;
-//	}
-//}
-//
-////===================================================================================
-//// 死亡時の処理
-////===================================================================================
-//
-//void Player::InitDead() {
-//	characterInfo_.isAlive = false; // 死亡フラグを立てる
-//}
-//
-//void Player::UpdateDead() {
-//
-//	Vector3& velocity_ = characterInfo_.velocity; // 移動ベクトル
-//	float deceleration_ = characterInfo_.deceleration; // 減速率
-//	float fallSpeed_ = characterInfo_.fallSpeed; // 落下速度
-//
-//	//左スティック
-//	StickState leftStick= Input::GetInstance()->GetLeftStickState(0);
-//	//右スティック 
-//	StickState rightStick = Input::GetInstance()->GetRightStickState(0);
-//
-//	//カメラの回転を設定
-//	camera_->SetStick({ rightStick.x, rightStick.y });
-//
-//	//空中にいる場合は落下処理
-//	if (characterInfo_.transform.translate.y > 0.0f) {
-//		// 空中での降下処理(fallSpeedを重力に加算)
-//		velocity_.y -= (gravity_ + fallSpeed_) * deltaTime_;
-//	} else {
-//		// 地面に着地したら速度を0にする
-//		velocity_.y = 0.0f;
-//	}
-//
-//	//速度の減速処理
-//	velocity_.x /= deceleration_;
-//	velocity_.z /= deceleration_;
-//
-//	//位置の更新（deltaTimeをここで適用）
-//	characterInfo_.transform.translate += velocity_ * deltaTime_;
-//
-//}
-//
 //===================================================================================
 // エネルギーの更新処理
 //===================================================================================
@@ -845,7 +480,3 @@ void Player::UpdateEnergy() {
 
 	}
 }
-
-//void Player::ChangeBehavior(std::unique_ptr<BaseBehavior> behavior) {
-//	behaviorPtr_ = std::move(behavior);
-//}

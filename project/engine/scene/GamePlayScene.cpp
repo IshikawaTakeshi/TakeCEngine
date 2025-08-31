@@ -257,9 +257,9 @@ void GamePlayScene::UpdateImGui() {
 		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
 	ImGui::Begin("Level Objects");
-	for(auto& object : levelObjects_) {
+	/*for(auto& object : levelObjects_) {
 		object.second->UpdateImGui();
-	}
+	}*/
 	ImGui::End();
 
 	//particleEmitter_->UpdateImGui();
@@ -298,9 +298,9 @@ void GamePlayScene::Draw() {
 	player_->DrawCollider();
 	//enemy_->DrawCollider();
 	bulletManager_->DrawCollider();
-	/*for (auto& object : levelObjects_) {
+	for (auto& object : levelObjects_) {
 		object.second->DrawCollider();
-	}*/
+	}
 
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);

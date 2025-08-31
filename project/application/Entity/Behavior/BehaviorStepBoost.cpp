@@ -45,11 +45,11 @@ void BehaviorStepBoost::Update(GameCharacterContext& characterInfo) {
 	characterInfo.stepBoostInfo.boostTimer -= deltaTime_;
 	if (characterInfo.stepBoostInfo.boostTimer <= 0.0f) {
 		// ステップ終了時前回の状態に戻す
-		if (characterInfo.transform.translate.y <= 0.0f) {
+		if (characterInfo.onGround == true) {
 			nextBehavior_ = Behavior::RUNNING;
 			isTransition_ = true; // 行動の切り替えフラグを立てる
 
-		} else if (characterInfo.transform.translate.y > 0.0f) {
+		} else {
 			nextBehavior_ = Behavior::FLOATING;
 			isTransition_ = true; // 行動の切り替えフラグを立てる
 		}

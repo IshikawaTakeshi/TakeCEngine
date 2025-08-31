@@ -59,7 +59,7 @@ void BehaviorManager::UpdateImGui() {
 
 	//コンボボックスの項目
 	std::vector<std::string> items = {
-		"IDLE","RUNNING", "JUMP","DASH","CHARGESHOOT",
+		"IDLE","RUNNING", "JUMP","DASH",
 		"CHARGESHOOT_STUN","HEAVYDAMAGE","STEPBOOST","FLOATING","DEAD"
 	};
 	//現在の項目
