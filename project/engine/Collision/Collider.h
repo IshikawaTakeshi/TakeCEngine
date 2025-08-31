@@ -54,6 +54,8 @@ public:
 	// ワールド座標の取得
 	virtual Vector3 GetWorldPos() = 0;
 
+	Vector3 GetHalfSize() const { return halfSize_; }
+
 	Vector4 GetColor() const;
 
 	// 衝突半径の取得

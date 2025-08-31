@@ -72,11 +72,11 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	characterInfo_.maxHealth = 10000.0f; // 最大体力
 	characterInfo_.health = characterInfo_.maxHealth; // 初期体力
 	characterInfo_.stepBoostInfo.speed = 230.0f; // ステップブーストの速度
-	characterInfo_.stepBoostInfo.duration = 0.2f; // ステップブーストの持続時間
+	characterInfo_.stepBoostInfo.duration = 0.3f; // ステップブーストの持続時間
 	characterInfo_.stepBoostInfo.useEnergy = 100.0f; // ステップブーストに必要なエネルギー
 	characterInfo_.stepBoostInfo.interval = 0.2f; // ステップブーストのインターバル
 	characterInfo_.jumpInfo.speed = 50.0f; // ジャンプの速度
-	characterInfo_.jumpInfo.maxJumpTime = 0.5f; // ジャンプの最大時間
+	characterInfo_.jumpInfo.maxJumpTime = 0.3f; // ジャンプの最大時間
 	characterInfo_.jumpInfo.deceleration = 40.0f; // ジャンプ中の減速率
 	characterInfo_.jumpInfo.useEnergy = 150.0f; // ジャンプに必要なエネルギー
 	characterInfo_.chargeAttackStunInfo.stunDuration = 0.5f; // チャージ攻撃後の硬直時間
@@ -142,6 +142,7 @@ std::vector<std::unique_ptr<BaseWeapon>>& Player::GetWeapons() {
 //===================================================================================
 
 void Player::Update() {
+	
 
 	//stepBoostのインターバルの更新
 	characterInfo_.stepBoostInfo.interval = 0.2f; // ステップブーストのインターバル
@@ -159,7 +160,6 @@ void Player::Update() {
 			// LTボタン＋スティック入力で発動
 			if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
 				behaviorManager_->RequestBehavior(GameCharacterBehavior::STEPBOOST);
-				//TriggerStepBoost();
 			}
 			//Jump入力判定
 			//RTで発動
@@ -174,10 +174,14 @@ void Player::Update() {
 		}
 	}
 
+	
+
 	//エネルギーの更新
 	UpdateEnergy();
 
+	//移動方向の取得
 	characterInfo_.moveDirection = inputProvider_->GetMoveDirection();
+	//Behaviorの更新
 	behaviorManager_->Update(characterInfo_);
 
 	// 地面に着地したらRUNNINGに戻る
@@ -185,8 +189,11 @@ void Player::Update() {
 		(behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::JUMP || 
 		 behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING)) {
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+	}else if(characterInfo_.onGround == false && 
+		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING) {
+		//空中にいる場合はFLOATINGに切り替え
+		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
 	}
-
 
 	//攻撃処理
 	if (characterInfo_.isAlive == true) {
@@ -198,6 +205,8 @@ void Player::Update() {
 		characterInfo_.isAlive = false;
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::DEAD);
 	}
+
+	characterInfo_.onGround = false; // 毎フレームリセット
 
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(characterInfo_.transform.rotate);
@@ -297,27 +306,44 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		VerticalMissile* missile = dynamic_cast<VerticalMissile*>(other);
 		characterInfo_.health -= missile->GetDamage();
 	}
+	
 	if(other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
-
+	
 		//playerのColliderが接触している面で判断する
 		if(collider_->GetSurfaceType() == SurfaceType::BOTTOM) {
+
 			//playerが下面で接触している場合は地面にいると判定
 			characterInfo_.onGround = true;
-			characterInfo_.velocity.y = 0.0f;             // ジャンプ中の速度をリセット
+			if (BoxCollider* box = dynamic_cast<BoxCollider*>(collider_.get())) {
+				Vector3 normal = box->GetMinAxis();
+				float penetrationDepth = box->GetMinPenetration();
+
+				//貫通している分だけ押し戻す
+				characterInfo_.transform.translate += -normal * penetrationDepth;
+
+				//接触面方向の速度を打ち消す
+				float velocityAlongNormal = Vector3Math::Dot(characterInfo_.velocity, normal);
+				characterInfo_.velocity -= normal * velocityAlongNormal;
+			
+			}
+
+
 			collider_->SetColor({ 0.0f,1.0f,0.0f,1.0f }); // コライダーの色を緑に変更
 
 		} else if(collider_->GetSurfaceType() == SurfaceType::WALL) {
+
 			//側面で接触した場合
 			if (BoxCollider* box = dynamic_cast<BoxCollider*>(collider_.get())) {
 				Vector3 normal = box->GetMinAxis();
 				float penetrationDepth = box->GetMinPenetration();
 
+				//貫通している分だけ押し戻す
 				characterInfo_.transform.translate += -normal * penetrationDepth;
 
+				//接触面方向の速度を打ち消す
 				float dot = Vector3Math::Dot(characterInfo_.velocity, normal);
-				if (dot < 0.0f) {
-					characterInfo_.velocity -= normal * dot; // 法線方向の成分を除去
-				}
+				characterInfo_.velocity -= normal * dot;
+				
 			}
 		
 			collider_->SetColor({ 0.0f,0.0f,1.0f,1.0f }); // コライダーの色を青に変更
