@@ -30,8 +30,8 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 
 	maxReloadTime_ = 3.0f; // 最大リロード時間を設定
 
-	isChargeAttack_ = false; // ライフルはチャージ攻撃可能
-	isMoveShootable_ = true; // ライフルは移動撃ち可能
+	canChargeAttack_ = false; // ライフルはチャージ攻撃可能
+	canMoveShootable_ = true; // ライフルは移動撃ち可能
 	isStopShootOnly_ = false; // ライフルは停止撃ち専用ではない
 }
 
@@ -110,8 +110,8 @@ void Rifle::UpdateImGui() {
 		ImGui::Text("Bullet Count: %d", bulletCount_);
 		ImGui::Text("Max Bullet Count: %d", maxBulletCount_);
 		ImGui::Text("Bullet Speed: %.2f", bulletSpeed_);
-		ImGui::Text("Is Charge Attack: %s", isChargeAttack_ ? "Yes" : "No");
-		ImGui::Text("Is Move Shootable: %s", isMoveShootable_ ? "Yes" : "No");
+		ImGui::Text("Is Charge Attack: %s", canChargeAttack_ ? "Yes" : "No");
+		ImGui::Text("Is Move Shootable: %s", canMoveShootable_ ? "Yes" : "No");
 		ImGui::Text("Is Stop Shoot Only: %s", isStopShootOnly_ ? "Yes" : "No");
 		ImGui::TreePop();
 	}
@@ -210,11 +210,11 @@ void Rifle::SetOwnerObject(GameCharacter* owner) {
 }
 
 bool Rifle::IsChargeAttack() const {
-	return isChargeAttack_;
+	return canChargeAttack_;
 }
 
 bool Rifle::IsMoveShootable() const {
-	return isMoveShootable_;
+	return canMoveShootable_;
 }
 
 bool Rifle::IsStopShootOnly() const {

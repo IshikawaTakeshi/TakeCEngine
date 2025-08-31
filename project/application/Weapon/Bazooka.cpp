@@ -29,8 +29,8 @@ void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 
 	maxReloadTime_ = 4.0f;
 
-	isChargeAttack_ = false;  // バズーカはチャージ攻撃不可
-	isMoveShootable_ = false; // バズーカは移動撃ち不可
+	canChargeAttack_ = false;  // バズーカはチャージ攻撃不可
+	canMoveShootable_ = false; // バズーカは移動撃ち不可
 	isStopShootOnly_ = true;  // バズーカは停止撃ち専用
 }
 
@@ -126,12 +126,12 @@ void Bazooka::SetOwnerObject(GameCharacter* owner) {
 
 bool Bazooka::IsChargeAttack() const {
 	// バズーカはチャージ攻撃不可
-	return isChargeAttack_;
+	return canChargeAttack_;
 }
 
 bool Bazooka::IsMoveShootable() const {
 	// バズーカは移動撃ち不可
-	return isMoveShootable_;
+	return canMoveShootable_;
 }
 
 bool Bazooka::IsStopShootOnly() const {

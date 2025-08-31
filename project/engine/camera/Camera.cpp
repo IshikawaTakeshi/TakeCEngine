@@ -311,9 +311,6 @@ void Camera::UpdateCameraLockOn() {
 	}
 }
 
-
-
-
-void Camera::SetRotate(const Vector3& rotate) {
-	transform_.rotate = { rotate.x, rotate.y, rotate.z,1.0f };
+void Camera::SetRotate(const Quaternion& rotate) {
+	transform_.rotate = rotate;
 }

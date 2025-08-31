@@ -12,8 +12,8 @@ void GameClearScene::Initialize() {
 	// GameCamera
 	gameClearCamera_ = std::make_unique<Camera>();
 	gameClearCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	gameClearCamera_->SetTranslate({ 0.0f, 20.0f, -60.0f });
-	gameClearCamera_->SetRotate({ 0.16f, 0.0f, 0.0f });
+	gameClearCamera_->SetTranslate({ 43.0f, 1.5f, -20.0f });
+	gameClearCamera_->SetRotate({ -0.03f, -0.5f, -0.02f,0.85f });
 	CameraManager::GetInstance()->AddCamera("GameOverCamera", *gameClearCamera_);
 	// デフォルトカメラの設定
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());

@@ -120,6 +120,9 @@ private:
 	//プレイヤーの武器
 	std::vector<std::unique_ptr<BaseWeapon>> weapons_;
 	std::vector<WeaponType> weaponTypes_;
+	//チャージ撃ちをする武器ユニット
+	std::vector<bool> chargeShootableUnits_;
+
 
 	//背部のパーティクルエミッター
 	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
