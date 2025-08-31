@@ -27,8 +27,8 @@ void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletM
 
 	maxReloadTime_ = 2.0f;
 
-	isChargeAttack_ = false; // ライフルはチャージ攻撃不可
-	isMoveShootable_ = true; // ライフルは移動撃ち可能
+	canChargeAttack_ = false; // ライフルはチャージ攻撃不可
+	canMoveShootable_ = true; // ライフルは移動撃ち可能
 	isStopShootOnly_ = false; // ライフルは停止撃ち専用ではない
 }
 
@@ -108,8 +108,8 @@ void VerticalMissileLauncher::UpdateImGui() {
 		ImGui::Text("Bullet Count: %d", bulletCount_);
 		ImGui::Text("Max Bullet Count: %d", maxBulletCount_);
 		ImGui::Text("Bullet Speed: %.2f", bulletSpeed_);
-		ImGui::Text("Is Charge Attack: %s", isChargeAttack_ ? "Yes" : "No");
-		ImGui::Text("Is Move Shootable: %s", isMoveShootable_ ? "Yes" : "No");
+		ImGui::Text("Is Charge Attack: %s", canChargeAttack_ ? "Yes" : "No");
+		ImGui::Text("Is Move Shootable: %s", canMoveShootable_ ? "Yes" : "No");
 		ImGui::Text("Is Stop Shoot Only: %s", isStopShootOnly_ ? "Yes" : "No");
 		ImGui::TreePop();
 	}
@@ -153,12 +153,12 @@ void VerticalMissileLauncher::SetOwnerObject(GameCharacter* owner) {
 
 bool VerticalMissileLauncher::IsChargeAttack() const {
 	// バーティカルミサイルはチャージ攻撃不可
-	return isChargeAttack_;
+	return canChargeAttack_;
 }
 
 bool VerticalMissileLauncher::IsMoveShootable() const {
 	//移動撃ち可能
-	return isMoveShootable_;
+	return canMoveShootable_;
 }
 
 bool VerticalMissileLauncher::IsStopShootOnly() const {
