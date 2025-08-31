@@ -113,7 +113,7 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bull
 		}else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
 			//垂直ミサイルの武器を初期化
 			weapons_[i] = std::make_unique<VerticalMissileLauncher>();
-			weapons_[i]->Initialize(object3dCommon,bulletManager, "Bazooka.gltf");
+			weapons_[i]->Initialize(object3dCommon,bulletManager, "VerticalMissileLauncher.gltf");
 			weapons_[i]->SetOwnerObject(this);
 		} else {
 			weapons_[i] = nullptr; // 未使用の武器スロットはnullptrに設定
