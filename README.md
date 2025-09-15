@@ -15,9 +15,9 @@
 - **Hotfix** : やばいバグ
 
 ## 例
-- Ver0.0_Feature_SceneManager
+- Ver0.0/Feature/SceneManager
 
 ---
 
 ### 現在のバージョン
-- Ver2.0_Develop（監修盤）
+- Ver2.0/Develop（監修盤）
