@@ -2,6 +2,7 @@
 #include "engine/math/Vector3Math.h"
 #include "engine/math/Quaternion.h"
 #include "engine/base/TakeCFrameWork.h"
+#include "application/Entity/Enemy/Enemy.h"
 
 Vector3 EnemyInputProvider::GetMoveDirection() const {
 
@@ -18,7 +19,7 @@ Vector3 EnemyInputProvider::GetMoveDirection() const {
 	orbitPos.y = enemy_->GetFocusTargetPos().y; // 高さはターゲットに合わせる（必要に応じて調整）
 	orbitPos.z = enemy_->GetFocusTargetPos().z + enemy_->GetOrbitRadius() * sin(enemy_->GetOrbitAngle());
 	// 目的座標までの方向ベクトルを計算
-	return orbitPos - enemy_->GetTransform().translate;
+	return Vector3Math::Normalize(orbitPos - enemy_->GetTransform().translate);
 }
 
 void EnemyInputProvider::RequestAttack() {

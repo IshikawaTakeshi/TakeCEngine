@@ -58,6 +58,7 @@ struct GameCharacterContext {
 	bool isAlive = true;          //生存しているかどうか
 	bool onGround = true; // 地面にいるかどうか
 	bool isChargeShooting = false; // チャージショット中かどうか
+	bool isDamaged = false; // ダメージを受けたかどうか
 
 	StepBoostInfo stepBoostInfo;   // ステップブースト情報
 	JumpInfo jumpInfo;             // ジャンプ情報
