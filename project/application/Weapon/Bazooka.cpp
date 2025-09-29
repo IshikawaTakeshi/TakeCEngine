@@ -21,6 +21,7 @@ void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 	damage_ = 1500.0f;                 // 攻撃力を設定
 	attackInterval_ = kAttackInterval; // 攻撃間隔を設定
 	bulletSpeed_ = 500.0f;             // 弾のスピードを設定
+	effectiveRange_ = 800.0f;        // 有効射程距離を設定
 
 	magazineCount_ = 5;                      // マガジン内の弾数を設定
 	bulletCount_ = magazineCount_;           // 初期弾数を設定

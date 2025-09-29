@@ -12,6 +12,8 @@
 #include "application/Entity/GameCharacterInfo.h"
 #include "application/Provider/EnemyInputProvider.h"
 #include "application/Entity/Behavior/BehaviorManager.h"
+#include "application/Entity/Enemy/AIBrainSystem.h"
+#include "application/Entity/Enemy/BulletSensor.h"
 
 class Enemy : public GameCharacter {
 
@@ -103,6 +105,11 @@ private:
 
 private:
 
+	
+	std::unique_ptr<AIBrainSystem> aiBrainSystem_ = nullptr;
+	//接近してくる弾に反応するためのコライダー
+	std::unique_ptr<BulletSensor> bulletSensor_ = nullptr;
+
 	//状態管理マネージャ
 	std::unique_ptr<BehaviorManager> behaviorManager_ = nullptr;
 	//プレイヤー入力プロバイダ
@@ -139,5 +146,4 @@ private:
 	float orbitRadius_ = 60.0f;             // 周回半径（ターゲットとの距離）
 	float orbitSpeed_ = 1.0f;              // 角速度（周る速さ）
 	Vector3 toOrbitPos_ = { 0.0f,0.0f,0.0f }; // 周回する座標
-
 };

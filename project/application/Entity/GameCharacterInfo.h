@@ -14,7 +14,6 @@ struct StepBoostInfo {
 	//インターバル用
 	float interval = 0.2f; // ステップブーストのインターバル
 	float intervalTimer  = 0.0f; // ステップブーストのインターバルタイマー
-	bool isBoosting = false; // ステップブーストするかどうか
 };
 
 struct JumpInfo {

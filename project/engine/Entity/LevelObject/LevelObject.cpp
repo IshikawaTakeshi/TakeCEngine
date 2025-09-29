@@ -54,8 +54,6 @@ void LevelObject::Update() {
 
 	// Object3dの更新
 	object3d_->Update();
-	// アニメーションの更新
-	object3d_->AnimationUpdate();
 	// コライダーの更新
 	collider_->Update(object3d_.get());
 	

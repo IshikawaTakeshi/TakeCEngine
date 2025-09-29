@@ -42,6 +42,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	characterInfo_.transform = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,30.0f} };
 	object3d_->SetScale(characterInfo_.transform.scale);
 
+	
+
 	//emiiter設定
 	//emitter0
 	particleEmitter_.resize(3);
@@ -66,6 +68,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
 	inputProvider_ = std::make_unique<EnemyInputProvider>(this);
+
 
 #pragma region charcterInfo
 
@@ -92,10 +95,18 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 
 #pragma endregion
 
+	//bulletSensor_の初期化
+	bulletSensor_ = std::make_unique<BulletSensor>();
+	bulletSensor_->Initialize(object3dCommon, "Sphere.gltf");
+
 	//BehaviorManagerの初期化
 	behaviorManager_ = std::make_unique<BehaviorManager>();
 	behaviorManager_->Initialize(inputProvider_.get());
 	behaviorManager_->InitializeBehaviors(characterInfo_);
+
+	//AIBrainSystemの初期化
+	aiBrainSystem_ = std::make_unique<AIBrainSystem>();
+	aiBrainSystem_->Initialize(&characterInfo_, weapons_.size());
 }
 
 void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
@@ -125,6 +136,8 @@ void Enemy::Update() {
 	// ランダムエンジンの初期化  
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
+
+	aiBrainSystem_->Update();
 
 	//stepBoostのインターバルの更新
 	if(characterInfo_.stepBoostInfo.intervalTimer > 0.0f) {
@@ -177,6 +190,14 @@ void Enemy::Update() {
 
 	characterInfo_.onGround = false; // 毎フレームリセット
 
+	//AIの更新
+	aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
+
+	bulletSensor_->SetTranslate(characterInfo_.transform.translate);
+	bulletSensor_->Update();
+
+	
+
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(characterInfo_.transform.rotate);
 	object3d_->SetTranslate(characterInfo_.transform.translate);
@@ -188,6 +209,8 @@ void Enemy::Update() {
 	weapons_[0]->Update();
 	weapons_[1]->SetTarget(focusTargetPos_);
 	weapons_[1]->Update(); 
+
+
 
 	//パーティクルエミッターの更新
 	for (auto& emitter : particleEmitter_) {
@@ -238,6 +261,7 @@ void Enemy::DrawCollider() {
 
 #ifdef _DEBUG
 	collider_->DrawCollider();
+	bulletSensor_->DrawCollider();
 
 #endif // _DEBUG
 

@@ -27,6 +27,7 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 	bulletCount_ = magazineCount_;
 	maxBulletCount_ = 600;
 	remainingBulletCount_ = maxBulletCount_; // 残弾数を最大弾数に設定
+	effectiveRange_ = 500.0f; // 有効射程距離を設定
 
 	maxReloadTime_ = 3.0f; // 最大リロード時間を設定
 
