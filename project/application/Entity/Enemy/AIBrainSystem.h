@@ -1,6 +1,10 @@
 #pragma once
+#include <unordered_map>
 #include "application/Entity/GameCharacterInfo.h"
 #include "application/Weapon/BaseWeapon.h"
+#include "application/Provider/Enum/CharacterActionInputEnum.h"
+
+using Action = CharacterActionInput;
 
 class AIBrainSystem {
 	public:
@@ -10,20 +14,20 @@ class AIBrainSystem {
 	void Initialize(GameCharacterContext* characterInfo,size_t weaponUnitSize);
 	void Update();
 
-	
+	std::vector<int> ChooseWeaponUnit(const std::vector<std::unique_ptr<BaseWeapon>>& weapons);
+
+	Action ChooseBestAction();
 
 	//=============================================================================
 	// accessor
 	//=============================================================================
 
 	//--- getter ---
-	float GetHpScore() const { return hpScore_; }
-	float GetDistanceScore() const { return distanceScore_; }
 	float GetAttackScore(int index) const { return attackScores_[index]; }
-	float GetStepBoostScore() const { return stepBoostScore_; }
 	float GetDistanceToTarget() const { return distanceToTarget_; }
 	float GetOrbitRadius() const { return orbitRadius_; }
 	bool GetIsBulletNearby() const { return isBulletNearby_; }
+	Action GetBestAction() const { return bestAction_; }
 
 	//--- setter ---
 	void SetDistanceToTarget(float distance) { distanceToTarget_ = distance; }
@@ -32,27 +36,25 @@ class AIBrainSystem {
 
 private:
 
-	float hpScore_;
-	float distanceScore_;
+	Action bestAction_ = Action::NONE;
 	std::vector<float> attackScores_;
-	float stepBoostScore_;
+	std::unordered_map<CharacterActionInput, float> actionScores_;
 
 	float distanceToTarget_;
 	float orbitRadius_;
 
 	//敵の弾が近くに飛んできたかどうか
 	bool isBulletNearby_ = false;
-
 	//enemyの情報(借りてくる)
 	GameCharacterContext* characterInfo_;
 
 private:
 
 	float CalculateHpScore();
-	float CalculateDistanceScore();
 	float CalculateAttackScore(BaseWeapon* weapon);
 	float CalculateStepBoostScore();
+	float CalculateJumpScore();
 
-	std::vector<int> ChooseWeaponUnit(const std::vector<std::unique_ptr<BaseWeapon>>& weapons);
+	
 };
 

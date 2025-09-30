@@ -248,43 +248,45 @@ StickState GamePad::GetRightStickState(int stickNo) const {
 ///-------------------------------------------///
 /// 指定スティックの値を取得 対応済み
 ///-------------------------------------------///
-float GamePad::GetStickValue(int stickNo, GamepadValueType valueType) const {
+Vector2 GamePad::GetStickValue(int stickNo, GamepadValueType valueType) const {
 	if (stickNo < 0 || stickNo >= XUSER_MAX_COUNT)
-		return 0.0f;
+		return { 0.0f, 0.0f };
 
 	// XInput / DirectInput のスティック値
-	float xInputValue = 0.0f;
-	float dInputValue = 0.0f;
+	Vector2 xInputValue{};
+	Vector2 dInputValue{};
 
 	switch (valueType) {
-	case GamepadValueType::LeftStickX:
-		xInputValue = static_cast<float>(currentState_[stickNo].Gamepad.sThumbLX) / NORMALIZE_RANGE;
-		dInputValue = static_cast<float>(currentDIState_[stickNo].lX) / 32767.0f; // DirectInput のスケール調整
+	case GamepadValueType::LeftStick:
+		xInputValue.x = static_cast<float>(currentState_[stickNo].Gamepad.sThumbLX) / NORMALIZE_RANGE;
+		dInputValue.x = static_cast<float>(currentDIState_[stickNo].lX) / 32767.0f; // DirectInput のスケール調整
+
+		xInputValue.y = static_cast<float>(currentState_[stickNo].Gamepad.sThumbLY) / NORMALIZE_RANGE;
+		dInputValue.y = static_cast<float>(currentDIState_[stickNo].lY) / 32767.0f;
+
 		break;
-	case GamepadValueType::LeftStickY:
-		xInputValue = static_cast<float>(currentState_[stickNo].Gamepad.sThumbLY) / NORMALIZE_RANGE;
-		dInputValue = static_cast<float>(currentDIState_[stickNo].lY) / 32767.0f;
-		break;
-	case GamepadValueType::RightStickX:
-		xInputValue = static_cast<float>(currentState_[stickNo].Gamepad.sThumbRX) / NORMALIZE_RANGE;
-		dInputValue = static_cast<float>(currentDIState_[stickNo].lRx) / 32767.0f;
-		break;
-	case GamepadValueType::RightStickY:
-		xInputValue = static_cast<float>(currentState_[stickNo].Gamepad.sThumbRY) / NORMALIZE_RANGE;
-		dInputValue = static_cast<float>(currentDIState_[stickNo].lRy) / 32767.0f;
+	case GamepadValueType::RightStick:
+		xInputValue.x = static_cast<float>(currentState_[stickNo].Gamepad.sThumbRX) / NORMALIZE_RANGE;
+		dInputValue.x = static_cast<float>(currentDIState_[stickNo].lRx) / 32767.0f;
+
+		xInputValue.y = static_cast<float>(currentState_[stickNo].Gamepad.sThumbRY) / NORMALIZE_RANGE;
+		dInputValue.y = static_cast<float>(currentDIState_[stickNo].lRy) / 32767.0f;
 		break;
 	default:
-		return 0.0f;
+		return { 0.0f,0.0f };
 	}
 
 	// デッドゾーン処理（微小な入力を無視）
-	if (std::abs(xInputValue) < DEADZONE)
-		xInputValue = 0.0f;
-	if (std::abs(dInputValue) < DEADZONE)
-		dInputValue = 0.0f;
+	if (std::abs(xInputValue.x) < DEADZONE || std::abs(xInputValue.y) < DEADZONE)
+		xInputValue = { 0.0f, 0.0f };
+	if (std::abs(dInputValue.x) < DEADZONE || std::abs(dInputValue.y) < DEADZONE)
+		dInputValue = { 0.0f, 0.0f };
 
 	// XInput と DirectInput の値のうち、大きい方を採用
-	return std::max<float>(xInputValue, std::clamp<float>(dInputValue, -1.0f, 1.0f));
+	return std::max<Vector2>(xInputValue, Vector2{
+		std::clamp<float>(dInputValue.x, -1.0f, 1.0f),
+		std::clamp<float>(dInputValue.y, -1.0f, 1.0f)
+		});
 }
 
 ///-------------------------------------------///

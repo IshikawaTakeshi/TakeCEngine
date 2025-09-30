@@ -2,6 +2,7 @@
 
 //	include
 #include <typeinfo>
+#include "engine/math/Vector2.h"
 
 // enumのみに制約をかける
 template<typename T>
@@ -21,6 +22,7 @@ public:
 
     // 連続入力
     virtual float GetVector(Enum axis)  const = 0;
+	virtual Vector2 GetVector2(Enum axis) const = 0;
 
     // 単入力
     virtual bool IsPressed(Enum button) const = 0;

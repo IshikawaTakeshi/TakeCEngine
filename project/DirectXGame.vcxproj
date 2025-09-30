@@ -228,12 +228,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp" />
     <ClCompile Include="application\UI\PlayerReticle.cpp" />
     <ClCompile Include="application\Provider\PlayerInputProvider.cpp" />
+    <ClCompile Include="application\Provider\PlayerKeyInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h" />
     <ClInclude Include="application\Entity\GameCharacterInfo.h" />
     <ClInclude Include="application\Entity\GameCharacterBehavior.h" />
     <ClInclude Include="application\Entity\WeaponUnit.h" />
+    <ClInclude Include="application\Provider\Enum\CharacterActionInputEnum.h" />
     <ClInclude Include="application\Weapon\Bazooka.h" />
     <ClInclude Include="application\Weapon\WeaponType.h" />
     <ClInclude Include="application\UI\EnergyInfoUI.h" />
@@ -341,6 +343,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Provider\PlayerInputProvider.h" />
     <ClInclude Include="engine\io\InputMapper.h" />
     <ClInclude Include="engine\io\IInputDevice.h" />
+    <ClInclude Include="application\Provider\PlayerKeyInput.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

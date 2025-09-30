@@ -1,29 +1,27 @@
 #include "AIBrainSystem.h"
 #include <cmath>
 
+
 void AIBrainSystem::Initialize(GameCharacterContext* characterInfo,size_t weaponUnitSize) {
 	characterInfo_ = characterInfo;
-	hpScore_ = 0.0f;
-	distanceScore_ = 0.0f;
 	attackScores_.resize(weaponUnitSize, 0.0f);
-	stepBoostScore_ = 0.0f;
 }
 
 void AIBrainSystem::Update() {
 	//各スコアの計算
-	hpScore_ = CalculateHpScore();
-	distanceScore_ = CalculateDistanceScore();
-	stepBoostScore_ = CalculateStepBoostScore();
+	actionScores_[Action::USE_REAIR] = CalculateHpScore();
+	actionScores_[Action::STEPBOOST] = CalculateStepBoostScore();
+	actionScores_[Action::JUMP] = CalculateJumpScore();
+
+	actionScores_[Action::ATTACK_RA] = attackScores_[0]; // 右手武器のスコア
+	actionScores_[Action::ATTACK_LA] = attackScores_[1]; // 左手武器のスコア
+	//actionScores_[Action::ATTACK_RB] = attackScores_[2]; // 右肩武器のスコア
+	//actionScores_[Action::ATTACK_LB] = attackScores_[3]; // 左肩武器のスコア
 }
 
 float AIBrainSystem::CalculateHpScore() {
 	float hpRatio = characterInfo_->health / characterInfo_->maxHealth;
 	return 1.0f - hpRatio; // HPが低いほどスコアが高くなる
-}
-
-float AIBrainSystem::CalculateDistanceScore() {
-	float distanceScore = distanceToTarget_ / orbitRadius_;
-	return std::clamp(distanceScore, 0.0f, 1.0f); // 0から1の範囲にクランプ
 }
 
 float AIBrainSystem::CalculateAttackScore(BaseWeapon* weapon) {
@@ -49,6 +47,27 @@ std::vector<int> AIBrainSystem::ChooseWeaponUnit(const std::vector<std::unique_p
 	return chosenWeapons;
 }
 
+Action AIBrainSystem::ChooseBestAction() {
+	Action bestAction = Action::NONE;
+
+	//各スコアから最も高いスコアの行動を選択
+	std::vector<float> chooseScores = {
+		actionScores_[Action::USE_REAIR],
+		actionScores_[Action::STEPBOOST],
+		actionScores_[Action::JUMP],
+	};
+
+	float bestScore = 0.0f;
+	for (const auto& [action, score] : actionScores_) {
+		if (score > bestScore) {
+			bestScore = score;
+			bestAction = action;
+		}
+	}
+
+	return bestAction;
+}
+
 float AIBrainSystem::CalculateStepBoostScore() {
 
 	float stepBoostScore;
@@ -67,4 +86,26 @@ float AIBrainSystem::CalculateStepBoostScore() {
 	stepBoostScore = dangerFactor * energyFactor;
 
 	return stepBoostScore;
+}
+
+float AIBrainSystem::CalculateJumpScore() {
+	
+	float jumpScore = 0.0f;
+	if (characterInfo_->onGround == true && characterInfo_->overHeatInfo.isOverheated == false) {
+
+		//相手との距離(特にY軸方向)が一定以上離れている場合はジャンプを優先する
+		if (std::abs(characterInfo_->transform.translate.y - distanceToTarget_) > orbitRadius_ * 0.5f) {
+			jumpScore += 0.5f; // 基本スコア
+		}
+
+		// エネルギー残量に基づくスコア計算
+		float energyFactor = (characterInfo_->energyInfo.energy - characterInfo_->jumpInfo.useEnergy) / characterInfo_->energyInfo.maxEnergy;
+		energyFactor = std::clamp(energyFactor, 0.0f, 1.0f);
+		// 近接しているかどうかに基づくスコア計算
+		float dangerFactor = isBulletNearby_ ? 1.0f : 0.0f;
+
+		jumpScore += dangerFactor * energyFactor * 0.5f; // 最大で0.5加算
+	}
+
+	return jumpScore;
 }

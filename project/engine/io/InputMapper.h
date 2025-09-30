@@ -2,6 +2,7 @@
 
 //	include
 #include <io/IInputDevice.h>
+#include "engine/math/Vector2.h"
 
 // c++
 #include <memory>
@@ -27,6 +28,7 @@ public:
     //--------- accessor -----------------------------------------------------
 
     float GetVector(Enum action) const;
+    Vector2 GetVector2(Enum actionX, Enum actionY) const;
 
     bool IsPressed(Enum button) const;
     bool IsTriggered(Enum button) const;
@@ -62,6 +64,11 @@ inline float InputMapper<Enum>::GetVector(Enum action) const {
     }
     vector = std::clamp(vector, -1.0f, 1.0f);
     return vector;
+}
+
+template<InputEnum Enum>
+inline Vector2 InputMapper<Enum>::GetVector2(Enum actionX, Enum actionY) const {
+	return { GetVector(actionX), GetVector(actionY) };
 }
 
 template<InputEnum Enum>

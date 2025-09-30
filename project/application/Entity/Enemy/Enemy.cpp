@@ -42,13 +42,11 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	characterInfo_.transform = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,30.0f} };
 	object3d_->SetScale(characterInfo_.transform.scale);
 
-	
-
 	//emiiter設定
 	//emitter0
 	particleEmitter_.resize(3);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0",{ {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, characterInfo_.transform.translate }, 5, 1.0f);
+	particleEmitter_[0]->Initialize("EnemyEmitter0", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, characterInfo_.transform.translate }, 5, 1.0f);
 	particleEmitter_[0]->SetParticleName("DamageSpark");
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
@@ -116,7 +114,7 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 			weapons_[i] = std::make_unique<Rifle>();
 			weapons_[i]->Initialize(object3dCommon, bulletManager, "Rifle.gltf");
 			weapons_[i]->SetOwnerObject(this);
-		}else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
+		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
 			weapons_[i] = std::make_unique<Bazooka>();
 			weapons_[i]->Initialize(object3dCommon, bulletManager, "Bazooka.gltf");
 			weapons_[i]->SetOwnerObject(this);
@@ -137,27 +135,24 @@ void Enemy::Update() {
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
-	aiBrainSystem_->Update();
+	//aiBrainSystem_->Update();
 
 	//stepBoostのインターバルの更新
-	if(characterInfo_.stepBoostInfo.intervalTimer > 0.0f) {
+	if (characterInfo_.stepBoostInfo.intervalTimer > 0.0f) {
 		characterInfo_.stepBoostInfo.intervalTimer -= deltaTime_;
 	}
 
 	// StepBoost入力判定を最初に追加
 	if (behaviorManager_->GetCurrentBehaviorType() == Behavior::RUNNING) {
 
-	
-			//1秒に1度確率で判定
-			if( randomEngine() % 100 < jumpProbability_) { // 1%の確率
-				if(randomEngine() % 2 == 0) {
-					//Jump遷移
-					behaviorManager_->RequestBehavior(Behavior::JUMP);
-				} else {
-					//StepBoost遷移
-					behaviorManager_->RequestBehavior(Behavior::STEPBOOST);
-				}
-			}
+		switch (aiBrainSystem_->GetBestAction()) {
+		case Action::JUMP:
+			behaviorManager_->RequestBehavior(Behavior::JUMP);
+			break;
+		case Action::STEPBOOST:
+			behaviorManager_->RequestBehavior(Behavior::STEPBOOST);
+			break;
+		}
 	}
 
 	//エネルギーの更新
@@ -182,7 +177,7 @@ void Enemy::Update() {
 		}
 	}
 
-	if(characterInfo_.health <= 0.0f) {
+	if (characterInfo_.health <= 0.0f) {
 		//死亡状態のリクエスト
 		characterInfo_.isAlive = false;
 		behaviorManager_->RequestBehavior(Behavior::DEAD);
@@ -196,7 +191,7 @@ void Enemy::Update() {
 	bulletSensor_->SetTranslate(characterInfo_.transform.translate);
 	bulletSensor_->Update();
 
-	
+
 
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(characterInfo_.transform.rotate);
@@ -208,7 +203,7 @@ void Enemy::Update() {
 	weapons_[0]->SetTarget(focusTargetPos_);
 	weapons_[0]->Update();
 	weapons_[1]->SetTarget(focusTargetPos_);
-	weapons_[1]->Update(); 
+	weapons_[1]->Update();
 
 
 
@@ -247,11 +242,10 @@ void Enemy::UpdateImGui() {
 // 描画処理
 //========================================================================================================
 
-
 void Enemy::Draw() {
 
 	object3d_->Draw();
-	for(const auto& weapon : weapons_) {
+	for (const auto& weapon : weapons_) {
 		weapon->Draw();
 	}
 
@@ -277,7 +271,7 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 
 	}
 
-	if (other->GetCharacterType()  == CharacterType::PLAYER_BULLET) {
+	if (other->GetCharacterType() == CharacterType::PLAYER_BULLET) {
 
 		Bullet* bullet = dynamic_cast<Bullet*>(other);
 		//プレイヤーの弾に当たった場合の処理
@@ -288,7 +282,7 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 		//体力を減らす
 		characterInfo_.health -= bullet->GetDamage();
 	}
-	if(other->GetCharacterType() == CharacterType::PLAYER_MISSILE) {
+	if (other->GetCharacterType() == CharacterType::PLAYER_MISSILE) {
 		//プレイヤーのミサイルに当たった場合の処理
 		//particleEmitter_[2]->Emit();
 		characterInfo_.isDamaged = true;
@@ -358,8 +352,13 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 
 void Enemy::UpdateAttack() {
 
-	WeaponAttack(R_ARMS); // 右手の武器で攻撃
-	WeaponAttack(L_ARMS); // 左手の武器で攻撃
+	// AIにどの武器を使うか選ばせる
+	std::vector<int> chosenWeapons = aiBrainSystem_->ChooseWeaponUnit(weapons_);
+
+	// 選ばれた武器すべてに対して攻撃処理を行う
+	for (int weaponIndex : chosenWeapons) {
+		WeaponAttack(weaponIndex);
+	}
 
 	//チャージ攻撃可能なユニットの処理
 	for (int i = 0; i < chargeShootableUnits_.size(); i++) {
@@ -384,37 +383,37 @@ void Enemy::UpdateAttack() {
 void Enemy::WeaponAttack(int weaponIndex) {
 
 	auto* weapon = weapons_[weaponIndex].get();
-	if (ShouldStartAttack(weaponIndex)) {
-		//チャージ攻撃可能な場合
-		if (weapon->IsChargeAttack()) {
 
-			//武器のチャージ処理
-			weapon->Charge(deltaTime_);
-			if (ShouldReleaseAttack(weaponIndex)) {
-				//チャージ攻撃実行
-				weapon->ChargeAttack();
-				if (weapon->IsStopShootOnly()) {
-					// 停止撃ち専用の場合はチャージ後に硬直状態へ
-					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
-				} else {
-					// 移動撃ち可能な場合はRUNNINGに戻す
-					behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
-				}
-			}
-		} else {
-			//チャージ攻撃不可:通常攻撃
-			if (weapon->IsStopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
-				// 停止撃ち専用:硬直処理を行う
-				characterInfo_.isChargeShooting = true; // チャージ撃ち中フラグを立てる
-				chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
-				chargeShootableUnits_[weaponIndex] = true; // チャージ撃ち可能なユニットとしてマーク
+	//チャージ攻撃可能な場合
+	if (weapon->IsChargeAttack()) {
 
+		//武器のチャージ処理
+		weapon->Charge(deltaTime_);
+		if (ShouldReleaseAttack(weaponIndex)) {
+			//チャージ攻撃実行
+			weapon->ChargeAttack();
+			if (weapon->IsStopShootOnly()) {
+				// 停止撃ち専用の場合はチャージ後に硬直状態へ
+				behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 			} else {
-				// 移動撃ち可能
-				weapon->Attack();
+				// 移動撃ち可能な場合はRUNNINGに戻す
+				behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
 			}
 		}
-	} else if (ShouldReleaseAttack(weaponIndex)) {
+	} else {
+		//チャージ攻撃不可:通常攻撃
+		if (weapon->IsStopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
+			// 停止撃ち専用:硬直処理を行う
+			characterInfo_.isChargeShooting = true; // チャージ撃ち中フラグを立てる
+			chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
+			chargeShootableUnits_[weaponIndex] = true; // チャージ撃ち可能なユニットとしてマーク
+
+		} else {
+			// 移動撃ち可能
+			weapon->Attack();
+		}
+	}
+	if (ShouldReleaseAttack(weaponIndex)) {
 		// LBボタンが離された場合
 
 		if (weapon->IsCharging()) {
