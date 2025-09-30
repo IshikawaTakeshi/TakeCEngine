@@ -131,11 +131,7 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 
 void Enemy::Update() {
 
-	// ランダムエンジンの初期化  
-	std::random_device seedGenerator;
-	std::mt19937 randomEngine(seedGenerator());
-
-	//aiBrainSystem_->Update();
+	aiBrainSystem_->Update();
 
 	//stepBoostのインターバルの更新
 	if (characterInfo_.stepBoostInfo.intervalTimer > 0.0f) {
