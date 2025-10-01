@@ -1,4 +1,5 @@
 #include "BulletSensor.h"
+#include "engine/base/TakeCFrameWork.h"
 #include "engine/3d/Object3dCommon.h"
 #include "engine/Collision/BoxCollider.h"
 #include "engine/Collision/SphereCollider.h"
@@ -19,6 +20,16 @@ void BulletSensor::Initialize(Object3dCommon* object3dCommon, const std::string&
 }
 
 void BulletSensor::Update() {
+
+	if(isActive_) {
+		activeTimer_ += TakeCFrameWork::GetDeltaTime();
+		if (activeTimer_ >= activeDuration_) {
+			isActive_ = false; // センサー無効化
+			activeTimer_ = 0.0f; // タイマーリセット
+			collider_->SetColor({ 0.0f,1.0f,1.0f,1.0f }); // 水色に戻す
+		}
+	}
+
 	// Object3dの更新
 	object3d_->Update();
 	// コライダーの更新
@@ -43,9 +54,5 @@ void BulletSensor::OnCollisionAction(GameCharacter* other) {
 		
 		isActive_ = true; // センサー有効化
 		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f }); // 赤色
-	} else {
-		
-		isActive_ = false; // センサー無効
-		return;
 	}
 }

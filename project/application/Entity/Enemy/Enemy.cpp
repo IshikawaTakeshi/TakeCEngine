@@ -96,6 +96,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//bulletSensor_の初期化
 	bulletSensor_ = std::make_unique<BulletSensor>();
 	bulletSensor_->Initialize(object3dCommon, "Sphere.gltf");
+	bulletSensor_->SetSensorRadius(collider_->GetHalfSize().x * 20.0f);
 
 	//BehaviorManagerの初期化
 	behaviorManager_ = std::make_unique<BehaviorManager>();
@@ -105,6 +106,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//AIBrainSystemの初期化
 	aiBrainSystem_ = std::make_unique<AIBrainSystem>();
 	aiBrainSystem_->Initialize(&characterInfo_, weapons_.size());
+	aiBrainSystem_->SetOrbitRadius(orbitRadius_);
+	aiBrainSystem_->SetDistanceToTarget(Vector3Math::Length(focusTargetPos_ - characterInfo_.transform.translate));
 }
 
 void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
@@ -186,11 +189,12 @@ void Enemy::Update() {
 	characterInfo_.onGround = false; // 毎フレームリセット
 
 	//AIの更新
+	aiBrainSystem_->SetDistanceToTarget(Vector3Math::Length(focusTargetPos_ - characterInfo_.transform.translate));
 	aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
-
+	aiBrainSystem_->Update();
+	//弾センサーの更新
 	bulletSensor_->SetTranslate(characterInfo_.transform.translate);
 	bulletSensor_->Update();
-
 
 
 	//Quaternionからオイラー角に変換
@@ -231,6 +235,7 @@ void Enemy::UpdateImGui() {
 	ImGui::DragFloat3("MoveDirection", &characterInfo_.moveDirection.x, 0.01f);
 	ImGui::Checkbox("OnGround", &characterInfo_.onGround);
 	behaviorManager_->UpdateImGui();
+	aiBrainSystem_->UpdateImGui();
 	collider_->UpdateImGui("Enemy");
 	weapons_[0]->UpdateImGui();
 	weapons_[1]->UpdateImGui();

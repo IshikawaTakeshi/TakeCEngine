@@ -13,6 +13,7 @@ class AIBrainSystem {
 
 	void Initialize(GameCharacterContext* characterInfo,size_t weaponUnitSize);
 	void Update();
+	void UpdateImGui();
 
 	std::vector<int> ChooseWeaponUnit(const std::vector<std::unique_ptr<BaseWeapon>>& weapons);
 

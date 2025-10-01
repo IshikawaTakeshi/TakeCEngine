@@ -293,12 +293,12 @@ void GamePlayScene::Draw() {
 #pragma endregion
 
 	//当たり判定の描画前処理
-	player_->DrawCollider();
-	//enemy_->DrawCollider();
+	//player_->DrawCollider();
+	enemy_->DrawCollider();
 	bulletManager_->DrawCollider();
-	for (auto& object : levelObjects_) {
+	/*for (auto& object : levelObjects_) {
 		object.second->DrawCollider();
-	}
+	}*/
 
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
@@ -429,6 +429,8 @@ void GamePlayScene::CheckAllCollisions() {
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
 	// 敵キャラクターの登録
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
+	//BulletSensorの登録
+	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_->GetBulletSensor()));
 
 	//弾の登録
 	for (const auto& bullet : bullets) {
