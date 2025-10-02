@@ -1,6 +1,7 @@
 #include "AIBrainSystem.h"
+#include "engine/base/ImGuiManager.h"
+#include "engine/Utility/StringUtility.h"
 #include <cmath>
-
 
 void AIBrainSystem::Initialize(GameCharacterContext* characterInfo,size_t weaponUnitSize) {
 	characterInfo_ = characterInfo;
@@ -17,6 +18,22 @@ void AIBrainSystem::Update() {
 	actionScores_[Action::ATTACK_LA] = attackScores_[1]; // 左手武器のスコア
 	//actionScores_[Action::ATTACK_RB] = attackScores_[2]; // 右肩武器のスコア
 	//actionScores_[Action::ATTACK_LB] = attackScores_[3]; // 左肩武器のスコア
+
+	bestAction_ = ChooseBestAction();
+}
+
+void AIBrainSystem::UpdateImGui() {
+	ImGui::SeparatorText("AIBrainSystem");
+	ImGui::Text("DistanceToTarget: %.2f", distanceToTarget_);
+	ImGui::Text("OrbitRadius: %.2f", orbitRadius_);
+	ImGui::Text("IsBulletNearby: %s", isBulletNearby_ ? "True" : "False");
+	ImGui::Separator();
+	ImGui::Text("BestAction: %s", StringUtility::EnumToString(bestAction_).c_str());
+	ImGui::Separator();
+	for (const auto& [action, score] : actionScores_) {
+		std::string actionName = "Score " + StringUtility::EnumToString<CharacterActionInput>(action);
+		ImGui::SliderFloat(actionName.c_str(), &actionScores_[action], 0.0f, 1.0f);
+	}
 }
 
 float AIBrainSystem::CalculateHpScore() {
@@ -30,7 +47,7 @@ float AIBrainSystem::CalculateAttackScore(BaseWeapon* weapon) {
 	float distanceFactor = 1.0f - (distanceToTarget_ / weapon->GetEffectiveRange());
 	float cooldownFactor = weapon->GetIsAvailable() ? 1.0f : 0.0f;
 	
-	attackScore = distanceFactor * cooldownFactor;
+	attackScore = distanceFactor * 0.8f * cooldownFactor;
 	return std::clamp(attackScore, 0.0f, 1.0f); // 0から1の範囲にクランプ
 }
 
@@ -81,9 +98,10 @@ float AIBrainSystem::CalculateStepBoostScore() {
 	energyFactor = std::clamp(energyFactor, 0.0f, 1.0f);
 	// 近接しているかどうかに基づくスコア計算
 	float dangerFactor = isBulletNearby_ ? 1.0f : 0.0f;
-	
+	float hpFactor = 1.0f - (characterInfo_->health / characterInfo_->maxHealth);
 
-	stepBoostScore = dangerFactor * energyFactor;
+	stepBoostScore = dangerFactor * energyFactor * (hpFactor * 1.3f);
+	stepBoostScore = std::clamp(stepBoostScore, 0.0f, 1.0f); // 0から1の範囲にクランプ
 
 	return stepBoostScore;
 }

@@ -20,13 +20,16 @@ class BulletSensor : public GameCharacter {
 
 	//------ getter ------
 	bool IsActive() const { return isActive_; }
-
+	float GetSensorRadius() const { return sensorRadius_; }
 
 	//------ setter ------
 	void SetActive(bool isActive) { isActive_ = isActive; }
-
+	void SetSensorRadius(float radius) { sensorRadius_ = radius; collider_->SetRadius(radius); }
 private:
 
 	bool isActive_ = true; // センサーが有効かどうか
+	float activeDuration_ = 0.8f; // センサーが有効な時間（秒）
+	float activeTimer_ = 0.0f; // センサーが有効になってからの経過時間
+	float sensorRadius_ = 5.0f; // センサーの半径
 };
 

@@ -429,6 +429,8 @@ void GamePlayScene::CheckAllCollisions() {
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
 	// 敵キャラクターの登録
 	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
+	//BulletSensorの登録
+	CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(enemy_->GetBulletSensor()));
 
 	//弾の登録
 	for (const auto& bullet : bullets) {

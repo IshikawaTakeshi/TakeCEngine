@@ -43,7 +43,7 @@ public:
 	const GameCharacterContext& GetCharacterInfo() const { return characterInfo_; }
 	GameCharacterContext& GetCharacterInfo() { return characterInfo_; }
 
-	//Camera* GetCamera() const { return camera_; }
+	BulletSensor* GetBulletSensor() const { return bulletSensor_.get(); }
 
 	//移動方向ベクトルの取得
 	const Vector3& GetMoveDirection() const { return characterInfo_.moveDirection; }

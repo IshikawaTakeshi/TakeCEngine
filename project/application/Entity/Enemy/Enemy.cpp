@@ -96,6 +96,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//bulletSensor_の初期化
 	bulletSensor_ = std::make_unique<BulletSensor>();
 	bulletSensor_->Initialize(object3dCommon, "Sphere.gltf");
+	bulletSensor_->SetSensorRadius(collider_->GetHalfSize().x * 20.0f);
 
 	//BehaviorManagerの初期化
 	behaviorManager_ = std::make_unique<BehaviorManager>();
@@ -105,6 +106,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//AIBrainSystemの初期化
 	aiBrainSystem_ = std::make_unique<AIBrainSystem>();
 	aiBrainSystem_->Initialize(&characterInfo_, weapons_.size());
+	aiBrainSystem_->SetOrbitRadius(orbitRadius_);
+	aiBrainSystem_->SetDistanceToTarget(Vector3Math::Length(focusTargetPos_ - characterInfo_.transform.translate));
 }
 
 void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
@@ -230,6 +233,7 @@ void Enemy::UpdateImGui() {
 	ImGui::Separator();
 	bulletSensor_->UpdateImGui();
 	behaviorManager_->UpdateImGui();
+	aiBrainSystem_->UpdateImGui();
 	collider_->UpdateImGui("Enemy");
 	weapons_[0]->UpdateImGui();
 	weapons_[1]->UpdateImGui();
