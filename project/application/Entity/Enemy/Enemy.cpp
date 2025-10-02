@@ -131,7 +131,7 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 
 void Enemy::Update() {
 
-	aiBrainSystem_->Update();
+	
 
 	//stepBoostのインターバルの更新
 	if (characterInfo_.stepBoostInfo.intervalTimer > 0.0f) {
@@ -181,13 +181,14 @@ void Enemy::Update() {
 
 	characterInfo_.onGround = false; // 毎フレームリセット
 
-	//AIの更新
-	aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
-
 	bulletSensor_->SetTranslate(characterInfo_.transform.translate);
 	bulletSensor_->Update();
 
-
+	//AIの更新
+	float distance = (focusTargetPos_ - characterInfo_.transform.translate).Length();
+	aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
+	aiBrainSystem_->SetDistanceToTarget(distance);
+	aiBrainSystem_->Update();
 
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(characterInfo_.transform.rotate);
@@ -226,6 +227,8 @@ void Enemy::UpdateImGui() {
 	ImGui::DragFloat3("Velocity", &characterInfo_.velocity.x, 0.01f);
 	ImGui::DragFloat3("MoveDirection", &characterInfo_.moveDirection.x, 0.01f);
 	ImGui::Checkbox("OnGround", &characterInfo_.onGround);
+	ImGui::Separator();
+	bulletSensor_->UpdateImGui();
 	behaviorManager_->UpdateImGui();
 	collider_->UpdateImGui("Enemy");
 	weapons_[0]->UpdateImGui();
@@ -250,7 +253,7 @@ void Enemy::Draw() {
 void Enemy::DrawCollider() {
 
 #ifdef _DEBUG
-	collider_->DrawCollider();
+	//collider_->DrawCollider();
 	bulletSensor_->DrawCollider();
 
 #endif // _DEBUG
@@ -432,15 +435,15 @@ void Enemy::WeaponAttack(int weaponIndex) {
 // 攻撃開始判定
 //===================================================================================
 
-bool Enemy::ShouldStartAttack(int weaponIndex) {
-	// 例: ターゲットとの距離が射程範囲でクールタイムが終わってたら攻撃
-	auto* weapon = weapons_[weaponIndex].get();
-	float distance = (focusTargetPos_ - characterInfo_.transform.translate).Length();
-	float range = orbitRadius_ * 3.5f;
-	bool cooldownReady = weapon->GetIsAvailable();
-	// 例: 一定確率で攻撃開始
-	return (distance <= range) && cooldownReady && (rand() % 100 < attackProbability_); // 10%の確率
-}
+//bool Enemy::ShouldStartAttack(int weaponIndex) {
+//	// 例: ターゲットとの距離が射程範囲でクールタイムが終わってたら攻撃
+//	auto* weapon = weapons_[weaponIndex].get();
+//	
+//	float range = orbitRadius_ * 3.5f;
+//	bool cooldownReady = weapon->GetIsAvailable();
+//	// 例: 一定確率で攻撃開始
+//	return (distance <= range) && cooldownReady && (rand() % 100 < attackProbability_); // 10%の確率
+//}
 
 bool Enemy::ShouldReleaseAttack(int weaponIndex) {
 	auto* weapon = weapons_[weaponIndex].get();

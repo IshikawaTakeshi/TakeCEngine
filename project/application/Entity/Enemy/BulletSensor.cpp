@@ -2,6 +2,7 @@
 #include "engine/3d/Object3dCommon.h"
 #include "engine/Collision/BoxCollider.h"
 #include "engine/Collision/SphereCollider.h"
+#include "engine/base/ImGuiManager.h"
 
 void BulletSensor::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 	//オブジェクト初期化
@@ -10,7 +11,7 @@ void BulletSensor::Initialize(Object3dCommon* object3dCommon, const std::string&
 	//コライダー初期化
 	collider_ = std::make_unique<SphereCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
-	collider_->SetRadius(5.0f); // 半径を設定
+	collider_->SetRadius(20.0f); // 半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Sensor)); // 種別IDを設定
 	//水色に設定
 	collider_->SetColor({ 0.0f, 1.0f, 1.0f, 1.0f }); // 水色
@@ -23,6 +24,14 @@ void BulletSensor::Update() {
 	object3d_->Update();
 	// コライダーの更新
 	collider_->Update(object3d_.get());
+}
+
+void BulletSensor::UpdateImGui() {
+	// ImGuiの更新
+	ImGui::SeparatorText("bulletSensor");
+	ImGui::Text("Scale: %.2f, %.2f, %.2f", object3d_->GetScale().x, object3d_->GetScale().y, object3d_->GetScale().z);
+	ImGui::Text("Rotate: %.2f, %.2f, %.2f", object3d_->GetRotate().x, object3d_->GetRotate().y, object3d_->GetRotate().z);
+	ImGui::Text("Translate: %.2f, %.2f, %.2f", object3d_->GetTranslate().x, object3d_->GetTranslate().y, object3d_->GetTranslate().z);
 }
 
 void BulletSensor::Draw() {

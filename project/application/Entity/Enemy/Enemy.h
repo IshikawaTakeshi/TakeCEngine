@@ -99,7 +99,7 @@ private:
 
 private:
 	// 攻撃開始判定
-	bool ShouldStartAttack(int weaponIndex);
+	//bool ShouldStartAttack(int weaponIndex);
 	// チャージ攻撃実行判定
 	bool ShouldReleaseAttack(int weaponIndex);
 

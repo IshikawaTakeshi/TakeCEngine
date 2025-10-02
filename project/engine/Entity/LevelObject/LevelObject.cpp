@@ -84,7 +84,7 @@ void LevelObject::Draw() {
 
 void LevelObject::DrawCollider() {
 #ifdef _DEBUG
-	collider_->DrawCollider();
+	//collider_->DrawCollider();
 #endif
 }
 
