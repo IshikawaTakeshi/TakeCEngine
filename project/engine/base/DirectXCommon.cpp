@@ -479,6 +479,13 @@ void DirectXCommon::UpdateFixFPS() {
 		}
 	}
 
+	// 経過時間を再計算
+	now = std::chrono::steady_clock::now();
+	elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
+
+	// FPSを計算
+	currentFPS_ = 1000000.0f / static_cast<float>(elapsed.count());
+
 	//現在の時間を記録する
 	reference_ = std::chrono::steady_clock::now();
 }
@@ -626,6 +633,15 @@ ComPtr<ID3D12Resource> DirectXCommon::CreateTextureResourceUAV(ComPtr<ID3D12Devi
 	commandList_->ResourceBarrier(1, &uavBarrier);
 
 	return resource;
+}
+
+void DirectXCommon::DrawFPS() {
+#ifdef _DEBUG
+	float currentFPS = GetCurrentFPS();
+	ImGui::Begin("FrameWork");
+	ImGui::Text("FPS: %.2f", currentFPS);
+	ImGui::End();
+#endif // _DEBUG
 }
 
 //==============================================================================================

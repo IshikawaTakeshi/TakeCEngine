@@ -31,10 +31,8 @@ enum class GamepadButtonType {
 };
 
 enum class GamepadValueType {
-	LeftStickX,  // 左スティック X 軸
-	LeftStickY,  // 左スティック Y 軸
-	RightStickX, // 右スティック X 軸
-	RightStickY, // 右スティック Y 軸
+	LeftStick,  // 左スティック
+	RightStick, // 右スティック
 };
 
 struct StickState {

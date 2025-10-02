@@ -22,11 +22,12 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 	weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
 	damage_ = 90.0f;
 	attackInterval_ = kAttackInterval;
-	bulletSpeed_ = 400.0f; // 弾のスピードを設定
+	bulletSpeed_ = 550.0f; // 弾のスピードを設定
 	magazineCount_ = 30; // マガジン内の弾数を設定
 	bulletCount_ = magazineCount_;
 	maxBulletCount_ = 600;
 	remainingBulletCount_ = maxBulletCount_; // 残弾数を最大弾数に設定
+	effectiveRange_ = 500.0f; // 有効射程距離を設定
 
 	maxReloadTime_ = 3.0f; // 最大リロード時間を設定
 

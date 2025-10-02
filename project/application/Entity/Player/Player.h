@@ -79,37 +79,6 @@ public:
 
 private:
 
-	void InitRunning();
-	void InitJump();
-	void InitDash();
-	void InitChargeShoot();
-	void InitChargeShootStun();
-	void InitStepBoost();
-	void InitFloating();
-	void InitDead();
-
-	void UpdateRunning();
-	void UpdateAttack();
-	void UpdateDamage();
-	void UpdateJump();
-	void UpdateDash();
-	void UpdateChargeShoot();
-	void UpdateChargeShootStun();
-	void UpdateStepBoost();
-	void UpdateFloating();
-	void UpdateDead();
-
-	// ステップブーストのBehavior切り替え処理
-	void TriggerStepBoost();
-	//武器一つ当たりの攻撃処理
-	void WeaponAttack(int weaponIndex, GamepadButtonType buttonType);
-	void WeaponChargeAttack(int weaponIndex);
-
-	//エネルギーの更新
-	void UpdateEnergy();
-
-private:
-
 	//カメラ
 	Camera* camera_ = nullptr;
 	//状態管理マネージャ
@@ -137,4 +106,16 @@ private:
 	
 	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
 	float chargeShootTimer_ = 0.0f; //停止撃ちまでの残り猶予時間
+
+
+private:
+
+	//武器の攻撃更新
+	void UpdateAttack();
+
+	//武器一つ当たりの攻撃処理
+	void WeaponAttack(int weaponIndex, GamepadButtonType buttonType);
+
+	//エネルギーの更新
+	void UpdateEnergy();
 };

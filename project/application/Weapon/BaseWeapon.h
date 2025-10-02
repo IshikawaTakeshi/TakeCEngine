@@ -49,6 +49,8 @@ public:
 	virtual const Vector3& GetTragetPos() const;
 	//武器のユニットポジションを取得
 	virtual uint32_t GetUnitPosition() const;
+	//有効射程距離の取得
+	virtual float GetEffectiveRange() const;
 
 	//弾速の取得
 	virtual float GetBulletSpeed() const;
@@ -92,6 +94,8 @@ public:
 	virtual void SetRotate(const Vector3& rotate) { object3d_->SetRotate(rotate); }
 	//武器のユニットポジションを設定
 	virtual void SetUnitPosition(uint32_t position);
+	//有効射程距離の設定
+	virtual void SetEffectiveRange(float range);
 
 	//弾速の設定
 	virtual void SetBulletSpeed(float speed);
@@ -131,8 +135,10 @@ protected:
 	float bulletSpeed_ = 0.0f;
 	//使用可能か
 	bool isAvailable_ = true;
-
-	uint32_t unitPosition_ = 0; // 武器のユニットポジション
+	// 武器のユニットポジション
+	uint32_t unitPosition_ = 0; 
+	// 有効射程距離
+	float effectiveRange_ = 0.0f;
 
 	//リロード中かどうか
 	bool isReloading_ = false;

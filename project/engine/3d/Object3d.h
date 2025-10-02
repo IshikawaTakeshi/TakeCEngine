@@ -31,7 +31,7 @@ public:
 	/// </summary>
 	void Update();
 
-	void AnimationUpdate();
+	
 
 	void UpdateImGui([[maybe_unused]]const std::string& name);
 
@@ -67,6 +67,11 @@ public: //setter
 	void SetAnimation(Animation* animation);
 	void SetParent(const Matrix4x4& parent) { parentWorldMatrix_ = &parent; }
 	void SetModelFilePath(const std::string& filePath) { modelFilePath_ = filePath; }
+
+private:
+
+	//アニメーション処理
+	void AnimationUpdate();
 
 protected: // privateメンバ変数
 
