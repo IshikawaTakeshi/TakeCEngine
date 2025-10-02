@@ -390,6 +390,7 @@
     <ClCompile Include="engine\io\IInputDevice.cpp" />
     <ClCompile Include="application\Entity\Enemy\BulletSensor.cpp" />
     <ClCompile Include="application\Provider\PlayerKeyInput.cpp" />
+    <ClCompile Include="application\Effect\BoostEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -759,6 +760,8 @@
     <ClInclude Include="application\Entity\Enemy\BulletSensor.h" />
     <ClInclude Include="application\Provider\Enum\CharacterActionInputEnum.h" />
     <ClInclude Include="application\Provider\PlayerKeyInput.h" />
+    <ClInclude Include="application\Effect\BoostEffect.h" />
+    <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

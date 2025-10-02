@@ -31,6 +31,7 @@ public:
 		Material* material_ = nullptr;
 		float outerRadius_ = 1.0f; // 外側の半径
 		float innerRadius_ = 0.01f; // 内側の半径
+		uint32_t subDivision_ = 32; // 分割数
 	};
 
 	//plane全体のデータ
@@ -48,6 +49,34 @@ public:
 		VertexData* vertexData_ = nullptr;
 		Material* material_ = nullptr;
 		float radius_;
+		uint32_t subDivision_ = 16; // 分割数
+	};
+
+	//cone全体のデータ
+	struct ConeData {
+		PrimitiveMesh primitiveData_;
+		VertexData* vertexData_ = nullptr;
+		Material* material_ = nullptr;
+		float radius_;
+		float height_;
+		uint32_t subDivision_ = 32; // 分割数
+	};
+
+	//cube全体のデータ
+	struct CubeData {
+		PrimitiveMesh primitiveData_;
+		VertexData* vertexData_ = nullptr;
+		Material* material_ = nullptr;
+		float size_;
+	};
+
+	//cylinder全体のデータ
+	struct CylinderData {
+		PrimitiveMesh primitiveData_;
+		VertexData* vertexData_ = nullptr;
+		Material* material_ = nullptr;
+		float radius_;
+		float height_;
 	};
 
 public:
@@ -69,30 +98,36 @@ public:
 	uint32_t GeneratePlane(const float width, const float height, const std::string& textureFilePath);
 	// 球データの生成
 	uint32_t GenerateSphere(const float radius, const std::string& textureFilePath);
-
-	// 描画処理
+	// 円錐データの生成
+	uint32_t GenerateCone(const float radius, const float height,uint32_t subDivision, const std::string& textureFilePath);
+	// 描画処理(particle用)
 	void DrawParticle(PSO* pso,UINT instanceCount,PrimitiveType type,uint32_t handle);
-
-	//void CreateVertexData(PrimitiveType type);
-
-	// リングの頂点データの作成関数
-	void CreateRingVertexData(RingData* ringData);
-
-	void CreatePlaneVertexData(PlaneData* planeData);
-
-	void CreateSphereVertexData(SphereData* sphereData);
-
-	void CreateRingMaterial(const std::string& textureFilePath,RingData* ringData);
-
-	void CreatePlaneMaterial(const std::string& textureFilePath,PlaneData* planeData);
-
-	void CreateSphereMaterial(const std::string& textureFilePath, SphereData* sphereData);
-
-	void ResetVertexIndex() { ringVertexIndex_ = 0; }
+	// 描画処理(オブジェクト用)
+	void DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handle);
 
 	PlaneData* GetPlaneData(uint32_t handle);
 	SphereData* GetSphereData(uint32_t handle);
 	RingData* GetRingData(uint32_t handle);
+	ConeData* GetConeData(uint32_t handle);
+
+private:
+
+	// リングの頂点データの作成関数
+	void CreateRingVertexData(RingData* ringData);
+	// 平面の頂点データの作成関数
+	void CreatePlaneVertexData(PlaneData* planeData);
+	// 球の頂点データの作成関数
+	void CreateSphereVertexData(SphereData* sphereData);
+	// Cube
+	//void CreateCubeVertexData(CubeData* cubeData);
+	// Cone
+	void CreateConeVertexData(ConeData* coneData);
+
+	// マテリアルの作成関数
+	void CreateRingMaterial(const std::string& textureFilePath,RingData* ringData);
+	void CreatePlaneMaterial(const std::string& textureFilePath,PlaneData* planeData);
+	void CreateSphereMaterial(const std::string& textureFilePath, SphereData* sphereData);
+	void CreateConeMaterial(const std::string& textureFilePath, ConeData* coneData);
 
 private:
 
@@ -119,6 +154,13 @@ private:
 	uint32_t sphereVertexCount_ = 0;
 	uint32_t sphereIndexCount_ = 0;
 	uint32_t sphereHandle_ = 0;
+
+	std::unordered_map<uint32_t, std::unique_ptr<ConeData>> coneDatas_;
+	uint32_t coneVertexIndex_ = 0;
+	uint32_t coneVertexCount_ = 0;
+	uint32_t coneHandle_ = 0;
+
+	//std::unordered_map<uint32_t, std::unique_ptr<CubeData>> cubeDatas_;
 
 	const uint32_t kMaxVertexCount_ = 32000;
 };

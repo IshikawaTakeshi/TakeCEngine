@@ -20,6 +20,8 @@ namespace Easing {
 	float EaseIn(float x);
 
 	float EaseInOut(float x);
+
+	float EaseOutCubic(float x);
 };
 
 

@@ -13,6 +13,7 @@
 #include "application/Entity/GameCharacterInfo.h"
 #include "application/Provider/PlayerInputProvider.h"
 #include "application/Entity/Behavior/BehaviorManager.h"
+#include "application/Effect/BoostEffect.h"
 
 
 class Player : public GameCharacter {
@@ -95,6 +96,8 @@ private:
 
 	//背部のパーティクルエミッター
 	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
+	//ブーストエフェクト
+	std::vector<std::unique_ptr<BoostEffect>> boostEffects_;
 	// プレイヤーの情報
 	GameCharacterContext characterInfo_;
 	// フレーム時間
@@ -118,4 +121,7 @@ private:
 
 	//エネルギーの更新
 	void UpdateEnergy();
+
+	//ブーストエフェクトのアクティブ化判定
+	void RequestActiveBoostEffect();
 };

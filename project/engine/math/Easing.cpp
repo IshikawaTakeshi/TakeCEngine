@@ -51,3 +51,7 @@ float Easing::EaseIn(float x) {
 float Easing::EaseInOut(float x) {
 	return -(cosf(std::numbers::pi_v<float> *x) - 1.0f) / 2.0f;
 }
+
+float Easing::EaseOutCubic(float x) {
+	return 1.0f - powf(1.0f - x, 3.0f);
+}

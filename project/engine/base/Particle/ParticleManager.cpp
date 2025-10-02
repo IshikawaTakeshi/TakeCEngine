@@ -84,6 +84,10 @@ void ParticleManager::UpdatePrimitiveType(const std::string& groupName, Primitiv
 		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
 			param.x, particleGroups_.at(groupName)->GetPreset().textureFilePath);
 		break;
+	case PRIMITIVE_CONE:
+		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
+			param.x, param.y,16, particleGroups_.at(groupName)->GetPreset().textureFilePath);
+		break;
 	default:
 		break;
 	}

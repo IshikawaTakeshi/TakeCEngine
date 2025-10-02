@@ -121,6 +121,7 @@ void MyGame::LoadModel() {
 	ModelManager::GetInstance()->LoadModel("gltf", "Rifle.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "Bazooka.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "VerticalMissileLauncher.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "boostEffectCone.gltf");
 	//obj
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");

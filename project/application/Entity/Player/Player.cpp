@@ -9,6 +9,7 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/math/Vector3Math.h"
 #include "engine/math/Easing.h"
+#include "engine/Utility/StringUtility.h"
 
 #include "application/Weapon/Rifle.h"
 #include "application/Weapon/Bazooka.h"
@@ -18,7 +19,7 @@
 #include "application/Entity/Behavior/BehaviorRunning.h"
 #include "application/Entity/Behavior/BehaviorJumping.h"
 #include "application/Entity/Behavior/BehaviorFloating.h"
-
+#include "application/Effect/BoostEffectPositionEnum.h"
 
 Player::~Player() {
 	object3d_.reset();
@@ -62,8 +63,22 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	backEmitter_ = std::make_unique<ParticleEmitter>();
 	backEmitter_->Initialize("PalyerBackpack", object3d_->GetTransform(), 10, 0.01f);
 	backEmitter_->SetParticleName("WalkSmoke2");
-	gravity_ = 9.8f; // 重力の強さ
+	//backEmitter_->SetIsEmit(true);
 
+	//ブーストエフェクトの初期化
+	boostEffects_.resize(4);
+	for (int i = 0; i < 4; i++) {
+		boostEffects_[i] = std::make_unique<BoostEffect>();
+		boostEffects_[i]->Initialize(this);
+	}
+	boostEffects_[LEFT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Left.Tip");
+	boostEffects_[RIGHT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Right.Tip");
+	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftShoulder");
+	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightShoulder");
+	boostEffects_[LEFT_BACK]->GetEffectObject()->SetRotate({ 0.7f,0.0f,1.3f });
+	boostEffects_[RIGHT_BACK]->GetEffectObject()->SetRotate({ 0.7f,0.0f,-1.3f }); //エフェクトの向きを調整
+
+	//入力プロバイダーの初期化
 	inputProvider_ = std::make_unique<PlayerInputProvider>(this);
 
 #pragma region charcterInfo
@@ -164,6 +179,7 @@ void Player::Update() {
 			//StepBoost入力判定
 			// LTボタン＋スティック入力で発動
 			if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
+				RequestActiveBoostEffect();
 				behaviorManager_->RequestBehavior(GameCharacterBehavior::STEPBOOST);
 			}
 			//Jump入力判定
@@ -178,8 +194,6 @@ void Player::Update() {
 			}
 		}
 	}
-
-
 
 	//エネルギーの更新
 	UpdateEnergy();
@@ -237,6 +251,9 @@ void Player::Update() {
 			weapon->Update();
 		}
 	}
+	for (const auto& boostEffect : boostEffects_) {
+		boostEffect->Update();
+	}
 }
 
 //===================================================================================
@@ -258,6 +275,9 @@ void Player::UpdateImGui() {
 	ImGui::Checkbox("OnGround", &characterInfo_.onGround);
 	behaviorManager_->UpdateImGui();
 	collider_->UpdateImGui("Player");
+	for (int i = 0; i < chargeShootableUnits_.size(); i++) {
+		boostEffects_[i]->UpdateImGui(magic_enum::enum_name(static_cast<BoostEffectPosition>(i)).data());
+	}
 	weapons_[0]->UpdateImGui();
 	weapons_[1]->UpdateImGui();
 	weapons_[2]->UpdateImGui();
@@ -276,6 +296,9 @@ void Player::Draw() {
 		if (weapon) {
 			weapon->Draw();
 		}
+	}
+	for (const auto& boostEffect : boostEffects_) {
+		boostEffect->Draw();
 	}
 }
 
@@ -329,9 +352,7 @@ void Player::OnCollisionAction(GameCharacter* other) {
 				//接触面方向の速度を打ち消す
 				float velocityAlongNormal = Vector3Math::Dot(characterInfo_.velocity, normal);
 				characterInfo_.velocity -= normal * velocityAlongNormal;
-
 			}
-
 
 			collider_->SetColor({ 0.0f,1.0f,0.0f,1.0f }); // コライダーの色を緑に変更
 
@@ -348,7 +369,6 @@ void Player::OnCollisionAction(GameCharacter* other) {
 				//接触面方向の速度を打ち消す
 				float dot = Vector3Math::Dot(characterInfo_.velocity, normal);
 				characterInfo_.velocity -= normal * dot;
-
 			}
 
 			collider_->SetColor({ 0.0f,0.0f,1.0f,1.0f }); // コライダーの色を青に変更
@@ -375,7 +395,6 @@ void Player::UpdateAttack() {
 	WeaponAttack(R_BACK, GamepadButtonType::X); // 3つ目の武器の攻撃
 	WeaponAttack(L_BACK, GamepadButtonType::Y); // 4つ目の武器の攻撃
 
-
 	//チャージ攻撃可能なユニットの処理
 	for (int i = 0; i < chargeShootableUnits_.size(); i++) {
 		if (chargeShootableUnits_[i] == true) {
@@ -394,8 +413,6 @@ void Player::UpdateAttack() {
 			}
 		}
 	}
-	
-	
 }
 
 void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
@@ -447,7 +464,7 @@ void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
 		}
 	}
 
-	
+
 }
 
 //===================================================================================
@@ -498,5 +515,18 @@ void Player::UpdateEnergy() {
 			}
 		}
 
+	}
+}
+
+void Player::RequestActiveBoostEffect() {
+
+	//ステップブーストの方向とスティックの向きによってアクティブにするエフェクトを変更
+	Vector3 moveDir = characterInfo_.moveDirection;
+	if (moveDir.Length() > 0.1f) {
+		moveDir = Vector3Math::Normalize(moveDir);
+		float forwardDot = Vector3Math::Dot(moveDir, Vector3(0.0f, 0.0f, 1.0f)); // 前方向との内積
+		float rightDot = Vector3Math::Dot(moveDir, Vector3(1.0f, 0.0f, 0.0f)); // 右方向との内積
+		
+		float stickAngle = atan2(rightDot, forwardDot) * (180.0f / 3.14159f); // スティックの角度を計算
 	}
 }
