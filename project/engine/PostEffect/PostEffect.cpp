@@ -38,5 +38,5 @@ void PostEffect::UpdateImGui() {
 	
 }
 
-void PostEffect::DisPatch() {
+void PostEffect::Dispatch() {
 }

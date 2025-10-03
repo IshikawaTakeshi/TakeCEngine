@@ -38,7 +38,7 @@ public:
 	//===========================================================================
 
 	//武器タイプの取得
-	virtual const WeaponType& GetWeaponType() const = 0;
+	virtual const WeaponType& GetWeaponType() const { return weaponType_; }
 	//攻撃間隔の取得
 	virtual float GetAttackInterval() const { return attackInterval_; }
 
@@ -46,7 +46,7 @@ public:
 
 	virtual const Vector3& GetCenterPosition() const { return object3d_->GetCenterPosition(); }
 	//ターゲットの座標を取得
-	virtual const Vector3& GetTragetPos() const;
+	virtual const Vector3& GetTargetPos() const;
 	//武器のユニットポジションを取得
 	virtual uint32_t GetUnitPosition() const;
 	//有効射程距離の取得
@@ -87,7 +87,7 @@ public:
 	//=============================================================================
 
 	//所有者の設定
-	virtual void SetOwnerObject(GameCharacter* owener) { ownerObject_ = owener; }
+	virtual void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
 	//攻撃対象の座標を設定
 	virtual void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
 

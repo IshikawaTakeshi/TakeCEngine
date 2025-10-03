@@ -38,7 +38,7 @@ void LuminanceBasedOutline::UpdateImGui() {
 #endif // _DEBUG
 }
 
-void LuminanceBasedOutline::DisPatch() {
+void LuminanceBasedOutline::Dispatch() {
 
 	if (!outlineInfoData_->isActive) {
 		return; // アウトラインが無効な場合は処理をスキップ

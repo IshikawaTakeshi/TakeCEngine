@@ -31,8 +31,6 @@ public:
 	/// </summary>
 	void Update();
 
-	
-
 	void UpdateImGui([[maybe_unused]]const std::string& name);
 
 	/// <summary>
@@ -40,7 +38,7 @@ public:
 	/// </summary>
 	void Draw();
 
-	void DisPatch();
+	void Dispatch();
 
 public: //getter
 

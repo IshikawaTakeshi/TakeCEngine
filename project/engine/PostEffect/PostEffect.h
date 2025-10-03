@@ -20,7 +20,7 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	virtual void DisPatch();
+	virtual void Dispatch();
 
 public:
 

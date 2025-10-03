@@ -34,7 +34,7 @@ public:
 	/// </summary>
 	void PreDraw();
 
-	void DisPatch();
+	void Dispatch();
 
 //================================================================================================
 // 	   getter
@@ -64,7 +64,7 @@ public:
 
 	void SetSLightIntensity(float intensity) { spotLightData_->intensity_ = intensity; }
 
-	void SetGraphicCBufferViewLghiting(PSO* pso);
+	void SetCBufferViewLighting(PSO* pso);
 
 	void SetCBufferViewCamera(PSO* pso);
 

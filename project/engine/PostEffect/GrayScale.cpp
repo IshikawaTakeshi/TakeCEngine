@@ -34,7 +34,7 @@ void GrayScale::UpdateImGui() {
 #endif
 }
 
-void GrayScale::DisPatch() {
+void GrayScale::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance()->Transition(

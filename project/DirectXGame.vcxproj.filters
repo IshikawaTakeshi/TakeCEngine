@@ -76,7 +76,9 @@
     <FxCompile Include="Resources\shaders\PostEffect\Vignette.CS.hlsl">
       <Filter>Resources\shader</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\shaders\PostEffect\DepthBasedOutline.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\DepthBasedOutline.CS.hlsl">
+      <Filter>Resources\shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -365,31 +367,81 @@
     <ClCompile Include="engine\3d\Primitive\Triangle.cpp">
       <Filter>engine\3d\Primitive</Filter>
     </ClCompile>
-    <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp" />
-    <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp" />
-    <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp" />
-    <ClCompile Include="engine\math\Vector2.cpp" />
-    <ClCompile Include="application\UI\PlayerReticle.cpp" />
-    <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
-    <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp" />
-    <ClCompile Include="application\UI\GameClearUI.cpp" />
-    <ClCompile Include="engine\scene\SceneTransition.cpp" />
-    <ClCompile Include="application\UI\BulletCounterUI.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BaseBehavior.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorRunning.cpp" />
-    <ClCompile Include="application\Provider\PlayerInputProvider.cpp" />
-    <ClCompile Include="application\Provider\EnemyInputProvider.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorFloating.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorJumping.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorManager.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorStepBoost.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorDead.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorChargeShootStun.cpp" />
-    <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp" />
-    <ClCompile Include="engine\io\InputMapper.cpp" />
-    <ClCompile Include="engine\io\IInputDevice.cpp" />
-    <ClCompile Include="application\Entity\Enemy\BulletSensor.cpp" />
-    <ClCompile Include="application\Provider\PlayerKeyInput.cpp" />
+    <ClCompile Include="application\Entity\Behavior\BaseBehavior.cpp">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorChargeShootStun.cpp">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorDead.cpp">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorFloating.cpp">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorJumping.cpp">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorManager.cpp">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorRunning.cpp">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorStepBoost.cpp">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp">
+      <Filter>application\Entity\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="application\UI\BulletCounterUI.cpp">
+      <Filter>application\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="application\UI\EnergyInfoUI.cpp">
+      <Filter>application\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="application\UI\GameClearUI.cpp">
+      <Filter>application\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Provider\EnemyInputProvider.cpp">
+      <Filter>application\Provider</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Provider\PlayerInputProvider.cpp">
+      <Filter>application\Provider</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Enemy\BulletSensor.cpp">
+      <Filter>application\Entity\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp">
+      <Filter>engine\postEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\io\IInputDevice.cpp">
+      <Filter>engine\io</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\io\InputMapper.cpp">
+      <Filter>engine\io</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp">
+      <Filter>application\Weapon\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Provider\PlayerKeyInput.cpp">
+      <Filter>application\Provider</Filter>
+    </ClCompile>
+    <ClCompile Include="application\UI\PlayerReticle.cpp">
+      <Filter>application\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\scene\SceneTransition.cpp">
+      <Filter>engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\math\Vector2.cpp">
+      <Filter>engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp">
+      <Filter>application\Weapon\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp">
+      <Filter>application\Weapon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -726,39 +778,105 @@
     <ClInclude Include="application\Weapon\WeaponType.h">
       <Filter>application\Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="application\Weapon\VerticalMissileLauncher.h" />
-    <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h" />
-    <ClInclude Include="application\Weapon\Bullet\MissilePool.h" />
-    <ClInclude Include="engine\math\physics\Ray.h" />
-    <ClInclude Include="application\UI\PlayerReticle.h" />
-    <ClInclude Include="application\UI\EnergyInfoUI.h" />
-    <ClInclude Include="engine\PostEffect\DepthBasedOutline.h" />
-    <ClInclude Include="engine\camera\PerView.h" />
-    <ClInclude Include="engine\camera\CameraForGPU.h" />
-    <ClInclude Include="application\UI\GameClearUI.h" />
-    <ClInclude Include="engine\scene\SceneTransition.h" />
-    <ClInclude Include="application\UI\BulletCounterUI.h" />
-    <ClInclude Include="application\Entity\GameCharacterBehavior.h" />
-    <ClInclude Include="application\Entity\WeaponUnit.h" />
-    <ClInclude Include="application\Entity\Behavior\BaseBehavior.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorRunning.h" />
-    <ClInclude Include="application\Provider\BaseInputProvider.h" />
-    <ClInclude Include="application\Provider\PlayerInputProvider.h" />
-    <ClInclude Include="application\Provider\EnemyInputProvider.h" />
-    <ClInclude Include="application\Entity\GameCharacterInfo.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorFloating.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorJumping.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorManager.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorStepBoost.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorDead.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorChargeShootStun.h" />
-    <ClInclude Include="engine\Collision\SurfaceType.h" />
-    <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h" />
-    <ClInclude Include="engine\io\InputMapper.h" />
-    <ClInclude Include="engine\io\IInputDevice.h" />
-    <ClInclude Include="application\Entity\Enemy\BulletSensor.h" />
-    <ClInclude Include="application\Provider\Enum\CharacterActionInputEnum.h" />
-    <ClInclude Include="application\Provider\PlayerKeyInput.h" />
+    <ClInclude Include="application\Entity\Behavior\BaseBehavior.h">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorChargeShootStun.h">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorDead.h">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorFloating.h">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorJumping.h">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorManager.h">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorRunning.h">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorStepBoost.h">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h">
+      <Filter>application\Entity\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\UI\BulletCounterUI.h">
+      <Filter>application\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="application\UI\EnergyInfoUI.h">
+      <Filter>application\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="application\UI\GameClearUI.h">
+      <Filter>application\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Provider\EnemyInputProvider.h">
+      <Filter>application\Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Provider\PlayerInputProvider.h">
+      <Filter>application\Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Provider\BaseInputProvider.h">
+      <Filter>application\Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Provider\Enum\CharacterActionInputEnum.h">
+      <Filter>application\Provider\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Enemy\BulletSensor.h">
+      <Filter>application\Entity\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\camera\CameraForGPU.h">
+      <Filter>engine\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\PostEffect\DepthBasedOutline.h">
+      <Filter>engine\postEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\io\IInputDevice.h">
+      <Filter>engine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\io\InputMapper.h">
+      <Filter>engine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Weapon\Bullet\MissilePool.h">
+      <Filter>application\Weapon\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\GameCharacterBehavior.h">
+      <Filter>application\Entity\Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\camera\PerView.h">
+      <Filter>engine\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Provider\PlayerKeyInput.h">
+      <Filter>application\Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="application\UI\PlayerReticle.h">
+      <Filter>application\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\physics\Ray.h">
+      <Filter>engine\math\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\GameCharacterInfo.h">
+      <Filter>application\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\scene\SceneTransition.h">
+      <Filter>engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h">
+      <Filter>application\Weapon\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Weapon\VerticalMissileLauncher.h">
+      <Filter>application\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Collision\SurfaceType.h">
+      <Filter>engine\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\WeaponUnit.h">
+      <Filter>application\Entity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -844,7 +962,9 @@
     <None Include="Resources\glTF\walk.fbx">
       <Filter>Resources\gltf</Filter>
     </None>
-    <None Include="Resources\shaders\CameraData.hlsli" />
+    <None Include="Resources\shaders\CameraData.hlsli">
+      <Filter>Resources\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">
@@ -951,6 +1071,21 @@
     </Filter>
     <Filter Include="engine\3d\Primitive">
       <UniqueIdentifier>{16046783-8e5d-405d-bb13-a1fdda80f7bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\Entity\Behavior">
+      <UniqueIdentifier>{81e90ec8-f816-4364-bdcf-36fb80461ae3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\UI">
+      <UniqueIdentifier>{9d9e71a0-054e-452e-8645-32ca3433c7f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\Provider">
+      <UniqueIdentifier>{0b7a339e-ebd4-4aa7-9c76-8125741f0973}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\Provider\Enum">
+      <UniqueIdentifier>{90b56bbe-d809-4329-bacf-10d7d9a1fd08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\math\Physics">
+      <UniqueIdentifier>{b1b3127e-748b-4787-b5ae-0ef9cc36fdba}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

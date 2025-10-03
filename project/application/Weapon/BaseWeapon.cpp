@@ -5,7 +5,7 @@ void BaseWeapon::AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jo
 	parentJointName_ = jointName;
 }
 
-const Vector3& BaseWeapon::GetTragetPos() const {
+const Vector3& BaseWeapon::GetTargetPos() const {
 	// ターゲットの座標を返す
 	return targetPos_;
 }

@@ -67,7 +67,7 @@ void VerticalMissile::Update() {
 		break;
 	case VerticalMissile::VerticalMissilePhase::HOMING:
 
-		targetPos_ = ownerWeapon_->GetTragetPos(); // ターゲット位置を更新
+		targetPos_ = ownerWeapon_->GetTargetPos(); // ターゲット位置を更新
 		direction_ = Vector3Math::Normalize((targetPos_ - transform_.translate)  * (1.0f - homingRate_));
 		velocity_ = direction_ * speed_;
 		transform_.translate += velocity_ * TakeCFrameWork::GetDeltaTime();
@@ -147,7 +147,7 @@ void VerticalMissile::Create(BaseWeapon* ownerWeapon, const float& speed, float 
 	characterType_ = type;
 	speed_ = speed;
 	damage_ = damage;
-	targetPos_ = ownerWeapon_->GetTragetPos();
+	targetPos_ = ownerWeapon_->GetTargetPos();
 	//ターゲットまでの方向を求める
 	direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
 	altitude_ = transform_.translate.y + kMaxAltitude_; // 初期の上昇高度を設定

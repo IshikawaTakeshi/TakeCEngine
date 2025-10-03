@@ -125,10 +125,10 @@ void Object3dCommon::PreDraw() {
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	SetCBufferViewCamera(pso_.get());
-	SetGraphicCBufferViewLghiting(pso_.get());
+	SetCBufferViewLighting(pso_.get());
 }
 
-void Object3dCommon::DisPatch() {
+void Object3dCommon::Dispatch() {
 
 	//PSO設定
 	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetComputePipelineState());
@@ -136,7 +136,7 @@ void Object3dCommon::DisPatch() {
 	dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignature_.Get());
 }
 
-void Object3dCommon::SetGraphicCBufferViewLghiting(PSO* pso) {
+void Object3dCommon::SetCBufferViewLighting(PSO* pso) {
 	//DirectionalLight
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gDirectionalLight"), directionalLightResource_->GetGPUVirtualAddress());
 	//pointLightのCBuffer

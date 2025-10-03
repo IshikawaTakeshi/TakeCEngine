@@ -166,10 +166,10 @@ void Object3d::Draw() {
 	}
 }
 
-void Object3d::DisPatch() {
+void Object3d::Dispatch() {
 	if (model_ != nullptr) {
 		if (model_->GetSkeleton()) {
-			model_->DisPatch(object3dCommon_->GetPSO());
+			model_->Dispatch(object3dCommon_->GetPSO());
 		}
 	}
 }

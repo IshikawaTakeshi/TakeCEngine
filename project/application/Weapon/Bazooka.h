@@ -16,10 +16,7 @@ public:
 	void Draw() override;
 	// 武器の攻撃
 	void Attack() override;
-	// 武器のチャージ処理（バズーカはチャージ攻撃なし）
-	
-	// 武器タイプの取得
-	const WeaponType& GetWeaponType() const override { return weaponType_; }
+
 	// 所有者の設定
 	void SetOwnerObject(GameCharacter* owner) override;
 	// 攻撃対象の座標を設定
