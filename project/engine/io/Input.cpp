@@ -156,7 +156,7 @@ StickState Input::GetRightStickState(int stickNo) const {
 	return gamePad_->GetRightStickState(stickNo);
 }
 
-float Input::GetStickValue(int stickNo, GamepadValueType valueType) const {
+Vector2 Input::GetStickValue(int stickNo, GamepadValueType valueType) const {
 	return gamePad_->GetStickValue(stickNo, valueType);
 }
 

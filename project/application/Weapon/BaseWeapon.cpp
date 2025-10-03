@@ -44,6 +44,11 @@ uint32_t BaseWeapon::GetRemainingBulletCount() const {
 	return remainingBulletCount_;
 }
 
+float BaseWeapon::GetEffectiveRange() const {
+	// 有効射程距離を返す
+	return effectiveRange_;
+}
+
 bool BaseWeapon::IsCharging() const {
 	// チャージ中かどうかを返す
 	return isCharging_;
@@ -81,4 +86,9 @@ void BaseWeapon::SetBulletCount(int32_t count) {
 void BaseWeapon::SetRemainingBulletCount(int32_t count) {
 	// 残弾数を設定
 	remainingBulletCount_ = count;
+}
+
+void BaseWeapon::SetEffectiveRange(float range) {
+	// 有効射程距離を設定
+	effectiveRange_ = range;
 }

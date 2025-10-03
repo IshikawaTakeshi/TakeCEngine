@@ -14,6 +14,11 @@ struct Vector2 final {
 	Vector2 operator*(float scalar) const;
 	Vector2 operator/(float scalar) const;
 	bool operator==(const Vector2& rhs) const;
+	bool operator<=(const Vector2& rhs) const;
+	bool operator>=(const Vector2& rhs) const;
+	bool operator!=(const Vector2& rhs) const;
+	bool operator<(const Vector2& rhs) const;
+	bool operator>(const Vector2& rhs) const;
 
 	Vector2 operator+=(const Vector2& rhs);
 	Vector2 operator-=(const Vector2& rhs);

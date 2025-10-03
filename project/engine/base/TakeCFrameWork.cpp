@@ -157,7 +157,7 @@ void TakeCFrameWork::Update() {
 #ifdef _DEBUG
 	imguiManager_->Begin();
 #endif
-
+	directXCommon_->DrawFPS();
 	//入力の更新
 	input_->Update();
 

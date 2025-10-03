@@ -11,6 +11,7 @@ enum CharacterType {
 	ENEMY_BULLET,
 	ENEMY_MISSILE,
 	LEVEL_OBJECT,
+	BULLET_SENSOR,
 };
 
 class GameCharacter {

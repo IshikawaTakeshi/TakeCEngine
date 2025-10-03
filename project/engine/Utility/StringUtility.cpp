@@ -3,6 +3,7 @@
 #include <debugapi.h>
 #include <iostream>
 
+
 std::wstring StringUtility::ConvertString(const std::string& str) {
 	if (str.empty()) {
 		return std::wstring();

@@ -1,13 +1,12 @@
 #pragma once
 #include "InputData.h"
+#include "engine/math/Vector2.h"
 
 ///=====================================================/// 
 ///	コントローラー
 ///=====================================================///
 class GamePad {
 public:
-
-
 
 	GamePad() =default;
 	~GamePad();
@@ -34,7 +33,7 @@ public:
     // スティックの状況を取得
     StickState GetLeftStickState(int stickNo) const;
     StickState GetRightStickState(int stickNo) const;
-    float GetStickValue(int stickNo, GamepadValueType valueType) const;
+    Vector2 GetStickValue(int stickNo, GamepadValueType valueType) const;
 
 private:
 

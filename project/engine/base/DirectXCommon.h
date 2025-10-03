@@ -81,6 +81,8 @@ public:
 
 	ComPtr<ID3D12Resource> CreateTextureResourceUAV(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format);
 
+	void DrawFPS();
+
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	///			Getter
@@ -119,6 +121,8 @@ public:
 	const D3D12_VIEWPORT& GetViewport() { return viewport_; }
 
 	const D3D12_RECT& GetScissorRect() { return scissorRect_; }
+
+	float GetCurrentFPS() const { return currentFPS_; }
 
 private:
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -174,8 +178,8 @@ private:
 
 	//記録時間(FPS固定)
 	std::chrono::steady_clock::time_point reference_;
-	int frameCount = 0;
-	float currentFPS = 0.0f;
+	int frameCount_ = 0;
+	float currentFPS_ = 0.0f;
 
 
 private:

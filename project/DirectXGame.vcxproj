@@ -46,12 +46,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\generated\obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)/externals/DirectXTex;$(SolutionDir)/externals/imgui;$(SolutionDir)/externals/nlohmann</IncludePath>
+    <IncludePath>$(SolutionDir)/externals/DirectXTex;$(SolutionDir)/externals/imgui;$(SolutionDir)/externals/nlohmann;$(SolutionDir)/externals/magic_enum</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\generated\obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)/externals/DirectXTex;$(SolutionDir)/externals/imgui;$(SolutionDir)/externals/nlohmann</IncludePath>
+    <IncludePath>$(SolutionDir)/externals/DirectXTex;$(SolutionDir)/externals/imgui;$(SolutionDir)/externals/nlohmann;$(SolutionDir)/externals/magic_enum</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -108,6 +108,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp" />
     <ClCompile Include="application\Weapon\Bazooka.cpp" />
     <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
     <ClCompile Include="application\UI\BulletCounterUI.cpp" />
@@ -120,6 +121,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Entity\Behavior\BehaviorStepBoost.cpp" />
     <ClCompile Include="application\Entity\Behavior\BehaviorDead.cpp" />
     <ClCompile Include="application\Entity\Behavior\BehaviorChargeShootStun.cpp" />
+    <ClCompile Include="application\Entity\Enemy\BulletSensor.cpp" />
     <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
     <ClCompile Include="engine\3d\Primitive\PrimitiveType.cpp" />
@@ -183,6 +185,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\PostEffect\LuminanceBasedOutline.cpp" />
     <ClCompile Include="engine\Entity\LevelObject\LevelObject.cpp" />
     <ClCompile Include="application\UI\GameClearUI.cpp" />
+    <ClCompile Include="engine\io\InputMapper.cpp" />
+    <ClCompile Include="engine\io\IInputDevice.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
     <ClCompile Include="engine\math\MatrixMath.cpp" />
@@ -224,11 +228,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp" />
     <ClCompile Include="application\UI\PlayerReticle.cpp" />
     <ClCompile Include="application\Provider\PlayerInputProvider.cpp" />
+    <ClCompile Include="application\Provider\PlayerKeyInput.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h" />
     <ClInclude Include="application\Entity\GameCharacterInfo.h" />
     <ClInclude Include="application\Entity\GameCharacterBehavior.h" />
     <ClInclude Include="application\Entity\WeaponUnit.h" />
+    <ClInclude Include="application\Provider\Enum\CharacterActionInputEnum.h" />
     <ClInclude Include="application\Weapon\Bazooka.h" />
     <ClInclude Include="application\Weapon\WeaponType.h" />
     <ClInclude Include="application\UI\EnergyInfoUI.h" />
@@ -242,6 +249,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Behavior\BehaviorStepBoost.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorDead.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorChargeShootStun.h" />
+    <ClInclude Include="application\Entity\Enemy\BulletSensor.h" />
     <ClInclude Include="engine\camera\CameraForGPU.h" />
     <ClInclude Include="engine\camera\PerView.h" />
     <ClInclude Include="engine\Collision\SurfaceType.h" />
@@ -333,6 +341,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\UI\GameClearUI.h" />
     <ClInclude Include="application\Provider\BaseInputProvider.h" />
     <ClInclude Include="application\Provider\PlayerInputProvider.h" />
+    <ClInclude Include="engine\io\InputMapper.h" />
+    <ClInclude Include="engine\io\IInputDevice.h" />
+    <ClInclude Include="application\Provider\PlayerKeyInput.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

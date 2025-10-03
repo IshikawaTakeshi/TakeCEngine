@@ -36,10 +36,9 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 	phase_ = VerticalMissilePhase::ASCENDING;
 
-	speed_ = 140.0f; // 初期速度を設定
 	lifeTime_ = 5.0f; // ライフタイムを設定
 	bulletradius_ = 1.5f; // 弾の半径を設定
-	homingRate_ = 0.4f;
+	homingRate_ = 0.5f;
 }
 
 //====================================================================================
@@ -69,8 +68,8 @@ void VerticalMissile::Update() {
 	case VerticalMissile::VerticalMissilePhase::HOMING:
 
 		targetPos_ = ownerWeapon_->GetTragetPos(); // ターゲット位置を更新
-		direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
-		velocity_ = direction_ * (1.0f - homingRate_) * speed_;
+		direction_ = Vector3Math::Normalize((targetPos_ - transform_.translate)  * (1.0f - homingRate_));
+		velocity_ = direction_ * speed_;
 		transform_.translate += velocity_ * TakeCFrameWork::GetDeltaTime();
 
 		break;

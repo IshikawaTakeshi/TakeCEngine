@@ -1,7 +1,7 @@
 #pragma once
 #include "application/Provider/BaseInputProvider.h"
-#include "application/Entity/Enemy/Enemy.h"
 
+class Enemy;
 class EnemyInputProvider : public baseInputProvider {
 
 public:
