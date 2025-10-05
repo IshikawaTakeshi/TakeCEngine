@@ -1,5 +1,7 @@
 #pragma once
 #include "engine/3d/Object3d.h"
+#include "application/Entity/GameCharacterBehavior.h"
+#include "engine/3d/Particle/ParticleEmitter.h"
 #include <string>
 
 class GameCharacter;
@@ -33,17 +35,22 @@ public:
 	//エフェクトのアクティブ設定
 	void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
 	void SetIsActive(bool isActive) { isActive_ = isActive; }
+	void SetBehavior(GameCharacterBehavior behavior) { behavior_ = behavior; }
 
 private:
 
 	//ブーストエフェクトオブジェクト
 	std::unique_ptr<Object3d> boostEffectObject_ = nullptr;
+	//パーティクルエミッター
+	std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
 	//武器の親Joint名
 	std::string parentJointName_;
 	// 親スケルトン
 	Skeleton* parentSkeleton_ = nullptr; 
 	//エフェクトの所有者
 	GameCharacter* ownerObject_ = nullptr;
+
+	GameCharacterBehavior behavior_;
 
 	//アクティブ時の可変スケール
 	Vector3 activeScale_ = { 1.0f,1.0f,1.0f };

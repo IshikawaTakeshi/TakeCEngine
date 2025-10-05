@@ -8,10 +8,18 @@
 #include <wrl.h>
 #include <optional>
 
+
 class Camera {
 public:
+
+	enum class GameCameraState {
+		FOLLOW,
+		LOOKAT,
+	};
+
 	Camera() = default;
 	~Camera();
+
 	void Initialize(ID3D12Device* device);
 	void Update();
 
@@ -21,10 +29,7 @@ public:
 
 private:
 
-	enum class GameCameraState {
-		FOLLOW,
-		LOOKAT,
-	};
+	
 
 	void UpdateDebugCamera();
 	void UpdateGameCamera();

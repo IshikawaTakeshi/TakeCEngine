@@ -102,7 +102,7 @@ private:
 	GameCharacterContext characterInfo_;
 	// フレーム時間
 	float deltaTime_ = 0.0f; 
-	float gravity_ = 9.8f;         // 重力の強さ
+
 	//補足対象の座標
 	Vector3 focusTargetPos_ = { 0.0f,100.0f,0.0f };
 
@@ -110,6 +110,9 @@ private:
 	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
 	float chargeShootTimer_ = 0.0f; //停止撃ちまでの残り猶予時間
 
+	bool isUseWeapon_ = false; //武器を使用しているかどうか
+	float weaponUseTimer_ = 0.0f; //武器を使用している時間
+	float weaponUseDuration_ = 1.0f; //武器を使用してからのクールダウン時間
 
 private:
 

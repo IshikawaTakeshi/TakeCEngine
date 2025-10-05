@@ -4,6 +4,7 @@ void to_json(nlohmann::json& j, const ParticleAttributes& attributes){
 
 	j["scale"] = attributes.scale;
 	j["color"] = attributes.color;
+	//j["direction"] = attributes.direction;
 
 	j["positionRange"] = json{ {"min", attributes.positionRange.min},{"max", attributes.positionRange.max }};
 	j["scaleRange"] = json{ {"min", attributes.scaleRange.min},{"max", attributes.scaleRange.max } };
@@ -16,7 +17,8 @@ void to_json(nlohmann::json& j, const ParticleAttributes& attributes){
 	j["editColor"] = attributes.editColor;
 	j["isBillboard"] = attributes.isBillboard;
 	j["scaleSetting_"] = attributes.scaleSetting_;
-	j["isTraslate_"] = attributes.isTraslate_;
+	j["isTraslate_"] = attributes.isTranslate_;
+	//j["isDiretional_"] = attributes.isDiretional_;
 	j["enableFollowEmitter_"] = attributes.enableFollowEmitter_;
 }
 
@@ -41,6 +43,7 @@ void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
 
 	j.at("scale").get_to(attributes.scale);
 	j.at("color").get_to(attributes.color);
+	//j.at("direction").get_to(attributes.direction);
 	j.at("scaleRange").get_to(attributes.scaleRange);
 	j.at("rotateRange").get_to(attributes.rotateRange);
 	j.at("positionRange").get_to(attributes.positionRange);
@@ -51,7 +54,8 @@ void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
 	j.at("emitCount").get_to(attributes.emitCount);
 	j.at("isBillboard").get_to(attributes.isBillboard);
 	j.at("editColor").get_to(attributes.editColor);
-	j.at("isTraslate_").get_to(attributes.isTraslate_);
+	j.at("isTraslate_").get_to(attributes.isTranslate_);
+	//j.at("isDiretional_").get_to(attributes.isDiretional_);
 	j.at("scaleSetting_").get_to(attributes.scaleSetting_);
 	j.at("enableFollowEmitter_").get_to(attributes.enableFollowEmitter_);
 }

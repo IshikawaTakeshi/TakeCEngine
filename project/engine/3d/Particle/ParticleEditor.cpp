@@ -166,7 +166,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 
 	//Translate,Velocity
 	ImGui::DragFloat2("Position Range", &attributes.positionRange.min, 0.01f, -10.0f, 10.0f);
-	if (attributes.isTraslate_) {
+	if (attributes.isTranslate_) {
 		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -10.0f, 10.0f);
 	}
 	
@@ -183,7 +183,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::Checkbox("Is Billboard", &attributes.isBillboard);
 	//Follow Emitter
 	ImGui::Checkbox("Enable Follow Emitter", &attributes.enableFollowEmitter_);
-	ImGui::Checkbox("TranslateUpdate", &attributes.isTraslate_);
+	ImGui::Checkbox("TranslateUpdate", &attributes.isTranslate_);
 
 	//設定の適用
 	if (ImGui::Button("Apply Attributes")) {

@@ -172,7 +172,7 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 	//particle1つの位置更新
 	ParticleAttributes& attributes = particlePreset_.attribute;
 
-	if (attributes.isTraslate_) {
+	if (attributes.isTranslate_) {
 		if (attributes.enableFollowEmitter_) {
 			//エミッターに追従する場合
 			(*particleIterator).transforms_.translate = emitterPos_;

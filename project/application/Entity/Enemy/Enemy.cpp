@@ -134,8 +134,6 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 
 void Enemy::Update() {
 
-	
-
 	//stepBoostのインターバルの更新
 	if (characterInfo_.stepBoostInfo.intervalTimer > 0.0f) {
 		characterInfo_.stepBoostInfo.intervalTimer -= deltaTime_;
@@ -162,6 +160,17 @@ void Enemy::Update() {
 	//Behaviorの更新
 	behaviorManager_->Update(characterInfo_);
 
+	// 地面に着地したらRUNNINGに戻る
+	if (characterInfo_.onGround == true &&
+		(behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::JUMP ||
+			behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING)) {
+		behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+	} else if (characterInfo_.onGround == false &&
+		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING) {
+		//空中にいる場合はFLOATINGに切り替え
+		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
+	}
+
 	//攻撃処理
 	if (characterInfo_.isAlive == true) {
 		UpdateAttack();
@@ -182,7 +191,8 @@ void Enemy::Update() {
 		behaviorManager_->RequestBehavior(Behavior::DEAD);
 	}
 
-	characterInfo_.onGround = false; // 毎フレームリセット
+	// 着地判定の毎フレームリセット
+	characterInfo_.onGround = false; 
 
 	bulletSensor_->SetTranslate(characterInfo_.transform.translate);
 	bulletSensor_->Update();
@@ -438,16 +448,6 @@ void Enemy::WeaponAttack(int weaponIndex) {
 //===================================================================================
 // 攻撃開始判定
 //===================================================================================
-
-//bool Enemy::ShouldStartAttack(int weaponIndex) {
-//	// 例: ターゲットとの距離が射程範囲でクールタイムが終わってたら攻撃
-//	auto* weapon = weapons_[weaponIndex].get();
-//	
-//	float range = orbitRadius_ * 3.5f;
-//	bool cooldownReady = weapon->GetIsAvailable();
-//	// 例: 一定確率で攻撃開始
-//	return (distance <= range) && cooldownReady && (rand() % 100 < attackProbability_); // 10%の確率
-//}
 
 bool Enemy::ShouldReleaseAttack(int weaponIndex) {
 	auto* weapon = weapons_[weaponIndex].get();

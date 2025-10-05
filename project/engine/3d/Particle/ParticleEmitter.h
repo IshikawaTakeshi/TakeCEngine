@@ -63,6 +63,7 @@ public:
 	const EulerTransform& GetTransforms() const { return transforms_; }
 	const uint32_t GetParticleCount() const { return particleCount_; }
 	const float GetFrequency() const { return frequency_; }
+	const Vector3& GetEmitDirection() const { return emitDirection_; }
 
 public:
 
@@ -76,6 +77,7 @@ public:
 	void SetIsEmit(bool isEmit) { isEmit_ = isEmit; }
 	void SetFrequency(float frequency) { frequency_ = frequency; }
 	void SetParticleCount(uint32_t count) { particleCount_ = count; }
+	void SetEmitDirection(const Vector3& direction) { emitDirection_ = direction; }
 
 private:
 	//Particleの総数
@@ -105,6 +107,7 @@ private:
 	uint32_t particleCount_; //発生するParticleの数
 	float frequency_;        //発生頻度
 	float frequencyTime_;    //経過時間
+	Vector3 emitDirection_; //発生方向
 	std::string emitterName_; //emitterの名前
 	std::string particleName_; //発生させるParticleの名前
 

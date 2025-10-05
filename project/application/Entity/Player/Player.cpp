@@ -197,6 +197,7 @@ void Player::Update() {
 
 	//エネルギーの更新
 	UpdateEnergy();
+	RequestActiveBoostEffect();
 
 	//移動方向の取得
 	characterInfo_.moveDirection = inputProvider_->GetMoveDirection();
@@ -224,8 +225,23 @@ void Player::Update() {
 		characterInfo_.isAlive = false;
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::DEAD);
 	}
+	// 着地判定の毎フレームリセット
+	characterInfo_.onGround = false; 
 
-	characterInfo_.onGround = false; // 毎フレームリセット
+	//モデルの回転処理
+	if (isUseWeapon_) {
+		//武器使用中はカメラの向きに合わせる
+		Quaternion targetRotate = camera_->GetRotate();
+		characterInfo_.transform.rotate = Easing::Slerp(characterInfo_.transform.rotate, targetRotate, 0.05f);
+		characterInfo_.transform.rotate = QuaternionMath::Normalize(characterInfo_.transform.rotate);
+	} else {
+		//移動方向に合わせて回転
+		float targetAngle = atan2(characterInfo_.moveDirection.x, characterInfo_.moveDirection.z);
+		Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
+		characterInfo_.transform.rotate = Easing::Slerp(characterInfo_.transform.rotate, targetRotate, 0.05f);
+		characterInfo_.transform.rotate = QuaternionMath::Normalize(characterInfo_.transform.rotate);
+	}
+	
 
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(characterInfo_.transform.rotate);
@@ -234,25 +250,31 @@ void Player::Update() {
 	camera_->SetFollowTargetRot(eulerRotate);
 	camera_->SetFocusTargetPos(focusTargetPos_);
 
+	//オブジェクトの更新
 	object3d_->SetTranslate(characterInfo_.transform.translate);
 	object3d_->SetRotate(eulerRotate);
 	object3d_->SetScale(characterInfo_.transform.scale);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
+	//背部エミッターの更新
 	std::optional<Vector3> backpackPosition = object3d_->GetModel()->GetSkeleton()->GetJointPosition("leg", object3d_->GetWorldMatrix());
 	backEmitter_->SetTranslate(backpackPosition.value());
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
 	backEmitter_->Update();
 
+	//武器の更新
 	for (const auto& weapon : weapons_) {
 		if (weapon) {
 			weapon->SetTarget(focusTargetPos_);
 			weapon->Update();
 		}
 	}
+
+	//ブーストエフェクトの更新
 	for (const auto& boostEffect : boostEffects_) {
 		boostEffect->Update();
+		boostEffect->SetBehavior(behaviorManager_->GetCurrentBehaviorType());
 	}
 }
 
@@ -413,12 +435,24 @@ void Player::UpdateAttack() {
 			}
 		}
 	}
+
+	if(isUseWeapon_ == true) {
+		//武器を使用した場合は一定時間経過後にリセット
+		weaponUseTimer_ += deltaTime_;
+		if (weaponUseTimer_ >= weaponUseDuration_) {
+			isUseWeapon_ = false;
+			weaponUseTimer_ = 0.0f;
+		}
+	}
 }
 
 void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
 
+	
 	auto* weapon = weapons_[weaponIndex].get();
 	if (Input::GetInstance()->PushButton(0, buttonType)) {
+		//武器を選択したことを記録
+		isUseWeapon_ = true;
 		//チャージ攻撃可能な場合
 		if (weapon->IsChargeAttack()) {
 
@@ -522,11 +556,46 @@ void Player::RequestActiveBoostEffect() {
 
 	//ステップブーストの方向とスティックの向きによってアクティブにするエフェクトを変更
 	Vector3 moveDir = characterInfo_.moveDirection;
-	if (moveDir.Length() > 0.1f) {
-		moveDir = Vector3Math::Normalize(moveDir);
-		float forwardDot = Vector3Math::Dot(moveDir, Vector3(0.0f, 0.0f, 1.0f)); // 前方向との内積
-		float rightDot = Vector3Math::Dot(moveDir, Vector3(1.0f, 0.0f, 0.0f)); // 右方向との内積
-		
-		float stickAngle = atan2(rightDot, forwardDot) * (180.0f / 3.14159f); // スティックの角度を計算
+	if (moveDir.Length() <= 0.1f) return;
+
+	// --- プレイヤーの向きをQuaternionから取得 ---
+	Vector3 localForward = Vector3(0.0f, 0.0f, 1.0f);
+	Vector3 playerForward = QuaternionMath::RotateVector(localForward, characterInfo_.transform.rotate);
+	playerForward.y = 0.0f; // 水平方向だけ見る
+	playerForward = Vector3Math::Normalize(playerForward);
+
+	// --- スティック方向との角度差を求める ---
+	float dot = Vector3Math::Dot(playerForward, moveDir);
+	float crossY = playerForward.x * moveDir.z - playerForward.z * moveDir.x;
+	float angle = atan2(crossY, dot) * (180.0f / std::numbers::pi_v<float>); // -180°～180°
+
+	// --- エフェクト制御 ---
+	if (angle >= -45.0f && angle < 45.0f) {
+		// 前方向
+		boostEffects_[LEFT_BACK]->SetIsActive(true);
+		boostEffects_[RIGHT_BACK]->SetIsActive(true);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+	}
+	else if (angle >= 45.0f && angle < 135.0f) {
+		// 右方向
+		boostEffects_[LEFT_BACK]->SetIsActive(false);
+		boostEffects_[RIGHT_BACK]->SetIsActive(true);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
+	}
+	else if (angle <= -45.0f && angle > -135.0f) {
+		// 左方向
+		boostEffects_[LEFT_BACK]->SetIsActive(true);
+		boostEffects_[RIGHT_BACK]->SetIsActive(false);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+	}
+	else {
+		// 後方向
+		boostEffects_[LEFT_BACK]->SetIsActive(true);
+		boostEffects_[RIGHT_BACK]->SetIsActive(true);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
 	}
 }
