@@ -33,6 +33,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	postEffectManager_->InitializeEffect("Dissolve",    L"PostEffect/Dissolve.CS.hlsl");
 	postEffectManager_->InitializeEffect("RadialBluer", L"PostEffect/RadialBlur.CS.hlsl");
 	postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
+	postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
 	//postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
 	postEffectManager_->InitializeEffect("DepthBasedOutline",     L"PostEffect/DepthBasedOutline.CS.hlsl");
 
@@ -41,7 +42,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//最初のシーンを設定
 #ifdef _DEBUG
 
-	SceneManager::GetInstance()->ChangeScene("GAMEPLAY",0.0f);
+	SceneManager::GetInstance()->ChangeScene("TITLE",0.0f);
 #else
 	SceneManager::GetInstance()->ChangeScene("TITLE", 0.0f);
 #endif // _DEBUG
@@ -121,6 +122,7 @@ void MyGame::LoadModel() {
 	ModelManager::GetInstance()->LoadModel("gltf", "Rifle.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "Bazooka.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "VerticalMissileLauncher.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "boostEffectCone.gltf");
 	//obj
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");

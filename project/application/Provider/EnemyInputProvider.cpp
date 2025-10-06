@@ -22,6 +22,10 @@ Vector3 EnemyInputProvider::GetMoveDirection() const {
 	return Vector3Math::Normalize(orbitPos - enemy_->GetTransform().translate);
 }
 
+bool EnemyInputProvider::IsJumpRequested() const {
+	return aiBrainSystem_->GetBestAction() == Action::FLOATING;
+}
+
 void EnemyInputProvider::RequestAttack() {
 }
 

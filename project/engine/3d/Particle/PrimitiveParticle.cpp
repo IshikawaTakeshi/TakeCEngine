@@ -51,6 +51,8 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(1.0f, 1.0f, filePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(1.0f, filePath);
+	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(1.0f, 5.0f, 16, filePath);
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");
 	}
@@ -157,6 +159,9 @@ void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
 		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetSphereData(primitiveHandle_)->material_;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetConeData(primitiveHandle_)->material_;
+		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");
 	}
@@ -167,7 +172,7 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 	//particle1つの位置更新
 	ParticleAttributes& attributes = particlePreset_.attribute;
 
-	if (attributes.isTraslate_) {
+	if (attributes.isTranslate_) {
 		if (attributes.enableFollowEmitter_) {
 			//エミッターに追従する場合
 			(*particleIterator).transforms_.translate = emitterPos_;

@@ -48,7 +48,7 @@ void GamePlayScene::Initialize() {
 #pragma endregion
 
 	//levelObjectの初期化
-	sceneManager_->LoadLevelData("levelData_gameScene_2");
+	sceneManager_->LoadLevelData("levelData_gameScene_3");
 	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
 
 	for (auto& object : levelObjects_) {
@@ -289,26 +289,17 @@ void GamePlayScene::Draw() {
 	for (auto& object : levelObjects_) {
 		object.second->Draw();
 	}
+	Object3dCommon::GetInstance()->PreDrawAddBlend();
+	player_->DrawBoostEffect();
 
 #pragma endregion
 
 	//当たり判定の描画前処理
-	//player_->DrawCollider();
 	enemy_->DrawCollider();
-	//bulletManager_->DrawCollider();
-	//for (auto& object : levelObjects_) {
-	//	object.second->DrawCollider();
-	//}
-
-	/*TakeCFrameWork::GetWireFrame()->DrawGridBox({
-		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);*/
 	TakeCFrameWork::GetWireFrame()->Draw();
 
 	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
-	//GPUパーティクルの描画
-	//ParticleCommon::GetInstance()->PreDrawForGPUParticle();
-	//gpuParticle_->Draw();
 
 #pragma region スプライト描画
 	//スプライトの描画前処理

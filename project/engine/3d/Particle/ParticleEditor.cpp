@@ -1,7 +1,8 @@
 #include "ParticleEditor.h"
-#include "base/ImGuiManager.h"
-#include "base/TakeCFrameWork.h"
-#include "base/TextureManager.h"
+#include "engine/base/ImGuiManager.h"
+#include "engine/base/TakeCFrameWork.h"
+#include "engine/base/TextureManager.h"
+#include "engine/Utility/StringUtility.h"
 #include <cassert>
 
 //======================================================================
@@ -165,7 +166,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 
 	//Translate,Velocity
 	ImGui::DragFloat2("Position Range", &attributes.positionRange.min, 0.01f, -10.0f, 10.0f);
-	if (attributes.isTraslate_) {
+	if (attributes.isTranslate_) {
 		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -10.0f, 10.0f);
 	}
 	
@@ -182,7 +183,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::Checkbox("Is Billboard", &attributes.isBillboard);
 	//Follow Emitter
 	ImGui::Checkbox("Enable Follow Emitter", &attributes.enableFollowEmitter_);
-	ImGui::Checkbox("TranslateUpdate", &attributes.isTraslate_);
+	ImGui::Checkbox("TranslateUpdate", &attributes.isTranslate_);
 
 	//設定の適用
 	if (ImGui::Button("Apply Attributes")) {
@@ -227,22 +228,33 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 
 #pragma region primitive type setting
 	ImGui::SeparatorText("Primitive Type");
-	static const char* PrimitiveTypeNames[] = {
-		"Ring", "Plane", "Sphere"
-	};
 
-	int currentType = static_cast<int>(currentPreset_.primitiveType);
-	if (ImGui::Combo("Primitive Type", &currentType, PrimitiveTypeNames, IM_ARRAYSIZE(PrimitiveTypeNames))) {
-		currentPreset_.primitiveType = static_cast<PrimitiveType>(currentType);
-		// プリミティブタイプが変更された場合、グループのプリミティブを更新
-		particleManager_->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType,currentPreset_.primitiveParameters);
+	// magic_enumを使用してPrimitiveTypeの全情報を取得
+	constexpr auto primitiveTypes = magic_enum::enum_entries<PrimitiveType>();
+
+	// 現在の選択インデックスを取得
+	int currentTypeIndex = static_cast<int>(magic_enum::enum_index(currentPreset_.primitiveType).value_or(0));
+
+	if (ImGui::BeginCombo("Primitive Type", magic_enum::enum_name(currentPreset_.primitiveType).data())) {
+		for (size_t i = 0; i < primitiveTypes.size(); ++i) {
+			const bool isSelected = (currentTypeIndex == static_cast<int>(i));
+			if (ImGui::Selectable(primitiveTypes[i].second.data(), isSelected)) {
+				currentPreset_.primitiveType = primitiveTypes[i].first;
+				// プリミティブタイプが変更された場合、グループのプリミティブを更新
+				particleManager_->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParameters);
+			}
+			if (isSelected) {
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
 	}
+
 	ImGui::DragFloat3("Primitive Parameters", &currentPreset_.primitiveParameters.x, 0.01f, 0.0f, 10.0f);
-	if(ImGui::Button("Update Primitive")) {
+	if (ImGui::Button("Update Primitive")) {
 		// プリミティブの更新
-		particleManager_->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType,currentPreset_.primitiveParameters);
+		particleManager_->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParameters);
 	}
-
 
 #pragma endregion
 

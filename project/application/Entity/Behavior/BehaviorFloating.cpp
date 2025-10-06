@@ -60,7 +60,7 @@ void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 	//}
 	//ジャンプボタンの追加入力でさらに上昇
 	//TODO: Enemyの浮遊の判断をどうするか
-	if( Input::GetInstance()->PushButton(0, GamepadButtonType::RT)) {
+	if(inputProvider_->IsJumpRequested()) {
 
 		if( characterInfo.overHeatInfo.isOverheated) {
 			// オーバーヒート中はジャンプできない

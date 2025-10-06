@@ -66,6 +66,7 @@ public:
 		MULTIPLY,
 		SCREEN,
 		SPRITE,
+		BOOSTEFFECT,
 	};
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +90,7 @@ public:
 	void CreateBlendStateForObject3d();
 	void CreateBlendStateForParticle();
 	void CreateBlendStateForSprite();
+	void CreateBlendStateForBoostEffect();
 
 	void InitializeBlendState(BlendState blendState);
 
