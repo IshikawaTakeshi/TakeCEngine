@@ -77,6 +77,7 @@
       <Filter>Resources\shader</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\PostEffect\DepthBasedOutline.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\BloomEffect.CS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -391,6 +392,7 @@
     <ClCompile Include="application\Entity\Enemy\BulletSensor.cpp" />
     <ClCompile Include="application\Provider\PlayerKeyInput.cpp" />
     <ClCompile Include="application\Effect\BoostEffect.cpp" />
+    <ClCompile Include="engine\PostEffect\BloomEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -762,6 +764,7 @@
     <ClInclude Include="application\Provider\PlayerKeyInput.h" />
     <ClInclude Include="application\Effect\BoostEffect.h" />
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
+    <ClInclude Include="engine\PostEffect\BloomEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

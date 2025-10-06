@@ -3,13 +3,14 @@
 #include "engine/base/ImGuiManager.h"
 #include "Utility/ResourceBarrier.h"
 #include "Utility/Logger.h"
-#include "PostEffect/Dissolve.h"
-#include "PostEffect/Vignette.h"
-#include "PostEffect/GrayScale.h"
+#include "PostEffect/BloomEffect.h"
 #include "PostEffect/BoxFilter.h"
+#include "PostEffect/Dissolve.h"
+#include "PostEffect/GrayScale.h"
 #include "PostEffect/RadialBluer.h"
 #include "PostEffect/LuminanceBasedOutline.h"
 #include "PostEffect/DepthBasedOutline.h"
+#include "PostEffect/Vignette.h"
 
 //====================================================================
 //	初期化
@@ -125,8 +126,10 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 		postEffect = std::make_unique<LuminanceBasedOutline>();
 	}else if(name == "DepthBasedOutline") {
 		postEffect = std::make_unique<DepthBasedOutline>();
+	} else if(name == "BloomEffect") {
+		postEffect = std::make_unique<BloomEffect>();
 	} else {
-		Logger::Log("PostEffectManager::InitializeEffect() : PostEffect is not found.");
+		Logger::Log("PostEffectManager::InitializeEffect() : Unknown PostEffect name.");
 		return;
 	} 
 
