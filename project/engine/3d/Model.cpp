@@ -158,7 +158,7 @@ void Model::DrawSkyBox() {
 // スキンメッシュの計算処理
 //=============================================================================
 
-void Model::DisPatch(PSO* skinningPso) {
+void Model::Dispatch(PSO* skinningPso) {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 

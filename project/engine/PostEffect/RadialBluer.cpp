@@ -39,7 +39,7 @@ void RadialBluer::UpdateImGui() {
 #endif // _DEBUG
 }
 
-void RadialBluer::DisPatch() {
+void RadialBluer::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance()->Transition(

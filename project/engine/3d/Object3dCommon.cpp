@@ -147,7 +147,7 @@ void Object3dCommon::PreDrawAddBlend() {
 	SetGraphicCBufferViewLighting(addBlendPso_.get());
 }
 
-void Object3dCommon::DisPatch() {
+void Object3dCommon::Dispatch() {
 
 	//PSO設定
 	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetComputePipelineState());

@@ -44,7 +44,7 @@ void DepthBasedOutline::UpdateImGui() {
 
 }
 
-void DepthBasedOutline::DisPatch() {
+void DepthBasedOutline::Dispatch() {
 
 	if(!outlineInfoData_->isActive) {
 		return; // アウトラインが無効な場合は処理をスキップ

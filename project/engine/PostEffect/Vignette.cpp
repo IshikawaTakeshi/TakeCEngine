@@ -35,7 +35,7 @@ void Vignette::UpdateImGui() {
 #endif // _DEBUG
 }
 
-void Vignette::DisPatch() {
+void Vignette::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance()->Transition(

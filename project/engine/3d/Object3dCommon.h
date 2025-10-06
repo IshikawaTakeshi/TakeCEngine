@@ -37,7 +37,6 @@ public:
 	void PreDrawAddBlend();
 
 	void DisPatch();
-
 //================================================================================================
 // 	   getter
 //================================================================================================
@@ -65,7 +64,6 @@ public:
 	void SetPointLightRadius(float radius) { pointLightData_->radius_ = radius; }
 
 	void SetSLightIntensity(float intensity) { spotLightData_->intensity_ = intensity; }
-
 
 private:
 

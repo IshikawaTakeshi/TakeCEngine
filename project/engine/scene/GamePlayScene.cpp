@@ -274,9 +274,9 @@ void GamePlayScene::Draw() {
 #pragma region Object3d描画
 
 	//Object3dの描画前処理
-	Object3dCommon::GetInstance()->DisPatch();
-	player_->GetObject3d()->DisPatch();
-	enemy_->GetObject3d()->DisPatch();
+	Object3dCommon::GetInstance()->Dispatch();
+	player_->GetObject3d()->Dispatch();
+	enemy_->GetObject3d()->Dispatch();
 
 	//for (auto& object : levelObjects_) {
 	//	object->DisPatch();

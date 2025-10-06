@@ -42,7 +42,7 @@ void Dissolve::UpdateImGui() {
 
 }
 
-void Dissolve::DisPatch() {
+void Dissolve::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance()->Transition(

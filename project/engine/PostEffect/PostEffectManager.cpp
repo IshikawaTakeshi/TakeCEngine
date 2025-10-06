@@ -62,7 +62,7 @@ void PostEffectManager::AllDispatch() {
 		renderTextureResource_.Get());              //currentResource
 
 	for (auto& postEffect : postEffects_) {
-		postEffect.postEffect->DisPatch();
+		postEffect.postEffect->Dispatch();
 	}
 
 	//NON_PIXCEL_SHADER_RESOURCE >> RENDER_TARGET
@@ -88,7 +88,7 @@ void PostEffectManager::ApplyEffect(const std::string& name) {
 	// 読み込み済みかどうか検索
 	for (const auto& postEffect : postEffects_) {
 		if (postEffect.name == name) {
-			postEffect.postEffect->DisPatch();
+			postEffect.postEffect->Dispatch();
 			return;
 		}
 	}

@@ -17,7 +17,7 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void DisPatch() override;
+	void Dispatch() override;
 
 private:
 

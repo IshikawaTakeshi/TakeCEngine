@@ -41,7 +41,7 @@ public:
 
 	void DrawSkyBox();
 
-	void DisPatch(PSO* skinningPso);
+	void Dispatch(PSO* skinningPso);
 
 	//void DisPatchForASkinningModel();
 

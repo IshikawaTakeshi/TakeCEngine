@@ -17,10 +17,9 @@ public:
 	virtual void Charge(float deltaTime) override;
 	// チャージ攻撃実行
 	virtual void ChargeAttack() override;
-
 	// 武器タイプの取得
-	const WeaponType& GetWeaponType() const override { return weaponType_; }
 	void SetOwnerObject(GameCharacter* owner) override;
+	// ターゲットの設定
 	void SetTarget(const Vector3& targetPos) override { targetPos_ = targetPos; }
 
 	//チャージ攻撃可能か
