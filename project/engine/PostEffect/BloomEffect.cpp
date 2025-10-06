@@ -17,9 +17,9 @@ void BloomEffect::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, co
 	effectInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&effectInfoData_));
 
 	effectInfoData_->isActive = true;
-	effectInfoData_->threshold = 0.8f;
-	effectInfoData_->radius = 5.0f;
-	effectInfoData_->sigma = 2.0f;
+	effectInfoData_->threshold = 0.75f;
+	effectInfoData_->strength = 0.15f;
+	effectInfoData_->sigma = 0.05f;
 }
 
 void BloomEffect::UpdateImGui() {
@@ -28,8 +28,8 @@ void BloomEffect::UpdateImGui() {
 	ImGui::Text("BloomEffect");
 	ImGui::SameLine();
 	ImGui::SliderFloat("threshold", &effectInfoData_->threshold, 0.0f, 1.0f);
-	ImGui::SliderFloat("radius", &effectInfoData_->radius, 0.0f, 20.0f);
-	ImGui::SliderFloat("sigma", &effectInfoData_->sigma, 0.1f, 10.0f);
+	ImGui::SliderFloat("strength", &effectInfoData_->strength, 0.0f, 0.5f);
+	ImGui::SliderFloat("sigma", &effectInfoData_->sigma, 0.0f, 2.0f);
 	ImGui::Checkbox("isActive", &effectInfoData_->isActive);
 #endif // _DEBUG
 

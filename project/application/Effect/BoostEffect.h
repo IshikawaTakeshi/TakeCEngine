@@ -36,11 +36,13 @@ public:
 	void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
 	void SetIsActive(bool isActive) { isActive_ = isActive; }
 	void SetBehavior(GameCharacterBehavior behavior) { behavior_ = behavior; }
+	void SetRotate(const Vector3& rotate);
 
 private:
 
 	//ブーストエフェクトオブジェクト
 	std::unique_ptr<Object3d> boostEffectObject_ = nullptr;
+	std::unique_ptr<Object3d> boostEffectObject2_ = nullptr;
 	//パーティクルエミッター
 	std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
 	//武器の親Joint名

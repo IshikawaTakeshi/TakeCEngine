@@ -34,6 +34,8 @@ public:
 	/// </summary>
 	void PreDraw();
 
+	void PreDrawAddBlend();
+
 	void DisPatch();
 
 //================================================================================================
@@ -64,9 +66,6 @@ public:
 
 	void SetSLightIntensity(float intensity) { spotLightData_->intensity_ = intensity; }
 
-	void SetGraphicCBufferViewLghiting(PSO* pso);
-
-	void SetCBufferViewCamera(PSO* pso);
 
 private:
 
@@ -74,6 +73,10 @@ private:
 	~Object3dCommon() = default;
 	Object3dCommon(const Object3dCommon&) = delete;
 	Object3dCommon& operator=(const Object3dCommon&) = delete;
+
+	void SetGraphicCBufferViewLighting(PSO* pso);
+
+	void SetCBufferViewCamera(PSO* pso);
 
 private:
 
@@ -98,9 +101,12 @@ private:
 
 	//PSO
 	std::unique_ptr<PSO> pso_ = nullptr;
+	//
+	std::unique_ptr<PSO> addBlendPso_ = nullptr;
 	
 	//RootSignature
 	ComPtr<ID3D12RootSignature> graphicRootSignature_ = nullptr;
 	ComPtr<ID3D12RootSignature> computeRootSignature_ = nullptr;
+	ComPtr<ID3D12RootSignature> addBlendRootSignature_ = nullptr;
 };
 

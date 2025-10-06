@@ -28,6 +28,7 @@ public:
 	void OnCollisionAction(GameCharacter* other) override;
 
 	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager);
+	void DrawBoostEffect();
 
 public:
 

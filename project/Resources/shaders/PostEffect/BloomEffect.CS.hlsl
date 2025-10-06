@@ -4,8 +4,9 @@
 //================================================================
 
 struct BloomEffectInfo {
+	bool isActive;
 	float threshold;
-	float radius;
+	float strength;
 	float sigma;
 };
 
@@ -36,13 +37,21 @@ void main( uint3 DTid : SV_DispatchThreadID ){
 	if(pixelPos.x >= width || pixelPos.y >= height) {
 		return;
 	}
+	//無効化されている場合は元の色をそのまま出力
+	if(gBloomEffectInfo.isActive == false) {
+		gOutputTexture[pixelPos] = originalColor;
+		return;
+	}
+	
+	// 半径をsigmaから算出
+	int radius = (int)ceil(3.0f * gBloomEffectInfo.sigma);
 	
 	//サンプリング
 	float3 bloomAccum = 0.0f;
 	float weightSum = 0.0f;
 	
-	for(int x = -int(gBloomEffectInfo.radius); x <= int(gBloomEffectInfo.radius); x++) {
-		for(int y = -int(gBloomEffectInfo.radius); y <= int(gBloomEffectInfo.radius); y++) {
+	for ( int y = -radius; y <= radius; ++y ) {
+		for ( int x = -radius; x <= radius; ++x ) {
 			
 			int2 samplePos = pixelPos + int2(x, y);
 			
@@ -56,20 +65,21 @@ void main( uint3 DTid : SV_DispatchThreadID ){
 			
 			//閾値以上の色のみを対象にする
 			float luminance = dot(sampleColor.rgb, float3(0.2126f, 0.7152f, 0.0722f));
-			if(luminance < gBloomEffectInfo.threshold) {
-				continue;
-			}
+			float lum = luminance;
+			float bright = max(lum - gBloomEffectInfo.threshold, 0.0); // 超過分
+			// ソフト閾値（k = 0.1f 等）滑らかステップ
+			bright = smoothstep(gBloomEffectInfo.threshold, gBloomEffectInfo.threshold + 0.1f, lum);
 			
 			//ガウシアン重み
 			float weight = Gaussian(length(float2(x, y)), gBloomEffectInfo.sigma);
 			
-			bloomAccum += sampleColor.rgb * weight;
-			weightSum += weight;
+			bloomAccum += sampleColor.rgb * bright * weight;
+			weightSum += bright * weight;
 		}
 	}
 	
 	//合成処理
 	float3 bloomColor = (weightSum > 0.0f) ? bloomAccum / weightSum : 0.0f;
-	float3 finalColor = originalColor.rgb + bloomColor;
+	float3 finalColor = originalColor.rgb + bloomColor * gBloomEffectInfo.strength;
 	gOutputTexture[pixelPos] = float4(finalColor, originalColor.a);
 }

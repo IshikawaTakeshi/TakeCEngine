@@ -22,7 +22,6 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	//DirectXCommon取得
 	dxCommon_ = directXCommon;
 	//PSO生成
-
 	pso_ = std::make_unique<PSO>();
 	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
 	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Object3d.PS.hlsl");
@@ -31,8 +30,17 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	pso_->CompileComputeShader(dxCommon_->GetDXC(), L"Skinning.CS.hlsl");
 	pso_->CreateComputePSO(dxCommon_->GetDevice());
 	pso_->SetComputePipelineName("Object3dPSO:Conpute");
+
+	addBlendPso_ = std::make_unique<PSO>();
+	addBlendPso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
+	addBlendPso_->CompilePixelShader(dxCommon_->GetDXC(), L"Object3d.PS.hlsl");
+	addBlendPso_->CreateGraphicPSO(dxCommon_->GetDevice(),
+		D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL, PSO::BlendState::ADD);
+	pso_->SetGraphicPipelineName("Object3dPSO:graphic:AddBlend");
+	//RootSignatureの取得
 	graphicRootSignature_ = pso_->GetGraphicRootSignature();
 	computeRootSignature_ = pso_->GetComputeRootSignature();
+	addBlendRootSignature_ = addBlendPso_->GetGraphicRootSignature();
 
 #pragma region "Lighting"
 	//平行光源用Resourceの作成
@@ -115,7 +123,6 @@ void Object3dCommon::Finalize() {
 
 void Object3dCommon::PreDraw() {
 
-
 	//PSO設定
 	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetGraphicPipelineState());
 	// ルートシグネチャ設定
@@ -125,7 +132,19 @@ void Object3dCommon::PreDraw() {
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	SetCBufferViewCamera(pso_.get());
-	SetGraphicCBufferViewLghiting(pso_.get());
+	SetGraphicCBufferViewLighting(pso_.get());
+}
+
+void Object3dCommon::PreDrawAddBlend() {
+
+	//PSO設定
+	dxCommon_->GetCommandList()->SetPipelineState(addBlendPso_->GetGraphicPipelineState());
+	// ルートシグネチャ設定
+	dxCommon_->GetCommandList()->SetGraphicsRootSignature(addBlendRootSignature_.Get());
+	//プリミティブトポロジー設定
+	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	SetCBufferViewCamera(addBlendPso_.get());
+	SetGraphicCBufferViewLighting(addBlendPso_.get());
 }
 
 void Object3dCommon::DisPatch() {
@@ -136,7 +155,7 @@ void Object3dCommon::DisPatch() {
 	dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignature_.Get());
 }
 
-void Object3dCommon::SetGraphicCBufferViewLghiting(PSO* pso) {
+void Object3dCommon::SetGraphicCBufferViewLighting(PSO* pso) {
 	//DirectionalLight
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gDirectionalLight"), directionalLightResource_->GetGPUVirtualAddress());
 	//pointLightのCBuffer

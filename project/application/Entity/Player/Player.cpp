@@ -75,8 +75,8 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	boostEffects_[RIGHT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Right.Tip");
 	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftShoulder");
 	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightShoulder");
-	boostEffects_[LEFT_BACK]->GetEffectObject()->SetRotate({ 0.7f,0.0f,1.3f });
-	boostEffects_[RIGHT_BACK]->GetEffectObject()->SetRotate({ 0.7f,0.0f,-1.3f }); //エフェクトの向きを調整
+	boostEffects_[LEFT_BACK]->SetRotate({ 0.7f,0.0f,1.3f });
+	boostEffects_[RIGHT_BACK]->SetRotate({ 0.7f,0.0f,-1.3f }); //エフェクトの向きを調整
 
 	//入力プロバイダーの初期化
 	inputProvider_ = std::make_unique<PlayerInputProvider>(this);
@@ -148,6 +148,8 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bul
 	weapons_[L_BACK]->SetUnitPosition(L_BACK); // 4つ目の武器のユニットポジションを設定
 	weapons_[L_BACK]->SetRotate({ -1.0f, 0.0f, 2.0f }); // 背中の武器の回転を初期化
 }
+
+
 
 BaseWeapon* Player::GetWeapon(int index) const {
 	return weapons_[index].get();
@@ -241,11 +243,13 @@ void Player::Update() {
 		characterInfo_.transform.rotate = Easing::Slerp(characterInfo_.transform.rotate, targetRotate, 0.05f);
 		characterInfo_.transform.rotate = QuaternionMath::Normalize(characterInfo_.transform.rotate);
 	} else {
-		//移動方向に合わせて回転
-		float targetAngle = atan2(characterInfo_.moveDirection.x, characterInfo_.moveDirection.z);
-		Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
-		characterInfo_.transform.rotate = Easing::Slerp(characterInfo_.transform.rotate, targetRotate, 0.05f);
-		characterInfo_.transform.rotate = QuaternionMath::Normalize(characterInfo_.transform.rotate);
+		if (characterInfo_.moveDirection.x != 0.0f || characterInfo_.moveDirection.z != 0.0f) {
+			//移動方向に合わせて回転
+			float targetAngle = atan2(characterInfo_.moveDirection.x, characterInfo_.moveDirection.z);
+			Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
+			characterInfo_.transform.rotate = Easing::Slerp(characterInfo_.transform.rotate, targetRotate, 0.05f);
+			characterInfo_.transform.rotate = QuaternionMath::Normalize(characterInfo_.transform.rotate);
+		}
 	}
 	
 
@@ -325,8 +329,12 @@ void Player::Draw() {
 			weapon->Draw();
 		}
 	}
-	for (const auto& boostEffect : boostEffects_) {
-		boostEffect->Draw();
+
+}
+
+void Player::DrawBoostEffect() {
+	for (const auto& effect : boostEffects_) {
+		effect->Draw();
 	}
 }
 

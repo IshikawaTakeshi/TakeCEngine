@@ -13,7 +13,7 @@ public:
 	static const int32_t kScreenHeight = 576;
 // クライアント領域のサイズ（デバッグ用）
 	static const int32_t kWindowWidth =  1920;
-	static const int32_t kWindowHeight = 1080;
+	static const int32_t kWindowHeight = 1000;
 #else
 	static const int32_t kScreenWidth = 1920;
 	static const int32_t kScreenHeight = 1080;

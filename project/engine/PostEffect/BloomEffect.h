@@ -15,7 +15,7 @@ private:
 	struct BloomEffectInfo {
 		bool isActive = false; // エフェクトの有効無効
 		float threshold = 0.8f; // 輝度の閾値
-		float radius = 5.0f; // ブラーの半径
+		float strength = 1.0f; // 輝度の強さ
 		float sigma = 2.0f; // ブラー強度
 	};
 
