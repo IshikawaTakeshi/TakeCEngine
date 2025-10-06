@@ -35,7 +35,7 @@ void BloomEffect::UpdateImGui() {
 
 }
 
-void BloomEffect::DisPatch() {
+void BloomEffect::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance()->Transition(
