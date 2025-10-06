@@ -9,6 +9,7 @@ public:
     ~PlayerInputProvider() override = default;
     // IMoveDirectionProviderの実装
     Vector3 GetMoveDirection() const override;
+	bool IsJumpRequested() const override;
 	void RequestAttack() override;
 	void RequestChargeAttack() override;
 

@@ -38,7 +38,7 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 
 	lifeTime_ = 5.0f; // ライフタイムを設定
 	bulletradius_ = 1.5f; // 弾の半径を設定
-	homingRate_ = 0.5f;
+	homingRate_ = 0.01f; // ホーミングの度合いを設定(値が大きいほど急激に曲がる)
 }
 
 //====================================================================================
@@ -47,9 +47,16 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 
 void VerticalMissile::Update() {
 
+	//パーティクルエミッターの更新
+	particleEmitter_[0]->SetTranslate(transform_.translate);
+	particleEmitter_[0]->Update();
+
+	particleEmitter_[1]->SetTranslate(transform_.translate);
+	particleEmitter_[1]->Update();
+
 	//ライフタイムの減少
 	lifeTime_ -= deltaTime_;
-	if (lifeTime_ <= 0.0f || transform_.translate.y < 0.0f) {
+	if (lifeTime_ <= 0.0f) {
 		isActive_ = false;
 	}
 
@@ -83,12 +90,7 @@ void VerticalMissile::Update() {
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
-	//パーティクルエミッターの更新
-	particleEmitter_[0]->SetTranslate(transform_.translate);
-	particleEmitter_[0]->Update();
-
-	particleEmitter_[1]->SetTranslate(transform_.translate);
-	particleEmitter_[1]->Update();
+	
 	//MEMO: パーティクルの毎フレーム発生
 	particleEmitter_[1]->Emit();
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("MissileSmoke")->SetEmitterPosition(transform_.translate);
@@ -119,9 +121,10 @@ void VerticalMissile::DrawCollider() {
 void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 
 	//他のキャラクターと衝突した場合の処理
-	if (other->GetCharacterType() == CharacterType::PLAYER ||
-		other->GetCharacterType() == CharacterType::ENEMY) {
-
+	if(characterType_ == CharacterType::PLAYER_MISSILE && other->GetCharacterType() == CharacterType::ENEMY ||
+	   characterType_ == CharacterType::ENEMY_MISSILE && other->GetCharacterType() == CharacterType::PLAYER) {
+		//パーティクル射出
+		particleEmitter_[0]->Emit();
 		isActive_ = false; //弾を無効化
 	}
 

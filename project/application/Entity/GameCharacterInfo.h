@@ -48,6 +48,7 @@ struct GameCharacterContext {
 	QuaternionTransform transform; // 位置、回転、スケール
 	Vector3 velocity;              // 速度
 	Vector3 moveDirection;        //移動方向
+	Vector3 focusTargetPos;       // フォーカス対象の座標
 	float deceleration = 1.1f;    //減速率
 	float moveSpeed = 200.0f;     //移動速度
 	float kMaxMoveSpeed = 120.0f; //移動速度の最大値

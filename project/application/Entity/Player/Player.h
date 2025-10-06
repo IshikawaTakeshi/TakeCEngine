@@ -56,7 +56,7 @@ public:
 	//最大体力の取得
 	const float GetMaxHealth() const { return characterInfo_.maxHealth; }
 	//フォーカス対象の座標を取得
-	const Vector3& GetFocusTargetPos() const { return focusTargetPos_; }
+	const Vector3& GetFocusTargetPos() const { return characterInfo_.focusTargetPos; }
 
 	//エネルギーの取得
 	float GetEnergy() const { return characterInfo_.energyInfo.energy; }
@@ -76,7 +76,7 @@ public:
 	//プレイヤーの体力を設定
 	void SetHealth(float health) { characterInfo_.health = health; }
 	//フォーカス対象の座標を設定
-	void SetFocusTargetPos(const Vector3& targetPos) { focusTargetPos_ = targetPos; }
+	void SetFocusTargetPos(const Vector3& targetPos) { characterInfo_.focusTargetPos = targetPos; }
 
 private:
 
@@ -102,10 +102,6 @@ private:
 	GameCharacterContext characterInfo_;
 	// フレーム時間
 	float deltaTime_ = 0.0f; 
-
-	//補足対象の座標
-	Vector3 focusTargetPos_ = { 0.0f,100.0f,0.0f };
-
 	
 	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
 	float chargeShootTimer_ = 0.0f; //停止撃ちまでの残り猶予時間

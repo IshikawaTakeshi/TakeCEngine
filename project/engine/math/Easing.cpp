@@ -30,28 +30,56 @@ Quaternion Easing::Slerp(Quaternion q0, Quaternion q1, float t) {
     }
 
     // 通常の SLERP の計算
-    float theta = std::acos(dot);       // なす角
-    float sinTheta = std::sin(theta);   // sin(θ)
+    float theta = std::acosf(dot);       // なす角
+    float sinTheta = std::sinf(theta);   // sin(θ)
 
-    float scale0 = std::sin((1.0f - t) * theta) / sinTheta;
-    float scale1 = std::sin(t * theta) / sinTheta;
+    float scale0 = std::sinf((1.0f - t) * theta) / sinTheta;
+    float scale1 = std::sinf(t * theta) / sinTheta;
 
     return scale0 * q0 + scale1 * q1;
 }
 
-float Easing::EaseOut(float x) {
+float Easing::EaseOutSine(float x) {
 	return sinf((x * std::numbers::pi_v<float>) / 2.0f);
 }
 
 
-float Easing::EaseIn(float x) {
+float Easing::EaseInSine(float x) {
 	return 1.0f - cosf((x * std::numbers::pi_v<float>) / 2.0f);
 }
 
-float Easing::EaseInOut(float x) {
-	return -(cosf(std::numbers::pi_v<float> *x) - 1.0f) / 2.0f;
+float Easing::EaseInOutSine(float x) {
+	return 0.5f * (1.0f - cosf(std::numbers::pi_v<float> * x));
+}
+
+float Easing::EaseInCubic(float x) {
+	return x * x * x;
 }
 
 float Easing::EaseOutCubic(float x) {
 	return 1.0f - powf(1.0f - x, 3.0f);
+}
+
+float Easing::EaseInExpo(float x) {
+	return x == 0.0f ? 0.0f : powf(2.0f, 10.0f * (x - 1.0f));
+}
+
+float Easing::EaseOutExpo(float x) {
+	return x == 1.0f ? 1.0f : 1.0f - powf(2.0f, -10.0f * x);
+}
+
+float Easing::UrgentRise(float x) {
+	return  std::pow(x, 4.0f);
+}
+
+float Easing::GentleRise(float x) {
+	return std::sqrt(x);
+}
+
+float Easing::EaseInQuad(float x) {
+	return x * x;
+}
+
+float Easing::EaseOutQuad(float x) {
+	return x * (2.0f - x);
 }

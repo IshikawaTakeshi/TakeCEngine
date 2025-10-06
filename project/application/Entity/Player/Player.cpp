@@ -61,7 +61,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 	//背部エミッターの初期化
 	backEmitter_ = std::make_unique<ParticleEmitter>();
-	backEmitter_->Initialize("PalyerBackpack", object3d_->GetTransform(), 10, 0.01f);
+	backEmitter_->Initialize("PlayerBackpack", object3d_->GetTransform(), 10, 0.01f);
 	backEmitter_->SetParticleName("WalkSmoke2");
 	//backEmitter_->SetIsEmit(true);
 
@@ -225,6 +225,12 @@ void Player::Update() {
 		characterInfo_.isAlive = false;
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::DEAD);
 	}
+
+	if (characterInfo_.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING || behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
+		backEmitter_->SetIsEmit(true);
+	} else {
+		backEmitter_->SetIsEmit(false);
+	}
 	// 着地判定の毎フレームリセット
 	characterInfo_.onGround = false; 
 
@@ -248,7 +254,7 @@ void Player::Update() {
 	//カメラの設定
 	camera_->SetFollowTargetPos(*object3d_->GetModel()->GetSkeleton()->GetJointPosition("neck", object3d_->GetWorldMatrix()));
 	camera_->SetFollowTargetRot(eulerRotate);
-	camera_->SetFocusTargetPos(focusTargetPos_);
+	camera_->SetFocusTargetPos(characterInfo_.focusTargetPos);
 
 	//オブジェクトの更新
 	object3d_->SetTranslate(characterInfo_.transform.translate);
@@ -266,7 +272,7 @@ void Player::Update() {
 	//武器の更新
 	for (const auto& weapon : weapons_) {
 		if (weapon) {
-			weapon->SetTarget(focusTargetPos_);
+			weapon->SetTarget(characterInfo_.focusTargetPos);
 			weapon->Update();
 		}
 	}

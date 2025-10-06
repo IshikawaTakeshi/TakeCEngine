@@ -41,7 +41,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//最初のシーンを設定
 #ifdef _DEBUG
 
-	SceneManager::GetInstance()->ChangeScene("GAMEPLAY",0.0f);
+	SceneManager::GetInstance()->ChangeScene("TITLE",0.0f);
 #else
 	SceneManager::GetInstance()->ChangeScene("TITLE", 0.0f);
 #endif // _DEBUG

@@ -55,7 +55,7 @@ private:
 	float CalculateAttackScore(BaseWeapon* weapon);
 	float CalculateStepBoostScore();
 	float CalculateJumpScore();
-
+	float CalculateFloatingScore();
 	
 };
 
