@@ -471,6 +471,7 @@
     <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp">
       <Filter>application\Weapon</Filter>
     </ClCompile>
+    <ClCompile Include="WaterSurface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -942,6 +943,7 @@
     <ClInclude Include="application\Entity\WeaponUnit.h">
       <Filter>application\Entity</Filter>
     </ClInclude>
+    <ClInclude Include="WaterSurface.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

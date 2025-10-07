@@ -97,14 +97,17 @@ void PrimitiveParticle::Update() {
 			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTime_;
 			particleData_[numInstance_].currentTime = (*particleIterator).currentTime_;
 
-			// データをGPUに転送  
-			perViewData_->viewProjection = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
-			perViewData_->billboardMatrix = CameraManager::GetInstance()->GetActiveCamera()->GetRotationMatrix();
+			
 
 			++numInstance_; // 次のインスタンスに進める  
 		}
 		++particleIterator; // 次のイテレータに進める  
 	}
+
+	// データをGPUに転送  
+	perViewData_->isBillboard = particlePreset_.attribute.isBillboard;
+	perViewData_->viewProjection = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+	perViewData_->billboardMatrix = CameraManager::GetInstance()->GetActiveCamera()->GetRotationMatrix();
 }
 
 void PrimitiveParticle::UpdateImGui() {
@@ -176,6 +179,7 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 		if (attributes.enableFollowEmitter) {
 			//エミッターに追従する場合
 			(*particleIterator).transforms_.translate = emitterPos_;
+			//(*particleIterator).transforms_.rotate = emitter
 		} else {
 			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
 
