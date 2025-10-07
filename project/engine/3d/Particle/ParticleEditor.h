@@ -57,6 +57,7 @@ private:
 
 	//プレビュー設定
 	EulerTransform emitterTransform_;
+	Vector3 emitterDirection_;
 	uint32_t emitCount_ = 10;
 	float emitFrequency_ = 0.1f;
 	bool autoEmit_ = false;

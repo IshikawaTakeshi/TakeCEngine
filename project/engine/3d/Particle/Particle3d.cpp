@@ -167,18 +167,18 @@ void Particle3d::Draw() {
 // パーティクルの生成
 //=============================================================================
 
-Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
+Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate,const Vector3& direction) {
 
-	return BaseParticleGroup::MakeNewParticle(randomEngine, translate);
+	return BaseParticleGroup::MakeNewParticle(randomEngine,direction, translate);
 }
 
 //=============================================================================
 // パーティクルの発生
 //=============================================================================
 
-std::list<Particle> Particle3d::Emit(const Vector3& emitterPos, uint32_t particleCount) {
+std::list<Particle> Particle3d::Emit(const Vector3& emitterPos,const Vector3& direction, uint32_t particleCount) {
 
-	return BaseParticleGroup::Emit(emitterPos, particleCount);
+	return BaseParticleGroup::Emit(emitterPos,direction, particleCount);
 }
 
 //=============================================================================
@@ -201,8 +201,8 @@ void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) 
 	//particle1つの位置更新
 	ParticleAttributes& attributes = particlePreset_.attribute;
 
-	if (attributes.isTranslate_) {
-		if (attributes.enableFollowEmitter_) {
+	if (attributes.isTranslate) {
+		if (attributes.enableFollowEmitter) {
 			//エミッターに追従する場合
 			(*particleIterator).transforms_.translate = emitterPos_;
 		} else {
@@ -211,7 +211,7 @@ void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) 
 		}
 	}
 
-	if (attributes.scaleSetting_) {
+	if (attributes.scaleSetting) {
 		//スケールの更新
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
 			attributes.scaleRange.min,

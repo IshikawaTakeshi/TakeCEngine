@@ -40,12 +40,12 @@ public:
 	/// <summary>
 	/// パーティクルの生成
 	/// </summary>
-	Particle MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate);
+	Particle MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate,const Vector3& directoin);
 
 	/// <summary>
 	/// パーティクルの発生
 	/// </summary>
-	std::list<Particle> Emit(const Vector3& emitterPos, uint32_t particleCount);
+	std::list<Particle> Emit(const Vector3& emitterPos,const Vector3& direction, uint32_t particleCount);
 
 	//bool IsCollision(const AABB& aabb, const Vector3& point);
 

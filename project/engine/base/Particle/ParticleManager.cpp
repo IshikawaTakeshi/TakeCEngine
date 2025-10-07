@@ -131,7 +131,7 @@ void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const 
 // パーティクルの発生
 //================================================================================================
 
-void ParticleManager::Emit(const std::string& name, const Vector3& emitPosition, uint32_t count) {
+void ParticleManager::Emit(const std::string& name, const Vector3& emitPosition,const Vector3& direction, uint32_t count) {
 
 	//存在しない場合は処理しない
 	if (!particleGroups_.contains(name)) {
@@ -139,7 +139,7 @@ void ParticleManager::Emit(const std::string& name, const Vector3& emitPosition,
 	}
 
 	//particleGroupsに発生させたパーティクルを登録させる
-	particleGroups_.at(name)->SpliceParticles(particleGroups_.at(name)->Emit(emitPosition, count));
+	particleGroups_.at(name)->SpliceParticles(particleGroups_.at(name)->Emit(emitPosition,direction, count));
 }
 
 uint32_t ParticleManager::EmitterAllocate() {

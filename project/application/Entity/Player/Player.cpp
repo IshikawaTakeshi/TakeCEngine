@@ -251,7 +251,6 @@ void Player::Update() {
 			characterInfo_.transform.rotate = QuaternionMath::Normalize(characterInfo_.transform.rotate);
 		}
 	}
-	
 
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::toEuler(characterInfo_.transform.rotate);

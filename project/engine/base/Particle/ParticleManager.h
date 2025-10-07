@@ -42,7 +42,7 @@ public:
 
 	void CreateParticleGroup(ParticleCommon* particleCommon, const std::string& presetJson);
 
-	void Emit(const std::string& name, const Vector3& emitPosition, uint32_t count);
+	void Emit(const std::string& name, const Vector3& emitPosition,const Vector3& direction, uint32_t count);
 
 	uint32_t EmitterAllocate();
 

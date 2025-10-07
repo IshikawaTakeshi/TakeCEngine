@@ -27,7 +27,7 @@ enum class ScaleSetting {
 struct ParticleAttributes {
 	Vector3 scale = { 1.0f,1.0f,1.0f };
 	Vector3 color = { 1.0f,1.0f,1.0f };
-	Vector3 direction = { 0.0f,1.0f,0.0f };
+	Vector3 direction = { 0.0f,0.0f,0.0f };
 	AttributeRange scaleRange = { 0.1f,3.0f };
 	AttributeRange rotateRange = { -std::numbers::pi_v<float>, std::numbers::pi_v<float> };
 	AttributeRange positionRange = {-1.0f, 1.0f};
@@ -38,10 +38,10 @@ struct ParticleAttributes {
 	uint32_t emitCount; //1回あたりのパーティクル発生数
 	bool isBillboard = false; //Billboardかどうか
 	bool editColor = false; //色を編集するかどうか
-	bool isTranslate_ = false; //位置を更新するかどうか
-	bool isDiretional_ = false; //方向に沿って移動するかどうか
-	uint32_t scaleSetting_;    //スケールの更新処理方法
-	bool enableFollowEmitter_ = false; //エミッターに追従するかどうか
+	bool isTranslate = false; //位置を更新するかどうか
+	bool isDirectional = false; //方向に沿って移動するかどうか
+	uint32_t scaleSetting;    //スケールの更新処理方法
+	bool enableFollowEmitter = false; //エミッターに追従するかどうか
 };
 
 struct ParticlePreset {

@@ -1,47 +1,53 @@
 {
-    "attributes": {
-        "color": {
-            "x": 1.0,
-            "y": 0.05882352963089943,
-            "z": 0.03921568766236305
-        },
-        "colorRange": {
-            "max": 1.0,
-            "min": 0.0
-        },
-        "editColor": true,
-        "emitCount": 0,
-        "enableFollowEmitter_": false,
-        "frequency": 0.0,
-        "isBillboard": true,
-        "isTraslate_": true,
-        "lifetimeRange": {
-            "max": 3.0,
-            "min": 1.0
-        },
-        "positionRange": {
-            "max": 0.6100000143051147,
-            "min": -0.4399999976158142
-        },
-        "rotateRange": {
-            "max": 2.421999931335449,
-            "min": -0.6620000004768372
-        },
-        "scale": {
-            "x": 0.09000000357627869,
-            "y": 0.09000000357627869,
-            "z": 0.019999999552965164
-        },
-        "scaleRange": {
-            "max": 7.050000190734863,
-            "min": 0.05000000074505806
-        },
-        "scaleSetting_": 0,
-        "velocityRange": {
-            "max": 5.659999847412109,
-            "min": -4.03000020980835
-        }
+  "attributes": {
+    "color": {
+      "x": 1.0,
+      "y": 0.05882352963089943,
+      "z": 0.03921568766236305
     },
+    "direction": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "colorRange": {
+      "max": 1.0,
+      "min": 0.0
+    },
+    "editColor": true,
+    "emitCount": 0,
+    "enableFollowEmitter": false,
+    "frequency": 0.0,
+    "isBillboard": true,
+    "isTraslate": true,
+    "isDirectional": false,
+    "lifetimeRange": {
+      "max": 3.0,
+      "min": 1.0
+    },
+    "positionRange": {
+      "max": 0.6100000143051147,
+      "min": -0.4399999976158142
+    },
+    "rotateRange": {
+      "max": 2.421999931335449,
+      "min": -0.6620000004768372
+    },
+    "scale": {
+      "x": 0.09000000357627869,
+      "y": 0.09000000357627869,
+      "z": 0.019999999552965164
+    },
+    "scaleRange": {
+      "max": 7.050000190734863,
+      "min": 0.05000000074505806
+    },
+    "scaleSetting": 0,
+    "velocityRange": {
+      "max": 5.659999847412109,
+      "min": -4.03000020980835
+    }
+  },
     "name": "DefaultGroup",
     "primitiveParameters": {
         "x": 1.0,

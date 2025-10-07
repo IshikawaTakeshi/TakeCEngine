@@ -21,7 +21,7 @@ void BoostEffect::Initialize(GameCharacter* owner) {
 	//エミッター初期化
 	particleEmitter_ = std::make_unique<ParticleEmitter>();
 	particleEmitter_->Initialize("BoostEffectEmitter", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} }, 10, 0.1f);
-
+	particleEmitter_->SetParticleName("BoostEffect3");
 	ownerObject_ = owner;
 }
 
@@ -80,6 +80,7 @@ void BoostEffect::Update() {
 		boostEffectObject_->GetModel()->GetMesh()->GetMaterial()->SetAlpha(alpha_);
 		boostEffectObject2_->SetScale(newScale * 1.1f);
 		boostEffectObject2_->GetModel()->GetMesh()->GetMaterial()->SetAlpha(alpha_);
+		
 	}
 		break;
 	case GameCharacterBehavior::JUMP:
@@ -149,6 +150,11 @@ void BoostEffect::Update() {
 
 	boostEffectObject_->Update();
 	boostEffectObject2_->Update();
+	
+	particleEmitter_->SetIsEmit(isActive_);
+	particleEmitter_->SetTranslate(boostEffectObject_->GetCenterPosition());
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BoostEffect2")->SetEmitterPosition(boostEffectObject_->GetCenterPosition());
+	particleEmitter_->Update();
 }
 
 void BoostEffect::UpdateImGui(std::string label) {

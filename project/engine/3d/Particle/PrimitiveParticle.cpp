@@ -132,14 +132,14 @@ void PrimitiveParticle::Draw() {
 		particleCommon_->GetGraphicPSO(), numInstance_, particlePreset_.primitiveType, primitiveHandle_);
 }
 
-Particle PrimitiveParticle::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
+Particle PrimitiveParticle::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate,const Vector3& direction) {
 
-	return BaseParticleGroup::MakeNewParticle(randomEngine, translate);
+	return BaseParticleGroup::MakeNewParticle(randomEngine, translate,direction);
 }
 
-std::list<Particle> PrimitiveParticle::Emit(const Vector3& emitterPos, uint32_t particleCount) {
+std::list<Particle> PrimitiveParticle::Emit(const Vector3& emitterPos,const Vector3& direction, uint32_t particleCount) {
 
-	return BaseParticleGroup::Emit(emitterPos, particleCount);
+	return BaseParticleGroup::Emit(emitterPos,direction, particleCount);
 }
 
 void PrimitiveParticle::SpliceParticles(std::list<Particle> particles) {
@@ -172,17 +172,24 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 	//particle1つの位置更新
 	ParticleAttributes& attributes = particlePreset_.attribute;
 
-	if (attributes.isTranslate_) {
-		if (attributes.enableFollowEmitter_) {
+	if (attributes.isTranslate) {
+		if (attributes.enableFollowEmitter) {
 			//エミッターに追従する場合
 			(*particleIterator).transforms_.translate = emitterPos_;
 		} else {
 			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
 
 		}
+
+		if(attributes.isDirectional){
+			//方向に沿って移動
+			(*particleIterator).velocity_ += attributes.direction * kDeltaTime_;
+			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
+			
+		}
 	}
 
-	if (attributes.scaleSetting_ == static_cast<uint32_t>(ScaleSetting::ScaleUp)) {
+	if (attributes.scaleSetting == static_cast<uint32_t>(ScaleSetting::ScaleUp)) {
 		//スケールの更新(拡大)
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
 			attributes.scaleRange.min,
@@ -198,7 +205,7 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 			attributes.scaleRange.max,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 
-	} else if (attributes.scaleSetting_ == static_cast<uint32_t>(ScaleSetting::ScaleDown)) {
+	} else if (attributes.scaleSetting == static_cast<uint32_t>(ScaleSetting::ScaleDown)) {
 		//スケールの更新(縮小)
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
 			attributes.scaleRange.max,
@@ -213,6 +220,8 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 			attributes.scaleRange.min,
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 	}
+
+	
 
 	(*particleIterator).currentTime_ += kDeltaTime_; //経過時間の更新
 

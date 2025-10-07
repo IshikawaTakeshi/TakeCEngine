@@ -23,7 +23,7 @@ void BaseParticleGroup::Draw() {
 		particleCommon_->GetGraphicPSO()->GetGraphicBindResourceIndex("gParticle"), particleSrvIndex_);
 }
 
-Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
+Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate, const Vector3& directoin) {
 
 	ParticleAttributes attributes = particlePreset_.attribute;
 	//スケールをランダムに設定
@@ -38,14 +38,24 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 	std::uniform_real_distribution<float> distColor(attributes.colorRange.min, attributes.colorRange.max);
 	//寿命をランダムに設定
 	std::uniform_real_distribution<float> distTime(attributes.lifetimeRange.min, attributes.lifetimeRange.max);
+	//射出方向の設定
+	//std::uniform_real_distribution<Vector2> distDirection({ -1.0f, -1.0f }, { 1.0f, 1.0f });
 
 	Particle particle;
-	particle.transforms_.scale = { attributes.scale.x,attributes.scale.y,attributes.scale.z};
-	particle.transforms_.rotate = { 0.0f,0.0f,distRotate(randomEngine)};
+	particle.transforms_.scale = { attributes.scale.x,attributes.scale.y,attributes.scale.z };
+	particle.transforms_.rotate = { 0.0f,0.0f,distRotate(randomEngine) };
 
 	Vector3 randomTranslate = { distPosition(randomEngine),distPosition(randomEngine),distPosition(randomEngine) };
 	particle.transforms_.translate = translate + randomTranslate;
-	particle.velocity_ = { distVelocity(randomEngine),distVelocity(randomEngine),distVelocity(randomEngine) };
+
+	if (attributes.isDirectional) {
+		//方向に沿って移動
+		attributes.direction = directoin;
+		particle.velocity_ = attributes.direction * distVelocity(randomEngine);
+	} else{
+		//ランダムな方向に飛ばす
+		particle.velocity_ = { distVelocity(randomEngine),distVelocity(randomEngine),distVelocity(randomEngine) };
+	}
 	if (attributes.editColor) {
 		particle.color_ = {
 			attributes.color.x,
@@ -69,14 +79,14 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 //=============================================================================
 // パーティクルの発生
 //=============================================================================
-std::list<Particle> BaseParticleGroup::Emit(const Vector3& emitterPos, uint32_t particleCount) {
+std::list<Particle> BaseParticleGroup::Emit(const Vector3& emitterPos,const Vector3& direction, uint32_t particleCount) {
 	//ランダムエンジン
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
 	std::list<Particle> particles;
 	for (uint32_t index = 0; index < particleCount; ++index) {
-		particles.push_back(MakeNewParticle(randomEngine, emitterPos));
+		particles.push_back(MakeNewParticle(randomEngine, emitterPos,direction));
 	}
 	return particles;
 }

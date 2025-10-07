@@ -56,6 +56,8 @@ void ParticleEditor::Update() {
 	previewEmitter_->SetRotate(emitterTransform_.rotate);
 	previewEmitter_->SetScale(emitterTransform_.scale);
 	previewEmitter_->SetIsEmit(autoEmit_);
+	previewEmitter_->SetParticleCount(emitCount_);
+	previewEmitter_->SetFrequency(emitFrequency_);
 	particleManager_->GetParticleGroup(currentGroupName_)->SetEmitterPosition(emitterTransform_.translate);
 	previewEmitter_->Update();
 
@@ -157,7 +159,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::SeparatorText("Particle Attributes");
 
 	//Scale
-	ImGui::SliderInt("Scale Setting", reinterpret_cast<int*>(&attributes.scaleSetting_), 0, 2, "None: %d, Scale Up: %d, Scale Down: %d");
+	ImGui::SliderInt("Scale Setting", reinterpret_cast<int*>(&attributes.scaleSetting), 0, 2, "None: %d, Scale Up: %d, Scale Down: %d");
 	ImGui::DragFloat3("Scale", &attributes.scale.x, 0.01f, 0.0f, 10.0f);
 	ImGui::DragFloat2("Scale Range", &attributes.scaleRange.min, 0.01f, 0.0f, 10.0f);
 
@@ -166,7 +168,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 
 	//Translate,Velocity
 	ImGui::DragFloat2("Position Range", &attributes.positionRange.min, 0.01f, -10.0f, 10.0f);
-	if (attributes.isTranslate_) {
+	if (attributes.isTranslate) {
 		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -10.0f, 10.0f);
 	}
 	
@@ -182,8 +184,10 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	//Billboard
 	ImGui::Checkbox("Is Billboard", &attributes.isBillboard);
 	//Follow Emitter
-	ImGui::Checkbox("Enable Follow Emitter", &attributes.enableFollowEmitter_);
-	ImGui::Checkbox("TranslateUpdate", &attributes.isTranslate_);
+	ImGui::Checkbox("Enable Follow Emitter", &attributes.enableFollowEmitter);
+	ImGui::Checkbox("TranslateUpdate", &attributes.isTranslate);
+	//isDirectional
+	ImGui::Checkbox("Is Directional", &attributes.isDirectional);
 
 	//設定の適用
 	if (ImGui::Button("Apply Attributes")) {
@@ -283,7 +287,8 @@ void ParticleEditor::DrawEmitterControls() {
 
 	//エミッターの発生ボタン
 	if (ImGui::Button("Manual Emit")) {
-		TakeCFrameWork::GetParticleManager()->Emit(currentGroupName_, emitterTransform_.translate, emitCount_);
+		emitterDirection_ = previewEmitter_->GetEmitDirection();
+		TakeCFrameWork::GetParticleManager()->Emit(currentGroupName_, emitterTransform_.translate,emitterDirection_, emitCount_);
 	}
 
 	ImGui::Separator();
