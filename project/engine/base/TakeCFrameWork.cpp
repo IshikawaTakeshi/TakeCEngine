@@ -11,7 +11,7 @@ std::unique_ptr<PrimitiveDrawer> TakeCFrameWork::primitiveDrawer_ = nullptr;
 std::unique_ptr<PostEffectManager> TakeCFrameWork::postEffectManager_= nullptr;
 std::unique_ptr<WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
 std::chrono::steady_clock::time_point TakeCFrameWork::gameTime_ = Clock::now();
-const float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
+float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
 
 //====================================================================
 //			初期化
@@ -147,6 +147,8 @@ void TakeCFrameWork::Finalize() {
 //====================================================================
 
 void TakeCFrameWork::Update() {
+
+	kDeltaTime = 0.016f * timeScale_;
 
 	//メッセージ処理
 	if (winApp_->ProcessMessage()) {

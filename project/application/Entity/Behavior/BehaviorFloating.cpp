@@ -42,9 +42,8 @@ void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 
 	// 空中での降下処理(fallSpeedを重力に加算)
 	velocity_.y -= (gravity_ + characterInfo.fallSpeed) * deltaTime_;
-	characterInfo.transform.translate.x += velocity_.x * deltaTime_;
-	characterInfo.transform.translate.z += velocity_.z * deltaTime_;
-	characterInfo.transform.translate.y += velocity_.y * deltaTime_;
+	characterInfo.transform.translate += velocity_ * deltaTime_;
+	
 
 	// 地面に着地したらRUNNINGに戻る
 	if(characterInfo.onGround == true) {

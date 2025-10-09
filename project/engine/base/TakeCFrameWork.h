@@ -70,7 +70,11 @@ public:
 
 	static float GetGameTime();
 
-	static const float GetDeltaTime() { return kDeltaTime; }
+	static float GetDeltaTime() { return kDeltaTime; }
+
+	float GetTimeScale() const { return timeScale_; }
+
+	void SetTimeScale(float timeScale) { timeScale_ = timeScale; }
 
 protected:
 
@@ -97,7 +101,8 @@ protected:
 	// ゲームの起動時間
 	static std::chrono::steady_clock::time_point gameTime_;
 	// ゲームの経過時間
-	static const float kDeltaTime;
+	static float kDeltaTime;
+	float timeScale_ = 1.0f;
 	//終了フラグ
 	bool isEnd_ = false;
 };
