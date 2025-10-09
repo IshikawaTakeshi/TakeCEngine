@@ -454,7 +454,7 @@
     <ClCompile Include="application\Effect\BoostEffect.cpp">
       <Filter>application\effect</Filter>
     </ClCompile>
-    <ClCompile Include="application\Objects\WaterSurface.cpp">
+    <ClCompile Include="application\Ground\WaterGround.cpp">
       <Filter>application\effect</Filter>
     </ClCompile>
     <ClCompile Include="application\Entity\Behavior\BaseBehavior.cpp">
@@ -976,7 +976,7 @@
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h">
       <Filter>application\effect\Enum</Filter>
     </ClInclude>
-    <ClInclude Include="application\Objects\WaterSurface.h">
+    <ClInclude Include="application\Ground\WaterGround.h">
       <Filter>application\effect</Filter>
     </ClInclude>
     <ClInclude Include="application\Entity\Behavior\BaseBehavior.h">
