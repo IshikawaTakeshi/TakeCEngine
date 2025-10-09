@@ -1,85 +1,89 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="Resources\shaders\PostEffect\BoxFilter.CS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\PostEffect\CopyImage.PS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\PostEffect\Dissolve.CS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\EmitParticle.CS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\PostEffect\FullScreen.VS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\GPUParticle.PS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\GPUParticle.VS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\PostEffect\GrayScale.CS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\InitializeParticle.CS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\PostEffect\LuminanceBasedOutline.CS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\Object3d.PS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\Object3d.VS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\Particle.PS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\Particle.VS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\PostEffect\RadialBlur.CS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\Skinning.CS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\SkinningObject3d.VS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\SkyBox.VS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\SkyBox.PS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\Sprite.PS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\Sprite.VS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\UpdateParticle.CS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\WireFrame\WireFrame.VS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\WireFrame\WireFrame.PS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\PostEffect\Vignette.CS.hlsl">
-      <Filter>Resources\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\PostEffect\DepthBasedOutline.CS.hlsl" />
-    <FxCompile Include="Resources\shaders\PostEffect\BloomEffect.CS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\DepthBasedOutline.CS.hlsl">
       <Filter>Resources\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\BloomEffect.CS.hlsl">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\BoxFilter.CS.hlsl">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\CopyImage.PS.hlsl">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\DepthBasedOutline.CS.hlsl">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\Dissolve.CS.hlsl">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\FullScreen.VS.hlsl">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\GrayScale.CS.hlsl">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\LuminanceBasedOutline.CS.hlsl">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\RadialBlur.CS.hlsl">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\Vignette.CS.hlsl">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\GPUParticle.VS.hlsl">
+      <Filter>Resources\shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\GPUParticle.PS.hlsl">
+      <Filter>Resources\shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\EmitParticle.CS.hlsl">
+      <Filter>Resources\shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\InitializeParticle.CS.hlsl">
+      <Filter>Resources\shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Particle.PS.hlsl">
+      <Filter>Resources\shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Particle.VS.hlsl">
+      <Filter>Resources\shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\UpdateParticle.CS.hlsl">
+      <Filter>Resources\shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Object3d.PS.hlsl">
+      <Filter>Resources\shader\Object</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Object3d.VS.hlsl">
+      <Filter>Resources\shader\Object</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Skinning.CS.hlsl">
+      <Filter>Resources\shader\Object</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\WireFrame\WireFrame.VS.hlsl">
+      <Filter>Resources\shader\WireFrame</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\WireFrame\WireFrame.PS.hlsl">
+      <Filter>Resources\shader\WireFrame</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Sprite.VS.hlsl">
+      <Filter>Resources\shader\Sprite</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Sprite.PS.hlsl">
+      <Filter>Resources\shader\Sprite</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\SkyBox.PS.hlsl">
+      <Filter>Resources\shader\Object</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\SkyBox.VS.hlsl">
+      <Filter>Resources\shader\Object</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\SkinningObject3d.VS.hlsl">
+      <Filter>Resources\shader\Object</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -88,7 +92,7 @@
       <Filter>engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="engine\Animation\Animator.cpp">
-      <Filter>engine\Animation</Filter>
+      <Filter>engine\animation</Filter>
     </ClCompile>
     <ClCompile Include="engine\audio\Audio.cpp">
       <Filter>engine\audio</Filter>
@@ -100,10 +104,10 @@
       <Filter>engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="application\Weapon\BaseWeapon.cpp">
-      <Filter>application\Weapon</Filter>
+      <Filter>application\weapon</Filter>
     </ClCompile>
     <ClCompile Include="application\Weapon\Bazooka.cpp">
-      <Filter>application\Weapon</Filter>
+      <Filter>application\weapon</Filter>
     </ClCompile>
     <ClCompile Include="engine\Collision\BoxCollider.cpp">
       <Filter>engine\collision</Filter>
@@ -112,13 +116,13 @@
       <Filter>engine\postEffect</Filter>
     </ClCompile>
     <ClCompile Include="application\Weapon\Bullet\Bullet.cpp">
-      <Filter>application\Weapon\Bullet</Filter>
+      <Filter>application\weapon\Bullet</Filter>
     </ClCompile>
     <ClCompile Include="application\Weapon\Bullet\BulletManager.cpp">
-      <Filter>application\Weapon\Bullet</Filter>
+      <Filter>application\weapon\Bullet</Filter>
     </ClCompile>
     <ClCompile Include="application\Weapon\Bullet\BulletPool.cpp">
-      <Filter>application\Weapon\Bullet</Filter>
+      <Filter>application\weapon\Bullet</Filter>
     </ClCompile>
     <ClCompile Include="engine\camera\Camera.cpp">
       <Filter>engine\camera</Filter>
@@ -148,7 +152,7 @@
       <Filter>engine\math</Filter>
     </ClCompile>
     <ClCompile Include="application\Entity\Enemy\Enemy.cpp">
-      <Filter>application\Entity\Enemy</Filter>
+      <Filter>application\entity\enemy</Filter>
     </ClCompile>
     <ClCompile Include="engine\scene\GameClearScene.cpp">
       <Filter>engine\scene</Filter>
@@ -196,10 +200,10 @@
       <Filter>engine\3d\Ground</Filter>
     </ClCompile>
     <ClCompile Include="application\UI\HPBar.cpp">
-      <Filter>application\HPBar</Filter>
+      <Filter>application\hpBar</Filter>
     </ClCompile>
     <ClCompile Include="engine\Utility\JsonLoader.cpp">
-      <Filter>engine\Utility</Filter>
+      <Filter>engine\utility</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\ImGuiManager.cpp">
       <Filter>engine\base</Filter>
@@ -208,7 +212,7 @@
       <Filter>engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="engine\Utility\Logger.cpp">
-      <Filter>engine\Utility</Filter>
+      <Filter>engine\utility</Filter>
     </ClCompile>
     <ClCompile Include="engine\PostEffect\LuminanceBasedOutline.cpp">
       <Filter>engine\postEffect</Filter>
@@ -283,7 +287,7 @@
       <Filter>engine\3d\Particle</Filter>
     </ClCompile>
     <ClCompile Include="application\Entity\Player\Player.cpp">
-      <Filter>application\Entity\Player</Filter>
+      <Filter>application\entity\player</Filter>
     </ClCompile>
     <ClCompile Include="application\MyGame.cpp">
       <Filter>application</Filter>
@@ -295,7 +299,7 @@
       <Filter>engine\postEffect</Filter>
     </ClCompile>
     <ClCompile Include="engine\Utility\ResourceBarrier.cpp">
-      <Filter>engine\Utility</Filter>
+      <Filter>engine\utility</Filter>
     </ClCompile>
     <ClCompile Include="engine\scene\SceneFactory.cpp">
       <Filter>engine\scene</Filter>
@@ -304,7 +308,7 @@
       <Filter>engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="application\Weapon\Rifle.cpp">
-      <Filter>application\Weapon</Filter>
+      <Filter>application\weapon</Filter>
     </ClCompile>
     <ClCompile Include="engine\math\Quaternion.cpp">
       <Filter>engine\math</Filter>
@@ -319,10 +323,10 @@
       <Filter>engine\2d</Filter>
     </ClCompile>
     <ClCompile Include="engine\Animation\Skeleton.cpp">
-      <Filter>engine\Animation</Filter>
+      <Filter>engine\animation</Filter>
     </ClCompile>
     <ClCompile Include="engine\Animation\SkinCluster.cpp">
-      <Filter>engine\Animation</Filter>
+      <Filter>engine\animation</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\TakeCFrameWork.cpp">
       <Filter>engine\base</Filter>
@@ -343,7 +347,7 @@
       <Filter>engine\collision</Filter>
     </ClCompile>
     <ClCompile Include="engine\Utility\StringUtility.cpp">
-      <Filter>engine\Utility</Filter>
+      <Filter>engine\utility</Filter>
     </ClCompile>
     <ClCompile Include="engine\math\Vector3.cpp">
       <Filter>engine\math</Filter>
@@ -369,33 +373,6 @@
     <ClCompile Include="engine\3d\Primitive\Triangle.cpp">
       <Filter>engine\3d\Primitive</Filter>
     </ClCompile>
-    <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp" />
-    <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp" />
-    <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp" />
-    <ClCompile Include="engine\math\Vector2.cpp" />
-    <ClCompile Include="application\UI\PlayerReticle.cpp" />
-    <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
-    <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp" />
-    <ClCompile Include="application\UI\GameClearUI.cpp" />
-    <ClCompile Include="engine\scene\SceneTransition.cpp" />
-    <ClCompile Include="application\UI\BulletCounterUI.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BaseBehavior.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorRunning.cpp" />
-    <ClCompile Include="application\Provider\PlayerInputProvider.cpp" />
-    <ClCompile Include="application\Provider\EnemyInputProvider.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorFloating.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorJumping.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorManager.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorStepBoost.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorDead.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorChargeShootStun.cpp" />
-    <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp" />
-    <ClCompile Include="engine\io\InputMapper.cpp" />
-    <ClCompile Include="engine\io\IInputDevice.cpp" />
-    <ClCompile Include="application\Entity\Enemy\BulletSensor.cpp" />
-    <ClCompile Include="application\Provider\PlayerKeyInput.cpp" />
-    <ClCompile Include="application\Effect\BoostEffect.cpp" />
-    <ClCompile Include="engine\PostEffect\BloomEffect.cpp" />
     <ClCompile Include="application\Entity\Behavior\BaseBehavior.cpp">
       <Filter>application\Entity\Behavior</Filter>
     </ClCompile>
@@ -471,7 +448,90 @@
     <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp">
       <Filter>application\Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="WaterSurface.cpp" />
+    <ClCompile Include="engine\PostEffect\BloomEffect.cpp">
+      <Filter>engine\postEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Effect\BoostEffect.cpp">
+      <Filter>application\effect</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Objects\WaterSurface.cpp">
+      <Filter>application\effect</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BaseBehavior.cpp">
+      <Filter>application\entity\behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorChargeShootStun.cpp">
+      <Filter>application\entity\behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorDead.cpp">
+      <Filter>application\entity\behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorFloating.cpp">
+      <Filter>application\entity\behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorJumping.cpp">
+      <Filter>application\entity\behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorManager.cpp">
+      <Filter>application\entity\behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorRunning.cpp">
+      <Filter>application\entity\behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Behavior\BehaviorStepBoost.cpp">
+      <Filter>application\entity\behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp">
+      <Filter>application\entity\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Entity\Enemy\BulletSensor.cpp">
+      <Filter>application\entity\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp">
+      <Filter>engine\postEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp">
+      <Filter>application\weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="application\UI\BulletCounterUI.cpp">
+      <Filter>application\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="application\UI\EnergyInfoUI.cpp">
+      <Filter>application\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="application\UI\GameClearUI.cpp">
+      <Filter>application\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp">
+      <Filter>application\weapon\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp">
+      <Filter>application\weapon\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\io\InputMapper.cpp">
+      <Filter>engine\io</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\io\IInputDevice.cpp">
+      <Filter>engine\io</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Provider\PlayerInputProvider.cpp">
+      <Filter>application\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="application\UI\PlayerReticle.cpp">
+      <Filter>application\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\math\Vector2.cpp">
+      <Filter>engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Provider\EnemyInputProvider.cpp">
+      <Filter>application\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Provider\PlayerKeyInput.cpp">
+      <Filter>application\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\scene\SceneTransition.cpp">
+      <Filter>engine\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -482,7 +542,7 @@
       <Filter>engine\math</Filter>
     </ClInclude>
     <ClInclude Include="engine\Animation\Animator.h">
-      <Filter>engine\Animation</Filter>
+      <Filter>engine\animation</Filter>
     </ClInclude>
     <ClInclude Include="engine\audio\Audio.h">
       <Filter>engine\audio</Filter>
@@ -494,10 +554,10 @@
       <Filter>engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\BaseWeapon.h">
-      <Filter>application\Weapon</Filter>
+      <Filter>application\weapon</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\Bazooka.h">
-      <Filter>application\Weapon</Filter>
+      <Filter>application\weapon</Filter>
     </ClInclude>
     <ClInclude Include="engine\Collision\BoxCollider.h">
       <Filter>engine\collision</Filter>
@@ -506,13 +566,13 @@
       <Filter>engine\postEffect</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\Bullet\Bullet.h">
-      <Filter>application\Weapon\Bullet</Filter>
+      <Filter>application\weapon\Bullet</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\Bullet\BulletManager.h">
-      <Filter>application\Weapon\Bullet</Filter>
+      <Filter>application\weapon\Bullet</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\Bullet\BulletPool.h">
-      <Filter>application\Weapon\Bullet</Filter>
+      <Filter>application\weapon\Bullet</Filter>
     </ClInclude>
     <ClInclude Include="engine\camera\Camera.h">
       <Filter>engine\camera</Filter>
@@ -542,10 +602,10 @@
       <Filter>engine\math</Filter>
     </ClInclude>
     <ClInclude Include="application\Entity\Enemy\Enemy.h">
-      <Filter>application\Entity\Enemy</Filter>
+      <Filter>application\entity\enemy</Filter>
     </ClInclude>
     <ClInclude Include="engine\Entity\GameCharacter.h">
-      <Filter>application\Entity</Filter>
+      <Filter>application\entity</Filter>
     </ClInclude>
     <ClInclude Include="engine\scene\GameClearScene.h">
       <Filter>engine\scene</Filter>
@@ -596,10 +656,10 @@
       <Filter>engine\3d\Ground</Filter>
     </ClInclude>
     <ClInclude Include="application\UI\HPBar.h">
-      <Filter>application\HPBar</Filter>
+      <Filter>application\hpBar</Filter>
     </ClInclude>
     <ClInclude Include="engine\Utility\JsonLoader.h">
-      <Filter>engine\Utility</Filter>
+      <Filter>engine\utility</Filter>
     </ClInclude>
     <ClInclude Include="engine\base\ImGuiManager.h">
       <Filter>engine\base</Filter>
@@ -611,13 +671,13 @@
       <Filter>engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="engine\Animation\Keyflame.h">
-      <Filter>engine\Animation</Filter>
+      <Filter>engine\animation</Filter>
     </ClInclude>
     <ClInclude Include="engine\io\InputData.h">
       <Filter>engine\io</Filter>
     </ClInclude>
     <ClInclude Include="engine\Utility\Logger.h">
-      <Filter>engine\Utility</Filter>
+      <Filter>engine\utility</Filter>
     </ClInclude>
     <ClInclude Include="engine\PostEffect\LuminanceBasedOutline.h">
       <Filter>engine\postEffect</Filter>
@@ -668,7 +728,7 @@
       <Filter>engine\3d\Particle</Filter>
     </ClInclude>
     <ClInclude Include="engine\Animation\NodeAnimation.h">
-      <Filter>engine\Animation</Filter>
+      <Filter>engine\animation</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Object3d.h">
       <Filter>engine\3d</Filter>
@@ -701,7 +761,7 @@
       <Filter>engine\3d\Particle</Filter>
     </ClInclude>
     <ClInclude Include="application\Entity\Player\Player.h">
-      <Filter>application\Entity\Player</Filter>
+      <Filter>application\entity\player</Filter>
     </ClInclude>
     <ClInclude Include="application\MyGame.h">
       <Filter>application</Filter>
@@ -713,7 +773,7 @@
       <Filter>engine\postEffect</Filter>
     </ClInclude>
     <ClInclude Include="engine\Utility\ResourceBarrier.h">
-      <Filter>engine\Utility</Filter>
+      <Filter>engine\utility</Filter>
     </ClInclude>
     <ClInclude Include="engine\scene\SceneManager.h">
       <Filter>engine\scene</Filter>
@@ -722,7 +782,7 @@
       <Filter>engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\Rifle.h">
-      <Filter>application\Weapon</Filter>
+      <Filter>application\weapon</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\Quaternion.h">
       <Filter>engine\math</Filter>
@@ -737,10 +797,10 @@
       <Filter>engine\2d</Filter>
     </ClInclude>
     <ClInclude Include="engine\Animation\Skeleton.h">
-      <Filter>engine\Animation</Filter>
+      <Filter>engine\animation</Filter>
     </ClInclude>
     <ClInclude Include="engine\Animation\SkinCluster.h">
-      <Filter>engine\Animation</Filter>
+      <Filter>engine\animation</Filter>
     </ClInclude>
     <ClInclude Include="engine\base\TextureManager.h">
       <Filter>engine\base</Filter>
@@ -767,7 +827,7 @@
       <Filter>engine\collision</Filter>
     </ClInclude>
     <ClInclude Include="engine\Utility\StringUtility.h">
-      <Filter>engine\Utility</Filter>
+      <Filter>engine\utility</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\Vector4.h">
       <Filter>engine\math</Filter>
@@ -806,44 +866,8 @@
       <Filter>engine\3d\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\WeaponType.h">
-      <Filter>application\Weapon</Filter>
+      <Filter>application\weapon</Filter>
     </ClInclude>
-    <ClInclude Include="application\Weapon\VerticalMissileLauncher.h" />
-    <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h" />
-    <ClInclude Include="application\Weapon\Bullet\MissilePool.h" />
-    <ClInclude Include="engine\math\physics\Ray.h" />
-    <ClInclude Include="application\UI\PlayerReticle.h" />
-    <ClInclude Include="application\UI\EnergyInfoUI.h" />
-    <ClInclude Include="engine\PostEffect\DepthBasedOutline.h" />
-    <ClInclude Include="engine\camera\PerView.h" />
-    <ClInclude Include="engine\camera\CameraForGPU.h" />
-    <ClInclude Include="application\UI\GameClearUI.h" />
-    <ClInclude Include="engine\scene\SceneTransition.h" />
-    <ClInclude Include="application\UI\BulletCounterUI.h" />
-    <ClInclude Include="application\Entity\GameCharacterBehavior.h" />
-    <ClInclude Include="application\Entity\WeaponUnit.h" />
-    <ClInclude Include="application\Entity\Behavior\BaseBehavior.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorRunning.h" />
-    <ClInclude Include="application\Provider\BaseInputProvider.h" />
-    <ClInclude Include="application\Provider\PlayerInputProvider.h" />
-    <ClInclude Include="application\Provider\EnemyInputProvider.h" />
-    <ClInclude Include="application\Entity\GameCharacterInfo.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorFloating.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorJumping.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorManager.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorStepBoost.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorDead.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorChargeShootStun.h" />
-    <ClInclude Include="engine\Collision\SurfaceType.h" />
-    <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h" />
-    <ClInclude Include="engine\io\InputMapper.h" />
-    <ClInclude Include="engine\io\IInputDevice.h" />
-    <ClInclude Include="application\Entity\Enemy\BulletSensor.h" />
-    <ClInclude Include="application\Provider\Enum\CharacterActionInputEnum.h" />
-    <ClInclude Include="application\Provider\PlayerKeyInput.h" />
-    <ClInclude Include="application\Effect\BoostEffect.h" />
-    <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
-    <ClInclude Include="engine\PostEffect\BloomEffect.h" />
     <ClInclude Include="application\Entity\Behavior\BaseBehavior.h">
       <Filter>application\Entity\Behavior</Filter>
     </ClInclude>
@@ -943,7 +967,117 @@
     <ClInclude Include="application\Entity\WeaponUnit.h">
       <Filter>application\Entity</Filter>
     </ClInclude>
-    <ClInclude Include="WaterSurface.h" />
+    <ClInclude Include="engine\PostEffect\BloomEffect.h">
+      <Filter>engine\postEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Effect\BoostEffect.h">
+      <Filter>application\effect</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Effect\BoostEffectPositionEnum.h">
+      <Filter>application\effect\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Objects\WaterSurface.h">
+      <Filter>application\effect</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BaseBehavior.h">
+      <Filter>application\entity\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Provider\BaseInputProvider.h">
+      <Filter>application\entity\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorChargeShootStun.h">
+      <Filter>application\entity\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorDead.h">
+      <Filter>application\entity\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorFloating.h">
+      <Filter>application\entity\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorJumping.h">
+      <Filter>application\entity\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorManager.h">
+      <Filter>application\entity\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorRunning.h">
+      <Filter>application\entity\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Behavior\BehaviorStepBoost.h">
+      <Filter>application\entity\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h">
+      <Filter>application\entity\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\Enemy\BulletSensor.h">
+      <Filter>application\entity\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\PostEffect\DepthBasedOutline.h">
+      <Filter>engine\postEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\GameCharacterBehavior.h">
+      <Filter>application\entity\behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h">
+      <Filter>application\weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Weapon\VerticalMissileLauncher.h">
+      <Filter>application\weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\WeaponUnit.h">
+      <Filter>application\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\GameCharacterInfo.h">
+      <Filter>application\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="application\UI\BulletCounterUI.h">
+      <Filter>application\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="application\UI\EnergyInfoUI.h">
+      <Filter>application\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="application\UI\GameClearUI.h">
+      <Filter>application\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Weapon\Bullet\MissilePool.h">
+      <Filter>application\weapon\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\io\InputMapper.h">
+      <Filter>engine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\io\IInputDevice.h">
+      <Filter>engine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Provider\PlayerInputProvider.h">
+      <Filter>application\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Provider\Enum\CharacterActionInputEnum.h">
+      <Filter>application\provider\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\camera\CameraForGPU.h">
+      <Filter>engine\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\camera\PerView.h">
+      <Filter>engine\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\UI\PlayerReticle.h">
+      <Filter>application\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Provider\EnemyInputProvider.h">
+      <Filter>application\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Provider\PlayerKeyInput.h">
+      <Filter>application\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\scene\SceneTransition.h">
+      <Filter>engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\physics\Ray.h">
+      <Filter>engine\math\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Collision\SurfaceType.h">
+      <Filter>engine\collision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -963,27 +1097,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\shaders\PostEffect\BoxFilter.hlsli">
-      <Filter>Resources\shader</Filter>
-    </None>
-    <None Include="Resources\shaders\PostEffect\FullScreen.hlsli">
-      <Filter>Resources\shader</Filter>
-    </None>
-    <None Include="Resources\shaders\GPUParticle.hlsli">
-      <Filter>Resources\shader</Filter>
-    </None>
-    <None Include="Resources\shaders\Object3d.hlsli">
-      <Filter>Resources\shader</Filter>
-    </None>
-    <None Include="Resources\shaders\PostEffect\Outline.hlsli">
-      <Filter>Resources\shader</Filter>
-    </None>
-    <None Include="Resources\shaders\Particle.hlsli">
-      <Filter>Resources\shader</Filter>
-    </None>
-    <None Include="Resources\shaders\ParticleEmitter.hlsli">
-      <Filter>Resources\shader</Filter>
-    </None>
     <None Include="Resources\Animation\player_animation.bin">
       <Filter>Resources\gltf</Filter>
     </None>
@@ -995,9 +1108,6 @@
     </None>
     <None Include="Resources\Animation\player_animation.gltf">
       <Filter>Resources\gltf</Filter>
-    </None>
-    <None Include="Resources\shaders\RandomGenerator.hlsli">
-      <Filter>Resources\shader</Filter>
     </None>
     <None Include="Resources\glTF\simpleSkin.bin">
       <Filter>Resources\gltf</Filter>
@@ -1011,15 +1121,6 @@
     <None Include="Resources\glTF\sneakWalk.bin">
       <Filter>Resources\gltf</Filter>
     </None>
-    <None Include="Resources\shaders\SkyBox.hlsli">
-      <Filter>Resources\shader</Filter>
-    </None>
-    <None Include="Resources\shaders\Sprite.hlsli">
-      <Filter>Resources\shader</Filter>
-    </None>
-    <None Include="Resources\shaders\WireFrame\WireFrame.hlsli">
-      <Filter>Resources\shader</Filter>
-    </None>
     <None Include="Resources\glTF\walk.gltf">
       <Filter>Resources\gltf</Filter>
     </None>
@@ -1029,8 +1130,41 @@
     <None Include="Resources\glTF\walk.fbx">
       <Filter>Resources\gltf</Filter>
     </None>
+    <None Include="Resources\shaders\PostEffect\BoxFilter.hlsli">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </None>
+    <None Include="Resources\shaders\PostEffect\FullScreen.hlsli">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </None>
+    <None Include="Resources\shaders\PostEffect\Outline.hlsli">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </None>
+    <None Include="Resources\shaders\GPUParticle.hlsli">
+      <Filter>Resources\shader\Particle</Filter>
+    </None>
+    <None Include="Resources\shaders\Particle.hlsli">
+      <Filter>Resources\shader\Particle</Filter>
+    </None>
+    <None Include="Resources\shaders\ParticleEmitter.hlsli">
+      <Filter>Resources\shader\Particle</Filter>
+    </None>
+    <None Include="Resources\shaders\RandomGenerator.hlsli">
+      <Filter>Resources\shader\Particle</Filter>
+    </None>
+    <None Include="Resources\shaders\Object3d.hlsli">
+      <Filter>Resources\shader\Object</Filter>
+    </None>
+    <None Include="Resources\shaders\WireFrame\WireFrame.hlsli">
+      <Filter>Resources\shader\WireFrame</Filter>
+    </None>
+    <None Include="Resources\shaders\Sprite.hlsli">
+      <Filter>Resources\shader\Sprite</Filter>
+    </None>
+    <None Include="Resources\shaders\SkyBox.hlsli">
+      <Filter>Resources\shader\Object</Filter>
+    </None>
     <None Include="Resources\shaders\CameraData.hlsli">
-      <Filter>Resources\shader</Filter>
+      <Filter>Resources\shader\Object</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -1052,9 +1186,6 @@
     <Filter Include="engine\math">
       <UniqueIdentifier>{2489cfa0-5ee2-4b24-8f98-2b08897ea186}</UniqueIdentifier>
     </Filter>
-    <Filter Include="engine\Animation">
-      <UniqueIdentifier>{69d819e5-aa5c-4f28-927c-8e7e5bda6708}</UniqueIdentifier>
-    </Filter>
     <Filter Include="engine\audio">
       <UniqueIdentifier>{2f9f0eaf-0fb8-433d-aa4a-8db391bd6138}</UniqueIdentifier>
     </Filter>
@@ -1063,12 +1194,6 @@
     </Filter>
     <Filter Include="engine\3d\Particle">
       <UniqueIdentifier>{98cc19d0-a81c-4831-a09d-706fac020d81}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="application\Entity">
-      <UniqueIdentifier>{7243ddc3-bcf7-45ec-a4ca-ca2e896186fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="application\Weapon">
-      <UniqueIdentifier>{e743fde6-b9b3-4cf2-92d7-4a7995720243}</UniqueIdentifier>
     </Filter>
     <Filter Include="engine\collision">
       <UniqueIdentifier>{38fc65b7-b3f2-4690-ab76-4163a534ad75}</UniqueIdentifier>
@@ -1082,20 +1207,11 @@
     <Filter Include="Resources\shader">
       <UniqueIdentifier>{01cf6800-7886-492e-b261-227f0c3f9d4f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="application\Weapon\Bullet">
-      <UniqueIdentifier>{5cc6d2bd-e4fe-455f-93ce-17e87039eaa8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="engine\camera">
       <UniqueIdentifier>{2cbecede-a562-4ba9-bc2f-ed710836a7d8}</UniqueIdentifier>
     </Filter>
     <Filter Include="engine\base">
       <UniqueIdentifier>{f8464de7-1dad-4a9f-8d2c-9a348e6173bc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="application\Entity\Player">
-      <UniqueIdentifier>{7d95dbd5-de97-4a4d-9b1a-1442193ef92d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="application\Entity\Enemy">
-      <UniqueIdentifier>{98d39096-79f4-494e-8640-edc0f445ac6b}</UniqueIdentifier>
     </Filter>
     <Filter Include="engine\io">
       <UniqueIdentifier>{072050b1-a2a3-4fb6-b74a-6df279e39c9c}</UniqueIdentifier>
@@ -1118,9 +1234,6 @@
     <Filter Include="Resources\obj_mtl">
       <UniqueIdentifier>{2ad8e3b3-6a80-43c2-9637-9b8b1bcd0734}</UniqueIdentifier>
     </Filter>
-    <Filter Include="application\HPBar">
-      <UniqueIdentifier>{a037a81e-ea89-4a83-9df4-e1af711ea387}</UniqueIdentifier>
-    </Filter>
     <Filter Include="engine\3d\SkyBox">
       <UniqueIdentifier>{e670c156-5bb0-4c8f-9a9b-ef82a334f418}</UniqueIdentifier>
     </Filter>
@@ -1130,29 +1243,71 @@
     <Filter Include="engine\3d\Skydome">
       <UniqueIdentifier>{5d94cf9a-0c92-4db7-af7b-7537ca01932e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="engine\Utility">
-      <UniqueIdentifier>{267af0fa-b574-4522-9321-036d459d4bf2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="engine\2d">
       <UniqueIdentifier>{d9be44db-22c2-45ae-9c29-fbd9c278827a}</UniqueIdentifier>
     </Filter>
     <Filter Include="engine\3d\Primitive">
       <UniqueIdentifier>{16046783-8e5d-405d-bb13-a1fdda80f7bb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="application\Entity\Behavior">
-      <UniqueIdentifier>{81e90ec8-f816-4364-bdcf-36fb80461ae3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="application\UI">
       <UniqueIdentifier>{9d9e71a0-054e-452e-8645-32ca3433c7f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="application\Provider">
-      <UniqueIdentifier>{0b7a339e-ebd4-4aa7-9c76-8125741f0973}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="application\Provider\Enum">
-      <UniqueIdentifier>{90b56bbe-d809-4329-bacf-10d7d9a1fd08}</UniqueIdentifier>
-    </Filter>
     <Filter Include="engine\math\Physics">
       <UniqueIdentifier>{b1b3127e-748b-4787-b5ae-0ef9cc36fdba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\shader\PostEffect">
+      <UniqueIdentifier>{754476ce-60c9-48d0-b786-4abbeb3468b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\shader\Particle">
+      <UniqueIdentifier>{a80614cb-49f9-4145-a087-c5ecdf958583}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\shader\Object">
+      <UniqueIdentifier>{f551e8cb-6ad1-4283-ace1-edaef77a344b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\shader\WireFrame">
+      <UniqueIdentifier>{6e3befd2-ba54-45f4-847c-2010bb967561}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\shader\Sprite">
+      <UniqueIdentifier>{53085881-530b-48b7-9601-09693b468b70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\utility">
+      <UniqueIdentifier>{267af0fa-b574-4522-9321-036d459d4bf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\effect">
+      <UniqueIdentifier>{ef87920d-9eec-45c3-ada6-a55042dc3019}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\effect\Enum">
+      <UniqueIdentifier>{3928511a-0d63-46c8-90a6-3d94b97313b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\entity">
+      <UniqueIdentifier>{7243ddc3-bcf7-45ec-a4ca-ca2e896186fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\entity\behavior">
+      <UniqueIdentifier>{81e90ec8-f816-4364-bdcf-36fb80461ae3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\entity\enemy">
+      <UniqueIdentifier>{98d39096-79f4-494e-8640-edc0f445ac6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\entity\player">
+      <UniqueIdentifier>{7d95dbd5-de97-4a4d-9b1a-1442193ef92d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\hpBar">
+      <UniqueIdentifier>{a037a81e-ea89-4a83-9df4-e1af711ea387}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\provider">
+      <UniqueIdentifier>{0b7a339e-ebd4-4aa7-9c76-8125741f0973}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\provider\Enum">
+      <UniqueIdentifier>{90b56bbe-d809-4329-bacf-10d7d9a1fd08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\weapon">
+      <UniqueIdentifier>{e743fde6-b9b3-4cf2-92d7-4a7995720243}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\weapon\Bullet">
+      <UniqueIdentifier>{5cc6d2bd-e4fe-455f-93ce-17e87039eaa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\animation">
+      <UniqueIdentifier>{69d819e5-aa5c-4f28-927c-8e7e5bda6708}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

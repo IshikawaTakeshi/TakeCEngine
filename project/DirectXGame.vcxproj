@@ -232,7 +232,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\UI\PlayerReticle.cpp" />
     <ClCompile Include="application\Provider\PlayerInputProvider.cpp" />
     <ClCompile Include="application\Provider\PlayerKeyInput.cpp" />
-    <ClCompile Include="WaterSurface.cpp" />
+    <ClCompile Include="application\Objects\WaterSurface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
@@ -383,7 +383,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\Rifle.h" />
     <ClInclude Include="application\Weapon\VerticalMissileLauncher.h" />
     <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h" />
-    <ClInclude Include="WaterSurface.h" />
+    <ClInclude Include="application\Objects\WaterSurface.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
