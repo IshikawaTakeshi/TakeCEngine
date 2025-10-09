@@ -10,14 +10,14 @@ void BoostEffect::Initialize(GameCharacter* owner) {
 	//エフェクトオブジェクト初期化
 	boostEffectObject_ = std::make_unique<Object3d>();
 	boostEffectObject_->Initialize(Object3dCommon::GetInstance(), "boostEffectCone.gltf");
-	boostEffectObject_->GetModel()->GetModelData()->material.textureFilePath = "BoostEffect4.png";
-	boostEffectObject_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,0.1f,0.0f,1.0f });
+	boostEffectObject_->GetModel()->GetModelData()->material.textureFilePath = "BlueBoostEffect.png";
+	//boostEffectObject_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,0.1f,0.0f,1.0f });
 
 	boostEffectObject2_ = std::make_unique<Object3d>();
 	boostEffectObject2_->Initialize(Object3dCommon::GetInstance(), "boostEffectCone.gltf");
-	boostEffectObject2_->GetModel()->GetModelData()->material.textureFilePath = "BoostEffect2.png";
+	boostEffectObject2_->GetModel()->GetModelData()->material.textureFilePath = "BlueBoostEffect.png";
 	boostEffectObject2_->SetScale({ 1.1f,1.1f,1.1f });
-	boostEffectObject2_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,0.1f,0.0f,1.0f });
+	//boostEffectObject2_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,0.1f,0.0f,1.0f });
 	//エミッター初期化
 	particleEmitter_ = std::make_unique<ParticleEmitter>();
 	particleEmitter_->Initialize("BoostEffectEmitter", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} }, 10, 0.1f);
@@ -173,7 +173,7 @@ void BoostEffect::UpdateImGui(std::string label) {
 void BoostEffect::Draw() {
 	if (isActive_) {
 		boostEffectObject_->Draw();
-		boostEffectObject2_->Draw();
+		//boostEffectObject2_->Draw();
 	}
 }
 
