@@ -27,6 +27,8 @@ void BehaviorJumping::Initialize(GameCharacterContext& characterInfo) {
 
 void BehaviorJumping::Update(GameCharacterContext& characterInfo) {
 
+	deltaTime_ = TakeCFrameWork::GetDeltaTime(); // デルタタイムの取得
+
 	Vector3& velocity = characterInfo.velocity; // 移動ベクトル
 
 	// ジャンプ中の移動

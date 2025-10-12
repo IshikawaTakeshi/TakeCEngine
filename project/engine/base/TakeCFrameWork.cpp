@@ -148,18 +148,22 @@ void TakeCFrameWork::Finalize() {
 
 void TakeCFrameWork::Update() {
 
-	kDeltaTime = 0.016f * timeScale_;
-
 	//メッセージ処理
 	if (winApp_->ProcessMessage()) {
 		//ウィンドウの×ボタンが押されたらループを抜ける
 		isEnd_ = true;
 	}
 
+	kDeltaTime = 0.016f * timeScale_;
+
 #ifdef _DEBUG
 	imguiManager_->Begin();
 #endif
+	ImGui::Begin("FrameWork");
 	directXCommon_->DrawFPS();
+	ImGui::Text("DeltaTime: %.4f", kDeltaTime);
+	ImGui::Text("TimeScale: %.2f", timeScale_);
+	ImGui::End();
 	//入力の更新
 	input_->Update();
 

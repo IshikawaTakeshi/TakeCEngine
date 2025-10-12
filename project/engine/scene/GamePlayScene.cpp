@@ -1,10 +1,10 @@
 #include "GamePlayScene.h"
 #include "TitleScene.h"
 #include "SceneManager.h"
-#include "TakeCFrameWork.h"
 #include "Vector3Math.h"
 #include "ImGuiManager.h"
 #include "Collision/CollisionManager.h"
+#include "MyGame.h"
 #include <format>
 #include <numbers>
 //====================================================================
@@ -181,6 +181,9 @@ void GamePlayScene::Update() {
 
 			InitializeGamePlay();
 			break;
+		case SceneBehavior::ENEMYDESTROYED:
+			InitializeEnemyDestroyed();
+			break;
 		case SceneBehavior::GAMEOVER:
 
 			InitializeGameOver();
@@ -209,6 +212,9 @@ void GamePlayScene::Update() {
 
 		UpdateGamePlay();
 		break;
+	case SceneBehavior::ENEMYDESTROYED:
+		UpdateEnemyDestroyed();
+		break;
 	case SceneBehavior::GAMEOVER:
 
 		UpdateGameOver();
@@ -223,20 +229,6 @@ void GamePlayScene::Update() {
 		break;
 	default:
 		break;
-	}
-
-
-
-	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-		//シーン切り替え依頼
-		SceneManager::GetInstance()->ChangeScene("TITLE");
-		// シーン切り替え依頼
-		//AudioManager::GetInstance()->SoundUnload(&BGM);
-		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
-	} else if (Input::GetInstance()->TriggerKey(DIK_O)) {
-		//AudioManager::GetInstance()->SoundUnload(&BGM);
-		fadeTimer_ = 2.0f;
-		SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
 	}
 }
 
@@ -371,9 +363,39 @@ void GamePlayScene::UpdateGamePlay() {
 
 	} else if (enemy_->GetHealth() <= 0.0f) {
 		//エネミーのHPが0以下になったらゲームクリア
-		behaviorRequest_ = SceneBehavior::GAMECLEAR;
+		behaviorRequest_ = SceneBehavior::ENEMYDESTROYED;
 	}
 
+}
+
+//====================================================================
+// 敵撃破時の処理
+//====================================================================
+
+void GamePlayScene::InitializeEnemyDestroyed() {
+
+	//スローモーションにする
+	MyGame::RequestTimeScale(-1.0f, 1.0f,1.0f);
+	//カメラをズームする
+	CameraManager::GetInstance()->GetActiveCamera()->SetCameraStateRequest(Camera::GameCameraState::ENEMY_DESTROYED);
+	//changeBehaviorTimerを初期化
+	changeBehaviorTimer_.Initialize(2.0f, 0.0f);
+}
+
+void GamePlayScene::UpdateEnemyDestroyed() {
+
+	//changeBehaviorTimerの更新
+	changeBehaviorTimer_.Update();
+
+	//changeBehaviorTimerが終了したらゲームクリアへ
+	if (changeBehaviorTimer_.IsFinished()) {
+
+		//ゲームクリアへ
+		behaviorRequest_ = SceneBehavior::GAMECLEAR;
+
+		//ズーム解除
+		CameraManager::GetInstance()->GetActiveCamera()->SetCameraStateRequest(Camera::GameCameraState::FOLLOW);
+	}
 }
 
 
@@ -392,7 +414,11 @@ void GamePlayScene::UpdateGameOver() {}
 //====================================================================
 void GamePlayScene::InitializeGameClear() {
 
-	fadeTimer_ = 2.0f;
+	//スローモーション解除
+	MyGame::RequestTimeScale(1.0f, 1.0f,0.0f);
+
+	//フェード処理の開始
+	fadeTimer_ = 4.0f;
 	SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
 }
 

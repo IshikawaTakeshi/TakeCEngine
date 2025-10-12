@@ -30,6 +30,8 @@
 #include "Utility/Logger.h"
 #include "Utility/ResourceBarrier.h"
 #include "Utility/JsonLoader.h"
+#include "Utility/Timer.h"
+#include "engine/math/Easing.h"
 
 //DirectXTex
 #include <dxgidebug.h>
@@ -72,10 +74,6 @@ public:
 
 	static float GetDeltaTime() { return kDeltaTime; }
 
-	float GetTimeScale() const { return timeScale_; }
-
-	void SetTimeScale(float timeScale) { timeScale_ = timeScale; }
-
 protected:
 
 	std::unique_ptr<WinApp> winApp_ = nullptr;
@@ -102,7 +100,8 @@ protected:
 	static std::chrono::steady_clock::time_point gameTime_;
 	// ゲームの経過時間
 	static float kDeltaTime;
-	float timeScale_ = 1.0f;
 	//終了フラグ
 	bool isEnd_ = false;
+
+	float timeScale_ = 1.0f;
 };

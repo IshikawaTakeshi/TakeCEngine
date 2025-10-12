@@ -36,18 +36,14 @@ void Camera::Initialize(ID3D12Device* device) {
 	cameraForGPU_ = nullptr;
 	cameraResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraForGPU_));
 	cameraForGPU_->worldPosition = transform_.translate;
-
-#ifdef _DEBUG
-	isDebug_ = true;
-#endif // _DEBUG
-
 }
 
 void Camera::Update() {
-
+#ifdef _DEBUG
 	if (Input::GetInstance()->TriggerKey(DIK_F1)) {
 		isDebug_ = !isDebug_;
 	}
+#endif // _DEBUG
 
 	if (isDebug_) {
 
@@ -172,6 +168,9 @@ void Camera::UpdateGameCamera() {
 		case Camera::GameCameraState::LOOKAT:
 			InitializeCameraLookAt();
 			break;
+		case Camera::GameCameraState::ENEMY_DESTROYED:
+			InitializeCameraEnemyDestroyed();
+			break;
 		default:
 			break;
 		}
@@ -185,6 +184,9 @@ void Camera::UpdateGameCamera() {
 		break;
 	case Camera::GameCameraState::LOOKAT:
 		UpdateCameraLockOn();
+		break;
+	case Camera::GameCameraState::ENEMY_DESTROYED:
+		UpdateCameraEnemyDestroyed();
 		break;
 	default:
 
@@ -200,12 +202,20 @@ void Camera::InitializeCameraFollow() {
 
 	followSpeed_ = 0.3f;
 	offset_ = offsetDelta_;
+	offsetDelta_ = Vector3(0.0f, 5.0f, -50.0f);
 }
 
 void Camera::InitializeCameraLookAt() {
 
 	followSpeed_ = 0.4f;
 	offsetDelta_ = Vector3(0.0f, 5.0f, -50.0f);
+}
+
+void Camera::InitializeCameraEnemyDestroyed() {
+
+	followSpeed_ = 0.1f;
+	offsetDelta_ = Vector3(0.0f, 5.0f, -30.0f);
+	isEZoomEnemy_ = true;
 }
 
 void Camera::UpdateCameraFollow() {
@@ -307,6 +317,52 @@ void Camera::UpdateCameraLockOn() {
 
 	// 状態切り替え
 	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RightStick)) {
+		cameraStateRequest_ = GameCameraState::FOLLOW;
+	}
+}
+
+void Camera::UpdateCameraEnemyDestroyed() {
+
+	// ターゲット方向を正規化
+	Vector3 toTarget = Vector3Math::Normalize(*focusTargetPosition_ - transform_.translate);
+
+	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
+	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
+
+	// 高さを持った固定オフセット
+	offset_ = offsetDelta_;
+
+	// ターゲットからの相対位置に補間移動
+	Vector3 desiredPosition = *followTargetPosition_ + QuaternionMath::RotateVector(offset_, transform_.rotate);
+	nextPosition_ = Easing::Lerp(transform_.translate, desiredPosition, followSpeed_);
+
+	//埋まり回避
+	direction_ = Vector3Math::Normalize(nextPosition_ - *followTargetPosition_);
+	float distance = Vector3Math::Length(nextPosition_ - *followTargetPosition_);
+
+	Ray ray;
+	ray.origin = *followTargetPosition_;
+	ray.direction = direction_;
+	ray.distance = distance;
+	RayCastHit hitInfo;
+
+	//コライダーのマスク
+	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
+	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
+		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
+		transform_.translate = hitInfo.position - direction_ * margin;
+	} else {
+		// 衝突しなかった場合は、通常の位置に移動
+		transform_.translate = nextPosition_;
+	}
+
+	// 回転補間
+	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
+
+
+	// 状態切り替え
+	if (isEZoomEnemy_ == false) {
 		cameraStateRequest_ = GameCameraState::FOLLOW;
 	}
 }

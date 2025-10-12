@@ -8,6 +8,9 @@ BehaviorStepBoost::BehaviorStepBoost(baseInputProvider* provider) {
 }
 
 void BehaviorStepBoost::Initialize(GameCharacterContext& characterInfo) {
+
+	deltaTime_ = TakeCFrameWork::GetDeltaTime(); // デルタタイムの取得
+
 	float speed = characterInfo.stepBoostInfo.speed;
 	float duration = characterInfo.stepBoostInfo.duration;
 	float useEnergy = characterInfo.stepBoostInfo.useEnergy;

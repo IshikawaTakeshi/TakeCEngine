@@ -4,6 +4,9 @@
 #include "Utility/StringUtility.h"
 #include "Collision/CollisionManager.h"
 
+float MyGame::requestedTimeScale_ = 1.0f;
+Timer MyGame::timeScaleTimer_;
+
 //====================================================================
 //			初期化
 //====================================================================
@@ -73,6 +76,14 @@ void MyGame::Finalize() {
 
 void MyGame::Update() {
 
+	timeScaleTimer_.Update(requestedTimeScale_);
+
+	if (timeScaleTimer_.IsFinished() == false) {
+
+		timeScale_ = std::clamp(timeScaleTimer_.GetEase(Easing::EasingType::OUT_QUAD), 0.4f, 1.0f);
+	}
+
+
 	//FrameWorkの更新
 	TakeCFrameWork::Update();
 	TakeCFrameWork::GetPrimitiveDrawer()->Update();
@@ -106,6 +117,11 @@ void MyGame::Draw() {
 #endif
 	//描画後処理
 	directXCommon_->PostDraw();
+}
+
+void MyGame::RequestTimeScale(float timeScale, float duration,float current) {
+	requestedTimeScale_ = timeScale;
+	timeScaleTimer_.Initialize(duration, current);
 }
 
 //====================================================================

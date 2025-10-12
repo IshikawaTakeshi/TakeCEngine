@@ -15,6 +15,7 @@ public:
 	enum class GameCameraState {
 		FOLLOW,
 		LOOKAT,
+		ENEMY_DESTROYED,
 	};
 
 	Camera() = default;
@@ -36,9 +37,11 @@ private:
 
 	void InitializeCameraFollow();
 	void InitializeCameraLookAt();
+	void InitializeCameraEnemyDestroyed();
 
 	void UpdateCameraFollow();
 	void UpdateCameraLockOn();
+	void UpdateCameraEnemyDestroyed();
 
 public: //getter
 	
@@ -72,6 +75,8 @@ public: //setter
 	void SetFollowTargetPos(const Vector3& target) { *followTargetPosition_ = target; }
 	void SetFollowTargetRot(const Vector3& targetRot) { *followTargetRotation_ = targetRot; }
 	void SetFocusTargetPos(const Vector3& target) { *focusTargetPosition_ = target; }
+	void SetCameraStateRequest(const GameCameraState state) { cameraStateRequest_ = state; }
+	void SetEZoomEnemy(const bool isEZoomEnemy) { isEZoomEnemy_ = isEZoomEnemy; }
 private:
 
 	//バッファリソース
@@ -126,5 +131,7 @@ private:
 	float shakeDuration_ = 0.0f; // シェイクの残り時間
 	Vector3 originalPosition_;   // シェイク開始前のカメラ位置
 	float shakeRange_ = 0.2f;    // シェイクの振幅
+
+	bool isEZoomEnemy_ = false;   // 敵をズームしているか
 };
 

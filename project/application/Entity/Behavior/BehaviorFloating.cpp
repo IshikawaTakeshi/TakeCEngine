@@ -16,6 +16,9 @@ void BehaviorFloating::Initialize([[maybe_unused]]GameCharacterContext& characte
 }
 
 void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
+
+	deltaTime_ = TakeCFrameWork::GetDeltaTime(); // デルタタイムの取得
+
 	Vector3& moveDirection_ = characterInfo.moveDirection; // 移動方向
 	Vector3& velocity_ = characterInfo.velocity; // 移動ベクトル
 	float moveSpeed_ = characterInfo.moveSpeed; // 移動速度

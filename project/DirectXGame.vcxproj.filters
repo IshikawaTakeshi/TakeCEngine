@@ -532,6 +532,7 @@
     <ClCompile Include="engine\scene\SceneTransition.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
+    <ClCompile Include="engine\Utility\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1078,6 +1079,7 @@
     <ClInclude Include="engine\Collision\SurfaceType.h">
       <Filter>engine\collision</Filter>
     </ClInclude>
+    <ClInclude Include="engine\Utility\Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
