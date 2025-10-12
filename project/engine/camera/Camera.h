@@ -7,7 +7,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <optional>
-
+#include <numbers>
 
 class Camera {
 public:
@@ -133,5 +133,6 @@ private:
 	float shakeRange_ = 0.2f;    // シェイクの振幅
 
 	bool isEZoomEnemy_ = false;   // 敵をズームしているか
+	const float kPitchLimit = std::numbers::pi_v<float> / 180.0f * 70.0f; // ピッチの制限角度
 };
 

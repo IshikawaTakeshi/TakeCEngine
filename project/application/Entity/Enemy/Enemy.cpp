@@ -218,7 +218,7 @@ void Enemy::Update() {
 	characterInfo_.onGround = false; 
 
 	//Quaternionからオイラー角に変換
-	Vector3 eulerRotate = QuaternionMath::toEuler(characterInfo_.transform.rotate);
+	Vector3 eulerRotate = QuaternionMath::ToEuler(characterInfo_.transform.rotate);
 	object3d_->SetTranslate(characterInfo_.transform.translate);
 	object3d_->SetRotate(eulerRotate);
 	object3d_->Update();

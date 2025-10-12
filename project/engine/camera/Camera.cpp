@@ -8,6 +8,7 @@
 #include "math/Easing.h"
 #include "math/Vector3Math.h"
 
+
 Camera::~Camera() {
 	cameraResource_.Reset();
 }
@@ -230,6 +231,8 @@ void Camera::UpdateCameraFollow() {
 	yawRot_ += deltaYaw;
 	pitchRot_ += deltaPitch;
 
+	pitchRot_ = std::clamp(pitchRot_, -kPitchLimit,kPitchLimit);
+
 	// クォータニオンを用いた回転計算
 	Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
 		Vector3(0, 1, 0), yawRot_);
@@ -266,8 +269,6 @@ void Camera::UpdateCameraFollow() {
 		transform_.translate = nextPosition_;
 	}
 	transform_.rotate = Easing::Slerp(transform_.rotate, rotationDelta, followSpeed_);
-	
-
 
 	//Rスティック押し込みでカメラの状態変更
 	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::RightStick)) {
@@ -314,9 +315,20 @@ void Camera::UpdateCameraLockOn() {
 	// 回転補間
 	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
 
+	
 
 	// 状態切り替え
 	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RightStick)) {
+		// transform_.rotateからforwardベクトルを算出
+		Vector3 forward = QuaternionMath::RotateVector(Vector3(0,0,1), transform_.rotate);
+		//yaw
+		yawRot_ = std::atan2(forward.x, forward.z);
+		//pitch
+		pitchRot_ = std::asin(-forward.y);
+		//必要ならclampする
+		pitchRot_ = std::clamp(pitchRot_, -kPitchLimit, kPitchLimit);
+
+		//状態遷移リクエスト(FOLLOW)
 		cameraStateRequest_ = GameCameraState::FOLLOW;
 	}
 }
@@ -359,10 +371,21 @@ void Camera::UpdateCameraEnemyDestroyed() {
 
 	// 回転補間
 	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
-
+	// transform_.rotateからforwardベクトルを算出
+	Vector3 forward = QuaternionMath::RotateVector(Vector3(0,0,1), transform_.rotate);
+	//yaw
+	yawRot_ = std::atan2(forward.x, forward.z);
+	//pitch
+	pitchRot_ = std::asin(-forward.y);
+	//必要ならclampする
+	pitchRot_ = std::clamp(pitchRot_, -kPitchLimit, kPitchLimit);
 
 	// 状態切り替え
 	if (isEZoomEnemy_ == false) {
+
+		
+
+		//状態遷移リクエスト(FOLLOW)
 		cameraStateRequest_ = GameCameraState::FOLLOW;
 	}
 }

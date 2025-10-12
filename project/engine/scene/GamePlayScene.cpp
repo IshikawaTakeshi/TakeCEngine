@@ -415,7 +415,7 @@ void GamePlayScene::UpdateGameOver() {}
 void GamePlayScene::InitializeGameClear() {
 
 	//スローモーション解除
-	MyGame::RequestTimeScale(1.0f, 1.0f,0.0f);
+	MyGame::RequestTimeScale(1.0f, 0.6f,0.0f);
 
 	//フェード処理の開始
 	fadeTimer_ = 4.0f;
