@@ -8,10 +8,9 @@
 #include "math/Easing.h"
 #include "math/Vector3Math.h"
 
-
-Camera::~Camera() {
-	cameraResource_.Reset();
-}
+//=============================================================================
+// 初期化
+//=============================================================================
 
 void Camera::Initialize(ID3D12Device* device) {
 	
@@ -39,42 +38,50 @@ void Camera::Initialize(ID3D12Device* device) {
 	cameraForGPU_->worldPosition = transform_.translate;
 }
 
+//=============================================================================
+// 更新
+//=============================================================================
+
 void Camera::Update() {
 #ifdef _DEBUG
+	//デバッグカメラとゲームカメラの切り替え
 	if (Input::GetInstance()->TriggerKey(DIK_F1)) {
 		isDebug_ = !isDebug_;
 	}
 #endif // _DEBUG
 
 	if (isDebug_) {
-
+		//デバッグカメラの更新
 		UpdateDebugCamera();
 		
 	} else {
-
+		//ゲームカメラの更新
 		UpdateGameCamera();
 	}
 	
-	transform_.rotate = QuaternionMath::Normalize(transform_.rotate); // クォータニオンを正規化して数値誤差を防ぐ
+	// クォータニオンを正規化して数値誤差を防ぐ
+	transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
 
+	//各種行列の計算
 	rotationMatrix_ = MatrixMath::MakeRotateMatrix(transform_.rotate);
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-
 	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);
-
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
 		fovX_,
 		aspectRatio_,
 		nearClip_,
 		farClip_
 	);
-
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
 
+	//GPUに転送するパラメータの更新
 	cameraForGPU_->worldPosition = transform_.translate;
 	cameraForGPU_->ProjectionInverse = MatrixMath::Inverse(projectionMatrix_);
 }
 
+//=============================================================================
+// シェイクの設定
+//=============================================================================
 
 void Camera::SetShake(float duration, float range) {
 	if (!isShaking_) {
@@ -84,6 +91,10 @@ void Camera::SetShake(float duration, float range) {
 		originalPosition_ = offsetDelta_; // 元の位置を保存
 	}
 }
+
+//=============================================================================
+// カメラシェイクの更新
+//=============================================================================
 
 void Camera::ShakeCamera() {
 	if (isShaking_) {
@@ -106,6 +117,10 @@ void Camera::ShakeCamera() {
 	}
 }
 
+//=============================================================================
+// ImGuiによるパラメータ調整
+//=============================================================================
+
 void Camera::UpdateImGui() {
 #ifdef _DEBUG
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
@@ -118,6 +133,10 @@ void Camera::UpdateImGui() {
 	ImGui::Checkbox("isDebug", &isDebug_);
 #endif // DEBUG
 }
+
+//=============================================================================
+// デバッグカメラの更新
+//=============================================================================
 
 void Camera::UpdateDebugCamera() {
 
@@ -156,6 +175,10 @@ void Camera::UpdateDebugCamera() {
 	transform_.translate = offset_;
 
 }
+
+//=============================================================================
+// ゲームカメラの更新
+//=============================================================================
 
 void Camera::UpdateGameCamera() {
 	
@@ -199,6 +222,11 @@ void Camera::UpdateGameCamera() {
 	
 }
 
+#pragma region Follow State
+//=============================================================================
+// Follow状態の処理
+//=============================================================================
+
 void Camera::InitializeCameraFollow() {
 
 	followSpeed_ = 0.3f;
@@ -206,18 +234,6 @@ void Camera::InitializeCameraFollow() {
 	offsetDelta_ = Vector3(0.0f, 5.0f, -50.0f);
 }
 
-void Camera::InitializeCameraLookAt() {
-
-	followSpeed_ = 0.4f;
-	offsetDelta_ = Vector3(0.0f, 5.0f, -50.0f);
-}
-
-void Camera::InitializeCameraEnemyDestroyed() {
-
-	followSpeed_ = 0.1f;
-	offsetDelta_ = Vector3(0.0f, 5.0f, -30.0f);
-	isEZoomEnemy_ = true;
-}
 
 void Camera::UpdateCameraFollow() {
 
@@ -276,6 +292,20 @@ void Camera::UpdateCameraFollow() {
 	}
 }
 
+#pragma endregion
+
+#pragma region LookAt State
+
+//=============================================================================
+// LookAt状態の処理
+//=============================================================================
+
+void Camera::InitializeCameraLookAt() {
+
+	followSpeed_ = 0.4f;
+	offsetDelta_ = Vector3(0.0f, 5.0f, -50.0f);
+}
+
 void Camera::UpdateCameraLockOn() {
 
 	// ターゲット方向を正規化
@@ -315,7 +345,7 @@ void Camera::UpdateCameraLockOn() {
 	// 回転補間
 	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
 
-	
+
 
 	// 状態切り替え
 	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RightStick)) {
@@ -331,6 +361,20 @@ void Camera::UpdateCameraLockOn() {
 		//状態遷移リクエスト(FOLLOW)
 		cameraStateRequest_ = GameCameraState::FOLLOW;
 	}
+}
+#pragma endregion
+
+#pragma region EnemyDestroyed State
+
+//=============================================================================
+// EnemyDestroyed状態の処理
+//=============================================================================
+
+void Camera::InitializeCameraEnemyDestroyed() {
+
+	followSpeed_ = 0.1f;
+	offsetDelta_ = Vector3(0.0f, 5.0f, -30.0f);
+	isEZoomEnemy_ = true;
 }
 
 void Camera::UpdateCameraEnemyDestroyed() {
@@ -383,12 +427,16 @@ void Camera::UpdateCameraEnemyDestroyed() {
 	// 状態切り替え
 	if (isEZoomEnemy_ == false) {
 
-		
-
 		//状態遷移リクエスト(FOLLOW)
 		cameraStateRequest_ = GameCameraState::FOLLOW;
 	}
 }
+
+#pragma endregion
+
+//=============================================================================
+// 回転の設定
+//=============================================================================
 
 void Camera::SetRotate(const Quaternion& rotate) {
 	transform_.rotate = rotate;
