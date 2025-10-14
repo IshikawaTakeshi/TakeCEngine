@@ -1,33 +1,33 @@
 {
     "attributes": {
         "color": {
-            "x": 0.007843137718737125,
-            "y": 0.0117647061124444,
-            "z": 0.0117647061124444
+            "x": 0.09019608050584793,
+            "y": 0.0941176488995552,
+            "z": 0.0941176488995552
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
         },
         "direction": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
         },
-        "colorRange": {
-            "max": 1.0,
-            "min": 0.0
-        },
         "editColor": true,
         "emitCount": 0,
         "enableFollowEmitter": false,
         "frequency": 0.0,
         "isBillboard": true,
+        "isDirectional": true,
         "isTraslate": true,
-        "isDirectional": false,
         "lifetimeRange": {
-            "max": 4.659999847412109,
-            "min": 1.0
+            "max": 5.670000076293945,
+            "min": 3.5
         },
         "positionRange": {
-            "max": 0.6700000166893005,
-            "min": -0.44999998807907104
+            "max": 1.0,
+            "min": -1.0
         },
         "rotateRange": {
             "max": 3.1415927410125732,
@@ -39,22 +39,22 @@
             "z": 1.0
         },
         "scaleRange": {
-            "max": 5.869999885559082,
-            "min": 4.119999885559082
+            "max": 5.800000190734863,
+            "min": 0.8600000143051147
         },
-        "scaleSetting": 0,
+        "scaleSetting": 1,
         "velocityRange": {
             "max": 10.0,
-            "min": -0.2800000011920929
+            "min": 3.2899999618530273
         }
     },
-    "name": "WalkSmoke2",
-  "primitiveParameters": {
-    "x": 1.0,
-    "y": 1.0,
-    "z": 1.0
-  },
-    "blendState": 1,
+    "blendState": 7,
+    "name": "DefaultGroup",
+    "primitiveParameters": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+    },
     "primitiveType": "PRIMITIVE_PLANE",
-    "textureFilePath": "white.png"
+    "textureFilePath": "SparkNoise.png"
 }

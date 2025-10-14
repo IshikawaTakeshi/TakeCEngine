@@ -34,6 +34,8 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 	//全プリセットの読み込み
 	LoadAllPresets();
 
+	TextureManager::GetInstance()->LoadTextureAll();
+
 	//テクスチャ名一覧の取得
 	textureFileNames_ = TextureManager::GetInstance()->GetLoadedTextureFileNames();
 }
@@ -138,8 +140,6 @@ void ParticleEditor::Finalize() {
 //======================================================================
 
 void ParticleEditor::Draw() {
-
-	particleCommon_->PreDraw();
 	TakeCFrameWork::GetParticleManager()->Draw();
 }
 
@@ -258,6 +258,30 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	if (ImGui::Button("Update Primitive")) {
 		// プリミティブの更新
 		particleManager_->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParameters);
+	}
+
+#pragma endregion
+
+	//ブレンドモードの設定
+#pragma region blend mode setting
+
+	ImGui::SeparatorText("Blend Mode Setting");
+	// BlendStateの全情報を取得
+	constexpr auto blendStates = magic_enum::enum_entries<BlendState>();
+	// 現在の選択インデックスを取得
+	int currentBlendIndex = static_cast<int>(magic_enum::enum_index(currentPreset_.blendState).value_or(0));
+	if (ImGui::BeginCombo("Blend Mode", magic_enum::enum_name(currentPreset_.blendState).data())) {
+		for (size_t i = 0; i < blendStates.size(); ++i) {
+			const bool isSelected = (currentBlendIndex == static_cast<int>(i));
+			if (ImGui::Selectable(blendStates[i].second.data(), isSelected)) {
+				//グループのブレンドモードを更新
+				currentPreset_.blendState = blendStates[i].first;
+			}
+			if (isSelected) {
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
 	}
 
 #pragma endregion

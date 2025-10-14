@@ -1,8 +1,8 @@
 #include "ParticleCommon.h"
-#include "DirectXCommon.h"
-#include "SrvManager.h"
-
-#include "CameraManager.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/SrvManager.h"
+#include "engine/camera/CameraManager.h"
+#include "engine/Utility/StringUtility.h"
 
 ParticleCommon* ParticleCommon::instance_ = nullptr;
 
@@ -20,17 +20,29 @@ void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 
 	srvManager_ = srvManager;
 
-	graphicPso_ = std::make_unique<PSO>();
-	graphicPso_->CompileVertexShader(dxCommon_->GetDXC(), L"Particle.VS.hlsl");
-	graphicPso_->CompilePixelShader(dxCommon_->GetDXC(), L"Particle.PS.hlsl");
-	graphicPso_->CreateGraphicPSO(dxCommon_->GetDevice(),D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO, PSO::BlendState::ADD);
-	graphicPso_->SetGraphicPipelineName("ParticlePSO");
-	graphicRootSignature_ = graphicPso_->GetGraphicRootSignature();
+	//graphicPso_ = std::make_unique<PSO>();
+	//graphicPso_->CompileVertexShader(dxCommon_->GetDXC(), L"Particle.VS.hlsl");
+	//graphicPso_->CompilePixelShader(dxCommon_->GetDXC(), L"Particle.PS.hlsl");
+	//graphicPso_->CreateGraphicPSO(dxCommon_->GetDevice(),D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO, BlendState::ADD);
+	//graphicPso_->SetGraphicPipelineName("ParticlePSO");
+	//graphicRootSignature_ = graphicPso_->GetGraphicRootSignature();
+
+	for (int i = 0; i < int(BlendState::COUNT); i++) {
+		auto pso = std::make_unique<PSO>();
+		pso->CompileVertexShader(dxCommon_->GetDXC(), L"Particle.VS.hlsl");
+		pso->CompilePixelShader(dxCommon_->GetDXC(), L"Particle.PS.hlsl");
+		pso->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO, static_cast<BlendState>(i));
+		
+		std::string blendStateName = StringUtility::EnumToString(static_cast<BlendState>(i));
+		pso->SetGraphicPipelineName("graphicPSO_" + blendStateName);
+		graphicPso_[static_cast<BlendState>(i)] = std::move(pso);
+	}
+	graphicRootSignature_ = graphicPso_[BlendState::NORMAL]->GetGraphicRootSignature();
 
 	graphicPsoForGPUParticle_ = std::make_unique<PSO>();
 	graphicPsoForGPUParticle_->CompileVertexShader(dxCommon_->GetDXC(), L"GPUParticle.VS.hlsl");
 	graphicPsoForGPUParticle_->CompilePixelShader(dxCommon_->GetDXC(), L"GPUParticle.PS.hlsl");
-	graphicPsoForGPUParticle_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO,PSO::BlendState::ADD);
+	graphicPsoForGPUParticle_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO,BlendState::ADD);
 	graphicPsoForGPUParticle_->SetGraphicPipelineName("GPUParticlePSO");
 	graphicRootSignatureForGPUParticle_ = graphicPsoForGPUParticle_->GetGraphicRootSignature();
 
@@ -57,7 +69,9 @@ void ParticleCommon::UpdateImGui() {
 void ParticleCommon::Finalize() {
 
 	graphicRootSignature_.Reset();
-	graphicPso_.reset();
+	for(auto& [key, pso] : graphicPso_) {
+		pso.reset();
+	}
 
 	graphicRootSignatureForGPUParticle_.Reset();
 	graphicPsoForGPUParticle_.reset();
@@ -72,12 +86,12 @@ void ParticleCommon::Finalize() {
 	dxCommon_ = nullptr;*/
 }
 
-void ParticleCommon::PreDraw() {
+void ParticleCommon::PreDraw(BlendState state) {
 
 	//ルートシグネチャ設定
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(graphicRootSignature_.Get());
 	//PSO設定
-	dxCommon_->GetCommandList()->SetPipelineState(graphicPso_->GetGraphicPipelineState());
+	dxCommon_->GetCommandList()->SetPipelineState(graphicPso_[state]->GetGraphicPipelineState());
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }

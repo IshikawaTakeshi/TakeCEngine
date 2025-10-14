@@ -34,6 +34,7 @@ void to_json(json& j, const ParticlePreset& preset) {
 
 	j["name"] = preset.presetName;
 	j["textureFilePath"] = preset.textureFilePath;
+	j["blendState"] = preset.blendState;
 	j["attributes"] = preset.attribute;
 	j["primitiveType"] = preset.primitiveType;
 	j["primitiveParameters"] = preset.primitiveParameters;
@@ -70,6 +71,7 @@ void from_json(const json& j, ParticlePreset& preset) {
 
 	j.at("name").get_to(preset.presetName);
 	j.at("textureFilePath").get_to(preset.textureFilePath);
+	j.at("blendState").get_to(preset.blendState);
 	j.at("attributes").get_to(preset.attribute);
 	j.at("primitiveType").get_to(preset.primitiveType);
 	j.at("primitiveParameters").get_to(preset.primitiveParameters);

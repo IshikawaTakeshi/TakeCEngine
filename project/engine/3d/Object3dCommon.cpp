@@ -35,7 +35,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	addBlendPso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
 	addBlendPso_->CompilePixelShader(dxCommon_->GetDXC(), L"Object3d.PS.hlsl");
 	addBlendPso_->CreateGraphicPSO(dxCommon_->GetDevice(),
-		D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL, PSO::BlendState::ADD);
+		D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL, BlendState::ADD);
 	pso_->SetGraphicPipelineName("Object3dPSO:graphic:AddBlend");
 	//RootSignatureの取得
 	graphicRootSignature_ = pso_->GetGraphicRootSignature();

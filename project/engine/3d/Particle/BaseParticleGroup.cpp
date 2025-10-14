@@ -17,10 +17,10 @@ void BaseParticleGroup::Draw() {
 
 	// perViewResource
 	particleCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(
-		particleCommon_->GetGraphicPSO()->GetGraphicBindResourceIndex("gPerView"), perViewResource_->GetGPUVirtualAddress());
+		particleCommon_->GetGraphicPSO(BlendState::NORMAL)->GetGraphicBindResourceIndex("gPerView"), perViewResource_->GetGPUVirtualAddress());
 	// particleResource
 	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
-		particleCommon_->GetGraphicPSO()->GetGraphicBindResourceIndex("gParticle"), particleSrvIndex_);
+		particleCommon_->GetGraphicPSO(BlendState::NORMAL)->GetGraphicBindResourceIndex("gParticle"), particleSrvIndex_);
 }
 
 Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate, const Vector3& directoin) {

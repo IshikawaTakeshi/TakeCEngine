@@ -48,12 +48,13 @@
       "min": -1.0
     }
   },
-    "name": "ItemPointEffect",
-    "primitiveParameters": {
-        "x": 1.9800000190734863,
-        "y": 2.0799999237060547,
-        "z": 1.0
-    },
-    "primitiveType": "PRIMITIVE_PLANE",
-    "textureFilePath": "Cross.png"
+  "name": "ItemPointEffect",
+  "primitiveParameters": {
+    "x": 1.9800000190734863,
+    "y": 2.0799999237060547,
+    "z": 1.0
+  },
+  "blendState": 1,
+  "primitiveType": "PRIMITIVE_PLANE",
+  "textureFilePath": "Cross.png"
 }

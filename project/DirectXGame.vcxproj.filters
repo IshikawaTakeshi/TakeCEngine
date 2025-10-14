@@ -1080,6 +1080,7 @@
       <Filter>engine\collision</Filter>
     </ClInclude>
     <ClInclude Include="engine\Utility\Timer.h" />
+    <ClInclude Include="engine\base\BlendModeStateEnum.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

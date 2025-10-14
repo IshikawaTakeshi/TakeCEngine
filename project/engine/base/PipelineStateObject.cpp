@@ -297,15 +297,58 @@ void PSO::CreateBlendStateForObject3d() {
 	blendDesc_.RenderTarget[0].DestBlendAlpha        = D3D12_BLEND_ZERO;
 }
 
-void PSO::CreateBlendStateForParticle() {
+void PSO::CreateBlendStateForParticle(BlendState state) {
+
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 	blendDesc_.RenderTarget[0].BlendEnable           = true;
-	blendDesc_.RenderTarget[0].SrcBlend              = D3D12_BLEND_SRC_ALPHA;
-	blendDesc_.RenderTarget[0].BlendOp               = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlend             = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].SrcBlendAlpha         = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].BlendOpAlpha          = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlendAlpha        = D3D12_BLEND_INV_SRC_ALPHA;
+	
+	switch (state) {
+	case BlendState::ADD:
+
+		blendDesc_.RenderTarget[0].SrcBlend       = D3D12_BLEND_SRC_ALPHA;
+		blendDesc_.RenderTarget[0].BlendOp        = D3D12_BLEND_OP_ADD;
+		blendDesc_.RenderTarget[0].DestBlend      = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].SrcBlendAlpha  = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].BlendOpAlpha   = D3D12_BLEND_OP_ADD;
+		blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+		break;
+	case BlendState::SUBTRACT:
+
+		blendDesc_.RenderTarget[0].SrcBlend       = D3D12_BLEND_SRC_ALPHA;
+		blendDesc_.RenderTarget[0].DestBlend      = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].BlendOp        = D3D12_BLEND_OP_REV_SUBTRACT;
+		blendDesc_.RenderTarget[0].SrcBlendAlpha  = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc_.RenderTarget[0].BlendOpAlpha   = D3D12_BLEND_OP_ADD;
+		break;
+	case BlendState::MULTIPLY:
+		blendDesc_.RenderTarget[0].SrcBlend       = D3D12_BLEND_DEST_COLOR;
+		blendDesc_.RenderTarget[0].DestBlend      = D3D12_BLEND_ZERO;
+		blendDesc_.RenderTarget[0].BlendOp        = D3D12_BLEND_OP_ADD;
+		blendDesc_.RenderTarget[0].SrcBlendAlpha  = D3D12_BLEND_ZERO;
+		blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc_.RenderTarget[0].BlendOpAlpha   = D3D12_BLEND_OP_ADD;
+		break;
+	case BlendState::SCREEN:
+		blendDesc_.RenderTarget[0].SrcBlend       = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].DestBlend      = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc_.RenderTarget[0].BlendOp        = D3D12_BLEND_OP_ADD;
+		blendDesc_.RenderTarget[0].SrcBlendAlpha  = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc_.RenderTarget[0].BlendOpAlpha   = D3D12_BLEND_OP_ADD;
+		break;
+	case BlendState::PREMULTIPLIED_ALPHA:
+		blendDesc_.RenderTarget[0].SrcBlend       = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].DestBlend      = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc_.RenderTarget[0].BlendOp        = D3D12_BLEND_OP_ADD;
+		blendDesc_.RenderTarget[0].SrcBlendAlpha  = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].BlendOpAlpha   = D3D12_BLEND_OP_ADD;
+		blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		break;
+	default:
+		break;
+	}
+	
 }
 
 void PSO::CreateBlendStateForSprite() {
@@ -332,25 +375,27 @@ void PSO::CreateBlendStateForBoostEffect() {
 
 void PSO::InitializeBlendState(BlendState blendState) {
 	switch (blendState) {
-	case PSO::BlendState::NORMAL:
+	case BlendState::NORMAL:
 		CreateBlendStateForObject3d();
 		break;
-	case PSO::BlendState::ADD:
-		CreateBlendStateForParticle();
+	case BlendState::ADD:
+		CreateBlendStateForParticle(BlendState::ADD);
 		break;
-	case PSO::BlendState::SUBTRACT:
-		CreateBlendStateForParticle();
+	case BlendState::SUBTRACT:
+		CreateBlendStateForParticle(BlendState::SUBTRACT);
 		break;
-	case PSO::BlendState::MULTIPLY:
-		CreateBlendStateForParticle();
+	case BlendState::MULTIPLY:
+		CreateBlendStateForParticle(BlendState::MULTIPLY);
 		break;
-	case PSO::BlendState::SCREEN:
-		CreateBlendStateForParticle();
+	case BlendState::SCREEN:
+		CreateBlendStateForParticle(BlendState::SCREEN);
+	case BlendState::PREMULTIPLIED_ALPHA:
+		CreateBlendStateForParticle(BlendState::PREMULTIPLIED_ALPHA);
 		break;
-	case PSO::BlendState::SPRITE:
+	case BlendState::SPRITE:
 		CreateBlendStateForSprite();
 		break;
-	case PSO::BlendState::BOOSTEFFECT:
+	case BlendState::BOOSTEFFECT:
 	default:
 		break;
 	}

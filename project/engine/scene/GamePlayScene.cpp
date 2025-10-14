@@ -236,7 +236,6 @@ void GamePlayScene::UpdateImGui() {
 
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();
-	ParticleCommon::GetInstance()->UpdateImGui();
 	
 	player_->UpdateImGui();
 	enemy_->UpdateImGui();
@@ -292,8 +291,8 @@ void GamePlayScene::Draw() {
 	enemy_->DrawCollider();
 	TakeCFrameWork::GetWireFrame()->Draw();
 
-	ParticleCommon::GetInstance()->PreDraw();   //パーティクルの描画前処理
-	TakeCFrameWork::GetParticleManager()->Draw(); //パーティクルの描画
+	//パーティクルの描画
+	TakeCFrameWork::GetParticleManager()->Draw();
 
 #pragma region スプライト描画
 	//スプライトの描画前処理

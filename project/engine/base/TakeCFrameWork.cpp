@@ -71,7 +71,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//ParticleManager
 	particleManager_ = std::make_unique<ParticleManager>();
-
+	particleManager_->Initialize(particleCommon_);
 	
 	//PrimitiveDrawer
 	primitiveDrawer_ = std::make_unique<PrimitiveDrawer>();

@@ -48,12 +48,13 @@
       "min": -0.019999999552965164
     }
   },
-    "name": "WalkSmoke1",
-    "primitiveParameters": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
-    },
-    "primitiveType": "PRIMITIVE_PLANE",
-    "textureFilePath": "Spark2.png"
+  "name": "WalkSmoke1",
+  "primitiveParameters": {
+    "x": 1.0,
+    "y": 1.0,
+    "z": 1.0
+  },
+  "blendState": 1,
+  "primitiveType": "PRIMITIVE_PLANE",
+  "textureFilePath": "Spark2.png"
 }
