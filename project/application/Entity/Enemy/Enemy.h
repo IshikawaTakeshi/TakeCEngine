@@ -14,6 +14,7 @@
 #include "application/Entity/Behavior/BehaviorManager.h"
 #include "application/Entity/Enemy/AIBrainSystem.h"
 #include "application/Entity/Enemy/BulletSensor.h"
+#include "application/Effect/DeadEffect.h"
 
 class Enemy : public GameCharacter {
 
@@ -124,6 +125,9 @@ private:
 	//背部のパーティクルエミッター
 	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
+	//死亡エフェクト
+	std::unique_ptr<DeadEffect> deadEffect_ = nullptr;
+
 	// プレイヤーの情報
 	GameCharacterContext characterInfo_;
 	// フレーム時間

@@ -1,9 +1,9 @@
 {
     "attributes": {
         "color": {
-            "x": 0.09019608050584793,
-            "y": 0.0941176488995552,
-            "z": 0.0941176488995552
+            "x": 1.0,
+            "y": 0.47058823704719543,
+            "z": 0.16078431904315948
         },
         "colorRange": {
             "max": 1.0,
@@ -18,43 +18,43 @@
         "emitCount": 0,
         "enableFollowEmitter": false,
         "frequency": 0.0,
-        "isBillboard": true,
-        "isDirectional": true,
+        "isBillboard": false,
+        "isDirectional": false,
         "isTraslate": true,
         "lifetimeRange": {
-            "max": 5.670000076293945,
-            "min": 3.5
+            "max": 0.49000000953674316,
+            "min": 0.3199999928474426
         },
         "positionRange": {
-            "max": 1.0,
-            "min": -1.0
+            "max": 3.9100000858306885,
+            "min": -5.789999961853027
         },
         "rotateRange": {
             "max": 3.1415927410125732,
             "min": -3.1415927410125732
         },
         "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 8.109999656677246,
+            "y": 6.010000228881836,
+            "z": 4.809999942779541
         },
         "scaleRange": {
-            "max": 5.800000190734863,
-            "min": 0.8600000143051147
+            "max": 10.0,
+            "min": 0.0
         },
         "scaleSetting": 1,
         "velocityRange": {
             "max": 10.0,
-            "min": 3.2899999618530273
+            "min": -9.470000267028809
         }
     },
-    "blendState": 7,
-    "name": "DefaultGroup",
+    "blendState": 1,
+    "name": "DeadExplosionEffect",
     "primitiveParameters": {
         "x": 1.0,
         "y": 1.0,
         "z": 1.0
     },
-    "primitiveType": "PRIMITIVE_PLANE",
-    "textureFilePath": "SparkNoise.png"
+    "primitiveType": "PRIMITIVE_SPHERE",
+    "textureFilePath": "BoostEffect4.png"
 }

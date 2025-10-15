@@ -35,6 +35,8 @@ private:
 
 	void LoadSound();
 
+	void LoadParticlePreset();
+
 private:
 
 	std::shared_ptr<BaseScene> currentScene_;

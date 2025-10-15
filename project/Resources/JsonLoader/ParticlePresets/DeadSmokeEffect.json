@@ -1,0 +1,60 @@
+{
+    "attributes": {
+        "color": {
+            "x": 0.09019608050584793,
+            "y": 0.0941176488995552,
+            "z": 0.0941176488995552
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 0,
+        "enableFollowEmitter": false,
+        "frequency": 0.0,
+        "isBillboard": true,
+        "isDirectional": true,
+        "isTraslate": true,
+        "lifetimeRange": {
+            "max": 5.670000076293945,
+            "min": 3.5
+        },
+        "positionRange": {
+            "max": 1.0,
+            "min": -1.0
+        },
+        "rotateRange": {
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "scaleRange": {
+            "max": 5.800000190734863,
+            "min": 0.8600000143051147
+        },
+        "scaleSetting": 1,
+        "velocityRange": {
+            "max": 10.0,
+            "min": 3.2899999618530273
+        }
+    },
+    "blendState": 7,
+    "name": "DeadSmokeEffect",
+    "primitiveParameters": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+    },
+    "primitiveType": "PRIMITIVE_PLANE",
+    "textureFilePath": "SparkNoise.png"
+}

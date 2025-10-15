@@ -28,14 +28,19 @@ void MyGame::Initialize(const std::wstring& titleName) {
 
 	//Model読み込み
 	LoadModel();
-
 	//Animation読み込み
 	LoadAnimation();
+	//Sound読み込み
+	LoadSound();
+	//ParticlePreset読み込み
+	LoadParticlePreset();
+
+
 	postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
 	postEffectManager_->InitializeEffect("GrayScale",   L"PostEffect/GrayScale.CS.hlsl");
 	postEffectManager_->InitializeEffect("Dissolve",    L"PostEffect/Dissolve.CS.hlsl");
 	postEffectManager_->InitializeEffect("RadialBluer", L"PostEffect/RadialBlur.CS.hlsl");
-	postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
+	//postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
 	postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
 	//postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
 	postEffectManager_->InitializeEffect("DepthBasedOutline",     L"PostEffect/DepthBasedOutline.CS.hlsl");
@@ -168,4 +173,12 @@ void MyGame::LoadTexture() {
 	TextureManager::GetInstance()->LoadTexture("UI/GameOverText.png", false);
 	TextureManager::GetInstance()->LoadTexture("UI/reticle_focusTarget.png", false);
 	TextureManager::GetInstance()->LoadTexture("UI/numText.png", false);
+}
+
+void MyGame::LoadSound() {
+
+}
+
+void MyGame::LoadParticlePreset() {
+
 }

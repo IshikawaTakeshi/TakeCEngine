@@ -46,7 +46,8 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "WalkSmoke2.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "MissileSmoke.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "MissileExplosion.json");
-
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DeadExplosionEffect.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DeadSmokeEffect.json");
 #pragma endregion
 
 	//levelObjectの初期化
