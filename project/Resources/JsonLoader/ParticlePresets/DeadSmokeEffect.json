@@ -22,12 +22,12 @@
         "isDirectional": true,
         "isTraslate": true,
         "lifetimeRange": {
-            "max": 5.670000076293945,
+            "max": 5.300000190734863,
             "min": 3.5
         },
         "positionRange": {
-            "max": 1.0,
-            "min": -1.0
+            "max": 2.0899999141693115,
+            "min": -2.490000009536743
         },
         "rotateRange": {
             "max": 3.1415927410125732,
@@ -39,8 +39,8 @@
             "z": 1.0
         },
         "scaleRange": {
-            "max": 5.800000190734863,
-            "min": 0.8600000143051147
+            "max": 4.28000020980835,
+            "min": 0.0
         },
         "scaleSetting": 1,
         "velocityRange": {

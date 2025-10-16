@@ -36,9 +36,9 @@ void GamePlayScene::Initialize() {
 	//CreateParticle
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "BoostEffect2.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "BoostEffect3.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"BulletLight.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "BulletLight.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "CrossEffect.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(),"DamageSpark.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "DamageSpark.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "SmokeEffect.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "SparkExplosion.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(ParticleCommon::GetInstance(), "ItemPointEffect.json");
@@ -59,11 +59,11 @@ void GamePlayScene::Initialize() {
 	}
 
 	//Animation読み込み
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation","walk.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation","Idle.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation","running.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation","throwAttack.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("gltf","player_singleMesh.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "walk.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "Idle.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "running.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "throwAttack.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("gltf", "player_singleMesh.gltf");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -107,13 +107,13 @@ void GamePlayScene::Initialize() {
 	//bulletCounterUI
 	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
 	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[0]->Initialize(SpriteCommon::GetInstance(), {760.0f,470.0f});
+	bulletCounterUI_[0]->Initialize(SpriteCommon::GetInstance(), { 760.0f,470.0f });
 	bulletCounterUI_[1] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[1]->Initialize(SpriteCommon::GetInstance(), {900.0f,470.0f});
+	bulletCounterUI_[1]->Initialize(SpriteCommon::GetInstance(), { 900.0f,470.0f });
 	bulletCounterUI_[2] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[2]->Initialize(SpriteCommon::GetInstance(), {760.0f,540.0f});
+	bulletCounterUI_[2]->Initialize(SpriteCommon::GetInstance(), { 760.0f,540.0f });
 	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[3]->Initialize(SpriteCommon::GetInstance(), {900.0f,540.0f});
+	bulletCounterUI_[3]->Initialize(SpriteCommon::GetInstance(), { 900.0f,540.0f });
 
 	//操作説明UI
 	instructionSprite_ = std::make_unique<Sprite>();
@@ -144,7 +144,7 @@ void GamePlayScene::Update() {
 	CameraManager::GetInstance()->Update();
 	//SkyBoxの更新
 	skyBox_->Update();
-	
+
 	//enemy
 	enemy_->SetFocusTargetPos(player_->GetObject3d()->GetTranslate());
 	enemy_->Update();
@@ -203,7 +203,7 @@ void GamePlayScene::Update() {
 
 		behaviorRequest_ = std::nullopt;
 	}
-	
+
 	switch (behavior_) {
 	case SceneBehavior::GAMESTART:
 
@@ -237,14 +237,14 @@ void GamePlayScene::UpdateImGui() {
 
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();
-	
+
 	player_->UpdateImGui();
 	enemy_->UpdateImGui();
 	playerHpBar_->UpdateImGui("player");
 	enemyHpBar_->UpdateImGui("enemy");
 	playerReticle_->UpdateImGui();
 	energyInfoUI_->UpdateImGui("player");
-	for(int i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) {
 		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
 	instructionSprite_->UpdateImGui("instruction");
@@ -299,24 +299,24 @@ void GamePlayScene::Draw() {
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
 
-	//プレイヤーのレティクルの描画
-	playerReticle_->Draw();
-	//HPバーの描画
-	playerHpBar_->Draw(); //プレイヤーのHPバーの描画
-	enemyHpBar_->Draw();  //敵のHPバーの描画
-	//エネルギーUIの描画
-	energyInfoUI_->Draw();
-	//弾カウンターUIの描画
-	for(auto& bulletUI : bulletCounterUI_) {
-		bulletUI->Draw();
+	if (behavior_ != SceneBehavior::ENEMYDESTROYED) {
+		//プレイヤーのレティクルの描画
+		playerReticle_->Draw();
+		//HPバーの描画
+		playerHpBar_->Draw(); //プレイヤーのHPバーの描画
+		enemyHpBar_->Draw();  //敵のHPバーの描画
+		//エネルギーUIの描画
+		energyInfoUI_->Draw();
+		//弾カウンターUIの描画
+		for (auto& bulletUI : bulletCounterUI_) {
+			bulletUI->Draw();
+		}
+
+		//操作説明UIの描画
+		instructionSprite_->Draw();
 	}
 
-	//操作説明UIの描画
-	instructionSprite_->Draw();
 #pragma endregion
-
-	
-
 }
 
 //====================================================================
@@ -375,11 +375,11 @@ void GamePlayScene::UpdateGamePlay() {
 void GamePlayScene::InitializeEnemyDestroyed() {
 
 	//スローモーションにする
-	MyGame::RequestTimeScale(-1.0f, 1.0f,1.0f);
+	MyGame::RequestTimeScale(-1.0f, 1.0f, 1.0f);
 	//カメラをズームする
 	CameraManager::GetInstance()->GetActiveCamera()->SetCameraStateRequest(Camera::GameCameraState::ENEMY_DESTROYED);
 	//changeBehaviorTimerを初期化
-	changeBehaviorTimer_.Initialize(2.0f, 0.0f);
+	changeBehaviorTimer_.Initialize(2.4f, 0.0f);
 }
 
 void GamePlayScene::UpdateEnemyDestroyed() {
@@ -415,7 +415,7 @@ void GamePlayScene::UpdateGameOver() {}
 void GamePlayScene::InitializeGameClear() {
 
 	//スローモーション解除
-	MyGame::RequestTimeScale(1.0f, 0.6f,0.0f);
+	MyGame::RequestTimeScale(1.0f, 0.6f, 0.0f);
 
 	//フェード処理の開始
 	fadeTimer_ = 4.0f;
@@ -458,7 +458,7 @@ void GamePlayScene::CheckAllCollisions() {
 		}
 	}
 	//垂直ミサイルの登録
-	for( const auto& missile : missiles) {
+	for (const auto& missile : missiles) {
 		if (missile->GetIsActive()) {
 			CollisionManager::GetInstance()->RegisterGameCharacter(static_cast<GameCharacter*>(missile));
 		}

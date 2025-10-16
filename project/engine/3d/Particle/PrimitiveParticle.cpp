@@ -58,6 +58,7 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 	}
 
 	particlePreset_.textureFilePath = filePath;
+	kDeltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
 void PrimitiveParticle::Update() {

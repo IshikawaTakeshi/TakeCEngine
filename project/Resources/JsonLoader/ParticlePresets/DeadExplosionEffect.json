@@ -22,8 +22,8 @@
         "isDirectional": false,
         "isTraslate": true,
         "lifetimeRange": {
-            "max": 0.49000000953674316,
-            "min": 0.3199999928474426
+            "max": 1.69,
+            "min": 1.32
         },
         "positionRange": {
             "max": 3.9100000858306885,
@@ -39,7 +39,7 @@
             "z": 4.809999942779541
         },
         "scaleRange": {
-            "max": 10.0,
+            "max": 22.0,
             "min": 0.0
         },
         "scaleSetting": 1,

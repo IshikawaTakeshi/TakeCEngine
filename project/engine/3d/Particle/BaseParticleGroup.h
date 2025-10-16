@@ -62,7 +62,7 @@ protected:
 	//Particleの総数
 	static const uint32_t kNumMaxInstance_ = 10240; 
 	//1フレームの時間
-	const float kDeltaTime_ = 1.0f / 60.0f;
+	float kDeltaTime_;
 	//描画するインスタンス数
 	uint32_t numInstance_ = 0; 
 	//Particleの配列

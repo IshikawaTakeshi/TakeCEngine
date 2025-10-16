@@ -161,15 +161,15 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	//Scale
 	ImGui::SliderInt("Scale Setting", reinterpret_cast<int*>(&attributes.scaleSetting), 0, 2, "None: %d, Scale Up: %d, Scale Down: %d");
 	ImGui::DragFloat3("Scale", &attributes.scale.x, 0.01f, 0.0f, 10.0f);
-	ImGui::DragFloat2("Scale Range", &attributes.scaleRange.min, 0.01f, 0.0f, 10.0f);
+	ImGui::DragFloat2("Scale Range", &attributes.scaleRange.min, 0.01f, 0.0f, 100.0f);
 
 	//Rotate
 	ImGui::DragFloat2("Rotate Range", &attributes.rotateRange.min, 0.01f, -3.14f, 3.14f);
 
 	//Translate,Velocity
-	ImGui::DragFloat2("Position Range", &attributes.positionRange.min, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat2("Position Range", &attributes.positionRange.min, 0.01f, -100.0f, 100.0f);
 	if (attributes.isTranslate) {
-		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -10.0f, 10.0f);
+		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -100.0f, 100.0f);
 	}
 	
 	//Color
@@ -421,6 +421,7 @@ void ParticleEditor::SavePreset(const std::string& presetName) {
 		return;
 	}
 	// 現在の属性をプリセットとして保存
+	currentPreset_.presetName = presetName;
 	TakeCFrameWork::GetJsonLoader()->SaveParticlePreset(presetName, currentPreset_);
 	// プリセット名を更新
 	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetParticlePresetList();

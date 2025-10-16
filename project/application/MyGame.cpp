@@ -85,7 +85,7 @@ void MyGame::Update() {
 
 	if (timeScaleTimer_.IsFinished() == false) {
 
-		timeScale_ = std::clamp(timeScaleTimer_.GetEase(Easing::EasingType::OUT_QUAD), 0.4f, 1.0f);
+		timeScale_ = std::clamp(timeScaleTimer_.GetEase(Easing::EasingType::OUT_QUAD), 0.2f, 1.0f);
 	}
 
 
