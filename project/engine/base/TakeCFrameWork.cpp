@@ -158,12 +158,14 @@ void TakeCFrameWork::Update() {
 
 #ifdef _DEBUG
 	imguiManager_->Begin();
-#endif
+
 	ImGui::Begin("FrameWork");
 	directXCommon_->DrawFPS();
 	ImGui::Text("DeltaTime: %.4f", kDeltaTime);
 	ImGui::Text("TimeScale: %.2f", timeScale_);
 	ImGui::End();
+#endif
+	
 	//入力の更新
 	input_->Update();
 
