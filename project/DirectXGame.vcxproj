@@ -124,6 +124,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Entity\Behavior\BehaviorChargeShootStun.cpp" />
     <ClCompile Include="application\Entity\Enemy\BulletSensor.cpp" />
     <ClCompile Include="application\Effect\BoostEffect.cpp" />
+    <ClCompile Include="application\Effect\DeadEffect.cpp" />
     <ClCompile Include="engine\PostEffect\BloomEffect.cpp" />
     <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
@@ -232,6 +233,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\UI\PlayerReticle.cpp" />
     <ClCompile Include="application\Provider\PlayerInputProvider.cpp" />
     <ClCompile Include="application\Provider\PlayerKeyInput.cpp" />
+    <ClCompile Include="application\Ground\WaterGround.cpp" />
+    <ClCompile Include="engine\Utility\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
@@ -255,6 +258,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Behavior\BehaviorChargeShootStun.h" />
     <ClInclude Include="application\Entity\Enemy\BulletSensor.h" />
     <ClInclude Include="application\Effect\BoostEffect.h" />
+    <ClInclude Include="application\Effect\DeadEffect.h" />
+    <ClInclude Include="engine\base\BlendModeStateEnum.h" />
     <ClInclude Include="engine\PostEffect\BloomEffect.h" />
     <ClInclude Include="engine\camera\CameraForGPU.h" />
     <ClInclude Include="engine\camera\PerView.h" />
@@ -382,6 +387,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\Rifle.h" />
     <ClInclude Include="application\Weapon\VerticalMissileLauncher.h" />
     <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h" />
+    <ClInclude Include="application\Ground\WaterGround.h" />
+    <ClInclude Include="engine\Utility\Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

@@ -46,6 +46,6 @@ namespace QuaternionMath {
 	Vector3 RotateVector(const Vector3& vector,const Quaternion& quaternion);
 
 	//QuaternionからVector3のオイラー角に変換
-	Vector3 toEuler(const Quaternion& q);
+	Vector3 ToEuler(const Quaternion& q);
 	
 }

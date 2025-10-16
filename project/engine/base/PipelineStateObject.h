@@ -11,7 +11,8 @@
 #include <d3d12shader.h>
 #include <d3dcompiler.h>
 
-#include "PSOType.h"
+#include "engine/base/PSOType.h"
+#include "engine/base/BlendModeStateEnum.h"
 
 ///	エイリアステンプレート
 template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
@@ -59,16 +60,6 @@ class PSO {
 
 public:
 
-	enum class BlendState {
-		NORMAL,
-		ADD,
-		SUBTRACT,
-		MULTIPLY,
-		SCREEN,
-		SPRITE,
-		BOOSTEFFECT,
-	};
-
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///			publicメンバ関数
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +79,7 @@ public:
 	/// ブレンドステート初期化
 	/// </summary>
 	void CreateBlendStateForObject3d();
-	void CreateBlendStateForParticle();
+	void CreateBlendStateForParticle(BlendState state);
 	void CreateBlendStateForSprite();
 	void CreateBlendStateForBoostEffect();
 

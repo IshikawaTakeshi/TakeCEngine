@@ -56,10 +56,14 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	particleEmitter_[2] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[2]->Initialize("EnemyEmitter2", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, characterInfo_.transform.translate }, 10, 1.0f);
 	particleEmitter_[2]->SetParticleName("SparkExplosion");
-
+	//背部エミッターの初期化
 	backEmitter_ = std::make_unique<ParticleEmitter>();
 	backEmitter_->Initialize("EnemyBackpack", object3d_->GetTransform(), 10, 0.01f);
 	backEmitter_->SetParticleName("WalkSmoke2");
+
+	//死亡エフェクト初期化
+	deadEffect_ = std::make_unique<DeadEffect>();
+	deadEffect_->Initialize();
 
 	weapons_.resize(2); // 武器の数を2つに設定
 	weaponTypes_.resize(2);
@@ -197,6 +201,7 @@ void Enemy::Update() {
 		//死亡状態のリクエスト
 		characterInfo_.isAlive = false;
 		behaviorManager_->RequestBehavior(Behavior::DEAD);
+		deadEffect_->Start();
 	}
 
 	//bulletSensorの更新
@@ -218,7 +223,7 @@ void Enemy::Update() {
 	characterInfo_.onGround = false; 
 
 	//Quaternionからオイラー角に変換
-	Vector3 eulerRotate = QuaternionMath::toEuler(characterInfo_.transform.rotate);
+	Vector3 eulerRotate = QuaternionMath::ToEuler(characterInfo_.transform.rotate);
 	object3d_->SetTranslate(characterInfo_.transform.translate);
 	object3d_->SetRotate(eulerRotate);
 	object3d_->Update();
@@ -241,6 +246,8 @@ void Enemy::Update() {
 	backEmitter_->SetTranslate(backpackPosition.value());
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
 	backEmitter_->Update();
+	//死亡エフェクトの更新
+	deadEffect_->Update(characterInfo_.transform.translate);
 
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark")->SetEmitterPosition(characterInfo_.transform.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(characterInfo_.transform.translate);

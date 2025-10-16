@@ -638,9 +638,7 @@ ComPtr<ID3D12Resource> DirectXCommon::CreateTextureResourceUAV(ComPtr<ID3D12Devi
 void DirectXCommon::DrawFPS() {
 #ifdef _DEBUG
 	float currentFPS = GetCurrentFPS();
-	ImGui::Begin("FrameWork");
 	ImGui::Text("FPS: %.2f", currentFPS);
-	ImGui::End();
 #endif // _DEBUG
 }
 

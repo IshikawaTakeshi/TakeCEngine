@@ -1,8 +1,10 @@
 #include "ParticleEmitter.h"
-#include "base/TakeCFrameWork.h"
-#include "base/ImGuiManager.h"
-#include "base/SrvManager.h"
-#include "math/Easing.h"
+#include "engine/base/TakeCFrameWork.h"
+#include "engine/base/ImGuiManager.h"
+#include "engine/base/SrvManager.h"
+#include "engine/math/Easing.h"
+#include "engine/math/Vector3Math.h"
+#include "engine/math/MatrixMath.h"
 #include "3d/Particle/GPUParticle.h"
 #include "2d/WireFrame.h"
 
@@ -25,6 +27,7 @@ void ParticleEmitter::Initialize(const std::string& emitterName, EulerTransform 
 	transforms_.translate = transforms.translate;
 	transforms_.rotate = transforms.rotate;
 	transforms_.scale = transforms.scale;
+	emitDirection_ = { 0.0f,0.0f,1.0f };
 	particleCount_ = count;
 	frequency_ = frequency;
 	frequencyTime_ = 0.0f;
@@ -83,6 +86,10 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 //==================================================================================
 
 void ParticleEmitter::Update() {
+
+	//transform.rotateによってDirectionを更新
+	Matrix4x4 rotateMatrix = MatrixMath::MakeRotateMatrix(transforms_.rotate);
+	emitDirection_ = MatrixMath::Transform({ 0.0f,0.0f,1.0f }, rotateMatrix);
 
 	//エミッターの更新
 	if (!isEmit_) return;
@@ -144,7 +151,7 @@ void ParticleEmitter::DrawWireFrame() {
 //==================================================================================
 
 void ParticleEmitter::Emit() {
-	TakeCFrameWork::GetParticleManager()->Emit(particleName_, transforms_.translate, particleCount_);
+	TakeCFrameWork::GetParticleManager()->Emit(particleName_, transforms_.translate,emitDirection_, particleCount_);
 }
 
 void ParticleEmitter::EmitParticle(GPUParticle* gpuParticle) {

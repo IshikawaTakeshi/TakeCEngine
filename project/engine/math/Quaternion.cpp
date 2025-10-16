@@ -147,7 +147,7 @@ Vector3 QuaternionMath::RotateVector(const Vector3& vector, const Quaternion& qu
 	return result;
 }
 
-Vector3 QuaternionMath::toEuler(const Quaternion& q) {
+Vector3 QuaternionMath::ToEuler(const Quaternion& q) {
 	Vector3 angles;
 	// X軸（ピッチ）
 	float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);

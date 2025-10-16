@@ -16,7 +16,7 @@ void WireFrame::Initialize(DirectXCommon* directXCommon) {
 		directXCommon->GetDevice(),
 		D3D12_FILL_MODE_WIREFRAME,
 		D3D12_DEPTH_WRITE_MASK_ALL,
-		PSO::BlendState::NORMAL,
+		BlendState::NORMAL,
 		D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
 		false
 	);

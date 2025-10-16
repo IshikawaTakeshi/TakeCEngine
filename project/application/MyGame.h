@@ -23,6 +23,7 @@ public:
 
 public:
 
+	static void RequestTimeScale(float timeScale, float duration,float current);
 
 private:
 
@@ -34,8 +35,13 @@ private:
 
 	void LoadSound();
 
+	void LoadParticlePreset();
+
 private:
 
 	std::shared_ptr<BaseScene> currentScene_;
+
+	static float requestedTimeScale_;
+	static Timer timeScaleTimer_;
 
 };

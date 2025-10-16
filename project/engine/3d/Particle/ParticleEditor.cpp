@@ -34,6 +34,8 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 	//全プリセットの読み込み
 	LoadAllPresets();
 
+	TextureManager::GetInstance()->LoadTextureAll();
+
 	//テクスチャ名一覧の取得
 	textureFileNames_ = TextureManager::GetInstance()->GetLoadedTextureFileNames();
 }
@@ -56,6 +58,8 @@ void ParticleEditor::Update() {
 	previewEmitter_->SetRotate(emitterTransform_.rotate);
 	previewEmitter_->SetScale(emitterTransform_.scale);
 	previewEmitter_->SetIsEmit(autoEmit_);
+	previewEmitter_->SetParticleCount(emitCount_);
+	previewEmitter_->SetFrequency(emitFrequency_);
 	particleManager_->GetParticleGroup(currentGroupName_)->SetEmitterPosition(emitterTransform_.translate);
 	previewEmitter_->Update();
 
@@ -136,8 +140,6 @@ void ParticleEditor::Finalize() {
 //======================================================================
 
 void ParticleEditor::Draw() {
-
-	particleCommon_->PreDraw();
 	TakeCFrameWork::GetParticleManager()->Draw();
 }
 
@@ -157,17 +159,17 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::SeparatorText("Particle Attributes");
 
 	//Scale
-	ImGui::SliderInt("Scale Setting", reinterpret_cast<int*>(&attributes.scaleSetting_), 0, 2, "None: %d, Scale Up: %d, Scale Down: %d");
+	ImGui::SliderInt("Scale Setting", reinterpret_cast<int*>(&attributes.scaleSetting), 0, 2, "None: %d, Scale Up: %d, Scale Down: %d");
 	ImGui::DragFloat3("Scale", &attributes.scale.x, 0.01f, 0.0f, 10.0f);
-	ImGui::DragFloat2("Scale Range", &attributes.scaleRange.min, 0.01f, 0.0f, 10.0f);
+	ImGui::DragFloat2("Scale Range", &attributes.scaleRange.min, 0.01f, 0.0f, 100.0f);
 
 	//Rotate
 	ImGui::DragFloat2("Rotate Range", &attributes.rotateRange.min, 0.01f, -3.14f, 3.14f);
 
 	//Translate,Velocity
-	ImGui::DragFloat2("Position Range", &attributes.positionRange.min, 0.01f, -10.0f, 10.0f);
-	if (attributes.isTranslate_) {
-		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat2("Position Range", &attributes.positionRange.min, 0.01f, -100.0f, 100.0f);
+	if (attributes.isTranslate) {
+		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -100.0f, 100.0f);
 	}
 	
 	//Color
@@ -182,8 +184,10 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	//Billboard
 	ImGui::Checkbox("Is Billboard", &attributes.isBillboard);
 	//Follow Emitter
-	ImGui::Checkbox("Enable Follow Emitter", &attributes.enableFollowEmitter_);
-	ImGui::Checkbox("TranslateUpdate", &attributes.isTranslate_);
+	ImGui::Checkbox("Enable Follow Emitter", &attributes.enableFollowEmitter);
+	ImGui::Checkbox("TranslateUpdate", &attributes.isTranslate);
+	//isDirectional
+	ImGui::Checkbox("Is Directional", &attributes.isDirectional);
 
 	//設定の適用
 	if (ImGui::Button("Apply Attributes")) {
@@ -258,6 +262,30 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 
 #pragma endregion
 
+	//ブレンドモードの設定
+#pragma region blend mode setting
+
+	ImGui::SeparatorText("Blend Mode Setting");
+	// BlendStateの全情報を取得
+	constexpr auto blendStates = magic_enum::enum_entries<BlendState>();
+	// 現在の選択インデックスを取得
+	int currentBlendIndex = static_cast<int>(magic_enum::enum_index(currentPreset_.blendState).value_or(0));
+	if (ImGui::BeginCombo("Blend Mode", magic_enum::enum_name(currentPreset_.blendState).data())) {
+		for (size_t i = 0; i < blendStates.size(); ++i) {
+			const bool isSelected = (currentBlendIndex == static_cast<int>(i));
+			if (ImGui::Selectable(blendStates[i].second.data(), isSelected)) {
+				//グループのブレンドモードを更新
+				currentPreset_.blendState = blendStates[i].first;
+			}
+			if (isSelected) {
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+#pragma endregion
+
 }
 
 //======================================================================
@@ -283,7 +311,8 @@ void ParticleEditor::DrawEmitterControls() {
 
 	//エミッターの発生ボタン
 	if (ImGui::Button("Manual Emit")) {
-		TakeCFrameWork::GetParticleManager()->Emit(currentGroupName_, emitterTransform_.translate, emitCount_);
+		emitterDirection_ = previewEmitter_->GetEmitDirection();
+		TakeCFrameWork::GetParticleManager()->Emit(currentGroupName_, emitterTransform_.translate,emitterDirection_, emitCount_);
 	}
 
 	ImGui::Separator();
@@ -392,6 +421,7 @@ void ParticleEditor::SavePreset(const std::string& presetName) {
 		return;
 	}
 	// 現在の属性をプリセットとして保存
+	currentPreset_.presetName = presetName;
 	TakeCFrameWork::GetJsonLoader()->SaveParticlePreset(presetName, currentPreset_);
 	// プリセット名を更新
 	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetParticlePresetList();

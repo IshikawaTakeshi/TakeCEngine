@@ -2,7 +2,8 @@
 #include <wrl.h>
 #include <d3d12.h>
 #include <memory>
-#include "PipelineStateObject.h"
+#include <unordered_map>
+#include "engine/base/PipelineStateObject.h"
 
 class Camera;
 class DirectXCommon;
@@ -21,7 +22,7 @@ public:
 
 	void Finalize();
 
-	void PreDraw();
+	void PreDraw(BlendState state);
 
 	void PreDrawForGPUParticle();
 
@@ -37,7 +38,7 @@ public:
 
 	SrvManager* GetSrvManager() const { return srvManager_; }
 
-	PSO* GetGraphicPSO() const { return graphicPso_.get(); }
+	PSO* GetGraphicPSO(BlendState state) const { return graphicPso_.at(state).get(); }
 
 	PSO* GetGraphicPSOForGPUParticle() const { return graphicPsoForGPUParticle_.get(); }
 
@@ -66,7 +67,7 @@ private:
 
 	DirectXCommon* dxCommon_ = nullptr;
 
-	std::unique_ptr<PSO> graphicPso_ = nullptr;
+	std::unordered_map<BlendState, std::unique_ptr<PSO>> graphicPso_;
 	std::unique_ptr<PSO> graphicPsoForGPUParticle_ = nullptr;
 	std::unique_ptr<PSO> computePsoForGPUParticle_ = nullptr;
 	std::unique_ptr<PSO> psoUpdateParticle_ = nullptr;

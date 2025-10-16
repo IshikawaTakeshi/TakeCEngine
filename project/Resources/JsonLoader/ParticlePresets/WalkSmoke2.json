@@ -5,16 +5,22 @@
             "y": 0.0117647061124444,
             "z": 0.0117647061124444
         },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
         "colorRange": {
             "max": 1.0,
             "min": 0.0
         },
         "editColor": true,
         "emitCount": 0,
-        "enableFollowEmitter_": false,
+        "enableFollowEmitter": false,
         "frequency": 0.0,
         "isBillboard": true,
-        "isTraslate_": true,
+        "isTraslate": true,
+        "isDirectional": false,
         "lifetimeRange": {
             "max": 4.659999847412109,
             "min": 1.0
@@ -36,18 +42,19 @@
             "max": 5.869999885559082,
             "min": 4.119999885559082
         },
-        "scaleSetting_": 0,
+        "scaleSetting": 0,
         "velocityRange": {
             "max": 10.0,
             "min": -0.2800000011920929
         }
     },
     "name": "WalkSmoke2",
-    "primitiveParameters": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
-    },
+  "primitiveParameters": {
+    "x": 1.0,
+    "y": 1.0,
+    "z": 1.0
+  },
+    "blendState": 1,
     "primitiveType": "PRIMITIVE_PLANE",
     "textureFilePath": "white.png"
 }
