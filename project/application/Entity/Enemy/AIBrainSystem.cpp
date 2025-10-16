@@ -157,7 +157,7 @@ float AIBrainSystem::CalculateJumpScore() {
 	float energyRatio = energyAfterJump / characterInfo_->energyInfo.maxEnergy;
 	float energyFactor = Easing::GentleRise(energyRatio);
 
-	jumpScore += energyFactor * 0.4f;
+	jumpScore += energyFactor * 0.2f;
 
 	return std::clamp(jumpScore, 0.0f, 1.0f);
 }
@@ -182,7 +182,7 @@ float AIBrainSystem::CalculateFloatingScore() {
 
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
-	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask) == true) {
 
 		// 障害物がある場合
 
@@ -192,29 +192,29 @@ float AIBrainSystem::CalculateFloatingScore() {
 		// プレイヤーより下にいる、または同じ高さにいる場合
 		if (verticalDiff >= 0.0f) {
 			// 目標: プレイヤーより少し上（例: +2.0f）
-			const float targetOffset = 2.0f;
+			const float targetOffset = 1.0f;
 			float idealHeight = characterInfo_->focusTargetPos.y + targetOffset;
 			float currentHeight = characterInfo_->transform.translate.y;
 			float heightDiff = idealHeight - currentHeight;
 
 			// 高度差を0-1の範囲に正規化（最大10.0fの差を想定）
-			const float maxHeightDiff = 10.0f;
+			const float maxHeightDiff = 5.0f;
 			float normalizedHeightDiff = std::clamp(heightDiff / maxHeightDiff, 0.0f, 1.0f);
 
 			// Easing関数を使用して緩やかなスコア変化
 			float heightFactor = Easing::GentleRise(normalizedHeightDiff);
 
-			// エネルギー残量に基づくスコア計算
+			// エネルギー残量に基づくスコア計算 (エネルギーが多いほど高スコア)
 			float energyFactor = (characterInfo_->energyInfo.energy - characterInfo_->jumpInfo.useEnergy) / characterInfo_->energyInfo.maxEnergy;
 			energyFactor = std::clamp(energyFactor, 0.0f, 1.0f);
 
 			// 障害物との距離が近いほどスコアを高くする
 			float obstacleProximity = 1.0f - std::clamp(hitInfo.distance / distance, 0.0f, 1.0f);
-			float obstacleFactor = Easing::GentleRise(obstacleProximity);
+			float obstacleFactor = Easing::UrgentRise(obstacleProximity);
 
 			// 最終スコア計算（障害物要素を追加）
 			floatingScore = heightFactor * energyFactor * obstacleFactor * 0.9f;
-			floatingScore = std::clamp(floatingScore, 0.0f, 1.0f);
+			floatingScore = Easing::Lerp(0.0f, 1.0f, floatingScore);
 		}
 	}
 

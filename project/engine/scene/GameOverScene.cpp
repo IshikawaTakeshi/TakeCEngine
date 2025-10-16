@@ -84,6 +84,6 @@ void GameOverScene::Draw() {
 
 	Object3dCommon::GetInstance()->PreDraw(); // Object3dの描画前処理
 	
-	ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理
+	//ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); // パーティクルの描画
 }

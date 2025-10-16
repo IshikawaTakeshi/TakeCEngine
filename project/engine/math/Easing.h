@@ -36,4 +36,34 @@ namespace Easing {
 	float UrgentRise(float x);
 	//緩やかな変化をさせる
 	float GentleRise(float x);
+
+	enum EasingType {
+		LINEAR,
+		IN_SINE,
+		OUT_SINE,
+		IN_OUT_SINE,
+		IN_QUAD,
+		OUT_QUAD,
+		IN_CUBIC,
+		OUT_CUBIC,
+		IN_EXPO,
+		OUT_EXPO,
+		URGENT_RISE,
+		GENTLE_RISE
+	};
+
+	using EasingFunction = std::function<float(float)>;
+	inline EasingFunction Ease[] = {[](float t){ return t; },
+		EaseInSine,
+		EaseOutSine,
+		EaseInOutSine,
+		EaseInQuad,
+		EaseOutQuad,
+		EaseInCubic,
+		EaseOutCubic,
+		EaseInExpo,
+		EaseOutExpo,
+		UrgentRise,
+		GentleRise
+	};
 };

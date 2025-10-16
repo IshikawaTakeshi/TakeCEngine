@@ -82,6 +82,6 @@ void GameClearScene::Draw() {
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
 	TakeCFrameWork::GetWireFrame()->Draw();
 
-	ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理
+	//ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); // パーティクルの描画
 }

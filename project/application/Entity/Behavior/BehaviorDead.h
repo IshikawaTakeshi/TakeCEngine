@@ -11,6 +11,6 @@ public:
 
 private:
 
-
+	float gravity_ = 9.8f; // 重力の強さ
 };
 

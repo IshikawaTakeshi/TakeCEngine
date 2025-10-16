@@ -25,9 +25,12 @@ void DepthBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	outlineInfoResource_->SetName(L"DepthBasedOutline::InfoResource");
 	outlineInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&outlineInfoData_));
 
-	outlineInfoData_->weight = 0.1f; // 初期値の設定
+	outlineInfoData_->weight = 0.1f;                           // 初期値の設定
 	outlineInfoData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f); // 初期色の設定
-	outlineInfoData_->isActive = true; // アウトラインを有効にする
+	outlineInfoData_->isActive = true;                         // アウトラインを有効にする
+	outlineInfoData_->distantSensitivity = 0.0f;               //遠方オブジェクトの感度調整係数
+	outlineInfoData_->distantStart = 200.0f;                   //遠方補正を始めるviewZ
+	outlineInfoData_->distantEnd = 2200.0f;                    //補正を最大にするviewZ
 }
 
 void DepthBasedOutline::UpdateImGui() {
@@ -36,6 +39,9 @@ void DepthBasedOutline::UpdateImGui() {
 	if (ImGui::TreeNode("DepthBasedOutline")) {
 		ImGui::SliderFloat("weight", &outlineInfoData_->weight, 0.0f, 10.0f);
 		ImGui::ColorEdit4("Color", &outlineInfoData_->color.x);
+		ImGui::SliderFloat("distantSensitivity", &outlineInfoData_->distantSensitivity, 0.0f, 1.0f);
+		ImGui::SliderFloat("distantStart", &outlineInfoData_->distantStart, 0.0f, 500.0f);
+		ImGui::SliderFloat("distantEnd", &outlineInfoData_->distantEnd, 0.0f, 5000.0f);
 		ImGui::TreePop();
 	}
 	ImGui::SameLine();

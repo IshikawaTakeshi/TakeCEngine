@@ -58,6 +58,7 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 	}
 
 	particlePreset_.textureFilePath = filePath;
+	kDeltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
 void PrimitiveParticle::Update() {
@@ -132,7 +133,7 @@ void PrimitiveParticle::Draw() {
 	BaseParticleGroup::Draw();
 	//プリミティブの描画
 	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(
-		particleCommon_->GetGraphicPSO(), numInstance_, particlePreset_.primitiveType, primitiveHandle_);
+		particleCommon_->GetGraphicPSO(BlendState::NORMAL), numInstance_, particlePreset_.primitiveType, primitiveHandle_);
 }
 
 Particle PrimitiveParticle::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate,const Vector3& direction) {

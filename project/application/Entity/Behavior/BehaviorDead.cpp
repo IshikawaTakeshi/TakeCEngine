@@ -10,8 +10,15 @@ BehaviorDead::BehaviorDead(baseInputProvider* provider) {
 }
 
 void BehaviorDead::Initialize([[maybe_unused]]GameCharacterContext& characterInfo) {
+
 }
 
 void BehaviorDead::Update(GameCharacterContext& characterInfo) {
-	characterInfo;
+	if(characterInfo.onGround == false){
+		//重力の影響を受ける
+		characterInfo.velocity.y -= (gravity_ + characterInfo.fallSpeed) * deltaTime_;
+		//位置の更新
+		characterInfo.transform.translate += characterInfo.velocity * deltaTime_;
+
+	}
 }

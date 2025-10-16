@@ -1,20 +1,21 @@
 #include "ParticleManager.h"
 #include "base/ImGuiManager.h"
 #include "base/TakeCFrameWork.h"
+#include "engine/3d/Particle/ParticleCommon.h"
 #include <cassert>
 
 //================================================================================================
 // 初期化
 //================================================================================================
 
-void ParticleManager::Initialize() {
+void ParticleManager::Initialize(ParticleCommon* particleCommon) {
 	emitterAllocater_ = std::make_unique<ParticleEmitterAllocater>();
+	particleCommon_ = particleCommon;
 }
 
 //================================================================================================
 // 更新処理
 //================================================================================================
-
 
 void ParticleManager::Update() {
 	for (auto& [name, particleGroup] : particleGroups_) {
@@ -49,8 +50,25 @@ void ParticleManager::UpdateImGui() {
 //================================================================================================
 
 void ParticleManager::Draw() {
-	for (auto& [name, particleGroup] : particleGroups_) {
-		particleGroup->Draw();
+	std::unordered_map<BlendState, std::vector<PrimitiveParticle*>> blendGroups;
+	for (auto& [name, group] : particleGroups_) {
+		BlendState state = group->GetPreset().blendState; // BlendMode取得
+		blendGroups[state].push_back(group.get());
+	}
+
+	//各ブレンドモードごとに描画
+	for (auto& [blendState, groups] : blendGroups) {
+
+		if (blendState == BlendState::COUNT) {
+			return;
+		}
+		
+		particleCommon_->PreDraw(blendState);
+
+		for (auto group : groups) {
+			group->Draw();
+		}
+		
 	}
 }
 

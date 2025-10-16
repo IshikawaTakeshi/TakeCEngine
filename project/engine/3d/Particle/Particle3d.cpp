@@ -135,7 +135,6 @@ void Particle3d::UpdateImGui() {
 
 	ImGui::Text("Particle3d");
 	ImGui::Text("ParticleCount:%d", numInstance_);
-	particleCommon_->GetGraphicPSO()->UpdateImGui();
 	ImGui::Separator();
 	ImGui::DragFloat3("Scale", &attributes.scale.x, 0.01f);
 	ImGui::DragFloat2("PositionRange", &attributes.positionRange.min, 0.01f);
