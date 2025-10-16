@@ -14,6 +14,7 @@
 #include "application/Entity/Behavior/BehaviorManager.h"
 #include "application/Entity/Enemy/AIBrainSystem.h"
 #include "application/Entity/Enemy/BulletSensor.h"
+#include "application/Effect/DeadEffect.h"
 
 class Enemy : public GameCharacter {
 
@@ -57,7 +58,7 @@ public:
 	//最大体力の取得
 	const float GetMaxHealth() const { return characterInfo_.maxHealth; }
 	//フォーカス対象の座標を取得
-	const Vector3& GetFocusTargetPos() const { return focusTargetPos_; }
+	const Vector3& GetFocusTargetPos() const { return characterInfo_.focusTargetPos; }
 
 	//エネルギーの取得
 	float GetEnergy() const { return characterInfo_.energyInfo.energy; }
@@ -83,7 +84,7 @@ public:
 	//プレイヤーの体力を設定
 	void SetHealth(float health) { characterInfo_.health = health; }
 	//フォーカス対象の座標を設定
-	void SetFocusTargetPos(const Vector3& targetPos) { focusTargetPos_ = targetPos; }
+	void SetFocusTargetPos(const Vector3& targetPos) { characterInfo_.focusTargetPos = targetPos; }
 
 	void SetVelocity(const Vector3& velocity) { characterInfo_.velocity = velocity; }
 	void SetOrbitAngle(float angle) { orbitAngle_ = angle; }
@@ -121,16 +122,17 @@ private:
 	//チャージ撃ちをする武器ユニット
 	std::vector<bool> chargeShootableUnits_;
 
-
+	//背部のパーティクルエミッター
+	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
+	//死亡エフェクト
+	std::unique_ptr<DeadEffect> deadEffect_ = nullptr;
+
 	// プレイヤーの情報
 	GameCharacterContext characterInfo_;
 	// フレーム時間
 	float deltaTime_ = 0.0f; 
 	float gravity_ = 9.8f;         // 重力の強さ
-	//補足対象の座標
-	Vector3 focusTargetPos_ = { 0.0f,100.0f,0.0f };
-
 	
 	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
 	float chargeShootTimer_ = 0.0f; //停止撃ちまでの残り猶予時間

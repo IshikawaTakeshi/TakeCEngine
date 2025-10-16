@@ -147,6 +147,34 @@ void TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
 	);
 }
 
+void TextureManager::LoadTextureAll() {
+
+	//Resources/imagesフォルダ内の全ての画像ファイルを読み込む
+	namespace fs = std::filesystem;
+	std::string directoryPath = "Resources/images/";
+	try {
+		if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
+			assert(false && "ディレクトリが存在しないか、ディレクトリではありません");
+			return;
+		}
+		for (const auto& entry : fs::directory_iterator(directoryPath)) {
+			if (entry.is_regular_file()) {
+				std::string filePath = entry.path().filename().string();
+				std::string extension = entry.path().extension().string();
+				//対応している拡張子のみ読み込む
+				if (extension == ".png" || extension == ".jpg" || extension == ".dds") {
+					LoadTexture(filePath, false);
+					//ファイルの最終更新日時を保存
+					fileUpdateTimes_[filePath] = GetFileLastWriteTime(entry.path().string());
+				}
+			}
+		}
+	} catch (const fs::filesystem_error& e) {
+		e;
+		assert(false && "ファイルシステムエラーが発生しました");
+	}
+}
+
 ///=================================================================================================
 ///			テクスチャリソースの作成
 //==================================================================================================

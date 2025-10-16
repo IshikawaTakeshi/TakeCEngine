@@ -49,7 +49,7 @@ void EnergyInfoUI::Update(float currentEnergy, float maxEnergy) {
 	//オーバーヒート中の場合、点滅スプライトの色を赤色に点滅させる
 	if (isOverHeating_) {
 		blinkTimer_ += TakeCFrameWork::GetDeltaTime();
-		float alpha = Easing::EaseOut(blinkTimer_ * blinkSpeed_);
+		float alpha = Easing::EaseOutSine(blinkTimer_ * blinkSpeed_);
 		blinkSprite_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, alpha }); // 赤色に設定
 
 	} else {

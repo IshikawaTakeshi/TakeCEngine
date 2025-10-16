@@ -56,6 +56,14 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	particleEmitter_[2] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[2]->Initialize("EnemyEmitter2", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, characterInfo_.transform.translate }, 10, 1.0f);
 	particleEmitter_[2]->SetParticleName("SparkExplosion");
+	//背部エミッターの初期化
+	backEmitter_ = std::make_unique<ParticleEmitter>();
+	backEmitter_->Initialize("EnemyBackpack", object3d_->GetTransform(), 10, 0.01f);
+	backEmitter_->SetParticleName("WalkSmoke2");
+
+	//死亡エフェクト初期化
+	deadEffect_ = std::make_unique<DeadEffect>();
+	deadEffect_->Initialize();
 
 	weapons_.resize(2); // 武器の数を2つに設定
 	weaponTypes_.resize(2);
@@ -64,9 +72,6 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	chargeShootableUnits_.resize(weapons_.size());
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
-
-	inputProvider_ = std::make_unique<EnemyInputProvider>(this);
-
 
 #pragma region charcterInfo
 
@@ -98,16 +103,20 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	bulletSensor_->Initialize(object3dCommon, "Sphere.gltf");
 	bulletSensor_->SetSensorRadius(collider_->GetHalfSize().x * 20.0f);
 
-	//BehaviorManagerの初期化
-	behaviorManager_ = std::make_unique<BehaviorManager>();
-	behaviorManager_->Initialize(inputProvider_.get());
-	behaviorManager_->InitializeBehaviors(characterInfo_);
-
 	//AIBrainSystemの初期化
 	aiBrainSystem_ = std::make_unique<AIBrainSystem>();
 	aiBrainSystem_->Initialize(&characterInfo_, weapons_.size());
 	aiBrainSystem_->SetOrbitRadius(orbitRadius_);
-	aiBrainSystem_->SetDistanceToTarget(Vector3Math::Length(focusTargetPos_ - characterInfo_.transform.translate));
+	aiBrainSystem_->SetDistanceToTarget(Vector3Math::Length(characterInfo_.focusTargetPos - characterInfo_.transform.translate));
+
+	//InputProviderの初期化
+	inputProvider_ = std::make_unique<EnemyInputProvider>(this);
+	inputProvider_->SetAIBrainSystem(aiBrainSystem_.get());
+
+	//BehaviorManagerの初期化
+	behaviorManager_ = std::make_unique<BehaviorManager>();
+	behaviorManager_->Initialize(inputProvider_.get());
+	behaviorManager_->InitializeBehaviors(characterInfo_);
 }
 
 void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
@@ -134,33 +143,45 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 
 void Enemy::Update() {
 
-	
-
 	//stepBoostのインターバルの更新
 	if (characterInfo_.stepBoostInfo.intervalTimer > 0.0f) {
 		characterInfo_.stepBoostInfo.intervalTimer -= deltaTime_;
 	}
 
-	// StepBoost入力判定を最初に追加
+	// RUNNING時のBehavior遷移リクエスト
 	if (behaviorManager_->GetCurrentBehaviorType() == Behavior::RUNNING) {
-
+		
+		//BestActionの取得
 		switch (aiBrainSystem_->GetBestAction()) {
-		case Action::JUMP:
+		case Action::JUMP: 
+			behaviorManager_->RequestBehavior(Behavior::JUMP);
+			break;
+		case Action::FLOATING: // FLOATINGへの遷移はJUMPで行う
 			behaviorManager_->RequestBehavior(Behavior::JUMP);
 			break;
 		case Action::STEPBOOST:
 			behaviorManager_->RequestBehavior(Behavior::STEPBOOST);
-			break;
+			break;	
 		}
 	}
 
 	//エネルギーの更新
 	UpdateEnergy();
-
 	//移動方向の取得
 	characterInfo_.moveDirection = inputProvider_->GetMoveDirection();
 	//Behaviorの更新
 	behaviorManager_->Update(characterInfo_);
+
+	// 地面に着地したらRUNNINGに戻る
+	if (characterInfo_.onGround == true &&
+		(behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::JUMP ||
+			behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING)) {
+		behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+	} else if (characterInfo_.onGround == false &&
+		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING) {
+		//空中にいる場合はFLOATINGに切り替え
+		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
+	}
 
 	//攻撃処理
 	if (characterInfo_.isAlive == true) {
@@ -180,38 +201,54 @@ void Enemy::Update() {
 		//死亡状態のリクエスト
 		characterInfo_.isAlive = false;
 		behaviorManager_->RequestBehavior(Behavior::DEAD);
+		deadEffect_->Start();
 	}
 
-	characterInfo_.onGround = false; // 毎フレームリセット
-
+	//bulletSensorの更新
 	bulletSensor_->SetTranslate(characterInfo_.transform.translate);
 	bulletSensor_->Update();
 
 	//AIの更新
-	float distance = (focusTargetPos_ - characterInfo_.transform.translate).Length();
+	float distance = (characterInfo_.focusTargetPos - characterInfo_.transform.translate).Length();
 	aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
 	aiBrainSystem_->SetDistanceToTarget(distance);
 	aiBrainSystem_->Update();
 
+	if (characterInfo_.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING || behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
+		backEmitter_->SetIsEmit(true);
+	} else {
+		backEmitter_->SetIsEmit(false);
+	}
+	// 着地判定の毎フレームリセット
+	characterInfo_.onGround = false; 
+
 	//Quaternionからオイラー角に変換
-	Vector3 eulerRotate = QuaternionMath::toEuler(characterInfo_.transform.rotate);
+	Vector3 eulerRotate = QuaternionMath::ToEuler(characterInfo_.transform.rotate);
 	object3d_->SetTranslate(characterInfo_.transform.translate);
 	object3d_->SetRotate(eulerRotate);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
-	weapons_[0]->SetTarget(focusTargetPos_);
+	//武器の更新
+	weapons_[0]->SetTarget(characterInfo_.focusTargetPos);
 	weapons_[0]->Update();
-	weapons_[1]->SetTarget(focusTargetPos_);
+	weapons_[1]->SetTarget(characterInfo_.focusTargetPos);
 	weapons_[1]->Update();
-
-
 
 	//パーティクルエミッターの更新
 	for (auto& emitter : particleEmitter_) {
 		emitter->SetTranslate(characterInfo_.transform.translate);
 		emitter->Update();
 	}
+
+	//背部エミッターの更新
+	std::optional<Vector3> backpackPosition = object3d_->GetModel()->GetSkeleton()->GetJointPosition("leg", object3d_->GetWorldMatrix());
+	backEmitter_->SetTranslate(backpackPosition.value());
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
+	backEmitter_->Update();
+	//死亡エフェクトの更新
+	deadEffect_->Update(characterInfo_.transform.translate);
+
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark")->SetEmitterPosition(characterInfo_.transform.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(characterInfo_.transform.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(characterInfo_.transform.translate);
@@ -438,16 +475,6 @@ void Enemy::WeaponAttack(int weaponIndex) {
 //===================================================================================
 // 攻撃開始判定
 //===================================================================================
-
-//bool Enemy::ShouldStartAttack(int weaponIndex) {
-//	// 例: ターゲットとの距離が射程範囲でクールタイムが終わってたら攻撃
-//	auto* weapon = weapons_[weaponIndex].get();
-//	
-//	float range = orbitRadius_ * 3.5f;
-//	bool cooldownReady = weapon->GetIsAvailable();
-//	// 例: 一定確率で攻撃開始
-//	return (distance <= range) && cooldownReady && (rand() % 100 < attackProbability_); // 10%の確率
-//}
 
 bool Enemy::ShouldReleaseAttack(int weaponIndex) {
 	auto* weapon = weapons_[weaponIndex].get();

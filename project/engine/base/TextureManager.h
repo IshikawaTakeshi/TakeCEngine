@@ -59,6 +59,8 @@ public:
 	/// <returns>画像イメージデータ</returns>
 	void LoadTexture(const std::string& filePath,bool forceReload);
 
+	void LoadTextureAll();
+
 private:
 
 	/// <summary>

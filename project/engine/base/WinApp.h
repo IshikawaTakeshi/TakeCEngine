@@ -10,19 +10,19 @@ public:
 // ゲームスクリーンのサイズ
 #ifdef _DEBUG
 	static const int32_t kScreenWidth = 1024;
-	static const int32_t kScreenHeight = 600;
+	static const int32_t kScreenHeight = 576;
 // クライアント領域のサイズ（デバッグ用）
-	static const int32_t kWindowWidth = 1880;
-	static const int32_t kWindowHeight = 920;
+	static const int32_t kWindowWidth =  1920;
+	static const int32_t kWindowHeight = 1000;
 #else
-	static const int32_t kScreenWidth = 1880;
-	static const int32_t kScreenHeight = 920;
+	static const int32_t kScreenWidth = 1920;
+	static const int32_t kScreenHeight = 1080;
 // クライアント領域のサイズ（リリース用）
-	static const int32_t kWindowWidth = 1880;
-	static const int32_t kWindowHeight = 920;
+	static const int32_t kWindowWidth = 1920;
+	static const int32_t kWindowHeight = 1080;
 #endif
 	static const uint32_t kDebugScreenWidth_ = 1024; // デバッグ用スクリーン幅
-	static const uint32_t kDebugScreenHeight_ = 600; // デバッグ用スクリーン高さ
+	static const uint32_t kDebugScreenHeight_ = 576; // デバッグ用スクリーン高さ
 
 	//デバッグ時のスクリーンサイズと実際に使うスクリーンサイズの比率
 	static float widthPercent_;

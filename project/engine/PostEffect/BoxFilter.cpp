@@ -26,7 +26,7 @@ void BoxFilter::UpdateImGui() {
 #endif // _DEBUG
 }
 
-void BoxFilter::DisPatch() {
+void BoxFilter::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance()->Transition(

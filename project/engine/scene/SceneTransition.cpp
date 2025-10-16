@@ -4,7 +4,6 @@
 #include "base/TakeCFrameWork.h"
 #include <algorithm>
 
-
 SceneTransition* SceneTransition::instance_ = nullptr;
 
 //=============================================================================

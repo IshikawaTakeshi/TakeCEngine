@@ -4,6 +4,9 @@
 #include "Utility/StringUtility.h"
 #include "Collision/CollisionManager.h"
 
+float MyGame::requestedTimeScale_ = 1.0f;
+Timer MyGame::timeScaleTimer_;
+
 //====================================================================
 //			初期化
 //====================================================================
@@ -25,14 +28,20 @@ void MyGame::Initialize(const std::wstring& titleName) {
 
 	//Model読み込み
 	LoadModel();
-
 	//Animation読み込み
 	LoadAnimation();
+	//Sound読み込み
+	LoadSound();
+	//ParticlePreset読み込み
+	LoadParticlePreset();
+
+
 	postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
 	postEffectManager_->InitializeEffect("GrayScale",   L"PostEffect/GrayScale.CS.hlsl");
 	postEffectManager_->InitializeEffect("Dissolve",    L"PostEffect/Dissolve.CS.hlsl");
 	postEffectManager_->InitializeEffect("RadialBluer", L"PostEffect/RadialBlur.CS.hlsl");
-	postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
+	//postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
+	postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
 	//postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
 	postEffectManager_->InitializeEffect("DepthBasedOutline",     L"PostEffect/DepthBasedOutline.CS.hlsl");
 
@@ -41,7 +50,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//最初のシーンを設定
 #ifdef _DEBUG
 
-	SceneManager::GetInstance()->ChangeScene("GAMEPLAY",0.0f);
+	SceneManager::GetInstance()->ChangeScene("TITLE",0.0f);
 #else
 	SceneManager::GetInstance()->ChangeScene("TITLE", 0.0f);
 #endif // _DEBUG
@@ -71,6 +80,14 @@ void MyGame::Finalize() {
 //====================================================================
 
 void MyGame::Update() {
+
+	timeScaleTimer_.Update(requestedTimeScale_);
+
+	if (timeScaleTimer_.IsFinished() == false) {
+
+		timeScale_ = std::clamp(timeScaleTimer_.GetEase(Easing::EasingType::OUT_QUAD), 0.2f, 1.0f);
+	}
+
 
 	//FrameWorkの更新
 	TakeCFrameWork::Update();
@@ -107,6 +124,11 @@ void MyGame::Draw() {
 	directXCommon_->PostDraw();
 }
 
+void MyGame::RequestTimeScale(float timeScale, float duration,float current) {
+	requestedTimeScale_ = timeScale;
+	timeScaleTimer_.Initialize(duration, current);
+}
+
 //====================================================================
 //			モデルの読み込み
 //====================================================================
@@ -121,6 +143,7 @@ void MyGame::LoadModel() {
 	ModelManager::GetInstance()->LoadModel("gltf", "Rifle.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "Bazooka.gltf");
 	ModelManager::GetInstance()->LoadModel("gltf", "VerticalMissileLauncher.gltf");
+	ModelManager::GetInstance()->LoadModel("gltf", "boostEffectCone.gltf");
 	//obj
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
 	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
@@ -150,4 +173,12 @@ void MyGame::LoadTexture() {
 	TextureManager::GetInstance()->LoadTexture("UI/GameOverText.png", false);
 	TextureManager::GetInstance()->LoadTexture("UI/reticle_focusTarget.png", false);
 	TextureManager::GetInstance()->LoadTexture("UI/numText.png", false);
+}
+
+void MyGame::LoadSound() {
+
+}
+
+void MyGame::LoadParticlePreset() {
+
 }

@@ -16,7 +16,7 @@ public:
 	
 	void UpdateImGui() override;
 
-	void DisPatch() override;
+	void Dispatch() override;
 
 private:
 

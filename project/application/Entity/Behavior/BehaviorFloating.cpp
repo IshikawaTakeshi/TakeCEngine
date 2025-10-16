@@ -16,6 +16,9 @@ void BehaviorFloating::Initialize([[maybe_unused]]GameCharacterContext& characte
 }
 
 void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
+
+	deltaTime_ = TakeCFrameWork::GetDeltaTime(); // デルタタイムの取得
+
 	Vector3& moveDirection_ = characterInfo.moveDirection; // 移動方向
 	Vector3& velocity_ = characterInfo.velocity; // 移動ベクトル
 	float moveSpeed_ = characterInfo.moveSpeed; // 移動速度
@@ -42,9 +45,8 @@ void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 
 	// 空中での降下処理(fallSpeedを重力に加算)
 	velocity_.y -= (gravity_ + characterInfo.fallSpeed) * deltaTime_;
-	characterInfo.transform.translate.x += velocity_.x * deltaTime_;
-	characterInfo.transform.translate.z += velocity_.z * deltaTime_;
-	characterInfo.transform.translate.y += velocity_.y * deltaTime_;
+	characterInfo.transform.translate += velocity_ * deltaTime_;
+	
 
 	// 地面に着地したらRUNNINGに戻る
 	if(characterInfo.onGround == true) {
@@ -60,7 +62,7 @@ void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 	//}
 	//ジャンプボタンの追加入力でさらに上昇
 	//TODO: Enemyの浮遊の判断をどうするか
-	if( Input::GetInstance()->PushButton(0, GamepadButtonType::RT)) {
+	if(inputProvider_->IsJumpRequested()) {
 
 		if( characterInfo.overHeatInfo.isOverheated) {
 			// オーバーヒート中はジャンプできない

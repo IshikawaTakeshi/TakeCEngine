@@ -17,6 +17,7 @@
 #include "engine/3d/Particle/ParticleEmitter.h"
 #include "engine/base/Particle/ParticleManager.h"
 #include "engine/Entity/LevelObject/LevelObject.h"
+#include "engine/Utility/Timer.h"
 
 //app
 #include "application/Ground/Ground.h"
@@ -34,6 +35,7 @@ public:
 	enum class SceneBehavior {
 		GAMESTART, // ゲーム開始状態
 		GAMEPLAY, // ゲームプレイ状態
+		ENEMYDESTROYED, // 敵撃破状態
 		GAMEOVER, // ゲームオーバー状態
 		GAMECLEAR, // ゲームクリア状態
 		PAUSE,  // ポーズ状態
@@ -60,6 +62,7 @@ private:
 	void InitializeGameStart();
 	//ゲームプレイ時の初期化
 	void InitializeGamePlay();
+	void InitializeEnemyDestroyed();
 	//ゲームオーバー時の初期化
 	void InitializeGameOver();
 	//ゲームクリア時の初期化
@@ -71,6 +74,7 @@ private:
 	void UpdateGameStart();
 	//ゲームプレイ時の更新
 	void UpdateGamePlay();
+	void UpdateEnemyDestroyed();
 	//ゲームオーバー時の更新
 	void UpdateGameOver();
 	//ゲームクリア時の更新
@@ -115,4 +119,6 @@ private:
 
 	//画面遷移時間
 	float fadeTimer_ = 0.0f;
+
+	Timer changeBehaviorTimer_;
 };

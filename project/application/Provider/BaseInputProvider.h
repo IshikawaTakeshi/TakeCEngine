@@ -8,6 +8,8 @@ public:
 		// 移動方向を取得する純粋仮想関数
 		virtual Vector3 GetMoveDirection() const = 0;
 
+		virtual bool IsJumpRequested() const = 0;
+
 		virtual void RequestAttack() = 0;
 		virtual void RequestChargeAttack() = 0;
 };

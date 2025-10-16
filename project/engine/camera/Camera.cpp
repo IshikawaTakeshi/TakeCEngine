@@ -8,9 +8,9 @@
 #include "math/Easing.h"
 #include "math/Vector3Math.h"
 
-Camera::~Camera() {
-	cameraResource_.Reset();
-}
+//=============================================================================
+// 初期化
+//=============================================================================
 
 void Camera::Initialize(ID3D12Device* device) {
 	
@@ -20,7 +20,7 @@ void Camera::Initialize(ID3D12Device* device) {
 	fovX_ = 0.45f;
 	aspectRatio_ = float(WinApp::kScreenWidth / 2) / float(WinApp::kScreenHeight / 2);
 	nearClip_ = 0.1f;
-	farClip_ = 2000.0f;
+	farClip_ = 3800.0f;
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(fovX_, aspectRatio_, nearClip_, farClip_);
@@ -36,48 +36,52 @@ void Camera::Initialize(ID3D12Device* device) {
 	cameraForGPU_ = nullptr;
 	cameraResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraForGPU_));
 	cameraForGPU_->worldPosition = transform_.translate;
-
-#ifdef _DEBUG
-	isDebug_ = true;
-#endif // _DEBUG
-
 }
 
-void Camera::Update() {
+//=============================================================================
+// 更新
+//=============================================================================
 
+void Camera::Update() {
+#ifdef _DEBUG
+	//デバッグカメラとゲームカメラの切り替え
 	if (Input::GetInstance()->TriggerKey(DIK_F1)) {
 		isDebug_ = !isDebug_;
 	}
+#endif // _DEBUG
 
 	if (isDebug_) {
-
+		//デバッグカメラの更新
 		UpdateDebugCamera();
 		
 	} else {
-
+		//ゲームカメラの更新
 		UpdateGameCamera();
 	}
 	
-	transform_.rotate = QuaternionMath::Normalize(transform_.rotate); // クォータニオンを正規化して数値誤差を防ぐ
+	// クォータニオンを正規化して数値誤差を防ぐ
+	transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
 
+	//各種行列の計算
 	rotationMatrix_ = MatrixMath::MakeRotateMatrix(transform_.rotate);
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-
 	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);
-
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
 		fovX_,
 		aspectRatio_,
 		nearClip_,
 		farClip_
 	);
-
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
 
+	//GPUに転送するパラメータの更新
 	cameraForGPU_->worldPosition = transform_.translate;
 	cameraForGPU_->ProjectionInverse = MatrixMath::Inverse(projectionMatrix_);
 }
 
+//=============================================================================
+// シェイクの設定
+//=============================================================================
 
 void Camera::SetShake(float duration, float range) {
 	if (!isShaking_) {
@@ -87,6 +91,10 @@ void Camera::SetShake(float duration, float range) {
 		originalPosition_ = offsetDelta_; // 元の位置を保存
 	}
 }
+
+//=============================================================================
+// カメラシェイクの更新
+//=============================================================================
 
 void Camera::ShakeCamera() {
 	if (isShaking_) {
@@ -109,6 +117,10 @@ void Camera::ShakeCamera() {
 	}
 }
 
+//=============================================================================
+// ImGuiによるパラメータ調整
+//=============================================================================
+
 void Camera::UpdateImGui() {
 #ifdef _DEBUG
 	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
@@ -121,6 +133,10 @@ void Camera::UpdateImGui() {
 	ImGui::Checkbox("isDebug", &isDebug_);
 #endif // DEBUG
 }
+
+//=============================================================================
+// デバッグカメラの更新
+//=============================================================================
 
 void Camera::UpdateDebugCamera() {
 
@@ -160,6 +176,10 @@ void Camera::UpdateDebugCamera() {
 
 }
 
+//=============================================================================
+// ゲームカメラの更新
+//=============================================================================
+
 void Camera::UpdateGameCamera() {
 	
 	if (cameraStateRequest_) {
@@ -171,6 +191,9 @@ void Camera::UpdateGameCamera() {
 			break;
 		case Camera::GameCameraState::LOOKAT:
 			InitializeCameraLookAt();
+			break;
+		case Camera::GameCameraState::ENEMY_DESTROYED:
+			InitializeCameraEnemyDestroyed();
 			break;
 		default:
 			break;
@@ -186,6 +209,9 @@ void Camera::UpdateGameCamera() {
 	case Camera::GameCameraState::LOOKAT:
 		UpdateCameraLockOn();
 		break;
+	case Camera::GameCameraState::ENEMY_DESTROYED:
+		UpdateCameraEnemyDestroyed();
+		break;
 	default:
 
 		nextPosition_ = transform_.translate; // デフォルトの位置を保持
@@ -196,17 +222,18 @@ void Camera::UpdateGameCamera() {
 	
 }
 
+#pragma region Follow State
+//=============================================================================
+// Follow状態の処理
+//=============================================================================
+
 void Camera::InitializeCameraFollow() {
 
 	followSpeed_ = 0.3f;
 	offset_ = offsetDelta_;
-}
-
-void Camera::InitializeCameraLookAt() {
-
-	followSpeed_ = 0.4f;
 	offsetDelta_ = Vector3(0.0f, 5.0f, -50.0f);
 }
+
 
 void Camera::UpdateCameraFollow() {
 
@@ -219,6 +246,8 @@ void Camera::UpdateCameraFollow() {
 
 	yawRot_ += deltaYaw;
 	pitchRot_ += deltaPitch;
+
+	pitchRot_ = std::clamp(pitchRot_, -kPitchLimit,kPitchLimit);
 
 	// クォータニオンを用いた回転計算
 	Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
@@ -256,13 +285,25 @@ void Camera::UpdateCameraFollow() {
 		transform_.translate = nextPosition_;
 	}
 	transform_.rotate = Easing::Slerp(transform_.rotate, rotationDelta, followSpeed_);
-	
-
 
 	//Rスティック押し込みでカメラの状態変更
 	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::RightStick)) {
 		cameraStateRequest_ = GameCameraState::LOOKAT;
 	}
+}
+
+#pragma endregion
+
+#pragma region LookAt State
+
+//=============================================================================
+// LookAt状態の処理
+//=============================================================================
+
+void Camera::InitializeCameraLookAt() {
+
+	followSpeed_ = 0.4f;
+	offsetDelta_ = Vector3(0.0f, 5.0f, -50.0f);
 }
 
 void Camera::UpdateCameraLockOn() {
@@ -305,11 +346,97 @@ void Camera::UpdateCameraLockOn() {
 	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
 
 
+
 	// 状態切り替え
 	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RightStick)) {
+		// transform_.rotateからforwardベクトルを算出
+		Vector3 forward = QuaternionMath::RotateVector(Vector3(0,0,1), transform_.rotate);
+		//yaw
+		yawRot_ = std::atan2(forward.x, forward.z);
+		//pitch
+		pitchRot_ = std::asin(-forward.y);
+		//必要ならclampする
+		pitchRot_ = std::clamp(pitchRot_, -kPitchLimit, kPitchLimit);
+
+		//状態遷移リクエスト(FOLLOW)
 		cameraStateRequest_ = GameCameraState::FOLLOW;
 	}
 }
+#pragma endregion
+
+#pragma region EnemyDestroyed State
+
+//=============================================================================
+// EnemyDestroyed状態の処理
+//=============================================================================
+
+void Camera::InitializeCameraEnemyDestroyed() {
+
+	followSpeed_ = 0.1f;
+	offsetDelta_ = Vector3(0.0f, 5.0f, -30.0f);
+	isEZoomEnemy_ = true;
+}
+
+void Camera::UpdateCameraEnemyDestroyed() {
+
+	// ターゲット方向を正規化
+	Vector3 toTarget = Vector3Math::Normalize(*focusTargetPosition_ - transform_.translate);
+
+	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
+	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
+
+	// 高さを持った固定オフセット
+	offset_ = offsetDelta_;
+
+	// ターゲットからの相対位置に補間移動
+	Vector3 desiredPosition = *followTargetPosition_ + QuaternionMath::RotateVector(offset_, transform_.rotate);
+	nextPosition_ = Easing::Lerp(transform_.translate, desiredPosition, followSpeed_);
+
+	//埋まり回避
+	direction_ = Vector3Math::Normalize(nextPosition_ - *followTargetPosition_);
+	float distance = Vector3Math::Length(nextPosition_ - *followTargetPosition_);
+
+	Ray ray;
+	ray.origin = *followTargetPosition_;
+	ray.direction = direction_;
+	ray.distance = distance;
+	RayCastHit hitInfo;
+
+	//コライダーのマスク
+	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
+	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
+		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
+		transform_.translate = hitInfo.position - direction_ * margin;
+	} else {
+		// 衝突しなかった場合は、通常の位置に移動
+		transform_.translate = nextPosition_;
+	}
+
+	// 回転補間
+	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
+	// transform_.rotateからforwardベクトルを算出
+	Vector3 forward = QuaternionMath::RotateVector(Vector3(0,0,1), transform_.rotate);
+	//yaw
+	yawRot_ = std::atan2(forward.x, forward.z);
+	//pitch
+	pitchRot_ = std::asin(-forward.y);
+	//必要ならclampする
+	pitchRot_ = std::clamp(pitchRot_, -kPitchLimit, kPitchLimit);
+
+	// 状態切り替え
+	if (isEZoomEnemy_ == false) {
+
+		//状態遷移リクエスト(FOLLOW)
+		cameraStateRequest_ = GameCameraState::FOLLOW;
+	}
+}
+
+#pragma endregion
+
+//=============================================================================
+// 回転の設定
+//=============================================================================
 
 void Camera::SetRotate(const Quaternion& rotate) {
 	transform_.rotate = rotate;

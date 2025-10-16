@@ -22,11 +22,6 @@ void BehaviorRunning::Update(GameCharacterContext& characterInfo) {
 		characterInfo.velocity.x += characterInfo.moveDirection.x * characterInfo.moveSpeed * deltaTime_;
 		characterInfo.velocity.z += characterInfo.moveDirection.z * characterInfo.moveSpeed * deltaTime_;
 
-		float targetAngle = atan2(characterInfo.moveDirection.x, characterInfo.moveDirection.z);
-		Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
-
-		characterInfo.transform.rotate = Easing::Slerp(characterInfo.transform.rotate, targetRotate, 0.1f);
-		characterInfo.transform.rotate = QuaternionMath::Normalize(characterInfo.transform.rotate);
 		//パーティクルエミッターの更新
 		//backEmitter_->Emit();
 

@@ -7,12 +7,6 @@ struct Material {
 	float shininess;
 };
 
-//struct DirectionalLight {
-//	float4 color; //ライトのカラー	
-//	float3 direction; //ライトの向き
-//	float intensity; //輝度
-//};
-
 //マテリアル
 ConstantBuffer<Material> gMaterial : register(b0);
 //テクスチャ
@@ -34,6 +28,6 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 	if (output.color.a == 0.0f) {
 		discard;
 	}
-	
+	output.color.rgb *= output.color.a;
 	return output;
 }

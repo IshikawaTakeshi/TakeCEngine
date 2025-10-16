@@ -1,0 +1,60 @@
+{
+    "attributes": {
+        "color": {
+            "x": 0.9254902005195618,
+            "y": 0.0470588244497776,
+            "z": 0.0470588244497776
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 0,
+        "enableFollowEmitter": false,
+        "frequency": 0.0,
+        "isBillboard": true,
+        "isDirectional": true,
+        "isTraslate": true,
+        "lifetimeRange": {
+            "max": 0.6499999761581421,
+            "min": 0.20999999344348907
+        },
+        "positionRange": {
+            "max": 0.46000000834465027,
+            "min": -0.4099999964237213
+        },
+        "rotateRange": {
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
+        },
+        "scale": {
+            "x": 0.05000000074505806,
+            "y": 0.1599999964237213,
+            "z": 0.1599999964237213
+        },
+        "scaleRange": {
+            "max": 0.5600000023841858,
+            "min": 0.14000000059604645
+        },
+        "scaleSetting": 1,
+        "velocityRange": {
+            "max": 4.059999942779541,
+            "min": 0.46000000834465027
+        }
+    },
+    "name": "BoostEffect3",
+  "primitiveParameters": {
+    "x": 1.0,
+    "y": 1.0,
+    "z": 1.0
+  },
+    "blendState": 1,
+    "primitiveType": "PRIMITIVE_PLANE",
+    "textureFilePath": "white1x1.png"
+}

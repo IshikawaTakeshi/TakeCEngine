@@ -11,7 +11,7 @@ std::unique_ptr<PrimitiveDrawer> TakeCFrameWork::primitiveDrawer_ = nullptr;
 std::unique_ptr<PostEffectManager> TakeCFrameWork::postEffectManager_= nullptr;
 std::unique_ptr<WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
 std::chrono::steady_clock::time_point TakeCFrameWork::gameTime_ = Clock::now();
-const float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
+float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
 
 //====================================================================
 //			初期化
@@ -71,7 +71,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//ParticleManager
 	particleManager_ = std::make_unique<ParticleManager>();
-
+	particleManager_->Initialize(particleCommon_);
 	
 	//PrimitiveDrawer
 	primitiveDrawer_ = std::make_unique<PrimitiveDrawer>();
@@ -154,10 +154,18 @@ void TakeCFrameWork::Update() {
 		isEnd_ = true;
 	}
 
+	kDeltaTime = 0.016f * timeScale_;
+
 #ifdef _DEBUG
 	imguiManager_->Begin();
-#endif
+
+	ImGui::Begin("FrameWork");
 	directXCommon_->DrawFPS();
+	ImGui::Text("DeltaTime: %.4f", kDeltaTime);
+	ImGui::Text("TimeScale: %.2f", timeScale_);
+	ImGui::End();
+#endif
+	
 	//入力の更新
 	input_->Update();
 
