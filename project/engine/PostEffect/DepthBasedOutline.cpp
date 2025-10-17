@@ -56,11 +56,19 @@ void DepthBasedOutline::Dispatch() {
 		return; // アウトラインが無効な場合は処理をスキップ
 	}
 
+	//outputTexure
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance()->Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		outputResource_.Get());
+
+	//depthTexture
+	//DEPTH_WRITE >> NON_PIXEL_SHADER_RESOURCE
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+		dxCommon_->GetDepthStencilResource().Get());
 
 	//Computeパイプラインのセット
 	dxCommon_->GetCommandList()->SetComputeRootSignature(rootSignature_.Get());
@@ -83,6 +91,14 @@ void DepthBasedOutline::Dispatch() {
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 8, WinApp::kScreenHeight / 8, 1);
 
+	//depthTexture
+	//NON_PIXEL_SHADER_RESOURCE >> DEPTH_WRITE
+	ResourceBarrier::GetInstance()->Transition(
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		dxCommon_->GetDepthStencilResource().Get());
+
+	//outputTexure
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
 	ResourceBarrier::GetInstance()->Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,

@@ -1083,6 +1083,7 @@
     <ClInclude Include="engine\Utility\Timer.h" />
     <ClInclude Include="engine\base\BlendModeStateEnum.h" />
     <ClInclude Include="application\Effect\DeadEffect.h" />
+    <ClInclude Include="engine\3d\Light\DirectionalLight.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -1171,6 +1172,11 @@
     <None Include="Resources\shaders\CameraData.hlsli">
       <Filter>Resources\shader\Object</Filter>
     </None>
+    <None Include="Resources\shaders\Light\Lighting.hlsli" />
+    <None Include="Resources\shaders\Light\DirectionalLight.hlsli" />
+    <None Include="Resources\shaders\Material.hlsli" />
+    <None Include="Resources\shaders\Light\PointLight.hlsli" />
+    <None Include="Resources\shaders\Light\SpotLight.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">

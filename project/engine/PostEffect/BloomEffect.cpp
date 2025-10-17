@@ -26,10 +26,14 @@ void BloomEffect::UpdateImGui() {
 
 #ifdef _DEBUG
 	ImGui::Text("BloomEffect");
+	
+	if (ImGui::TreeNode("BloomEffect")) {
+		ImGui::SliderFloat("threshold", &effectInfoData_->threshold, 0.0f, 1.0f);
+		ImGui::SliderFloat("strength", &effectInfoData_->strength, 0.0f, 0.5f);
+		ImGui::SliderFloat("sigma", &effectInfoData_->sigma, 0.0f, 2.0f);
+		ImGui::TreePop();
+	}
 	ImGui::SameLine();
-	ImGui::SliderFloat("threshold", &effectInfoData_->threshold, 0.0f, 1.0f);
-	ImGui::SliderFloat("strength", &effectInfoData_->strength, 0.0f, 0.5f);
-	ImGui::SliderFloat("sigma", &effectInfoData_->sigma, 0.0f, 2.0f);
 	ImGui::Checkbox("isActive", &effectInfoData_->isActive);
 #endif // _DEBUG
 

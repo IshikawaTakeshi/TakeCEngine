@@ -1,6 +1,7 @@
 #pragma once
 #include "ResourceDataStructure.h"
-#include "PipelineStateObject.h"
+#include "engine/base/PipelineStateObject.h"
+#include "engine/3d/Light/DirectionalLight.h"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
