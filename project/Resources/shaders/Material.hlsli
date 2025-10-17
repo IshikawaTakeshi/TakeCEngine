@@ -1,3 +1,4 @@
+#pragma once
 struct Material {
 	float4 color; //カラー
 	float4x4 uvTransform;

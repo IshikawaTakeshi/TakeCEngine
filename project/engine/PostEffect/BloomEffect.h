@@ -1,13 +1,22 @@
 #pragma once
 #include "engine/PostEffect/PostEffect.h"
+
+//============================================================
+//	BloomEffect class
+//============================================================
 class BloomEffect : public PostEffect {
 public:
 	BloomEffect() = default;
 	~BloomEffect() = default;
+
+	// 初期化
 	void Initialize(
 		DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
 		ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) override;
+
+	// ImGuiの更新
 	void UpdateImGui() override;
+	// エフェクトの実行
 	void Dispatch() override;
 
 private:
