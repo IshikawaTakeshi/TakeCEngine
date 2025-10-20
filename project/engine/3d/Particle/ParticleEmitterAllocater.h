@@ -4,10 +4,10 @@
 #include "DirectXCommon.h"
 #include "SrvManager.h"
 
-class ParticleEmitterAllocater {
+class ParticleEmitterAllocator {
 public:
-	ParticleEmitterAllocater() = default;
-	~ParticleEmitterAllocater() = default;
+	ParticleEmitterAllocator() = default;
+	~ParticleEmitterAllocator() = default;
 
 	uint32_t Allocate();
 

@@ -297,7 +297,7 @@ void ParticleEditor::DrawEmitterControls() {
 	ImGui::Text("Emitter Controls");
 	ImGui::Separator();
 
-	//エミッターTrasformの表示
+	//エミッターTransformの表示
 	ImGui::DragFloat3("Emitter Translate", &emitterTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat3("Emitter Rotate", &emitterTransform_.rotate.x, 0.01f, -3.14f, 3.14f);
 	ImGui::DragFloat3("Emitter Scale", &emitterTransform_.scale.x, 0.01f, 0.0f, 10.0f);

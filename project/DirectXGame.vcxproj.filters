@@ -1084,6 +1084,9 @@
     <ClInclude Include="engine\base\BlendModeStateEnum.h" />
     <ClInclude Include="application\Effect\DeadEffect.h" />
     <ClInclude Include="engine\3d\Light\DirectionalLight.h" />
+    <ClInclude Include="engine\3d\Light\PointLight.h" />
+    <ClInclude Include="engine\3d\Light\SpotLight.h" />
+    <ClInclude Include="engine\3d\Light\LightCounter.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

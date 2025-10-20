@@ -1,7 +1,7 @@
 #include "ParticleEmitterAllocater.h"
 #include <cassert>
 
-uint32_t ParticleEmitterAllocater::Allocate() {
+uint32_t ParticleEmitterAllocator::Allocate() {
 
 	//上限に達してないかチェック
 	assert(emitterCount_ < kMaxEmitterCount_);
@@ -14,7 +14,7 @@ uint32_t ParticleEmitterAllocater::Allocate() {
 	return index;
 }
 
-void ParticleEmitterAllocater::Clear() {
+void ParticleEmitterAllocator::Clear() {
 
 	emitterCount_ = 0;
 }
