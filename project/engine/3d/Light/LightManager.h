@@ -1,4 +1,5 @@
 #pragma once
+#include "engine/base/ComPtrAliasTemplates.h"
 #include "engine/3d/Light/DirectionalLight.h"
 #include "engine/3d/Light/PointLight.h"
 #include "engine/3d/Light/SpotLight.h"
@@ -32,7 +33,13 @@ private:
 	LightCounter<SpotLightData> spotLightCounter_;
 
 	DirectionalLightData* dirLightData_ = nullptr;
-	PointLghtData* pointLightData_ = nullptr;
-	pointLightData_* spotLightData_ = nullptr;
+	PointLightData* pointLightData_ = nullptr;
+	SpotLightData* spotLightData_ = nullptr;
 
+	ComPtr<ID3D12Resource> dirLightResource_;
+	ComPtr<ID3D12Resource> pointLightResource_;
+	ComPtr<ID3D12Resource> spotLightResource_;
+
+	uint32_t pointLightSrvIndex_ = 0;
+	uint32_t spotLightSrvIndex_ = 0;
 };

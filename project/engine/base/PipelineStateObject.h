@@ -81,7 +81,6 @@ public:
 	void CreateBlendStateForObject3d();
 	void CreateBlendStateForParticle(BlendState state);
 	void CreateBlendStateForSprite();
-	void CreateBlendStateForBoostEffect();
 
 	void InitializeBlendState(BlendState blendState);
 

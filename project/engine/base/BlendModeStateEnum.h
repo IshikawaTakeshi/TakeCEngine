@@ -11,7 +11,6 @@ enum class BlendState {
 	MULTIPLY            = 3,
 	SCREEN              = 4,
 	SPRITE              = 5,
-	BOOSTEFFECT         = 6,
-	PREMULTIPLIED_ALPHA = 7,
-	COUNT               = 8,
+	PREMULTIPLIED_ALPHA = 6,
+	COUNT               = 7,
 };
