@@ -6,8 +6,9 @@
 #include <array>
 
 #include "ResourceDataStructure.h"
-#include "Skeleton.h"
-#include "SrvManager.h"
+#include "engine/base/ComPtrAliasTemplates.h"
+#include "engine/base/SrvManager.h"
+#include "engine/Animation/Skeleton.h"
 
 //最大の影響ボーン数
 const uint32_t kNumMaxInfluence = 4;

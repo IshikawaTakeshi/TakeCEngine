@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <array>
 
-#include "base/ResourceDataStructure.h"
+#include "engine/base/ComPtrAliasTemplates.h"
 
 class DirectXCommon;
 class RtvManager {

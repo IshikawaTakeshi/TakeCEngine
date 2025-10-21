@@ -125,6 +125,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Entity\Enemy\BulletSensor.cpp" />
     <ClCompile Include="application\Effect\BoostEffect.cpp" />
     <ClCompile Include="application\Effect\DeadEffect.cpp" />
+    <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
     <ClCompile Include="engine\PostEffect\BloomEffect.cpp" />
     <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp" />
@@ -191,6 +192,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\UI\GameClearUI.cpp" />
     <ClCompile Include="engine\io\InputMapper.cpp" />
     <ClCompile Include="engine\io\IInputDevice.cpp" />
+    <ClCompile Include="engine\3d\Light\LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
     <ClCompile Include="engine\math\MatrixMath.cpp" />
@@ -264,6 +266,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Light\PointLight.h" />
     <ClInclude Include="engine\3d\Light\SpotLight.h" />
     <ClInclude Include="engine\base\BlendModeStateEnum.h" />
+    <ClInclude Include="engine\base\ComPtrAliasTemplates.h" />
     <ClInclude Include="engine\PostEffect\BloomEffect.h" />
     <ClInclude Include="engine\camera\CameraForGPU.h" />
     <ClInclude Include="engine\camera\PerView.h" />
@@ -359,6 +362,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\io\InputMapper.h" />
     <ClInclude Include="engine\io\IInputDevice.h" />
     <ClInclude Include="application\Provider\PlayerKeyInput.h" />
+    <ClInclude Include="engine\3d\Light\LightManager.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

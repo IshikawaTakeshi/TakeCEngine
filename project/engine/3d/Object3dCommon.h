@@ -1,7 +1,11 @@
 #pragma once
 #include "ResourceDataStructure.h"
 #include "engine/base/PipelineStateObject.h"
+#include "engine/base/ComPtrAliasTemplates.h"
 #include "engine/3d/Light/DirectionalLight.h"
+#include "engine/3d/Light/PointLight.h"
+#include "engine/3d/Light/SpotLight.h"
+#include "engine/3d/Light/LightCounter.h"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
@@ -12,9 +16,6 @@ class DirectXCommon;
 class Object3dCommon {
 
 public:
-
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 	static Object3dCommon* GetInstance();
 
@@ -56,16 +57,6 @@ public:
 
 	void SetDirectionalLightIntensity(const float intensity) { directionalLightData_->intensity_ = intensity; }
 
-	void SetPointLightIntensity(const float intensity) { pointLightData_->intensity_ = intensity; }
-
-	void SetPointLightPosition(const Vector3& position) { pointLightData_->position_ = position; }
-
-	void SetPointLightColor(const Vector4& color) { pointLightData_->color_ = color; }
-
-	void SetPointLightRadius(float radius) { pointLightData_->radius_ = radius; }
-
-	void SetSLightIntensity(float intensity) { spotLightData_->intensity_ = intensity; }
-
 private:
 
 	Object3dCommon() = default;
@@ -90,9 +81,12 @@ private:
 	DirectionalLightData* directionalLightData_ = nullptr;
 	//ポイントライトのリソース
 	ComPtr<ID3D12Resource> pointLightResource_;
+	LightCounter<PointLightData> pointLightCounter_;
 	PointLightData* pointLightData_ = nullptr;
+
 	//スポットライトのリソース
 	ComPtr<ID3D12Resource> spotLightResource_;
+	LightCounter<SpotLightData> spotLightCounter_;
 	SpotLightData* spotLightData_ = nullptr;
 
 	//defaultCamera

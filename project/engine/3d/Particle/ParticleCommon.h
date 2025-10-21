@@ -4,15 +4,13 @@
 #include <memory>
 #include <unordered_map>
 #include "engine/base/PipelineStateObject.h"
+#include "engine/base/ComPtrAliasTemplates.h"
 
 class Camera;
 class DirectXCommon;
 class SrvManager;
 class ParticleCommon {
 public:
-
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 	static ParticleCommon* GetInstance();
 

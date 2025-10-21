@@ -534,6 +534,8 @@
     </ClCompile>
     <ClCompile Include="engine\Utility\Timer.cpp" />
     <ClCompile Include="application\Effect\DeadEffect.cpp" />
+    <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
+    <ClCompile Include="engine\3d\Light\LightManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1087,6 +1089,8 @@
     <ClInclude Include="engine\3d\Light\PointLight.h" />
     <ClInclude Include="engine\3d\Light\SpotLight.h" />
     <ClInclude Include="engine\3d\Light\LightCounter.h" />
+    <ClInclude Include="engine\3d\Light\LightManager.h" />
+    <ClInclude Include="engine\base\ComPtrAliasTemplates.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
