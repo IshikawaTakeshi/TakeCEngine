@@ -3,6 +3,7 @@
 #include "engine/base/SrvManager.h"
 #include "engine/camera/CameraManager.h"
 #include "engine/Utility/StringUtility.h"
+#include "engine/3d/Object3dCommon.h"
 
 ParticleCommon* ParticleCommon::instance_ = nullptr;
 
@@ -94,6 +95,10 @@ void ParticleCommon::PreDraw(BlendState state) {
 	dxCommon_->GetCommandList()->SetPipelineState(graphicPso_[state]->GetGraphicPipelineState());
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//DirectionalLight
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(graphicPso_[state]->GetGraphicBindResourceIndex("gDirLight"), 
+		Object3dCommon::GetInstance()->GetDirectionalLightResource()->GetGPUVirtualAddress());
 }
 
 void ParticleCommon::PreDrawForGPUParticle() {

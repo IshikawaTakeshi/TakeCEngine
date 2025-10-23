@@ -49,6 +49,9 @@ public:
 
 	PSO* GetPSO() const { return pso_.get(); }
 
+	ID3D12Resource* GetDirectionalLightResource() const { return directionalLightResource_.Get(); }
+
+
 //================================================================================================
 // 	   setter
 //================================================================================================
@@ -64,6 +67,7 @@ private:
 	Object3dCommon(const Object3dCommon&) = delete;
 	Object3dCommon& operator=(const Object3dCommon&) = delete;
 
+	
 	void SetGraphicCBufferViewLighting(PSO* pso);
 
 	void SetCBufferViewCamera(PSO* pso);

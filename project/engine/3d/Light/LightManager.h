@@ -8,6 +8,7 @@
 #include <dxgi1_6.h>
 #include <wrl.h>
 #include <memory>
+#include <unordered_map>
 
 //============================================================================
 //		LightManager class
@@ -20,6 +21,10 @@ public:
 	//========================================================================
 	LightManager() = default;
 	~LightManager() = default;
+
+	void Initialize();
+	void Update();
+
 	//--------- accessor -----------------------------------------------------
 	
 
@@ -42,4 +47,7 @@ private:
 
 	uint32_t pointLightSrvIndex_ = 0;
 	uint32_t spotLightSrvIndex_ = 0;
+
+	std::unordered_map<int, std::unique_ptr<PointLightData>> pointLightMap_;
+	std::unordered_map<int, std::unique_ptr<SpotLightData>> spotLightMap_;
 };

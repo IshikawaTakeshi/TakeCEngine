@@ -55,6 +55,7 @@ void ParticleEditScene::UpdateImGui() {
 	CameraManager::GetInstance()->UpdateImGui();
 	ParticleCommon::GetInstance()->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	Object3dCommon::GetInstance()->UpdateImGui();
 
 	// ImGuiの更新
 	particleEditor_->UpdateImGui();

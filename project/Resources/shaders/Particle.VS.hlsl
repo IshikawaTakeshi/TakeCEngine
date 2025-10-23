@@ -9,7 +9,6 @@ struct PerView {
 
 StructuredBuffer<ParticleForGPU> gParticle : register(t0);
 ConstantBuffer<PerView> gPerView : register(b0);
-ConstantBuffer<DirectionalLight> gDirLight : register(b1);
 
 struct VertexShaderInput {
 	float4 position : POSITION0;
@@ -94,32 +93,11 @@ VertexShaderOutput main(VertexShaderInput input, uint instanceId : SV_InstanceID
 
 	output.position = mul(input.position, mul(worldMatrix, gPerView.viewProjection));
 	output.texcoord = input.texcoord;
+	// ======= 法線計算 =======
+	if (gPerView.isBillboard) {
+		output.normal = input.normal; // ビルボード時はそのまま
+	} 
+	output.normal = input.normal;
 	output.color = particle.color;
-	
-	//===============光蓄積計算===============//
-	// View空間での基底ベクトル
-	float3x3 hl2Basis = float3x3(
-		float3(1, 0, 0),
-		float3(0, 1, 0),
-		float3(0, 0, 1)
-	);
-
-	// ライト方向（View空間想定）
-	float3 lightDir = normalize(-gDirLight.direction); 
-	// ライト色×強度
-	float3 lightCol = gDirLight.color.rgb * gDirLight.intensity;
-	
-	// 各基底ベクトルとの内積を重みとする
-	float3 weights = saturate(float3(
-		dot(lightDir, hl2Basis[0]),
-		dot(lightDir, hl2Basis[1]),
-		dot(lightDir, hl2Basis[2])
-	));
-
-	output.basisColor0 = lightCol * weights.x;
-	output.basisColor1 = lightCol * weights.y;
-	output.basisColor2 = lightCol * weights.z;
-
-	output.normal = float3(0, 0, -1); // ビルボードの正面方向
 	return output;
 }
