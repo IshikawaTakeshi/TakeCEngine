@@ -4,10 +4,9 @@
 #include "engine/base/ImGuiManager.h"
 #include "engine/base/TakeCFrameWork.h"
 
-HPBar::~HPBar() {
-	// unique_ptr により自動解放されるため明示的に削除は不要
-}
-
+//===================================================================================
+//　初期化
+//===================================================================================
 void HPBar::Initialize(SpriteCommon* spriteCommon, const std::string& backgroundFilePath, const std::string& foregroundFilePath) {
 	// 背景スプライトの初期化
 	backgroundSprite_ = std::make_unique<Sprite>();
@@ -24,6 +23,9 @@ void HPBar::Initialize(SpriteCommon* spriteCommon, const std::string& background
 	fadeSpeed_ = 1.0f; // フェード速度を設定
 }
 
+//===================================================================================
+//　更新
+//===================================================================================
 void HPBar::Update(float currentHP, float maxHP) {
 	// HPの割合を計算
 	currentHP = std::max(0.0f, std::min(currentHP, maxHP));
@@ -56,10 +58,14 @@ void HPBar::Update(float currentHP, float maxHP) {
 		alpha_ = 1.0f; // アクティブな場合はアルファ値を1に設定
 	}
 
+	//スプライトの更新
 	backgroundSprite_->Update();
 	foregroundSprite_->Update();
 }
 
+//===================================================================================
+//　描画
+//===================================================================================
 void HPBar::Draw() {
 	if (!isActive_) return; // アクティブでない場合は描画しない
 
@@ -70,6 +76,9 @@ void HPBar::Draw() {
 	foregroundSprite_->Draw();
 }
 
+//===================================================================================
+//　ImGuiの更新
+//===================================================================================
 void HPBar::UpdateImGui([[maybe_unused]]std::string name) {
 
 #ifdef _DEBUG
@@ -78,8 +87,9 @@ void HPBar::UpdateImGui([[maybe_unused]]std::string name) {
 #endif // DEBUG
 }
 
-
-
+//===================================================================================
+//　位置を設定
+//===================================================================================
 void HPBar::SetPosition(const Vector2& position) {
 	position_ = position;
 
@@ -90,6 +100,9 @@ void HPBar::SetPosition(const Vector2& position) {
 	foregroundSprite_->SetPosition(position);
 }
 
+//===================================================================================
+//　サイズを設定
+//===================================================================================
 void HPBar::SetSize(const Vector2& size) {
 	if (backgroundSprite_) {
 		backgroundSprite_->SetSize(size);
@@ -101,4 +114,5 @@ void HPBar::SetSize(const Vector2& size) {
 	}
 }
 
+//positionの取得
 Vector2 HPBar::GetTranslate() const { return position_; }

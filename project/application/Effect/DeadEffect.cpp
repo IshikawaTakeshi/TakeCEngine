@@ -3,6 +3,9 @@
 #include "engine/math/Easing.h"
 #include <algorithm>
 
+//===================================================================================
+//　初期化
+//===================================================================================
 void DeadEffect::Initialize() {
 	//パーティクルエミッターの生成
 	explosionParticleEmitter_ = std::make_unique<ParticleEmitter>();
@@ -14,11 +17,15 @@ void DeadEffect::Initialize() {
 	smokeParticleEmitter_->SetParticleName("DeadSmokeEffect");
 }
 
+//===================================================================================
+//　更新
+//===================================================================================
 void DeadEffect::Update(const Vector3& translate) {
 	//タイマー更新
 	timer_.Update();
 
 	if (timer_.IsFinished()) {
+		//タイマーが終了したらパーティクル発生停止
 		explosionParticleEmitter_->SetIsEmit(false);
 	}
 	
@@ -32,6 +39,9 @@ void DeadEffect::Update(const Vector3& translate) {
 	smokeParticleEmitter_->Update();
 }
 
+//===================================================================================
+//　開始
+//===================================================================================
 void DeadEffect::Start() {
 	timer_.Initialize(0.01f, 0.0f);
 	explosionParticleEmitter_->SetIsEmit(true);

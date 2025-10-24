@@ -5,35 +5,58 @@
 #include <cstdint>
 #include <vector>
 
+// 前方宣言
 class SpriteCommon;
 class Sprite;
+
+//============================================================================
+// BulletCounterUI class
+//============================================================================
 class BulletCounterUI {
 public:
 
 	BulletCounterUI() = default;
 	~BulletCounterUI() = default;
 
+	//========================================================================
+	// functions
+	//========================================================================
+
+	// 初期化
 	void Initialize(SpriteCommon* spriteCommon,const Vector2& position);
-
+	// 更新
 	void Update();
-
+	// 描画
 	void Draw();
-
+	// ImGuiの更新
 	void UpdateImGui([[maybe_unused]] const std::string& name);
 
-	uint32_t GetBulletCount() const;
-	uint32_t GetRemainingBulletCount() const;
 
+	//----- getter ---------------------------
+
+	// 弾数取得
+	uint32_t GetBulletCount() const;
+	// 残り弾数取得
+	uint32_t GetRemainingBulletCount() const;
+	// 弾数カウンターの位置取得
 	const Vector2& GetBulletCounterPosition() const;
 
+	//----- setter ---------------------------
+
+	// 弾数設定
 	void SetBulletCount(uint32_t count);
+	// 残り弾数設定
 	void SetRemainingBulletCount(uint32_t count);
+	// リロード状態設定
 	void SetReloadingState(bool isReloading);
+	// 弾数カウンターの位置設定
 	void SetBulletCounterPosition(const Vector2& position);
+	// 武器アイコンのUV設定
 	void SetWeaponIconUV(int weaponIndex);
 
 private:
 
+	// 桁ごとのUV設定
 	void SetDigitUV(Sprite* sprite, int digit);
 
 private:
@@ -58,4 +81,3 @@ private:
 	//スプライトの間隔
 	float spriteSpace_ = 5.0f; // スプライト間の間隔
 };
-

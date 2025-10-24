@@ -5,7 +5,12 @@
 #include "engine/math/Easing.h"
 #include "engine/base/TakeCFrameWork.h"
 
-void EnergyInfoUI::Initialize(SpriteCommon* spriteCommon, const std::string& backgroundFilePath, const std::string& foregroundFilePath) {
+//===================================================================================
+//　初期化
+//===================================================================================
+void EnergyInfoUI::Initialize(SpriteCommon* spriteCommon,
+	const std::string& backgroundFilePath, const std::string& foregroundFilePath) {
+
 	// 背景スプライトの初期化
 	backgroundSprite_ = std::make_unique<Sprite>();
 	backgroundSprite_->Initialize(spriteCommon, backgroundFilePath);
@@ -24,6 +29,9 @@ void EnergyInfoUI::Initialize(SpriteCommon* spriteCommon, const std::string& bac
 	blinkSpeed_ = 12.0f; // 点滅スピードを設定
 }
 
+//===================================================================================
+//　更新
+//===================================================================================
 void EnergyInfoUI::Update(float currentEnergy, float maxEnergy) {
 	currentEnergy = std::max(0.0f, std::min(currentEnergy, maxEnergy));
 	float hpRatio = currentEnergy / maxEnergy;
@@ -32,6 +40,7 @@ void EnergyInfoUI::Update(float currentEnergy, float maxEnergy) {
 	Vector2 bgSize = backgroundSprite_->GetSize();
 	Vector2 bgPos = backgroundSprite_->GetTranslate();
 
+	// 点滅スプライトの位置・サイズを背景スプライトと同じにする
 	blinkSprite_->SetPosition(bgPos);
 	blinkSprite_->SetSize(bgSize);
 
@@ -55,18 +64,25 @@ void EnergyInfoUI::Update(float currentEnergy, float maxEnergy) {
 	} else {
 		blinkSprite_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 0.0f }); // 通常は透明に設定
 	}
+
+	// スプライトの更新
 	backgroundSprite_->Update();
 	blinkSprite_->Update();
 	foregroundSprite_->Update();
-
 }
 
+//===================================================================================
+//　描画
+//===================================================================================
 void EnergyInfoUI::Draw() {
 	backgroundSprite_->Draw();
 	blinkSprite_->Draw();
 	foregroundSprite_->Draw();
 }
 
+//===================================================================================
+//　ImGuiの更新
+//===================================================================================
 void EnergyInfoUI::UpdateImGui([[maybe_unused]] std::string name) {
 #ifdef _DEBUG
 	ImGui::SeparatorText("Energy Info UI Settings");
@@ -76,26 +92,32 @@ void EnergyInfoUI::UpdateImGui([[maybe_unused]] std::string name) {
 #endif
 }
 
-
+// positionの取得
 const Vector2& EnergyInfoUI::GetTranslate() const { return position_; }
-
+// sizeの取得
 const Vector2& EnergyInfoUI::GetSize() const { return backgroundSprite_->GetSize(); }
-
+// オーバーヒート状態の取得
 bool EnergyInfoUI::GetOverHeatState() const { return isOverHeating_; }
 
+// positionの設定
 void EnergyInfoUI::SetPosition(const Vector2& position) {
 	position_ = position;
 	backgroundSprite_->SetPosition(position_);
 	foregroundSprite_->SetPosition(position_);
 }
 
+// sizeの設定
 void EnergyInfoUI::SetSize(const Vector2& size) {
+
 	backgroundSprite_->SetSize(size);
 	Vector2 foregroundSize = size;
-	foregroundSize.x *= foregroundSprite_->GetSize().x / backgroundSprite_->GetSize().x; // 比率を保持
+	// 比率を保持
+	foregroundSize.x *= foregroundSprite_->GetSize().x / backgroundSprite_->GetSize().x;
+	// 枠の内側に収める
 	foregroundSprite_->SetSize(foregroundSize);
 }
 
+// オーバーヒート状態の設定
 void EnergyInfoUI::SetOverHeatState(bool isOverHeating) { isOverHeating_ = isOverHeating; }
-
+// オーバーヒートタイマーの設定
 void EnergyInfoUI::SetOverHeatTimer(float timer) { overHeatTimer_ = timer; }

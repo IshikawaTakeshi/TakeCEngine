@@ -4,16 +4,13 @@
 #include <wrl.h>
 #include <memory>
 
+#include "engine/"
+
 class PSO;
 class DirectXCommon;
 class SpriteCommon {
 public:
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			エイリアステンプレート
-	/////////////////////////////////////////////////////////////////////////////////////
 
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public:
 

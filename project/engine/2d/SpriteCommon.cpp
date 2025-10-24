@@ -4,6 +4,9 @@
 
 SpriteCommon* SpriteCommon::instance_ = nullptr;
 
+//====================================================================
+// インスタンスの取得
+//====================================================================
 SpriteCommon* SpriteCommon::GetInstance() {	
 	if(instance_ == nullptr) {
 		instance_ = new SpriteCommon();
@@ -11,6 +14,9 @@ SpriteCommon* SpriteCommon::GetInstance() {
 	return instance_;
 }
 
+//====================================================================
+// 初期化
+//====================================================================
 void SpriteCommon::Initialize(DirectXCommon* directXCommon) {
 
 	dxCommon_ = directXCommon;
@@ -23,6 +29,9 @@ void SpriteCommon::Initialize(DirectXCommon* directXCommon) {
 	rootSignature_ = pso_->GetGraphicRootSignature();
 }
 
+//====================================================================
+// 終了処理
+//====================================================================
 void SpriteCommon::Finalize() {
 	rootSignature_.Reset();
 	pso_.reset();
@@ -31,9 +40,11 @@ void SpriteCommon::Finalize() {
 	instance_ = nullptr;
 }
 
+//====================================================================
+// 共通描画設定
+//====================================================================
 void SpriteCommon::PreDraw() {
 
-	
 	//ルートシグネチャ設定
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
 	//PSO設定
@@ -41,4 +52,3 @@ void SpriteCommon::PreDraw() {
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
-

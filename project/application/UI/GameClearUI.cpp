@@ -4,6 +4,9 @@
 #include "engine/base/ImGuiManager.h"
 #include "engine/base/TakeCFrameWork.h"
 
+//===================================================================================
+//　初期化
+//===================================================================================
 void GameClearUI::Initialize(SpriteCommon* spriteCommon) {
 
 	spriteCommon_ = spriteCommon;
@@ -13,6 +16,9 @@ void GameClearUI::Initialize(SpriteCommon* spriteCommon) {
 	isActive_ = false;
 }
 
+//===================================================================================
+//　更新
+//===================================================================================
 void GameClearUI::Update() {
 	if (!isActive_) return;
 	// タイマー更新
@@ -29,11 +35,17 @@ void GameClearUI::Update() {
 	textSprite_->Update();
 }
 
+//===================================================================================
+//　描画
+//===================================================================================
 void GameClearUI::Draw() {
 	if (!isActive_) return;
 	textSprite_->Draw();
 }
 
+//===================================================================================
+//　表示・非表示設定
+//===================================================================================
 void GameClearUI::SetIsActive(bool isActive) {
 	isActive_ = isActive;
 	if (isActive_) {

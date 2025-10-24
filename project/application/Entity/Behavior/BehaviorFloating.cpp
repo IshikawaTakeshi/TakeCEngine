@@ -4,20 +4,26 @@
 #include "application/Provider/BaseInputProvider.h"
 #include "engine/base/TakeCFrameWork.h"
 
-
+//===================================================================================
+//　コンストラクタ
+//===================================================================================
 BehaviorFloating::BehaviorFloating(baseInputProvider* provider) {
-	inputProvider_ = provider;
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
-	gravity_ = 9.8f; // 重力の強さ
+	inputProvider_ = provider; //入力プロバイダーの設定
+	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
+	gravity_ = 9.8f; //重力の強さ
 }
 
+//===================================================================================
+//　初期化
+//===================================================================================
 void BehaviorFloating::Initialize([[maybe_unused]]GameCharacterContext& characterInfo) {
 
 }
 
+//===================================================================================
+//　更新
+//===================================================================================
 void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
-
-	deltaTime_ = TakeCFrameWork::GetDeltaTime(); // デルタタイムの取得
 
 	Vector3& moveDirection_ = characterInfo.moveDirection; // 移動方向
 	Vector3& velocity_ = characterInfo.velocity; // 移動ベクトル
@@ -25,6 +31,7 @@ void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 	float deceleration_ = characterInfo.deceleration; // 減速率
 	float kMaxMoveSpeed_ = characterInfo.kMaxMoveSpeed; // 最大移動速度
 
+	// コントローラー入力時、速度の更新
 	if (moveDirection_.x != 0.0f || moveDirection_.z != 0.0f) {
 		moveDirection_ = Vector3Math::Normalize(moveDirection_);
 		//移動時の加速度の計算
@@ -47,7 +54,6 @@ void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 	velocity_.y -= (gravity_ + characterInfo.fallSpeed) * deltaTime_;
 	characterInfo.transform.translate += velocity_ * deltaTime_;
 	
-
 	// 地面に着地したらRUNNINGに戻る
 	if(characterInfo.onGround == true) {
 		isTransition_ = true;
@@ -55,13 +61,7 @@ void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
 		return;
 	}
 
-	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
-	// LTボタン＋スティック入力で発動
-	//if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
-	//	//TriggerStepBoost();
-	//}
 	//ジャンプボタンの追加入力でさらに上昇
-	//TODO: Enemyの浮遊の判断をどうするか
 	if(inputProvider_->IsJumpRequested()) {
 
 		if( characterInfo.overHeatInfo.isOverheated) {

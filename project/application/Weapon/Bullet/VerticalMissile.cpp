@@ -20,7 +20,7 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 		collider_ = std::make_unique<SphereCollider>();
 		collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	}
-	collider_->SetRadius(bulletradius_); // 半径を設定
+	collider_->SetRadius(bulletRadius_); // 半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Missile)); // 種別IDを設定
 	//emiiter設定
 	//emitter0
@@ -37,7 +37,7 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 	phase_ = VerticalMissilePhase::ASCENDING;
 
 	lifeTime_ = 5.0f; // ライフタイムを設定
-	bulletradius_ = 1.5f; // 弾の半径を設定
+	bulletRadius_ = 1.5f; // 弾の半径を設定
 	homingRate_ = 0.01f; // ホーミングの度合いを設定(値が大きいほど急激に曲がる)
 }
 
@@ -175,7 +175,7 @@ float VerticalMissile::GetDamage() const { return damage_; }
 //弾速の取得
 float VerticalMissile::GetSpeed() const { return speed_; }
 //弾の半径の取得
-float VerticalMissile::GetBulletRadius() const { return bulletradius_; }
+float VerticalMissile::GetBulletRadius() const { return bulletRadius_; }
 //寿命時間の取得
 float VerticalMissile::GetLifeTime() const { return lifeTime_; }
 //ミサイルのフェーズの取得

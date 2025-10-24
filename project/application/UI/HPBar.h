@@ -3,13 +3,17 @@
 #include <memory>
 #include <string>
 
+// 前方宣言
 class SpriteCommon;
 class Sprite;
 
+//============================================================================
+// HPBar class
+//============================================================================
 class HPBar {
 public:
 	HPBar() = default;
-	~HPBar();
+	~HPBar() = default;
 
 	/// <summary>
 	/// 初期化

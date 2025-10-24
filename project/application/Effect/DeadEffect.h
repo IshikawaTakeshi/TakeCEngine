@@ -16,7 +16,7 @@ public:
 	void Initialize();
 	//更新
 	void Update(const Vector3& translate);
-
+	//開始
 	void Start();
 
 private:

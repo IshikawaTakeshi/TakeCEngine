@@ -7,13 +7,14 @@
 #include "application/Entity/Behavior/BehaviorChargeShootStun.h"
 #include "application/Entity/Behavior/BehaviorDead.h"
 #include "engine/base/TakeCFrameWork.h"
+#include "engine/Utility/StringUtility.h"
 
 //=====================================================================================
 // 初期化
 //=====================================================================================
 
 void BehaviorManager::Initialize(baseInputProvider* moveDirectionProvider) {
-	inputProvider_ = moveDirectionProvider;
+	inputProvider_ = moveDirectionProvider; //入力プロバイダーの設定
 }
 
 void BehaviorManager::InitializeBehaviors(GameCharacterContext& characterContext) {
@@ -55,16 +56,14 @@ void BehaviorManager::Update(GameCharacterContext& characterContext) {
 	}
 }
 
+//=====================================================================================
+// ImGuiの更新
+//=====================================================================================
 void BehaviorManager::UpdateImGui() {
 #ifdef _DEBUG
 
-	//コンボボックスの項目
-	std::vector<std::string> items = {
-		"IDLE","RUNNING", "JUMP","DASH",
-		"CHARGESHOOT_STUN","HEAVYDAMAGE","STEPBOOST","FLOATING","DEAD"
-	};
 	//現在の項目
-	std::string currentBehaviorStr = "Current Behavior:" + items[int(currentBehaviorType_)];
+	std::string currentBehaviorStr = "Current Behavior:" + StringUtility::EnumToString(currentBehaviorType_);
 
 	ImGui::SeparatorText("BehaviorManager");
 	ImGui::Text(currentBehaviorStr.c_str());
@@ -74,7 +73,6 @@ void BehaviorManager::UpdateImGui() {
 //=====================================================================================
 // ビヘイビアのリクエスト
 //=====================================================================================
-
 void BehaviorManager::RequestBehavior(Behavior nextBehavior) {
 	if (nextBehavior != GameCharacterBehavior::NONE && nextBehavior != currentBehaviorType_) {
 		nextBehavior_ = nextBehavior;
@@ -85,7 +83,6 @@ void BehaviorManager::RequestBehavior(Behavior nextBehavior) {
 //=====================================================================================
 // 各ビヘイビアの取得
 //=====================================================================================
-
 void BehaviorManager::CreateDefaultBehaviors() {
 	behaviors_.emplace(GameCharacterBehavior::RUNNING, std::make_unique<BehaviorRunning>(inputProvider_));
 	behaviors_.emplace(GameCharacterBehavior::JUMP, std::make_unique<BehaviorJumping>(inputProvider_));

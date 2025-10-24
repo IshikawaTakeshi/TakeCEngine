@@ -3,6 +3,9 @@
 #include "application/Entity/Player/Player.h"
 #include "engine/io/Input.h"
 
+//=====================================================================================
+//　移動方向の取得
+//=====================================================================================
 Vector3 PlayerInputProvider::GetMoveDirection() const {
 	//左スティック
 	StickState leftStick= Input::GetInstance()->GetLeftStickState(0);
@@ -18,10 +21,16 @@ Vector3 PlayerInputProvider::GetMoveDirection() const {
 	return forward * leftStick.y + right * leftStick.x;
 }
 
+//=====================================================================================
+//　ジャンプ入力の取得
+//=====================================================================================
 bool PlayerInputProvider::IsJumpRequested() const {
 	return Input::GetInstance()->PushButton(0, GamepadButtonType::RT);
 }
 
+//=====================================================================================
+//　攻撃入力の取得
+//=====================================================================================
 void PlayerInputProvider::RequestAttack() {
 	for(auto& weapon : player_->GetWeapons()) {
 		if (weapon->IsChargeAttack()) {
@@ -33,6 +42,9 @@ void PlayerInputProvider::RequestAttack() {
 	}
 }
 
+//=====================================================================================
+//　チャージ攻撃入力の取得
+//=====================================================================================
 void PlayerInputProvider::RequestChargeAttack() {
 	for(auto& weapon : player_->GetWeapons()) {
 		weapon->Attack();

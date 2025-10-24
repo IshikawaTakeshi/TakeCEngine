@@ -4,10 +4,15 @@
 #include <unordered_map>
 
 class baseInputProvider;
+
+//============================================================================
+// BehaviorManager class
+//============================================================================
 class BehaviorManager {
 public:
 	BehaviorManager() = default;
 	~BehaviorManager() = default;
+
 	// ビヘイビアの初期化
 	void Initialize(baseInputProvider* moveDirectionProvider);
 	void InitializeBehaviors(GameCharacterContext& characterContext);
@@ -17,7 +22,11 @@ public:
 	// ビヘイビアの遷移リクエスト
 	void RequestBehavior(Behavior nextBehavior);
 
+	//----- getter ---------------------------
+
+	// 現在のビヘイビアタイプ取得
 	Behavior GetCurrentBehaviorType() const { return currentBehaviorType_; }
+	// 次のビヘイビアタイプ取得
 	Behavior GetNextBehaviorType() const { return nextBehavior_; }
 
 private:
@@ -26,14 +35,17 @@ private:
 	void CreateDefaultBehaviors();
 
 private:
+	// 現在のビヘイビア
+	std::unique_ptr<BaseBehavior> currentBehavior_;
+	// ビヘイビアのマップ
+	std::unordered_map<Behavior, std::unique_ptr<BaseBehavior>> behaviors_;
 
-	std::unique_ptr<BaseBehavior> currentBehavior_; // 現在のビヘイビア
-	std::unordered_map<Behavior, std::unique_ptr<BaseBehavior>> behaviors_; // ビヘイビアのマップ
-
-	Behavior currentBehaviorType_ = Behavior::NONE; // 現在のビヘイビアタイプ
-	Behavior nextBehavior_ = Behavior::NONE; // 次のビヘイビア
-	bool isChanged_ = false; // ビヘイビアが変更されたかどうか
-
+	// 現在のビヘイビアタイプ
+	Behavior currentBehaviorType_ = Behavior::NONE;
+	// 次のビヘイビア
+	Behavior nextBehavior_ = Behavior::NONE;
+	// ビヘイビアが変更されたかどうか
+	bool isChanged_ = false;
+	// 入力プロバイダ
 	baseInputProvider* inputProvider_ = nullptr;
 };
-
