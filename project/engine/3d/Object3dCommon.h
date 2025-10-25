@@ -11,12 +11,33 @@
 #include <wrl.h>
 #include <memory>
 
+//前方宣言
 class Camera;
 class DirectXCommon;
+
+//============================================================================
+// Object3dCommon class
+//============================================================================
 class Object3dCommon {
+private:
+
+	//コンストラクタ・デストラクタ・コピー禁止
+	Object3dCommon() = default;
+	~Object3dCommon() = default;
+	Object3dCommon(const Object3dCommon&) = delete;
+	Object3dCommon& operator=(const Object3dCommon&) = delete;
+
 
 public:
 
+	//========================================================================
+	// functions
+	//========================================================================
+
+	/// <summary>
+	/// インスタンスの取得
+	/// </summary>
+	/// <returns></returns>
 	static Object3dCommon* GetInstance();
 
 	/// <summary>
@@ -24,6 +45,9 @@ public:
 	/// </summary>
 	void Initialize(DirectXCommon* directXCommon);
 
+	/// <summary>
+	/// ImGuiの更新
+	/// </summary>
 	void UpdateImGui();
 
 	/// <summary>
@@ -36,32 +60,42 @@ public:
 	/// </summary>
 	void PreDraw();
 
+	/// <summary>
+	/// 加算ブレンド描画前処理
+	/// </summary>
 	void PreDrawAddBlend();
 
+	/// <summary>
+	/// スキニング計算
+	/// </summary>
 	void Dispatch();
-//================================================================================================
-// 	   getter
-//================================================================================================
 
+public:
+	//================================================================================================
+	// accessors
+	//================================================================================================
+
+	//----- getter ---------------------------
+
+	/// DirectXCommonの取得
 	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
-
+	/// 平行光源データの取得
 	Camera* GetDefaultCamera() const { return defaultCamera_; }
-
+	/// PSOの取得
 	PSO* GetPSO() const { return pso_.get(); }
-
+	/// 平行光源リソースの取得
 	ID3D12Resource* GetDirectionalLightResource() const { return directionalLightResource_.Get(); }
 
+	///----- setter ---------------------------
 
-//================================================================================================
-// 	   setter
-//================================================================================================
-
+	/// デフォルトカメラの設定
 	void SetDefaultCamera(Camera* camera) { defaultCamera_ = camera; }
-
+	/// 平行光源の方向の設定
 	void SetDirectionalLightIntensity(const float intensity) { directionalLightData_->intensity_ = intensity; }
 
 private:
 
+	//コンストラクタ・デストラクタ・コピー禁止
 	Object3dCommon() = default;
 	~Object3dCommon() = default;
 	Object3dCommon(const Object3dCommon&) = delete;

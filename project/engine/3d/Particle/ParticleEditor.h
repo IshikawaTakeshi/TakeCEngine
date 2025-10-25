@@ -7,16 +7,44 @@
 #include <vector>
 #include <memory>
 
+//============================================================================
+// ParticleEditor class
+//============================================================================
 class ParticleEditor {
 public:
 
 	ParticleEditor() = default;
 	~ParticleEditor() = default;
 
+	//======================================================================
+	// functions
+	//======================================================================
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="particleManager"></param>
+	/// <param name="particleCommon"></param>
 	void Initialize(ParticleManager* particleManager,ParticleCommon* particleCommon);
+
+	/// <summary>
+	/// 更新処理
+	/// </summary>
 	void Update();
+
+	/// <summary>
+	/// ImGui更新処理
+	/// </summary>
 	void UpdateImGui();
+
+	/// <summary>
+	/// 終了・開放処理
+	/// </summary>
 	void Finalize();
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	void Draw();
 
 private:

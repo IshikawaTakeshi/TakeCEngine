@@ -3,10 +3,14 @@
 #include "camera/CameraManager.h"
 #include "math/Easing.h"
 
+//=============================================================================
+// 初期化
+//=============================================================================
 void WireFrame::Initialize(DirectXCommon* directXCommon) {
 
 	dxCommon_ = directXCommon;
 
+	//PSOの生成
 	pso_ = std::make_unique<PSO>();
 	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"WireFrame/WireFrame.VS.hlsl");
 	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"WireFrame/WireFrame.PS.hlsl");
@@ -20,10 +24,12 @@ void WireFrame::Initialize(DirectXCommon* directXCommon) {
 		D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
 		false
 	);
+	//パイプライン名の設定
 	pso_->SetGraphicPipelineName("WireFramePSO");
-
+	//RootSignatureの取得
 	rootSignature_ = pso_->GetGraphicRootSignature();
 
+	//線描画用の頂点データ生成
 	lineData_ = new LineData();
 	CreateVertexData();
 
@@ -35,15 +41,18 @@ void WireFrame::Initialize(DirectXCommon* directXCommon) {
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
 }
 
+//=============================================================================
+// 更新
+//=============================================================================
 void WireFrame::Update() {
 
+	// ビュープロジェクション行列の取得
 	TransformMatrixData_->WVP = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
 }
 
 //=============================================================================
 // 線の描画
 //=============================================================================
-
 void WireFrame::DrawLine(const Vector3& start, const Vector3& end, const Vector4& color) {
 
 	lineData_->vertexData_[lineIndex_].position = start;
@@ -99,7 +108,9 @@ void WireFrame::DrawSphere(const Vector3& center, float radius, const Vector4& c
 
 	Matrix4x4 worldMatrix = MatrixMath::MakeAffineMatrix(Vector3(radius, radius, radius), Vector3(0.0f, 0.0f, 0.0f), center);
 
+	// 球の頂点を3つずつ取り出して線を描画
 	for (uint32_t i = 0; i + 2 < spheres_.size(); i += 3) {
+
 		Vector3 a = spheres_[i];
 		Vector3 b = spheres_[i + 1];
 		Vector3 c = spheres_[i + 2];
@@ -153,6 +164,9 @@ void WireFrame::DrawGridGround(const Vector3& center, const Vector3& size, uint3
 	DrawLine(center, center + Vector3(0.0f, size.y, 0.0f), color);
 }
 
+//=============================================================================
+// グリッドボックスの描画
+//=============================================================================
 void WireFrame::DrawGridBox(const AABB& aabb, uint32_t division) {
 
 	//グリッドを6面描画
@@ -211,6 +225,9 @@ void WireFrame::DrawGridBox(const AABB& aabb, uint32_t division) {
 
 }
 
+//=============================================================================
+// 登録された線をすべて描画
+//=============================================================================
 void WireFrame::Draw() {
 
 	//ルートシグネチャ設定
@@ -233,10 +250,16 @@ void WireFrame::Draw() {
 	lineIndex_ = 0;
 }
 
+//============================================================================
+// lineIndexリセット
+//============================================================================
 void WireFrame::Reset() {
 	lineIndex_ = 0;
 }
 
+//=============================================================================
+// 終了・開放処理
+//=============================================================================
 void WireFrame::Finalize() {
 
 	pso_.reset();
@@ -245,6 +268,9 @@ void WireFrame::Finalize() {
 	lineData_->vertexBuffer_.Reset();
 }
 
+//=============================================================================
+// 頂点データ生成
+//=============================================================================
 void WireFrame::CreateVertexData() {
 
 	UINT vertexBufferSize = sizeof(WireFrameVertexData) * kLineVertexCount_ * kMaxLineCount_;
@@ -262,6 +288,9 @@ void WireFrame::CreateVertexData() {
 	lineData_->vertexBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&lineData_->vertexData_));
 }
 
+//=============================================================================
+// 球の頂点データ計算
+//=============================================================================
 void WireFrame::CalculateSphereVertexData() {
 
 	const float pi = 3.1415926535897932f;
@@ -297,11 +326,14 @@ void WireFrame::CalculateSphereVertexData() {
 	}
 }
 
+//=============================================================================
+// グリッド線の描画
+//=============================================================================
 void WireFrame::DrawGridLines(const Vector3& start, const Vector3& end, const Vector3& offset, uint32_t division, const Vector4& color) {
 	for (uint32_t i = 0; i <= division; i++) {
-		float t = float(i) / float(division);
-		Vector3 s = Easing::Lerp(start, end, t);
-		Vector3 e = s + offset;
-		DrawLine(s, e, color);
+		float easedT = float(i) / float(division);
+		Vector3 startPos = Easing::Lerp(start, end, easedT);
+		Vector3 endPos = startPos + offset;
+		DrawLine(startPos, endPos, color);
 	}
 }

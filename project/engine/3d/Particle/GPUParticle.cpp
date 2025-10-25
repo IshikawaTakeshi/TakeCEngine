@@ -8,14 +8,6 @@
 #include "TakeCFrameWork.h"
 #include "Utility/ResourceBarrier.h"
 
-GPUParticle::~GPUParticle() {
-	particleUavResource_.Reset();
-	perViewResource_.Reset();
-	perFrameResource_.Reset();
-	freeListIndexResource_.Reset();
-	freeListResource_.Reset();
-}
-
 //==================================================================================
 //		Initialize
 //==================================================================================
@@ -123,7 +115,7 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 }
 
 //==================================================================================
-//		Update
+//	更新処理
 //==================================================================================
 
 void GPUParticle::Update() {
@@ -141,7 +133,7 @@ void GPUParticle::Update() {
 }
 
 //==================================================================================
-//		Draw
+//	描画処理
 //==================================================================================
 
 void GPUParticle::Draw() {
@@ -153,12 +145,13 @@ void GPUParticle::Draw() {
 	//particleResource
 	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(3, particleUavIndex_);
 
+	//描画
 	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(particleCommon_->GetGraphicPSOForGPUParticle(),
 		kNumMaxInstance_, particlePreset_.primitiveType, primitiveHandle_);
 }
 
 //==================================================================================
-//		DisPatchInitializeParticle
+//	GPUパーティクル初期化
 //==================================================================================
 
 void GPUParticle::DisPatchInitializeParticle() {
@@ -193,7 +186,7 @@ void GPUParticle::DisPatchInitializeParticle() {
 }
 
 //==================================================================================
-//		DisPatchUpdateParticle
+//	GPUパーティクル更新処理
 //==================================================================================
 
 void GPUParticle::DisPatchUpdateParticle() {

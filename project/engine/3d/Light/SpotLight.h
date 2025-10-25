@@ -2,7 +2,9 @@
 #include "engine/math/Vector3.h"
 #include "engine/math/Vector4.h"
 
+//============================================================================
 //SpotLightのデータ
+//============================================================================
 struct SpotLightData {
 	Vector4 color_;       //ライトの色
 	Vector3 position_;    //ライトの位置

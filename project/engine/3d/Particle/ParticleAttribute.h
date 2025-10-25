@@ -8,16 +8,23 @@
 #include <cstdint>
 #include <unordered_map>
 
+//============================================================================
+// ParticleAttribute.h
+//============================================================================
+
+// パーティクルモデルの種類を表す列挙型
 enum class ParticleModelType {
 	Primitive,
 	ExternalModel
 };
 
+// 属性の範囲を表す構造体
 struct AttributeRange {
 	float min;
 	float max;
 };
 
+// スケール設定の種類を表す列挙型
 enum class ScaleSetting {
 	None = 0, //スケールの更新なし
 	ScaleUp = 1, //スケールの更新(拡大)
@@ -45,6 +52,7 @@ struct ParticleAttributes {
 	bool enableFollowEmitter = false; //エミッターに追従するかどうか
 };
 
+// パーティクルプリセットを保持する構造体
 struct ParticlePreset {
 	std::string presetName; //プリセットの名前
 	ParticleAttributes attribute; //属性のマップ
@@ -54,6 +62,7 @@ struct ParticlePreset {
 	Vector3 primitiveParameters = {1.0f,1.0f,1.0f}; //プリミティブのパラメータ
 };
 
+// nlohmann::jsonのエイリアス
 using json = nlohmann::json;
 
 // JSON形式に変換
@@ -61,7 +70,7 @@ void to_json(json& j, const ParticleAttributes& attributes);
 void to_json(json& j, const AttributeRange& attributeRange);
 void to_json(json& j, const ParticlePreset& preset);
 
-// JSONから変換
+// JSONから各データ構造体に変換
 void from_json(const json& j, ParticleAttributes& attributes);
 void from_json(const json& j, AttributeRange& attributeRange);
 void from_json(const json& j, ParticlePreset& preset);

@@ -12,9 +12,6 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "winmm.lib")
 
-DirectXCommon::~DirectXCommon() {
-	
-}
 
 //==============================================================================================
 //		初期化

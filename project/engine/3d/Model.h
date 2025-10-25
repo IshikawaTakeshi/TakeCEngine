@@ -16,11 +16,18 @@
 #include <wrl.h>
 #include <memory>
 
+//============================================================================
+// Model class
+//============================================================================
 class Model {
 public:
 
-	Model();
-	~Model();
+	Model() = default;
+	~Model() = default;
+
+	//========================================================================
+	// functions
+	//========================================================================
 
 	/// <summary>
 	/// 初期化
@@ -32,64 +39,64 @@ public:
 	/// </summary>
 	void Update(Animation* animation, float animationTime);
 
-	//void UpdateSkeleton();
-
 	/// <summary>
 	/// 描画処理
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// スカイボックス用描画処理
+	/// </summary>
 	void DrawSkyBox();
 
+	/// <summary>
+	/// スキニング計算
+	/// </summary>
+	/// <param name="skinningPso"></param>
 	void Dispatch(PSO* skinningPso);
 
-	//void DisPatchForASkinningModel();
-
-
 	/// <summary>
-	/// パーティクル描画
+	/// パーティクル用描画処理
 	/// </summary>
 	/// <param name="instanceCount_"></param>
 	void DrawForParticle(UINT instanceCount_);
 
+	/// <summary>
+	/// GPUパーティクル用描画処理
+	/// </summary>
 	void DrawForGPUParticle(UINT instanceCount);
 
-	/// <summary>
-	/// アニメーションの適用
-	/// </summary>
-	//void ApplyAnimation();
+public:
 
-
-public: //ゲッター
-
+	//========================================================================
+	// accessors
+	//========================================================================
+	
+	//----- getter ---------------------------
+	
 	//メッシュの取得
 	Mesh* GetMesh() { return mesh_.get(); }
-
 	//スケルトンの取得
 	Skeleton* GetSkeleton() { return skeleton_.get(); }
-
 	//ModelDataの取得
 	ModelData* GetModelData() { return modelData_; }
-
 	//ModelCommonの取得
 	ModelCommon* GetModelCommon() { return modelCommon_; }
-
 	//テクスチャファイルパスの取得
 	const std::string& GetTextureFilePath() const { return modelData_->material.textureFilePath; }
-
 	//ローカル行列の取得
 	const Matrix4x4& GetLocalMatrix() const { return localMatrix_; }
 
-public: //セッター
-
+	//----- setter ---------------------------
+	
 	//メッシュの設定
 	void SetMesh(Mesh* mesh) { mesh_.reset(mesh); }
-
 	//ModelCommonの設定
 	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
 
 private:
 
+	//モデルの共通情報
 	ModelCommon* modelCommon_ = nullptr;
 
 	//メッシュ
@@ -101,16 +108,17 @@ private:
 
 	//構築するModelData
 	ModelData* modelData_;
-	//Animation* animation_;
 
+	//移動・回転・拡縮情報
 	Vector3 translate_;
 	Quaternion rotate_;
 	Vector3 scale_;
 	Matrix4x4 localMatrix_;
 
+	//UAVのインデックス
 	uint32_t uavIndex_ = 0;
-
+	//スケルトンを持っているかどうか
 	bool haveSkeleton_ = true;
-
+	//inputVertexのインデックス
 	uint32_t inputIndex_ = 0;
 };

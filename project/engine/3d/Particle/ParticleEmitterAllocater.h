@@ -4,13 +4,26 @@
 #include "DirectXCommon.h"
 #include "SrvManager.h"
 
+//============================================================================
+// ParticleEmitterAllocator class
+//============================================================================
 class ParticleEmitterAllocator {
 public:
 	ParticleEmitterAllocator() = default;
 	~ParticleEmitterAllocator() = default;
 
+	//======================================================================
+	// functions
+	//======================================================================
+
+	/// <summary>
+	/// エミッターの割り当て
+	/// </summary>
 	uint32_t Allocate();
 
+	/// <summary>
+	/// エミッターのクリア
+	/// </summary>
 	void Clear();
 
 public:
@@ -19,6 +32,7 @@ public:
 
 private:
 
+	//現在のエミッター数
 	uint32_t emitterCount_ = 0;
 };
 

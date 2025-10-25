@@ -22,19 +22,41 @@ struct Particle {
 	float currentTime_;     //経過時間
 };
 
-
+// 前方宣言
 class ParticleCommon;
+
+//============================================================================
+// BaseParticleGroup class
+//============================================================================
 class BaseParticleGroup {
 public:
 	BaseParticleGroup() = default;
 	virtual ~BaseParticleGroup() = default;
 
+	//=========================================================================
+	// functions
+	//=========================================================================
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="particleCommon"></param>
+	/// <param name="filePath"></param>
 	virtual void Initialize(ParticleCommon* particleCommon, const std::string& filePath) = 0;
 
+	/// <summary>
+	// 更新処理
+	/// </summary>
 	virtual void Update() = 0;
 
+	/// <summary>
+	/// ImGui更新処理
+	/// </summary>
 	virtual void UpdateImGui() = 0;
 
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	virtual void Draw();
 
 	/// <summary>
@@ -47,14 +69,38 @@ public:
 	/// </summary>
 	std::list<Particle> Emit(const Vector3& emitterPos,const Vector3& direction, uint32_t particleCount);
 
-	//bool IsCollision(const AABB& aabb, const Vector3& point);
-
+	/// <summary>
+	/// パーティクルの追加
+	/// </summary>
+	/// <param name="particles"></param>
 	void SpliceParticles(std::list<Particle> particles);
 
+public:
+
+	//=========================================================================
+	// accessor
+	//=========================================================================
+
+	//----- getter ---------------
+
+	/// <summary>
+	/// パーティクルのプリセット取得
+	/// </summary>
+	/// <returns></returns>
 	const ParticlePreset& GetPreset() const { return particlePreset_; }
 
+	//----- setter ---------------
+
+	/// <summary>
+	/// パーティクルのプリセット設定
+	/// </summary>
+	/// <param name="preset"></param>
 	virtual void SetPreset(const ParticlePreset& preset);
 
+	/// <summary>
+	/// エミッターの座標設定
+	/// </summary>
+	/// <param name="position"></param>
 	void SetEmitterPosition(const Vector3& position);
 
 protected:
@@ -68,8 +114,6 @@ protected:
 	//Particleの配列
 	std::list<Particle> particles_; 
 
-	//加速フィールド
-	//AccelerationField accelerationField_;
 	//パーティクルの属性
 	ParticlePreset particlePreset_;
 
@@ -83,8 +127,12 @@ protected:
 
 	//instancing用のデータ
 	ParticleForGPU* particleData_ = nullptr;
+	//ビュー行列用データ
 	PerView* perViewData_ = nullptr;
+	//Srvのインデックス
 	uint32_t particleSrvIndex_ = 0;
+	//Srvのインデックス
 	ComPtr<ID3D12Resource> particleResource_;
+	//ビュー行列用リソース
 	ComPtr<ID3D12Resource> perViewResource_;
 };

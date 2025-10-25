@@ -8,12 +8,17 @@ struct AccelerationField {
 	AABB aabb_;            //当たり判定
 };
 
+// 前方宣言
 class ParticleCommon;
+
+//============================================================================
+// Particle3d class
+//============================================================================
 class Particle3d : public BaseParticleGroup {
 public:
 
 	Particle3d() = default;
-	~Particle3d();
+	~Particle3d() = default;
 
 	/// <summary>
 	/// 初期化
@@ -25,6 +30,9 @@ public:
 	/// </summary>
 	void Update() override;
 
+	/// <summary>
+	/// ImGui更新処理
+	/// </summary>
 	void UpdateImGui() override;
 
 	/// <summary>
@@ -32,6 +40,10 @@ public:
 	/// </summary>
 	void Draw() override;
 
+	/// <summary>
+	/// パーティクルのプリセット設定
+	/// </summary>
+	/// <param name="preset"></param>
 	void SetPreset(const ParticlePreset& preset) override { particlePreset_ = preset; }
 
 	/// <summary>
@@ -44,10 +56,16 @@ public:
 	/// </summary>
 	std::list<Particle> Emit(const Vector3& emitterPos,const Vector3& direction, uint32_t particleCount);
 
+	/// <summary>
+	/// パーティクルの配列の結合処理
+	/// </summary>
 	void SpliceParticles(std::list<Particle> particles);
 
 private:
 
+	/// <summary>
+	/// モデルの設定
+	/// </summary>
 	void SetModel(const std::string& filePath);
 
 private:
@@ -56,5 +74,8 @@ private:
 
 private:
 
+	/// <summary>
+	/// パーティクルの移動更新
+	/// </summary>
 	void UpdateMovement(std::list<Particle>::iterator particleIterator);
 };

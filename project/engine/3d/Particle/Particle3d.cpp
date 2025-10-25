@@ -13,13 +13,6 @@
 #include "Input.h"
 #include <numbers>
 
-
-Particle3d::~Particle3d() {
-	model_ = nullptr;
-	particleResource_.Reset();
-	perViewResource_.Reset();
-}
-
 //=============================================================================
 // 初期化
 //=============================================================================
@@ -70,8 +63,6 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	particlePreset_.textureFilePath = filePath;
 	//モデルの読み込み
 	SetModel(filePath);
-	//TakeCFrameWork::GetPrimitiveDrawer()->CreateRingVertexData();
-
 }
 
 //=============================================================================

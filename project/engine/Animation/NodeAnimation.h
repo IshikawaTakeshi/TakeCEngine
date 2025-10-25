@@ -7,7 +7,7 @@
 
 template <typename T>
 struct AnimationCurve {
-	std::vector<Keyflame<T>> keyflames;
+	std::vector<Keyframe<T>> keyflames;
 };
 
 struct NodeAnimation {
