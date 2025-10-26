@@ -4,6 +4,9 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "application/Entity/Enemy/Enemy.h"
 
+//=============================================================================
+//　移動方向の取得
+//=============================================================================
 Vector3 EnemyInputProvider::GetMoveDirection() const {
 
 	// 移動方向の計算
@@ -22,12 +25,22 @@ Vector3 EnemyInputProvider::GetMoveDirection() const {
 	return Vector3Math::Normalize(orbitPos - enemy_->GetTransform().translate);
 }
 
+
+//=============================================================================
+//　ジャンプ入力の取得
+//=============================================================================
 bool EnemyInputProvider::IsJumpRequested() const {
 	return aiBrainSystem_->GetBestAction() == Action::FLOATING;
 }
 
+//=============================================================================
+//　攻撃入力の取得
+//=============================================================================
 void EnemyInputProvider::RequestAttack() {
 }
 
+//=============================================================================
+//　チャージ攻撃入力の取得
+//=============================================================================
 void EnemyInputProvider::RequestChargeAttack() {
 }

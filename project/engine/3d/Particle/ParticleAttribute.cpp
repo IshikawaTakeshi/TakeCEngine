@@ -1,5 +1,8 @@
 #include "ParticleAttribute.h"
 
+//============================================================================
+// JSON <- ParticleAttributes
+//============================================================================
 void to_json(nlohmann::json& j, const ParticleAttributes& attributes){
 
 	j["scale"] = attributes.scale;
@@ -22,6 +25,9 @@ void to_json(nlohmann::json& j, const ParticleAttributes& attributes){
 	j["enableFollowEmitter"] = attributes.enableFollowEmitter;
 }
 
+//============================================================================
+// JSON <- AttributeRange
+//============================================================================
 void to_json(nlohmann::json& j, const AttributeRange& attributeRange) {
 
 	j = json{
@@ -30,6 +36,9 @@ void to_json(nlohmann::json& j, const AttributeRange& attributeRange) {
 	};
 }
 
+//============================================================================
+// JSON <- ParticlePreset
+//============================================================================
 void to_json(json& j, const ParticlePreset& preset) {
 
 	j["name"] = preset.presetName;
@@ -40,6 +49,9 @@ void to_json(json& j, const ParticlePreset& preset) {
 	j["primitiveParameters"] = preset.primitiveParameters;
 }
 
+//============================================================================
+// JSON -> ParticleAttributes
+//============================================================================
 void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
 
 	j.at("scale").get_to(attributes.scale);
@@ -61,12 +73,18 @@ void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
 	j.at("enableFollowEmitter").get_to(attributes.enableFollowEmitter);
 }
 
+//============================================================================
+// JSON -> AttributeRange
+//============================================================================
 void from_json(const nlohmann::json& j, AttributeRange& attributeRange) {
 
 	j.at("min").get_to(attributeRange.min);
 	j.at("max").get_to(attributeRange.max);
 }
 
+//============================================================================
+// JSON -> ParticlePreset
+//============================================================================
 void from_json(const json& j, ParticlePreset& preset) {
 
 	j.at("name").get_to(preset.presetName);

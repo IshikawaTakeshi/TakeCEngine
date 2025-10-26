@@ -73,6 +73,10 @@ void SkyBox::Update() {
 	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 }
 
+void SkyBox::UpdateImGui() {
+
+}
+
 void SkyBox::Draw() {
 
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();

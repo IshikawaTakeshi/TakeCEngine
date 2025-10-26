@@ -9,7 +9,7 @@
 //================================================================================================
 
 void ParticleManager::Initialize(ParticleCommon* particleCommon) {
-	emitterAllocater_ = std::make_unique<ParticleEmitterAllocater>();
+	emitterAllocater_ = std::make_unique<ParticleEmitterAllocator>();
 	particleCommon_ = particleCommon;
 }
 

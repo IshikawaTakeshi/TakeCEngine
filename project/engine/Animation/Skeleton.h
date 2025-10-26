@@ -9,6 +9,7 @@
 #include <optional>
 #include <map>
 
+//jointの構造体
 struct Joint {
 	QuaternionTransform transform; 
 	Matrix4x4 localMatrix;
@@ -19,18 +20,35 @@ struct Joint {
 	std::optional<uint32_t> parent;   //親Jointのインデックス
 };
 
+//==============================================================
+// Skeletonクラス
+//==============================================================
 class Skeleton {
 public:
+
+	//==========================================================
+	// functions
+	//==========================================================
 
 	/// <summary>
 	/// Skeletonの作成
 	/// </summary>
 	void Create(const Node& node);
 
+	/// <summary>
+	/// スケルトンの更新
+	/// </summary>
 	void Update();
 
+	/// <summary>
+	/// ImGui更新
+	/// </summary>
 	void UpdateImGui();
 
+	/// <summary>
+	/// スケルトンの描画
+	/// </summary>
+	/// <param name="worldMatrix"></param>
 	void Draw(const Matrix4x4& worldMatrix);
 
 	/// <summary>
@@ -39,19 +57,24 @@ public:
 	void ApplyAnimation(Animation* animation,float animationTime);
 
 
-public: //getter
-	
+	//=====================================================
+	// accessors
+	//=====================================================
+
+	//----- getter ---------------
+
+	//スケルトンのRootJointのインデックスを取得
 	const int32_t GetRoot() const { return root; }
-
+	//ジョイントのリストを取得
 	const std::vector<Joint>& GetJoints() { return joints; }
-
+	//ジョイント名からインデックスのマップを取得
 	const std::map<std::string, int32_t>& GetJointMap() { return jointMap; }
 
 	// ジョイント名から値を取得
 	std::optional<Joint> GetJointByName(const std::string& name) const;
-
+	// ジョイント名からワールド行列を取得
 	std::optional<Matrix4x4> GetJointWorldMatrix(const std::string& jointName, const Matrix4x4& characterWorldMatrix) const;
-
+	// ジョイント名からワールド位置を取得
 	std::optional<Vector3> GetJointPosition(const std::string& jointName, const Matrix4x4& modelWorldMatrix) const;
 
 private:

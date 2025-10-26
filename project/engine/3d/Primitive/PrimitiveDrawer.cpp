@@ -7,13 +7,19 @@
 #include "Particle/Particle3d.h"
 #include <numbers>
 
+//============================================================================
+// 初期化
+//============================================================================
+
 void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
-
 }
 
+//============================================================================
+// 終了処理
+//============================================================================
 void PrimitiveDrawer::Finalize() {
 
 	// 各プリミティブデータの解放
@@ -42,10 +48,9 @@ void PrimitiveDrawer::Finalize() {
 	sphereDatas_.clear();
 }
 
-void PrimitiveDrawer::Update() {
-
-}
-
+//============================================================================
+// ImGui更新処理
+//============================================================================
 void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type) {
 
 	switch (type) {
@@ -90,11 +95,15 @@ void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type) {
 	}
 }
 
+//============================================================================
+// ImGui更新処理（パラメータ付き）
+//============================================================================
 void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param) {
 
 	switch (type) {
 	case PRIMITIVE_RING:
 	{
+		//Ringのパラメータ更新と表示
 		auto it = ringDatas_.find(handle);
 		if (it != ringDatas_.end()) {
 			auto& ringData = it->second;
@@ -109,6 +118,7 @@ void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vec
 	}
 	case PRIMITIVE_PLANE:
 	{
+		//Planeのパラメータ更新と表示
 		auto it = planeDatas_.find(handle);
 		if (it != planeDatas_.end()) {
 			auto& planeData = it->second;
@@ -123,6 +133,7 @@ void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vec
 	}
 	case PRIMITIVE_SPHERE:
 	{
+		//Sphereのパラメータ更新と表示
 		auto it = sphereDatas_.find(handle);
 		if (it != sphereDatas_.end()) {
 			auto& sphereData = it->second;
@@ -135,6 +146,7 @@ void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vec
 	}
 	case PRIMITIVE_CONE:
 	{
+		//Coneのパラメータ更新と表示
 		auto it = coneDatas_.find(handle);
 		if (it != coneDatas_.end()) {
 			auto& coneData = it->second;
@@ -153,6 +165,9 @@ void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vec
 	}
 }
 
+//=================================================================================
+//	プリミティブデータ生成処理(リング)
+//=================================================================================
 uint32_t PrimitiveDrawer::GenerateRing(const float outerRadius, const float innerRadius, const std::string& textureFilePath) {
 
 	auto ring = std::make_unique<RingData>();
@@ -165,6 +180,9 @@ uint32_t PrimitiveDrawer::GenerateRing(const float outerRadius, const float inne
 	return useHandle;
 }
 
+//=================================================================================
+//	プリミティブデータ生成処理(平面)
+//=================================================================================
 uint32_t PrimitiveDrawer::GeneratePlane(const float width, const float height, const std::string& textureFilePath) {
 
 	auto plane = std::make_unique<PlaneData>();
@@ -177,6 +195,9 @@ uint32_t PrimitiveDrawer::GeneratePlane(const float width, const float height, c
 	return useHandle;
 }
 
+//=================================================================================
+//	プリミティブデータ生成処理(球)
+//=================================================================================
 uint32_t PrimitiveDrawer::GenerateSphere(const float radius, const std::string& textureFilePath) {
 
 	auto sphere = std::make_unique<SphereData>();
@@ -188,6 +209,9 @@ uint32_t PrimitiveDrawer::GenerateSphere(const float radius, const std::string& 
 	return useHandle;
 }
 
+//=================================================================================
+//	プリミティブデータ生成処理(円錐)
+//=================================================================================
 uint32_t PrimitiveDrawer::GenerateCone(const float radius, const float height, uint32_t subDivision, const std::string& textureFilePath) {
 
 	auto cone = std::make_unique<ConeData>();
@@ -223,8 +247,9 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 			return; // handleが無効な場合は何もしない
 		}
 
+		// リングデータ取得
 		auto& ringData = itRing->second;
-
+		//プリミティブトポロジー設定
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		//VertexBufferView
 		commandList->IASetVertexBuffers(0, 1, &ringData->primitiveData_.vertexBufferView_);
@@ -250,8 +275,9 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 		auto itPlane = planeDatas_.find(handle);
 		if (itPlane == planeDatas_.end()) return;
 
+		// planeデータ取得
 		auto& planeData = itPlane->second;
-
+		//プリミティブトポロジー設定
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		//VertexBufferView
@@ -276,10 +302,10 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 		auto itSphere = sphereDatas_.find(handle);
 		if (itSphere == sphereDatas_.end()) return;
 
+		// sphereデータ取得
 		auto& sphereData = itSphere->second;
-
+		//プリミティブトポロジー設定
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 		//VertexBufferView
 		commandList->IASetVertexBuffers(0, 1, &sphereData->primitiveData_.vertexBufferView_);
 		// materialResource
@@ -288,9 +314,6 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
 			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(sphereData->material_->GetTextureFilePath()));
-
-		//IBVの設定
-		//commandList->IASetIndexBuffer(&sphereData->primitiveData_.indexBufferView_);
 
 		//描画
 		commandList->DrawInstanced(sphereVertexCount_, instanceCount, 0, 0);
@@ -304,6 +327,8 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 		//--------------------------------------------------
 		auto itCone = coneDatas_.find(handle);
 		if (itCone == coneDatas_.end()) return;
+
+		// coneデータ取得
 		auto& coneData = itCone->second;
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		//VertexBufferView
@@ -314,8 +339,6 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
 			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(coneData->material_->GetTextureFilePath()));
-		//IBVの設定
-		//commandList->IASetIndexBuffer(&coneData->primitiveData_.indexBufferView_);
 		//描画
 		commandList->DrawInstanced(coneVertexCount_, instanceCount, 0, 0);
 		break;
@@ -329,6 +352,9 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 	}
 }
 
+//=================================================================================
+//	描画処理(オブジェクト用)
+//=================================================================================
 void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handle) {
 
 
@@ -433,6 +459,9 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 	}
 }
 
+//=================================================================================
+//	頂点データの作成関数(リング)
+//=================================================================================
 void PrimitiveDrawer::CreateRingVertexData(RingData* ringData) {
 
 	UINT size = sizeof(VertexData) * ringData->subDivision_ * kMaxVertexCount_;
@@ -440,7 +469,7 @@ void PrimitiveDrawer::CreateRingVertexData(RingData* ringData) {
 	//bufferをカウント分確保
 	ringData->primitiveData_.vertexBuffer_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
 	ringData->primitiveData_.vertexBuffer_->SetName(L"Ring::vertexResource_");
-	//bufferview設定
+	//bufferView設定
 	ringData->primitiveData_.vertexBufferView_.BufferLocation = ringData->primitiveData_.vertexBuffer_->GetGPUVirtualAddress();
 	ringData->primitiveData_.vertexBufferView_.StrideInBytes = sizeof(VertexData);
 	ringData->primitiveData_.vertexBufferView_.SizeInBytes = size;
@@ -485,6 +514,9 @@ void PrimitiveDrawer::CreateRingVertexData(RingData* ringData) {
 	ringVertexCount_ += ringData->subDivision_ * 6;
 }
 
+//=================================================================================
+//	頂点データの作成関数(平面)
+//=================================================================================
 void PrimitiveDrawer::CreatePlaneVertexData(PlaneData* planeData) {
 
 	UINT size = sizeof(VertexData) * 6 * kMaxVertexCount_;
@@ -524,6 +556,9 @@ void PrimitiveDrawer::CreatePlaneVertexData(PlaneData* planeData) {
 	planeVertexCount_ += 6;
 }
 
+//====================================================================
+// Sphereの頂点データの作成関数
+//====================================================================
 void PrimitiveDrawer::CreateSphereVertexData(SphereData* sphereData) {
 
 	auto CreateSphereVertex = [&](const Vector3& pos, uint32_t lonIndex, uint32_t latIndex, uint32_t kSubdivision, float radius) {
@@ -612,7 +647,7 @@ void PrimitiveDrawer::CreateSphereVertexData(SphereData* sphereData) {
 }
 
 //====================================================================
-// Coneの頂点データの作成関数
+// 頂点データの作成関数(円錐)
 //====================================================================
 
 void PrimitiveDrawer::CreateConeVertexData(ConeData* coneData) {
@@ -727,7 +762,7 @@ void PrimitiveDrawer::CreateConeVertexData(ConeData* coneData) {
 }
 
 //====================================================================
-// マテリアルの作成関数
+// マテリアルの作成関数(リング、平面、球、円錐)
 //====================================================================
 
 void PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath, RingData* ringData) {
@@ -767,18 +802,26 @@ void PrimitiveDrawer::CreateConeMaterial(const std::string& textureFilePath, Con
 	coneData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
 }
 
+//====================================================================
+//	データ取得関数
+//====================================================================
+
 PrimitiveDrawer::PlaneData* PrimitiveDrawer::GetPlaneData(uint32_t handle) {
+	// planeDataを返す
 	return planeDatas_[handle].get();
 }
 
 PrimitiveDrawer::SphereData* PrimitiveDrawer::GetSphereData(uint32_t handle) {
+	// sphereDataを返す
 	return sphereDatas_[handle].get();
 }
 
 PrimitiveDrawer::RingData* PrimitiveDrawer::GetRingData(uint32_t handle) {
+	// ringDataを返す
 	return ringDatas_[handle].get();
 }
 
 PrimitiveDrawer::ConeData* PrimitiveDrawer::GetConeData(uint32_t handle) {
+	// coneDataを返す
 	return coneDatas_[handle].get();
 }

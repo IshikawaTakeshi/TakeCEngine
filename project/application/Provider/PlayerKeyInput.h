@@ -2,12 +2,15 @@
 #include "engine/io/IInputDevice.h"
 #include "application/Provider/Enum/CharacterActionInputEnum.h"
 
-class PlayerKeyInput : 
-	public IInputDevice<CharacterActionInput> {
+//============================================================================
+// PlayerKeyInput class
+//============================================================================
+class PlayerKeyInput : public IInputDevice<CharacterActionInput> {
+public:
 
-	public:
 	PlayerKeyInput() = default;
 	~PlayerKeyInput() override = default;
+
 	//--------- accessor -----------------------------------------------------
 	// 連続入力
 	float GetVector(CharacterActionInput axis)  const override;

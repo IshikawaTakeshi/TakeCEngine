@@ -7,23 +7,39 @@
 #include <string>
 #include <memory>
 
+// 弾の種類
 enum class BulletType {
 	NONE,
 	BULLET,
 	EXPLOSION,
 };
 
+//============================================================================
+// Bullet class
+//============================================================================
 class Bullet : public GameCharacter {
 public:
 	Bullet() = default;
 	~Bullet() = default;
+
+	//========================================================================
+	// function
+	//========================================================================
+
+	//初期化
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath)override;
+	//更新
 	void Update() override;
+	//ImGuiの更新
 	void UpdateImGui();
+	//描画
 	void Draw() override;
+	//コライダー描画
 	void DrawCollider() override;
+	//衝突時の処理
 	void OnCollisionAction(GameCharacter* other) override;
 
+	//弾の生成
 	void Create(const Vector3& weaponPos,const Vector3& targetPos,float speed,float damage,CharacterType type);
 
 public:
@@ -53,7 +69,11 @@ public:
 
 public:
 
-	//trasformの設定
+	//===========================================================================
+	// setter
+	//===========================================================================
+
+	//transformの設定
 	void SetTransform(const EulerTransform& transform) { transform_ = transform; }
 	//生存フラグの設定
 	void SetIsActive(bool isActive);
@@ -85,8 +105,9 @@ private:
 	//寿命時間
 	float lifeTime_ = 0.0f;
 	//弾の半径
-	float bulletradius_ = 1.0f;
+	float bulletRadius_ = 1.0f;
 
+	//パーティクルエミッター
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
 };
 

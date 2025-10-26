@@ -5,14 +5,23 @@
 #include "engine/math/Easing.h"
 #include "engine/base/TakeCFrameWork.h"
 
+//===================================================================================
+//　コンストラクタ
+//===================================================================================
 BehaviorRunning::BehaviorRunning(baseInputProvider* provider) {
 	inputProvider_ = provider;
 }
 
+//===================================================================================
+//　初期化
+//===================================================================================
 void BehaviorRunning::Initialize([[maybe_unused]]GameCharacterContext& characterInfo) {
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
+//===================================================================================
+//　更新
+//===================================================================================
 void BehaviorRunning::Update(GameCharacterContext& characterInfo) {
 
 	//移動方向の正規化
@@ -44,4 +53,3 @@ void BehaviorRunning::Update(GameCharacterContext& characterInfo) {
 	characterInfo.transform.translate += characterInfo.velocity * deltaTime_;
 
 }
-

@@ -21,12 +21,6 @@
 #include "application/Entity/Behavior/BehaviorFloating.h"
 #include "application/Effect/BoostEffectPositionEnum.h"
 
-Player::~Player() {
-	object3d_.reset();
-	collider_.reset();
-	camera_ = nullptr;
-}
-
 //===================================================================================
 // 初期化処理
 //===================================================================================

@@ -34,8 +34,11 @@ public:
 
 	//エフェクトのアクティブ設定
 	void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
+	//エフェクトの持続時間設定
 	void SetIsActive(bool isActive) { isActive_ = isActive; }
+	//GameCharacterの行動を参照
 	void SetBehavior(GameCharacterBehavior behavior) { behavior_ = behavior; }
+	//エフェクトのスケール設定
 	void SetRotate(const Vector3& rotate);
 
 private:

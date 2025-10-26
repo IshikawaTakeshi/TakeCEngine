@@ -1,9 +1,9 @@
 #include "../Material.hlsli"
 
 struct DirectionalLight {
-	float4 color; //ライトのカラー	
-	float3 direction; //ライトの向き
-	float intensity; //輝度
+	float4 color;
+	float3 direction;
+	float intensity;
 };
 
 float3 CalcDirectionalLighting(DirectionalLight dLight,Material gMaterial,float3 N, float3 viewDir, float3 albedo) {

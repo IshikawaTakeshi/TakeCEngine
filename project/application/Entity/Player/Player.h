@@ -15,19 +15,34 @@
 #include "application/Entity/Behavior/BehaviorManager.h"
 #include "application/Effect/BoostEffect.h"
 
-
+//==================================================================================
+// Player class
+//==================================================================================
 class Player : public GameCharacter {
 public:
 	Player() = default;
-	~Player() override;
+	~Player() override = default;
+
+	//==============================================================================
+	// functions
+	//==============================================================================
+
+	//初期化
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
+	//更新
 	void Update() override;
+	//ImGuiの更新
 	void UpdateImGui();
+	//描画
 	void Draw() override;
+	//コライダーの描画
 	void DrawCollider() override;
+	//衝突時の処理
 	void OnCollisionAction(GameCharacter* other) override;
 
+	//武器の初期化
 	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager);
+	//ブーストエフェクトの描画
 	void DrawBoostEffect();
 
 public:
@@ -36,13 +51,12 @@ public:
 	// getter
 	//==============================================================================
 
+	//武器の取得
 	BaseWeapon* GetWeapon(int index) const;
-
+	//全武器の取得
 	std::vector<std::unique_ptr<BaseWeapon>>& GetWeapons();
 
-	const GameCharacterContext& GetCharacterInfo() const { return characterInfo_; }
-	GameCharacterContext& GetCharacterInfo() { return characterInfo_; }
-
+	//カメラの取得
 	Camera* GetCamera() const { return camera_; }
 
 	//移動方向ベクトルの取得
@@ -65,9 +79,9 @@ public:
 	float GetMaxEnergy() const { return characterInfo_.energyInfo.maxEnergy; }
 	//エネルギーの回復速度の取得
 	float GetEnergyRegenRate() const { return characterInfo_.energyInfo.recoveryRate; }
-
+	//エネルギー枯渇フラグの取得
 	bool GetIsOverHeated() const { return characterInfo_.overHeatInfo.isOverheated; }
-
+	//生存フラグの取得
 	bool GetIsAlive() const { return characterInfo_.isAlive; }
 
 	//================================================================================

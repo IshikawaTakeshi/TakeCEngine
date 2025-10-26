@@ -16,34 +16,46 @@
 #include "application/Entity/Enemy/BulletSensor.h"
 #include "application/Effect/DeadEffect.h"
 
+//============================================================================
+// Enemy class
+//============================================================================
 class Enemy : public GameCharacter {
 
 public:
 	Enemy() = default;
-	~Enemy() override;
+	~Enemy() override = default;
+
+	//================================================================================
+	// functions
+	//================================================================================
+
+	//初期化
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
+	//更新
 	void Update() override;
+	//ImGuiの更新
 	void UpdateImGui();
+	//描画
 	void Draw() override;
+	//コライダーの描画
 	void DrawCollider() override;
+	//衝突時の処理
 	void OnCollisionAction(GameCharacter* other) override;
 
+	//武器の初期化
 	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager);
 
 public:
-
 
 	//==============================================================================
 	// getter
 	//==============================================================================
 
+	//武器の取得
 	BaseWeapon* GetWeapon(int index) const;
-
+	//全武器の取得
 	std::vector<std::unique_ptr<BaseWeapon>>& GetWeapons();
-
-	const GameCharacterContext& GetCharacterInfo() const { return characterInfo_; }
-	GameCharacterContext& GetCharacterInfo() { return characterInfo_; }
-
+	//BulletSensorの取得
 	BulletSensor* GetBulletSensor() const { return bulletSensor_.get(); }
 
 	//移動方向ベクトルの取得
@@ -66,47 +78,45 @@ public:
 	float GetMaxEnergy() const { return characterInfo_.energyInfo.maxEnergy; }
 	//エネルギーの回復速度の取得
 	float GetEnergyRegenRate() const { return characterInfo_.energyInfo.recoveryRate; }
-
+	//エネルギー枯渇中かどうか
 	bool GetIsOverHeated() const { return characterInfo_.overHeatInfo.isOverheated; }
-
+	//生存しているかどうか
 	bool GetIsAlive() const { return characterInfo_.isAlive; }
 
+	//周回角度の取得
 	float GetOrbitAngle() const { return orbitAngle_; }
+	//周回半径の取得
 	float GetOrbitRadius() const { return orbitRadius_; }
+	//周回速度の取得
 	float GetOrbitSpeed() const { return orbitSpeed_; }
-
-	const Vector3& GetToOrbitPos() const { return toOrbitPos_; }
 
 	//================================================================================
 	// setter
 	//================================================================================
 
-	//プレイヤーの体力を設定
-	void SetHealth(float health) { characterInfo_.health = health; }
 	//フォーカス対象の座標を設定
 	void SetFocusTargetPos(const Vector3& targetPos) { characterInfo_.focusTargetPos = targetPos; }
-
-	void SetVelocity(const Vector3& velocity) { characterInfo_.velocity = velocity; }
+	//移動ベクトルの設定
 	void SetOrbitAngle(float angle) { orbitAngle_ = angle; }
-	void SetOrbitSpeed(float speed) { orbitSpeed_ = speed; }
 
 private:
 
+	//攻撃処理の更新
 	void UpdateAttack();
+	//各武器の攻撃処理
 	void WeaponAttack(int weaponIndex);
 
 	//エネルギーの更新
 	void UpdateEnergy();
 
 private:
-	// 攻撃開始判定
-	//bool ShouldStartAttack(int weaponIndex);
+
 	// チャージ攻撃実行判定
 	bool ShouldReleaseAttack(int weaponIndex);
 
 private:
 
-	
+	//AIシステム
 	std::unique_ptr<AIBrainSystem> aiBrainSystem_ = nullptr;
 	//接近してくる弾に反応するためのコライダー
 	std::unique_ptr<BulletSensor> bulletSensor_ = nullptr;
@@ -130,19 +140,14 @@ private:
 
 	// プレイヤーの情報
 	GameCharacterContext characterInfo_;
-	// フレーム時間
+	// デルタタイム
 	float deltaTime_ = 0.0f; 
-	float gravity_ = 9.8f;         // 重力の強さ
+	float gravity_ = 9.8f; // 重力の強さ
 	
 	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
 	float chargeShootTimer_ = 0.0f; //停止撃ちまでの残り猶予時間
-
 	float damageEffectTime_ = 0.0f; // ダメージエフェクトの時間
 
-	//攻撃確率(0~100)
-	const float attackProbability_ = 10.0f;
-	//ジャンプ確率(0~100)
-	const float jumpProbability_ = 1.0f;
 	//ターゲットの周りを周回するための変数
 	float orbitAngle_ = 0.0f;              // 周回角度
 	float orbitRadius_ = 60.0f;             // 周回半径（ターゲットとの距離）

@@ -6,6 +6,9 @@
 
 #include <algorithm>
 
+//=================================================================================
+//	初期化
+//=================================================================================
 void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath) {
 
 	//マテリアルリソース初期化
@@ -28,6 +31,9 @@ void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath, 
 	};
 }
 
+//=================================================================================
+//	更新処理
+//=================================================================================
 void Material::Update() {
 
 	Matrix4x4 scaleMatrix = MatrixMath::MakeScaleMatrix(uvTransform_.scale);
@@ -36,6 +42,9 @@ void Material::Update() {
 	materialData_->uvTransform = MatrixMath::Multiply(MatrixMath::Multiply(scaleMatrix, rotateMatrix), translateMatrix);
 }
 
+//=================================================================================
+//	ImGui更新処理
+//=================================================================================
 void Material::UpdateMaterialImGui() {
 #ifdef _DEBUG
 	//ImGuiの更新
@@ -61,6 +70,9 @@ void Material::UpdateMaterialImGui() {
 #endif // DEBUG
 }
 
+//=================================================================================
+//	マテリアルリソース初期化
+//=================================================================================
 void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> device) {
 
 	//マテリアル用リソース作成

@@ -2,9 +2,13 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "application/Provider/BaseInputProvider.h"
 
+
+//=========================================================================
+// コンストラクタ
+//=========================================================================
 BehaviorJumping::BehaviorJumping(baseInputProvider* provider) {
-	inputProvider_ = provider;
-	deltaTime_ = TakeCFrameWork::GetDeltaTime(); // デルタタイムの取得
+	inputProvider_ = provider; //入力プロバイダーの設定
+	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 	
 }
 
@@ -27,8 +31,6 @@ void BehaviorJumping::Initialize(GameCharacterContext& characterInfo) {
 
 void BehaviorJumping::Update(GameCharacterContext& characterInfo) {
 
-	deltaTime_ = TakeCFrameWork::GetDeltaTime(); // デルタタイムの取得
-
 	Vector3& velocity = characterInfo.velocity; // 移動ベクトル
 
 	// ジャンプ中の移動
@@ -37,8 +39,10 @@ void BehaviorJumping::Update(GameCharacterContext& characterInfo) {
 	// 重力の適用
 	velocity.y -= (gravity_ + characterInfo.jumpInfo.deceleration) * deltaTime_;
 	characterInfo.transform.translate.y += velocity.y * deltaTime_;
-
+	// ジャンプタイマーの更新
 	characterInfo.jumpInfo.jumpTimer += deltaTime_;
+
+	// ジャンプ時間が最大時間を超えたらFLOATINGに遷移
 	if (characterInfo.jumpInfo.jumpTimer > characterInfo.jumpInfo.maxJumpTime) {
 
 		characterInfo.jumpInfo.jumpTimer = 0.0f; // ジャンプタイマーをリセット

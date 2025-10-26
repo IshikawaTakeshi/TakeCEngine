@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <unordered_map>
 
+// プリミティブメッシュ構造体
 struct PrimitiveMesh {
 	ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
@@ -17,6 +18,10 @@ struct PrimitiveMesh {
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
 };
 
+
+//============================================================================
+// PrimitiveDrawer class
+//============================================================================
 class PrimitiveDrawer {
 public:
 	PrimitiveDrawer() = default;
@@ -80,15 +85,18 @@ public:
 	};
 
 public:
+
+	//=================================================================================
+	// functions
+	//=================================================================================
+	
 	// 初期化
 	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
 
 	/// 終了処理
 	void Finalize();
 
-	//更新処理
-	void Update();
-
+	// ImGui更新処理
 	void UpdateImGui(uint32_t handle,PrimitiveType type);
 	void UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param);
 
@@ -123,7 +131,7 @@ private:
 	// Cone
 	void CreateConeVertexData(ConeData* coneData);
 
-	// マテリアルの作成関数
+	// マテリアルの作成関数(リング、平面、球、円錐)
 	void CreateRingMaterial(const std::string& textureFilePath,RingData* ringData);
 	void CreatePlaneMaterial(const std::string& textureFilePath,PlaneData* planeData);
 	void CreateSphereMaterial(const std::string& textureFilePath, SphereData* sphereData);
@@ -137,17 +145,21 @@ private:
 	TransformMatrix* TransformMatrixData_ = nullptr;
 	EulerTransform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
+	// プリミティブデータ管理用マップ
+	//ring
 	std::unordered_map<uint32_t,std::unique_ptr<RingData>> ringDatas_;
 	uint32_t ringDivide_ = 32;
 	uint32_t ringVertexIndex_ = 0;
 	uint32_t ringVertexCount_ = 0;
 	uint32_t ringHandle_ = 0;
 
+	//plane
 	std::unordered_map<uint32_t,std::unique_ptr<PlaneData>> planeDatas_;
 	uint32_t planeVertexIndex_ = 0;
 	uint32_t planeVertexCount_ = 0;
 	uint32_t planeHandle_ = 0;
 
+	//sphere
 	std::unordered_map<uint32_t, std::unique_ptr<SphereData>> sphereDatas_;
 	uint32_t sphereDivide_ = 16; // 球の分割数
 	uint32_t sphereVertexIndex_ = 0;
@@ -155,13 +167,11 @@ private:
 	uint32_t sphereIndexCount_ = 0;
 	uint32_t sphereHandle_ = 0;
 
+	//cone
 	std::unordered_map<uint32_t, std::unique_ptr<ConeData>> coneDatas_;
 	uint32_t coneVertexIndex_ = 0;
 	uint32_t coneVertexCount_ = 0;
 	uint32_t coneHandle_ = 0;
 
-	//std::unordered_map<uint32_t, std::unique_ptr<CubeData>> cubeDatas_;
-
 	const uint32_t kMaxVertexCount_ = 32000;
 };
-

@@ -4,11 +4,14 @@
 #include <algorithm>
 #include <cassert>
 
+//====================================================================
+// SkinCluster生成
+//====================================================================
 void SkinCluster::Create(
 	const ComPtr<ID3D12Device>& device,SrvManager* srvManager,
 	Skeleton* skeleton, const ModelData* modelData) {
 
-	//palette用のReosurce確保
+	//palette用のResource確保
 	//MEMO:sizeInBytesはWellForGPUのサイズ×ジョイント数
 	paletteResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(WellForGPU) * skeleton->GetJoints().size());
 	paletteResource->SetName(L"SkinCluster::paletteResource");
@@ -75,6 +78,9 @@ void SkinCluster::Create(
 	}
 }
 
+//====================================================================
+// SkinCluster更新
+//====================================================================
 void SkinCluster::Update(Skeleton* skeleton) {
 	for (size_t jointIndex = 0; jointIndex < skeleton->GetJoints().size(); ++jointIndex) {
 		assert(jointIndex < inverseBindPoseMatrices.size());

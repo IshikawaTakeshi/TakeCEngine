@@ -5,7 +5,21 @@
 #include <string>
 
 #pragma comment(lib, "xaudio2.lib")
+
+//===================================================================================
+///			AudioManagerクラス
+//===================================================================================
 class AudioManager {
+private:
+
+	//シングルトンインスタンス
+	static AudioManager* instance_;
+
+	//コピーコンストラクタ・代入演算子禁止
+	AudioManager() = default;
+	~AudioManager() = default;
+	AudioManager(const AudioManager&) = delete;
+	AudioManager& operator=(const AudioManager&) = delete;
 public:
 
 	//エイリアステンプレート
@@ -93,14 +107,7 @@ public:
 
 	IXAudio2MasteringVoice* GetMasteringVoice() const { return masteringVoice_; }
 
-private:
 
-	static AudioManager* instance_;
-
-	AudioManager() = default;
-	~AudioManager() = default;
-	AudioManager(const AudioManager&) = delete;
-	AudioManager& operator=(const AudioManager&) = delete;
 
 private:
 

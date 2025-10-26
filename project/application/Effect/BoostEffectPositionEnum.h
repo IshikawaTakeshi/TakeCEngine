@@ -1,5 +1,8 @@
 #pragma once
 
+//============================================================================
+// BoostEffectPosition enum
+//============================================================================
 enum BoostEffectPosition {
 	LEFT_SHOULDER,
 	RIGHT_SHOULDER,

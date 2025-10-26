@@ -15,19 +15,9 @@
 
 #pragma endregion
 
-
-Sprite::~Sprite() {
-	
-	
-	wvpResource_.Reset();
-	mesh_.reset();
-	spriteCommon_ = nullptr;
-	
-	
-}
-
-#pragma region 初期化処理
-
+//==================================================================================
+// 初期化
+//==================================================================================
 void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath) {
 
 	//SpriteCommonの設定
@@ -75,9 +65,10 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	wvpData_->WVP = worldViewProjectionMatrix_;
 	wvpData_->World = worldMatrix_;
 }
-#pragma endregion
 
-#pragma region 更新処理
+//=============================================================================================
+// 更新処理
+//=============================================================================================
 void Sprite::Update() {
 
 	if(firstUpdate_) {
@@ -112,6 +103,9 @@ void Sprite::Update() {
 	wvpData_->World = worldMatrix_;
 }
 
+//=============================================================================================
+// ImGuiの更新
+//=============================================================================================
 void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 #ifdef _DEBUG
 	//ImGuiの更新
@@ -134,6 +128,9 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 #endif // DEBUG
 }
 
+//=============================================================================================
+// 頂点データ更新
+//=============================================================================================
 void Sprite::UpdateVertexData() {
 	//頂点データ
 	VertexData* vertexData;
@@ -172,11 +169,17 @@ void Sprite::UpdateVertexData() {
 	vertexData[3].texcoord = { tex_right,tex_top };
 }
 
+//=============================================================================================
+// サイズを画面サイズに対する相対サイズにする
+//=============================================================================================
 void Sprite::SetSizeRelative() {
 	size_.x *= WinApp::widthPercent_;
 	size_.y *= WinApp::heightPercent_;
 }
 
+//=============================================================================================
+// テクスチャサイズをイメージに合わせる
+//=============================================================================================
 void Sprite::AdjustTextureSize() {
 
 	//テクスチャメタデータを取得
@@ -189,23 +192,22 @@ void Sprite::AdjustTextureSize() {
 	size_ = textureSize_;
 }
 
-#pragma endregion
 
-
-#pragma region 描画処理
+//=============================================================================================
+// 描画処理
+//=============================================================================================
 void Sprite::Draw() {
-	//spriteの描画。
+	//spriteの描画
 	mesh_->SetVertexBuffers(spriteCommon_->GetDirectXCommon()->GetCommandList(), 0);
 	//TransformationMatrixCBufferの場所の設定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
-	//materialCBufferの場所を指定
+	//gMaterial
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(
 		1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	//gTexureの設定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(filePath_));
 	//IBVの設定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 }
-#pragma endregion

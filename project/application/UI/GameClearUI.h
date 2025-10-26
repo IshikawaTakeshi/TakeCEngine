@@ -2,12 +2,22 @@
 #include <memory>
 #include <string>
 
+// 前方宣言
 class SpriteCommon;
 class Sprite;
+
+//============================================================================
+// GameClearUI class
+//============================================================================
 class GameClearUI {
 public:
 	GameClearUI() = default;
 	~GameClearUI() = default;
+
+	//========================================================================
+	// functions
+	//========================================================================
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -21,8 +31,12 @@ public:
 	/// </summary>
 	void Draw();
 
+	//----- getter ---------------------------
+
+	//----- setter ---------------------------
+
+	//UIの表示状態設定
 	void SetIsActive(bool isActive);
-	
 
 private:
 
@@ -36,4 +50,3 @@ private:
 	float fadeSpeed_ = 1.0f; // フェード速度
 	float alpha_ = 0.0f; // アルファ値（透明度）
 };
-

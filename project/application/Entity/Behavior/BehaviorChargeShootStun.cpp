@@ -2,19 +2,28 @@
 #include "application/Provider/BaseInputProvider.h"
 #include "engine/base/TakeCFrameWork.h"
 
+//===================================================================================
+//　コンストラクタ
+//===================================================================================
 BehaviorChargeShootStun::BehaviorChargeShootStun(baseInputProvider* provider) {
 	inputProvider_ = provider;
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
+//===================================================================================
+//　初期化
+//===================================================================================
 void BehaviorChargeShootStun::Initialize(GameCharacterContext& characterInfo) {
 	// 硬直タイマーの初期化
 	characterInfo.chargeAttackStunInfo.stunTimer = characterInfo.chargeAttackStunInfo.stunDuration;
 }
 
+//===================================================================================
+//　更新
+//===================================================================================
 void BehaviorChargeShootStun::Update(GameCharacterContext& characterInfo) {
 	float& stunTimer_ = characterInfo.chargeAttackStunInfo.stunTimer;
-	Vector3& velocity_ = characterInfo.velocity; // 移動ベクトル
+	Vector3& velocity_ = characterInfo.velocity;
 	// 硬直時間の更新
 	stunTimer_ -= deltaTime_;
 

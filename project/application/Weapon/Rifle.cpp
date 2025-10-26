@@ -4,8 +4,9 @@
 #include "engine/math/MatrixMath.h"
 #include "application/Weapon/Bullet/BulletManager.h"
 
-Rifle::~Rifle() {}
-
+//===================================================================================
+//　初期化処理
+//===================================================================================
 void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& filePath) {
 
 	bulletManager_ = bulletManager;
@@ -36,6 +37,9 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 	isStopShootOnly_ = false; // ライフルは停止撃ち専用ではない
 }
 
+//===================================================================================
+//　更新処理
+//===================================================================================
 void Rifle::Update() {
 
 	if(remainingBulletCount_ <= 0 && bulletCount_ <= 0) {
@@ -66,8 +70,10 @@ void Rifle::Update() {
 		if (burstInterval_ <= 0.0f && burstCount_ > 0) {
 			// 弾発射
 			if (ownerObject_->GetCharacterType() == CharacterType::PLAYER) {
+				//プレイヤーの弾として発射
 				bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, bulletSpeed_,damage_, CharacterType::PLAYER_BULLET);
 			} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
+				//エネミーの弾として発射
 				bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, bulletSpeed_,damage_, CharacterType::ENEMY_BULLET);
 			}
 
@@ -96,6 +102,9 @@ void Rifle::Update() {
 	object3d_->Update();
 }
 
+//===================================================================================
+//　ImGui更新処理
+//===================================================================================
 void Rifle::UpdateImGui() {
 
 	ImGui::SeparatorText("Rifle");
@@ -118,6 +127,9 @@ void Rifle::UpdateImGui() {
 	}
 }
 
+//===================================================================================
+//　描画処理
+//===================================================================================
 void Rifle::Draw() {
 
 	object3d_->Draw();
@@ -126,7 +138,6 @@ void Rifle::Draw() {
 //=====================================================================================
 // 攻撃処理
 //=====================================================================================
-
 void Rifle::Attack() {
 
 	if (isReloading_) {
@@ -206,18 +217,24 @@ void Rifle::ChargeAttack() {
 	chargeTime_ = 0.0f;
 }
 
+//=====================================================================================
+// 所有者の設定
+//=====================================================================================
 void Rifle::SetOwnerObject(GameCharacter* owner) {
 	ownerObject_ = owner;
 }
 
+//チャージ攻撃可能か
 bool Rifle::IsChargeAttack() const {
 	return canChargeAttack_;
 }
 
+//移動撃ち可能か
 bool Rifle::IsMoveShootable() const {
 	return canMoveShootable_;
 }
 
+//停止撃ち専用か
 bool Rifle::IsStopShootOnly() const {
 	return isStopShootOnly_;
 }

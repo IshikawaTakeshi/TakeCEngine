@@ -11,6 +11,7 @@
 #include <memory>
 #include <random>
 
+// 前方宣言
 class ParticleCommon;
 
 //==================================================================================
@@ -57,7 +58,7 @@ public:
 private:
 
 	//エミッターアロケータ
-	std::unique_ptr<ParticleEmitterAllocater> emitterAllocater_;
+	std::unique_ptr<ParticleEmitterAllocator> emitterAllocater_;
 	//パーティクルグループ
 	std::unordered_map<std::string, std::unique_ptr<PrimitiveParticle>> particleGroups_;
 	//パーティクル共通情報

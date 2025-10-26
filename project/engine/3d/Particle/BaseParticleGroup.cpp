@@ -13,6 +13,10 @@
 #include "camera/CameraManager.h"
 #include <numbers>
 
+//=============================================================================
+// 描画処理
+//=============================================================================
+
 void BaseParticleGroup::Draw() {
 
 	// perViewResource
@@ -23,6 +27,10 @@ void BaseParticleGroup::Draw() {
 		particleCommon_->GetGraphicPSO(BlendState::NORMAL)->GetGraphicBindResourceIndex("gParticle"), particleSrvIndex_);
 }
 
+
+//=============================================================================
+// パーティクルの生成
+//=============================================================================
 Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate, const Vector3& directoin) {
 
 	ParticleAttributes attributes = particlePreset_.attribute;
@@ -57,19 +65,24 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 		particle.velocity_ = { distVelocity(randomEngine),distVelocity(randomEngine),distVelocity(randomEngine) };
 	}
 	if (attributes.editColor) {
+		//色を編集する場合
 		particle.color_ = {
 			attributes.color.x,
 			attributes.color.y,
 			attributes.color.z,
 			1.0f };
 	} else {
+		//ランダムな色にする場合
 		particle.color_ = { distColor(randomEngine),distColor(randomEngine),distColor(randomEngine),1.0f };
 	}
 
+	//寿命の設定
 	particle.lifeTime_ = distTime(randomEngine);
+	//経過時間の初期化
 	particle.currentTime_ = 0.0f;
 
 	if (attributes.isBillboard == true) {
+		//Billboardの場合
 		perViewData_->isBillboard = true;
 	}
 
@@ -99,11 +112,13 @@ void BaseParticleGroup::SpliceParticles(std::list<Particle> particles) {
 }
 
 void BaseParticleGroup::SetPreset(const ParticlePreset& preset) {
+	//プリセットの設定
 	particlePreset_ = preset;
 	
 }
 
 void BaseParticleGroup::SetEmitterPosition(const Vector3& position) {
+	//エミッターの位置設定
 	emitterPos_ = position;
 }
 

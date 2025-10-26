@@ -25,6 +25,8 @@ public:
 	/// </summary>
 	void Update();
 
+	void UpdateImGui();
+
 	/// <summary>
 	/// 描画処理
 	/// </summary>

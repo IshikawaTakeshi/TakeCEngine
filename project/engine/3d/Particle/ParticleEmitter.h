@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 
+//球状エミッター情報構造体
 struct EmitterSphereInfo {
 	Vector3 translate; //エミッターの位置
 	float radius; //射出半径
@@ -15,14 +16,19 @@ struct EmitterSphereInfo {
 	uint32_t isEmit; //発生許可
 };
 
+// 前方宣言
 class DirectXCommon;
 class SrvManager;
 class GPUParticle;
+
+//============================================================================
+// ParticleEmitter class
+//============================================================================
 class ParticleEmitter {
 public:
 
 	ParticleEmitter() = default;
-	~ParticleEmitter();
+	~ParticleEmitter() = default;
 
 	/// <summary>
 	/// 初期化
@@ -33,6 +39,11 @@ public:
 	/// <param name="frequency">発生頻度</param>
 	void Initialize(const std::string& emitterName, EulerTransform transforms,uint32_t count, float frequency);
 
+	/// <summary>
+	/// 球状エミッター初期化
+	/// </summary>
+	/// <param name="dxCommon"></param>
+	/// <param name="srvManager"></param>
 	void InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManager* srvManager);
 
 	/// <summary>
@@ -40,6 +51,9 @@ public:
 	/// </summary>
 	void Update();
 
+	/// <summary>
+	/// GPUパーティクル用の更新処理
+	/// </summary>
 	void UpdateForGPU();
 
 	/// <summary>
@@ -47,6 +61,9 @@ public:
 	/// </summary>
 	void UpdateImGui();
 
+	/// <summary>
+	/// 描画処理(ワイヤーフレーム)
+	/// </summary>
 	void DrawWireFrame();
 
 	/// <summary>
@@ -58,25 +75,46 @@ public:
 
 public:
 
+	//==================================================================================
+	//		accessor
+	//==================================================================================
+
+	//----- getter ---------------
+
+	//発生させるParticleの名前取得
 	const std::string& GetEmitterName() const { return emitterName_; }
+	//発生させるParticleの名前取得
 	const bool IsEmit() const { return isEmit_; }
+	//エミッターの位置取得
 	const EulerTransform& GetTransforms() const { return transforms_; }
+	//発生させるParticleの数取得
 	const uint32_t GetParticleCount() const { return particleCount_; }
+	//発生頻度取得
 	const float GetFrequency() const { return frequency_; }
+	//発生方向取得
 	const Vector3& GetEmitDirection() const { return emitDirection_; }
 
-public:
+	//----- setter ---------------
 
+	//発生させるParticleの名前設定
 	void SetParticleName(const std::string& particleName);
+	//emitter名の設定
 	void SetEmitterName(const std::string& emitterName) { emitterName_ = emitterName; }
 
+	//エミッターの位置設定
 	void SetTranslate(const Vector3& translate) {transforms_.translate = translate; }
+	//エミッターの回転設定
 	void SetRotate(const Vector3& rotate) { transforms_.rotate = rotate; }
+	//エミッターのスケール設定
 	void SetScale(const Vector3& scale) { transforms_.scale = scale; }
 
+	//発生フラグ設定
 	void SetIsEmit(bool isEmit) { isEmit_ = isEmit; }
+	//発生頻度設定
 	void SetFrequency(float frequency) { frequency_ = frequency; }
+	//発生させるParticleの数設定
 	void SetParticleCount(uint32_t count) { particleCount_ = count; }
+	//発生方向設定
 	void SetEmitDirection(const Vector3& direction) { emitDirection_ = direction; }
 
 private:
@@ -98,7 +136,7 @@ private:
 	//フレーム時間の情報
 	PerFrame* perFrameData_ = nullptr;
 
-
+	//リソース
 	ComPtr<ID3D12Resource> emitterSphereResource_;
 	ComPtr<ID3D12Resource> perFrameResource_;
 
@@ -112,4 +150,3 @@ private:
 	std::string particleName_; //発生させるParticleの名前
 
 };
-

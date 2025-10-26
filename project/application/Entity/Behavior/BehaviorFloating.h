@@ -1,17 +1,25 @@
 #pragma once
 #include "application/Entity/Behavior/BaseBehavior.h"
 
-class baseInputProvider; // 前方宣言
+// 前方宣言
+class baseInputProvider;
+
+//============================================================================
+// BehaviorFloating class
+//============================================================================
 class BehaviorFloating : public BaseBehavior {
 public:
 
 	BehaviorFloating(baseInputProvider* provider);
 	~BehaviorFloating() override = default;
+
+	// 初期化
 	void Initialize([[maybe_unused]]GameCharacterContext& characterInfo) override;
+	// 更新
 	void Update(GameCharacterContext& characterInfo) override;
 
 private:
 
-	float gravity_ = 9.8f; // 重力の強さ
+	//重力の強さ
+	float gravity_ = 9.8f;
 };
-

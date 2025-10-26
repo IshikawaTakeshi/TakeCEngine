@@ -6,9 +6,13 @@
 #include "engine/3d/Particle/ParticleEmitter.h"
 #include "Bullet.h"
 
+//============================================================================
+// VerticalMissile class
+//============================================================================
 class VerticalMissile : public GameCharacter {
 public:
 
+	//ミサイルのフェーズ
 	enum class VerticalMissilePhase {
 		ASCENDING, // 上昇中
 		HOMING,    // 目標に向かっている
@@ -17,13 +21,24 @@ public:
 
 	VerticalMissile() = default;
 	~VerticalMissile() override = default;
+	
+	//========================================================================
+	// functions
+	//========================================================================
 
+	// 初期化
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
+	// 更新処理
 	void Update() override;
+	// ImGuiの更新
 	void UpdateImGui();
+	// 描画処理
 	void Draw() override;
+	// コライダー描画
 	void DrawCollider() override;
+	// 衝突時の処理
 	void OnCollisionAction(GameCharacter* other) override;
+	// ミサイルの生成
 	void Create(BaseWeapon* ownerWeapon, const float& speed,float damage, CharacterType type);
 
 public:
@@ -66,8 +81,9 @@ private:
 	float damage_ = 0.0f; // 攻撃力
 	bool isActive_ = false; // 生存フラグ
 	float lifeTime_ = 0.0f; // 寿命時間
-	float bulletradius_ = 1.0f; //弾の半径
+	float bulletRadius_ = 1.0f; //弾の半径
 
+	//パーティクルエミッター
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
 
 	//ミサイルのフェーズ
@@ -85,4 +101,3 @@ private:
 	//ホーミングの度合い
 	float homingRate_ = 0.1f;
 };
-

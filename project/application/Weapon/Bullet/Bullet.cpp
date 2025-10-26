@@ -6,9 +6,8 @@
 #include "math/Easing.h"
 
 //========================================================================================================
-// object3d,colliderの初期化
+// 初期化
 //========================================================================================================
-
 void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
 	//オブジェクト初期化
@@ -21,7 +20,7 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 		collider_ = std::make_unique<SphereCollider>();
 		collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	}
-	collider_->SetRadius(bulletradius_); // 半径を設定
+	collider_->SetRadius(bulletRadius_); // 半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Bullet)); // 種別IDを設定
 	//emiiter設定
 	//emitter0
@@ -73,6 +72,9 @@ void Bullet::Update() {
 
 }
 
+//========================================================================================================
+// ImGuiの更新
+//========================================================================================================
 void Bullet::UpdateImGui() {
 
 }
@@ -104,8 +106,6 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 	if (characterType_ == CharacterType::PLAYER_BULLET) {
 		if (other->GetCharacterType() == CharacterType::ENEMY) {
 			//敵に当たった場合の処理
-			//敵のHPを減らす
-			//enemy_->TakeDamage(damage_);
 
 			//パーティクル射出
 			//particleEmitter_[0]->Emit();
@@ -129,8 +129,6 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 
 		isActive_ = false; //弾を無効化
 	}
-
-
 }
 
 //========================================================================================================
@@ -169,7 +167,7 @@ float Bullet::GetDamage() const { return damage_; }
 // 弾速の取得
 float Bullet::GetSpeed() const { return speed_; }
 // 弾の半径の取得
-float Bullet::GetBulletRadius() const { return bulletradius_; }
+float Bullet::GetBulletRadius() const { return bulletRadius_; }
 // 寿命時間の取得
 float Bullet::GetLifeTime() const { return lifeTime_; }
 
@@ -188,9 +186,9 @@ void Bullet::SetTargetPos(const Vector3& targetPos) { targetPos_ = targetPos; }
 
 // 弾の半径を設定
 void Bullet::SetBulletRadius(float radius) {
-	bulletradius_ = radius;
+	bulletRadius_ = radius;
 	// コライダーの半径も更新
-	collider_->SetRadius(bulletradius_);
+	collider_->SetRadius(bulletRadius_);
 }
 
 // 弾速を設定

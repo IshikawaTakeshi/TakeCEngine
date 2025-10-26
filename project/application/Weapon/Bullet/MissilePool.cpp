@@ -1,16 +1,24 @@
 #include "MissilePool.h"
 
-
+//===================================================================================
+//　初期化
+//===================================================================================
 void MissilePool::Initialize(size_t size) {
 	for (size_t i = 0; i < size; i++) {
 		pool_.emplace_back(std::make_unique<VerticalMissile>());
 	}
 }
 
+//===================================================================================
+//　終了処理
+//===================================================================================
 void MissilePool::Finalize() {
 	pool_.clear();
 }
 
+//===================================================================================
+//　ミサイルの取得
+//===================================================================================
 VerticalMissile* MissilePool::GetMissile() {
 	for (const auto& missile : pool_) {
 		if (!missile->GetIsActive()) {
@@ -21,14 +29,21 @@ VerticalMissile* MissilePool::GetMissile() {
 	return nullptr;
 }
 
+//===================================================================================
+//　全ミサイルの更新
+//===================================================================================
 void MissilePool::UpdateAllMissiles() {
 	for (const auto& missile : pool_) {
 		if (missile->GetIsActive()) {
+			// アクティブなミサイルのみ更新
 			missile->Update();
 		}
 	}
 }
 
+//===================================================================================
+//　全ミサイルの描画
+//===================================================================================
 void MissilePool::DrawAllMissiles() {
 	for (const auto& missile : pool_) {
 		if (missile->GetIsActive()) {
@@ -37,6 +52,9 @@ void MissilePool::DrawAllMissiles() {
 	}
 }
 
+//===================================================================================
+//　全ミサイルのコライダー描画
+//===================================================================================
 void MissilePool::DrawAllCollider() {
 	for (const auto& missile : pool_) {
 		if (missile->GetIsActive()) {
@@ -44,7 +62,9 @@ void MissilePool::DrawAllCollider() {
 		}
 	}
 }
-
+//===================================================================================
+//　ミサイルプールの取得
+//===================================================================================
 std::vector<VerticalMissile*> MissilePool::GetPool() {
 	std::vector<VerticalMissile*> missiles;
 	for (const auto& missile : pool_) {

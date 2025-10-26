@@ -1,11 +1,17 @@
 #include "PlayerKeyInput.h"
 #include "engine/io/Input.h"
 
+//=============================================================================
+// 連続入力取得
+//=============================================================================
 float PlayerKeyInput::GetVector(CharacterActionInput axis) const {
     axis;
     return 0.0f;
 }
 
+//=============================================================================
+// 連続入力取得(Vector2)
+//=============================================================================
 Vector2 PlayerKeyInput::GetVector2(CharacterActionInput axis) const {
     
     Vector2 value{};
@@ -36,11 +42,17 @@ Vector2 PlayerKeyInput::GetVector2(CharacterActionInput axis) const {
 	return value;
 }
 
+//=============================================================================
+// 単入力取得(押下)
+//=============================================================================
 bool PlayerKeyInput::IsPressed(CharacterActionInput button) const {
     button;
     return false;
 }
 
+//=============================================================================
+// 単入力取得(トリガー)
+//=============================================================================
 bool PlayerKeyInput::IsTriggered(CharacterActionInput button) const {
     button;
     return false;

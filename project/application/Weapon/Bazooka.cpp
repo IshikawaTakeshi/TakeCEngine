@@ -4,6 +4,9 @@
 #include "math/MatrixMath.h"
 #include "application/Weapon/Bullet/BulletManager.h"
 
+//=============================================================================
+// 初期化処理
+//=============================================================================
 void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) {
 
 	//弾薬マネージャの設定
@@ -35,6 +38,9 @@ void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 	isStopShootOnly_ = true;  // バズーカは停止撃ち専用
 }
 
+//=============================================================================
+// 更新処理
+//=============================================================================
 void Bazooka::Update() {
 
 	if(remainingBulletCount_ <= 0 && bulletCount_ <= 0) {
@@ -72,6 +78,9 @@ void Bazooka::Update() {
 	object3d_->Update();
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void Bazooka::UpdateImGui() {
 	ImGui::SeparatorText("Bazooka Settings");
 	ImGui::Text("Weapon Type: Bazooka");
@@ -87,11 +96,17 @@ void Bazooka::UpdateImGui() {
 	ImGui::Text("Bullet Speed: %.2f", bulletSpeed_);
 }
 
+//=============================================================================
+// 描画処理
+//=============================================================================
 void Bazooka::Draw() {
 
 	object3d_->Draw();
 }
 
+//=============================================================================
+// 攻撃処理
+//=============================================================================
 void Bazooka::Attack() {
 
 	if (isReloading_ == true) {
@@ -120,21 +135,27 @@ void Bazooka::Attack() {
 	attackInterval_ = kAttackInterval;
 }
 
+//=============================================================================
+// 所有者の設定
+//=============================================================================
 void Bazooka::SetOwnerObject(GameCharacter* owner) {
 
 	ownerObject_ = owner;
 }
 
+// チャージ攻撃可能か
 bool Bazooka::IsChargeAttack() const {
 	// バズーカはチャージ攻撃不可
 	return canChargeAttack_;
 }
 
+// 移動撃ち可能か
 bool Bazooka::IsMoveShootable() const {
 	// バズーカは移動撃ち不可
 	return canMoveShootable_;
 }
 
+// 停止撃ち専用か
 bool Bazooka::IsStopShootOnly() const {
 	// バズーカは停止撃ち専用
 	return isStopShootOnly_;

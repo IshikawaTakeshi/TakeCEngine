@@ -14,16 +14,9 @@
 #include "application/Weapon/Bazooka.h"
 #include "application/Entity/WeaponUnit.h"
 
-Enemy::~Enemy() {
-	object3d_.reset();
-	collider_.reset();
-}
-
 //========================================================================================================
 //　初期化
 //========================================================================================================
-
-
 void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
 

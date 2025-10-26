@@ -1,5 +1,6 @@
 #include "BaseWeapon.h"
 
+// 武器をスケルトンのジョイントに取り付ける
 void BaseWeapon::AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName) {
 	parentSkeleton_ = skeleton;
 	parentJointName_ = jointName;

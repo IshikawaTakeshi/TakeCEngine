@@ -5,6 +5,9 @@
 #include "engine/Collision/SphereCollider.h"
 #include "engine/base/ImGuiManager.h"
 
+//===================================================================================
+//　初期化
+//===================================================================================
 void BulletSensor::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 	//オブジェクト初期化
 	object3d_ = std::make_unique<Object3d>();
@@ -20,12 +23,16 @@ void BulletSensor::Initialize(Object3dCommon* object3dCommon, const std::string&
 	characterType_ = CharacterType::BULLET_SENSOR;
 }
 
+//===================================================================================
+//　更新
+//===================================================================================
 void BulletSensor::Update() {
 
+	// センサーが有効な場合、タイマーを進める
 	if(isActive_) {
 		activeTimer_ += TakeCFrameWork::GetDeltaTime();
 		if (activeTimer_ >= activeDuration_) {
-			isActive_ = false; // センサー無効化
+			isActive_ = false;
 			activeTimer_ = 0.0f; // タイマーリセット
 			collider_->SetColor({ 0.0f,1.0f,1.0f,1.0f }); // 水色に戻す
 		}
@@ -37,26 +44,40 @@ void BulletSensor::Update() {
 	collider_->Update(object3d_.get());
 }
 
+//===================================================================================
+//　ImGuiの更新
+//===================================================================================
 void BulletSensor::UpdateImGui() {
-	// ImGuiの更新
+
 	ImGui::SeparatorText("bulletSensor");
+	//Scale, Rotate, Translate表示
 	ImGui::Text("Scale: %.2f, %.2f, %.2f", object3d_->GetScale().x, object3d_->GetScale().y, object3d_->GetScale().z);
 	ImGui::Text("Rotate: %.2f, %.2f, %.2f", object3d_->GetRotate().x, object3d_->GetRotate().y, object3d_->GetRotate().z);
 	ImGui::Text("Translate: %.2f, %.2f, %.2f", object3d_->GetTranslate().x, object3d_->GetTranslate().y, object3d_->GetTranslate().z);
 }
 
+//===================================================================================
+//　描画
+//===================================================================================
 void BulletSensor::Draw() {
 	// Object3dの描画
 	object3d_->Draw();
 }
 
+//===================================================================================
+//　コライダーの描画
+//===================================================================================
 void BulletSensor::DrawCollider() {
 	// コライダーの描画
 	collider_->DrawCollider();
 }
 
+//===================================================================================
+//　衝突時の処理
+//===================================================================================
 void BulletSensor::OnCollisionAction(GameCharacter* other) {
 
+	// 衝突相手がプレイヤー関連の場合、センサーを有効化
 	if(other->GetCharacterType() == CharacterType::PLAYER ||
 		other->GetCharacterType() == CharacterType::PLAYER_BULLET || 
 		other->GetCharacterType() == CharacterType::PLAYER_MISSILE) {

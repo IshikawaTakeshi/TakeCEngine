@@ -91,9 +91,7 @@ void MyGame::Update() {
 
 	//FrameWorkの更新
 	TakeCFrameWork::Update();
-	TakeCFrameWork::GetPrimitiveDrawer()->Update();
 	TakeCFrameWork::GetWireFrame()->Update();
-
 }
 
 //====================================================================
@@ -166,6 +164,9 @@ void MyGame::LoadAnimation() {
 	//TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
 }
 
+//====================================================================
+//			テクスチャの読み込み
+//====================================================================
 void MyGame::LoadTexture() {
 
 	TextureManager::GetInstance()->LoadTexture("UI/TitleText.png",false);
@@ -175,10 +176,16 @@ void MyGame::LoadTexture() {
 	TextureManager::GetInstance()->LoadTexture("UI/numText.png", false);
 }
 
+//====================================================================
+//			サウンドの読み込み
+//====================================================================
 void MyGame::LoadSound() {
 
 }
 
+//====================================================================
+//			パーティクルプリセットの読み込み
+//====================================================================
 void MyGame::LoadParticlePreset() {
 
 }
