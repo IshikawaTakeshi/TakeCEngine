@@ -96,9 +96,6 @@ public:
 	/// 終了処理
 	void Finalize();
 
-	//更新処理
-	void Update();
-
 	// ImGui更新処理
 	void UpdateImGui(uint32_t handle,PrimitiveType type);
 	void UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param);

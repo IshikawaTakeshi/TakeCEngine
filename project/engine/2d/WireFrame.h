@@ -38,6 +38,10 @@ struct LineData {
 class WireFrame {
 public:
 
+	//=========================================================================
+	// functions
+	//=========================================================================
+	
 	//初期化
 	void Initialize(DirectXCommon* directXCommon);
 	//更新処理

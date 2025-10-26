@@ -85,7 +85,7 @@ std::map<std::string, Animation*> Animator::LoadAnimationFile(const std::string&
 				KeyframeVector3 keyframe;
 				keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
 				keyframe.value = { -keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z }; //右手->左手に変換するので手動で対処する
-				nodeAnimation.translate.keyflames.push_back(keyframe);
+				nodeAnimation.translate.keyframes.push_back(keyframe);
 			}
 			//rotation
 			for (uint32_t keyIndex = 0; keyIndex < NodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
@@ -93,7 +93,7 @@ std::map<std::string, Animation*> Animator::LoadAnimationFile(const std::string&
 				KeyframeQuaternion keyframe;
 				keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
 				keyframe.value = { keyAssimp.mValue.x, -keyAssimp.mValue.y, -keyAssimp.mValue.z, keyAssimp.mValue.w };
-				nodeAnimation.rotate.keyflames.push_back(keyframe);
+				nodeAnimation.rotate.keyframes.push_back(keyframe);
 			}
 			//scale
 			for (uint32_t keyIndex = 0; keyIndex < NodeAnimationAssimp->mNumScalingKeys; ++keyIndex) {
@@ -101,7 +101,7 @@ std::map<std::string, Animation*> Animator::LoadAnimationFile(const std::string&
 				KeyframeVector3 keyframe;
 				keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
 				keyframe.value = { keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z };
-				nodeAnimation.scale.keyflames.push_back(keyframe);
+				nodeAnimation.scale.keyframes.push_back(keyframe);
 			}
 		}
 

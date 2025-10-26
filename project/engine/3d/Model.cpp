@@ -97,9 +97,9 @@ void Model::Update(Animation* animation,float animationTime) {
 
 		//rootNodeのAnimationを取得
 		NodeAnimation& rootNodeAnimation = animation->nodeAnimations[modelData_->rootNode.name];
-		translate_ = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
-		rotate_ = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
-		scale_ = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
+		translate_ = Animator::CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
+		rotate_ = Animator::CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
+		scale_ = Animator::CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 		localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
 	}
 }

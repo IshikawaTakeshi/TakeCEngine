@@ -2,6 +2,9 @@
 #include "engine/math/MatrixMath.h"
 #include "engine/base/TakeCFrameWork.h"
 
+//====================================================================
+// スケルトン生成
+//====================================================================
 void Skeleton::Create(const Node& rootNode) {
 
 	root = CreateJoint(rootNode, {});
@@ -27,6 +30,9 @@ void Skeleton::Create(const Node& rootNode) {
 	}
 }
 
+//====================================================================
+// スケルトン更新
+//====================================================================
 void Skeleton::Update() {
 	//全てのJointを更新
 	for (Joint& joint : joints) {
@@ -45,6 +51,9 @@ void Skeleton::Update() {
 	}
 }
 
+//====================================================================
+// ImGui更新
+//====================================================================
 void Skeleton::UpdateImGui() {
 #ifdef _DEBUG
 	for (Joint& joint : joints) {
@@ -56,6 +65,9 @@ void Skeleton::UpdateImGui() {
 #endif
 }
 
+//====================================================================
+// スケルトン描画
+//====================================================================
 void Skeleton::Draw(const Matrix4x4& worldMatrix) {
 
 	//jointの描画
@@ -80,6 +92,7 @@ void Skeleton::Draw(const Matrix4x4& worldMatrix) {
 				TakeCFrameWork::GetWireFrame()->DrawLine(jointWorldPos, parentWorldPos, { 1.0f,1.0f,1.0f,1.0f }); // 仮想関数
 			}
 
+			//Jointを球で描画
 			TakeCFrameWork::GetWireFrame()->DrawSphere(
 				jointWorldPos,
 				0.1f, { 1.0f,0.1f,0.1f,1.0f });
@@ -87,18 +100,25 @@ void Skeleton::Draw(const Matrix4x4& worldMatrix) {
 	}
 }
 
+
+//====================================================================
+// アニメーションの適用
+//====================================================================
 void Skeleton::ApplyAnimation(Animation* animation, float animationTime) {
 	for (Joint& joint : joints) {
 		//対象のJointのAnimationがあれば、値の適用を行う。
 		if (auto it = animation->nodeAnimations.find(joint.name); it != animation->nodeAnimations.end()) {
 			const NodeAnimation& rootNodeAnimation = (*it).second;
-			joint.transform.scale = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
-			joint.transform.rotate = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
-			joint.transform.translate = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
+			joint.transform.scale = Animator::CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+			joint.transform.rotate = Animator::CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
+			joint.transform.translate = Animator::CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
 		}
 	}
 }
 
+//====================================================================
+// ジョイント名から値を取得
+//====================================================================
 std::optional<Joint> Skeleton::GetJointByName(const std::string& name) const {
 	auto it = jointMap.find(name);
 	if (it != jointMap.end()) {
@@ -107,6 +127,9 @@ std::optional<Joint> Skeleton::GetJointByName(const std::string& name) const {
 	return std::nullopt; //見つからなかった場合はstd::nulloptを返す
 }
 
+//====================================================================
+// ジョイント名からワールド行列を取得
+//====================================================================
 std::optional<Matrix4x4> Skeleton::GetJointWorldMatrix(const std::string& jointName, const Matrix4x4& characterWorldMatrix) const {
 	auto it = jointMap.find(jointName);
 	if (it != jointMap.end()) {
@@ -115,6 +138,9 @@ std::optional<Matrix4x4> Skeleton::GetJointWorldMatrix(const std::string& jointN
 	return std::nullopt; //見つからなかった場合はstd::nulloptを返す
 }
 
+//====================================================================
+// ジョイント名からワールド位置を取得
+//====================================================================
 std::optional<Vector3> Skeleton::GetJointPosition(const std::string& jointName, const Matrix4x4& modelWorldMatrix) const {
 	auto it = jointMap.find(jointName);
 	if (it != jointMap.end()) {
@@ -127,7 +153,9 @@ std::optional<Vector3> Skeleton::GetJointPosition(const std::string& jointName, 
 	return std::nullopt;
 }
 
-
+//====================================================================
+// NodeからJointを作成
+//====================================================================
 int32_t Skeleton::CreateJoint(const Node& node, const std::optional<int32_t>& parent) {
 	Joint joint;
 	joint.name = node.name;

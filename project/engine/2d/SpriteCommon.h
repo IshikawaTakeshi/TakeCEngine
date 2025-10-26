@@ -3,6 +3,7 @@
 #include <dxgi1_6.h>
 #include <wrl.h>
 #include <memory>
+#include "engine/base/ComPtrAliasTemplates.h"
 
 // 前方宣言
 class PSO;
@@ -19,10 +20,6 @@ private:
 	~SpriteCommon() = default;
 	SpriteCommon(const SpriteCommon&) = delete;
 	SpriteCommon& operator=(const SpriteCommon&) = delete;
-
-public:
-
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public:
 

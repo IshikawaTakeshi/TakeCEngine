@@ -3,6 +3,10 @@ struct VertexShaderOutput {
 	float2 texcoord : TEXCOORD0;
 	float3 normal : NORMAL0;
 	float4 color : COLOR0;
+	
+	float3 basisColor1 : COLOR1;
+	float3 basisColor2 : COLOR2;
+	float3 basisColor3 : COLOR3;
 };
 
 struct ParticleForGPU {

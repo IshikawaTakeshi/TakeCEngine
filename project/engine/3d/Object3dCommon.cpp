@@ -100,6 +100,7 @@ void Object3dCommon::UpdateImGui() {
 	ImGui::SliderFloat3("Direction", &directionalLightData_->direction_.x, -1.0f, 1.0f);
 	directionalLightData_->direction_ = Vector3Math::Normalize(directionalLightData_->direction_);
 	ImGui::DragFloat("dirIntensity", &directionalLightData_->intensity_, 0.01f);
+	ImGui::ColorEdit4("dirColor", &directionalLightData_->color_.x);
 	ImGui::Text("PointLight");
 	ImGui::ColorEdit4("Color", &pointLightData_->color_.x);
 	ImGui::DragFloat3("Position", &pointLightData_->position_.x, 0.01f);

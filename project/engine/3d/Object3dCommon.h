@@ -95,13 +95,6 @@ public:
 
 private:
 
-	//コンストラクタ・デストラクタ・コピー禁止
-	Object3dCommon() = default;
-	~Object3dCommon() = default;
-	Object3dCommon(const Object3dCommon&) = delete;
-	Object3dCommon& operator=(const Object3dCommon&) = delete;
-
-	
 	void SetGraphicCBufferViewLighting(PSO* pso);
 
 	void SetCBufferViewCamera(PSO* pso);
