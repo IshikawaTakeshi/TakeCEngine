@@ -419,7 +419,7 @@ void GamePlayScene::InitializeGameClear() {
 
 	//フェード処理の開始
 	fadeTimer_ = 4.0f;
-	SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
+	//SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
 }
 
 void GamePlayScene::UpdateGameClear() {

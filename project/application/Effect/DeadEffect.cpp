@@ -12,7 +12,7 @@ void DeadEffect::Initialize() {
 	explosionParticleEmitter_->Initialize("explosion", {}, 6, 0.5f);
 	explosionParticleEmitter_->SetParticleName("DeadExplosionEffect");
 	smokeParticleEmitter_ = std::make_unique<ParticleEmitter>();
-	smokeParticleEmitter_->Initialize("smoke", {}, 20, 0.3f);
+	smokeParticleEmitter_->Initialize("smoke", {}, 20, 0.1f);
 	smokeParticleEmitter_->SetRotate({ -1.4f,0.0f,0.0f });
 	smokeParticleEmitter_->SetParticleName("DeadSmokeEffect");
 }

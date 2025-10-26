@@ -48,7 +48,7 @@
             "min": 3.2899999618530273
         }
     },
-    "blendState": 7,
+    "blendState": 6,
     "name": "DeadSmokeEffect",
     "primitiveParameters": {
         "x": 1.0,

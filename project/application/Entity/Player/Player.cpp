@@ -264,7 +264,7 @@ void Player::Update() {
 	std::optional<Vector3> backpackPosition = object3d_->GetModel()->GetSkeleton()->GetJointPosition("leg", object3d_->GetWorldMatrix());
 	backEmitter_->SetTranslate(backpackPosition.value());
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
-	backEmitter_->Update();
+	//backEmitter_->Update();
 
 	//武器の更新
 	for (const auto& weapon : weapons_) {

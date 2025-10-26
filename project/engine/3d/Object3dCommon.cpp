@@ -59,7 +59,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	//光源の色を書き込む
 	directionalLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	//光源の方向を書き込む
-	directionalLightData_->direction_ = { 0.0f,-1.0f,0.0f };
+	directionalLightData_->direction_ = { 0.0f,-0.05f,-0.95f };
 	//光源の輝度書き込む
 	directionalLightData_->intensity_ = 1.0f;
 
