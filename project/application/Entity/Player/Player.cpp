@@ -222,6 +222,7 @@ void Player::Update() {
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::DEAD);
 	}
 
+	//歩行時の煙エミッターのON/OFF制御
 	if (characterInfo_.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING || behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
 		backEmitter_->SetIsEmit(true);
 	} else {
