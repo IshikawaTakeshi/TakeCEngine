@@ -7,13 +7,13 @@
 #include <chrono>
 
 
+//シングルトンインスタンスの初期化
 TextureManager* TextureManager::instance_ = nullptr;
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///			シングルトンインスタンスの取得
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+//================================================================
+// シングルトンインスタンスの取得
+//================================================================
 TextureManager* TextureManager::GetInstance() {
 	if (instance_ == nullptr) {
 		instance_ = new TextureManager();
@@ -21,10 +21,9 @@ TextureManager* TextureManager::GetInstance() {
 	return instance_;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///			初期化
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+//================================================================
+//			初期化
+//================================================================
 void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 
 
@@ -37,10 +36,9 @@ void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 	
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///			終了処理
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+//================================================================
+//			終了処理
+//================================================================
 void TextureManager::Finalize() {
 	srvManager_ = nullptr;
 	dxCommon_ = nullptr;
@@ -71,10 +69,9 @@ void TextureManager::CheckAndReloadTextures() {
 	}
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///			テクスチャファイルの読み込み
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+//=============================================================================================
+///			テクスチャの読み込み
+//=============================================================================================
 void TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
 
 	//読み込み済みテクスチャを検索
@@ -91,14 +88,17 @@ void TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
 	std::wstring fullPathW = L"Resources/images/" + filePathW;
 	HRESULT hr;
 	if (filePathW.empty()) {
+		//ファイルパスが空文字列の場合は白テクスチャを読み込む
 		hr = DirectX::LoadFromWICFile(L"Resources/images/white1x1.png", DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 		assert(SUCCEEDED(hr));
 
 	} else if(filePathW.ends_with(L".dds")){
+		//DDSファイルの場合
 		hr = DirectX::LoadFromDDSFile(fullPathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
 		assert(SUCCEEDED(hr));
 
 	} else {
+		//WIC対応ファイルの場合
 		hr = DirectX::LoadFromWICFile(fullPathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 		assert(SUCCEEDED(hr));
 	}
@@ -147,6 +147,9 @@ void TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
 	);
 }
 
+//=============================================================================================
+///			全テクスチャの読み込み
+//=============================================================================================
 void TextureManager::LoadTextureAll() {
 
 	//Resources/imagesフォルダ内の全ての画像ファイルを読み込む
@@ -178,7 +181,6 @@ void TextureManager::LoadTextureAll() {
 ///=================================================================================================
 ///			テクスチャリソースの作成
 //==================================================================================================
-
 Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(const DirectX::TexMetadata& metadata) {
 
 	//metadataを基にResourceの設定
@@ -281,9 +283,9 @@ const DirectX::TexMetadata& TextureManager::GetMetadata(const std::string& fileP
 	return textureDatas_.at(filePath).metadata;
 }
 
-//=====================================================================
+//============================================================================================
 // 読み込んだテクスチャのファイル名を取得
-//=====================================================================
+//============================================================================================
 
 std::vector<std::string> TextureManager::GetLoadedTextureFileNames() const {
 	std::vector<std::string> fileNames;

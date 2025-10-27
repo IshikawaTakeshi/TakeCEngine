@@ -63,6 +63,8 @@ public:
 
 private:
 	uint32_t primitiveHandle_ = 0; // プリミティブのハンドル
+
+	std::list<Particle> pendingParticles_; // 発生待ちパーティクルのリスト
 private:
 
 	/// <summary>

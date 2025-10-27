@@ -6,21 +6,43 @@
 //============================================================
 class BloomEffect : public PostEffect {
 public:
+
+	//=========================================================
+	// functions
+	//=========================================================
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	BloomEffect() = default;
 	~BloomEffect() = default;
 
-	// 初期化
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="dxCommon"></param>
+	/// <param name="srvManager"></param>
+	/// <param name="CSFilePath"></param>
+	/// <param name="inputResource"></param>
+	/// <param name="inputSrvIdx"></param>
+	/// <param name="outputResource"></param>
 	void Initialize(
 		DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
 		ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) override;
 
-	// ImGuiの更新
+	/// <summary>
+	/// ImGui更新処理
+	/// </summary>
 	void UpdateImGui() override;
-	// エフェクトの実行
+	
+	/// <summary>
+	/// ディスパッチ
+	/// </summary>
 	void Dispatch() override;
 
 private:
 
+	// エフェクト情報構造体
 	struct BloomEffectInfo {
 		bool isActive = false; // エフェクトの有効無効
 		float threshold = 0.8f; // 輝度の閾値
@@ -32,4 +54,3 @@ private:
 
 	ComPtr<ID3D12Resource> effectInfoResource_; // エフェクト情報リソース
 };
-

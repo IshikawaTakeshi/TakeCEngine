@@ -2,8 +2,7 @@
 #include "DirectXCommon.h"
 #include <cassert>
 
-
-
+// 最大SRV数
 const uint32_t SrvManager::kMaxSRVCount_ = 512;
 
 //================================================================================================

@@ -115,6 +115,12 @@ void PrimitiveParticle::Update() {
 		++particleIterator; // 次のイテレータに進める  
 	}
 
+	if (!pendingParticles_.empty()) {
+		// 末尾にまとめて追加
+		particles_.insert(particles_.end(), pendingParticles_.begin(), pendingParticles_.end());
+		pendingParticles_.clear();
+	}
+
 	// データをGPUに転送  
 	perViewData_->isBillboard = particlePreset_.attribute.isBillboard;
 	perViewData_->viewProjection = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
@@ -207,6 +213,10 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 	//particle1つの位置更新
 	ParticleAttributes& attributes = particlePreset_.attribute;
 
+	// 前フレームの位置を保存
+	Vector3 oldPosition = (*particleIterator).transforms_.translate;
+	float oldTime = (*particleIterator).currentTime_;
+
 	if (attributes.isTranslate) {
 		if (attributes.enableFollowEmitter) {
 			//エミッターに追従する場合
@@ -257,5 +267,44 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
 	}
 
+
 	(*particleIterator).currentTime_ += kDeltaTime_; //経過時間の更新
+	float newTime = (*particleIterator).currentTime_;
+
+	// --- トレイル（補間）処理 ---
+	if (attributes.isTrail && (*particleIterator).isTrailParent_) {
+
+		// タイマーを更新（残りを保持するために減算方式）
+		(*particleIterator).trailSpawnTimer_ += kDeltaTime_;
+
+		// もし interval を複数回超えていたら、複数回分生成できるようにループする
+		while ((*particleIterator).trailSpawnTimer_ >= attributes.trailEmitInterval) {
+			// 残り時間を減らす（0 にリセットするより正確）
+			(*particleIterator).trailSpawnTimer_ -= attributes.trailEmitInterval;
+
+			// 指定回数分、位置を補間して子パーティクルを生成
+			size_t n = attributes.particlesPerInterpolation;
+			for (size_t i = 0; i < n; ++i) {
+				float t = static_cast<float>(i + 1) / static_cast<float>(n + 1);
+
+				Particle trailParticle = *particleIterator; // 親をコピー
+				// 補間位置
+				trailParticle.transforms_.translate =
+					Easing::Lerp(oldPosition, (*particleIterator).transforms_.translate, t);
+				// 補間経過時間（親の oldTime -> newTime）
+				trailParticle.currentTime_ = Easing::Lerp(oldTime, newTime, t);
+
+				//移動させる必要がないため、速度を0に設定
+				trailParticle.velocity_ = Vector3(0.0f, 0.0f, 0.0f);
+
+				// トレイルは親化しない（更なるトレイルを作らない）
+				trailParticle.isTrailParent_ = false;
+				// トレイル固有のタイマーはリセット
+				trailParticle.trailSpawnTimer_ = 0.0f;
+
+				// 直接 particles_ に挿入せず pending に積む（次フレーム扱いにする）
+				pendingParticles_.push_back(std::move(trailParticle));
+			}
+		}
+	}
 }

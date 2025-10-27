@@ -80,6 +80,8 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 	particle.lifeTime_ = distTime(randomEngine);
 	//経過時間の初期化
 	particle.currentTime_ = 0.0f;
+	//トレイルエフェクトの親フラグ初期化
+	particle.isTrailParent_ = true;
 
 	if (attributes.isBillboard == true) {
 		//Billboardの場合

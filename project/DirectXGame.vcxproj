@@ -190,8 +190,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\PostEffect\LuminanceBasedOutline.cpp" />
     <ClCompile Include="engine\Entity\LevelObject\LevelObject.cpp" />
     <ClCompile Include="application\UI\GameClearUI.cpp" />
-    <ClCompile Include="engine\io\InputMapper.cpp" />
-    <ClCompile Include="engine\io\IInputDevice.cpp" />
     <ClCompile Include="engine\3d\Light\LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />

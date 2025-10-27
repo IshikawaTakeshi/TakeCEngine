@@ -1,12 +1,17 @@
 #pragma once
-#include "base/DirectXCommon.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/ComPtrAliasTemplates.h"
 #include <cstdint>
 
+//============================================================================
+// SrvManager class
+//============================================================================
 class SrvManager {
 public:
 
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+	//========================================================================
+	// functions
+	//========================================================================
 
 	/// <summary>
 	/// 初期化
@@ -27,10 +32,21 @@ public:
 
 
 	/// <summary>
-	/// SRV生成（テクスチャ用）
+	/// SRV生成（Texture2D用）
 	/// </summary>
+	/// <param name="isCubeMap"></param>
+	/// <param name="Format"></param>
+	/// <param name="MipLevels"></param>
+	/// <param name="pResource"></param>
+	/// <param name="srvIndex"></param>
 	void CreateSRVforTexture2D(bool isCubeMap, DXGI_FORMAT Format, UINT MipLevels, ID3D12Resource* pResource, uint32_t srvIndex);
 
+	/// <summary>
+	/// SRV生成（レンダーターゲット用）
+	/// </summary>
+	/// <param name="pResource"></param>
+	/// <param name="Format"></param>
+	/// <param name="srvIndex"></param>
 	void CreateSRVforRenderTexture(	ID3D12Resource* pResource,DXGI_FORMAT Format, uint32_t srvIndex);
 
 	/// <summary>
@@ -38,6 +54,11 @@ public:
 	/// </summary>
 	void CreateSRVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource, uint32_t srvIndex);
 
+	/// <summary>
+	/// SRV生成（Depth Texture用）
+	/// </summary>
+	/// <param name="pResource"></param>
+	/// <param name="srvIndex"></param>
 	void CreateSRVforDepthTexture(ID3D12Resource* pResource, uint32_t srvIndex);
 
 	/// <summary>
@@ -45,39 +66,40 @@ public:
 	/// </summary>
 	void CreateUAVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource, uint32_t uavIndex);
 
-
-
+	/// <summary>
+	/// UAV生成（レンダーターゲット用）
+	/// </summary>
+	/// <param name="pResource"></param>
+	/// <param name="Format"></param>
+	/// <param name="uavIndex"></param>
 	void CreateUAVforRenderTexture(ID3D12Resource* pResource,DXGI_FORMAT Format, uint32_t uavIndex);
 
-	//テクスチャ確保可能チェック
+	/// <summary>
+	/// テクスチャ確保可能チェック
+	/// </summary>
+	/// <returns></returns>
 	bool CheckTextureAllocate();
 
 
 public:
 	//================================================================================================
-	// getter/setter
+	// accessor
 	//================================================================================================
 
-	/// <summary>
-	/// CPUディスクリプタハンドルの取得
-	/// </summary>
+	//----- getter ---------------
+
+	// CPU用SRVデスクリプタハンドルの取得
 	D3D12_CPU_DESCRIPTOR_HANDLE GetSrvDescriptorHandleCPU(uint32_t index);
-
-	/// <summary>
-	/// GPUディスクリプタハンドルの取得
-	/// </summary>
+	// GPU用SRVデスクリプタハンドルの取得
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvDescriptorHandleGPU(uint32_t index);
-
 	/// srvHeapの取得
 	ID3D12DescriptorHeap* GetSrvHeap() { return descriptorHeap_.Get(); }
 
-	/// <summary>
-	/// SRVの設定
-	/// </summary>
-	/// <param name="RootParameterIndex"></param>
-	/// <param name="srvIndex"></param>
-	void SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex);
+	//----- setter ---------------
 
+	//ディスクリプタテーブルの設定(Graphics)
+	void SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex);
+	//ディスクリプタテーブルの設定(Compute)
 	void SetComputeRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex);
 	
 public:

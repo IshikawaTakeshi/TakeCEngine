@@ -3,14 +3,10 @@
 #include <algorithm>
 #include <cassert>
 
-///-------------------------------------------///
-/// デストラクタ
-///-------------------------------------------///
-GamePad::~GamePad() {}
 
-///-------------------------------------------///
-/// 初期化　対応済み
-///-------------------------------------------///
+///=================================================================
+/// 初期化　
+///=================================================================
 void GamePad::Initialize() {
 	ZeroMemory(currentState_, sizeof(currentState_));
 	ZeroMemory(previousState_, sizeof(previousState_));
@@ -35,9 +31,9 @@ void GamePad::Initialize() {
 	};
 }
 
-///-------------------------------------------///
-/// 更新 対応済み
-///-------------------------------------------///
+///===============================================================
+/// 更新処理
+///===============================================================
 void GamePad::Update() {
 	for (int i = 0; i < XUSER_MAX_COUNT; ++i) {
 		previousState_[i] = currentState_[i];
@@ -49,39 +45,44 @@ void GamePad::Update() {
 	}
 }
 
-///-------------------------------------------///
-/// コントローラースティックの取得
-///-------------------------------------------///
-// XInput
+//===============================================================
+// ジョイスティックの状態取得
+//===============================================================
+
+//----- XInput -----//
 bool GamePad::GetJoystickState(int stickNo, XINPUT_STATE& out) const {
+	//現在の状態を取得
 	if (stickNo < 0 || stickNo >= XUSER_MAX_COUNT)
 		return false;
 	out = currentState_[stickNo];
 	return true;
 }
 bool GamePad::GetJoystickStatePrevious(int stickNo, XINPUT_STATE& out) const {
+	//前回の状態を取得
 	if (stickNo < 0 || stickNo >= XUSER_MAX_COUNT)
 		return false;
 	out = previousState_[stickNo];
 	return true;
 }
-// DirectInput
+//----- DirectInput -----//
 bool GamePad::GetJoystickState(int stickNo, DIJOYSTATE2& out) const {
+	//現在の状態を取得
 	if (stickNo < 0 || stickNo >= XUSER_MAX_COUNT)
 		return false;
 	out = currentDIState_[stickNo];
 	return true;
 }
 bool GamePad::GetJoystickStatePrevious(int stickNo, DIJOYSTATE2& out) const {
+	//前回の状態を取得
 	if (stickNo < 0 || stickNo >= XUSER_MAX_COUNT)
 		return false;
 	out = previousDIState_[stickNo];
 	return true;
 }
 
-///-------------------------------------------///
+//===============================================================
 /// 指定したボタンの XInput / DirectInput マッピングを取得
-///-------------------------------------------///
+//===============================================================
 std::pair<WORD, int> GamePad::ConvertToButton(GamepadButtonType button) const {
 	auto it = buttonMapping_.find(button);
 	if (it != buttonMapping_.end()) {
@@ -90,9 +91,9 @@ std::pair<WORD, int> GamePad::ConvertToButton(GamepadButtonType button) const {
 	return {static_cast<WORD>(0), -1}; // 無効なボタン
 }
 
-///-------------------------------------------///
-/// ボタンを押している間　対応済み
-///-------------------------------------------///
+//===============================================================
+/// ボタンを押している間
+//===============================================================
 bool GamePad::PushButton(int stickNo, GamepadButtonType button) const {
 	auto [xInputButton, dInputButton] = ConvertToButton(button);
 
@@ -119,9 +120,9 @@ bool GamePad::PushButton(int stickNo, GamepadButtonType button) const {
 	return false;
 }
 
-///-------------------------------------------///
-/// ボタンを押した瞬間　対応済み
-///-------------------------------------------///
+//===============================================================
+/// ボタンを押した瞬間
+//===============================================================
 bool GamePad::TriggerButton(int stickNo, GamepadButtonType button) const {
 	auto [xInputButton, dInputButton] = ConvertToButton(button);
 
@@ -150,9 +151,9 @@ bool GamePad::TriggerButton(int stickNo, GamepadButtonType button) const {
 	return false;
 }
 
-///-------------------------------------------///
-/// ボタンを離した瞬間 対応済み
-///-------------------------------------------///
+//===============================================================
+/// ボタンを離した瞬間
+//===============================================================
 bool GamePad::ReleaseButton(int stickNo, GamepadButtonType button) const {
 	auto [xInputButton, dInputButton] = ConvertToButton(button);
 
@@ -181,9 +182,10 @@ bool GamePad::ReleaseButton(int stickNo, GamepadButtonType button) const {
 	return false;
 }
 
-///-------------------------------------------///
-/// スティックの状況を取得 対応済み
-///-------------------------------------------///
+//===============================================================
+/// スティックの状況を取得
+//===============================================================
+
 // 左スティックの状況を取得
 StickState GamePad::GetLeftStickState(int stickNo) const {
 	StickState state = {0.0f, 0.0f};
@@ -245,9 +247,9 @@ StickState GamePad::GetRightStickState(int stickNo) const {
 	return state;
 }
 
-///-------------------------------------------///
-/// 指定スティックの値を取得 対応済み
-///-------------------------------------------///
+//===============================================================
+/// 指定スティックの値を取得
+//===============================================================
 Vector2 GamePad::GetStickValue(int stickNo, GamepadValueType valueType) const {
 	if (stickNo < 0 || stickNo >= XUSER_MAX_COUNT)
 		return { 0.0f, 0.0f };
@@ -289,9 +291,9 @@ Vector2 GamePad::GetStickValue(int stickNo, GamepadValueType valueType) const {
 		});
 }
 
-///-------------------------------------------///
-/// ボタンの押し込み量を取得　対応済み
-///-------------------------------------------///
+//===============================================================
+/// ボタンの押し込み量を取得
+//===============================================================
 float GamePad::GetTriggerValue(int stickNo, GamepadButtonType button) const {
 	if (stickNo < 0 || stickNo >= XUSER_MAX_COUNT)
 		return 0.0f;

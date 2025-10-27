@@ -16,12 +16,21 @@
 class Camera {
 public:
 
+	//ゲーム内カメラの状態
 	enum class GameCameraState {
 		FOLLOW,
 		LOOKAT,
 		ENEMY_DESTROYED,
 	};
 
+
+	//============================================================================
+	// functions
+	//============================================================================
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	Camera() = default;
 	~Camera() = default;
 

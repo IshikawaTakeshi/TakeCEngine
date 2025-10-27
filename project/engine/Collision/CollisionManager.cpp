@@ -55,37 +55,24 @@ void CollisionManager::Finalize() {
 }
 
 //=============================================================================
-// コライダー2つ衝突判定と応答処理
+// ゲームキャラクターの登録・解放・衝突判定
 //=============================================================================
-
-void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
-
-	//コライダーAとBの座標
-	Vector3 posA, posB;
-
-	//コライダーAとBの座標の取得
-	posA = colliderA->GetWorldPos();
-	posB = colliderB->GetWorldPos();
-
-	//コライダーAとBの衝突判定
-	if (Vector3Math::Length(posA - posB) <= colliderA->GetRadius() + colliderB->GetRadius()) {
-		//コライダーAの衝突処理
-		//colliderA->OnCollisionAction(colliderB);
-		//コライダーBの衝突処理
-		//colliderB->OnCollisionAction(colliderA);
-	}
-}
-
 void CollisionManager::RegisterGameCharacter(GameCharacter* gameCharacter) {
 	colliders_.push_back(gameCharacter->GetCollider());
 	gameCharacters_.push_back(gameCharacter);
 }
 
+//=============================================================================
+// ゲームキャラクターの全解放
+//=============================================================================
 void CollisionManager::ClearGameCharacter() {
 	colliders_.clear();
 	gameCharacters_.clear();
 }
 
+//=============================================================================
+// ゲームキャラクター同士の全衝突判定
+//=============================================================================
 void CollisionManager::CheckAllCollisionsForGameCharacter() {
 
 	//リスト内のペアを総当たり
@@ -105,6 +92,9 @@ void CollisionManager::CheckAllCollisionsForGameCharacter() {
 	}
 }
 
+//=============================================================================
+// ゲームキャラクター同士の衝突判定
+//=============================================================================
 void CollisionManager::CheckCollisionPairForGameCharacter(GameCharacter* gameCharacterA, GameCharacter* gameCharacterB) {
 
 	//コライダーAとB
@@ -129,6 +119,9 @@ void CollisionManager::CheckCollisionPairForGameCharacter(GameCharacter* gameCha
 	}
 }
 
+//=============================================================================
+// レイキャスト処理
+//=============================================================================
 bool CollisionManager::RayCast(const Ray& ray, RayCastHit& outHit,uint32_t layerMask) {
 
 	bool result = false;
@@ -138,7 +131,9 @@ bool CollisionManager::RayCast(const Ray& ray, RayCastHit& outHit,uint32_t layer
 		// レイヤーマスクによる絞り込み
 		if (!(static_cast<uint32_t>(collider->GetCollisionLayerID()) & layerMask)) continue;
 
+		// レイとコライダーの交差判定
 		if (collider->Intersects(ray, tempHit)) {
+			// 最も近いヒットを記録
 			if (tempHit.distance < closestDistance) {
 				closestDistance = tempHit.distance;
 				outHit = tempHit;

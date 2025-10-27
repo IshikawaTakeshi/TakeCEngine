@@ -19,6 +19,9 @@ public:
     //	public Methods
     //========================================================================
 
+    /// <summary>
+	/// コンストラクタ・デストラクタ
+    /// </summary>
     InputMapper() = default;
     ~InputMapper() = default;
 
@@ -27,11 +30,18 @@ public:
 
     //--------- accessor -----------------------------------------------------
 
+    //----- getter --------------------
+
+	// 入力取得
     float GetVector(Enum action) const;
+	// 2Dベクトル入力取得
     Vector2 GetVector2(Enum actionX, Enum actionY) const;
 
+	// ボタンが押されているか
     bool IsPressed(Enum button) const;
+	// ボタンがトリガーされたか
     bool IsTriggered(Enum button) const;
+
 private:
     //========================================================================
     //	private Methods
@@ -47,12 +57,18 @@ private:
 //	InputMapper templateMethods
 //============================================================================
 
+//-------------------------------------------------------------------------
+// 使用する入力デバイスを追加
+//-------------------------------------------------------------------------
 template<InputEnum Enum>
 inline void InputMapper<Enum>::AddDevice(std::unique_ptr<IInputDevice<Enum>> device) {
 
     devices_.emplace_back(std::move(device));
 }
 
+//-------------------------------------------------------------------------
+// 入力取得
+//-------------------------------------------------------------------------
 template<InputEnum Enum>
 inline float InputMapper<Enum>::GetVector(Enum action) const {
 
@@ -66,11 +82,17 @@ inline float InputMapper<Enum>::GetVector(Enum action) const {
     return vector;
 }
 
+//-------------------------------------------------------------------------
+// 2Dベクトル入力取得
+//-------------------------------------------------------------------------
 template<InputEnum Enum>
 inline Vector2 InputMapper<Enum>::GetVector2(Enum actionX, Enum actionY) const {
 	return { GetVector(actionX), GetVector(actionY) };
 }
 
+//-------------------------------------------------------------------------
+// ボタンが押されているか
+//-------------------------------------------------------------------------
 template<InputEnum Enum>
 inline bool InputMapper<Enum>::IsPressed(Enum button) const {
 
@@ -84,6 +106,9 @@ inline bool InputMapper<Enum>::IsPressed(Enum button) const {
     return false;
 }
 
+//-------------------------------------------------------------------------
+// ボタンがトリガーされたか
+//-------------------------------------------------------------------------
 template<InputEnum Enum>
 inline bool InputMapper<Enum>::IsTriggered(Enum button) const {
 

@@ -7,6 +7,7 @@
 #include "3d/Model.h"
 #include "3d/Particle/ParticleAttribute.h"
 #include "camera/PerView.h"
+#include "engine/Utility/Timer.h"
 
 #include <d3d12.h>
 #include <wrl.h>
@@ -20,6 +21,9 @@ struct Particle {
 	Vector4 color_;         //色
 	float lifeTime_;        //寿命
 	float currentTime_;     //経過時間
+
+	float trailSpawnTimer_ = 0.0f; //トレイルエフェクトの生成タイマー
+	bool isTrailParent_ = false; //トレイルエフェクトの親かどうか
 };
 
 // 前方宣言

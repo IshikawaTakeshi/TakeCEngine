@@ -421,12 +421,6 @@
     <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp">
       <Filter>engine\postEffect</Filter>
     </ClCompile>
-    <ClCompile Include="engine\io\IInputDevice.cpp">
-      <Filter>engine\io</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\io\InputMapper.cpp">
-      <Filter>engine\io</Filter>
-    </ClCompile>
     <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp">
       <Filter>application\Weapon\Bullet</Filter>
     </ClCompile>

@@ -69,6 +69,9 @@ private:
 	void DrawPreviewSettings();
 	void DrawPresetManager();
 
+	//上書き確認ダイアログの描画
+	void DrawOverwriteConfirmDialog();
+
 private:
 
 	// パーティクルマネージャー
@@ -96,4 +99,9 @@ private:
 	std::map<std::string, ParticlePreset> presets_;
 	// テクスチャファイル名のリスト(参照渡し)
 	std::vector<std::string> textureFileNames_; 
+
+	// 上書き確認ダイアログ表示フラグ
+	bool showOverwriteConfirm_ = false;
+	// 上書き予定のプリセット名
+	std::string pendingPresetName_;
 };

@@ -7,6 +7,9 @@
 #include <cassert>
 #include <format>
 
+//====================================================================
+//			初期化
+//====================================================================
 void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, SrvManager* srvManager) {
 
 	dxCommon_ = dxCommon;
@@ -42,13 +45,21 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, SrvManage
 	io.DisplaySize = ImVec2(static_cast<float>(WinApp::kWindowWidth), static_cast<float>(WinApp::kWindowHeight));
 }
 
+//====================================================================
+//			終了処理
+//====================================================================
 void ImGuiManager::Finalize() {
 
+	//ImGuiの終了処理
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
+	//ImGuiコンテキストの破棄
 	ImGui::DestroyContext();
 }
 
+//====================================================================
+// ImGui受付開始・終了
+//====================================================================
 void ImGuiManager::Begin() {
 
 	//ImGui受付開始
@@ -62,9 +73,13 @@ void ImGuiManager::End() {
 	ImGui::Render();
 }
 
+//====================================================================
+// デバッグ画面の描画
+//====================================================================
 void ImGuiManager::DrawDebugScreen() {
 	ImGui::SetNextWindowBgAlpha(1.0f); // 完全透明
 	ImGui::Begin("ImGuiManager::DebugScreen");
+	//レンダーターゲットの内容を表示
 	ImGui::Image(
 		ImTextureID(srvManager_->GetSrvDescriptorHandleGPU(renderTextureIndex_).ptr),
 		ImVec2(static_cast<float>(WinApp::kScreenWidth), static_cast<float>(WinApp::kScreenHeight)),
@@ -75,26 +90,32 @@ void ImGuiManager::DrawDebugScreen() {
 	ImGui::End();
 }
 
+//====================================================================
+// ImGui描画後処理
+//====================================================================
 void ImGuiManager::PostDraw() {
 
 	ID3D12GraphicsCommandList* commandList =  dxCommon_->GetCommandList();
-	//ID3D12DescriptorHeap* ppHeaps[] = { srvManager_->GetSrvHeap() };
-
-	//commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
 	//実際のcommandListのImGuiの描画コマンドを積む
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 }
 
+//====================================================================
+// 各種デバッグ表示用関数
+//====================================================================
 void ImGuiManager::QuaternionScreenPrintf(const std::string& label, const Quaternion& q) {
+	// ImGuiでクォータニオンを画面表示
 	ImGui::Text("%s : %.2f %.2f %.2f %.2f", label.c_str(), q.x, q.y, q.z, q.w);
 }
 
 void ImGuiManager::Vector3ScreenPrintf(const std::string& label, const Vector3& v) {
+	// ImGuiでベクトルを画面表示
 	ImGui::Text("%s : %.2f %.2f %.2f", label.c_str(), v.x, v.y, v.z);
 }
 
 void ImGuiManager::Matrix4x4ScreenPrintf(const std::string& label, const Matrix4x4& m) {
+	// ImGuiで4x4行列を画面表示
 	ImGui::Text(label.c_str());
 	ImGui::Text("%.3f %.3f %.3f %.3f", m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3]);
 	ImGui::Text("%.3f %.3f %.3f %.3f", m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3]);

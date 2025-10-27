@@ -8,6 +8,9 @@
 #include <cassert>
 #include <list>
 
+//=============================================================================
+// デストラクタ
+//=============================================================================
 PSO::~PSO() {
 
 	graphicRootSignature_.Reset();
@@ -18,6 +21,9 @@ PSO::~PSO() {
 	graphicPipelineState_.Reset();
 }
 
+//=============================================================================
+// シェーダーコンパイル関数(VS,PS,CS)
+//=============================================================================
 void PSO::CompileVertexShader(DXC* dxc_, const std::wstring& filePath) {
 
 	//頂点シェーダーのコンパイル
@@ -32,8 +38,6 @@ void PSO::CompilePixelShader(DXC* dxc_, const std::wstring& filePath) {
 	graphicShaderData_.pixelBlob = dxc_->CompileShader(
 		filePath, L"ps_6_6", dxc_->GetDxcUtils().Get(), dxc_->GetDxcCompiler().Get(), dxc_->GetIncludeHandler().Get()
 	);
-
-	//
 }
 
 void PSO::CompileComputeShader(DXC* dxc_, const std::wstring& filePath) {
@@ -60,8 +64,11 @@ void PSO::ExtractInputLayout(ID3D12ShaderReflection* shaderReflection) {
 		return;
 	}
 
+	// 入力レイアウト情報を取得
 	inputElementDescs_.resize(shaderDesc.InputParameters);
 	semanticName_.resize(shaderDesc.InputParameters);
+
+	// 各入力パラメータを処理
 	for (UINT i = 0; i < shaderDesc.InputParameters; ++i) {
 		D3D12_SIGNATURE_PARAMETER_DESC inputParamDesc;
 		shaderReflection->GetInputParameterDesc(i, &inputParamDesc);
@@ -72,6 +79,7 @@ void PSO::ExtractInputLayout(ID3D12ShaderReflection* shaderReflection) {
 		inputElementDescs_[i].SemanticIndex = inputParamDesc.SemanticIndex;
 		inputElementDescs_[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
+		//マスクのビット数からフォーマットを決定
 		if (inputParamDesc.Mask == 1) {
 			inputElementDescs_[i].Format = DXGI_FORMAT_R32_FLOAT;
 		} else if (inputParamDesc.Mask <= 3) {
@@ -82,7 +90,10 @@ void PSO::ExtractInputLayout(ID3D12ShaderReflection* shaderReflection) {
 			inputElementDescs_[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		}
 	}
+
+	// 入力レイアウト記述子を設定
 	inputLayoutDesc_.pInputElementDescs = inputElementDescs_.data();
+	// 要素数を設定
 	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescs_.size());
 }
 
@@ -152,6 +163,7 @@ ShaderResourceMap PSO::LoadShaderResourceInfo(
 					}
 					continue;
 				}
+				// 新しいリソースの場合、マップに追加
 				bindResources[key] = { key, bindDesc.Name };
 			}
 		}
@@ -160,7 +172,7 @@ ShaderResourceMap PSO::LoadShaderResourceInfo(
 			ExtractInputLayout(shaderReflection.Get());
 		}
 	}
-	return { bindResources };
+	return { bindResources }; // 収集したリソースを返す
 }
 
 //=============================================================================

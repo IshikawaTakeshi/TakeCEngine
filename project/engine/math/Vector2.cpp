@@ -2,6 +2,8 @@
 #include <cmath>
 #include <algorithm>
 
+
+
 Vector2 Vector2::operator+(){
 	return {x, y};
 }

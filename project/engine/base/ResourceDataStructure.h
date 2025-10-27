@@ -10,6 +10,7 @@
 #include <map>
 #include <wrl.h>
 
+//頂点データ構造体
 struct VertexData {
 	Vector4 position;
 	Vector2 texcoord;

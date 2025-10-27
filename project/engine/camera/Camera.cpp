@@ -14,6 +14,7 @@
 
 void Camera::Initialize(ID3D12Device* device) {
 	
+	//カメラの各種パラメータ初期化
 	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	offset_ = { 0.0f, 0.0f, -5.0f };
 	offsetDelta_ = { 0.0f, 5.0f, -55.0f };
@@ -30,6 +31,7 @@ void Camera::Initialize(ID3D12Device* device) {
 	followSpeed_ = 0.3f;
 	rotationSpeed_ = 0.1f;
 
+	//カメラ用バッファリソース生成
 	cameraResource_ = DirectXCommon::CreateBufferResource(device, sizeof(CameraForGPU));
 	cameraResource_->SetName(L"Camera::cameraResource_");
 	cameraForGPU_ = nullptr;

@@ -17,12 +17,13 @@ struct Vector3 final {
 	Vector3 operator/=(float s);
 	bool operator==(const Vector3& v) const;
 
+	//内積
 	float Dot(const Vector3& other) const;
-
+	//外積
 	Vector3 Cross(const Vector3& other) const;
-
+	//ベクトルの長さ
 	float Length() const;
-
+	//正規化
 	Vector3 Normalize() const;
 };
 
@@ -38,6 +39,7 @@ Vector3 operator/(const Vector3& v, float s);
 
 using json = nlohmann::json;
 
+/// JSON形式に変換
 void to_json(nlohmann::json& j, const Vector3& v);
-
+/// JSONから変換
 void from_json(const nlohmann::json& j, Vector3& v);
