@@ -20,12 +20,17 @@
 //==================================================================================
 class Player : public GameCharacter {
 public:
-	Player() = default;
-	~Player() override = default;
+	
 
 	//==============================================================================
 	// functions
 	//==============================================================================
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
+	Player() = default;
+	~Player() override = default;
 
 	//初期化
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
@@ -44,6 +49,18 @@ public:
 	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager);
 	//ブーストエフェクトの描画
 	void DrawBoostEffect();
+
+	/// <summary>
+	/// PlayerのGameCharacterContextの読み込み
+	/// </summary>
+	/// <param name="characterName"></param>
+	void LoadPlayerData(const std::string& characterName);
+
+	/// <summary>
+	/// PlayerのGameCharacterContextの保存
+	/// </summary>
+	/// <param name="characterName"></param>
+	void SavePlayerData(const std::string& characterName);
 
 public:
 

@@ -77,7 +77,7 @@ void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
 	if(j.contains("enableFollowEmitter"))j.at("enableFollowEmitter").get_to(attributes.enableFollowEmitter);
 	if(j.contains("isTrail"))j.at("isTrail").get_to(attributes.isTrail);
 	if(j.contains("particlesPerInterpolation"))j.at("particlesPerInterpolation").get_to(attributes.particlesPerInterpolation);
-	if (j.contains("trailEmitInterval"))j.at("trailEmitInterval").get_to(attributes.trailEmitInterval);
+	if(j.contains("trailEmitInterval"))j.at("trailEmitInterval").get_to(attributes.trailEmitInterval);
 }
 
 //============================================================================

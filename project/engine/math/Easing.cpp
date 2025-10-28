@@ -10,7 +10,7 @@ float Easing::Lerp(float startPos, float endPos, float easedT) {
 //=============================================================================
 // 線形補間(Vector3)
 //=============================================================================
-const Vector3& Easing::Lerp(Vector3 startPos, Vector3 endPos, float easedT) {
+Vector3 Easing::Lerp(Vector3 startPos, Vector3 endPos, float easedT) {
 	return {
 		(1.0f - easedT) * startPos.x + easedT * endPos.x,
 		(1.0f - easedT) * startPos.y + easedT * endPos.y,
@@ -21,7 +21,7 @@ const Vector3& Easing::Lerp(Vector3 startPos, Vector3 endPos, float easedT) {
 //=============================================================================
 // 球面線形補間(Quaternion)
 //=============================================================================
-const Quaternion& Easing::Slerp(Quaternion q0, Quaternion q1, float t) {
+Quaternion Easing::Slerp(Quaternion q0, Quaternion q1, float t) {
     float dot = QuaternionMath::Dot(q0, q1);
 
     // クォータニオンが逆向きの時、最短経路を取るために反転

@@ -18,6 +18,12 @@ Quaternion operator+(const Quaternion& lhs, const Quaternion& rhs);
 Quaternion operator-(const Quaternion& lhs, const Quaternion& rhs);
 Quaternion operator-(const Quaternion& lhs);
 
+// JSON形式に変換
+void to_json(nlohmann::json& j, const Quaternion& q);
+
+// JSON形式からQuaternionに変換
+void from_json(const nlohmann::json& j, Quaternion& q);
+
 //=============================================================================
 // QuaternionMath namespace
 //=============================================================================
