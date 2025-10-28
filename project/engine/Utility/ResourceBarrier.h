@@ -3,9 +3,28 @@
 #include "base/ResourceDataStructure.h"
 #include <unordered_map>
 
+//============================================================
+// ResourceBarrier class
+//============================================================
 class ResourceBarrier {
+private:
+
+	/// コンストラクタ・デストラクタ・コピー禁止
+	ResourceBarrier() = default;
+	~ResourceBarrier() = default;
+	ResourceBarrier(const ResourceBarrier&) = delete;
+	ResourceBarrier& operator=(const ResourceBarrier&) = delete;
+
 public:
+
+	//=========================================================
+	/// functions
+	//=========================================================
 	
+	/// <summary>
+	/// インスタンスの取得
+	/// </summary>
+	/// <returns></returns>
 	static ResourceBarrier* GetInstance();
 
 	/// <summary>
@@ -13,21 +32,25 @@ public:
 	/// </summary>
 	void Initialize(DirectXCommon* dxCommon);
 
+	/// <summary>
+	/// リソースバリアの終了処理
+	/// </summary>
 	void Finalize();
 
+	/// <summary>
+	/// リソースの状態遷移
+	/// </summary>
+	/// <param name="beforeState"></param>
+	/// <param name="afterState"></param>
+	/// <param name="resource"></param>
 	void Transition(D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState,ID3D12Resource* resource);
 
-private:
-
-	ResourceBarrier() = default;
-	~ResourceBarrier() = default;
-	ResourceBarrier(const ResourceBarrier&) = delete;
-	ResourceBarrier& operator=(const ResourceBarrier&) = delete;
 
 private:
 
+	/// シングルトンインスタンス
 	static ResourceBarrier* instance_;
-
+	//dxCommon
 	DirectXCommon* dxCommon_ = nullptr;
 	
 	//リソースごとの状態を管理するためのマップ

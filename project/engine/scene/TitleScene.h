@@ -12,6 +12,9 @@
 #include "3d/Object3dCommon.h"
 #include "engine/SkyBox/SkyBox.h"
 
+//============================================================================
+// TitleScene class
+//============================================================================
 class TitleScene : public BaseScene {
 public:
 

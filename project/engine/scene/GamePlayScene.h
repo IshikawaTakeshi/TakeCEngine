@@ -28,10 +28,13 @@
 #include "application/UI/EnergyInfoUI.h"
 #include "application/UI/BulletCounterUI.h"
 
-
+//=============================================================================
+// GamePlayScene class
+//=============================================================================
 class GamePlayScene : public BaseScene {
 public:
 
+	//シーンの状態
 	enum class SceneBehavior {
 		GAMESTART, // ゲーム開始状態
 		GAMEPLAY, // ゲームプレイ状態
@@ -40,6 +43,10 @@ public:
 		GAMECLEAR, // ゲームクリア状態
 		PAUSE,  // ポーズ状態
 	};
+
+	//=========================================================================
+	// functions
+	//=========================================================================
 
 	//初期化
 	void Initialize() override;
@@ -119,6 +126,6 @@ private:
 
 	//画面遷移時間
 	float fadeTimer_ = 0.0f;
-
+	//状態遷移用タイマー
 	Timer changeBehaviorTimer_;
 };

@@ -4,6 +4,9 @@
 #include "engine/camera/CameraManager.h"
 #include <cassert>
 
+//=============================================================================
+// 初期化
+//=============================================================================
 void DepthBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,
 	const std::wstring& CSFilePath, ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
@@ -33,6 +36,9 @@ void DepthBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	outlineInfoData_->distantEnd = 2200.0f;                    //補正を最大にするviewZ
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void DepthBasedOutline::UpdateImGui() {
 #ifdef _DEBUG
 
@@ -50,6 +56,9 @@ void DepthBasedOutline::UpdateImGui() {
 
 }
 
+//=============================================================================
+// Dispatch
+//=============================================================================
 void DepthBasedOutline::Dispatch() {
 
 	if(!outlineInfoData_->isActive) {

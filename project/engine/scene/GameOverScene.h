@@ -16,21 +16,30 @@
 #include "SkyBox/SkyBox.h"
 #include "Ground/Ground.h"
 
-
+//============================================================================
+// GameOverScene class
+//============================================================================
 class GameOverScene : public BaseScene {
 public:
+
+	//シーンのフェーズ
 	enum Phase {
 		FIRST,
 		SECOND,
 		FINAL,
 	};
+
+	//========================================================================
+	// functions
+	//========================================================================
+	
 	//初期化
 	void Initialize() override;
 	//終了処理
 	void Finalize() override;
 	//更新処理
 	void Update() override;
-
+	//ImGuiの更新
 	void UpdateImGui() override;
 	//描画処理
 	void Draw() override;
@@ -39,7 +48,9 @@ private:
 
 	//サウンドデータ
 	AudioManager::SoundData gameOverBGM;
+	// サウンド再生フラグ
 	bool isSoundPlay = false;
+	//カメラ
 	std::unique_ptr<Camera> gameOverCamera_ = nullptr;
 	// 天球
 	std::unique_ptr<SkyBox> skybox_ = nullptr;

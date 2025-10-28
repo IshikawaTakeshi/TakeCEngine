@@ -6,8 +6,15 @@
 #include "3d/Particle/ParticleCommon.h"
 #include "3d/Particle/ParticleEditor.h"
 
+//============================================================================
+// ParticleEditScene class
+//============================================================================
 class ParticleEditScene : public BaseScene {
 public:
+
+	//======================================================================
+	/// functions
+	//======================================================================
 
 	//初期化
 	void Initialize() override;
@@ -34,4 +41,3 @@ private:
 	//ParticleEditor
 	std::unique_ptr<ParticleEditor> particleEditor_ = nullptr;
 };
-

@@ -3,6 +3,9 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+//=============================================================================
+// 初期化
+//=============================================================================
 void PostEffect::Initialize(
 	DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource) {
@@ -10,7 +13,7 @@ void PostEffect::Initialize(
 	dxCommon_ = dxCommon;
 	//SRVManagerの取得
 	srvManager_ = srvManager;
-
+	//CSファイルパス保存
 	csFilePath_ = CSFilePath;
 
 	//PSO初期化
@@ -32,11 +35,4 @@ void PostEffect::Initialize(
 	srvManager_->CreateSRVforRenderTexture(outputResource_.Get(),DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, outputTexSrvIndex_);
 	//uav生成
 	srvManager_->CreateUAVforRenderTexture(outputResource_.Get(),DXGI_FORMAT_R8G8B8A8_UNORM, outputTexUavIndex_);
-}
-
-void PostEffect::UpdateImGui() {
-	
-}
-
-void PostEffect::Dispatch() {
 }

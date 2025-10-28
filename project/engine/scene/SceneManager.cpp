@@ -6,6 +6,7 @@
 #include "scene/SceneTransition.h"
 #include <cassert>
 
+//シングルトンインスタンスの初期化
 SceneManager* SceneManager::instance_ = nullptr;
 
 //========================================================================
@@ -133,6 +134,9 @@ void SceneManager::ChangeToNextScene() {
 	}
 }
 
+//========================================================================
+//	レベルデータの読み込み
+//========================================================================
 void SceneManager::LoadLevelData(const std::string& sceneName) {
 
 	levelData_ = TakeCFrameWork::GetJsonLoader()->LoadLevelFile(sceneName);
@@ -194,6 +198,9 @@ void SceneManager::ChangeScene(const std::string& sceneName) {
 	}
 }
 
+//========================================================================
+//	シーンの変更（トランジション時間指定版）
+//========================================================================
 void SceneManager::ChangeScene(const std::string& sceneName, float transitionTime) {
 	assert(sceneFactory_ != nullptr);
 

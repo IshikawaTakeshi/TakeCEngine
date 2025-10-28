@@ -4,10 +4,11 @@
 #include "base/TakeCFrameWork.h"
 #include <algorithm>
 
+//シングルトンインスタンスの初期化
 SceneTransition* SceneTransition::instance_ = nullptr;
 
 //=============================================================================
-//初期化
+// シングルトンインスタンス取得
 //=============================================================================
 
 SceneTransition* SceneTransition::GetInstance() {
@@ -18,6 +19,9 @@ SceneTransition* SceneTransition::GetInstance() {
 	return instance_;
 }
 
+//=============================================================================
+//初期化
+//=============================================================================
 void SceneTransition::Initialize() {
 
 	state_ = TransitionState::NONE;
@@ -41,7 +45,6 @@ void SceneTransition::Initialize() {
 
 void SceneTransition::Finalize() {
 
-	//state_ = TransitionState::NONE;
 	fadeSprite_.reset();
 
 	if(instance_ != nullptr) {
@@ -55,38 +58,42 @@ void SceneTransition::Finalize() {
 
 void SceneTransition::Update() {
 
+	//状態に応じて処理
 	switch (state_) {
 	case TransitionState::NONE:
 		break;
 
 	case TransitionState::FADE_IN:
 
-		//
+		//遷移時間を減少
 		transitionTime_ -= transitionSpeed_;
 
-		//
+		//時間が0以下になったらstateをNONEに
 		if (transitionTime_ <= 0.0f) {
 			transitionTime_ = 0.0f;
 			state_ = TransitionState::NONE;
 		}
 
+		//アルファ値計算
 		alpha_ = std::clamp(transitionTime_ / duration_, 0.0f, 1.0f);
 		break;
 
 	case TransitionState::FADE_OUT:
 
-		//
+		//遷移時間を加算
 		transitionTime_ += transitionSpeed_;
 
-		//
+		//時間がduration以上になったらdurationに固定
 		if (transitionTime_ >= duration_) {
 			transitionTime_ = duration_;
 		}
 
+		//アルファ値計算
 		alpha_ = std::clamp(transitionTime_ / duration_, 0.0f, 1.0f);
 		break;
 	}
 
+	//スプライトの更新
 	fadeSprite_->GetMesh()->GetMaterial()->SetMaterialColor({0.0f, 0.0f, 0.0f, alpha_});
 	fadeSprite_->Update();
 #ifdef _DEBUG
@@ -102,11 +109,14 @@ void SceneTransition::Update() {
 
 void SceneTransition::Draw() {
 
+	//遷移中でなければ描画しない
 	if (state_ == TransitionState::NONE) {
 		return;
 	}
 
+	//描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
+	//スプライト描画
 	fadeSprite_->Draw();
 }
 
@@ -116,9 +126,11 @@ void SceneTransition::Draw() {
 
 void SceneTransition::Start(TransitionState state, float duration) {
 
+
 	state_ = state;
 	duration_ = duration;
 
+	//状態に応じて初期値設定
 	if (state_ == TransitionState::FADE_IN) {
 
 		alpha_ = 1.0f;
@@ -139,10 +151,15 @@ void SceneTransition::Stop() {
 	state_ = TransitionState::NONE;
 }
 
+//=============================================================================
+//シーン遷移が終了したかどうか
+//=============================================================================
 bool SceneTransition::IsFinished() {
 	switch (state_) {
 	case TransitionState::FADE_IN:
 	case TransitionState::FADE_OUT:
+
+		//遷移時間がduration以上になったら終了
 		if (transitionTime_ >= duration_) {
 			return true;
 		} else {

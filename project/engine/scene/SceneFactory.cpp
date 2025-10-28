@@ -5,6 +5,9 @@
 #include "GameClearScene.h"
 #include "ParticleEditScene.h"
 
+//============================================================================
+// シーン生成
+//============================================================================
 std::shared_ptr<BaseScene> SceneFactory::CreateScene(const std::string& sceneName) {
 
     //次のシーンの生成

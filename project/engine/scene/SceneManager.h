@@ -5,48 +5,96 @@
 #include "scene//LevelData.h"
 #include "engine/Entity/LevelObject/Levelobject.h"
 
-////////////////////
-///	シーン管理クラス
-////////////////////
+//========================================================================
+//	SceneManager class
+//========================================================================
 class SceneManager {
-public:
-
-	static SceneManager* GetInstance();
-
-	void Finalize();
-
-	void Update();
-
-	void UpdateImGui();
-
-	void Draw();
-
-	void ChangeScene(const std::string& sceneName);
-	void ChangeScene(const std::string& sceneName, float transitionTime);
-
-	void ChangeToNextScene();
-
-	void LoadLevelData(const std::string& sceneName);
-
-	//========================================================================
-	//	アクセッサ
-	//========================================================================
-
-	std::map<std::string,std::unique_ptr<LevelObject>>& GetLevelObjects() { return levelObjects_; }
-
-	void SetSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; }
-
 private:
 
+	//コピーコンストラクタ・代入演算子禁止
 	SceneManager() = default;
 	~SceneManager() = default;
 	SceneManager(SceneManager&) = delete;
 	SceneManager& operator=(SceneManager&) = delete;
 
+public:
+
+	//=====================================================================
+	//	functions
+	//=====================================================================
+
+	/// <summary>
+	/// インスタンスの取得
+	/// </summary>
+	/// <returns></returns>
+	static SceneManager* GetInstance();
+
+	/// <summary>
+	/// インスタンスの解放
+	/// </summary>
+	void Finalize();
+
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	void Update();
+
+	/// <summary>
+	/// ImGuiの更新処理
+	/// </summary>
+	void UpdateImGui();
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
+	void Draw();
+
+	/// <summary>
+	/// シーンの変更
+	/// </summary>
+	/// <param name="sceneName"></param>
+	void ChangeScene(const std::string& sceneName);
+
+	/// <summary>
+	/// シーンの変更（トランジション時間指定版）
+	/// </summary>
+	/// <param name="sceneName"></param>
+	/// <param name="transitionTime"></param>
+	void ChangeScene(const std::string& sceneName, float transitionTime);
+
+	/// <summary>
+	/// 次のシーンへ変更
+	/// </summary>
+	void ChangeToNextScene();
+
+	/// <summary>
+	/// レベルデータの読み込み
+	/// </summary>
+	/// <param name="sceneName"></param>
+	void LoadLevelData(const std::string& sceneName);
+
+	//========================================================================
+	//	accessors
+	//========================================================================
+
+	//----- getter --------------------
+
+	/// 現在のシーンの取得
+	std::map<std::string,std::unique_ptr<LevelObject>>& GetLevelObjects() { return levelObjects_; }
+
+	//----- setter --------------------
+
+	/// シーンファクトリーのセット
+	void SetSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; }
+
+
 private:
 
+	//シングルトンインスタンス
 	static SceneManager* instance_;
+	//現在のシーン
 	std::shared_ptr<BaseScene> currentScene_ = nullptr;
+	//次のシーン
 	std::shared_ptr<BaseScene> nextScene_ = nullptr;
 	//シーンファクトリー(借りてくる)
 	AbstractSceneFactory* sceneFactory_ = nullptr;

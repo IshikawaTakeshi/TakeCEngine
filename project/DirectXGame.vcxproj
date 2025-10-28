@@ -155,8 +155,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\io\Gamepad.cpp" />
     <ClCompile Include="engine\math\Easing.cpp" />
     <ClCompile Include="engine\math\Quaternion.cpp" />
-    <ClCompile Include="engine\scene\AbstractSceneFactory.cpp" />
-    <ClCompile Include="engine\scene\BaseScene.cpp" />
     <ClCompile Include="engine\audio\Audio.cpp" />
     <ClCompile Include="engine\camera\Camera.cpp" />
     <ClCompile Include="engine\camera\CameraManager.cpp" />

@@ -88,9 +88,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="engine\scene\AbstractSceneFactory.cpp">
-      <Filter>engine\scene</Filter>
-    </ClCompile>
     <ClCompile Include="engine\Animation\Animator.cpp">
       <Filter>engine\animation</Filter>
     </ClCompile>
@@ -99,9 +96,6 @@
     </ClCompile>
     <ClCompile Include="engine\3d\Particle\BaseParticleGroup.cpp">
       <Filter>engine\3d\Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\scene\BaseScene.cpp">
-      <Filter>engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="application\Weapon\BaseWeapon.cpp">
       <Filter>application\weapon</Filter>

@@ -4,6 +4,9 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+//=============================================================================
+// 初期化
+//=============================================================================
 void Dissolve::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
@@ -15,19 +18,27 @@ void Dissolve::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 	inputResource_->SetName(L"Dissolve::inputResource_");
 	outputResource_->SetName(L"Dissolve::outputResource_");
 
+	//dissolveInfoResource生成
 	dissolveInfoResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DissolveInfo));
 	dissolveInfoResource_->SetName(L"Dissolve::dissolveInfoResource_");
 	dissolveInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&dissolveInfoData_));
+
+	//dissolveInfo初期化
 	dissolveInfoData_->threshold = 0.5f;
 	dissolveInfoData_->isDissolve = false;
 
+	//maskTexture読み込み
 	maskTextureFilePath_ = "cloudNoise.png";
 	TextureManager::GetInstance()->LoadTexture(maskTextureFilePath_,false);
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void Dissolve::UpdateImGui() {
 #ifdef _DEBUG
 
+	//Dissolve設定
 	if(ImGui::TreeNode("Dissolve")) {
 		ImGui::Text("Dissolve");
 		ImGui::SliderFloat("DissolveThreshold", &dissolveInfoData_->threshold, 0.0f, 1.0f);
@@ -42,6 +53,9 @@ void Dissolve::UpdateImGui() {
 
 }
 
+//=============================================================================
+// Dispatch
+//=============================================================================
 void Dissolve::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
