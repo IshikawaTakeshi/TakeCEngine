@@ -3,6 +3,9 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+//=============================================================================
+// 初期化
+//=============================================================================
 void LuminanceBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
@@ -23,9 +26,14 @@ void LuminanceBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvM
 	outlineInfoData_->color = { 1.0f, 1.0f, 1.0f, 1.0f }; // アウトラインの色
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void LuminanceBasedOutline::UpdateImGui() {
 
 #ifdef _DEBUG
+
+	// Info表示
 	if (ImGui::TreeNode("LuminanceBasedOutline")) {
 		ImGui::SliderFloat("weight", &outlineInfoData_->weight, 0.0f, 10.0f);
 		ImGui::ColorEdit4("Color", &outlineInfoData_->color.x);
@@ -38,6 +46,9 @@ void LuminanceBasedOutline::UpdateImGui() {
 #endif // _DEBUG
 }
 
+//=============================================================================
+// Dispatch
+//=============================================================================
 void LuminanceBasedOutline::Dispatch() {
 
 	if (!outlineInfoData_->isActive) {

@@ -3,9 +3,13 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+//=============================================================================
+// 初期化
+//=============================================================================
 void Vignette::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
+	// 親クラスの初期化処理
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx,outputResource);
 	//PSOの名前付け
 	computePSO_->SetComputePipelineName("VignettePSO");
@@ -22,6 +26,9 @@ void Vignette::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 	vignetteInfoData_->vignetteScale = 1.5f; //Vignetteのスケール
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void Vignette::UpdateImGui() {
 #ifdef _DEBUG
 	if (ImGui::TreeNode("Vignette")) {
@@ -35,6 +42,9 @@ void Vignette::UpdateImGui() {
 #endif // _DEBUG
 }
 
+//=============================================================================
+// Dispatch
+//=============================================================================
 void Vignette::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS

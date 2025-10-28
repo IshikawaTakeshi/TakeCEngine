@@ -88,9 +88,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="engine\scene\AbstractSceneFactory.cpp">
-      <Filter>engine\scene</Filter>
-    </ClCompile>
     <ClCompile Include="engine\Animation\Animator.cpp">
       <Filter>engine\animation</Filter>
     </ClCompile>
@@ -99,9 +96,6 @@
     </ClCompile>
     <ClCompile Include="engine\3d\Particle\BaseParticleGroup.cpp">
       <Filter>engine\3d\Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\scene\BaseScene.cpp">
-      <Filter>engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="application\Weapon\BaseWeapon.cpp">
       <Filter>application\weapon</Filter>
@@ -502,12 +496,6 @@
     <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp">
       <Filter>application\weapon\Bullet</Filter>
     </ClCompile>
-    <ClCompile Include="engine\io\InputMapper.cpp">
-      <Filter>engine\io</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\io\IInputDevice.cpp">
-      <Filter>engine\io</Filter>
-    </ClCompile>
     <ClCompile Include="application\Provider\PlayerInputProvider.cpp">
       <Filter>application\provider</Filter>
     </ClCompile>
@@ -531,6 +519,7 @@
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
     <ClCompile Include="engine\3d\Light\LightManager.cpp" />
     <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
+    <ClCompile Include="engine\math\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />

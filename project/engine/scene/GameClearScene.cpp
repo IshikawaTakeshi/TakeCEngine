@@ -4,6 +4,9 @@
 #include <cmath>
 #include <algorithm>
 
+//====================================================================
+//			初期化
+//====================================================================
 void GameClearScene::Initialize() {
 
 	// サウンドデータ
@@ -33,6 +36,9 @@ void GameClearScene::Initialize() {
 
 }
 
+//====================================================================
+//			終了処理
+//====================================================================
 void GameClearScene::Finalize() {
 	// サウンドデータの解放
 	AudioManager::GetInstance()->SoundUnload(&gameClearBGM);
@@ -40,6 +46,9 @@ void GameClearScene::Finalize() {
 	CameraManager::GetInstance()->ResetCameras();
 }
 
+//====================================================================
+//			更新処理
+//====================================================================
 void GameClearScene::Update() {
 
 	// オーディオ再生
@@ -63,6 +72,9 @@ void GameClearScene::Update() {
 		}
 }
 
+//====================================================================
+//			ImGui更新処理
+//====================================================================
 void GameClearScene::UpdateImGui() {
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();
@@ -70,6 +82,9 @@ void GameClearScene::UpdateImGui() {
 	clearTextSprite_->UpdateImGui("ClearText");
 }
 
+//====================================================================
+//			描画処理
+//====================================================================
 void GameClearScene::Draw() {
 
 	skybox_->Draw(); // 天球の描画

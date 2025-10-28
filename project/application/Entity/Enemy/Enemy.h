@@ -45,6 +45,17 @@ public:
 	//武器の初期化
 	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager);
 
+	/// <summary>
+	/// EnemyのGameCharacterContextの読み込み
+	/// </summary>
+	/// <param name="characterName"></param>
+	void LoadEnemyData(const std::string& characterName);
+
+	/// <summary>
+	/// EnemyのGameCharacterContextの保存
+	/// </summary>
+	/// <param name="characterName"></param>
+	void SaveEnemyData(const std::string& characterName);
 public:
 
 	//==============================================================================

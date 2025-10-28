@@ -1,5 +1,6 @@
 #pragma once
-#include "Particle/ParticleAttribute.h"
+#include "engine/3d/Particle/ParticleAttribute.h"
+#include "application/Entity/GameCharacterInfo.h"
 #include "scene/LevelData.h"
 #include <iostream>
 #include <variant>
@@ -9,11 +10,22 @@
 
 #include "Vector3.h"
 
+//=============================================================================================
+/// JsonLoader class
+//=============================================================================================
 class JsonLoader {
 public:
 
+	// JSON namespace alias
 	using json = nlohmann::json;
 
+	//==========================================================================================
+	// functions
+	//==========================================================================================
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	JsonLoader() = default;
 	~JsonLoader() = default;
 
@@ -23,17 +35,20 @@ public:
 	/// <param name="groupName">グループ名</param>
 	LevelData* LoadLevelFile(const std::string& groupName);
 
-	//=============================================================================================
-	/// Particle Preset Functions
-	//=============================================================================================
 
-	// パーティクルプリセットの保存
+	// ParticleAttributesの保存
 	void SaveParticleAttribute(const std::string& presetName, const ParticleAttributes& attributes);
+	// パーティクルプリセットの保存
 	void SaveParticlePreset(const std::string& presetName, const ParticlePreset& preset);
+	// ゲームキャラクターコンテキストの保存
+	void SaveGameCharacterContext(const std::string& characterName, const GameCharacterContext& context);
 
-	// パーティクルプリセットの読み込み
+	// ParticleAttributesの読み込み
 	ParticleAttributes LoadParticleAttribute(const std::string& presetName) const;
+	// パーティクルプリセットの読み込み
 	ParticlePreset LoadParticlePreset(const std::string& presetName) const;
+	// ゲームキャラクターコンテキストの読み込み
+	GameCharacterContext LoadGameCharacterContext(const std::string& characterName) const;
 
 	// パーティクルプリセットの削除
 	void DeleteParticlePreset(const std::string& presetName);
@@ -51,5 +66,7 @@ private:
 	
 	//パーティクルプリセットの保存先
 	const std::string kParticlePresetPath = "Resources/JsonLoader/ParticlePresets/";
-};
 
+	//ゲームキャラクターコンテキストの保存先
+	const std::string kGameCharacterContextPath = "Resources/JsonLoader/GameCharacters/";
+};

@@ -3,12 +3,24 @@
 #include <memory>
 #include <string>
 
-/////////////////////
-//シーン遷移クラス
-/////////////////////
+//============================================================
+//	SceneTransition class
+//============================================================
 class SceneTransition {
+private:
+
+	//シングルトンインスタンス
+	static SceneTransition* instance_;
+
+	//コンストラクタ・デストラクタ・コピー禁止
+	SceneTransition() = default;
+	~SceneTransition() = default;
+	SceneTransition(SceneTransition&) = delete;
+	SceneTransition& operator=(SceneTransition&) = delete;
+
 public:
 
+	//シーン遷移状態列挙型
 	enum class TransitionState {
 		NONE,
 		FADE_IN,
@@ -17,16 +29,36 @@ public:
 
 public:
 
+	//=========================================================
+	// functions
+	//=========================================================
+
+	/// <summary>
+	/// インスタンスの取得
+	/// </summary>
+	/// <returns></returns>
 	static SceneTransition* GetInstance();
 
-	//初期化
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
-	//終了処理
+
+	/// <summary>
+	/// 終了処理
+	/// </summary>
 	void Finalize();
-	//更新処理
+
+	/// <summary>
+	/// 更新処理
+	/// </summary>
 	void Update();
-	//描画処理
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	void Draw();
+
 	//シーン遷移開始
 	void Start(TransitionState state, float duration);
 	//シーン遷移を中止させる処理
@@ -34,15 +66,6 @@ public:
 
 	//シーン遷移が終了しているか
 	bool IsFinished();
-
-private:
-
-	static SceneTransition* instance_;
-
-	SceneTransition() = default;
-	~SceneTransition() = default;
-	SceneTransition(SceneTransition&) = delete;
-	SceneTransition& operator=(SceneTransition&) = delete;
 
 private:
 

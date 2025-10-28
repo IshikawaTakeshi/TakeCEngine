@@ -5,9 +5,24 @@
 #include "base/PipelineStateObject.h"
 #include <string>
 
+//============================================================
+//	PostEffect class
+//============================================================
 class PostEffect {
 public:
+
+	//=========================================================
+	// functions
+	//=========================================================
+
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
 	PostEffect() = default;
+
+	/// <summary>
+	/// デストラクタ(仮想デストラクタ)
+	/// </summary>
 	virtual ~PostEffect() = default;
 
 	/// <summary>
@@ -16,14 +31,22 @@ public:
 	virtual void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,const std::wstring& CSFilePath,
 		ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource);
 
-	virtual void UpdateImGui();
+	/// <summary>
+	/// ImGui更新処理
+	/// </summary>
+	virtual void UpdateImGui() = 0;
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	virtual void Dispatch();
+	virtual void Dispatch() = 0;
 
 public:
-
+	//=========================================================
+	// accessors
+	//=========================================================
+	
+	//----- getter ----------------------------
+	
 	//inputRenderTextureのSRVインデックスを取得
 	uint32_t GetInputTextureSrvIndex() const { return inputTexSrvIndex_; }
 	//outputRenderTextureのUAVインデックスを取得
@@ -51,5 +74,6 @@ protected:
 	std::unique_ptr<PSO> computePSO_ = nullptr;
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 
+	//CSファイルパス
 	std::wstring csFilePath_ = L"";
 };

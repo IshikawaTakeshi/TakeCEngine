@@ -5,9 +5,9 @@
 #include <cassert>
 #include <imgui.h>
 
-//////////////////////////////////////////////////////////////////////////////////////
-///			レベルデータファイル読み込み
-//////////////////////////////////////////////////////////////////////////////////////
+//===============================================================================================
+///			レベルデータの読み込み
+//===============================================================================================
 
 LevelData* JsonLoader::LoadLevelFile(const std::string& groupName) {
 
@@ -140,9 +140,8 @@ LevelData* JsonLoader::LoadLevelFile(const std::string& groupName) {
 }
 
 //===============================================================================================
-///			パーティクルプリセットの保存
+///			パーティクル属性の保存
 //===============================================================================================
-
 void JsonLoader::SaveParticleAttribute(const std::string& presetName, const ParticleAttributes& attributes) {
 
 	std::filesystem::path dirctory(kParticlePresetPath);
@@ -170,6 +169,9 @@ void JsonLoader::SaveParticleAttribute(const std::string& presetName, const Part
 	ofs.close();
 }
 
+//===============================================================================================
+///			パーティクルプリセットの保存
+//===============================================================================================
 void JsonLoader::SaveParticlePreset(const std::string& presetName, const ParticlePreset& preset) {
 
 	std::filesystem::path dirctory(kParticlePresetPath);
@@ -195,9 +197,35 @@ void JsonLoader::SaveParticlePreset(const std::string& presetName, const Particl
 }
 
 //===============================================================================================
+///			ゲームキャラクターコンテキストの保存
+//===============================================================================================
+void JsonLoader::SaveGameCharacterContext(const std::string& characterName, const GameCharacterContext& context) {
+
+	std::filesystem::path dirctory(kDirectoryPath + "GameCharacters/");
+	//ディレクトリがなければ作成する
+	if (!std::filesystem::exists(dirctory)) {
+		std::filesystem::create_directories(dirctory);
+	}
+	// JSONオブジェクトに変換
+	json contextJson = context;
+	std::string filePath = kDirectoryPath + "GameCharacters/" + characterName + ".json";
+	std::ofstream ofs(filePath);
+	//ファイルオープンが失敗した場合
+	if (ofs.fail()) {
+		std::string message = "Failed open game character context file for write:" + characterName + ".json";
+		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
+		assert(0);
+		return;
+	}
+	// JSONファイルに書き込む
+	ofs << std::setw(4) << contextJson << std::endl;
+	// ファイルを閉じる
+	ofs.close();
+}
+
+//===============================================================================================
 ///			パーティクル属性の読み込み
 //===============================================================================================
-
 ParticleAttributes JsonLoader::LoadParticleAttribute(const std::string& presetName) const {
 
 	std::string filePath = kParticlePresetPath + presetName + ".json";
@@ -242,6 +270,28 @@ ParticlePreset JsonLoader::LoadParticlePreset(const std::string& presetName) con
 	ifs.close();
 	// JSONからParticlePresetに変換
 	return presetJson.get<ParticlePreset>();
+}
+
+//================================================================================================
+///			ゲームキャラクターコンテキストの読み込み
+//================================================================================================
+GameCharacterContext JsonLoader::LoadGameCharacterContext(const std::string& characterName) const {
+	
+	std::string filePath = kDirectoryPath + "GameCharacters/" + characterName + ".json";
+	std::ifstream ifs(filePath);
+	//ファイルオープンが失敗した場合
+	if (ifs.fail()) {
+		std::string message = "Failed open game character context file for read:" + characterName;
+		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
+		assert(0);
+		return GameCharacterContext();
+	}
+	// JSONファイルから読み込む
+	json contextJson;
+	ifs >> contextJson;
+	ifs.close();
+	// JSONからGameCharacterContextに変換
+	return contextJson.get<GameCharacterContext>();
 }
 
 //================================================================================================
@@ -297,3 +347,4 @@ bool JsonLoader::IsParticlePresetExists(const std::string& presetName) const {
 	//ファイルが存在するかチェック
 	return std::filesystem::exists(filePath);
 }
+

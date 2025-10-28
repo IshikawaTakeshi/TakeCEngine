@@ -10,6 +10,7 @@
 #include "engine/math/Vector3Math.h"
 #include "engine/math/Easing.h"
 #include "engine/Utility/StringUtility.h"
+#include "engine/Utility/JsonLoader.h"
 
 #include "application/Weapon/Rifle.h"
 #include "application/Weapon/Bazooka.h"
@@ -75,31 +76,6 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//入力プロバイダーの初期化
 	inputProvider_ = std::make_unique<PlayerInputProvider>(this);
 
-#pragma region charcterInfo
-
-	characterInfo_.deceleration = 1.1f; //減速率
-	characterInfo_.moveSpeed = 200.0f; //移動速度
-	characterInfo_.kMaxMoveSpeed = 120.0f; //移動速度の最大値
-	characterInfo_.maxHealth = 10000.0f; // 最大体力
-	characterInfo_.health = characterInfo_.maxHealth; // 初期体力
-	characterInfo_.stepBoostInfo.speed = 230.0f; // ステップブーストの速度
-	characterInfo_.stepBoostInfo.duration = 0.3f; // ステップブーストの持続時間
-	characterInfo_.stepBoostInfo.useEnergy = 100.0f; // ステップブーストに必要なエネルギー
-	characterInfo_.stepBoostInfo.interval = 0.2f; // ステップブーストのインターバル
-	characterInfo_.jumpInfo.speed = 50.0f; // ジャンプの速度
-	characterInfo_.jumpInfo.maxJumpTime = 0.3f; // ジャンプの最大時間
-	characterInfo_.jumpInfo.deceleration = 40.0f; // ジャンプ中の減速率
-	characterInfo_.jumpInfo.useEnergy = 150.0f; // ジャンプに必要なエネルギー
-	characterInfo_.chargeAttackStunInfo.stunDuration = 0.5f; // チャージ攻撃後の硬直時間
-	characterInfo_.energyInfo.maxEnergy = 1000.0f; // 最大エネルギー
-	characterInfo_.energyInfo.energy = characterInfo_.energyInfo.maxEnergy; // 初期エネルギー
-	characterInfo_.energyInfo.recoveryRate = 200.0f; // エネルギーの回復速度
-	characterInfo_.overHeatInfo.isOverheated = false; // オーバーヒート状態
-	characterInfo_.overHeatInfo.overheatTimer = 0.0f; // オーバーヒートタイマー
-	characterInfo_.overHeatInfo.overheatDuration = 3.0f; // オーバーヒートの持続時間
-
-#pragma endregion
-
 	//BehaviorManagerの初期化
 	behaviorManager_ = std::make_unique<BehaviorManager>();
 	behaviorManager_->Initialize(inputProvider_.get());
@@ -143,12 +119,16 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bul
 	weapons_[L_BACK]->SetRotate({ -1.0f, 0.0f, 2.0f }); // 背中の武器の回転を初期化
 }
 
-
-
+//===================================================================================
+// 武器の取得
+//===================================================================================
 BaseWeapon* Player::GetWeapon(int index) const {
 	return weapons_[index].get();
 }
 
+//===================================================================================
+// 全武器の取得
+//===================================================================================
 std::vector<std::unique_ptr<BaseWeapon>>& Player::GetWeapons() {
 	return weapons_;
 }
@@ -299,11 +279,25 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat3("Velocity", &characterInfo_.velocity.x, 0.01f);
 	ImGui::DragFloat3("MoveDirection", &characterInfo_.moveDirection.x, 0.01f);
 	ImGui::Checkbox("OnGround", &characterInfo_.onGround);
+
+	// デバッグ用ダメージボタン
+	if(ImGui::Button("Damage 1000")) {
+		characterInfo_.health -= 1000.0f;
+	}
+	// プレイヤーデータの保存ボタン
+	if(ImGui::Button("Save Player Data")) {
+		SavePlayerData("Player");
+	}
+	ImGui::Separator();
+	// 状態管理マネージャのImGui更新
 	behaviorManager_->UpdateImGui();
+	// コライダーのImGui更新
 	collider_->UpdateImGui("Player");
+	// ブーストエフェクトのImGui更新
 	for (int i = 0; i < chargeShootableUnits_.size(); i++) {
 		boostEffects_[i]->UpdateImGui(magic_enum::enum_name(static_cast<BoostEffectPosition>(i)).data());
 	}
+	// 武器のImGui更新
 	weapons_[0]->UpdateImGui();
 	weapons_[1]->UpdateImGui();
 	weapons_[2]->UpdateImGui();
@@ -326,10 +320,29 @@ void Player::Draw() {
 
 }
 
+//===================================================================================
+// ブーストエフェクトの描画処理
+//===================================================================================
 void Player::DrawBoostEffect() {
 	for (const auto& effect : boostEffects_) {
 		effect->Draw();
 	}
+}
+
+//===================================================================================
+// プレイヤーデータの読み込み・保存処理
+//===================================================================================
+void Player::LoadPlayerData(const std::string& characterName) {
+
+	//Jsonからデータを読み込み
+	TakeCFrameWork::GetJsonLoader()->LoadGameCharacterContext(characterName);
+}
+
+void Player::SavePlayerData(const std::string& characterName) {
+
+	//Jsonにデータを保存
+	characterInfo_.name = characterName;
+	TakeCFrameWork::GetJsonLoader()->SaveGameCharacterContext(characterName, characterInfo_);
 }
 
 void Player::DrawCollider() {

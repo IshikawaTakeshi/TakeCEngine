@@ -3,6 +3,9 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+//=============================================================================
+// 初期化
+//=============================================================================
 void RadialBluer::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
@@ -19,11 +22,15 @@ void RadialBluer::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, co
 	//mapping
 	blurInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&radialBlurInfo_));
 
+	//Info初期化
 	radialBlurInfo_->center = Vector2(0.5f, 0.5f);
 	radialBlurInfo_->blurWidth = 0.01f;
 	radialBlurInfo_->enable = false;
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void RadialBluer::UpdateImGui() {
 #ifdef _DEBUG
 
@@ -39,6 +46,9 @@ void RadialBluer::UpdateImGui() {
 #endif // _DEBUG
 }
 
+//=============================================================================
+// Dispatch
+//=============================================================================
 void RadialBluer::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS

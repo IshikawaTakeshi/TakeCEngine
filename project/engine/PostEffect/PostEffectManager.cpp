@@ -18,8 +18,8 @@
 
 void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 
-	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
+	dxCommon_ = dxCommon; //DirectXCommonのセット
+	srvManager_ = srvManager; //SrvManagerのセット
 
 	//中間リソースの生成
 	intermediateResource_[FRONT] = dxCommon_->CreateTextureResourceUAV(
@@ -30,6 +30,9 @@ void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	intermediateResource_[BACK]->SetName(L"intermediateResource_B");
 }
 
+//====================================================================
+// ImGui更新処理
+//====================================================================
 void PostEffectManager::UpdateImGui() {
 	ImGui::Begin("PostEffectManager");
 	for (auto& postEffect : postEffects_) {
@@ -83,17 +86,24 @@ void PostEffectManager::Draw(PSO* pso) {
 		pso->GetGraphicBindResourceIndex("gTexture"),postEffects_.back().postEffect->GetOutputTextureSrvIndex());
 }
 
+//======================================================================
+// 特定のPostEffectの処理
+//======================================================================
 void PostEffectManager::ApplyEffect(const std::string& name) {
 
 	// 読み込み済みかどうか検索
 	for (const auto& postEffect : postEffects_) {
 		if (postEffect.name == name) {
+			// 名前が一致したPostEffectのDispatchを実行
 			postEffect.postEffect->Dispatch();
 			return;
 		}
 	}
 }
 
+//======================================================================
+// 特定のPostEffectの初期化
+//======================================================================
 void PostEffectManager::InitializeEffect(const std::string& name, const std::wstring& csFilePath) {
 
 	// 読み込み済みかどうか検索
@@ -161,6 +171,9 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 	currentWriteBufferIsA_ = !currentWriteBufferIsA_; 
 }
 
+//======================================================================
+// 最終出力テクスチャのSRVインデックスを取得
+//======================================================================
 uint32_t PostEffectManager::GetFinalOutputSrvIndex() const {
 	return postEffects_.back().postEffect->GetOutputTextureSrvIndex();
 }

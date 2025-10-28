@@ -212,6 +212,9 @@ Vector3 QuaternionMath::ToEuler(const Quaternion& q) {
 	return angles;
 }
 
+//============================================================================
+// 演算子オーバーロード
+//============================================================================
 Quaternion operator*(const Quaternion& q, float s) {
 	return QuaternionMath::Multiply(q, s);
 }
@@ -238,4 +241,28 @@ Quaternion operator-(const Quaternion& lhs, const Quaternion& rhs) {
 
 Quaternion operator-(const Quaternion& lhs) {
 	return { -lhs.x, -lhs.y, -lhs.z, -lhs.w };
+}
+
+//============================================================================
+// JSON形式に変換
+//============================================================================
+void to_json(nlohmann::json& j, const Quaternion& q) {
+
+	j = nlohmann::json{
+		{"x",q.x},
+		{"y",q.y},
+		{"z",q.z},
+		{"w",q.w}
+	};
+}
+
+//============================================================================
+// JSON形式からQuaternionに変換
+//===========================================================================
+void from_json(const nlohmann::json& j, Quaternion& q) {
+
+	j.at("x").get_to(q.x);
+	j.at("y").get_to(q.y);
+	j.at("z").get_to(q.z);
+	j.at("w").get_to(q.w);
 }

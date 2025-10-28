@@ -7,11 +7,11 @@
 
 // ステップブースト情報
 struct StepBoostInfo {
-	Vector3 direction;    // ステップブーストの方向
-	float speed;    // ステップブーストの速度
-	float duration; // ステップブーストの持続時間
-	float boostTimer;     // ステップブーストの持続タイマー
-	float useEnergy;      // ステップブーストに必要なエネルギー
+	Vector3 direction = { 0.0f,0.0f,0.0f };    // ステップブーストの方向
+	float speed = 0.0f;    // ステップブーストの速度
+	float duration = 0.0f; // ステップブーストの持続時間
+	float boostTimer = 0.0f;     // ステップブーストの持続タイマー
+	float useEnergy = 0.0f;      // ステップブーストに必要なエネルギー
 	//インターバル用
 	float interval = 0.2f; // ステップブーストのインターバル
 	float intervalTimer  = 0.0f; // ステップブーストのインターバルタイマー
@@ -39,7 +39,7 @@ struct EnergyInfo {
 	float energy = 0.0f;               // 現在のエネルギー
 	float maxEnergy = 1000.0f;         // 最大エネルギー
 	float recoveryRate = 200.0f;    // エネルギーの回復速度
-	const float energyCooldown = 1.0f; // エネルギー使用後のクールダウン時間
+	float energyCooldown = 1.0f; // エネルギー使用後のクールダウン時間
 	bool isEnergyDepleted = false; // エネルギーが枯渇しているかどうか
 };
 
@@ -52,10 +52,10 @@ struct OverHeatInfo {
 
 // ゲームキャラクターのコンテキスト情報
 struct GameCharacterContext {
-	QuaternionTransform transform; // 位置、回転、スケール
-	Vector3 velocity;              // 速度
-	Vector3 moveDirection;        //移動方向
-	Vector3 focusTargetPos;       // フォーカス対象の座標
+	QuaternionTransform transform{}; // 位置、回転、スケール
+	Vector3 velocity{};              // 速度
+	Vector3 moveDirection{};        //移動方向
+	Vector3 focusTargetPos{};       // フォーカス対象の座標
 	float deceleration = 1.1f;    //減速率
 	float moveSpeed = 200.0f;     //移動速度
 	float kMaxMoveSpeed = 120.0f; //移動速度の最大値
@@ -67,11 +67,11 @@ struct GameCharacterContext {
 	bool isChargeShooting = false; // チャージショット中かどうか
 	bool isDamaged = false; // ダメージを受けたかどうか
 
-	StepBoostInfo stepBoostInfo;   // ステップブースト情報
-	JumpInfo jumpInfo;             // ジャンプ情報
-	ChargeAttackStunInfo chargeAttackStunInfo; // チャージ攻撃後の硬直情報
-	EnergyInfo energyInfo;         // エネルギー情報
-	OverHeatInfo overHeatInfo;     // オーバーヒート情報
+	StepBoostInfo stepBoostInfo{};   // ステップブースト情報
+	JumpInfo jumpInfo{};             // ジャンプ情報
+	ChargeAttackStunInfo chargeAttackStunInfo{}; // チャージ攻撃後の硬直情報
+	EnergyInfo energyInfo{};         // エネルギー情報
+	OverHeatInfo overHeatInfo{};     // オーバーヒート情報
 
 	std::string name;              // エンティティの名前
 };

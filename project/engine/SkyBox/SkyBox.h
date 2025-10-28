@@ -1,19 +1,29 @@
 #pragma once
-#include "DirectXCommon.h"
-#include "ResourceDataStructure.h"
-#include "TransformMatrix.h"
-#include "Model.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/ResourceDataStructure.h"
+#include "engine/base/ComPtrAliasTemplates.h"
+#include "engine/math/TransformMatrix.h"
+#include "engine/3d/Model.h"
 
+//前方宣言
 class Camera;
 class PSO;
+
+//===========================================================================
+// SkyBox class
+//===========================================================================
 class SkyBox {
 public:
 
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+	//=======================================================================
+	// functions
+	//=======================================================================
 
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	SkyBox() = default;
-	~SkyBox();
+	~SkyBox() = default;
 
 	/// <summary>
 	/// 初期化
@@ -25,6 +35,9 @@ public:
 	/// </summary>
 	void Update();
 
+	/// <summary>
+	/// ImGui更新処理
+	/// </summary>
 	void UpdateImGui();
 
 	/// <summary>
@@ -32,6 +45,10 @@ public:
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// マテリアルカラーの設定
+	/// </summary>
+	/// <param name="color"></param>
 	void SetMaterialColor(const Vector4& color) { model_->GetMesh()->GetMaterial()->SetMaterialColor(color); }
 
 private: // privateメンバ変数
@@ -60,4 +77,3 @@ private: // privateメンバ変数
 	//Camera
 	Camera* camera_ = nullptr;
 };
-

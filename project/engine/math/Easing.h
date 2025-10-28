@@ -29,7 +29,7 @@ namespace Easing {
 	/// <param name="endPos"></param>
 	/// <param name="easedT"></param>
 	/// <returns></returns>
-	const Vector3& Lerp(Vector3 startPos, Vector3 endPos, float easedT);
+	Vector3 Lerp(Vector3 startPos, Vector3 endPos, float easedT);
 
 	/// <summary>
 	/// 球面線形補間(Quaternion)
@@ -38,7 +38,7 @@ namespace Easing {
 	/// <param name="q1"></param>
 	/// <param name="t"></param>
 	/// <returns></returns>
-	const Quaternion& Slerp(Quaternion q0, Quaternion q1, float t);
+	Quaternion Slerp(Quaternion q0, Quaternion q1, float t);
 
 	//Sine（正弦関数）
 	float EaseOutSine(float x);
