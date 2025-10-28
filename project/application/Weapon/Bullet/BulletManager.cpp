@@ -55,11 +55,11 @@ void BulletManager::DrawCollider() {
 // 弾の初期化
 //========================================================================================================
 
-void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,const float& speed,float damage,CharacterType type) {
+void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,const Vector3& targetVel,const float& speed,float damage,CharacterType type) {
 
 	Bullet* bullet = bulletPool_->GetBullet();
 	bullet->Initialize(object3dCommon_, bulletFilePath_);
-	bullet->Create(weaponPos, targetPos,speed,damage,type);
+	bullet->Create(weaponPos, targetPos,targetVel,speed,damage,type);
 }
 
 //========================================================================================================

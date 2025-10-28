@@ -218,8 +218,10 @@ void Enemy::Update() {
 
 	//武器の更新
 	weapons_[0]->SetTarget(characterInfo_.focusTargetPos);
+	weapons_[0]->SetTargetVelocity(focusTargetVelocity_);
 	weapons_[0]->Update();
 	weapons_[1]->SetTarget(characterInfo_.focusTargetPos);
+	weapons_[1]->SetTargetVelocity(focusTargetVelocity_);
 	weapons_[1]->Update();
 
 	//パーティクルエミッターの更新

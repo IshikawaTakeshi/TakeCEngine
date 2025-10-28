@@ -94,6 +94,8 @@ public:
 	virtual void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
 	//攻撃対象の座標を設定
 	virtual void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
+	//攻撃対象の速度ベクトルを設定
+	virtual void SetTargetVelocity(const Vector3& targetVel) { targetVel_ = targetVel; }
 
 	virtual void SetRotate(const Vector3& rotate) { object3d_->SetRotate(rotate); }
 	//武器のユニットポジションを設定
@@ -128,6 +130,8 @@ protected:
 	GameCharacter* ownerObject_ = nullptr;
 	//攻撃対象の座標
 	Vector3 targetPos_;
+	//攻撃対象の速度ベクトル
+	Vector3 targetVel_;
 
 	//武器の種類
 	WeaponType weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;

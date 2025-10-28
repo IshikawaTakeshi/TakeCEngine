@@ -110,6 +110,8 @@ public:
 	//移動ベクトルの設定
 	void SetOrbitAngle(float angle) { orbitAngle_ = angle; }
 
+	void SetFocusTargetVelocity(const Vector3& targetVel) { focusTargetVelocity_ = targetVel; }
+
 private:
 
 	//攻撃処理の更新
@@ -164,4 +166,6 @@ private:
 	float orbitRadius_ = 60.0f;             // 周回半径（ターゲットとの距離）
 	float orbitSpeed_ = 1.0f;              // 角速度（周る速さ）
 	Vector3 toOrbitPos_ = { 0.0f,0.0f,0.0f }; // 周回する座標
+
+	Vector3 focusTargetVelocity_ = { 0.0f,0.0f,0.0f }; // フォーカス対象の移動ベクトル
 };

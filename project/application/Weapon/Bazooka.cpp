@@ -119,9 +119,9 @@ void Bazooka::Attack() {
 	}
 
 	if (ownerObject_->GetCharacterType() == CharacterType::PLAYER){
-		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,bulletSpeed_,damage_, CharacterType::PLAYER_BULLET);
+		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,targetVel_,bulletSpeed_,damage_, CharacterType::PLAYER_BULLET);
 	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
-		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,bulletSpeed_,damage_, CharacterType::ENEMY_BULLET);
+		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,targetVel_,bulletSpeed_,damage_, CharacterType::ENEMY_BULLET);
 	} else {
 		return; // キャラクタータイプが不明な場合は攻撃しない
 	}

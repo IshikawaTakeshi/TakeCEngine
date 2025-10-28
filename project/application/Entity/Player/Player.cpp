@@ -251,6 +251,7 @@ void Player::Update() {
 	for (const auto& weapon : weapons_) {
 		if (weapon) {
 			weapon->SetTarget(characterInfo_.focusTargetPos);
+			weapon->SetTargetVelocity(focusTargetVelocity_);
 			weapon->Update();
 		}
 	}
