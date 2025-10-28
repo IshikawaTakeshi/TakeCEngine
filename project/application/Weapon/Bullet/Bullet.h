@@ -40,7 +40,7 @@ public:
 	void OnCollisionAction(GameCharacter* other) override;
 
 	//弾の生成
-	void Create(const Vector3& weaponPos,const Vector3& targetPos,float speed,float damage,CharacterType type);
+	void Create(const Vector3& weaponPos,const Vector3& targetPos,const Vector3& targetVel,float speed,float damage,CharacterType type);
 
 public:
 

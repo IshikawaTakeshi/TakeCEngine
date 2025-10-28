@@ -110,6 +110,8 @@ public:
 	//フォーカス対象の座標を設定
 	void SetFocusTargetPos(const Vector3& targetPos) { characterInfo_.focusTargetPos = targetPos; }
 
+	void SetFocusTargetVelocity(const Vector3& targetVel) { focusTargetVelocity_ = targetVel; }
+
 private:
 
 	//カメラ
@@ -141,6 +143,8 @@ private:
 	bool isUseWeapon_ = false; //武器を使用しているかどうか
 	float weaponUseTimer_ = 0.0f; //武器を使用している時間
 	float weaponUseDuration_ = 1.0f; //武器を使用してからのクールダウン時間
+
+	Vector3 focusTargetVelocity_ = { 0.0f,0.0f,0.0f }; // フォーカス対象の移動ベクトル
 
 private:
 

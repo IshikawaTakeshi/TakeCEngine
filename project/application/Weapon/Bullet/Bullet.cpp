@@ -135,16 +135,21 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 // 弾の座標、速度の初期化
 //========================================================================================================
 
-void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos,float speed,float damage, CharacterType type) {
+void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos,const Vector3& targetVel,float speed,float damage, CharacterType type) {
 
 	transform_.translate = weaponPos;
 	characterType_ = type;
 	damage_ = damage;
 	speed_ = speed;
 	targetPos_ = targetPos;
+	targetVel;
 	//ターゲットまでの方向を求める
-	direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
+	float distance = Vector3Math::Length(targetPos_ - transform_.translate);
+	float travelTime = distance / speed_;
+	Vector3 predictedTargetPos = targetPos_ + targetVel * travelTime;
 
+	//direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
+	direction_ = Vector3Math::Normalize(predictedTargetPos - transform_.translate);
 	//速度の設定
 	velocity_ = direction_ * speed_;
 	isActive_ = true;

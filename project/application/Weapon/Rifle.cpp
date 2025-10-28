@@ -71,10 +71,10 @@ void Rifle::Update() {
 			// 弾発射
 			if (ownerObject_->GetCharacterType() == CharacterType::PLAYER) {
 				//プレイヤーの弾として発射
-				bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, bulletSpeed_,damage_, CharacterType::PLAYER_BULLET);
+				bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,targetVel_, bulletSpeed_,damage_, CharacterType::PLAYER_BULLET);
 			} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
 				//エネミーの弾として発射
-				bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_, bulletSpeed_,damage_, CharacterType::ENEMY_BULLET);
+				bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,targetVel_, bulletSpeed_,damage_, CharacterType::ENEMY_BULLET);
 			}
 
 			bulletCount_--;
@@ -150,9 +150,9 @@ void Rifle::Attack() {
 	}
 
 	if (ownerObject_->GetCharacterType() == CharacterType::PLAYER){
-		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,bulletSpeed_,damage_, CharacterType::PLAYER_BULLET);
+		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,targetVel_,bulletSpeed_,damage_, CharacterType::PLAYER_BULLET);
 	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
-		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,bulletSpeed_,damage_, CharacterType::ENEMY_BULLET);
+		bulletManager_->ShootBullet(object3d_->GetCenterPosition(), targetPos_,targetVel_,bulletSpeed_,damage_, CharacterType::ENEMY_BULLET);
 	} else {
 		return; // キャラクタータイプが不明な場合は攻撃しない
 	}

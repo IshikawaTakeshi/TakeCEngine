@@ -131,10 +131,12 @@ void GamePlayScene::Update() {
 
 	//enemy
 	enemy_->SetFocusTargetPos(player_->GetObject3d()->GetTranslate());
+	enemy_->SetFocusTargetVelocity(player_->GetVelocity());
 	enemy_->Update();
 
 	//player
 	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
+	player_->SetFocusTargetVelocity(enemy_->GetVelocity());
 	player_->Update();
 
 	//弾の更新
