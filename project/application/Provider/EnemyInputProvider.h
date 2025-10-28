@@ -11,7 +11,7 @@ class Enemy;
 class EnemyInputProvider : public baseInputProvider {
 public:
 
-    EnemyInputProvider(Enemy* enemy) : enemy_(enemy) {}
+	EnemyInputProvider(Enemy* enemy);
     ~EnemyInputProvider() override = default;
 
 	//移動方向の取得

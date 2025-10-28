@@ -16,6 +16,7 @@ void PlayerReticle::Initialize() {
 	reticleSprite_->AdjustTextureSize(); // テクスチャサイズをイメージに合わせる
 	reticleSprite_->SetSize({ size_, size_ }); // レティクルのサイズを設定
 	screenPosition_ = { WinApp::kScreenWidth / 2.0f, WinApp::kScreenHeight / 2.0f };
+	targetPosition_ = { 0.0f, 0.0f, 0.0f };
 }
 
 //===================================================================================

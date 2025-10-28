@@ -4,6 +4,11 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "application/Entity/Enemy/Enemy.h"
 
+EnemyInputProvider::EnemyInputProvider(Enemy* enemy) {
+
+	enemy_ = enemy;
+}
+
 //=============================================================================
 //　移動方向の取得
 //=============================================================================
