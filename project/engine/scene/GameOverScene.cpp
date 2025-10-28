@@ -38,9 +38,6 @@ void GameOverScene::Initialize() {
 //			終了処理
 //====================================================================
 void GameOverScene::Finalize() {
-
-	TakeCFrameWork::GetParticleManager()->Finalize();
-	
 	// サウンドデータの解放
 	AudioManager::GetInstance()->SoundUnload(&gameOverBGM);
 	// カメラの解放
