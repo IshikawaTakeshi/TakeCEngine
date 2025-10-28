@@ -52,8 +52,6 @@ public:
 	/// </summary>
 	void Draw();
 
-	///テクスチャ変更処理
-	//void ChangeTexture(const std::string& textureFilePath);
 	//テクスチャサイズをイメージに合わせる
 	void AdjustTextureSize();
 private:
