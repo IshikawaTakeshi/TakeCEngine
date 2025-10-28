@@ -148,13 +148,13 @@
     <ClCompile Include="application\Entity\Enemy\Enemy.cpp">
       <Filter>application\entity\enemy</Filter>
     </ClCompile>
-    <ClCompile Include="engine\scene\GameClearScene.cpp">
+    <ClCompile Include="application\Scene\GameClearScene.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="engine\scene\GameOverScene.cpp">
+    <ClCompile Include="application\Scene\GameOverScene.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="engine\scene\GamePlayScene.cpp">
+    <ClCompile Include="application\Scene\GamePlayScene.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="engine\io\Gamepad.cpp">
@@ -244,7 +244,7 @@
     <ClCompile Include="engine\3d\Particle\ParticleEditor.cpp">
       <Filter>engine\3d\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="engine\scene\ParticleEditScene.cpp">
+    <ClCompile Include="application\Scene\ParticleEditScene.cpp">
       <Filter>engine\3d\Particle</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Particle\ParticleEmitter.cpp">
@@ -295,10 +295,10 @@
     <ClCompile Include="engine\Utility\ResourceBarrier.cpp">
       <Filter>engine\utility</Filter>
     </ClCompile>
-    <ClCompile Include="engine\scene\SceneFactory.cpp">
+    <ClCompile Include="application\Scene\SceneFactory.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="engine\scene\SceneManager.cpp">
+    <ClCompile Include="application\Scene\SceneManager.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="application\Weapon\Rifle.cpp">
@@ -334,7 +334,7 @@
     <ClCompile Include="engine\base\RtvManager.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\scene\TitleScene.cpp">
+    <ClCompile Include="application\Scene\TitleScene.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="engine\Collision\SphereCollider.cpp">
@@ -424,7 +424,7 @@
     <ClCompile Include="application\UI\PlayerReticle.cpp">
       <Filter>application\UI</Filter>
     </ClCompile>
-    <ClCompile Include="engine\scene\SceneTransition.cpp">
+    <ClCompile Include="application\Scene\SceneTransition.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="engine\math\Vector2.cpp">
@@ -520,10 +520,11 @@
     <ClCompile Include="engine\3d\Light\LightManager.cpp" />
     <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
     <ClCompile Include="engine\math\Transform.cpp" />
+    <ClCompile Include="application\Scene\EnemySelectScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="engine\scene\AbstractSceneFactory.h">
+    <ClInclude Include="application\Scene\AbstractSceneFactory.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\AABB.h">
@@ -538,7 +539,7 @@
     <ClInclude Include="engine\3d\Particle\BaseParticleGroup.h">
       <Filter>engine\3d\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="engine\scene\BaseScene.h">
+    <ClInclude Include="application\Scene\BaseScene.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\BaseWeapon.h">
@@ -595,13 +596,13 @@
     <ClInclude Include="engine\Entity\GameCharacter.h">
       <Filter>application\entity</Filter>
     </ClInclude>
-    <ClInclude Include="engine\scene\GameClearScene.h">
+    <ClInclude Include="application\Scene\GameClearScene.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="engine\scene\GameOverScene.h">
+    <ClInclude Include="application\Scene\GameOverScene.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="engine\scene\GamePlayScene.h">
+    <ClInclude Include="application\Scene\GamePlayScene.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="engine\io\Gamepad.h">
@@ -652,7 +653,7 @@
     <ClInclude Include="engine\base\ImGuiManager.h">
       <Filter>engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\scene\LevelData.h">
+    <ClInclude Include="application\Scene\LevelData.h">
       <Filter>engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="engine\Entity\LevelObject\LevelObject.h">
@@ -706,7 +707,7 @@
     <ClInclude Include="engine\3d\Particle\ParticleEditor.h">
       <Filter>engine\3d\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="engine\scene\ParticleEditScene.h">
+    <ClInclude Include="application\Scene\ParticleEditScene.h">
       <Filter>engine\3d\Particle</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Particle\ParticleEmitterAllocater.h">
@@ -763,10 +764,10 @@
     <ClInclude Include="engine\Utility\ResourceBarrier.h">
       <Filter>engine\utility</Filter>
     </ClInclude>
-    <ClInclude Include="engine\scene\SceneManager.h">
+    <ClInclude Include="application\Scene\SceneManager.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="engine\scene\SceneFactory.h">
+    <ClInclude Include="application\Scene\SceneFactory.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\Rifle.h">
@@ -805,7 +806,7 @@
     <ClInclude Include="engine\base\PSOType.h">
       <Filter>engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\scene\TitleScene.h">
+    <ClInclude Include="application\Scene\TitleScene.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="engine\base\ResourceDataStructure.h">
@@ -940,7 +941,7 @@
     <ClInclude Include="application\Entity\GameCharacterInfo.h">
       <Filter>application\Entity</Filter>
     </ClInclude>
-    <ClInclude Include="engine\scene\SceneTransition.h">
+    <ClInclude Include="application\Scene\SceneTransition.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h">
@@ -1075,6 +1076,7 @@
     <ClInclude Include="engine\3d\Light\LightCounter.h" />
     <ClInclude Include="engine\3d\Light\LightManager.h" />
     <ClInclude Include="engine\base\ComPtrAliasTemplates.h" />
+    <ClInclude Include="application\Scene\EnemySelectScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

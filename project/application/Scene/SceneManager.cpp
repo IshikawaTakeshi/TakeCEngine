@@ -53,7 +53,7 @@ void SceneManager::UpdateImGui() {
 #ifdef _DEBUG
 
 	//コンボボックスの項目
-	std::vector<std::string> items = { "GAMEPLAY","TITLE", "GAMEOVER","GAMECLEAR","PARTICLEEDITOR"};
+	std::vector<std::string> items = { "GAMEPLAY","TITLE", "GAMEOVER","GAMECLEAR","PARTICLEEDITOR","ENEMYSELECT"};
 	//現在の項目
 	std::string& currentItem = items[itemCurrentIdx];
 	//変更があったかどうか
@@ -99,6 +99,9 @@ void SceneManager::UpdateImGui() {
 			break;
 		case 4:
 			nextScene_ = sceneFactory_->CreateScene("PARTICLEEDITOR");
+			break;
+		case 5:
+			nextScene_ = sceneFactory_->CreateScene("ENEMYSELECT");
 			break;
 		}
 	}
