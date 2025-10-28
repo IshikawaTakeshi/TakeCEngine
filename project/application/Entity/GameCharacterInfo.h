@@ -1,10 +1,11 @@
 #pragma once
 #include <string>
+#include <json.hpp>
 #include "engine/math/Vector3.h"
 #include "engine/math/Transform.h"
 
 
-
+// ステップブースト情報
 struct StepBoostInfo {
 	Vector3 direction;    // ステップブーストの方向
 	float speed;    // ステップブーストの速度
@@ -16,6 +17,7 @@ struct StepBoostInfo {
 	float intervalTimer  = 0.0f; // ステップブーストのインターバルタイマー
 };
 
+// ジャンプ情報
 struct JumpInfo {
 	float speed = 50.0f;        // ジャンプの速度
 	float jumpTimer = 0.0f;               // ジャンプのタイマー
@@ -25,12 +27,14 @@ struct JumpInfo {
 	bool isJumping = false; // ジャンプするかどうか
 };
 
+// チャージ攻撃後の硬直情報
 struct ChargeAttackStunInfo {
 	float stunTimer = 0.0f;    //チャージ攻撃後の硬直時間
 	float stunDuration = 0.5f; // チャージ攻撃後の硬直時間
 	bool isStunned = false; // チャージ攻撃後に硬直しているかどうか
 };
 
+// エネルギー情報
 struct EnergyInfo {
 	float energy = 0.0f;               // 現在のエネルギー
 	float maxEnergy = 1000.0f;         // 最大エネルギー
@@ -38,12 +42,15 @@ struct EnergyInfo {
 	const float energyCooldown = 1.0f; // エネルギー使用後のクールダウン時間
 	bool isEnergyDepleted = false; // エネルギーが枯渇しているかどうか
 };
+
+// オーバーヒート情報
 struct OverHeatInfo {
 	float overheatTimer = 0.0f;          // オーバーヒートのタイマー
 	float overheatDuration = 3.0f; // オーバーヒートの持続時間
 	bool isOverheated = false;           // オーバーヒート中かどうか
 };
 
+// ゲームキャラクターのコンテキスト情報
 struct GameCharacterContext {
 	QuaternionTransform transform; // 位置、回転、スケール
 	Vector3 velocity;              // 速度
@@ -68,3 +75,19 @@ struct GameCharacterContext {
 
 	std::string name;              // エンティティの名前
 };
+
+// JSON形式に変換
+void to_json(nlohmann::json& j, const GameCharacterContext& context);
+void to_json(nlohmann::json& j, const StepBoostInfo& info);
+void to_json(nlohmann::json& j, const JumpInfo& info);
+void to_json(nlohmann::json& j, const ChargeAttackStunInfo& info);
+void to_json(nlohmann::json& j, const EnergyInfo& info);
+void to_json(nlohmann::json& j, const OverHeatInfo& info);
+
+// JSON形式から変換
+void from_json(const nlohmann::json& j, GameCharacterContext& context);
+void from_json(const nlohmann::json& j, StepBoostInfo& info);
+void from_json(const nlohmann::json& j, JumpInfo& info);
+void from_json(const nlohmann::json& j, ChargeAttackStunInfo& info);
+void from_json(const nlohmann::json& j, EnergyInfo& info);
+void from_json(const nlohmann::json& j, OverHeatInfo& info);

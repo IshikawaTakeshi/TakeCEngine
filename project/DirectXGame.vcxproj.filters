@@ -536,6 +536,7 @@
     <ClCompile Include="application\Effect\DeadEffect.cpp" />
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
     <ClCompile Include="engine\3d\Light\LightManager.cpp" />
+    <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
