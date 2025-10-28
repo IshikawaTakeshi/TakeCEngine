@@ -3,6 +3,9 @@
 #include "SceneManager.h"
 #include <algorithm>
 
+//====================================================================
+//			初期化
+//====================================================================
 void TitleScene::Initialize() {
 
 	//Camera0
@@ -27,6 +30,9 @@ void TitleScene::Initialize() {
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 }
 
+//====================================================================
+//			終了処理
+//====================================================================
 void TitleScene::Finalize() {
 	titleTextSprite_.reset();
 	camera0_.reset();
@@ -35,6 +41,9 @@ void TitleScene::Finalize() {
 
 }
 
+//====================================================================
+//			更新処理
+//====================================================================
 void TitleScene::Update() {
 
 	//カメラの更新
@@ -43,6 +52,7 @@ void TitleScene::Update() {
 	//SkyBoxの更新
 	skyBox_->Update();
 
+	//タイトルテキストの更新
 	titleTextSprite_->Update();
 
 	//シーン遷移
@@ -52,6 +62,9 @@ void TitleScene::Update() {
 	}
 }
 
+//====================================================================
+//			ImGui更新処理
+//====================================================================
 void TitleScene::UpdateImGui() {
 #ifdef _DEBUG
 	//ImGuiの更新
@@ -61,11 +74,15 @@ void TitleScene::UpdateImGui() {
 #endif
 }
 
+//====================================================================
+//			描画処理
+//====================================================================
 void TitleScene::Draw() {
 
 	//SkyBox描画
 	skyBox_->Draw();
 
+	//タイトルテキスト描画
 	SpriteCommon::GetInstance()->PreDraw();
 	titleTextSprite_->Draw();
 	Object3dCommon::GetInstance()->PreDraw();

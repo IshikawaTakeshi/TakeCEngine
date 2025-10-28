@@ -7,8 +7,12 @@
 
 #include <cassert>
 
+//シングルトンインスタンスの初期化
 ModelManager* ModelManager::instance_ = nullptr;
 
+//=============================================================================
+// シングルトンインスタンスの取得
+//=============================================================================
 ModelManager* ModelManager::GetInstance() {
 
 	if (instance_ == nullptr) {
@@ -17,6 +21,9 @@ ModelManager* ModelManager::GetInstance() {
 	return instance_;
 }
 
+//=============================================================================
+// 初期化
+//=============================================================================
 void ModelManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 
 	//ModelCommon初期化
@@ -24,6 +31,9 @@ void ModelManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 	modelCommon_->Initialize(dxCommon, srvManager);
 }
 
+//=============================================================================
+// 終了処理
+//=============================================================================
 void ModelManager::Finalize() {
 	modelCommon_->Finalize();
 
@@ -31,6 +41,9 @@ void ModelManager::Finalize() {
 	instance_ = nullptr;
 }
 
+//=============================================================================
+// モデルの読み込み
+//=============================================================================
 void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::string& modelFile,const std::string& envMapFile) {
 
 	//読み込み済みモデルの検索
@@ -48,6 +61,9 @@ void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::s
 	models_.insert(std::make_pair(modelFile, std::move(model)));
 }
 
+//=============================================================================
+// モデルの検索
+//=============================================================================
 Model* ModelManager::FindModel(const std::string& filePath) {
 
 	//読み込み済みモデルを検索
@@ -60,6 +76,9 @@ Model* ModelManager::FindModel(const std::string& filePath) {
 	return nullptr;
 }
 
+//=============================================================================
+// モデルのコピーを作成
+//=============================================================================
 std::unique_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
 	
 	//読み込み済みモデルを検索
@@ -156,7 +175,7 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 				//Weightの解析
 				for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
 
-					//InverceBindPoseMatrixの作成
+					//InverseBindPoseMatrixの作成
 					jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight, bone->mWeights[weightIndex].mVertexId });
 				}
 			}

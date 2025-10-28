@@ -4,11 +4,13 @@
 #include "Utility/Logger.h"
 #include "PostEffect/PostEffectManager.h"
 
+//======================================================================
+// デストラクタ
+//======================================================================
 RenderTexture::~RenderTexture() {
 	rootSignature_.Reset();
 	renderTexturePSO_.reset();
 	renderTextureResource_.Reset();
-
 }
 
 //======================================================================
@@ -66,8 +68,6 @@ void RenderTexture::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, 
 
 void RenderTexture::ClearRenderTarget() {
 
-
-
 	//描画先のRTVとDSVを設定する
 	dxCommon_->GetCommandList()->OMSetRenderTargets(1, &rtvHandle_, false, &dsvHandle_);
 	// 全画面クリア
@@ -85,7 +85,7 @@ void RenderTexture::ClearRenderTarget() {
 //========================================================================
 
 void RenderTexture::PreDraw() {
-
+	//レンダーターゲットのクリア
 	ClearRenderTarget();
 }
 

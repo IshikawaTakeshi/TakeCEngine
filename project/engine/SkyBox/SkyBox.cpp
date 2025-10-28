@@ -7,14 +7,9 @@
 #include "math/MatrixMath.h"
 #include "TakeCFrameWork.h"
 
-SkyBox::~SkyBox() {
-	pso_.reset();
-	rootSignature_.Reset();
-	wvpResource_.Reset();
-	model_ = nullptr;
-	dxCommon_ = nullptr;
-}
-
+//=============================================================================
+// 初期化
+//=============================================================================
 void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename) {
 
 	dxCommon_ = directXCommon;
@@ -53,6 +48,9 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename
 	camera_ = CameraManager::GetInstance()->GetActiveCamera();
 }
 
+//=============================================================================
+// 更新処理
+//=============================================================================
 void SkyBox::Update() {
 
 	//アフィン行列の更新
@@ -67,12 +65,25 @@ void SkyBox::Update() {
 		WVPMatrix_ = worldMatrix_;
 	}
 
+	//ワールド行列の逆行列の転置行列を計算
 	WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
+
+	//GPUに使うデータを転送
 	TransformMatrixData_->World = worldMatrix_;
 	TransformMatrixData_->WVP = model_->GetModelData()->rootNode.localMatrix * WVPMatrix_;
 	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
+void SkyBox::UpdateImGui() {
+
+}
+
+//=============================================================================
+// 描画処理
+//=============================================================================
 void SkyBox::Draw() {
 
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
@@ -88,6 +99,7 @@ void SkyBox::Draw() {
 	//TransformationMatrix
 	commandList->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
+	//モデルの描画
 	if (model_ != nullptr) {
 		model_->DrawSkyBox();
 	}

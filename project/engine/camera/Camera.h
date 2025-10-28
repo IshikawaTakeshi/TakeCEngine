@@ -16,12 +16,21 @@
 class Camera {
 public:
 
+	//ゲーム内カメラの状態
 	enum class GameCameraState {
 		FOLLOW,
 		LOOKAT,
 		ENEMY_DESTROYED,
 	};
 
+
+	//============================================================================
+	// functions
+	//============================================================================
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	Camera() = default;
 	~Camera() = default;
 
@@ -90,11 +99,11 @@ public: //setter
 	void SetShake(float duration, float range);
 	
 	//追従対象の位置の設定
-	void SetFollowTargetPos(const Vector3& target) { *followTargetPosition_ = target; }
+	void SetFollowTargetPos(const Vector3& target) { followTargetPosition_ = target; }
 	//追従対象の回転量の設定
-	void SetFollowTargetRot(const Vector3& targetRot) { *followTargetRotation_ = targetRot; }
+	void SetFollowTargetRot(const Vector3& targetRot) { followTargetRotation_ = targetRot; }
 	//補足対象の設定
-	void SetFocusTargetPos(const Vector3& target) { *focusTargetPosition_ = target; }
+	void SetFocusTargetPos(const Vector3& target) { focusTargetPosition_ = target; }
 	//スティック情報の設定
 	void SetStick(const Vector2& stick) { stick_ = stick; }
 
@@ -128,12 +137,13 @@ private:
 	GameCameraState cameraState_ = GameCameraState::FOLLOW;
 
 	//追従対象
-	Vector3* followTargetPosition_;
-	Vector3* followTargetRotation_;
-	float followSpeed_ = 0.3f;
+	Vector3 followTargetPosition_;
+	Vector3 followTargetRotation_;
+	float followSpeed_ = 0.3f; //追従速度
+	float rotationSpeed_ = 0.1f; //回転追従速度
 
 	//補足対象
-	Vector3* focusTargetPosition_;
+	Vector3 focusTargetPosition_;
 	
 	//水平方向視野角
 	float fovX_;

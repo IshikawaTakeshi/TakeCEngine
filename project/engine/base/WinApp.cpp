@@ -11,17 +11,9 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 #endif // DEBUG
 #pragma endregion
 
+//静的メンバ変数の初期化
 float WinApp::widthPercent_ = float(WinApp::kScreenWidth) / WinApp::kDebugScreenWidth_;
 float WinApp::heightPercent_ = float(WinApp::kScreenHeight) / WinApp::kDebugScreenHeight_;
-
-WinApp::WinApp() {}
-
-WinApp::~WinApp() {
-#ifdef _DEBUG
-	debugController_.Reset();
-#endif // _DEBUG
-
-}
 
 //=====================================================================
 //			初期化
@@ -43,7 +35,7 @@ void WinApp::Initialize(const wchar_t title[]) {
 
 	//ウィンドウクラスを登録する
 	RegisterClass(&wc_);
-
+	//ゲームウィンドウの作成
 	CreateGameWindow(title);
 
 	assert(SUCCEEDED(hr));

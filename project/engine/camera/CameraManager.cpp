@@ -8,8 +8,12 @@
 #endif 
 #pragma endregion
 
+//シングルトンインスタンスの初期化
 CameraManager* CameraManager::instance_ = nullptr;
 
+//============================================================================
+// インスタンスの取得
+//============================================================================
 CameraManager* CameraManager::GetInstance() {
 	if (instance_ == nullptr) {
 		instance_ = new CameraManager();
@@ -17,16 +21,26 @@ CameraManager* CameraManager::GetInstance() {
 	return instance_;
 }
 
+//============================================================================
+// 初期化
+//============================================================================
 void CameraManager::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 }
 
+//============================================================================
+// 更新処理
+//============================================================================
 void CameraManager::Update() {
 	if (activeCamera_) {
+		// アクティブカメラの更新
 		activeCamera_->Update();
 	}
 }
 
+//============================================================================
+// ImGuiの更新
+//============================================================================
 void CameraManager::UpdateImGui() {
 
 #ifdef _DEBUG
@@ -44,6 +58,9 @@ void CameraManager::UpdateImGui() {
 #endif // _DEBUG
 }
 
+//============================================================================
+// 終了・開放処理
+//============================================================================
 void CameraManager::Finalize() {
 
 	cameras_.clear();
@@ -51,6 +68,9 @@ void CameraManager::Finalize() {
 	instance_ = nullptr;
 }
 
+//============================================================================
+// カメラの追加
+//============================================================================
 void CameraManager::AddCamera(std::string name, const Camera& camera) {
 	//生成済みのカメラの検索
 	if (cameras_.contains(name)) {
@@ -66,11 +86,17 @@ void CameraManager::AddCamera(std::string name, const Camera& camera) {
 	}
 }
 
+//============================================================================
+// カメラのリセット
+//============================================================================
 void CameraManager::ResetCameras() {
 	cameras_.clear();
 	activeCamera_ = nullptr;
 }
 
+//============================================================================
+// アクティブカメラの設定
+//============================================================================
 void CameraManager::SetActiveCamera(std::string name) {
 
 	auto it = cameras_.find(name);
@@ -83,10 +109,16 @@ void CameraManager::SetActiveCamera(std::string name) {
 	}
 }
 
+//============================================================================
+// アクティブカメラの取得
+//============================================================================
 Camera* CameraManager::GetActiveCamera() {
 	return activeCamera_;
 }
 
+//============================================================================
+// カメラの数を取得
+//============================================================================
 int CameraManager::GetCameraCount() const {
 	return static_cast<int>(cameras_.size());
 }

@@ -14,9 +14,10 @@
 
 void Camera::Initialize(ID3D12Device* device) {
 	
+	//カメラの各種パラメータ初期化
 	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	offset_ = { 0.0f, 0.0f, -5.0f };
-	offsetDelta_ = { 0.0f, 5.0f, -50.0f };
+	offsetDelta_ = { 0.0f, 5.0f, -55.0f };
 	fovX_ = 0.45f;
 	aspectRatio_ = float(WinApp::kScreenWidth / 2) / float(WinApp::kScreenHeight / 2);
 	nearClip_ = 0.1f;
@@ -27,10 +28,10 @@ void Camera::Initialize(ID3D12Device* device) {
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
 	rotationMatrix_ = MatrixMath::MakeIdentity4x4();
 
-	followTargetPosition_ = new Vector3();
-	followTargetRotation_ = new Vector3();
-	focusTargetPosition_ = new Vector3();
+	followSpeed_ = 0.3f;
+	rotationSpeed_ = 0.1f;
 
+	//カメラ用バッファリソース生成
 	cameraResource_ = DirectXCommon::CreateBufferResource(device, sizeof(CameraForGPU));
 	cameraResource_->SetName(L"Camera::cameraResource_");
 	cameraForGPU_ = nullptr;
@@ -130,6 +131,8 @@ void Camera::UpdateImGui() {
 	ImGui::DragFloat("yawRot", &yawRot_, 0.01f);
 	ImGui::DragFloat("pitchRot", &pitchRot_, 0.01f);
 	ImGui::DragFloat("FovX", &fovX_, 0.01f);
+	ImGui::DragFloat("followSpeed", &followSpeed_, 0.01f);
+	ImGui::DragFloat("rotationSpeed", &rotationSpeed_, 0.01f);
 	ImGui::Checkbox("isDebug", &isDebug_);
 #endif // DEBUG
 }
@@ -261,15 +264,15 @@ void Camera::UpdateCameraFollow() {
 	// オフセットに回転を適用
 	offset_ = QuaternionMath::RotateVector(offsetDelta_, rotationDelta);
 	//カメラ位置の計算
-	Vector3 tagetPosition_ = *followTargetPosition_ + offset_;
-	nextPosition_ = Easing::Lerp(transform_.translate, tagetPosition_, followSpeed_);
+	Vector3 targetPosition_ = followTargetPosition_ + offset_;
+	nextPosition_ = Easing::Lerp(transform_.translate, targetPosition_, followSpeed_);
 
 	//埋まり回避
-	direction_ = Vector3Math::Normalize(nextPosition_ - *followTargetPosition_);
-	float distance = Vector3Math::Length(nextPosition_ - *followTargetPosition_);
+	direction_ = Vector3Math::Normalize(nextPosition_ - followTargetPosition_);
+	float distance = Vector3Math::Length(nextPosition_ - followTargetPosition_);
 
 	Ray ray;
-	ray.origin = *followTargetPosition_;
+	ray.origin = followTargetPosition_;
 	ray.direction = direction_;
 	ray.distance = distance;
 	RayCastHit hitInfo;
@@ -284,7 +287,7 @@ void Camera::UpdateCameraFollow() {
 		// 衝突しなかった場合は、通常の位置に移動
 		transform_.translate = nextPosition_;
 	}
-	transform_.rotate = Easing::Slerp(transform_.rotate, rotationDelta, followSpeed_);
+	transform_.rotate = Easing::Slerp(transform_.rotate, rotationDelta, rotationSpeed_);
 
 	//Rスティック押し込みでカメラの状態変更
 	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::RightStick)) {
@@ -309,7 +312,7 @@ void Camera::InitializeCameraLookAt() {
 void Camera::UpdateCameraLockOn() {
 
 	// ターゲット方向を正規化
-	Vector3 toTarget = Vector3Math::Normalize(*focusTargetPosition_ - transform_.translate);
+	Vector3 toTarget = Vector3Math::Normalize(focusTargetPosition_ - transform_.translate);
 
 	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
 	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
@@ -318,15 +321,15 @@ void Camera::UpdateCameraLockOn() {
 	offset_ = offsetDelta_;
 
 	// ターゲットからの相対位置に補間移動
-	Vector3 desiredPosition = *followTargetPosition_ + QuaternionMath::RotateVector(offset_, transform_.rotate);
+	Vector3 desiredPosition = followTargetPosition_ + QuaternionMath::RotateVector(offset_, transform_.rotate);
 	nextPosition_ = Easing::Lerp(transform_.translate, desiredPosition, followSpeed_);
 
 	//埋まり回避
-	direction_ = Vector3Math::Normalize(nextPosition_ - *followTargetPosition_);
-	float distance = Vector3Math::Length(nextPosition_ - *followTargetPosition_);
+	direction_ = Vector3Math::Normalize(nextPosition_ - followTargetPosition_);
+	float distance = Vector3Math::Length(nextPosition_ - followTargetPosition_);
 
 	Ray ray;
-	ray.origin = *followTargetPosition_;
+	ray.origin = followTargetPosition_;
 	ray.direction = direction_;
 	ray.distance = distance;
 	RayCastHit hitInfo;
@@ -343,9 +346,7 @@ void Camera::UpdateCameraLockOn() {
 	}
 
 	// 回転補間
-	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
-
-
+	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, rotationSpeed_);
 
 	// 状態切り替え
 	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RightStick)) {
@@ -380,7 +381,7 @@ void Camera::InitializeCameraEnemyDestroyed() {
 void Camera::UpdateCameraEnemyDestroyed() {
 
 	// ターゲット方向を正規化
-	Vector3 toTarget = Vector3Math::Normalize(*focusTargetPosition_ - transform_.translate);
+	Vector3 toTarget = Vector3Math::Normalize(focusTargetPosition_ - transform_.translate);
 
 	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
 	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
@@ -389,15 +390,15 @@ void Camera::UpdateCameraEnemyDestroyed() {
 	offset_ = offsetDelta_;
 
 	// ターゲットからの相対位置に補間移動
-	Vector3 desiredPosition = *followTargetPosition_ + QuaternionMath::RotateVector(offset_, transform_.rotate);
+	Vector3 desiredPosition = followTargetPosition_ + QuaternionMath::RotateVector(offset_, transform_.rotate);
 	nextPosition_ = Easing::Lerp(transform_.translate, desiredPosition, followSpeed_);
 
 	//埋まり回避
-	direction_ = Vector3Math::Normalize(nextPosition_ - *followTargetPosition_);
-	float distance = Vector3Math::Length(nextPosition_ - *followTargetPosition_);
+	direction_ = Vector3Math::Normalize(nextPosition_ - followTargetPosition_);
+	float distance = Vector3Math::Length(nextPosition_ - followTargetPosition_);
 
 	Ray ray;
-	ray.origin = *followTargetPosition_;
+	ray.origin = followTargetPosition_;
 	ray.direction = direction_;
 	ray.distance = distance;
 	RayCastHit hitInfo;

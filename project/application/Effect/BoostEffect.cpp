@@ -6,18 +6,20 @@
 #include "engine/math/Easing.h"
 #include <algorithm>
 
+//===================================================================================
+//　初期化
+//===================================================================================
 void BoostEffect::Initialize(GameCharacter* owner) {
-	//エフェクトオブジェクト初期化
+	//effectObject初期化
 	boostEffectObject_ = std::make_unique<Object3d>();
 	boostEffectObject_->Initialize(Object3dCommon::GetInstance(), "boostEffectCone.gltf");
 	boostEffectObject_->GetModel()->GetModelData()->material.textureFilePath = "BlueBoostEffect.png";
-	//boostEffectObject_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,0.1f,0.0f,1.0f });
-
+	//effectObject2初期化
 	boostEffectObject2_ = std::make_unique<Object3d>();
 	boostEffectObject2_->Initialize(Object3dCommon::GetInstance(), "boostEffectCone.gltf");
 	boostEffectObject2_->GetModel()->GetModelData()->material.textureFilePath = "BlueBoostEffect.png";
 	boostEffectObject2_->SetScale({ 1.1f,1.1f,1.1f });
-	//boostEffectObject2_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f,0.1f,0.0f,1.0f });
+
 	//エミッター初期化
 	particleEmitter_ = std::make_unique<ParticleEmitter>();
 	particleEmitter_->Initialize("BoostEffectEmitter", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} }, 10, 0.1f);
@@ -25,6 +27,9 @@ void BoostEffect::Initialize(GameCharacter* owner) {
 	ownerObject_ = owner;
 }
 
+//===================================================================================
+//　更新
+//===================================================================================
 void BoostEffect::Update() {
 
 	switch (behavior_) {
@@ -40,17 +45,10 @@ void BoostEffect::Update() {
 				effectTime_ = 0.0f;
 				isActive_ = false;
 			}
-			//float progress = effectTime_ / duration_;
-			//float easedProgress = Easing::EaseOutCubic(progress);
-			//alpha_ = 1.0f - easedProgress; // アルファ値を進行度に基づいて設定
-			//Vector3 newScale = Easing::Lerp(activeScale_, { 0.0f }, easedProgress); // スケールを進行度に基づいて設定
-			//boostEffectObject_->SetScale(newScale);
-			//boostEffectObject_->GetModel()->GetMesh()->GetMaterial()->SetAlpha(alpha_);
-			//boostEffectObject2_->SetScale(newScale * 1.1f);
-			//boostEffectObject2_->GetModel()->GetMesh()->GetMaterial()->SetAlpha(alpha_);
+
 		} else {
+			//スケール拡大
 			effectTime_ = 0.0f;
-			//alpha_ = 0.0f;
 			boostEffectObject_->SetScale({ 0.0f,0.0f,0.0f });
 			boostEffectObject_->GetModel()->GetMesh()->GetMaterial()->SetAlpha(alpha_);
 			boostEffectObject2_->SetScale({ 0.0f,0.0f,0.0f });
@@ -69,12 +67,14 @@ void BoostEffect::Update() {
 			}
 		}
 
+		// アルファ値を進行度に基づいて設定
 		float progress = effectTime_ / duration_;
-		//float easedProgress = Easing::EaseOutCubic(progress);
-		alpha_ = 1.0f; // アルファ値を進行度に基づいて設定
+		alpha_ = 1.0f; 
 		float wave = sinf(progress * std::numbers::pi_v<float> *3.0f) * 0.1f;
-		float finalScaleFactor = 1.0f + wave; // 最終的なスケール係数
-		Vector3 newScale = activeScale_ * finalScaleFactor; // スケールを進行度に基づいて設定
+		// 最終的なスケール係数
+		float finalScaleFactor = 1.0f + wave; 
+		// スケールを進行度に基づいて設定
+		Vector3 newScale = activeScale_ * finalScaleFactor; 
 
 		boostEffectObject_->SetScale(newScale);
 		boostEffectObject_->GetModel()->GetMesh()->GetMaterial()->SetAlpha(alpha_);
@@ -110,14 +110,7 @@ void BoostEffect::Update() {
 				effectTime_ = 0.0f;
 				isActive_ = false;
 			}
-			//float progress = effectTime_ / duration_;
-			//float easedProgress = Easing::EaseOutCubic(progress);
-			//alpha_ = 1.0f - easedProgress; // アルファ値を進行度に基づいて設定
-			//Vector3 newScale = Easing::Lerp(activeScale_ * 1.5f, activeScale_ * 0.5f, easedProgress); // スケールを進行度に基づいて設定
-			//boostEffectObject_->SetScale(newScale);
-			//boostEffectObject_->GetModel()->GetMesh()->GetMaterial()->SetAlpha(alpha_);
-			//boostEffectObject2_->SetScale(newScale * 1.1f);
-			//boostEffectObject2_->GetModel()->GetMesh()->GetMaterial()->SetAlpha(alpha_);
+			
 		} else {
 			effectTime_ = 0.0f;
 			alpha_ = 0.0f;
@@ -141,22 +134,29 @@ void BoostEffect::Update() {
 		break;
 	}
 
+	
 	if (parentSkeleton_ && !parentJointName_.empty() && ownerObject_) {
+		// 親スケルトンのジョイントに追従
 		Matrix4x4 characterWorldMatrix = ownerObject_->GetObject3d()->GetWorldMatrix();
 		auto jointWorldMatrixOpt = parentSkeleton_->GetJointWorldMatrix(parentJointName_, characterWorldMatrix);
 		boostEffectObject_->SetParent(*jointWorldMatrixOpt);
 		boostEffectObject2_->SetParent(*jointWorldMatrixOpt);
 	}
 
+	//effectObject更新
 	boostEffectObject_->Update();
 	boostEffectObject2_->Update();
 	
+	//particleエミッター更新
 	particleEmitter_->SetIsEmit(isActive_);
 	particleEmitter_->SetTranslate(boostEffectObject_->GetCenterPosition());
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BoostEffect2")->SetEmitterPosition(boostEffectObject_->GetCenterPosition());
 	particleEmitter_->Update();
 }
 
+//===================================================================================
+//　ImGuiの更新
+//===================================================================================
 void BoostEffect::UpdateImGui(std::string label) {
 	if (ImGui::TreeNode(label.c_str())) {
 		ImGui::Checkbox("IsActive", &isActive_);
@@ -170,18 +170,26 @@ void BoostEffect::UpdateImGui(std::string label) {
 	}
 }
 
+//===================================================================================
+//　描画
+//===================================================================================
 void BoostEffect::Draw() {
 	if (isActive_) {
 		boostEffectObject_->Draw();
-		//boostEffectObject2_->Draw();
 	}
 }
 
+//===================================================================================
+//　スケルトンのジョイントにアタッチ
+//===================================================================================
 void BoostEffect::AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName) {
 	parentSkeleton_ = skeleton;
 	parentJointName_ = jointName;
 }
 
+//===================================================================================
+//　回転設定
+//===================================================================================
 void BoostEffect::SetRotate(const Vector3& rotate) {
 	boostEffectObject_->SetRotate(rotate);
 	boostEffectObject2_->SetRotate(rotate);

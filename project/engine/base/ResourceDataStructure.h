@@ -10,39 +10,11 @@
 #include <map>
 #include <wrl.h>
 
+//頂点データ構造体
 struct VertexData {
 	Vector4 position;
 	Vector2 texcoord;
 	Vector3 normal;
-};
-
-//DirectionalLightのデータ
-struct DirectionalLightData {
-	Vector4 color_; //ライトの色
-	Vector3 direction_; //ライトの向き
-	float intensity_; //輝度
-};
-
-//PointLightのデータ
-struct PointLightData {
-	Vector4 color_; //ライトの色
-	Vector3 position_; //ライトの位置
-	float intensity_; //輝度
-	float radius_; //影響範囲
-	float decay_; //減衰率
-	float padding[2];
-};
-
-//SpotLightのデータ
-struct SpotLightData {
-	Vector4 color_;       //ライトの色
-	Vector3 position_;    //ライトの位置
-	float intensity_;     //輝度
-	Vector3 direction_;   //ライトの向き
-	float distance_;      //影響範囲
-	float decay_;         //減衰率
-	float cosAngle_;     //スポットライトの角度
-	float penumbraAngle_; //影のぼかし角度
 };
 
 //モデル1個分のマテリアルデータ
@@ -53,6 +25,7 @@ struct ModelMaterialData {
 	uint32_t srvIndex; //テクスチャのインデックス
 };
 
+//アニメーションノード構造体
 struct Node {
 	QuaternionTransform transform;
 	Matrix4x4 localMatrix;
@@ -60,16 +33,19 @@ struct Node {
 	std::vector<Node> children;
 };
 
+//頂点ウェイトデータ構造体
 struct VertexWeightData {
 	float weight;
 	uint32_t vertexIndex;
 };
 
+//ジョイントウェイトデータ構造体
 struct JointWeightData {
 	Matrix4x4 inverseBindPoseMatrix;
 	std::vector<VertexWeightData> vertexWeights;
 };
 
+//スキニング情報構造体
 struct SkinningInfo {
 	uint32_t numVertices;
 };
@@ -104,6 +80,3 @@ struct PerFrame {
 	//フレームの経過時間
 	float deltaTime;
 };
-
-//エイリアステンプレート
-template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;

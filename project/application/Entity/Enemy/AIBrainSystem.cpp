@@ -6,11 +6,17 @@
 #include "engine/MAth/Vector3Math.h"
 #include <cmath>
 
+//===================================================================================
+//　初期化
+//===================================================================================
 void AIBrainSystem::Initialize(GameCharacterContext* characterInfo,size_t weaponUnitSize) {
 	characterInfo_ = characterInfo;
 	attackScores_.resize(weaponUnitSize, 0.0f);
 }
 
+//===================================================================================
+//　更新
+//===================================================================================
 void AIBrainSystem::Update() {
 	//各スコアの計算
 	actionScores_[Action::USE_REAIR] = CalculateHpScore();
@@ -20,12 +26,17 @@ void AIBrainSystem::Update() {
 
 	actionScores_[Action::ATTACK_RA] = attackScores_[0]; // 右手武器のスコア
 	actionScores_[Action::ATTACK_LA] = attackScores_[1]; // 左手武器のスコア
+
+	//TODO: Enemyの肩武器の設定
 	//actionScores_[Action::ATTACK_RB] = attackScores_[2]; // 右肩武器のスコア
 	//actionScores_[Action::ATTACK_LB] = attackScores_[3]; // 左肩武器のスコア
 
 	bestAction_ = ChooseBestAction();
 }
 
+//===================================================================================
+//　ImGui更新
+//===================================================================================
 void AIBrainSystem::UpdateImGui() {
 	ImGui::SeparatorText("AIBrainSystem");
 	ImGui::Text("DistanceToTarget: %.2f", distanceToTarget_);
@@ -34,12 +45,17 @@ void AIBrainSystem::UpdateImGui() {
 	ImGui::Separator();
 	ImGui::Text("BestAction: %s", StringUtility::EnumToString(bestAction_).c_str());
 	ImGui::Separator();
+
+	//各スコアの表示と調整
 	for (const auto& [action, score] : actionScores_) {
 		std::string actionName = "Score " + StringUtility::EnumToString<CharacterActionInput>(action);
 		ImGui::SliderFloat(actionName.c_str(), &actionScores_[action], 0.0f, 1.0f);
 	}
 }
 
+//===================================================================================
+//　スコア計算(HP)
+//===================================================================================
 float AIBrainSystem::CalculateHpScore() {
 	float hpRatio = characterInfo_->health / characterInfo_->maxHealth;
 	float normalizedHpLoss = 1.0f - hpRatio;
@@ -49,6 +65,9 @@ float AIBrainSystem::CalculateHpScore() {
 	return Easing::EaseInExpo(normalizedHpLoss);
 }
 
+//===================================================================================
+//　スコア計算(攻撃)
+//===================================================================================
 float AIBrainSystem::CalculateAttackScore(BaseWeapon* weapon) {
 	if (!weapon->GetIsAvailable()) {
 		return 0.0f; // クールダウン中は攻撃不可
@@ -65,6 +84,9 @@ float AIBrainSystem::CalculateAttackScore(BaseWeapon* weapon) {
 	return std::clamp(attackScore, 0.0f, 1.0f);
 }
 
+//===================================================================================
+//　武器ユニット選択
+//===================================================================================
 std::vector<int> AIBrainSystem::ChooseWeaponUnit(const std::vector<std::unique_ptr<BaseWeapon>>& weapons) {
 	std::vector<int> chosenWeapons;
 
@@ -78,6 +100,9 @@ std::vector<int> AIBrainSystem::ChooseWeaponUnit(const std::vector<std::unique_p
 	return chosenWeapons;
 }
 
+//===================================================================================
+//　一番良い行動選択
+//===================================================================================
 Action AIBrainSystem::ChooseBestAction() {
 	Action bestAction = Action::NONE;
 
@@ -89,6 +114,8 @@ Action AIBrainSystem::ChooseBestAction() {
 		actionScores_[Action::FLOATING],
 	};
 
+
+	// 各行動のスコアを比較して最も高いものを選択
 	float bestScore = 0.0f;
 	for (const auto& [action, score] : actionScores_) {
 		if (score > bestScore) {
@@ -100,6 +127,9 @@ Action AIBrainSystem::ChooseBestAction() {
 	return bestAction;
 }
 
+//===================================================================================
+//　スコア計算(ステップブースト)
+//===================================================================================
 float AIBrainSystem::CalculateStepBoostScore() {
 	if (characterInfo_->overHeatInfo.isOverheated) {
 		return 0.0f;
@@ -129,8 +159,13 @@ float AIBrainSystem::CalculateStepBoostScore() {
 	return std::clamp(stepBoostScore, 0.0f, 1.0f);
 }
 
+//===================================================================================
+//　スコア計算(ジャンプ)
+//===================================================================================
 float AIBrainSystem::CalculateJumpScore() {
 	
+	float jumpScore = 0.0f;
+	// 地面にいない、またはオーバーヒート中はジャンプ不可
 	if (!characterInfo_->onGround || characterInfo_->overHeatInfo.isOverheated) {
 		return 0.0f;
 	}
@@ -140,8 +175,6 @@ float AIBrainSystem::CalculateJumpScore() {
 	if (energyAfterJump < 0.0f) {
 		return 0.0f;
 	}
-
-	float jumpScore = 0.0f;
 
 	// 高度差による計算
 	float heightDifference = std::abs(characterInfo_->transform.translate.y - distanceToTarget_);
@@ -156,12 +189,15 @@ float AIBrainSystem::CalculateJumpScore() {
 	// エネルギー要因
 	float energyRatio = energyAfterJump / characterInfo_->energyInfo.maxEnergy;
 	float energyFactor = Easing::GentleRise(energyRatio);
-
+	// エネルギーが多いほどスコア上昇
 	jumpScore += energyFactor * 0.2f;
 
 	return std::clamp(jumpScore, 0.0f, 1.0f);
 }
 
+//===================================================================================
+//　スコア計算(フローティング)
+//===================================================================================
 float AIBrainSystem::CalculateFloatingScore() {
 	
 	float floatingScore = 0.0f;
@@ -171,9 +207,11 @@ float AIBrainSystem::CalculateFloatingScore() {
 		return 0.0f;
 	}
 
+	// ターゲットへの方向と距離を計算
 	Vector3 targetDirection = Vector3Math::Normalize(characterInfo_->focusTargetPos - characterInfo_->transform.translate);
 	float distance = Vector3Math::Length(characterInfo_->focusTargetPos - characterInfo_->transform.translate);
 
+	// レイキャストで障害物の有無を確認
 	Ray ray;
 	ray.origin = characterInfo_->transform.translate;
 	ray.direction = targetDirection;
@@ -183,8 +221,6 @@ float AIBrainSystem::CalculateFloatingScore() {
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
 	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask) == true) {
-
-		// 障害物がある場合
 
 		// プレイヤーとのY軸方向の位置差を計算
 		float verticalDiff = characterInfo_->focusTargetPos.y - characterInfo_->transform.translate.y;

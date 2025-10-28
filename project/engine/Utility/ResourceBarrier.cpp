@@ -2,8 +2,12 @@
 #include <cassert>
 #include <format>
 
+//インスタンス初期化
 ResourceBarrier* ResourceBarrier::instance_ = nullptr;
 
+//=============================================================================
+// インスタンス取得
+//=============================================================================
 ResourceBarrier* ResourceBarrier::GetInstance() {
  
 	if(instance_ == nullptr) {
@@ -12,15 +16,24 @@ ResourceBarrier* ResourceBarrier::GetInstance() {
 	return instance_;
 }
 
+//=============================================================================
+// 初期化
+//=============================================================================
 void ResourceBarrier::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 }
 
+//=============================================================================
+// 終了処理
+//=============================================================================
 void ResourceBarrier::Finalize() {
 	delete instance_;
 	instance_ = nullptr;
 }
 
+//=============================================================================
+// リソースバリアの設定(状態遷移)
+//=============================================================================
 void ResourceBarrier::Transition(D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState, ID3D12Resource* resource) {
 
 	// 現在の状態が一致しているか確認

@@ -51,7 +51,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	//カメラのセット
 	camera_ = object3dCommon_->GetDefaultCamera();
 
-
+	//アニメーション初期化
 	animation_ = new Animation();
 	animation_->duration = 0.0f;
 	animationTime_ = 0.0f;

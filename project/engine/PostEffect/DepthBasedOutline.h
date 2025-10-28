@@ -8,8 +8,16 @@
 class DepthBasedOutline : public PostEffect {
 public:
 
+	//=======================================================================
+	/// functions
+	//=======================================================================
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	DepthBasedOutline() = default;
 	~DepthBasedOutline() = default;
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -39,4 +47,3 @@ private:
 	uint32_t depthTextureSrvIndex_ = 0;           // 深度テクスチャのSRVインデックス
 	ComPtr<ID3D12Resource> depthTextureResource_; // 深度テクスチャリソース
 };
-

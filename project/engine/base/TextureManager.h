@@ -12,25 +12,34 @@
 #include <memory>
 #include <unordered_map>
 
-#include "DirectXCommon.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/ComPtrAliasTemplates.h"
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
 
+//前方宣言
 class SrvManager;
+
+//===================================================================================
+// TextureManager class
+//===================================================================================
 class TextureManager {
+private:
+
+	//シングルトンインスタンス
+	static TextureManager* instance_;
+
+	//コンストラクタ・デストラクタ・コピー禁止
+	TextureManager() = default;
+	~TextureManager() = default;
+	TextureManager(TextureManager&) = delete;
+	TextureManager& operator=(TextureManager&) = delete;
+
 public:
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			エイリアステンプレート
-	/////////////////////////////////////////////////////////////////////////////////////
 
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-
-public:
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			publicメンバ関数
-	/////////////////////////////////////////////////////////////////////////////////////
+	//================================================================================
+	// functions
+	//================================================================================
 
 	/// <summary>
 	/// インスタンス取得
@@ -59,6 +68,9 @@ public:
 	/// <returns>画像イメージデータ</returns>
 	void LoadTexture(const std::string& filePath,bool forceReload);
 
+	/// <summary>
+	/// 全テクスチャの読み込み
+	/// </summary>
 	void LoadTextureAll();
 
 private:
@@ -86,9 +98,11 @@ private:
 	time_t GetFileLastWriteTime(const std::string& filePath);
 public:
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			getter
-	/////////////////////////////////////////////////////////////////////////////////////
+	//=============================================================================
+	// accessor
+	//=============================================================================
+
+	//----- getter ---------------
 
 	/// GPUハンドル取得
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGPU(const std::string& filePath);
@@ -96,7 +110,7 @@ public:
 	uint32_t GetSrvIndex(const std::string& filePath);
 	/// メタデータ取得
 	const DirectX::TexMetadata& GetMetadata(const std::string& filePath);
-
+	/// SrvManager取得
 	SrvManager* GetSrvManager() { return srvManager_; }
 
 	//現在読み込み済みのファイル名一覧を取得する
@@ -118,19 +132,6 @@ private:
 		D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU; //GPUディスクリプタハンドル
 	};
 
-private:
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			privateメンバ変数
-	/////////////////////////////////////////////////////////////////////////////////////
-
-	//シングルトンインスタンス
-	static TextureManager* instance_;
-
-	TextureManager() = default;
-	~TextureManager() = default;
-	TextureManager(TextureManager&) = delete;
-	TextureManager& operator=(TextureManager&) = delete;
 
 private:
 

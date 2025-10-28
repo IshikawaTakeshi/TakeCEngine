@@ -8,13 +8,6 @@
 #include "3d/Particle/GPUParticle.h"
 #include "2d/WireFrame.h"
 
-ParticleEmitter::~ParticleEmitter() {
-	emitterSphereResource_.Reset();
-	perFrameResource_.Reset();
-	emitParticleRootSignature_.Reset();
-	emitParticlePso_.reset();
-}
-
 //================================================================================================
 // 初期化
 //================================================================================================

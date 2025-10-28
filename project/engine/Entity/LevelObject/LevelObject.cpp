@@ -4,6 +4,9 @@
 #include "engine/base/imGuiManager.h"
 #include "engine/base/TakeCFrameWork.h"
 
+//====================================================================
+//			初期化
+//====================================================================
 void LevelObject::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
 	object3dCommon_ = object3dCommon;
@@ -16,6 +19,9 @@ void LevelObject::Initialize(Object3dCommon* object3dCommon, const std::string& 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
+//====================================================================
+//			コライダーの初期化(BoxCollider)
+//====================================================================
 void LevelObject::CollisionInitialize(const LevelData::BoxCollider& boxInfo) {
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->SetHalfSize(boxInfo.size);
@@ -25,6 +31,9 @@ void LevelObject::CollisionInitialize(const LevelData::BoxCollider& boxInfo) {
 	collider_->SetColor({ 0.0f, 1.0f, 1.0f, 1.0f }); // 水色
 }
 
+//====================================================================
+//			コライダーの初期化(SphereCollider)
+//====================================================================
 void LevelObject::CollisionInitialize(const LevelData::SphereCollider& sphereInfo) {
 	collider_ = std::make_unique<SphereCollider>();
 	collider_->SetRadius(sphereInfo.radius);
@@ -33,6 +42,9 @@ void LevelObject::CollisionInitialize(const LevelData::SphereCollider& sphereInf
 	collider_->SetColor({ 0.0f, 1.0f, 1.0f, 1.0f }); // 水色
 }
 
+//====================================================================
+//			更新処理
+//====================================================================
 void LevelObject::Update() {
 
 	if(isBlinking_) {
@@ -59,6 +71,9 @@ void LevelObject::Update() {
 	
 }
 
+//====================================================================
+//			ImGuiの更新
+//====================================================================
 void LevelObject::UpdateImGui() {
 	// ImGuiの更新
 	std::string windowName = "LevelObject" + name_;
@@ -76,21 +91,30 @@ void LevelObject::UpdateImGui() {
 	}
 }
 
+//====================================================================
+//			描画処理
+//====================================================================
 void LevelObject::Draw() {
 
 	// Object3dの描画
 	object3d_->Draw();
 }
 
+//====================================================================
+//			コライダーの描画
+//====================================================================
 void LevelObject::DrawCollider() {
 #ifdef _DEBUG
 	//collider_->DrawCollider();
 #endif
 }
 
+//====================================================================
+//			衝突時の処理
+//====================================================================
 void LevelObject::OnCollisionAction(GameCharacter* other) {
 
-
+	// 弾との衝突時に点滅を開始
 	if(other->GetCharacterType() == CharacterType::PLAYER_BULLET ||
 	   other->GetCharacterType() == CharacterType::ENEMY_BULLET) {
 		isBlinking_ = true; // 点滅開始

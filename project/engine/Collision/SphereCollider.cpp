@@ -86,7 +86,7 @@ bool SphereCollider::CheckCollision(Collider* other) {
 
 void SphereCollider::DrawCollider() {
 
-
+	// ワイヤーフレームの描画
 	TakeCFrameWork::GetWireFrame()->DrawSphere(transform_.translate, radius_, color_);
 }
 
@@ -130,10 +130,6 @@ SurfaceType SphereCollider::CheckSurfaceType() const {
 	return SurfaceType::WALL; // 球は特定の面を持たないため、WALLを返す
 }
 
-Vector3 SphereCollider::GetWorldPos() {
-	
-	return transform_.translate;
-}
 //=============================================================================
 // OBBとの衝突判定
 //=============================================================================
@@ -142,6 +138,7 @@ bool SphereCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 	OBB obb = otherBox->GetOBB();
 	Vector3 closestPoint = obb.center;
 
+	// 各軸に沿って最近接点を計算
 	for (int i = 0; i < 3; i++) {
 		float distance = Vector3(transform_.translate - obb.center).Dot(obb.axis[i]);
 		float clampedDistance = std::min(distance, obb.halfSize.Dot(obb.axis[i]));
@@ -150,8 +147,10 @@ bool SphereCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 		closestPoint = closestPoint + otherBox->GetOBB().axis[i] * clampedDistance;
 	}
 
+	// 球の中心と最近接点の距離を計算
 	Vector3 diff = transform_.translate - closestPoint;
 	
+	// 衝突判定
 	if (diff.Dot(diff) <= (radius_ * radius_)) {
 		return true;
 	}
@@ -170,6 +169,9 @@ bool SphereCollider::CheckCollisionSphere(SphereCollider* sphere) {
 	return distanceSquared <= (radiusSum * radiusSum);
 }
 
+//=============================================================================
+// OBBのローカル座標系への変換
+//=============================================================================
 Vector3 SphereCollider::SphereCenterToOBBLocal(const OBB& obb, const Vector3& sphereCenter) {
 	Vector3 local;
 	Vector3 rel = sphereCenter - obb.center;
@@ -177,4 +179,10 @@ Vector3 SphereCollider::SphereCenterToOBBLocal(const OBB& obb, const Vector3& sp
 	local.y = rel.Dot(obb.axis[1]);
 	local.z = rel.Dot(obb.axis[2]);
 	return local;
+}
+
+
+Vector3 SphereCollider::GetWorldPos() {
+	// ワールド座標の取得	
+	return transform_.translate;
 }

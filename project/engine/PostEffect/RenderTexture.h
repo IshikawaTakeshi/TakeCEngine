@@ -4,25 +4,63 @@
 #include "base/PipelineStateObject.h"
 #include "PostEffect/PostEffectManager.h"
 
+//============================================================
+//	RenderTexture class
+//============================================================
 class RenderTexture {
 public:
 
+	//=========================================================
+	// functions
+	//=========================================================
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	RenderTexture() = default;
 	~RenderTexture();
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="dxCommon"></param>
+	/// <param name="srvManager"></param>
+	/// <param name="postEffectManager"></param>
 	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, PostEffectManager* postEffectManager);
 
+	/// <summary>
+	/// レンダーターゲットのクリア
+	/// </summary>
 	void ClearRenderTarget();
 
+	/// <summary>
+	/// 描画前処理
+	/// </summary>
 	void PreDraw();
 
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 描画後処理
+	/// </summary>
 	void PostDraw();
 
+public:
+
+	//========================================================
+	// accessors
+	//========================================================
+
+	//------ getter ----------------
+
+	//レンダーテクスチャリソースの取得
 	ComPtr<ID3D12Resource> GetRenderTextureResource() const {
 		return renderTextureResource_;
 	}
-
+	//RTVハンドルの取得
 	uint32_t GetSrvIndex() const {return srvIndex_;}
 
 private:

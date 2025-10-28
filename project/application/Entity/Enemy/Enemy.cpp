@@ -7,6 +7,7 @@
 #include "engine/io/Input.h"
 #include "engine/camera/CameraManager.h"
 #include "engine/base/TakeCFrameWork.h"
+#include "engine/Utility/JsonLoader.h"
 #include "Vector3Math.h"
 #include "math/Easing.h"
 
@@ -14,16 +15,9 @@
 #include "application/Weapon/Bazooka.h"
 #include "application/Entity/WeaponUnit.h"
 
-Enemy::~Enemy() {
-	object3d_.reset();
-	collider_.reset();
-}
-
 //========================================================================================================
 //　初期化
 //========================================================================================================
-
-
 void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
 
@@ -73,31 +67,6 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
-#pragma region charcterInfo
-
-	characterInfo_.deceleration = 1.1f; //減速率
-	characterInfo_.moveSpeed = 200.0f; //移動速度
-	characterInfo_.kMaxMoveSpeed = 120.0f; //移動速度の最大値
-	characterInfo_.maxHealth = 10000.0f; // 最大体力
-	characterInfo_.health = characterInfo_.maxHealth; // 初期体力
-	characterInfo_.stepBoostInfo.speed = 230.0f; // ステップブーストの速度
-	characterInfo_.stepBoostInfo.duration = 0.3f; // ステップブーストの持続時間
-	characterInfo_.stepBoostInfo.useEnergy = 100.0f; // ステップブーストに必要なエネルギー
-	characterInfo_.stepBoostInfo.interval = 0.2f; // ステップブーストのインターバル
-	characterInfo_.jumpInfo.speed = 50.0f; // ジャンプの速度
-	characterInfo_.jumpInfo.maxJumpTime = 0.3f; // ジャンプの最大時間
-	characterInfo_.jumpInfo.deceleration = 40.0f; // ジャンプ中の減速率
-	characterInfo_.jumpInfo.useEnergy = 150.0f; // ジャンプに必要なエネルギー
-	characterInfo_.chargeAttackStunInfo.stunDuration = 0.5f; // チャージ攻撃後の硬直時間
-	characterInfo_.energyInfo.maxEnergy = 1000.0f; // 最大エネルギー
-	characterInfo_.energyInfo.energy = characterInfo_.energyInfo.maxEnergy; // 初期エネルギー
-	characterInfo_.energyInfo.recoveryRate = 200.0f; // エネルギーの回復速度
-	characterInfo_.overHeatInfo.isOverheated = false; // オーバーヒート状態
-	characterInfo_.overHeatInfo.overheatTimer = 0.0f; // オーバーヒートタイマー
-	characterInfo_.overHeatInfo.overheatDuration = 3.0f; // オーバーヒートの持続時間
-
-#pragma endregion
-
 	//bulletSensor_の初期化
 	bulletSensor_ = std::make_unique<BulletSensor>();
 	bulletSensor_->Initialize(object3dCommon, "Sphere.gltf");
@@ -107,7 +76,6 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	aiBrainSystem_ = std::make_unique<AIBrainSystem>();
 	aiBrainSystem_->Initialize(&characterInfo_, weapons_.size());
 	aiBrainSystem_->SetOrbitRadius(orbitRadius_);
-	aiBrainSystem_->SetDistanceToTarget(Vector3Math::Length(characterInfo_.focusTargetPos - characterInfo_.transform.translate));
 
 	//InputProviderの初期化
 	inputProvider_ = std::make_unique<EnemyInputProvider>(this);
@@ -119,6 +87,9 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	behaviorManager_->InitializeBehaviors(characterInfo_);
 }
 
+//========================================================================================================
+// 武器の初期化
+//========================================================================================================
 void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
 	//武器の初期化
 	for (int i = 0; i < weapons_.size(); i++) {
@@ -135,6 +106,22 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 
 	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
 	weapons_[L_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
+}
+
+//========================================================================================================
+// EnemyのGameCharacterContextの読み込み・保存
+//========================================================================================================
+void Enemy::LoadEnemyData(const std::string& characterName) {
+
+	//JsonLoaderを使ってEnemyのGameCharacterContextを読み込み
+	characterInfo_ = TakeCFrameWork::GetJsonLoader()->LoadGameCharacterContext(characterName);
+}
+
+void Enemy::SaveEnemyData(const std::string& characterName) {
+
+	//JsonLoaderを使ってEnemyのGameCharacterContextを保存
+	characterInfo_.name = characterName;
+	TakeCFrameWork::GetJsonLoader()->SaveGameCharacterContext(characterName, characterInfo_);
 }
 
 //========================================================================================================
@@ -267,6 +254,18 @@ void Enemy::UpdateImGui() {
 	ImGui::DragFloat3("Velocity", &characterInfo_.velocity.x, 0.01f);
 	ImGui::DragFloat3("MoveDirection", &characterInfo_.moveDirection.x, 0.01f);
 	ImGui::Checkbox("OnGround", &characterInfo_.onGround);
+
+	// ダメージ処理テスト用ボタン
+	if(ImGui::Button("Damage 1000")) {
+		characterInfo_.health -= 1000.0f;
+		characterInfo_.isDamaged = true;
+		damageEffectTime_ = 0.5f;
+		particleEmitter_[1]->Emit();
+	}
+	//データ保存ボタン
+	if (ImGui::Button("Save Enemy Data")) {
+		SaveEnemyData(characterInfo_.name);
+	}
 	ImGui::Separator();
 	bulletSensor_->UpdateImGui();
 	behaviorManager_->UpdateImGui();

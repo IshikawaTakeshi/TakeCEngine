@@ -1,7 +1,19 @@
 #pragma once
 #include "PostEffect/PostEffect.h"
+
+//============================================================================
+//	GrayScale class
+//============================================================================
 class GrayScale : public PostEffect {
 public:
+
+	//=======================================================================
+	/// functions
+	//=======================================================================
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	GrayScale() = default;
 	~GrayScale() = default;
 	/// <summary>
@@ -10,7 +22,9 @@ public:
 	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
 		ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource) override;
 	
-	
+	/// <summary>
+	/// ImGui更新処理
+	/// </summary>
 	void UpdateImGui() override;
 	/// <summary>
 	/// 更新処理
@@ -33,4 +47,3 @@ private:
 	ComPtr<ID3D12Resource> grayScaleTypeResource_;
 
 };
-

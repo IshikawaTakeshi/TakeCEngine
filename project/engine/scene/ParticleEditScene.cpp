@@ -2,6 +2,10 @@
 #include "camera/CameraManager.h"
 #include "base/TakeCFrameWork.h"
 
+
+//=====================================================================
+//			初期化
+//=====================================================================
 void ParticleEditScene::Initialize() {
 
 	// カメラの初期化
@@ -16,6 +20,7 @@ void ParticleEditScene::Initialize() {
 	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
 
+	// ParticleEditorの初期化
 	particleEditor_ = std::make_unique<ParticleEditor>();
 	particleEditor_->Initialize(TakeCFrameWork::GetParticleManager(), ParticleCommon::GetInstance());
 
@@ -26,21 +31,23 @@ void ParticleEditScene::Initialize() {
 
 }
 
+//=====================================================================
+//			終了処理
+//=====================================================================
 void ParticleEditScene::Finalize() {
 
 	// カメラのリセット
 	CameraManager::GetInstance()->ResetCameras();
 
-	// ParticleManagerのリセット
-	//TakeCFrameWork::GetParticleManager()
-
 	// ParticleEditorの解放
 	particleEditor_->Finalize();
 }
 
+//=====================================================================
+//			更新処理
+//=====================================================================
 void ParticleEditScene::Update() {
 
-	
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
 	//SkyBoxの更新
@@ -50,18 +57,27 @@ void ParticleEditScene::Update() {
 	particleEditor_->Update();
 }
 
+//=====================================================================
+//			ImGuiの更新
+//=====================================================================
 void ParticleEditScene::UpdateImGui() {
-
+	// 各種マネージャーのImGui更新
 	CameraManager::GetInstance()->UpdateImGui();
 	ParticleCommon::GetInstance()->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	Object3dCommon::GetInstance()->UpdateImGui();
 
-	// ImGuiの更新
+	// EditorのImGuiの更新
 	particleEditor_->UpdateImGui();
 }
 
+
+//=====================================================================
+//			描画処理
+//=====================================================================
 void ParticleEditScene::Draw() {
 
+	//SkyBox描画
 	skyBox_->Draw();
 
 	//グリッド地面の描画

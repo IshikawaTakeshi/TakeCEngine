@@ -7,55 +7,94 @@
 
 #include "Camera.h"
 
+//前方宣言
 class DirectXCommon;
 class Camera;
+
+//============================================================================
+// CameraManager class
+//============================================================================
 class CameraManager {
-public:
-	
-	static CameraManager* GetInstance();
-
-	void Initialize(DirectXCommon* dxCommon);
-
-	void Update();
-
-	void UpdateImGui();
-
-	void Finalize();
-
-	// カメラを追加するメソッド
-	void AddCamera(std::string name, const Camera& camera);
-
-	//カメラの情報のリセット
-	void ResetCameras();
-
-	// アクティブカメラのリセット
-	//void ResetActiveCamera();
-
-	// アクティブなカメラを設定する
-	void SetActiveCamera(std::string name);
-
-	// アクティブなカメラを取得する
-	Camera* GetActiveCamera();
-
-	// カメラの数を取得する
-	int GetCameraCount() const;
-
-	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
-
-
 private:
 
+	//コピーコンストラクタ・代入演算子禁止
 	CameraManager() = default;
 	~CameraManager() = default;
 	CameraManager(const CameraManager&) = delete;
 	CameraManager& operator=(const CameraManager&) = delete;
 
+public:
+	
+	//=============================================================================
+	// functions
+	//=============================================================================
+
+	/// <summary>
+	/// インスタンスの取得
+	/// </summary>
+	static CameraManager* GetInstance();
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="dxCommon"></param>
+	void Initialize(DirectXCommon* dxCommon);
+
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	void Update();
+
+	/// <summary>
+	/// ImGui更新処理
+	/// </summary>
+	void UpdateImGui();
+
+	/// <summary>
+	/// 終了・開放処理
+	/// </summary>
+	void Finalize();
+
+	/// <summary>
+	/// カメラの追加
+	/// </summary>
+	/// <param name="name"></param>
+	/// <param name="camera"></param>
+	void AddCamera(std::string name, const Camera& camera);
+
+	/// <summary>
+	/// カメラのリセット
+	/// </summary>
+	void ResetCameras();
+
+public:
+
+	//=============================================================================
+	// accessors
+	//=============================================================================
+
+	//----- getter ----------------
+
+	/// アクティブなカメラの取得
+	Camera* GetActiveCamera();
+	/// カメラの数の取得
+	int GetCameraCount() const;
+	/// DirectXCommonの取得
+	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
+
+	//----- setter ----------------
+
+	/// アクティブなカメラの設定
+	void SetActiveCamera(std::string name);
+
 private:
 
+	//DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
 
+	//シングルトンインスタンス
 	static CameraManager* instance_;
+	//登録したカメラのマップ
 	std::unordered_map<std::string, std::unique_ptr<Camera>> cameras_;
 	Camera* activeCamera_;  // 現在アクティブなカメラ
 };
-

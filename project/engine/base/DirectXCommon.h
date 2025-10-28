@@ -15,30 +15,26 @@
 #include "base/ResourceDataStructure.h"
 #include "base/RtvManager.h"
 
+//============================================================================
+// DirectXCommon class
+//============================================================================
 class DirectXCommon {
 public:
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			エイリアステンプレート
-	/////////////////////////////////////////////////////////////////////////////////////
 
 	//エイリアステンプレート
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-
 public:
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			publicメンバ関数
-	/////////////////////////////////////////////////////////////////////////////////////
+	
+	//============================================================================
+	// functions
+	//============================================================================
 
 	/// <summary>
-	/// コンストラクタ
+	/// コンストラクタ・デストラクタ
 	/// </summary>
 	DirectXCommon() = default;
-
-	/// <summary>
-	/// デストラクタ
-	/// </summary>
-	~DirectXCommon();
+	~DirectXCommon() = default;
 
 	/// <summary>
 	/// 初期化
@@ -83,10 +79,13 @@ public:
 
 	void DrawFPS();
 
+
 public:
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			Getter
-	/////////////////////////////////////////////////////////////////////////////////////
+	//============================================================================
+	// accessors
+	//============================================================================
+
+	//----- getter ----------------------------
 
 	/// デバイスの取得
 	ID3D12Device* GetDevice() const { return device_.Get(); }
@@ -117,11 +116,11 @@ public:
 
 	/// GPUディスクリプタハンドルの取得
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
-
+	/// ビューポートの取得
 	const D3D12_VIEWPORT& GetViewport() { return viewport_; }
-
+	/// シザー矩形の取得
 	const D3D12_RECT& GetScissorRect() { return scissorRect_; }
-
+	/// 現在のFPSの取得
 	float GetCurrentFPS() const { return currentFPS_; }
 
 private:
@@ -254,8 +253,9 @@ private:
 	/// </summary>
 	void UpdateFixFPS();
 
-	
+	/// <summary>
+	/// バリア設定
+	/// </summary>
 	void SetBarrier(D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState,ID3D12Resource* resource);
 
 };
-

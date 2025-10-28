@@ -62,6 +62,9 @@ void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPo
 	bullet->Create(weaponPos, targetPos,speed,damage,type);
 }
 
+//========================================================================================================
+// ミサイルの発射処理
+//========================================================================================================
 void BulletManager::ShootMissile(BaseWeapon* ownerWeapon, const float& speed,float damage, CharacterType type) {
 
 	VerticalMissile* missile = missilePool_->GetMissile();
@@ -72,6 +75,9 @@ void BulletManager::ShootMissile(BaseWeapon* ownerWeapon, const float& speed,flo
 	missile->Create(ownerWeapon, speed,damage, type);
 }
 
+//========================================================================================================
+// 全弾の取得
+//========================================================================================================
 std::vector<Bullet*> BulletManager::GetAllBullets() {
 	
 	std::vector<Bullet*> bullets;
@@ -83,6 +89,9 @@ std::vector<Bullet*> BulletManager::GetAllBullets() {
 	return bullets;
 }
 
+//========================================================================================================
+// 全ミサイルの取得
+//========================================================================================================
 std::vector<VerticalMissile*> BulletManager::GetAllMissiles() {
 	
 	std::vector<VerticalMissile*> missiles;

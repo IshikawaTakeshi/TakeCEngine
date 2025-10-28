@@ -2,6 +2,7 @@
 #include "Vector3.h"
 #include "Matrix4x4.h"
 
+// クォータニオン構造体
 struct Quaternion {
 	float x;
 	float y;
@@ -17,11 +18,19 @@ Quaternion operator+(const Quaternion& lhs, const Quaternion& rhs);
 Quaternion operator-(const Quaternion& lhs, const Quaternion& rhs);
 Quaternion operator-(const Quaternion& lhs);
 
+// JSON形式に変換
+void to_json(nlohmann::json& j, const Quaternion& q);
 
+// JSON形式からQuaternionに変換
+void from_json(const nlohmann::json& j, Quaternion& q);
+
+//=============================================================================
+// QuaternionMath namespace
+//=============================================================================
 namespace QuaternionMath {
 	//クォータニオン掛け算
 	Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs);
-
+	//スカラー倍
 	Quaternion Multiply(const Quaternion& q, float s);
 	//内積
 	float Dot(const Quaternion& lhs, const Quaternion& rhs);
@@ -37,9 +46,9 @@ namespace QuaternionMath {
 	Quaternion Inverse(const Quaternion& q);
 	//任意軸回転クォータニオン
 	Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle);
-
+	//2つのベクトル間の回転クォータニオン
 	Quaternion LookRotation(const Vector3& forward, const Vector3& up);
-
+	//行列からQuaternionに変換
 	Quaternion FromMatrix(const Matrix4x4& m);
 
 	//Quaternionの回転結果をベクトルで返す

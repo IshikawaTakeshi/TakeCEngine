@@ -10,12 +10,29 @@
 #include <string>
 #include <memory>
 
+//前方宣言
 class Model;
 class ModelCommon;
 class SrvManager;
 class DirectXCommon;
+
+//============================================================================
+// ModelManager class
+//============================================================================
 class ModelManager {
+private:
+
+	//コピーコンストラクタ・代入演算子禁止
+	ModelManager() = default;
+	~ModelManager() = default;
+	ModelManager(const ModelManager&) = delete;
+	ModelManager& operator=(const ModelManager&) = delete;
+
 public:
+
+	//========================================================================
+	// functions
+	//========================================================================
 	
 	/// <summary>
 	/// シングルトンインスタンス取得
@@ -44,6 +61,11 @@ public:
 	/// <param name="filePath">モデルのファイルパス</param>
 	Model* FindModel(const std::string& filePath);
 
+	/// <summary>
+	/// モデルのコピーを作成する関数
+	/// </summary>
+	/// <param name="filePath"></param>
+	/// <returns></returns>
 	std::unique_ptr<Model> CopyModel(const std::string& filePath);
 
 	/// <summary>
@@ -56,18 +78,13 @@ public:
 	/// </summary>
 	Node ReadNode(aiNode* rootNode);
 
-private:
-
-	ModelManager() = default;
-	~ModelManager() = default;
-	ModelManager(const ModelManager&) = delete;
-	ModelManager& operator=(const ModelManager&) = delete;
 
 private:
 
 	//インスタンス
 	static ModelManager* instance_;
 
+	//モデル共通データ
 	ModelCommon* modelCommon_ = nullptr;
 
 	//モデルデータコンテナ

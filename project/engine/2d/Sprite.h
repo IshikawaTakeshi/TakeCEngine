@@ -19,12 +19,21 @@
 #include "Mesh/Mesh.h"
 #include "SpriteCommon.h"
 
+//前方宣言
 class DirectXCommon;
+
+//============================================================================
+// Sprite class
+//============================================================================
 class Sprite {
 public:
 
 	Sprite() = default;
-	~Sprite();
+	~Sprite() = default;
+
+	//========================================================================
+	// functions
+	//========================================================================
 
 	/// <summary>
 	/// 初期化
@@ -51,58 +60,56 @@ private:
 
 	//頂点データ更新
 	void UpdateVertexData();
-
+	//サイズを相対座標にセット
 	void SetSizeRelative();
 
-	
 public:
-	//================================================================================================
-	// getter
-	//================================================================================================
+	//========================================================================
+	// accessors
+	//========================================================================
+
+	//----- getter ---------------------------
 
 	//トランスフォーム取得
 	EulerTransform GetTransform() { return transform_; }
-
+	//メッシュ取得
 	const std::unique_ptr<Mesh>& GetMesh() const { return mesh_; }
-
 	//アンカーポイント取得
 	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
-
+	//座標取得
 	const Vector2& GetTranslate() const { return position_; }
-
+	//回転取得
 	const float GetRotate() const { return rotation_; }
-
+	//サイズ取得
 	const Vector2& GetSize() const { return size_; }
-
+	//左右フリップ取得
 	const bool GetIsFlipX() const { return isFlipX_; }
-
+	//上下フリップ取得
 	const bool GetIsFlipY() const { return isFlipY_; }
-
+	//テクスチャの左上座標取得
 	const Vector2& GetTextureLeftTop() const { return textureLeftTop_; }
-
+	//テクスチャの切り出しサイズ取得
 	const Vector2& GetTextureSize() const { return textureSize_; }
 	
-	//================================================================================================
-	// setter
-	//================================================================================================
-
+	//----- setter ---------------------------
+	
 	//アンカーポイント設定
 	void SetAnchorPoint(const Vector2& anchorPoint) { anchorPoint_ = anchorPoint; }
-
+	//座標設定
 	void SetPosition(const Vector2& position) { position_ = position; }
-
+	//回転設定
 	void SetRotate(const float rotation) { rotation_ = rotation; }
-
+	//サイズ設定
 	void SetSize(const Vector2& size) { size_ = size; }
-
+	//左右フリップ設定
 	void SetIsFlipX(const bool isFlipX) { isFlipX_ = isFlipX; }
-
+	//上下フリップ設定
 	void SetIsFlipY(const bool isFlipY) { isFlipY_ = isFlipY; }
-
+	//テクスチャの左上座標設定
 	void SetTextureLeftTop(const Vector2& textureLeftTop) { textureLeftTop_ = textureLeftTop; }
-
+	//テクスチャの切り出しサイズ設定
 	void SetTextureSize(const Vector2& textureSize) { textureSize_ = textureSize; }
-
+	//マテリアルカラー設定
 	void SetMaterialColor(const Vector4& color) { mesh_->GetMaterial()->SetMaterialColor(color); }
 
 private:

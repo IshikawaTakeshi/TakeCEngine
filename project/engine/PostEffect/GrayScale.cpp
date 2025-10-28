@@ -3,6 +3,9 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+//=============================================================================
+// 初期化
+//=============================================================================
 void GrayScale::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource) {
 
@@ -21,8 +24,13 @@ void GrayScale::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, cons
 	grayScaleInfoData_->isActive = false;
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void GrayScale::UpdateImGui() {
 #ifdef _DEBUG
+
+	//GrayScaleの設定
 	if(ImGui::TreeNode("GrayScale")){
 		ImGui::Text("GrayScaleType");
 		ImGui::SliderInt("GrayScaleType", &grayScaleInfoData_->grayScaleType, 0, 2);
@@ -34,6 +42,9 @@ void GrayScale::UpdateImGui() {
 #endif
 }
 
+//=============================================================================
+// Dispatch
+//=============================================================================
 void GrayScale::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS

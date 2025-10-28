@@ -5,6 +5,9 @@
 #include "engine/math/MatrixMath.h"
 #include "engine/math/Vector3Math.h"
 
+//===================================================================================
+//　初期化
+//===================================================================================
 void PlayerReticle::Initialize() {
 		// レティクルのスプライトを初期化
 	reticleSprite_ = std::make_unique<Sprite>();
@@ -15,20 +18,29 @@ void PlayerReticle::Initialize() {
 	screenPosition_ = { WinApp::kScreenWidth / 2.0f, WinApp::kScreenHeight / 2.0f };
 }
 
+//===================================================================================
+//　更新
+//===================================================================================
 void PlayerReticle::Update(const Vector3& targetPosition) {
 
+	//ターゲット位置の取得
 	targetPosition_ = targetPosition;
 
 	//ロックオン時
 	if (isFocus_) {
+
+		//ターゲットのワールド座標をスクリーン座標に変換
 		Matrix4x4 viewProjectionMatrix = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
 		Vector3 screenPos = MatrixMath::Transform(targetPosition_, viewProjectionMatrix);
+
+		//スクリーン座標に変換（-1～1の範囲）
 		screenPosition_ = {
 			(screenPos.x + 1.0f) * WinApp::kScreenWidth / 2.0f,
 			(1.0f - screenPos.y) * WinApp::kScreenHeight / 2.0f
 		};
 		
 	} else {
+		//非ロックオン時は画面中央に表示
 		targetPosition_ = { WinApp::kScreenWidth / 2.0f, WinApp::kScreenHeight / 2.0f };
 	}
 
@@ -38,10 +50,17 @@ void PlayerReticle::Update(const Vector3& targetPosition) {
 	reticleSprite_->Update();
 }
 
+//===================================================================================
+//　描画
+//===================================================================================
 void PlayerReticle::Draw() {
 	reticleSprite_->Draw();
 }	
 
+
+//===================================================================================
+//　ImGuiの更新
+//===================================================================================
 void PlayerReticle::UpdateImGui() {
 #ifdef _DEBUG
 	reticleSprite_->UpdateImGui("Reticle Sprite");

@@ -8,16 +8,23 @@
 #include <cstdint>
 #include <unordered_map>
 
+//============================================================================
+// ParticleAttribute.h
+//============================================================================
+
+// パーティクルモデルの種類を表す列挙型
 enum class ParticleModelType {
 	Primitive,
 	ExternalModel
 };
 
+// 属性の範囲を表す構造体
 struct AttributeRange {
 	float min;
 	float max;
 };
 
+// スケール設定の種類を表す列挙型
 enum class ScaleSetting {
 	None = 0, //スケールの更新なし
 	ScaleUp = 1, //スケールの更新(拡大)
@@ -35,16 +42,21 @@ struct ParticleAttributes {
 	AttributeRange velocityRange = { -1.0f,1.0f };
 	AttributeRange colorRange = { 0.0f,1.0f };
 	AttributeRange lifetimeRange = { 1.0f,3.0f };
-	float frequency; //パーティクルの発生頻度
-	uint32_t emitCount; //1回あたりのパーティクル発生数
+	float frequency = 0.1f; //パーティクルの発生頻度
+	uint32_t emitCount = 1; //1回あたりのパーティクル発生数
 	bool isBillboard = false; //Billboardかどうか
 	bool editColor = false; //色を編集するかどうか
 	bool isTranslate = false; //位置を更新するかどうか
 	bool isDirectional = false; //方向に沿って移動するかどうか
-	uint32_t scaleSetting;    //スケールの更新処理方法
+	uint32_t scaleSetting = 0;    //スケールの更新処理方法
 	bool enableFollowEmitter = false; //エミッターに追従するかどうか
+
+	bool isTrail = false; //トレイルエフェクトを有効にするかどうか
+	uint32_t particlesPerInterpolation = 5; //一度の補間で生成するパーティクル数
+	float trailEmitInterval = 0.016f; //トレイルエフェクトの生成間隔
 };
 
+// パーティクルプリセットを保持する構造体
 struct ParticlePreset {
 	std::string presetName; //プリセットの名前
 	ParticleAttributes attribute; //属性のマップ
@@ -54,6 +66,7 @@ struct ParticlePreset {
 	Vector3 primitiveParameters = {1.0f,1.0f,1.0f}; //プリミティブのパラメータ
 };
 
+// nlohmann::jsonのエイリアス
 using json = nlohmann::json;
 
 // JSON形式に変換
@@ -61,7 +74,7 @@ void to_json(json& j, const ParticleAttributes& attributes);
 void to_json(json& j, const AttributeRange& attributeRange);
 void to_json(json& j, const ParticlePreset& preset);
 
-// JSONから変換
+// JSONから各データ構造体に変換
 void from_json(const json& j, ParticleAttributes& attributes);
 void from_json(const json& j, AttributeRange& attributeRange);
 void from_json(const json& j, ParticlePreset& preset);

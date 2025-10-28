@@ -4,6 +4,9 @@
 #include <wrl.h>
 #include <cstdint>
 
+//================================================================================
+// WinApp class
+//================================================================================
 class WinApp {
 public:
 
@@ -28,8 +31,15 @@ public:
 	static float widthPercent_;
 	static float heightPercent_;
 
-	WinApp();
-	~WinApp();
+	//============================================================================
+	// functions
+	//============================================================================
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
+	WinApp() = default;
+	~WinApp() = default;
 
 	/// <summary>
 	/// ウィンドウプロシージャ
@@ -64,41 +74,33 @@ public:
 
 public:
 
-	/// <summary>
+	//============================================================================
+	// accessor
+	//============================================================================
+
+	//----- getter ---------------
+
 	/// ウィンドウクラスのhInstance取得
-	/// </summary>
-	/// <returns></returns>
 	const HINSTANCE& GetHInstance() const { return wc_.hInstance; }
-
-	/// <summary>
 	/// ウィンドウハンドルの取得
-	/// </summary>
-	/// <returns></returns>
 	const HWND& GetHwnd() const { return hwnd_; }
-
+	/// ウィンドウのRECT取得
 	const RECT& GetWindowRect() const { return wrc_; }
+	/// 描画位置のオフセットX取得
+	float GetOffsetX() const { return offsetX_; }
+	/// 描画位置のオフセットY取得
+	float GetOffsetY() const { return offsetY_; }
 
-	const float& GetOffsetX() const { return offsetX_; }
-
-	const float& GetOffsetY() const { return offsetY_; }
-
-	/// <summary>
 	/// ビューポートの取得
-	/// </summary>
 	D3D12_VIEWPORT GetViewport() const;
-
-	/// <summary>
 	/// ウィンドウのクライアント領域のサイズを取得
-	/// </summary>
 	D3D12_RECT GetScissorRect() const;
 
 private:
 
-	
-
 	//ウィンドウクラス
 	WNDCLASS wc_;
-
+	//ウィンドウのRECT
 	RECT wrc_;
 	//ウィンドウハンドル
 	HWND hwnd_;

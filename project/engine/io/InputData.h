@@ -12,6 +12,11 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "xinput.lib")
 
+//===================================================================================
+// InputData.h
+//===================================================================================
+
+// Gamepadのボタンの種類を表す列挙型
 enum class GamepadButtonType {
 	A,          // Aボタン
 	B,          // Bボタン
@@ -30,11 +35,13 @@ enum class GamepadButtonType {
 	Start,
 };
 
+// Gamepadのアナログ値の種類を表す列挙型
 enum class GamepadValueType {
 	LeftStick,  // 左スティック
 	RightStick, // 右スティック
 };
 
+// スティックの状態を表す構造体
 struct StickState {
 	float x;
 	float y;

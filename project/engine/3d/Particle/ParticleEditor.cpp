@@ -117,6 +117,8 @@ void ParticleEditor::UpdateImGui() {
 			DrawPreviewSettings();
 			// プリセットマネージャー
 			DrawPresetManager();
+			// 上書き確認ダイアログ
+			DrawOverwriteConfirmDialog();
 
 			ImGui::EndTabItem();
 		}
@@ -188,6 +190,10 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::Checkbox("TranslateUpdate", &attributes.isTranslate);
 	//isDirectional
 	ImGui::Checkbox("Is Directional", &attributes.isDirectional);
+	//isTrail
+	ImGui::Checkbox("Is Trail", &attributes.isTrail);
+	ImGui::SliderInt("Particles Per Interpolation", reinterpret_cast<int*>(&attributes.particlesPerInterpolation), 1, 20);
+	ImGui::DragFloat("Trail Emit Interval", &attributes.trailEmitInterval, 0.001f, 0.001f, 1.0f);
 
 	//設定の適用
 	if (ImGui::Button("Apply Attributes")) {
@@ -297,7 +303,7 @@ void ParticleEditor::DrawEmitterControls() {
 	ImGui::Text("Emitter Controls");
 	ImGui::Separator();
 
-	//エミッターTrasformの表示
+	//エミッターTransformの表示
 	ImGui::DragFloat3("Emitter Translate", &emitterTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat3("Emitter Rotate", &emitterTransform_.rotate.x, 0.01f, -3.14f, 3.14f);
 	ImGui::DragFloat3("Emitter Scale", &emitterTransform_.scale.x, 0.01f, 0.0f, 10.0f);
@@ -410,8 +416,37 @@ void ParticleEditor::DrawPresetManager() {
 	}
 }
 
+void ParticleEditor::DrawOverwriteConfirmDialog() {
+	if (showOverwriteConfirm_) {
+		ImGui::OpenPopup("Overwrite Preset?");
+
+		if (ImGui::BeginPopupModal("Overwrite Preset?", &showOverwriteConfirm_, ImGuiWindowFlags_AlwaysAutoResize)) {
+			ImGui::Text("Preset '%s' already exists.", pendingPresetName_.c_str());
+			ImGui::Text("Do you want to overwrite it?");
+			ImGui::Separator();
+
+			if (ImGui::Button("Yes", ImVec2(120, 0))) {
+				// 上書き保存を実行
+				currentPreset_.presetName = pendingPresetName_;
+				TakeCFrameWork::GetJsonLoader()->SaveParticlePreset(pendingPresetName_, currentPreset_);
+				presetNames_ = TakeCFrameWork::GetJsonLoader()->GetParticlePresetList();
+
+				showOverwriteConfirm_ = false;
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("No", ImVec2(120, 0))) {
+				showOverwriteConfirm_ = false;
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+}
+
 //========================================================================
-//			プリセットの保存、読み込み、削除
+//			プリセットの保存
 //========================================================================
 
 void ParticleEditor::SavePreset(const std::string& presetName) {
@@ -420,6 +455,15 @@ void ParticleEditor::SavePreset(const std::string& presetName) {
 		ImGui::Text("Preset already exists or name is empty: %s", presetName.c_str());
 		return;
 	}
+
+	// プリセットが既に存在する場合は上書き確認
+	if (presets_.find(presetName) != presets_.end()) {
+		// 上書き確認フラグを立てる（次のフレームで確認ダイアログを表示）
+		showOverwriteConfirm_ = true;
+		pendingPresetName_ = presetName;
+		return;
+	}
+
 	// 現在の属性をプリセットとして保存
 	currentPreset_.presetName = presetName;
 	TakeCFrameWork::GetJsonLoader()->SaveParticlePreset(presetName, currentPreset_);
@@ -429,7 +473,7 @@ void ParticleEditor::SavePreset(const std::string& presetName) {
 }
 
 //=======================================================================
-//			プリセットの読み込み、削除、デフォルトプリセットの読み込み
+//			プリセットの読み込み
 //========================================================================
 
 void ParticleEditor::LoadPreset(const std::string& presetName) {

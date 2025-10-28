@@ -1,9 +1,15 @@
 #include "Easing.h"
 
+//=============================================================================
+// 線形補間(float)
+//=============================================================================
 float Easing::Lerp(float startPos, float endPos, float easedT) {
 	return (1.0f - easedT) * startPos + easedT * endPos;
 }
 
+//=============================================================================
+// 線形補間(Vector3)
+//=============================================================================
 Vector3 Easing::Lerp(Vector3 startPos, Vector3 endPos, float easedT) {
 	return {
 		(1.0f - easedT) * startPos.x + easedT * endPos.x,
@@ -12,6 +18,9 @@ Vector3 Easing::Lerp(Vector3 startPos, Vector3 endPos, float easedT) {
 	};
 }
 
+//=============================================================================
+// 球面線形補間(Quaternion)
+//=============================================================================
 Quaternion Easing::Slerp(Quaternion q0, Quaternion q1, float t) {
     float dot = QuaternionMath::Dot(q0, q1);
 
@@ -39,6 +48,9 @@ Quaternion Easing::Slerp(Quaternion q0, Quaternion q1, float t) {
     return scale0 * q0 + scale1 * q1;
 }
 
+//=============================================================================
+// イージング関数
+//=============================================================================
 float Easing::EaseOutSine(float x) {
 	return sinf((x * std::numbers::pi_v<float>) / 2.0f);
 }

@@ -2,10 +2,18 @@
 #include "Weapon/BaseWeapon.h"
 #include "Weapon/Bullet/BulletManager.h"
 
+//============================================================================
+// Bazooka class
+//============================================================================
 class Bazooka : public BaseWeapon {
 public:
 	Bazooka() = default;
 	~Bazooka() override = default;
+	
+	//========================================================================
+	// functions
+	//========================================================================
+	
 	// 武器の初期化
 	void Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) override;
 	// 武器の更新
@@ -16,6 +24,10 @@ public:
 	void Draw() override;
 	// 武器の攻撃
 	void Attack() override;
+
+	//=============================================================================
+	// setter
+	//=============================================================================
 
 	// 所有者の設定
 	void SetOwnerObject(GameCharacter* owner) override;

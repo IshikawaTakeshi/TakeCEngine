@@ -45,27 +45,27 @@ struct BindResourceInfo {
 
 using ShaderResourceMap = std::map<ShaderResourceKey, BindResourceInfo>;
 
-
+// グラフィックシェーダーデータ
 struct GraphicShaderData {
 	ComPtr<IDxcBlob> vertexBlob;
 	ComPtr<IDxcBlob> pixelBlob;
 };
 
+// 前方宣言
 class DXC;
+
+//============================================================================
+// PipelineStateObject class
+//============================================================================
 class PSO {
-
-	///////////////////////////////////////////////////////////////////////////////////////////////
-	///			PSO
-	///////////////////////////////////////////////////////////////////////////////////////////////
-
 public:
-
-	///////////////////////////////////////////////////////////////////////////////////////////
-	///			publicメンバ関数
-	///////////////////////////////////////////////////////////////////////////////////////////
 
 	PSO() = default;
 	~PSO();
+
+	//========================================================================
+	//	functions
+	//========================================================================
 
 	//vertexShaderをコンパイル
 	void CompileVertexShader(DXC* dxc_, const std::wstring& filePath);
@@ -73,7 +73,6 @@ public:
 	void CompilePixelShader(DXC* dxc_, const std::wstring& filePath);
 	//computeShaderをコンパイル
 	void CompileComputeShader(DXC* dxc_, const std::wstring& filePath);
-	
 
 	/// <summary>
 	/// ブレンドステート初期化
@@ -81,8 +80,10 @@ public:
 	void CreateBlendStateForObject3d();
 	void CreateBlendStateForParticle(BlendState state);
 	void CreateBlendStateForSprite();
-	void CreateBlendStateForBoostEffect();
 
+	/// <summary>
+	/// ブレンドステート設定
+	/// </summary>
 	void InitializeBlendState(BlendState blendState);
 
 	/// <summary>
@@ -106,38 +107,44 @@ public:
 	/// </summary>
 	void CreateComputePSO(ID3D12Device* device);
 
+	/// <summary>
+	/// RenderTexturePSO生成
+	/// </summary>
 	void CreateRenderTexturePSO(ID3D12Device* device);
 
+	/// <summary>
+	/// ImGuiの更新
+	/// </summary>
 	void UpdateImGui();
 
+	/// <summary>
+	/// ImGuiのコンボボックス更新
+	/// </summary>
 	bool UpdateImGuiCombo();
 
 public:
 
-	///////////////////////////////////////////////////////////////////////////////////////////
-	///			getter
-	///////////////////////////////////////////////////////////////////////////////////////////
+	//=========================================================================
+	// accessors
+	//=========================================================================
+
+	//----- getter ---------------------------
 
 	// 名前から bindResources のインデックスを取得する
 	int32_t GetGraphicBindResourceIndex(const std::string& name);
 	int32_t GetComputeBindResourceIndex(const std::string& name);
 
-	/// <summary>
 	/// rootSignatureの取得
-	/// </summary>
 	const ComPtr<ID3D12RootSignature>& GetGraphicRootSignature() const { return graphicRootSignature_; }
 	const ComPtr<ID3D12RootSignature>& GetComputeRootSignature() const { return computeRootSignature_; }
 
-	/// <summary>
 	///graphicPipelineStateの取得
-	/// </summary>
 	ID3D12PipelineState* GetGraphicPipelineState() const { return graphicPipelineState_.Get(); }
 	ID3D12PipelineState* GetComputePipelineState() const { return computePipelineState_.Get(); }
 
-	///////////////////////////////////////////////////////////////////////////////////////////
-	///			setter
-	///////////////////////////////////////////////////////////////////////////////////////////
+	//----- setter ---------------------------
 
+	/// パイプラインステート名設定
 	void SetGraphicPipelineName(const std::string& name);
 	void SetComputePipelineName(const std::string& name);
 
@@ -149,31 +156,36 @@ private:
 	ComPtr<ID3D12RootSignature> CreateRootSignature(ID3D12Device* device, ShaderResourceMap resourceMap);
 	//入力レイアウトの情報を取得
 	void ExtractInputLayout(ID3D12ShaderReflection* shaderReflection);
-
+	//PipelineStateDescの設定
 	void SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type);
 	void SetComputePipelineStateDesc();
 
 private:
 
-	///////////////////////////////////////////////////////////////////////////////////////////
-	///			privateメンバ変数
-	///////////////////////////////////////////////////////////////////////////////////////////
+	//=====================================================================
+	//		privateメンバ変数
+	//=====================================================================
 
+	//bindResourceInfo
 	ShaderResourceMap graphicBindResourceInfo_;
 	ShaderResourceMap computeBindResourceInfo_;
-
+	//semanticName
 	std::vector<std::string> semanticName_;
 
+	//shaderBlob
 	ComPtr<ID3D10Blob> signatureBlob_;
 	ComPtr<ID3D10Blob> errorBlob_;
+	//rootSignature
 	ComPtr<ID3D12RootSignature> graphicRootSignature_;
 	ComPtr<ID3D12RootSignature> computeRootSignature_;
-
+	//staticSampler
 	std::vector<D3D12_STATIC_SAMPLER_DESC> staticSamplers_{};
 	//InputLayout
 	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_ = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
+	//blendState
 	D3D12_BLEND_DESC blendDesc_{};
+	//rasterizerState
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};
 
 	//shaderBlob
@@ -182,9 +194,10 @@ private:
 
 	//depthStencilState
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
-	//graphicPipelineState
+	//PipelineState
 	ComPtr<ID3D12PipelineState> graphicPipelineState_;
 	ComPtr<ID3D12PipelineState> computePipelineState_;
+	//PipelineStateDesc
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc_{};
 	D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineStateDesc_{};
 	//BlendMode

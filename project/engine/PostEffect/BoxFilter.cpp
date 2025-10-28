@@ -3,6 +3,9 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+//=============================================================================
+// 初期化
+//=============================================================================
 void BoxFilter::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
@@ -13,11 +16,15 @@ void BoxFilter::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, cons
 	inputResource_->SetName(L"BoxFilter::inputResource_");
 	outputResource_->SetName(L"BoxFilter::outputResource_");
 
+	//SRVの生成
 	filterInfoResource_ = dxCommon->CreateBufferResource(dxCommon->GetDevice(), sizeof(BoxFilterInfo));
 	filterInfoResource_->SetName(L"BoxFilter::filterInfoResource_");
 	filterInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&filterInfoData_));
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void BoxFilter::UpdateImGui() {
 #ifdef _DEBUG
 	ImGui::Text("BoxFilter");
@@ -26,6 +33,9 @@ void BoxFilter::UpdateImGui() {
 #endif // _DEBUG
 }
 
+//=============================================================================
+// Dispatch
+//=============================================================================
 void BoxFilter::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS

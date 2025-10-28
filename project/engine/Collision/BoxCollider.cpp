@@ -19,8 +19,10 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 
 	dxCommon_ = dxCommon;
 
+	//半分の大きさをセット
 	rotateMatrix_ = MatrixMath::MakeRotateMatrix(collisionObject->GetRotate());
 
+	// OBB情報のセット
 	obb_.center = collisionObject->GetCenterPosition();
 	obb_.axis[0].x = rotateMatrix_.m[0][0];
 	obb_.axis[0].y = rotateMatrix_.m[0][1];
@@ -54,6 +56,9 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 	camera_ = CameraManager::GetInstance()->GetActiveCamera();
 }
 
+//=============================================================================
+// 更新処理
+//=============================================================================
 void BoxCollider::Update(Object3d* collisionObject) {
 	minAxis_ = { 0.0f,0.0f,0.0f };
 	minPenetration_ = 0.0f;
@@ -61,10 +66,13 @@ void BoxCollider::Update(Object3d* collisionObject) {
 	transform_ = collisionObject->GetTransform();
 	obb_.center = collisionObject->GetCenterPosition();
 
+	// スケール行列の更新
 	Matrix4x4 scaleMat = MatrixMath::MakeScaleMatrix(transform_.scale);
 
+	// 回転行列の更新
 	rotateMatrix_ = MatrixMath::MakeRotateMatrix(transform_.rotate);
 
+	// OBB情報のセット
 	obb_.axis[0].x = rotateMatrix_.m[0][0];
 	obb_.axis[0].y = rotateMatrix_.m[0][1];
 	obb_.axis[0].z = rotateMatrix_.m[0][2];
@@ -77,11 +85,16 @@ void BoxCollider::Update(Object3d* collisionObject) {
 	obb_.axis[2].y = rotateMatrix_.m[2][1];
 	obb_.axis[2].z = rotateMatrix_.m[2][2];
 
+	// 平行移動行列の更新
 	Matrix4x4 translateMat = MatrixMath::MakeTranslateMatrix(obb_.center);
 
 	//アフィン行列の更新
 	worldMatrix_ = scaleMat * rotateMatrix_ * translateMat;
 }
+
+//=============================================================================
+// ImGuiによるパラメータ調整
+//=============================================================================
 void BoxCollider::UpdateImGui([[maybe_unused]]const std::string& name) {
 #ifdef _DEBUG
 	std::string windowName = "BoxCollider" + name;
@@ -117,6 +130,9 @@ bool BoxCollider::CheckCollision(Collider* other) {
 	return false;
 }
 
+//=============================================================================
+// レイとの衝突判定
+//=============================================================================
 bool BoxCollider::Intersects(const Ray& ray, RayCastHit& outHit) {
 	// OBBとレイの衝突判定
 	Vector3 invDir = { 1.0f / ray.direction.x, 1.0f / ray.direction.y, 1.0f / ray.direction.z };

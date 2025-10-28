@@ -2,12 +2,17 @@
 #include "Vector3.h"
 #include "Quaternion.h"
 
+//============================================================================
+// Keyframe struct
+//============================================================================
+
+// キーフレーム構造体
 template <typename T>
-struct Keyflame {
+struct Keyframe {
 
 	float time;
 	T value;
 };
 
-using KeyflameVector3 = Keyflame<Vector3>;
-using KeyflameQuaternion = Keyflame<Quaternion>;
+using KeyframeVector3 = Keyframe<Vector3>;
+using KeyframeQuaternion = Keyframe<Quaternion>;

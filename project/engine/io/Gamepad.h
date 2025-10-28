@@ -2,18 +2,30 @@
 #include "InputData.h"
 #include "engine/math/Vector2.h"
 
-///=====================================================/// 
-///	コントローラー
-///=====================================================///
+///===================================================================== 
+///	GamePad class
+///=====================================================================
 class GamePad {
 public:
 
-	GamePad() =default;
-	~GamePad();
+	//==================================================================
+	// functions
+	//==================================================================
 
-	// 初期化
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
+	GamePad() = default;
+	~GamePad() = default;
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
-	// 更新
+	
+	/// <summary>
+	/// 更新処理
+	/// </summary>
 	void Update();
 
     // コントローラースティックの取得
@@ -55,4 +67,3 @@ private:
     // 指定したボタンの XInput / DirectInput マッピングを取得
     std::pair<WORD, int> ConvertToButton(GamepadButtonType button) const;
 };
-

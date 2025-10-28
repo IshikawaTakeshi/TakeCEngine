@@ -4,6 +4,9 @@
 #include "engine/math/MatrixMath.h"
 #include "application/Weapon/Bullet/BulletManager.h"
 
+//================================================================================
+//　初期化
+//================================================================================
 void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) {
 	bulletManager_ = bulletManager;
 
@@ -33,6 +36,9 @@ void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletM
 	isStopShootOnly_ = false; // ライフルは停止撃ち専用ではない
 }
 
+//================================================================================
+//　更新
+//================================================================================
 void VerticalMissileLauncher::Update() {
 
 	if(remainingBulletCount_ <= 0 && bulletCount_ <= 0) {
@@ -90,6 +96,9 @@ void VerticalMissileLauncher::Update() {
 	object3d_->Update();
 }
 
+//===================================================================================
+//　ImGuiの更新
+//===================================================================================
 void VerticalMissileLauncher::UpdateImGui() {
 
 #ifdef _DEBUG
@@ -117,6 +126,9 @@ void VerticalMissileLauncher::UpdateImGui() {
 #endif // _DEBUG
 }
 
+//================================================================================
+//　描画処理
+//================================================================================
 void VerticalMissileLauncher::Draw() {
 
 	// モデル描画
@@ -124,6 +136,9 @@ void VerticalMissileLauncher::Draw() {
 
 }
 
+//================================================================================
+//　攻撃処理
+//================================================================================
 void VerticalMissileLauncher::Attack() {
 
 	if (isReloading_ == true) {
@@ -142,26 +157,43 @@ void VerticalMissileLauncher::Attack() {
 	}
 }
 
+
+//================================================================================
+//　チャージ処理
+//================================================================================
 void VerticalMissileLauncher::Charge(float deltaTime) {
+	// チャージ処理なし
 	deltaTime;
 }
 
-void VerticalMissileLauncher::ChargeAttack() {}
+//================================================================================
+//　チャージ攻撃処理
+//================================================================================
+void VerticalMissileLauncher::ChargeAttack() {
+	// チャージ攻撃処理なし
+}
 
+
+//================================================================================
+//　所有者の設定
+//================================================================================
 void VerticalMissileLauncher::SetOwnerObject(GameCharacter* owner) {
 	ownerObject_ = owner;
 }
 
+//チャージ攻撃可能か
 bool VerticalMissileLauncher::IsChargeAttack() const {
 	// バーティカルミサイルはチャージ攻撃不可
 	return canChargeAttack_;
 }
 
+//移動撃ち可能か
 bool VerticalMissileLauncher::IsMoveShootable() const {
 	//移動撃ち可能
 	return canMoveShootable_;
 }
 
+//停止撃ち専用か
 bool VerticalMissileLauncher::IsStopShootOnly() const {
 	//停止撃ち専用ではない
 	return isStopShootOnly_;

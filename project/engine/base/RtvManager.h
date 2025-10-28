@@ -5,9 +5,14 @@
 #include <cstdint>
 #include <array>
 
-#include "base/ResourceDataStructure.h"
+#include "engine/base/ComPtrAliasTemplates.h"
 
+// 前方宣言
 class DirectXCommon;
+
+//======================================================================
+// RTVManager class
+//======================================================================
 class RtvManager {
 public:
 
@@ -15,11 +20,18 @@ public:
 
 public:
 
+	//==================================================================
+	// functions
+	//==================================================================
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	void Initialize(DirectXCommon* directXCommon);
 
+	/// <summary>
+	/// 終了・開放処理
+	/// </summary>
 	void Finalize();
 
 	/// <summary>
@@ -38,19 +50,30 @@ public:
 	/// </summary>
 	void CreateRTV(ID3D12Resource* pResource, uint32_t rtvIndex);
 
-	void CrearRenderTarget();
+	/// <summary>
+	/// レンダーターゲットクリア
+	/// </summary>
+	void ClearRenderTarget();
 public:
 
+	//==================================================================
+	// accessor
+	//==================================================================
+
+	//----- getter ---------------
+
+	/// CPUデスクリプタハンドルの取得
 	D3D12_CPU_DESCRIPTOR_HANDLE GetRtvDescriptorHandleCPU(uint32_t index);
-
+	/// GPUデスクリプタハンドルの取得
 	D3D12_GPU_DESCRIPTOR_HANDLE GetRtvDescriptorHandleGPU(uint32_t index);
-
+	/// RTV用デスクリプタヒープの取得
 	ID3D12DescriptorHeap* GetRtvHeap() { return descriptorHeap_.Get(); }
-
+	/// RTV用デスクリプタヒープの取得
 	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() { return rtvDesc_; }
 
 private:
 
+	//dxCommon
 	DirectXCommon* dxCommon_ = nullptr;
 
 	//RTV用デスクリプタヒープ
@@ -59,7 +82,6 @@ private:
 	uint32_t descriptorSize_ = 0;
 	//使用中のインデックス
 	uint32_t useIndex_ = 0;
-
+	//RTV用デスクリプタヒープの記述子
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_ = {};
 };
-

@@ -3,24 +3,29 @@
 #include <dxgi1_6.h>
 #include <wrl.h>
 #include <memory>
+#include "engine/base/ComPtrAliasTemplates.h"
 
+// 前方宣言
 class PSO;
 class DirectXCommon;
+
+//============================================================================
+// SpriteCommon class
+//============================================================================
 class SpriteCommon {
+private:
+
+	//コンストラクタ・デストラクタ・コピー禁止
+	SpriteCommon() = default;
+	~SpriteCommon() = default;
+	SpriteCommon(const SpriteCommon&) = delete;
+	SpriteCommon& operator=(const SpriteCommon&) = delete;
+
 public:
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			エイリアステンプレート
-	/////////////////////////////////////////////////////////////////////////////////////
 
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-
-public:
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			publicメンバ関数
-	/////////////////////////////////////////////////////////////////////////////////////
-
+	//========================================================================
+	// functions
+	//========================================================================
 	static SpriteCommon* GetInstance();
 
 	/// <summary>
@@ -37,34 +42,24 @@ public:
 	/// 共通描画設定
 	/// </summary>
 	void PreDraw();
-
-	/// <summary>
-	/// 描画後処理
-	/// </summary>
-	//void PostDraw();
 	
 public:
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			getter
-	/////////////////////////////////////////////////////////////////////////////////////
+	//=========================================================================
+	// accessors
+	//=========================================================================
 
+	//----- getter ---------------------------
+
+	//DirectXCommonの取得
 	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
 
-public:
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			setter
-	/////////////////////////////////////////////////////////////////////////////////////
+	//----- setter ---------------------------
 
+	//DirectXCommonの設定
 	void SetDirectXCommon(DirectXCommon* dxCommon) { dxCommon_ = dxCommon; }
 
-private:
-	
-	SpriteCommon() = default;
-	~SpriteCommon() = default;
-	SpriteCommon(const SpriteCommon&) = delete;
-	SpriteCommon& operator=(const SpriteCommon&) = delete;
 
 
 private:
@@ -86,4 +81,3 @@ private:
 	std::unique_ptr<PSO> pso_ = nullptr;
 
 };
-

@@ -3,6 +3,10 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+
+//=============================================================================
+// 初期化
+//=============================================================================
 void BloomEffect::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath, ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx,outputResource);
@@ -16,25 +20,36 @@ void BloomEffect::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, co
 	effectInfoResource_->SetName(L"Bloom::effectInfoResource_");
 	effectInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&effectInfoData_));
 
+	//エフェクト情報初期化
 	effectInfoData_->isActive = true;
 	effectInfoData_->threshold = 0.75f;
 	effectInfoData_->strength = 0.15f;
 	effectInfoData_->sigma = 0.05f;
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void BloomEffect::UpdateImGui() {
 
 #ifdef _DEBUG
 	ImGui::Text("BloomEffect");
+	
+	if (ImGui::TreeNode("BloomEffect")) {
+		ImGui::SliderFloat("threshold", &effectInfoData_->threshold, 0.0f, 1.0f);
+		ImGui::SliderFloat("strength", &effectInfoData_->strength, 0.0f, 0.5f);
+		ImGui::SliderFloat("sigma", &effectInfoData_->sigma, 0.0f, 2.0f);
+		ImGui::TreePop();
+	}
 	ImGui::SameLine();
-	ImGui::SliderFloat("threshold", &effectInfoData_->threshold, 0.0f, 1.0f);
-	ImGui::SliderFloat("strength", &effectInfoData_->strength, 0.0f, 0.5f);
-	ImGui::SliderFloat("sigma", &effectInfoData_->sigma, 0.0f, 2.0f);
 	ImGui::Checkbox("isActive", &effectInfoData_->isActive);
 #endif // _DEBUG
 
 }
 
+//=============================================================================
+// Dispatch
+//=============================================================================
 void BloomEffect::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS

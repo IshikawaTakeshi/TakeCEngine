@@ -4,6 +4,11 @@
 #include <dxgi1_6.h>
 #include <wrl.h>
 
+
+//============================================================================
+//　デストラクタ
+//============================================================================
+
 D3DResourceLeakChecker::~D3DResourceLeakChecker() {
 	Microsoft::WRL::ComPtr<IDXGIDebug1> debug;
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {

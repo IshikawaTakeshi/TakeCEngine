@@ -7,16 +7,44 @@
 #include <vector>
 #include <memory>
 
+//============================================================================
+// ParticleEditor class
+//============================================================================
 class ParticleEditor {
 public:
 
 	ParticleEditor() = default;
 	~ParticleEditor() = default;
 
+	//======================================================================
+	// functions
+	//======================================================================
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="particleManager"></param>
+	/// <param name="particleCommon"></param>
 	void Initialize(ParticleManager* particleManager,ParticleCommon* particleCommon);
+
+	/// <summary>
+	/// 更新処理
+	/// </summary>
 	void Update();
+
+	/// <summary>
+	/// ImGui更新処理
+	/// </summary>
 	void UpdateImGui();
+
+	/// <summary>
+	/// 終了・開放処理
+	/// </summary>
 	void Finalize();
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	void Draw();
 
 private:
@@ -40,6 +68,9 @@ private:
 	void DrawEmitterControls();
 	void DrawPreviewSettings();
 	void DrawPresetManager();
+
+	//上書き確認ダイアログの描画
+	void DrawOverwriteConfirmDialog();
 
 private:
 
@@ -68,4 +99,9 @@ private:
 	std::map<std::string, ParticlePreset> presets_;
 	// テクスチャファイル名のリスト(参照渡し)
 	std::vector<std::string> textureFileNames_; 
+
+	// 上書き確認ダイアログ表示フラグ
+	bool showOverwriteConfirm_ = false;
+	// 上書き予定のプリセット名
+	std::string pendingPresetName_;
 };

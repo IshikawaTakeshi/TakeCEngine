@@ -88,9 +88,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="engine\scene\AbstractSceneFactory.cpp">
-      <Filter>engine\scene</Filter>
-    </ClCompile>
     <ClCompile Include="engine\Animation\Animator.cpp">
       <Filter>engine\animation</Filter>
     </ClCompile>
@@ -99,9 +96,6 @@
     </ClCompile>
     <ClCompile Include="engine\3d\Particle\BaseParticleGroup.cpp">
       <Filter>engine\3d\Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\scene\BaseScene.cpp">
-      <Filter>engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="application\Weapon\BaseWeapon.cpp">
       <Filter>application\weapon</Filter>
@@ -421,12 +415,6 @@
     <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp">
       <Filter>engine\postEffect</Filter>
     </ClCompile>
-    <ClCompile Include="engine\io\IInputDevice.cpp">
-      <Filter>engine\io</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\io\InputMapper.cpp">
-      <Filter>engine\io</Filter>
-    </ClCompile>
     <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp">
       <Filter>application\Weapon\Bullet</Filter>
     </ClCompile>
@@ -508,12 +496,6 @@
     <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp">
       <Filter>application\weapon\Bullet</Filter>
     </ClCompile>
-    <ClCompile Include="engine\io\InputMapper.cpp">
-      <Filter>engine\io</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\io\IInputDevice.cpp">
-      <Filter>engine\io</Filter>
-    </ClCompile>
     <ClCompile Include="application\Provider\PlayerInputProvider.cpp">
       <Filter>application\provider</Filter>
     </ClCompile>
@@ -534,6 +516,10 @@
     </ClCompile>
     <ClCompile Include="engine\Utility\Timer.cpp" />
     <ClCompile Include="application\Effect\DeadEffect.cpp" />
+    <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
+    <ClCompile Include="engine\3d\Light\LightManager.cpp" />
+    <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
+    <ClCompile Include="engine\math\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1083,6 +1069,12 @@
     <ClInclude Include="engine\Utility\Timer.h" />
     <ClInclude Include="engine\base\BlendModeStateEnum.h" />
     <ClInclude Include="application\Effect\DeadEffect.h" />
+    <ClInclude Include="engine\3d\Light\DirectionalLight.h" />
+    <ClInclude Include="engine\3d\Light\PointLight.h" />
+    <ClInclude Include="engine\3d\Light\SpotLight.h" />
+    <ClInclude Include="engine\3d\Light\LightCounter.h" />
+    <ClInclude Include="engine\3d\Light\LightManager.h" />
+    <ClInclude Include="engine\base\ComPtrAliasTemplates.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -1171,6 +1163,11 @@
     <None Include="Resources\shaders\CameraData.hlsli">
       <Filter>Resources\shader\Object</Filter>
     </None>
+    <None Include="Resources\shaders\Light\Lighting.hlsli" />
+    <None Include="Resources\shaders\Light\DirectionalLight.hlsli" />
+    <None Include="Resources\shaders\Material.hlsli" />
+    <None Include="Resources\shaders\Light\PointLight.hlsli" />
+    <None Include="Resources\shaders\Light\SpotLight.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">

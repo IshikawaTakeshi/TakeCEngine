@@ -7,22 +7,33 @@
 #include <vector>
 #include <memory>
 
-#include "Vector2.h"
-#include "Gamepad.h"
+#include "engine/base/ComPtrAliasTemplates.h"
+#include "engine/math/Vector2.h"
+#include "engine/io/Gamepad.h"
 
+//前方宣言
 class WinApp;
+
+//============================================================================
+// Input class
+//============================================================================
 class Input {
+private:
+
+	//コピーコンストラクタ・代入演算子禁止
+	Input() = default;
+	~Input() = default;
+	Input(const Input&) = delete;
+	Input& operator=(const Input&) = delete;
+
 public:
+
+	// マウス移動量構造体
 	struct MouseMove {
 		LONG lX;
 		LONG lY;
 		LONG lZ;
 	};
-
-public:
-
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public:
 
@@ -44,6 +55,9 @@ public:
 	/// <param name="winApp"></param>
 	void Update();
 
+	/// <summary>
+	/// 終了・開放処理
+	/// </summary>
 	void Finalize();
 
 	/// <summary>
@@ -53,9 +67,12 @@ public:
 	/// <returns>押されているか</returns>
 	bool PushKey(BYTE keyNumber);
 
+	/// <summary>
+	/// キーのトリガーをチェック。押した瞬間だけtrueになる
+	/// </summary>
+	/// <param name="keyNumber"></param>
+	/// <returns></returns>
 	bool TriggerKey(BYTE keyNumber);
-
-	
 
 	/// <summary>
 	/// 全マウス情報取得
@@ -102,9 +119,9 @@ public:
 
 	//ゲームパッドの押下チェック
 	bool PushButton(int stickNo, GamepadButtonType button) const;
-
+	//ゲームパッドのトリガーチェック
 	bool TriggerButton(int stickNo, GamepadButtonType button) const;
-
+	//ゲームパッドのリリースチェック
 	bool ReleaseButton(int stickNo, GamepadButtonType button) const;
 
 	//ボタンの押し込み量を取得
@@ -112,39 +129,37 @@ public:
 
 	//スティックの状況を取得
 	StickState GetLeftStickState(int stickNo) const;
-
+	//スティックの状況を取得
 	StickState GetRightStickState(int stickNo) const;
-
+	// スティックの値を取得
 	Vector2 GetStickValue(int stickNo, GamepadValueType valueType) const;
 
-private:
-
-	Input() = default;
-	~Input() = default;
-	Input(const Input&) = delete;
-	Input& operator=(const Input&) = delete;
 
 private:
 
 	//シングルトンインスタンス
 	static Input* instance_;
 
+	//DirectInput
 	ComPtr<IDirectInput8> directInput_ = nullptr;
+	//キーボードデバイス
 	ComPtr<IDirectInputDevice8> keyboardDevice_ = nullptr;
+	//マウスデバイス
 	ComPtr<IDirectInputDevice8> mouseDevice_ = nullptr;
 
+	//GamePad
 	std::unique_ptr<GamePad> gamePad_;
 	
 	//WindowsAPI
 	WinApp* winApp_ = nullptr;
-	//ウィンドウハンドル
-	//HWND hwnd_;
 	//キー情報
 	BYTE key[256] = {};
 	//前回フレームのキーデータ
 	BYTE preKey[256] = {};
+	//マウス情報
 	DIMOUSESTATE2 mouse_;
+	//前回フレームのマウス情報
 	DIMOUSESTATE2 mousePre_;
+	//マウス位置
 	Vector2 mousePosition_;
 };
-

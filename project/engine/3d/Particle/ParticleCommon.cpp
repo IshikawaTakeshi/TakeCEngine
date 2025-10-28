@@ -3,9 +3,13 @@
 #include "engine/base/SrvManager.h"
 #include "engine/camera/CameraManager.h"
 #include "engine/Utility/StringUtility.h"
+#include "engine/3d/Object3dCommon.h"
 
 ParticleCommon* ParticleCommon::instance_ = nullptr;
 
+//==================================================================================
+// インスタンス取得
+//==================================================================================
 ParticleCommon* ParticleCommon::GetInstance() {
 
 	if (instance_ == nullptr) {
@@ -14,19 +18,15 @@ ParticleCommon* ParticleCommon::GetInstance() {
 	return instance_;
 }
 
+//==================================================================================
+// 初期化
+//==================================================================================
 void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 
 	dxCommon_ = dxCommon;
-
 	srvManager_ = srvManager;
 
-	//graphicPso_ = std::make_unique<PSO>();
-	//graphicPso_->CompileVertexShader(dxCommon_->GetDXC(), L"Particle.VS.hlsl");
-	//graphicPso_->CompilePixelShader(dxCommon_->GetDXC(), L"Particle.PS.hlsl");
-	//graphicPso_->CreateGraphicPSO(dxCommon_->GetDevice(),D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO, BlendState::ADD);
-	//graphicPso_->SetGraphicPipelineName("ParticlePSO");
-	//graphicRootSignature_ = graphicPso_->GetGraphicRootSignature();
-
+	//各ブレンドステート用PSO生成
 	for (int i = 0; i < int(BlendState::COUNT); i++) {
 		auto pso = std::make_unique<PSO>();
 		pso->CompileVertexShader(dxCommon_->GetDXC(), L"Particle.VS.hlsl");
@@ -37,8 +37,11 @@ void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 		pso->SetGraphicPipelineName("graphicPSO_" + blendStateName);
 		graphicPso_[static_cast<BlendState>(i)] = std::move(pso);
 	}
+
+	//ルートシグネチャをBlendState::NORMALのものを共通で使う
 	graphicRootSignature_ = graphicPso_[BlendState::NORMAL]->GetGraphicRootSignature();
 
+	//GPUパーティクル用PSO生成
 	graphicPsoForGPUParticle_ = std::make_unique<PSO>();
 	graphicPsoForGPUParticle_->CompileVertexShader(dxCommon_->GetDXC(), L"GPUParticle.VS.hlsl");
 	graphicPsoForGPUParticle_->CompilePixelShader(dxCommon_->GetDXC(), L"GPUParticle.PS.hlsl");
@@ -61,11 +64,17 @@ void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 	rootSignatureUpdateParticle_ = psoUpdateParticle_->GetComputeRootSignature();
 }
 
+//==================================================================================
+// ImGuiの更新
+//==================================================================================
 void ParticleCommon::UpdateImGui() {
 	//graphicPso_->UpdateImGui();
 	graphicPsoForGPUParticle_->UpdateImGui();
 }
 
+//==================================================================================
+// 終了・開放処理
+//==================================================================================
 void ParticleCommon::Finalize() {
 
 	graphicRootSignature_.Reset();
@@ -81,11 +90,11 @@ void ParticleCommon::Finalize() {
 
 	rootSignatureUpdateParticle_.Reset();
 	psoUpdateParticle_.reset();
-
-	/*srvManager_ = nullptr;
-	dxCommon_ = nullptr;*/
 }
 
+//==================================================================================
+// 描画前処理
+//==================================================================================
 void ParticleCommon::PreDraw(BlendState state) {
 
 	//ルートシグネチャ設定
@@ -94,8 +103,15 @@ void ParticleCommon::PreDraw(BlendState state) {
 	dxCommon_->GetCommandList()->SetPipelineState(graphicPso_[state]->GetGraphicPipelineState());
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//DirectionalLight
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(graphicPso_[state]->GetGraphicBindResourceIndex("gDirLight"), 
+		Object3dCommon::GetInstance()->GetDirectionalLightResource()->GetGPUVirtualAddress());
 }
 
+//==================================================================================
+// GPUパーティクル描画前処理
+//==================================================================================
 void ParticleCommon::PreDrawForGPUParticle() {
 
 	//ルートシグネチャ設定
@@ -106,6 +122,9 @@ void ParticleCommon::PreDrawForGPUParticle() {
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
+//==================================================================================
+// GPUパーティクル初期化用ディスパッチ
+//==================================================================================
 void ParticleCommon::DispatchForGPUParticle() {
 
 	//PSO設定
@@ -115,6 +134,9 @@ void ParticleCommon::DispatchForGPUParticle() {
 	dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignatureForGPUParticle_.Get());
 }
 
+//==================================================================================
+// GPUパーティクル更新用ディスパッチ
+//==================================================================================
 void ParticleCommon::DispatchUpdateParticle() {
 
 	//PSO設定

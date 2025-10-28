@@ -3,13 +3,9 @@
 #include "TextureManager.h"
 #include <numbers>
 
-Mesh::~Mesh() {
-	material_.reset();
-	inputVertexResource_.Reset();
-	outputVertexResource_.Reset();
-	indexBuffer_.Reset();
-}
-
+//=============================================================================
+// メッシュ初期化
+//=============================================================================
 void Mesh::InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath) {
 
 	material_ = std::make_unique<Material>();
@@ -18,21 +14,33 @@ void Mesh::InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath, 
 }
 
 
+//============================================================================
+// 描画処理時に使用する頂点バッファを設定
+//============================================================================
 void Mesh::SetVertexBuffers(ID3D12GraphicsCommandList* commandList, UINT startSlot) {
 	//頂点バッファビューの設定
 	assert(vertexBufferViews_.size() > 0);
 	commandList->IASetVertexBuffers(startSlot, static_cast<UINT>(vertexBufferViews_.size()), vertexBufferViews_.data());
 }
 
+//============================================================================
+// スキニング後の頂点バッファを設定
+//============================================================================
 void Mesh::SetSkinnedVertexBuffer(ID3D12GraphicsCommandList* commandList, UINT startSlot) {
 
 	commandList->IASetVertexBuffers(startSlot, 1, &skinnedVBV_);
 }
 
+//============================================================================
+// 頂点バッファビュー追加
+//============================================================================
 void Mesh::AddVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vbv) {
 	vertexBufferViews_.push_back(vbv);
 }
 
+//============================================================================
+// 球体の頂点バッファリソース初期化
+//============================================================================
 void Mesh::InitializeVertexResourceSphere(ID3D12Device* device) {
 
 	// 頂点数の設定
@@ -113,6 +121,9 @@ void Mesh::InitializeVertexResourceSphere(ID3D12Device* device) {
 
 }
 
+//=============================================================================
+// スプライトの頂点バッファリソース初期化
+//=============================================================================
 void Mesh::InitializeVertexResourceSprite(ID3D12Device* device, Vector2 anchorPoint) {
 
 
@@ -143,6 +154,9 @@ void Mesh::InitializeVertexResourceSprite(ID3D12Device* device, Vector2 anchorPo
 	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
 }
 
+//=============================================================================
+// 三角形の頂点バッファリソース初期化
+//=============================================================================
 void Mesh::InitializeVertexResourceTriangle(ID3D12Device* device) {
 
 	//VertexResource生成
@@ -194,6 +208,9 @@ void Mesh::InitializeInputVertexResourceModel(ID3D12Device* device, ModelData* m
 	std::memcpy(vertexData, modelData->vertices.data(), sizeof(VertexData) * modelData->vertices.size());
 }
 
+//================================================================================================
+// objモデルの頂点バッファリソース初期化（出力用）
+//================================================================================================
 void Mesh::InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* modelData, ID3D12GraphicsCommandList* commandList) {
 	//頂点リソースを作る
 	outputVertexResource_ = DirectXCommon::CreateBufferResourceUAV(device, sizeof(VertexData) * modelData->vertices.size(),commandList);
@@ -204,6 +221,9 @@ void Mesh::InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* 
 	vertexBufferViews_[0].StrideInBytes = sizeof(VertexData);
 }
 
+//================================================================================================
+// 球体のIndexResource初期化
+//================================================================================================
 void Mesh::InitializeIndexResourceSphere(ID3D12Device* device) {
 
 	// インデックスバッファのサイズを設定
@@ -236,6 +256,9 @@ void Mesh::InitializeIndexResourceSphere(ID3D12Device* device) {
 	}
 }
 
+//================================================================================================
+// スプライトのIndexResource初期化
+//================================================================================================
 void Mesh::InitializeIndexResourceSprite(ID3D12Device* device) {
 
 	//リソースの作成
@@ -270,6 +293,9 @@ void Mesh::InitializeIndexResourceModel(ID3D12Device* device, ModelData* modelDa
 	std::memcpy(indexData, modelData->indices.data(), sizeof(uint32_t) * modelData->indices.size());
 }
 
+//================================================================================================
+// モデルの頂点バッファリソースにデータをマップ
+//================================================================================================
 void Mesh::MapInputVertexResource(ModelData* modelData) {
 	//リソースにデータを書き込む
 	VertexData* vertexData;

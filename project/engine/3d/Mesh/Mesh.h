@@ -5,24 +5,48 @@
 #include <wrl.h>
 #include <memory>
 
+// 前方宣言
 class DirectXCommon;
+
+//============================================================================
+// Meshクラス
+//============================================================================
 class Mesh {
 public:
 
 	Mesh() = default;
-	~Mesh();
+	~Mesh() = default;
 
+	//========================================================================
+	// functions
+	//========================================================================
+
+	/// <summary>
+	/// メッシュ初期化
+	/// </summary>
+	/// <param name="dxCommon"></param>
+	/// <param name="filePath"></param>
+	/// <param name="envMapfilePath"></param>
 	void InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath,const std::string& envMapfilePath = "");
 
 	/// <summary>
-		/// 描画処理時に使用する頂点バッファを設定
-		/// </summary>
-		/// <param name="commandList"></param>
-		/// <param name="startSlot"></param>
+	/// 描画処理時に使用する頂点バッファを設定
+	/// </summary>
+	/// <param name="commandList"></param>
+	/// <param name="startSlot"></param>
 	void SetVertexBuffers(ID3D12GraphicsCommandList* commandList, UINT startSlot);
 
+	/// <summary>
+	/// スキニング後の頂点バッファを設定
+	/// </summary>
+	/// <param name="commandList"></param>
+	/// <param name="startSlot"></param>
 	void SetSkinnedVertexBuffer(ID3D12GraphicsCommandList* commandList, UINT startSlot);
 
+	/// <summary>
+	/// 頂点バッファビュー追加
+	/// </summary>
+	/// <param name="vbv"></param>
 	void AddVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vbv);
 
 	/// <summary>
@@ -58,17 +82,30 @@ public:
 	/// </summary>
 	void InitializeIndexResourceSprite(ID3D12Device* device);
 
+	/// <summary>
+	/// モデルのIndexResourceの初期化
+	/// </summary>
+	/// <param name="device"></param>
+	/// <param name="modelData"></param>
 	void InitializeIndexResourceModel(ID3D12Device* device, ModelData* modelData);
 
-	//Map
+	/// <summary>
+	/// モデルの頂点バッファリソースにデータをマップ
+	/// </summary>
+	/// <param name="modelData"></param>
 	void MapInputVertexResource(ModelData* modelData);
 
-public: //getter
+public: 
+
+	//=============================================================================
+	// accessor
+	//=============================================================================
+
+	//----- getter ---------------
 	
-	/// 頂点リソースの取得
+	/// 頂点リソースの取得(入力用、出力用)
 	ID3D12Resource* GetInputVertexResource() { return inputVertexResource_.Get(); }
 	ID3D12Resource* GetOutputVertexResource() { return outputVertexResource_.Get(); }
-	//ID3D12Resource* GetSkinnedVertexResource() { return skinnedVertexResource_.Get(); }
 
 	/// 頂点数リソースの取得
 	ID3D12Resource* GetVertexCountResource() { return vertexCountResource_.Get(); }

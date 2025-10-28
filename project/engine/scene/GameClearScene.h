@@ -16,20 +16,30 @@
 #include "3d/Particle/ParticleEmitter.h"
 #include "SkyBox/SkyBox.h"
 
+//============================================================================
+// GameClearScene class
+//============================================================================
 class GameClearScene : public BaseScene {
 public:
+
+	//フェーズ
 	enum Phase {
 		FIRST,
 		SECOND,
 		FINAL,
 	};
+	
+	//=========================================================================
+	// functions
+	//=========================================================================
+
 	//初期化
 	void Initialize() override;
 	//終了処理
 	void Finalize() override;
 	//更新処理
 	void Update() override;
-
+	//ImGuiの更新
 	void UpdateImGui() override;
 	//描画処理
 	void Draw() override;
@@ -38,7 +48,9 @@ private:
 
 	//サウンドデータ
 	AudioManager::SoundData gameClearBGM;
+	//サウンド再生フラグ
 	bool isSoundPlay = false;
+	//カメラ
 	std::unique_ptr<Camera> gameClearCamera_ = nullptr;
 
 	// SkyBox
@@ -46,11 +58,11 @@ private:
 
 	//スプライト
 	std::unique_ptr<Sprite> clearTextSprite_ = nullptr;
-
+	//パーティクル
 	float lerpTime_ = 0.0f;
-
+	//フェーズ管理
 	Phase phase_;
-
+	//フェーズ変更フラグ
 	bool changePhase_ = false;
 
 };

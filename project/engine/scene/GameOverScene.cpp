@@ -4,6 +4,9 @@
 #include <cmath>
 #include <algorithm>
 
+//====================================================================
+//			初期化
+//====================================================================
 void GameOverScene::Initialize() {
 
 	// サウンドデータ
@@ -31,6 +34,9 @@ void GameOverScene::Initialize() {
 
 }
 
+//====================================================================
+//			終了処理
+//====================================================================
 void GameOverScene::Finalize() {
 
 	TakeCFrameWork::GetParticleManager()->Finalize();
@@ -41,6 +47,9 @@ void GameOverScene::Finalize() {
 	CameraManager::GetInstance()->ResetCameras();
 }
 
+//====================================================================
+//			更新処理
+//====================================================================
 void GameOverScene::Update() {
 
 	if (!isSoundPlay) {
@@ -68,6 +77,9 @@ void GameOverScene::Update() {
 	}
 }
 
+//====================================================================
+//			ImGui更新処理
+//====================================================================
 void GameOverScene::UpdateImGui() {
 	CameraManager::GetInstance()->UpdateImGui();
 	Object3dCommon::GetInstance()->UpdateImGui();	
@@ -76,6 +88,9 @@ void GameOverScene::UpdateImGui() {
 
 }
 
+//====================================================================
+//			描画処理
+//====================================================================
 void GameOverScene::Draw() {
 	skybox_->Draw();
 

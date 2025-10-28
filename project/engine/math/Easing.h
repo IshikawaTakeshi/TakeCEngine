@@ -4,15 +4,40 @@
 #include <cmath>
 #include <numbers>
 
+//============================================================================
+// Easing namespace
+//============================================================================
 namespace Easing {
 
-	//===============線形補間====================//
+	//========================================================================
+	// functions
+	//========================================================================
 
+	/// <summary>
+	/// 線形補間(float)
+	/// </summary>
+	/// <param name="startPos"></param>
+	/// <param name="endPos"></param>
+	/// <param name="easedT"></param>
+	/// <returns></returns>
 	float Lerp(float startPos, float endPos, float easedT);
 
+	/// <summary>
+	/// 線形補間(Vector3)
+	/// </summary>
+	/// <param name="startPos"></param>
+	/// <param name="endPos"></param>
+	/// <param name="easedT"></param>
+	/// <returns></returns>
 	Vector3 Lerp(Vector3 startPos, Vector3 endPos, float easedT);
 
-	//球面線形補間
+	/// <summary>
+	/// 球面線形補間(Quaternion)
+	/// </summary>
+	/// <param name="q0"></param>
+	/// <param name="q1"></param>
+	/// <param name="t"></param>
+	/// <returns></returns>
 	Quaternion Slerp(Quaternion q0, Quaternion q1, float t);
 
 	//Sine（正弦関数）
@@ -37,6 +62,7 @@ namespace Easing {
 	//緩やかな変化をさせる
 	float GentleRise(float x);
 
+	// イージング関数の種類列挙型
 	enum EasingType {
 		LINEAR,
 		IN_SINE,
@@ -52,6 +78,7 @@ namespace Easing {
 		GENTLE_RISE
 	};
 
+	// イージング関数配列
 	using EasingFunction = std::function<float(float)>;
 	inline EasingFunction Ease[] = {[](float t){ return t; },
 		EaseInSine,

@@ -9,6 +9,9 @@
 
 Object3dCommon* Object3dCommon::instance_ = nullptr;
 
+//================================================================================================
+// インスタンスの取得
+//================================================================================================
 Object3dCommon* Object3dCommon::GetInstance() {
 	if (instance_ == nullptr) {
 		instance_ = new Object3dCommon();
@@ -17,6 +20,9 @@ Object3dCommon* Object3dCommon::GetInstance() {
 	
 }
 
+//================================================================================================
+// 初期化
+//================================================================================================
 void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 
 	//DirectXCommon取得
@@ -42,6 +48,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	computeRootSignature_ = pso_->GetComputeRootSignature();
 	addBlendRootSignature_ = addBlendPso_->GetGraphicRootSignature();
 
+	//TODO:ライト関連の初期化処理を別のクラスに移動させる
 #pragma region "Lighting"
 	//平行光源用Resourceの作成
 	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(DirectionalLightData));
@@ -52,7 +59,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	//光源の色を書き込む
 	directionalLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	//光源の方向を書き込む
-	directionalLightData_->direction_ = { 0.0f,-1.0f,0.0f };
+	directionalLightData_->direction_ = { 0.0f,-0.05f,-0.95f };
 	//光源の輝度書き込む
 	directionalLightData_->intensity_ = 1.0f;
 
@@ -84,12 +91,16 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 #pragma endregion
 }
 
+//================================================================================================
+// ImGuiの更新
+//================================================================================================
 void Object3dCommon::UpdateImGui() {
 	ImGui::Begin("Lighting");
 	ImGui::Text("DirectionalLight");
 	ImGui::SliderFloat3("Direction", &directionalLightData_->direction_.x, -1.0f, 1.0f);
 	directionalLightData_->direction_ = Vector3Math::Normalize(directionalLightData_->direction_);
 	ImGui::DragFloat("dirIntensity", &directionalLightData_->intensity_, 0.01f);
+	ImGui::ColorEdit4("dirColor", &directionalLightData_->color_.x);
 	ImGui::Text("PointLight");
 	ImGui::ColorEdit4("Color", &pointLightData_->color_.x);
 	ImGui::DragFloat3("Position", &pointLightData_->position_.x, 0.01f);
@@ -109,6 +120,9 @@ void Object3dCommon::UpdateImGui() {
 	ImGui::End();
 }
 
+//================================================================================================
+// 終了・開放処理
+//================================================================================================
 void Object3dCommon::Finalize() {
 	directionalLightResource_.Reset();
 	pointLightResource_.Reset();
@@ -121,6 +135,9 @@ void Object3dCommon::Finalize() {
 	instance_ = nullptr;
 }
 
+//================================================================================================
+// 描画前処理
+//================================================================================================
 void Object3dCommon::PreDraw() {
 
 	//PSO設定
@@ -135,6 +152,9 @@ void Object3dCommon::PreDraw() {
 	SetGraphicCBufferViewLighting(pso_.get());
 }
 
+//================================================================================================
+// 描画前処理(加算ブレンド)
+//================================================================================================
 void Object3dCommon::PreDrawAddBlend() {
 
 	//PSO設定
@@ -147,6 +167,9 @@ void Object3dCommon::PreDrawAddBlend() {
 	SetGraphicCBufferViewLighting(addBlendPso_.get());
 }
 
+//================================================================================================
+// コンピュートシェーダーのディスパッチ前処理
+//================================================================================================
 void Object3dCommon::Dispatch() {
 
 	//PSO設定
@@ -155,6 +178,9 @@ void Object3dCommon::Dispatch() {
 	dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignature_.Get());
 }
 
+//================================================================================================
+// ライティング用CBufferView設定
+//================================================================================================
 void Object3dCommon::SetGraphicCBufferViewLighting(PSO* pso) {
 	//DirectionalLight
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gDirectionalLight"), directionalLightResource_->GetGPUVirtualAddress());
@@ -165,6 +191,9 @@ void Object3dCommon::SetGraphicCBufferViewLighting(PSO* pso) {
 
 }
 
+//================================================================================================
+// カメラ情報用CBufferView設定
+//================================================================================================
 void Object3dCommon::SetCBufferViewCamera(PSO* pso) {
 	//カメラ情報のCBufferの場所を指定
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(
