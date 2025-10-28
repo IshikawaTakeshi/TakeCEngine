@@ -69,6 +69,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 //====================================================================
 
 void MyGame::Finalize() {
+	TakeCFrameWork::GetParticleManager()->Finalize(); //パーティクルマネージャーの解放
 	CollisionManager::GetInstance()->Finalize();
 	sceneTransition_->Finalize(); //シーン遷移の開放
 	sceneManager_->Finalize();  //シーンの開放
