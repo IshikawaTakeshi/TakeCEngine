@@ -142,7 +142,7 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos,const Vec
 	damage_ = damage;
 	speed_ = speed;
 	targetPos_ = targetPos;
-	targetVel;
+
 	//ターゲットまでの方向を求める
 	float distance = Vector3Math::Length(targetPos_ - transform_.translate);
 	float travelTime = distance / speed_;
