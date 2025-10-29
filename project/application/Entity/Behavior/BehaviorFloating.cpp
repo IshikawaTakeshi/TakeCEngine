@@ -17,7 +17,7 @@ BehaviorFloating::BehaviorFloating(baseInputProvider* provider) {
 //　初期化
 //===================================================================================
 void BehaviorFloating::Initialize([[maybe_unused]]GameCharacterContext& characterInfo) {
-
+	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 }
 
 //===================================================================================

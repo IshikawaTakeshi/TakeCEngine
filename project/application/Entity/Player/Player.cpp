@@ -139,7 +139,6 @@ std::vector<std::unique_ptr<BaseWeapon>>& Player::GetWeapons() {
 
 void Player::Update() {
 
-
 	//stepBoostのインターバルの更新
 	characterInfo_.stepBoostInfo.interval = 0.2f; // ステップブーストのインターバル
 	if (characterInfo_.stepBoostInfo.intervalTimer > 0.0f) {
@@ -171,14 +170,15 @@ void Player::Update() {
 		}
 	}
 
-	//エネルギーの更新
-	UpdateEnergy();
-	RequestActiveBoostEffect();
-
 	//移動方向の取得
 	characterInfo_.moveDirection = inputProvider_->GetMoveDirection();
 	//Behaviorの更新
 	behaviorManager_->Update(characterInfo_);
+
+	//エネルギーの更新
+	UpdateEnergy();
+	//アクティブブーストエフェクトのリクエスト
+	RequestActiveBoostEffect();
 
 	// 地面に着地したらRUNNINGに戻る
 	if (characterInfo_.onGround == true &&
@@ -193,9 +193,11 @@ void Player::Update() {
 
 	//攻撃処理
 	if (characterInfo_.isAlive == true) {
+		//生存時のみ攻撃処理を行う
 		UpdateAttack();
 	}
 
+	//HPが0以下なら死亡処理
 	if (characterInfo_.health <= 0.0f) {
 		//死亡状態のリクエスト
 		characterInfo_.isAlive = false;
@@ -203,13 +205,13 @@ void Player::Update() {
 	}
 
 	//歩行時の煙エミッターのON/OFF制御
-	if (characterInfo_.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING || behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
+	if (characterInfo_.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING ||
+		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
 		backEmitter_->SetIsEmit(true);
 	} else {
 		backEmitter_->SetIsEmit(false);
 	}
-	// 着地判定の毎フレームリセット
-	characterInfo_.onGround = false; 
+
 
 	//モデルの回転処理
 	if (isUseWeapon_) {
@@ -261,6 +263,8 @@ void Player::Update() {
 		boostEffect->Update();
 		boostEffect->SetBehavior(behaviorManager_->GetCurrentBehaviorType());
 	}
+
+	characterInfo_.onGround = false; // 毎フレームリセットし、衝突判定で更新されるようにする
 }
 
 //===================================================================================
@@ -386,12 +390,14 @@ void Player::OnCollisionAction(GameCharacter* other) {
 
 			//playerが下面で接触している場合は地面にいると判定
 			characterInfo_.onGround = true;
+
 			if (BoxCollider* box = dynamic_cast<BoxCollider*>(collider_.get())) {
 				Vector3 normal = box->GetMinAxis();
 				float penetrationDepth = box->GetMinPenetration();
 
 				//貫通している分だけ押し戻す
-				characterInfo_.transform.translate += -normal * penetrationDepth;
+				//過剰な押し戻しを防ぐために、penetrationDepthを2で割ると良い感じになる
+				characterInfo_.transform.translate += -normal * penetrationDepth * 0.5f;
 
 				//接触面方向の速度を打ち消す
 				float velocityAlongNormal = Vector3Math::Dot(characterInfo_.velocity, normal);
@@ -424,7 +430,7 @@ void Player::OnCollisionAction(GameCharacter* other) {
 			}
 
 			collider_->SetColor({ 1.0f,1.0f,0.0f,1.0f }); // コライダーの色を黄色に変更
-		}
+		} 
 	}
 }
 

@@ -65,14 +65,14 @@ void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPo
 //========================================================================================================
 // ミサイルの発射処理
 //========================================================================================================
-void BulletManager::ShootMissile(BaseWeapon* ownerWeapon, const float& speed,float damage, CharacterType type) {
+void BulletManager::ShootMissile(BaseWeapon* ownerWeapon, float speed,float homingRate,float damage, CharacterType type) {
 
 	VerticalMissile* missile = missilePool_->GetMissile();
 	if (missile == nullptr) {
 		return; // ミサイルが取得できなかった場合は何もしない
 	}
 	missile->Initialize(object3dCommon_, missileFilePath_);
-	missile->Create(ownerWeapon, speed,damage, type);
+	missile->Create(ownerWeapon, speed,homingRate,damage, type);
 }
 
 //========================================================================================================

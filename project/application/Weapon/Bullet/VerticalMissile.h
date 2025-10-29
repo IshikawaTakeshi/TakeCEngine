@@ -39,7 +39,7 @@ public:
 	// 衝突時の処理
 	void OnCollisionAction(GameCharacter* other) override;
 	// ミサイルの生成
-	void Create(BaseWeapon* ownerWeapon, const float& speed,float damage, CharacterType type);
+	void Create(BaseWeapon* ownerWeapon, float speed,float homingRate,float damage, CharacterType type);
 
 public:
 

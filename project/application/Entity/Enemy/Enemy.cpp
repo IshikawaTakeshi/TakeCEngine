@@ -206,9 +206,7 @@ void Enemy::Update() {
 	} else {
 		backEmitter_->SetIsEmit(false);
 	}
-	// 着地判定の毎フレームリセット
-	characterInfo_.onGround = false; 
-
+	
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::ToEuler(characterInfo_.transform.rotate);
 	object3d_->SetTranslate(characterInfo_.transform.translate);
@@ -241,6 +239,10 @@ void Enemy::Update() {
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark")->SetEmitterPosition(characterInfo_.transform.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(characterInfo_.transform.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(characterInfo_.transform.translate);
+
+	// 着地判定の毎フレームリセット
+	characterInfo_.onGround = false; 
+
 }
 
 void Enemy::UpdateImGui() {
@@ -347,7 +349,8 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 				float penetrationDepth = box->GetMinPenetration();
 
 				//貫通している分だけ押し戻す
-				characterInfo_.transform.translate += -normal * penetrationDepth;
+				//過剰な押し戻しを防ぐために、penetrationDepthを2で割ると良い感じになる
+				characterInfo_.transform.translate += -normal * penetrationDepth * 0.5f;
 
 				//接触面方向の速度を打ち消す
 				float velocityAlongNormal = Vector3Math::Dot(characterInfo_.velocity, normal);

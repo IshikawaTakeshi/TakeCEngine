@@ -2,6 +2,7 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/math/Vector3Math.h"
 #include "engine/math/MatrixMath.h"
+#include "engine/math/Easing.h"
 #include "engine/Collision/SphereCollider.h"
 
 //====================================================================================
@@ -47,6 +48,8 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 
 void VerticalMissile::Update() {
 
+	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+
 	//パーティクルエミッターの更新
 	particleEmitter_[0]->SetTranslate(transform_.translate);
 	particleEmitter_[0]->Update();
@@ -73,12 +76,37 @@ void VerticalMissile::Update() {
 
 		break;
 	case VerticalMissile::VerticalMissilePhase::HOMING:
+	{
 
-		targetPos_ = ownerWeapon_->GetTargetPos(); // ターゲット位置を更新
-		direction_ = Vector3Math::Normalize((targetPos_ - transform_.translate)  * (1.0f - homingRate_));
+		// ターゲット位置を更新
+		targetPos_ = ownerWeapon_->GetTargetPos();
+
+		// ターゲット方向への単位ベクトルを計算
+		Vector3 desired = targetPos_ - transform_.translate;
+		desired = Vector3Math::Normalize(desired);
+
+		// 現在の進行方向の単位ベクトルを計算
+		Vector3 currentDir;
+		if (velocity_.Length() > 0) {
+			// 速度がある場合はその方向を使用
+			currentDir = Vector3Math::Normalize(velocity_);
+		} else {
+			currentDir = desired; // 初回など速度が0なら目標方向へ
+		}
+
+		// homingRate_の値に基づいて徐々にターゲット方向に向かう
+		float easedT = std::clamp(homingRate_, 0.0f, 1.0f);
+
+		// 進行方向を補間して新しい方向を計算
+		Vector3 mixed = Easing::Lerp(currentDir, desired, easedT);
+		// 新しい方向ベクトルを計算
+		direction_ = Vector3Math::Normalize(mixed);
+
+		// 速度ベクトルを更新
 		velocity_ = direction_ * speed_;
-		transform_.translate += velocity_ * TakeCFrameWork::GetDeltaTime();
-
+		// 位置を更新
+		transform_.translate += velocity_ * deltaTime_;
+	}
 		break;
 	case VerticalMissile::VerticalMissilePhase::EXPLODING:
 		break;
@@ -143,12 +171,13 @@ void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 // ミサイルの生成
 //====================================================================================
 
-void VerticalMissile::Create(BaseWeapon* ownerWeapon, const float& speed, float damage, CharacterType type) {
+void VerticalMissile::Create(BaseWeapon* ownerWeapon, float speed,float HomingRate, float damage, CharacterType type) {
 
 	ownerWeapon_ = ownerWeapon; // 所有者の武器を設定
 	transform_.translate = ownerWeapon_->GetCenterPosition();
 	characterType_ = type;
 	speed_ = speed;
+	homingRate_ = HomingRate;
 	damage_ = damage;
 	targetPos_ = ownerWeapon_->GetTargetPos();
 	//ターゲットまでの方向を求める

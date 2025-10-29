@@ -22,6 +22,7 @@ void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletM
 	damage_ = 400.0f;
 	attackInterval_ = 0.0f;
 	bulletSpeed_ = 300.0f; // 弾のスピードを設定
+	homingRate_ = 0.1f;    // ホーミング率を設定
 	effectiveRange_ = 1000.0f; // 有効射程距離を設定
 
 	maxBulletCount_ = 120;                   // 最大弾数
@@ -67,9 +68,9 @@ void VerticalMissileLauncher::Update() {
 		if (burstInterval_ <= 0.0f && burstCount_ > 0) {
 			// 弾発射
 			if (ownerObject_->GetCharacterType() == CharacterType::PLAYER) {
-				bulletManager_->ShootMissile(this, bulletSpeed_,damage_, CharacterType::PLAYER_MISSILE);
+				bulletManager_->ShootMissile(this, bulletSpeed_,homingRate_,damage_, CharacterType::PLAYER_MISSILE);
 			} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
-				bulletManager_->ShootMissile(this, bulletSpeed_,damage_, CharacterType::ENEMY_MISSILE);
+				bulletManager_->ShootMissile(this, bulletSpeed_,homingRate_,damage_, CharacterType::ENEMY_MISSILE);
 			}
 			bulletCount_--;
 			if (bulletCount_ <= 0) {
@@ -107,6 +108,7 @@ void VerticalMissileLauncher::UpdateImGui() {
 	ImGui::Text("Required Charge Time: %.2f", requiredChargeTime_);
 	ImGui::Text("Is Charging: %s", isCharging_ ? "Yes" : "No");
 	ImGui::SliderFloat("Bullet Speed", &bulletSpeed_, 100.0f, 1000.0f);
+	ImGui::SliderFloat("Homing Rate", &homingRate_, 0.0f, 1.0f);
 	Vector3 rotate = object3d_->GetTransform().rotate;
 	ImGui::DragFloat3("Launcher::Rotate", &rotate.x, 0.01f);
 	object3d_->SetRotate(rotate);

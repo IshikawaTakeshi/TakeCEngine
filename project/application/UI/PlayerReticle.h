@@ -26,7 +26,10 @@ public:
 
 private:
 
-	std::unique_ptr<Sprite> reticleSprite_ = nullptr; // レティクルのスプライト
+	// レティクルのスプライト
+	std::unique_ptr<Sprite> reticleSprite_ = nullptr; 
+	//予測着弾点のレティクルスプライト
+	std::unique_ptr<Sprite> predictedImpactReticle_ = nullptr;
 	Vector2 screenPosition_{0.0f,0.0f}; // スクリーン上のレティクルの位置
 	Vector3 targetPosition_{0.0f,0.0f,0.0f}; // レティクルが狙う位置
 	float size_ = 256.0f; // レティクルのサイズ

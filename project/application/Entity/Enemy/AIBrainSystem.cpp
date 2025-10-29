@@ -146,7 +146,7 @@ float AIBrainSystem::CalculateStepBoostScore() {
 	float energyFactor = Easing::EaseOutQuad(energyRatio);
 
 	// 危険度の計算
-	float dangerFactor = isBulletNearby_ ? 1.0f : 0.05f;
+	float dangerFactor = isBulletNearby_ ? 0.f : 0.05f;
 
 	// HPが低いほど回避行動を優先
 	float hpRatio = characterInfo_->health / characterInfo_->maxHealth;
@@ -177,7 +177,7 @@ float AIBrainSystem::CalculateJumpScore() {
 	}
 
 	// 高度差による計算
-	float heightDifference = std::abs(characterInfo_->transform.translate.y - distanceToTarget_);
+	float heightDifference = std::abs(distanceToTarget_ - characterInfo_->transform.translate.y);
 	float heightThreshold = orbitRadius_ * 0.7f;
 
 	if (heightDifference > heightThreshold) {
@@ -190,7 +190,7 @@ float AIBrainSystem::CalculateJumpScore() {
 	float energyRatio = energyAfterJump / characterInfo_->energyInfo.maxEnergy;
 	float energyFactor = Easing::GentleRise(energyRatio);
 	// エネルギーが多いほどスコア上昇
-	jumpScore += energyFactor * 0.2f;
+	jumpScore += energyFactor * 0.15f;
 
 	return std::clamp(jumpScore, 0.0f, 1.0f);
 }
@@ -217,6 +217,13 @@ float AIBrainSystem::CalculateFloatingScore() {
 	ray.direction = targetDirection;
 	ray.distance = distance;
 	RayCastHit hitInfo;
+	float obstacleFactor = 0.2f;
+
+	// 目標: プレイヤーより少し上（例: +2.0f）
+	const float targetOffset = 2.0f;
+	float idealHeight = characterInfo_->focusTargetPos.y + targetOffset;
+	float currentHeight = characterInfo_->transform.translate.y;
+	float heightDiff = idealHeight - currentHeight;
 
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
@@ -227,32 +234,32 @@ float AIBrainSystem::CalculateFloatingScore() {
 
 		// プレイヤーより下にいる、または同じ高さにいる場合
 		if (verticalDiff >= 0.0f) {
-			// 目標: プレイヤーより少し上（例: +2.0f）
-			const float targetOffset = 1.0f;
-			float idealHeight = characterInfo_->focusTargetPos.y + targetOffset;
-			float currentHeight = characterInfo_->transform.translate.y;
-			float heightDiff = idealHeight - currentHeight;
-
-			// 高度差を0-1の範囲に正規化（最大10.0fの差を想定）
-			const float maxHeightDiff = 5.0f;
-			float normalizedHeightDiff = std::clamp(heightDiff / maxHeightDiff, 0.0f, 1.0f);
-
-			// Easing関数を使用して緩やかなスコア変化
-			float heightFactor = Easing::GentleRise(normalizedHeightDiff);
-
-			// エネルギー残量に基づくスコア計算 (エネルギーが多いほど高スコア)
-			float energyFactor = (characterInfo_->energyInfo.energy - characterInfo_->jumpInfo.useEnergy) / characterInfo_->energyInfo.maxEnergy;
-			energyFactor = std::clamp(energyFactor, 0.0f, 1.0f);
+			
 
 			// 障害物との距離が近いほどスコアを高くする
 			float obstacleProximity = 1.0f - std::clamp(hitInfo.distance / distance, 0.0f, 1.0f);
-			float obstacleFactor = Easing::UrgentRise(obstacleProximity);
+			obstacleFactor = Easing::UrgentRise(obstacleProximity);
 
-			// 最終スコア計算（障害物要素を追加）
-			floatingScore = heightFactor * energyFactor * obstacleFactor * 0.9f;
-			floatingScore = Easing::Lerp(0.0f, 1.0f, floatingScore);
+			
 		}
 	}
+
+	
+
+	// 高度差を0-1の範囲に正規化（最大10.0fの差を想定）
+	const float maxHeightDiff = 4.0f;
+	float normalizedHeightDiff = std::clamp(heightDiff / maxHeightDiff, 0.0f, 1.0f);
+
+	// Easing関数を使用して緩やかなスコア変化
+	float heightFactor = Easing::GentleRise(normalizedHeightDiff);
+
+	// エネルギー残量に基づくスコア計算 (エネルギーが多いほど高スコア)
+	float energyFactor = (characterInfo_->energyInfo.energy - characterInfo_->jumpInfo.useEnergy) / characterInfo_->energyInfo.maxEnergy;
+	energyFactor = std::clamp(energyFactor, 0.0f, 1.0f);
+
+	// 最終スコア計算（障害物要素を追加）
+	floatingScore = heightFactor * energyFactor * obstacleFactor * 0.9f;
+	floatingScore = Easing::Lerp(0.0f, 1.0f, floatingScore);
 
 	return floatingScore;
 }
