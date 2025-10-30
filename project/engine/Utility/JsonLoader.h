@@ -54,14 +54,30 @@ public:
 	template<typename T>
 	T LoadJsonData(const std::string& filePath) const;
 
-	// パーティクルプリセットの削除
-	void DeleteParticlePreset(const std::string& presetName);
+	/// <summary>
+	/// JSONデータの削除
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="filePath"></param>
+	template<typename T>
+	void DeleteJsonData(const std::string& filePath);
 
-	// パーティクルプリセットの一覧を取得
-	std::vector<std::string> GetParticlePresetList() const;
+	/// <summary>
+	/// JSONデータリストの取得
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <returns></returns>
+	template<typename T>
+	std::vector<std::string> GetJsonDataList() const;
 
-	// パーティクルプリセットが存在するかチェック
-	bool IsParticlePresetExists(const std::string& presetName) const;
+	/// <summary>
+	/// JSONデータの存在チェック
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="filePath"></param>
+	/// <returns></returns>
+	template<typename T>
+	bool IsJsonDataExists(const std::string& filePath) const;
 };
 
 
@@ -71,10 +87,10 @@ public:
 template<typename T>
 inline void JsonLoader::SaveJsonData(const std::string& filePath, const T& data) {
 
-	std::filesystem::path dirctory = JsonPath<T>::GetDirectory();
+	std::filesystem::path directory = JsonPath<T>::GetDirectory();
 	//ディレクトリがなければ作成する
-	if (!std::filesystem::exists(dirctory)) {
-		std::filesystem::create_directories(dirctory);
+	if (!std::filesystem::exists(directory)) {
+		std::filesystem::create_directories(directory);
 	}
 	// JSONオブジェクトに変換
 	json presetJson = data;
@@ -98,8 +114,8 @@ inline void JsonLoader::SaveJsonData(const std::string& filePath, const T& data)
 template<typename T>
 inline T JsonLoader::LoadJsonData(const std::string& filePath) const {
 	
-	std::filesystem::path dirctory = JsonPath<T>::GetDirectory();
-	std::string fileFullPath = dirctory.string() + filePath;
+	std::filesystem::path directory = JsonPath<T>::GetDirectory();
+	std::string fileFullPath = directory.string() + filePath;
 	std::ifstream ifs(fileFullPath);
 	//ファイルオープンが失敗した場合
 	if (ifs.fail()) {
@@ -114,4 +130,61 @@ inline T JsonLoader::LoadJsonData(const std::string& filePath) const {
 	ifs.close();
 	// JSONからTに変換
 	return dataJson.get<T>();
+}
+
+//-------------------------------------------------------------------------------
+// JSONデータの削除
+//-------------------------------------------------------------------------------
+template<typename T>
+inline void JsonLoader::DeleteJsonData(const std::string& filePath) {
+
+	std::filesystem::path directory = JsonPath<T>::GetDirectory();
+	std::string fileFullPath = directory.string() + filePath;
+	//ファイルが存在する場合
+	if (std::filesystem::exists(fileFullPath)) {
+		//ファイルを削除
+		std::filesystem::remove(fileFullPath);
+	} else {
+		std::string message = "Json data not found: " + fileFullPath;
+		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
+		assert(0);
+	}
+}
+
+//-------------------------------------------------------------------------------
+// JSONデータリストの取得
+//-------------------------------------------------------------------------------
+template<typename T>
+inline std::vector<std::string> JsonLoader::GetJsonDataList() const {
+	
+	std::vector<std::string> dataList;
+	std::filesystem::path directory = JsonPath<T>::GetDirectory();
+	//ディレクトリが存在しない場合は空のベクターを返す
+	if (!std::filesystem::exists(directory)) {
+		return dataList;
+	}
+
+	// JSONファイルを走査
+	for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+
+		// 拡張子が.jsonのファイル名をリストに追加
+		if (entry.path().extension() == ".json") {
+			dataList.push_back(entry.path().stem().string());
+		}
+	}
+	return dataList;
+}
+
+//-------------------------------------------------------------------------------
+// JSONデータの存在チェック
+//-------------------------------------------------------------------------------
+template<typename T>
+inline bool JsonLoader::IsJsonDataExists(const std::string& filePath) const {
+	
+	// フルパスを生成して存在チェック
+	std::filesystem::path directory = JsonPath<T>::GetDirectory();
+	std::string fileFullPath = directory.string() + filePath;
+
+	// ファイルの存在を返す
+	return std::filesystem::exists(fileFullPath);
 }

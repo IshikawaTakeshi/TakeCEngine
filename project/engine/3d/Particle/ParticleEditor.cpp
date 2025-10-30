@@ -429,7 +429,7 @@ void ParticleEditor::DrawOverwriteConfirmDialog() {
 				// 上書き保存を実行
 				currentPreset_.presetName = pendingPresetName_;
 				TakeCFrameWork::GetJsonLoader()->SaveJsonData<ParticlePreset>(pendingPresetName_ + ".json", currentPreset_);
-				presetNames_ = TakeCFrameWork::GetJsonLoader()->GetParticlePresetList();
+				presetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ParticlePreset>();
 
 				showOverwriteConfirm_ = false;
 				ImGui::CloseCurrentPopup();
@@ -451,6 +451,7 @@ void ParticleEditor::DrawOverwriteConfirmDialog() {
 
 void ParticleEditor::SavePreset(const std::string& presetName) {
 
+	// プリセット名が空でないか、既に存在しないか確認
 	if (presetName.empty() || presets_.find(presetName) != presets_.end()) {
 		ImGui::Text("Preset already exists or name is empty: %s", presetName.c_str());
 		return;
@@ -468,7 +469,7 @@ void ParticleEditor::SavePreset(const std::string& presetName) {
 	currentPreset_.presetName = presetName;
 	TakeCFrameWork::GetJsonLoader()->SaveJsonData<ParticlePreset>(presetName + ".json", currentPreset_);
 	// プリセット名を更新
-	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetParticlePresetList();
+	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ParticlePreset>();
 
 }
 
@@ -502,7 +503,7 @@ void ParticleEditor::DeletePreset(const std::string& presetName) {
 	}
 
 	// プリセットを削除
-	TakeCFrameWork::GetJsonLoader()->DeleteParticlePreset(presetName);
+	TakeCFrameWork::GetJsonLoader()->DeleteJsonData<ParticlePreset>(presetName + ".json");
 
 	//プリセット名更新
 	RefreshPresetList();
@@ -544,5 +545,5 @@ void ParticleEditor::LoadAllPresets() {
 
 void ParticleEditor::RefreshPresetList() {
 	// プリセット名のリストを更新
-	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetParticlePresetList();
+	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ParticlePreset>();
 }

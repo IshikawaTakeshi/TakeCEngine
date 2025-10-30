@@ -76,9 +76,11 @@ struct GameCharacterContext {
 	OverHeatInfo overHeatInfo{};     // オーバーヒート情報
 };
 
-// ゲームキャラクターデータ
+// 実際に使用するゲームキャラクターデータ
 struct CharacterData {
 	std::string name;  //名前
+
+	std::string characterName; //キャラクター名
 	std::string modelFilePath; //モデルファイルパス
 
 	GameCharacterContext context; // コンテキスト情報

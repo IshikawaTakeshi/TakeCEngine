@@ -132,6 +132,9 @@ void Rifle::UpdateImGui() {
 //===================================================================================
 void Rifle::Draw() {
 
+	if(remainingBulletCount_ <= 0 && bulletCount_ <= 0) {
+		return; // 弾がなくなったら描画しない
+	}
 	object3d_->Draw();
 }
 
