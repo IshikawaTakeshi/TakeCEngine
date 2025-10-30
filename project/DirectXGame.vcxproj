@@ -127,6 +127,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Effect\BoostEffect.cpp" />
     <ClCompile Include="application\Effect\DeadEffect.cpp" />
     <ClCompile Include="application\Scene\EnemySelectScene.cpp" />
+    <ClCompile Include="application\Tool\CharacterEdit\CharacterEditTool.cpp" />
+    <ClCompile Include="application\Weapon\WeaponContext.cpp" />
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
     <ClCompile Include="engine\math\Transform.cpp" />
     <ClCompile Include="engine\PostEffect\BloomEffect.cpp" />
@@ -246,6 +248,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Provider\Enum\CharacterActionInputEnum.h" />
     <ClInclude Include="application\Scene\EnemySelectScene.h" />
     <ClInclude Include="application\Weapon\Bazooka.h" />
+    <ClInclude Include="application\Weapon\WeaponContext.h" />
     <ClInclude Include="application\Weapon\WeaponType.h" />
     <ClInclude Include="application\UI\EnergyInfoUI.h" />
     <ClInclude Include="application\UI\BulletCounterUI.h" />
@@ -261,6 +264,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Enemy\BulletSensor.h" />
     <ClInclude Include="application\Effect\BoostEffect.h" />
     <ClInclude Include="application\Effect\DeadEffect.h" />
+    <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
     <ClInclude Include="engine\3d\Light\DirectionalLight.h" />
     <ClInclude Include="engine\3d\Light\LightCounter.h" />
     <ClInclude Include="engine\3d\Light\PointLight.h" />
@@ -284,6 +288,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Collision\BoxCollider.h" />
     <ClInclude Include="application\Scene\LevelData.h" />
     <ClInclude Include="application\Scene\SceneTransition.h" />
+    <ClInclude Include="engine\Utility\JsonDirectoryPathData.h" />
     <ClInclude Include="engine\Utility\JsonLoader.h" />
     <ClInclude Include="application\Weapon\Bullet\Bullet.h" />
     <ClInclude Include="application\Weapon\Bullet\BulletManager.h" />

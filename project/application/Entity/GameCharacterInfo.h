@@ -1,9 +1,11 @@
 #pragma once
 #include <string>
 #include <json.hpp>
+#include <array>
 #include "engine/math/Vector3.h"
 #include "engine/math/Transform.h"
-
+#include "engine/Utility/JsonDirectoryPathData.h"
+#include "application/Weapon/WeaponContext.h"
 
 // ステップブースト情報
 struct StepBoostInfo {
@@ -72,8 +74,15 @@ struct GameCharacterContext {
 	ChargeAttackStunInfo chargeAttackStunInfo{}; // チャージ攻撃後の硬直情報
 	EnergyInfo energyInfo{};         // エネルギー情報
 	OverHeatInfo overHeatInfo{};     // オーバーヒート情報
+};
 
-	std::string name;              // エンティティの名前
+// ゲームキャラクターデータ
+struct CharacterData {
+	std::string name;  //名前
+	std::string modelFilePath; //モデルファイルパス
+
+	GameCharacterContext context; // コンテキスト情報
+	std::array<WeaponData, 4> weaponData; // 武器データ（最大4つ）
 };
 
 // JSON形式に変換
@@ -91,3 +100,18 @@ void from_json(const nlohmann::json& j, JumpInfo& info);
 void from_json(const nlohmann::json& j, ChargeAttackStunInfo& info);
 void from_json(const nlohmann::json& j, EnergyInfo& info);
 void from_json(const nlohmann::json& j, OverHeatInfo& info);
+
+//ディレクトリパス取得用テンプレート特殊化
+template<>
+struct JsonPath<GameCharacterContext> {
+	static std::filesystem::path GetDirectory() {
+		return kGameCharacterContextPath;
+	}
+};
+
+template<>
+struct JsonPath<CharacterData> {
+	static std::filesystem::path GetDirectory() {
+		return kGameCharacterDataPath;
+	}
+};

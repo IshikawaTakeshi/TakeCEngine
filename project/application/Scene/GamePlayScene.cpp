@@ -58,14 +58,14 @@ void GamePlayScene::Initialize() {
 
 	//player
 	player_ = std::make_unique<Player>();
-	player_->LoadPlayerData("Player"); //Playerという名前のプレイヤーデータを読み込み
+	player_->LoadPlayerData("Player.json"); //Playerという名前のプレイヤーデータを読み込み
 	player_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
-	enemy_->LoadEnemyData("Enemy"); //Enemyという名前の敵データを読み込み
+	enemy_->LoadEnemyData("Enemy.json"); //Enemyという名前の敵データを読み込み
 	enemy_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
 	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
 	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));

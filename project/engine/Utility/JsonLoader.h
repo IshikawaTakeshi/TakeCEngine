@@ -1,23 +1,23 @@
 #pragma once
 #include "engine/3d/Particle/ParticleAttribute.h"
 #include "application/Entity/GameCharacterInfo.h"
+#include "engine/Utility/JsonDirectoryPathData.h"
 #include "scene/LevelData.h"
 #include <iostream>
 #include <variant>
 #include <string>
 #include <map>
 #include <json.hpp>
+#include <typeinfo>
 
 #include "Vector3.h"
 
 //=============================================================================================
 /// JsonLoader class
 //=============================================================================================
+
 class JsonLoader {
 public:
-
-	// JSON namespace alias
-	using json = nlohmann::json;
 
 	//==========================================================================================
 	// functions
@@ -36,19 +36,23 @@ public:
 	LevelData* LoadLevelFile(const std::string& groupName);
 
 
-	// ParticleAttributesの保存
-	void SaveParticleAttribute(const std::string& presetName, const ParticleAttributes& attributes);
-	// パーティクルプリセットの保存
-	void SaveParticlePreset(const std::string& presetName, const ParticlePreset& preset);
-	// ゲームキャラクターコンテキストの保存
-	void SaveGameCharacterContext(const std::string& characterName, const GameCharacterContext& context);
+	/// <summary>
+	/// JSONデータの保存
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="filePath"></param>
+	/// <param name="data"></param>
+	template<typename T>
+	void SaveJsonData(const std::string& filePath, const T& data);
 
-	// ParticleAttributesの読み込み
-	ParticleAttributes LoadParticleAttribute(const std::string& presetName) const;
-	// パーティクルプリセットの読み込み
-	ParticlePreset LoadParticlePreset(const std::string& presetName) const;
-	// ゲームキャラクターコンテキストの読み込み
-	GameCharacterContext LoadGameCharacterContext(const std::string& characterName) const;
+	/// <summary>
+	/// JSONデータの読み込み
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="filePath"></param>
+	/// <returns></returns>
+	template<typename T>
+	T LoadJsonData(const std::string& filePath) const;
 
 	// パーティクルプリセットの削除
 	void DeleteParticlePreset(const std::string& presetName);
@@ -58,15 +62,56 @@ public:
 
 	// パーティクルプリセットが存在するかチェック
 	bool IsParticlePresetExists(const std::string& presetName) const;
-
-private:
-
-	//グローバル変数の保存先ファイルパス
-	const std::string kDirectoryPath = "Resources/JsonLoader/";
-	
-	//パーティクルプリセットの保存先
-	const std::string kParticlePresetPath = "Resources/JsonLoader/ParticlePresets/";
-
-	//ゲームキャラクターコンテキストの保存先
-	const std::string kGameCharacterContextPath = "Resources/JsonLoader/GameCharacters/";
 };
+
+
+//-------------------------------------------------------------------------------
+// JSONデータの保存
+//-------------------------------------------------------------------------------
+template<typename T>
+inline void JsonLoader::SaveJsonData(const std::string& filePath, const T& data) {
+
+	std::filesystem::path dirctory = JsonPath<T>::GetDirectory();
+	//ディレクトリがなければ作成する
+	if (!std::filesystem::exists(dirctory)) {
+		std::filesystem::create_directories(dirctory);
+	}
+	// JSONオブジェクトに変換
+	json presetJson = data;
+	std::ofstream ofs(filePath);
+	//ファイルオープンが失敗した場合
+	if (ofs.fail()) {
+		std::string message = "Failed open json file for write:" + filePath;
+		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
+		assert(0);
+		return;
+	}
+	// JSONファイルに書き込む
+	ofs << presetJson.dump(4) << std::endl;
+	// ファイルを閉じる
+	ofs.close();
+}
+
+//-------------------------------------------------------------------------------
+// JSONデータの読み込み
+//-------------------------------------------------------------------------------
+template<typename T>
+inline T JsonLoader::LoadJsonData(const std::string& filePath) const {
+	
+	std::filesystem::path dirctory = JsonPath<T>::GetDirectory();
+	std::string fileFullPath = dirctory.string() + filePath;
+	std::ifstream ifs(fileFullPath);
+	//ファイルオープンが失敗した場合
+	if (ifs.fail()) {
+		std::string message = "Failed open json file for read:" + fileFullPath;
+		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
+		assert(0);
+		return T();
+	}
+	// JSONファイルから読み込む
+	json dataJson;
+	ifs >> dataJson;
+	ifs.close();
+	// JSONからTに変換
+	return dataJson.get<T>();
+}

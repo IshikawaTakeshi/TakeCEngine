@@ -111,17 +111,17 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 //========================================================================================================
 // EnemyのGameCharacterContextの読み込み・保存
 //========================================================================================================
-void Enemy::LoadEnemyData(const std::string& characterName) {
+void Enemy::LoadEnemyData(const std::string& characterJsonPath) {
 
 	//JsonLoaderを使ってEnemyのGameCharacterContextを読み込み
-	characterInfo_ = TakeCFrameWork::GetJsonLoader()->LoadGameCharacterContext(characterName);
+	characterInfo_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<GameCharacterContext>(characterJsonPath);
 }
 
-void Enemy::SaveEnemyData(const std::string& characterName) {
+void Enemy::SaveEnemyData(const std::string& characterJsonPath) {
 
 	//JsonLoaderを使ってEnemyのGameCharacterContextを保存
-	characterInfo_.name = characterName;
-	TakeCFrameWork::GetJsonLoader()->SaveGameCharacterContext(characterName, characterInfo_);
+	characterInfo_.name = characterJsonPath;
+	TakeCFrameWork::GetJsonLoader()->SaveJsonData<GameCharacterContext>(characterJsonPath, characterInfo_);
 }
 
 //========================================================================================================

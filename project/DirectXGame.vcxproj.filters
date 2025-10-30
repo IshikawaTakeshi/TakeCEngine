@@ -511,9 +511,6 @@
     <ClCompile Include="application\Provider\PlayerKeyInput.cpp">
       <Filter>application\provider</Filter>
     </ClCompile>
-    <ClCompile Include="engine\scene\SceneTransition.cpp">
-      <Filter>engine\scene</Filter>
-    </ClCompile>
     <ClCompile Include="engine\Utility\Timer.cpp" />
     <ClCompile Include="application\Effect\DeadEffect.cpp" />
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
@@ -521,6 +518,8 @@
     <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
     <ClCompile Include="engine\math\Transform.cpp" />
     <ClCompile Include="application\Scene\EnemySelectScene.cpp" />
+    <ClCompile Include="application\Tool\CharacterEdit\CharacterEditTool.cpp" />
+    <ClCompile Include="application\Weapon\WeaponContext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1058,9 +1057,6 @@
     <ClInclude Include="application\Provider\PlayerKeyInput.h">
       <Filter>application\provider</Filter>
     </ClInclude>
-    <ClInclude Include="engine\scene\SceneTransition.h">
-      <Filter>engine\scene</Filter>
-    </ClInclude>
     <ClInclude Include="engine\math\physics\Ray.h">
       <Filter>engine\math\Physics</Filter>
     </ClInclude>
@@ -1077,6 +1073,9 @@
     <ClInclude Include="engine\3d\Light\LightManager.h" />
     <ClInclude Include="engine\base\ComPtrAliasTemplates.h" />
     <ClInclude Include="application\Scene\EnemySelectScene.h" />
+    <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
+    <ClInclude Include="application\Weapon\WeaponContext.h" />
+    <ClInclude Include="engine\Utility\JsonDirectoryPathData.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
