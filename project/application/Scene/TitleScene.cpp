@@ -24,6 +24,10 @@ void TitleScene::Initialize() {
 	titleTextSprite_->AdjustTextureSize();
 	titleTextSprite_->SetPosition({ 200.0f, 256.0f});
 
+	// 「PRESS START」スプライトUI
+	pushStartUI_ = std::make_unique<PushStartUI>();
+	pushStartUI_->Initialize();
+
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.obj");
@@ -35,6 +39,7 @@ void TitleScene::Initialize() {
 //====================================================================
 void TitleScene::Finalize() {
 	titleTextSprite_.reset();
+	pushStartUI_.reset();
 	camera0_.reset();
 	camera1_.reset();
 	CameraManager::GetInstance()->ResetCameras();
@@ -54,6 +59,7 @@ void TitleScene::Update() {
 
 	//タイトルテキストの更新
 	titleTextSprite_->Update();
+	pushStartUI_->Update();
 
 	//シーン遷移
 	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::A)) {
@@ -70,6 +76,7 @@ void TitleScene::UpdateImGui() {
 	//ImGuiの更新
 	CameraManager::GetInstance()->UpdateImGui();
 	titleTextSprite_->UpdateImGui("title");
+	pushStartUI_->UpdateImGui();
 
 #endif
 }
@@ -85,6 +92,7 @@ void TitleScene::Draw() {
 	//タイトルテキスト描画
 	SpriteCommon::GetInstance()->PreDraw();
 	titleTextSprite_->Draw();
+	pushStartUI_->Draw();
 	Object3dCommon::GetInstance()->PreDraw();
 
 }
