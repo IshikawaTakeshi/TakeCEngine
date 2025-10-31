@@ -16,6 +16,7 @@
 
 //application
 #include "application/UI/PushStartUI.h"
+#include "application/UI/PhaseMessageUI.h"
 
 //============================================================================
 // TitleScene class
@@ -51,5 +52,8 @@ private:
 	std::unique_ptr<Sprite> titleTextSprite_ = nullptr;
 	// 「PRESS START」スプライトUI
 	std::unique_ptr<PushStartUI> pushStartUI_ = nullptr;
+
+	// フェーズメッセージUI
+	std::unique_ptr<PhaseMessageUI> phaseMessageUI_ = nullptr;
 
 };
