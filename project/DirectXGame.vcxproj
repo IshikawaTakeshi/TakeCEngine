@@ -236,6 +236,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Provider\PlayerKeyInput.cpp" />
     <ClCompile Include="application\Ground\WaterGround.cpp" />
     <ClCompile Include="engine\Utility\Timer.cpp" />
+    <ClCompile Include="application\UI\PushStartUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
@@ -363,6 +364,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\io\IInputDevice.h" />
     <ClInclude Include="application\Provider\PlayerKeyInput.h" />
     <ClInclude Include="engine\3d\Light\LightManager.h" />
+    <ClInclude Include="application\UI\PushStartUI.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />
