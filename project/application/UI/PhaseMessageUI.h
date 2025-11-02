@@ -1,9 +1,17 @@
 #pragma once
 #include <memory>
+#include <optional>
 #include "engine/2d/Sprite.h"
 #include "engine/Utility/Timer.h"
 
-
+// フェーズメッセージ列挙型
+enum class PhaseMessage {
+	READY,
+	GO,
+	WIN,
+	LOSE,
+	COUNT,
+};
 
 //============================================================================
 // PhaseMessageUI class
@@ -55,4 +63,7 @@ private:
 	Timer displayTimer_;
 	// アルファ値
 	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
+
+	std::optional<PhaseMessage> nextMessage_ = std::nullopt;
+	PhaseMessage currentMessage_ = PhaseMessage::COUNT;
 };

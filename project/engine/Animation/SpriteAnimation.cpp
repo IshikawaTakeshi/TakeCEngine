@@ -1,63 +1,100 @@
 #include "SpriteAnimation.h"
 #include "engine/Utility/Timer.h"
 #include "engine/2d/Sprite.h"
+#include "engine/base/TakeCFrameWork.h"
 #include <utility>
+
+void SpriteAnimator::Initialize(Sprite* target) {
+	target_ = target;
+}
 
 //=============================================================================
 // 拡大アニメーション
 //=============================================================================
 
-void SpriteAnim::UpScale(Sprite& sprite, const Vector2& startSize, const Vector2& endSize, float duration, Easing::EasingType EaseType, PlayMode playMode) {
+void SpriteAnimator::PlayUpScale(
+	const Vector2& startSize, const Vector2& endSize,
+	float duration, float delay,
+	Easing::EasingType easeType, PlayMode playMode) {
 
-	//タイマーの更新
-	static Timer timer(duration, 0.0f);
-	timer.Update();
-	//進捗の計算
-	float t = timer.GetEase(EaseType);
-	//スケールの計算
-	Vector2 newScale = Easing::Lerp(startSize, endSize, t);
-	sprite.SetSize(newScale);
-	//再生モードによる処理
-	if (playMode == PlayMode::LOOP) {
-		if (timer.IsFinished()) {
-			timer.Reset();
+	startSize_ = startSize;
+	endSize_ = endSize;
+	duration_ = duration;
+	delay_ = delay;
+	easeType_ = easeType;
+	playMode_ = playMode;
+	timer_ = 0.0f;
+	state_ = State::Up;
+
+	if (target_) target_->SetSize(startSize_);
+
+	// 🔹 アニメーション関数をラムダとして登録
+	currentAnimFunc_ = [this](float deltaTime) {
+		if (!target_) return;
+		timer_ += deltaTime;
+
+		switch (state_) {
+		case State::Up:
+		{
+			float t = std::clamp(timer_ / duration_, 0.0f, 1.0f);
+			float eased = Easing::Ease[easeType_](t);
+			Vector2 size = Easing::Lerp(startSize_, endSize_, eased);
+			target_->SetSize(size);
+
+			if (t >= 1.0f) {
+				timer_ = 0.0f;
+				if (playMode_ == PlayMode::PINGPONG) {
+					state_ = State::Delay;
+				} else if (playMode_ == PlayMode::LOOP) {
+					state_ = State::Up;
+					target_->SetSize(startSize_);
+				} else if (playMode_ == PlayMode::ONCE) {
+					state_ = State::None;
+					target_->SetSize(endSize_);
+				}
+			}
+			break;
 		}
-	}
-	else if (playMode == PlayMode::ONCE) {
-		if (timer.IsFinished()) {
-			sprite.SetSize(endSize);
+
+		case State::Delay:
+		{
+			if (timer_ >= delay_) {
+				timer_ = 0.0f;
+				state_ = State::Down;
+			}
+			break;
 		}
-	} else if (playMode == PlayMode::PINGPONG) {
-		if (timer.IsFinished()) {
-			DownScale(sprite, endSize, startSize, duration, EaseType, PlayMode::ONCE);
+
+		case State::Down:
+		{
+			float t = std::clamp(timer_ / duration_, 0.0f, 1.0f);
+			float eased = Easing::Ease[easeType_](t);
+			Vector2 size = Easing::Lerp(endSize_, startSize_, eased);
+			target_->SetSize(size);
+
+			if (t >= 1.0f) {
+				timer_ = 0.0f;
+				if (playMode_ == PlayMode::PINGPONG) {
+					state_ = State::Up;
+				} else if (playMode_ == PlayMode::LOOP) {
+					state_ = State::Up;
+					target_->SetSize(startSize_);
+				} else if (playMode_ == PlayMode::ONCE) {
+					state_ = State::None;
+					target_->SetSize(startSize_);
+				}
+			}
+			break;
 		}
-	}
+
+		default:
+			break;
+		}
+		};
 }
 
-void SpriteAnim::DownScale(Sprite& sprite, const Vector2& startSize, const Vector2& endSize, float duration, Easing::EasingType EaseType, PlayMode playMode) {
-	//タイマーの更新
-	static Timer timer(duration, 0.0f);
-	timer.Update();
-	//進捗の計算
-	float t = timer.GetEase(EaseType);
-	//スケールの計算
-	Vector2 newScale = Easing::Lerp(startSize, endSize, t);
-	sprite.SetSize(newScale);
-	//再生モードによる処理
-	if (playMode == PlayMode::LOOP) {
-		if (timer.IsFinished()) {
-			timer.Reset();
-		}
-	}
-	else if (playMode == PlayMode::ONCE) {
-		if (timer.IsFinished()) {
-			sprite.SetSize(endSize);
-		}
-	}
-	else if (playMode == PlayMode::PINGPONG) {
-		if (timer.IsFinished()) {
-
-			timer.Reset();
-		}
+void SpriteAnimator::Update(float deltaTime) {
+	if (state_ != State::None && currentAnimFunc_) {
+		currentAnimFunc_(deltaTime);
 	}
 }

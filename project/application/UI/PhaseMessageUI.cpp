@@ -24,6 +24,7 @@ void PhaseMessageUI::Initialize() {
 	// タイマー初期化
 	displayTimer_.Reset();
 
+	nextMessage_ = PhaseMessage::READY;
 }
 
 //====================================================================
@@ -31,22 +32,57 @@ void PhaseMessageUI::Initialize() {
 //====================================================================
 
 void PhaseMessageUI::Update() {
-	// タイマー更新
-	displayTimer_.Update();
-
 	
-	// タイマーが終了していなければアルファ値を減少させる
-	if (!displayTimer_.IsFinished()) {
-		SpriteAnim::UpScale(*bandSprite_, { 1280.0f,0.0f }, { 1280.0f,80.0f }, 1.0f, Easing::EasingType::OUT_BACK, SpriteAnim::PlayMode::ONCE);
-		color_.w = 1.0f - displayTimer_.GetProgress();
-	} else {
-		color_.w = 0.0f;
+
+	if (nextMessage_) {
+
+		currentMessage_ = nextMessage_.value();
+
+		switch (currentMessage_) {
+		case PhaseMessage::READY:
+			
+			// 帯アニメーション再生(拡大)
+			bandSprite_->Animation()->PlayUpScale(
+				{ bandSprite_->GetSize().x,0.0f },
+				{ bandSprite_->GetSize().x, bandSprite_->GetSize().y },
+				0.5f,
+				1.0f,
+				Easing::EasingType::OUT_QUAD,
+				SpriteAnimator::PlayMode::PINGPONG
+			);	
+
+			break;
+		case PhaseMessage::GO:
+			
+			bandSprite_->Animation()->PlayUpScale(
+				{ bandSprite_->GetSize().x,0.0f },
+				{ bandSprite_->GetSize().x, bandSprite_->GetSize().y },
+				0.3f,
+				0.5f,
+				Easing::EasingType::OUT_QUAD,
+				SpriteAnimator::PlayMode::PINGPONG
+			);
+			break;
+		
+		default:
+			break;
+		}
+
+		nextMessage_ = std::nullopt;
+	}
+
+	switch (currentMessage_) {
+	case PhaseMessage::READY:
+
+		bool isBandAnimFinished = !bandSprite_->Animation()->IsFinished();
+		if(!isBandAnimFinished) {
+			nextMessage_ = PhaseMessage::GO;
+		}
+
+		break;
 
 	}
-	// スプライトのアルファ値設定
-	phaseMessageText_->SetMaterialColor(color_);
 
-	// スプライトの更新
 	phaseMessageText_->Update();
 	bandSprite_->Update();
 }
