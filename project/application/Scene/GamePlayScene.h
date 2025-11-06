@@ -28,6 +28,7 @@
 #include "application/UI/EnergyInfoUI.h"
 #include "application/UI/BulletCounterUI.h"
 #include "application/Scene/GamePlaySceneBehavior.h"
+#include "application/UI/PhaseMessageUI.h"
 
 //=============================================================================
 // GamePlayScene class
@@ -113,7 +114,11 @@ private:
 
 	std::map<std::string,std::unique_ptr<LevelObject>> levelObjects_;
 
+	//
 	std::unique_ptr<Sprite> instructionSprite_ = nullptr;
+
+	// フェーズメッセージUI
+	std::unique_ptr<PhaseMessageUI> phaseMessageUI_ = nullptr;
 
 	//画面遷移時間
 	float fadeTimer_ = 0.0f;

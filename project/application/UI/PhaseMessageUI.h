@@ -4,10 +4,11 @@
 #include "engine/2d/Sprite.h"
 #include "engine/Utility/Timer.h"
 
+
 // フェーズメッセージ列挙型
 enum class PhaseMessage {
 	READY,
-	GO,
+	FIGHT,
 	WIN,
 	LOSE,
 	COUNT,
@@ -49,6 +50,16 @@ public:
 	/// </summary>
 	void Draw();
 
+
+	PhaseMessage GetCurrentMessage() const {
+		return currentMessage_;
+	}
+
+	std::optional<PhaseMessage> GetNextMessage() const {
+		return nextMessage_;
+	}
+
+	void SetNextMessage(PhaseMessage message);
 private:
 
 	//========================================================================
@@ -59,11 +70,20 @@ private:
 	std::unique_ptr<Sprite> phaseMessageText_ = nullptr;
 	//帯スプライト
 	std::unique_ptr<Sprite> bandSprite_ = nullptr;
-	// 表示タイマー
-	Timer displayTimer_;
+
 	// アルファ値
 	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
 
 	std::optional<PhaseMessage> nextMessage_ = std::nullopt;
 	PhaseMessage currentMessage_ = PhaseMessage::COUNT;
+
+	Vector2 originalTextSizeMin_ = { 0.0f,0.0f };
+	Vector2 originalTextSizeMax_ = { 0.0f,0.0f };
+
+	Vector2 originalBandSizeMin_ = { 0.0f,0.0f };
+	Vector2 originalBandSizeMax_ = { 0.0f,0.0f };
+
+	Vector2 screenCenter_;
+
+	bool isMessageFinished_ = false;
 };

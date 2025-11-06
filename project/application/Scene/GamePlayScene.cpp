@@ -99,12 +99,19 @@ void GamePlayScene::Initialize() {
 	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[3]->Initialize(SpriteCommon::GetInstance(), { 900.0f,540.0f });
 
+	// フェーズメッセージUI
+	phaseMessageUI_ = std::make_unique<PhaseMessageUI>();
+	phaseMessageUI_->Initialize();
+
 	//操作説明UI
 	instructionSprite_ = std::make_unique<Sprite>();
 	instructionSprite_->Initialize(SpriteCommon::GetInstance(), "UI/OperationInstructions.png");
 	instructionSprite_->SetPosition({ 0.0f, 100.0f });
 	instructionSprite_->AdjustTextureSize();
 	instructionSprite_->SetSize({ 250.0f, 200.0f });
+
+	//最初の状態設定
+	behaviorRequest_ = SceneBehavior::GAMESTART;
 }
 
 //====================================================================
@@ -132,28 +139,12 @@ void GamePlayScene::Update() {
 	//enemy
 	enemy_->SetFocusTargetPos(player_->GetObject3d()->GetTranslate());
 	enemy_->SetFocusTargetVelocity(player_->GetVelocity());
-	enemy_->Update();
+	
 
 	//player
 	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
 	player_->SetFocusTargetVelocity(enemy_->GetVelocity());
-	player_->Update();
 
-	//弾の更新
-	bulletManager_->Update();
-
-	for (auto& object : levelObjects_) {
-		object.second->Update();
-	}
-
-	//particleManager更新
-	TakeCFrameWork::GetParticleManager()->Update();
-	//particleEmitter_->UpdateForGPU();
-	//particleEmitter_->EmitParticle(gpuParticle_.get());
-	//gpuParticle_->Update();
-
-	//当たり判定の更新
-	CheckAllCollisions();
 
 	if (behaviorRequest_) {
 
@@ -217,6 +208,28 @@ void GamePlayScene::Update() {
 	default:
 		break;
 	}
+
+	enemy_->Update();
+	player_->Update();
+
+	//弾の更新
+	bulletManager_->Update();
+
+	for (auto& object : levelObjects_) {
+		object.second->Update();
+	}
+
+	//フェーズメッセージUIの更新
+	phaseMessageUI_->Update();
+
+	//particleManager更新
+	TakeCFrameWork::GetParticleManager()->Update();
+	//particleEmitter_->UpdateForGPU();
+	//particleEmitter_->EmitParticle(gpuParticle_.get());
+	//gpuParticle_->Update();
+
+	//当たり判定の更新
+	CheckAllCollisions();
 }
 
 void GamePlayScene::UpdateImGui() {
@@ -230,17 +243,12 @@ void GamePlayScene::UpdateImGui() {
 	enemyHpBar_->UpdateImGui("enemy");
 	playerReticle_->UpdateImGui();
 	energyInfoUI_->UpdateImGui("player");
+	phaseMessageUI_->UpdateImGui();
 	for (int i = 0; i < 4; i++) {
 		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
 	instructionSprite_->UpdateImGui("instruction");
-	ImGui::Begin("Level Objects");
-	/*for(auto& object : levelObjects_) {
-		object.second->UpdateImGui();
-	}*/
-	ImGui::End();
 
-	//particleEmitter_->UpdateImGui();
 }
 
 //====================================================================
@@ -300,6 +308,9 @@ void GamePlayScene::Draw() {
 
 		//操作説明UIの描画
 		instructionSprite_->Draw();
+
+		//フェーズメッセージUIの描画
+		phaseMessageUI_->Draw();
 	}
 
 #pragma endregion
@@ -309,14 +320,29 @@ void GamePlayScene::Draw() {
 // ゲームスタート時の処理
 //====================================================================
 
-void GamePlayScene::InitializeGameStart() {}
+void GamePlayScene::InitializeGameStart() {
 
-void GamePlayScene::UpdateGameStart() {}
+	//フェーズメッセージUIにREADYメッセージをセット
+	phaseMessageUI_->SetNextMessage(PhaseMessage::READY);
+}
+
+void GamePlayScene::UpdateGameStart() {
+
+	
+	//フェーズメッセージUIが終了したらゲームプレイへ
+	if (phaseMessageUI_->GetCurrentMessage() == PhaseMessage::FIGHT) {
+		behaviorRequest_ = SceneBehavior::GAMEPLAY;
+	}
+}
 
 //====================================================================
 // ゲームプレイ時の処理
 //====================================================================
-void GamePlayScene::InitializeGamePlay() {}
+void GamePlayScene::InitializeGamePlay() {
+
+	//フェーズメッセージUIにGOメッセージをセット
+	phaseMessageUI_->SetNextMessage(PhaseMessage::FIGHT);
+}
 
 void GamePlayScene::UpdateGamePlay() {
 
@@ -395,7 +421,9 @@ void GamePlayScene::UpdateEnemyDestroyed() {
 //====================================================================
 void GamePlayScene::InitializeGameOver() {
 
-	fadeTimer_ = 2.0f;
+	phaseMessageUI_->SetNextMessage(PhaseMessage::LOSE);
+
+	fadeTimer_ = 3.0f;
 	SceneManager::GetInstance()->ChangeScene("GAMEOVER", fadeTimer_);
 }
 
@@ -405,12 +433,12 @@ void GamePlayScene::UpdateGameOver() {}
 //====================================================================
 void GamePlayScene::InitializeGameClear() {
 
+	phaseMessageUI_->SetNextMessage(PhaseMessage::WIN);
+
 	//スローモーション解除
 	MyGame::RequestTimeScale(1.0f, 0.6f, 0.0f);
-
-	//フェード処理の開始
-	fadeTimer_ = 4.0f;
-	//SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
+	fadeTimer_ = 3.0f;
+	SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
 }
 
 void GamePlayScene::UpdateGameClear() {

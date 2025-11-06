@@ -179,6 +179,12 @@ void Sprite::SetSizeRelative() {
 	size_.y *= WinApp::heightPercent_;
 }
 
+void Sprite::SetFilePath(const std::string& filePath) {
+	filePath_ = filePath;
+	mesh_->GetMaterial()->SetTextureFilePath(filePath);
+
+}
+
 //=============================================================================================
 // テクスチャサイズをイメージに合わせる
 //=============================================================================================

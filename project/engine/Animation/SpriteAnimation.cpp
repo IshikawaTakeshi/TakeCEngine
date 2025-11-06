@@ -26,30 +26,35 @@ void SpriteAnimator::PlayUpScale(
 	timer_ = 0.0f;
 	state_ = State::Up;
 
+	//アニメーション開始時にサイズを初期化
 	if (target_) target_->SetSize(startSize_);
 
-	// 🔹 アニメーション関数をラムダとして登録
+	//アニメーション関数をラムダとして登録
 	currentAnimFunc_ = [this](float deltaTime) {
 		if (!target_) return;
 		timer_ += deltaTime;
 
+		//状態別処理
 		switch (state_) {
 		case State::Up:
 		{
+
+			
 			float t = std::clamp(timer_ / duration_, 0.0f, 1.0f);
 			float eased = Easing::Ease[easeType_](t);
 			Vector2 size = Easing::Lerp(startSize_, endSize_, eased);
 			target_->SetSize(size);
 
+			// 完了判定
 			if (t >= 1.0f) {
 				timer_ = 0.0f;
 				if (playMode_ == PlayMode::PINGPONG) {
-					state_ = State::Delay;
+					state_ = State::Delay; // PINGPONGの場合はDelayへ
 				} else if (playMode_ == PlayMode::LOOP) {
-					state_ = State::Up;
+					state_ = State::Up;    // LOOPの場合は再度Upへ
 					target_->SetSize(startSize_);
 				} else if (playMode_ == PlayMode::ONCE) {
-					state_ = State::None;
+					state_ = State::None;  // ONCEの場合は終了
 					target_->SetSize(endSize_);
 				}
 			}
@@ -75,7 +80,8 @@ void SpriteAnimator::PlayUpScale(
 			if (t >= 1.0f) {
 				timer_ = 0.0f;
 				if (playMode_ == PlayMode::PINGPONG) {
-					state_ = State::Up;
+					state_ = State::None;
+					target_->SetSize(startSize_);
 				} else if (playMode_ == PlayMode::LOOP) {
 					state_ = State::Up;
 					target_->SetSize(startSize_);

@@ -113,6 +113,8 @@ public:
 	void SetTextureSize(const Vector2& textureSize) { textureSize_ = textureSize; }
 	//マテリアルカラー設定
 	void SetMaterialColor(const Vector4& color) { mesh_->GetMaterial()->SetMaterialColor(color); }
+	//ファイルパス設定
+	void SetFilePath(const std::string& filePath);
 
 private:
 

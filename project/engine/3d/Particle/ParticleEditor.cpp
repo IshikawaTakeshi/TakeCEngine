@@ -214,22 +214,26 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 		slectedTextureIndex = static_cast<int>(std::distance(textureFileNames_.begin(), it));
 	}
 
-	
+	//コンボボックスの表示
 	if(ImGui::BeginCombo("Texture File",textureFileNames_.empty() ? "None":textureFileNames_[slectedTextureIndex].c_str())) {
 		
+		//テクスチャ名一覧の表示
 		for (int i = 0; i < textureFileNames_.size(); ++i) {
 			bool isSelected = (slectedTextureIndex == i);
+
+			//テクスチャ名の選択
 			if (ImGui::Selectable(textureFileNames_[i].c_str(), isSelected)) {
 				slectedTextureIndex = i;
+				// 選択されたテクスチャをプリセットに設定
 				currentPreset_.textureFilePath = textureFileNames_[i];
 			}
+
+			//デフォルトフォーカスの設定
 			if (isSelected) {
 				ImGui::SetItemDefaultFocus();
 			}
 		}
 		
-		
-
 		ImGui::EndCombo();
 	}
 #pragma endregion
