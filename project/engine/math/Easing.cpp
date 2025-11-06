@@ -8,6 +8,17 @@ float Easing::Lerp(float startPos, float endPos, float easedT) {
 }
 
 //=============================================================================
+// 線形補間(Vector2)
+//=============================================================================
+Vector2 Easing::Lerp(Vector2 startPos, Vector2 endPos, float easedT) {
+    
+    return {
+        (1.0f - easedT) * startPos.x + easedT * endPos.x,
+        (1.0f - easedT) * startPos.y + easedT * endPos.y
+	};
+}
+
+//=============================================================================
 // 線形補間(Vector3)
 //=============================================================================
 Vector3 Easing::Lerp(Vector3 startPos, Vector3 endPos, float easedT) {
@@ -78,6 +89,14 @@ float Easing::EaseInExpo(float x) {
 
 float Easing::EaseOutExpo(float x) {
 	return x == 1.0f ? 1.0f : 1.0f - powf(2.0f, -10.0f * x);
+}
+
+float Easing::EaseInBack(float x) {
+	return x * x * x - x * std::sin(x * std::numbers::pi_v<float>);
+}
+
+float Easing::EaseOutBack(float x) {
+	return 1.0f - EaseInBack(1.0f - x);
 }
 
 float Easing::UrgentRise(float x) {

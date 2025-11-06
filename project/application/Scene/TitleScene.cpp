@@ -28,6 +28,8 @@ void TitleScene::Initialize() {
 	pushStartUI_ = std::make_unique<PushStartUI>();
 	pushStartUI_->Initialize();
 
+	
+	
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.obj");
@@ -60,6 +62,7 @@ void TitleScene::Update() {
 	//タイトルテキストの更新
 	titleTextSprite_->Update();
 	pushStartUI_->Update();
+	
 
 	//シーン遷移
 	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::A)) {
@@ -77,6 +80,7 @@ void TitleScene::UpdateImGui() {
 	CameraManager::GetInstance()->UpdateImGui();
 	titleTextSprite_->UpdateImGui("title");
 	pushStartUI_->UpdateImGui();
+	
 
 #endif
 }
@@ -93,6 +97,7 @@ void TitleScene::Draw() {
 	SpriteCommon::GetInstance()->PreDraw();
 	titleTextSprite_->Draw();
 	pushStartUI_->Draw();
+	//phaseMessageUI_->Draw();
 	Object3dCommon::GetInstance()->PreDraw();
 
 }

@@ -18,6 +18,7 @@
 #include "ResourceDataStructure.h"
 #include "Mesh/Mesh.h"
 #include "SpriteCommon.h"
+#include "engine/Animation/SpriteAnimation.h"
 
 //前方宣言
 class DirectXCommon;
@@ -72,6 +73,9 @@ public:
 	EulerTransform GetTransform() { return transform_; }
 	//メッシュ取得
 	const std::unique_ptr<Mesh>& GetMesh() const { return mesh_; }
+
+	//SpriteAnimator取得
+	SpriteAnimator* Animation() const { return spriteAnimator_.get(); }
 	//アンカーポイント取得
 	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
 	//座標取得
@@ -109,6 +113,8 @@ public:
 	void SetTextureSize(const Vector2& textureSize) { textureSize_ = textureSize; }
 	//マテリアルカラー設定
 	void SetMaterialColor(const Vector4& color) { mesh_->GetMaterial()->SetMaterialColor(color); }
+	//ファイルパス設定
+	void SetFilePath(const std::string& filePath);
 
 private:
 
@@ -120,6 +126,8 @@ private:
 
 	//filePath
 	std::string filePath_;
+	//SpriteAnimator
+	std::unique_ptr<SpriteAnimator> spriteAnimator_{};
 
 	//sprite用のTransformationMatrix用の頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;

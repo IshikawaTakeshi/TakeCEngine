@@ -1,4 +1,5 @@
 #pragma once
+#include "math/Vector2.h"
 #include "math/Vector3.h"
 #include "math/Quaternion.h"
 #include <cmath>
@@ -23,12 +24,13 @@ namespace Easing {
 	float Lerp(float startPos, float endPos, float easedT);
 
 	/// <summary>
+	/// 線形補間(Vector2)
+	/// </summary>
+	Vector2 Lerp(Vector2 startPos, Vector2 endPos, float easedT);
+
+	/// <summary>
 	/// 線形補間(Vector3)
 	/// </summary>
-	/// <param name="startPos"></param>
-	/// <param name="endPos"></param>
-	/// <param name="easedT"></param>
-	/// <returns></returns>
 	Vector3 Lerp(Vector3 startPos, Vector3 endPos, float easedT);
 
 	/// <summary>
@@ -57,6 +59,10 @@ namespace Easing {
 	float EaseInExpo(float x);
 	float EaseOutExpo(float x);
 
+	//back系
+	float EaseInBack(float x);
+	float EaseOutBack(float x);
+
 	//急激な変化をさせる
 	float UrgentRise(float x);
 	//緩やかな変化をさせる
@@ -74,6 +80,8 @@ namespace Easing {
 		OUT_CUBIC,
 		IN_EXPO,
 		OUT_EXPO,
+		IN_BACK,
+		OUT_BACK,
 		URGENT_RISE,
 		GENTLE_RISE
 	};
@@ -90,6 +98,8 @@ namespace Easing {
 		EaseOutCubic,
 		EaseInExpo,
 		EaseOutExpo,
+		EaseInBack,
+		EaseOutBack,
 		UrgentRise,
 		GentleRise
 	};

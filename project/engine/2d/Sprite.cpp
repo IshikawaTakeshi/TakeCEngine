@@ -4,16 +4,8 @@
 #include "Material.h"
 #include "MatrixMath.h"
 #include "TextureManager.h"
-
-#pragma region imgui
-#ifdef _DEBUG
-
-#include "../externals/imgui/imgui.h"
-#include "../externals/imgui/imgui_impl_dx12.h"
-#include "../externals/imgui/imgui_impl_win32.h"
-#endif // DEBUG
-
-#pragma endregion
+#include "engine/base/TakeCFrameWork.h"
+#include "engine/base/ImGuiManager.h"
 
 //==================================================================================
 // 初期化
@@ -57,6 +49,10 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 		transform_.translate
 	);
 
+	//SpriteAnimatorの初期化(targetの設定)
+	spriteAnimator_ = std::make_unique<SpriteAnimator>();
+	spriteAnimator_->Initialize(this);
+
 	//ViewProjectionの初期化
 	viewMatrix_ = MatrixMath::MakeIdentity4x4();
 	projectionMatrix_ = MatrixMath::MakeOrthographicMatrix(
@@ -79,12 +75,18 @@ void Sprite::Update() {
 		firstUpdate_ = false;
 	}
 
+	//SpriteAnimatorの更新
+	spriteAnimator_->Update(TakeCFrameWork::GetDeltaTime());
+
+	//Transformの更新
 	transform_.translate = Vector3{ position_.x,position_.y,0.0f };
 	transform_.rotate = Vector3{ 0.0f,0.0f,rotation_ };
 	transform_.scale = Vector3{ size_.x,size_.y,1.0f };
 
+	//頂点データ更新
 	UpdateVertexData();
 
+	//テクスチャサイズをイメージに合わせる
 	if (adjustSwitch_) {
 		AdjustTextureSize();
 	}
@@ -175,6 +177,12 @@ void Sprite::UpdateVertexData() {
 void Sprite::SetSizeRelative() {
 	size_.x *= WinApp::widthPercent_;
 	size_.y *= WinApp::heightPercent_;
+}
+
+void Sprite::SetFilePath(const std::string& filePath) {
+	filePath_ = filePath;
+	mesh_->GetMaterial()->SetTextureFilePath(filePath);
+
 }
 
 //=============================================================================================
