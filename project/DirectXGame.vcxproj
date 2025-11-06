@@ -130,6 +130,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Tool\CharacterEdit\CharacterEditTool.cpp" />
     <ClCompile Include="application\Weapon\WeaponContext.cpp" />
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
+    <ClCompile Include="engine\Animation\SpriteAnimation.cpp" />
     <ClCompile Include="engine\math\Transform.cpp" />
     <ClCompile Include="engine\PostEffect\BloomEffect.cpp" />
     <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp" />
@@ -238,6 +239,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Provider\PlayerKeyInput.cpp" />
     <ClCompile Include="application\Ground\WaterGround.cpp" />
     <ClCompile Include="engine\Utility\Timer.cpp" />
+    <ClCompile Include="application\UI\PushStartUI.cpp" />
+    <ClCompile Include="application\UI\PhaseMessageUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
@@ -247,6 +250,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\WeaponUnit.h" />
     <ClInclude Include="application\Provider\Enum\CharacterActionInputEnum.h" />
     <ClInclude Include="application\Scene\EnemySelectScene.h" />
+    <ClInclude Include="application\Scene\GamePlaySceneBehavior.h" />
     <ClInclude Include="application\Weapon\Bazooka.h" />
     <ClInclude Include="application\Weapon\WeaponContext.h" />
     <ClInclude Include="application\Weapon\WeaponType.h" />
@@ -269,6 +273,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Light\LightCounter.h" />
     <ClInclude Include="engine\3d\Light\PointLight.h" />
     <ClInclude Include="engine\3d\Light\SpotLight.h" />
+    <ClInclude Include="engine\Animation\SpriteAnimation.h" />
     <ClInclude Include="engine\base\BlendModeStateEnum.h" />
     <ClInclude Include="engine\base\ComPtrAliasTemplates.h" />
     <ClInclude Include="engine\PostEffect\BloomEffect.h" />
@@ -368,6 +373,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\io\IInputDevice.h" />
     <ClInclude Include="application\Provider\PlayerKeyInput.h" />
     <ClInclude Include="engine\3d\Light\LightManager.h" />
+    <ClInclude Include="application\UI\PushStartUI.h" />
+    <ClInclude Include="application\UI\PhaseMessageUI.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

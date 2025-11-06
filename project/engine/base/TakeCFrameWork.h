@@ -80,6 +80,8 @@ public:
 	static JsonLoader* GetJsonLoader();
 	//PrimitiveDrawerの取得
 	static PrimitiveDrawer* GetPrimitiveDrawer();
+	//PostEffectManagerの取得
+	static PostEffectManager* GetPostEffectManager();
 	//WireFrameの取得
 	static WireFrame* GetWireFrame();
 	//ゲーム起動時間の取得

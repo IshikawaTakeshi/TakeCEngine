@@ -27,22 +27,14 @@
 #include "application/UI/PlayerReticle.h"
 #include "application/UI/EnergyInfoUI.h"
 #include "application/UI/BulletCounterUI.h"
+#include "application/Scene/GamePlaySceneBehavior.h"
+#include "application/UI/PhaseMessageUI.h"
 
 //=============================================================================
 // GamePlayScene class
 //=============================================================================
 class GamePlayScene : public BaseScene {
 public:
-
-	//シーンの状態
-	enum class SceneBehavior {
-		GAMESTART, // ゲーム開始状態
-		GAMEPLAY, // ゲームプレイ状態
-		ENEMYDESTROYED, // 敵撃破状態
-		GAMEOVER, // ゲームオーバー状態
-		GAMECLEAR, // ゲームクリア状態
-		PAUSE,  // ポーズ状態
-	};
 
 	//=========================================================================
 	// functions
@@ -122,7 +114,11 @@ private:
 
 	std::map<std::string,std::unique_ptr<LevelObject>> levelObjects_;
 
+	//
 	std::unique_ptr<Sprite> instructionSprite_ = nullptr;
+
+	// フェーズメッセージUI
+	std::unique_ptr<PhaseMessageUI> phaseMessageUI_ = nullptr;
 
 	//画面遷移時間
 	float fadeTimer_ = 0.0f;
