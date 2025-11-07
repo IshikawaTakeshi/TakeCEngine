@@ -52,8 +52,9 @@ struct OverHeatInfo {
 	bool isOverheated = false;           // オーバーヒート中かどうか
 };
 
-// ゲームキャラクターのコンテキスト情報
-struct GameCharacterContext {
+// 操作可能なキャラクターの基礎情報
+struct PlayableCharacterInfo {
+	std::string characterName; //キャラクター名
 	QuaternionTransform transform{}; // 位置、回転、スケール
 	Vector3 velocity{};              // 速度
 	Vector3 moveDirection{};        //移動方向
@@ -78,17 +79,17 @@ struct GameCharacterContext {
 
 // 実際に使用するゲームキャラクターデータ
 struct CharacterData {
-	std::string name;  //名前
 
-	std::string characterName; //キャラクター名
+	
 	std::string modelFilePath; //モデルファイルパス
 
-	GameCharacterContext context; // コンテキスト情報
+	PlayableCharacterInfo playableCharacterInfo; // コンテキスト情報
 	std::array<WeaponData, 4> weaponData; // 武器データ（最大4つ）
 };
 
 // JSON形式に変換
-void to_json(nlohmann::json& j, const GameCharacterContext& context);
+void to_json(nlohmann::json& j, const CharacterData& info);
+void to_json(nlohmann::json& j, const PlayableCharacterInfo& info);
 void to_json(nlohmann::json& j, const StepBoostInfo& info);
 void to_json(nlohmann::json& j, const JumpInfo& info);
 void to_json(nlohmann::json& j, const ChargeAttackStunInfo& info);
@@ -96,7 +97,8 @@ void to_json(nlohmann::json& j, const EnergyInfo& info);
 void to_json(nlohmann::json& j, const OverHeatInfo& info);
 
 // JSON形式から変換
-void from_json(const nlohmann::json& j, GameCharacterContext& context);
+void from_json(const nlohmann::json& j, CharacterData& info);
+void from_json(const nlohmann::json& j, PlayableCharacterInfo& info);
 void from_json(const nlohmann::json& j, StepBoostInfo& info);
 void from_json(const nlohmann::json& j, JumpInfo& info);
 void from_json(const nlohmann::json& j, ChargeAttackStunInfo& info);
@@ -105,7 +107,7 @@ void from_json(const nlohmann::json& j, OverHeatInfo& info);
 
 //ディレクトリパス取得用テンプレート特殊化
 template<>
-struct JsonPath<GameCharacterContext> {
+struct JsonPath<PlayableCharacterInfo> {
 	static std::filesystem::path GetDirectory() {
 		return kGameCharacterContextPath;
 	}

@@ -114,14 +114,14 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 void Enemy::LoadEnemyData(const std::string& characterJsonPath) {
 
 	//JsonLoaderを使ってEnemyのGameCharacterContextを読み込み
-	characterInfo_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<GameCharacterContext>(characterJsonPath);
+	characterInfo_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(characterJsonPath);
 }
 
 void Enemy::SaveEnemyData(const std::string& characterJsonPath) {
 
 	//JsonLoaderを使ってEnemyのGameCharacterContextを保存
-	characterInfo_.name = characterJsonPath;
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<GameCharacterContext>(characterJsonPath, characterInfo_);
+	characterInfo_.characterName = characterJsonPath;
+	TakeCFrameWork::GetJsonLoader()->SaveJsonData<PlayableCharacterInfo>(characterJsonPath, characterInfo_);
 }
 
 //========================================================================================================
@@ -268,7 +268,7 @@ void Enemy::UpdateImGui() {
 	}
 	//データ保存ボタン
 	if (ImGui::Button("Save Enemy Data")) {
-		SaveEnemyData(characterInfo_.name);
+		SaveEnemyData(characterInfo_.characterName);
 	}
 	ImGui::Separator();
 	bulletSensor_->UpdateImGui();

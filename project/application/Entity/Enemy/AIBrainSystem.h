@@ -20,7 +20,7 @@ class AIBrainSystem {
 	//=============================================================================
 
 	//初期化
-	void Initialize(GameCharacterContext* characterInfo,size_t weaponUnitSize);
+	void Initialize(PlayableCharacterInfo* characterInfo,size_t weaponUnitSize);
 	//更新
 	void Update();
 	//ImGuiの更新
@@ -73,7 +73,7 @@ private:
 	//敵の弾が近くに飛んできたかどうか
 	bool isBulletNearby_ = false;
 	//enemyの情報(借りてくる)
-	GameCharacterContext* characterInfo_;
+	PlayableCharacterInfo* characterInfo_;
 
 private:
 

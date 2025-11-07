@@ -133,7 +133,7 @@ private:
 	//ブーストエフェクト
 	std::vector<std::unique_ptr<BoostEffect>> boostEffects_;
 	// プレイヤーの情報
-	GameCharacterContext characterInfo_;
+	PlayableCharacterInfo characterInfo_;
 	// フレーム時間
 	float deltaTime_ = 0.0f; 
 	

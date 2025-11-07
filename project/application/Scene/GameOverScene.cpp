@@ -29,7 +29,7 @@ void GameOverScene::Initialize() {
 	//Spriteの初期化
 	gameOverTextSprite_ = std::make_unique<Sprite>();
 	gameOverTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/GameOverText.png");
-	gameOverTextSprite_->SetPosition({ 50.0f, 50.0f });
+	gameOverTextSprite_->SetTranslate({ 50.0f, 50.0f });
 	gameOverTextSprite_->AdjustTextureSize();
 
 }

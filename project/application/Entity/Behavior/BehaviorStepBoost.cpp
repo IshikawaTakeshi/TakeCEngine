@@ -13,7 +13,7 @@ BehaviorStepBoost::BehaviorStepBoost(baseInputProvider* provider) {
 //===================================================================================
 //　初期化
 //===================================================================================
-void BehaviorStepBoost::Initialize(GameCharacterContext& characterInfo) {
+void BehaviorStepBoost::Initialize(PlayableCharacterInfo& characterInfo) {
 
 	float speed = characterInfo.stepBoostInfo.speed;         // ステップブーストの速度
 	float duration = characterInfo.stepBoostInfo.duration;   // ステップブーストの持続時間
@@ -44,7 +44,7 @@ void BehaviorStepBoost::Initialize(GameCharacterContext& characterInfo) {
 //===================================================================================
 //　更新
 //===================================================================================
-void BehaviorStepBoost::Update(GameCharacterContext& characterInfo) {
+void BehaviorStepBoost::Update(PlayableCharacterInfo& characterInfo) {
 
 	// インターバル時間の取得
 	float interval = characterInfo.stepBoostInfo.interval;

@@ -41,7 +41,7 @@ void EnergyInfoUI::Update(float currentEnergy, float maxEnergy) {
 	Vector2 bgPos = backgroundSprite_->GetTranslate();
 
 	// 点滅スプライトの位置・サイズを背景スプライトと同じにする
-	blinkSprite_->SetPosition(bgPos);
+	blinkSprite_->SetTranslate(bgPos);
 	blinkSprite_->SetSize(bgSize);
 
 	// フォアグラウンドスプライトの幅・高さを枠の内側に収める
@@ -53,7 +53,7 @@ void EnergyInfoUI::Update(float currentEnergy, float maxEnergy) {
 
 	// 前景スプライトの左上を枠の内側に配置
 	Vector2 fgPos = bgPos + Vector2{ margin_, margin_ };
-	foregroundSprite_->SetPosition(fgPos);
+	foregroundSprite_->SetTranslate(fgPos);
 
 	//オーバーヒート中の場合、点滅スプライトの色を赤色に点滅させる
 	if (isOverHeating_) {
@@ -102,8 +102,8 @@ bool EnergyInfoUI::GetOverHeatState() const { return isOverHeating_; }
 // positionの設定
 void EnergyInfoUI::SetPosition(const Vector2& position) {
 	position_ = position;
-	backgroundSprite_->SetPosition(position_);
-	foregroundSprite_->SetPosition(position_);
+	backgroundSprite_->SetTranslate(position_);
+	foregroundSprite_->SetTranslate(position_);
 }
 
 // sizeの設定

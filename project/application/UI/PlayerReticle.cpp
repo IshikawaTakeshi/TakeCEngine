@@ -59,10 +59,10 @@ void PlayerReticle::Update(const Vector3& targetPosition, const Vector3& predict
 	}
 
 	// スプライトの位置とサイズを更新
-	reticleSprite_->SetPosition(screenPosition_);
+	reticleSprite_->SetTranslate(screenPosition_);
 	reticleSprite_->Update();
 
-	predictedImpactReticle_->SetPosition(predictedScreenPosition_);
+	predictedImpactReticle_->SetTranslate(predictedScreenPosition_);
 	predictedImpactReticle_->Update();
 }
 

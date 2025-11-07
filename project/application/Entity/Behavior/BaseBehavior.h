@@ -21,9 +21,9 @@ public:
 	virtual ~BaseBehavior() = default;
 
 	// 初期化
-	virtual void Initialize([[maybe_unused]]GameCharacterContext& characterInfo) = 0;
+	virtual void Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) = 0;
 	// 更新
-	virtual void Update(GameCharacterContext& characterInfo) = 0;
+	virtual void Update(PlayableCharacterInfo& characterInfo) = 0;
 	// 遷移先のビヘイビアチェック
 	std::pair<bool,Behavior> TransitionNextBehavior(Behavior nextBehavior);
 

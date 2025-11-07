@@ -340,14 +340,14 @@ void Player::DrawBoostEffect() {
 void Player::LoadPlayerData(const std::string& characterName) {
 
 	//Jsonからデータを読み込み
-	characterInfo_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<GameCharacterContext>(characterName);
+	characterInfo_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(characterName);
 }
 
 void Player::SavePlayerData(const std::string& characterName) {
 
 	//Jsonにデータを保存
-	characterInfo_.name = characterName;
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<GameCharacterContext>(characterName, characterInfo_);
+	characterInfo_.characterName = characterName;
+	TakeCFrameWork::GetJsonLoader()->SaveJsonData<PlayableCharacterInfo>(characterName, characterInfo_);
 }
 
 void Player::DrawCollider() {

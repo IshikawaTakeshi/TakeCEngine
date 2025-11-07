@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <vector>
 #include "engine/math/Easing.h"
 #include "engine/math/Vector2.h"
 #include "engine/Utility/Timer.h"
@@ -16,7 +17,7 @@ class SpriteAnimator {
 public:
 
 	///状態列挙型
-	enum class State {
+	enum class AnimationPhase {
 		None,
 		Up,
 		Delay,
@@ -27,7 +28,8 @@ public:
 	enum class PlayMode {
 		LOOP,
 		ONCE,
-		PINGPONG
+		PINGPONG_LOOP,
+		PINGPONG_ONCE
 	};
 
 public:
@@ -43,6 +45,17 @@ public:
 	~SpriteAnimator() = default;
 
 	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="target"></param>
+	void Initialize(Sprite* target);
+
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	void Update();
+
+	/// <summary>
 	/// 拡大アニメーションの再生
 	/// </summary>
 	/// <param name="target"></param>
@@ -54,32 +67,70 @@ public:
 	/// <param name="playMode"></param>
 	void PlayUpScale(const Vector2& startSize, const Vector2& endSize, float duration, float delay, Easing::EasingType easeType, PlayMode playMode);
 
-	void Initialize(Sprite* target);
+	/// <summary>
+	/// 移動アニメーションの再生
+	/// </summary>
+	/// <param name="startPos"></param>
+	/// <param name="endPos"></param>
+	/// <param name="duration"></param>
+	/// <param name="delay"></param>
+	/// <param name="easeType"></param>
+	/// <param name="playMode"></param>
+	void PlayTranslate(const Vector2& startPos, const Vector2& endPos, float duration, float delay, Easing::EasingType easeType, PlayMode playMode);
+
+	void PlayFade(const float startAlpha, const float endAlpha, float duration, float delay, Easing::EasingType easeType, PlayMode playMode);
 
 	/// <summary>
-	/// 更新処理
+	/// アニメーション再生中かどうか
 	/// </summary>
-	/// <param name="deltaTime"></param>
-	void Update(float deltaTime);
+	/// <returns></returns>
+	bool IsPlaying() const;
 
-	bool IsPlaying() const { return state_ != State::None; }
-
-	bool IsFinished() const { return state_ == State::None; }
+	/// <summary>
+	/// アニメーションが終了したかどうか
+	/// </summary>
+	/// <returns></returns>
+	bool IsFinished() const;
 
 private:
+
+	//========================================================================
+	// variables
+	//========================================================================
+
+	///アニメーションジョブ構造体
+	struct AnimationJob {
+		int id = 0;
+
+		//アニメーション用タイマー
+		Timer timer;
+		float delay = 0.0f;
+
+		//アニメーション状態
+		AnimationPhase state = AnimationPhase::None;
+		//イージングタイプ
+		Easing::EasingType easeType = Easing::EasingType::LINEAR;
+		//再生モード
+		PlayMode playMode = PlayMode::ONCE;
+
+		//Vec2用変数
+		Vector2 startValueVec2{};
+		Vector2 endValueVec2{};
+		//float用変数
+		float startValueFloat = 0.0f;
+		float endValueFloat = 0.0f;
+
+		//更新関数(ラムダで格納)(Vec2用・float用)
+		std::function<void(AnimationJob&)> updateFunc;
+
+		//終了フラグ
+		bool finished = false;
+	};
+
+	//アニメーションさせるスプライト
 	Sprite* target_ = nullptr;
-	State state_ = State::None;
-	PlayMode playMode_ = PlayMode::ONCE;
-
-	Vector2 startSize_{};
-	Vector2 endSize_{};
-
-	float duration_ = 1.0f;
-	float delay_ = 0.0f;
-	float timer_ = 0.0f;
-
-	Easing::EasingType easeType_ = Easing::EasingType::LINEAR;
-
+	
 	// 現在実行するアニメーション関数（ラムダで格納）
-	std::function<void(float)> currentAnimFunc_;
+	std::vector<AnimationJob> animationJobs_;
+	int nextJobId_ = 1;
 };

@@ -22,7 +22,7 @@ void TitleScene::Initialize() {
 	titleTextSprite_ = std::make_unique<Sprite>();
 	titleTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/TitleText.png");
 	titleTextSprite_->AdjustTextureSize();
-	titleTextSprite_->SetPosition({ 200.0f, 256.0f});
+	titleTextSprite_->SetTranslate({ 200.0f, 256.0f});
 
 	// 「PRESS START」スプライトUI
 	pushStartUI_ = std::make_unique<PushStartUI>();

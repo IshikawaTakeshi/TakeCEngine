@@ -50,11 +50,11 @@ Index of this file:
 //    | TableSetupDrawChannels()                - setup ImDrawList channels
 //    | TableUpdateBorders()                    - detect hovering columns for resize, ahead of contents submission
 //    | TableBeginContextMenuPopup()
-//    | - TableDrawDefaultContextMenu()         - draw right-click context menu contents
+//    | - TableDrawDefaultContextMenu()         - draw right-click playableCharacterInfo menu contents
 //-----------------------------------------------------------------------------
 // - TableHeadersRow() or TableHeader()         user submit a headers row (optional)
 //    | TableSortSpecsClickColumn()             - when left-clicked: alter sort order and sort direction
-//    | TableOpenContextMenu()                  - when right-clicked: trigger opening of the default context menu
+//    | TableOpenContextMenu()                  - when right-clicked: trigger opening of the default playableCharacterInfo menu
 // - TableGetSortSpecs()                        user queries updated sort specs (optional, generally after submitting headers)
 // - TableNextRow()                             user begin into a new row (also automatically called by TableHeadersRow())
 //    | TableEndRow()                           - finish existing row
@@ -168,7 +168,7 @@ Index of this file:
 //   In many situations, you may skip submitting contents for every column but one (e.g. the first one).
 // - Case A: column is not hidden by user, and at least partially in sight (most common case).
 // - Case B: column is clipped / out of sight (because of scrolling or parent ClipRect): TableNextColumn() return false as a hint but we still allow layout output.
-// - Case C: column is hidden explicitly by the user (e.g. via the context menu, or _DefaultHide column flag, etc.).
+// - Case C: column is hidden explicitly by the user (e.g. via the playableCharacterInfo menu, or _DefaultHide column flag, etc.).
 //
 //                        [A]         [B]          [C]
 //  TableNextColumn():    true        false        false       -> [userland] when TableNextColumn() / TableSetColumnIndex() returns false, user can skip submitting items but only if the column doesn't contribute to row height.
@@ -1181,9 +1181,9 @@ void ImGui::TableUpdateLayout(ImGuiTable* table)
         table->Columns[table->LeftMostEnabledColumn].IsSkipItems = false;
     }
 
-    // [Part 7] Detect/store when we are hovering the unused space after the right-most column (so e.g. context menus can react on it)
+    // [Part 7] Detect/store when we are hovering the unused space after the right-most column (so e.g. playableCharacterInfo menus can react on it)
     // Clear Resizable flag if none of our column are actually resizable (either via an explicit _NoResize flag, either
-    // because of using _WidthAuto/_WidthStretch). This will hide the resizing option from the context menu.
+    // because of using _WidthAuto/_WidthStretch). This will hide the resizing option from the playableCharacterInfo menu.
     const float unused_x1 = ImMax(table->WorkRect.Min.x, table->Columns[table->RightMostEnabledColumn].ClipRect.Max.x);
     if (is_hovering_table && table->HoveredColumnBody == -1)
         if (mouse_skewed_x >= unused_x1)
@@ -1233,7 +1233,7 @@ void ImGui::TableUpdateLayout(ImGuiTable* table)
         if (g.ActiveId == 0 || (table->IsActiveIdInTable || g.DragDropActive))
             table->HighlightColumnHeader = table->HoveredColumnBody;
 
-    // [Part 11] Default context menu
+    // [Part 11] Default playableCharacterInfo menu
     // - To append to this menu: you can call TableBeginContextMenuPopup()/.../EndPopup().
     // - To modify or replace this: set table->IsContextPopupNoDefaultContents = true, then call TableBeginContextMenuPopup()/.../EndPopup().
     // - You may call TableDrawDefaultContextMenu() with selected flags to display specific sections of the default menu,
@@ -1696,11 +1696,11 @@ const char* ImGui::TableGetColumnName(const ImGuiTable* table, int column_n)
 }
 
 // Change user accessible enabled/disabled state of a column (often perceived as "showing/hiding" from users point of view)
-// Note that end-user can use the context menu to change this themselves (right-click in headers, or right-click in columns body with ImGuiTableFlags_ContextMenuInBody)
+// Note that end-user can use the playableCharacterInfo menu to change this themselves (right-click in headers, or right-click in columns body with ImGuiTableFlags_ContextMenuInBody)
 // - Require table to have the ImGuiTableFlags_Hideable flag because we are manipulating user accessible state.
 // - Request will be applied during next layout, which happens on the first call to TableNextRow() after BeginTable().
 // - For the getter you can test (TableGetColumnFlags() & ImGuiTableColumnFlags_IsEnabled) != 0.
-// - Alternative: the ImGuiTableColumnFlags_Disabled is an overriding/master disable flag which will also hide the column from context menu.
+// - Alternative: the ImGuiTableColumnFlags_Disabled is an overriding/master disable flag which will also hide the column from playableCharacterInfo menu.
 void ImGui::TableSetColumnEnabled(int column_n, bool enabled)
 {
     ImGuiContext& g = *GImGui;
@@ -3113,7 +3113,7 @@ void ImGui::TableHeader(const char* label)
     column->ContentMaxXHeadersUsed = ImMax(column->ContentMaxXHeadersUsed, sort_arrow ? cell_r.Max.x : ImMin(max_pos_x, cell_r.Max.x));
     column->ContentMaxXHeadersIdeal = ImMax(column->ContentMaxXHeadersIdeal, max_pos_x);
 
-    // Keep header highlighted when context menu is open.
+    // Keep header highlighted when playableCharacterInfo menu is open.
     ImGuiID id = window->GetID(label);
     ImRect bb(cell_r.Min.x, cell_r.Min.y, cell_r.Max.x, ImMax(cell_r.Max.y, cell_r.Min.y + label_height + g.Style.CellPadding.y * 2.0f));
     ItemSize(ImVec2(0.0f, label_height)); // Don't declare unclipped width, it'll be fed ContentMaxPosHeadersIdeal
@@ -3414,14 +3414,14 @@ bool ImGui::TableBeginContextMenuPopup(ImGuiTable* table)
     return false;
 }
 
-// Output context menu into current window (generally a popup)
+// Output playableCharacterInfo menu into current window (generally a popup)
 // FIXME-TABLE: Ideally this should be writable by the user. Full programmatic access to that data?
 // Sections to display are pulled from 'flags_for_section_to_display', which is typically == table->Flags.
 // - ImGuiTableFlags_Resizable   -> display Sizing menu items
 // - ImGuiTableFlags_Reorderable -> display "Reset Order"
 ////- ImGuiTableFlags_Sortable   -> display sorting options (disabled)
 // - ImGuiTableFlags_Hideable    -> display columns visibility menu items
-// It means if you have a custom context menus you can call this section and omit some sections, and add your own.
+// It means if you have a custom playableCharacterInfo menus you can call this section and omit some sections, and add your own.
 void ImGui::TableDrawDefaultContextMenu(ImGuiTable* table, ImGuiTableFlags flags_for_section_to_display)
 {
     ImGuiContext& g = *GImGui;

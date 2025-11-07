@@ -9,7 +9,7 @@
 //===================================================================================
 //　初期化
 //===================================================================================
-void AIBrainSystem::Initialize(GameCharacterContext* characterInfo,size_t weaponUnitSize) {
+void AIBrainSystem::Initialize(PlayableCharacterInfo* characterInfo,size_t weaponUnitSize) {
 	characterInfo_ = characterInfo;
 	attackScores_.resize(weaponUnitSize, 0.0f);
 }

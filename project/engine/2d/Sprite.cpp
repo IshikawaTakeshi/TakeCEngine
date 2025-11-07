@@ -76,7 +76,7 @@ void Sprite::Update() {
 	}
 
 	//SpriteAnimatorの更新
-	spriteAnimator_->Update(TakeCFrameWork::GetDeltaTime());
+	spriteAnimator_->Update();
 
 	//Transformの更新
 	transform_.translate = Vector3{ position_.x,position_.y,0.0f };

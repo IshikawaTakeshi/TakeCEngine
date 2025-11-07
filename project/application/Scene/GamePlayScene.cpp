@@ -106,7 +106,7 @@ void GamePlayScene::Initialize() {
 	//操作説明UI
 	instructionSprite_ = std::make_unique<Sprite>();
 	instructionSprite_->Initialize(SpriteCommon::GetInstance(), "UI/OperationInstructions.png");
-	instructionSprite_->SetPosition({ 0.0f, 100.0f });
+	instructionSprite_->SetTranslate({ 0.0f, 100.0f });
 	instructionSprite_->AdjustTextureSize();
 	instructionSprite_->SetSize({ 250.0f, 200.0f });
 
