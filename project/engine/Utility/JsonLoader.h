@@ -86,18 +86,20 @@ public:
 //-------------------------------------------------------------------------------
 template<typename T>
 inline void JsonLoader::SaveJsonData(const std::string& filePath, const T& data) {
-
+	// フルパスを生成
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
+	std::string fileFullPath = directory.string() + filePath;
+
 	//ディレクトリがなければ作成する
 	if (!std::filesystem::exists(directory)) {
 		std::filesystem::create_directories(directory);
 	}
 	// JSONオブジェクトに変換
 	json presetJson = data;
-	std::ofstream ofs(filePath);
+	std::ofstream ofs(fileFullPath);
 	//ファイルオープンが失敗した場合
 	if (ofs.fail()) {
-		std::string message = "Failed open json file for write:" + filePath;
+		std::string message = "Failed open json file for write:" + fileFullPath;
 		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
 		assert(0);
 		return;
@@ -114,6 +116,7 @@ inline void JsonLoader::SaveJsonData(const std::string& filePath, const T& data)
 template<typename T>
 inline T JsonLoader::LoadJsonData(const std::string& filePath) const {
 	
+	// フルパスを生成
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
 	std::string fileFullPath = directory.string() + filePath;
 	std::ifstream ifs(fileFullPath);

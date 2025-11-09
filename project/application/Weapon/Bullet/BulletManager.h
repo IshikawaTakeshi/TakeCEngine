@@ -41,18 +41,18 @@ public:
 	/// <param name="weaponPos"> 武器の位置</param>
 	/// <param name="targetPos"> ターゲットの位置</param>
 	/// <param name="speed">     弾の速度</param>
-	/// <param name="damage">    ダメージ量</param>
+	/// <param name="power">    ダメージ量</param>
 	/// <param name="type">      キャラクタータイプ</param>
-	void ShootBullet(const Vector3& weaponPos, const Vector3& targetPos,const Vector3& targetVel, const float& speed,float damage, CharacterType type);
+	void ShootBullet(const Vector3& weaponPos, const Vector3& targetPos,const Vector3& targetVel, const float& speed,float power, CharacterType type);
 	
 	/// <summary>
 	/// ミサイルの発射処理
 	/// </summary>
 	/// <param name="ownerWeapon"> 所有武器</param>
 	/// <param name="speed">       ミサイルの速度</param>
-	/// <param name="damage">      ダメージ量</param>
+	/// <param name="power">      ダメージ量</param>
 	/// <param name="type">        キャラクタータイプ</param>
-	void ShootMissile(BaseWeapon* ownerWeapon, float speed,float homingRate,float damage, CharacterType type);
+	void ShootMissile(BaseWeapon* ownerWeapon, float speed,float homingRate,float power, CharacterType type);
 
 	//----- getter ---------------------------
 	

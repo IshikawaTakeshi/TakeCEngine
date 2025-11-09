@@ -128,6 +128,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Effect\DeadEffect.cpp" />
     <ClCompile Include="application\Scene\EnemySelectScene.cpp" />
     <ClCompile Include="application\Tool\CharacterEdit\CharacterEditTool.cpp" />
+    <ClCompile Include="application\Weapon\BurstShotInfo.cpp" />
     <ClCompile Include="application\Weapon\WeaponContext.cpp" />
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
     <ClCompile Include="engine\Animation\SpriteAnimation.cpp" />
@@ -252,6 +253,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Scene\EnemySelectScene.h" />
     <ClInclude Include="application\Scene\GamePlaySceneBehavior.h" />
     <ClInclude Include="application\Weapon\Bazooka.h" />
+    <ClInclude Include="application\Weapon\BurstShotInfo.h" />
     <ClInclude Include="application\Weapon\WeaponContext.h" />
     <ClInclude Include="application\Weapon\WeaponType.h" />
     <ClInclude Include="application\UI\EnergyInfoUI.h" />

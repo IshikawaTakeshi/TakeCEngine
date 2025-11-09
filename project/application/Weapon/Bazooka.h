@@ -43,7 +43,5 @@ public:
 
 public:
 
-	const float kAttackInterval = 2.0f; // 攻撃間隔定数
 
 };
-
