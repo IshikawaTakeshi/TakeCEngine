@@ -13,7 +13,7 @@ BehaviorChargeShootStun::BehaviorChargeShootStun(baseInputProvider* provider) {
 //===================================================================================
 //　初期化
 //===================================================================================
-void BehaviorChargeShootStun::Initialize(GameCharacterContext& characterInfo) {
+void BehaviorChargeShootStun::Initialize(PlayableCharacterInfo& characterInfo) {
 	// 硬直タイマーの初期化
 	characterInfo.chargeAttackStunInfo.stunTimer = characterInfo.chargeAttackStunInfo.stunDuration;
 }
@@ -21,7 +21,7 @@ void BehaviorChargeShootStun::Initialize(GameCharacterContext& characterInfo) {
 //===================================================================================
 //　更新
 //===================================================================================
-void BehaviorChargeShootStun::Update(GameCharacterContext& characterInfo) {
+void BehaviorChargeShootStun::Update(PlayableCharacterInfo& characterInfo) {
 	float& stunTimer_ = characterInfo.chargeAttackStunInfo.stunTimer;
 	Vector3& velocity_ = characterInfo.velocity;
 	// 硬直時間の更新

@@ -2,6 +2,7 @@
 #include "engine/math/Vector3.h"
 #include "engine/3d/Primitive/PrimitiveType.h"
 #include "engine/base/BlendModeStateEnum.h"
+#include "engine/Utility/JsonDirectoryPathData.h"
 #include <json.hpp>
 #include <numbers>
 #include <string>
@@ -78,3 +79,11 @@ void to_json(json& j, const ParticlePreset& preset);
 void from_json(const json& j, ParticleAttributes& attributes);
 void from_json(const json& j, AttributeRange& attributeRange);
 void from_json(const json& j, ParticlePreset& preset);
+
+//型毎のディレクトリパス取得用テンプレート特殊化
+template<>
+struct JsonPath<ParticlePreset> {
+	static std::string GetDirectory() {
+		return kParticlePresetPath;
+	}
+};

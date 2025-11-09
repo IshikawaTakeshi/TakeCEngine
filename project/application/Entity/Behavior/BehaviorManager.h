@@ -15,9 +15,9 @@ public:
 
 	// ビヘイビアの初期化
 	void Initialize(baseInputProvider* moveDirectionProvider);
-	void InitializeBehaviors(GameCharacterContext& characterContext);
+	void InitializeBehaviors(PlayableCharacterInfo& characterContext);
 	// ビヘイビアの更新
-	void Update(GameCharacterContext& characterContext);
+	void Update(PlayableCharacterInfo& characterContext);
 	void UpdateImGui();
 	// ビヘイビアの遷移リクエスト
 	void RequestBehavior(Behavior nextBehavior);

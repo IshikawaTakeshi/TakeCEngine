@@ -24,7 +24,7 @@ void BulletCounterUI::Initialize(SpriteCommon* spriteCommon,const Vector2& posit
 		sprite->SetTextureSize({ 72.0f,72.0f });
 		sprite->SetAnchorPoint({ -1.0f, 0.0f });
 		sprite->SetSize(counterSpriteSize_); // スプライトのサイズを設定
-		sprite->SetPosition({
+		sprite->SetTranslate({
 			bulletCounterPos_.x + i * (sprite->GetSize().x - spriteSpace_),
 			bulletCounterPos_.y  // 弾数カウンターの位置を設定
 			}
@@ -40,7 +40,7 @@ void BulletCounterUI::Initialize(SpriteCommon* spriteCommon,const Vector2& posit
 		maxSprite->SetTextureSize({ 72.0f,72.0f });
 		maxSprite->SetAnchorPoint({ -1.0f, 0.0f });
 		maxSprite->SetSize(counterSpriteSize_); // スプライトのサイズを設定
-		maxSprite->SetPosition({
+		maxSprite->SetTranslate({
 			bulletCounterPos_.x + i * (maxSprite->GetSize().x - spriteSpace_),
 			bulletCounterPos_.y + counterSpriteSize_.y + 5.0f // 弾数カウンターの下に配置
 			}
@@ -57,7 +57,7 @@ void BulletCounterUI::Initialize(SpriteCommon* spriteCommon,const Vector2& posit
 	reloadSprite_->AdjustTextureSize();
 
 	// リロード中のスプライトの更新
-	reloadSprite_->SetPosition(bulletCounterPos_);
+	reloadSprite_->SetTranslate(bulletCounterPos_);
 	reloadSprite_->SetSize(reloadSpriteSize_);
 	reloadSprite_->GetMesh()->GetMaterial()->SetMaterialColor({ 1.0f, 0.2f, 0.2f, 1.0f }); // 赤色に設定
 
@@ -68,7 +68,7 @@ void BulletCounterUI::Initialize(SpriteCommon* spriteCommon,const Vector2& posit
 	separatorSprite_->AdjustTextureSize();
 	separatorSprite_->SetAnchorPoint({ 0.5f, 0.5f }); // セパレーターのアンカーポイントを中央に設定
 	separatorSprite_->SetSize(separatorSpriteSize_);
-	separatorSprite_->SetPosition({
+	separatorSprite_->SetTranslate({
 		bulletCounterPos_.x + 1.5f * (counterSpriteSize_.x - spriteSpace_),
 		bulletCounterPos_.y + counterSpriteSize_.y + 5.0f // セパレーターの位置を弾数カウンターの中央に設定
 		});
@@ -78,7 +78,7 @@ void BulletCounterUI::Initialize(SpriteCommon* spriteCommon,const Vector2& posit
 	weaponIconSprite_->Initialize(spriteCommon, "UI/WeaponIcon.png");
 	weaponIconSprite_->AdjustTextureSize();
 	weaponIconSprite_->SetTextureSize({ 210.0f, 128.0f }); // アイコンのサイズを設定
-	weaponIconSprite_->SetPosition({
+	weaponIconSprite_->SetTranslate({
 		bulletCounterPos_.x - 40.0f, // アイコンの位置を弾数カウンターの左側に設定
 		bulletCounterPos_.y
 		});
@@ -191,7 +191,7 @@ void BulletCounterUI::SetBulletCounterPosition(const Vector2& position) {
 
 	bulletCounterPos_ = position;
 	for (int i = 0; i < 3; ++i) {
-		bulletCounterSprite_[i]->SetPosition({
+		bulletCounterSprite_[i]->SetTranslate({
 			bulletCounterPos_.x + i * (bulletCounterSprite_[i]->GetSize().x - spriteSpace_),
 			bulletCounterPos_.y
 		});

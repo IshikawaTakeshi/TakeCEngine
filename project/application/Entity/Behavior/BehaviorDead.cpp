@@ -15,14 +15,14 @@ BehaviorDead::BehaviorDead(baseInputProvider* provider) {
 //===================================================================================
 //　初期化
 //===================================================================================
-void BehaviorDead::Initialize([[maybe_unused]]GameCharacterContext& characterInfo) {
+void BehaviorDead::Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) {
 
 }
 
 //===================================================================================
 //　更新
 //===================================================================================
-void BehaviorDead::Update(GameCharacterContext& characterInfo) {
+void BehaviorDead::Update(PlayableCharacterInfo& characterInfo) {
 	if(characterInfo.onGround == false){
 		//重力の影響を受ける
 		characterInfo.velocity.y -= (gravity_ + characterInfo.fallSpeed) * deltaTime_;

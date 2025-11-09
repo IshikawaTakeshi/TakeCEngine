@@ -44,7 +44,7 @@ void HPBar::Update(float currentHP, float maxHP) {
 
 	// 前景スプライトの左上を枠の内側に配置
 	Vector2 fgPos = bgPos + Vector2{ margin_, margin_ };
-	foregroundSprite_->SetPosition(fgPos);
+	foregroundSprite_->SetTranslate(fgPos);
 
 	//isActiveがfalseになった時
 	if( !isActive_) {
@@ -94,10 +94,10 @@ void HPBar::SetPosition(const Vector2& position) {
 	position_ = position;
 
 	// 背景スプライトの位置を設定
-	backgroundSprite_->SetPosition(position);
+	backgroundSprite_->SetTranslate(position);
 
 	// フォアグラウンドスプライトの位置も背景に揃える
-	foregroundSprite_->SetPosition(position);
+	foregroundSprite_->SetTranslate(position);
 }
 
 //===================================================================================

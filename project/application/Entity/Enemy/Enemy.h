@@ -152,7 +152,7 @@ private:
 	std::unique_ptr<DeadEffect> deadEffect_ = nullptr;
 
 	// プレイヤーの情報
-	GameCharacterContext characterInfo_;
+	PlayableCharacterInfo characterInfo_;
 	// デルタタイム
 	float deltaTime_ = 0.0f; 
 	float gravity_ = 9.8f; // 重力の強さ

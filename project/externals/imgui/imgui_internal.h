@@ -28,10 +28,10 @@ Index of this file:
 // [SECTION] Viewport support
 // [SECTION] Settings support
 // [SECTION] Localization support
-// [SECTION] Error handling, State recovery support
+// [SECTION] Error handling, AnimationPhase recovery support
 // [SECTION] Metrics, Debug tools
-// [SECTION] Generic context hooks
-// [SECTION] ImGuiContext (main imgui context)
+// [SECTION] Generic playableCharacterInfo hooks
+// [SECTION] ImGuiContext (main imgui playableCharacterInfo)
 // [SECTION] ImGuiWindowTempData, ImGuiWindow
 // [SECTION] Tab bar, Tab item support
 // [SECTION] Table support
@@ -128,11 +128,11 @@ struct ImDrawDataBuilder;           // Helper to build a ImDrawData instance
 struct ImDrawListSharedData;        // Data shared between all ImDrawList instances
 struct ImGuiBoxSelectState;         // Box-selection state (currently used by multi-selection, could potentially be used by others)
 struct ImGuiColorMod;               // Stacked color modifier, backup of modified data so we can restore it
-struct ImGuiContext;                // Main Dear ImGui context
+struct ImGuiContext;                // Main Dear ImGui playableCharacterInfo
 struct ImGuiContextHook;            // Hook for extensions like ImGuiTestEngine
 struct ImGuiDataVarInfo;            // Variable information (e.g. to access style variables from an enum)
 struct ImGuiDataTypeInfo;           // Type information associated to a ImGuiDataType enum
-struct ImGuiDockContext;            // Docking system context
+struct ImGuiDockContext;            // Docking system playableCharacterInfo
 struct ImGuiDockRequest;            // Docking system dock/undock queued request
 struct ImGuiDockNode;               // Docking system node (hold a list of Windows OR two child dock nodes)
 struct ImGuiDockNodeSettings;       // Storage for a dock node in .ini file (we preserve those even if the associated dock node isn't active during the session)
@@ -200,7 +200,7 @@ typedef int ImGuiWindowRefreshFlags;    // -> enum ImGuiWindowRefreshFlags_ // F
 //-----------------------------------------------------------------------------
 
 #ifndef GImGui
-extern IMGUI_API ImGuiContext* GImGui;  // Current implicit context pointer
+extern IMGUI_API ImGuiContext* GImGui;  // Current implicit playableCharacterInfo pointer
 #endif
 
 //-----------------------------------------------------------------------------
@@ -319,7 +319,7 @@ extern IMGUI_API ImGuiContext* GImGui;  // Current implicit context pointer
 //-----------------------------------------------------------------------------
 // [SECTION] Generic helpers
 // Note that the ImXXX helpers functions are lower-level than ImGui functions.
-// ImGui functions or the ImGui context are never called/used from other ImXXX functions.
+// ImGui functions or the ImGui playableCharacterInfo are never called/used from other ImXXX functions.
 //-----------------------------------------------------------------------------
 // - Helpers: Hashing
 // - Helpers: Sorting
@@ -1113,8 +1113,8 @@ typedef ImStb::STB_TexteditState ImStbTexteditState;
 // For a given item ID, access with ImGui::GetInputTextState()
 struct IMGUI_API ImGuiInputTextState
 {
-    ImGuiContext*           Ctx;                    // parent UI context (needs to be set explicitly by parent).
-    ImStbTexteditState*     Stb;                    // State for stb_textedit.h
+    ImGuiContext*           Ctx;                    // parent UI playableCharacterInfo (needs to be set explicitly by parent).
+    ImStbTexteditState*     Stb;                    // AnimationPhase for stb_textedit.h
     ImGuiID                 ID;                     // widget id owning the text state
     int                     CurLenA;                // UTF-8 length of the string in TextA (in bytes)
     ImVector<char>          TextA;                  // main UTF8 buffer.
@@ -1443,7 +1443,7 @@ struct ImGuiKeyRoutingData
 };
 
 // Routing table: maintain a desired owner for each possible key-chord (key + mods), and setup owner in NewFrame() when mods are matching.
-// Stored in main context (1 instance)
+// Stored in main playableCharacterInfo (1 instance)
 struct ImGuiKeyRoutingTable
 {
     ImGuiKeyRoutingIndex            Index[ImGuiKey_NamedKey_COUNT]; // Index of first entry in Entries[]
@@ -1455,7 +1455,7 @@ struct ImGuiKeyRoutingTable
 };
 
 // This extends ImGuiKeyData but only for named keys (legacy keys don't support the new features)
-// Stored in main context (1 per named key). In the future it might be merged into ImGuiKeyData.
+// Stored in main playableCharacterInfo (1 per named key). In the future it might be merged into ImGuiKeyData.
 struct ImGuiKeyOwnerData
 {
     ImGuiID     OwnerCurr;
@@ -2019,7 +2019,7 @@ struct ImGuiWindowSettings
     short       DockOrder;      // Order of the last time the window was visible within its DockNode. This is used to reorder windows that are reappearing on the same frame. Same value between windows that were active and windows that were none are possible.
     bool        Collapsed;
     bool        IsChild;
-    bool        WantApply;      // Set when loaded from .ini data (to enable merging/loading .ini data into an already running context)
+    bool        WantApply;      // Set when loaded from .ini data (to enable merging/loading .ini data into an already running playableCharacterInfo)
     bool        WantDelete;     // Set to invalidate/delete the settings entry
 
     ImGuiWindowSettings()       { memset(this, 0, sizeof(*this)); DockOrder = -1; }
@@ -2071,7 +2071,7 @@ struct ImGuiLocEntry
 };
 
 //-----------------------------------------------------------------------------
-// [SECTION] Error handling, State recovery support
+// [SECTION] Error handling, AnimationPhase recovery support
 //-----------------------------------------------------------------------------
 
 // Macros used by Recoverable Error handling
@@ -2157,7 +2157,7 @@ struct ImGuiStackLevelInfo
     ImGuiStackLevelInfo()   { memset(this, 0, sizeof(*this)); }
 };
 
-// State for ID Stack tool queries
+// AnimationPhase for ID Stack tool queries
 struct ImGuiIDStackTool
 {
     int                     LastActiveFrame;
@@ -2171,7 +2171,7 @@ struct ImGuiIDStackTool
 };
 
 //-----------------------------------------------------------------------------
-// [SECTION] Generic context hooks
+// [SECTION] Generic playableCharacterInfo hooks
 //-----------------------------------------------------------------------------
 
 typedef void (*ImGuiContextHookCallback)(ImGuiContext* ctx, ImGuiContextHook* hook);
@@ -2189,7 +2189,7 @@ struct ImGuiContextHook
 };
 
 //-----------------------------------------------------------------------------
-// [SECTION] ImGuiContext (main Dear ImGui context)
+// [SECTION] ImGuiContext (main Dear ImGui playableCharacterInfo)
 //-----------------------------------------------------------------------------
 
 struct ImGuiContext
@@ -2218,7 +2218,7 @@ struct ImGuiContext
     bool                    GcCompactAll;                       // Request full GC
     bool                    TestEngineHookItems;                // Will call test engine hooks: ImGuiTestEngineHook_ItemAdd(), ImGuiTestEngineHook_ItemInfo(), ImGuiTestEngineHook_Log()
     void*                   TestEngine;                         // Test engine user data
-    char                    ContextName[16];                    // Storage for a context name (to facilitate debugging multi-context setups)
+    char                    ContextName[16];                    // Storage for a playableCharacterInfo name (to facilitate debugging multi-playableCharacterInfo setups)
 
     // Inputs
     ImVector<ImGuiInputEvent> InputEventsQueue;                 // Input events which will be trickled/written into IO structure.
@@ -2238,7 +2238,7 @@ struct ImGuiContext
     ImGuiWindow*            CurrentWindow;                      // Window being drawn into
     ImGuiWindow*            HoveredWindow;                      // Window the mouse is hovering. Will typically catch mouse inputs.
     ImGuiWindow*            HoveredWindowUnderMovingWindow;     // Hovered window ignoring MovingWindow. Only set if MovingWindow is set.
-    ImGuiWindow*            HoveredWindowBeforeClear;           // Window the mouse is hovering. Filled even with _NoMouse. This is currently useful for multi-context compositors.
+    ImGuiWindow*            HoveredWindowBeforeClear;           // Window the mouse is hovering. Filled even with _NoMouse. This is currently useful for multi-playableCharacterInfo compositors.
     ImGuiWindow*            MovingWindow;                       // Track the window we clicked on (in order to preserve focus). The actual window that is moved is generally MovingWindow->RootWindowDockTree.
     ImGuiWindow*            WheelingWindow;                     // Track the window we started mouse-wheeling on. Until a timer elapse or mouse has moved, generally keep scrolling the same window even if during the course of scrolling the mouse ends up hovering a child window.
     ImVec2                  WheelingWindowRefMousePos;
@@ -2489,7 +2489,7 @@ struct ImGuiContext
     ImGuiWindow*            TooltipPreviousWindow;              // Window of last tooltip submitted during the frame
     ImVector<char>          ClipboardHandlerData;               // If no custom clipboard handler is defined
     ImVector<ImGuiID>       MenusIdSubmittedThisFrame;          // A list of menu IDs that were rendered at least once
-    ImGuiTypingSelectState  TypingSelectState;                  // State for GetTypingSelectRequest()
+    ImGuiTypingSelectState  TypingSelectState;                  // AnimationPhase for GetTypingSelectRequest()
 
     // Platform support
     ImGuiPlatformImeData    PlatformImeData;                    // Data updated by current frame
@@ -2632,7 +2632,7 @@ struct IMGUI_API ImGuiWindowTempData
 // Storage for one window
 struct IMGUI_API ImGuiWindow
 {
-    ImGuiContext*           Ctx;                                // Parent UI context (needs to be set explicitly by parent).
+    ImGuiContext*           Ctx;                                // Parent UI playableCharacterInfo (needs to be set explicitly by parent).
     char*                   Name;                               // Window name, owned by the window.
     ImGuiID                 ID;                                 // == ImHashStr(Name)
     ImGuiWindowFlags        Flags, FlagsPreviousFrame;          // See enum ImGuiWindowFlags_
@@ -2685,7 +2685,7 @@ struct IMGUI_API ImGuiWindow
     short                   BeginCount;                         // Number of Begin() during the current frame (generally 0 or 1, 1+ if appending via multiple Begin/End pairs)
     short                   BeginCountPreviousFrame;            // Number of Begin() during the previous frame
     short                   BeginOrderWithinParent;             // Begin() order within immediate parent window, if we are a child window. Otherwise 0.
-    short                   BeginOrderWithinContext;            // Begin() order within entire imgui context. This is mostly used for debugging submission order related issues.
+    short                   BeginOrderWithinContext;            // Begin() order within entire imgui playableCharacterInfo. This is mostly used for debugging submission order related issues.
     short                   FocusOrder;                         // Order within WindowsFocusOrder[], altered when windows are focused.
     ImS8                    AutoFitFramesX, AutoFitFramesY;
     bool                    AutoFitOnlyGrows;
@@ -3051,7 +3051,7 @@ struct IMGUI_API ImGuiTable
     ImGuiTableColumnIdx         RightMostEnabledColumn;     // Index of right-most non-hidden column.
     ImGuiTableColumnIdx         LeftMostStretchedColumn;    // Index of left-most stretched column.
     ImGuiTableColumnIdx         RightMostStretchedColumn;   // Index of right-most stretched column.
-    ImGuiTableColumnIdx         ContextPopupColumn;         // Column right-clicked on, of -1 if opening context menu from a neutral/empty spot
+    ImGuiTableColumnIdx         ContextPopupColumn;         // Column right-clicked on, of -1 if opening playableCharacterInfo menu from a neutral/empty spot
     ImGuiTableColumnIdx         FreezeRowsRequest;          // Requested frozen rows count
     ImGuiTableColumnIdx         FreezeRowsCount;            // Actual frozen row count (== FreezeRowsRequest, or == 0 when no scrolling offset)
     ImGuiTableColumnIdx         FreezeColumnsRequest;       // Requested frozen columns count
@@ -3065,8 +3065,8 @@ struct IMGUI_API ImGuiTable
     bool                        IsInitializing;
     bool                        IsSortSpecsDirty;
     bool                        IsUsingHeaders;             // Set when the first row had the ImGuiTableRowFlags_Headers flag.
-    bool                        IsContextPopupOpen;         // Set when default context menu is open (also see: ContextPopupColumn, InstanceInteracted).
-    bool                        DisableDefaultContextMenu;  // Disable default context menu contents. You may submit your own using TableBeginContextMenuPopup()/EndPopup()
+    bool                        IsContextPopupOpen;         // Set when default playableCharacterInfo menu is open (also see: ContextPopupColumn, InstanceInteracted).
+    bool                        DisableDefaultContextMenu;  // Disable default playableCharacterInfo menu contents. You may submit your own using TableBeginContextMenuPopup()/EndPopup()
     bool                        IsSettingsRequestLoad;
     bool                        IsSettingsDirty;            // Set when table settings have changed and needs to be reported into ImGuiTableSetttings data.
     bool                        IsDefaultDisplayOrder;      // Set when display order is unchanged from default (DisplayOrder contains 0...Count-1)
@@ -3144,7 +3144,7 @@ struct ImGuiTableSettings
     float                       RefScale;               // Reference scale to be able to rescale columns on font/dpi changes.
     ImGuiTableColumnIdx         ColumnsCount;
     ImGuiTableColumnIdx         ColumnsCountMax;        // Maximum number of columns this settings instance can store, we can recycle a settings instance with lower number of columns but not higher
-    bool                        WantApply;              // Set when loaded from .ini data (to enable merging/loading .ini data into an already running context)
+    bool                        WantApply;              // Set when loaded from .ini data (to enable merging/loading .ini data into an already running playableCharacterInfo)
 
     ImGuiTableSettings()        { memset(this, 0, sizeof(*this)); }
     ImGuiTableColumnSettings*   GetColumnSettings()     { return (ImGuiTableColumnSettings*)(this + 1); }
@@ -3205,7 +3205,7 @@ namespace ImGui
 
     // Init
     IMGUI_API void          Initialize();
-    IMGUI_API void          Shutdown();    // Since 1.60 this is a _private_ function. You can call DestroyContext() to destroy the context created by CreateContext().
+    IMGUI_API void          Shutdown();    // Since 1.60 this is a _private_ function. You can call DestroyContext() to destroy the playableCharacterInfo created by CreateContext().
 
     // NewFrame
     IMGUI_API void          UpdateInputEvents(bool trickle_fast_inputs);
@@ -3216,7 +3216,7 @@ namespace ImGui
     IMGUI_API void          UpdateMouseMovingWindowNewFrame();
     IMGUI_API void          UpdateMouseMovingWindowEndFrame();
 
-    // Generic context hooks
+    // Generic playableCharacterInfo hooks
     IMGUI_API ImGuiID       AddContextHook(ImGuiContext* context, const ImGuiContextHook* hook);
     IMGUI_API void          RemoveContextHook(ImGuiContext* context, ImGuiID hook_to_remove);
     IMGUI_API void          CallContextHooks(ImGuiContext* context, ImGuiContextHookType type);
@@ -3730,7 +3730,7 @@ namespace ImGui
     IMGUI_API void          GcCompactTransientWindowBuffers(ImGuiWindow* window);
     IMGUI_API void          GcAwakeTransientWindowBuffers(ImGuiWindow* window);
 
-    // Error handling, State Recovery
+    // Error handling, AnimationPhase Recovery
     IMGUI_API bool          ErrorLog(const char* msg);
     IMGUI_API void          ErrorRecoveryStoreState(ImGuiErrorRecoveryState* state_out);
     IMGUI_API void          ErrorRecoveryTryToRecoverState(const ImGuiErrorRecoveryState* state_in);

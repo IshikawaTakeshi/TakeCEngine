@@ -73,7 +73,7 @@ struct ImGui_ImplDX12_Data
 };
 
 // Backend data stored in io.BackendRendererUserData to allow support for multiple Dear ImGui contexts
-// It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear ImGui context + multiple windows) instead of multiple Dear ImGui contexts.
+// It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear ImGui playableCharacterInfo + multiple windows) instead of multiple Dear ImGui contexts.
 static ImGui_ImplDX12_Data* ImGui_ImplDX12_GetBackendData()
 {
     return ImGui::GetCurrentContext() ? (ImGui_ImplDX12_Data*)ImGui::GetIO().BackendRendererUserData : nullptr;
@@ -730,7 +730,7 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
         desc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
     }
 
-    // Create depth-stencil State
+    // Create depth-stencil AnimationPhase
     {
         D3D12_DEPTH_STENCIL_DESC& desc = psoDesc.DepthStencilState;
         desc.DepthEnable = false;

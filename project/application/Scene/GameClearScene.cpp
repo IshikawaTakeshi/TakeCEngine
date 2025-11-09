@@ -31,7 +31,7 @@ void GameClearScene::Initialize() {
 	//whiteOutSprite
 	clearTextSprite_ = std::make_unique<Sprite>();
 	clearTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/GameClearText.png");
-	clearTextSprite_->SetPosition({ 640.0f, 360.0f });
+	clearTextSprite_->SetTranslate({ 640.0f, 360.0f });
 	clearTextSprite_->AdjustTextureSize();
 
 }

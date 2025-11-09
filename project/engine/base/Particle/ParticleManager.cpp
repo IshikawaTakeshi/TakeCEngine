@@ -131,7 +131,7 @@ void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const 
 }
 
 void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& presetJson) {
-	ParticlePreset preset = TakeCFrameWork::GetJsonLoader()->LoadParticlePreset(presetJson);
+	ParticlePreset preset = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetJson);
 	if(particleGroups_.contains(preset.presetName)) {
 		//既に同名のparticleGroupが存在する場合は生成しない
 		return;

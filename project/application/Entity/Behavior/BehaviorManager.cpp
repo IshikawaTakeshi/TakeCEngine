@@ -17,7 +17,7 @@ void BehaviorManager::Initialize(baseInputProvider* moveDirectionProvider) {
 	inputProvider_ = moveDirectionProvider; //入力プロバイダーの設定
 }
 
-void BehaviorManager::InitializeBehaviors(GameCharacterContext& characterContext) {
+void BehaviorManager::InitializeBehaviors(PlayableCharacterInfo& characterContext) {
 	// ビヘイビアの初期化
 	CreateDefaultBehaviors();
 	// 初期化時にデフォルトのビヘイビアを設定
@@ -30,7 +30,7 @@ void BehaviorManager::InitializeBehaviors(GameCharacterContext& characterContext
 // 更新
 //=====================================================================================
 
-void BehaviorManager::Update(GameCharacterContext& characterContext) {
+void BehaviorManager::Update(PlayableCharacterInfo& characterContext) {
 	// ビヘイビアの遷移チェック
 	if (currentBehavior_) {
 		if (currentBehavior_->GetIsTransition() == true) { // 遷移が必要な場合

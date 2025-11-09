@@ -16,14 +16,14 @@ BehaviorFloating::BehaviorFloating(baseInputProvider* provider) {
 //===================================================================================
 //　初期化
 //===================================================================================
-void BehaviorFloating::Initialize([[maybe_unused]]GameCharacterContext& characterInfo) {
+void BehaviorFloating::Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) {
 	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 }
 
 //===================================================================================
 //　更新
 //===================================================================================
-void BehaviorFloating::Update(GameCharacterContext& characterInfo) {
+void BehaviorFloating::Update(PlayableCharacterInfo& characterInfo) {
 
 	Vector3& moveDirection_ = characterInfo.moveDirection; // 移動方向
 	Vector3& velocity_ = characterInfo.velocity; // 移動ベクトル

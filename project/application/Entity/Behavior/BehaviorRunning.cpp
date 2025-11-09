@@ -15,14 +15,14 @@ BehaviorRunning::BehaviorRunning(baseInputProvider* provider) {
 //===================================================================================
 //　初期化
 //===================================================================================
-void BehaviorRunning::Initialize([[maybe_unused]]GameCharacterContext& characterInfo) {
+void BehaviorRunning::Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) {
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
 //===================================================================================
 //　更新
 //===================================================================================
-void BehaviorRunning::Update(GameCharacterContext& characterInfo) {
+void BehaviorRunning::Update(PlayableCharacterInfo& characterInfo) {
 
 	//移動方向の正規化
 	if (characterInfo.moveDirection.x != 0.0f || characterInfo.moveDirection.z != 0.0f) {

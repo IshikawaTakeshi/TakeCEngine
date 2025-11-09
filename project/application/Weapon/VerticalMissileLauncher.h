@@ -1,5 +1,6 @@
 #pragma once
 #include "application/Weapon/BaseWeapon.h"
+#include "application/Weapon/BurstShotInfo.h"
 
 //============================================================================
 // VerticalMissileLauncher class
@@ -46,12 +47,8 @@ public:
 
 private:
 
-	const float kAttackInterval = 5.0f; // 攻撃間隔定数
-	float homingRate_ = 0.05f;          // ホーミング率
+	float homingRate_ = 0.05f;    // ホーミング率
 
-	bool isBursting_ = false;                // 3連射中かどうか
-	int burstCount_ = 0;                     // 3連射のカウント
-	float burstInterval_ = 0.0f;             // 3連射の間隔
-	const int kMaxBurstCount = 3;            // 3連射の最大カウント
-	const float kBurstAttackInterval = 0.1f; // 3連射時の攻撃間隔
+	BurstShotInfo burstShotInfo_{};
+	BurstShotState burstShotState_{};
 };

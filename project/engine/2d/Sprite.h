@@ -92,13 +92,15 @@ public:
 	const Vector2& GetTextureLeftTop() const { return textureLeftTop_; }
 	//テクスチャの切り出しサイズ取得
 	const Vector2& GetTextureSize() const { return textureSize_; }
+	//マテリアルカラー取得
+	const Vector4& GetMaterialColor() const { return mesh_->GetMaterial()->GetMaterialData()->color; }
 	
 	//----- setter ---------------------------
 	
 	//アンカーポイント設定
 	void SetAnchorPoint(const Vector2& anchorPoint) { anchorPoint_ = anchorPoint; }
 	//座標設定
-	void SetPosition(const Vector2& position) { position_ = position; }
+	void SetTranslate(const Vector2& position) { position_ = position; }
 	//回転設定
 	void SetRotate(const float rotation) { rotation_ = rotation; }
 	//サイズ設定

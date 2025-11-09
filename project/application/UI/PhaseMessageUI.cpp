@@ -25,7 +25,7 @@ void PhaseMessageUI::Initialize() {
 	phaseMessageText_->Initialize(SpriteCommon::GetInstance(), "UI/PhaseMessage_ReadyText.png");
 	phaseMessageText_->AdjustTextureSize();
 	phaseMessageText_->SetAnchorPoint({ 0.5f,0.5f });
-	phaseMessageText_->SetPosition(screenCenter_);
+	phaseMessageText_->SetTranslate(screenCenter_);
 
 	// 元のサイズを保存
 	originalTextSizeMin_ = { phaseMessageText_.get()->GetSize().x,0.0f};
@@ -36,7 +36,7 @@ void PhaseMessageUI::Initialize() {
 	bandSprite_->Initialize(SpriteCommon::GetInstance(),"UI/PhaseMessageBand.png");
 	bandSprite_->AdjustTextureSize();
 	bandSprite_->SetAnchorPoint({ 0.5f,0.5f });
-	bandSprite_->SetPosition(screenCenter_);
+	bandSprite_->SetTranslate(screenCenter_);
 
 	// 元のサイズを保存
 	originalBandSizeMin_ = { bandSprite_.get()->GetSize().x,0.0f };
@@ -67,7 +67,7 @@ void PhaseMessageUI::Update() {
 				0.5f,
 				1.0f,
 				Easing::EasingType::OUT_QUAD,
-				SpriteAnimator::PlayMode::PINGPONG
+				SpriteAnimator::PlayMode::PINGPONG_ONCE
 			);	
 			//テキストスプライト拡大
 			phaseMessageText_->Animation()->PlayUpScale(
@@ -76,7 +76,7 @@ void PhaseMessageUI::Update() {
 				0.5f,
 				0.5f,
 				Easing::EasingType::OUT_QUAD,
-				SpriteAnimator::PlayMode::PINGPONG
+				SpriteAnimator::PlayMode::PINGPONG_ONCE
 			);
 
 			break;
@@ -91,7 +91,7 @@ void PhaseMessageUI::Update() {
 				0.5f,
 				1.5f,
 				Easing::EasingType::OUT_QUAD,
-				SpriteAnimator::PlayMode::PINGPONG
+				SpriteAnimator::PlayMode::PINGPONG_ONCE
 			);
 			//テキストスプライト拡大
 			phaseMessageText_->Animation()->PlayUpScale(
@@ -100,7 +100,7 @@ void PhaseMessageUI::Update() {
 				0.5f,
 				1.5f,
 				Easing::EasingType::OUT_QUAD,
-				SpriteAnimator::PlayMode::PINGPONG
+				SpriteAnimator::PlayMode::PINGPONG_ONCE
 			);
 			break;
 

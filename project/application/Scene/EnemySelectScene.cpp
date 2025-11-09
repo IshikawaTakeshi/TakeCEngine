@@ -43,6 +43,10 @@ void EnemySelectScene::Initialize() {
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.obj");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
+
+	//キャラクター編集ツール
+	characterEditTool_ = std::make_unique<CharacterEditTool>();
+	characterEditTool_->Initialize();
 }
 
 //====================================================================
@@ -65,6 +69,8 @@ void EnemySelectScene::Update() {
 	CameraManager::GetInstance()->Update();
 	//SkyBoxの更新
 	skyBox_->Update();
+	//キャラクター編集ツールの更新
+	characterEditTool_->Update();
 
 	//particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
@@ -139,9 +145,7 @@ void EnemySelectScene::UpdateImGui() {
 	Object3dCommon::GetInstance()->UpdateImGui();
 
 	ImGui::Begin("Level Objects");
-	/*for(auto& object : levelObjects_) {
-	object.second->UpdateImGui();
-	}*/
+	characterEditTool_->UpdateImGui();
 	ImGui::End();
 
 	//particleEmitter_->UpdateImGui();
@@ -176,9 +180,7 @@ void EnemySelectScene::Draw() {
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
 
-	if (behavior_ != SceneBehavior::ENEMYDESTROYED) {
-
-	}
+	characterEditTool_->DrawUI();
 
 #pragma endregion
 }

@@ -4,33 +4,38 @@
 // JSON <- GameCharacterInfo
 //============================================================================
 
-void to_json(nlohmann::json& j, const GameCharacterContext& context) {
+void to_json(nlohmann::json& j, const CharacterData& info) {
+	
+	j["modelFilePath"] = info.modelFilePath;
+	j["info"] = info.playableCharacterInfo;
+	j["weaponData"] = info.weaponData;
+}
 
-	j["transform"] = context.transform;
+void to_json(nlohmann::json& j, const PlayableCharacterInfo& info) {
+	j["characterName"] = info.characterName;
+	j["transform"] = info.transform;
 
-	j["velocity"] = context.velocity;
-	j["moveDirection"] = context.moveDirection;
-	j["focusTargetPos"] = context.focusTargetPos;
+	j["velocity"] = info.velocity;
+	j["moveDirection"] = info.moveDirection;
+	j["focusTargetPos"] = info.focusTargetPos;
 
-	j["deceleration"] = context.deceleration;
-	j["moveSpeed"] = context.moveSpeed;
-	j["kMaxMoveSpeed"] = context.kMaxMoveSpeed;
-	j["fallSpeed"] = context.fallSpeed;
-	j["health"] = context.health;
-	j["maxHealth"] = context.maxHealth;
+	j["deceleration"] = info.deceleration;
+	j["moveSpeed"] = info.moveSpeed;
+	j["kMaxMoveSpeed"] = info.kMaxMoveSpeed;
+	j["fallSpeed"] = info.fallSpeed;
+	j["health"] = info.health;
+	j["maxHealth"] = info.maxHealth;
 
-	j["isAlive"] = context.isAlive;
-	j["onGround"] = context.onGround;
-	j["isChargeShooting"] = context.isChargeShooting;
-	j["isDamaged"] = context.isDamaged;
+	j["isAlive"] = info.isAlive;
+	j["onGround"] = info.onGround;
+	j["isChargeShooting"] = info.isChargeShooting;
+	j["isDamaged"] = info.isDamaged;
 
-	j["stepBoostInfo"] = context.stepBoostInfo;
-	j["jumpInfo"] = context.jumpInfo;
-	j["chargeAttackStunInfo"] = context.chargeAttackStunInfo;
-	j["energyInfo"] = context.energyInfo;
-	j["overHeatInfo"] = context.overHeatInfo;
-
-	j["name"] = context.name;
+	j["stepBoostInfo"] = info.stepBoostInfo;
+	j["jumpInfo"] = info.jumpInfo;
+	j["chargeAttackStunInfo"] = info.chargeAttackStunInfo;
+	j["energyInfo"] = info.energyInfo;
+	j["overHeatInfo"] = info.overHeatInfo;
 }
 
 void to_json(nlohmann::json& j, const StepBoostInfo& info) {
@@ -78,28 +83,34 @@ void to_json(nlohmann::json& j, const OverHeatInfo& info) {
 // JSON <- GameCharacterInfo
 //============================================================================
 
-void from_json(const nlohmann::json& j, GameCharacterContext& context) {
+void from_json(const nlohmann::json& j, CharacterData& info) {
+	
+	if (j.contains("modelFilePath"))j.at("modelFilePath").get_to(info.modelFilePath);
+	if (j.contains("info"))j.at("info").get_to(info.playableCharacterInfo);
+	if (j.contains("weaponData"))j.at("weaponData").get_to(info.weaponData);
+}
 
-	if (j.contains("transform"))j.at("transform").get_to(context.transform);
-	if (j.contains("velocity"))j.at("velocity").get_to(context.velocity);
-	if (j.contains("moveDirection"))j.at("moveDirection").get_to(context.moveDirection);
-	if (j.contains("focusTargetPos"))j.at("focusTargetPos").get_to(context.focusTargetPos);
-	if (j.contains("deceleration"))j.at("deceleration").get_to(context.deceleration);
-	if (j.contains("moveSpeed"))j.at("moveSpeed").get_to(context.moveSpeed);
-	if (j.contains("kMaxMoveSpeed"))j.at("kMaxMoveSpeed").get_to(context.kMaxMoveSpeed);
-	if (j.contains("fallSpeed"))j.at("fallSpeed").get_to(context.fallSpeed);
-	if (j.contains("health"))j.at("health").get_to(context.health);
-	if (j.contains("maxHealth"))j.at("maxHealth").get_to(context.maxHealth);
-	if (j.contains("isAlive"))j.at("isAlive").get_to(context.isAlive);
-	if (j.contains("onGround"))j.at("onGround").get_to(context.onGround);
-	if (j.contains("isChargeShooting"))j.at("isChargeShooting").get_to(context.isChargeShooting);
-	if (j.contains("isDamaged"))j.at("isDamaged").get_to(context.isDamaged);
-	if (j.contains("stepBoostInfo"))j.at("stepBoostInfo").get_to(context.stepBoostInfo);
-	if (j.contains("jumpInfo"))j.at("jumpInfo").get_to(context.jumpInfo);
-	if (j.contains("chargeAttackStunInfo"))j.at("chargeAttackStunInfo").get_to(context.chargeAttackStunInfo);
-	if (j.contains("energyInfo"))j.at("energyInfo").get_to(context.energyInfo);
-	if (j.contains("overHeatInfo"))j.at("overHeatInfo").get_to(context.overHeatInfo);
-	if (j.contains("name"))j.at("name").get_to(context.name);
+void from_json(const nlohmann::json& j, PlayableCharacterInfo& info) {
+	if (j.contains("characterName"))j.at("characterName").get_to(info.characterName);
+	if (j.contains("transform"))j.at("transform").get_to(info.transform);
+	if (j.contains("velocity"))j.at("velocity").get_to(info.velocity);
+	if (j.contains("moveDirection"))j.at("moveDirection").get_to(info.moveDirection);
+	if (j.contains("focusTargetPos"))j.at("focusTargetPos").get_to(info.focusTargetPos);
+	if (j.contains("deceleration"))j.at("deceleration").get_to(info.deceleration);
+	if (j.contains("moveSpeed"))j.at("moveSpeed").get_to(info.moveSpeed);
+	if (j.contains("kMaxMoveSpeed"))j.at("kMaxMoveSpeed").get_to(info.kMaxMoveSpeed);
+	if (j.contains("fallSpeed"))j.at("fallSpeed").get_to(info.fallSpeed);
+	if (j.contains("health"))j.at("health").get_to(info.health);
+	if (j.contains("maxHealth"))j.at("maxHealth").get_to(info.maxHealth);
+	if (j.contains("isAlive"))j.at("isAlive").get_to(info.isAlive);
+	if (j.contains("onGround"))j.at("onGround").get_to(info.onGround);
+	if (j.contains("isChargeShooting"))j.at("isChargeShooting").get_to(info.isChargeShooting);
+	if (j.contains("isDamaged"))j.at("isDamaged").get_to(info.isDamaged);
+	if (j.contains("stepBoostInfo"))j.at("stepBoostInfo").get_to(info.stepBoostInfo);
+	if (j.contains("jumpInfo"))j.at("jumpInfo").get_to(info.jumpInfo);
+	if (j.contains("chargeAttackStunInfo"))j.at("chargeAttackStunInfo").get_to(info.chargeAttackStunInfo);
+	if (j.contains("energyInfo"))j.at("energyInfo").get_to(info.energyInfo);
+	if (j.contains("overHeatInfo"))j.at("overHeatInfo").get_to(info.overHeatInfo);
 
 }
 
@@ -148,7 +159,7 @@ void from_json(const nlohmann::json& j, OverHeatInfo& info) {
 // 演算子オーバーロード
 //============================================================================
 
-//GameCharacterContext GameCharacterContext::operator=(const GameCharacterContext& other) {
+//PlayableCharacterInfo PlayableCharacterInfo::operator=(const PlayableCharacterInfo& other) {
 //	
 //	this->transform = other.transform;
 //	this->velocity = other.velocity;

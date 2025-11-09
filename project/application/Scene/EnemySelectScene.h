@@ -1,11 +1,12 @@
 #pragma once
 #include "Scene/BaseScene.h"
 
+// engine
 #include "audio/Audio.h"
 #include "io/Input.h"
 #include "engine/camera/Camera.h"
 #include "engine/camera/CameraManager.h"
-#include "ModelManager.h"
+#include "engine/base/ModelManager.h"
 #include "SkyBox/SkyBox.h"
 #include "engine/2d/Sprite.h"
 #include "engine/3d/Object3d.h"
@@ -18,6 +19,13 @@
 #include "engine/base/Particle/ParticleManager.h"
 #include "engine/Entity/LevelObject/LevelObject.h"
 #include "engine/Utility/Timer.h"
+
+//app
+#include "application/Tool/CharacterEdit/CharacterEditTool.h"
+
+//=============================================================================
+// EnemySelectScene class
+//=============================================================================
 
 class EnemySelectScene : public BaseScene {
 public:
@@ -98,5 +106,6 @@ private:
 	//状態遷移用タイマー
 	Timer changeBehaviorTimer_;
 
+	//キャラクター編集ツール
+	std::unique_ptr<CharacterEditTool> characterEditTool_ = nullptr;
 };
-

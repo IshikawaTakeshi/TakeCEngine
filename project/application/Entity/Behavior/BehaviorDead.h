@@ -13,9 +13,9 @@ public:
 	~BehaviorDead() override = default;
 
 	// 初期化
-	void Initialize([[maybe_unused]] GameCharacterContext& characterInfo) override;
+	void Initialize([[maybe_unused]] PlayableCharacterInfo& characterInfo) override;
 	// 更新
-	void Update(GameCharacterContext& characterInfo) override; 
+	void Update(PlayableCharacterInfo& characterInfo) override; 
 
 private:
 	// 重力の強さ

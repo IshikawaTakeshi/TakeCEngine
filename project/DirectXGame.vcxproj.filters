@@ -518,9 +518,12 @@
     <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
     <ClCompile Include="engine\math\Transform.cpp" />
     <ClCompile Include="application\Scene\EnemySelectScene.cpp" />
+    <ClCompile Include="application\Tool\CharacterEdit\CharacterEditTool.cpp" />
+    <ClCompile Include="application\Weapon\WeaponContext.cpp" />
     <ClCompile Include="application\UI\PushStartUI.cpp" />
     <ClCompile Include="application\UI\PhaseMessageUI.cpp" />
     <ClCompile Include="engine\Animation\SpriteAnimation.cpp" />
+    <ClCompile Include="application\Weapon\BurstShotInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1074,10 +1077,14 @@
     <ClInclude Include="engine\3d\Light\LightManager.h" />
     <ClInclude Include="engine\base\ComPtrAliasTemplates.h" />
     <ClInclude Include="application\Scene\EnemySelectScene.h" />
+    <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
+    <ClInclude Include="application\Weapon\WeaponContext.h" />
+    <ClInclude Include="engine\Utility\JsonDirectoryPathData.h" />
     <ClInclude Include="application\UI\PushStartUI.h" />
     <ClInclude Include="application\UI\PhaseMessageUI.h" />
     <ClInclude Include="application\Scene\GamePlaySceneBehavior.h" />
     <ClInclude Include="engine\Animation\SpriteAnimation.h" />
+    <ClInclude Include="application\Weapon\BurstShotInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

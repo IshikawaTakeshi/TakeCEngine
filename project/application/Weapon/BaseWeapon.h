@@ -3,6 +3,7 @@
 #include "Object3dCommon.h"
 #include "Entity/GameCharacter.h"
 #include "Weapon/WeaponType.h"
+#include "Weapon/WeaponContext.h"
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -42,9 +43,9 @@ public:
 	//===========================================================================
 
 	//武器タイプの取得
-	virtual const WeaponType& GetWeaponType() const { return weaponType_; }
+	virtual const WeaponType& GetWeaponType() const;
 	//攻撃間隔の取得
-	virtual float GetAttackInterval() const { return attackInterval_; }
+	virtual float GetAttackInterval() const;
 
 	virtual const Vector3& GetTranslate() const { return object3d_->GetTranslate(); }
 
@@ -75,9 +76,9 @@ public:
 	// 必要チャージ時間を取得
 	virtual float GetRequiredChargeTime() const;
 	//使用可能かどうか
-	virtual bool GetIsAvailable() const { return isAvailable_; }
+	virtual bool GetIsAvailable() const;
 	//リロード中かどうか
-	virtual bool GetIsReloading() const { return isReloading_; }
+	virtual bool GetIsReloading() const;
 
 	//チャージ攻撃可能か
 	virtual bool IsChargeAttack() const = 0;
@@ -135,36 +136,9 @@ protected:
 
 	//武器の種類
 	WeaponType weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
-	//武器の攻撃力
-	float damage_ = 0.0f;
-	//攻撃間隔
-	float attackInterval_ = 0.0f;
-	//弾のスピード
-	float bulletSpeed_ = 0.0f;
-	//使用可能か
-	bool isAvailable_ = true;
+	//武器の基本データ
+	WeaponData weaponData_{};
+	WeaponState weaponState_{};
 	// 武器のユニットポジション
 	uint32_t unitPosition_ = 0; 
-	// 有効射程距離
-	float effectiveRange_ = 0.0f;
-
-	//リロード中かどうか
-	bool isReloading_ = false;
-	//リロード時間
-	float reloadTime_ = 0.0f; // リロード時間
-	float maxReloadTime_ = 0.0f; // 最大リロード時間
-
-	uint32_t bulletCount_ = 0; // 現在の弾数
-	uint32_t magazineCount_ = 0; // マガジン内の弾数
-	uint32_t remainingBulletCount_ = 0; // 残弾数
-	uint32_t maxBulletCount_ = 0; // 最大弾数
-
-	// チャージ攻撃
-	bool isCharging_ = false;  // チャージ攻撃フラグ
-	float chargeTime_ = 0.0f;    // チャージ時間
-	float requiredChargeTime_ = 0.0f; // 必要チャージ時間
-
-	bool canChargeAttack_  = false; // チャージ攻撃フラグ
-	bool canMoveShootable_ = false; // 移動撃ち可能か
-	bool isStopShootOnly_ = false; // 停止撃ち専用か
 };

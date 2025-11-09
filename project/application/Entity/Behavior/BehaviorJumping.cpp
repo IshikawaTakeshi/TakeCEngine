@@ -16,7 +16,7 @@ BehaviorJumping::BehaviorJumping(baseInputProvider* provider) {
 // 初期化処理
 //=========================================================================
 
-void BehaviorJumping::Initialize(GameCharacterContext& characterInfo) {
+void BehaviorJumping::Initialize(PlayableCharacterInfo& characterInfo) {
 	// ジャンプのエネルギー消費
 	characterInfo.energyInfo.energy -= characterInfo.jumpInfo.useEnergy;
 	//ジャンプの速度を設定
@@ -29,7 +29,7 @@ void BehaviorJumping::Initialize(GameCharacterContext& characterInfo) {
 // 更新処理
 //=========================================================================
 
-void BehaviorJumping::Update(GameCharacterContext& characterInfo) {
+void BehaviorJumping::Update(PlayableCharacterInfo& characterInfo) {
 
 	Vector3& velocity = characterInfo.velocity; // 移動ベクトル
 
