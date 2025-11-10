@@ -1,6 +1,6 @@
 #pragma once
 #include "application/Weapon/BaseWeapon.h"
-#include "application/Weapon/BurstShotInfo.h"
+#include "application/Weapon/Launcher/VerticalMissileLauncherInfo.h"
 
 //============================================================================
 // VerticalMissileLauncher class
@@ -47,8 +47,6 @@ public:
 
 private:
 
-	float homingRate_ = 0.05f;    // ホーミング率
-
-	BurstShotInfo burstShotInfo_{};
+	VerticalMissileLauncherInfo vmLauncherInfo_{};
 	BurstShotState burstShotState_{};
 };

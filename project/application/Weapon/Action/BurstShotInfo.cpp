@@ -6,8 +6,8 @@
 // configの編集
 //============================================================================
 void BurstShotInfo::EditConfigImGui() {
-	ImGui::SliderFloat("連射時の攻撃間隔", &kInterval, 0.01f, 1.0f);
-	ImGui::SliderInt("連射の最大カウント", &kMaxBurstCount, 2, 10);
+	ImGui::SliderFloat("burstInterval", &kInterval, 0.01f, 1.0f);
+	ImGui::SliderInt("burstCount", &kMaxBurstCount, 2, 10);
 }
 
 //============================================================================

@@ -20,6 +20,9 @@ namespace StringUtility {
 	template<InputEnum Enum>
 	std::string EnumToString(Enum e);
 
+	template<InputEnum Enum>
+	Enum StringToEnum(const std::string& str);
+
 }
 
 //------------------------------------------------------------
@@ -28,4 +31,15 @@ namespace StringUtility {
 template<InputEnum Enum>
 std::string StringUtility::EnumToString(Enum e) {
 	return std::string(magic_enum::enum_name(e));
-}	
+}
+
+template<InputEnum Enum>
+Enum StringUtility::StringToEnum(const std::string& str) {
+	auto e = magic_enum::enum_cast<Enum>(str);
+	if (e.has_value()) {
+		return e.value();
+	}
+	else {
+		return static_cast<Enum>(0);
+	}
+}

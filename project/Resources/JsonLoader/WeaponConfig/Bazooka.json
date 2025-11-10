@@ -1,0 +1,19 @@
+{
+    "config": {
+        "bulletSpeed": 500.0,
+        "canChargeAttack": false,
+        "canMoveShootable": false,
+        "effectiveRange": 1000.0,
+        "homingRate": 0.0,
+        "isStopShootOnly": true,
+        "kAttackInterval": 2.0,
+        "magazineCount_": 5,
+        "maxBulletCount": 50,
+        "maxReloadTime": 4.0,
+        "power": 1500.0,
+        "requiredChargeTime": 0.0
+    },
+    "modelFilePath": "Bazooka.gltf",
+    "weaponName": "Bazooka",
+    "weaponType": "WEAPON_TYPE_BAZOOKA"
+}

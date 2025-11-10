@@ -5,7 +5,7 @@
 #include <array>
 #include <optional>
 
-#include "application/Weapon/WeaponContext.h"
+#include "application/Weapon/WeaponData.h"
 #include "application/Entity/WeaponUnit.h"
 #include "application/Entity/GameCharacterInfo.h"
 #include "engine/math/Vector2.h"
@@ -133,7 +133,11 @@ private:
 	//編集中のメニューアイテムインデックス
 	uint32_t editingItemIndex_ = 0; 
 	//メニューアイテム最大数（武器項目+キャラクター項目）
-	const uint32_t maxMenuItems_ = WeaponUnit::Size + 1; 
+	const uint32_t maxMenuItems_ = WeaponUnit::Size + 1;
+	//武器メニューアイテム最大数
+	uint32_t maxWeaponMenuItems_ = 0;
+
+	uint32_t editingWeaponUnitIndex_ = 0; //編集中の武器ユニットインデックス
 
 	std::vector<std::unique_ptr<Sprite>> weaponItemSprites_; //武器項目スプライトリスト
 

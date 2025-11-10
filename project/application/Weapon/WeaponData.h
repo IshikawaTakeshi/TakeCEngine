@@ -1,18 +1,18 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include <variant>
 #include <json.hpp>
 #include "engine/Utility/JsonDirectoryPathData.h"
+#include "application/Weapon/WeaponType.h"
+#include "application/Weapon/Action/WeaponActionData.h"
 
 //============================================================================
 //		WeaponData.h
 //============================================================================
 
 // 武器データ構造体
-struct WeaponData {
-	
-	std::string weaponName = ""; //武器名
-	std::string modelFilePath = ""; //モデルファイルパス
+struct WeaponConfig {
 
 	float power = 0.0f; //武器の攻撃力
 	float kAttackInterval = 0.25f; // 攻撃間隔定数
@@ -45,10 +45,21 @@ struct WeaponState {
 	bool isCharging = false;           // チャージ攻撃フラグ
 };
 
+struct WeaponData {
+	std::string weaponName = ""; //武器名
+	std::string modelFilePath = ""; //モデルファイルパス
+	WeaponType weaponType = WeaponType::NONE; //武器の種類
+	WeaponConfig config; //武器の基本データ
+	WeaponDataVariant actionData; //武器の特殊アクションデータ
+};
+
 // WeaponContextをJSONに変換する関数
-void to_json(nlohmann::json& jsonData, const WeaponData& weaponContext);
+void to_json(nlohmann::json& jsonData, const WeaponConfig& weaponContext);
+void to_json(nlohmann::json& jsonData, const WeaponData& weaponData);
+
 // JSONからWeaponContextへデータを読み込む関数
-void from_json(const nlohmann::json& jsonData, WeaponData& weaponContext);
+void from_json(const nlohmann::json& jsonData, WeaponConfig& weaponContext);
+void from_json(const nlohmann::json& jsonData, WeaponData& weaponData);
 
 //ディレクトリパス取得用テンプレート特殊化
 template<>

@@ -1,0 +1,6 @@
+{
+    "burstShotInfo": {
+        "kInterval": 0.10000000149011612,
+        "kMaxBurstCount": 3
+    }
+}

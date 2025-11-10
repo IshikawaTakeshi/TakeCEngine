@@ -26,6 +26,6 @@ const std::string kGameCharacterContextPath = "Resources/JsonLoader/GameCharacte
 
 const std::string kGameCharacterDataPath = "Resources/JsonLoader/GameCharacterData/";
 //WeaponDataの保存先
-const std::string kWeaponDataPath = "Resources/JsonLoader/WeaponData/";
-//BurstShotInfoの保存先
-const std::string kBurstShotInfoPath = "Resources/JsonLoader/WeaponData/BurstShotInfo/";
+const std::string kWeaponDataPath = "Resources/JsonLoader/WeaponConfig/";
+//拡張ショット情報の保存先
+const std::string kWeaponActionDataPath = "Resources/JsonLoader/WeaponConfig/Extra/";

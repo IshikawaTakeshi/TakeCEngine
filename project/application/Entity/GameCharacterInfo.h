@@ -5,7 +5,7 @@
 #include "engine/math/Vector3.h"
 #include "engine/math/Transform.h"
 #include "engine/Utility/JsonDirectoryPathData.h"
-#include "application/Weapon/WeaponContext.h"
+#include "application/Weapon/WeaponData.h"
 
 // ステップブースト情報
 struct StepBoostInfo {

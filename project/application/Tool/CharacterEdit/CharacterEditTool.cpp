@@ -4,7 +4,6 @@
 #include "engine/3d/Object3d.h"
 #include "engine/io/Input.h"
 
-
 //========================================================================
 // 初期化
 //========================================================================
@@ -15,16 +14,17 @@ void CharacterEditTool::Initialize() {
 	LoadAllCharacterData();
 
 	//武器、キャラクターデータのサイズを使ってresize,初期化
-	weaponItemSprites_.resize(weaponDataMap_.size());
+	maxWeaponMenuItems_ = static_cast<uint32_t>(weaponDataMap_.size());
+	weaponItemSprites_.resize(maxWeaponMenuItems_);
 	for(size_t i =0;i<weaponItemSprites_.size();++i){
 		weaponItemSprites_[i] = std::make_unique<Sprite>();
 		weaponItemSprites_[i]->Initialize(SpriteCommon::GetInstance(), "white1x1.png");
 		weaponItemSprites_[i]->SetSize(menuBarSpriteSize_);
 		weaponItemSprites_[i]->SetTranslate({
-			menuBarLeftTop_.x + menuBarSpriteSize_.x + menuBarSpacing_,
+			0.0f,
 			menuBarLeftTop_.y + (menuBarSpriteSize_.y + menuBarSpacing_) * static_cast<float>(i)
 			});
-		weaponItemSprites_[i]->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
+		weaponItemSprites_[i]->SetMaterialColor({ 0.2f,0.2f,0.2f,0.0f });
 	}
 
 
@@ -94,20 +94,35 @@ void CharacterEditTool::Update() {
 				SpriteAnimator::PlayMode::PINGPONG_LOOP
 			);
 
-			// カーソルスプライトのフェードインアニメーション再生
-			cursorSprite_->Animation()->PlayFade(0.0f, 0.6f, 0.5f, 0.1f, Easing::EasingType::LINEAR, SpriteAnimator::PlayMode::PINGPONG_LOOP);
 			break;
 		case EditMode::CHARACTER_EDIT:
 
 
 			break;
 		case EditMode::WEAPON_EDIT:
+
+			// 武器編集モード初期化処理
+			//武器項目スプライトの移動アニメーション再生
+			for(auto& sprite:weaponItemSprites_){
+				sprite->Animation()->PlayTranslate(
+					sprite->GetTranslate(),
+					{ menuBarLeftTop_.x,sprite->GetTranslate().y },
+					0.2f,
+					0.0f,
+					Easing::EasingType::OUT_BACK,
+					SpriteAnimator::PlayMode::ONCE
+				);
+				// 武器項目スプライトのフェードインアニメーション再生
+				sprite->Animation()->PlayFade(0.0f,1.0f,0.2f,0.0f,Easing::EasingType::LINEAR,SpriteAnimator::PlayMode::ONCE);
+			}
+
 			break;
 		default:
 			break;
 		}
 
-		
+		// カーソルスプライトのフェードインアニメーション再生
+		cursorSprite_->Animation()->PlayFade(0.0f, 0.6f, 0.5f, 0.0f, Easing::EasingType::LINEAR, SpriteAnimator::PlayMode::PINGPONG_LOOP);
 		
 		editModeRequest_ = std::nullopt;
 	}
@@ -136,6 +151,10 @@ void CharacterEditTool::Update() {
 	cursorSprite_->Update();
 	// メニューバー用スプライト群の更新
 	for (auto& sprite : weaponMenuBarSprites_) {
+		sprite->Update();
+	}
+	// 武器項目スプライト群の更新
+	for(auto& sprite:weaponItemSprites_){
 		sprite->Update();
 	}
 }
@@ -211,19 +230,6 @@ void CharacterEditTool::SelectEditItem() {
 				SpriteAnimator::PlayMode::ONCE
 			);
 		}
-
-		// カーソルスプライトの移動アニメーション再生
-		cursorSprite_->Animation()->PlayTranslate(
-			cursorSprite_->GetTranslate(),
-			{ menuBarLeftTop_.x,menuBarLeftTop_.y + (menuBarSpriteSize_.y + menuBarSpacing_) * static_cast<float>(editingItemIndex_) },
-			0.5f,
-			0.0f,
-			Easing::EasingType::OUT_BACK,
-			SpriteAnimator::PlayMode::PINGPONG_LOOP
-		);
-		// カーソルスプライトのフェードアウトアニメーション再生
-		cursorSprite_->Animation()->PlayFade(0.6f,0.0f,0.5f,0.1f,Easing::EasingType::LINEAR,SpriteAnimator::PlayMode::PINGPONG_LOOP);
-
 	}
 
 	// カーソルスプライトの位置更新
@@ -243,9 +249,15 @@ void CharacterEditTool::Draw() {
 void CharacterEditTool::DrawUI() {
 	// UI描画処理
 
+	// メニューバー用スプライト群の描画
 	for (auto& sprite : weaponMenuBarSprites_) {
 		sprite->Draw();
 	}
+	// 武器項目スプライト群の描画
+	for(auto& sprite:weaponItemSprites_){
+		sprite->Draw();
+	}
+	// カーソルスプライトの描画
 	cursorSprite_->Draw();
 }
 
@@ -262,25 +274,75 @@ void CharacterEditTool::UpdateCharacterEdit() {
 // 武器編集更新処理
 //========================================================================
 void CharacterEditTool::UpdateWeaponEdit() {
-	// 武器編集の更新処理
-	
 
-	if(Input::GetInstance()->TriggerButton(0,GamepadButtonType::B)){
-		//戻るボタンが押されたときの処理
+	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::DPadDOWN)) {
+		//下ボタンが押されたときの処理
+		editingWeaponUnitIndex_ = (editingWeaponUnitIndex_ + 1) % maxWeaponMenuItems_;
+
+		//オフセット分を越えたら0に戻す
+		if (editingWeaponUnitIndex_ >= maxWeaponMenuItems_) {
+			editingWeaponUnitIndex_ = 0;
+		}
+
+	} else if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::DPadUP)) {
+		//上ボタンが押されたときの処理
+		editingWeaponUnitIndex_ = (editingWeaponUnitIndex_ - 1 + maxWeaponMenuItems_) % maxWeaponMenuItems_;
+
+		//オフセット分を越えたら最後の項目に戻す
+		if (editingWeaponUnitIndex_ >= maxWeaponMenuItems_) {
+			editingWeaponUnitIndex_ = maxWeaponMenuItems_ - 1;
+		}
+	}
+
+	//決定ボタンが押されたときの処理
+	if(Input::GetInstance()->TriggerButton(0,GamepadButtonType::A)){
+		
+		// 武器の適用
+		currentCharacterData_.weaponData[editingItemIndex_] = *AttachWeapon(weaponNames_[editingWeaponUnitIndex_]);
+		// 編集モードをメニューに変更
 		editModeRequest_ = EditMode::EDIT_MENU;
 
-		// カーソルスプライトの移動アニメーション再生
-		cursorSprite_->Animation()->PlayTranslate(
-			cursorSprite_->GetTranslate(),
-			{ menuBarLeftTop_.x,menuBarLeftTop_.y + (menuBarSpriteSize_.y + menuBarSpacing_) * static_cast<float>(editingItemIndex_) },
-			0.5f,
-			0.0f,
-			Easing::EasingType::OUT_BACK,
-			SpriteAnimator::PlayMode::PINGPONG_LOOP
-		);
-		// カーソルスプライトのフェードアウトアニメーション再生
-		cursorSprite_->Animation()->PlayFade(0.6f,0.0f,0.5f,0.1f,Easing::EasingType::LINEAR,SpriteAnimator::PlayMode::PINGPONG_LOOP);
+		// 武器項目スプライトの移動アニメーション再生
+		for(auto& sprite:weaponItemSprites_){
+			sprite->Animation()->PlayTranslate(
+				sprite->GetTranslate(),
+				{ 0.0f,sprite->GetTranslate().y },
+				0.2f,
+				0.0f,
+				Easing::EasingType::OUT_BACK,
+				SpriteAnimator::PlayMode::ONCE
+			);
+			// 武器項目スプライトのフェードアウトアニメーション再生
+			sprite->Animation()->PlayFade(1.0f,0.0f,0.2f,0.0f,Easing::EasingType::LINEAR,SpriteAnimator::PlayMode::ONCE);
+		}
 	}
+
+	//戻るボタンが押されたときの処理
+	if(Input::GetInstance()->TriggerButton(0,GamepadButtonType::B)){
+
+		// 編集モードをメニューに変更
+		editModeRequest_ = EditMode::EDIT_MENU;
+
+		// 武器項目スプライトの移動アニメーション再生
+		for(auto& sprite:weaponItemSprites_){
+			sprite->Animation()->PlayTranslate(
+				sprite->GetTranslate(),
+				{ 0.0f,sprite->GetTranslate().y },
+				0.2f,
+				0.0f,
+				Easing::EasingType::OUT_BACK,
+				SpriteAnimator::PlayMode::ONCE
+			);
+			// 武器項目スプライトのフェードアウトアニメーション再生
+			sprite->Animation()->PlayFade(1.0f,0.0f,0.2f,0.0f,Easing::EasingType::LINEAR,SpriteAnimator::PlayMode::ONCE);
+		}
+	}
+
+	// カーソルスプライトの位置更新
+	cursorSprite_->SetTranslate({
+		menuBarLeftTop_.x,
+		menuBarLeftTop_.y + (menuBarSpriteSize_.y + menuBarSpacing_) * static_cast<float>(editingWeaponUnitIndex_)
+		});
 }
 
 //========================================================================
@@ -353,8 +415,10 @@ void CharacterEditTool::SaveWeaponData(std::string WeaponName, WeaponUnit unit) 
 	// 現在のキャラクター名をcharacterDataとして保存
 	currentCharacterData_.weaponData[unit].weaponName = WeaponName;
 	TakeCFrameWork::GetJsonLoader()->SaveJsonData<WeaponData>(WeaponName + ".json", currentCharacterData_.weaponData[unit]);
+
+
 	// 武器名リストを更新
-	weaponNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<WeaponData>();
+	weaponNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<WeaponConfig>();
 }
 
 void CharacterEditTool::LoadPlayableCharacterInfo(std::string characterName) {
@@ -385,6 +449,35 @@ void CharacterEditTool::LoadWeaponData(std::string WeaponName, WeaponUnit unit) 
 	}
 	//JSONからプリセットを読み込む
 	WeaponData loadedWeaponData = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>(WeaponName + ".json");
+
+	switch (loadedWeaponData.weaponType) {
+	case WeaponType::NONE:
+		// NONEの場合の処理
+		break;
+	case WeaponType::WEAPON_TYPE_RIFLE:
+	{
+
+
+		// ライフルの場合の処理
+		RifleInfo rifleInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<RifleInfo>(WeaponName + "_extraInfo.json");
+		loadedWeaponData.actionData = rifleInfo;
+		break;
+	}
+	case WeaponType::WEAPON_TYPE_BAZOOKA:
+		// バズーカの場合の処理
+		break;
+	case WeaponType::WEAPON_TYPE_VERTICAL_MISSILE:
+	{
+
+		// 垂直ミサイルの場合の処理
+		VerticalMissileLauncherInfo vmLauncherInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<VerticalMissileLauncherInfo>(WeaponName + "_extraInfo.json");
+		loadedWeaponData.actionData = vmLauncherInfo;
+		break;
+	}
+	default:
+		break;
+	}
+
 	// コンテナに存在しなければ追加
 	if (!weaponDataMap_.contains(WeaponName)) {
 		weaponDataMap_[WeaponName] = loadedWeaponData;
@@ -399,4 +492,35 @@ void CharacterEditTool::LoadAllCharacterData() {
 }
 
 void CharacterEditTool::LoadAllWeaponData() {
+
+	// 全武器データの読み込み
+	weaponNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<WeaponData>();
+	for (const auto& weaponName : weaponNames_) {
+		WeaponData weaponData = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>(weaponName + ".json");
+		switch (weaponData.weaponType) {
+		case WeaponType::NONE:
+			// NONEの場合の処理
+			break;
+		case WeaponType::WEAPON_TYPE_RIFLE:
+		{
+			// ライフルの場合の処理
+			RifleInfo rifleInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<RifleInfo>(weaponName + "_extraInfo.json");
+			weaponData.actionData = rifleInfo;
+			break;
+		}
+		case WeaponType::WEAPON_TYPE_BAZOOKA:
+			// バズーカの場合の処理
+			break;
+		case WeaponType::WEAPON_TYPE_VERTICAL_MISSILE:
+		{
+			// 垂直ミサイルの場合の処理
+			VerticalMissileLauncherInfo vmLauncherInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<VerticalMissileLauncherInfo>(weaponName + "_extraInfo.json");
+			weaponData.actionData = vmLauncherInfo;
+			break;
+		}
+		default:
+			break;
+		}
+		weaponDataMap_[weaponName] = weaponData;
+	}
 }

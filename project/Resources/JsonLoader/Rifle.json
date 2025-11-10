@@ -9,8 +9,6 @@
     "magazineCount_": 30,
     "maxBulletCount": 600,
     "maxReloadTime": 3.0,
-    "modelFilePath": "",
     "power": 90.0,
-    "requiredChargeTime": 0.0,
-    "weaponName": ""
+    "requiredChargeTime": 0.0
 }

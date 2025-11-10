@@ -100,7 +100,7 @@
     <ClCompile Include="application\Weapon\BaseWeapon.cpp">
       <Filter>application\weapon</Filter>
     </ClCompile>
-    <ClCompile Include="application\Weapon\Bazooka.cpp">
+    <ClCompile Include="application\Weapon\Bazooka\Bazooka.cpp">
       <Filter>application\weapon</Filter>
     </ClCompile>
     <ClCompile Include="engine\Collision\BoxCollider.cpp">
@@ -301,7 +301,7 @@
     <ClCompile Include="application\Scene\SceneManager.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="application\Weapon\Rifle.cpp">
+    <ClCompile Include="application\Weapon\Rifle\Rifle.cpp">
       <Filter>application\weapon</Filter>
     </ClCompile>
     <ClCompile Include="engine\math\Quaternion.cpp">
@@ -433,7 +433,7 @@
     <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp">
       <Filter>application\Weapon\Bullet</Filter>
     </ClCompile>
-    <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp">
+    <ClCompile Include="application\Weapon\Launcher\VerticalMissileLauncher.cpp">
       <Filter>application\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="engine\PostEffect\BloomEffect.cpp">
@@ -478,9 +478,6 @@
     <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp">
       <Filter>engine\postEffect</Filter>
     </ClCompile>
-    <ClCompile Include="application\Weapon\VerticalMissileLauncher.cpp">
-      <Filter>application\weapon</Filter>
-    </ClCompile>
     <ClCompile Include="application\UI\BulletCounterUI.cpp">
       <Filter>application\UI</Filter>
     </ClCompile>
@@ -519,11 +516,13 @@
     <ClCompile Include="engine\math\Transform.cpp" />
     <ClCompile Include="application\Scene\EnemySelectScene.cpp" />
     <ClCompile Include="application\Tool\CharacterEdit\CharacterEditTool.cpp" />
-    <ClCompile Include="application\Weapon\WeaponContext.cpp" />
+    <ClCompile Include="application\Weapon\WeaponData.cpp" />
     <ClCompile Include="application\UI\PushStartUI.cpp" />
     <ClCompile Include="application\UI\PhaseMessageUI.cpp" />
     <ClCompile Include="engine\Animation\SpriteAnimation.cpp" />
-    <ClCompile Include="application\Weapon\BurstShotInfo.cpp" />
+    <ClCompile Include="application\Weapon\Action\BurstShotInfo.cpp" />
+    <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
+    <ClCompile Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -548,7 +547,7 @@
     <ClInclude Include="application\Weapon\BaseWeapon.h">
       <Filter>application\weapon</Filter>
     </ClInclude>
-    <ClInclude Include="application\Weapon\Bazooka.h">
+    <ClInclude Include="application\Weapon\Bazooka\Bazooka.h">
       <Filter>application\weapon</Filter>
     </ClInclude>
     <ClInclude Include="engine\Collision\BoxCollider.h">
@@ -773,7 +772,7 @@
     <ClInclude Include="application\Scene\SceneFactory.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="application\Weapon\Rifle.h">
+    <ClInclude Include="application\Weapon\Rifle\Rifle.h">
       <Filter>application\weapon</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\Quaternion.h">
@@ -950,7 +949,7 @@
     <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h">
       <Filter>application\Weapon\Bullet</Filter>
     </ClInclude>
-    <ClInclude Include="application\Weapon\VerticalMissileLauncher.h">
+    <ClInclude Include="application\Weapon\Launcher\VerticalMissileLauncher.h">
       <Filter>application\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="engine\Collision\SurfaceType.h">
@@ -1011,9 +1010,6 @@
       <Filter>application\entity\behavior</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h">
-      <Filter>application\weapon</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Weapon\VerticalMissileLauncher.h">
       <Filter>application\weapon</Filter>
     </ClInclude>
     <ClInclude Include="application\Entity\WeaponUnit.h">
@@ -1078,13 +1074,16 @@
     <ClInclude Include="engine\base\ComPtrAliasTemplates.h" />
     <ClInclude Include="application\Scene\EnemySelectScene.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
-    <ClInclude Include="application\Weapon\WeaponContext.h" />
+    <ClInclude Include="application\Weapon\WeaponData.h" />
     <ClInclude Include="engine\Utility\JsonDirectoryPathData.h" />
     <ClInclude Include="application\UI\PushStartUI.h" />
     <ClInclude Include="application\UI\PhaseMessageUI.h" />
     <ClInclude Include="application\Scene\GamePlaySceneBehavior.h" />
     <ClInclude Include="engine\Animation\SpriteAnimation.h" />
-    <ClInclude Include="application\Weapon\BurstShotInfo.h" />
+    <ClInclude Include="application\Weapon\Action\BurstShotInfo.h" />
+    <ClInclude Include="application\Weapon\Action\WeaponActionData.h" />
+    <ClInclude Include="application\Weapon\Rifle\RifleInfo.h" />
+    <ClInclude Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

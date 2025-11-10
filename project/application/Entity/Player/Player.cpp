@@ -12,9 +12,9 @@
 #include "engine/Utility/StringUtility.h"
 #include "engine/Utility/JsonLoader.h"
 
-#include "application/Weapon/Rifle.h"
-#include "application/Weapon/Bazooka.h"
-#include "application/Weapon/VerticalMissileLauncher.h"
+#include "application/Weapon/Rifle/Rifle.h"
+#include "application/Weapon/Bazooka/Bazooka.h"
+#include "application/Weapon/Launcher/VerticalMissileLauncher.h"
 #include "application/Entity/WeaponUnit.h"
 
 #include "application/Entity/Behavior/BehaviorRunning.h"
