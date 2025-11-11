@@ -5,9 +5,10 @@
 #include <array>
 #include <optional>
 
-#include "application/Weapon/WeaponContext.h"
+#include "application/Weapon/WeaponData.h"
 #include "application/Entity/WeaponUnit.h"
 #include "application/Entity/GameCharacterInfo.h"
+#include "application/Tool/CharacterEdit/CharacterEditMenuEnum.h"
 #include "engine/math/Vector2.h"
 #include "engine/2d/Sprite.h"
 
@@ -16,7 +17,8 @@ enum class EditMode {
 	EDIT_MENU,
 	CHARACTER_EDIT,
 	WEAPON_EDIT,
-};;
+	NEXT_MENU
+};
 
 //前方宣言
 class Object3d;
@@ -60,7 +62,9 @@ public:
 	/// </summary>
 	void UpdateWeaponEdit();
 
-	void Draw();
+	void DispatchObject();
+
+	void DrawObject();
 
 	void DrawUI();
 
@@ -88,6 +92,8 @@ public:
 	/// <param name="WeaponName"></param>
 	void SaveWeaponData(std::string WeaponName,WeaponUnit unit);
 
+	void SaveCharacterData();
+
 	/// <summary>
 	/// キャラクターデータ読み込み処理
 	/// </summary>
@@ -104,7 +110,34 @@ public:
 	/// 全キャラクターデータ・武器データ読み込み処理
 	/// </summary>
 	void LoadAllCharacterData();
+
+	/// <summary>
+	/// 全武器データ読み込み処理
+	/// </summary>
 	void LoadAllWeaponData();
+
+public:
+
+	//========================================================================
+	// accessors
+	//========================================================================
+	//----- getter ---------------------------
+	//編集モードリクエスト取得
+	const std::optional<EditMode>& GetEditModeRequest() const { return editModeRequest_; }
+	//編集中のキャラクターデータ取得
+	const CharacterData& GetCurrentCharacterData() const { return currentCharacterData_; }
+	//編集中のメニューアイテムインデックス取得
+	const uint32_t& GetEditingItemIndex() const { return editingItemIndex_; }
+	//メニューアイテム最大数取得
+	bool IsNextMenuRequested() const { return nextMenuRequested_; }
+
+	//----- setter ---------------------------
+	//編集モードリクエスト設定
+	void SetEditModeRequest(const std::optional<EditMode>& editModeRequest) { editModeRequest_ = editModeRequest; }
+	//編集中のメニューアイテムインデックス設定
+	void SetEditingItemIndex(const uint32_t& editingItemIndex) { editingItemIndex_ = editingItemIndex; }
+	//次のメニューへ移動リクエストフラグ設定
+	void SetNextMenuRequested(const bool& nextMenuRequested) { nextMenuRequested_ = nextMenuRequested; }
 
 private:
 
@@ -113,7 +146,7 @@ private:
 	//プレビュー用武器モデル群
 	std::vector<std::unique_ptr<Object3d>> previewWeaponModels_;
 	//メニューバースプライト群
-	std::array<std::unique_ptr<Sprite>, WeaponUnit::Size> weaponMenuBarSprites_;
+	std::array<std::unique_ptr<Sprite>, CharacterEditMenuEnum::MENU_SIZE> menuBarSprites_;
 	//カーソルスプライト
 	std::unique_ptr<Sprite> cursorSprite_;
 
@@ -133,9 +166,20 @@ private:
 	//編集中のメニューアイテムインデックス
 	uint32_t editingItemIndex_ = 0; 
 	//メニューアイテム最大数（武器項目+キャラクター項目）
-	const uint32_t maxMenuItems_ = WeaponUnit::Size + 1; 
+	const uint32_t maxMenuItems_ = CharacterEditMenuEnum::MENU_SIZE;
+
+	//武器メニューアイテム最大数
+	uint32_t maxWeaponMenuItems_ = 0;
+	//編集中の武器ユニットインデックス
+	uint32_t editingWeaponUnitIndex_ = 0;
+
+	// 編集中のキャラクターインデックス
+	uint32_t editingCharacterIndex_ = 0;
+	// キャラクターメニューアイテム最大数
+	uint32_t maxCharacterMenuItems_ = 0;
 
 	std::vector<std::unique_ptr<Sprite>> weaponItemSprites_; //武器項目スプライトリスト
+	std::vector<std::unique_ptr<Sprite>> characterItemSprites_; //キャラクター項目スプライトリスト
 
 	//武器データマップ
 	std::map<std::string, WeaponData> weaponDataMap_;
@@ -152,4 +196,7 @@ private:
 	std::string pendingCharacterName_;
 	// 上書き予定の武器名
 	std::string pendingWeaponName_;
+
+	// 次のメニューへ移動リクエストフラグ
+	bool nextMenuRequested_ = false;
 };

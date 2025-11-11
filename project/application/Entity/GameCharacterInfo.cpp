@@ -6,13 +6,14 @@
 
 void to_json(nlohmann::json& j, const CharacterData& info) {
 	
-	j["modelFilePath"] = info.modelFilePath;
-	j["info"] = info.playableCharacterInfo;
+	
+	j["info"] = info.characterInfo;
 	j["weaponData"] = info.weaponData;
 }
 
 void to_json(nlohmann::json& j, const PlayableCharacterInfo& info) {
 	j["characterName"] = info.characterName;
+	j["modelFilePath"] = info.modelFilePath;
 	j["transform"] = info.transform;
 
 	j["velocity"] = info.velocity;
@@ -80,18 +81,18 @@ void to_json(nlohmann::json& j, const OverHeatInfo& info) {
 
 
 //============================================================================
-// JSON <- GameCharacterInfo
+// JSON <- CharacterData
 //============================================================================
 
 void from_json(const nlohmann::json& j, CharacterData& info) {
-	
-	if (j.contains("modelFilePath"))j.at("modelFilePath").get_to(info.modelFilePath);
-	if (j.contains("info"))j.at("info").get_to(info.playableCharacterInfo);
+
+	if (j.contains("info"))j.at("info").get_to(info.characterInfo);
 	if (j.contains("weaponData"))j.at("weaponData").get_to(info.weaponData);
 }
 
 void from_json(const nlohmann::json& j, PlayableCharacterInfo& info) {
 	if (j.contains("characterName"))j.at("characterName").get_to(info.characterName);
+	if (j.contains("modelFilePath"))j.at("modelFilePath").get_to(info.modelFilePath);
 	if (j.contains("transform"))j.at("transform").get_to(info.transform);
 	if (j.contains("velocity"))j.at("velocity").get_to(info.velocity);
 	if (j.contains("moveDirection"))j.at("moveDirection").get_to(info.moveDirection);

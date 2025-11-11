@@ -12,9 +12,9 @@
 #include "engine/Utility/StringUtility.h"
 #include "engine/Utility/JsonLoader.h"
 
-#include "application/Weapon/Rifle.h"
-#include "application/Weapon/Bazooka.h"
-#include "application/Weapon/VerticalMissileLauncher.h"
+#include "application/Weapon/Rifle/Rifle.h"
+#include "application/Weapon/Bazooka/Bazooka.h"
+#include "application/Weapon/Launcher/VerticalMissileLauncher.h"
 #include "application/Entity/WeaponUnit.h"
 
 #include "application/Entity/Behavior/BehaviorRunning.h"
@@ -43,15 +43,15 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	camera_ = object3dCommon->GetDefaultCamera();
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
-	characterInfo_.transform = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
-	object3d_->SetScale(characterInfo_.transform.scale);
+	playerData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>("PlayerData.json");
+	playerData_.characterInfo.transform = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
+	object3d_->SetScale(playerData_.characterInfo.transform.scale);
 
-	weapons_.resize(4);
-	weaponTypes_.resize(4);
-	weaponTypes_[R_ARMS] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
-	weaponTypes_[L_ARMS] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
-	weaponTypes_[R_BACK] = WeaponType::WEAPON_TYPE_VERTICAL_MISSILE; // 3つ目の武器は垂直ミサイル
-	weaponTypes_[L_BACK] = WeaponType::WEAPON_TYPE_VERTICAL_MISSILE; // 4つ目の武器は垂直ミサイル
+	weapons_.resize(WeaponUnit::Size);
+	weaponTypes_.resize(WeaponUnit::Size);
+	for(size_t i = 0; i < weaponTypes_.size(); i++) {
+		weaponTypes_[i] = playerData_.weaponData[i].weaponType;
+	}
 	chargeShootableUnits_.resize(4);
 
 	//背部エミッターの初期化
@@ -79,7 +79,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//BehaviorManagerの初期化
 	behaviorManager_ = std::make_unique<BehaviorManager>();
 	behaviorManager_->Initialize(inputProvider_.get());
-	behaviorManager_->InitializeBehaviors(characterInfo_);
+	behaviorManager_->InitializeBehaviors(playerData_.characterInfo);
 }
 
 //===================================================================================
@@ -140,9 +140,9 @@ std::vector<std::unique_ptr<BaseWeapon>>& Player::GetWeapons() {
 void Player::Update() {
 
 	//stepBoostのインターバルの更新
-	characterInfo_.stepBoostInfo.interval = 0.2f; // ステップブーストのインターバル
-	if (characterInfo_.stepBoostInfo.intervalTimer > 0.0f) {
-		characterInfo_.stepBoostInfo.intervalTimer -= deltaTime_;
+	playerData_.characterInfo.stepBoostInfo.interval = 0.2f; // ステップブーストのインターバル
+	if (playerData_.characterInfo.stepBoostInfo.intervalTimer > 0.0f) {
+		playerData_.characterInfo.stepBoostInfo.intervalTimer -= deltaTime_;
 	}
 
 	// StepBoost入力判定を最初に追加
@@ -150,7 +150,7 @@ void Player::Update() {
 		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING) {
 
 		//オーバーヒート状態のチェック
-		if (characterInfo_.overHeatInfo.isOverheated == false) {
+		if (playerData_.characterInfo.overHeatInfo.isOverheated == false) {
 			//StepBoost入力判定
 			// LTボタン＋スティック入力で発動
 			if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
@@ -159,21 +159,21 @@ void Player::Update() {
 			}
 			//Jump入力判定
 			//RTで発動
-			if (characterInfo_.onGround == true) {
+			if (playerData_.characterInfo.onGround == true) {
 
 				if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RT)) {
 					//ジャンプのリクエスト
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::JUMP);
-					characterInfo_.onGround = false; // ジャンプしたので地上ではない
+					playerData_.characterInfo.onGround = false; // ジャンプしたので地上ではない
 				}
 			}
 		}
 	}
 
 	//移動方向の取得
-	characterInfo_.moveDirection = inputProvider_->GetMoveDirection();
+	playerData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
 	//Behaviorの更新
-	behaviorManager_->Update(characterInfo_);
+	behaviorManager_->Update(playerData_.characterInfo);
 
 	//エネルギーの更新
 	UpdateEnergy();
@@ -181,31 +181,31 @@ void Player::Update() {
 	RequestActiveBoostEffect();
 
 	// 地面に着地したらRUNNINGに戻る
-	if (characterInfo_.onGround == true &&
+	if (playerData_.characterInfo.onGround == true &&
 		(behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::JUMP ||
 			behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING)) {
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
-	} else if (characterInfo_.onGround == false &&
+	} else if (playerData_.characterInfo.onGround == false &&
 		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING) {
 		//空中にいる場合はFLOATINGに切り替え
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
 	}
 
 	//攻撃処理
-	if (characterInfo_.isAlive == true) {
+	if (playerData_.characterInfo.isAlive == true) {
 		//生存時のみ攻撃処理を行う
 		UpdateAttack();
 	}
 
 	//HPが0以下なら死亡処理
-	if (characterInfo_.health <= 0.0f) {
+	if (playerData_.characterInfo.health <= 0.0f) {
 		//死亡状態のリクエスト
-		characterInfo_.isAlive = false;
+		playerData_.characterInfo.isAlive = false;
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::DEAD);
 	}
 
 	//歩行時の煙エミッターのON/OFF制御
-	if (characterInfo_.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING ||
+	if (playerData_.characterInfo.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING ||
 		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
 		backEmitter_->SetIsEmit(true);
 	} else {
@@ -217,29 +217,29 @@ void Player::Update() {
 	if (isUseWeapon_) {
 		//武器使用中はカメラの向きに合わせる
 		Quaternion targetRotate = camera_->GetRotate();
-		characterInfo_.transform.rotate = Easing::Slerp(characterInfo_.transform.rotate, targetRotate, 0.05f);
-		characterInfo_.transform.rotate = QuaternionMath::Normalize(characterInfo_.transform.rotate);
+		playerData_.characterInfo.transform.rotate = Easing::Slerp(playerData_.characterInfo.transform.rotate, targetRotate, 0.05f);
+		playerData_.characterInfo.transform.rotate = QuaternionMath::Normalize(playerData_.characterInfo.transform.rotate);
 	} else {
-		if (characterInfo_.moveDirection.x != 0.0f || characterInfo_.moveDirection.z != 0.0f) {
+		if (playerData_.characterInfo.moveDirection.x != 0.0f || playerData_.characterInfo.moveDirection.z != 0.0f) {
 			//移動方向に合わせて回転
-			float targetAngle = atan2(characterInfo_.moveDirection.x, characterInfo_.moveDirection.z);
+			float targetAngle = atan2(playerData_.characterInfo.moveDirection.x, playerData_.characterInfo.moveDirection.z);
 			Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
-			characterInfo_.transform.rotate = Easing::Slerp(characterInfo_.transform.rotate, targetRotate, 0.05f);
-			characterInfo_.transform.rotate = QuaternionMath::Normalize(characterInfo_.transform.rotate);
+			playerData_.characterInfo.transform.rotate = Easing::Slerp(playerData_.characterInfo.transform.rotate, targetRotate, 0.05f);
+			playerData_.characterInfo.transform.rotate = QuaternionMath::Normalize(playerData_.characterInfo.transform.rotate);
 		}
 	}
 
 	//Quaternionからオイラー角に変換
-	Vector3 eulerRotate = QuaternionMath::ToEuler(characterInfo_.transform.rotate);
+	Vector3 eulerRotate = QuaternionMath::ToEuler(playerData_.characterInfo.transform.rotate);
 	//カメラの設定
 	camera_->SetFollowTargetPos(*object3d_->GetModel()->GetSkeleton()->GetJointPosition("neck", object3d_->GetWorldMatrix()));
 	camera_->SetFollowTargetRot(eulerRotate);
-	camera_->SetFocusTargetPos(characterInfo_.focusTargetPos);
+	camera_->SetFocusTargetPos(playerData_.characterInfo.focusTargetPos);
 
 	//オブジェクトの更新
-	object3d_->SetTranslate(characterInfo_.transform.translate);
+	object3d_->SetTranslate(playerData_.characterInfo.transform.translate);
 	object3d_->SetRotate(eulerRotate);
-	object3d_->SetScale(characterInfo_.transform.scale);
+	object3d_->SetScale(playerData_.characterInfo.transform.scale);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
@@ -252,7 +252,7 @@ void Player::Update() {
 	//武器の更新
 	for (const auto& weapon : weapons_) {
 		if (weapon) {
-			weapon->SetTarget(characterInfo_.focusTargetPos);
+			weapon->SetTarget(playerData_.characterInfo.focusTargetPos);
 			weapon->SetTargetVelocity(focusTargetVelocity_);
 			weapon->Update();
 		}
@@ -264,7 +264,7 @@ void Player::Update() {
 		boostEffect->SetBehavior(behaviorManager_->GetCurrentBehaviorType());
 	}
 
-	characterInfo_.onGround = false; // 毎フレームリセットし、衝突判定で更新されるようにする
+	playerData_.characterInfo.onGround = false; // 毎フレームリセットし、衝突判定で更新されるようにする
 }
 
 //===================================================================================
@@ -275,19 +275,19 @@ void Player::UpdateImGui() {
 #ifdef _DEBUG
 
 	ImGui::Begin("Player");
-	ImGui::DragFloat3("Translate", &characterInfo_.transform.translate.x, 0.01f);
-	ImGui::DragFloat3("Scale", &characterInfo_.transform.scale.x, 0.01f);
-	ImGui::DragFloat4("Rotate", &characterInfo_.transform.rotate.x, 0.01f);
+	ImGui::DragFloat3("Translate", &playerData_.characterInfo.transform.translate.x, 0.01f);
+	ImGui::DragFloat3("Scale", &playerData_.characterInfo.transform.scale.x, 0.01f);
+	ImGui::DragFloat4("Rotate", &playerData_.characterInfo.transform.rotate.x, 0.01f);
 	ImGui::Separator();
-	ImGui::DragFloat("Health", &characterInfo_.health, 1.0f, 0.0f, characterInfo_.maxHealth);
-	ImGui::DragFloat("Energy", &characterInfo_.energyInfo.energy, 1.0f, 0.0f, characterInfo_.energyInfo.maxEnergy);
-	ImGui::DragFloat3("Velocity", &characterInfo_.velocity.x, 0.01f);
-	ImGui::DragFloat3("MoveDirection", &characterInfo_.moveDirection.x, 0.01f);
-	ImGui::Checkbox("OnGround", &characterInfo_.onGround);
+	ImGui::DragFloat("Health", &playerData_.characterInfo.health, 1.0f, 0.0f, playerData_.characterInfo.maxHealth);
+	ImGui::DragFloat("Energy", &playerData_.characterInfo.energyInfo.energy, 1.0f, 0.0f, playerData_.characterInfo.energyInfo.maxEnergy);
+	ImGui::DragFloat3("Velocity", &playerData_.characterInfo.velocity.x, 0.01f);
+	ImGui::DragFloat3("MoveDirection", &playerData_.characterInfo.moveDirection.x, 0.01f);
+	ImGui::Checkbox("OnGround", &playerData_.characterInfo.onGround);
 
 	// デバッグ用ダメージボタン
 	if(ImGui::Button("Damage 1000")) {
-		characterInfo_.health -= 1000.0f;
+		playerData_.characterInfo.health -= 1000.0f;
 	}
 	// プレイヤーデータの保存ボタン
 	if(ImGui::Button("Save Player Data")) {
@@ -340,14 +340,15 @@ void Player::DrawBoostEffect() {
 void Player::LoadPlayerData(const std::string& characterName) {
 
 	//Jsonからデータを読み込み
-	characterInfo_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(characterName);
+	playerData_.characterInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(characterName);
 }
 
 void Player::SavePlayerData(const std::string& characterName) {
 
 	//Jsonにデータを保存
-	characterInfo_.characterName = characterName;
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<PlayableCharacterInfo>(characterName, characterInfo_);
+	playerData_.characterInfo.characterName = characterName;
+	playerData_.characterInfo.modelFilePath = object3d_->GetModelFilePath();
+	TakeCFrameWork::GetJsonLoader()->SaveJsonData<PlayableCharacterInfo>(characterName + ".json", playerData_.characterInfo);
 }
 
 void Player::DrawCollider() {
@@ -373,14 +374,14 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
 		//ダメージを受ける
 		Bullet* bullet = dynamic_cast<Bullet*>(other);
-		characterInfo_.health -= bullet->GetDamage();
+		playerData_.characterInfo.health -= bullet->GetDamage();
 	}
 	if (other->GetCharacterType() == CharacterType::ENEMY_MISSILE) {
 		//敵のミサイルに当たった場合
 		collider_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
 		//ダメージを受ける
 		VerticalMissile* missile = dynamic_cast<VerticalMissile*>(other);
-		characterInfo_.health -= missile->GetDamage();
+		playerData_.characterInfo.health -= missile->GetDamage();
 	}
 
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
@@ -389,7 +390,7 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		if (collider_->GetSurfaceType() == SurfaceType::BOTTOM) {
 
 			//playerが下面で接触している場合は地面にいると判定
-			characterInfo_.onGround = true;
+			playerData_.characterInfo.onGround = true;
 
 			if (BoxCollider* box = dynamic_cast<BoxCollider*>(collider_.get())) {
 				Vector3 normal = box->GetMinAxis();
@@ -397,11 +398,11 @@ void Player::OnCollisionAction(GameCharacter* other) {
 
 				//貫通している分だけ押し戻す
 				//過剰な押し戻しを防ぐために、penetrationDepthを2で割ると良い感じになる
-				characterInfo_.transform.translate += -normal * penetrationDepth * 0.5f;
+				playerData_.characterInfo.transform.translate += -normal * penetrationDepth * 0.5f;
 
 				//接触面方向の速度を打ち消す
-				float velocityAlongNormal = Vector3Math::Dot(characterInfo_.velocity, normal);
-				characterInfo_.velocity -= normal * velocityAlongNormal;
+				float velocityAlongNormal = Vector3Math::Dot(playerData_.characterInfo.velocity, normal);
+				playerData_.characterInfo.velocity -= normal * velocityAlongNormal;
 			}
 
 			collider_->SetColor({ 0.0f,1.0f,0.0f,1.0f }); // コライダーの色を緑に変更
@@ -414,19 +415,19 @@ void Player::OnCollisionAction(GameCharacter* other) {
 				float penetrationDepth = box->GetMinPenetration();
 
 				//貫通している分だけ押し戻す
-				characterInfo_.transform.translate += -normal * penetrationDepth;
+				playerData_.characterInfo.transform.translate += -normal * penetrationDepth;
 
 				//接触面方向の速度を打ち消す
-				float dot = Vector3Math::Dot(characterInfo_.velocity, normal);
-				characterInfo_.velocity -= normal * dot;
+				float dot = Vector3Math::Dot(playerData_.characterInfo.velocity, normal);
+				playerData_.characterInfo.velocity -= normal * dot;
 			}
 
 			collider_->SetColor({ 0.0f,0.0f,1.0f,1.0f }); // コライダーの色を青に変更
 
 		} else if (collider_->GetSurfaceType() == SurfaceType::TOP) {
 			//天井に接触した場合
-			if (characterInfo_.velocity.y > 0.0f) {
-				characterInfo_.velocity.y = 0.0f;
+			if (playerData_.characterInfo.velocity.y > 0.0f) {
+				playerData_.characterInfo.velocity.y = 0.0f;
 			}
 
 			collider_->SetColor({ 1.0f,1.0f,0.0f,1.0f }); // コライダーの色を黄色に変更
@@ -450,12 +451,12 @@ void Player::UpdateAttack() {
 		if (chargeShootableUnits_[i] == true) {
 			//チャージ撃ち可能なユニットの処理
 			auto* weapon = weapons_[i].get();
-			if (characterInfo_.isChargeShooting == true) {
+			if (playerData_.characterInfo.isChargeShooting == true) {
 				// チャージ撃ち中の処理
 				chargeShootTimer_ -= deltaTime_;
 				if (chargeShootTimer_ <= 0.0f) {
 					weapon->Attack();
-					characterInfo_.isChargeShooting = false; // チャージ撃ち中フラグをリセット
+					playerData_.characterInfo.isChargeShooting = false; // チャージ撃ち中フラグをリセット
 					chargeShootTimer_ = 0.0f; // タイマーをリセット
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 					chargeShootableUnits_[i] = false; // チャージ撃ち可能なユニットのマークをリセット
@@ -501,7 +502,7 @@ void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
 			//チャージ攻撃不可:通常攻撃
 			if (weapon->IsStopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
 				// 停止撃ち専用:硬直処理を行う
-				characterInfo_.isChargeShooting = true; // チャージ撃ち中フラグを立てる
+				playerData_.characterInfo.isChargeShooting = true; // チャージ撃ち中フラグを立てる
 				chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
 				chargeShootableUnits_[weaponIndex] = true; // チャージ撃ち可能なユニットとしてマーク
 
@@ -535,21 +536,21 @@ void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
 
 void Player::UpdateEnergy() {
 
-	float& overheatTimer = characterInfo_.overHeatInfo.overheatTimer; // オーバーヒートタイマー
-	float maxEnergy = characterInfo_.energyInfo.maxEnergy; // 最大エネルギー
+	float& overheatTimer = playerData_.characterInfo.overHeatInfo.overheatTimer; // オーバーヒートタイマー
+	float maxEnergy = playerData_.characterInfo.energyInfo.maxEnergy; // 最大エネルギー
 
 	//オーバーヒートしているかどうか
-	if (!characterInfo_.overHeatInfo.isOverheated) {
+	if (!playerData_.characterInfo.overHeatInfo.isOverheated) {
 
-		if (characterInfo_.energyInfo.energy <= 0.0f) {
+		if (playerData_.characterInfo.energyInfo.energy <= 0.0f) {
 			// エネルギーが0以下になったらオーバーヒート状態にする
-			characterInfo_.overHeatInfo.isOverheated = true;
-			overheatTimer = characterInfo_.overHeatInfo.overheatDuration; // オーバーヒートのタイマーを設定
-			characterInfo_.energyInfo.energy = 0.0f; // エネルギーを0にする
+			playerData_.characterInfo.overHeatInfo.isOverheated = true;
+			overheatTimer = playerData_.characterInfo.overHeatInfo.overheatDuration; // オーバーヒートのタイマーを設定
+			playerData_.characterInfo.energyInfo.energy = 0.0f; // エネルギーを0にする
 		}
 
 		// エネルギーの回復
-		if (characterInfo_.energyInfo.energy < maxEnergy) {
+		if (playerData_.characterInfo.energyInfo.energy < maxEnergy) {
 
 			//浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
 			if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING ||
@@ -558,9 +559,9 @@ void Player::UpdateEnergy() {
 				return; // エネルギーの回復を行わない
 			}
 
-			characterInfo_.energyInfo.energy += characterInfo_.energyInfo.recoveryRate * deltaTime_;
-			if (characterInfo_.energyInfo.energy > maxEnergy) {
-				characterInfo_.energyInfo.energy = maxEnergy;
+			playerData_.characterInfo.energyInfo.energy += playerData_.characterInfo.energyInfo.recoveryRate * deltaTime_;
+			if (playerData_.characterInfo.energyInfo.energy > maxEnergy) {
+				playerData_.characterInfo.energyInfo.energy = maxEnergy;
 			}
 		}
 
@@ -571,9 +572,9 @@ void Player::UpdateEnergy() {
 			overheatTimer -= deltaTime_;
 			if (overheatTimer <= 0.0f) {
 				// オーバーヒートが終了したらエネルギーを半分回復
-				characterInfo_.energyInfo.energy = maxEnergy / 2.0f;
+				playerData_.characterInfo.energyInfo.energy = maxEnergy / 2.0f;
 				// オーバーヒート状態を解除
-				characterInfo_.overHeatInfo.isOverheated = false;
+				playerData_.characterInfo.overHeatInfo.isOverheated = false;
 			}
 		}
 
@@ -583,12 +584,12 @@ void Player::UpdateEnergy() {
 void Player::RequestActiveBoostEffect() {
 
 	//ステップブーストの方向とスティックの向きによってアクティブにするエフェクトを変更
-	Vector3 moveDir = characterInfo_.moveDirection;
+	Vector3 moveDir = playerData_.characterInfo.moveDirection;
 	if (moveDir.Length() <= 0.1f) return;
 
 	// --- プレイヤーの向きをQuaternionから取得 ---
 	Vector3 localForward = Vector3(0.0f, 0.0f, 1.0f);
-	Vector3 playerForward = QuaternionMath::RotateVector(localForward, characterInfo_.transform.rotate);
+	Vector3 playerForward = QuaternionMath::RotateVector(localForward, playerData_.characterInfo.transform.rotate);
 	playerForward.y = 0.0f; // 水平方向だけ見る
 	playerForward = Vector3Math::Normalize(playerForward);
 

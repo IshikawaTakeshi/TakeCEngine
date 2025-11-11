@@ -1,7 +1,7 @@
 #pragma once
 #include "Weapon/BaseWeapon.h"
 #include "Weapon/Bullet/Bullet.h"
-#include "Weapon/BurstShotInfo.h"
+#include "Weapon/Rifle/RifleInfo.h"
 
 //============================================================================
 // Rifle class
@@ -47,6 +47,6 @@ public:
 private:
 
 	//連射情報
-	BurstShotInfo burstShotInfo_{};
+	RifleInfo rifleInfo_{};
 	BurstShotState burstShotState_{};
 };

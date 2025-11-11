@@ -20,22 +20,11 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.8f);
 
 	//武器の初期化
-	weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
-	weaponData_.power = 90.0f;
-	weaponData_.kAttackInterval = 0.3f; // 攻撃間隔定数を設定
-	weaponState_.attackInterval = burstShotInfo_.kInterval; // 三連射の間隔を攻撃間隔に設定
-	weaponData_.bulletSpeed = 550.0f; // 弾のスピードを設定
-	weaponData_.maxMagazineCount = 30; // マガジン内の弾数を設定
-	weaponState_.bulletCount = weaponData_.maxMagazineCount;
-	weaponData_.maxBulletCount = 600;
-	weaponState_.remainingBulletCount = weaponData_.maxBulletCount; // 残弾数を最大弾数に設定
-	weaponData_.effectiveRange = 700.0f; // 有効射程距離を設定
+	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Rifle.json");
 
-	weaponData_.maxReloadTime = 3.0f; // 最大リロード時間を設定
-
-	weaponData_.canChargeAttack = false; // ライフルはチャージ攻撃可能
-	weaponData_.canMoveShootable = true; // ライフルは移動撃ち可能
-	weaponData_.isStopShootOnly = false; // ライフルは停止撃ち専用ではない
+	weaponState_.attackInterval = rifleInfo_.burstShotInfo.kInterval; // 連射の間隔を攻撃間隔に設定
+	weaponState_.bulletCount = weaponData_.config.maxMagazineCount;
+	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定
 }
 
 //===================================================================================
@@ -57,8 +46,8 @@ void Rifle::Update() {
 			weaponState_.reloadTime = 0.0f; // リロード時間をリセット
 			//リロード完了
 			weaponState_.isReloading = false;
-			weaponState_.bulletCount = weaponData_.maxMagazineCount; // 弾数をマガジン内の弾数にリセット
-			weaponState_.remainingBulletCount -= weaponData_.maxMagazineCount; // 残弾数を更新
+			weaponState_.bulletCount = weaponData_.config.maxMagazineCount; // 弾数をマガジン内の弾数にリセット
+			weaponState_.remainingBulletCount -= weaponData_.config.maxMagazineCount; // 残弾数を更新
 		}
 		
 	}
@@ -75,8 +64,8 @@ void Rifle::Update() {
 				bulletManager_->ShootBullet(
 					object3d_->GetCenterPosition(),
 					targetPos_,targetVel_,
-					weaponData_.bulletSpeed,
-					weaponData_.power,
+					weaponData_.config.bulletSpeed,
+					weaponData_.config.power,
 					CharacterType::PLAYER_BULLET);
 
 			} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
@@ -84,8 +73,8 @@ void Rifle::Update() {
 				bulletManager_->ShootBullet(
 					object3d_->GetCenterPosition(),
 					targetPos_,targetVel_,
-					weaponData_.bulletSpeed,
-					weaponData_.power,
+					weaponData_.config.bulletSpeed,
+					weaponData_.config.power,
 					CharacterType::ENEMY_BULLET);
 			}
 
@@ -93,12 +82,12 @@ void Rifle::Update() {
 			weaponState_.bulletCount--;
 			if (weaponState_.bulletCount <= 0) {
 				weaponState_.isReloading = true; // 弾がなくなったらリロード中にする
-				weaponState_.reloadTime = weaponData_.maxReloadTime; // リロード時間をリセット
+				weaponState_.reloadTime = weaponData_.config.maxReloadTime; // リロード時間をリセット
 			}
 
 			burstShotState_.count--;
 			if (burstShotState_.count > 0) {
-				burstShotState_.intervalTimer = burstShotInfo_.kInterval; // 次の弾発射までの間隔を設定
+				burstShotState_.intervalTimer = rifleInfo_.burstShotInfo.kInterval; // 次の弾発射までの間隔を設定
 			} else {
 				burstShotState_.isActive = false; // 三連射終了
 			}
@@ -122,17 +111,18 @@ void Rifle::UpdateImGui() {
 
 	ImGui::SeparatorText("Rifle");
 	ImGui::Text("Charge Time: %.2f", weaponState_.chargeTime);
-	ImGui::Text("required Charge Time: %.2f", weaponData_.requiredChargeTime);
+	ImGui::Text("required Charge Time: %.2f", weaponData_.config.requiredChargeTime);
 	ImGui::Text("Is Charging: %s", weaponState_.isCharging ? "Yes" : "No");
-	ImGui::SliderFloat("##Rifle::Bullet Speed", &weaponData_.bulletSpeed, 100.0f, 1000.0f);
+	ImGui::SliderFloat("##Rifle::Bullet Speed", &weaponData_.config.bulletSpeed, 100.0f, 1000.0f);
 	ImGui::Separator();
-	burstShotInfo_.EditConfigImGui();
-	weaponData_.EditConfigImGui();
+	rifleInfo_.burstShotInfo.EditConfigImGui();
+	weaponData_.config.EditConfigImGui();
 
 	if(ImGui::Button("Save Rifle Config")) {
 		// 設定をJSONに保存
-		TakeCFrameWork::GetJsonLoader()->SaveJsonData("RifleConfig.json", weaponData_);
-		TakeCFrameWork::GetJsonLoader()->SaveJsonData("RifleBurstShotInfo.json", burstShotInfo_);
+		weaponData_.actionData = rifleInfo_;
+		TakeCFrameWork::GetJsonLoader()->SaveJsonData("Rifle.json", weaponData_);
+
 	}
 }
 
@@ -167,15 +157,15 @@ void Rifle::Attack() {
 			object3d_->GetCenterPosition(),
 			targetPos_,
 			targetVel_,
-			weaponData_.bulletSpeed,
-			weaponData_.power,
+			weaponData_.config.bulletSpeed,
+			weaponData_.config.power,
 			CharacterType::PLAYER_BULLET);
 	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
 		bulletManager_->ShootBullet(
 			object3d_->GetCenterPosition(),
 			targetPos_,targetVel_,
-			weaponData_.bulletSpeed,
-			weaponData_.power,
+			weaponData_.config.bulletSpeed,
+			weaponData_.config.power,
 			CharacterType::ENEMY_BULLET);
 	} else {
 		return; // キャラクタータイプが不明な場合は攻撃しない
@@ -184,10 +174,10 @@ void Rifle::Attack() {
 	weaponState_.bulletCount--;
 	if (weaponState_.bulletCount <= 0) {
 		weaponState_.isReloading = true; // 弾がなくなったらリロード中にする
-		weaponState_.reloadTime = weaponData_.maxReloadTime; // リロード時間をリセット
+		weaponState_.reloadTime = weaponData_.config.maxReloadTime; // リロード時間をリセット
 	}
 	//攻撃間隔のリセット
-	weaponState_.attackInterval = weaponData_.kAttackInterval;
+	weaponState_.attackInterval = weaponData_.config.kAttackInterval;
 	//攻撃力の設定
 }
 
@@ -204,10 +194,10 @@ void Rifle::Charge(float deltaTime) {
 	weaponState_.chargeTime += deltaTime;
 
 	// チャージ時間が最大に達した場合
-	if (weaponState_.chargeTime >= weaponData_.requiredChargeTime) { 
+	if (weaponState_.chargeTime >= weaponData_.config.requiredChargeTime) { 
 
 		// チャージ時間を最大に制限
-		weaponState_.chargeTime = weaponData_.requiredChargeTime; 
+		weaponState_.chargeTime = weaponData_.config.requiredChargeTime; 
 	}
 
 	//TODO: チャージ中のエフェクトやアニメーションをここで処理する
@@ -225,11 +215,11 @@ void Rifle::ChargeAttack() {
 	}
 	weaponState_.isCharging = false;
 
-	if (weaponState_.chargeTime >= weaponData_.requiredChargeTime) {
+	if (weaponState_.chargeTime >= weaponData_.config.requiredChargeTime) {
 		// 最大チャージ時間に達した場合の処理
 		//停止撃ちで三連射
 		burstShotState_.isActive = true;
-		burstShotState_.count = burstShotInfo_.kMaxBurstCount; // 3連射のカウントを初期化
+		burstShotState_.count = rifleInfo_.burstShotInfo.kMaxBurstCount; // 3連射のカウントを初期化
 		burstShotState_.intervalTimer = 0.0f; // 3連射の間隔を初期化
 
 	} else {
@@ -252,15 +242,15 @@ void Rifle::SetOwnerObject(GameCharacter* owner) {
 
 //チャージ攻撃可能か
 bool Rifle::IsChargeAttack() const {
-	return weaponData_.canChargeAttack;
+	return weaponData_.config.canChargeAttack;
 }
 
 //移動撃ち可能か
 bool Rifle::IsMoveShootable() const {
-	return weaponData_.canMoveShootable;
+	return weaponData_.config.canMoveShootable;
 }
 
 //停止撃ち専用か
 bool Rifle::IsStopShootOnly() const {
-	return weaponData_.isStopShootOnly;
+	return weaponData_.config.isStopShootOnly;
 }

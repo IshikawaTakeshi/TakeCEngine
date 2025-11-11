@@ -1,13 +1,11 @@
-#include "WeaponContext.h"
+#include "WeaponData.h"
 #include "engine/base/ImGuiManager.h"
+#include "engine/Utility/StringUtility.h"
 
 //============================================================================
-// JSON <- WeaponData
+// JSON <- WeaponConfig
 //============================================================================
-void to_json(nlohmann::json& jsonData, const WeaponData& weaponContext) {
-
-	jsonData["weaponName"] = weaponContext.weaponName;
-	jsonData["modelFilePath"] = weaponContext.modelFilePath;
+void to_json(nlohmann::json& jsonData, const WeaponConfig& weaponContext) {
 
 	jsonData["power"] = weaponContext.power;
 	jsonData["kAttackInterval"] = weaponContext.kAttackInterval;
@@ -26,14 +24,28 @@ void to_json(nlohmann::json& jsonData, const WeaponData& weaponContext) {
 }
 
 //============================================================================
-// JSON -> WeaponData
+// JSON <- WeaponData
 //============================================================================
 
-void from_json(const nlohmann::json& jsonData, WeaponData& weaponContext) {
-
-	if (jsonData.contains("weaponName"))jsonData.at("weaponName").get_to(weaponContext.weaponName);
-	if (jsonData.contains("modelFilePath"))jsonData.at("modelFilePath").get_to(weaponContext.modelFilePath);
+void to_json(nlohmann::json& jsonData, const WeaponData& weaponData) {
+	jsonData["weaponName"] = weaponData.weaponName;
+	jsonData["modelFilePath"] = weaponData.modelFilePath;
+	jsonData["weaponType"] = StringUtility::EnumToString(weaponData.weaponType);
+	jsonData["config"] = weaponData.config;
 	
+	if(weaponData.weaponType == WeaponType::WEAPON_TYPE_RIFLE) {
+		jsonData["actionData"] = std::get<RifleInfo>(weaponData.actionData);
+	} else if(weaponData.weaponType == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
+		jsonData["actionData"] = std::get<VerticalMissileLauncherInfo>(weaponData.actionData);
+	}
+}
+
+//============================================================================
+// JSON -> WeaponConfig
+//============================================================================
+
+void from_json(const nlohmann::json& jsonData, WeaponConfig& weaponContext) {
+
 	if (jsonData.contains("power"))jsonData.at("power").get_to(weaponContext.power);
 	if (jsonData.contains("kAttackInterval"))jsonData.at("kAttackInterval").get_to(weaponContext.kAttackInterval);
 	if (jsonData.contains("bulletSpeed"))jsonData.at("bulletSpeed").get_to(weaponContext.bulletSpeed);
@@ -51,11 +63,40 @@ void from_json(const nlohmann::json& jsonData, WeaponData& weaponContext) {
 }
 
 //============================================================================
+// JSON -> WeaponData
+//============================================================================
+void from_json(const nlohmann::json& jsonData, WeaponData& weaponData) {
+
+	if (jsonData.contains("weaponName"))jsonData.at("weaponName").get_to(weaponData.weaponName);
+	if (jsonData.contains("modelFilePath"))jsonData.at("modelFilePath").get_to(weaponData.modelFilePath);
+	if (jsonData.contains("weaponType")) {
+		std::string weaponTypeStr;
+		jsonData.at("weaponType").get_to(weaponTypeStr);
+		weaponData.weaponType = StringUtility::StringToEnum<WeaponType>(weaponTypeStr);
+	}
+	if (jsonData.contains("config"))jsonData.at("config").get_to(weaponData.config);
+
+	// actionDataの読み込み
+	if (jsonData.contains("actionData")) {
+		// weaponTypeに応じて適切な型で読み込む
+		if (weaponData.weaponType == WeaponType::WEAPON_TYPE_RIFLE) {
+			RifleInfo rifleInfo;
+			jsonData.at("actionData").get_to(rifleInfo);
+			weaponData.actionData = rifleInfo;
+		}
+		else if (weaponData.weaponType == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
+			VerticalMissileLauncherInfo vmLauncherInfo;
+			jsonData.at("actionData").get_to(vmLauncherInfo);
+			weaponData.actionData = vmLauncherInfo;
+		}
+	}
+}
+
+
+//============================================================================
 // configの編集
 //============================================================================
-void WeaponData::EditConfigImGui() {
-	ImGui::Text("Weapon Name", &weaponName);
-	ImGui::Text("Model File Path", &modelFilePath);
+void WeaponConfig::EditConfigImGui() {
 	ImGui::SliderFloat("Power", &power, 0.0f, 500.0f);
 	ImGui::SliderFloat("Attack Interval", &kAttackInterval, 0.01f, 2.0f);
 	ImGui::SliderFloat("Bullet Speed", &bulletSpeed, 100.0f, 2000.0f);

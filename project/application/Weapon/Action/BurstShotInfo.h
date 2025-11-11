@@ -25,11 +25,3 @@ struct BurstShotState {
 void to_json(nlohmann::json& jsonData, const BurstShotInfo& burstShotInfo);
 // JSONからBurstShotInfoへデータを読み込む関数
 void from_json(const nlohmann::json& jsonData, BurstShotInfo& burstShotInfo);
-
-//ディレクトリパス取得用テンプレート特殊化
-template<>
-struct JsonPath<BurstShotInfo> {
-	static std::filesystem::path GetDirectory() {
-		return kBurstShotInfoPath;
-	}
-};

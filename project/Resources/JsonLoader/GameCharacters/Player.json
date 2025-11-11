@@ -1,4 +1,5 @@
 {
+    "characterName": "Player",
     "chargeAttackStunInfo": {
         "isStunned": false,
         "stunDuration": 0.5,
@@ -14,11 +15,11 @@
     },
     "fallSpeed": 40.0,
     "focusTargetPos": {
-        "x": -68.596923828125,
-        "y": -57.89731979370117,
-        "z": -94.61487579345703
+        "x": -57.15410232543945,
+        "y": -73.17855834960938,
+        "z": -135.4304656982422
     },
-    "health": 10000.0,
+    "health": 9730.0,
     "isAlive": true,
     "isChargeShooting": false,
     "isDamaged": false,
@@ -32,13 +33,13 @@
     },
     "kMaxMoveSpeed": 120.0,
     "maxHealth": 10000.0,
+    "modelFilePath": "player_singleMesh.gltf",
     "moveDirection": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0
     },
     "moveSpeed": 200.0,
-    "name": "Player",
     "onGround": true,
     "overHeatInfo": {
         "isOverheated": false,

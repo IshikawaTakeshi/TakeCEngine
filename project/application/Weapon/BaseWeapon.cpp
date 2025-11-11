@@ -27,12 +27,12 @@ uint32_t BaseWeapon::GetUnitPosition() const {
 
 float BaseWeapon::GetBulletSpeed() const {
 	// 弾速を返す
-	return weaponData_.bulletSpeed;
+	return weaponData_.config.bulletSpeed;
 }
 
 float BaseWeapon::GetAttackPower() const {
 	// 攻撃力を返す
-	return weaponData_.power;
+	return weaponData_.config.power;
 }
 
 uint32_t BaseWeapon::GetBulletCount() const {
@@ -42,12 +42,12 @@ uint32_t BaseWeapon::GetBulletCount() const {
 
 uint32_t BaseWeapon::GetMaxBulletCount() const {
 	// 最大弾数を返す
-	return weaponData_.maxBulletCount;
+	return weaponData_.config.maxBulletCount;
 }
 
 uint32_t BaseWeapon::GetMagazineCount() const {
 	// 一度に撃てる弾容量を返す
-	return weaponData_.maxMagazineCount;
+	return weaponData_.config.maxMagazineCount;
 }
 
 uint32_t BaseWeapon::GetRemainingBulletCount() const {
@@ -57,7 +57,7 @@ uint32_t BaseWeapon::GetRemainingBulletCount() const {
 
 float BaseWeapon::GetEffectiveRange() const {
 	// 有効射程距離を返す
-	return weaponData_.effectiveRange;
+	return weaponData_.config.effectiveRange;
 }
 
 bool BaseWeapon::IsCharging() const {
@@ -72,7 +72,7 @@ float BaseWeapon::GetChargeTime() const {
 
 float BaseWeapon::GetRequiredChargeTime() const {
 	// 必要チャージ時間を返す
-	return weaponData_.requiredChargeTime;
+	return weaponData_.config.requiredChargeTime;
 }
 
 bool BaseWeapon::GetIsAvailable() const {
@@ -89,12 +89,12 @@ void BaseWeapon::SetUnitPosition(uint32_t position) {
 
 void BaseWeapon::SetBulletSpeed(float speed) {
 	// 弾速を設定
-	weaponData_.bulletSpeed = speed;
+	weaponData_.config.bulletSpeed = speed;
 }
 
 void BaseWeapon::SetAttackPower(float power) {
 	// 攻撃力を設定
-	weaponData_.power = power;
+	weaponData_.config.power = power;
 }
 
 void BaseWeapon::SetBulletCount(int32_t count) {
@@ -109,5 +109,5 @@ void BaseWeapon::SetRemainingBulletCount(int32_t count) {
 
 void BaseWeapon::SetEffectiveRange(float range) {
 	// 有効射程距離を設定
-	weaponData_.effectiveRange = range;
+	weaponData_.config.effectiveRange = range;
 }

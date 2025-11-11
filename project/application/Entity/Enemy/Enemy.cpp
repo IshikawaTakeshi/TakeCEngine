@@ -11,8 +11,8 @@
 #include "Vector3Math.h"
 #include "math/Easing.h"
 
-#include "application/Weapon/Rifle.h"
-#include "application/Weapon/Bazooka.h"
+#include "application/Weapon/Rifle/Rifle.h"
+#include "application/Weapon/Bazooka/Bazooka.h"
 #include "application/Entity/WeaponUnit.h"
 
 //========================================================================================================

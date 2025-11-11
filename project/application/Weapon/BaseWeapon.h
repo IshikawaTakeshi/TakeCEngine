@@ -3,7 +3,7 @@
 #include "Object3dCommon.h"
 #include "Entity/GameCharacter.h"
 #include "Weapon/WeaponType.h"
-#include "Weapon/WeaponContext.h"
+#include "Weapon/WeaponData.h"
 #include <cstdint>
 #include <string>
 #include <memory>

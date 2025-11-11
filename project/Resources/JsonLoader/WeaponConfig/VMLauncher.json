@@ -1,0 +1,26 @@
+{
+    "actionData": {
+        "burstShotInfo": {
+            "kInterval": 0.1,
+            "kMaxBurstCount": 3
+        },
+        "homingRate": 0.15
+    },
+    "config": {
+        "bulletSpeed": 300.0,
+        "canChargeAttack": false,
+        "canMoveShootable": true,
+        "effectiveRange": 1000.0,
+        "homingRate": 0.1,
+        "isStopShootOnly": false,
+        "kAttackInterval": 5.0,
+        "magazineCount_": 3,
+        "maxBulletCount": 120,
+        "maxReloadTime": 2.0,
+        "power": 400.0,
+        "requiredChargeTime": 0.0
+    },
+    "modelFilePath": "VerticalMissileLauncher.gltf",
+    "weaponName": "VerticalMissileLauncher",
+    "weaponType": "WEAPON_TYPE_VERTICAL_MISSILE"
+}

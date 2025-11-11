@@ -79,6 +79,8 @@ public:
 	float GetDuration() { return animation_->duration; }
 	//アニメーションの再生時間の取得
 	float GetAnimationTime() { return animationTime_; }
+	//モデルファイルパスの取得
+	const std::string& GetModelFilePath() const { return modelFilePath_; }
 
 	//----- setter ---------------------------
 

@@ -18,24 +18,11 @@ void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletM
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
 
 	//武器の初期化
-	weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
-	weaponData_.power = 400.0f;
-	weaponData_.kAttackInterval = 5.0f; // 攻撃間隔定数を設定
+	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("VMLauncher.json");
+	vmLauncherInfo_ = std::get<VerticalMissileLauncherInfo>(weaponData_.actionData);
+	weaponState_.bulletCount = weaponData_.config.maxMagazineCount;           // 初期弾数をマガジン内の弾数に設定
 	weaponState_.attackInterval = 0.0f;
-	weaponData_.bulletSpeed = 300.0f; // 弾のスピードを設定
-	homingRate_ = 0.1f;    // ホーミング率を設定
-	weaponData_.effectiveRange = 1000.0f; // 有効射程距離を設定
-
-	weaponData_.maxBulletCount = 120;                   // 最大弾数
-	weaponState_.remainingBulletCount = weaponData_.maxBulletCount; // 残弾数を最大弾数に設定
-	weaponData_.maxMagazineCount = 3;                      // マガジン内の弾数
-	weaponState_.bulletCount = weaponData_.maxMagazineCount;           // 初期弾数をマガジン内の弾数に設定
-
-	weaponData_.maxReloadTime = 2.0f;
-
-	weaponData_.canChargeAttack = false; // ライフルはチャージ攻撃不可
-	weaponData_.canMoveShootable = true; // ライフルは移動撃ち可能
-	weaponData_.isStopShootOnly = false; // ライフルは停止撃ち専用ではない
+	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定
 }
 
 //================================================================================
@@ -57,8 +44,8 @@ void VerticalMissileLauncher::Update() {
 			weaponState_.reloadTime = 0.0f; // リロード時間をリセット
 			//リロード完了
 			weaponState_.isReloading = false;
-			weaponState_.bulletCount = weaponData_.maxMagazineCount; // 弾数をマガジン内の弾数にリセット
-			weaponState_.remainingBulletCount -= weaponData_.maxMagazineCount; // 残弾数を減らす
+			weaponState_.bulletCount = weaponData_.config.maxMagazineCount; // 弾数をマガジン内の弾数にリセット
+			weaponState_.remainingBulletCount -= weaponData_.config.maxMagazineCount; // 残弾数を減らす
 		}
 	}
 	//攻撃間隔の減少
@@ -72,28 +59,28 @@ void VerticalMissileLauncher::Update() {
 			if (ownerObject_->GetCharacterType() == CharacterType::PLAYER) {
 				bulletManager_->ShootMissile(
 					this,
-					weaponData_.bulletSpeed,
-					homingRate_,
-					weaponData_.power,
+					weaponData_.config.bulletSpeed,
+					vmLauncherInfo_.homingRate,
+					weaponData_.config.power,
 					CharacterType::PLAYER_MISSILE);
 
 			} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
 				bulletManager_->ShootMissile(
 					this,
-					weaponData_.bulletSpeed,
-					homingRate_,
-					weaponData_.power,
+					weaponData_.config.bulletSpeed,
+					vmLauncherInfo_.homingRate,
+					weaponData_.config.power,
 					CharacterType::ENEMY_MISSILE);
 			}
 			weaponState_.bulletCount--;
 			if (weaponState_.bulletCount <= 0) {
 				weaponState_.isReloading = true; // 弾がなくなったらリロード中にする
-				weaponState_.reloadTime = weaponData_.maxReloadTime; // リロード時間をリセット
+				weaponState_.reloadTime = weaponData_.config.maxReloadTime; // リロード時間をリセット
 			}
 
 			burstShotState_.count--;
 			if (burstShotState_.count > 0) {
-				burstShotState_.intervalTimer = burstShotInfo_.kInterval; // 次の弾発射までの間隔を設定
+				burstShotState_.intervalTimer = vmLauncherInfo_.burstShotInfo.kInterval; // 次の弾発射までの間隔を設定
 			} else {
 				burstShotState_.isActive = false; // 三連射終了
 			}
@@ -118,7 +105,7 @@ void VerticalMissileLauncher::UpdateImGui() {
 	ImGui::SeparatorText("VerticalMissile");
 
 	//WeaponDataのImGui表示
-	weaponData_.EditConfigImGui();
+	weaponData_.config.EditConfigImGui();
 
 	Vector3 rotate = object3d_->GetTransform().rotate;
 	ImGui::DragFloat3("Launcher::Rotate", &rotate.x, 0.01f);
@@ -126,12 +113,11 @@ void VerticalMissileLauncher::UpdateImGui() {
 	ImGui::SeparatorText("VerticalMissile Settings");
 
 	//連射情報のImGui表示
-	burstShotInfo_.EditConfigImGui();
-
+	vmLauncherInfo_.burstShotInfo.EditConfigImGui();
 	if (ImGui::Button("Save VerticalMissileLauncher config")) {
 		// 設定をJSONに保存
-		TakeCFrameWork::GetJsonLoader()->SaveJsonData("VMLauncherConfig.json", weaponData_);
-		TakeCFrameWork::GetJsonLoader()->SaveJsonData("VMLauncherBurstShotInfo.json", burstShotInfo_);
+		weaponData_.actionData = vmLauncherInfo_;
+		TakeCFrameWork::GetJsonLoader()->SaveJsonData("VMLauncher.json", weaponData_);
 	}
 }
 
@@ -158,11 +144,11 @@ void VerticalMissileLauncher::Attack() {
 		// 弾発射
 		//停止撃ちで三連射
 		burstShotState_.isActive = true;
-		burstShotState_.count = burstShotInfo_.kMaxBurstCount; // 3連射のカウントを初期化
+		burstShotState_.count = vmLauncherInfo_.burstShotInfo.kMaxBurstCount; // 3連射のカウントを初期化
 		burstShotState_.intervalTimer = 0.0f; // 3連射の間隔を初期化
 
 		//攻撃間隔のリセット
-		weaponState_.attackInterval = weaponData_.maxReloadTime;
+		weaponState_.attackInterval = weaponData_.config.maxReloadTime;
 	}
 }
 
@@ -193,17 +179,17 @@ void VerticalMissileLauncher::SetOwnerObject(GameCharacter* owner) {
 //チャージ攻撃可能か
 bool VerticalMissileLauncher::IsChargeAttack() const {
 	// バーティカルミサイルはチャージ攻撃不可
-	return weaponData_.canChargeAttack;
+	return weaponData_.config.canChargeAttack;
 }
 
 //移動撃ち可能か
 bool VerticalMissileLauncher::IsMoveShootable() const {
 	//移動撃ち可能
-	return weaponData_.canMoveShootable;
+	return weaponData_.config.canMoveShootable;
 }
 
 //停止撃ち専用か
 bool VerticalMissileLauncher::IsStopShootOnly() const {
 	//停止撃ち専用ではない
-	return weaponData_.isStopShootOnly;
+	return weaponData_.config.isStopShootOnly;
 }
