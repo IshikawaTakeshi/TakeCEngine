@@ -250,10 +250,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h" />
     <ClInclude Include="application\Entity\GameCharacterInfo.h" />
     <ClInclude Include="application\Entity\GameCharacterBehavior.h" />
+    <ClInclude Include="application\Entity\Player\PlayerData.h" />
     <ClInclude Include="application\Entity\WeaponUnit.h" />
     <ClInclude Include="application\Provider\Enum\CharacterActionInputEnum.h" />
     <ClInclude Include="application\Scene\EnemySelectScene.h" />
     <ClInclude Include="application\Scene\GamePlaySceneBehavior.h" />
+    <ClInclude Include="application\Tool\CharacterEdit\CharacterEditMenuEnum.h" />
     <ClInclude Include="application\Weapon\Action\WeaponActionData.h" />
     <ClInclude Include="application\Weapon\Bazooka\Bazooka.h" />
     <ClInclude Include="application\Weapon\Action\BurstShotInfo.h" />

@@ -55,6 +55,7 @@ struct OverHeatInfo {
 // 操作可能なキャラクターの基礎情報
 struct PlayableCharacterInfo {
 	std::string characterName; //キャラクター名
+	std::string modelFilePath; //モデルファイルパス
 	QuaternionTransform transform{}; // 位置、回転、スケール
 	Vector3 velocity{};              // 速度
 	Vector3 moveDirection{};        //移動方向
@@ -80,10 +81,7 @@ struct PlayableCharacterInfo {
 // 実際に使用するゲームキャラクターデータ
 struct CharacterData {
 
-	
-	std::string modelFilePath; //モデルファイルパス
-
-	PlayableCharacterInfo playableCharacterInfo; // コンテキスト情報
+	PlayableCharacterInfo characterInfo; // コンテキスト情報
 	std::array<WeaponData, 4> weaponData; // 武器データ（最大4つ）
 };
 

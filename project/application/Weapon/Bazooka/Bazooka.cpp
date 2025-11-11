@@ -21,25 +21,10 @@ void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.8f);
 
 	//武器の初期化
-	weaponData_.weaponType = WeaponType::WEAPON_TYPE_BAZOOKA;
-	weaponData_.weaponName = "Bazooka";
-	weaponData_.modelFilePath = filePath;
-	weaponData_.config.power = 1500.0f;                 // 攻撃力を設定
-	weaponData_.config.kAttackInterval = 2.0f;         // 攻撃間隔定数を設定
+	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Bazooka.json");
 	weaponState_.attackInterval = weaponData_.config.kAttackInterval; // 攻撃間隔を設定
-	weaponData_.config.bulletSpeed = 500.0f;             // 弾のスピードを設定
-	weaponData_.config.effectiveRange = 1000.0f;        // 有効射程距離を設定
-
-	weaponData_.config.maxMagazineCount = 5;                      // マガジン内の弾数を設定
 	weaponState_.bulletCount = weaponData_.config.maxMagazineCount;           // 初期弾数を設定
-	weaponData_.config.maxBulletCount = 50;                    // 最大弾数を設定
 	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定
-
-	weaponData_.config.maxReloadTime = 4.0f;
-
-	weaponData_.config.canChargeAttack = false;  // バズーカはチャージ攻撃不可
-	weaponData_.config.canMoveShootable = false; // バズーカは移動撃ち不可
-	weaponData_.config.isStopShootOnly = true;  // バズーカは停止撃ち専用
 }
 
 //=============================================================================

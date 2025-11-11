@@ -1084,6 +1084,8 @@
     <ClInclude Include="application\Weapon\Action\WeaponActionData.h" />
     <ClInclude Include="application\Weapon\Rifle\RifleInfo.h" />
     <ClInclude Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.h" />
+    <ClInclude Include="application\Tool\CharacterEdit\CharacterEditMenuEnum.h" />
+    <ClInclude Include="application\Entity\Player\PlayerData.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

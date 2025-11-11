@@ -18,26 +18,11 @@ void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletM
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
 
 	//武器の初期化
-	weaponData_.weaponType = WeaponType::WEAPON_TYPE_VERTICAL_MISSILE;
-	weaponData_.weaponName = "VerticalMissileLauncher";
-	weaponData_.modelFilePath = filePath;
-	weaponData_.config.power = 400.0f;
-	weaponData_.config.kAttackInterval = 5.0f; // 攻撃間隔定数を設定
-	weaponData_.config.bulletSpeed = 300.0f; // 弾のスピードを設定
-	vmLauncherInfo_.homingRate = 0.1f;    // ホーミング率を設定
-	weaponData_.config.effectiveRange = 1000.0f; // 有効射程距離を設定
-
-	weaponData_.config.maxBulletCount = 120;                   // 最大弾数
-	weaponData_.config.maxMagazineCount = 3;                      // マガジン内の弾数
+	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("VMLauncher.json");
+	vmLauncherInfo_ = std::get<VerticalMissileLauncherInfo>(weaponData_.actionData);
 	weaponState_.bulletCount = weaponData_.config.maxMagazineCount;           // 初期弾数をマガジン内の弾数に設定
 	weaponState_.attackInterval = 0.0f;
 	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定
-
-	weaponData_.config.maxReloadTime = 2.0f;
-
-	weaponData_.config.canChargeAttack = false; // ライフルはチャージ攻撃不可
-	weaponData_.config.canMoveShootable = true; // ライフルは移動撃ち可能
-	weaponData_.config.isStopShootOnly = false; // ライフルは停止撃ち専用ではない
 }
 
 //================================================================================

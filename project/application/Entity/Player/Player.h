@@ -77,38 +77,38 @@ public:
 	Camera* GetCamera() const { return camera_; }
 
 	//移動方向ベクトルの取得
-	const Vector3& GetMoveDirection() const { return characterInfo_.moveDirection; }
+	const Vector3& GetMoveDirection() const { return playerData_.characterInfo.moveDirection; }
 	//移動ベクトルの取得
-	const Vector3& GetVelocity() const { return characterInfo_.velocity; }
+	const Vector3& GetVelocity() const { return playerData_.characterInfo.velocity; }
 	//transformの取得
-	const QuaternionTransform& GetTransform() const { return characterInfo_.transform; }
+	const QuaternionTransform& GetTransform() const { return playerData_.characterInfo.transform; }
 
 	//体力の取得
-	float GetHealth() const { return characterInfo_.health; }
+	float GetHealth() const { return playerData_.characterInfo.health; }
 	//最大体力の取得
-	const float GetMaxHealth() const { return characterInfo_.maxHealth; }
+	const float GetMaxHealth() const { return playerData_.characterInfo.maxHealth; }
 	//フォーカス対象の座標を取得
-	const Vector3& GetFocusTargetPos() const { return characterInfo_.focusTargetPos; }
+	const Vector3& GetFocusTargetPos() const { return playerData_.characterInfo.focusTargetPos; }
 
 	//エネルギーの取得
-	float GetEnergy() const { return characterInfo_.energyInfo.energy; }
+	float GetEnergy() const { return playerData_.characterInfo.energyInfo.energy; }
 	//最大エネルギーの取得
-	float GetMaxEnergy() const { return characterInfo_.energyInfo.maxEnergy; }
+	float GetMaxEnergy() const { return playerData_.characterInfo.energyInfo.maxEnergy; }
 	//エネルギーの回復速度の取得
-	float GetEnergyRegenRate() const { return characterInfo_.energyInfo.recoveryRate; }
+	float GetEnergyRegenRate() const { return playerData_.characterInfo.energyInfo.recoveryRate; }
 	//エネルギー枯渇フラグの取得
-	bool GetIsOverHeated() const { return characterInfo_.overHeatInfo.isOverheated; }
+	bool GetIsOverHeated() const { return playerData_.characterInfo.overHeatInfo.isOverheated; }
 	//生存フラグの取得
-	bool GetIsAlive() const { return characterInfo_.isAlive; }
+	bool GetIsAlive() const { return playerData_.characterInfo.isAlive; }
 
 	//================================================================================
 	// setter
 	//================================================================================
 
 	//プレイヤーの体力を設定
-	void SetHealth(float health) { characterInfo_.health = health; }
+	void SetHealth(float health) { playerData_.characterInfo.health = health; }
 	//フォーカス対象の座標を設定
-	void SetFocusTargetPos(const Vector3& targetPos) { characterInfo_.focusTargetPos = targetPos; }
+	void SetFocusTargetPos(const Vector3& targetPos) { playerData_.characterInfo.focusTargetPos = targetPos; }
 
 	void SetFocusTargetVelocity(const Vector3& targetVel) { focusTargetVelocity_ = targetVel; }
 
@@ -132,8 +132,9 @@ private:
 	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
 	//ブーストエフェクト
 	std::vector<std::unique_ptr<BoostEffect>> boostEffects_;
-	// プレイヤーの情報
-	PlayableCharacterInfo characterInfo_;
+	// プレイヤーの基本情報
+	CharacterData playerData_;
+
 	// フレーム時間
 	float deltaTime_ = 0.0f; 
 	

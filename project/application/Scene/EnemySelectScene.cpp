@@ -137,6 +137,15 @@ void EnemySelectScene::Update() {
 	default:
 		break;
 	}
+
+	//メニュー移動リクエスト
+	if (characterEditTool_->IsNextMenuRequested() == true) {
+		
+		//ゲームプレイシーンへ移動
+		SceneManager::GetInstance()->ChangeScene("GAMEPLAY", 1.0f);
+		//リクエストフラグを下ろす
+		characterEditTool_->SetNextMenuRequested(false);
+	}
 }
 
 void EnemySelectScene::UpdateImGui() {
@@ -163,8 +172,10 @@ void EnemySelectScene::Draw() {
 
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance()->Dispatch();
+	characterEditTool_->DispatchObject();
 	
 	Object3dCommon::GetInstance()->PreDraw();
+	characterEditTool_->DrawObject();
 	
 	Object3dCommon::GetInstance()->PreDrawAddBlend();
 	

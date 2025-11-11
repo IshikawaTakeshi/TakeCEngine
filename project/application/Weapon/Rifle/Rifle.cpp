@@ -20,24 +20,11 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.8f);
 
 	//武器の初期化
-	weaponData_.weaponName = "Rifle";
-	weaponData_.weaponType = WeaponType::WEAPON_TYPE_RIFLE;
-	weaponData_.modelFilePath = filePath;
-	weaponData_.config.power = 90.0f;
-	weaponData_.config.kAttackInterval = 0.3f; // 攻撃間隔定数を設定
-	weaponData_.config.bulletSpeed = 550.0f; // 弾のスピードを設定
-	weaponData_.config.maxMagazineCount = 30; // マガジン内の弾数を設定
-	weaponData_.config.maxBulletCount = 600;
-	weaponData_.config.effectiveRange = 700.0f; // 有効射程距離を設定
+	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Rifle.json");
+
 	weaponState_.attackInterval = rifleInfo_.burstShotInfo.kInterval; // 連射の間隔を攻撃間隔に設定
 	weaponState_.bulletCount = weaponData_.config.maxMagazineCount;
 	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定
-
-	weaponData_.config.maxReloadTime = 3.0f; // 最大リロード時間を設定
-
-	weaponData_.config.canChargeAttack = false; // ライフルはチャージ攻撃可能
-	weaponData_.config.canMoveShootable = true; // ライフルは移動撃ち可能
-	weaponData_.config.isStopShootOnly = false; // ライフルは停止撃ち専用ではない
 }
 
 //===================================================================================
