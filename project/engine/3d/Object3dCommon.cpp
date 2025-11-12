@@ -1,12 +1,14 @@
 #include "Object3dCommon.h"
-#include "DirectXCommon.h"
 
-#include "ImGuiManager.h"
-#include "CameraManager.h"
-#include "Vector3Math.h"
 #include <numbers>
 #include <algorithm>
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/ImGuiManager.h"
+#include "engine/camera/CameraManager.h"
+#include "engine/math/Vector3Math.h"
+#include "engine/3d/Light/LightManager.h"
 
+//シングルトンインスタンスの初期化
 Object3dCommon* Object3dCommon::instance_ = nullptr;
 
 //================================================================================================
@@ -23,10 +25,12 @@ Object3dCommon* Object3dCommon::GetInstance() {
 //================================================================================================
 // 初期化
 //================================================================================================
-void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
+void Object3dCommon::Initialize(DirectXCommon* directXCommon,LightManager* lightManager) {
 
 	//DirectXCommon取得
 	dxCommon_ = directXCommon;
+	//LightManager取得
+	lightManager_ = lightManager;
 	//PSO生成
 	pso_ = std::make_unique<PSO>();
 	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
@@ -36,7 +40,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	pso_->CompileComputeShader(dxCommon_->GetDXC(), L"Skinning.CS.hlsl");
 	pso_->CreateComputePSO(dxCommon_->GetDevice());
 	pso_->SetComputePipelineName("Object3dPSO:Conpute");
-
+	//加算ブレンド用PSO生成
 	addBlendPso_ = std::make_unique<PSO>();
 	addBlendPso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
 	addBlendPso_->CompilePixelShader(dxCommon_->GetDXC(), L"Object3d.PS.hlsl");

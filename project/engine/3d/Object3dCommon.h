@@ -14,6 +14,7 @@
 //前方宣言
 class Camera;
 class DirectXCommon;
+class LightManager;
 
 //============================================================================
 // Object3dCommon class
@@ -43,7 +44,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* directXCommon);
+	void Initialize(DirectXCommon* directXCommon,LightManager* lightManager);
 
 	/// <summary>
 	/// ImGuiの更新
@@ -106,6 +107,8 @@ private:
 
 	//DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
+	//LightManager
+	LightManager* lightManager_ = nullptr;
 
 	//平行光源用のリソース
 	ComPtr<ID3D12Resource> directionalLightResource_;

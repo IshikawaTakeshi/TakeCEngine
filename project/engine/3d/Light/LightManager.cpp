@@ -15,14 +15,7 @@ void LightManager::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager) {
 	dirLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(DirectionalLightData));
 	dirLightResource_->SetName(L"Object3dCommon::directionalLightResource_");
 	dirLightData_ = nullptr;
-	//データを書き込むためのアドレスを取得
 	dirLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&dirLightData_));
-	//光源の色を書き込む
-	dirLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
-	//光源の方向を書き込む
-	dirLightData_->direction_ = { 0.0f,-0.05f,-0.95f };
-	//光源の輝度書き込む
-	dirLightData_->intensity_ = 1.0f;
 
 	//PointLight用のResourceの作成
 	pointLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(PointLightData) * kMaxPointLights);
@@ -30,6 +23,12 @@ void LightManager::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager) {
 	//SpotLight用のResourceの作成
 	spotLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(SpotLightData) * kMaxSpotLights);
 	spotLightResource_->SetName(L"Object3dCommon::spotLightResource_");
+
+	//LightCount用のResourceの作成
+	lightCountResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(LightCountData));
+	lightCountResource_->SetName(L"Object3dCommon::lightCountResource_");
+	lightCountData_ = nullptr;
+	lightCountResource_->Map(0, nullptr, reinterpret_cast<void**>(&lightCountData_));
 	
 	//SRVの生成(PointLight)
 	pointLightSrvIndex_ = srvManager_->Allocate();
@@ -48,9 +47,32 @@ void LightManager::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager) {
 		spotLightSrvIndex_
 	);
 
-	//ライトデータ初期化
+	//DirectionalLight初期化
+	//光源の色を書き込む
+	dirLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	//光源の方向を書き込む
+	dirLightData_->direction_ = { 0.0f,-0.05f,-0.95f };
+	//光源の輝度書き込む
+	dirLightData_->intensity_ = 1.0f;
+
+	//pointLightDataの初期化
 	pointLightData_.clear();
+	//spotLightDataの初期化
 	spotLightData_.clear();
+
+	//ライト数データ初期化
+	lightCountData_->pointLightCount = 0;
+	lightCountData_->spotLightCount = 0;
+}
+
+//=============================================================================
+// 終了・開放処理
+//=============================================================================
+void LightManager::Finalize() {
+	dirLightResource_.Reset();
+	pointLightResource_.Reset();
+	spotLightResource_.Reset();
+	lightCountResource_.Reset();
 }
 
 //=============================================================================
@@ -61,7 +83,11 @@ uint32_t LightManager::AddPointLight(const PointLightData& lightData) {
 		return UINT32_MAX; // エラー
 	}
 
+	// 追加
 	pointLightData_.push_back(lightData);
+	//ライト数更新
+	lightCountData_->pointLightCount = static_cast<uint32_t>(pointLightData_.size());
+
 	return static_cast<uint32_t>(pointLightData_.size() - 1);
 }
 
@@ -73,7 +99,12 @@ uint32_t LightManager::AddSpotLight(const SpotLightData& lightData) {
 	if (spotLightData_.size() >= kMaxSpotLights) {
 		return UINT32_MAX; // エラー
 	}
+
+	// 追加
 	spotLightData_.push_back(lightData);
+	//ライト数更新
+	lightCountData_->spotLightCount = static_cast<uint32_t>(spotLightData_.size());
+
 	return static_cast<uint32_t>(spotLightData_.size() - 1);
 }
 
@@ -147,4 +178,10 @@ void LightManager::SetLightResources(PSO* pso) {
 	srvManager_->SetGraphicsRootDescriptorTable(pso->GetGraphicBindResourceIndex("gPointLight"),pointLightSrvIndex_);
 	//SpotLight
 	srvManager_->SetGraphicsRootDescriptorTable(pso->GetGraphicBindResourceIndex("gSpotLight"), spotLightSrvIndex_);
+
+	//LightCount
+	commandList->SetGraphicsRootConstantBufferView(
+		pso->GetGraphicBindResourceIndex("gLightCount"),
+		lightCountResource_->GetGPUVirtualAddress()
+	);
 }

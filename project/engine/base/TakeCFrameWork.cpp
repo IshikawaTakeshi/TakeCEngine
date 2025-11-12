@@ -45,6 +45,10 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//JsonLoader
 	jsonLoader_ = std::make_unique<JsonLoader>();
 
+	//lightManager
+	lightManager_ = std::make_unique<LightManager>();
+	lightManager_->Initialize(directXCommon_.get(), srvManager_.get());
+
 	//SpriteCommon
 	spriteCommon_ = SpriteCommon::GetInstance();
 	spriteCommon_->Initialize(directXCommon_.get());

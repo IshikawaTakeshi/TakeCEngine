@@ -8,6 +8,12 @@
 #include <wrl.h>
 #include <span>
 
+struct LightCountData {
+	uint32_t pointLightCount;
+	uint32_t spotLightCount;
+	uint32_t padding[2];
+};
+
 //============================================================================
 //		LightManager class
 //============================================================================
@@ -29,6 +35,11 @@ public:
 	/// <param name="dxCommon"></param>
 	/// <param name="srvManager"></param>
 	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
+
+	/// <summary>
+	/// 終了・開放処理
+	/// </summary>
+	void Finalize();
 
 	/// <summary>
 	/// 更新
@@ -91,10 +102,12 @@ private:
 	DirectionalLightData* dirLightData_ = nullptr;
 	std::vector<PointLightData> pointLightData_;
 	std::vector<SpotLightData> spotLightData_;
+	LightCountData* lightCountData_ = nullptr;
 
 	ComPtr<ID3D12Resource> dirLightResource_;
 	ComPtr<ID3D12Resource> pointLightResource_;
 	ComPtr<ID3D12Resource> spotLightResource_;
+	ComPtr<ID3D12Resource> lightCountResource_;
 
 	uint32_t pointLightSrvIndex_ = 0;
 	uint32_t spotLightSrvIndex_ = 0;
