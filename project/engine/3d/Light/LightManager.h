@@ -42,9 +42,9 @@ public:
 	void Finalize();
 
 	/// <summary>
-	/// 更新
+	/// ImGui更新
 	/// </summary>
-	void Update();
+	void UpdateImGui();
 
 	/// <summary>
 	/// ポイントライト追加
@@ -55,6 +55,10 @@ public:
 
 	uint32_t AddSpotLight(const SpotLightData& lightData);
 
+	bool RemovePointLight(uint32_t index);
+
+	bool RemoveSpotLight(uint32_t index);
+
 	/// <summary>
 	/// ポイントライト更新
 	/// </summary>
@@ -64,11 +68,6 @@ public:
 
 	void UpdateSpotLight(uint32_t index, const SpotLightData& light);
 
-	/// <summary>
-	/// GPUへデータ転送
-	/// </summary>
-	void TransferToGPU();
-
 public:
 
 	//========================================================================
@@ -77,13 +76,11 @@ public:
 
 	//----- getter ---------------------------
 	
-	/// ポイントライトの読み取り専用ビューを取得
-	std::span<const PointLightData> GetPointLights() const {
-		return std::span<const PointLightData>(pointLightData_);
-	}
-	/// スポットライトの読み取り専用ビューを取得
-	std::span<const SpotLightData> GetSpotLights() const {
-		return std::span<const SpotLightData>(spotLightData_);
+	PointLightData* GetPointLightData(uint32_t index) const;
+	SpotLightData* GetSpotLightData(uint32_t index) const;
+
+	ID3D12Resource* GetDirectionalLightResource() const {
+		return dirLightResource_.Get();
 	}
 
 	//----- setter ---------------------------
@@ -99,18 +96,23 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
 
+	ComPtr<ID3D12Resource> dirLightResource_;
 	DirectionalLightData* dirLightData_ = nullptr;
-	std::vector<PointLightData> pointLightData_;
-	std::vector<SpotLightData> spotLightData_;
+
+	ComPtr<ID3D12Resource> pointLightResource_;
+	PointLightData* pointLightData_;
+	uint32_t activePointLightCount_ = 0; // アクティブなポイントライト数
+	uint32_t pointLightSrvIndex_ = 0;
+
+	ComPtr<ID3D12Resource> spotLightResource_;
+	uint32_t activeSpotLightCount_ = 0; // アクティブなスポットライト数
+	SpotLightData* spotLightData_;
+	uint32_t spotLightSrvIndex_ = 0;
+
+	ComPtr<ID3D12Resource> lightCountResource_;
 	LightCountData* lightCountData_ = nullptr;
 
-	ComPtr<ID3D12Resource> dirLightResource_;
-	ComPtr<ID3D12Resource> pointLightResource_;
-	ComPtr<ID3D12Resource> spotLightResource_;
-	ComPtr<ID3D12Resource> lightCountResource_;
 
-	uint32_t pointLightSrvIndex_ = 0;
-	uint32_t spotLightSrvIndex_ = 0;
 
 	static const uint32_t kMaxPointLights = 32;   // 最大ポイントライト数
 	static const uint32_t kMaxSpotLights = 32;    // 最大スポットライト数

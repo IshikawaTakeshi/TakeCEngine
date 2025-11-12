@@ -54,12 +54,8 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon,LightManager* light
 
 	//TODO:ライト関連の初期化処理を別のクラスに移動させる
 #pragma region "Lighting"
-	//平行光源用Resourceの作成
-	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(DirectionalLightData));
-	directionalLightResource_->SetName(L"Object3dCommon::directionalLightResource_");
-	directionalLightData_ = nullptr;
-	//データを書き込むためのアドレスを取得
-	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
+
+	directionalLightData_ = std::make_unique<DirectionalLightData>();
 	//光源の色を書き込む
 	directionalLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	//光源の方向を書き込む
@@ -67,30 +63,27 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon,LightManager* light
 	//光源の輝度書き込む
 	directionalLightData_->intensity_ = 1.0f;
 
-	//PointLight用のResourceの作成
-	pointLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(PointLightData));
-	pointLightResource_->SetName(L"Object3dCommon::pointLightResource_");
-	pointLightData_ = nullptr;
-	pointLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&pointLightData_));
+	//pointLightDataの初期化
+	pointLightData_ = std::make_unique<PointLightData>();
 	pointLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	pointLightData_->position_ = { 0.0f,2.0f,0.0f };
-	pointLightData_->intensity_ = 0.0f;
+	pointLightData_->intensity_ = 50.0f;
 	pointLightData_->radius_ = 10.0f;
 	pointLightData_->decay_ = 1.0f;
-
-	//SpotLight用のResourceの作成
-	spotLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(SpotLightData));
-	spotLightResource_->SetName(L"Object3dCommon::spotLightResource_");
-	spotLightData_ = nullptr;
-	spotLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&spotLightData_));
+	pointLightIndex_ = lightManager_->AddPointLight(*pointLightData_);
+	
+	//spotLightDataの初期化
+	spotLightData_ = std::make_unique<SpotLightData>();
 	spotLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	spotLightData_->position_ = { 2.0f,2.0f,0.0f };
 	spotLightData_->direction_ = { -1.0f,-1.0f,0.0f };
 	spotLightData_->distance_ = 7.0f;
-	spotLightData_->intensity_ = 4.0f;
+	spotLightData_->intensity_ = 45.0f;
 	spotLightData_->decay_ = 2.0f;
 	spotLightData_->cosAngle_ = std::cosf(std::numbers::pi_v<float> / 3.0f);
 	spotLightData_->penumbraAngle_ = std::numbers::pi_v<float> / 6.0f;
+	spotLightIndex_ = lightManager_->AddSpotLight(*spotLightData_);
+	
 
 #pragma endregion
 }
@@ -122,15 +115,15 @@ void Object3dCommon::UpdateImGui() {
 	ImGui::SliderAngle("SpotCosAngle", &spotLightData_->cosAngle_);
 	ImGui::SliderAngle("SpotPenumbraAngle", &spotLightData_->penumbraAngle_);
 	ImGui::End();
+
+	
 }
 
 //================================================================================================
 // 終了・開放処理
 //================================================================================================
 void Object3dCommon::Finalize() {
-	directionalLightResource_.Reset();
-	pointLightResource_.Reset();
-	spotLightResource_.Reset();
+
 	graphicRootSignature_.Reset();
 	computeRootSignature_.Reset();
 	pso_.reset();
@@ -182,17 +175,15 @@ void Object3dCommon::Dispatch() {
 	dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignature_.Get());
 }
 
+ID3D12Resource* Object3dCommon::GetDirectionalLightResource() const {
+	return lightManager_->GetDirectionalLightResource();
+}
+
 //================================================================================================
 // ライティング用CBufferView設定
 //================================================================================================
 void Object3dCommon::SetGraphicCBufferViewLighting(PSO* pso) {
-	//DirectionalLight
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gDirectionalLight"), directionalLightResource_->GetGPUVirtualAddress());
-	//pointLightのCBuffer
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gPointLight"), pointLightResource_->GetGPUVirtualAddress());
-	//spotLightのCBuffer
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gSpotLight"), spotLightResource_->GetGPUVirtualAddress());
-
+	lightManager_->SetLightResources(pso);
 }
 
 //================================================================================================

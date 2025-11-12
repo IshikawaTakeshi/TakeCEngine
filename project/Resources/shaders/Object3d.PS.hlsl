@@ -3,6 +3,7 @@
 #include "Light/DirectionalLight.hlsli"
 #include "Light/PointLight.hlsli"
 #include "Light/SpotLight.hlsli"
+#include "Light/LightCountData.hlsli"
 
 //マテリアル
 ConstantBuffer<Material> gMaterial : register(b0);
@@ -10,15 +11,19 @@ ConstantBuffer<Material> gMaterial : register(b0);
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 //カメラ
 ConstantBuffer<CameraData> gCamera : register(b2);
-//ポイントライト
-ConstantBuffer<PointLight> gPointLight : register(b3);
-//スポットライト
-ConstantBuffer<SpotLight> gSpotLight : register(b4);
+//ライト数カウンター
+ConstantBuffer<LightCountData> gLightCount : register(b3);
+
 
 //テクスチャ
 Texture2D<float4> gTexture : register(t0);
 //環境マップ用テクスチャ
 TextureCube<float4> gEnvMapTexture : register(t1);
+
+//ポイントライト
+StructuredBuffer<PointLight> gPointLight : register(t2);
+//スポットライト
+StructuredBuffer<SpotLight> gSpotLight : register(t3);
 //サンプラー
 SamplerState gSampler : register(s0);
 
@@ -27,8 +32,6 @@ PixelShaderOutput main(VertexShaderOutput input) {
 	PixelShaderOutput output;
 	Material material = gMaterial;
 	DirectionalLight dirLightInfo = gDirectionalLight;
-	PointLight pointLightInfo = gPointLight;
-	SpotLight spotLightInfo = gSpotLight;
 
 	float4 transformedUV = mul(float4(input.texcoord,0.0f,1.0f), gMaterial.uvTransform);
 	float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
@@ -43,10 +46,18 @@ PixelShaderOutput main(VertexShaderOutput input) {
 		float3 dirLighting = CalcDirectionalLighting(dirLightInfo, material, input.normal, toEye, material.color.rgb * textureColor.rgb);
 		
 		//pointLightの計算(光の減衰込み)
-		float3 pointLighting = CalcPointLighting(pointLightInfo, material, input.normal, input.worldPosition, toEye, gMaterial.color.rgb * textureColor.rgb);
+		float3 pointLighting = CalcPointLighting(
+			gPointLight,
+			material,
+			gLightCount.pointLightCount,
+			input.normal, input.worldPosition, toEye, gMaterial.color.rgb * textureColor.rgb);
 		
 		//spotLightの計算
-		float3 spotLighting = CalcSpotLighting(spotLightInfo, material, input.normal, input.worldPosition, toEye, gMaterial.color.rgb * textureColor.rgb);
+		float3 spotLighting = CalcSpotLighting(
+			gSpotLight, 
+			material,
+			gLightCount.spotLightCount,
+			input.normal, input.worldPosition, toEye, gMaterial.color.rgb * textureColor.rgb);
 
 		//環境マップの計算
 		float3 cameraToPosition = normalize(input.worldPosition - gCamera.worldPosition);

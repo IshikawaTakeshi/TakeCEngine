@@ -6,6 +6,7 @@ using Clock = std::chrono::high_resolution_clock;
 
 std::unique_ptr<Animator> TakeCFrameWork::animator_ = nullptr;
 std::unique_ptr<JsonLoader> TakeCFrameWork::jsonLoader_ = nullptr;
+std::unique_ptr<LightManager> TakeCFrameWork::lightManager_ = nullptr;
 std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
 std::unique_ptr<PrimitiveDrawer> TakeCFrameWork::primitiveDrawer_ = nullptr;
 std::unique_ptr<PostEffectManager> TakeCFrameWork::postEffectManager_= nullptr;
@@ -55,7 +56,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//Object3dCommon
 	object3dCommon_ = Object3dCommon::GetInstance();
-	object3dCommon_->Initialize(directXCommon_.get());
+	object3dCommon_->Initialize(directXCommon_.get(),lightManager_.get());
 
 	//ParticleCommon
 	particleCommon_ = ParticleCommon::GetInstance();
@@ -129,6 +130,7 @@ void TakeCFrameWork::Finalize() {
 	primitiveDrawer_->Finalize();
 	particleCommon_->Finalize();
 	object3dCommon_->Finalize();
+	lightManager_->Finalize();
 	spriteCommon_->Finalize();
 	sceneFactory_.reset();
 	//Audioの開放
@@ -175,6 +177,7 @@ void TakeCFrameWork::Update() {
 
 	//シーンの更新
 	sceneManager_->Update();
+
 #ifdef _DEBUG
 	sceneManager_->UpdateImGui();
 	postEffectManager_->UpdateImGui();
