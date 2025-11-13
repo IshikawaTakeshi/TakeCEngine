@@ -92,31 +92,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon,LightManager* light
 // ImGuiの更新
 //================================================================================================
 void Object3dCommon::UpdateImGui() {
-	ImGui::Begin("Lighting");
-	ImGui::Text("DirectionalLight");
-	ImGui::SliderFloat3("Direction", &directionalLightData_->direction_.x, -1.0f, 1.0f);
-	directionalLightData_->direction_ = Vector3Math::Normalize(directionalLightData_->direction_);
-	ImGui::DragFloat("dirIntensity", &directionalLightData_->intensity_, 0.01f);
-	ImGui::ColorEdit4("dirColor", &directionalLightData_->color_.x);
-	ImGui::Text("PointLight");
-	ImGui::ColorEdit4("Color", &pointLightData_->color_.x);
-	ImGui::DragFloat3("Position", &pointLightData_->position_.x, 0.01f);
-	ImGui::DragFloat("Intensity", &pointLightData_->intensity_, 0.01f);
-	ImGui::SliderFloat("PointLightRadius", &pointLightData_->radius_, 0.0f, 100.0f);
-	ImGui::SliderFloat("Decay", &pointLightData_->decay_, 0.0f, 2.0f);
-	ImGui::Text("SpotLight");
-	ImGui::ColorEdit4("SpotColor", &spotLightData_->color_.x);
-	ImGui::DragFloat3("SpotPosition", &spotLightData_->position_.x, 0.01f);
-	ImGui::DragFloat3("SpotDirection", &spotLightData_->direction_.x, 0.01f);
-	spotLightData_->direction_ = Vector3Math::Normalize(spotLightData_->direction_);
-	ImGui::DragFloat("SpotDistance", &spotLightData_->distance_, 0.01f);
-	ImGui::DragFloat("SpotIntensity", &spotLightData_->intensity_, 0.01f);
-	ImGui::SliderFloat("SpotDecay", &spotLightData_->decay_, 0.0f, 2.0f);
-	ImGui::SliderAngle("SpotCosAngle", &spotLightData_->cosAngle_);
-	ImGui::SliderAngle("SpotPenumbraAngle", &spotLightData_->penumbraAngle_);
-	ImGui::End();
-
-	
+	lightManager_->UpdateImGui();
 }
 
 //================================================================================================
@@ -136,6 +112,9 @@ void Object3dCommon::Finalize() {
 // 描画前処理
 //================================================================================================
 void Object3dCommon::PreDraw() {
+
+	lightManager_->UpdatePointLight(pointLightIndex_, *pointLightData_);
+	lightManager_->UpdateSpotLight(spotLightIndex_, *spotLightData_);
 
 	//PSO設定
 	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetGraphicPipelineState());

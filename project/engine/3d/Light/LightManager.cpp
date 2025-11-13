@@ -1,9 +1,12 @@
 #include "LightManager.h"
+
+#include <numbers>
 #include "engine/base/DirectXCommon.h"
 #include "engine/base/SrvManager.h"
 #include "engine/base/PipelineStateObject.h"
 #include "engine/base/ImGuiManager.h"
 #include "engine/math/Vector3Math.h"
+#include "engine/2d/WireFrame.h"
 
 //=============================================================================
 // 初期化
@@ -188,6 +191,10 @@ void LightManager::UpdateSpotLight(uint32_t index, const SpotLightData& light) {
 	spotLightData_[index] = light;
 }
 
+void LightManager::DrawPointLights() {
+
+}
+
 //=============================================================================
 // PointLightData取得
 //=============================================================================
@@ -255,18 +262,20 @@ void LightManager::UpdateImGui() {
 	if (ImGui::TreeNode("PointLights")) {
 		ImGui::Text("Active: %u / %u", activePointLightCount_, kMaxPointLights);
 
+		// 全てのポイントライト一覧を表示
 		for (uint32_t i = 0; i < activePointLightCount_; ++i) {
 			std::string label = "Light " + std::to_string(i);
 			if (ImGui::TreeNode(label.c_str())) {
 				ImGui::ColorEdit4("Color", &pointLightData_[i].color_.x);
 				ImGui::DragFloat3("Position", &pointLightData_[i].position_.x, 0.1f);
-				ImGui::DragFloat("Intensity", &pointLightData_[i].intensity_, 0.01f, 0.0f, 10.0f);
+				ImGui::DragFloat("Intensity", &pointLightData_[i].intensity_, 0.01f, 0.0f, 100.0f);
 				ImGui::DragFloat("Radius", &pointLightData_[i].radius_, 0.1f, 0.1f, 100.0f);
 				ImGui::DragFloat("Decay", &pointLightData_[i].decay_, 0.01f, 0.0f, 10.0f);
 				ImGui::TreePop();
 			}
 		}
 
+		// ポイントライト追加ボタン
 		if (ImGui::Button("Add Light") && activePointLightCount_ < kMaxPointLights) {
 			PointLightData newLight{};
 			newLight.color_ = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -277,6 +286,41 @@ void LightManager::UpdateImGui() {
 			AddPointLight(newLight);
 		}
 
+		ImGui::TreePop();
+	}
+
+	// SpotLights
+	if (ImGui::TreeNode("SpotLights")) {
+		ImGui::Text("Active: %u / %u", activeSpotLightCount_, kMaxSpotLights);
+		// 全てのスポットライト一覧を表示
+		for (uint32_t i = 0; i < activeSpotLightCount_; ++i) {
+			std::string label = "Light " + std::to_string(i);
+			if (ImGui::TreeNode(label.c_str())) {
+				ImGui::ColorEdit4("Color", &spotLightData_[i].color_.x);
+				ImGui::DragFloat3("Position", &spotLightData_[i].position_.x, 0.1f);
+				ImGui::DragFloat3("Direction", &spotLightData_[i].direction_.x, 0.01f);
+				spotLightData_[i].direction_ = Vector3Math::Normalize(spotLightData_[i].direction_);
+				ImGui::DragFloat("Distance", &spotLightData_[i].distance_, 0.1f, 0.1f, 100.0f);
+				ImGui::DragFloat("Intensity", &spotLightData_[i].intensity_, 0.01f, 0.0f, 100.0f);
+				ImGui::DragFloat("Decay", &spotLightData_[i].decay_, 0.01f, 0.0f, 10.0f);
+				ImGui::DragFloat("CosAngle", &spotLightData_[i].cosAngle_, 0.001f, 0.0f, 1.0f);
+				ImGui::DragFloat("PenumbraAngle", &spotLightData_[i].penumbraAngle_, 0.001f, 0.0f, 1.0f);
+				ImGui::TreePop();
+			}
+		}
+		// スポットライト追加ボタン
+		if (ImGui::Button("Add Light") && activeSpotLightCount_ < kMaxSpotLights) {
+			SpotLightData newLight{};
+			newLight.color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+			newLight.position_ = { 2.0f, 2.0f, 0.0f };
+			newLight.direction_ = { -1.0f, -1.0f, 0.0f };
+			newLight.distance_ = 10.0f;
+			newLight.intensity_ = 1.0f;
+			newLight.decay_ = 1.0f;
+			newLight.cosAngle_ = std::cosf(std::numbers::pi_v<float> / 4.0f);
+			newLight.penumbraAngle_ = std::numbers::pi_v<float> / 8.0f;
+			AddSpotLight(newLight);
+		}
 		ImGui::TreePop();
 	}
 

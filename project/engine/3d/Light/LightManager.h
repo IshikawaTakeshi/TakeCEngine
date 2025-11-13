@@ -53,10 +53,25 @@ public:
 	/// <returns></returns>
 	uint32_t AddPointLight(const PointLightData& lightData);
 
+	/// <summary>
+	/// スポットライト追加
+	/// </summary>
+	/// <param name="lightData"></param>
+	/// <returns></returns>
 	uint32_t AddSpotLight(const SpotLightData& lightData);
 
+	/// <summary>
+	/// ポイントライト削除
+	/// </summary>
+	/// <param name="index"></param>
+	/// <returns></returns>
 	bool RemovePointLight(uint32_t index);
 
+	/// <summary>
+	/// スポットライト削除
+	/// </summary>
+	/// <param name="index"></param>
+	/// <returns></returns>
 	bool RemoveSpotLight(uint32_t index);
 
 	/// <summary>
@@ -66,7 +81,14 @@ public:
 	/// <param name="light"></param>
 	void UpdatePointLight(uint32_t index, const PointLightData& light);
 
+	/// <summary>
+	/// スポットライト更新
+	/// </summary>
+	/// <param name="index"></param>
+	/// <param name="light"></param>
 	void UpdateSpotLight(uint32_t index, const SpotLightData& light);
+
+	void DrawPointLights();
 
 public:
 

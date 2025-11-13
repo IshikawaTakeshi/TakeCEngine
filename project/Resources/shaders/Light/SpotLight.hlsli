@@ -10,6 +10,7 @@ struct SpotLight {
 	float decay; //減衰率
 	float cosAngle; //スポットライトの角度
 	float penumbraAngle; //影のぼかし角度
+	float padding; //パディング
 };
 
 float3 CalcSpotLighting(

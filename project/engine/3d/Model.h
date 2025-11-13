@@ -42,7 +42,7 @@ public:
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void Draw();
+	void Draw(PSO* pso);
 
 	/// <summary>
 	/// スカイボックス用描画処理
