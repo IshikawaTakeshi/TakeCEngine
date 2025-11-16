@@ -143,7 +143,8 @@ void Object3d::UpdateImGui([[maybe_unused]]const std::string& name) {
 		ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
 		ImGui::Checkbox("isAnimation", &isAnimation_);
-		model_->GetMesh()->GetMaterial()->UpdateMaterialImGui();
+		
+		model_->UpdateImGui();
 		ImGui::TreePop();
 	}
 	ImGui::End();

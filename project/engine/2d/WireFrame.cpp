@@ -263,7 +263,7 @@ void WireFrame::DrawCone(const Vector3& apex, const Vector3& direction, float an
 	Vector3 baseCenter = apex + direction.Normalize() * height;
 	float radius = tanf(angle) * height;
 	// 底面の円周上の点を計算して描画
-	const int segments = 32; // 円周の分割数
+	const int segments = 8; // 円周の分割数
 	for (int i = 0; i < segments; i++) {
 		float theta1 = (2.0f * kPi * i) / segments;
 		float theta2 = (2.0f * kPi * (i + 1)) / segments;

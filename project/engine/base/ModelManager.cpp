@@ -103,10 +103,31 @@ std::shared_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
 
 ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::string& envMapFile) {
 
+	namespace fs = std::filesystem;
+
+	// 拡張子から検索ルートを決める
+	fs::path fileNamePath(modelFile);
+	std::string ext = fileNamePath.extension().string();
+
+	// ベースディレクトリ
+	fs::path baseDir = "./Resources/Models/";
+
+	// 拡張子ごとの検索ディレクトリを決める
+	fs::path modelDir;
+	if (ext == ".fbx") {
+		modelDir = baseDir / "fbx/";
+	} else if (ext == ".obj") {
+		modelDir = baseDir / "obj/";
+	} else if (ext == ".gltf" || ext == ".glb") {
+		modelDir = baseDir / "gltf/";
+	}
+
+	// 最終的なフルパス
+	fs::path fullPath = modelDir / modelFile;
+
 	ModelData* modelData = new ModelData();
 	Assimp::Importer importer;
-	std::string filePath = "./Resources/Models/" + modelFile;
-	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(fullPath.string().c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 
 	modelData->fileName = modelFile;
 
@@ -237,6 +258,11 @@ void ModelManager::ReloadModel(const std::string& modelFile) {
 				iter = vec.erase(iter);
 			}
 		}
+	}
+
+	// 元のモデルにも通知
+	if (auto itRep = models_.find(fileKey); itRep != models_.end()) {
+		itRep->second->Reload(newData);
 	}
 }
 

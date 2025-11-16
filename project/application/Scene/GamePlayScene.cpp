@@ -45,7 +45,7 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "Idle.gltf");
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "running.gltf");
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "throwAttack.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("gltf", "player_singleMesh.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Models/gltf", "player_singleMesh.gltf");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
