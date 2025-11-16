@@ -4,6 +4,7 @@
 #include "engine/base/ImGuiManager.h"
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/math/Easing.h"
+#include "engine/math/MathEnv.h"
 #include <algorithm>
 
 //===================================================================================
@@ -70,7 +71,8 @@ void BoostEffect::Update() {
 		// アルファ値を進行度に基づいて設定
 		float progress = effectTime_ / duration_;
 		alpha_ = 1.0f; 
-		float wave = sinf(progress * std::numbers::pi_v<float> *3.0f) * 0.1f;
+		// 波状の変化を加える
+		float wave = sinf(progress * kPi *3.0f) * 0.1f;
 		// 最終的なスケール係数
 		float finalScaleFactor = 1.0f + wave; 
 		// スケールを進行度に基づいて設定

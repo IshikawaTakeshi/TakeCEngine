@@ -1,12 +1,14 @@
 #include "Object3dCommon.h"
-#include "DirectXCommon.h"
 
-#include "ImGuiManager.h"
-#include "CameraManager.h"
-#include "Vector3Math.h"
 #include <numbers>
 #include <algorithm>
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/ImGuiManager.h"
+#include "engine/camera/CameraManager.h"
+#include "engine/math/Vector3Math.h"
+#include "engine/3d/Light/LightManager.h"
 
+//シングルトンインスタンスの初期化
 Object3dCommon* Object3dCommon::instance_ = nullptr;
 
 //================================================================================================
@@ -23,10 +25,12 @@ Object3dCommon* Object3dCommon::GetInstance() {
 //================================================================================================
 // 初期化
 //================================================================================================
-void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
+void Object3dCommon::Initialize(DirectXCommon* directXCommon,LightManager* lightManager) {
 
 	//DirectXCommon取得
 	dxCommon_ = directXCommon;
+	//LightManager取得
+	lightManager_ = lightManager;
 	//PSO生成
 	pso_ = std::make_unique<PSO>();
 	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
@@ -36,7 +40,7 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	pso_->CompileComputeShader(dxCommon_->GetDXC(), L"Skinning.CS.hlsl");
 	pso_->CreateComputePSO(dxCommon_->GetDevice());
 	pso_->SetComputePipelineName("Object3dPSO:Conpute");
-
+	//加算ブレンド用PSO生成
 	addBlendPso_ = std::make_unique<PSO>();
 	addBlendPso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
 	addBlendPso_->CompilePixelShader(dxCommon_->GetDXC(), L"Object3d.PS.hlsl");
@@ -50,12 +54,8 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 
 	//TODO:ライト関連の初期化処理を別のクラスに移動させる
 #pragma region "Lighting"
-	//平行光源用Resourceの作成
-	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(DirectionalLightData));
-	directionalLightResource_->SetName(L"Object3dCommon::directionalLightResource_");
-	directionalLightData_ = nullptr;
-	//データを書き込むためのアドレスを取得
-	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
+
+	directionalLightData_ = std::make_unique<DirectionalLightData>();
 	//光源の色を書き込む
 	directionalLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	//光源の方向を書き込む
@@ -63,30 +63,27 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 	//光源の輝度書き込む
 	directionalLightData_->intensity_ = 1.0f;
 
-	//PointLight用のResourceの作成
-	pointLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(PointLightData));
-	pointLightResource_->SetName(L"Object3dCommon::pointLightResource_");
-	pointLightData_ = nullptr;
-	pointLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&pointLightData_));
+	//pointLightDataの初期化
+	pointLightData_ = std::make_unique<PointLightData>();
 	pointLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	pointLightData_->position_ = { 0.0f,2.0f,0.0f };
-	pointLightData_->intensity_ = 0.0f;
+	pointLightData_->intensity_ = 50.0f;
 	pointLightData_->radius_ = 10.0f;
 	pointLightData_->decay_ = 1.0f;
-
-	//SpotLight用のResourceの作成
-	spotLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(SpotLightData));
-	spotLightResource_->SetName(L"Object3dCommon::spotLightResource_");
-	spotLightData_ = nullptr;
-	spotLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&spotLightData_));
+	pointLightIndex_ = lightManager_->AddPointLight(*pointLightData_);
+	
+	//spotLightDataの初期化
+	spotLightData_ = std::make_unique<SpotLightData>();
 	spotLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	spotLightData_->position_ = { 2.0f,2.0f,0.0f };
 	spotLightData_->direction_ = { -1.0f,-1.0f,0.0f };
 	spotLightData_->distance_ = 7.0f;
-	spotLightData_->intensity_ = 4.0f;
+	spotLightData_->intensity_ = 45.0f;
 	spotLightData_->decay_ = 2.0f;
 	spotLightData_->cosAngle_ = std::cosf(std::numbers::pi_v<float> / 3.0f);
 	spotLightData_->penumbraAngle_ = std::numbers::pi_v<float> / 6.0f;
+	spotLightIndex_ = lightManager_->AddSpotLight(*spotLightData_);
+	
 
 #pragma endregion
 }
@@ -95,38 +92,14 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon) {
 // ImGuiの更新
 //================================================================================================
 void Object3dCommon::UpdateImGui() {
-	ImGui::Begin("Lighting");
-	ImGui::Text("DirectionalLight");
-	ImGui::SliderFloat3("Direction", &directionalLightData_->direction_.x, -1.0f, 1.0f);
-	directionalLightData_->direction_ = Vector3Math::Normalize(directionalLightData_->direction_);
-	ImGui::DragFloat("dirIntensity", &directionalLightData_->intensity_, 0.01f);
-	ImGui::ColorEdit4("dirColor", &directionalLightData_->color_.x);
-	ImGui::Text("PointLight");
-	ImGui::ColorEdit4("Color", &pointLightData_->color_.x);
-	ImGui::DragFloat3("Position", &pointLightData_->position_.x, 0.01f);
-	ImGui::DragFloat("Intensity", &pointLightData_->intensity_, 0.01f);
-	ImGui::SliderFloat("PointLightRadius", &pointLightData_->radius_, 0.0f, 100.0f);
-	ImGui::SliderFloat("Decay", &pointLightData_->decay_, 0.0f, 2.0f);
-	ImGui::Text("SpotLight");
-	ImGui::ColorEdit4("SpotColor", &spotLightData_->color_.x);
-	ImGui::DragFloat3("SpotPosition", &spotLightData_->position_.x, 0.01f);
-	ImGui::DragFloat3("SpotDirection", &spotLightData_->direction_.x, 0.01f);
-	spotLightData_->direction_ = Vector3Math::Normalize(spotLightData_->direction_);
-	ImGui::DragFloat("SpotDistance", &spotLightData_->distance_, 0.01f);
-	ImGui::DragFloat("SpotIntensity", &spotLightData_->intensity_, 0.01f);
-	ImGui::SliderFloat("SpotDecay", &spotLightData_->decay_, 0.0f, 2.0f);
-	ImGui::SliderAngle("SpotCosAngle", &spotLightData_->cosAngle_);
-	ImGui::SliderAngle("SpotPenumbraAngle", &spotLightData_->penumbraAngle_);
-	ImGui::End();
+	lightManager_->UpdateImGui();
 }
 
 //================================================================================================
 // 終了・開放処理
 //================================================================================================
 void Object3dCommon::Finalize() {
-	directionalLightResource_.Reset();
-	pointLightResource_.Reset();
-	spotLightResource_.Reset();
+
 	graphicRootSignature_.Reset();
 	computeRootSignature_.Reset();
 	pso_.reset();
@@ -140,6 +113,9 @@ void Object3dCommon::Finalize() {
 //================================================================================================
 void Object3dCommon::PreDraw() {
 
+	lightManager_->UpdatePointLight(pointLightIndex_, *pointLightData_);
+	lightManager_->UpdateSpotLight(spotLightIndex_, *spotLightData_);
+
 	//PSO設定
 	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetGraphicPipelineState());
 	// ルートシグネチャ設定
@@ -147,9 +123,10 @@ void Object3dCommon::PreDraw() {
 	
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+	// カメラ情報設定
 	SetCBufferViewCamera(pso_.get());
-	SetGraphicCBufferViewLighting(pso_.get());
+	// ライトリソース設定
+	lightManager_->SetLightResources(pso_.get());
 }
 
 //================================================================================================
@@ -163,8 +140,10 @@ void Object3dCommon::PreDrawAddBlend() {
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(addBlendRootSignature_.Get());
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// カメラ情報設定
 	SetCBufferViewCamera(addBlendPso_.get());
-	SetGraphicCBufferViewLighting(addBlendPso_.get());
+	// ライトリソース設定
+	lightManager_->SetLightResources(addBlendPso_.get());
 }
 
 //================================================================================================
@@ -178,17 +157,8 @@ void Object3dCommon::Dispatch() {
 	dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignature_.Get());
 }
 
-//================================================================================================
-// ライティング用CBufferView設定
-//================================================================================================
-void Object3dCommon::SetGraphicCBufferViewLighting(PSO* pso) {
-	//DirectionalLight
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gDirectionalLight"), directionalLightResource_->GetGPUVirtualAddress());
-	//pointLightのCBuffer
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gPointLight"), pointLightResource_->GetGPUVirtualAddress());
-	//spotLightのCBuffer
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(pso->GetGraphicBindResourceIndex("gSpotLight"), spotLightResource_->GetGPUVirtualAddress());
-
+ID3D12Resource* Object3dCommon::GetDirectionalLightResource() const {
+	return lightManager_->GetDirectionalLightResource();
 }
 
 //================================================================================================

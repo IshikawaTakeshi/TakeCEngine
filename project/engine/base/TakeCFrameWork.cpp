@@ -6,6 +6,7 @@ using Clock = std::chrono::high_resolution_clock;
 
 std::unique_ptr<Animator> TakeCFrameWork::animator_ = nullptr;
 std::unique_ptr<JsonLoader> TakeCFrameWork::jsonLoader_ = nullptr;
+std::unique_ptr<LightManager> TakeCFrameWork::lightManager_ = nullptr;
 std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
 std::unique_ptr<PrimitiveDrawer> TakeCFrameWork::primitiveDrawer_ = nullptr;
 std::unique_ptr<PostEffectManager> TakeCFrameWork::postEffectManager_= nullptr;
@@ -45,17 +46,21 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//JsonLoader
 	jsonLoader_ = std::make_unique<JsonLoader>();
 
+	//lightManager
+	lightManager_ = std::make_unique<LightManager>();
+	lightManager_->Initialize(directXCommon_.get(), srvManager_.get());
+
 	//SpriteCommon
 	spriteCommon_ = SpriteCommon::GetInstance();
 	spriteCommon_->Initialize(directXCommon_.get());
 
 	//Object3dCommon
 	object3dCommon_ = Object3dCommon::GetInstance();
-	object3dCommon_->Initialize(directXCommon_.get());
+	object3dCommon_->Initialize(directXCommon_.get(),lightManager_.get());
 
 	//ParticleCommon
 	particleCommon_ = ParticleCommon::GetInstance();
-	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get());
+	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get(),lightManager_.get());
 
 	//Animator
 	animator_ = std::make_unique<Animator>();
@@ -125,6 +130,7 @@ void TakeCFrameWork::Finalize() {
 	primitiveDrawer_->Finalize();
 	particleCommon_->Finalize();
 	object3dCommon_->Finalize();
+	lightManager_->Finalize();
 	spriteCommon_->Finalize();
 	sceneFactory_.reset();
 	//Audioの開放
@@ -171,6 +177,7 @@ void TakeCFrameWork::Update() {
 
 	//シーンの更新
 	sceneManager_->Update();
+
 #ifdef _DEBUG
 	sceneManager_->UpdateImGui();
 	postEffectManager_->UpdateImGui();
@@ -248,6 +255,11 @@ PostEffectManager* TakeCFrameWork::GetPostEffectManager() {
 WireFrame* TakeCFrameWork::GetWireFrame() {
 	assert(wireFrame_ != nullptr);
 	return wireFrame_.get();
+}
+
+LightManager* TakeCFrameWork::GetLightManager() {
+	assert(lightManager_ != nullptr);
+	return lightManager_.get();
 }
 
 float TakeCFrameWork::GetGameTime() {

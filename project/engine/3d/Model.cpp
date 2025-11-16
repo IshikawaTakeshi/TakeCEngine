@@ -108,7 +108,7 @@ void Model::Update(Animation* animation,float animationTime) {
 // 描画処理
 //=============================================================================
 
-void Model::Draw() {
+void Model::Draw(PSO* pso) {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
@@ -117,11 +117,17 @@ void Model::Draw() {
 	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(
+		pso->GetGraphicBindResourceIndex("gMaterial"),
+		mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//textureSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(6, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+		pso->GetGraphicBindResourceIndex("gTexture"),
+		TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
 	//envMapSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.envMapFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+		pso->GetGraphicBindResourceIndex("gEnvMapTexture"),
+		TextureManager::GetInstance()->GetSrvIndex(modelData_->material.envMapFilePath));
 	//IBVの設定
 	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	//DrawCall

@@ -67,6 +67,8 @@ public: //getter
 	const Vector3& GetTranslate() const { return transform_.translate; }
 	//オフセットの取得
 	const Vector3& GetOffset() const { return offset_; }
+
+	const Vector3& GetUpVector() const;
 	
 	//シェイクするかどうかの取得
 	const bool& GetIsShaking() const { return isShaking_; }

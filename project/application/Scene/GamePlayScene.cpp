@@ -283,6 +283,11 @@ void GamePlayScene::Draw() {
 
 	//当たり判定の描画前処理
 	enemy_->DrawCollider();
+	//pointLightの描画
+	TakeCFrameWork::GetLightManager()->DrawPointLights();
+	//spotLightの描画
+	TakeCFrameWork::GetLightManager()->DrawSpotLights();
+	//登録されたワイヤーフレームをすべて描画させる
 	TakeCFrameWork::GetWireFrame()->Draw();
 
 	//パーティクルの描画
@@ -437,7 +442,7 @@ void GamePlayScene::InitializeGameClear() {
 	//スローモーション解除
 	MyGame::RequestTimeScale(1.0f, 0.6f, 0.0f);
 	fadeTimer_ = 3.0f;
-	SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
+	//SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
 }
 
 void GamePlayScene::UpdateGameClear() {

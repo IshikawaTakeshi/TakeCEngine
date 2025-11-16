@@ -14,6 +14,7 @@
 #include "3d/Object3dCommon.h"
 #include "3d/Primitive/PrimitiveDrawer.h"
 #include "3d/Particle/ParticleCommon.h"
+#include "3d/Light/LightManager.h"
 #include "3d/Particle/ParticleEditor.h"
 #include "2d/SpriteCommon.h"
 #include "2d/WireFrame.h"
@@ -84,6 +85,8 @@ public:
 	static PostEffectManager* GetPostEffectManager();
 	//WireFrameの取得
 	static WireFrame* GetWireFrame();
+	//LightManagerの取得
+	static LightManager* GetLightManager();
 	//ゲーム起動時間の取得
 	static float GetGameTime();
 	//経過時間の取得
@@ -135,6 +138,8 @@ protected:
 	static std::unique_ptr<PostEffectManager> postEffectManager_;
 	//ワイヤーフレーム描画クラス
 	static std::unique_ptr<WireFrame> wireFrame_;
+	//LightManager
+	static std::unique_ptr<LightManager> lightManager_;
 	
 	// ゲームの起動時間
 	static std::chrono::steady_clock::time_point gameTime_;

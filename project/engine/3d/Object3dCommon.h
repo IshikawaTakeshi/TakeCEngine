@@ -14,6 +14,7 @@
 //前方宣言
 class Camera;
 class DirectXCommon;
+class LightManager;
 
 //============================================================================
 // Object3dCommon class
@@ -43,7 +44,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* directXCommon);
+	void Initialize(DirectXCommon* directXCommon,LightManager* lightManager);
 
 	/// <summary>
 	/// ImGuiの更新
@@ -84,7 +85,7 @@ public:
 	/// PSOの取得
 	PSO* GetPSO() const { return pso_.get(); }
 	/// 平行光源リソースの取得
-	ID3D12Resource* GetDirectionalLightResource() const { return directionalLightResource_.Get(); }
+	ID3D12Resource* GetDirectionalLightResource() const;
 
 	///----- setter ---------------------------
 
@@ -95,8 +96,6 @@ public:
 
 private:
 
-	void SetGraphicCBufferViewLighting(PSO* pso);
-
 	void SetCBufferViewCamera(PSO* pso);
 
 private:
@@ -106,26 +105,22 @@ private:
 
 	//DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
+	//LightManager
+	LightManager* lightManager_ = nullptr;
 
-	//平行光源用のリソース
-	ComPtr<ID3D12Resource> directionalLightResource_;
-	DirectionalLightData* directionalLightData_ = nullptr;
-	//ポイントライトのリソース
-	ComPtr<ID3D12Resource> pointLightResource_;
-	LightCounter<PointLightData> pointLightCounter_;
-	PointLightData* pointLightData_ = nullptr;
 
-	//スポットライトのリソース
-	ComPtr<ID3D12Resource> spotLightResource_;
-	LightCounter<SpotLightData> spotLightCounter_;
-	SpotLightData* spotLightData_ = nullptr;
+	std::unique_ptr<DirectionalLightData> directionalLightData_ = nullptr;
+	std::unique_ptr<PointLightData> pointLightData_ = nullptr;
+	std::unique_ptr<SpotLightData> spotLightData_ = nullptr;
+	uint32_t pointLightIndex_ = 0;
+	uint32_t spotLightIndex_ = 0;
 
 	//defaultCamera
 	Camera* defaultCamera_ = nullptr;
 
 	//PSO
 	std::unique_ptr<PSO> pso_ = nullptr;
-	//
+	//加算ブレンド用PSO
 	std::unique_ptr<PSO> addBlendPso_ = nullptr;
 	
 	//RootSignature

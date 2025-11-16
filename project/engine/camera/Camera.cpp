@@ -7,6 +7,7 @@
 #include "math/MatrixMath.h"
 #include "math/Easing.h"
 #include "math/Vector3Math.h"
+#include "math/MathEnv.h"
 
 //=============================================================================
 // 初期化
@@ -441,4 +442,13 @@ void Camera::UpdateCameraEnemyDestroyed() {
 
 void Camera::SetRotate(const Quaternion& rotate) {
 	transform_.rotate = rotate;
+}
+
+//=============================================================================
+// 上方向ベクトルの取得
+//=============================================================================
+const Vector3& Camera::GetUpVector() const {
+
+	static Vector3 upVector = QuaternionMath::RotateVector(Vector3(0, 1, 0), transform_.rotate);
+	return upVector;
 }

@@ -1,5 +1,8 @@
 #include "Particle.hlsli"
 #include "Light/DirectionalLight.hlsli"
+#include "Light/PointLight.hlsli"
+#include "Light/SpotLight.hlsli"
+#include "Light/LightCountData.hlsli"
 
 struct PerView {
 	float4x4 viewProjection;
@@ -8,8 +11,11 @@ struct PerView {
 };
 
 StructuredBuffer<ParticleForGPU> gParticle : register(t0);
-ConstantBuffer<DirectionalLight> gDirLight : register(b0);
+StructuredBuffer<PointLight> gPointLight : register(t1);
+StructuredBuffer<SpotLight> gSpotLight : register(t2);
+ConstantBuffer<DirectionalLight> gDirectionalLight : register(b0);
 ConstantBuffer<PerView> gPerView : register(b1);
+ConstantBuffer<LightCountData> gLightCount : register(b2);
 
 struct VertexShaderInput {
 	float4 position : POSITION0;
@@ -31,7 +37,7 @@ static const float3 HL2Basis2 = float3(0, 0, 1);
 VertexShaderOutput main(VertexShaderInput input, uint instanceId : SV_InstanceID) {
 	VertexShaderOutput output;
 	ParticleForGPU particle = gParticle[instanceId];
-	DirectionalLight dirLightInfo = gDirLight;
+	DirectionalLight dirLightInfo = gDirectionalLight;
 	
 	 //---------------------------------------------------
 	// ワールド行列計算
@@ -107,44 +113,94 @@ VertexShaderOutput main(VertexShaderInput input, uint instanceId : SV_InstanceID
 		// 最終ワールド行列 = 平行移動 * 回転 * スケーリング
 		worldMatrix = mul(mul(scaleMatrix, rotZ), translateMatrix);
 	}
+	
+	//----------------------------------------------------
+	// 最終姿勢の頂点位置計算
+	//----------------------------------------------------
+	
+	float4 worldPos4 = mul(input.position, worldMatrix);
+	float3 worldPos = worldPos4.xyz;
+	
 
-	output.position = mul(input.position, mul(worldMatrix, gPerView.viewProjection));
+	output.position = mul(worldPos4, gPerView.viewProjection);
 	output.texcoord = input.texcoord;
 	output.color = particle.color;
 	
 	 //----------------------------------------------------
     // 法線処理（ビルボード時はカメラ正面固定）
-    //----------------------------------------------------
-	float3 normalWS = (gPerView.isBillboard) ? float3(0, 0, 1)
-        : normalize(mul(input.normal, (float3x3)worldMatrix));
+    //-----------------------------------------------------
+	float3 normalWS = (gPerView.isBillboard) 
+		? float3(0, 0, 1)
+		: normalize(mul(input.normal, (float3x3)worldMatrix));
 
 	output.normal = normalWS;
 	
 	 //----------------------------------------------------
     // HL2-basisライティング計算
-    //----------------------------------------------------
+    //-----------------------------------------------------
 	output.basisColor1 = float3(0, 0, 0);
 	output.basisColor2 = float3(0, 0, 0);
 	output.basisColor3 = float3(0, 0, 0);
+	
+	//-----------------------------------------------------
+	// directional light計算
+	//-----------------------------------------------------
 
-    // 方向光情報を取得
-	float3 lightDir = normalize(-dirLightInfo.direction.xyz);
-	float3 lightCol = dirLightInfo.color.rgb * dirLightInfo.intensity;
-
-    // 入射角に基づく減衰（Lambert的）
-	float NdotL = saturate(dot(normalWS, lightDir));
-	lightCol *= NdotL;
+    //光情報を計算
+	float3 lightCol = CalcDirectionalLightingSimple(dirLightInfo, normalWS);
 
     // basis方向ごとの寄与
 	float3 weights = saturate(float3(
-        dot(lightDir, HL2Basis0),
-        dot(lightDir, HL2Basis1),
-        dot(lightDir, HL2Basis2)
+        dot(lightCol, HL2Basis0),
+        dot(lightCol, HL2Basis1),
+        dot(lightCol, HL2Basis2)
     ));
 
 	output.basisColor1 += lightCol * weights.x;
 	output.basisColor2 += lightCol * weights.y;
 	output.basisColor3 += lightCol * weights.z;
+	
+	//-----------------------------------------------------
+	// point light計算
+	//-----------------------------------------------------
+	
+	float3 lightColPoint = CalcPointLightingSimple(
+		gPointLight,
+		gLightCount.pointLightCount,
+		normalWS,
+		worldPos);
+	
+	// basis方向ごとの寄与
+	float3 weightsPoint = saturate(float3(
+		dot(lightColPoint, HL2Basis0),
+		dot(lightColPoint, HL2Basis1),
+		dot(lightColPoint, HL2Basis2)
+	));
+	
+	output.basisColor1 += lightColPoint * weightsPoint.x;
+	output.basisColor2 += lightColPoint * weightsPoint.y;
+	output.basisColor3 += lightColPoint * weightsPoint.z;
+	
+	//-----------------------------------------------------
+	// spot light計算
+	//-----------------------------------------------------
+	
+	float3 lightColSpot = CalcSpotLightingSimple(
+		gSpotLight,
+		gLightCount.spotLightCount,
+		normalWS,
+		worldPos);
+	
+	// basis方向ごとの寄与
+	float3 weightsSpot = saturate(float3(
+		dot(lightColSpot, HL2Basis0),
+		dot(lightColSpot, HL2Basis1),
+		dot(lightColSpot, HL2Basis2)
+	));
+	
+	output.basisColor1 += lightColSpot * weightsSpot.x;
+	output.basisColor2 += lightColSpot * weightsSpot.y;
+	output.basisColor3 += lightColSpot * weightsSpot.z;
 	
 	return output;
 }

@@ -178,7 +178,6 @@ void Rifle::Attack() {
 	}
 	//攻撃間隔のリセット
 	weaponState_.attackInterval = weaponData_.config.kAttackInterval;
-	//攻撃力の設定
 }
 
 //=====================================================================================
