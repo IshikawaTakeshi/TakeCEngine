@@ -40,6 +40,11 @@ public:
 	void Update(Animation* animation, float animationTime);
 
 	/// <summary>
+	/// ImGui更新
+	/// </summary>
+	void UpdateImGui();
+
+	/// <summary>
 	/// 描画処理
 	/// </summary>
 	void Draw(PSO* pso);
@@ -65,6 +70,12 @@ public:
 	/// GPUパーティクル用描画処理
 	/// </summary>
 	void DrawForGPUParticle(UINT instanceCount);
+
+	/// <summary>
+	/// モデルデータの再読み込み
+	/// </summary>
+	/// <param name="newModelData"></param>
+	void Reload(ModelData* newModelData);
 
 public:
 

@@ -1,14 +1,17 @@
 #include "Model.h"
-#include "base/DirectXCommon.h"
-#include "base/TextureManager.h"
-#include "3d/Material.h"
 
-#include "3d/Mesh/Mesh.h"
-#include "math/MatrixMath.h"
-#include "Utility/ResourceBarrier.h"
-
+// STL
 #include <fstream>
 #include <sstream>
+
+// Engine
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/TextureManager.h"
+#include "engine/base/ImGuiManager.h"
+#include "engine/3d/Material.h"
+#include "engine/3d/Mesh/Mesh.h"
+#include "engine/math/MatrixMath.h"
+#include "engine/Utility/ResourceBarrier.h"
 
 //=============================================================================
 // 初期化
@@ -101,6 +104,26 @@ void Model::Update(Animation* animation,float animationTime) {
 		rotate_ = Animator::CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
 		scale_ = Animator::CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 		localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
+	}
+}
+
+//=============================================================================
+// ImGui更新
+//=============================================================================
+
+void Model::UpdateImGui() {
+
+	//モデル情報
+	if(ImGui::CollapsingHeader("Model Info")) {
+
+		ImGui::Text("Model Name: %s", modelData_->fileName.c_str());
+		ImGui::Text("Num Vertices: %d", static_cast<int>(modelData_->vertices.size()));
+		ImGui::Text("Num Indices: %d", static_cast<int>(modelData_->indices.size()));
+
+		//テクスチャのリロード
+		if (ImGui::Button("Reload Texture")) {
+			TextureManager::GetInstance()->LoadTexture(modelData_->material.textureFilePath, true);
+		}
 	}
 }
 
@@ -226,4 +249,22 @@ void Model::DrawForGPUParticle(UINT instanceCount) {
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount, 0, 0);
+}
+
+void Model::Reload(ModelData* newModelData) {
+	// 新しい ModelData に差し替え
+	modelData_ = newModelData;
+
+	// 既存メッシュの再初期化
+	if (modelData_->haveBone) {
+		// Skeletonがなければ作成
+		if(!skeleton_) {
+			skeleton_ = std::make_unique<Skeleton>();
+		}
+		// SkinCluster 作成
+		skinCluster_.Create(modelCommon_->GetDirectXCommon()->GetDevice(), modelCommon_->GetSrvManager(), skeleton_.get(), modelData_);
+		haveSkeleton_ = true;
+	} else {
+		skeleton_ = nullptr;
+		haveSkeleton_ = false;
 }

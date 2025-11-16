@@ -44,7 +44,7 @@ void ModelManager::Finalize() {
 //=============================================================================
 // モデルの読み込み
 //=============================================================================
-void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::string& modelFile,const std::string& envMapFile) {
+void ModelManager::LoadModel(const std::string& modelFile,const std::string& envMapFile) {
 
 	//読み込み済みモデルの検索
 	if (models_.contains(modelFile)) {
@@ -53,12 +53,14 @@ void ModelManager::LoadModel(const std::string& modelDirectoryPath, const std::s
 	}
 
 	//モデルの生成とファイル読み込み、初期化
-	ModelData* modelData = LoadModelFile(modelDirectoryPath, modelFile,envMapFile);
+	ModelData* modelData = LoadModelFile(modelFile,envMapFile);
 	std::shared_ptr<Model> model = std::make_shared<Model>();
 	model->Initialize(modelCommon_, modelData);
 
 	//モデルをコンテナに追加
-	models_.insert(std::make_pair(modelFile, std::move(model)));
+	models_.insert({ modelFile, std::move(model) });
+	// モデルインスタンスを登録
+	RegisterInstance(modelFile, models_.at(modelFile));
 }
 
 //=============================================================================
@@ -79,19 +81,19 @@ Model* ModelManager::FindModel(const std::string& filePath) {
 //=============================================================================
 // モデルのコピーを作成
 //=============================================================================
-std::unique_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
+std::shared_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
 	
-	//読み込み済みモデルを検索
-	if (models_.contains(filePath)) {
-		//読み込みモデルを戻り値としてreturn
-		std::unique_ptr<Model> model = std::make_unique<Model>();
-		model->Initialize(modelCommon_, models_.at(filePath)->GetModelData());
-		return model;
-	} else {
-		std::unique_ptr<Model> model = std::make_unique<Model>();
-		model->Initialize(modelCommon_, models_.at("cube.gltf")->GetModelData());
-		return model;
+	auto it = models_.find(filePath);
+	if (it == models_.end()) {
+		return nullptr;
 	}
+
+	//モデルの生成と初期化
+	std::shared_ptr<Model> model = std::make_shared<Model>();
+	model->Initialize(modelCommon_, it->second->GetModelData());
+
+	RegisterInstance(filePath, model);
+	return model;
 
 }
 
@@ -99,11 +101,11 @@ std::unique_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
 // Modelファイルを読む関数
 //=============================================================================
 
-ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, const std::string& modelFile,const std::string& envMapFile) {
+ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::string& envMapFile) {
 
 	ModelData* modelData = new ModelData();
 	Assimp::Importer importer;
-	std::string filePath = "./Resources/" + modelDirectoryPath + "/" + modelFile;
+	std::string filePath = "./Resources/Models/" + modelFile;
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 
 	modelData->fileName = modelFile;
@@ -212,6 +214,33 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelDirectoryPath, co
 }
 
 //=============================================================================
+// モデルのリロード
+//=============================================================================
+void ModelManager::ReloadModel(const std::string& modelFile) {
+
+	const std::string& fileKey = modelFile;
+
+	ModelData* newData = LoadModelFile(fileKey, models_.at(fileKey)->GetModelData()->material.envMapFilePath);
+
+
+	// このモデルファイルを使っている全インスタンスに通知
+	auto it = modelInstances_.find(fileKey);
+	if (it != modelInstances_.end()) {
+		auto& vec = it->second;
+		for (auto iter = vec.begin(); iter != vec.end(); ) {
+			if (auto instance = iter->lock()) {
+				// 生きているインスタンスなら Reload
+				instance->Reload(newData);
+				++iter;
+			} else {
+				// すでに破棄されたインスタンスはリストから消してクリーンアップ
+				iter = vec.erase(iter);
+			}
+		}
+	}
+}
+
+//=============================================================================
 // Nodeの解析
 //=============================================================================
 
@@ -231,4 +260,9 @@ Node ModelManager::ReadNode(aiNode* node) {
 		result.children[childIndex] = ReadNode(node->mChildren[childIndex]); //再帰的に子ノードを読む
 	}
 	return result;
+}
+
+void ModelManager::RegisterInstance(const std::string& filePath, std::shared_ptr<Model> modelInstance) {
+	//ファイルパスをキーにモデルインスタンスを登録
+	modelInstances_[filePath].push_back(modelInstance);
 }
