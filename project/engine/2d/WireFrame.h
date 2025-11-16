@@ -41,22 +41,94 @@ public:
 	//=========================================================================
 	// functions
 	//=========================================================================
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
+	WireFrame() = default;
+	~WireFrame() = default;
 	
-	//初期化
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="directXCommon"></param>
 	void Initialize(DirectXCommon* directXCommon);
-	//更新処理
+	
+	/// <summary>
+	/// 更新処理
+	/// </summary>
 	void Update();
-	//線の描画
+	
+	/// <summary>
+	/// 線の描画
+	/// </summary>
+	/// <param name="start"></param>
+	/// <param name="end"></param>
+	/// <param name="color"></param>
 	void DrawLine(const Vector3& start, const Vector3& end,const Vector4& color);
-	//AABBの描画
+	
+	/// <summary>
+	/// AABBの描画
+	/// </summary>
+	/// <param name="obb"></param>
+	/// <param name="color"></param>
 	void DrawOBB(const OBB& obb, const Vector4& color);
-	//球の描画
+	
+	/// <summary>
+	/// 球の描画
+	/// </summary>
+	/// <param name="center"></param>
+	/// <param name="radius"></param>
+	/// <param name="color"></param>
 	void DrawSphere(const Vector3& center, float radius, const Vector4& color);
-	//グリッド平面の描画
+	
+	/// <summary>
+	/// グリッド平面の描画
+	/// </summary>
+	/// <param name="center"></param>
+	/// <param name="size"></param>
+	/// <param name="division"></param>
 	void DrawGridGround(const Vector3& center, const Vector3& size,uint32_t division);
-	//グリッドボックスの描画
+	
+	/// <summary>
+	/// グリッドボックスの描画
+	/// </summary>
+	/// <param name="aabb"></param>
+	/// <param name="division"></param>
 	void DrawGridBox(const AABB& aabb, uint32_t division);
-	//描画処理
+	
+	/// <summary>
+	/// 視錐台の描画
+	/// </summary>
+	/// <param name="viewProjectionInverse"></param>
+	/// <param name="color"></param>
+	void DrawFrustum(const Matrix4x4& viewProjectionInverse, const Vector4& color);
+	
+	/// <summary>
+	/// 円錐の描画
+	/// </summary>
+	/// <param name="apex">coneの頂点</param>
+	/// <param name="direction">中心軸の方向</param>
+	/// <param name="angle">開き角</param>
+	/// <param name="height">底面中心までの高さ</param>
+	/// <param name="color">色</param>
+	void DrawCone(const Vector3& apex, const Vector3& direction, float angle, float height, const Vector4& color);
+
+	/// <summary>
+	/// 円の描画
+	/// </summary>
+	/// <param name="center"></param>
+	/// <param name="normal"></param>
+	/// <param name="radius"></param>
+	/// <param name="color"></param>
+	/// <param name="isBillboard"></param>
+	void DrawRing(const Vector3& center, const Vector3& normal, float radius, const Vector4& color,bool isBillboard);
+
+	void DrawPointLight(const Vector3& center, const Vector3& normal, float radius, const Vector4& color);
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	void Draw();
 	//リセット
 	void Reset();
@@ -107,5 +179,4 @@ private:
 	const uint32_t kMaxLineCount_ = 100000;
 	//線の頂点数
 	const uint32_t kLineVertexCount_ = 2;
-
 };

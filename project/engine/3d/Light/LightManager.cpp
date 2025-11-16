@@ -5,8 +5,8 @@
 #include "engine/base/SrvManager.h"
 #include "engine/base/PipelineStateObject.h"
 #include "engine/base/ImGuiManager.h"
+#include "engine/base/TakeCFrameWork.h"
 #include "engine/math/Vector3Math.h"
-#include "engine/2d/WireFrame.h"
 
 //=============================================================================
 // 初期化
@@ -191,8 +191,47 @@ void LightManager::UpdateSpotLight(uint32_t index, const SpotLightData& light) {
 	spotLightData_[index] = light;
 }
 
+//=============================================================================
+// ポイントライト描画
+//=============================================================================
 void LightManager::DrawPointLights() {
 
+	// アクティブなポイントライトが無ければ終了
+	if(activePointLightCount_ == 0) {
+		return;
+	}
+
+	// 全てのポイントライト一覧を表示
+	for (uint32_t i = 0; i < activePointLightCount_; ++i) {
+
+		TakeCFrameWork::GetWireFrame()->DrawPointLight(
+			pointLightData_[i].position_,
+			Vector3{0.0f,0.0f,-1.0f},
+			pointLightData_[i].radius_,
+			pointLightData_[i].color_
+		);
+	}
+}
+
+//=============================================================================
+// スポットライト描画
+//=============================================================================
+void LightManager::DrawSpotLights() {
+
+	// アクティブなスポットライトが無ければ終了
+	if (activeSpotLightCount_ == 0) {
+		return;
+	}
+	// 全てのスポットライト一覧を表示
+	for (uint32_t i = 0; i < activeSpotLightCount_; ++i) {
+		TakeCFrameWork::GetWireFrame()->DrawCone(
+			spotLightData_[i].position_,
+			spotLightData_[i].direction_,
+			std::acos(spotLightData_[i].cosAngle_),
+			spotLightData_[i].distance_,
+			spotLightData_[i].color_
+		);
+	}
 }
 
 //=============================================================================

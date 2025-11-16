@@ -11,7 +11,7 @@ struct PointLight {
 	float intensity; //輝度
 	float radius; //ライトの届く最大距離
 	float decay; //減衰率
-	float padding[3]; //パディング
+	float padding[2]; //パディング
 };
 
 //===============================
@@ -42,7 +42,8 @@ float3 CalcPointLighting(
         
         // 光の減衰計算
 		float distancePoint = length(pLight.position - worldPos);
-		float attenuation = pow(saturate(-distancePoint / pLight.radius + 1.0f), pLight.decay);
+		float baseAtten = saturate(1.0f - distancePoint / pLight.radius);
+		float attenuation = lerp(1.0f, pow(baseAtten, pLight.decay), step(1e-5, pLight.decay));
         
         // 最終的な色の計算
 		float3 diffuse = albedo * pLight.color.rgb * cosPoint * pLight.intensity * attenuation;
@@ -51,5 +52,29 @@ float3 CalcPointLighting(
 		totalLighting += diffuse + specular;
 	}
     
+	return totalLighting;
+}
+
+//===============================
+//ポイントライトの計算（シンプル版）
+//===============================
+float3 CalcPointLightingSimple(
+	StructuredBuffer<PointLight> pointLights,
+	uint lightCount,
+	float3 N, float3 worldPos) {
+	float3 totalLighting = float3(0, 0, 0);
+	// 全てのライトをループ
+	for (uint i = 0; i < lightCount; i++) {
+		PointLight pLight = pointLights[i];
+		N = normalize(N);
+		float3 dir = normalize(pLight.position - worldPos);
+		float cosPoint = pow(dot(N, dir) * 0.5f + 0.5f, 2.0f);
+		// 光の減衰計算
+		float distancePoint = length(pLight.position - worldPos);
+		float baseAtten = saturate(1.0f - distancePoint / pLight.radius);
+		float attenuation = lerp(1.0f, pow(baseAtten, pLight.decay), step(1e-5, pLight.decay));
+		float3 diffuse = pLight.color.rgb * cosPoint * pLight.intensity * attenuation;
+		totalLighting += diffuse;
+	}
 	return totalLighting;
 }

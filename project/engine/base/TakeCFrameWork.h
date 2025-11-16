@@ -85,6 +85,8 @@ public:
 	static PostEffectManager* GetPostEffectManager();
 	//WireFrameの取得
 	static WireFrame* GetWireFrame();
+	//LightManagerの取得
+	static LightManager* GetLightManager();
 	//ゲーム起動時間の取得
 	static float GetGameTime();
 	//経過時間の取得

@@ -283,6 +283,11 @@ void GamePlayScene::Draw() {
 
 	//当たり判定の描画前処理
 	enemy_->DrawCollider();
+	//pointLightの描画
+	TakeCFrameWork::GetLightManager()->DrawPointLights();
+	//spotLightの描画
+	TakeCFrameWork::GetLightManager()->DrawSpotLights();
+	//登録されたワイヤーフレームをすべて描画させる
 	TakeCFrameWork::GetWireFrame()->Draw();
 
 	//パーティクルの描画

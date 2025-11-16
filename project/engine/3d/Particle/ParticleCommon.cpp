@@ -4,6 +4,7 @@
 #include "engine/camera/CameraManager.h"
 #include "engine/Utility/StringUtility.h"
 #include "engine/3d/Object3dCommon.h"
+#include "engine/3d/Light/LightManager.h"
 
 ParticleCommon* ParticleCommon::instance_ = nullptr;
 
@@ -21,10 +22,11 @@ ParticleCommon* ParticleCommon::GetInstance() {
 //==================================================================================
 // 初期化
 //==================================================================================
-void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
+void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,LightManager* lightManager) {
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
+	lightManager_ = lightManager;
 
 	//各ブレンドステート用PSO生成
 	for (int i = 0; i < int(BlendState::COUNT); i++) {
@@ -104,9 +106,8 @@ void ParticleCommon::PreDraw(BlendState state) {
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//DirectionalLight
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(graphicPso_[state]->GetGraphicBindResourceIndex("gDirLight"), 
-		Object3dCommon::GetInstance()->GetDirectionalLightResource()->GetGPUVirtualAddress());
+	//ライト情報セット
+	lightManager_->SetLightResources(graphicPso_[state].get());
 }
 
 //==================================================================================

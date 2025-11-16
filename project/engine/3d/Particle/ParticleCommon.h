@@ -9,6 +9,7 @@
 // 前方宣言
 class Camera;
 class DirectXCommon;
+class LightManager;
 class SrvManager;
 
 //============================================================================
@@ -40,7 +41,7 @@ public:
 	/// </summary>
 	/// <param name="dxCommon"></param>
 	/// <param name="srvManager"></param>
-	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
+	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager,LightManager* lightManager);
 
 	/// <summary>
 	/// ImGuiの更新
@@ -105,6 +106,8 @@ private:
 	static ParticleCommon* instance_;
 	//DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
+	//LightManager
+	LightManager* lightManager_ = nullptr;
 
 	//PSO
 	std::unordered_map<BlendState, std::unique_ptr<PSO>> graphicPso_;

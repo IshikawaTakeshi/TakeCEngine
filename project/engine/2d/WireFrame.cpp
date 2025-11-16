@@ -2,6 +2,7 @@
 #include "math/MatrixMath.h"
 #include "camera/CameraManager.h"
 #include "math/Easing.h"
+#include "math/MathEnv.h"
 
 //=============================================================================
 // 初期化
@@ -223,6 +224,87 @@ void WireFrame::DrawGridBox(const AABB& aabb, uint32_t division) {
 		Vector3(halfSize.x * 2, 0.0f, 0.0f), division, color);
 	
 
+}
+
+//=============================================================================
+// 視錐台の描画
+//=============================================================================
+void WireFrame::DrawFrustum(const Matrix4x4& viewProjectionInverse, const Vector4& color) {
+
+	// クリップ空間の8頂点
+	Vector3 clipSpaceVertices[8] = {
+		{-1.0f,  1.0f, 0.0f}, { 1.0f,  1.0f, 0.0f},
+		{ 1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f},
+		{-1.0f,  1.0f, 1.0f}, { 1.0f,  1.0f, 1.0f},
+		{ 1.0f, -1.0f, 1.0f}, {-1.0f, -1.0f, 1.0f}
+	};
+	// ワールド空間に変換
+	Vector3 worldSpaceVertices[8];
+	for (int i = 0; i < 8; i++) {
+		worldSpaceVertices[i] = MatrixMath::Transform(clipSpaceVertices[i], viewProjectionInverse);
+	}
+	// エッジを結ぶ
+	int edges[12][2] = {
+		{0, 1}, {1, 2}, {2, 3}, {3, 0}, // Near面
+		{4, 5}, {5, 6}, {6, 7}, {7, 4}, // Far面
+		{0, 4}, {1, 5}, {2, 6}, {3, 7}  // 側面
+	};
+	for (int i = 0; i < 12; i++) {
+		DrawLine(worldSpaceVertices[edges[i][0]], worldSpaceVertices[edges[i][1]], color);
+	}
+}
+
+//=============================================================================
+// コーンの描画
+//=============================================================================
+void WireFrame::DrawCone(const Vector3& apex, const Vector3& direction, float angle, float height, const Vector4& color) {
+
+	// コーンの底面の中心と半径を計算
+	Vector3 baseCenter = apex + direction.Normalize() * height;
+	float radius = tanf(angle) * height;
+	// 底面の円周上の点を計算して描画
+	const int segments = 32; // 円周の分割数
+	for (int i = 0; i < segments; i++) {
+		float theta1 = (2.0f * kPi * i) / segments;
+		float theta2 = (2.0f * kPi * (i + 1)) / segments;
+		Vector3 point1 = baseCenter + Vector3(cosf(theta1) * radius, 0.0f, sinf(theta1) * radius);
+		Vector3 point2 = baseCenter + Vector3(cosf(theta2) * radius, 0.0f, sinf(theta2) * radius);
+		// 底面の線分
+		DrawLine(point1, point2, color);
+		// 頂点から底面への線分
+		DrawLine(apex, point1, color);
+	}
+}
+
+//=============================================================================
+// 円の描画
+//=============================================================================
+void WireFrame::DrawRing(const Vector3& center, const Vector3& normal, float radius, const Vector4& color, bool isBillboard) {
+	// ビルボードの場合、カメラの向きを考慮
+	Vector3 up = isBillboard ? CameraManager::GetInstance()->GetActiveCamera()->GetUpVector() : Vector3(0.0f, 1.0f, 0.0f);
+	Vector3 right = normal.Cross(up).Normalize();
+	up = right.Cross(normal).Normalize();
+	const int segments = 32; // 円周の分割数
+	for (int i = 0; i < segments; i++) {
+		float theta1 = (2.0f * kPi * i) / segments;
+		float theta2 = (2.0f * kPi * (i + 1)) / segments;
+		Vector3 point1 = center + (right * cosf(theta1) + up * sinf(theta1)) * radius;
+		Vector3 point2 = center + (right * cosf(theta2) + up * sinf(theta2)) * radius;
+		// 円周の線分
+		DrawLine(point1, point2, color);
+	}
+}
+
+//=============================================================================
+// 点光源の描画
+//=============================================================================
+void WireFrame::DrawPointLight(const Vector3& center, const Vector3& normal, float radius, const Vector4& color) {
+
+	// 横方向のリング
+	DrawRing(center, normal, radius, color, false);
+	// 縦方向のリング
+	Vector3 right = normal.Cross(Vector3(0.0f, 1.0f, 0.0f)).Normalize();
+	DrawRing(center, right, radius, color, false);
 }
 
 //=============================================================================

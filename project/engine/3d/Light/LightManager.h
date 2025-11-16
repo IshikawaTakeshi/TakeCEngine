@@ -88,7 +88,15 @@ public:
 	/// <param name="light"></param>
 	void UpdateSpotLight(uint32_t index, const SpotLightData& light);
 
+	/// <summary>
+	/// ポイントライト描画
+	/// </summary>
 	void DrawPointLights();
+
+	/// <summary>
+	/// スポットライト描画
+	/// </summary>
+	void DrawSpotLights();
 
 public:
 
@@ -133,8 +141,6 @@ private:
 
 	ComPtr<ID3D12Resource> lightCountResource_;
 	LightCountData* lightCountData_ = nullptr;
-
-
 
 	static const uint32_t kMaxPointLights = 32;   // 最大ポイントライト数
 	static const uint32_t kMaxSpotLights = 32;    // 最大スポットライト数

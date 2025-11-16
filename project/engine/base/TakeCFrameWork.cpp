@@ -60,7 +60,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//ParticleCommon
 	particleCommon_ = ParticleCommon::GetInstance();
-	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get());
+	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get(),lightManager_.get());
 
 	//Animator
 	animator_ = std::make_unique<Animator>();
@@ -255,6 +255,11 @@ PostEffectManager* TakeCFrameWork::GetPostEffectManager() {
 WireFrame* TakeCFrameWork::GetWireFrame() {
 	assert(wireFrame_ != nullptr);
 	return wireFrame_.get();
+}
+
+LightManager* TakeCFrameWork::GetLightManager() {
+	assert(lightManager_ != nullptr);
+	return lightManager_.get();
 }
 
 float TakeCFrameWork::GetGameTime() {

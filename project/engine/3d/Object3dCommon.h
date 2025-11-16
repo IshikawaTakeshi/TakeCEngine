@@ -96,8 +96,6 @@ public:
 
 private:
 
-	void SetGraphicCBufferViewLighting(PSO* pso);
-
 	void SetCBufferViewCamera(PSO* pso);
 
 private:

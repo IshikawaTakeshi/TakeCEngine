@@ -123,9 +123,10 @@ void Object3dCommon::PreDraw() {
 	
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+	// カメラ情報設定
 	SetCBufferViewCamera(pso_.get());
-	SetGraphicCBufferViewLighting(pso_.get());
+	// ライトリソース設定
+	lightManager_->SetLightResources(pso_.get());
 }
 
 //================================================================================================
@@ -139,8 +140,10 @@ void Object3dCommon::PreDrawAddBlend() {
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(addBlendRootSignature_.Get());
 	//プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// カメラ情報設定
 	SetCBufferViewCamera(addBlendPso_.get());
-	SetGraphicCBufferViewLighting(addBlendPso_.get());
+	// ライトリソース設定
+	lightManager_->SetLightResources(addBlendPso_.get());
 }
 
 //================================================================================================
@@ -156,13 +159,6 @@ void Object3dCommon::Dispatch() {
 
 ID3D12Resource* Object3dCommon::GetDirectionalLightResource() const {
 	return lightManager_->GetDirectionalLightResource();
-}
-
-//================================================================================================
-// ライティング用CBufferView設定
-//================================================================================================
-void Object3dCommon::SetGraphicCBufferViewLighting(PSO* pso) {
-	lightManager_->SetLightResources(pso);
 }
 
 //================================================================================================

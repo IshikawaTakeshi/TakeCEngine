@@ -14,5 +14,5 @@ struct SpotLightData {
 	float decay_;         //減衰率
 	float cosAngle_;     //スポットライトの角度
 	float penumbraAngle_; //影のぼかし角度
-	float padding[2];
+	float padding;
 };
