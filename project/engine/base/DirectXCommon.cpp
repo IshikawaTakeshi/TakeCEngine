@@ -143,18 +143,8 @@ void DirectXCommon::PostDraw() {
 	//GPUとOSに画面の交換を行うよう通知
 	swapChain_->Present(1, 0);
 
-	//Fenceの値の更新
-	fenceVal_++;
-	//GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにSignalを送る
-	commandQueue_->Signal(fence_.Get(), fenceVal_);
-
-	//Fenceの値が指定したSignal値にたどり着いているか確認する
-	if (fence_->GetCompletedValue() < fenceVal_) {
-		//指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
-		fence_->SetEventOnCompletion(fenceVal_, fenceEvent_);
-		//イベントを待つ
-		WaitForSingleObject(fenceEvent_, INFINITE);
-	}
+	//GPUの処理がここまで到達したかどうか確認・待機
+	WaitForGPU();
 
 	//FPS固定の更新
 	UpdateFixFPS();
@@ -166,6 +156,20 @@ void DirectXCommon::PostDraw() {
 	//コマンドリストのリセット
 	result = commandList_->Reset(commandAllocator_.Get(), nullptr);
 	assert(SUCCEEDED(result));
+}
+
+void DirectXCommon::WaitForGPU() {
+	//Fenceの値の更新
+	fenceVal_++;
+	//GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにSignalを送る
+	commandQueue_->Signal(fence_.Get(), fenceVal_);
+	//Fenceの値が指定したSignal値にたどり着いているか確認する
+	if (fence_->GetCompletedValue() < fenceVal_) {
+		//指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
+		fence_->SetEventOnCompletion(fenceVal_, fenceEvent_);
+		//イベントを待つ
+		WaitForSingleObject(fenceEvent_, INFINITE);
+	}
 }
 
 
@@ -695,7 +699,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(ID3D1
 	return resource;
 }
 
-Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResourceUAV(ID3D12Device* device, size_t sizeInBytes, ID3D12GraphicsCommandList* commandList) {
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResourceUAV(ID3D12Device* device, size_t sizeInBytes) {
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
 	HRESULT result = S_FALSE;
@@ -719,25 +723,14 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResourceUAV(ID
 	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
 	//実際に頂点リソースを作る
-	result = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
-		&resourceDesc, D3D12_RESOURCE_STATE_COMMON, nullptr,
+	result = device->CreateCommittedResource(
+		&uploadHeapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDesc,
+		D3D12_RESOURCE_STATE_COMMON,
+		nullptr,
 		IID_PPV_ARGS(&resource));
 	assert(SUCCEEDED(result));
-
-	D3D12_RESOURCE_BARRIER uavBarrier = {};
-
-	//今回のバリアはTransition
-	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	//Noneにしておく
-	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	//バリアを張る対象のリソース。現在のバックバッファに対して行う
-	uavBarrier.Transition.pResource = resource.Get();
-	//遷移前(現在)のResourceState
-	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
-	//遷移後のResourceState
-	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-	//TransitionBarrierを張る
-	commandList->ResourceBarrier(1, &uavBarrier);
 
 	return resource;
 }

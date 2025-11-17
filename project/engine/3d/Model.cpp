@@ -50,10 +50,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 
 	if (modelData_->haveBone) {
 		//outputVertexResource
-		mesh_->InitializeOutputVertexResourceModel(
-			modelCommon_->GetDirectXCommon()->GetDevice(),
-			modelData_,
-			modelCommon_->GetDirectXCommon()->GetCommandList());
+		mesh_->InitializeOutputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(),modelData_);
 
 		//SRVの設定
 		inputIndex_ = modelCommon_->GetSrvManager()->Allocate();
@@ -125,7 +122,7 @@ void Model::UpdateImGui() {
 
 		//モデルのリロード
 		if(ImGui::Button("Reload Model")) {
-			ModelManager::GetInstance()->ReloadModel(modelData_->fileName);		
+			ModelManager::GetInstance()->RequestReload(modelData_->fileName);
 		}
 
 		//テクスチャのリロード
@@ -314,10 +311,7 @@ void Model::Reload(ModelData* newModelData) {
 
 	if(modelData_->haveBone) {
 		//outputVertexResource
-		mesh_->InitializeOutputVertexResourceModel(
-			modelCommon_->GetDirectXCommon()->GetDevice(),
-			modelData_,
-			modelCommon_->GetDirectXCommon()->GetCommandList());
+		mesh_->InitializeOutputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(),modelData_);
 
 		// 入力頂点用 SRV
 		if (inputIndex_ == 0) {

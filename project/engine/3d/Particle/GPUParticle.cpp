@@ -18,8 +18,7 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 
 	//ParticleResource生成
 	particleUavResource_ = DirectXCommon::CreateBufferResourceUAV(
-		particleCommon_->GetDirectXCommon()->GetDevice(),sizeof(ParticleForCS) * kNumMaxInstance_,
-		particleCommon_->GetDirectXCommon()->GetCommandList());
+		particleCommon_->GetDirectXCommon()->GetDevice(),sizeof(ParticleForCS) * kNumMaxInstance_);
 	particleUavResource_->SetName(L"GPUParticle::particleUavResource_");
 
 	//PerViewResource生成
@@ -34,14 +33,12 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 
 	//freeListIndexResource生成
 	freeListIndexResource_ = DirectXCommon::CreateBufferResourceUAV(
-		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(uint32_t),
-		particleCommon_->GetDirectXCommon()->GetCommandList());
+		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(uint32_t));
 	freeListIndexResource_->SetName(L"GPUParticle::freeListIndexResource_");
 
 	//freeListResource生成
 	freeListResource_ = DirectXCommon::CreateBufferResourceUAV(
-		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(uint32_t) * kNumMaxInstance_,
-		particleCommon_->GetDirectXCommon()->GetCommandList());
+		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(uint32_t) * kNumMaxInstance_);
 	freeListResource_->SetName(L"GPUParticle::freeListResource_");
 
 	//Mapping

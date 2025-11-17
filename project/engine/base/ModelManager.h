@@ -82,8 +82,11 @@ public:
 
 	void RegisterInstance(const std::string& filePath, std::shared_ptr<Model> modelInstance);
 
-	void UnregisterInstance(const std::string& filePath);
+	//void UnregisterInstance(const std::string& filePath);
 
+	void RequestReload(const std::string& modelFile);
+
+	void ApplyModelReloads();
 
 private:
 
@@ -97,5 +100,7 @@ private:
 	std::map<std::string, std::shared_ptr<Model>> models_;
 	//ファイルを使用しているモデルを追跡するためのコンテナ
 	std::map<std::string, std::vector<std::weak_ptr<Model>>> modelInstances_;
+
+	std::vector<std::string> reloadRequests_;
 };
 

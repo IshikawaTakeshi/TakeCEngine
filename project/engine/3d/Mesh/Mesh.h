@@ -69,7 +69,7 @@ public:
 	/// </summary>
 	/// <param name="device"></param>
 	void InitializeInputVertexResourceModel(ID3D12Device* device, ModelData* modelData);
-	void InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* modelData, ID3D12GraphicsCommandList* commandList);
+	void InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* modelData);
 	//void InitializeSkinnedVertexResource(ID3D12Device* device, ModelData modelData);
 
 	/// <summary>

@@ -122,6 +122,8 @@ void MyGame::Draw() {
 #endif
 	//描画後処理
 	directXCommon_->PostDraw();
+
+	ModelManager::GetInstance()->ApplyModelReloads();
 }
 
 void MyGame::RequestTimeScale(float timeScale, float duration,float current) {

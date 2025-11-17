@@ -292,3 +292,15 @@ void ModelManager::RegisterInstance(const std::string& filePath, std::shared_ptr
 	//ファイルパスをキーにモデルインスタンスを登録
 	modelInstances_[filePath].push_back(modelInstance);
 }
+
+void ModelManager::RequestReload(const std::string& modelFile) {
+
+	reloadRequests_.push_back(modelFile);
+}
+
+void ModelManager::ApplyModelReloads() {
+	for (const std::string& key : reloadRequests_) {
+		ReloadModel(key);   // ここで ModelData 読み直し + 全 Model::Reload
+	}
+	reloadRequests_.clear();
+}

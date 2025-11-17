@@ -285,6 +285,8 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat3("MoveDirection", &playerData_.characterInfo.moveDirection.x, 0.01f);
 	ImGui::Checkbox("OnGround", &playerData_.characterInfo.onGround);
 
+	object3d_->UpdateImGui("Player Object3d");
+
 	// デバッグ用ダメージボタン
 	if(ImGui::Button("Damage 1000")) {
 		playerData_.characterInfo.health -= 1000.0f;
