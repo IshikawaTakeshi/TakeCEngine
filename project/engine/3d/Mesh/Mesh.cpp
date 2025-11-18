@@ -211,9 +211,9 @@ void Mesh::InitializeInputVertexResourceModel(ID3D12Device* device, ModelData* m
 //================================================================================================
 // objモデルの頂点バッファリソース初期化（出力用）
 //================================================================================================
-void Mesh::InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* modelData, ID3D12GraphicsCommandList* commandList) {
+void Mesh::InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* modelData) {
 	//頂点リソースを作る
-	outputVertexResource_ = DirectXCommon::CreateBufferResourceUAV(device, sizeof(VertexData) * modelData->vertices.size(),commandList);
+	outputVertexResource_ = DirectXCommon::CreateBufferResourceUAV(device, sizeof(VertexData) * modelData->vertices.size());
 	outputVertexResource_->SetName(L"Mesh::outputVertexResource_");
 	//頂点バッファビューを作る
 	vertexBufferViews_[0].BufferLocation = outputVertexResource_->GetGPUVirtualAddress();

@@ -122,6 +122,8 @@ void MyGame::Draw() {
 #endif
 	//描画後処理
 	directXCommon_->PostDraw();
+
+	ModelManager::GetInstance()->ApplyModelReloads();
 }
 
 void MyGame::RequestTimeScale(float timeScale, float duration,float current) {
@@ -135,24 +137,24 @@ void MyGame::RequestTimeScale(float timeScale, float duration,float current) {
 
 void MyGame::LoadModel() {
 	//gltf
-	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf","skyBox_blueSky.dds");
-	ModelManager::GetInstance()->LoadModel("gltf", "player_singleMesh.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "cube.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "ICOBall.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "Rifle.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "Bazooka.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "VerticalMissileLauncher.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "boostEffectCone.gltf");
+	ModelManager::GetInstance()->LoadModel("walk.gltf");
+	ModelManager::GetInstance()->LoadModel("plane.gltf","skyBox_blueSky.dds");
+	ModelManager::GetInstance()->LoadModel("player_singleMesh.gltf");
+	ModelManager::GetInstance()->LoadModel("cube.gltf");
+	ModelManager::GetInstance()->LoadModel("ICOBall.gltf");
+	ModelManager::GetInstance()->LoadModel("Rifle.gltf");
+	ModelManager::GetInstance()->LoadModel("Bazooka.gltf");
+	ModelManager::GetInstance()->LoadModel("VerticalMissileLauncher.gltf");
+	ModelManager::GetInstance()->LoadModel("boostEffectCone.gltf");
 	//obj
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_airport.obj","rostock_laage_airport_4k.dds");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_blueSky.obj","skyBox_blueSky.dds");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_pool.obj","pool_4k.dds");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "cube.obj","pool_4k.dds");
+	ModelManager::GetInstance()->LoadModel("plane.obj");
+	ModelManager::GetInstance()->LoadModel("sphere.obj");
+	ModelManager::GetInstance()->LoadModel("skyBox_airport.obj","rostock_laage_airport_4k.dds");
+	ModelManager::GetInstance()->LoadModel("skyBox_blueSky.obj","skyBox_blueSky.dds");
+	ModelManager::GetInstance()->LoadModel("skyBox_pool.obj","pool_4k.dds");
+	ModelManager::GetInstance()->LoadModel("ground.obj");
+	ModelManager::GetInstance()->LoadModel("axis.obj");
+	ModelManager::GetInstance()->LoadModel("cube.obj","pool_4k.dds");
 }
 
 //====================================================================

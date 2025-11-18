@@ -114,7 +114,7 @@ protected: // privateメンバ変数
 	const Matrix4x4* parentWorldMatrix_ = nullptr;
 
 	//モデル
-	std::unique_ptr<Model> model_ = nullptr;
+	std::shared_ptr<Model> model_;
 	//モデルファイルパス
 	std::string modelFilePath_;
 

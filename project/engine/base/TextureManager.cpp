@@ -74,8 +74,11 @@ void TextureManager::CheckAndReloadTextures() {
 //=============================================================================================
 void TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
 
-	//読み込み済みテクスチャを検索
-	if (!forceReload && textureDatas_.contains(filePath)) {
+	//既に読み込み済みかどうか
+	const bool alreadyLoaded = textureDatas_.contains(filePath);
+
+	// 通常ロードかつ既に読み込み済みなら何もしない
+	if (!forceReload && alreadyLoaded) {
 		return;
 	}
 
@@ -133,10 +136,12 @@ void TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
 	textureData.intermediateResource = UploadTextureData(textureData.resource, mipImages);
 
 	//テクスチャデータの要素数番号をSRVのインデックスとして設定
-	textureData.srvIndex = srvManager_->Allocate();
-	textureData.srvHandleCPU = srvManager_->GetSrvDescriptorHandleCPU(textureData.srvIndex);
-	textureData.srvHandleGPU = srvManager_->GetSrvDescriptorHandleGPU(textureData.srvIndex);
-	
+	if (!alreadyLoaded) {
+		// 初回ロード時のみSRVを新規割り当て
+		textureData.srvIndex = srvManager_->Allocate();
+		textureData.srvHandleCPU = srvManager_->GetSrvDescriptorHandleCPU(textureData.srvIndex);
+		textureData.srvHandleGPU = srvManager_->GetSrvDescriptorHandleGPU(textureData.srvIndex);
+	}
 	//metadataを基にSRVの設定
 	srvManager_->CreateSRVforTexture2D(
 		textureData.metadata.IsCubemap(),
@@ -156,10 +161,12 @@ void TextureManager::LoadTextureAll() {
 	namespace fs = std::filesystem;
 	std::string directoryPath = "Resources/images/";
 	try {
+		//ディレクトリの存在確認
 		if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
 			assert(false && "ディレクトリが存在しないか、ディレクトリではありません");
 			return;
 		}
+		//ディレクトリ内の全てのファイルを走査
 		for (const auto& entry : fs::directory_iterator(directoryPath)) {
 			if (entry.is_regular_file()) {
 				std::string filePath = entry.path().filename().string();

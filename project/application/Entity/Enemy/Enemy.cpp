@@ -69,7 +69,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 
 	//bulletSensor_の初期化
 	bulletSensor_ = std::make_unique<BulletSensor>();
-	bulletSensor_->Initialize(object3dCommon, "Sphere.gltf");
+	bulletSensor_->Initialize(object3dCommon, "ICOBall.gltf");
 	bulletSensor_->SetSensorRadius(collider_->GetHalfSize().x * 20.0f);
 
 	//AIBrainSystemの初期化

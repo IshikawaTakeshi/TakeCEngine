@@ -65,6 +65,7 @@ public:
 	/// テクスチャファイルの読み込み
 	/// </summary>
 	/// <param name="filePath">テクスチャファイルのパス</param>
+	/// <param name="forceReload">強制再読み込みフラグ</param>
 	/// <returns>画像イメージデータ</returns>
 	void LoadTexture(const std::string& filePath,bool forceReload);
 

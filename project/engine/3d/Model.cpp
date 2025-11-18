@@ -1,14 +1,18 @@
 #include "Model.h"
-#include "base/DirectXCommon.h"
-#include "base/TextureManager.h"
-#include "3d/Material.h"
 
-#include "3d/Mesh/Mesh.h"
-#include "math/MatrixMath.h"
-#include "Utility/ResourceBarrier.h"
-
+// STL
 #include <fstream>
 #include <sstream>
+
+// Engine
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/TextureManager.h"
+#include "engine/base/ImGuiManager.h"
+#include "engine/base/ModelManager.h"
+#include "engine/3d/Material.h"
+#include "engine/3d/Mesh/Mesh.h"
+#include "engine/math/MatrixMath.h"
+#include "engine/Utility/ResourceBarrier.h"
 
 //=============================================================================
 // 初期化
@@ -46,10 +50,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 
 	if (modelData_->haveBone) {
 		//outputVertexResource
-		mesh_->InitializeOutputVertexResourceModel(
-			modelCommon_->GetDirectXCommon()->GetDevice(),
-			modelData_,
-			modelCommon_->GetDirectXCommon()->GetCommandList());
+		mesh_->InitializeOutputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(),modelData_);
 
 		//SRVの設定
 		inputIndex_ = modelCommon_->GetSrvManager()->Allocate();
@@ -101,6 +102,33 @@ void Model::Update(Animation* animation,float animationTime) {
 		rotate_ = Animator::CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
 		scale_ = Animator::CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 		localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
+	}
+}
+
+//=============================================================================
+// ImGui更新
+//=============================================================================
+
+void Model::UpdateImGui() {
+
+	//モデル情報
+	if(ImGui::CollapsingHeader("Model Info")) {
+
+		ImGui::Text("Model Name: %s", modelData_->fileName.c_str());
+		ImGui::Text("Num Vertices: %d", static_cast<int>(modelData_->vertices.size()));
+		ImGui::Text("Num Indices: %d", static_cast<int>(modelData_->indices.size()));
+
+		mesh_->GetMaterial()->UpdateMaterialImGui();
+
+		//モデルのリロード
+		if(ImGui::Button("Reload Model")) {
+			ModelManager::GetInstance()->RequestReload(modelData_->fileName);
+		}
+
+		//テクスチャのリロード
+		if (ImGui::Button("Reload Texture")) {
+			TextureManager::GetInstance()->LoadTexture(modelData_->material.textureFilePath, true);
+		}
 	}
 }
 
@@ -226,4 +254,99 @@ void Model::DrawForGPUParticle(UINT instanceCount) {
 	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount, 0, 0);
+}
+
+//=============================================================================
+// モデルデータの再読み込み
+//=============================================================================
+
+void Model::Reload(ModelData* newModelData) {
+	// 新しい ModelData に差し替え
+	modelData_ = newModelData;
+
+	//--------------------------------------------------------
+	// Skeleton/SkinCluster
+	//--------------------------------------------------------
+
+	// 既存メッシュの再初期化
+	if (modelData_->haveBone) {
+		// Skeletonがなければ作成
+		if(!skeleton_) {
+			skeleton_ = std::make_unique<Skeleton>();
+		}
+		// Skeleton を新しい rootNode で構築し直す
+		skeleton_->Create(modelData_->rootNode);
+
+		// SkinCluster 作成
+		skinCluster_.Create(
+			modelCommon_->GetDirectXCommon()->GetDevice(),
+			modelCommon_->GetSrvManager(),
+			skeleton_.get(),
+			modelData_);
+		haveSkeleton_ = true;
+	} else {
+		//ボーンがないモデルに差し替えた場合はSkeletonを破棄
+		skeleton_.reset();
+		haveSkeleton_ = false;
+	}
+
+	//--------------------------------------------------------
+	// メッシュ再初期化
+	//--------------------------------------------------------
+
+	// 既存メッシュの再初期化
+	mesh_->InitializeMesh(
+		modelCommon_->GetDirectXCommon(),
+		modelData_->material.textureFilePath,
+		modelData_->material.envMapFilePath);
+
+	//inputVertexResource
+	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+	//indexResource
+	mesh_->InitializeIndexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
+
+	//--------------------------------------------------------
+	// スキニング用リソース再初期化
+	//--------------------------------------------------------
+
+	if(modelData_->haveBone) {
+		//outputVertexResource
+		mesh_->InitializeOutputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(),modelData_);
+
+		// 入力頂点用 SRV
+		if (inputIndex_ == 0) {
+			// 未割り当ての場合のみ新規割り当て
+			inputIndex_ = modelCommon_->GetSrvManager()->Allocate();
+		}
+
+		//SRVの設定
+		modelCommon_->GetSrvManager()->CreateSRVforStructuredBuffer(
+			modelData_->skinningInfoData.numVertices,
+			sizeof(VertexData),
+			mesh_->GetInputVertexResource(),
+			inputIndex_);
+		//UAVの設定
+		// 出力頂点用 UAV
+		if (uavIndex_ == 0) {
+			// 未割り当ての場合のみ新規割り当て
+			uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
+		}
+		
+		modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
+			modelData_->skinningInfoData.numVertices,
+			sizeof(VertexData),
+			mesh_->GetOutputVertexResource(),
+			uavIndex_);
+	}
+
+	//--------------------------------------------------------
+	// ボーンを持たないモデルの場合、変換情報をリセット
+	//--------------------------------------------------------
+
+	if (!modelData_->haveBone) {
+		translate_ = { 0.0f,0.0f,0.0f };
+		rotate_ = { 0.0f,0.0f,0.0f,1.0f };
+		scale_ = { 1.0f,1.0f,1.0f };
+		localMatrix_ = modelData_->rootNode.localMatrix;
+	}
 }
