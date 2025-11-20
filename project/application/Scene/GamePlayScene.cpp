@@ -14,7 +14,7 @@
 void GamePlayScene::Initialize() {
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
-	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
+	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	gameCamera_->SetIsDebug(false);
 	gameCamera_->SetTranslate({ 5.0f,0.0f,-10.0f });
 	gameCamera_->SetRotate({ 0.0f,-1.4f,0.0f,1.0f });
@@ -22,7 +22,7 @@ void GamePlayScene::Initialize() {
 
 	//Camera1
 	debugCamera_ = std::make_shared<Camera>();
-	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
+	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	debugCamera_->SetTranslate({ 5.0f,0.0f,-1.0f });
 	debugCamera_->SetRotate({ 0.0f,-1.4f,0.0f,1.0f });
 	debugCamera_->SetIsDebug(true);
@@ -257,6 +257,12 @@ void GamePlayScene::UpdateImGui() {
 void GamePlayScene::Draw() {
 
 	skyBox_->Draw();    //天球の描画
+
+#pragma region 背景スプライト描画
+	//スプライトの描画前処理
+	SpriteCommon::GetInstance()->PreDraw();
+	
+#pragma endregion
 
 #pragma region Object3d描画
 

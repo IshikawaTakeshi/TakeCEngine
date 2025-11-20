@@ -10,7 +10,7 @@ void TitleScene::Initialize() {
 
 	//Camera0
 	camera0_ = std::make_shared<Camera>();
-	camera0_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
+	camera0_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_TitleScene.json");
 	camera0_->SetTranslate({ 0.0f,0.0f,-20.0f });
 	camera0_->SetRotate({ 0.1f,0.0f,0.0f });
 	CameraManager::GetInstance()->AddCamera("Tcamera0", *camera0_);
@@ -67,7 +67,8 @@ void TitleScene::Update() {
 	//シーン遷移
 	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::A)) {
 		//シーン切り替え依頼
-		SceneManager::GetInstance()->ChangeScene("GAMEPLAY",1.0f);
+		//EnemySelectSceneへ
+		SceneManager::GetInstance()->ChangeScene("ENEMYSELECT",1.0f);
 	}
 }
 

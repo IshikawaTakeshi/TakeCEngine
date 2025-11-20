@@ -122,7 +122,7 @@ void MyGame::Draw() {
 #endif
 	//描画後処理
 	directXCommon_->PostDraw();
-
+	//モデルのリロード適用
 	ModelManager::GetInstance()->ApplyModelReloads();
 }
 

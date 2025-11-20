@@ -524,6 +524,7 @@
     <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
     <ClCompile Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.cpp" />
     <ClCompile Include="engine\math\MathEnv.cpp" />
+    <ClCompile Include="engine\camera\CameraForGPU.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />

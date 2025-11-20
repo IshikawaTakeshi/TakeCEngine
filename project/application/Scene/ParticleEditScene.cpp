@@ -10,7 +10,7 @@ void ParticleEditScene::Initialize() {
 
 	// カメラの初期化
 	previewCamera_ = std::make_shared<Camera>();
-	previewCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
+	previewCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	previewCamera_->SetIsDebug(true);
 	previewCamera_->SetTranslate({ 5.0f,0.0f,-10.0f });
 	previewCamera_->SetRotate({ 0.0f,-1.4f,0.0f });

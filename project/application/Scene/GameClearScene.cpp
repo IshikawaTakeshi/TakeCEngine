@@ -14,7 +14,7 @@ void GameClearScene::Initialize() {
 	isSoundPlay = false;
 	// GameCamera
 	gameClearCamera_ = std::make_unique<Camera>();
-	gameClearCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
+	gameClearCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	gameClearCamera_->SetTranslate({ 43.0f, 1.5f, -20.0f });
 	gameClearCamera_->SetRotate({ -0.03f, -0.5f, -0.02f,0.85f });
 	CameraManager::GetInstance()->AddCamera("GameOverCamera", *gameClearCamera_);

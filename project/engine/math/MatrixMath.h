@@ -1,7 +1,7 @@
-#include "Vector3.h"
-#include "Matrix4x4.h"
-#include "Quaternion.h"
-
+#include "engine/math/Vector3.h"
+#include "engine/math/Matrix4x4.h"
+#include "engine/math/Quaternion.h"
+#include "engine/math/Transform.h"
 
 //============================================================================
 // MatrixMath namespace
@@ -52,8 +52,10 @@ namespace MatrixMath {
 
 	//3次元アフィン変換行列(オイラー角)
 	Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
+	Matrix4x4 MakeAffineMatrix(const EulerTransform& transform);
 	//3次元アフィン変換行列(クォータニオン)
 	Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate);
+	Matrix4x4 MakeAffineMatrix(const QuaternionTransform& transform);
 
 	//透視投影行列
 	Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
