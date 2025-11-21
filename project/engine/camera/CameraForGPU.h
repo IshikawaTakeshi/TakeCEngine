@@ -4,6 +4,7 @@
 #include "engine/math/Transform.h"
 #include "engine/Utility/JsonDirectoryPathData.h"
 #include "engine/base/WinApp.h"
+#include <string>
 #include <json.hpp>
 
 //============================================================================

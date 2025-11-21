@@ -14,17 +14,12 @@
 void EnemySelectScene::Initialize() {
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
-	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
-	gameCamera_->SetIsDebug(false);
-	gameCamera_->SetTranslate({ 0.0f,0.0f,-10.0f });
-	gameCamera_->SetRotate({ 0.0f,-1.4f,0.0f,1.0f });
+	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_CharacterEdit.json");
 	CameraManager::GetInstance()->AddCamera("gameCamera", *gameCamera_);
 
 	//Camera1
 	debugCamera_ = std::make_shared<Camera>();
-	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
-	debugCamera_->SetTranslate({ 5.0f,0.0f,-1.0f });
-	debugCamera_->SetRotate({ 0.0f,-1.4f,0.0f,1.0f });
+	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_CharacterEdit.json");
 	debugCamera_->SetIsDebug(true);
 	CameraManager::GetInstance()->AddCamera("debugCamera", *debugCamera_);
 
