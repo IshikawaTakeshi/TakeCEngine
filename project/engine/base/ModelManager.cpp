@@ -132,9 +132,23 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::s
 	modelData->fileName = modelFile;
 
 	if (scene->HasMeshes()) {
+
+		modelData->vertices.clear();
+		modelData->indices.clear();
+		modelData->subMeshes.clear();
+		modelData->materials.clear();
+
+		uint32_t globalVertexOffset = 0;
+		uint32_t globalIndexOffset  = 0;
+
 		//Meshの解析
 		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 			aiMesh* mesh = scene->mMeshes[meshIndex];
+			SubMesh sub{};
+			sub.vertexStart = globalVertexOffset;
+			sub.indexStart  = globalIndexOffset;
+			sub.vertexCount = mesh->mNumVertices;
+			sub.materialIndex = mesh->mMaterialIndex; // aiMeshが参照するマテリアル番号を保持
 			assert(mesh->HasNormals()); //法線がない場合は現在エラー
 			
 
@@ -158,6 +172,7 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::s
 					modelData->vertices[vertexIndex].texcoord = { 0.0f, 0.0f };
 				}
 			}
+			
 			//faceの解析
 			for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
 				aiFace& face = mesh->mFaces[faceIndex];
@@ -165,12 +180,24 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::s
 
 				//Indices解析
 				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
-					uint32_t indicesIndex = face.mIndices[element];
-					modelData->indices.push_back(indicesIndex);
+					uint32_t localIndex = face.mIndices[element];
+					uint32_t globalIndex = globalVertexOffset + localIndex;
+					modelData->indices.push_back(globalIndex);
 				}
 			}
 
+			// サブメッシュのインデックス数の計算
+			sub.indexCount = uint32_t(modelData->indices.size()) - sub.indexStart;
+
+			modelData->subMeshes.push_back(sub);
+
+			//globalOffsetに加算
+			globalVertexOffset += mesh->mNumVertices;
+			globalIndexOffset  += sub.indexCount;
+
+			//----------------------------------------------------
 			//boneの解析
+			//----------------------------------------------------
 			//boneがない場合はスキップ
 			if (mesh->HasBones() == false) {
 				modelData->haveBone = false;
@@ -205,26 +232,34 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::s
 		}
 	}
 
+	//------------------------------------------------
 	//materialの解析
+	//------------------------------------------------
+
+	modelData->materials.clear();
+	modelData->materials.resize(scene->mNumMaterials);
+
+	// 
 	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
 		aiMaterial* material = scene->mMaterials[materialIndex];
-		unsigned int textureCount = material->GetTextureCount(aiTextureType_DIFFUSE);
-		textureCount;
+		ModelMaterialData& mat = modelData->materials[materialIndex];
 
 		aiString textureFilePath;
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath) == AI_SUCCESS) {
-			modelData->material.textureFilePath = textureFilePath.C_Str();
+			mat.textureFilePath = textureFilePath.C_Str();
 		}
 
-		if (modelData->material.textureFilePath == "") { //テクスチャがない場合はデフォルトのテクスチャを設定
-			modelData->material.textureFilePath = "white1x1.png";
+		if (mat.textureFilePath == "") { //テクスチャがない場合はデフォルトのテクスチャを設定
+			mat.textureFilePath = "white1x1.png";
 		}
 
 		//環境マップテクスチャの設定
 		//MEMO: 画像はDDSファイルのみ対応
-		if (envMapFile != "") {
-			assert(envMapFile.find(".dds") != std::string::npos); //DDSファイル以外はエラー)
-			modelData->material.envMapFilePath = envMapFile;
+		if (!envMapFile.empty()) {
+			assert(envMapFile.find(".dds") != std::string::npos);
+			mat.envMapFilePath = envMapFile;
+		} else {
+			mat.envMapFilePath = "rostock_laage_airport_4k.dds"; // 旧仕様を踏襲するか要検討
 		}
 	}
 

@@ -1,16 +1,16 @@
 #include "SkyBox.h"
-#include "Camera.h"
-#include "CameraManager.h"
-#include "PipelineStateObject.h"
-#include "Model.h"
-#include "ModelManager.h"
+#include "camera/Camera.h"
+#include "camera/CameraManager.h"
 #include "math/MatrixMath.h"
-#include "TakeCFrameWork.h"
+#include "3d/Model.h"
+#include "base/TakeCFrameWork.h"
+#include "base/ModelManager.h"
+#include "base/PipelineStateObject.h"
 
 //=============================================================================
 // 初期化
 //=============================================================================
-void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename) {
+void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& texturefilePath) {
 
 	dxCommon_ = directXCommon;
 
@@ -24,8 +24,10 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename
 	rootSignature_ = pso_->GetGraphicRootSignature();
 
 	//モデルの生成
-	model_ = ModelManager::GetInstance()->FindModel(filename);
-
+	primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
+		{ {-50.0f,-50.0f,-50.0f},{50.0f,50.0f,50.0f} }, texturefilePath
+	);
+	
 	//TransformationMatrix用のResource生成
 	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
 	wvpResource_->SetName(L"SkyBox::wvpResource_");
@@ -35,7 +37,7 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename
 	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
 	//CPUで動かす用のTransform
-	transform_ = { {50.0f,50.0f,50.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform_ = { {100.0f,100.0f,100.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	//アフィン行列
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(
@@ -70,7 +72,7 @@ void SkyBox::Update() {
 
 	//GPUに使うデータを転送
 	TransformMatrixData_->World = worldMatrix_;
-	TransformMatrixData_->WVP = model_->GetModelData()->rootNode.localMatrix * WVPMatrix_;
+	TransformMatrixData_->WVP = WVPMatrix_;
 	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 }
 
@@ -99,8 +101,19 @@ void SkyBox::Draw() {
 	//TransformationMatrix
 	commandList->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
-	//モデルの描画
-	if (model_ != nullptr) {
-		model_->DrawSkyBox();
-	}
+	//プリミティブ描画
+	TakeCFrameWork::GetPrimitiveDrawer()->DrawAllObject(
+		pso_.get(),
+		PRIMITIVE_CUBE,
+		primitiveHandle_
+	);
+}
+
+void SkyBox::SetMaterialColor(const Vector4& color) {
+
+	TakeCFrameWork::GetPrimitiveDrawer()->SetMaterialColor(
+		primitiveHandle_,
+		PRIMITIVE_CUBE,
+		{ color.x,color.y,color.z,1.0f }
+	);
 }

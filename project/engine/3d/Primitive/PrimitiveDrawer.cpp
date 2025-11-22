@@ -168,7 +168,7 @@ void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vec
 //=================================================================================
 //	プリミティブデータ生成処理(リング)
 //=================================================================================
-uint32_t PrimitiveDrawer::GenerateRing(const float outerRadius, const float innerRadius, const std::string& textureFilePath) {
+uint32_t PrimitiveDrawer::GenerateRing(float outerRadius,float innerRadius, const std::string& textureFilePath) {
 
 	auto ring = std::make_unique<RingData>();
 	ring->innerRadius_ = innerRadius;
@@ -183,7 +183,7 @@ uint32_t PrimitiveDrawer::GenerateRing(const float outerRadius, const float inne
 //=================================================================================
 //	プリミティブデータ生成処理(平面)
 //=================================================================================
-uint32_t PrimitiveDrawer::GeneratePlane(const float width, const float height, const std::string& textureFilePath) {
+uint32_t PrimitiveDrawer::GeneratePlane(float width, float height, const std::string& textureFilePath) {
 
 	auto plane = std::make_unique<PlaneData>();
 	plane->width_ = width;
@@ -198,7 +198,7 @@ uint32_t PrimitiveDrawer::GeneratePlane(const float width, const float height, c
 //=================================================================================
 //	プリミティブデータ生成処理(球)
 //=================================================================================
-uint32_t PrimitiveDrawer::GenerateSphere(const float radius, const std::string& textureFilePath) {
+uint32_t PrimitiveDrawer::GenerateSphere(float radius, const std::string& textureFilePath) {
 
 	auto sphere = std::make_unique<SphereData>();
 	sphere->radius_ = radius;
@@ -212,7 +212,7 @@ uint32_t PrimitiveDrawer::GenerateSphere(const float radius, const std::string& 
 //=================================================================================
 //	プリミティブデータ生成処理(円錐)
 //=================================================================================
-uint32_t PrimitiveDrawer::GenerateCone(const float radius, const float height, uint32_t subDivision, const std::string& textureFilePath) {
+uint32_t PrimitiveDrawer::GenerateCone(float radius,float height, uint32_t subDivision, const std::string& textureFilePath) {
 
 	auto cone = std::make_unique<ConeData>();
 	cone->radius_ = radius;
@@ -222,6 +222,20 @@ uint32_t PrimitiveDrawer::GenerateCone(const float radius, const float height, u
 	CreateConeMaterial(textureFilePath, cone.get());
 	uint32_t useHandle = coneHandle_++;
 	coneDatas_[useHandle] = std::move(cone);
+	return useHandle;
+}
+
+//=================================================================================
+//	プリミティブデータ生成処理(cube)
+//=================================================================================
+uint32_t PrimitiveDrawer::GenerateCube(const AABB& size, const std::string& textureFilePath) {
+	
+	auto cube = std::make_unique<CubeData>();
+	cube->size_ = size;
+	CreateCubeVertexData(cube.get());
+	CreateCubeMaterial(textureFilePath, cube.get());
+	uint32_t useHandle = cubeHandle_++;
+	cubeDatas_[useHandle] = std::move(cube);
 	return useHandle;
 }
 
@@ -451,6 +465,29 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 		commandList->DrawInstanced(coneVertexCount_, 1, 0, 0);
 		break;
 	}
+	case PRIMITIVE_CUBE:
+	{
+		//--------------------------------------------------
+		//		cubeの描画
+		//--------------------------------------------------
+		auto itCube = cubeDatas_.find(handle);
+		if (itCube == cubeDatas_.end()) return;
+		auto& cubeData = itCube->second;
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//VertexBufferView
+		commandList->IASetVertexBuffers(0, 1, &cubeData->primitiveData_.vertexBufferView_);
+		// materialResource
+		commandList->SetGraphicsRootConstantBufferView(
+			pso->GetGraphicBindResourceIndex("gMaterial"), cubeData->material_->GetMaterialResource()->GetGPUVirtualAddress());
+		// texture
+		srvManager_->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(cubeData->material_->GetTextureFilePath()));
+		//IBVの設定
+		//commandList->IASetIndexBuffer(&cubeData->primitiveData_.indexBufferView_);
+		//描画
+		commandList->DrawInstanced(cubeVertexCount_, 1, 0, 0);
+		break;
+	}
 	case PRIMITIVE_COUNT:
 		break;
 	default:
@@ -647,6 +684,133 @@ void PrimitiveDrawer::CreateSphereVertexData(SphereData* sphereData) {
 }
 
 //====================================================================
+// 頂点データの作成関数(cube)
+//====================================================================
+void PrimitiveDrawer::CreateCubeVertexData(CubeData* cubeData) {
+
+	UINT size = sizeof(VertexData) * 36 * kMaxVertexCount_;
+
+	//bufferをカウント分確保
+	cubeData->primitiveData_.vertexBuffer_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
+	cubeData->primitiveData_.vertexBuffer_->SetName(L"Cube::vertexBuffer");
+	//bufferview設定
+	cubeData->primitiveData_.vertexBufferView_.BufferLocation = cubeData->primitiveData_.vertexBuffer_->GetGPUVirtualAddress();
+	cubeData->primitiveData_.vertexBufferView_.StrideInBytes = sizeof(VertexData);
+	cubeData->primitiveData_.vertexBufferView_.SizeInBytes = size;
+	//mapping
+	cubeData->primitiveData_.vertexBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cubeData->vertexData_));
+
+	//Cubeの頂点データを生成(36頂点分)
+	Vector3 max = cubeData->size_.max;
+	Vector3 min = cubeData->size_.min;
+
+	// 各頂点の座標を決める
+	Vector3 p000 = {min.x, min.y, min.z};
+	Vector3 p001 = {min.x, min.y, max.z};
+	Vector3 p010 = {min.x, max.y, min.z};
+	Vector3 p011 = {min.x, max.y, max.z};
+	Vector3 p100 = {max.x, min.y, min.z};
+	Vector3 p101 = {max.x, min.y, max.z};
+	Vector3 p110 = {max.x, max.y, min.z};
+	Vector3 p111 = {max.x, max.y, max.z};
+
+	VertexData* v = cubeData->vertexData_;
+	int idx = 0;
+
+	auto SetVertex = [&](int i, const Vector3& pos, const Vector2& uv, const Vector3& normal) {
+		v[i].position = {pos.x, pos.y, pos.z, 1.0f};
+		v[i].texcoord = uv;
+		v[i].normal   = normal;
+		};
+
+	// +X面 (右側)
+	{
+		Vector3 n = { 1.0f, 0.0f, 0.0f };
+		// 2 Triangles: (p110, p111, p101), (p110, p101, p100)
+		SetVertex(idx + 0, p110, {0.0f, 0.0f}, n);
+		SetVertex(idx + 1, p111, {1.0f, 0.0f}, n);
+		SetVertex(idx + 2, p101, {1.0f, 1.0f}, n);
+
+		SetVertex(idx + 3, p110, {0.0f, 0.0f}, n);
+		SetVertex(idx + 4, p101, {1.0f, 1.0f}, n);
+		SetVertex(idx + 5, p100, {0.0f, 1.0f}, n);
+		idx += 6;
+	}
+
+	// -X面 (左側)
+	{
+		Vector3 n = { -1.0f, 0.0f, 0.0f };
+		// (p011, p010, p000), (p011, p000, p001)
+		SetVertex(idx + 0, p011, {0.0f, 0.0f}, n);
+		SetVertex(idx + 1, p010, {1.0f, 0.0f}, n);
+		SetVertex(idx + 2, p000, {1.0f, 1.0f}, n);
+
+		SetVertex(idx + 3, p011, {0.0f, 0.0f}, n);
+		SetVertex(idx + 4, p000, {1.0f, 1.0f}, n);
+		SetVertex(idx + 5, p001, {0.0f, 1.0f}, n);
+		idx += 6;
+	}
+
+	// +Y面 (上)
+	{
+		Vector3 n = {0.0f, 1.0f, 0.0f};
+		// (p010, p110, p111), (p010, p111, p011)
+		SetVertex(idx + 0, p010, {0.0f, 0.0f}, n);
+		SetVertex(idx + 1, p110, {1.0f, 0.0f}, n);
+		SetVertex(idx + 2, p111, {1.0f, 1.0f}, n);
+
+		SetVertex(idx + 3, p010, {0.0f, 0.0f}, n);
+		SetVertex(idx + 4, p111, {1.0f, 1.0f}, n);
+		SetVertex(idx + 5, p011, {0.0f, 1.0f}, n);
+		idx += 6;
+	}
+
+	// -Y面 (下)
+	{
+		Vector3 n = {0.0f, -1.0f, 0.0f};
+		// (p001, p101, p100), (p001, p100, p000)
+		SetVertex(idx + 0, p001, {0.0f, 0.0f}, n);
+		SetVertex(idx + 1, p101, {1.0f, 0.0f}, n);
+		SetVertex(idx + 2, p100, {1.0f, 1.0f}, n);
+
+		SetVertex(idx + 3, p001, {0.0f, 0.0f}, n);
+		SetVertex(idx + 4, p100, {1.0f, 1.0f}, n);
+		SetVertex(idx + 5, p000, {0.0f, 1.0f}, n);
+		idx += 6;
+	}
+
+	// +Z面 (前)
+	{
+		Vector3 n = {0.0f, 0.0f, 1.0f};
+		// (p111, p101, p001), (p111, p001, p011)
+		SetVertex(idx + 0, p111, {0.0f, 0.0f}, n);
+		SetVertex(idx + 1, p101, {1.0f, 0.0f}, n);
+		SetVertex(idx + 2, p001, {1.0f, 1.0f}, n);
+
+		SetVertex(idx + 3, p111, {0.0f, 0.0f}, n);
+		SetVertex(idx + 4, p001, {1.0f, 1.0f}, n);
+		SetVertex(idx + 5, p011, {0.0f, 1.0f}, n);
+		idx += 6;
+	}
+
+	// -Z面 (後ろ)
+	{
+		Vector3 n = {0.0f, 0.0f, -1.0f};
+		// (p010, p000, p100), (p010, p100, p110)
+		SetVertex(idx + 0, p010, {0.0f, 0.0f}, n);
+		SetVertex(idx + 1, p000, {1.0f, 0.0f}, n);
+		SetVertex(idx + 2, p100, {1.0f, 1.0f}, n);
+
+		SetVertex(idx + 3, p010, {0.0f, 0.0f}, n);
+		SetVertex(idx + 4, p100, {1.0f, 1.0f}, n);
+		SetVertex(idx + 5, p110, {0.0f, 1.0f}, n);
+		idx += 6;
+	}
+
+	cubeVertexCount_ += 36;
+}
+
+//====================================================================
 // 頂点データの作成関数(円錐)
 //====================================================================
 
@@ -802,6 +966,15 @@ void PrimitiveDrawer::CreateConeMaterial(const std::string& textureFilePath, Con
 	coneData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
 }
 
+void PrimitiveDrawer::CreateCubeMaterial(const std::string& textureFilePath, CubeData* cubeData) {
+
+	cubeData->material_ = new Material();
+	cubeData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
+	cubeData->material_->SetEnableLighting(false);
+	cubeData->material_->SetEnvCoefficient(0.0f);
+	cubeData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
+}
+
 //====================================================================
 //	データ取得関数
 //====================================================================
@@ -824,4 +997,50 @@ PrimitiveDrawer::RingData* PrimitiveDrawer::GetRingData(uint32_t handle) {
 PrimitiveDrawer::ConeData* PrimitiveDrawer::GetConeData(uint32_t handle) {
 	// coneDataを返す
 	return coneDatas_[handle].get();
+}
+
+void PrimitiveDrawer::SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color) {
+
+	switch (type) {
+	case PRIMITIVE_RING:
+	{
+		auto itRing = ringDatas_.find(handle);
+		if (itRing == ringDatas_.end()) return;
+		itRing->second->material_->SetMaterialColor(color);
+		break;
+	}
+	case PRIMITIVE_PLANE:
+	{
+		auto itPlane = planeDatas_.find(handle);
+		if (itPlane == planeDatas_.end()) return;
+		itPlane->second->material_->SetMaterialColor(color);
+		break;
+	}
+	case PRIMITIVE_SPHERE:
+	{
+		auto itSphere = sphereDatas_.find(handle);
+		if (itSphere == sphereDatas_.end()) return;
+		itSphere->second->material_->SetMaterialColor(color);
+		break;
+	}
+	case PRIMITIVE_CONE:
+	{
+		auto itCone = coneDatas_.find(handle);
+		if (itCone == coneDatas_.end()) return;
+		itCone->second->material_->SetMaterialColor(color);
+		break;
+	}
+	case PRIMITIVE_CUBE:
+	{
+		auto itCube = cubeDatas_.find(handle);
+		if (itCube == cubeDatas_.end()) return;
+		itCube->second->material_->SetMaterialColor(color);
+		break;
+	}
+	case PRIMITIVE_COUNT:
+		break;
+	default:
+		assert(0 && "未対応の PrimitiveType が指定されました");
+		break;
+	}
 }

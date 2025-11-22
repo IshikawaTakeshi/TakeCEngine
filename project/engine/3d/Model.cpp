@@ -140,26 +140,41 @@ void Model::Draw(PSO* pso) {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	// VBVを設定
+	// VBV/IBV の設定（共通）
 	mesh_->SetVertexBuffers(commandList, 0);
-	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gMaterial"),
-		mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//textureSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
-	//envMapSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gEnvMapTexture"),
-		TextureManager::GetInstance()->GetSrvIndex(modelData_->material.envMapFilePath));
-	//IBVの設定
-	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
-	//DrawCall
-	commandList->DrawIndexedInstanced(UINT(modelData_->indices.size()), 1, 0, 0, 0);
+	commandList->IASetIndexBuffer(&mesh_->GetIndexBufferView());
+
+	// サブメッシュごとに描画
+	for (const SubMesh& sub : modelData_->subMeshes) {
+		const ModelMaterialData& mat = modelData_->materials[sub.materialIndex];
+
+		// マテリアル CBuffer
+		commandList->SetGraphicsRootConstantBufferView(
+			pso->GetGraphicBindResourceIndex("gMaterial"),
+			mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress()
+			// ここは「マテリアル単位の CBuffer」があるなら切り替えを検討
+		);
+
+		// Texture SRV
+		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gTexture"),
+			TextureManager::GetInstance()->GetSrvIndex(mat.textureFilePath));
+
+		// EnvMap SRV
+		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gEnvMapTexture"),
+			TextureManager::GetInstance()->GetSrvIndex(mat.envMapFilePath));
+
+		// Draw 呼び出し
+		commandList->DrawIndexedInstanced(
+			sub.indexCount,    // インデックス数
+			1,                 // インスタンス数
+			sub.indexStart,    // StartIndexLocation
+			0,                 // BaseVertexLocation (頂点側にもオフセットを持たせるならここも sub.vertexStart)
+			0                  // StartInstanceLocation
+		);
+	}
 }
 
 void Model::DrawSkyBox() {
@@ -168,7 +183,7 @@ void Model::DrawSkyBox() {
 
 	// VBVを設定
 	mesh_->SetVertexBuffers(commandList, 0);
-	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
+	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//materialCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
