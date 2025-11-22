@@ -140,6 +140,7 @@ void MyGame::LoadModel() {
 	ModelManager::GetInstance()->LoadModel("walk.gltf");
 	ModelManager::GetInstance()->LoadModel("plane.gltf","skyBox_blueSky.dds");
 	ModelManager::GetInstance()->LoadModel("player_singleMesh.gltf");
+	ModelManager::GetInstance()->LoadModel("player_MultiMesh.gltf");
 	ModelManager::GetInstance()->LoadModel("cube.gltf");
 	ModelManager::GetInstance()->LoadModel("ICOBall.gltf");
 	ModelManager::GetInstance()->LoadModel("Rifle.gltf");

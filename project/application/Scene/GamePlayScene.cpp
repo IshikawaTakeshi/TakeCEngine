@@ -58,7 +58,7 @@ void GamePlayScene::Initialize() {
 
 	//player
 	player_ = std::make_unique<Player>();
-	player_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
+	player_->Initialize(Object3dCommon::GetInstance(), "player_MultiMesh.gltf");
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });

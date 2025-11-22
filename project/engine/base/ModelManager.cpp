@@ -141,6 +141,8 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::s
 		uint32_t globalVertexOffset = 0;
 		uint32_t globalIndexOffset  = 0;
 
+		modelData->haveBone = false;
+
 		//Meshの解析
 		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 			aiMesh* mesh = scene->mMeshes[meshIndex];
@@ -200,11 +202,13 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::s
 			//----------------------------------------------------
 			//boneがない場合はスキップ
 			if (mesh->HasBones() == false) {
-				modelData->haveBone = false;
 				continue;
-			}
-			for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+			} else {
 				modelData->haveBone = true;
+			}
+
+			
+			for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
 				aiBone* bone = mesh->mBones[boneIndex];
 				std::string jointwName = bone->mName.C_Str();
 				JointWeightData& jointWeightData = modelData->skinClusterData[jointwName];
