@@ -284,9 +284,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Light\LightCounter.h" />
     <ClInclude Include="engine\3d\Light\PointLight.h" />
     <ClInclude Include="engine\3d\Light\SpotLight.h" />
+    <ClInclude Include="engine\3d\Mesh\SubMesh.h" />
+    <ClInclude Include="engine\3d\ModelData.h" />
+    <ClInclude Include="engine\3d\Particle\ParticleForGPU.h" />
+    <ClInclude Include="engine\3d\VertexData.h" />
     <ClInclude Include="engine\Animation\SpriteAnimation.h" />
     <ClInclude Include="engine\base\BlendModeStateEnum.h" />
     <ClInclude Include="engine\base\ComPtrAliasTemplates.h" />
+    <ClInclude Include="engine\base\PerFrame.h" />
     <ClInclude Include="engine\math\MathEnv.h" />
     <ClInclude Include="engine\PostEffect\BloomEffect.h" />
     <ClInclude Include="engine\camera\CameraForGPU.h" />
@@ -396,7 +401,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\Vector3Math.h" />
     <ClInclude Include="engine\math\TransformMatrix.h" />
     <ClInclude Include="engine\base\PipelineStateObject.h" />
-    <ClInclude Include="engine\base\ResourceDataStructure.h" />
     <ClInclude Include="engine\3d\Primitive\Sphere.h" />
     <ClInclude Include="engine\base\TextureManager.h" />
     <ClInclude Include="engine\math\Transform.h" />

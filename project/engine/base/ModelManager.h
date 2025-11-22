@@ -1,5 +1,6 @@
 #pragma once
-#include "ResourceDataStructure.h"
+
+#include "engine/3d/ModelData.h"
 
 //assimp
 #include <assimp/Importer.hpp>

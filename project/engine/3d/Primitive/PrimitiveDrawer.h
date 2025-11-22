@@ -3,8 +3,8 @@
 #include "base/PipelineStateObject.h"
 #include "base/SrvManager.h"
 #include "3d/Material.h"
-#include "TransformMatrix.h"
-#include "ResourceDataStructure.h"
+#include "3d/VertexData.h"
+#include "math/TransformMatrix.h"
 #include "Primitive/PrimitiveType.h"
 #include <memory>
 #include <cstdint>

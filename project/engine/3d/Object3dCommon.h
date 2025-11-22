@@ -1,5 +1,4 @@
 #pragma once
-#include "ResourceDataStructure.h"
 #include "engine/base/PipelineStateObject.h"
 #include "engine/base/ComPtrAliasTemplates.h"
 #include "engine/3d/Light/DirectionalLight.h"

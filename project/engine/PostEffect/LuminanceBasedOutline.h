@@ -1,5 +1,6 @@
 #pragma once
 #include "PostEffect/PostEffect.h"
+#include "engine/math/Vector4.h"
 
 //============================================================================
 // LuminanceBasedOutline class

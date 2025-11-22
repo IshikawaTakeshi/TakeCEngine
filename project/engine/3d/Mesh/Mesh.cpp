@@ -1,6 +1,7 @@
 #include "Mesh.h"
-#include "DirectXCommon.h"
-#include "TextureManager.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/TextureManager.h"
+#include "engine/3d/ModelData.h"
 #include <numbers>
 
 //=============================================================================

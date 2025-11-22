@@ -10,10 +10,10 @@
 #include <chrono>
 #include <memory>
 
-#include "base/DirectXShaderCompiler.h"
-#include "base/WinApp.h"
-#include "base/ResourceDataStructure.h"
-#include "base/RtvManager.h"
+#include "engine/base/DirectXShaderCompiler.h"
+#include "engine/base/WinApp.h"
+#include "engine/base/RtvManager.h"
+#include "engine/math/Vector4.h"
 
 //============================================================================
 // DirectXCommon class

@@ -1,6 +1,7 @@
 #pragma once
-#include "ResourceDataStructure.h"
-#include "Material.h"
+
+#include "engine/3d/Material.h"
+#include "engine/3d/ModelData.h"
 #include <d3d12.h>
 #include <wrl.h>
 #include <memory>

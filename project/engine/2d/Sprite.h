@@ -15,7 +15,6 @@
 #include "Matrix4x4.h"
 #include "Transform.h"
 #include "TransformMatrix.h"
-#include "ResourceDataStructure.h"
 #include "Mesh/Mesh.h"
 #include "SpriteCommon.h"
 #include "engine/Animation/SpriteAnimation.h"

@@ -1,6 +1,8 @@
 #pragma once
-#include "ResourceDataStructure.h"
-#include "Transform.h"
+#include "engine/math/Transform.h"
+#include "engine/math/Vector4.h"
+#include "engine/math/Matrix4x4.h"
+
 #include <d3d12.h>
 #include <wrl.h>
 #include <string>

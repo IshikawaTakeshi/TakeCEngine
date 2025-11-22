@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ResourceDataStructure.h"
-#include "Transform.h"
-#include "TransformMatrix.h"
+#include "engine/math/Transform.h"
+#include "engine/math/TransformMatrix.h"
 #include "Animation/Animator.h"
 #include "Animation/Skeleton.h"
 #include "Animation/SkinCluster.h"
-#include "Mesh/Mesh.h"
+#include "3d/Mesh/Mesh.h"
+#include "3d/ModelData.h"
 #include "base/PipelineStateObject.h"
 #include "base/SrvManager.h"
 #include "base/DirectXCommon.h"

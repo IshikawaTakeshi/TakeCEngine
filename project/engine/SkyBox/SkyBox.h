@@ -1,6 +1,5 @@
 #pragma once
 #include "engine/base/DirectXCommon.h"
-#include "engine/base/ResourceDataStructure.h"
 #include "engine/base/ComPtrAliasTemplates.h"
 #include "engine/math/TransformMatrix.h"
 #include "engine/3d/Model.h"

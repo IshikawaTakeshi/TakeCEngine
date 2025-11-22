@@ -1,21 +1,15 @@
 #pragma once
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
-#include "Matrix4x4.h"
-#include "Transform.h"
-#include <string>
-#include <vector>
+#include "engine/math/Vector2.h"
+#include "engine/math/Vector3.h"
+#include "engine/math/Vector4.h"
+#include "engine/math/Transform.h"
+#include "engine/math/Matrix4x4.h"
+#include "engine/3d/VertexData.h"
 #include <cstdint>
 #include <map>
-#include <wrl.h>
+#include <string>
+#include <vector>
 
-//頂点データ構造体
-struct VertexData {
-	Vector4 position;
-	Vector2 texcoord;
-	Vector3 normal;
-};
 
 //モデル1個分のマテリアルデータ
 struct ModelMaterialData {
@@ -60,23 +54,4 @@ struct ModelData {
 	ModelMaterialData material;
 	Node rootNode;
 	bool haveBone = false;
-};
-
-//パーティクル用の行列,色データ
-struct ParticleForGPU {
-	Vector3 translate;
-	Vector3 rotate;
-	Vector3 scale;
-	Vector3 velocity;
-	Vector4 color;
-	float lifeTime;
-	float currentTime;
-};
-
-//フレーム情報
-struct PerFrame {
-	//ゲームを開始してからの時間
-	float gameTime;
-	//フレームの経過時間
-	float deltaTime;
 };
