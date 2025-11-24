@@ -176,7 +176,7 @@ void Model::Draw(PSO* pso) {
 			sub.indexCount,    // インデックス数
 			1,                 // インスタンス数
 			sub.indexStart,    // StartIndexLocation
-			0,   // BaseVertexLocation (頂点側にもオフセットを持たせるならここも sub.vertexStart)
+			0,                 // BaseVertexLocation
 			0                  // StartInstanceLocation
 		);
 	}
