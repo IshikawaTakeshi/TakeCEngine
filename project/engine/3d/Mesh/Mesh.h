@@ -5,6 +5,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <memory>
+#include <vector>
 
 // 前方宣言
 class DirectXCommon;
@@ -28,7 +29,9 @@ public:
 	/// <param name="dxCommon"></param>
 	/// <param name="filePath"></param>
 	/// <param name="envMapfilePath"></param>
-	void InitializeMesh(DirectXCommon* dxCommon, const std::string& filePath,const std::string& envMapfilePath = "");
+	void InitializeMesh(DirectXCommon* dxCommon,std::vector<ModelMaterialData> materialData);
+
+	void InitializeMesh(DirectXCommon* dxCommon, const std::string& texturePath, const std::string& envMapPath = "");
 
 	/// <summary>
 	/// 描画処理時に使用する頂点バッファを設定
@@ -51,19 +54,9 @@ public:
 	void AddVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vbv);
 
 	/// <summary>
-	/// 球体の頂点バッファリソース初期化
-	/// </summary>
-	void InitializeVertexResourceSphere(ID3D12Device* device);
-
-	/// <summary>
 	/// スプライトの頂点バッファリソース初期化
 	/// </summary>
 	void InitializeVertexResourceSprite(ID3D12Device* device, Vector2 anchorPoint);
-
-	/// <summary>
-	/// 三角形の頂点バッファリソース初期化
-	/// </summary>
-	void InitializeVertexResourceTriangle(ID3D12Device* device);
 
 	/// <summary>
 	/// モデルの頂点バッファリソース初期化
@@ -72,11 +65,6 @@ public:
 	void InitializeInputVertexResourceModel(ID3D12Device* device, ModelData* modelData);
 	void InitializeOutputVertexResourceModel(ID3D12Device* device, ModelData* modelData);
 	//void InitializeSkinnedVertexResource(ID3D12Device* device, ModelData modelData);
-
-	/// <summary>
-	/// 球体のIndexResource初期化
-	/// </summary>
-	void InitializeIndexResourceSphere(ID3D12Device* device);
 
 	/// <summary>
 	/// スプライトのIndexResource初期化
@@ -118,7 +106,9 @@ public:
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() { return indexBufferView_; }
 
 	/// マテリアルの取得
-	Material* GetMaterial() { return material_.get(); }
+	Material* GetMaterial() { return material_[0].get(); }
+
+	std::vector<std::unique_ptr<Material>>& GetMaterials() { return material_; }
 
 public:
 
@@ -128,7 +118,7 @@ public:
 protected:
 
 	//マテリアル
-	std::unique_ptr<Material> material_ = nullptr;
+	std::vector<std::unique_ptr<Material>> material_;
 
 	//頂点バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> inputVertexResource_;

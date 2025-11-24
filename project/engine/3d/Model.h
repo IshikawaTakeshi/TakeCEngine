@@ -50,11 +50,6 @@ public:
 	void Draw(PSO* pso);
 
 	/// <summary>
-	/// スカイボックス用描画処理
-	/// </summary>
-	void DrawSkyBox();
-
-	/// <summary>
 	/// スキニング計算
 	/// </summary>
 	/// <param name="skinningPso"></param>

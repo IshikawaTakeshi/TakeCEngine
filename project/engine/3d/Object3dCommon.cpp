@@ -63,28 +63,6 @@ void Object3dCommon::Initialize(DirectXCommon* directXCommon,LightManager* light
 	//光源の輝度書き込む
 	directionalLightData_->intensity_ = 1.0f;
 
-	//pointLightDataの初期化
-	pointLightData_ = std::make_unique<PointLightData>();
-	pointLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
-	pointLightData_->position_ = { 0.0f,2.0f,0.0f };
-	pointLightData_->intensity_ = 50.0f;
-	pointLightData_->radius_ = 10.0f;
-	pointLightData_->decay_ = 1.0f;
-	pointLightIndex_ = lightManager_->AddPointLight(*pointLightData_);
-	
-	//spotLightDataの初期化
-	spotLightData_ = std::make_unique<SpotLightData>();
-	spotLightData_->color_ = { 1.0f,1.0f,1.0f,1.0f };
-	spotLightData_->position_ = { 2.0f,2.0f,0.0f };
-	spotLightData_->direction_ = { -1.0f,-1.0f,0.0f };
-	spotLightData_->distance_ = 7.0f;
-	spotLightData_->intensity_ = 45.0f;
-	spotLightData_->decay_ = 2.0f;
-	spotLightData_->cosAngle_ = std::cosf(std::numbers::pi_v<float> / 3.0f);
-	spotLightData_->penumbraAngle_ = std::numbers::pi_v<float> / 6.0f;
-	spotLightIndex_ = lightManager_->AddSpotLight(*spotLightData_);
-	
-
 #pragma endregion
 }
 
@@ -112,9 +90,6 @@ void Object3dCommon::Finalize() {
 // 描画前処理
 //================================================================================================
 void Object3dCommon::PreDraw() {
-
-	lightManager_->UpdatePointLight(pointLightIndex_, *pointLightData_);
-	lightManager_->UpdateSpotLight(spotLightIndex_, *spotLightData_);
 
 	//PSO設定
 	dxCommon_->GetCommandList()->SetPipelineState(pso_->GetGraphicPipelineState());

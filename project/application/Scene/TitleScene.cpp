@@ -1,6 +1,7 @@
 #include "TitleScene.h"
 #include "GamePlayScene.h"
 #include "SceneManager.h"
+#include "engine/base/TakeCFrameWork.h"
 #include <algorithm>
 
 //====================================================================
@@ -28,7 +29,11 @@ void TitleScene::Initialize() {
 	pushStartUI_ = std::make_unique<PushStartUI>();
 	pushStartUI_->Initialize();
 
-	
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Models/gltf", "Deer.gltf");
+
+	titleObject_ = std::make_unique<Object3d>();
+	titleObject_->Initialize(Object3dCommon::GetInstance(), "Deer.gltf");
+	titleObject_->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("Deer.gltf", "Idle"));
 	
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -62,6 +67,8 @@ void TitleScene::Update() {
 	//タイトルテキストの更新
 	titleTextSprite_->Update();
 	pushStartUI_->Update();
+
+	titleObject_->Update();
 	
 
 	//シーン遷移
@@ -99,6 +106,8 @@ void TitleScene::Draw() {
 	titleTextSprite_->Draw();
 	pushStartUI_->Draw();
 	//phaseMessageUI_->Draw();
+	Object3dCommon::GetInstance()->Dispatch();
+	titleObject_->Dispatch();
 	Object3dCommon::GetInstance()->PreDraw();
-
+	titleObject_->Draw();
 }

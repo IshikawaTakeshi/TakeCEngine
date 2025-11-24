@@ -17,7 +17,9 @@ struct ModelMaterialData {
 
 	std::string textureFilePath; //テクスチャファイルのパス
 	std::string envMapFilePath; //環境マップのパス
-	uint32_t srvIndex; //テクスチャのインデックス
+	uint32_t textureIndex; //テクスチャのインデックス
+
+	Vector4 baseColor = { 1.0f,1.0f,1.0f,1.0f }; //ベースカラー(ディフューズカラー)
 };
 
 //アニメーションノード構造体

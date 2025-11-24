@@ -153,26 +153,26 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::s
 			sub.materialIndex = mesh->mMaterialIndex; // aiMeshが参照するマテリアル番号を保持
 			assert(mesh->HasNormals()); //法線がない場合は現在エラー
 			
-
-			modelData->vertices.resize(mesh->mNumVertices);
-			//Meshの頂点数の格納
-			modelData->skinningInfoData.numVertices = mesh->mNumVertices;
-
 			//vertexの解析
 			for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
 				aiVector3D& position = mesh->mVertices[vertexIndex];
 				aiVector3D& normal = mesh->mNormals[vertexIndex];
 				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
 
-				modelData->vertices[vertexIndex].position = { -position.x,position.y,position.z, 1.0f };
-				modelData->vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
+				VertexData vtx{};
+				vtx.position = { -position.x, position.y, position.z, 1.0f };
+				vtx.normal   = { -normal.x,   normal.y,   normal.z   };
+				//vtx.texcoord = { texcoord.x,  texcoord.y };
 				
 				// UVがある場合は値を、無い場合は(0,0)を設定
 				if (mesh->HasTextureCoords(0)) {
-					modelData->vertices[vertexIndex].texcoord = { texcoord.x, texcoord.y };
+					vtx.texcoord = { texcoord.x,  texcoord.y };
 				} else {
-					modelData->vertices[vertexIndex].texcoord = { 0.0f, 0.0f };
+					vtx.texcoord = { 0.0f, 0.0f };
 				}
+
+				//頂点を追加していく
+				modelData->vertices.push_back(vtx);
 			}
 			
 			//faceの解析
@@ -190,12 +190,12 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::s
 
 			// サブメッシュのインデックス数の計算
 			sub.indexCount = uint32_t(modelData->indices.size()) - sub.indexStart;
-
 			modelData->subMeshes.push_back(sub);
 
 			//globalOffsetに加算
 			globalVertexOffset += mesh->mNumVertices;
 			globalIndexOffset  += sub.indexCount;
+
 
 			//----------------------------------------------------
 			//boneの解析
@@ -227,13 +227,22 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::s
 				jointWeightData.inverseBindPoseMatrix = MatrixMath::Inverse(bindPoseMatrix);
 
 				//Weightの解析
+				uint32_t globalVertexOffsetForThisMesh = sub.vertexStart; 
 				for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
 
-					//InverseBindPoseMatrixの作成
-					jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight, bone->mWeights[weightIndex].mVertexId });
+					uint32_t localVertexIndex  = bone->mWeights[weightIndex].mVertexId;
+					uint32_t globalVertexIndex = globalVertexOffsetForThisMesh + localVertexIndex;
+
+					jointWeightData.vertexWeights.push_back({
+						bone->mWeights[weightIndex].mWeight,
+						globalVertexIndex
+						});
 				}
 			}
 		}
+
+		// モデル全体の頂点数
+		modelData->skinningInfoData.numVertices = static_cast<uint32_t>(modelData->vertices.size());
 	}
 
 	//------------------------------------------------
@@ -248,6 +257,9 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::s
 		aiMaterial* material = scene->mMaterials[materialIndex];
 		ModelMaterialData& mat = modelData->materials[materialIndex];
 
+		//-------------------------------------------
+		// テクスチャの設定
+		//-------------------------------------------
 		aiString textureFilePath;
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath) == AI_SUCCESS) {
 			mat.textureFilePath = textureFilePath.C_Str();
@@ -257,7 +269,26 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::s
 			mat.textureFilePath = "white1x1.png";
 		}
 
+		// -----------------------------------------
+		// ベースカラー（ディフューズカラー）
+		// -----------------------------------------
+		aiColor4D diffuseColor;
+		if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor)) {
+			mat.baseColor = {
+				diffuseColor.r,
+				diffuseColor.g,
+				diffuseColor.b,
+				diffuseColor.a
+			};
+		} else {
+			mat.baseColor = { 1.0f,1.0f,1.0f,1.0f };
+		}
+
+
+		//-----------------------------------------
 		//環境マップテクスチャの設定
+		//-----------------------------------------
+		
 		//MEMO: 画像はDDSファイルのみ対応
 		if (!envMapFile.empty()) {
 			assert(envMapFile.find(".dds") != std::string::npos);
