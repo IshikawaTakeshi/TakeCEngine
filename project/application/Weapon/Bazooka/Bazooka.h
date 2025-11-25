@@ -15,7 +15,7 @@ public:
 	//========================================================================
 	
 	// 武器の初期化
-	void Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) override;
+	void Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) override;
 	// 武器の更新
 	void Update() override;
 	// ImGuiの更新

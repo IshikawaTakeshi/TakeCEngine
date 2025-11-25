@@ -146,6 +146,7 @@ void MyGame::LoadModel() {
 	ModelManager::GetInstance()->LoadModel("Rifle.gltf");
 	ModelManager::GetInstance()->LoadModel("Bazooka.gltf");
 	ModelManager::GetInstance()->LoadModel("VerticalMissileLauncher.gltf");
+	ModelManager::GetInstance()->LoadModel("MachineGun.gltf");
 	ModelManager::GetInstance()->LoadModel("boostEffectCone.gltf");
 	ModelManager::GetInstance()->LoadModel("MultiICO.gltf");
 	ModelManager::GetInstance()->LoadModel("Deer.gltf");

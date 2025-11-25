@@ -15,7 +15,7 @@
 struct WeaponConfig {
 
 	float power = 0.0f; //武器の攻撃力
-	float kAttackInterval = 0.25f; // 攻撃間隔定数
+	float attackInterval = 0.25f; // 攻撃間隔定数
 	float bulletSpeed = 0.0f; //弾のスピード
 	float effectiveRange = 0.0f; // 有効射程距離
 	float maxReloadTime = 0.0f; // 最大リロード時間
@@ -29,7 +29,7 @@ struct WeaponConfig {
 	bool isStopShootOnly = false; // 停止撃ち専用か
 
 	//configの編集
-	void EditConfigImGui();
+	void EditConfigImGui(const std::string& weaponName);
 };
 
 // 武器の実行中の情報構造体
