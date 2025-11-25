@@ -1,6 +1,5 @@
 #pragma once
 #include "base/DirectXCommon.h"
-#include "base/ResourceDataStructure.h"
 #include <unordered_map>
 
 //============================================================

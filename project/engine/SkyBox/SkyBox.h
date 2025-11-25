@@ -1,6 +1,5 @@
 #pragma once
 #include "engine/base/DirectXCommon.h"
-#include "engine/base/ResourceDataStructure.h"
 #include "engine/base/ComPtrAliasTemplates.h"
 #include "engine/math/TransformMatrix.h"
 #include "engine/3d/Model.h"
@@ -28,7 +27,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* directXCommon,const std::string& filename);
+	void Initialize(DirectXCommon* directXCommon,const std::string& texturefilePath);
 
 	/// <summary>
 	/// 更新処理
@@ -45,11 +44,7 @@ public:
 	/// </summary>
 	void Draw();
 
-	/// <summary>
-	/// マテリアルカラーの設定
-	/// </summary>
-	/// <param name="color"></param>
-	void SetMaterialColor(const Vector4& color) { model_->GetMesh()->GetMaterial()->SetMaterialColor(color); }
+	void SetMaterialColor(const Vector4& color);
 
 private: // privateメンバ変数
 
@@ -60,13 +55,14 @@ private: // privateメンバ変数
 	//RootSignature
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 
-	//モデル
-	Model* model_ = nullptr;
 
 	//TransformationMatrix用の頂点リソース
 	ComPtr<ID3D12Resource> wvpResource_;
 	//TransformationMatrix用の頂点データ
 	TransformMatrix* TransformMatrixData_ = nullptr;
+
+	//プリミティブのハンドル
+	uint32_t primitiveHandle_ = 0;
 
 	//Transform
 	EulerTransform transform_{};

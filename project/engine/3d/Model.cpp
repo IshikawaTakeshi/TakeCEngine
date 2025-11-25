@@ -38,10 +38,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 
 	//メッシュ初期化
 	mesh_ = std::make_unique<Mesh>();
-	mesh_->InitializeMesh(
-		modelCommon_->GetDirectXCommon(),
-		modelData_->material.textureFilePath,
-		modelData_->material.envMapFilePath);
+	mesh_->InitializeMesh(modelCommon_->GetDirectXCommon(),modelData_->materials);
 
 	//inputVertexResource
 	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
@@ -118,6 +115,15 @@ void Model::UpdateImGui() {
 		ImGui::Text("Num Vertices: %d", static_cast<int>(modelData_->vertices.size()));
 		ImGui::Text("Num Indices: %d", static_cast<int>(modelData_->indices.size()));
 
+		//サブメッシュの情報表示
+		ImGui::Text("Num SubMeshes: %d", static_cast<int>(modelData_->subMeshes.size()));
+		for (size_t i = 0; i < modelData_->subMeshes.size(); ++i) {
+			const SubMesh& subMesh = modelData_->subMeshes[i];
+			ImGui::Text("vertexCount:%d, vertexStart:%d", subMesh.vertexCount,subMesh.vertexStart);
+			ImGui::Text(" SubMesh %d: IndexCount:%d, IndexStart:%d", static_cast<int>(i), subMesh.indexCount, subMesh.indexStart);
+		}
+
+		//マテリアル情報の表示
 		mesh_->GetMaterial()->UpdateMaterialImGui();
 
 		//モデルのリロード
@@ -140,46 +146,42 @@ void Model::Draw(PSO* pso) {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
-	// VBVを設定
+	// VBV/IBV の設定（共通）
 	mesh_->SetVertexBuffers(commandList, 0);
-	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gMaterial"),
-		mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//textureSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
-	//envMapSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gEnvMapTexture"),
-		TextureManager::GetInstance()->GetSrvIndex(modelData_->material.envMapFilePath));
-	//IBVの設定
-	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
-	//DrawCall
-	commandList->DrawIndexedInstanced(UINT(modelData_->indices.size()), 1, 0, 0, 0);
+	commandList->IASetIndexBuffer(&mesh_->GetIndexBufferView());
+
+	// サブメッシュごとに描画
+	for (const SubMesh& sub : modelData_->subMeshes) {
+		const ModelMaterialData& mat = modelData_->materials[sub.materialIndex];
+
+		// マテリアル CBuffer
+		commandList->SetGraphicsRootConstantBufferView(
+			pso->GetGraphicBindResourceIndex("gMaterial"),
+			mesh_->GetMaterials()[sub.materialIndex]->GetMaterialResource()->GetGPUVirtualAddress()
+		);
+
+		// Texture SRV
+		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gTexture"),
+			TextureManager::GetInstance()->GetSrvIndex(mat.textureFilePath));
+
+		// EnvMap SRV
+		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gEnvMapTexture"),
+			TextureManager::GetInstance()->GetSrvIndex(mat.envMapFilePath));
+
+		// Draw 呼び出し
+		commandList->DrawIndexedInstanced(
+			sub.indexCount,    // インデックス数
+			1,                 // インスタンス数
+			sub.indexStart,    // StartIndexLocation
+			0,                 // BaseVertexLocation
+			0                  // StartInstanceLocation
+		);
+	}
 }
 
-void Model::DrawSkyBox() {
-
-	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
-
-	// VBVを設定
-	mesh_->SetVertexBuffers(commandList, 0);
-	// 形状を設定。PSOに設定しいるものとはまた別。同じものを設定すると考えておけばいい
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//materialCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//TextureSRV
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
-
-	//IBVの設定
-	modelCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
-	//DrawCall
-	commandList->DrawIndexedInstanced(UINT(modelData_->indices.size()), 1, 0, 0, 0);
-}
 
 //=============================================================================
 // スキンメッシュの計算処理
@@ -296,9 +298,7 @@ void Model::Reload(ModelData* newModelData) {
 
 	// 既存メッシュの再初期化
 	mesh_->InitializeMesh(
-		modelCommon_->GetDirectXCommon(),
-		modelData_->material.textureFilePath,
-		modelData_->material.envMapFilePath);
+		modelCommon_->GetDirectXCommon(),modelData_->materials);
 
 	//inputVertexResource
 	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);

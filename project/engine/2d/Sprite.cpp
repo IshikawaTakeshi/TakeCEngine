@@ -212,7 +212,7 @@ void Sprite::Draw() {
 	//gMaterial
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(
 		1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
-	//gTexureの設定
+	//gTextureの設定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(filePath_));
 	//IBVの設定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());

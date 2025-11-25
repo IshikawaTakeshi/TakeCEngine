@@ -1,5 +1,6 @@
 #pragma once
 #include "PostEffect/PostEffect.h"
+#include "math/Vector2.h"
 
 //RadialBlur情報構造体
 struct RadialBlurInfo {

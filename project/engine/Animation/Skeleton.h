@@ -1,8 +1,8 @@
 #pragma once
-#include "ResourceDataStructure.h"
-#include "Transform.h"
-#include "Matrix4x4.h"
-#include "Animation/Animator.h"
+#include "engine/math/Transform.h"
+#include "engine/math/Matrix4x4.h"
+#include "engine/3d/ModelData.h"
+#include "engine/Animation/Animator.h"
 #include <string>
 #include <vector>
 #include <cstdint>

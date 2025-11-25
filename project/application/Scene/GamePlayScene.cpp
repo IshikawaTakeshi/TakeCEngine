@@ -14,18 +14,12 @@
 void GamePlayScene::Initialize() {
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
-	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
-	gameCamera_->SetIsDebug(false);
-	gameCamera_->SetTranslate({ 5.0f,0.0f,-10.0f });
-	gameCamera_->SetRotate({ 0.0f,-1.4f,0.0f,1.0f });
+	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
 	CameraManager::GetInstance()->AddCamera("gameCamera", *gameCamera_);
 
 	//Camera1
 	debugCamera_ = std::make_shared<Camera>();
-	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
-	debugCamera_->SetTranslate({ 5.0f,0.0f,-1.0f });
-	debugCamera_->SetRotate({ 0.0f,-1.4f,0.0f,1.0f });
-	debugCamera_->SetIsDebug(true);
+	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
 	CameraManager::GetInstance()->AddCamera("debugCamera", *debugCamera_);
 
 	//デフォルトカメラの設定
@@ -49,7 +43,7 @@ void GamePlayScene::Initialize() {
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.obj");
+	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//BulletManager
@@ -58,16 +52,16 @@ void GamePlayScene::Initialize() {
 
 	//player
 	player_ = std::make_unique<Player>();
-	player_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
+	player_->Initialize(Object3dCommon::GetInstance(), "player_MultiMesh.gltf");
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
-	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
+	//player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->LoadEnemyData("Enemy.json"); //Enemyという名前の敵データを読み込み
 	enemy_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
 	enemy_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
-	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
+	//enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();

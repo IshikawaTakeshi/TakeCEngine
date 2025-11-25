@@ -1,5 +1,4 @@
 #pragma once
-#include "ResourceDataStructure.h"
 #include "engine/3d/Particle/Particle3d.h"
 #include "engine/3d/Particle/PrimitiveParticle.h"
 #include "engine/3d/Particle/ParticleEmitterAllocater.h"

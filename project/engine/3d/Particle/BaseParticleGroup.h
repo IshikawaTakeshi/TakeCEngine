@@ -1,12 +1,12 @@
 #pragma once
-#include "ResourceDataStructure.h"
-#include "Transform.h"
-#include "TransformMatrix.h"
-#include "DirectXCommon.h"
-#include "math/AABB.h"
-#include "3d/Model.h"
-#include "3d/Particle/ParticleAttribute.h"
-#include "camera/PerView.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/math/Transform.h"
+#include "engine/math/TransformMatrix.h"
+#include "engine/math/AABB.h"
+#include "engine/3d/Model.h"
+#include "engine/3d/Particle/ParticleAttribute.h"
+#include "engine/3d/Particle/ParticleForGPU.h"
+#include "engine/camera/PerView.h"
 #include "engine/Utility/Timer.h"
 
 #include <d3d12.h>

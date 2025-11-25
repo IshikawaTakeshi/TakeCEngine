@@ -25,22 +25,8 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 	mesh_ = std::make_unique<Mesh>();
 	//mesh_->InitializeMesh(dxCommon,textureFilePath);
 
-	//======================= VertexResource ===========================//
-
-	mesh_->InitializeVertexResourceSphere(dxCommon->GetDevice());
-
-	//======================= MaterialResource ===========================//
-
-	mesh_->GetMaterial()->GetMaterialResource();
-
-	//======================= IndexResource ===========================//
-
-	mesh_->InitializeIndexResourceSphere(dxCommon->GetDevice());
-
 	//テクスチャ番号の検索と記録
 	filePath_ = textureFilePath;
-
-
 
 	//======================= transformationMatrix用のVertexResource ===========================//
 

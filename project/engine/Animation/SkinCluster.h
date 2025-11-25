@@ -5,9 +5,9 @@
 #include <span>
 #include <array>
 
-#include "ResourceDataStructure.h"
 #include "engine/base/ComPtrAliasTemplates.h"
 #include "engine/base/SrvManager.h"
+#include "engine/math/Matrix4x4.h"
 #include "engine/Animation/Skeleton.h"
 
 //最大の影響ボーン数

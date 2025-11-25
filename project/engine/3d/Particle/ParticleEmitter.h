@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/math/Transform.h"
 #include "engine/base/PipelineStateObject.h"
-#include "ResourceDataStructure.h"
+#include "engine/base/PerFrame.h"
 #include <cstdint>
 #include <memory>
 #include <string>

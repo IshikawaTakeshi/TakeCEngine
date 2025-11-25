@@ -1,8 +1,8 @@
 #pragma once
-#include "base/DirectXCommon.h"
-#include "base/SrvManager.h"
-#include "base/RtvManager.h"
-#include "base/PipelineStateObject.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/SrvManager.h"
+#include "engine/base/RtvManager.h"
+#include "engine/base/PipelineStateObject.h"
 #include <string>
 
 //============================================================
