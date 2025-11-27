@@ -2,7 +2,9 @@
 #include <cmath>
 #include <algorithm>
 
-
+//=============================================================================
+// operator overloads
+//=============================================================================
 
 Vector2 Vector2::operator+(){
 	return {x, y};
@@ -82,6 +84,11 @@ Vector2 Vector2::operator/=(float scalar) {
 	return *this;
 }
 
+
+//=============================================================================
+// member functions
+//=============================================================================
+
 float Vector2::Length() const {
 	return sqrt(x * x + y * y);
 }
@@ -98,4 +105,24 @@ float Vector2::Dot(const Vector2& other) const {
 }
 float Vector2::Cross(const Vector2& other) const {
 	return x * other.y - y * other.x;
+}
+
+//=============================================================================
+// JSON形式に変換
+//=============================================================================
+void to_json(nlohmann::json& j, const Vector2& v) {
+
+	j = nlohmann::json{ 
+		{"x", v.x},
+		{"y", v.y}
+	};
+}
+
+//=============================================================================
+// JSON形式からVector2に変換
+//=============================================================================
+void from_json(const nlohmann::json& j, Vector2& v) {
+
+	j.at("x").get_to(v.x);
+	j.at("y").get_to(v.y);
 }

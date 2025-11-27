@@ -132,6 +132,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.cpp" />
     <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
     <ClCompile Include="application\Weapon\WeaponData.cpp" />
+    <ClCompile Include="engine\2d\SpriteConfig.cpp" />
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
     <ClCompile Include="engine\Animation\SpriteAnimation.cpp" />
     <ClCompile Include="engine\camera\CameraForGPU.cpp" />
@@ -281,6 +282,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Effect\BoostEffect.h" />
     <ClInclude Include="application\Effect\DeadEffect.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
+    <ClInclude Include="engine\2d\SpriteConfig.h" />
     <ClInclude Include="engine\3d\Light\DirectionalLight.h" />
     <ClInclude Include="engine\3d\Light\LightCounter.h" />
     <ClInclude Include="engine\3d\Light\PointLight.h" />

@@ -19,6 +19,7 @@ struct CameraForGPU {
 
 struct CameraConfig {
 
+	//カメラ設定JSONファイルのパス
 	std::string filePath;
 	//カメラの各種パラメータ
 	QuaternionTransform transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };

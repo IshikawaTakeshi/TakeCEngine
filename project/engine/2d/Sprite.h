@@ -18,6 +18,7 @@
 #include "Mesh/Mesh.h"
 #include "SpriteCommon.h"
 #include "engine/Animation/SpriteAnimation.h"
+#include "engine/2d/SpriteConfig.h"
 
 //前方宣言
 class DirectXCommon;
@@ -76,42 +77,42 @@ public:
 	//SpriteAnimator取得
 	SpriteAnimator* Animation() const { return spriteAnimator_.get(); }
 	//アンカーポイント取得
-	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
+	const Vector2& GetAnchorPoint() const { return spriteConfig_.anchorPoint_; }
 	//座標取得
-	const Vector2& GetTranslate() const { return position_; }
+	const Vector2& GetTranslate() const { return spriteConfig_.position_; }
 	//回転取得
-	const float GetRotate() const { return rotation_; }
+	const float GetRotate() const { return spriteConfig_.rotation_; }
 	//サイズ取得
-	const Vector2& GetSize() const { return size_; }
+	const Vector2& GetSize() const { return spriteConfig_.size_; }
 	//左右フリップ取得
 	const bool GetIsFlipX() const { return isFlipX_; }
 	//上下フリップ取得
 	const bool GetIsFlipY() const { return isFlipY_; }
 	//テクスチャの左上座標取得
-	const Vector2& GetTextureLeftTop() const { return textureLeftTop_; }
+	const Vector2& GetTextureLeftTop() const { return spriteConfig_.textureLeftTop_; }
 	//テクスチャの切り出しサイズ取得
-	const Vector2& GetTextureSize() const { return textureSize_; }
+	const Vector2& GetTextureSize() const { return spriteConfig_.textureSize_; }
 	//マテリアルカラー取得
 	const Vector4& GetMaterialColor() const { return mesh_->GetMaterial()->GetMaterialData()->color; }
 	
 	//----- setter ---------------------------
 	
 	//アンカーポイント設定
-	void SetAnchorPoint(const Vector2& anchorPoint) { anchorPoint_ = anchorPoint; }
+	void SetAnchorPoint(const Vector2& anchorPoint) { spriteConfig_.anchorPoint_ = anchorPoint; }
 	//座標設定
-	void SetTranslate(const Vector2& position) { position_ = position; }
+	void SetTranslate(const Vector2& position) { spriteConfig_.position_ = position; }
 	//回転設定
-	void SetRotate(const float rotation) { rotation_ = rotation; }
+	void SetRotate(const float rotation) { spriteConfig_.rotation_ = rotation; }
 	//サイズ設定
-	void SetSize(const Vector2& size) { size_ = size; }
+	void SetSize(const Vector2& size) { spriteConfig_.size_ = size; }
 	//左右フリップ設定
 	void SetIsFlipX(const bool isFlipX) { isFlipX_ = isFlipX; }
 	//上下フリップ設定
 	void SetIsFlipY(const bool isFlipY) { isFlipY_ = isFlipY; }
 	//テクスチャの左上座標設定
-	void SetTextureLeftTop(const Vector2& textureLeftTop) { textureLeftTop_ = textureLeftTop; }
+	void SetTextureLeftTop(const Vector2& textureLeftTop) { spriteConfig_.textureLeftTop_ = textureLeftTop; }
 	//テクスチャの切り出しサイズ設定
-	void SetTextureSize(const Vector2& textureSize) { textureSize_ = textureSize; }
+	void SetTextureSize(const Vector2& textureSize) { spriteConfig_.textureSize_ = textureSize; }
 	//マテリアルカラー設定
 	void SetMaterialColor(const Vector4& color) { mesh_->GetMaterial()->SetMaterialColor(color); }
 	//ファイルパス設定
@@ -125,8 +126,6 @@ private:
 	//メッシュ
 	std::unique_ptr<Mesh> mesh_ = nullptr;
 
-	//filePath
-	std::string filePath_;
 	//SpriteAnimator
 	std::unique_ptr<SpriteAnimator> spriteAnimator_{};
 
@@ -142,17 +141,11 @@ private:
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 worldViewProjectionMatrix_;
 
-	Vector2 position_ = { 0.0f,0.0f };
-	float rotation_ = 0.0f;
-	Vector2 size_ = { 400.0f,200.0f };
-
-	
-	Vector2 anchorPoint_ = { 0.0f,0.0f }; //アンカーポイント
 	bool isFlipX_ = false; //左右フリップ
 	bool isFlipY_ = false; //上下フリップ
 	bool adjustSwitch_ = false; //テクスチャサイズ調整スイッチ
 	bool firstUpdate_ = true; //初回更新フラグ
 
-	Vector2 textureLeftTop_ = { 0.0f,0.0f  }; //テクスチャの左上座標
-	Vector2 textureSize_ = { 100.0f,100.0f }; //テクスチャの切り出しサイズ
+	//Sprite設定データ
+	SpriteConfig spriteConfig_{};
 };

@@ -31,3 +31,5 @@ const std::string kWeaponDataPath = "Resources/JsonLoader/WeaponConfig/";
 const std::string kWeaponActionDataPath = "Resources/JsonLoader/WeaponConfig/Extra/";
 //cameraDataの保存先
 const std::string kCameraDataPath = "Resources/JsonLoader/Camera/";
+//SpriteCongigの保存先
+const std::string kSpriteConfigPath = "Resources/JsonLoader/SpriteConfig/";
