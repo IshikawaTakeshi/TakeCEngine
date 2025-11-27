@@ -15,6 +15,7 @@ void EnemySelectScene::Initialize() {
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
 	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
+	gameCamera_->SetYawRot(2.5f);
 	CameraManager::GetInstance()->AddCamera("gameCamera", *gameCamera_);
 
 	//Camera1

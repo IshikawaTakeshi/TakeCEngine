@@ -42,7 +42,15 @@ public:
 	void ShakeCamera();
 	//ImGuiの更新処理
 	void UpdateImGui();
-public: //getter
+public: 
+
+	//============================================================================
+	// accessor
+	//============================================================================
+
+	//------------------------
+	// getter
+	//------------------------
 
 	//cameraBufferの取得
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetCameraResource() const { return cameraResource_; }
@@ -72,7 +80,9 @@ public: //getter
 	//シェイクするかどうかの取得
 	const bool& GetIsShaking() const { return isShaking_; }
 
-public: //setter
+	//------------------------
+	//setter
+	//------------------------
 
 	//カメラの状態リクエストの設定
 	void SetCameraStateRequest(const GameCameraState state) { cameraStateRequest_ = state; }
@@ -85,19 +95,24 @@ public: //setter
 	void SetOffset(const Vector3& offset) { cameraConfig_.offset_ = offset; }
 	
 	//オフセットの変化量の設定
-	void SetFovX(const float fovX) { cameraConfig_.fovX_ = fovX; }
+	void SetFovX(float fovX) { cameraConfig_.fovX_ = fovX; }
 	//水平方向視野角の設定
-	void SetAspectRatio(const float aspectRatio) { cameraConfig_.aspectRatio_ = aspectRatio; }
+	void SetAspectRatio(float aspectRatio) { cameraConfig_.aspectRatio_ = aspectRatio; }
 	//nearクリップ距離の設定
-	void SetNearClip(const float nearClip) { cameraConfig_.nearClip_ = nearClip; }
+	void SetNearClip(float nearClip) { cameraConfig_.nearClip_ = nearClip; }
 	//farクリップ距離の設定
-	void SetFarClip(const float farClip) { cameraConfig_.farClip_ = farClip; }
+	void SetFarClip(float farClip) { cameraConfig_.farClip_ = farClip; }
 	//シェイクするかどうかの設定
-	void SetIsShaking(const bool isShaking) { isShaking_ = isShaking; }
+	void SetIsShaking(bool isShaking) { isShaking_ = isShaking; }
 	//デバッグ状態かの設定
 	void SetIsDebug(bool isDebug){ isDebug_ = isDebug; }
 	//カメラシェイクの設定
 	void SetShake(float duration, float range);
+	//ヨー回転量の設定
+	void SetYawRot(float yaw) { yawRot_ = yaw; }
+	//ピッチ回転量の設定
+	void SetPitchRot(float pitch) { pitchRot_ = pitch; }
+	void SetFollowSpeed(float speed) { followSpeed_ = speed; }
 	
 	//追従対象の位置の設定
 	void SetFollowTargetPos(const Vector3& target) { followTargetPosition_ = target; }
@@ -109,7 +124,7 @@ public: //setter
 	void SetStick(const Vector2& stick) { stick_ = stick; }
 
 	//EnemyZoomの設定
-	void SetEZoomEnemy(const bool isEZoomEnemy) { isEZoomEnemy_ = isEZoomEnemy; }
+	void SetEZoomEnemy(bool isEZoomEnemy) { isEZoomEnemy_ = isEZoomEnemy; }
 private:
 
 	//バッファリソース
