@@ -223,7 +223,7 @@ void Player::Update() {
 	if (isUseWeapon_) {
 		//武器使用中はカメラの向きに合わせる
 		Quaternion targetRotate = camera_->GetRotate();
-		playerData_.characterInfo.transform.rotate = Easing::Slerp(playerData_.characterInfo.transform.rotate, targetRotate, 0.05f);
+		playerData_.characterInfo.transform.rotate = Easing::Slerp(playerData_.characterInfo.transform.rotate, targetRotate, 0.25f);
 		playerData_.characterInfo.transform.rotate = QuaternionMath::Normalize(playerData_.characterInfo.transform.rotate);
 	} else {
 		if (playerData_.characterInfo.moveDirection.x != 0.0f || playerData_.characterInfo.moveDirection.z != 0.0f) {

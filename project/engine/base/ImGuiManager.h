@@ -91,4 +91,6 @@ private:
 	DirectXCommon* dxCommon_ = nullptr; //DXCommon
 	SrvManager* srvManager_ = nullptr; //SrvManager
 	uint32_t renderTextureIndex_ = 0; // ImGuiのレンダリングターゲットのSRVインデックス
+
+	ImGuiWindowFlags windowFlags_ = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
 };

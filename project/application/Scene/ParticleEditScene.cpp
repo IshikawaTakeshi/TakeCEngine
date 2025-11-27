@@ -26,7 +26,7 @@ void ParticleEditScene::Initialize() {
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.obj");
+	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 }
