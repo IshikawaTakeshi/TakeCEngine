@@ -1,0 +1,25 @@
+{
+    "anchorPoint": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "jsonFilePath": "GameOverText.json",
+    "position": {
+        "x": 50.0,
+        "y": 50.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 600.0,
+        "y": 75.0
+    },
+    "textureFilePath": "UI/GameOverText.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "textureSize": {
+        "x": 600.0,
+        "y": 75.0
+    }
+}

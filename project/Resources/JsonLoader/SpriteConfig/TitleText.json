@@ -1,0 +1,25 @@
+{
+    "anchorPoint": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "jsonFilePath": "TitleText.json",
+    "position": {
+        "x": 200.0,
+        "y": 256.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 640.0,
+        "y": 168.0
+    },
+    "textureFilePath": "UI/TitleText.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "textureSize": {
+        "x": 640.0,
+        "y": 168.0
+    }
+}

@@ -136,11 +136,13 @@ void Camera::UpdateImGui() {
 	ImGui::DragFloat("rotationSpeed", &rotationSpeed_, 0.01f);
 	ImGui::Checkbox("isDebug", &isDebug_);
 
+	// カメラデータ保存ボタン
 	if (ImGui::Button("Save Camera Data"))
 	{
 		ImGui::OpenPopup("Save Camera");
 	}
 
+	// 保存用ポップアップ
 	if (ImGui::BeginPopupModal("Save Camera", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		static char filenameBuf[256] = "camera.json";
@@ -151,6 +153,7 @@ void Camera::UpdateImGui() {
 
 		if (ImGui::Button("OK", ImVec2(120, 0)))
 		{
+			//Jsonファイルの名前を入力して保存
 			cameraConfig_.filePath = std::string(filenameBuf);
 			TakeCFrameWork::GetJsonLoader()->SaveJsonData<CameraConfig>(cameraConfig_.filePath, cameraConfig_);
 			ImGui::CloseCurrentPopup();

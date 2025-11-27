@@ -526,6 +526,7 @@
     <ClCompile Include="engine\math\MathEnv.cpp" />
     <ClCompile Include="engine\camera\CameraForGPU.cpp" />
     <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
+    <ClCompile Include="engine\2d\SpriteConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1093,6 +1094,7 @@
     <ClInclude Include="engine\3d\Particle\ParticleForGPU.h" />
     <ClInclude Include="engine\3d\VertexData.h" />
     <ClInclude Include="application\Weapon\MachineGun\MachineGun.h" />
+    <ClInclude Include="engine\2d\SpriteConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
