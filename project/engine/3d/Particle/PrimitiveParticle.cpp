@@ -272,7 +272,7 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 	float newTime = (*particleIterator).currentTime_;
 
 	// --- トレイル（補間）処理 ---
-	if (attributes.isTrail && (*particleIterator).isTrailParent_) {
+	if (attributes.isParticleTrail && (*particleIterator).isTrailParent_) {
 
 		// タイマーを更新（残りを保持するために減算方式）
 		(*particleIterator).trailSpawnTimer_ += kDeltaTime_;

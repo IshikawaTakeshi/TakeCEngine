@@ -190,10 +190,12 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::Checkbox("TranslateUpdate", &attributes.isTranslate);
 	//isDirectional
 	ImGui::Checkbox("Is Directional", &attributes.isDirectional);
-	//isTrail
-	ImGui::Checkbox("Is Trail", &attributes.isTrail);
+	//isParticleTrail
+	ImGui::Checkbox("Is ParticleTrail", &attributes.isParticleTrail);
+	ImGui::Checkbox("Is EmitterTrail", &attributes.isEmitterTrail);
 	ImGui::SliderInt("Particles Per Interpolation", reinterpret_cast<int*>(&attributes.particlesPerInterpolation), 1, 20);
 	ImGui::DragFloat("Trail Emit Interval", &attributes.trailEmitInterval, 0.001f, 0.001f, 1.0f);
+
 
 	//設定の適用
 	if (ImGui::Button("Apply Attributes")) {
@@ -206,24 +208,24 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 #pragma region texture setting
 	ImGui::SeparatorText("Texture Setting");
 	//テクスチャファイル名の選択
-	static int slectedTextureIndex = 0;
+	static int selectedTextureIndex = 0;
 
 	//今の設定がリストにあればインデックスを合わせる
 	auto it = std::find(textureFileNames_.begin(), textureFileNames_.end(), currentPreset_.textureFilePath);
 	if(it != textureFileNames_.end()) {
-		slectedTextureIndex = static_cast<int>(std::distance(textureFileNames_.begin(), it));
+		selectedTextureIndex = static_cast<int>(std::distance(textureFileNames_.begin(), it));
 	}
 
 	//コンボボックスの表示
-	if(ImGui::BeginCombo("Texture File",textureFileNames_.empty() ? "None":textureFileNames_[slectedTextureIndex].c_str())) {
+	if(ImGui::BeginCombo("Texture File",textureFileNames_.empty() ? "None":textureFileNames_[selectedTextureIndex].c_str())) {
 		
 		//テクスチャ名一覧の表示
 		for (int i = 0; i < textureFileNames_.size(); ++i) {
-			bool isSelected = (slectedTextureIndex == i);
+			bool isSelected = (selectedTextureIndex == i);
 
 			//テクスチャ名の選択
 			if (ImGui::Selectable(textureFileNames_[i].c_str(), isSelected)) {
-				slectedTextureIndex = i;
+				selectedTextureIndex = i;
 				// 選択されたテクスチャをプリセットに設定
 				currentPreset_.textureFilePath = textureFileNames_[i];
 			}
