@@ -647,14 +647,13 @@ void CharacterEditTool::LoadWeaponData(std::string WeaponName, WeaponUnit unit) 
 		break;
 	case WeaponType::WEAPON_TYPE_RIFLE:
 	{
-
-
 		// ライフルの場合の処理
 		RifleInfo rifleInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<RifleInfo>(WeaponName + "_extraInfo.json");
 		loadedWeaponData.actionData = rifleInfo;
 		break;
 	}
 	case WeaponType::WEAPON_TYPE_BAZOOKA:
+	case WeaponType::WEAPON_TYPE_MACHINE_GUN:
 		// バズーカの場合の処理
 		break;
 	case WeaponType::WEAPON_TYPE_VERTICAL_MISSILE:
@@ -713,6 +712,7 @@ void CharacterEditTool::LoadAllWeaponData() {
 			break;
 		}
 		case WeaponType::WEAPON_TYPE_BAZOOKA:
+		case WeaponType::WEAPON_TYPE_MACHINE_GUN:
 			// バズーカの場合の処理
 			break;
 		case WeaponType::WEAPON_TYPE_VERTICAL_MISSILE:

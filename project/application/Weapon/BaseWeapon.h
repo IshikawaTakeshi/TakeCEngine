@@ -21,7 +21,7 @@ public:
 	virtual ~BaseWeapon() = default;
 
 	//武器の初期化
-	virtual void Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) = 0;
+	virtual void Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) = 0;
 	//武器の更新
 	virtual void Update() = 0;
 	//ImGuiの更新

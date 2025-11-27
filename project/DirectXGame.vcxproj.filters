@@ -525,6 +525,7 @@
     <ClCompile Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.cpp" />
     <ClCompile Include="engine\math\MathEnv.cpp" />
     <ClCompile Include="engine\camera\CameraForGPU.cpp" />
+    <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1091,6 +1092,7 @@
     <ClInclude Include="engine\base\PerFrame.h" />
     <ClInclude Include="engine\3d\Particle\ParticleForGPU.h" />
     <ClInclude Include="engine\3d\VertexData.h" />
+    <ClInclude Include="application\Weapon\MachineGun\MachineGun.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

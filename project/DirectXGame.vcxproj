@@ -200,6 +200,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\Entity\LevelObject\LevelObject.cpp" />
     <ClCompile Include="application\UI\GameClearUI.cpp" />
     <ClCompile Include="engine\3d\Light\LightManager.cpp" />
+    <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
     <ClCompile Include="engine\math\MatrixMath.cpp" />
@@ -392,6 +393,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Light\LightManager.h" />
     <ClInclude Include="application\UI\PushStartUI.h" />
     <ClInclude Include="application\UI\PhaseMessageUI.h" />
+    <ClInclude Include="application\Weapon\MachineGun\MachineGun.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />
