@@ -6,12 +6,12 @@
 // ImGui更新
 //==========================================================================================
 void SpriteConfig::UpdateImGui() {
-	ImGui::InputFloat2("Position", &position_.x);
-	ImGui::InputFloat2("Size", &size_.x);
-	ImGui::InputFloat2("Anchor Point", &anchorPoint_.x);
-	ImGui::InputFloat2("Texture Left Top", &textureLeftTop_.x);
-	ImGui::InputFloat2("Texture Size", &textureSize_.x);
-	ImGui::InputFloat("Rotation", &rotation_);
+	ImGui::DragFloat2("Position", &position_.x);
+	ImGui::DragFloat2("Size", &size_.x);
+	ImGui::DragFloat2("Anchor Point", &anchorPoint_.x);
+	ImGui::DragFloat2("Texture Left Top", &textureLeftTop_.x);
+	ImGui::DragFloat2("Texture Size", &textureSize_.x);
+	ImGui::DragFloat("Rotation", &rotation_);
 }
 
 void to_json(nlohmann::json& j, const SpriteConfig& spriteConfig) {

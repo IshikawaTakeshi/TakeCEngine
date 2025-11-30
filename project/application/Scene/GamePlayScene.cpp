@@ -12,6 +12,10 @@
 //====================================================================
 
 void GamePlayScene::Initialize() {
+
+	//BGM読み込み
+	BGM = AudioManager::GetInstance()->LoadSound("GamePlaySceneBGM.mp3");
+
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
 	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
@@ -113,6 +117,7 @@ void GamePlayScene::Initialize() {
 
 void GamePlayScene::Finalize() {
 	
+	AudioManager::GetInstance()->SoundUnload(&BGM); // BGMの解放
 	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	player_.reset();
@@ -123,6 +128,12 @@ void GamePlayScene::Finalize() {
 //			更新処理
 //====================================================================
 void GamePlayScene::Update() {
+
+	//BGM再生
+	if (!isSoundPlay) {
+		AudioManager::GetInstance()->SoundPlayWave(BGM, 0.05f,true);
+		isSoundPlay = true;
+	}
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
@@ -442,7 +453,7 @@ void GamePlayScene::InitializeGameClear() {
 	//スローモーション解除
 	MyGame::RequestTimeScale(1.0f, 0.6f, 0.0f);
 	fadeTimer_ = 3.0f;
-	//SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
+	SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
 }
 
 void GamePlayScene::UpdateGameClear() {

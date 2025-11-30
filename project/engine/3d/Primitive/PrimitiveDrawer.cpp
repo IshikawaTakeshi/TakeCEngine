@@ -43,6 +43,11 @@ void PrimitiveDrawer::Finalize() {
 		pair.second->primitiveData_.indexBuffer_.Reset();
 		delete pair.second->material_;
 	}
+	for(auto& pair : cubeDatas_) {
+		pair.second->primitiveData_.vertexBuffer_.Reset();
+		pair.second->primitiveData_.indexBuffer_.Reset();
+		delete pair.second->material_;
+	}
 	ringDatas_.clear();
 	planeDatas_.clear();
 	sphereDatas_.clear();

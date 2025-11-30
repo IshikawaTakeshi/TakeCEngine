@@ -31,10 +31,6 @@ void TitleScene::Initialize() {
 
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Models/gltf", "Deer.gltf");
 
-	titleObject_ = std::make_unique<Object3d>();
-	titleObject_->Initialize(Object3dCommon::GetInstance(), "Deer.gltf");
-	titleObject_->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("Deer.gltf", "Idle"));
-	
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
@@ -67,9 +63,6 @@ void TitleScene::Update() {
 	//タイトルテキストの更新
 	titleTextSprite_->Update();
 	pushStartUI_->Update();
-
-	titleObject_->Update();
-	
 
 	//シーン遷移
 	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::A)) {
@@ -107,7 +100,7 @@ void TitleScene::Draw() {
 	pushStartUI_->Draw();
 	//phaseMessageUI_->Draw();
 	Object3dCommon::GetInstance()->Dispatch();
-	titleObject_->Dispatch();
+
 	Object3dCommon::GetInstance()->PreDraw();
-	titleObject_->Draw();
+
 }

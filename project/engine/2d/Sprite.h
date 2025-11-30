@@ -55,6 +55,9 @@ public:
 
 	//テクスチャサイズをイメージに合わせる
 	void AdjustTextureSize();
+
+	void LoadConfig(const std::string& jsonFilePath);
+
 private:
 
 	//頂点データ更新

@@ -25,6 +25,7 @@ void GameOverScene::Initialize() {
 	//SkyBox
 	skybox_ = std::make_unique<SkyBox>();
 	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
+	skybox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//Spriteの初期化
 	gameOverTextSprite_ = std::make_unique<Sprite>();

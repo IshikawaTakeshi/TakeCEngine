@@ -17,6 +17,7 @@ void CharacterEditTool::Initialize() {
 	//武器、キャラクターデータのサイズを使ってresize,初期化
 	maxWeaponMenuItems_ = static_cast<uint32_t>(weaponDataMap_.size());
 	weaponItemSprites_.resize(maxWeaponMenuItems_);
+	weaponIconTexts_.resize(maxWeaponMenuItems_);
 	for(size_t i =0;i<weaponItemSprites_.size();++i){
 		weaponItemSprites_[i] = std::make_unique<Sprite>();
 		weaponItemSprites_[i]->Initialize(SpriteCommon::GetInstance(), "white1x1.png");
@@ -26,6 +27,10 @@ void CharacterEditTool::Initialize() {
 			menuBarLeftTop_.y + (menuBarSpriteSize_.y + menuBarSpacing_) * static_cast<float>(i)
 			});
 		weaponItemSprites_[i]->SetMaterialColor({ 0.2f,0.2f,0.2f,0.0f });
+
+		weaponIconTexts_[i] = std::make_unique<Sprite>();
+		weaponIconTexts_[i]->Initialize(SpriteCommon::GetInstance(), "UI/EditWeaponIcon.png");
+		weaponIconTexts_[i]->LoadConfig("EditWeaponIconText" + std::to_string(i) + ".json");
 	}
 
 	maxCharacterMenuItems_ = static_cast<uint32_t>(playableCharacterInfoMap_.size());
@@ -46,6 +51,12 @@ void CharacterEditTool::Initialize() {
 	cursorSprite_->Initialize(SpriteCommon::GetInstance(), "white1x1.png");
 	cursorSprite_->SetSize(menuBarSpriteSize_);
 	cursorSprite_->SetTranslate(menuBarLeftTop_);
+
+	//ゲーム開始テキストスプライト初期化
+	startGameTextSprite_ = std::make_unique<Sprite>();
+	startGameTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/GameStartText.png");
+	startGameTextSprite_->LoadConfig("GameStartText.json");
+	startGameTextSpritePos_ = startGameTextSprite_->GetTranslate();
 
 	//メニューバー用スプライト群初期化
 	for (size_t i = 0; i < CharacterEditMenuEnum::MENU_SIZE; ++i) {
@@ -125,25 +136,76 @@ void CharacterEditTool::Update() {
 				SpriteAnimator::PlayMode::PINGPONG_LOOP
 			);
 
-			break;
-		case EditMode::CHARACTER_EDIT:
+			//ゲーム開始テキストスプライトの移動アニメーション再生
+			startGameTextSprite_->Animation()->PlayTranslate(
+				startGameTextSprite_->GetTranslate(),
+				{ startGameTextSpritePos_.x,startGameTextSprite_->GetTranslate().y },
+				0.2f,
+				0.0f,
+				Easing::EasingType::OUT_BACK,
+				SpriteAnimator::PlayMode::ONCE
+			);
 
-			// キャラクター編集モード初期化処理
-			//キャラクター項目スプライトの移動アニメーション再生
-			for(auto& sprite:characterItemSprites_){
-				sprite->Animation()->PlayTranslate(
-					sprite->GetTranslate(),
-					{ menuBarLeftTop_.x,sprite->GetTranslate().y },
+			startGameTextSprite_->Animation()->PlayFade(0.0f, 1.0f, 0.2f, 0.0f, Easing::EasingType::LINEAR, SpriteAnimator::PlayMode::ONCE);
+
+			for(auto& iconText:weaponIconTexts_){
+				// 武器アイコンテキストスプライトの移動アニメーション再生
+				iconText->Animation()->PlayTranslate(
+					iconText->GetTranslate(),
+					{ 30.0f,iconText->GetTranslate().y },
 					0.2f,
 					0.0f,
 					Easing::EasingType::OUT_BACK,
 					SpriteAnimator::PlayMode::ONCE
 				);
-				// キャラクター項目スプライトのフェードインアニメーション再生
-				sprite->Animation()->PlayFade(0.0f,1.0f,0.2f,0.0f,Easing::EasingType::LINEAR,SpriteAnimator::PlayMode::ONCE);
+				// 武器アイコンテキストスプライトのフェードインアニメーション再生
+				iconText->Animation()->PlayFade(0.0f,1.0f,0.2f,0.0f,Easing::EasingType::LINEAR,SpriteAnimator::PlayMode::ONCE);
 			}
 
 			break;
+		case EditMode::CHARACTER_EDIT:
+
+			//// キャラクター編集モード初期化処理
+			////キャラクター項目スプライトの移動アニメーション再生
+			//for(auto& sprite:characterItemSprites_){
+			//	sprite->Animation()->PlayTranslate(
+			//		sprite->GetTranslate(),
+			//		{ menuBarLeftTop_.x,sprite->GetTranslate().y },
+			//		0.2f,
+			//		0.0f,
+			//		Easing::EasingType::OUT_BACK,
+			//		SpriteAnimator::PlayMode::ONCE
+			//	);
+			//	// キャラクター項目スプライトのフェードインアニメーション再生
+			//	sprite->Animation()->PlayFade(0.0f,1.0f,0.2f,0.0f,Easing::EasingType::LINEAR,SpriteAnimator::PlayMode::ONCE);
+			//}
+
+			//for(auto& iconText:weaponIconTexts_){
+			//	// 武器アイコンテキストスプライトの移動アニメーション再生
+			//	iconText->Animation()->PlayTranslate(
+			//		iconText->GetTranslate(),
+			//		{ 0.0f,iconText->GetTranslate().y },
+			//		0.2f,
+			//		0.0f,
+			//		Easing::EasingType::OUT_BACK,
+			//		SpriteAnimator::PlayMode::ONCE
+			//	);
+			//	// 武器アイコンテキストスプライトのフェードインアニメーション再生
+			//	iconText->Animation()->PlayFade(1.0f,0.0f,0.2f,0.0f,Easing::EasingType::LINEAR,SpriteAnimator::PlayMode::ONCE);
+			//}
+
+			////ゲーム開始テキストスプライトの移動アニメーション再生
+			//startGameTextSprite_->Animation()->PlayTranslate(
+			//	startGameTextSprite_->GetTranslate(),
+			//	{ -50.0f,startGameTextSprite_->GetTranslate().y },
+			//	0.2f,
+			//	0.0f,
+			//	Easing::EasingType::IN_BACK,
+			//	SpriteAnimator::PlayMode::ONCE
+			//);
+			//startGameTextSprite_->Animation()->PlayFade(1.0f, 0.0f, 0.2f, 0.0f, Easing::EasingType::LINEAR, SpriteAnimator::PlayMode::ONCE);
+
+			//break;
 		case EditMode::WEAPON_EDIT:
 
 			// 武器編集モード初期化処理
@@ -160,6 +222,30 @@ void CharacterEditTool::Update() {
 				// 武器項目スプライトのフェードインアニメーション再生
 				sprite->Animation()->PlayFade(0.0f,1.0f,0.2f,0.0f,Easing::EasingType::LINEAR,SpriteAnimator::PlayMode::ONCE);
 			}
+			for(auto& iconText:weaponIconTexts_){
+				// 武器アイコンテキストスプライトの移動アニメーション再生
+				iconText->Animation()->PlayTranslate(
+					iconText->GetTranslate(),
+					{ 0.0f,iconText->GetTranslate().y },
+					0.2f,
+					0.0f,
+					Easing::EasingType::OUT_BACK,
+					SpriteAnimator::PlayMode::ONCE
+				);
+				// 武器アイコンテキストスプライトのフェードインアニメーション再生
+				iconText->Animation()->PlayFade(1.0f,0.0f,0.2f,0.0f,Easing::EasingType::LINEAR,SpriteAnimator::PlayMode::ONCE);
+			}
+
+			//ゲーム開始テキストスプライトの移動アニメーション再生
+			startGameTextSprite_->Animation()->PlayTranslate(
+				startGameTextSprite_->GetTranslate(),
+				{ 0.0f,startGameTextSprite_->GetTranslate().y },
+				0.2f,
+				0.0f,
+				Easing::EasingType::IN_BACK,
+				SpriteAnimator::PlayMode::ONCE
+			);
+			startGameTextSprite_->Animation()->PlayFade(1.0f, 0.0f, 0.2f, 0.0f, Easing::EasingType::LINEAR, SpriteAnimator::PlayMode::ONCE);
 
 			break;
 		case EditMode::NEXT_MENU:
@@ -239,6 +325,8 @@ void CharacterEditTool::Update() {
 
 	// カーソルスプライトの更新
 	cursorSprite_->Update();
+	// ゲーム開始テキストスプライトの更新
+	startGameTextSprite_->Update();
 	// メニューバー用スプライト群の更新
 	for (auto& sprite : menuBarSprites_) {
 		sprite->Update();
@@ -246,6 +334,10 @@ void CharacterEditTool::Update() {
 	// 武器項目スプライト群の更新
 	for(auto& sprite:weaponItemSprites_){
 		sprite->Update();
+	}
+	// 武器アイコンテキストスプライト群の更新
+	for(auto& iconText:weaponIconTexts_){
+		iconText->Update();
 	}
 	// キャラクター項目スプライト群の更新
 	for(auto& sprite:characterItemSprites_){
@@ -263,9 +355,21 @@ void CharacterEditTool::UpdateImGui() {
 	//menu bar用スプライトのImGui更新
 	ImGui::SeparatorText("Character Edit Tool");
 	cursorSprite_->UpdateImGui("Cursor Sprite");
+	startGameTextSprite_->UpdateImGui("Start Game Text Sprite");
+	//menu bar sprites
 	for (size_t i = 0; i < WeaponUnit::Size; ++i) {
 		menuBarSprites_[i]->UpdateImGui("Weapon Menu Bar Sprite " + std::to_string(i));
 	}
+	//weapon item sprites
+	for(auto& sprite:weaponItemSprites_){
+		sprite->UpdateImGui("Weapon Item Sprite");
+	}
+	//weapon icon texts
+	for(auto& iconText:weaponIconTexts_){
+		std::string IconNumber = std::to_string(&iconText - &weaponIconTexts_[0]);
+		iconText->UpdateImGui("Weapon Icon Text " + IconNumber);
+	}
+	
 	previewCharacterModel_->UpdateImGui("Preview Character Model");
 	ImGui::End();
 }
@@ -373,12 +477,18 @@ void CharacterEditTool::DrawUI() {
 	for(auto& sprite:weaponItemSprites_){
 		sprite->Draw();
 	}
+	// 武器アイコンテキストスプライト群の描画
+	for(auto& iconText:weaponIconTexts_){
+		iconText->Draw();
+	}
 	// キャラクター項目スプライト群の描画
 	for(auto& sprite:characterItemSprites_){
 		sprite->Draw();
 	}
 	// カーソルスプライトの描画
 	cursorSprite_->Draw();
+	// ゲーム開始テキストスプライトの描画
+	startGameTextSprite_->Draw();
 }
 
 //========================================================================

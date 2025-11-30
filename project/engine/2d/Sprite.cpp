@@ -234,6 +234,12 @@ void Sprite::AdjustTextureSize() {
 	spriteConfig_.size_ = spriteConfig_.textureSize_;
 }
 
+void Sprite::LoadConfig(const std::string& jsonFilePath) {
+
+	//jsonファイルから設定読み込み
+	spriteConfig_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<SpriteConfig>(jsonFilePath);
+}
+
 
 //=============================================================================================
 // 描画処理

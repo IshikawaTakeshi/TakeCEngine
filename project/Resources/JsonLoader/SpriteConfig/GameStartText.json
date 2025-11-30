@@ -1,0 +1,25 @@
+{
+    "anchorPoint": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "jsonFilePath": "GameStartText.json",
+    "position": {
+        "x": 40.0,
+        "y": 391.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 280.0,
+        "y": 40.0
+    },
+    "textureFilePath": "UI/GameStartText.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "textureSize": {
+        "x": 530.0,
+        "y": 75.0
+    }
+}

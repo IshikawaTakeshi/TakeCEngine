@@ -1,0 +1,25 @@
+{
+    "anchorPoint": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "jsonFilePath": "EditWeaponIconText1.json",
+    "position": {
+        "x": 35.0,
+        "y": 90.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 200.0,
+        "y": 15.0
+    },
+    "textureFilePath": "UI/EditWeaponIcon.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 55.0
+    },
+    "textureSize": {
+        "x": 680.0,
+        "y": 50.0
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "anchorPoint": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "jsonFilePath": "GameClearText.json",
+    "position": {
+        "x": 260.0,
+        "y": 360.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 730.0,
+        "y": 75.0
+    },
+    "textureFilePath": "UI/GameClearText.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "textureSize": {
+        "x": 730.0,
+        "y": 75.0
+    }
+}

@@ -25,14 +25,12 @@ void GameClearScene::Initialize() {
 	//SkyBox
 	skybox_ = std::make_unique<SkyBox>();
 	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
-	skybox_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
-
+	skybox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//whiteOutSprite
 	clearTextSprite_ = std::make_unique<Sprite>();
 	clearTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/GameClearText.png");
-	clearTextSprite_->SetTranslate({ 640.0f, 360.0f });
-	clearTextSprite_->AdjustTextureSize();
+	clearTextSprite_->LoadConfig("GameClearText.json");
 
 }
 

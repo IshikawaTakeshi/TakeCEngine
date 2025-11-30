@@ -53,6 +53,4 @@ private:
 	// 「PRESS START」スプライトUI
 	std::unique_ptr<PushStartUI> pushStartUI_ = nullptr;
 
-	std::unique_ptr<Object3d> titleObject_ = nullptr;
-
 };

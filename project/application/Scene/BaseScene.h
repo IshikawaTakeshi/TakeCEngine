@@ -1,5 +1,6 @@
 #pragma once
 #include "LevelData.h"
+#include "engine/audio/Audio.h"
 
 //前方宣言
 class SceneManager;
@@ -47,6 +48,10 @@ public:
 	virtual void SetSceneManager(SceneManager* sceneManager) {sceneManager_ = sceneManager; }
 
 protected:
+
+	//サウンドデータ
+	AudioManager::SoundData BGM;
+	bool isSoundPlay = false;
 
 	//シーンマネージャー(このクラスで解放しないこと)
 	SceneManager* sceneManager_ = nullptr;
