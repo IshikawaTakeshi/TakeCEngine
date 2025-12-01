@@ -50,8 +50,9 @@ public:
 protected:
 
 	//サウンドデータ
-	AudioManager::SoundData BGM;
-	bool isSoundPlay = false;
+	AudioManager::SoundData BGM_;
+	float bgmVolume_ = 0.05f;
+	bool isSoundPlay_ = false;
 
 	//シーンマネージャー(このクラスで解放しないこと)
 	SceneManager* sceneManager_ = nullptr;

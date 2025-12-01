@@ -14,7 +14,7 @@
 void EnemySelectScene::Initialize() {
 
 	//BGM読み込み
-	BGM = AudioManager::GetInstance()->LoadSound("SelectSceneBGM.mp3");
+	BGM_ = AudioManager::GetInstance()->LoadSound("SelectSceneBGM.mp3");
 
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
@@ -54,7 +54,7 @@ void EnemySelectScene::Initialize() {
 //====================================================================
 
 void EnemySelectScene::Finalize() {
-	AudioManager::GetInstance()->SoundUnload(&BGM); // BGM停止
+	AudioManager::GetInstance()->SoundUnload(&BGM_); // BGM停止
 	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	skyBox_.reset();
@@ -66,9 +66,9 @@ void EnemySelectScene::Finalize() {
 void EnemySelectScene::Update() {
 
 	//BGM再生
-	if (!isSoundPlay) {
-		AudioManager::GetInstance()->SoundPlayWave(BGM, 0.05f,true);
-		isSoundPlay = true;
+	if (!isSoundPlay_) {
+		AudioManager::GetInstance()->SoundPlayWave(BGM_, bgmVolume_,true);
+		isSoundPlay_ = true;
 	}
 
 	//カメラの更新

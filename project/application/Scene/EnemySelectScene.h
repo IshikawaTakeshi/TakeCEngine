@@ -92,9 +92,6 @@ private:
 	//シーンの状態
 	SceneBehavior behavior_ = SceneBehavior::GAMEPLAY;
 
-	//サウンドデータ
-	//AudioManager::SoundData BGM;
-	bool isSoundPlay = false;
 	// カメラ
 	std::shared_ptr<Camera> gameCamera_ = nullptr;
 	std::shared_ptr<Camera> debugCamera_ = nullptr;
