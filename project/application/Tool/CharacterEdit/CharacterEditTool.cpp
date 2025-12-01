@@ -24,13 +24,17 @@ void CharacterEditTool::Initialize() {
 		weaponItemSprites_[i]->SetSize(menuBarSpriteSize_);
 		weaponItemSprites_[i]->SetTranslate({
 			0.0f,
-			menuBarLeftTop_.y + (menuBarSpriteSize_.y + menuBarSpacing_) * static_cast<float>(i)
+			menuBarLeftTop_.y + (menuBarSpriteSize_.y * WinApp::heightPercent_ + menuBarSpacing_) * static_cast<float>(i)
 			});
 		weaponItemSprites_[i]->SetMaterialColor({ 0.2f,0.2f,0.2f,0.0f });
 
 		weaponIconTexts_[i] = std::make_unique<Sprite>();
 		weaponIconTexts_[i]->Initialize(SpriteCommon::GetInstance(), "UI/EditWeaponIcon.png");
 		weaponIconTexts_[i]->LoadConfig("EditWeaponIconText" + std::to_string(i) + ".json");
+		weaponIconTexts_[i]->SetTranslate({
+			0.0f,
+			menuBarLeftTop_.y + (menuBarSpriteSize_.y * WinApp::heightPercent_ + menuBarSpacing_) * static_cast<float>(i)
+			});
 	}
 
 	maxCharacterMenuItems_ = static_cast<uint32_t>(playableCharacterInfoMap_.size());
@@ -41,7 +45,7 @@ void CharacterEditTool::Initialize() {
 		characterItemSprites_[i]->SetSize(menuBarSpriteSize_);
 		characterItemSprites_[i]->SetTranslate({
 			0.0f,
-			menuBarLeftTop_.y + (menuBarSpriteSize_.y + menuBarSpacing_) * static_cast<float>(i)
+			menuBarLeftTop_.y + (menuBarSpriteSize_.y * WinApp::heightPercent_ + menuBarSpacing_) * static_cast<float>(i)
 			});
 		characterItemSprites_[i]->SetMaterialColor({ 0.2f,0.2f,0.2f,0.0f });
 	}
@@ -52,11 +56,7 @@ void CharacterEditTool::Initialize() {
 	cursorSprite_->SetSize(menuBarSpriteSize_);
 	cursorSprite_->SetTranslate(menuBarLeftTop_);
 
-	//ゲーム開始テキストスプライト初期化
-	startGameTextSprite_ = std::make_unique<Sprite>();
-	startGameTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/GameStartText.png");
-	startGameTextSprite_->LoadConfig("GameStartText.json");
-	startGameTextSpritePos_ = startGameTextSprite_->GetTranslate();
+	
 
 	//メニューバー用スプライト群初期化
 	for (size_t i = 0; i < CharacterEditMenuEnum::MENU_SIZE; ++i) {
@@ -65,10 +65,17 @@ void CharacterEditTool::Initialize() {
 		menuBarSprites_[i]->SetSize(menuBarSpriteSize_);
 		menuBarSprites_[i]->SetTranslate({
 			menuBarLeftTop_.x,
-			menuBarLeftTop_.y + (menuBarSpriteSize_.y + menuBarSpacing_) * static_cast<float>(i)
+			menuBarLeftTop_.y + (menuBarSpriteSize_.y * WinApp::heightPercent_ + menuBarSpacing_) * static_cast<float>(i)
 			});
 		menuBarSprites_[i]->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 	}
+
+	//ゲーム開始テキストスプライト初期化
+	startGameTextSprite_ = std::make_unique<Sprite>();
+	startGameTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/GameStartText.png");
+	startGameTextSprite_->LoadConfig("GameStartText.json");
+	startGameTextSpritePos_ = menuBarSprites_[6]->GetTranslate();
+	startGameTextSprite_->SetTranslate(startGameTextSpritePos_);
 
 	//編集中のキャラクターデータ初期化
 	currentCharacterData_ = CharacterData{};
@@ -445,7 +452,7 @@ void CharacterEditTool::SelectEditItem() {
 	// カーソルスプライトの位置更新
 	cursorSprite_->SetTranslate({
 		menuBarLeftTop_.x,
-		menuBarLeftTop_.y + (menuBarSpriteSize_.y + menuBarSpacing_) * static_cast<float>(editingItemIndex_)
+		menuBarLeftTop_.y + (menuBarSpriteSize_.y * WinApp::heightPercent_ + menuBarSpacing_) * static_cast<float>(editingItemIndex_)
 		});
 }
 
@@ -555,7 +562,7 @@ void CharacterEditTool::UpdateCharacterEdit() {
 	// カーソルスプライトの位置更新
 	cursorSprite_->SetTranslate({
 		menuBarLeftTop_.x,
-		menuBarLeftTop_.y + (menuBarSpriteSize_.y + menuBarSpacing_) * static_cast<float>(editingCharacterIndex_)
+		menuBarLeftTop_.y + (menuBarSpriteSize_.y * WinApp::heightPercent_ + menuBarSpacing_) * static_cast<float>(editingCharacterIndex_)
 		});
 }
 
@@ -616,7 +623,7 @@ void CharacterEditTool::UpdateWeaponEdit() {
 	// カーソルスプライトの位置更新
 	cursorSprite_->SetTranslate({
 		menuBarLeftTop_.x,
-		menuBarLeftTop_.y + (menuBarSpriteSize_.y + menuBarSpacing_) * static_cast<float>(editingWeaponUnitIndex_)
+		menuBarLeftTop_.y + (menuBarSpriteSize_.y * WinApp::heightPercent_ + menuBarSpacing_) * static_cast<float>(editingWeaponUnitIndex_)
 		});
 }
 

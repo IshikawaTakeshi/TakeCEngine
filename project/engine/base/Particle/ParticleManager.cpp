@@ -164,6 +164,10 @@ uint32_t ParticleManager::EmitterAllocate() {
 	return emitterAllocater_->Allocate();
 }
 
+void ParticleManager::ClearParticleGroups() {
+	particleGroups_.clear();
+}
+
 BaseParticleGroup* ParticleManager::GetParticleGroup(const std::string& name) {
 
 	if (particleGroups_.contains(name)) {

@@ -120,6 +120,7 @@ void GamePlayScene::Finalize() {
 	AudioManager::GetInstance()->SoundUnload(&BGM); // BGMの解放
 	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
+	TakeCFrameWork::GetParticleManager()->ClearParticleGroups(); //パーティクルグループの解放
 	player_.reset();
 	skyBox_.reset();
 }
