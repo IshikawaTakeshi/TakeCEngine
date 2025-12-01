@@ -24,9 +24,10 @@ void to_json(nlohmann::json& j, const ParticleAttributes& attributes){
 	j["isDirectional"] = attributes.isDirectional;
 	j["enableFollowEmitter"] = attributes.enableFollowEmitter;
 
-	j["isTrail"] = attributes.isTrail;
+	j["isParticleTrail"] = attributes.isParticleTrail;
 	j["particlesPerInterpolation"] = attributes.particlesPerInterpolation;
 	j["trailEmitInterval"] = attributes.trailEmitInterval;
+	j["isEmitterTrail"] = attributes.isEmitterTrail;
 }
 
 //============================================================================
@@ -75,9 +76,10 @@ void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
 	if(j.contains("isDirectional"))j.at("isDirectional").get_to(attributes.isDirectional);
 	if(j.contains("scaleSetting"))j.at("scaleSetting").get_to(attributes.scaleSetting);
 	if(j.contains("enableFollowEmitter"))j.at("enableFollowEmitter").get_to(attributes.enableFollowEmitter);
-	if(j.contains("isTrail"))j.at("isTrail").get_to(attributes.isTrail);
+	if(j.contains("isParticleTrail"))j.at("isParticleTrail").get_to(attributes.isParticleTrail);
 	if(j.contains("particlesPerInterpolation"))j.at("particlesPerInterpolation").get_to(attributes.particlesPerInterpolation);
 	if(j.contains("trailEmitInterval"))j.at("trailEmitInterval").get_to(attributes.trailEmitInterval);
+	if(j.contains("isEmitterTrail"))j.at("isEmitterTrail").get_to(attributes.isEmitterTrail);
 }
 
 //============================================================================

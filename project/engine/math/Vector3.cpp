@@ -55,7 +55,7 @@ void from_json(const nlohmann::json& j, Vector3& v) {
 
 	j.at("x").get_to(v.x);
 	j.at("y").get_to(v.y);
-	j.at("y").get_to(v.z);
+	j.at("z").get_to(v.z);
 }
 
 

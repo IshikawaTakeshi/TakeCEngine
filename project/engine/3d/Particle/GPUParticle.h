@@ -1,13 +1,13 @@
 #pragma once
-#include "math/Vector3.h"
-#include "math/Vector4.h"
-#include "camera/Camera.h"
-#include "camera/PerView.h"
-#include "math/Matrix4x4.h"
-#include "3d/Model.h"
-#include "3d/Particle/ParticleCommon.h"
-#include "ResourceDataStructure.h"
-#include "3d/Particle/ParticleAttribute.h"
+#include "engine/base/PerFrame.h"
+#include "engine/3d/Model.h"
+#include "engine/3d/Particle/ParticleCommon.h"
+#include "engine/3d/Particle/ParticleAttribute.h"
+#include "engine/math/Vector3.h"
+#include "engine/math/Vector4.h"
+#include "engine/math/Matrix4x4.h"
+#include "engine/camera/Camera.h"
+#include "engine/camera/PerView.h"
 #include <memory>
 
 //ComputeShader用パーティクルデータ構造体

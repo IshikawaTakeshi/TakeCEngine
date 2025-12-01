@@ -14,7 +14,7 @@ void GameClearScene::Initialize() {
 	isSoundPlay = false;
 	// GameCamera
 	gameClearCamera_ = std::make_unique<Camera>();
-	gameClearCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
+	gameClearCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	gameClearCamera_->SetTranslate({ 43.0f, 1.5f, -20.0f });
 	gameClearCamera_->SetRotate({ -0.03f, -0.5f, -0.02f,0.85f });
 	CameraManager::GetInstance()->AddCamera("GameOverCamera", *gameClearCamera_);
@@ -24,15 +24,13 @@ void GameClearScene::Initialize() {
 
 	//SkyBox
 	skybox_ = std::make_unique<SkyBox>();
-	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.obj");
-	skybox_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
-
+	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
+	skybox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//whiteOutSprite
 	clearTextSprite_ = std::make_unique<Sprite>();
 	clearTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/GameClearText.png");
-	clearTextSprite_->SetTranslate({ 640.0f, 360.0f });
-	clearTextSprite_->AdjustTextureSize();
+	clearTextSprite_->LoadConfig("GameClearText.json");
 
 }
 

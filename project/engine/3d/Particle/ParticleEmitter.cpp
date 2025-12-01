@@ -13,8 +13,6 @@
 //================================================================================================
 
 void ParticleEmitter::Initialize(const std::string& emitterName, EulerTransform transforms, uint32_t count, float frequency) {
-
-	
 	//Emitter初期化
 	emitterName_ = emitterName;
 	transforms_.translate = transforms.translate;
@@ -25,6 +23,8 @@ void ParticleEmitter::Initialize(const std::string& emitterName, EulerTransform 
 	frequency_ = frequency;
 	frequencyTime_ = 0.0f;
 	isEmit_ = false;
+
+	
 }
 
 void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManager* srvManager) {
@@ -80,6 +80,9 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 
 void ParticleEmitter::Update() {
 
+	ParticlePreset preset = TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset();
+	maxInterpolationCount_ = preset.attribute.particlesPerInterpolation; // 最大補間回数
+
 	//transform.rotateによってDirectionを更新
 	Matrix4x4 rotateMatrix = MatrixMath::MakeRotateMatrix(transforms_.rotate);
 	emitDirection_ = MatrixMath::Transform({ 0.0f,0.0f,1.0f }, rotateMatrix);
@@ -88,8 +91,32 @@ void ParticleEmitter::Update() {
 	if (!isEmit_) return;
 	frequencyTime_ += TakeCFrameWork::GetDeltaTime();
 	if (frequency_ <= frequencyTime_) {
+
+		if (TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.isEmitterTrail == true) {
+			// 移動ベクトルと距離
+			Vector3 moveVector = transforms_.translate - prevTranslate_;
+			float moveDistance = Vector3Math::Length(moveVector);
+
+			// 移動距離に応じた補間回数を計算
+			// 例: 1. 0単位ごとに1回補間
+			const float interpolationUnit = 1.0f; // 調整可能
+			int interpolationCount = static_cast<int>(moveDistance / interpolationUnit);
+
+			// 最大補間回数の制限（パフォーマンス対策）
+			interpolationCount = std::min(interpolationCount, maxInterpolationCount_);
+
+			if (interpolationCount > 0) {
+				// 等間隔で補間位置から発生
+				for (int i = 0; i < interpolationCount; ++i) {
+					float t = static_cast<float>(i + 1) / (interpolationCount + 1);
+					Vector3 interpolatedPos = prevTranslate_ + moveVector * t;
+					Emit(interpolatedPos);
+				}
+			}
+		}
 		Emit();
 		frequencyTime_ -= frequency_; //余計に過ぎた時間も加味して頻度計算する
+		prevTranslate_ = transforms_. translate;
 	}
 }
 
@@ -145,6 +172,10 @@ void ParticleEmitter::DrawWireFrame() {
 
 void ParticleEmitter::Emit() {
 	TakeCFrameWork::GetParticleManager()->Emit(particleName_, transforms_.translate,emitDirection_, particleCount_);
+}
+
+void ParticleEmitter::Emit(const Vector3& position) {
+	TakeCFrameWork::GetParticleManager()->Emit(particleName_, position,emitDirection_, particleCount_);
 }
 
 void ParticleEmitter::EmitParticle(GPUParticle* gpuParticle) {

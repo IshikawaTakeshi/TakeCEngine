@@ -1,5 +1,4 @@
 #pragma once
-#include "ResourceDataStructure.h"
 #include "engine/3d/Particle/Particle3d.h"
 #include "engine/3d/Particle/PrimitiveParticle.h"
 #include "engine/3d/Particle/ParticleEmitterAllocater.h"
@@ -50,6 +49,9 @@ public:
 	void Emit(const std::string& name, const Vector3& emitPosition,const Vector3& direction, uint32_t count);
 	//エミッター用のハンドルの割り当て
 	uint32_t EmitterAllocate();
+	//パーティクルグループの開放
+	void ClearParticleGroups();
+
 	//パーティクルグループの取得
 	BaseParticleGroup* GetParticleGroup(const std::string& name);
 	//プリセットの設定

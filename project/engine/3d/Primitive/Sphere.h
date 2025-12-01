@@ -3,7 +3,6 @@
 #include "Matrix4x4.h"
 #include "TransformMatrix.h"
 #include "Transform.h"
-#include "ResourceDataStructure.h"
 #include "engine/3d/Light/DirectionalLight.h"
 #include "Mesh/Mesh.h"
 #include <stdint.h>

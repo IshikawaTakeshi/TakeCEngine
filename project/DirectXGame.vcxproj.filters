@@ -524,6 +524,9 @@
     <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
     <ClCompile Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.cpp" />
     <ClCompile Include="engine\math\MathEnv.cpp" />
+    <ClCompile Include="engine\camera\CameraForGPU.cpp" />
+    <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
+    <ClCompile Include="engine\2d\SpriteConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -812,9 +815,6 @@
     <ClInclude Include="application\Scene\TitleScene.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\ResourceDataStructure.h">
-      <Filter>engine\base</Filter>
-    </ClInclude>
     <ClInclude Include="engine\Collision\SphereCollider.h">
       <Filter>engine\collision</Filter>
     </ClInclude>
@@ -1088,6 +1088,13 @@
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditMenuEnum.h" />
     <ClInclude Include="application\Entity\Player\PlayerData.h" />
     <ClInclude Include="engine\math\MathEnv.h" />
+    <ClInclude Include="engine\3d\Mesh\SubMesh.h" />
+    <ClInclude Include="engine\3d\ModelData.h" />
+    <ClInclude Include="engine\base\PerFrame.h" />
+    <ClInclude Include="engine\3d\Particle\ParticleForGPU.h" />
+    <ClInclude Include="engine\3d\VertexData.h" />
+    <ClInclude Include="application\Weapon\MachineGun\MachineGun.h" />
+    <ClInclude Include="engine\2d\SpriteConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

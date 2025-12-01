@@ -1,4 +1,5 @@
 #pragma once
+#include <json.hpp>
 
 /// <summary>
 /// 2次元ベクトル
@@ -34,3 +35,8 @@ struct Vector2 final {
 	// 外積
 	float Cross(const Vector2& other) const;
 };
+
+// JSON形式に変換
+void to_json(nlohmann::json& j, const Vector2& v);
+// JSON形式からVector2に変換
+void from_json(const nlohmann::json& j, Vector2& v);

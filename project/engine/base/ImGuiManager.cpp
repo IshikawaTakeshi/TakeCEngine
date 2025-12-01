@@ -78,7 +78,9 @@ void ImGuiManager::End() {
 //====================================================================
 void ImGuiManager::DrawDebugScreen() {
 	ImGui::SetNextWindowBgAlpha(1.0f); // 完全透明
-	ImGui::Begin("ImGuiManager::DebugScreen");
+	// 画面左上にぴったり固定（必要に応じて座標を変える）
+	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+	ImGui::Begin("ImGuiManager::DebugScreen",nullptr,windowFlags_);
 	//レンダーターゲットの内容を表示
 	ImGui::Image(
 		ImTextureID(srvManager_->GetSrvDescriptorHandleGPU(renderTextureIndex_).ptr),

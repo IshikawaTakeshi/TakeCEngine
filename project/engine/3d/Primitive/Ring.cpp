@@ -17,7 +17,7 @@ void Ring::Initialize(DirectXCommon* dxCommon) {
 
 	//Meshの生成
 	mesh_ = std::make_unique<Mesh>();
-	mesh_->InitializeMesh(dxCommon_,"uvChecker.png");
+	//mesh_->InitializeMesh(dxCommon_,"uvChecker.png");
 
 
 	rootSignature_ = pso_->GetGraphicRootSignature();

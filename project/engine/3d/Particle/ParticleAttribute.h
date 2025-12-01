@@ -52,9 +52,11 @@ struct ParticleAttributes {
 	uint32_t scaleSetting = 0;    //スケールの更新処理方法
 	bool enableFollowEmitter = false; //エミッターに追従するかどうか
 
-	bool isTrail = false; //トレイルエフェクトを有効にするかどうか
+	bool isParticleTrail = false; //パーティクルによるトレイルを有効にするかどうか
 	uint32_t particlesPerInterpolation = 5; //一度の補間で生成するパーティクル数
 	float trailEmitInterval = 0.016f; //トレイルエフェクトの生成間隔
+
+	bool isEmitterTrail = false; //エミッターの移動に応じてトレイルを生成するかどうか
 };
 
 // パーティクルプリセットを保持する構造体

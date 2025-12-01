@@ -7,22 +7,22 @@
 //=============================================================================
 // 初期化処理
 //=============================================================================
-void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) {
+void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
 
 	//弾薬マネージャの設定
 	bulletManager_ = bulletManager;
+	//武器の初期化
+	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Bazooka.json");
 	//3Dオブジェクトの初期化
 	object3d_ = std::make_unique<Object3d>();
-	object3d_->Initialize(object3dCommon, filePath);
+	object3d_->Initialize(object3dCommon, weaponData_.modelFilePath);
 
 
 	// ライフルの色を設定
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.8f);
 
-	//武器の初期化
-	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Bazooka.json");
-	weaponState_.attackInterval = weaponData_.config.kAttackInterval; // 攻撃間隔を設定
+	weaponState_.attackInterval = weaponData_.config.attackInterval; // 攻撃間隔を設定
 	weaponState_.bulletCount = weaponData_.config.maxMagazineCount;           // 初期弾数を設定
 	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定
 }
@@ -72,7 +72,7 @@ void Bazooka::Update() {
 //=============================================================================
 void Bazooka::UpdateImGui() {
 	ImGui::SeparatorText("Bazooka Settings");
-	weaponData_.config.EditConfigImGui();
+	weaponData_.config.EditConfigImGui(weaponData_.weaponName);
 
 	if(ImGui::Button("Save Bazooka Config")) {
 		// 設定をJSONに保存
@@ -128,7 +128,7 @@ void Bazooka::Attack() {
 		weaponState_.reloadTime = weaponData_.config.maxReloadTime; // リロード時間をリセット
 	}
 	//攻撃間隔のリセット
-	weaponState_.attackInterval = weaponData_.config.kAttackInterval;
+	weaponState_.attackInterval = weaponData_.config.attackInterval;
 }
 
 //=============================================================================

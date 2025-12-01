@@ -16,7 +16,7 @@ public:
 	//=====================================================================
 
 	// 初期化処理
-	void Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) override;
+	void Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) override;
 	// 更新処理
 	void Update() override;
 	// ImGuiの更新

@@ -2,7 +2,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <memory>
-#include "ResourceDataStructure.h"
+
 #include "camera/Camera.h"
 #include "3d/Model.h"
 #include "Animation/Animator.h"

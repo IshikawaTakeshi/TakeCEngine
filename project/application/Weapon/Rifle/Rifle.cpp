@@ -7,20 +7,21 @@
 //===================================================================================
 //　初期化処理
 //===================================================================================
-void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManager, const std::string& filePath) {
+void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManager) {
 
 	bulletManager_ = bulletManager;
 
+	//武器の初期化
+	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Rifle.json");
+
 	//3dオブジェクトの初期化
 	object3d_ = std::make_unique<Object3d>();
-	object3d_->Initialize(object3dCommon, filePath);
+	object3d_->Initialize(object3dCommon, weaponData_.modelFilePath);
 
 	// ライフルの色を設定
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.8f);
 
-	//武器の初期化
-	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Rifle.json");
 
 	weaponState_.attackInterval = rifleInfo_.burstShotInfo.kInterval; // 連射の間隔を攻撃間隔に設定
 	weaponState_.bulletCount = weaponData_.config.maxMagazineCount;
@@ -55,6 +56,10 @@ void Rifle::Update() {
 	//攻撃間隔の減少
 	weaponState_.attackInterval -= TakeCFrameWork::GetDeltaTime();
 
+
+	//------------------------------------------------------------
+	// 三連射処理
+	//------------------------------------------------------------
 	if (burstShotState_.isActive) {
 		burstShotState_.intervalTimer -= TakeCFrameWork::GetDeltaTime();
 		if (burstShotState_.intervalTimer <= 0.0f && burstShotState_.count > 0) {
@@ -116,7 +121,7 @@ void Rifle::UpdateImGui() {
 	ImGui::SliderFloat("##Rifle::Bullet Speed", &weaponData_.config.bulletSpeed, 100.0f, 1000.0f);
 	ImGui::Separator();
 	rifleInfo_.burstShotInfo.EditConfigImGui();
-	weaponData_.config.EditConfigImGui();
+	weaponData_.config.EditConfigImGui(weaponData_.weaponName);
 
 	if(ImGui::Button("Save Rifle Config")) {
 		// 設定をJSONに保存
@@ -177,7 +182,7 @@ void Rifle::Attack() {
 		weaponState_.reloadTime = weaponData_.config.maxReloadTime; // リロード時間をリセット
 	}
 	//攻撃間隔のリセット
-	weaponState_.attackInterval = weaponData_.config.kAttackInterval;
+	weaponState_.attackInterval = weaponData_.config.attackInterval;
 }
 
 //=====================================================================================

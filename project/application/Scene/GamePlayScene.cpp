@@ -12,20 +12,18 @@
 //====================================================================
 
 void GamePlayScene::Initialize() {
+
+	//BGM読み込み
+	BGM = AudioManager::GetInstance()->LoadSound("GamePlaySceneBGM.mp3");
+
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
-	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	gameCamera_->SetIsDebug(false);
-	gameCamera_->SetTranslate({ 5.0f,0.0f,-10.0f });
-	gameCamera_->SetRotate({ 0.0f,-1.4f,0.0f,1.0f });
+	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
 	CameraManager::GetInstance()->AddCamera("gameCamera", *gameCamera_);
 
 	//Camera1
 	debugCamera_ = std::make_shared<Camera>();
-	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	debugCamera_->SetTranslate({ 5.0f,0.0f,-1.0f });
-	debugCamera_->SetRotate({ 0.0f,-1.4f,0.0f,1.0f });
-	debugCamera_->SetIsDebug(true);
+	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
 	CameraManager::GetInstance()->AddCamera("debugCamera", *debugCamera_);
 
 	//デフォルトカメラの設定
@@ -49,7 +47,7 @@ void GamePlayScene::Initialize() {
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.obj");
+	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//BulletManager
@@ -58,7 +56,7 @@ void GamePlayScene::Initialize() {
 
 	//player
 	player_ = std::make_unique<Player>();
-	player_->Initialize(Object3dCommon::GetInstance(), "player_singleMesh.gltf");
+	player_->Initialize(Object3dCommon::GetInstance(), "player_MultiMesh.gltf");
 	player_->WeaponInitialize(Object3dCommon::GetInstance(), bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
@@ -119,8 +117,10 @@ void GamePlayScene::Initialize() {
 
 void GamePlayScene::Finalize() {
 	
+	AudioManager::GetInstance()->SoundUnload(&BGM); // BGMの解放
 	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
+	TakeCFrameWork::GetParticleManager()->ClearParticleGroups(); //パーティクルグループの解放
 	player_.reset();
 	skyBox_.reset();
 }
@@ -129,6 +129,12 @@ void GamePlayScene::Finalize() {
 //			更新処理
 //====================================================================
 void GamePlayScene::Update() {
+
+	//BGM再生
+	if (!isSoundPlay) {
+		AudioManager::GetInstance()->SoundPlayWave(BGM, 0.05f,true);
+		isSoundPlay = true;
+	}
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();
@@ -257,6 +263,12 @@ void GamePlayScene::UpdateImGui() {
 void GamePlayScene::Draw() {
 
 	skyBox_->Draw();    //天球の描画
+
+#pragma region 背景スプライト描画
+	//スプライトの描画前処理
+	SpriteCommon::GetInstance()->PreDraw();
+	
+#pragma endregion
 
 #pragma region Object3d描画
 
@@ -442,7 +454,7 @@ void GamePlayScene::InitializeGameClear() {
 	//スローモーション解除
 	MyGame::RequestTimeScale(1.0f, 0.6f, 0.0f);
 	fadeTimer_ = 3.0f;
-	//SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
+	SceneManager::GetInstance()->ChangeScene("GAMECLEAR", fadeTimer_);
 }
 
 void GamePlayScene::UpdateGameClear() {

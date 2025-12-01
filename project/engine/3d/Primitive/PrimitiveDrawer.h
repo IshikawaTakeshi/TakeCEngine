@@ -3,8 +3,9 @@
 #include "base/PipelineStateObject.h"
 #include "base/SrvManager.h"
 #include "3d/Material.h"
-#include "TransformMatrix.h"
-#include "ResourceDataStructure.h"
+#include "3d/VertexData.h"
+#include "math/TransformMatrix.h"
+#include "math/AABB.h"
 #include "Primitive/PrimitiveType.h"
 #include <memory>
 #include <cstdint>
@@ -72,7 +73,7 @@ public:
 		PrimitiveMesh primitiveData_;
 		VertexData* vertexData_ = nullptr;
 		Material* material_ = nullptr;
-		float size_;
+		AABB size_;
 	};
 
 	//cylinder全体のデータ
@@ -101,13 +102,16 @@ public:
 	void UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param);
 
 	//リングデータの生成
-	uint32_t GenerateRing(const float outerRadius, const float innerRadius, const std::string& textureFilePath);
+	uint32_t GenerateRing(float outerRadius, float innerRadius, const std::string& textureFilePath);
 	// 平面データの生成
-	uint32_t GeneratePlane(const float width, const float height, const std::string& textureFilePath);
+	uint32_t GeneratePlane(float width, float height, const std::string& textureFilePath);
 	// 球データの生成
-	uint32_t GenerateSphere(const float radius, const std::string& textureFilePath);
+	uint32_t GenerateSphere(float radius, const std::string& textureFilePath);
 	// 円錐データの生成
-	uint32_t GenerateCone(const float radius, const float height,uint32_t subDivision, const std::string& textureFilePath);
+	uint32_t GenerateCone(float radius, float height,uint32_t subDivision, const std::string& textureFilePath);
+	//cubeデータの作成
+	uint32_t GenerateCube(const AABB& size, const std::string& textureFilePath);
+
 	// 描画処理(particle用)
 	void DrawParticle(PSO* pso,UINT instanceCount,PrimitiveType type,uint32_t handle);
 	// 描画処理(オブジェクト用)
@@ -118,6 +122,8 @@ public:
 	RingData* GetRingData(uint32_t handle);
 	ConeData* GetConeData(uint32_t handle);
 
+	void SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color);
+
 private:
 
 	// リングの頂点データの作成関数
@@ -127,7 +133,7 @@ private:
 	// 球の頂点データの作成関数
 	void CreateSphereVertexData(SphereData* sphereData);
 	// Cube
-	//void CreateCubeVertexData(CubeData* cubeData);
+	void CreateCubeVertexData(CubeData* cubeData);
 	// Cone
 	void CreateConeVertexData(ConeData* coneData);
 
@@ -136,6 +142,7 @@ private:
 	void CreatePlaneMaterial(const std::string& textureFilePath,PlaneData* planeData);
 	void CreateSphereMaterial(const std::string& textureFilePath, SphereData* sphereData);
 	void CreateConeMaterial(const std::string& textureFilePath, ConeData* coneData);
+	void CreateCubeMaterial(const std::string& textureFilePath, CubeData* cubeData);
 
 private:
 
@@ -172,6 +179,12 @@ private:
 	uint32_t coneVertexIndex_ = 0;
 	uint32_t coneVertexCount_ = 0;
 	uint32_t coneHandle_ = 0;
+
+	//cube
+	std::unordered_map<uint32_t, std::unique_ptr<CubeData>> cubeDatas_;
+	uint32_t cubeVertexIndex_ = 0;
+	uint32_t cubeVertexCount_ = 0;
+	uint32_t cubeHandle_ = 0;
 
 	const uint32_t kMaxVertexCount_ = 32000;
 };

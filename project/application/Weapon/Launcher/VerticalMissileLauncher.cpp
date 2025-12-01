@@ -7,18 +7,18 @@
 //================================================================================
 //　初期化
 //================================================================================
-void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager, const std::string& filePath) {
+void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
 	bulletManager_ = bulletManager;
 
+	//武器の初期化
+	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("VMLauncher.json");
 	//3dオブジェクトの初期化
 	object3d_ = std::make_unique<Object3d>();
-	object3d_->Initialize(object3dCommon, filePath);
+	object3d_->Initialize(object3dCommon, weaponData_.modelFilePath);
 
 	// ライフルの色を設定
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
 
-	//武器の初期化
-	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("VMLauncher.json");
 	vmLauncherInfo_ = std::get<VerticalMissileLauncherInfo>(weaponData_.actionData);
 	weaponState_.bulletCount = weaponData_.config.maxMagazineCount;           // 初期弾数をマガジン内の弾数に設定
 	weaponState_.attackInterval = 0.0f;
@@ -105,7 +105,7 @@ void VerticalMissileLauncher::UpdateImGui() {
 	ImGui::SeparatorText("VerticalMissile");
 
 	//WeaponDataのImGui表示
-	weaponData_.config.EditConfigImGui();
+	weaponData_.config.EditConfigImGui(weaponData_.weaponName);
 
 	Vector3 rotate = object3d_->GetTransform().rotate;
 	ImGui::DragFloat3("Launcher::Rotate", &rotate.x, 0.01f);

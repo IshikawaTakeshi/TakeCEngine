@@ -149,6 +149,13 @@ private:
 	std::array<std::unique_ptr<Sprite>, CharacterEditMenuEnum::MENU_SIZE> menuBarSprites_;
 	//カーソルスプライト
 	std::unique_ptr<Sprite> cursorSprite_;
+	//ゲーム開始テキストスプライト
+	std::unique_ptr<Sprite> startGameTextSprite_;
+	Vector2 startGameTextSpritePos_{ 400.0f,300.0f }; //ゲーム開始テキストスプライト座標
+
+	std::vector<std::unique_ptr<Sprite>> weaponItemSprites_; //武器項目スプライトリスト
+	std::vector<std::unique_ptr<Sprite>> weaponIconTexts_; //武器項目テキストスプライトリスト
+	std::vector<std::unique_ptr<Sprite>> characterItemSprites_; //キャラクター項目スプライトリスト
 
 	//メニューバースプライトサイズ
 	Vector2 menuBarSpriteSize_{ 300.0f,50.0f }; 
@@ -177,9 +184,6 @@ private:
 	uint32_t editingCharacterIndex_ = 0;
 	// キャラクターメニューアイテム最大数
 	uint32_t maxCharacterMenuItems_ = 0;
-
-	std::vector<std::unique_ptr<Sprite>> weaponItemSprites_; //武器項目スプライトリスト
-	std::vector<std::unique_ptr<Sprite>> characterItemSprites_; //キャラクター項目スプライトリスト
 
 	//武器データマップ
 	std::map<std::string, WeaponData> weaponDataMap_;

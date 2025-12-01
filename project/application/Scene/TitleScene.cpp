@@ -1,6 +1,7 @@
 #include "TitleScene.h"
 #include "GamePlayScene.h"
 #include "SceneManager.h"
+#include "engine/base/TakeCFrameWork.h"
 #include <algorithm>
 
 //====================================================================
@@ -10,7 +11,7 @@ void TitleScene::Initialize() {
 
 	//Camera0
 	camera0_ = std::make_shared<Camera>();
-	camera0_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
+	camera0_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_TitleScene.json");
 	camera0_->SetTranslate({ 0.0f,0.0f,-20.0f });
 	camera0_->SetRotate({ 0.1f,0.0f,0.0f });
 	CameraManager::GetInstance()->AddCamera("Tcamera0", *camera0_);
@@ -28,11 +29,11 @@ void TitleScene::Initialize() {
 	pushStartUI_ = std::make_unique<PushStartUI>();
 	pushStartUI_->Initialize();
 
-	
-	
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Models/gltf", "Deer.gltf");
+
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.obj");
+	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 }
 
@@ -62,12 +63,12 @@ void TitleScene::Update() {
 	//タイトルテキストの更新
 	titleTextSprite_->Update();
 	pushStartUI_->Update();
-	
 
 	//シーン遷移
 	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::A)) {
 		//シーン切り替え依頼
-		SceneManager::GetInstance()->ChangeScene("GAMEPLAY",1.0f);
+		//EnemySelectSceneへ
+		SceneManager::GetInstance()->ChangeScene("ENEMYSELECT",1.0f);
 	}
 }
 
@@ -98,6 +99,8 @@ void TitleScene::Draw() {
 	titleTextSprite_->Draw();
 	pushStartUI_->Draw();
 	//phaseMessageUI_->Draw();
+	Object3dCommon::GetInstance()->Dispatch();
+
 	Object3dCommon::GetInstance()->PreDraw();
 
 }

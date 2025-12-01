@@ -319,6 +319,17 @@ Matrix4x4 MatrixMath::MakeAffineMatrix(const Vector3& scale, const Vector3& rota
 	return result;
 }
 
+Matrix4x4 MatrixMath::MakeAffineMatrix(const EulerTransform& transform) {
+	Matrix4x4 rotateMatrix = MakeRotateMatrix(transform.rotate);
+	Matrix4x4 result = {
+		transform.scale.x * rotateMatrix.m[0][0],transform.scale.x * rotateMatrix.m[0][1],transform.scale.x * rotateMatrix.m[0][2],0,
+		transform.scale.y * rotateMatrix.m[1][0],transform.scale.y * rotateMatrix.m[1][1],transform.scale.y * rotateMatrix.m[1][2],0,
+		transform.scale.z * rotateMatrix.m[2][0],transform.scale.z * rotateMatrix.m[2][1],transform.scale.z * rotateMatrix.m[2][2],0,
+		transform.translate.x,transform.translate.y,transform.translate.z,1.0f
+	};
+	return result;
+}
+
 //============================================================================
 //3次元アフィン変換行列（クォータニオン）
 //============================================================================
@@ -329,6 +340,17 @@ Matrix4x4 MatrixMath::MakeAffineMatrix(const Vector3& scale, const Quaternion& r
 		scale.y * rotateMatrix.m[1][0],scale.y * rotateMatrix.m[1][1],scale.y * rotateMatrix.m[1][2],0,
 		scale.z * rotateMatrix.m[2][0],scale.z * rotateMatrix.m[2][1],scale.z * rotateMatrix.m[2][2],0,
 		translate.x,translate.y,translate.z,1.0f
+	};
+	return result;
+}
+
+Matrix4x4 MatrixMath::MakeAffineMatrix(const QuaternionTransform& transform) {
+	Matrix4x4 rotateMatrix = MakeRotateMatrix(transform.rotate);
+	Matrix4x4 result = {
+		transform.scale.x * rotateMatrix.m[0][0],transform.scale.x * rotateMatrix.m[0][1],transform.scale.x * rotateMatrix.m[0][2],0,
+		transform.scale.y * rotateMatrix.m[1][0],transform.scale.y * rotateMatrix.m[1][1],transform.scale.y * rotateMatrix.m[1][2],0,
+		transform.scale.z * rotateMatrix.m[2][0],transform.scale.z * rotateMatrix.m[2][1],transform.scale.z * rotateMatrix.m[2][2],0,
+		transform.translate.x,transform.translate.y,transform.translate.z,1.0f
 	};
 	return result;
 }

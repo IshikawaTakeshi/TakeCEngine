@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/math/Transform.h"
 #include "engine/base/PipelineStateObject.h"
-#include "ResourceDataStructure.h"
+#include "engine/base/PerFrame.h"
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -70,6 +70,7 @@ public:
 	/// パーティクルの発生
 	/// </summary>
 	void Emit();
+	void Emit(const Vector3& position);
 
 	void EmitParticle(GPUParticle* gpuParticle);
 
@@ -142,6 +143,7 @@ private:
 
 	bool isEmit_; //発生フラグ
 	EulerTransform transforms_;   //エミッターの位置
+	Vector3 prevTranslate_; //前回のエミッター位置
 	uint32_t particleCount_; //発生するParticleの数
 	float frequency_;        //発生頻度
 	float frequencyTime_;    //経過時間
@@ -149,4 +151,7 @@ private:
 	std::string emitterName_; //emitterの名前
 	std::string particleName_; //発生させるParticleの名前
 
+	uint32_t particlesPerInterpolation = 5; //一度の補間で生成するパーティクル数
+	float trailEmitInterval = 0.016f; //トレイルエフェクトの生成間隔
+	int maxInterpolationCount_ = 0; //最大補間回数
 };

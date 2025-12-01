@@ -12,19 +12,19 @@
 //====================================================================
 
 void EnemySelectScene::Initialize() {
+
+	//BGM読み込み
+	BGM = AudioManager::GetInstance()->LoadSound("SelectSceneBGM.mp3");
+
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
-	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	gameCamera_->SetIsDebug(false);
-	gameCamera_->SetTranslate({ 5.0f,0.0f,-10.0f });
-	gameCamera_->SetRotate({ 0.0f,-1.4f,0.0f,1.0f });
+	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
+	gameCamera_->SetYawRot(2.5f);
 	CameraManager::GetInstance()->AddCamera("gameCamera", *gameCamera_);
 
 	//Camera1
 	debugCamera_ = std::make_shared<Camera>();
-	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
-	debugCamera_->SetTranslate({ 5.0f,0.0f,-1.0f });
-	debugCamera_->SetRotate({ 0.0f,-1.4f,0.0f,1.0f });
+	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	debugCamera_->SetIsDebug(true);
 	CameraManager::GetInstance()->AddCamera("debugCamera", *debugCamera_);
 
@@ -37,11 +37,11 @@ void EnemySelectScene::Initialize() {
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "Idle.gltf");
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "running.gltf");
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "throwAttack.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("gltf", "player_singleMesh.gltf");
+	TakeCFrameWork::GetAnimator()->LoadAnimation("Models/gltf", "player_singleMesh.gltf");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.obj");
+	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//キャラクター編集ツール
@@ -54,7 +54,7 @@ void EnemySelectScene::Initialize() {
 //====================================================================
 
 void EnemySelectScene::Finalize() {
-
+	AudioManager::GetInstance()->SoundUnload(&BGM); // BGM停止
 	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	skyBox_.reset();
@@ -64,6 +64,12 @@ void EnemySelectScene::Finalize() {
 //			更新処理
 //====================================================================
 void EnemySelectScene::Update() {
+
+	//BGM再生
+	if (!isSoundPlay) {
+		AudioManager::GetInstance()->SoundPlayWave(BGM, 0.05f,true);
+		isSoundPlay = true;
+	}
 
 	//カメラの更新
 	CameraManager::GetInstance()->Update();

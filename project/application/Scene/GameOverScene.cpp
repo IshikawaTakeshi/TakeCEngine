@@ -14,7 +14,7 @@ void GameOverScene::Initialize() {
 	isSoundPlay = false;
 	// GameCamera
 	gameOverCamera_ = std::make_unique<Camera>();
-	gameOverCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice());
+	gameOverCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	gameOverCamera_->SetTranslate({ 0.0f, 20.0f, -60.0f });
 	gameOverCamera_->SetRotate({ 0.9f, -0.01f, 0.03f,0.36f });
 	CameraManager::GetInstance()->AddCamera("GameOverCamera", *gameOverCamera_);
@@ -24,7 +24,8 @@ void GameOverScene::Initialize() {
 
 	//SkyBox
 	skybox_ = std::make_unique<SkyBox>();
-	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.obj");
+	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
+	skybox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//Spriteの初期化
 	gameOverTextSprite_ = std::make_unique<Sprite>();

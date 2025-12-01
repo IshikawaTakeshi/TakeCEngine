@@ -146,7 +146,7 @@ float AIBrainSystem::CalculateStepBoostScore() {
 	float energyFactor = Easing::EaseOutQuad(energyRatio);
 
 	// 危険度の計算
-	float dangerFactor = isBulletNearby_ ? 0.f : 0.05f;
+	float dangerFactor = isBulletNearby_ ? 0.7f : 0.05f;
 
 	// HPが低いほど回避行動を優先
 	float hpRatio = characterInfo_->health / characterInfo_->maxHealth;
@@ -220,7 +220,11 @@ float AIBrainSystem::CalculateFloatingScore() {
 	float obstacleFactor = 0.2f;
 
 	// 目標: プレイヤーより少し上（例: +2.0f）
-	const float targetOffset = 2.0f;
+	float targetOffset = 2.0f;
+	if (distanceToTarget_ < 20.0f) { // 近距離なら
+		targetOffset = 10.0f; // 相手のカメラアングルを狂わせる高さまで飛ぶ
+	}
+
 	float idealHeight = characterInfo_->focusTargetPos.y + targetOffset;
 	float currentHeight = characterInfo_->transform.translate.y;
 	float heightDiff = idealHeight - currentHeight;
@@ -235,16 +239,11 @@ float AIBrainSystem::CalculateFloatingScore() {
 		// プレイヤーより下にいる、または同じ高さにいる場合
 		if (verticalDiff >= 0.0f) {
 			
-
 			// 障害物との距離が近いほどスコアを高くする
 			float obstacleProximity = 1.0f - std::clamp(hitInfo.distance / distance, 0.0f, 1.0f);
 			obstacleFactor = Easing::UrgentRise(obstacleProximity);
-
-			
 		}
 	}
-
-	
 
 	// 高度差を0-1の範囲に正規化（最大10.0fの差を想定）
 	const float maxHeightDiff = 4.0f;

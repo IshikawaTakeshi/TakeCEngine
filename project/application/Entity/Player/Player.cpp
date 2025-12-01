@@ -15,6 +15,7 @@
 #include "application/Weapon/Rifle/Rifle.h"
 #include "application/Weapon/Bazooka/Bazooka.h"
 #include "application/Weapon/Launcher/VerticalMissileLauncher.h"
+#include "application/Weapon/MachineGun/MachineGun.h"
 #include "application/Entity/WeaponUnit.h"
 
 #include "application/Entity/Behavior/BehaviorRunning.h"
@@ -91,16 +92,21 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bul
 	for (int i = 0; i < weapons_.size(); i++) {
 		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
 			weapons_[i] = std::make_unique<Rifle>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager, "Rifle.gltf");
+			weapons_[i]->Initialize(object3dCommon, bulletManager);
 			weapons_[i]->SetOwnerObject(this);
 		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
 			weapons_[i] = std::make_unique<Bazooka>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager, "Bazooka.gltf");
+			weapons_[i]->Initialize(object3dCommon, bulletManager);
 			weapons_[i]->SetOwnerObject(this);
 		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
 			//垂直ミサイルの武器を初期化
 			weapons_[i] = std::make_unique<VerticalMissileLauncher>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager, "VerticalMissileLauncher.gltf");
+			weapons_[i]->Initialize(object3dCommon, bulletManager);
+			weapons_[i]->SetOwnerObject(this);
+		} else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_MACHINE_GUN) {
+			//マシンガンの武器を初期化
+			weapons_[i] = std::make_unique<MachineGun>();
+			weapons_[i]->Initialize(object3dCommon, bulletManager);
 			weapons_[i]->SetOwnerObject(this);
 		} else {
 			weapons_[i] = nullptr; // 未使用の武器スロットはnullptrに設定
@@ -217,7 +223,7 @@ void Player::Update() {
 	if (isUseWeapon_) {
 		//武器使用中はカメラの向きに合わせる
 		Quaternion targetRotate = camera_->GetRotate();
-		playerData_.characterInfo.transform.rotate = Easing::Slerp(playerData_.characterInfo.transform.rotate, targetRotate, 0.05f);
+		playerData_.characterInfo.transform.rotate = Easing::Slerp(playerData_.characterInfo.transform.rotate, targetRotate, 0.25f);
 		playerData_.characterInfo.transform.rotate = QuaternionMath::Normalize(playerData_.characterInfo.transform.rotate);
 	} else {
 		if (playerData_.characterInfo.moveDirection.x != 0.0f || playerData_.characterInfo.moveDirection.z != 0.0f) {

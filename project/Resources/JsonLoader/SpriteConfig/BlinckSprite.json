@@ -1,0 +1,25 @@
+{
+    "anchorPoint": {
+        "x": 0.5,
+        "y": 0.5
+    },
+    "jsonFilePath": "BlinckSprite.json",
+    "position": {
+        "x": 512.0,
+        "y": 500.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 400.0,
+        "y": 60.0
+    },
+    "textureFilePath": "UI/TitleSelect.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "textureSize": {
+        "x": 100.0,
+        "y": 100.0
+    }
+}

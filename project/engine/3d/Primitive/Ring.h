@@ -1,7 +1,6 @@
 #pragma once
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
-#include "ResourceDataStructure.h"
 #include "TransformMatrix.h"
 #include "Transform.h"
 #include "Mesh/Mesh.h"

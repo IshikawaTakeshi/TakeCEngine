@@ -1,5 +1,4 @@
 #pragma once
-#include "ResourceDataStructure.h"
 #include "engine/base/PipelineStateObject.h"
 #include "engine/base/ComPtrAliasTemplates.h"
 #include "engine/3d/Light/DirectionalLight.h"
@@ -110,8 +109,6 @@ private:
 
 
 	std::unique_ptr<DirectionalLightData> directionalLightData_ = nullptr;
-	std::unique_ptr<PointLightData> pointLightData_ = nullptr;
-	std::unique_ptr<SpotLightData> spotLightData_ = nullptr;
 	uint32_t pointLightIndex_ = 0;
 	uint32_t spotLightIndex_ = 0;
 

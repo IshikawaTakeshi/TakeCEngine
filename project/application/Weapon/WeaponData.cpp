@@ -8,7 +8,7 @@
 void to_json(nlohmann::json& jsonData, const WeaponConfig& weaponContext) {
 
 	jsonData["power"] = weaponContext.power;
-	jsonData["kAttackInterval"] = weaponContext.kAttackInterval;
+	jsonData["kAttackInterval"] = weaponContext.attackInterval;
 	jsonData["bulletSpeed"] = weaponContext.bulletSpeed;
 	jsonData["effectiveRange"] = weaponContext.effectiveRange;
 	jsonData["maxReloadTime"] = weaponContext.maxReloadTime;
@@ -47,7 +47,7 @@ void to_json(nlohmann::json& jsonData, const WeaponData& weaponData) {
 void from_json(const nlohmann::json& jsonData, WeaponConfig& weaponContext) {
 
 	if (jsonData.contains("power"))jsonData.at("power").get_to(weaponContext.power);
-	if (jsonData.contains("kAttackInterval"))jsonData.at("kAttackInterval").get_to(weaponContext.kAttackInterval);
+	if (jsonData.contains("kAttackInterval"))jsonData.at("kAttackInterval").get_to(weaponContext.attackInterval);
 	if (jsonData.contains("bulletSpeed"))jsonData.at("bulletSpeed").get_to(weaponContext.bulletSpeed);
 	if (jsonData.contains("effectiveRange"))jsonData.at("effectiveRange").get_to(weaponContext.effectiveRange);
 	if (jsonData.contains("maxReloadTime"))jsonData.at("maxReloadTime").get_to(weaponContext.maxReloadTime);
@@ -96,17 +96,18 @@ void from_json(const nlohmann::json& jsonData, WeaponData& weaponData) {
 //============================================================================
 // configの編集
 //============================================================================
-void WeaponConfig::EditConfigImGui() {
-	ImGui::SliderFloat("Power", &power, 0.0f, 500.0f);
-	ImGui::SliderFloat("Attack Interval", &kAttackInterval, 0.01f, 2.0f);
-	ImGui::SliderFloat("Bullet Speed", &bulletSpeed, 100.0f, 2000.0f);
-	ImGui::SliderFloat("Effective Range", &effectiveRange, 50.0f, 2000.0f);
-	ImGui::SliderFloat("Max Reload Time", &maxReloadTime, 0.1f, 10.0f);
-	ImGui::SliderFloat("Required Charge Time", &requiredChargeTime, 0.0f, 5.0f);
-	ImGui::SliderFloat("Homing Rate", &homingRate, 0.0f, 1.0f);
-	ImGui::SliderInt("Max Magazine Count", reinterpret_cast<int*>(&maxMagazineCount), 1, 100);
-	ImGui::SliderInt("Max Bullet Count", reinterpret_cast<int*>(&maxBulletCount), 1, 1000);
-	ImGui::Checkbox("Can Charge Attack", &canChargeAttack);
-	ImGui::Checkbox("Can Move Shootable", &canMoveShootable);
-	ImGui::Checkbox("Is Stop Shoot Only", &isStopShootOnly);
+void WeaponConfig::EditConfigImGui(const std::string& weaponName) {
+	ImGui::SeparatorText((weaponName + " Config").c_str());
+	ImGui::SliderFloat(("Power##" + weaponName).c_str(), &power, 0.0f, 1000.0f);
+	ImGui::SliderFloat(("Attack Interval##" + weaponName).c_str(), &attackInterval, 0.0f, 5.0f);
+	ImGui::SliderFloat(("Bullet Speed##" + weaponName).c_str(), &bulletSpeed, 50.0f, 1000.0f);
+	ImGui::SliderFloat(("Effective Range##" + weaponName).c_str(), &effectiveRange, 0.0f, 1000.0f);
+	ImGui::SliderFloat(("Max Reload Time##" + weaponName).c_str(), &maxReloadTime, 0.0f, 10.0f);
+	ImGui::SliderFloat(("Required Charge Time##" + weaponName).c_str(), &requiredChargeTime, 0.0f, 5.0f);
+	ImGui::SliderFloat(("Homing Rate##" + weaponName).c_str(), &homingRate, 0.0f, 1.0f);
+	ImGui::SliderInt(("Max Magazine Count##" + weaponName).c_str(), reinterpret_cast<int*>(&maxMagazineCount), 1, 100);
+	ImGui::SliderInt(("Max Bullet Count##" + weaponName).c_str(), reinterpret_cast<int*>(&maxBulletCount), 1, 1000);
+	ImGui::Checkbox(("Can Charge Attack##" + weaponName).c_str(), &canChargeAttack);
+	ImGui::Checkbox(("Can Move Shootable##" + weaponName).c_str(), &canMoveShootable);
+	ImGui::Checkbox(("Is Stop Shoot Only##" + weaponName).c_str(), &isStopShootOnly);
 }

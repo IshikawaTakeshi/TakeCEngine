@@ -3,7 +3,7 @@
 #include "Matrix4x4.h"
 #include "Transform.h"
 #include "Material.h"
-#include "ResourceDataStructure.h"
+#include "3d/VertexData.h"
 
 #include <string>
 #include <vector>
