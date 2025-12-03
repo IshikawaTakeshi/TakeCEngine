@@ -283,19 +283,21 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->PreDraw();
 	player_->Draw();
 	enemy_->Draw();
-	bulletManager_->Draw();
+	bulletManager_->DrawMissile();
+	bulletManager_->DrawBullet();
 	for (auto& object : levelObjects_) {
 		object.second->Draw();
 	}
 	Object3dCommon::GetInstance()->PreDrawAddBlend();
 	player_->DrawBoostEffect();
+	
 
 #pragma endregion
 
 	//当たり判定の描画前処理
 	enemy_->DrawCollider();
 	//pointLightの描画
-	TakeCFrameWork::GetLightManager()->DrawPointLights();
+	//TakeCFrameWork::GetLightManager()->DrawPointLights();
 	//spotLightの描画
 	TakeCFrameWork::GetLightManager()->DrawSpotLights();
 	//登録されたワイヤーフレームをすべて描画させる

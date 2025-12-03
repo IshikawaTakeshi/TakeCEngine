@@ -85,8 +85,9 @@
     <FxCompile Include="Resources\shaders\PostEffect\DepthBasedOutline.CS.hlsl">
       <Filter>Resources\shader\PostEffect</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\shaders\PostEffect\GlareExtract.CS.hlsl" />
-    <FxCompile Include="Resources\shaders\PostEffect\KawaseBlur.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\BloomBrightPass.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\BloomBlurHorizontal.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\BloomBlurVertical.CS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -1193,6 +1194,7 @@
     <None Include="Resources\shaders\Light\PointLight.hlsli" />
     <None Include="Resources\shaders\Light\SpotLight.hlsli" />
     <None Include="Resources\shaders\Light\LightCountData.hlsli" />
+    <None Include="Resources\shaders\PostEffect\BloomEffectInfo.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">

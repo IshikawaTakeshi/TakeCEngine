@@ -3,6 +3,7 @@
 #include "3d/Object3dCommon.h"
 #include "Entity/GameCharacter.h"
 #include "3d/Particle/ParticleEmitter.h"
+#include "3d/Light/PointLight.h"
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -106,6 +107,9 @@ private:
 	float lifeTime_ = 0.0f;
 	//弾の半径
 	float bulletRadius_ = 1.0f;
+
+	PointLightData pointLightData_;
+	uint32_t pointLightIndex_ = 0;
 
 	//パーティクルエミッター
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;

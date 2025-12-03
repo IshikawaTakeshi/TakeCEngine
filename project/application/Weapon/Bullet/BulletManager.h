@@ -31,7 +31,8 @@ public:
 	//更新
 	void Update();
 	//ImGuiの更新
-	void Draw();
+	void DrawBullet();
+	void DrawMissile();
 	//コライダー描画
 	void DrawCollider();
 

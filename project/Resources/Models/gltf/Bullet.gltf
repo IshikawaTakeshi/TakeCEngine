@@ -15,17 +15,7 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"Bullet",
-			"scale":[
-				0.42911553382873535,
-				0.42911553382873535,
-				5.6957783699035645
-			],
-			"translation":[
-				0,
-				0,
-				0.4234704375267029
-			]
+			"name":"Bullet"
 		}
 	],
 	"materials":[
@@ -33,9 +23,6 @@
 			"doubleSided":true,
 			"name":"\u30de\u30c6\u30ea\u30a2\u30eb",
 			"pbrMetallicRoughness":{
-				"baseColorTexture":{
-					"index":0
-				},
 				"metallicFactor":0,
 				"roughnessFactor":0.5
 			}
@@ -57,33 +44,20 @@
 			]
 		}
 	],
-	"textures":[
-		{
-			"sampler":0,
-			"source":0
-		}
-	],
-	"images":[
-		{
-			"mimeType":"image/png",
-			"name":"BulletEffect1",
-			"uri":"BulletEffect1.png"
-		}
-	],
 	"accessors":[
 		{
 			"bufferView":0,
 			"componentType":5126,
 			"count":61,
 			"max":[
-				1,
-				0.824012279510498,
-				1.0000001192092896
+				0.42911553382873535,
+				0.3535964787006378,
+				3.07466983795166
 			],
 			"min":[
-				-1,
-				-0.824012279510498,
-				-1.2596468925476074
+				-0.42911553382873535,
+				-0.3535964787006378,
+				-9.795778274536133
 			],
 			"type":"VEC3"
 		},
@@ -130,12 +104,6 @@
 			"byteLength":228,
 			"byteOffset":1952,
 			"target":34963
-		}
-	],
-	"samplers":[
-		{
-			"magFilter":9729,
-			"minFilter":9987
 		}
 	],
 	"buffers":[
