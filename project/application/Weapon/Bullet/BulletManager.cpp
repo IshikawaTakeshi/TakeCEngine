@@ -10,7 +10,7 @@ void BulletManager::Initialize(Object3dCommon* object3dCommon,size_t size) {
 	missilePool_ = std::make_unique<MissilePool>();
 	missilePool_->Initialize(size); 
 	object3dCommon_ = object3dCommon;
-	bulletFilePath_ = "cube.obj";
+	bulletFilePath_ = "Bullet.gltf";
 	missileFilePath_ = "ICOBall.gltf";
 }
 

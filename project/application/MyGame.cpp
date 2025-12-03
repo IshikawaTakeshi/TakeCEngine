@@ -150,6 +150,7 @@ void MyGame::LoadModel() {
 	ModelManager::GetInstance()->LoadModel("boostEffectCone.gltf");
 	ModelManager::GetInstance()->LoadModel("MultiICO.gltf");
 	ModelManager::GetInstance()->LoadModel("Deer.gltf");
+	ModelManager::GetInstance()->LoadModel("Bullet.gltf");
 	//obj
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("sphere.obj");

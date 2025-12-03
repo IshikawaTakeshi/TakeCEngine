@@ -85,6 +85,8 @@
     <FxCompile Include="Resources\shaders\PostEffect\DepthBasedOutline.CS.hlsl">
       <Filter>Resources\shader\PostEffect</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\GlareExtract.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\KawaseBlur.CS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -527,6 +529,7 @@
     <ClCompile Include="engine\camera\CameraForGPU.cpp" />
     <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
     <ClCompile Include="engine\2d\SpriteConfig.cpp" />
+    <ClCompile Include="engine\PostEffect\GlareEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1095,6 +1098,7 @@
     <ClInclude Include="engine\3d\VertexData.h" />
     <ClInclude Include="application\Weapon\MachineGun\MachineGun.h" />
     <ClInclude Include="engine\2d\SpriteConfig.h" />
+    <ClInclude Include="engine\PostEffect\GlareEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

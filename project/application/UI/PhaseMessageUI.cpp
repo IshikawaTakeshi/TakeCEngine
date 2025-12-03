@@ -11,8 +11,8 @@
 void PhaseMessageUI::Initialize() {
 
 	screenCenter_ = {
-		WinApp::kScreenWidth / 2.0f,
-		WinApp::kScreenHeight / 2.0f
+		WinApp::kDebugScreenWidth_ / 2.0f,
+		WinApp::kDebugScreenHeight_ / 2.0f
 	};
 
 	TextureManager::GetInstance()->LoadTexture("UI/PhaseMessage_ReadyText.png",false);
