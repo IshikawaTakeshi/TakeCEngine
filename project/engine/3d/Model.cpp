@@ -171,7 +171,7 @@ void Model::Draw(PSO* pso) {
 			pso->GetGraphicBindResourceIndex("gEnvMapTexture"),
 			TextureManager::GetInstance()->GetSrvIndex(mat.envMapFilePath));
 
-		// Draw 呼び出し
+		// DrawObject 呼び出し
 		commandList->DrawIndexedInstanced(
 			sub.indexCount,    // インデックス数
 			1,                 // インスタンス数

@@ -24,7 +24,14 @@ void SpriteCommon::Initialize(DirectXCommon* directXCommon) {
 	pso_ = std::make_unique<PSO>();
 	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Sprite.VS.hlsl");
 	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Sprite.PS.hlsl");
-	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO,BlendState::SPRITE);
+	pso_->CreateGraphicPSO(
+		dxCommon_->GetDevice(),
+		D3D12_FILL_MODE_SOLID,
+		D3D12_DEPTH_WRITE_MASK_ZERO,
+		BlendState::SPRITE,
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+		false
+	);
 	pso_->SetGraphicPipelineName("SpritePSO");
 	rootSignature_ = pso_->GetGraphicRootSignature();
 }

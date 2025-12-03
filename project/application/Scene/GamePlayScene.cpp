@@ -305,8 +305,10 @@ void GamePlayScene::Draw() {
 
 	//パーティクルの描画
 	TakeCFrameWork::GetParticleManager()->Draw();
+}
 
-#pragma region スプライト描画
+void GamePlayScene::DrawSprite() {
+
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
 
@@ -329,8 +331,6 @@ void GamePlayScene::Draw() {
 		//フェーズメッセージUIの描画
 		phaseMessageUI_->Draw();
 	}
-
-#pragma endregion
 }
 
 //====================================================================

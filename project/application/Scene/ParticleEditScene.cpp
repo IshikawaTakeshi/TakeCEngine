@@ -89,3 +89,7 @@ void ParticleEditScene::Draw() {
 	// ParticleEditorの描画
 	particleEditor_->Draw();
 }
+
+void ParticleEditScene::DrawSprite() {
+
+}

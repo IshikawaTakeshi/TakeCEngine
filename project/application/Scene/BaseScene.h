@@ -41,6 +41,8 @@ public:
 	/// </summary>
 	virtual void Draw() = 0;
 
+	virtual void DrawSprite() = 0;
+
 	/// <summary>
 	/// シーンマネージャーのセット
 	/// </summary>

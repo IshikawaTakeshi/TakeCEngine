@@ -46,18 +46,16 @@ public:
 
 	//初期化
 	void Initialize() override;
-
 	//終了処理
 	void Finalize() override;
-
 	//更新処理
 	void Update() override;
-
 	//ImGuiの更新処理
 	void UpdateImGui() override;
-
 	//描画処理
 	void Draw() override;
+	//スプライト描画処理
+	void DrawSprite() override;
 
 private:
 

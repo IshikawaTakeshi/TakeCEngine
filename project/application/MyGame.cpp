@@ -106,17 +106,20 @@ void MyGame::Draw() {
 	renderTexture_->PreDraw();
 	//SRV描画前処理
 	srvManager_->SetDescriptorHeap(); 
-	//シーン描画
-	sceneManager_->Draw();
-	 //描画前処理
-	directXCommon_->PreDraw();
-
+	//オブジェクト描画
+	sceneManager_->DrawObject();
+	//スプライト描画
+	sceneManager_->DrawSprite();
 	//postEffect計算処理
 	postEffectManager_->AllDispatch();
+	 //描画前処理
+	directXCommon_->PreDraw();
 	//RenderTexture描画
 	renderTexture_->Draw();
+	
 	//renderTexture描画後処理
 	renderTexture_->PostDraw();
+
 #ifdef _DEBUG
 	imguiManager_->PostDraw();
 #endif

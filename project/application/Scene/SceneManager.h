@@ -47,7 +47,12 @@ public:
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void Draw();
+	void DrawObject();
+
+	/// <summary>
+	/// スプライト描画処理
+	/// </summary>
+	void DrawSprite();
 
 	/// <summary>
 	/// シーンの変更
