@@ -11,5 +11,5 @@ struct PointLightData {
 	float intensity_; //輝度
 	float radius_; //影響範囲
 	float decay_; //減衰率
-	float padding[2];
+	uint16_t enabled_; //ライトの有効・無効
 };

@@ -21,6 +21,7 @@
     "isBillboard": true,
     "isTraslate": true,
     "isDirectional": false,
+    "isEmitterTrail": true,
     "lifetimeRange": {
       "max": 3.0,
       "min": 1.0
