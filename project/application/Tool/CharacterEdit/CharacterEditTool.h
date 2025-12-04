@@ -116,6 +116,10 @@ public:
 	/// </summary>
 	void LoadAllWeaponData();
 
+private:
+
+	float GetMenuItemOffsetY() const;
+
 public:
 
 	//========================================================================
@@ -155,10 +159,11 @@ private:
 
 	std::vector<std::unique_ptr<Sprite>> weaponItemSprites_; //武器項目スプライトリスト
 	std::vector<std::unique_ptr<Sprite>> weaponIconTexts_; //武器項目テキストスプライトリスト
+	std::vector<std::unique_ptr<Sprite>> weaponNameTexts_; //武器名テキストスプライトリスト
 	std::vector<std::unique_ptr<Sprite>> characterItemSprites_; //キャラクター項目スプライトリスト
 
 	//メニューバースプライトサイズ
-	Vector2 menuBarSpriteSize_{ 300.0f,50.0f }; 
+	Vector2 menuBarSpriteSize_{ 330.0f,50.0f }; 
 	//メニューバー左上座標
 	Vector2 menuBarLeftTop_{ 30.0f,30.0f }; 
 	//メニューバーの縦間隔

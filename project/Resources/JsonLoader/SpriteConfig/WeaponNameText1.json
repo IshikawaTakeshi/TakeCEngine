@@ -1,0 +1,25 @@
+{
+    "anchorPoint": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "jsonFilePath": "WeaponNameText1.json",
+    "position": {
+        "x": 49.0,
+        "y": 111.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 300.0,
+        "y": 30.0
+    },
+    "textureFilePath": "UI/EditWeaponNameText.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 64.0
+    },
+    "textureSize": {
+        "x": 380.0,
+        "y": 52.0
+    }
+}
