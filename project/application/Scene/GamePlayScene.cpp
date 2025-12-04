@@ -14,7 +14,7 @@
 void GamePlayScene::Initialize() {
 
 	//BGM読み込み
-	BGM = AudioManager::GetInstance()->LoadSound("GamePlaySceneBGM.mp3");
+	BGM_ = AudioManager::GetInstance()->LoadSound("GamePlaySceneBGM.mp3");
 
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
@@ -117,7 +117,7 @@ void GamePlayScene::Initialize() {
 
 void GamePlayScene::Finalize() {
 	
-	AudioManager::GetInstance()->SoundUnload(&BGM); // BGMの解放
+	AudioManager::GetInstance()->SoundUnload(&BGM_); // BGMの解放
 	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
 	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
 	TakeCFrameWork::GetParticleManager()->ClearParticleGroups(); //パーティクルグループの解放
@@ -131,9 +131,9 @@ void GamePlayScene::Finalize() {
 void GamePlayScene::Update() {
 
 	//BGM再生
-	if (!isSoundPlay) {
-		AudioManager::GetInstance()->SoundPlayWave(BGM, 0.05f,true);
-		isSoundPlay = true;
+	if (!isSoundPlay_) {
+		AudioManager::GetInstance()->SoundPlayWave(BGM_, bgmVolume_,true);
+		isSoundPlay_ = true;
 	}
 
 	//カメラの更新
@@ -144,7 +144,6 @@ void GamePlayScene::Update() {
 	//enemy
 	enemy_->SetFocusTargetPos(player_->GetObject3d()->GetTranslate());
 	enemy_->SetFocusTargetVelocity(player_->GetVelocity());
-	
 
 	//player
 	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
@@ -284,19 +283,21 @@ void GamePlayScene::Draw() {
 	Object3dCommon::GetInstance()->PreDraw();
 	player_->Draw();
 	enemy_->Draw();
-	bulletManager_->Draw();
+	bulletManager_->DrawMissile();
+	bulletManager_->DrawBullet();
 	for (auto& object : levelObjects_) {
 		object.second->Draw();
 	}
 	Object3dCommon::GetInstance()->PreDrawAddBlend();
 	player_->DrawBoostEffect();
+	
 
 #pragma endregion
 
 	//当たり判定の描画前処理
 	enemy_->DrawCollider();
 	//pointLightの描画
-	TakeCFrameWork::GetLightManager()->DrawPointLights();
+	//TakeCFrameWork::GetLightManager()->DrawPointLights();
 	//spotLightの描画
 	TakeCFrameWork::GetLightManager()->DrawSpotLights();
 	//登録されたワイヤーフレームをすべて描画させる
@@ -304,8 +305,10 @@ void GamePlayScene::Draw() {
 
 	//パーティクルの描画
 	TakeCFrameWork::GetParticleManager()->Draw();
+}
 
-#pragma region スプライト描画
+void GamePlayScene::DrawSprite() {
+
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance()->PreDraw();
 
@@ -328,8 +331,6 @@ void GamePlayScene::Draw() {
 		//フェーズメッセージUIの描画
 		phaseMessageUI_->Draw();
 	}
-
-#pragma endregion
 }
 
 //====================================================================

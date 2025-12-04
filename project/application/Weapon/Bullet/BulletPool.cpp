@@ -1,4 +1,5 @@
 #include "BulletPool.h"
+#include "3d/Object3dCommon.h"
 #include <cassert>
 
 //===================================================================================
@@ -8,6 +9,7 @@ void BulletPool::Initialize(size_t size) {
 
 	for (int i = 0; i < size; i++) {
 		pool_.emplace_back(std::make_unique<Bullet>());
+		pool_[i]->Initialize(Object3dCommon::GetInstance(), "Bullet.gltf");
 	}
 }
 
@@ -40,9 +42,7 @@ void BulletPool::UpdateAllBullet() {
 
 	for (const auto& bullet : pool_) {
 		//アクティブな弾のみ更新
-		if (bullet->GetIsActive()) {
-			bullet->Update();
-		}
+		bullet->Update();
 	}
 }
 

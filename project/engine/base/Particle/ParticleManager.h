@@ -52,6 +52,9 @@ public:
 	//パーティクルグループの開放
 	void ClearParticleGroups();
 
+	//出現しているパーティクルのクリア
+	void ClearParticles();
+
 	//パーティクルグループの取得
 	BaseParticleGroup* GetParticleGroup(const std::string& name);
 	//プリセットの設定

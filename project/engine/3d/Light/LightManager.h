@@ -142,6 +142,6 @@ private:
 	ComPtr<ID3D12Resource> lightCountResource_;
 	LightCountData* lightCountData_ = nullptr;
 
-	static const uint32_t kMaxPointLights = 32;   // 最大ポイントライト数
-	static const uint32_t kMaxSpotLights = 32;    // 最大スポットライト数
+	static const uint32_t kMaxPointLights = 128;   // 最大ポイントライト数
+	static const uint32_t kMaxSpotLights = 128;    // 最大スポットライト数
 };

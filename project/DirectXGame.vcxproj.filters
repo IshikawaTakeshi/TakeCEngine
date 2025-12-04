@@ -85,6 +85,9 @@
     <FxCompile Include="Resources\shaders\PostEffect\DepthBasedOutline.CS.hlsl">
       <Filter>Resources\shader\PostEffect</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\BloomBrightPass.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\BloomBlurHorizontal.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\BloomBlurVertical.CS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -527,6 +530,7 @@
     <ClCompile Include="engine\camera\CameraForGPU.cpp" />
     <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
     <ClCompile Include="engine\2d\SpriteConfig.cpp" />
+    <ClCompile Include="engine\PostEffect\GlareEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1095,6 +1099,7 @@
     <ClInclude Include="engine\3d\VertexData.h" />
     <ClInclude Include="application\Weapon\MachineGun\MachineGun.h" />
     <ClInclude Include="engine\2d\SpriteConfig.h" />
+    <ClInclude Include="engine\PostEffect\GlareEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -1189,6 +1194,7 @@
     <None Include="Resources\shaders\Light\PointLight.hlsli" />
     <None Include="Resources\shaders\Light\SpotLight.hlsli" />
     <None Include="Resources\shaders\Light\LightCountData.hlsli" />
+    <None Include="Resources\shaders\PostEffect\BloomEffectInfo.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">

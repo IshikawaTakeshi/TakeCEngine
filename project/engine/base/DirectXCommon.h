@@ -155,6 +155,7 @@ private:
 	std::unique_ptr<RtvManager> rtvManager_ = nullptr;
 	uint32_t swapchainRtvIndex_[2];
 
+
 	//depthStencil
 	ComPtr<ID3D12DescriptorHeap> dsvHeap_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;

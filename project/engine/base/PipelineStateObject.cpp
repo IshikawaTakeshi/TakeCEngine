@@ -610,7 +610,13 @@ void PSO::SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type) {
 
 	//DepthStencilの設定
 	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc_;
-	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	if (depthStencilDesc_.DepthEnable) {
+
+		graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	} else {
+		graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_UNKNOWN;
+	}
 
 	// RootSignature
 	graphicsPipelineStateDesc_.pRootSignature = graphicRootSignature_.Get();

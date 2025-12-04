@@ -34,10 +34,7 @@ VerticalMissile* MissilePool::GetMissile() {
 //===================================================================================
 void MissilePool::UpdateAllMissiles() {
 	for (const auto& missile : pool_) {
-		if (missile->GetIsActive()) {
-			// アクティブなミサイルのみ更新
-			missile->Update();
-		}
+		missile->Update();
 	}
 }
 

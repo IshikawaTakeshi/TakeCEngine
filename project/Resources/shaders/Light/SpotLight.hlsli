@@ -24,43 +24,61 @@ float3 CalcSpotLighting(
 	
 	float3 totalLighting = float3(0, 0, 0);
 	
-	for ( int i = 0; i < lightCount; i++ ) {
+	// ✅ ループ外で正規化（1回だけ）
+	N = normalize(N);
+	
+	for ( uint i = 0; i < lightCount; i++ ) {
 		SpotLight sLight = spotLights[i];
-
-		N = normalize(N);
-		float3 L = normalize(sLight.position - worldPos);
-        
-        // diffuse
+		
+		// ✅ 早期カリング（距離チェック）を最初に行う
+		float3 toLight = sLight.position - worldPos;
+		float distanceSq = dot(toLight, toLight);
+		float maxDistSq = sLight.distance * sLight.distance;
+		
+		if ( distanceSq > maxDistSq ) {
+			continue; // 範囲外はスキップ
+		}
+		
+		// ✅ toLight を再利用して L を計算
+		float distanceSpot = sqrt(distanceSq);
+		float3 L = toLight / distanceSpot; // normalize の代わり
+		
+		// ✅ スポットライトのコーン判定（早期スキップ）
+		float3 lightDir = normalize(sLight.direction);
+		float spotEffect = dot(lightDir, -L);
+		
+		// コーンの外側なら早期スキップ
+		if ( spotEffect < sLight.cosAngle - sLight.penumbraAngle ) {
+			continue;
+		}
+		
+		// diffuse
 		float cosSpot = saturate(dot(N, L));
-
-        // specular
+		
+		// specular
 		float3 halfVec = normalize(L + viewDir);
 		float spec = pow(saturate(dot(N, halfVec)), gMaterial.shininess);
-
-		// 光の減衰計算
-		float distanceSpot = length(sLight.position - worldPos);
 		
 		// 減衰率が0の場合は一定、そうでない場合は減衰計算
 		float baseAtten = saturate(1.0f - distanceSpot / sLight.distance);
 		float attenuation = lerp(1.0f, pow(baseAtten, sLight.decay), step(0.001f, sLight.decay));
-
-		//スポットライトのコーン判定
-		float3 lightDir = normalize(sLight.direction);
-		float spotEffect = dot(lightDir, -L);
-
-		float spotAttenuation =
-			smoothstep(sLight.cosAngle - sLight.penumbraAngle,
-						sLight.cosAngle,
-						spotEffect);
-
+		
+		// スポットライトの減衰
+		float spotAttenuation = smoothstep(
+			sLight.cosAngle - sLight.penumbraAngle,
+			sLight.cosAngle,
+			spotEffect);
+		
+		// ✅ 共通項をまとめる
+		float3 lightContrib = sLight.color.rgb * sLight.intensity * attenuation * spotAttenuation;
+		
 		// 最終的な色の計算
-		float3 diffuse = albedo * sLight.color.rgb * cosSpot * sLight.intensity * attenuation * spotAttenuation;
-		float3 specular = sLight.color.rgb * sLight.intensity * attenuation * spotAttenuation * spec;
-
-		// 合計ライティングに加算
+		float3 diffuse = albedo * lightContrib * cosSpot;
+		float3 specular = lightContrib * spec;
+		
 		totalLighting += diffuse + specular;
 	}
-
+	
 	return totalLighting;
 }
 
@@ -73,34 +91,53 @@ float3 CalcSpotLightingSimple(
 	float3 N, float3 worldPos) {
 	
 	float3 totalLighting = float3(0, 0, 0);
-	for ( int i = 0; i < lightCount; i++ ) {
+	
+	// ✅ ループ外で正規化（1回だけ）
+	N = normalize(N);
+	
+	for ( uint i = 0; i < lightCount; i++ ) {
 		SpotLight sLight = spotLights[i];
 		
-		// 法線ベクトルを正規化
-		N = normalize(N);
+		// ✅ 早期カリング（距離チェック）を最初に行う
+		float3 toLight = sLight.position - worldPos;
+		float distanceSq = dot(toLight, toLight);
+		float maxDistSq = sLight.distance * sLight.distance;
 		
-		// ライト方向ベクトルの計算
-		float3 L = normalize(sLight.position - worldPos);
-		float cosSpot = saturate(dot(N, L));
-		// 光の減衰計算
-		float distanceSpot = length(sLight.position - worldPos);
+		if ( distanceSq > maxDistSq ) {
+			continue; // 範囲外はスキップ
+		}
 		
-		// 減衰率が0の場合は一定、そうでない場合は減衰計算
-		float baseAtten = saturate(1.0f - distanceSpot / sLight.distance);
-		float attenuation = lerp(1.0f, pow(baseAtten, sLight.decay), step(0.001f, sLight.decay));
-		//スポットライトのコーン判定
+		// ✅ toLight を再利用して L を計算
+		float distanceSpot = sqrt(distanceSq);
+		float3 L = toLight / distanceSpot; // normalize の代わり
+		
+		// ✅ スポットライトのコーン判定（早期スキップ）
 		float3 lightDir = normalize(sLight.direction);
 		float spotEffect = dot(lightDir, -L);
-		float spotAttenuation =
-			smoothstep(sLight.cosAngle - sLight.penumbraAngle,
-						sLight.cosAngle,
-						spotEffect);
+		
+		// コーンの外側なら早期スキップ
+		if ( spotEffect < sLight.cosAngle - sLight.penumbraAngle ) {
+			continue;
+		}
+		
+		// diffuse
+		float cosSpot = saturate(dot(N, L));
+		
+		// 減衰計算
+		float baseAtten = saturate(1.0f - distanceSpot / sLight.distance);
+		float attenuation = lerp(1.0f, pow(baseAtten, sLight.decay), step(0.001f, sLight.decay));
+		
+		// スポットライトの減衰
+		float spotAttenuation = smoothstep(
+			sLight.cosAngle - sLight.penumbraAngle,
+			sLight.cosAngle,
+			spotEffect);
 		
 		// 最終的な色の計算
 		float3 diffuse = sLight.color.rgb * cosSpot * sLight.intensity * attenuation * spotAttenuation;
 		
-		// 合計ライティングに加算
 		totalLighting += diffuse;
 	}
+	
 	return totalLighting;
 }

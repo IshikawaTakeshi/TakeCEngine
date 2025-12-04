@@ -87,8 +87,7 @@ void GameClearScene::Draw() {
 
 	skybox_->Draw(); // 天球の描画
 
-	SpriteCommon::GetInstance()->PreDraw(); // Spriteの描画前処理
-	clearTextSprite_->Draw();
+	
 	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
 
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
@@ -97,4 +96,10 @@ void GameClearScene::Draw() {
 
 	//ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); // パーティクルの描画
+}
+
+void GameClearScene::DrawSprite() {
+
+	SpriteCommon::GetInstance()->PreDraw(); // Spriteの描画前処理
+	clearTextSprite_->Draw();
 }
