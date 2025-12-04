@@ -160,12 +160,27 @@ void ParticleManager::Emit(const std::string& name, const Vector3& emitPosition,
 	particleGroups_.at(name)->SpliceParticles(particleGroups_.at(name)->Emit(emitPosition,direction, count));
 }
 
+//================================================================================================
+// エミッター用のハンドルの割り当て
+//================================================================================================
 uint32_t ParticleManager::EmitterAllocate() {
 	return emitterAllocater_->Allocate();
 }
 
+//================================================================================================
+// パーティクルグループの開放
+//================================================================================================
 void ParticleManager::ClearParticleGroups() {
 	particleGroups_.clear();
+}
+
+//================================================================================================
+// 出現しているパーティクルのクリア
+//================================================================================================
+void ParticleManager::ClearParticles() {
+	for (auto& [name, particleGroup] : particleGroups_) {
+		particleGroup->SpliceParticles(std::list<Particle>{});
+	}
 }
 
 BaseParticleGroup* ParticleManager::GetParticleGroup(const std::string& name) {

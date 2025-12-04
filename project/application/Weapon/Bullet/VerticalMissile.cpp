@@ -37,9 +37,16 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 	phase_ = VerticalMissilePhase::ASCENDING;
 
-	lifeTime_ = 5.0f; // ライフタイムを設定
+	
 	bulletRadius_ = 1.5f; // 弾の半径を設定
 	homingRate_ = 0.01f; // ホーミングの度合いを設定(値が大きいほど急激に曲がる)
+
+	pointLightData_.color_ = { 1.0f,0.1f,0.2f,1.0f };
+	pointLightData_.intensity_ = 0.0f;
+	pointLightData_.radius_ = 20.0f;
+	pointLightData_.decay_ = 6.0f;
+	//ポイントライトの追加
+	pointLightIndex_ = TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
 }
 
 //====================================================================================
@@ -60,6 +67,7 @@ void VerticalMissile::Update() {
 	//ライフタイムの減少
 	lifeTime_ -= deltaTime_;
 	if (lifeTime_ <= 0.0f) {
+		pointLightData_.intensity_--;
 		isActive_ = false;
 	}
 
@@ -114,11 +122,14 @@ void VerticalMissile::Update() {
 		break;
 	}
 
+	//オブジェクト、コライダーの更新
 	object3d_->SetTranslate(transform_.translate);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
-	
+	//ポイントライトの更新
+	pointLightData_.position_ = transform_.translate;
+	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
 	//MEMO: パーティクルの毎フレーム発生
 	particleEmitter_[1]->Emit();
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("MissileSmoke")->SetEmitterPosition(transform_.translate);
@@ -153,7 +164,10 @@ void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 	   characterType_ == CharacterType::ENEMY_MISSILE && other->GetCharacterType() == CharacterType::PLAYER) {
 		//パーティクル射出
 		particleEmitter_[0]->Emit();
-		isActive_ = false; //弾を無効化
+		//弾を無効化
+		isActive_ = false; 
+		//ライトを消す
+		pointLightData_.intensity_ = 0.0f;
 	}
 
 	//レベルオブジェクトに当たった場合の処理
@@ -161,8 +175,10 @@ void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 
 		//パーティクル射出
 		particleEmitter_[0]->Emit();
-
-		isActive_ = false; //弾を無効化
+		//弾を無効化
+		isActive_ = false; 
+		//ライトを消す
+		pointLightData_.intensity_ = 0.0f;
 	}
 
 }
@@ -183,6 +199,9 @@ void VerticalMissile::Create(BaseWeapon* ownerWeapon, float speed,float HomingRa
 	//ターゲットまでの方向を求める
 	direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
 	altitude_ = transform_.translate.y + kMaxAltitude_; // 初期の上昇高度を設定
+
+	lifeTime_ = 5.0f; // ライフタイムを設定
+	pointLightData_.intensity_ = 120.0f;
 	isActive_ = true;
 }
 

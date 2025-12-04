@@ -83,6 +83,9 @@ private:
 	float lifeTime_ = 0.0f; // 寿命時間
 	float bulletRadius_ = 1.0f; //弾の半径
 
+	PointLightData pointLightData_;
+	uint32_t pointLightIndex_ = 0;
+
 	//パーティクルエミッター
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
 
