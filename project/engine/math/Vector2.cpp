@@ -1,60 +1,66 @@
 #include "Vector2.h"
 #include <cmath>
 #include <algorithm>
+#include <tuple>
 
 //=============================================================================
 // operator overloads
 //=============================================================================
 
-Vector2 Vector2::operator+(){
-	return {x, y};
+Vector2 operator+(const Vector2& lhs, const Vector2& rhs) {
+	return { lhs.x + rhs.x, lhs.y + rhs.y };
 }
 
-Vector2 Vector2::operator+(const Vector2& rhs) const {
-	return { x + rhs.x, y + rhs.y };
+Vector2 operator-(const Vector2& lhs, const Vector2& rhs) {
+	return { lhs.x - rhs.x, lhs.y - rhs.y };
 }
 
-Vector2 Vector2::operator-(const Vector2& rhs) const {
-	return { x - rhs.x, y - rhs.y };
+
+Vector2 operator*(float scalar,const Vector2& v) {
+	return { v.x * scalar, v.y * scalar };
 }
 
-Vector2 Vector2::operator-() {
-	return { -x, -y };
+Vector2 operator*(const Vector2& v, float scalar) {
+	return { v.x * scalar, v.y * scalar };
 }
 
-Vector2 Vector2::operator*(float scalar) const {
-	return { x * scalar, y * scalar };
-}
-
-Vector2 Vector2::operator/(float scalar) const {
+Vector2 operator/(const Vector2& v,float scalar) {
 	if (scalar == 0.0f) {
 		return { 0.0f, 0.0f }; // Avoid division by zero
 	}
-	return { x / scalar, y / scalar };
+	return { v.x / scalar, v.y / scalar };
 }
 
-bool Vector2::operator==(const Vector2& rhs) const {
-	return (x == rhs.x && y == rhs.y);
+bool operator==(const Vector2& lhs, const Vector2& rhs) {
+	return (lhs.x == rhs.x && lhs.y == rhs.y);
 }
 
-bool Vector2::operator<=(const Vector2& rhs) const {
-	return (x <= rhs.x && y <= rhs.y);
+bool operator<=(const Vector2& lhs, const Vector2& rhs) {
+	return (lhs.x <= rhs.x && lhs.y <= rhs.y);
 }
 
-bool Vector2::operator>=(const Vector2& rhs) const {
-	return (x >= rhs.x && y >= rhs.y);
+bool operator>=(const Vector2& lhs, const Vector2& rhs) {
+	return (lhs.x >= rhs.x && lhs.y >= rhs.y);
 }
 
-bool Vector2::operator!=(const Vector2& rhs) const {
-	return (x != rhs.x || y != rhs.y);
+bool operator!=(const Vector2& lhs, const Vector2& rhs) {
+	return (lhs.x != rhs.x || lhs.y != rhs.y);
 }
 
-bool Vector2::operator<(const Vector2& rhs) const {
-	return (x < rhs.x && y < rhs.y);
+bool operator<(const Vector2& lhs, const Vector2& rhs) {
+	return (lhs.x < rhs.x && lhs.y < rhs.y);
 }
 
-bool Vector2::operator>(const Vector2& rhs) const {
-	return (x > rhs.x && y > rhs.y);
+bool operator>(const Vector2& lhs, const Vector2& rhs) {
+	return (lhs.x > rhs.x && lhs.y > rhs.y);
+}
+
+Vector2 Vector2::operator+() const{
+	return {x, y};
+}
+
+Vector2 Vector2::operator-() const{
+	return { -x, -y };
 }
 
 Vector2 Vector2::operator+=(const Vector2& rhs) {
@@ -105,24 +111,4 @@ float Vector2::Dot(const Vector2& other) const {
 }
 float Vector2::Cross(const Vector2& other) const {
 	return x * other.y - y * other.x;
-}
-
-//=============================================================================
-// JSON形式に変換
-//=============================================================================
-void to_json(nlohmann::json& j, const Vector2& v) {
-
-	j = nlohmann::json{ 
-		{"x", v.x},
-		{"y", v.y}
-	};
-}
-
-//=============================================================================
-// JSON形式からVector2に変換
-//=============================================================================
-void from_json(const nlohmann::json& j, Vector2& v) {
-
-	j.at("x").get_to(v.x);
-	j.at("y").get_to(v.y);
 }

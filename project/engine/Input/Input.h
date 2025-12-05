@@ -9,7 +9,7 @@
 
 #include "engine/base/ComPtrAliasTemplates.h"
 #include "engine/math/Vector2.h"
-#include "engine/io/Gamepad.h"
+#include "engine/Input/Gamepad.h"
 
 //前方宣言
 class WinApp;

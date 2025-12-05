@@ -1,6 +1,6 @@
 #pragma once
 #include "engine/Entity/GameCharacter.h"
-#include "engine/io/Gamepad.h"
+#include "engine/Input/Gamepad.h"
 #include "engine/camera/Camera.h"
 #include "engine/3d/Particle/ParticleEmitter.h"
 #include <optional>

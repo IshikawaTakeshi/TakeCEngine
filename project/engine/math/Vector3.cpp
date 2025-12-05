@@ -3,23 +3,15 @@
 #include "Utility/Logger.h"
 
 //===============================================================
-//		二項演算子
+//		演算子オーバーロード
 //===============================================================
 
 Vector3 operator+(const Vector3& v1, const Vector3& v2) {
 	return Vector3Math::Add(v1, v2);
 }
 
-Vector3 operator+(const Vector3& v) {
-	return v;
-}
-
 Vector3 operator-(const Vector3& v1, const Vector3& v2) {
 	return Vector3Math::Subtract(v1, v2);
-}
-
-Vector3 operator-(const Vector3& v) {
-	return { -v.x, -v.y, -v.z };
 }
 
 Vector3 operator*(float s, const Vector3& v) {
@@ -43,25 +35,13 @@ Vector3 operator/(const Vector3& v, float s) {
 	return s / v;
 }
 
-void to_json(nlohmann::json& j, const Vector3& v) {
-	j = json{
-		{"x", v.x},
-		{"y", v.y},
-		{"z", v.z}
-	};
+Vector3 Vector3::operator+() const {
+	return Vector3(x, y, z);
 }
 
-void from_json(const nlohmann::json& j, Vector3& v) {
-
-	j.at("x").get_to(v.x);
-	j.at("y").get_to(v.y);
-	j.at("z").get_to(v.z);
+Vector3 Vector3::operator-() const {
+	return Vector3(-x, -y, -z);
 }
-
-
-//===============================================================
-//		複合代入演算子
-//===============================================================
 
 Vector3 Vector3::operator+=(const Vector3& v) {
 	x += v.x;
@@ -91,8 +71,28 @@ Vector3 Vector3::operator/=(float s) {
 	return *this;
 }
 
-bool Vector3::operator==(const Vector3& v) const {
-	return x == v.x && y == v.y && z == v.z;
+bool operator==(const Vector3& lhs, const Vector3& rhs) {
+	return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+}
+
+bool operator!=(const Vector3& lhs, const Vector3& rhs) {
+	return !(lhs == rhs);
+}
+
+bool operator<(const Vector3& lhs, const Vector3& rhs) {
+	return (lhs.x < rhs.x) && (lhs.y < rhs.y) && (lhs.z < rhs.z);
+}
+
+bool operator<=(const Vector3& lhs, const Vector3& rhs) {
+	return (lhs.x <= rhs.x) && (lhs.y <= rhs.y) && (lhs.z <= rhs.z);
+}
+
+bool operator>(const Vector3& lhs, const Vector3& rhs) {
+	return (rhs < lhs);
+}
+
+bool operator>=(const Vector3& lhs, const Vector3& rhs) {
+	return (rhs <= lhs);
 }
 
 float Vector3::Dot(const Vector3& other) const {

@@ -10,7 +10,7 @@
 #include "3d/Model.h"
 #include "camera/CameraManager.h"
 #include "ParticleCommon.h"
-#include "Input.h"
+#include "Input/Input.h"
 #include <numbers>
 
 //=============================================================================

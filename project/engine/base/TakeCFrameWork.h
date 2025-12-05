@@ -20,7 +20,7 @@
 #include "2d/WireFrame.h"
 #include "Animation/Animator.h"
 #include "audio/Audio.h"
-#include "io/Input.h"
+#include "Input/Input.h"
 #include "camera/CameraManager.h"
 #include "primitive/Sphere.h"
 #include "PostEffect/PostEffectManager.h"

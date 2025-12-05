@@ -1,5 +1,5 @@
 #pragma once
-#include "engine/io/IInputDevice.h"
+#include "engine/Input/IInputDevice.h"
 #include "application/Provider/Enum/CharacterActionInputEnum.h"
 
 //============================================================================

@@ -1,7 +1,6 @@
 #include "PlayerInputProvider.h"
-#include "engine/io/Input.h"
+#include "engine/Input/Input.h"
 #include "application/Entity/Player/Player.h"
-#include "engine/io/Input.h"
 
 //=====================================================================================
 //　移動方向の取得

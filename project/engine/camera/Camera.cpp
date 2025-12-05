@@ -3,7 +3,7 @@
 #include "base/DirectXCommon.h"
 #include "base/ImGuiManager.h"
 #include "base/TakeCFrameWork.h"
-#include "io/Input.h"
+#include "Input/Input.h"
 #include "Collision/CollisionManager.h"
 #include "math/MatrixMath.h"
 #include "math/Easing.h"

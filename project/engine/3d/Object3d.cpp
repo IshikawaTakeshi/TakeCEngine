@@ -52,7 +52,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	camera_ = object3dCommon_->GetDefaultCamera();
 
 	//アニメーション初期化
-	animation_ = new Animation();
+	animation_ = std::make_unique<Animation>();
 	animation_->duration = 0.0f;
 	animationTime_ = 0.0f;
 }
@@ -122,7 +122,7 @@ void Object3d::AnimationUpdate() {
 	}
 
 	//スケルトン・スキンクラスターの更新
-	model_->Update(animation_, animationTime_);
+	model_->Update(animation_.get(), animationTime_);
 
 	//最後まで行ったら最初からリピート再生する
 	animationTime_ = std::fmod(animationTime_, animation_->duration);
@@ -191,7 +191,7 @@ void Object3d::SetWorldMatrix(const Matrix4x4& worldMatrix) {
 
 void Object3d::SetAnimation(Animation* animation) {
 	if (animation) {
-		animation_ = new Animation(*animation);
+		animation_ = std::make_unique<Animation>(*animation);
 	}
 	animationTime_ = 0.0f;
 }

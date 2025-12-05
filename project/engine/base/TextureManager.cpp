@@ -56,7 +56,7 @@ void TextureManager::CheckAndReloadTextures() {
 
 	//テクスチャの更新チェック
 	for(auto& [filePath, textureData] : textureDatas_) {
-		std::string fullPath = "Resources/images/" + filePath;
+		std::string fullPath = "Resources/Images/" + filePath;
 		//ファイルの最終更新日時を取得
 		time_t newTime = GetFileLastWriteTime(fullPath);
 
@@ -88,11 +88,11 @@ void TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
 	//テクスチャファイルを読み込んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = StringUtility::ConvertString(filePath);
-	std::wstring fullPathW = L"Resources/images/" + filePathW;
+	std::wstring fullPathW = L"Resources/Images/" + filePathW;
 	HRESULT hr;
 	if (filePathW.empty()) {
 		//ファイルパスが空文字列の場合は白テクスチャを読み込む
-		hr = DirectX::LoadFromWICFile(L"Resources/images/white1x1.png", DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+		hr = DirectX::LoadFromWICFile(L"Resources/Images/white1x1.png", DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 		assert(SUCCEEDED(hr));
 
 	} else if(filePathW.ends_with(L".dds")){
@@ -159,7 +159,7 @@ void TextureManager::LoadTextureAll() {
 
 	//Resources/imagesフォルダ内の全ての画像ファイルを読み込む
 	namespace fs = std::filesystem;
-	std::string directoryPath = "Resources/images/";
+	std::string directoryPath = "Resources/Images/";
 	try {
 		//ディレクトリの存在確認
 		if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {

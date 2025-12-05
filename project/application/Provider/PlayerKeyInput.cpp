@@ -1,5 +1,5 @@
 #include "PlayerKeyInput.h"
-#include "engine/io/Input.h"
+#include "engine/Input/Input.h"
 
 //=============================================================================
 // 連続入力取得
