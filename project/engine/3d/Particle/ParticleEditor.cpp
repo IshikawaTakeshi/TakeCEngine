@@ -196,7 +196,6 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::SliderInt("Particles Per Interpolation", reinterpret_cast<int*>(&attributes.particlesPerInterpolation), 1, 20);
 	ImGui::DragFloat("Trail Emit Interval", &attributes.trailEmitInterval, 0.001f, 0.001f, 1.0f);
 
-
 	//設定の適用
 	if (ImGui::Button("Apply Attributes")) {
 		// 現在のグループに属性を適用

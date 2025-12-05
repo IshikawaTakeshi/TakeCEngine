@@ -10,7 +10,7 @@ void BulletManager::Initialize(Object3dCommon* object3dCommon,size_t size) {
 	missilePool_ = std::make_unique<MissilePool>();
 	missilePool_->Initialize(size); 
 	object3dCommon_ = object3dCommon;
-	bulletFilePath_ = "cube.obj";
+	bulletFilePath_ = "Bullet.gltf";
 	missileFilePath_ = "ICOBall.gltf";
 }
 
@@ -36,12 +36,19 @@ void BulletManager::Update() {
 	missilePool_->UpdateAllMissiles();
 }
 
+
+
 //========================================================================================================
-// 全弾の描画処理
+// 各弾の描画処理
 //========================================================================================================
 
-void BulletManager::Draw() {
+void BulletManager::DrawBullet() {
+	// 弾の描画
 	bulletPool_->DrawAllBullet();
+}
+
+void BulletManager::DrawMissile() {
+	// ミサイルの描画
 	missilePool_->DrawAllMissiles();
 }
 
@@ -58,7 +65,7 @@ void BulletManager::DrawCollider() {
 void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,const Vector3& targetVel,const float& speed,float power,CharacterType type) {
 
 	Bullet* bullet = bulletPool_->GetBullet();
-	bullet->Initialize(object3dCommon_, bulletFilePath_);
+	//bullet->Initialize(object3dCommon_, bulletFilePath_);
 	bullet->Create(weaponPos, targetPos,targetVel,speed,power,type);
 }
 

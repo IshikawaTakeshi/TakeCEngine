@@ -32,12 +32,17 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 8, 0.001f);
 	particleEmitter_[1]->SetParticleName("SmokeEffect");
-
+	//deltaTime取得
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
-
-	lifeTime_ = 2.0f; // 弾のライフタイムを設定
-
+	//transform初期化
 	transform_.translate = { 0.0f, 100.0f, 0.0f };
+	//ポイントライト初期化
+	pointLightData_.color_ = { 1.0f,0.3f,0.0f,1.0f };
+	pointLightData_.intensity_ = 120.0f;
+	pointLightData_.radius_ = 20.0f;
+	pointLightData_.decay_ = 6.0f;
+	//ポイントライトの追加
+	pointLightIndex_ = TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
 }
 
 //========================================================================================================
@@ -46,16 +51,30 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 void Bullet::Update() {
 
+	if (isActive_ == false) {
+		pointLightData_.enabled_ = 0;
+		return;
+	}
+
+
 	//移動処理
 	transform_.translate += velocity_ * deltaTime_;
 
 	//ライフタイムの減少
 	lifeTime_ -= deltaTime_;
+
+	pointLightData_.position_ = transform_.translate;
+	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
+
+	//ライフタイムが0以下になったら弾を無効化
 	if (lifeTime_ <= 0.0f) {
+		pointLightData_.enabled_ = 0;
 		isActive_ = false;
+		return;
 	}
 
 	object3d_->SetTranslate(transform_.translate);
+	object3d_->SetRotate(transform_.rotate);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
@@ -108,15 +127,14 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 			//敵に当たった場合の処理
 
 			//パーティクル射出
-			//particleEmitter_[0]->Emit();
+			pointLightData_.enabled_ = 0;
 			isActive_ = false; //弾を無効化
 		}
 	} else if (characterType_ == CharacterType::ENEMY_BULLET) {
 		//敵の弾の場合の処理
 		if (other->GetCharacterType() == CharacterType::PLAYER) {
 			//プレイヤーに当たった場合の処理
-
-			//player_->TakeDamage(damage_);
+			pointLightData_.enabled_ = 0;
 			isActive_ = false; //弾を無効化
 		}
 	}
@@ -126,7 +144,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 
 		//パーティクル射出
 		//particleEmitter_[0]->Emit();
-
+		pointLightData_.enabled_ = 0;
 		isActive_ = false; //弾を無効化
 	}
 }
@@ -147,9 +165,14 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos,const Vec
 	float distance = Vector3Math::Length(targetPos_ - transform_.translate);
 	float travelTime = distance / speed_;
 	Vector3 predictedTargetPos = targetPos_ + targetVel * travelTime;
-
-	//direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
 	direction_ = Vector3Math::Normalize(predictedTargetPos - transform_.translate);
+	//ターゲットの方向にモデルを向ける
+	float angle = std::atan2(direction_.x, direction_.z);
+	transform_.rotate.y = angle;
+	
+	lifeTime_ = 2.0f; // 弾のライフタイムを設定
+	pointLightData_.enabled_ = 1;
+
 	//速度の設定
 	velocity_ = direction_ * speed_;
 	isActive_ = true;

@@ -94,13 +94,17 @@ void TitleScene::Draw() {
 	//SkyBox描画
 	skyBox_->Draw();
 
-	//タイトルテキスト描画
-	SpriteCommon::GetInstance()->PreDraw();
-	titleTextSprite_->Draw();
-	pushStartUI_->Draw();
-	//phaseMessageUI_->Draw();
+	
+	//phaseMessageUI_->DrawObject();
 	Object3dCommon::GetInstance()->Dispatch();
 
 	Object3dCommon::GetInstance()->PreDraw();
 
+}
+
+void TitleScene::DrawSprite() {
+	//タイトルテキスト描画
+	SpriteCommon::GetInstance()->PreDraw();
+	titleTextSprite_->Draw();
+	pushStartUI_->Draw();
 }

@@ -179,8 +179,13 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 //	描画処理
 //========================================================================
 
-void SceneManager::Draw() {
+void SceneManager::DrawObject() {
 	currentScene_->Draw();
+	
+}
+
+void SceneManager::DrawSprite() {
+	currentScene_->DrawSprite();
 	SceneTransition::GetInstance()->Draw();
 }
 

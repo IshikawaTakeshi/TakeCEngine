@@ -41,6 +41,8 @@ public:
 	/// </summary>
 	virtual void Draw() = 0;
 
+	virtual void DrawSprite() = 0;
+
 	/// <summary>
 	/// シーンマネージャーのセット
 	/// </summary>
@@ -50,8 +52,9 @@ public:
 protected:
 
 	//サウンドデータ
-	AudioManager::SoundData BGM;
-	bool isSoundPlay = false;
+	AudioManager::SoundData BGM_;
+	float bgmVolume_ = 0.05f;
+	bool isSoundPlay_ = false;
 
 	//シーンマネージャー(このクラスで解放しないこと)
 	SceneManager* sceneManager_ = nullptr;

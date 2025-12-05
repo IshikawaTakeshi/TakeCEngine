@@ -38,6 +38,8 @@ public:
 
 	//描画処理
 	void Draw() override;
+	//スプライト描画処理
+	void DrawSprite() override;
 
 private:
 

@@ -37,8 +37,8 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//Texture読み込み
 	TextureManager::GetInstance()->LoadTextureAll();
 
-	postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
-	postEffectManager_->InitializeEffect("GrayScale",   L"PostEffect/GrayScale.CS.hlsl");
+	//postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
+	//postEffectManager_->InitializeEffect("GrayScale",   L"PostEffect/GrayScale.CS.hlsl");
 	postEffectManager_->InitializeEffect("Dissolve",    L"PostEffect/Dissolve.CS.hlsl");
 	postEffectManager_->InitializeEffect("RadialBluer", L"PostEffect/RadialBlur.CS.hlsl");
 	//postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
@@ -106,17 +106,20 @@ void MyGame::Draw() {
 	renderTexture_->PreDraw();
 	//SRV描画前処理
 	srvManager_->SetDescriptorHeap(); 
-	//シーン描画
-	sceneManager_->Draw();
-	 //描画前処理
-	directXCommon_->PreDraw();
-
+	//オブジェクト描画
+	sceneManager_->DrawObject();
+	//スプライト描画
+	sceneManager_->DrawSprite();
 	//postEffect計算処理
 	postEffectManager_->AllDispatch();
+	 //描画前処理
+	directXCommon_->PreDraw();
 	//RenderTexture描画
 	renderTexture_->Draw();
+	
 	//renderTexture描画後処理
 	renderTexture_->PostDraw();
+
 #ifdef _DEBUG
 	imguiManager_->PostDraw();
 #endif
@@ -150,6 +153,7 @@ void MyGame::LoadModel() {
 	ModelManager::GetInstance()->LoadModel("boostEffectCone.gltf");
 	ModelManager::GetInstance()->LoadModel("MultiICO.gltf");
 	ModelManager::GetInstance()->LoadModel("Deer.gltf");
+	ModelManager::GetInstance()->LoadModel("Bullet.gltf");
 	//obj
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("sphere.obj");
