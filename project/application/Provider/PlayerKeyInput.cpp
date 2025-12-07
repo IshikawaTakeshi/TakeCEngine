@@ -35,6 +35,14 @@ Vector2 PlayerKeyInput::GetVector2(CharacterActionInput axis) const {
 		auto move = Input::GetInstance()->GetMouseMove();
 		value.x = static_cast<float>(move.lX);
 		value.y = static_cast<float>(move.lY);
+
+		//正規化
+		if (value.Length() > 1.0f) {
+			value = value.Normalize();
+		}
+		// スケーリング
+		value.x *= mouseMoveScale_;
+		value.y *= mouseMoveScale_;
 	}
 	break;
 	default:
@@ -51,11 +59,11 @@ bool PlayerKeyInput::IsPressed(CharacterActionInput button) const {
 	case CharacterActionInput::JUMP:        return Input::GetInstance()->PushKey(DIK_SPACE);
 	case CharacterActionInput::FLOATING:    return Input::GetInstance()->PushKey(DIK_SPACE);
 	case CharacterActionInput::STEPBOOST:   return Input::GetInstance()->PushKey(DIK_LSHIFT);
-	case CharacterActionInput::ATTACK_RA:   return Input::GetInstance()->IsPressMouse(0);
-	case CharacterActionInput::ATTACK_LA:   return Input::GetInstance()->IsPressMouse(1);
-	case CharacterActionInput::ATTACK_RB:   return Input::GetInstance()->PushKey(DIK_1) || Input::GetInstance()->IsPressMouse(3);
-	case CharacterActionInput::ATTACK_LB:   return Input::GetInstance()->PushKey(DIK_2) || Input::GetInstance()->IsPressMouse(4);
-	case CharacterActionInput::LOCKON:      return Input::GetInstance()->IsPressMouse(2);
+	case CharacterActionInput::ATTACK_RA:   return Input::GetInstance()->PressMouse(1);
+	case CharacterActionInput::ATTACK_LA:   return Input::GetInstance()->PressMouse(0);
+	case CharacterActionInput::ATTACK_RB:   return Input::GetInstance()->PushKey(DIK_1) || Input::GetInstance()->PressMouse(3);
+	case CharacterActionInput::ATTACK_LB:   return Input::GetInstance()->PushKey(DIK_2) || Input::GetInstance()->PressMouse(4);
+	case CharacterActionInput::LOCKON:      return Input::GetInstance()->PressMouse(2);
 	default:
 		return false;
 	}
@@ -69,10 +77,30 @@ bool PlayerKeyInput::IsTriggered(CharacterActionInput button) const {
 	case CharacterActionInput::JUMP:        return Input::GetInstance()->TriggerKey(DIK_SPACE);
 	case CharacterActionInput::FLOATING:    return Input::GetInstance()->TriggerKey(DIK_SPACE);
 	case CharacterActionInput::STEPBOOST:   return Input::GetInstance()->TriggerKey(DIK_LSHIFT);
-	case CharacterActionInput::ATTACK_RA:   return Input::GetInstance()->TriggerKey(DIK_J);
-	case CharacterActionInput::ATTACK_LA:   return Input::GetInstance()->TriggerKey(DIK_K);
-	case CharacterActionInput::ATTACK_RB:   return Input::GetInstance()->TriggerKey(DIK_U);
-	case CharacterActionInput::ATTACK_LB:   return Input::GetInstance()->TriggerKey(DIK_I);
+	case CharacterActionInput::ATTACK_RA:   return Input::GetInstance()->TriggerMouse(1);
+	case CharacterActionInput::ATTACK_LA:   return Input::GetInstance()->TriggerMouse(0);
+	case CharacterActionInput::ATTACK_RB:   return Input::GetInstance()->TriggerKey(DIK_1) || Input::GetInstance()->TriggerMouse(3);
+	case CharacterActionInput::ATTACK_LB:   return Input::GetInstance()->TriggerKey(DIK_2) || Input::GetInstance()->TriggerMouse(4);
+	case CharacterActionInput::LOCKON:      return Input::GetInstance()->TriggerMouse(2);
+	default:
+		return false;
+	}
+}
+
+//=============================================================================
+// 単入力取得(リリース)
+//=============================================================================
+
+bool PlayerKeyInput::IsReleased(CharacterActionInput button) const {
+	switch (button) {
+	case CharacterActionInput::JUMP:        return Input::GetInstance()->ReleaseKey(DIK_SPACE);
+	case CharacterActionInput::FLOATING:    return Input::GetInstance()->ReleaseKey(DIK_SPACE);
+	case CharacterActionInput::STEPBOOST:   return Input::GetInstance()->ReleaseKey(DIK_LSHIFT);
+	case CharacterActionInput::ATTACK_RA:   return Input::GetInstance()->ReleaseMouse(1);
+	case CharacterActionInput::ATTACK_LA:   return Input::GetInstance()->ReleaseMouse(0);
+	case CharacterActionInput::ATTACK_RB:   return Input::GetInstance()->ReleaseKey(DIK_1) || Input::GetInstance()->ReleaseMouse(3);
+	case CharacterActionInput::ATTACK_LB:   return Input::GetInstance()->ReleaseKey(DIK_2) || Input::GetInstance()->ReleaseMouse(4);
+	case CharacterActionInput::LOCKON:      return Input::GetInstance()->ReleaseMouse(2);
 	default:
 		return false;
 	}

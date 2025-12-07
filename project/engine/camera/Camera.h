@@ -19,7 +19,7 @@ public:
 	//ゲーム内カメラの状態
 	enum class GameCameraState {
 		FOLLOW,
-		LOOKAT,
+		LOCKON,
 		ENEMY_DESTROYED,
 	};
 
@@ -125,6 +125,8 @@ public:
 
 	//EnemyZoomの設定
 	void SetEZoomEnemy(bool isEZoomEnemy) { isEZoomEnemy_ = isEZoomEnemy; }
+	//カメラモード変更要求の設定
+	void SetRequestedChangeCameraMode(bool requested) { requestedChangeCameraMode_ = requested; }
 private:
 
 	//バッファリソース
@@ -169,6 +171,7 @@ private:
 	Vector3 originalPosition_;   //シェイク開始前のカメラ位置
 	float shakeRange_ = 0.2f;    //シェイクの振幅
 
+	bool requestedChangeCameraMode_ = false; //ロックオン要求があったか
 	//敵をズームしているか
 	bool isEZoomEnemy_ = false;
 	//ピッチの制限角度(70度)
@@ -185,7 +188,7 @@ private:
 
 	//各カメラ状態の初期化
 	void InitializeCameraFollow();
-	void InitializeCameraLookAt();
+	void InitializeCameraLockOn();
 	void InitializeCameraEnemyDestroyed();
 
 	//各カメラ状態の更新

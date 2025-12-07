@@ -20,6 +20,8 @@ public:
 	bool RequestJumpInput() const override;
 	//攻撃入力の取得
 	bool RequestAttack(CharacterActionInput attackButton) override;
+
+	bool ReleaseAttackInput(CharacterActionInput attackButton) override;
 	//チャージ攻撃入力の取得
 	bool RequestChargeAttack(CharacterActionInput attackButton) override;
 	//ステップブースト入力の取得

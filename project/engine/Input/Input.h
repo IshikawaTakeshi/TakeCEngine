@@ -75,6 +75,13 @@ public:
 	bool TriggerKey(BYTE keyNumber);
 
 	/// <summary>
+	/// キーのリリースをチェック。離した瞬間だけtrueになる
+	/// </summary>
+	/// <param name="keyNumber"></param>
+	/// <returns></returns>
+	bool ReleaseKey(BYTE keyNumber);
+
+	/// <summary>
 	/// 全マウス情報取得
 	/// </summary>
 	/// <returns>マウス情報</returns>
@@ -85,14 +92,21 @@ public:
 	/// </summary>
 	/// <param name="buttonNumber">マウスボタン番号(0:左,1:右,2:中,3~7:拡張マウスボタン)</param>
 	/// <returns>押されているか</returns>
-	bool IsPressMouse(int32_t mouseNumber) const;
+	bool PressMouse(int32_t mouseNumber) const;
 
 	/// <summary>
 	/// マウスのトリガーをチェック。押した瞬間だけtrueになる
 	/// </summary>
 	/// <param name="buttonNumber">マウスボタン番号(0:左,1:右,2:中,3~7:拡張マウスボタン)</param>
 	/// <returns>トリガーか</returns>
-	bool IsTriggerMouse(int32_t buttonNumber) const;
+	bool TriggerMouse(int32_t buttonNumber) const;
+
+	/// <summary>
+	/// マウスのリリースをチェック。離した瞬間だけtrueになる
+	/// </summary>
+	/// <param name="buttonNumber"></param>
+	/// <returns></returns>
+	bool ReleaseMouse(int32_t buttonNumber) const;
 
 	/// <summary>
 	/// マウス移動量を取得

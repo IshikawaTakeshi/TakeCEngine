@@ -27,5 +27,6 @@ public:
     // 単入力
     virtual bool IsPressed(Enum button) const = 0;
     virtual bool IsTriggered(Enum button) const = 0;
+	virtual bool IsReleased(Enum button) const = 0;
 };
 

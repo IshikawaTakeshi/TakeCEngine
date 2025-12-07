@@ -153,7 +153,7 @@ private:
 	void UpdateAttack();
 
 	//武器一つ当たりの攻撃処理
-	void WeaponAttack(int weaponIndex, GamepadButtonType buttonType);
+	void WeaponAttack(CharacterActionInput actionInput);
 
 	//エネルギーの更新
 	void UpdateEnergy();

@@ -180,7 +180,7 @@ void Camera::UpdateDebugCamera() {
 	// クォータニオンで回転を管理
 	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
 
-	if (Input::GetInstance()->IsPressMouse(1)) {
+	if (Input::GetInstance()->PressMouse(1)) {
 		// マウス入力による回転計算
 		float deltaPitch = (float)Input::GetInstance()->GetMouseMove().lY * 0.001f; // X軸回転
 		float deltaYaw = (float)Input::GetInstance()->GetMouseMove().lX * 0.001f;   // Y軸回転
@@ -198,7 +198,7 @@ void Camera::UpdateDebugCamera() {
 	// 累積回転を更新
 	cameraConfig_.transform_.rotate = rotationDelta * cameraConfig_.transform_.rotate;
 
-	if (Input::GetInstance()->IsPressMouse(2)) {
+	if (Input::GetInstance()->PressMouse(2)) {
 		cameraConfig_.offsetDelta_.x += (float)Input::GetInstance()->GetMouseMove().lX * 0.1f;
 		cameraConfig_.offsetDelta_.y -= (float)Input::GetInstance()->GetMouseMove().lY * 0.1f;
 	}
@@ -226,8 +226,8 @@ void Camera::UpdateGameCamera() {
 		case Camera::GameCameraState::FOLLOW:
 			InitializeCameraFollow();
 			break;
-		case Camera::GameCameraState::LOOKAT:
-			InitializeCameraLookAt();
+		case Camera::GameCameraState::LOCKON:
+			InitializeCameraLockOn();
 			break;
 		case Camera::GameCameraState::ENEMY_DESTROYED:
 			InitializeCameraEnemyDestroyed();
@@ -243,7 +243,7 @@ void Camera::UpdateGameCamera() {
 	case Camera::GameCameraState::FOLLOW:
 		UpdateCameraFollow();
 		break;
-	case Camera::GameCameraState::LOOKAT:
+	case Camera::GameCameraState::LOCKON:
 		UpdateCameraLockOn();
 		break;
 	case Camera::GameCameraState::ENEMY_DESTROYED:
@@ -323,9 +323,10 @@ void Camera::UpdateCameraFollow() {
 	}
 	cameraConfig_.transform_.rotate = Easing::Slerp(cameraConfig_.transform_.rotate, rotationDelta, rotationSpeed_);
 
-	//Rスティック押し込みでカメラの状態変更
-	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::RightStick)) {
-		cameraStateRequest_ = GameCameraState::LOOKAT;
+	//ロックオン要求があったら状態遷移
+	if (requestedChangeCameraMode_ == true) {
+		cameraStateRequest_ = GameCameraState::LOCKON;
+		requestedChangeCameraMode_ = false;
 	}
 }
 
@@ -337,7 +338,7 @@ void Camera::UpdateCameraFollow() {
 // LookAt状態の処理
 //=============================================================================
 
-void Camera::InitializeCameraLookAt() {
+void Camera::InitializeCameraLockOn() {
 
 	followSpeed_ = 0.4f;
 	cameraConfig_.offsetDelta_ = Vector3(0.0f, 5.0f, -50.0f);
@@ -383,7 +384,7 @@ void Camera::UpdateCameraLockOn() {
 	cameraConfig_.transform_.rotate = Easing::Slerp(cameraConfig_.transform_.rotate, targetRotation, rotationSpeed_);
 
 	// 状態切り替え
-	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RightStick)) {
+	if (requestedChangeCameraMode_ == true) {
 		// transform_.rotateからforwardベクトルを算出
 		Vector3 forward = QuaternionMath::RotateVector(Vector3(0,0,1), cameraConfig_.transform_.rotate);
 		//yaw
@@ -395,6 +396,7 @@ void Camera::UpdateCameraLockOn() {
 
 		//状態遷移リクエスト(FOLLOW)
 		cameraStateRequest_ = GameCameraState::FOLLOW;
+		requestedChangeCameraMode_ = false;
 	}
 }
 #pragma endregion

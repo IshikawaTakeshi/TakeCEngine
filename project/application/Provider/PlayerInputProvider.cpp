@@ -22,6 +22,11 @@ Vector3 PlayerInputProvider::GetMoveDirection() const {
 	return forward * move.y + right * move.x;
 }
 
+Vector2 PlayerInputProvider::GetCameraRotateInput() const {
+	Vector2 cameraMove = mapper_->GetVector2(CharacterActionInput::MOVE_CAMERA);
+	return cameraMove;
+}
+
 //=====================================================================================
 //　ジャンプ入力の取得
 //=====================================================================================
@@ -33,8 +38,14 @@ bool PlayerInputProvider::RequestJumpInput() const {
 //　攻撃入力の取得
 //=====================================================================================
 bool PlayerInputProvider::RequestAttack(CharacterActionInput attackButton) {
-
 	return mapper_->IsPressed(attackButton);
+}
+
+//=====================================================================================
+//　攻撃入力を離したか取得
+
+bool PlayerInputProvider::ReleaseAttackInput(CharacterActionInput attackButton) {
+	return mapper_->IsReleased(attackButton);
 }
 
 //=====================================================================================
@@ -49,4 +60,8 @@ bool PlayerInputProvider::RequestChargeAttack(CharacterActionInput attackButton)
 //=====================================================================================
 bool PlayerInputProvider::RequestStepBoost() const {
 	return mapper_->IsPressed(CharacterActionInput::STEPBOOST);
+}
+
+bool PlayerInputProvider::RequestChangeCameraMode() const {
+	return mapper_->IsTriggered(CharacterActionInput::LOCKON);
 }

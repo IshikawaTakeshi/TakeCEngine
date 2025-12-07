@@ -116,22 +116,16 @@ bool Input::TriggerKey(BYTE keyNumber) {
 	return key[keyNumber] && !preKey[keyNumber];
 }
 
-//bool Input::GetJoystickState(int stickNo, XINPUT_STATE& out) const {
-//	return gamePad_->GetJoystickState(stickNo,out);
-//}
-//
-//bool Input::GetJoystickState(int stickNo, DIJOYSTATE2& out) const {
-//	return gamePad_->GetJoystickState(stickNo, out);
-//}
-//
-//bool Input::GetJoystickStatePrevious(int stickNo, XINPUT_STATE& out) const {
-//	return gamePad_->GetJoystickStatePrevious(stickNo, out);
-//}
-//
-//bool Input::GetJoystickStatePrevious(int stickNo, DIJOYSTATE2& out) const {
-//	return gamePad_->GetJoystickStatePrevious(stickNo, out);
-//}
+//=========================================================
+// キー入力(リリース)の取得
+//=========================================================
+bool Input::ReleaseKey(BYTE keyNumber) {
+	return !key[keyNumber] && preKey[keyNumber];
+}
 
+//=========================================================
+// ゲームパッドの入力取得
+//=========================================================
 bool Input::PushButton(int stickNo, GamepadButtonType button) const {
 	return gamePad_->PushButton(stickNo, button);
 }
@@ -153,16 +147,20 @@ Vector2 Input::GetLeftStickState(int stickNo) const {
 }
 
 Vector2 Input::GetRightStickState(int stickNo) const {
+	// スティックの状況を取得
 	return gamePad_->GetRightStickState(stickNo);
 }
 
 Vector2 Input::GetStickValue(int stickNo, GamepadValueType valueType) const {
+	// スティックの値を取得
 	return gamePad_->GetStickValue(stickNo, valueType);
 }
+
 
 //=========================================================
 // 全マウス情報取得
 //=========================================================
+
 
 const DIMOUSESTATE2& Input::GetAllMouse() const {
 	return mouse_;
@@ -172,7 +170,7 @@ const DIMOUSESTATE2& Input::GetAllMouse() const {
 // マウスの押下をチェック
 //=========================================================
 
-bool Input::IsPressMouse(int32_t buttonNumber) const {
+bool Input::PressMouse(int32_t buttonNumber) const {
 	return mouse_.rgbButtons[buttonNumber] & 0x80;
 }
 
@@ -180,13 +178,21 @@ bool Input::IsPressMouse(int32_t buttonNumber) const {
 // マウスのトリガーをチェック
 //=========================================================
 
-bool Input::IsTriggerMouse(int32_t buttonNumber) const {
+bool Input::TriggerMouse(int32_t buttonNumber) const {
 	return (mouse_.rgbButtons[buttonNumber] & 0x80) && !(mousePre_.rgbButtons[buttonNumber] & 0x80);
 }
 
 //=========================================================
+// マウスのリリースをチェック
+//=========================================================
+bool Input::ReleaseMouse(int32_t buttonNumber) const {
+	return !(mouse_.rgbButtons[buttonNumber] & 0x80) && (mousePre_.rgbButtons[buttonNumber] & 0x80);
+}
+//=========================================================
 // マウス移動量を取得
 //=========================================================
+
+
 
 Input::MouseMove Input::GetMouseMove() {
 	MouseMove move;
