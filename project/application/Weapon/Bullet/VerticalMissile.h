@@ -1,5 +1,6 @@
 #pragma once
 #include "application/Weapon/BaseWeapon.h"
+#include "application/Weapon/Bullet/VerticalMissileInfo.h"
 #include "engine/Entity/GameCharacter.h"
 #include "engine/3d/Object3d.h"
 #include "engine/3d/Object3dCommon.h"
@@ -39,7 +40,7 @@ public:
 	// 衝突時の処理
 	void OnCollisionAction(GameCharacter* other) override;
 	// ミサイルの生成
-	void Create(BaseWeapon* ownerWeapon, float speed,float homingRate,float damage, CharacterType type);
+	void Create(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo, float speed,float damage, CharacterType type);
 
 public:
 
@@ -92,15 +93,6 @@ private:
 	//ミサイルのフェーズ
 	VerticalMissilePhase phase_ = VerticalMissilePhase::ASCENDING;
 
-	//ミサイルの上昇高度
-	float altitude_ = 0.0f;
-	//撃ちだされてからの上昇値
-	const float kMaxAltitude_ = 100.0f;
-
-	//ミサイルの上昇速度
-	const float kAscendSpeed_ = 140.0f;
-	//ミサイルの爆発半径
-	const float kExplosionRadius_ = 5.0f;
-	//ホーミングの度合い
-	float homingRate_ = 0.1f;
+	// ホーミング特性
+	VerticalMissileInfo vmInfo_{};
 };

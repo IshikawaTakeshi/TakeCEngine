@@ -1,5 +1,6 @@
 #pragma once
 #include "application/Weapon/Action/BurstShotInfo.h"
+#include "application/Weapon/Bullet/VerticalMissileInfo.h"
 #include "engine/Utility/JsonDirectoryPathData.h"
 
 //============================================================================
@@ -8,12 +9,11 @@
 
 struct VerticalMissileLauncherInfo {
 	BurstShotInfo burstShotInfo{}; // バーストショット情報
-	float homingRate = 0.05f; // ホーミング率
+	VerticalMissileInfo vmInfo{};  // 垂直ミサイル情報
+	
 };
 
-void to_json(nlohmann::json& jsonData, const VerticalMissileLauncherInfo& vmLauncherInfo);
-
-void from_json(const nlohmann::json& jsonData, VerticalMissileLauncherInfo& vmLauncherInfo);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(VerticalMissileLauncherInfo, burstShotInfo, vmInfo)
 
 template<>
 struct JsonPath<VerticalMissileLauncherInfo> {

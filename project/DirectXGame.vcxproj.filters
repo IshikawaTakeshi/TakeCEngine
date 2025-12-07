@@ -532,6 +532,7 @@
     <ClCompile Include="engine\2d\SpriteConfig.cpp" />
     <ClCompile Include="engine\PostEffect\GlareEffect.cpp" />
     <ClCompile Include="application\Provider\PlayerPadInput.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\VerticalMissileInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1096,6 +1097,7 @@
     <ClInclude Include="engine\2d\SpriteConfig.h" />
     <ClInclude Include="engine\PostEffect\GlareEffect.h" />
     <ClInclude Include="application\Provider\PlayerPadInput.h" />
+    <ClInclude Include="application\Weapon\Bullet\VerticalMissileInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

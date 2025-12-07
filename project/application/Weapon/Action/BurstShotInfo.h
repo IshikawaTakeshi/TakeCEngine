@@ -21,7 +21,4 @@ struct BurstShotState {
 	bool isActive = false; // 連射中かどうか
 };
 
-// BurstShotInfoをJSONに変換する関数
-void to_json(nlohmann::json& jsonData, const BurstShotInfo& burstShotInfo);
-// JSONからBurstShotInfoへデータを読み込む関数
-void from_json(const nlohmann::json& jsonData, BurstShotInfo& burstShotInfo);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BurstShotInfo, kInterval, kMaxBurstCount)

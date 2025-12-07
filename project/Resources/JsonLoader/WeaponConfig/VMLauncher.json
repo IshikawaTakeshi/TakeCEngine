@@ -1,17 +1,22 @@
 {
     "actionData": {
         "burstShotInfo": {
-            "kInterval": 0.1,
+            "kInterval": 0.10000000149011612,
             "kMaxBurstCount": 3
         },
-        "homingRate": 0.15
+        "vmInfo": {
+            "ascendSpeed": 183.39999389648438,
+            "explosionRadius": 5.0,
+            "homingRate": 0.375,
+            "maxAltitude": 0.0
+        }
     },
     "config": {
         "bulletSpeed": 300.0,
         "canChargeAttack": false,
         "canMoveShootable": true,
         "effectiveRange": 1000.0,
-        "homingRate": 0.1,
+        "homingRate": 0.10000000149011612,
         "isStopShootOnly": false,
         "kAttackInterval": 5.0,
         "magazineCount_": 3,

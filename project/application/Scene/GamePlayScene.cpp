@@ -413,7 +413,7 @@ void GamePlayScene::InitializeEnemyDestroyed() {
 	//カメラをズームする
 	CameraManager::GetInstance()->GetActiveCamera()->SetCameraStateRequest(Camera::GameCameraState::ENEMY_DESTROYED);
 	//changeBehaviorTimerを初期化
-	changeBehaviorTimer_.Initialize(2.4f, 0.0f);
+	changeBehaviorTimer_.Initialize(1.5f, 0.0f);
 }
 
 void GamePlayScene::UpdateEnemyDestroyed() {

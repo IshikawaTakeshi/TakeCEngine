@@ -135,7 +135,12 @@
                     "kInterval": 0.10000000149011612,
                     "kMaxBurstCount": 3
                 },
-                "homingRate": 0.10000000149011612
+                "vmInfo": {
+                    "ascendSpeed": 140.0,
+                    "explosionRadius": 5.0,
+                    "homingRate": 0.10000000149011612,
+                    "maxAltitude": 10.0
+                }
             },
             "config": {
                 "bulletSpeed": 300.0,
@@ -161,7 +166,12 @@
                     "kInterval": 0.10000000149011612,
                     "kMaxBurstCount": 3
                 },
-                "homingRate": 0.10000000149011612
+                "vmInfo": {
+                    "ascendSpeed": 140.0,
+                    "explosionRadius": 5.0,
+                    "homingRate": 0.10000000149011612,
+                    "maxAltitude": 10.0
+                }
             },
             "config": {
                 "bulletSpeed": 300.0,

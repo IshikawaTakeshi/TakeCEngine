@@ -59,16 +59,16 @@ void VerticalMissileLauncher::Update() {
 			if (ownerObject_->GetCharacterType() == CharacterType::PLAYER) {
 				bulletManager_->ShootMissile(
 					this,
+					vmLauncherInfo_.vmInfo,
 					weaponData_.config.bulletSpeed,
-					vmLauncherInfo_.homingRate,
 					weaponData_.config.power,
 					CharacterType::PLAYER_MISSILE);
 
 			} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
 				bulletManager_->ShootMissile(
 					this,
+					vmLauncherInfo_.vmInfo,
 					weaponData_.config.bulletSpeed,
-					vmLauncherInfo_.homingRate,
 					weaponData_.config.power,
 					CharacterType::ENEMY_MISSILE);
 			}
@@ -114,6 +114,8 @@ void VerticalMissileLauncher::UpdateImGui() {
 
 	//連射情報のImGui表示
 	vmLauncherInfo_.burstShotInfo.EditConfigImGui();
+	//垂直ミサイル情報のImGui表示
+	vmLauncherInfo_.vmInfo.EditConfigImGui();
 	if (ImGui::Button("Save VerticalMissileLauncher config")) {
 		// 設定をJSONに保存
 		weaponData_.actionData = vmLauncherInfo_;

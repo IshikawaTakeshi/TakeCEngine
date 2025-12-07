@@ -129,6 +129,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Scene\EnemySelectScene.cpp" />
     <ClCompile Include="application\Tool\CharacterEdit\CharacterEditTool.cpp" />
     <ClCompile Include="application\Weapon\Action\BurstShotInfo.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\VerticalMissileInfo.cpp" />
     <ClCompile Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.cpp" />
     <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
     <ClCompile Include="application\Weapon\WeaponData.cpp" />
@@ -265,6 +266,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\Action\WeaponActionData.h" />
     <ClInclude Include="application\Weapon\Bazooka\Bazooka.h" />
     <ClInclude Include="application\Weapon\Action\BurstShotInfo.h" />
+    <ClInclude Include="application\Weapon\Bullet\VerticalMissileInfo.h" />
     <ClInclude Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.h" />
     <ClInclude Include="application\Weapon\Rifle\RifleInfo.h" />
     <ClInclude Include="application\Weapon\WeaponData.h" />

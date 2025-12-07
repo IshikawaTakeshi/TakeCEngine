@@ -11,6 +11,7 @@
 
 void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
+
 	//オブジェクト初期化
 	if (!object3d_) {
 		object3d_ = std::make_unique<Object3d>();
@@ -40,7 +41,6 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 	//transform初期化
 	transform_.translate = { 0.0f, 200.0f, 0.0f };
 	bulletRadius_ = 1.5f; // 弾の半径を設定
-	homingRate_ = 0.01f; // ホーミングの度合いを設定(値が大きいほど急激に曲がる)
 
 	pointLightData_.color_ = { 1.0f,0.1f,0.2f,1.0f };
 	pointLightData_.intensity_ = 120.0f;
@@ -79,10 +79,10 @@ void VerticalMissile::Update() {
 	switch (phase_) {
 	case VerticalMissile::VerticalMissilePhase::ASCENDING:
 		// 上昇中の処理
-		transform_.translate.y += kAscendSpeed_ * TakeCFrameWork::GetDeltaTime();
-		if (transform_.translate.y >= altitude_) {
+		transform_.translate.y += vmInfo_.ascendSpeed * TakeCFrameWork::GetDeltaTime();
+		if (transform_.translate.y >= vmInfo_.maxAltitude) {
 			// 最大高度に達したらホーミングフェーズに移行
-			transform_.translate.y = altitude_; // 高度を制限
+			transform_.translate.y = vmInfo_.maxAltitude; // 高度を制限
 
 			phase_ = VerticalMissile::VerticalMissilePhase::HOMING;
 		}
@@ -108,7 +108,7 @@ void VerticalMissile::Update() {
 		}
 
 		// homingRate_の値に基づいて徐々にターゲット方向に向かう
-		float easedT = std::clamp(homingRate_, 0.0f, 1.0f);
+		float easedT = std::clamp(vmInfo_.homingRate, 0.0f, 1.0f);
 
 		// 進行方向を補間して新しい方向を計算
 		Vector3 mixed = Easing::Lerp(currentDir, desired, easedT);
@@ -198,19 +198,18 @@ void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 // ミサイルの生成
 //====================================================================================
 
-void VerticalMissile::Create(BaseWeapon* ownerWeapon, float speed,float HomingRate, float damage, CharacterType type) {
+void VerticalMissile::Create(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo, float speed, float damage, CharacterType type) {
 
 	ownerWeapon_ = ownerWeapon; // 所有者の武器を設定
 	transform_.translate = ownerWeapon_->GetCenterPosition();
 	characterType_ = type;
 	speed_ = speed;
-	homingRate_ = HomingRate;
+	vmInfo_ = vmInfo;
 	damage_ = damage;
 	targetPos_ = ownerWeapon_->GetTargetPos();
 	//ターゲットまでの方向を求める
 	direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
-	altitude_ = transform_.translate.y + kMaxAltitude_; // 初期の上昇高度を設定
-
+	
 	lifeTime_ = 5.0f; // ライフタイムを設定
 	isActive_ = true;
 	//ポイントライト有効化

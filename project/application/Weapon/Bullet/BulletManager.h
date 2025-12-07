@@ -53,7 +53,7 @@ public:
 	/// <param name="speed">       ミサイルの速度</param>
 	/// <param name="power">      ダメージ量</param>
 	/// <param name="type">        キャラクタータイプ</param>
-	void ShootMissile(BaseWeapon* ownerWeapon, float speed,float homingRate,float power, CharacterType type);
+	void ShootMissile(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo, float speed,float power, CharacterType type);
 
 	//----- getter ---------------------------
 	
