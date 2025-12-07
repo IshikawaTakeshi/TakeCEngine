@@ -178,6 +178,9 @@ void Player::Update() {
 
 	//移動方向の取得
 	playerData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
+	//カメラ方向のベクトルを取得
+	camera_->SetStick(inputProvider_->GetCameraRotateInput());
+
 	//Behaviorの更新
 	behaviorManager_->Update(playerData_.characterInfo);
 
@@ -238,6 +241,9 @@ void Player::Update() {
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::ToEuler(playerData_.characterInfo.transform.rotate);
 	//カメラの設定
+	if (inputProvider_->RequestChangeCameraMode() == true) {
+		camera_->SetRequestedChangeCameraMode(true);
+	}
 	camera_->SetFollowTargetPos(*object3d_->GetModel()->GetSkeleton()->GetJointPosition("neck", object3d_->GetWorldMatrix()));
 	camera_->SetFollowTargetRot(eulerRotate);
 	camera_->SetFocusTargetPos(playerData_.characterInfo.focusTargetPos);
@@ -449,10 +455,10 @@ void Player::OnCollisionAction(GameCharacter* other) {
 
 void Player::UpdateAttack() {
 
-	WeaponAttack(R_ARMS, GamepadButtonType::RB); // 1つ目の武器の攻撃
-	WeaponAttack(L_ARMS, GamepadButtonType::LB); // 2つ目の武器の攻撃
-	WeaponAttack(R_BACK, GamepadButtonType::X); // 3つ目の武器の攻撃
-	WeaponAttack(L_BACK, GamepadButtonType::Y); // 4つ目の武器の攻撃
+	WeaponAttack(CharacterActionInput::ATTACK_LA); // 1つ目の武器の攻撃
+	WeaponAttack(CharacterActionInput::ATTACK_RA); // 2つ目の武器の攻撃
+	WeaponAttack(CharacterActionInput::ATTACK_LB); // 3つ目の武器の攻撃
+	WeaponAttack(CharacterActionInput::ATTACK_RB); // 4つ目の武器の攻撃
 
 	//チャージ攻撃可能なユニットの処理
 	for (int i = 0; i < chargeShootableUnits_.size(); i++) {
@@ -483,11 +489,12 @@ void Player::UpdateAttack() {
 	}
 }
 
-void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
+void Player::WeaponAttack(CharacterActionInput actionInput) {
 
-	
+	int weaponIndex = static_cast<int>(actionInput) - static_cast<int>(CharacterActionInput::ATTACK_RA);
 	auto* weapon = weapons_[weaponIndex].get();
-	if (Input::GetInstance()->PushButton(0, buttonType)) {
+
+	if (inputProvider_->RequestAttack(actionInput) == true) {
 		//武器を選択したことを記録
 		isUseWeapon_ = true;
 		//チャージ攻撃可能な場合
@@ -495,7 +502,7 @@ void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
 
 			//武器のチャージ処理
 			weapon->Charge(deltaTime_);
-			if (Input::GetInstance()->ReleaseButton(0, buttonType)) {
+			if (inputProvider_->ReleaseAttackInput(actionInput) == true) {
 				//チャージ攻撃実行
 				weapon->ChargeAttack();
 				if (weapon->IsStopShootOnly()) {
@@ -519,7 +526,7 @@ void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
 				weapon->Attack();
 			}
 		}
-	} else if (Input::GetInstance()->ReleaseButton(0, buttonType)) {
+	} else if (inputProvider_->ReleaseAttackInput(actionInput) == true) {
 		// LBボタンが離された場合
 
 		if (weapon->IsCharging()) {

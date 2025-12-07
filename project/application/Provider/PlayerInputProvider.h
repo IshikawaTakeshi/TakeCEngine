@@ -24,14 +24,22 @@ public:
 
 	//移動方向の取得
 	Vector3 GetMoveDirection() const override;
+	//カメラの回転入力の取得
+	Vector2 GetCameraRotateInput() const;
+	
 	//ジャンプ入力の取得
 	bool RequestJumpInput() const override;
 	//攻撃入力の取得
 	bool RequestAttack(CharacterActionInput attackButton) override;
+
+	//攻撃入力を離したか取得
+	bool ReleaseAttackInput(CharacterActionInput attackButton) override;
 	//チャージ攻撃入力の取得
 	bool RequestChargeAttack(CharacterActionInput attackButton) override;
 	//ステップブースト入力の取得
 	bool RequestStepBoost() const override;
+
+	bool RequestChangeCameraMode() const;
 
 private:
 	//--------- variables ----------------------------------------------------

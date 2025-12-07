@@ -46,6 +46,11 @@ bool EnemyInputProvider::RequestAttack(CharacterActionInput attackButton) {
 	return false;
 }
 
+bool EnemyInputProvider::ReleaseAttackInput(CharacterActionInput attackButton) {
+	attackButton;
+	return false;
+}
+
 //=============================================================================
 //　チャージ攻撃入力の取得
 //=============================================================================

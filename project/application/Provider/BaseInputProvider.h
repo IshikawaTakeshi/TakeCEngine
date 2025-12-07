@@ -16,6 +16,8 @@ public:
 		virtual bool RequestJumpInput() const = 0;
 		// 攻撃入力を取得
 		virtual bool RequestAttack(CharacterActionInput attackButton) = 0;
+		// 攻撃入力を離したか取得
+		virtual bool ReleaseAttackInput(CharacterActionInput attackButton) = 0;
 		// チャージ攻撃入力を取得
 		virtual bool RequestChargeAttack(CharacterActionInput attackButton) = 0;
 		//ステップブースト入力を取得

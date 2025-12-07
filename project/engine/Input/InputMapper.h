@@ -39,6 +39,8 @@ public:
 
 	// ボタンが押されているか
 	bool IsPressed(Enum button) const;
+
+	bool IsReleased(Enum button) const;
 	// ボタンがトリガーされたか
 	bool IsTriggered(Enum button) const;
 
@@ -95,10 +97,6 @@ inline Vector2 InputMapper<Enum>::GetVector2(Enum action) const {
 		vector.x += inputVec.x;
 		vector.y += inputVec.y;
 	}
-	// 正規化
-	if (vector.Length() > 1.0f) {
-		vector = vector.Normalize();
-	}
 	return vector;
 }
 
@@ -112,6 +110,21 @@ inline bool InputMapper<Enum>::IsPressed(Enum button) const {
 	for (const auto& device : devices_) {
 		if (device->IsPressed(button)) {
 
+			return true;
+		}
+	}
+	return false;
+}
+
+//-------------------------------------------------------------------------
+// ボタンが離されたか
+//-------------------------------------------------------------------------
+template<InputEnum Enum>
+inline bool InputMapper<Enum>::IsReleased(Enum button) const {
+	
+	// 入力結果を取得
+	for (const auto& device : devices_) {
+		if (device->IsReleased(button)) {
 			return true;
 		}
 	}
