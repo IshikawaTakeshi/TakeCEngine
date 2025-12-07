@@ -51,6 +51,8 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 void Bullet::Update() {
 
+	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+
 	if (isActive_ == false) {
 		pointLightData_.enabled_ = 0;
 		return;

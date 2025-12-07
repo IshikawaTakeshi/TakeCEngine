@@ -56,12 +56,12 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 
 void VerticalMissile::Update() {
 
+	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 	if (isActive_ == false) {
 		pointLightData_.enabled_ = 0;
 		return;
 	}
 
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
 	//ライフタイムの減少
 	lifeTime_ -= deltaTime_;
@@ -82,8 +82,6 @@ void VerticalMissile::Update() {
 		transform_.translate.y += vmInfo_.ascendSpeed * TakeCFrameWork::GetDeltaTime();
 		if (transform_.translate.y >= vmInfo_.maxAltitude) {
 			// 最大高度に達したらホーミングフェーズに移行
-			transform_.translate.y = vmInfo_.maxAltitude; // 高度を制限
-
 			phase_ = VerticalMissile::VerticalMissilePhase::HOMING;
 		}
 
