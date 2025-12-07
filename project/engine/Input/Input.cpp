@@ -148,11 +148,11 @@ float Input::GetTriggerValue(int stickNo, GamepadButtonType button) const {
 	return gamePad_->GetTriggerValue(stickNo, button);
 }
 
-StickState Input::GetLeftStickState(int stickNo) const {
+Vector2 Input::GetLeftStickState(int stickNo) const {
 	return gamePad_->GetLeftStickState(stickNo);
 }
 
-StickState Input::GetRightStickState(int stickNo) const {
+Vector2 Input::GetRightStickState(int stickNo) const {
 	return gamePad_->GetRightStickState(stickNo);
 }
 

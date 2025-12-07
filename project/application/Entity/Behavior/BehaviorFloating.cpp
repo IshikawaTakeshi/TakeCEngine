@@ -62,7 +62,7 @@ void BehaviorFloating::Update(PlayableCharacterInfo& characterInfo) {
 	}
 
 	//ジャンプボタンの追加入力でさらに上昇
-	if(inputProvider_->IsJumpRequested()) {
+	if(inputProvider_->RequestJumpInput()) {
 
 		if( characterInfo.overHeatInfo.isOverheated) {
 			// オーバーヒート中はジャンプできない

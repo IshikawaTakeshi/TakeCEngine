@@ -1,7 +1,7 @@
 #pragma once
 
 //	include
-#include <io/IInputDevice.h>
+#include "Input/IInputDevice.h"
 #include "engine/math/Vector2.h"
 
 // c++
@@ -15,42 +15,42 @@
 template<InputEnum Enum>
 class InputMapper {
 public:
-    //========================================================================
-    //	public Methods
-    //========================================================================
+	//========================================================================
+	//	public Methods
+	//========================================================================
 
-    /// <summary>
+	/// <summary>
 	/// コンストラクタ・デストラクタ
-    /// </summary>
-    InputMapper() = default;
-    ~InputMapper() = default;
+	/// </summary>
+	InputMapper() = default;
+	~InputMapper() = default;
 
-    // 使用する入力デバイスを追加
-    void AddDevice(std::unique_ptr<IInputDevice<Enum>> device);
+	// 使用する入力デバイスを追加
+	void AddDevice(std::unique_ptr<IInputDevice<Enum>> device);
 
-    //--------- accessor -----------------------------------------------------
+	//--------- accessor -----------------------------------------------------
 
-    //----- getter --------------------
+	//----- getter --------------------
 
 	// 入力取得
-    float GetVector(Enum action) const;
+	float GetVector(Enum action) const;
 	// 2Dベクトル入力取得
-    Vector2 GetVector2(Enum actionX, Enum actionY) const;
+	Vector2 GetVector2(Enum action) const;
 
 	// ボタンが押されているか
-    bool IsPressed(Enum button) const;
+	bool IsPressed(Enum button) const;
 	// ボタンがトリガーされたか
-    bool IsTriggered(Enum button) const;
+	bool IsTriggered(Enum button) const;
 
 private:
-    //========================================================================
-    //	private Methods
-    //========================================================================
+	//========================================================================
+	//	private Methods
+	//========================================================================
 
-    //--------- variables ----------------------------------------------------
+	//--------- variables ----------------------------------------------------
 
-    // 使用する入力デバイス
-    std::vector<std::unique_ptr<IInputDevice<Enum>>> devices_;
+	// 使用する入力デバイス
+	std::vector<std::unique_ptr<IInputDevice<Enum>>> devices_;
 };
 
 //============================================================================
@@ -63,7 +63,7 @@ private:
 template<InputEnum Enum>
 inline void InputMapper<Enum>::AddDevice(std::unique_ptr<IInputDevice<Enum>> device) {
 
-    devices_.emplace_back(std::move(device));
+	devices_.emplace_back(std::move(device));
 }
 
 //-------------------------------------------------------------------------
@@ -72,22 +72,34 @@ inline void InputMapper<Enum>::AddDevice(std::unique_ptr<IInputDevice<Enum>> dev
 template<InputEnum Enum>
 inline float InputMapper<Enum>::GetVector(Enum action) const {
 
-    float vector = 0.0f;
-    // 各入力から値を入れる
-    for (const auto& device : devices_) {
+	float vector = 0.0f;
+	// 各入力から値を入れる
+	for (const auto& device : devices_) {
 
-        vector += device->GetVector(action);
-    }
-    vector = std::clamp(vector, -1.0f, 1.0f);
-    return vector;
+		vector += device->GetVector(action);
+	}
+	vector = std::clamp(vector, -1.0f, 1.0f);
+	return vector;
 }
 
 //-------------------------------------------------------------------------
 // 2Dベクトル入力取得
 //-------------------------------------------------------------------------
 template<InputEnum Enum>
-inline Vector2 InputMapper<Enum>::GetVector2(Enum actionX, Enum actionY) const {
-	return { GetVector(actionX), GetVector(actionY) };
+inline Vector2 InputMapper<Enum>::GetVector2(Enum action) const {
+
+	Vector2 vector{ 0.0f, 0.0f };
+	// 各入力から値を入れる
+	for (const auto& device : devices_) {
+		Vector2 inputVec = device->GetVector2(action);
+		vector.x += inputVec.x;
+		vector.y += inputVec.y;
+	}
+	// 正規化
+	if (vector.Length() > 1.0f) {
+		vector = vector.Normalize();
+	}
+	return vector;
 }
 
 //-------------------------------------------------------------------------
@@ -96,14 +108,14 @@ inline Vector2 InputMapper<Enum>::GetVector2(Enum actionX, Enum actionY) const {
 template<InputEnum Enum>
 inline bool InputMapper<Enum>::IsPressed(Enum button) const {
 
-    // 入力結果を取得
-    for (const auto& device : devices_) {
-        if (device->IsPressed(button)) {
+	// 入力結果を取得
+	for (const auto& device : devices_) {
+		if (device->IsPressed(button)) {
 
-            return true;
-        }
-    }
-    return false;
+			return true;
+		}
+	}
+	return false;
 }
 
 //-------------------------------------------------------------------------
@@ -112,12 +124,12 @@ inline bool InputMapper<Enum>::IsPressed(Enum button) const {
 template<InputEnum Enum>
 inline bool InputMapper<Enum>::IsTriggered(Enum button) const {
 
-    // 入力結果を取得
-    for (const auto& device : devices_) {
-        if (device->IsTriggered(button)) {
+	// 入力結果を取得
+	for (const auto& device : devices_) {
+		if (device->IsTriggered(button)) {
 
-            return true;
-        }
-    }
-    return false;
+			return true;
+		}
+	}
+	return false;
 }

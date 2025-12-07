@@ -14,6 +14,6 @@ enum class CharacterActionInput {
 	ATTACK_LA,
 	ATTACK_RB,
 	ATTACK_LB,
-	ROCKON,
+	LOCKON,
 	USE_REAIR,
 };

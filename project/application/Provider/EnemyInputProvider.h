@@ -17,11 +17,13 @@ public:
 	//移動方向の取得
 	Vector3 GetMoveDirection() const override;
 	//ジャンプ入力の取得
-	bool IsJumpRequested() const override;
+	bool RequestJumpInput() const override;
 	//攻撃入力の取得
-	void RequestAttack() override;
+	bool RequestAttack(CharacterActionInput attackButton) override;
 	//チャージ攻撃入力の取得
-	void RequestChargeAttack() override;
+	bool RequestChargeAttack(CharacterActionInput attackButton) override;
+	//ステップブースト入力の取得
+	bool RequestStepBoost() const override;
 
 	//----- setter ---------------------------
 	void SetAIBrainSystem(AIBrainSystem* aiBrainSystem) { aiBrainSystem_ = aiBrainSystem; }

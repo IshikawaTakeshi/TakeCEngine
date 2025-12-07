@@ -187,8 +187,8 @@ bool GamePad::ReleaseButton(int stickNo, GamepadButtonType button) const {
 //===============================================================
 
 // 左スティックの状況を取得
-StickState GamePad::GetLeftStickState(int stickNo) const {
-	StickState state = {0.0f, 0.0f};
+Vector2 GamePad::GetLeftStickState(int stickNo) const {
+	Vector2 state = {0.0f, 0.0f};
 	if (stickNo < 0 || stickNo >= XUSER_MAX_COUNT)
 		return state;
 
@@ -217,8 +217,8 @@ StickState GamePad::GetLeftStickState(int stickNo) const {
 	return state;
 }
 // 右スティックの状況を取得
-StickState GamePad::GetRightStickState(int stickNo) const {
-	StickState state = {0.0f, 0.0f};
+Vector2 GamePad::GetRightStickState(int stickNo) const {
+	Vector2 state = {0.0f, 0.0f};
 	if (stickNo < 0 || stickNo >= XUSER_MAX_COUNT)
 		return state;
 
@@ -259,7 +259,7 @@ Vector2 GamePad::GetStickValue(int stickNo, GamepadValueType valueType) const {
 	Vector2 dInputValue{};
 
 	switch (valueType) {
-	case GamepadValueType::LeftStick:
+	case GamepadValueType::LEFT_STICK:
 		xInputValue.x = static_cast<float>(currentState_[stickNo].Gamepad.sThumbLX) / NORMALIZE_RANGE;
 		dInputValue.x = static_cast<float>(currentDIState_[stickNo].lX) / 32767.0f; // DirectInput のスケール調整
 

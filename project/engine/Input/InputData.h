@@ -37,12 +37,6 @@ enum class GamepadButtonType {
 
 // Gamepadのアナログ値の種類を表す列挙型
 enum class GamepadValueType {
-	LeftStick,  // 左スティック
+	LEFT_STICK,  // 左スティック
 	RightStick, // 右スティック
-};
-
-// スティックの状態を表す構造体
-struct StickState {
-	float x;
-	float y;
 };
