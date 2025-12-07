@@ -365,7 +365,7 @@ void GamePlayScene::UpdateGamePlay() {
 
 	//予測命中位置の計算
 	Vector3 toEnemy = enemy_->GetObject3d()->GetTranslate() - player_->GetObject3d()->GetTranslate();
-	float travelTime = Vector3Math::Length(toEnemy) / player_->GetWeapon(0)->GetBulletSpeed();
+	float travelTime = Vector3Math::Length(toEnemy) / player_->GetCurrentWeapon(0)->GetBulletSpeed();
 	Vector3 predictedImpactPos = enemy_->GetObject3d()->GetTranslate() + enemy_->GetVelocity() * travelTime;
 
 	//playerReticleの更新
@@ -381,10 +381,10 @@ void GamePlayScene::UpdateGamePlay() {
 	energyInfoUI_->Update(player_->GetEnergy(), player_->GetMaxEnergy());
 	//bulletCounterUIの更新
 	for (int i = 0; i < 4; i++) {
-		bulletCounterUI_[i]->SetBulletCount(player_->GetWeapon(i)->GetBulletCount());
-		bulletCounterUI_[i]->SetRemainingBulletCount(player_->GetWeapon(i)->GetRemainingBulletCount());
-		bulletCounterUI_[i]->SetReloadingState(player_->GetWeapon(i)->GetIsReloading());
-		bulletCounterUI_[i]->SetWeaponIconUV(static_cast<int>(player_->GetWeapon(i)->GetUnitPosition()));
+		bulletCounterUI_[i]->SetBulletCount(player_->GetCurrentWeapon(i)->GetBulletCount());
+		bulletCounterUI_[i]->SetRemainingBulletCount(player_->GetCurrentWeapon(i)->GetRemainingBulletCount());
+		bulletCounterUI_[i]->SetReloadingState(player_->GetCurrentWeapon(i)->GetIsReloading());
+		bulletCounterUI_[i]->SetWeaponIconUV(static_cast<int>(player_->GetCurrentWeapon(i)->GetUnitPosition()));
 		bulletCounterUI_[i]->Update();
 	}
 

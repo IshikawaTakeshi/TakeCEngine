@@ -128,7 +128,7 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bul
 //===================================================================================
 // 武器の取得
 //===================================================================================
-BaseWeapon* Player::GetWeapon(int index) const {
+BaseWeapon* Player::GetCurrentWeapon(int index) const {
 	return weapons_[index].get();
 }
 
@@ -159,7 +159,7 @@ void Player::Update() {
 		if (playerData_.characterInfo.overHeatInfo.isOverheated == false) {
 			//StepBoost入力判定
 			// LTボタン＋スティック入力で発動
-			if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
+			if (inputProvider_->RequestStepBoost()) {
 				RequestActiveBoostEffect();
 				behaviorManager_->RequestBehavior(GameCharacterBehavior::STEPBOOST);
 			}
@@ -167,7 +167,7 @@ void Player::Update() {
 			//RTで発動
 			if (playerData_.characterInfo.onGround == true) {
 
-				if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RT)) {
+				if (inputProvider_->RequestJumpInput()) {
 					//ジャンプのリクエスト
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::JUMP);
 					playerData_.characterInfo.onGround = false; // ジャンプしたので地上ではない

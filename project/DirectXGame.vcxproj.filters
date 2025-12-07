@@ -531,6 +531,7 @@
     <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
     <ClCompile Include="engine\2d\SpriteConfig.cpp" />
     <ClCompile Include="engine\PostEffect\GlareEffect.cpp" />
+    <ClCompile Include="application\Provider\PlayerPadInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1035,12 +1036,6 @@
     <ClInclude Include="application\Weapon\Bullet\MissilePool.h">
       <Filter>application\weapon\Bullet</Filter>
     </ClInclude>
-    <ClInclude Include="engine\io\InputMapper.h">
-      <Filter>engine\io</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\io\IInputDevice.h">
-      <Filter>engine\io</Filter>
-    </ClInclude>
     <ClInclude Include="application\Provider\PlayerInputProvider.h">
       <Filter>application\provider</Filter>
     </ClInclude>
@@ -1100,6 +1095,7 @@
     <ClInclude Include="application\Weapon\MachineGun\MachineGun.h" />
     <ClInclude Include="engine\2d\SpriteConfig.h" />
     <ClInclude Include="engine\PostEffect\GlareEffect.h" />
+    <ClInclude Include="application\Provider\PlayerPadInput.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

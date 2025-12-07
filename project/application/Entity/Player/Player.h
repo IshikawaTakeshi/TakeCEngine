@@ -69,7 +69,7 @@ public:
 	//==============================================================================
 
 	//武器の取得
-	BaseWeapon* GetWeapon(int index) const;
+	BaseWeapon* GetCurrentWeapon(int index) const;
 	//全武器の取得
 	std::vector<std::unique_ptr<BaseWeapon>>& GetWeapons();
 

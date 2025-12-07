@@ -128,9 +128,9 @@ public:
 	float GetTriggerValue(int stickNo, GamepadButtonType button) const;
 
 	//スティックの状況を取得
-	StickState GetLeftStickState(int stickNo) const;
+	Vector2 GetLeftStickState(int stickNo) const;
 	//スティックの状況を取得
-	StickState GetRightStickState(int stickNo) const;
+	Vector2 GetRightStickState(int stickNo) const;
 	// スティックの値を取得
 	Vector2 GetStickValue(int stickNo, GamepadValueType valueType) const;
 

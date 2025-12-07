@@ -5,7 +5,7 @@
 #include "application/Entity/Enemy/Enemy.h"
 
 EnemyInputProvider::EnemyInputProvider(Enemy* enemy) {
-
+	//mapper_ = std::make_unique<InputMapper<CharacterActionInput>>();
 	enemy_ = enemy;
 }
 
@@ -34,18 +34,29 @@ Vector3 EnemyInputProvider::GetMoveDirection() const {
 //=============================================================================
 //　ジャンプ入力の取得
 //=============================================================================
-bool EnemyInputProvider::IsJumpRequested() const {
+bool EnemyInputProvider::RequestJumpInput() const {
 	return aiBrainSystem_->GetBestAction() == Action::FLOATING;
 }
 
 //=============================================================================
 //　攻撃入力の取得
 //=============================================================================
-void EnemyInputProvider::RequestAttack() {
+bool EnemyInputProvider::RequestAttack(CharacterActionInput attackButton) {
+	attackButton;
+	return false;
 }
 
 //=============================================================================
 //　チャージ攻撃入力の取得
 //=============================================================================
-void EnemyInputProvider::RequestChargeAttack() {
+bool EnemyInputProvider::RequestChargeAttack(CharacterActionInput attackButton) {
+	attackButton;
+	return false;
+}
+
+//=============================================================================
+//　ステップブースト入力の取得
+//=============================================================================
+bool EnemyInputProvider::RequestStepBoost() const {
+	return aiBrainSystem_->GetBestAction() == Action::STEPBOOST;
 }
