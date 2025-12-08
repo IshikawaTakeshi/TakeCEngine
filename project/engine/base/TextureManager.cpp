@@ -97,6 +97,7 @@ void TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
 
 	} else if(filePathW.ends_with(L".dds")){
 		//DDSファイルの場合
+		fullPathW = L"Resources/Images/dds/" + filePathW;
 		hr = DirectX::LoadFromDDSFile(fullPathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
 		assert(SUCCEEDED(hr));
 

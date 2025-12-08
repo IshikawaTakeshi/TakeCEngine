@@ -15,6 +15,14 @@ void DeadEffect::Initialize() {
 	smokeParticleEmitter_->Initialize("smoke", {}, 20, 0.1f);
 	smokeParticleEmitter_->SetRotate({ -1.4f,0.0f,0.0f });
 	smokeParticleEmitter_->SetParticleName("DeadSmokeEffect");
+
+	//PointLightの設定
+	pointLightData_.enabled_ = 0;
+	pointLightData_.color_ = { 1.0f,0.5f,0.1f,1.0f };
+	pointLightData_.intensity_ = 0.0f;
+	pointLightData_.radius_ = 20.0f;
+	pointLightData_.decay_ = 1.0f;
+	pointLightIndex_ = TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
 }
 
 //===================================================================================
@@ -37,13 +45,19 @@ void DeadEffect::Update(const Vector3& translate) {
 	//パーティクルエミッター更新
 	explosionParticleEmitter_->Update();
 	smokeParticleEmitter_->Update();
+
+	//ポイントライトの更新
+	pointLightData_.position_ = translate + Vector3{ 0.0f,20.0f,0.0f };
+	pointLightData_.intensity_ = 120.0f * (1.0f - timer_.GetEase(Easing::OUT_QUAD));
+	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
 }
 
 //===================================================================================
 //　開始
 //===================================================================================
 void DeadEffect::Start() {
-	timer_.Initialize(0.01f, 0.0f);
-	explosionParticleEmitter_->SetIsEmit(true);
+	timer_.Initialize(0.01f, 0.0f); //タイマー初期化
+	explosionParticleEmitter_->SetIsEmit(true); //パーティクル発生開始
 	smokeParticleEmitter_->SetIsEmit(true);
+	pointLightData_.enabled_ = 1; //ライト有効化
 }

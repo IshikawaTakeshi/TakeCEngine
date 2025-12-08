@@ -6,7 +6,7 @@
 
 PlayerInputProvider::PlayerInputProvider(Player* player) {
 	mapper_ = std::make_unique<InputMapper<CharacterActionInput>>();
-	mapper_->AddDevice(std::make_unique<PlayerKeyInput>());
+	//mapper_->AddDevice(std::make_unique<PlayerKeyInput>());
 	mapper_->AddDevice(std::make_unique<PlayerPadInput>());
 	player_ = player;
 }

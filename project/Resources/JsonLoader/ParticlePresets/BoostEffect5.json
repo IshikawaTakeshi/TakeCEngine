@@ -1,0 +1,64 @@
+{
+    "attributes": {
+        "color": {
+            "x": 0.76,
+            "y": 0.3019607961177826,
+            "z": 0.1
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.009999999776482582
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 50,
+        "enableFollowEmitter": false,
+        "frequency": 0.0,
+        "isBillboard": true,
+        "isDirectional": true,
+        "isEmitterTrail": true,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeRange": {
+            "max": 0.1216,
+            "min": 0.07000000029802322
+        },
+        "particlesPerInterpolation": 30,
+        "positionRange": {
+            "max": 0.46000000834465027,
+            "min": -0.4099999964237213
+        },
+        "rotateRange": {
+            "max": 0.27000001072883606,
+            "min": -0.46000000834465027
+        },
+        "scale": {
+            "x": 0.05000000074505806,
+            "y": 0.1599999964237213,
+            "z": 0.1599999964237213
+        },
+        "scaleRange": {
+            "max": 1.0,
+            "min": 0.1
+        },
+        "scaleSetting": 2,
+        "trailEmitInterval": 0.0001,
+        "velocityRange": {
+            "max": 50.8499984741211,
+            "min": 0.46000000834465027
+        }
+    },
+    "blendState": 1,
+    "name": "BoostEffect5",
+    "primitiveParameters": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+    },
+    "primitiveType": "PRIMITIVE_PLANE",
+    "textureFilePath": "MazzleEffect1.png"
+}

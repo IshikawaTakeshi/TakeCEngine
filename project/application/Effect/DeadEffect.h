@@ -1,5 +1,6 @@
 #pragma once
 #include "engine/3d/Particle/ParticleEmitter.h"
+#include "engine/3d/Light/PointLight.h"
 #include "engine/Utility/Timer.h"
 #include <string>
 
@@ -27,5 +28,8 @@ private:
 	std::unique_ptr<ParticleEmitter> smokeParticleEmitter_ = nullptr;
 	//タイマー
 	Timer timer_;
+
+	PointLightData pointLightData_;
+	uint32_t pointLightIndex_ = 0;
 };
 

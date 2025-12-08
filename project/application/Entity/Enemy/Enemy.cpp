@@ -22,7 +22,6 @@
 //========================================================================================================
 void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
-
 	//キャラクタータイプ設定
 	characterType_ = CharacterType::ENEMY;
 
@@ -38,7 +37,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	characterInfo_.transform = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,30.0f} };
 	object3d_->SetScale(characterInfo_.transform.scale);
 
-	//emiiter設定
+	//emitter設定
 	//emitter0
 	particleEmitter_.resize(3);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
@@ -87,6 +86,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	behaviorManager_ = std::make_unique<BehaviorManager>();
 	behaviorManager_->Initialize(inputProvider_.get());
 	behaviorManager_->InitializeBehaviors(characterInfo_);
+
+	
 }
 
 //========================================================================================================
@@ -254,6 +255,7 @@ void Enemy::Update() {
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(characterInfo_.transform.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(characterInfo_.transform.translate);
 
+	
 	// 着地判定の毎フレームリセット
 	characterInfo_.onGround = false; 
 

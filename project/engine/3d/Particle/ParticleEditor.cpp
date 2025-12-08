@@ -206,6 +206,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	//テクスチャファイルの設定
 #pragma region texture setting
 	ImGui::SeparatorText("Texture Setting");
+
 	//テクスチャファイル名の選択
 	static int selectedTextureIndex = 0;
 

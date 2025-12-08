@@ -168,4 +168,6 @@ private:
 	Vector3 toOrbitPos_ = { 0.0f,0.0f,0.0f }; // 周回する座標
 
 	Vector3 focusTargetVelocity_ = { 0.0f,0.0f,0.0f }; // フォーカス対象の移動ベクトル
+
+	
 };

@@ -4,7 +4,6 @@
         "kMaxBurstCount": 3
     },
     "vmInfo": {
-        "altitude": 0.0,
         "maxAltitude": 10.0,
         "ascendSpeed": 140.0,
         "homingRate": 0.1

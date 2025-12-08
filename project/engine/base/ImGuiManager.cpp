@@ -78,15 +78,22 @@ void ImGuiManager::End() {
 //====================================================================
 void ImGuiManager::DrawDebugScreen() {
 	ImGui::SetNextWindowBgAlpha(1.0f); // 完全透明
-	// 画面左上にぴったり固定（必要に応じて座標を変える）
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-	ImGui::Begin("ImGuiManager::DebugScreen",nullptr,windowFlags_);
-	//レンダーターゲットの内容を表示
+	ImGui::Begin("ImGuiManager::DebugScreen", nullptr, windowFlags_);
+
+	// 表示サイズの切り替え UI
+	ImGui::Checkbox("Use Release Size", &useReleaseSize_);
+
+	const ImVec2 imageSize = useReleaseSize_
+		? releaseImageSize_
+		: ImVec2(static_cast<float>(WinApp::kScreenWidth), static_cast<float>(WinApp::kScreenHeight));
+
+	// レンダーターゲットの内容を表示
 	ImGui::Image(
 		ImTextureID(srvManager_->GetSrvDescriptorHandleGPU(renderTextureIndex_).ptr),
-		ImVec2(static_cast<float>(WinApp::kScreenWidth), static_cast<float>(WinApp::kScreenHeight)),
+		imageSize,
 		ImVec2(0, 0), // UV座標の左上
-		ImVec2(1, 1),  // UV座標の右下
+		ImVec2(1, 1), // UV座標の右下
 		ImVec4(1, 1, 1, 1) // 色の設定（白）
 	);
 	ImGui::End();

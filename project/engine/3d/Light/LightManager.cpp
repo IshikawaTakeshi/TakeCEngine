@@ -304,12 +304,25 @@ void LightManager::UpdateImGui() {
 		// 全てのポイントライト一覧を表示
 		for (uint32_t i = 0; i < activePointLightCount_; ++i) {
 			std::string label = "Light " + std::to_string(i);
-			if (ImGui::TreeNode(label.c_str())) {
+			std::string colorButtonId = "##PointLightColor" + std::to_string(i);
+
+			bool nodeOpen = ImGui::TreeNode(label. c_str());
+			ImGui::SameLine();
+			ImGui::ColorButton(
+				colorButtonId. c_str(),
+				ImVec4(
+					pointLightData_[i].color_.x,
+					pointLightData_[i].color_.y,
+					pointLightData_[i].color_.z,
+					pointLightData_[i].color_. w),
+				ImGuiColorEditFlags_NoTooltip, ImVec2(16, 16));
+
+			if (nodeOpen) {
 				ImGui::ColorEdit4("Color", &pointLightData_[i].color_.x);
 				ImGui::DragFloat3("Position", &pointLightData_[i].position_.x, 0.1f);
 				ImGui::DragFloat("Intensity", &pointLightData_[i].intensity_, 0.01f, 0.0f, 100.0f);
-				ImGui::DragFloat("Radius", &pointLightData_[i].radius_, 0.1f, 0.1f, 100.0f);
-				ImGui::DragFloat("Decay", &pointLightData_[i].decay_, 0.01f, 0.0f, 10.0f);
+				ImGui::DragFloat("Radius", &pointLightData_[i]. radius_, 0.1f, 0.1f, 100.0f);
+				ImGui::DragFloat("Decay", &pointLightData_[i]. decay_, 0.01f, 0.0f, 10.0f);
 				ImGui::TreePop();
 			}
 		}
@@ -326,6 +339,7 @@ void LightManager::UpdateImGui() {
 		}
 
 		ImGui::TreePop();
+
 	}
 
 	// SpotLights
@@ -334,16 +348,22 @@ void LightManager::UpdateImGui() {
 		// 全てのスポットライト一覧を表示
 		for (uint32_t i = 0; i < activeSpotLightCount_; ++i) {
 			std::string label = "Light " + std::to_string(i);
-			if (ImGui::TreeNode(label.c_str())) {
+			std::string colorButtonId = "##SpotLightColor" + std::to_string(i);
+
+			bool nodeOpen = ImGui::TreeNode(label. c_str());
+			ImGui::SameLine();
+			ImGui::ColorButton(colorButtonId. c_str(), ImVec4(spotLightData_[i].color_.x, spotLightData_[i].color_.y, spotLightData_[i].color_.z, spotLightData_[i].color_. w), ImGuiColorEditFlags_NoTooltip, ImVec2(16, 16));
+
+			if (nodeOpen) {
 				ImGui::ColorEdit4("Color", &spotLightData_[i].color_.x);
 				ImGui::DragFloat3("Position", &spotLightData_[i].position_.x, 0.1f);
 				ImGui::DragFloat3("Direction", &spotLightData_[i].direction_.x, 0.01f);
-				spotLightData_[i].direction_ = Vector3Math::Normalize(spotLightData_[i].direction_);
+				spotLightData_[i].direction_ = Vector3Math::Normalize(spotLightData_[i]. direction_);
 				ImGui::DragFloat("Distance", &spotLightData_[i].distance_, 0.1f, 0.1f, 100.0f);
 				ImGui::DragFloat("Intensity", &spotLightData_[i].intensity_, 0.01f, 0.0f, 100.0f);
-				ImGui::DragFloat("Decay", &spotLightData_[i].decay_, 0.01f, 0.0f, 10.0f);
+				ImGui::DragFloat("Decay", &spotLightData_[i]. decay_, 0.01f, 0.0f, 10.0f);
 				ImGui::DragFloat("CosAngle", &spotLightData_[i].cosAngle_, 0.001f, 0.0f, 1.0f);
-				ImGui::DragFloat("PenumbraAngle", &spotLightData_[i].penumbraAngle_, 0.001f, 0.0f, 1.0f);
+				ImGui::DragFloat("PenumbraAngle", &spotLightData_[i]. penumbraAngle_, 0.001f, 0.0f, 1.0f);
 				ImGui::TreePop();
 			}
 		}

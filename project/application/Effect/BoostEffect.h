@@ -1,5 +1,6 @@
 #pragma once
 #include "engine/3d/Object3d.h"
+#include "engine/3d/Light/PointLight.h"
 #include "application/Entity/GameCharacterBehavior.h"
 #include "engine/3d/Particle/ParticleEmitter.h"
 #include <string>
@@ -66,5 +67,7 @@ private:
 	float effectTime_ = 0.0f;
 	//エフェクトのアクティブフラグ
 	bool isActive_ = false;
-};
 
+	PointLightData pointLightData_;
+	uint32_t pointLightIndex_ = 0;
+};
