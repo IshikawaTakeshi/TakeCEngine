@@ -425,7 +425,7 @@ void GamePlayScene::UpdateEnemyDestroyed() {
 	if (changeBehaviorTimer_.IsFinished()) {
 
 		//ゲームクリアへ
-		//behaviorRequest_ = SceneBehavior::GAMECLEAR;
+		behaviorRequest_ = SceneBehavior::GAMECLEAR;
 
 		//ズーム解除
 		CameraManager::GetInstance()->GetActiveCamera()->SetCameraStateRequest(Camera::GameCameraState::FOLLOW);

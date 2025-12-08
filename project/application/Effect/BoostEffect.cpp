@@ -25,6 +25,8 @@ void BoostEffect::Initialize(GameCharacter* owner) {
 	particleEmitter_ = std::make_unique<ParticleEmitter>();
 	particleEmitter_->Initialize("BoostEffectEmitter", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} }, 10, 0.1f);
 	particleEmitter_->SetParticleName("BoostEffect5");
+	particleEmitter_->SetFrequency(0.05f);
+	particleEmitter_->SetParticleCount(40);
 	ownerObject_ = owner;
 
 	//pointLight設定
@@ -169,11 +171,11 @@ void BoostEffect::Update() {
 	boostEffectObject2_->Update();
 	
 	//particleエミッター更新
-	//particleEmitter_->SetIsEmit(isActive_);
-	//particleEmitter_->SetTranslate(boostEffectObject_->GetCenterPosition());
-	//particleEmitter_->SetRotate(boostEffectObject_->GetRotate());
-	////TakeCFrameWork::GetParticleManager()->GetParticleGroup("BoostEffect5")->SetEmitterPosition(boostEffectObject_->GetCenterPosition());
-	//particleEmitter_->Update();
+	particleEmitter_->SetIsEmit(isActive_);
+	particleEmitter_->SetTranslate(boostEffectObject_->GetCenterPosition());
+	particleEmitter_->SetRotate(boostEffectObject_->GetRotate());
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BoostEffect5")->SetEmitterPosition(boostEffectObject_->GetCenterPosition());
+	particleEmitter_->Update();
 }
 
 //===================================================================================

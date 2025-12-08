@@ -44,7 +44,18 @@ public:
 	/// <param name="speed">     弾の速度</param>
 	/// <param name="power">    ダメージ量</param>
 	/// <param name="type">      キャラクタータイプ</param>
-	void ShootBullet(const Vector3& weaponPos, const Vector3& targetPos,const Vector3& targetVel, const float& speed,float power, CharacterType type);
+	void ShootBullet(
+		const Vector3& weaponPos,
+		const Vector3& targetPos,
+		const Vector3& targetVel,
+		const float& speed,float power,
+		CharacterType type);
+	void ShootBullet(
+		const Vector3& weaponPos,
+		const Vector3& direction,
+		const float& speed,
+		float power,
+		CharacterType type);
 	
 	/// <summary>
 	/// ミサイルの発射処理

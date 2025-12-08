@@ -525,7 +525,6 @@
     <ClCompile Include="engine\Animation\SpriteAnimation.cpp" />
     <ClCompile Include="application\Weapon\Action\BurstShotInfo.cpp" />
     <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
-    <ClCompile Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.cpp" />
     <ClCompile Include="engine\Math\MathEnv.cpp" />
     <ClCompile Include="engine\Camera\CameraForGPU.cpp" />
     <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
@@ -533,6 +532,8 @@
     <ClCompile Include="engine\PostEffect\GlareEffect.cpp" />
     <ClCompile Include="application\Provider\PlayerPadInput.cpp" />
     <ClCompile Include="application\Weapon\Bullet\VerticalMissileInfo.cpp" />
+    <ClCompile Include="application\Weapon\ShotGun\ShotGun.cpp" />
+    <ClCompile Include="application\Weapon\ShotGun\ShotGunInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1098,6 +1099,8 @@
     <ClInclude Include="engine\PostEffect\GlareEffect.h" />
     <ClInclude Include="application\Provider\PlayerPadInput.h" />
     <ClInclude Include="application\Weapon\Bullet\VerticalMissileInfo.h" />
+    <ClInclude Include="application\Weapon\ShotGun\ShotGun.h" />
+    <ClInclude Include="application\Weapon\ShotGun\ShotGunInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

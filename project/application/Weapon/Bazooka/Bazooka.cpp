@@ -107,14 +107,14 @@ void Bazooka::Attack() {
 	if (ownerObject_->GetCharacterType() == CharacterType::PLAYER){
 		bulletManager_->ShootBullet(
 			object3d_->GetCenterPosition(),
-			targetPos_,targetVel_,
+			targetPos_,targetVelocity_,
 			weaponData_.config.bulletSpeed,
 			weaponData_.config.power,
 			CharacterType::PLAYER_BULLET);
 	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
 		bulletManager_->ShootBullet(
 			object3d_->GetCenterPosition(),
-			targetPos_,targetVel_,
+			targetPos_,targetVelocity_,
 			weaponData_.config.bulletSpeed,
 			weaponData_.config.power,
 			CharacterType::ENEMY_BULLET);
@@ -129,30 +129,4 @@ void Bazooka::Attack() {
 	}
 	//攻撃間隔のリセット
 	weaponState_.attackInterval = weaponData_.config.attackInterval;
-}
-
-//=============================================================================
-// 所有者の設定
-//=============================================================================
-void Bazooka::SetOwnerObject(GameCharacter* owner) {
-
-	ownerObject_ = owner;
-}
-
-// チャージ攻撃可能か
-bool Bazooka::IsChargeAttack() const {
-	// バズーカはチャージ攻撃不可
-	return weaponData_.config.canChargeAttack;
-}
-
-// 移動撃ち可能か
-bool Bazooka::IsMoveShootable() const {
-	// バズーカは移動撃ち不可
-	return weaponData_.config.canMoveShootable;
-}
-
-// 停止撃ち専用か
-bool Bazooka::IsStopShootOnly() const {
-	// バズーカは停止撃ち専用
-	return weaponData_.config.isStopShootOnly;
 }

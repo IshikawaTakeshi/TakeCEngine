@@ -130,8 +130,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Tool\CharacterEdit\CharacterEditTool.cpp" />
     <ClCompile Include="application\Weapon\Action\BurstShotInfo.cpp" />
     <ClCompile Include="application\Weapon\Bullet\VerticalMissileInfo.cpp" />
-    <ClCompile Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.cpp" />
     <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
+    <ClCompile Include="application\Weapon\ShotGun\ShotGunInfo.cpp" />
     <ClCompile Include="application\Weapon\WeaponData.cpp" />
     <ClCompile Include="engine\2d\SpriteConfig.cpp" />
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
@@ -251,6 +251,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\UI\PushStartUI.cpp" />
     <ClCompile Include="application\UI\PhaseMessageUI.cpp" />
     <ClCompile Include="application\Provider\PlayerPadInput.cpp" />
+    <ClCompile Include="application\Weapon\ShotGun\ShotGun.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
@@ -269,6 +270,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\Bullet\VerticalMissileInfo.h" />
     <ClInclude Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.h" />
     <ClInclude Include="application\Weapon\Rifle\RifleInfo.h" />
+    <ClInclude Include="application\Weapon\ShotGun\ShotGunInfo.h" />
     <ClInclude Include="application\Weapon\WeaponData.h" />
     <ClInclude Include="application\Weapon\WeaponType.h" />
     <ClInclude Include="application\UI\EnergyInfoUI.h" />
@@ -435,6 +437,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h" />
     <ClInclude Include="application\Ground\WaterGround.h" />
     <ClInclude Include="engine\Utility\Timer.h" />
+    <ClInclude Include="application\Weapon\ShotGun\ShotGun.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

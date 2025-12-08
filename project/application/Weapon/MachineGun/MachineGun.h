@@ -44,25 +44,5 @@ public:
 	/// 攻撃処理
 	/// </summary>
 	void Attack() override;
-
-public:
-
-	//===========================================================================
-	// accessor
-	//===========================================================================
-
-	//----- setter ---------------------------
-
-	// 武器タイプの取得
-	void SetOwnerObject(GameCharacter* owner) override;
-	//攻撃対象の座標を設定
-	void SetTarget(const Vector3& targetPos) override { targetPos_ = targetPos; }
-
-	//チャージ攻撃可能か
-	bool IsChargeAttack() const override;
-	//移動撃ち可能か
-	bool IsMoveShootable() const override;
-	//停止撃ち専用か
-	bool IsStopShootOnly() const override;
 };
 

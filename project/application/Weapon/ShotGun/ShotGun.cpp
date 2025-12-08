@@ -1,42 +1,47 @@
-#include "MachineGun.h"
+#include "ShotGun.h"
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/base/ImGuiManager.h"
-#include "engine/math/MatrixMath.h"
+#include "engine/Math/MatrixMath.h"
+#include "engine/Math/Vector3Math.h"
+#include "engine/Math/MathEnv.h"
 #include "application/Weapon/Bullet/BulletManager.h"
 
-//===================================================================================
-//　初期化処理
-//===================================================================================
-void MachineGun::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
+//====================================================================
+// 初期化
+//====================================================================
+void ShotGun::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
 
 	bulletManager_ = bulletManager;
 
 	//武器の初期化
-	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("MachineGun.json");
+	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("ShotGun.json");
+
 	//3dオブジェクトの初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, weaponData_.modelFilePath);
 
-	weaponState_.attackInterval = weaponData_.config.attackInterval; // 攻撃間隔を設定
+	// ライフルの色を設定
+	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
+	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.8f);
+
+	weaponState_.attackInterval = weaponData_.config.attackInterval;
 	weaponState_.bulletCount = weaponData_.config.maxMagazineCount;
 	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定
 }
 
-//===================================================================================
-//　更新処理
-//===================================================================================
-void MachineGun::Update() {
-	if(weaponState_.remainingBulletCount <= 0 && weaponState_.bulletCount <= 0) {
+void ShotGun::Update() {
+
+	if (weaponState_.remainingBulletCount <= 0 && weaponState_.bulletCount <= 0) {
 		weaponState_.isAvailable = false; // 弾がなくなったら使用不可
 		return;
 	}
 
 	//リロード中かどうか
-	if(weaponState_.isReloading) {
+	if (weaponState_.isReloading) {
 
 		weaponState_.reloadTime -= TakeCFrameWork::GetDeltaTime();
 
-		if( weaponState_.reloadTime <= 0.0f) {
+		if (weaponState_.reloadTime <= 0.0f) {
 			weaponState_.reloadTime = 0.0f; // リロード時間をリセット
 			//リロード完了
 			weaponState_.isReloading = false;
@@ -59,33 +64,28 @@ void MachineGun::Update() {
 	object3d_->Update();
 }
 
-//===================================================================================
-//　ImGui更新処理
-//===================================================================================
-void MachineGun::UpdateImGui() {
+void ShotGun::UpdateImGui() {
 
-	ImGui::SeparatorText("MachineGun");
+	ImGui::SeparatorText("ShotGun Status");
+	ImGui::SliderFloat("##ShotGun::Bullet Speed", &weaponData_.config.bulletSpeed, 100.0f, 1000.0f);
+	ImGui::Separator();
 	weaponData_.config.EditConfigImGui(weaponData_.weaponName);
-	if(ImGui::Button("Save MachineGun Config")) {
-		// 設定をJSONに保存
-		TakeCFrameWork::GetJsonLoader()->SaveJsonData("MachineGun.json", weaponData_);
+	shotGunInfo_.EditConfigImGui();
+
+	if (ImGui::Button("Save ShotGun Data")) {
+		weaponData_.actionData = shotGunInfo_;
+		TakeCFrameWork::GetJsonLoader()->SaveJsonData("ShotGun.json", weaponData_);
 	}
 }
 
-//===================================================================================
-//　描画処理
-//===================================================================================
-void MachineGun::Draw() {
-	if(weaponState_.remainingBulletCount <= 0 && weaponState_.bulletCount <= 0) {
+void ShotGun::Draw() {
+	if (weaponState_.remainingBulletCount <= 0 && weaponState_.bulletCount <= 0) {
 		return; // 弾がなくなったら描画しない
 	}
 	object3d_->Draw();
 }
 
-//===================================================================================
-//　攻撃処理
-//===================================================================================
-void MachineGun::Attack() {
+void ShotGun::Attack() {
 	if (weaponState_.isReloading) {
 		return; // リロード中は攻撃しない
 	}
@@ -95,24 +95,24 @@ void MachineGun::Attack() {
 		return;
 	}
 
+	Vector3 muzzlePos = GetCenterPosition(); // or joint-based muzzle
+	Vector3 baseDir = (GetTargetPos() - muzzlePos).Normalize(); // 基本の射撃方向
+	CharacterType ownerType = ownerObject_->GetCharacterType();
 	//弾の発射
-	if (ownerObject_->GetCharacterType() == CharacterType::PLAYER){
+	for (size_t i = 0; i < shotGunInfo_.pelletCount; ++i) {
+		float yawOffset   = GetRandomFloat(-shotGunInfo_.spreadDeg, shotGunInfo_.spreadDeg);
+		float pitchOffset = GetRandomFloat(-shotGunInfo_.spreadDeg, shotGunInfo_.spreadDeg);
+		
+		// ランダムな方向ベクトルを計算
+		Vector3 dir = Vector3Math::ApplyYawPitch(baseDir, yawOffset, pitchOffset).Normalize();
+
+		// Bullet 生成
 		bulletManager_->ShootBullet(
 			object3d_->GetCenterPosition(),
-			targetPos_,
-			targetVelocity_,
+			dir,
 			weaponData_.config.bulletSpeed,
 			weaponData_.config.power,
-			CharacterType::PLAYER_BULLET);
-	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
-		bulletManager_->ShootBullet(
-			object3d_->GetCenterPosition(),
-			targetPos_,targetVelocity_,
-			weaponData_.config.bulletSpeed,
-			weaponData_.config.power,
-			CharacterType::ENEMY_BULLET);
-	} else {
-		return; // キャラクタータイプが不明な場合は攻撃しない
+			static_cast<CharacterType>(static_cast<int>(ownerType) + 1));
 	}
 
 	weaponState_.bulletCount--;
