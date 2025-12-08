@@ -87,22 +87,22 @@
     "weaponData": [
         {
             "config": {
-                "bulletSpeed": 500.0,
+                "bulletSpeed": 700.0,
                 "canChargeAttack": false,
-                "canMoveShootable": false,
-                "effectiveRange": 1000.0,
+                "canMoveShootable": true,
+                "effectiveRange": 400.0,
                 "homingRate": 0.0,
-                "isStopShootOnly": true,
-                "kAttackInterval": 2.0,
-                "magazineCount_": 5,
-                "maxBulletCount": 50,
-                "maxReloadTime": 4.0,
-                "power": 1500.0,
+                "isStopShootOnly": false,
+                "kAttackInterval": 0.07500000298023224,
+                "magazineCount_": 30,
+                "maxBulletCount": 600,
+                "maxReloadTime": 2.0,
+                "power": 49.24300003051758,
                 "requiredChargeTime": 0.0
             },
-            "modelFilePath": "Bazooka.gltf",
-            "weaponName": "Bazooka",
-            "weaponType": "WEAPON_TYPE_BAZOOKA"
+            "modelFilePath": "MachineGun.gltf",
+            "weaponName": "MachineGun",
+            "weaponType": "WEAPON_TYPE_MACHINE_GUN"
         },
         {
             "actionData": {

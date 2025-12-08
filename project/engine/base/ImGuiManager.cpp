@@ -78,15 +78,19 @@ void ImGuiManager::End() {
 //====================================================================
 void ImGuiManager::DrawDebugScreen() {
 	ImGui::SetNextWindowBgAlpha(1.0f); // 完全透明
+	// 画像サイズを先に決定
+	const ImVec2 imageSize = useReleaseSize_
+		? releaseImageSize_
+		: ImVec2(static_cast<float>(WinApp::kScreenWidth), static_cast<float>(WinApp::kScreenHeight));
+
+	// 画面左上に固定し、ウィンドウサイズも画像サイズに合わせる
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(imageSize, ImGuiCond_Always);
+
 	ImGui::Begin("ImGuiManager::DebugScreen", nullptr, windowFlags_);
 
 	// 表示サイズの切り替え UI
 	ImGui::Checkbox("Use Release Size", &useReleaseSize_);
-
-	const ImVec2 imageSize = useReleaseSize_
-		? releaseImageSize_
-		: ImVec2(static_cast<float>(WinApp::kScreenWidth), static_cast<float>(WinApp::kScreenHeight));
 
 	// レンダーターゲットの内容を表示
 	ImGui::Image(

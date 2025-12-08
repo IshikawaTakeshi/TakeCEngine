@@ -169,11 +169,11 @@ void BoostEffect::Update() {
 	boostEffectObject2_->Update();
 	
 	//particleエミッター更新
-	particleEmitter_->SetIsEmit(isActive_);
-	particleEmitter_->SetTranslate(boostEffectObject_->GetCenterPosition());
-	particleEmitter_->SetRotate(boostEffectObject_->GetRotate());
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BoostEffect2")->SetEmitterPosition(boostEffectObject_->GetCenterPosition());
-	particleEmitter_->Update();
+	//particleEmitter_->SetIsEmit(isActive_);
+	//particleEmitter_->SetTranslate(boostEffectObject_->GetCenterPosition());
+	//particleEmitter_->SetRotate(boostEffectObject_->GetRotate());
+	////TakeCFrameWork::GetParticleManager()->GetParticleGroup("BoostEffect5")->SetEmitterPosition(boostEffectObject_->GetCenterPosition());
+	//particleEmitter_->Update();
 }
 
 //===================================================================================
