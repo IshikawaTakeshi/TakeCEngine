@@ -30,20 +30,6 @@ public:
 	// チャージ攻撃実行
 	void ChargeAttack() override;
 
-	//----- setter ---------------------------
-
-	// 武器タイプの取得
-	void SetOwnerObject(GameCharacter* owner) override;
-	//攻撃対象の座標を設定
-	void SetTarget(const Vector3& targetPos) override { targetPos_ = targetPos; }
-
-	//チャージ攻撃可能か
-	bool IsChargeAttack() const override;
-	//移動撃ち可能か
-	bool IsMoveShootable() const override;
-		//停止撃ち専用か
-	bool IsStopShootOnly() const override;
-
 private:
 
 	//連射情報

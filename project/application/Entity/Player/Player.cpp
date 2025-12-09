@@ -16,6 +16,7 @@
 #include "application/Weapon/Bazooka/Bazooka.h"
 #include "application/Weapon/Launcher/VerticalMissileLauncher.h"
 #include "application/Weapon/MachineGun/MachineGun.h"
+#include "application/Weapon/ShotGun/ShotGun.h"
 #include "application/Entity/WeaponUnit.h"
 
 #include "application/Entity/Behavior/BehaviorRunning.h"
@@ -89,7 +90,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
 	//武器の初期化
-	for (int i = 0; i < weapons_.size(); i++) {
+	for (int i = 0; i < weapons_.size() - 1; i++) {
 		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
 			weapons_[i] = std::make_unique<Rifle>();
 			weapons_[i]->Initialize(object3dCommon, bulletManager);
@@ -108,9 +109,18 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bul
 			weapons_[i] = std::make_unique<MachineGun>();
 			weapons_[i]->Initialize(object3dCommon, bulletManager);
 			weapons_[i]->SetOwnerObject(this);
+		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_SHOTGUN) {
+			//ショットガンの武器を初期化
+			weapons_[i] = std::make_unique<ShotGun>();
+			weapons_[i]->Initialize(object3dCommon, bulletManager);
+			weapons_[i]->SetOwnerObject(this);
 		} else {
-			weapons_[i] = nullptr; // 未使用の武器スロットはnullptrに設定
+			//武器が設定されていない場合はnullptrのまま
+			weapons_[i] = nullptr;
 		}
+		weapons_[3] = std::make_unique<ShotGun>();
+		weapons_[3]->Initialize(object3dCommon, bulletManager);
+		weapons_[3]->SetOwnerObject(this);
 	}
 
 	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
@@ -320,6 +330,7 @@ void Player::UpdateImGui() {
 	weapons_[0]->UpdateImGui();
 	weapons_[1]->UpdateImGui();
 	weapons_[2]->UpdateImGui();
+	weapons_[3]->UpdateImGui();
 	ImGui::End();
 
 #endif // _DEBUG
@@ -498,14 +509,14 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 		//武器を選択したことを記録
 		isUseWeapon_ = true;
 		//チャージ攻撃可能な場合
-		if (weapon->IsChargeAttack()) {
+		if (weapon->CanChargeAttack()) {
 
 			//武器のチャージ処理
 			weapon->Charge(deltaTime_);
 			if (inputProvider_->ReleaseAttackInput(actionInput) == true) {
 				//チャージ攻撃実行
 				weapon->ChargeAttack();
-				if (weapon->IsStopShootOnly()) {
+				if (weapon->StopShootOnly()) {
 					// 停止撃ち専用の場合はチャージ後に硬直状態へ
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 				} else {
@@ -515,7 +526,7 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 			}
 		} else {
 			//チャージ攻撃不可:通常攻撃
-			if (weapon->IsStopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
+			if (weapon->StopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
 				// 停止撃ち専用:硬直処理を行う
 				playerData_.characterInfo.isChargeShooting = true; // チャージ撃ち中フラグを立てる
 				chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
@@ -532,7 +543,7 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 		if (weapon->IsCharging()) {
 			// チャージ中の場合はチャージ攻撃を終了
 			weapon->ChargeAttack();
-			if (weapon->IsStopShootOnly()) {
+			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
 				behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 			} else {

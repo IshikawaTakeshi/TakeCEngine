@@ -17,7 +17,7 @@ void CharacterEditTool::Initialize() {
 	//武器、キャラクターデータのサイズを使ってresize,初期化
 	maxWeaponMenuItems_ = static_cast<uint32_t>(weaponDataMap_.size());
 	weaponItemSprites_.resize(maxWeaponMenuItems_);
-	weaponIconTexts_.resize(maxWeaponMenuItems_);
+	weaponIconTexts_.resize(4);
 	weaponNameTexts_.resize(maxWeaponMenuItems_);
 	for(size_t i =0;i<weaponItemSprites_.size();++i){
 		weaponItemSprites_[i] = std::make_unique<Sprite>();
@@ -29,13 +29,15 @@ void CharacterEditTool::Initialize() {
 			});
 		weaponItemSprites_[i]->SetMaterialColor({ 0.2f,0.2f,0.2f,0.0f });
 
-		weaponIconTexts_[i] = std::make_unique<Sprite>();
-		weaponIconTexts_[i]->Initialize(SpriteCommon::GetInstance(), "UI/EditWeaponIcon.png");
-		weaponIconTexts_[i]->LoadConfig("EditWeaponIconText" + std::to_string(i) + ".json");
-		weaponIconTexts_[i]->SetTranslate({
-			menuBarLeftTop_.x,
-			menuBarLeftTop_.y + GetMenuItemOffsetY() * i
-			});
+		if (i < 4) {
+			weaponIconTexts_[i] = std::make_unique<Sprite>();
+			weaponIconTexts_[i]->Initialize(SpriteCommon::GetInstance(), "UI/EditWeaponIcon.png");
+			weaponIconTexts_[i]->LoadConfig("EditWeaponIconText" + std::to_string(i) + ".json");
+			weaponIconTexts_[i]->SetTranslate({
+				menuBarLeftTop_.x,
+				menuBarLeftTop_.y + GetMenuItemOffsetY() * i
+				});
+		}
 		weaponNameTexts_[i] = std::make_unique<Sprite>();
 		weaponNameTexts_[i]->Initialize(SpriteCommon::GetInstance(), "UI/EditWeaponNameText.png");
 		weaponNameTexts_[i]->LoadConfig("WeaponNameText" + std::to_string(i) + ".json");
@@ -923,31 +925,35 @@ void CharacterEditTool::LoadAllWeaponData() {
 	weaponNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<WeaponData>();
 	for (const auto& weaponName : weaponNames_) {
 		WeaponData weaponData = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>(weaponName + ".json");
-		switch (weaponData.weaponType) {
-		case WeaponType::NONE:
-			// NONEの場合の処理
-			break;
-		case WeaponType::WEAPON_TYPE_RIFLE:
-		{
-			// ライフルの場合の処理
-			RifleInfo rifleInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<RifleInfo>(weaponName + "_extraInfo.json");
-			weaponData.actionData = rifleInfo;
-			break;
-		}
-		case WeaponType::WEAPON_TYPE_BAZOOKA:
-		case WeaponType::WEAPON_TYPE_MACHINE_GUN:
-			// バズーカの場合の処理
-			break;
-		case WeaponType::WEAPON_TYPE_VERTICAL_MISSILE:
-		{
-			// 垂直ミサイルの場合の処理
-			VerticalMissileLauncherInfo vmLauncherInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<VerticalMissileLauncherInfo>(weaponName + "_extraInfo.json");
-			weaponData.actionData = vmLauncherInfo;
-			break;
-		}
-		default:
-			break;
-		}
+		//switch (weaponData.weaponType) {
+		//case WeaponType::NONE:
+		//	// NONEの場合の処理
+		//	break;
+		//case WeaponType::WEAPON_TYPE_RIFLE:
+		//{
+		//	// ライフルの場合の処理
+		//	RifleInfo rifleInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<RifleInfo>(weaponName + "_extraInfo.json");
+		//	weaponData.actionData = rifleInfo;
+		//	break;
+		//}
+		//case WeaponType::WEAPON_TYPE_BAZOOKA:
+		//case WeaponType::WEAPON_TYPE_MACHINE_GUN:
+		//	// バズーカの場合の処理
+		//	break;
+		//case WeaponType::WEAPON_TYPE_VERTICAL_MISSILE:
+		//{
+		//	// 垂直ミサイルの場合の処理
+		//	VerticalMissileLauncherInfo vmLauncherInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<VerticalMissileLauncherInfo>(weaponName + "_extraInfo.json");
+		//	weaponData.actionData = vmLauncherInfo;
+		//	break;
+		//}
+		///*case WeaponType::WEAPON_TYPE_SHOTGUN:
+		//	ShotGunInfo shotGunInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ShotGunInfo>(weaponName + "_extraInfo.json");
+		//	weaponData.actionData = shotGunInfo;
+		//	break;*/
+		//default:
+		//	break;
+		//}
 		weaponDataMap_[weaponName] = weaponData;
 	}
 }

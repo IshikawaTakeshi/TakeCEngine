@@ -68,7 +68,7 @@ void Rifle::Update() {
 				//プレイヤーの弾として発射
 				bulletManager_->ShootBullet(
 					object3d_->GetCenterPosition(),
-					targetPos_,targetVel_,
+					targetPos_,targetVelocity_,
 					weaponData_.config.bulletSpeed,
 					weaponData_.config.power,
 					CharacterType::PLAYER_BULLET);
@@ -77,7 +77,7 @@ void Rifle::Update() {
 				//エネミーの弾として発射
 				bulletManager_->ShootBullet(
 					object3d_->GetCenterPosition(),
-					targetPos_,targetVel_,
+					targetPos_,targetVelocity_,
 					weaponData_.config.bulletSpeed,
 					weaponData_.config.power,
 					CharacterType::ENEMY_BULLET);
@@ -161,14 +161,14 @@ void Rifle::Attack() {
 		bulletManager_->ShootBullet(
 			object3d_->GetCenterPosition(),
 			targetPos_,
-			targetVel_,
+			targetVelocity_,
 			weaponData_.config.bulletSpeed,
 			weaponData_.config.power,
 			CharacterType::PLAYER_BULLET);
 	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
 		bulletManager_->ShootBullet(
 			object3d_->GetCenterPosition(),
-			targetPos_,targetVel_,
+			targetPos_,targetVelocity_,
 			weaponData_.config.bulletSpeed,
 			weaponData_.config.power,
 			CharacterType::ENEMY_BULLET);
@@ -235,26 +235,4 @@ void Rifle::ChargeAttack() {
 	
 	//チャージ時間のリセット
 	weaponState_.chargeTime = 0.0f;
-}
-
-//=====================================================================================
-// 所有者の設定
-//=====================================================================================
-void Rifle::SetOwnerObject(GameCharacter* owner) {
-	ownerObject_ = owner;
-}
-
-//チャージ攻撃可能か
-bool Rifle::IsChargeAttack() const {
-	return weaponData_.config.canChargeAttack;
-}
-
-//移動撃ち可能か
-bool Rifle::IsMoveShootable() const {
-	return weaponData_.config.canMoveShootable;
-}
-
-//停止撃ち専用か
-bool Rifle::IsStopShootOnly() const {
-	return weaponData_.config.isStopShootOnly;
 }

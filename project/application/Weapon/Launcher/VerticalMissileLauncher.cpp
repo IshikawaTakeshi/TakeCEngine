@@ -169,29 +169,3 @@ void VerticalMissileLauncher::Charge(float deltaTime) {
 void VerticalMissileLauncher::ChargeAttack() {
 	// チャージ攻撃処理なし
 }
-
-
-//================================================================================
-//　所有者の設定
-//================================================================================
-void VerticalMissileLauncher::SetOwnerObject(GameCharacter* owner) {
-	ownerObject_ = owner;
-}
-
-//チャージ攻撃可能か
-bool VerticalMissileLauncher::IsChargeAttack() const {
-	// バーティカルミサイルはチャージ攻撃不可
-	return weaponData_.config.canChargeAttack;
-}
-
-//移動撃ち可能か
-bool VerticalMissileLauncher::IsMoveShootable() const {
-	//移動撃ち可能
-	return weaponData_.config.canMoveShootable;
-}
-
-//停止撃ち専用か
-bool VerticalMissileLauncher::IsStopShootOnly() const {
-	//停止撃ち専用ではない
-	return weaponData_.config.isStopShootOnly;
-}

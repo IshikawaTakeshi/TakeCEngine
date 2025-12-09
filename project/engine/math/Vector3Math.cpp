@@ -1,4 +1,5 @@
 #include "Vector3Math.h"
+#include "engine/math/MathEnv.h"
 #include <cmath>
 
 /////////////////////////////////////////////////////////////////
@@ -81,4 +82,30 @@ Vector3 Vector3Math::Normalize(const Vector3& v) {
 	result.y = v.y / length;
 	result.z = v.z / length;
 	return result;
+}
+
+Vector3 Vector3Math::ApplyYawPitch(const Vector3& baseDir, float yawDeg, float pitchDeg) {
+	// 必要なら degreeToRadian を使う
+	float yaw   = degreeToRadian(yawDeg);
+	float pitch = degreeToRadian(pitchDeg);
+
+	// ヨー回転: Y軸まわり
+	float cosYaw = std::cos(yaw);
+	float sinYaw = std::sin(yaw);
+	Vector3 dirYaw = {
+		baseDir.x * cosYaw - baseDir.z * sinYaw,
+		baseDir.y,
+		baseDir.x * sinYaw + baseDir.z * cosYaw
+	};
+
+	// ピッチ回転: X軸まわり
+	float cosPitch = std::cos(pitch);
+	float sinPitch = std::sin(pitch);
+	Vector3 dirYawPitch = {
+		dirYaw.x,
+		dirYaw.y * cosPitch - dirYaw.z * sinPitch,
+		dirYaw.y * sinPitch + dirYaw.z * cosPitch
+	};
+
+	return dirYawPitch;
 }

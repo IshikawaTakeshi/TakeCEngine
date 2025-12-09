@@ -100,14 +100,14 @@ void MachineGun::Attack() {
 		bulletManager_->ShootBullet(
 			object3d_->GetCenterPosition(),
 			targetPos_,
-			targetVel_,
+			targetVelocity_,
 			weaponData_.config.bulletSpeed,
 			weaponData_.config.power,
 			CharacterType::PLAYER_BULLET);
 	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
 		bulletManager_->ShootBullet(
 			object3d_->GetCenterPosition(),
-			targetPos_,targetVel_,
+			targetPos_,targetVelocity_,
 			weaponData_.config.bulletSpeed,
 			weaponData_.config.power,
 			CharacterType::ENEMY_BULLET);
@@ -122,21 +122,4 @@ void MachineGun::Attack() {
 	}
 	//攻撃間隔のリセット
 	weaponState_.attackInterval = weaponData_.config.attackInterval;
-}
-
-void MachineGun::SetOwnerObject(GameCharacter* owner) {
-
-	ownerObject_ = owner;
-}
-
-bool MachineGun::IsChargeAttack() const {
-	return false;
-}
-
-bool MachineGun::IsMoveShootable() const {
-	return true;
-}
-
-bool MachineGun::IsStopShootOnly() const {
-	return false;
 }

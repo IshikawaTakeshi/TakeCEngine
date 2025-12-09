@@ -1,0 +1,23 @@
+{
+    "actionData": {
+        "pelletCount": 6,
+        "spreadDeg": 10.0
+    },
+    "config": {
+        "bulletSpeed": 400.0,
+        "canChargeAttack": false,
+        "canMoveShootable": false,
+        "effectiveRange": 300.0,
+        "homingRate": 0.0,
+        "isStopShootOnly": false,
+        "kAttackInterval": 1.0,
+        "magazineCount_": 2,
+        "maxBulletCount": 20,
+        "maxReloadTime": 2.0,
+        "power": 10.0,
+        "requiredChargeTime": 0.0
+    },
+    "modelFilePath": "ShotGun.gltf",
+    "weaponName": "ShotGun",
+    "weaponType": "WEAPON_TYPE_SHOTGUN"
+}
