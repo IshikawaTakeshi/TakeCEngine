@@ -90,7 +90,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
 	//武器の初期化
-	for (int i = 0; i < weapons_.size(); i++) {
+	for (int i = 0; i < weapons_.size() - 1; i++) {
 		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
 			weapons_[i] = std::make_unique<Rifle>();
 			weapons_[i]->Initialize(object3dCommon, bulletManager);
@@ -118,6 +118,9 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bul
 			//武器が設定されていない場合はnullptrのまま
 			weapons_[i] = nullptr;
 		}
+		weapons_[3] = std::make_unique<ShotGun>();
+		weapons_[3]->Initialize(object3dCommon, bulletManager);
+		weapons_[3]->SetOwnerObject(this);
 	}
 
 	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
@@ -327,6 +330,7 @@ void Player::UpdateImGui() {
 	weapons_[0]->UpdateImGui();
 	weapons_[1]->UpdateImGui();
 	weapons_[2]->UpdateImGui();
+	weapons_[3]->UpdateImGui();
 	ImGui::End();
 
 #endif // _DEBUG

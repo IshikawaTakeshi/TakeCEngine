@@ -14,7 +14,19 @@ void ShotGun::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 	bulletManager_ = bulletManager;
 
 	//武器の初期化
-	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("ShotGun.json");
+	//weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("ShotGun.json");
+	weaponData_.weaponName = "ShotGun";
+	weaponData_.modelFilePath = "ShotGun.gltf";
+	weaponData_.weaponType = WeaponType::WEAPON_TYPE_SHOTGUN;
+	weaponData_.config.power = 10.0f;
+	weaponData_.config.attackInterval = 1.0f;
+	weaponData_.config.bulletSpeed = 400.0f;
+	weaponData_.config.effectiveRange = 300.0f;
+	weaponData_.config.maxReloadTime = 2.0f;
+	weaponData_.config.maxMagazineCount = 2;
+	weaponData_.config.maxBulletCount = 20;
+	shotGunInfo_.pelletCount = 6;
+	shotGunInfo_.spreadDeg = 10.0f;
 
 	//3dオブジェクトの初期化
 	object3d_ = std::make_unique<Object3d>();
