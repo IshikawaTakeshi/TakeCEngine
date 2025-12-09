@@ -88,6 +88,7 @@
     <FxCompile Include="Resources\shaders\PostEffect\BloomBrightPass.CS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\BloomBlurHorizontal.CS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\BloomBlurVertical.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\ShadowMapEffect.CS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -534,6 +535,8 @@
     <ClCompile Include="application\Weapon\Bullet\VerticalMissileInfo.cpp" />
     <ClCompile Include="application\Weapon\ShotGun\ShotGun.cpp" />
     <ClCompile Include="application\Weapon\ShotGun\ShotGunInfo.cpp" />
+    <ClCompile Include="ShadowMapEffect.cpp" />
+    <ClCompile Include="LightCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1101,6 +1104,8 @@
     <ClInclude Include="application\Weapon\Bullet\VerticalMissileInfo.h" />
     <ClInclude Include="application\Weapon\ShotGun\ShotGun.h" />
     <ClInclude Include="application\Weapon\ShotGun\ShotGunInfo.h" />
+    <ClInclude Include="ShadowMapEffect.h" />
+    <ClInclude Include="LightCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

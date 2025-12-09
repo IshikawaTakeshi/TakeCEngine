@@ -113,6 +113,14 @@ public:
 		return dirLightResource_.Get();
 	}
 
+	ID3D12Resource* GetPointLightResource() const {
+		return pointLightResource_.Get();
+	}
+
+	ID3D12Resource* GetSpotLightResource() const {
+		return spotLightResource_.Get();
+	}
+
 	//----- setter ---------------------------
 
 	/// ライト用リソースの設定
