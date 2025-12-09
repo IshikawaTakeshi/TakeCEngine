@@ -228,7 +228,7 @@ void EnemySelectScene::InitializeEnemyDestroyed() {
 	//スローモーションにする
 	MyGame::RequestTimeScale(-1.0f, 1.0f, 1.0f);
 	//カメラをズームする
-	CameraManager::GetInstance()->GetActiveCamera()->SetCameraStateRequest(Camera::GameCameraState::ENEMY_DESTROYED);
+	CameraManager::GetInstance()->GetActiveCamera()->RequestCameraState(Camera::GameCameraState::ENEMY_DESTROYED);
 	//changeBehaviorTimerを初期化
 	changeBehaviorTimer_.Initialize(2.4f, 0.0f);
 }
@@ -245,7 +245,7 @@ void EnemySelectScene::UpdateEnemyDestroyed() {
 		behaviorRequest_ = SceneBehavior::GAMECLEAR;
 
 		//ズーム解除
-		CameraManager::GetInstance()->GetActiveCamera()->SetCameraStateRequest(Camera::GameCameraState::FOLLOW);
+		CameraManager::GetInstance()->GetActiveCamera()->RequestCameraState(Camera::GameCameraState::FOLLOW);
 	}
 }
 

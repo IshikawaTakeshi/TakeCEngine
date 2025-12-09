@@ -19,6 +19,7 @@ void GamePlayScene::Initialize() {
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
 	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
+	gameCamera_->RequestCameraState(Camera::GameCameraState::FOLLOW);
 	CameraManager::GetInstance()->AddCamera("gameCamera", *gameCamera_);
 
 	//Camera1
@@ -359,6 +360,8 @@ void GamePlayScene::InitializeGamePlay() {
 
 	//フェーズメッセージUIにGOメッセージをセット
 	phaseMessageUI_->SetNextMessage(PhaseMessage::FIGHT);
+
+	CameraManager::GetInstance()->GetActiveCamera()->RequestCameraState(Camera::GameCameraState::LOCKON);
 }
 
 void GamePlayScene::UpdateGamePlay() {
@@ -411,7 +414,7 @@ void GamePlayScene::InitializeEnemyDestroyed() {
 	//スローモーションにする
 	MyGame::RequestTimeScale(-1.0f, 1.0f, 1.0f);
 	//カメラをズームする
-	CameraManager::GetInstance()->GetActiveCamera()->SetCameraStateRequest(Camera::GameCameraState::ENEMY_DESTROYED);
+	CameraManager::GetInstance()->GetActiveCamera()->RequestCameraState(Camera::GameCameraState::ENEMY_DESTROYED);
 	//changeBehaviorTimerを初期化
 	changeBehaviorTimer_.Initialize(2.0f, 0.0f);
 }
@@ -428,7 +431,7 @@ void GamePlayScene::UpdateEnemyDestroyed() {
 		behaviorRequest_ = SceneBehavior::GAMECLEAR;
 
 		//ズーム解除
-		CameraManager::GetInstance()->GetActiveCamera()->SetCameraStateRequest(Camera::GameCameraState::FOLLOW);
+		CameraManager::GetInstance()->GetActiveCamera()->RequestCameraState(Camera::GameCameraState::FOLLOW);
 	}
 }
 

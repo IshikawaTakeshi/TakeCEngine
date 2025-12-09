@@ -85,7 +85,7 @@ public:
 	//------------------------
 
 	//カメラの状態リクエストの設定
-	void SetCameraStateRequest(const GameCameraState state) { cameraStateRequest_ = state; }
+	void RequestCameraState(const GameCameraState state) { cameraStateRequest_ = state; }
 
 	//カメラの回転の設定
 	void SetRotate(const Quaternion& rotate);
