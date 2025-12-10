@@ -9,7 +9,7 @@
 //================================================================
 // シングルトンインスタンスの取得
 //================================================================
-TextureManager& TextureManager::GetInstance() {
+TakeC::TextureManager& TakeC::TextureManager::GetInstance() {
 	static TextureManager instance;
 	return instance;
 }
@@ -17,7 +17,7 @@ TextureManager& TextureManager::GetInstance() {
 //================================================================
 //			初期化
 //================================================================
-void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
+void TakeC::TextureManager::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager) {
 
 
 	//dxCommon_の取得
@@ -32,7 +32,7 @@ void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 //================================================================
 //			終了処理
 //================================================================
-void TextureManager::Finalize() {
+void TakeC::TextureManager::Finalize() {
 	srvManager_ = nullptr;
 	dxCommon_ = nullptr;
 	textureDatas_.clear();
@@ -42,7 +42,7 @@ void TextureManager::Finalize() {
 ///			テクスチャの更新チェック
 //=============================================================================================
 
-void TextureManager::CheckAndReloadTextures() {
+void TakeC::TextureManager::CheckAndReloadTextures() {
 
 	//テクスチャの更新チェック
 	for(auto& [filePath, textureData] : textureDatas_) {
@@ -62,7 +62,7 @@ void TextureManager::CheckAndReloadTextures() {
 //=============================================================================================
 ///			テクスチャの読み込み
 //=============================================================================================
-void TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
+void TakeC::TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
 
 	//既に読み込み済みかどうか
 	const bool alreadyLoaded = textureDatas_.contains(filePath);
@@ -146,7 +146,7 @@ void TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
 //=============================================================================================
 ///			全テクスチャの読み込み
 //=============================================================================================
-void TextureManager::LoadTextureAll() {
+void TakeC::TextureManager::LoadTextureAll() {
 
 	//Resources/imagesフォルダ内の全ての画像ファイルを読み込む
 	namespace fs = std::filesystem;
@@ -179,7 +179,7 @@ void TextureManager::LoadTextureAll() {
 ///=================================================================================================
 ///			テクスチャリソースの作成
 //==================================================================================================
-Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(const DirectX::TexMetadata& metadata) {
+Microsoft::WRL::ComPtr<ID3D12Resource> TakeC::TextureManager::CreateTextureResource(const DirectX::TexMetadata& metadata) {
 
 	//metadataを基にResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
@@ -213,7 +213,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(con
 //			テクスチャデータのアップロード
 //============================================================================================
 
-ComPtr<ID3D12Resource> TextureManager::UploadTextureData(
+ComPtr<ID3D12Resource> TakeC::TextureManager::UploadTextureData(
 	ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
 
 	//サブリソースの作成
@@ -253,7 +253,7 @@ ComPtr<ID3D12Resource> TextureManager::UploadTextureData(
 ///			テクスチャのSRVハンドルを取得
 //============================================================================================
 
-D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(const std::string& filePath) {
+D3D12_GPU_DESCRIPTOR_HANDLE TakeC::TextureManager::GetSrvHandleGPU(const std::string& filePath) {
 	assert(textureDatas_.contains(filePath));
 	return textureDatas_.at(filePath).srvHandleGPU;
 }
@@ -262,7 +262,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(const std::string& f
 // テクスチャのSRVハンドルを取得
 //============================================================================================
 
-uint32_t TextureManager::GetSrvIndex(const std::string& filePath) {
+uint32_t TakeC::TextureManager::GetSrvIndex(const std::string& filePath) {
 
 	//読み込み済みテクスチャを検索
 	if (textureDatas_.contains(filePath)) {
@@ -276,7 +276,7 @@ uint32_t TextureManager::GetSrvIndex(const std::string& filePath) {
 // テクスチャのメタデータを取得
 //============================================================================================
 
-const DirectX::TexMetadata& TextureManager::GetMetadata(const std::string& filePath) {
+const DirectX::TexMetadata& TakeC::TextureManager::GetMetadata(const std::string& filePath) {
 	assert(textureDatas_.contains(filePath));
 	return textureDatas_.at(filePath).metadata;
 }
@@ -285,7 +285,7 @@ const DirectX::TexMetadata& TextureManager::GetMetadata(const std::string& fileP
 // 読み込んだテクスチャのファイル名を取得
 //============================================================================================
 
-std::vector<std::string> TextureManager::GetLoadedTextureFileNames() const {
+std::vector<std::string> TakeC::TextureManager::GetLoadedTextureFileNames() const {
 	std::vector<std::string> fileNames;
 	for (const auto& pair : textureDatas_) {
 		fileNames.push_back(pair.first);
@@ -297,7 +297,7 @@ std::vector<std::string> TextureManager::GetLoadedTextureFileNames() const {
 //			ファイルの最終更新日時を取得
 //============================================================================================
 
-time_t TextureManager::GetFileLastWriteTime(const std::string& filePath) {
+time_t TakeC::TextureManager::GetFileLastWriteTime(const std::string& filePath) {
 	namespace fs = std::filesystem;
 	namespace chrono = std::chrono;
 	try {

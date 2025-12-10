@@ -10,7 +10,7 @@
 //=============================================================================
 // シングルトンインスタンスの取得
 //=============================================================================
-ModelManager& ModelManager::GetInstance() {
+TakeC::ModelManager& TakeC::ModelManager::GetInstance() {
 	static ModelManager instance_;
 	return instance_;
 }
@@ -18,24 +18,24 @@ ModelManager& ModelManager::GetInstance() {
 //=============================================================================
 // 初期化
 //=============================================================================
-void ModelManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
+void TakeC::ModelManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 
 	//ModelCommon初期化
-	modelCommon_ = ModelCommon::GetInstance();
+	modelCommon_ = &ModelCommon::GetInstance();
 	modelCommon_->Initialize(dxCommon, srvManager);
 }
 
 //=============================================================================
 // 終了処理
 //=============================================================================
-void ModelManager::Finalize() {
+void TakeC::ModelManager::Finalize() {
 	modelCommon_->Finalize();
 }
 
 //=============================================================================
 // モデルの読み込み
 //=============================================================================
-void ModelManager::LoadModel(const std::string& modelFile,const std::string& envMapFile) {
+void TakeC::ModelManager::LoadModel(const std::string& modelFile,const std::string& envMapFile) {
 
 	//読み込み済みモデルの検索
 	if (models_.contains(modelFile)) {
@@ -57,7 +57,7 @@ void ModelManager::LoadModel(const std::string& modelFile,const std::string& env
 //=============================================================================
 // モデルの検索
 //=============================================================================
-Model* ModelManager::FindModel(const std::string& filePath) {
+Model* TakeC::ModelManager::FindModel(const std::string& filePath) {
 
 	//読み込み済みモデルを検索
 	if (models_.contains(filePath)) {
@@ -72,7 +72,7 @@ Model* ModelManager::FindModel(const std::string& filePath) {
 //=============================================================================
 // モデルのコピーを作成
 //=============================================================================
-std::shared_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
+std::shared_ptr<Model> TakeC::ModelManager::CopyModel(const std::string& filePath) {
 	
 	auto it = models_.find(filePath);
 	if (it == models_.end()) {
@@ -92,7 +92,7 @@ std::shared_ptr<Model> ModelManager::CopyModel(const std::string& filePath) {
 // Modelファイルを読む関数
 //=============================================================================
 
-ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::string& envMapFile) {
+ModelData* TakeC::ModelManager::LoadModelFile(const std::string& modelFile,const std::string& envMapFile) {
 
 	namespace fs = std::filesystem;
 
@@ -298,7 +298,7 @@ ModelData* ModelManager::LoadModelFile(const std::string& modelFile,const std::s
 //=============================================================================
 // モデルのリロード
 //=============================================================================
-void ModelManager::ReloadModel(const std::string& modelFile) {
+void TakeC::ModelManager::ReloadModel(const std::string& modelFile) {
 
 	const std::string& fileKey = modelFile;
 
@@ -331,7 +331,7 @@ void ModelManager::ReloadModel(const std::string& modelFile) {
 // Nodeの解析
 //=============================================================================
 
-Node ModelManager::ReadNode(aiNode* node) {
+Node TakeC::ModelManager::ReadNode(aiNode* node) {
 	Node result;
 	aiVector3D scale, translate;
 	aiQuaternion rotate;
@@ -349,17 +349,17 @@ Node ModelManager::ReadNode(aiNode* node) {
 	return result;
 }
 
-void ModelManager::RegisterInstance(const std::string& filePath, std::shared_ptr<Model> modelInstance) {
+void TakeC::ModelManager::RegisterInstance(const std::string& filePath, std::shared_ptr<Model> modelInstance) {
 	//ファイルパスをキーにモデルインスタンスを登録
 	modelInstances_[filePath].push_back(modelInstance);
 }
 
-void ModelManager::RequestReload(const std::string& modelFile) {
+void TakeC::ModelManager::RequestReload(const std::string& modelFile) {
 
 	reloadRequests_.push_back(modelFile);
 }
 
-void ModelManager::ApplyModelReloads() {
+void TakeC::ModelManager::ApplyModelReloads() {
 	for (const std::string& key : reloadRequests_) {
 		ReloadModel(key);   // ここで ModelData 読み直し + 全 Model::Reload
 	}

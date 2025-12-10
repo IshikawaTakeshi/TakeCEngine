@@ -523,7 +523,7 @@ void CharacterEditTool::DrawUI() {
 void CharacterEditTool::SelectEditItem() {
 
 
-	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::DPadDOWN)) {
+	if (TakeC::Input::GetInstance().TriggerButton(0, GamepadButtonType::DPadDOWN)) {
 		//下ボタンが押されたときの処理
 		editingItemIndex_ = (editingItemIndex_ + 1) % maxMenuItems_;
 
@@ -532,7 +532,7 @@ void CharacterEditTool::SelectEditItem() {
 			editingItemIndex_ = 0;
 		}
 
-	} else if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::DPadUP)) {
+	} else if (TakeC::Input::GetInstance().TriggerButton(0, GamepadButtonType::DPadUP)) {
 		//上ボタンが押されたときの処理
 		editingItemIndex_ = (editingItemIndex_ - 1 + maxMenuItems_) % maxMenuItems_;
 
@@ -542,7 +542,7 @@ void CharacterEditTool::SelectEditItem() {
 		}
 	}
 
-	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::A)) {
+	if (TakeC::Input::GetInstance().TriggerButton(0, GamepadButtonType::A)) {
 		// 決定ボタンが押されたときの処理
 
 		if (editingItemIndex_ < CharacterEditMenuEnum::CHARACTER_CONFIG) {
@@ -588,7 +588,7 @@ void CharacterEditTool::SelectEditItem() {
 	// カーソルスプライトの位置更新
 	cursorSprite_->SetTranslate({
 		menuBarLeftTop_.x,
-		(menuBarLeftTop_.y * WinApp::heightPercent_) + (GetMenuItemOffsetY() * WinApp::heightPercent_) * editingItemIndex_
+		(menuBarLeftTop_.y * TakeC::WinApp::heightPercent_) + (GetMenuItemOffsetY() * TakeC::WinApp::heightPercent_) * editingItemIndex_
 		});
 }
 
@@ -597,13 +597,13 @@ void CharacterEditTool::SelectEditItem() {
 //========================================================================
 void CharacterEditTool::UpdateCharacterEdit() {
 	//　下ボタンが押されたときの処理
-	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::DPadDOWN)) {
+	if (TakeC::Input::GetInstance().TriggerButton(0, GamepadButtonType::DPadDOWN)) {
 		editingCharacterIndex_ = (editingCharacterIndex_ + 1) % maxCharacterMenuItems_;
 		//オフセット分を越えたら0に戻す
 		if (editingCharacterIndex_ >= maxCharacterMenuItems_) {
 			editingCharacterIndex_ = 0;
 		}
-	} else if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::DPadUP)) {
+	} else if (TakeC::Input::GetInstance().TriggerButton(0, GamepadButtonType::DPadUP)) {
 		//上ボタンが押されたときの処理
 		editingCharacterIndex_ = (editingCharacterIndex_ - 1 + maxCharacterMenuItems_) % maxCharacterMenuItems_;
 		//オフセット分を越えたら最後の項目に戻す
@@ -613,7 +613,7 @@ void CharacterEditTool::UpdateCharacterEdit() {
 	}
 
 	//決定ボタンが押されたときの処理
-	if(Input::GetInstance()->TriggerButton(0,GamepadButtonType::A)){
+	if(TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::A)){
 
 		// キャラクターの適用
 		currentCharacterData_.characterInfo = *AttachPlayableCharacterInfo(characterNames_[editingCharacterIndex_]);
@@ -634,7 +634,7 @@ void CharacterEditTool::UpdateCharacterEdit() {
 	}
 
 	//戻るボタンが押されたときの処理
-	if(Input::GetInstance()->TriggerButton(0,GamepadButtonType::B)){
+	if(TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::B)){
 		
 		// 編集モードをメニューに変更
 		editModeRequest_ = EditMode::EDIT_MENU;
@@ -656,7 +656,7 @@ void CharacterEditTool::UpdateCharacterEdit() {
 	// カーソルスプライトの位置更新
 	cursorSprite_->SetTranslate({
 		menuBarLeftTop_.x,
-		(menuBarLeftTop_.y * WinApp::heightPercent_) + (GetMenuItemOffsetY() * WinApp::heightPercent_) * editingCharacterIndex_
+		(menuBarLeftTop_.y * TakeC::WinApp::heightPercent_) + (GetMenuItemOffsetY() *TakeC::WinApp::heightPercent_) * editingCharacterIndex_
 		});
 }
 
@@ -665,7 +665,7 @@ void CharacterEditTool::UpdateCharacterEdit() {
 //========================================================================
 void CharacterEditTool::UpdateWeaponEdit() {
 
-	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::DPadDOWN)) {
+	if (TakeC::Input::GetInstance().TriggerButton(0, GamepadButtonType::DPadDOWN)) {
 		//下ボタンが押されたときの処理
 		editingWeaponUnitIndex_ = (editingWeaponUnitIndex_ + 1) % maxWeaponMenuItems_;
 
@@ -674,7 +674,7 @@ void CharacterEditTool::UpdateWeaponEdit() {
 			editingWeaponUnitIndex_ = 0;
 		}
 
-	} else if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::DPadUP)) {
+	} else if (TakeC::Input::GetInstance().TriggerButton(0, GamepadButtonType::DPadUP)) {
 		//上ボタンが押されたときの処理
 		editingWeaponUnitIndex_ = (editingWeaponUnitIndex_ - 1 + maxWeaponMenuItems_) % maxWeaponMenuItems_;
 
@@ -685,7 +685,7 @@ void CharacterEditTool::UpdateWeaponEdit() {
 	}
 
 	//決定ボタンが押されたときの処理
-	if(Input::GetInstance()->TriggerButton(0,GamepadButtonType::A)){
+	if(TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::A)){
 		
 		// 武器の適用
 		currentCharacterData_.weaponData[editingItemIndex_] = *AttachWeapon(weaponNames_[editingWeaponUnitIndex_]);
@@ -694,7 +694,7 @@ void CharacterEditTool::UpdateWeaponEdit() {
 	}
 
 	//戻るボタンが押されたときの処理
-	if(Input::GetInstance()->TriggerButton(0,GamepadButtonType::B)){
+	if(TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::B)){
 
 		// 編集モードをメニューに変更
 		editModeRequest_ = EditMode::EDIT_MENU;
@@ -731,7 +731,7 @@ void CharacterEditTool::UpdateWeaponEdit() {
 	// カーソルスプライトの位置更新
 	cursorSprite_->SetTranslate({
 		menuBarLeftTop_.x,
-		(menuBarLeftTop_.y * WinApp::heightPercent_) + (GetMenuItemOffsetY() * WinApp::heightPercent_) * editingWeaponUnitIndex_
+		(menuBarLeftTop_.y * TakeC::WinApp::heightPercent_) + (GetMenuItemOffsetY() * TakeC::WinApp::heightPercent_) * editingWeaponUnitIndex_
 		});
 }
 
@@ -925,35 +925,6 @@ void CharacterEditTool::LoadAllWeaponData() {
 	weaponNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<WeaponData>();
 	for (const auto& weaponName : weaponNames_) {
 		WeaponData weaponData = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>(weaponName + ".json");
-		//switch (weaponData.weaponType) {
-		//case WeaponType::NONE:
-		//	// NONEの場合の処理
-		//	break;
-		//case WeaponType::WEAPON_TYPE_RIFLE:
-		//{
-		//	// ライフルの場合の処理
-		//	RifleInfo rifleInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<RifleInfo>(weaponName + "_extraInfo.json");
-		//	weaponData.actionData = rifleInfo;
-		//	break;
-		//}
-		//case WeaponType::WEAPON_TYPE_BAZOOKA:
-		//case WeaponType::WEAPON_TYPE_MACHINE_GUN:
-		//	// バズーカの場合の処理
-		//	break;
-		//case WeaponType::WEAPON_TYPE_VERTICAL_MISSILE:
-		//{
-		//	// 垂直ミサイルの場合の処理
-		//	VerticalMissileLauncherInfo vmLauncherInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<VerticalMissileLauncherInfo>(weaponName + "_extraInfo.json");
-		//	weaponData.actionData = vmLauncherInfo;
-		//	break;
-		//}
-		///*case WeaponType::WEAPON_TYPE_SHOTGUN:
-		//	ShotGunInfo shotGunInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ShotGunInfo>(weaponName + "_extraInfo.json");
-		//	weaponData.actionData = shotGunInfo;
-		//	break;*/
-		//default:
-		//	break;
-		//}
 		weaponDataMap_[weaponName] = weaponData;
 	}
 }

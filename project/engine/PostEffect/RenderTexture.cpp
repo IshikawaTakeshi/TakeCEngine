@@ -4,6 +4,8 @@
 #include "Utility/Logger.h"
 #include "PostEffect/PostEffectManager.h"
 
+using namespace TakeC;
+
 //======================================================================
 // デストラクタ
 //======================================================================
@@ -17,7 +19,7 @@ RenderTexture::~RenderTexture() {
 // 初期化
 //======================================================================
 
-void RenderTexture::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, PostEffectManager* postEffectManager ){
+void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, TakeC::PostEffectManager* postEffectManager ){
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;

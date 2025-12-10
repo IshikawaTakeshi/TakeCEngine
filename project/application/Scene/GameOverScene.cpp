@@ -14,13 +14,13 @@ void GameOverScene::Initialize() {
 	isSoundPlay = false;
 	// GameCamera
 	gameOverCamera_ = std::make_unique<Camera>();
-	gameOverCamera_->Initialize(CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
+	gameOverCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	gameOverCamera_->SetTranslate({ 0.0f, 20.0f, -60.0f });
 	gameOverCamera_->SetRotate({ 0.9f, -0.01f, 0.03f,0.36f });
-	CameraManager::GetInstance().AddCamera("GameOverCamera", *gameOverCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("GameOverCamera", *gameOverCamera_);
 	// デフォルトカメラの設定
-	Object3dCommon::GetInstance().SetDefaultCamera(CameraManager::GetInstance().GetActiveCamera());
-	ParticleCommon::GetInstance().SetDefaultCamera(CameraManager::GetInstance().GetActiveCamera());
+	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
+	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 
 	//SkyBox
 	skybox_ = std::make_unique<SkyBox>();
@@ -42,7 +42,7 @@ void GameOverScene::Finalize() {
 	// サウンドデータの解放
 	AudioManager::GetInstance().SoundUnload(&gameOverBGM);
 	// カメラの解放
-	CameraManager::GetInstance().ResetCameras();
+	TakeC::CameraManager::GetInstance().ResetCameras();
 }
 
 //====================================================================
@@ -56,7 +56,7 @@ void GameOverScene::Update() {
 	}
 	
 	// カメラの更新
-	CameraManager::GetInstance().Update();
+	TakeC::CameraManager::GetInstance().Update();
 	// 天球の更新
 	skybox_->Update();
 
@@ -64,10 +64,10 @@ void GameOverScene::Update() {
 	gameOverTextSprite_->Update();
 
 	// パーティクルの更新
-	TakeCFrameWork::GetParticleManager()->Update();
+	TakeC::ParticleManager().Update();
 	
 		// シーン遷移
-	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::A)) {
+	if (TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::A)) {
 
 		// シーン切り替え依頼
 		AudioManager::GetInstance().SoundUnload(&gameOverBGM);
@@ -79,9 +79,9 @@ void GameOverScene::Update() {
 //			ImGui更新処理
 //====================================================================
 void GameOverScene::UpdateImGui() {
-	CameraManager::GetInstance().UpdateImGui();
+	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();	
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	TakeC::ParticleManager().UpdateImGui();
 	gameOverTextSprite_->UpdateImGui("GameOverTextSprite");
 
 }

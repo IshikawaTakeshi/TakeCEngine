@@ -28,8 +28,8 @@ void SceneTransition::Initialize() {
 
 	fadeSprite_ = std::make_unique<Sprite>();
 	fadeSprite_->Initialize(&SpriteCommon::GetInstance(), "black.png");
-	fadeSprite_->SetTextureSize({ WinApp::kScreenWidth,WinApp::kScreenHeight });
-	fadeSprite_->SetSize({ WinApp::kScreenWidth,WinApp::kScreenHeight });
+	fadeSprite_->SetTextureSize({ TakeC::WinApp::kScreenWidth,TakeC::WinApp::kScreenHeight });
+	fadeSprite_->SetSize({ TakeC::WinApp::kScreenWidth,TakeC::WinApp::kScreenHeight });
 	duration_ = 0.0f;
 
 	transitionTime_ = 0.0f;

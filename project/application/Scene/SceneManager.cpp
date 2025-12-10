@@ -140,7 +140,7 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 
 	for (auto& objectData : levelData_->objects) {
 		Model* model = nullptr;
-		model = ModelManager::GetInstance().FindModel(objectData.file_name);
+		model = TakeC::ModelManager::GetInstance().FindModel(objectData.file_name);
 		std::pair<std::string, std::unique_ptr<LevelObject>> newObject = { objectData.name, std::make_unique<LevelObject>() };
 		newObject.second->Initialize(&Object3dCommon::GetInstance(), objectData.file_name);
 		newObject.second->SetName(objectData.name);

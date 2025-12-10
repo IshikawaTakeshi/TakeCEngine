@@ -29,7 +29,7 @@ public:
 	/// <summary>
 	/// リソースバリアの初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize(TakeC::DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// リソースの状態遷移
@@ -43,7 +43,7 @@ public:
 private:
 
 	//dxCommon
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 	
 	//リソースごとの状態を管理するためのマップ
 	std::unordered_map<ID3D12Resource*, D3D12_RESOURCE_STATES> resourceStates_;

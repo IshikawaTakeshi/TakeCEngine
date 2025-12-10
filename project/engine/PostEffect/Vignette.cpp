@@ -3,10 +3,12 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+using namespace TakeC;
+
 //=============================================================================
 // 初期化
 //=============================================================================
-void Vignette::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
+void Vignette::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
 	// 親クラスの初期化処理

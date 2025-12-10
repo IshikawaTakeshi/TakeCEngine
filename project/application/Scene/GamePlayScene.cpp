@@ -18,18 +18,18 @@ void GamePlayScene::Initialize() {
 
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
-	gameCamera_->Initialize(CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
+	gameCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
 	gameCamera_->RequestCameraState(Camera::GameCameraState::FOLLOW);
-	CameraManager::GetInstance().AddCamera("gameCamera", *gameCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("gameCamera", *gameCamera_);
 
 	//Camera1
 	debugCamera_ = std::make_shared<Camera>();
-	debugCamera_->Initialize(CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
-	CameraManager::GetInstance().AddCamera("debugCamera", *debugCamera_);
+	debugCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
+	TakeC::CameraManager::GetInstance().AddCamera("debugCamera", *debugCamera_);
 
 	//デフォルトカメラの設定
-	Object3dCommon::GetInstance().SetDefaultCamera(CameraManager::GetInstance().GetActiveCamera());
-	ParticleCommon::GetInstance().SetDefaultCamera(CameraManager::GetInstance().GetActiveCamera());
+	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
+	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 
 	//levelObjectの初期化
 	sceneManager_->LoadLevelData("levelData_gameScene_3");
@@ -40,11 +40,11 @@ void GamePlayScene::Initialize() {
 	}
 
 	//Animation読み込み
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "walk.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "Idle.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "running.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "throwAttack.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Models/gltf", "player_singleMesh.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "walk.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "Idle.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "running.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "throwAttack.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Models/gltf", "player_singleMesh.gltf");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -59,14 +59,14 @@ void GamePlayScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize(&Object3dCommon::GetInstance(), "player_MultiMesh.gltf");
 	player_->WeaponInitialize(&Object3dCommon::GetInstance(), bulletManager_.get());
-	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
+	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->LoadEnemyData("Enemy.json"); //Enemyという名前の敵データを読み込み
 	enemy_->Initialize(&Object3dCommon::GetInstance(), "player_singleMesh.gltf");
 	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(), bulletManager_.get());
-	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimator()->FindAnimation("player_singleMesh.gltf", "moveshot"));
+	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
@@ -120,7 +120,7 @@ void GamePlayScene::Finalize() {
 	
 	AudioManager::GetInstance().SoundUnload(&BGM_); // BGMの解放
 	CollisionManager::GetInstance().ClearGameCharacter(); // 当たり判定の解放
-	CameraManager::GetInstance().ResetCameras(); //カメラのリセット
+	TakeC::CameraManager::GetInstance().ResetCameras(); //カメラのリセット
 	TakeCFrameWork::GetParticleManager()->ClearParticleGroups(); //パーティクルグループの解放
 	player_.reset();
 	skyBox_.reset();
@@ -138,7 +138,7 @@ void GamePlayScene::Update() {
 	}
 
 	//カメラの更新
-	CameraManager::GetInstance().Update();
+	TakeC::CameraManager::GetInstance().Update();
 	//SkyBoxの更新
 	skyBox_->Update();
 
@@ -229,9 +229,6 @@ void GamePlayScene::Update() {
 
 	//particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
-	//particleEmitter_->UpdateForGPU();
-	//particleEmitter_->EmitParticle(gpuParticle_.get());
-	//gpuParticle_->Update();
 
 	//当たり判定の更新
 	CheckAllCollisions();
@@ -239,7 +236,7 @@ void GamePlayScene::Update() {
 
 void GamePlayScene::UpdateImGui() {
 
-	CameraManager::GetInstance().UpdateImGui();
+	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
 
 	player_->UpdateImGui();
@@ -361,7 +358,7 @@ void GamePlayScene::InitializeGamePlay() {
 	//フェーズメッセージUIにGOメッセージをセット
 	phaseMessageUI_->SetNextMessage(PhaseMessage::FIGHT);
 
-	CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::LOCKON);
+	TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::LOCKON);
 }
 
 void GamePlayScene::UpdateGamePlay() {
@@ -414,7 +411,7 @@ void GamePlayScene::InitializeEnemyDestroyed() {
 	//スローモーションにする
 	MyGame::RequestTimeScale(-1.0f, 1.0f, 1.0f);
 	//カメラをズームする
-	CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::ENEMY_DESTROYED);
+	TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::ENEMY_DESTROYED);
 	//changeBehaviorTimerを初期化
 	changeBehaviorTimer_.Initialize(2.0f, 0.0f);
 }
@@ -431,7 +428,7 @@ void GamePlayScene::UpdateEnemyDestroyed() {
 		behaviorRequest_ = SceneBehavior::GAMECLEAR;
 
 		//ズーム解除
-		CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::FOLLOW);
+		TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::FOLLOW);
 	}
 }
 

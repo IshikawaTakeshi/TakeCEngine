@@ -19,7 +19,7 @@ Object3dCommon& Object3dCommon::GetInstance() {
 //================================================================================================
 // 初期化
 //================================================================================================
-void Object3dCommon::Initialize(DirectXCommon* directXCommon,LightManager* lightManager) {
+void Object3dCommon::Initialize(TakeC::DirectXCommon* directXCommon,TakeC::LightManager* lightManager) {
 
 	//DirectXCommon取得
 	dxCommon_ = directXCommon;
@@ -134,6 +134,6 @@ ID3D12Resource* Object3dCommon::GetDirectionalLightResource() const {
 void Object3dCommon::SetCBufferViewCamera(PSO* pso) {
 	//カメラ情報のCBufferの場所を指定
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gCamera"), CameraManager::GetInstance().GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
+		pso->GetGraphicBindResourceIndex("gCamera"), TakeC::CameraManager::GetInstance().GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
 
 }

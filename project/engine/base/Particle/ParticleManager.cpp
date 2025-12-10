@@ -8,8 +8,8 @@
 // 初期化
 //================================================================================================
 
-void ParticleManager::Initialize(ParticleCommon* particleCommon) {
-	emitterAllocater_ = std::make_unique<ParticleEmitterAllocator>();
+void TakeC::ParticleManager::Initialize(ParticleCommon* particleCommon) {
+	emitterAllocator_ = std::make_unique<ParticleEmitterAllocator>();
 	particleCommon_ = particleCommon;
 }
 
@@ -17,7 +17,7 @@ void ParticleManager::Initialize(ParticleCommon* particleCommon) {
 // 更新処理
 //================================================================================================
 
-void ParticleManager::Update() {
+void TakeC::ParticleManager::Update() {
 	for (auto& [name, particleGroup] : particleGroups_) {
 		particleGroup->Update();
 	}
@@ -27,7 +27,7 @@ void ParticleManager::Update() {
 // ImGuiの更新処理
 //================================================================================================
 
-void ParticleManager::UpdateImGui() {
+void TakeC::ParticleManager::UpdateImGui() {
 
 #ifdef _DEBUG
 	ImGui::Begin("ParticleManager");
@@ -49,7 +49,7 @@ void ParticleManager::UpdateImGui() {
 // 描画処理
 //================================================================================================
 
-void ParticleManager::Draw() {
+void TakeC::ParticleManager::Draw() {
 	std::unordered_map<BlendState, std::vector<PrimitiveParticle*>> blendGroups;
 	for (auto& [name, group] : particleGroups_) {
 		BlendState state = group->GetPreset().blendState; // BlendMode取得
@@ -76,11 +76,11 @@ void ParticleManager::Draw() {
 // 終了処理
 //================================================================================================
 
-void ParticleManager::Finalize() {
+void TakeC::ParticleManager::Finalize() {
 	particleGroups_.clear();
 }
 
-void ParticleManager::UpdatePrimitiveType(const std::string& groupName, PrimitiveType type,const Vector3& param) {
+void TakeC::ParticleManager::UpdatePrimitiveType(const std::string& groupName, PrimitiveType type,const Vector3& param) {
 
 	if (!particleGroups_.contains(groupName)) {
 		assert(false && "ParticleGroup not found! Please check the name.");
@@ -116,7 +116,7 @@ void ParticleManager::UpdatePrimitiveType(const std::string& groupName, Primitiv
 // パーティクルグループの生成
 //================================================================================================
 
-void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& name,
+void TakeC::ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& name,
 		const std::string& filePath,PrimitiveType primitiveType) {
 
 	if (particleGroups_.contains(name)) {
@@ -130,7 +130,7 @@ void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const 
 	particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
 }
 
-void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& presetJson) {
+void TakeC::ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& presetJson) {
 	ParticlePreset preset = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetJson);
 	if(particleGroups_.contains(preset.presetName)) {
 		//既に同名のparticleGroupが存在する場合は生成しない
@@ -149,7 +149,7 @@ void ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const 
 // パーティクルの発生
 //================================================================================================
 
-void ParticleManager::Emit(const std::string& name, const Vector3& emitPosition,const Vector3& direction, uint32_t count) {
+void TakeC::ParticleManager::Emit(const std::string& name, const Vector3& emitPosition,const Vector3& direction, uint32_t count) {
 
 	//存在しない場合は処理しない
 	if (!particleGroups_.contains(name)) {
@@ -163,27 +163,27 @@ void ParticleManager::Emit(const std::string& name, const Vector3& emitPosition,
 //================================================================================================
 // エミッター用のハンドルの割り当て
 //================================================================================================
-uint32_t ParticleManager::EmitterAllocate() {
-	return emitterAllocater_->Allocate();
+uint32_t TakeC::ParticleManager::EmitterAllocate() {
+	return emitterAllocator_->Allocate();
 }
 
 //================================================================================================
 // パーティクルグループの開放
 //================================================================================================
-void ParticleManager::ClearParticleGroups() {
+void TakeC::ParticleManager::ClearParticleGroups() {
 	particleGroups_.clear();
 }
 
 //================================================================================================
 // 出現しているパーティクルのクリア
 //================================================================================================
-void ParticleManager::ClearParticles() {
+void TakeC::ParticleManager::ClearParticles() {
 	for (auto& [name, particleGroup] : particleGroups_) {
 		particleGroup->SpliceParticles(std::list<Particle>{});
 	}
 }
 
-BaseParticleGroup* ParticleManager::GetParticleGroup(const std::string& name) {
+BaseParticleGroup* TakeC::ParticleManager::GetParticleGroup(const std::string& name) {
 
 	if (particleGroups_.contains(name)) {
 		return particleGroups_.at(name).get();
@@ -193,7 +193,7 @@ BaseParticleGroup* ParticleManager::GetParticleGroup(const std::string& name) {
 	return nullptr;
 }
 
-void ParticleManager::SetPreset(const std::string& name, const ParticlePreset& preset) {
+void TakeC::ParticleManager::SetPreset(const std::string& name, const ParticlePreset& preset) {
 
 	//存在しない場合は処理しない
 	if (!particleGroups_.contains(name)) {

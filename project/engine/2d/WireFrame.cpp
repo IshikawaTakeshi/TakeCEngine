@@ -7,7 +7,7 @@
 //=============================================================================
 // 初期化
 //=============================================================================
-void WireFrame::Initialize(DirectXCommon* directXCommon) {
+void TakeC::WireFrame::Initialize(DirectXCommon* directXCommon) {
 
 	dxCommon_ = directXCommon;
 
@@ -45,7 +45,7 @@ void WireFrame::Initialize(DirectXCommon* directXCommon) {
 //=============================================================================
 // 更新
 //=============================================================================
-void WireFrame::Update() {
+void TakeC::WireFrame::Update() {
 
 	// ビュープロジェクション行列の取得
 	TransformMatrixData_->WVP = CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
@@ -54,7 +54,7 @@ void WireFrame::Update() {
 //=============================================================================
 // 線の描画
 //=============================================================================
-void WireFrame::DrawLine(const Vector3& start, const Vector3& end, const Vector4& color) {
+void TakeC::WireFrame::DrawLine(const Vector3& start, const Vector3& end, const Vector4& color) {
 
 	lineData_->vertexData_[lineIndex_].position = start;
 	lineData_->vertexData_[lineIndex_ + 1].position = end;
@@ -69,7 +69,7 @@ void WireFrame::DrawLine(const Vector3& start, const Vector3& end, const Vector4
 // OBBの描画
 //=============================================================================
 
-void WireFrame::DrawOBB(const OBB& obb, const Vector4& color) {
+void TakeC::WireFrame::DrawOBB(const OBB& obb, const Vector4& color) {
 
 	// OBBの各頂点を定義（ローカル座標）
 	Vector3 localVertices[8] = {
@@ -105,7 +105,7 @@ void WireFrame::DrawOBB(const OBB& obb, const Vector4& color) {
 // 球の描画
 //=============================================================================
 
-void WireFrame::DrawSphere(const Vector3& center, float radius, const Vector4& color) {
+void TakeC::WireFrame::DrawSphere(const Vector3& center, float radius, const Vector4& color) {
 
 	Matrix4x4 worldMatrix = MatrixMath::MakeAffineMatrix(Vector3(radius, radius, radius), Vector3(0.0f, 0.0f, 0.0f), center);
 
@@ -131,7 +131,7 @@ void WireFrame::DrawSphere(const Vector3& center, float radius, const Vector4& c
 // グリッド地面の描画
 //=============================================================================
 
-void WireFrame::DrawGridGround(const Vector3& center, const Vector3& size, uint32_t division) {
+void TakeC::WireFrame::DrawGridGround(const Vector3& center, const Vector3& size, uint32_t division) {
 
 	Vector3 halfSize = size * 0.5f;
 	Vector3 start = center + Vector3(-halfSize.x, 0.0f, -halfSize.z);
@@ -168,7 +168,7 @@ void WireFrame::DrawGridGround(const Vector3& center, const Vector3& size, uint3
 //=============================================================================
 // グリッドボックスの描画
 //=============================================================================
-void WireFrame::DrawGridBox(const AABB& aabb, uint32_t division) {
+void TakeC::WireFrame::DrawGridBox(const AABB& aabb, uint32_t division) {
 
 	//グリッドを6面描画
 	Vector3 size = aabb.max - aabb.min;
@@ -229,7 +229,7 @@ void WireFrame::DrawGridBox(const AABB& aabb, uint32_t division) {
 //=============================================================================
 // 視錐台の描画
 //=============================================================================
-void WireFrame::DrawFrustum(const Matrix4x4& viewProjectionInverse, const Vector4& color) {
+void TakeC::WireFrame::DrawFrustum(const Matrix4x4& viewProjectionInverse, const Vector4& color) {
 
 	// クリップ空間の8頂点
 	Vector3 clipSpaceVertices[8] = {
@@ -257,7 +257,7 @@ void WireFrame::DrawFrustum(const Matrix4x4& viewProjectionInverse, const Vector
 //=============================================================================
 // コーンの描画
 //=============================================================================
-void WireFrame::DrawCone(const Vector3& apex, const Vector3& direction, float angle, float height, const Vector4& color) {
+void TakeC::WireFrame::DrawCone(const Vector3& apex, const Vector3& direction, float angle, float height, const Vector4& color) {
 
 	// コーンの底面の中心と半径を計算
 	Vector3 baseCenter = apex + direction.Normalize() * height;
@@ -279,7 +279,7 @@ void WireFrame::DrawCone(const Vector3& apex, const Vector3& direction, float an
 //=============================================================================
 // 円の描画
 //=============================================================================
-void WireFrame::DrawRing(const Vector3& center, const Vector3& normal, float radius, const Vector4& color, bool isBillboard) {
+void TakeC::WireFrame::DrawRing(const Vector3& center, const Vector3& normal, float radius, const Vector4& color, bool isBillboard) {
 	// ビルボードの場合、カメラの向きを考慮
 	Vector3 up = isBillboard ? CameraManager::GetInstance().GetActiveCamera()->GetUpVector() : Vector3(0.0f, 1.0f, 0.0f);
 	Vector3 right = normal.Cross(up).Normalize();
@@ -298,7 +298,7 @@ void WireFrame::DrawRing(const Vector3& center, const Vector3& normal, float rad
 //=============================================================================
 // 点光源の描画
 //=============================================================================
-void WireFrame::DrawPointLight(const Vector3& center, const Vector3& normal, float radius, const Vector4& color) {
+void TakeC::WireFrame::DrawPointLight(const Vector3& center, const Vector3& normal, float radius, const Vector4& color) {
 
 	// 横方向のリング
 	DrawRing(center, normal, radius, color, false);
@@ -310,7 +310,7 @@ void WireFrame::DrawPointLight(const Vector3& center, const Vector3& normal, flo
 //=============================================================================
 // 登録された線をすべて描画
 //=============================================================================
-void WireFrame::Draw() {
+void TakeC::WireFrame::Draw() {
 
 	//ルートシグネチャ設定
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
@@ -335,14 +335,14 @@ void WireFrame::Draw() {
 //============================================================================
 // lineIndexリセット
 //============================================================================
-void WireFrame::Reset() {
+void TakeC::WireFrame::Reset() {
 	lineIndex_ = 0;
 }
 
 //=============================================================================
 // 終了・開放処理
 //=============================================================================
-void WireFrame::Finalize() {
+void TakeC::WireFrame::Finalize() {
 
 	pso_.reset();
 	rootSignature_.Reset();
@@ -353,7 +353,7 @@ void WireFrame::Finalize() {
 //=============================================================================
 // 頂点データ生成
 //=============================================================================
-void WireFrame::CreateVertexData() {
+void TakeC::WireFrame::CreateVertexData() {
 
 	UINT vertexBufferSize = sizeof(WireFrameVertexData) * kLineVertexCount_ * kMaxLineCount_;
 
@@ -373,7 +373,7 @@ void WireFrame::CreateVertexData() {
 //=============================================================================
 // 球の頂点データ計算
 //=============================================================================
-void WireFrame::CalculateSphereVertexData() {
+void TakeC::WireFrame::CalculateSphereVertexData() {
 
 	const float pi = 3.1415926535897932f;
 	const uint32_t kSubdivision = 6; // 分割数
@@ -411,7 +411,7 @@ void WireFrame::CalculateSphereVertexData() {
 //=============================================================================
 // グリッド線の描画
 //=============================================================================
-void WireFrame::DrawGridLines(const Vector3& start, const Vector3& end, const Vector3& offset, uint32_t division, const Vector4& color) {
+void TakeC::WireFrame::DrawGridLines(const Vector3& start, const Vector3& end, const Vector3& offset, uint32_t division, const Vector4& color) {
 	for (uint32_t i = 0; i <= division; i++) {
 		float easedT = float(i) / float(division);
 		Vector3 startPos = Easing::Lerp(start, end, easedT);

@@ -13,7 +13,7 @@ class ShadowMapEffect : public PostEffect {
 		ShadowMapEffect() = default;
 		~ShadowMapEffect() override = default;
 
-		void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,
+		void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager,
 			const std::wstring& CSFilePath,
 			ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,
 			ComPtr<ID3D12Resource> outputResource) override;

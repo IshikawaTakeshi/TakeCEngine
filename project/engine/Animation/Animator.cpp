@@ -8,18 +8,19 @@
 #include <cassert>
 #include "Animator.h"
 
+using namespace TakeC;
 
 //=============================================================================
 //	終了・開放処理
 //=============================================================================
-void Animator::Finalize() {
+void AnimationManager::Finalize() {
 	animations_.clear();
 }
 //=============================================================================
 //	アニメーションの読み込み/登録
 //=============================================================================
 
-void Animator::LoadAnimation(const std::string& directoryPath,const std::string& filePath) {
+void AnimationManager::LoadAnimation(const std::string& directoryPath,const std::string& filePath) {
 
 	//読み込み済みアニメーションを検索
 	if (animations_.contains(filePath)) {
@@ -37,7 +38,7 @@ void Animator::LoadAnimation(const std::string& directoryPath,const std::string&
 //	アニメーションの検索
 //=============================================================================
 
-Animation* Animator::FindAnimation(const std::string& filePath, const std::string& animName) {
+Animation* AnimationManager::FindAnimation(const std::string& filePath, const std::string& animName) {
 	//読み込み済みアニメーションを検索
 	if (animations_.contains(filePath)) {
 		if (animations_.at(filePath).contains(animName)) {
@@ -55,7 +56,7 @@ Animation* Animator::FindAnimation(const std::string& filePath, const std::strin
 //=============================================================================
 //	アニメーションファイルの読み込み
 //=============================================================================
-std::map<std::string, Animation*> Animator::LoadAnimationFile(const std::string& directoryPath, const std::string& filename) {
+std::map<std::string, Animation*> AnimationManager::LoadAnimationFile(const std::string& directoryPath, const std::string& filename) {
 	std::map<std::string, Animation*> animations = {};
     Assimp::Importer importer;
     std::string filePath ="./Resources/" + directoryPath + "/" + filename;
@@ -120,7 +121,7 @@ std::map<std::string, Animation*> Animator::LoadAnimationFile(const std::string&
 //	補間値の計算(Vector3用)
 //=============================================================================
 
-Vector3 Animator::CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time) {
+Vector3 AnimationManager::CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time) {
 	assert(!keyframes.empty()); //keyframesが空の場合はエラー
 	if(keyframes.size() == 1 || time <= keyframes[0].time) {
 		return keyframes[0].value;
@@ -142,7 +143,7 @@ Vector3 Animator::CalculateValue(const std::vector<KeyframeVector3>& keyframes, 
 //=============================================================================
 //	補間値の計算(Quaternion用)
 //=============================================================================
-Quaternion Animator::CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time) {
+Quaternion AnimationManager::CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time) {
 	assert(!keyframes.empty()); //keyframesが空の場合はエラー
 	if(keyframes.size() == 1 || time <= keyframes[0].time) {
 		return keyframes[0].value;

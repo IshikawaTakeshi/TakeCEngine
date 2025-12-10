@@ -1,12 +1,7 @@
 #include "CameraManager.h"
+#include "engine/Base/ImGuiManager.h"
 
-#pragma region imgui
-#ifdef _DEBUG
-#include "externals/imgui/imgui.h"
-#include "externals/imgui/imgui_impl_dx12.h"
-#include "externals/imgui/imgui_impl_win32.h"
-#endif 
-#pragma endregion
+using namespace TakeC;
 
 //============================================================================
 // インスタンスの取得
@@ -19,7 +14,7 @@ CameraManager& CameraManager::GetInstance() {
 //============================================================================
 // 初期化
 //============================================================================
-void CameraManager::Initialize(DirectXCommon* dxCommon) {
+void CameraManager::Initialize(TakeC::DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 }
 

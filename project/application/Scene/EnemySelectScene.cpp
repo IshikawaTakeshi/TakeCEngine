@@ -18,26 +18,26 @@ void EnemySelectScene::Initialize() {
 
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
-	gameCamera_->Initialize(CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
+	gameCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	gameCamera_->SetYawRot(2.5f);
-	CameraManager::GetInstance().AddCamera("gameCamera", *gameCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("gameCamera", *gameCamera_);
 
 	//Camera1
 	debugCamera_ = std::make_shared<Camera>();
-	debugCamera_->Initialize(CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
+	debugCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	debugCamera_->SetIsDebug(true);
-	CameraManager::GetInstance().AddCamera("debugCamera", *debugCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("debugCamera", *debugCamera_);
 
 	//デフォルトカメラの設定
-	Object3dCommon::GetInstance().SetDefaultCamera(CameraManager::GetInstance().GetActiveCamera());
-	ParticleCommon::GetInstance().SetDefaultCamera(CameraManager::GetInstance().GetActiveCamera());
+	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
+	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 
 	//Animation読み込み
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "walk.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "Idle.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "running.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "throwAttack.gltf");
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Models/gltf", "player_singleMesh.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "walk.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "Idle.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "running.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "throwAttack.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Models/gltf", "player_singleMesh.gltf");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -56,7 +56,7 @@ void EnemySelectScene::Initialize() {
 void EnemySelectScene::Finalize() {
 	AudioManager::GetInstance().SoundUnload(&BGM_); // BGM停止
 	CollisionManager::GetInstance().ClearGameCharacter(); // 当たり判定の解放
-	CameraManager::GetInstance().ResetCameras(); //カメラのリセット
+	TakeC::CameraManager::GetInstance().ResetCameras(); //カメラのリセット
 	skyBox_.reset();
 }
 
@@ -72,7 +72,7 @@ void EnemySelectScene::Update() {
 	}
 
 	//カメラの更新
-	CameraManager::GetInstance().Update();
+	TakeC::CameraManager::GetInstance().Update();
 	//SkyBoxの更新
 	skyBox_->Update();
 	//キャラクター編集ツールの更新
@@ -156,7 +156,7 @@ void EnemySelectScene::Update() {
 
 void EnemySelectScene::UpdateImGui() {
 
-	CameraManager::GetInstance().UpdateImGui();
+	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
 
 	ImGui::Begin("Level Objects");
@@ -188,6 +188,7 @@ void EnemySelectScene::Draw() {
 
 #pragma endregion
 
+	//ワイヤーフレームの描画
 	TakeCFrameWork::GetWireFrame()->Draw();
 
 	//パーティクルの描画
@@ -228,7 +229,7 @@ void EnemySelectScene::InitializeEnemyDestroyed() {
 	//スローモーションにする
 	MyGame::RequestTimeScale(-1.0f, 1.0f, 1.0f);
 	//カメラをズームする
-	CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::ENEMY_DESTROYED);
+	TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::ENEMY_DESTROYED);
 	//changeBehaviorTimerを初期化
 	changeBehaviorTimer_.Initialize(2.4f, 0.0f);
 }
@@ -245,7 +246,7 @@ void EnemySelectScene::UpdateEnemyDestroyed() {
 		behaviorRequest_ = SceneBehavior::GAMECLEAR;
 
 		//ズーム解除
-		CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::FOLLOW);
+		TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::FOLLOW);
 	}
 }
 

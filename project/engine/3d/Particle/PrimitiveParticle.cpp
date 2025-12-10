@@ -28,10 +28,10 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 
 	//ParticleResource生成
 	particleResource_ =
-		DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
+		TakeC::DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
 	particleResource_->SetName(L"PrimitiveParticle::particleResource_");
 	//perViewResource生成
-	perViewResource_ = DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
+	perViewResource_ = TakeC::DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
 	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));
 	perViewResource_->SetName(L"PrimitiveParticle::perViewResource_");
 	//SRVの生成
@@ -123,8 +123,8 @@ void PrimitiveParticle::Update() {
 
 	// データをGPUに転送  
 	perViewData_->isBillboard = particlePreset_.attribute.isBillboard;
-	perViewData_->viewProjection = CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
-	perViewData_->billboardMatrix = CameraManager::GetInstance().GetActiveCamera()->GetRotationMatrix();
+	perViewData_->viewProjection = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
+	perViewData_->billboardMatrix = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetRotationMatrix();
 }
 
 //=============================================================================
@@ -192,10 +192,10 @@ void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
 		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetRingData(primitiveHandle_)->material_;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	}else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetPlaneData(primitiveHandle_)->material_;
+		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetPlaneData(primitiveHandle_)->material_;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetSphereData(primitiveHandle_)->material_;
+		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetSphereData(primitiveHandle_)->material_;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
 		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetConeData(primitiveHandle_)->material_;

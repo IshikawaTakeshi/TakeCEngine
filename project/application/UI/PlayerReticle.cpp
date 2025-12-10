@@ -21,7 +21,7 @@ void PlayerReticle::Initialize() {
 	predictedImpactReticle_->SetAnchorPoint({ 0.5f, 0.5f }); // アンカーポイントを中心に設定
 	predictedImpactReticle_->AdjustTextureSize(); // テクスチャサイズをイメージに合わせる
 	predictedImpactReticle_->SetSize({ size_ * reticleSizeScale_, size_ * reticleSizeScale_ }); 
-	screenPosition_ = { WinApp::kScreenWidth / 2.0f, WinApp::kScreenHeight / 2.0f };
+	screenPosition_ = { TakeC::WinApp::kScreenWidth / 2.0f, TakeC::WinApp::kScreenHeight / 2.0f };
 	targetPosition_ = { 0.0f, 0.0f, 0.0f };
 	predictedImpactPosition_ = { 0.0f, 0.0f, 0.0f };
 }
@@ -39,23 +39,23 @@ void PlayerReticle::Update(const Vector3& targetPosition, const Vector3& predict
 	if (isFocus_) {
 
 		//ターゲットのワールド座標をスクリーン座標に変換
-		Matrix4x4 viewProjectionMatrix = CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
+		Matrix4x4 viewProjectionMatrix = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
 		Vector3 screenPos = MatrixMath::Transform(targetPosition_, viewProjectionMatrix);
 		Vector3 predictedScreenPos = MatrixMath::Transform(predictedImpactPosition_, viewProjectionMatrix);
 		//スクリーン座標に変換（-1～1の範囲）
 		screenPosition_ = {
-			(screenPos.x + 1.0f) * WinApp::kScreenWidth / 2.0f,
-			(1.0f - screenPos.y) * WinApp::kScreenHeight / 2.0f
+			(screenPos.x + 1.0f) * TakeC::WinApp::kScreenWidth / 2.0f,
+			(1.0f - screenPos.y) * TakeC::WinApp::kScreenHeight / 2.0f
 		};
 		predictedScreenPosition_ = {
-			(predictedScreenPos.x + 1.0f) * WinApp::kScreenWidth / 2.0f,
-			(1.0f - predictedScreenPos.y) * WinApp::kScreenHeight / 2.0f
+			(predictedScreenPos.x + 1.0f) * TakeC::WinApp::kScreenWidth / 2.0f,
+			(1.0f - predictedScreenPos.y) * TakeC::WinApp::kScreenHeight / 2.0f
 		};
 
 	} else {
 		//非ロックオン時は画面中央に表示
-		screenPosition_ = { WinApp::kScreenWidth / 2.0f, WinApp::kScreenHeight / 2.0f };
-		predictedScreenPosition_ = { WinApp::kScreenWidth / 2.0f, WinApp::kScreenHeight / 2.0f };
+		screenPosition_ = { TakeC::WinApp::kScreenWidth / 2.0f, TakeC::WinApp::kScreenHeight / 2.0f };
+		predictedScreenPosition_ = { TakeC::WinApp::kScreenWidth / 2.0f, TakeC::WinApp::kScreenHeight / 2.0f };
 	}
 
 	// スプライトの位置とサイズを更新

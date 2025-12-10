@@ -95,9 +95,9 @@ void Model::Update(Animation* animation,float animationTime) {
 
 		//rootNodeのAnimationを取得
 		NodeAnimation& rootNodeAnimation = animation->nodeAnimations[modelData_->rootNode.name];
-		translate_ = Animator::CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
-		rotate_ = Animator::CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
-		scale_ = Animator::CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+		translate_ = TakeC::AnimationManager::CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
+		rotate_ = TakeC::AnimationManager::CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
+		scale_ = TakeC::AnimationManager::CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 		localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
 	}
 }
@@ -128,12 +128,12 @@ void Model::UpdateImGui() {
 
 		//モデルのリロード
 		if(ImGui::Button("Reload Model")) {
-			ModelManager::GetInstance().RequestReload(modelData_->fileName);
+			TakeC::ModelManager::GetInstance().RequestReload(modelData_->fileName);
 		}
 
 		//テクスチャのリロード
 		if (ImGui::Button("Reload Texture")) {
-			TextureManager::GetInstance().LoadTexture(modelData_->material.textureFilePath, true);
+			TakeC::TextureManager::GetInstance().LoadTexture(modelData_->material.textureFilePath, true);
 		}
 	}
 }
@@ -164,12 +164,12 @@ void Model::Draw(PSO* pso) {
 		// Texture SRV
 		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
 			pso->GetGraphicBindResourceIndex("gTexture"),
-			TextureManager::GetInstance().GetSrvIndex(mat.textureFilePath));
+			TakeC::TextureManager::GetInstance().GetSrvIndex(mat.textureFilePath));
 
 		// EnvMap SRV
 		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
 			pso->GetGraphicBindResourceIndex("gEnvMapTexture"),
-			TextureManager::GetInstance().GetSrvIndex(mat.envMapFilePath));
+			TakeC::TextureManager::GetInstance().GetSrvIndex(mat.envMapFilePath));
 
 		// DrawObject 呼び出し
 		commandList->DrawIndexedInstanced(
@@ -202,7 +202,7 @@ void Model::Dispatch(PSO* skinningPso) {
 		skinningPso->GetComputeBindResourceIndex("gSkinningInfo"),
 		skinCluster_.skinningInfoResource->GetGPUVirtualAddress());
 
-	SrvManager* pSrvManager = modelCommon_->GetSrvManager();
+	TakeC::SrvManager* pSrvManager = modelCommon_->GetSrvManager();
 	//palette
 	pSrvManager->SetComputeRootDescriptorTable(skinningPso->GetComputeBindResourceIndex("gPalette"), skinCluster_.paletteIndex);
 	//inputVertex
@@ -237,7 +237,7 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	//materialCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance().GetSrvIndex(modelData_->material.textureFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TakeC::TextureManager::GetInstance().GetSrvIndex(modelData_->material.textureFilePath));
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount_, 0, 0);
 
@@ -253,7 +253,7 @@ void Model::DrawForGPUParticle(UINT instanceCount) {
 	//materialCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance().GetSrvIndex(modelData_->material.textureFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TakeC::TextureManager::GetInstance().GetSrvIndex(modelData_->material.textureFilePath));
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount, 0, 0);
 }

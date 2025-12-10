@@ -19,7 +19,7 @@ ParticleCommon& ParticleCommon::GetInstance() {
 //==================================================================================
 // 初期化
 //==================================================================================
-void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,LightManager* lightManager) {
+void ParticleCommon::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager,TakeC::LightManager* lightManager) {
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;

@@ -38,7 +38,7 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="dxCommon"></param>
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize(TakeC::DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// 描画前処理
@@ -95,7 +95,7 @@ private:
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	//dxCommon
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 
 	//コライダーリスト
 	std::vector<Collider*> colliders_;

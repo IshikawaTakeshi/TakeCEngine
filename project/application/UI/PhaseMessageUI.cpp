@@ -11,14 +11,14 @@
 void PhaseMessageUI::Initialize() {
 
 	screenCenter_ = {
-		WinApp::kDebugScreenWidth_ / 2.0f,
-		WinApp::kDebugScreenHeight_ / 2.0f
+		TakeC::WinApp::kDebugScreenWidth_ / 2.0f,
+		TakeC::WinApp::kDebugScreenHeight_ / 2.0f
 	};
 
-	TextureManager::GetInstance().LoadTexture("UI/PhaseMessage_ReadyText.png",false);
-	TextureManager::GetInstance().LoadTexture("UI/PhaseMessage_FightText.png",false);
-	TextureManager::GetInstance().LoadTexture("UI/GameClearText.png", false);
-	TextureManager::GetInstance().LoadTexture("UI/GameOverText.png", false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/PhaseMessage_ReadyText.png",false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/PhaseMessage_FightText.png",false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/GameClearText.png", false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/GameOverText.png", false);
 
 	// フェーズメッセージスプライトの生成
 	phaseMessageText_ = std::make_unique<Sprite>();

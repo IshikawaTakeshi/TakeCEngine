@@ -11,13 +11,13 @@ void TitleScene::Initialize() {
 
 	//Camera0
 	camera0_ = std::make_shared<Camera>();
-	camera0_->Initialize(CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_TitleScene.json");
+	camera0_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_TitleScene.json");
 	camera0_->SetTranslate({ 0.0f,0.0f,-20.0f });
 	camera0_->SetRotate({ 0.1f,0.0f,0.0f });
-	CameraManager::GetInstance().AddCamera("Tcamera0", *camera0_);
+	TakeC::CameraManager::GetInstance().AddCamera("Tcamera0", *camera0_);
 
 	//デフォルトカメラの設定
-	Object3dCommon::GetInstance().SetDefaultCamera(CameraManager::GetInstance().GetActiveCamera());
+	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 
 	// Sprite
 	titleTextSprite_ = std::make_unique<Sprite>();
@@ -29,7 +29,7 @@ void TitleScene::Initialize() {
 	pushStartUI_ = std::make_unique<PushStartUI>();
 	pushStartUI_->Initialize();
 
-	TakeCFrameWork::GetAnimator()->LoadAnimation("Models/gltf", "Deer.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Models/gltf", "Deer.gltf");
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
@@ -45,7 +45,7 @@ void TitleScene::Finalize() {
 	pushStartUI_.reset();
 	camera0_.reset();
 	camera1_.reset();
-	CameraManager::GetInstance().ResetCameras();
+	TakeC::CameraManager::GetInstance().ResetCameras();
 
 }
 
@@ -55,7 +55,7 @@ void TitleScene::Finalize() {
 void TitleScene::Update() {
 
 	//カメラの更新
-	CameraManager::GetInstance().Update();
+	TakeC::CameraManager::GetInstance().Update();
 
 	//SkyBoxの更新
 	skyBox_->Update();
@@ -65,7 +65,7 @@ void TitleScene::Update() {
 	pushStartUI_->Update();
 
 	//シーン遷移
-	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::A)) {
+	if (TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::A)) {
 		//シーン切り替え依頼
 		//EnemySelectSceneへ
 		SceneManager::GetInstance().ChangeScene("ENEMYSELECT",1.0f);
@@ -78,7 +78,7 @@ void TitleScene::Update() {
 void TitleScene::UpdateImGui() {
 #ifdef _DEBUG
 	//ImGuiの更新
-	CameraManager::GetInstance().UpdateImGui();
+	TakeC::CameraManager::GetInstance().UpdateImGui();
 	titleTextSprite_->UpdateImGui("title");
 	pushStartUI_->UpdateImGui();
 	

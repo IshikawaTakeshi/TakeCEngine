@@ -368,9 +368,6 @@
     <ClCompile Include="engine\SkyBox\SkyBox.cpp">
       <Filter>engine\3d\SkyBox</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Primitive\Triangle.cpp">
-      <Filter>engine\3d\Primitive</Filter>
-    </ClCompile>
     <ClCompile Include="application\Entity\Behavior\BaseBehavior.cpp">
       <Filter>application\Entity\Behavior</Filter>
     </ClCompile>
@@ -863,9 +860,6 @@
     </ClInclude>
     <ClInclude Include="engine\SkyBox\SkyBox.h">
       <Filter>engine\3d\SkyBox</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\3d\Primitive\Triangle.h">
-      <Filter>engine\3d\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\WeaponType.h">
       <Filter>application\weapon</Filter>

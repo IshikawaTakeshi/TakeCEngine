@@ -2,7 +2,7 @@
 #include "MatrixMath.h"
 #include "CameraManager.h"
 
-void Ring::Initialize(DirectXCommon* dxCommon) {
+void Ring::Initialize(TakeC::DirectXCommon* dxCommon) {
 
 	dxCommon_ = dxCommon;
 	//PSOの生成
@@ -21,7 +21,7 @@ void Ring::Initialize(DirectXCommon* dxCommon) {
 
 
 	rootSignature_ = pso_->GetGraphicRootSignature();
-	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
+	wvpResource_ = TakeC::DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
 
 	//CPUで動かす用のTransform
@@ -41,7 +41,7 @@ void Ring::Update() {
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	//wvpの更新
-	WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix());
+	WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix());
 	WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 	TransformMatrixData_->World = worldMatrix_;
 	TransformMatrixData_->WVP = WVPMatrix_;

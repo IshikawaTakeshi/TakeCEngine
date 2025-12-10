@@ -17,27 +17,27 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 	particleCommon_ = particleCommon;
 
 	//ParticleResource生成
-	particleUavResource_ = DirectXCommon::CreateBufferResourceUAV(
+	particleUavResource_ = TakeC::DirectXCommon::CreateBufferResourceUAV(
 		particleCommon_->GetDirectXCommon()->GetDevice(),sizeof(ParticleForCS) * kNumMaxInstance_);
 	particleUavResource_->SetName(L"GPUParticle::particleUavResource_");
 
 	//PerViewResource生成
-	perViewResource_ = DirectXCommon::CreateBufferResource(
+	perViewResource_ = TakeC::DirectXCommon::CreateBufferResource(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
 	perViewResource_->SetName(L"GPUParticle::perViewResource_");
 
 	//PerFrameResource生成
-	perFrameResource_ = DirectXCommon::CreateBufferResource(
+	perFrameResource_ = TakeC::DirectXCommon::CreateBufferResource(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerFrame));
 	perFrameResource_->SetName(L"GPUParticle::perFrameResource_");
 
 	//freeListIndexResource生成
-	freeListIndexResource_ = DirectXCommon::CreateBufferResourceUAV(
+	freeListIndexResource_ = TakeC::DirectXCommon::CreateBufferResourceUAV(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(uint32_t));
 	freeListIndexResource_->SetName(L"GPUParticle::freeListIndexResource_");
 
 	//freeListResource生成
-	freeListResource_ = DirectXCommon::CreateBufferResourceUAV(
+	freeListResource_ = TakeC::DirectXCommon::CreateBufferResourceUAV(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(uint32_t) * kNumMaxInstance_);
 	freeListResource_->SetName(L"GPUParticle::freeListResource_");
 
@@ -80,7 +80,7 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 	camera_ = particleCommon_->GetDefaultCamera();
 
 	//attributeの初期化
-	attributeResource_ = DirectXCommon::CreateBufferResource(
+	attributeResource_ = TakeC::DirectXCommon::CreateBufferResource(
 		particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleAttributes) * kNumMaxInstance_);
 	attributeResource_->SetName(L"GPUParticle::attributeResource_");
 	
@@ -118,7 +118,7 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 void GPUParticle::Update() {
 
 	//cameraの情報取得
-	camera_ = CameraManager::GetInstance().GetActiveCamera();
+	camera_ = TakeC::CameraManager::GetInstance().GetActiveCamera();
 
 	//CSによる更新処理
 	DisPatchUpdateParticle();

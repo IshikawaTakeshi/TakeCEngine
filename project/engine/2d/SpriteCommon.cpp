@@ -14,7 +14,7 @@ SpriteCommon& SpriteCommon::GetInstance() {
 //====================================================================
 // 初期化
 //====================================================================
-void SpriteCommon::Initialize(DirectXCommon* directXCommon) {
+void SpriteCommon::Initialize(TakeC::DirectXCommon* directXCommon) {
 
 	dxCommon_ = directXCommon;
 

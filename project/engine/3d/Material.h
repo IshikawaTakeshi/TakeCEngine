@@ -18,7 +18,9 @@ struct MaterialData {
 };
 
 //前方宣言
-class DirectXCommon;
+namespace TakeC {
+	class DirectXCommon;
+}
 
 //============================================================================
 // Material class
@@ -36,7 +38,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath);
+	void Initialize(TakeC::DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath);
 
 	void Update();
 

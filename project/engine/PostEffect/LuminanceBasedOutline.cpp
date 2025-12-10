@@ -3,10 +3,12 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+using namespace TakeC;
+
 //=============================================================================
 // 初期化
 //=============================================================================
-void LuminanceBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
+void LuminanceBasedOutline::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx, outputResource);

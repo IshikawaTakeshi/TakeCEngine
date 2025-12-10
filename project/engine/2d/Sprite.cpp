@@ -29,7 +29,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	//======================= transformationMatrix用のVertexResource ===========================//
 
 	//スプライト用のTransformationMatrix用のVertexResource生成
-	wvpResource_ = DirectXCommon::CreateBufferResource(spriteCommon->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
+	wvpResource_ = TakeC::DirectXCommon::CreateBufferResource(spriteCommon->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
 
 	//TransformationMatrix用
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
@@ -56,7 +56,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	//ViewProjectionの初期化
 	viewMatrix_ = MatrixMath::MakeIdentity4x4();
 	projectionMatrix_ = MatrixMath::MakeOrthographicMatrix(
-		0.0f, 0.0f, WinApp::kScreenWidth, WinApp::kScreenHeight, 0.1f, 1000.0f);
+		0.0f, 0.0f, TakeC::WinApp::kScreenWidth, TakeC::WinApp::kScreenHeight, 0.1f, 1000.0f);
 	worldViewProjectionMatrix_ = worldMatrix_ * viewMatrix_ * projectionMatrix_;
 	wvpData_->WVP = worldViewProjectionMatrix_;
 	wvpData_->World = worldMatrix_;
@@ -70,8 +70,8 @@ void Sprite::Update() {
 	if(firstUpdate_) {
 		//初回更新時にサイズを相対サイズにする
 		SetSizeRelative();
-		spriteConfig_.position_.x *= WinApp::widthPercent_;
-		spriteConfig_.position_.y *= WinApp::heightPercent_;
+		spriteConfig_.position_.x *= TakeC::WinApp::widthPercent_;
+		spriteConfig_.position_.y *= TakeC::WinApp::heightPercent_;
 		firstUpdate_ = false;
 	}
 
@@ -177,7 +177,7 @@ void Sprite::UpdateVertexData() {
 	float top = 0.0f - spriteConfig_.anchorPoint_.y;
 	float bottom = 1.0f - spriteConfig_.anchorPoint_.y;
 	//テクスチャ範囲指定
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance().GetMetadata(spriteConfig_.textureFilePath_);
+	const DirectX::TexMetadata& metadata = TakeC::TextureManager::GetInstance().GetMetadata(spriteConfig_.textureFilePath_);
 	float tex_left = spriteConfig_.textureLeftTop_.x / metadata.width;
 	float tex_top = spriteConfig_.textureLeftTop_.y / metadata.height;
 	float tex_right = (spriteConfig_.textureLeftTop_.x + spriteConfig_.textureSize_.x) / metadata.width;
@@ -209,8 +209,8 @@ void Sprite::UpdateVertexData() {
 // サイズを画面サイズに対する相対サイズにする
 //=============================================================================================
 void Sprite::SetSizeRelative() {
-	spriteConfig_.size_.x *= WinApp::widthPercent_;
-	spriteConfig_.size_.y *= WinApp::heightPercent_;
+	spriteConfig_.size_.x *= TakeC::WinApp::widthPercent_;
+	spriteConfig_.size_.y *= TakeC::WinApp::heightPercent_;
 }
 
 void Sprite::SetFilePath(const std::string& filePath) {
@@ -225,7 +225,7 @@ void Sprite::SetFilePath(const std::string& filePath) {
 void Sprite::AdjustTextureSize() {
 
 	//テクスチャメタデータを取得
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance().GetMetadata(spriteConfig_.textureFilePath_);
+	const DirectX::TexMetadata& metadata = TakeC::TextureManager::GetInstance().GetMetadata(spriteConfig_.textureFilePath_);
 
 	spriteConfig_.textureSize_.x = static_cast<float>(metadata.width);
 	spriteConfig_.textureSize_.y = static_cast<float>(metadata.height);
@@ -253,7 +253,7 @@ void Sprite::Draw() {
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(
 		1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//gTextureの設定
-	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance().GetSrvHandleGPU(spriteConfig_.textureFilePath_));
+	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TakeC::TextureManager::GetInstance().GetSrvHandleGPU(spriteConfig_.textureFilePath_));
 	//IBVの設定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。

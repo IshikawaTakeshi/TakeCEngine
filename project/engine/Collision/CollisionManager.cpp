@@ -14,7 +14,7 @@ CollisionManager& CollisionManager::GetInstance() {
 // 初期化
 //=============================================================================
 
-void CollisionManager::Initialize(DirectXCommon* dxCommon) {
+void CollisionManager::Initialize(TakeC::DirectXCommon* dxCommon) {
 
 	dxCommon_ = dxCommon;
 

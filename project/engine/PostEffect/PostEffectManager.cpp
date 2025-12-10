@@ -12,11 +12,13 @@
 #include "PostEffect/DepthBasedOutline.h"
 #include "PostEffect/Vignette.h"
 
+using namespace TakeC;
+
 //====================================================================
 //	初期化
 //====================================================================
 
-void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
+void PostEffectManager::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager) {
 
 	dxCommon_ = dxCommon; //DirectXCommonのセット
 	srvManager_ = srvManager; //SrvManagerのセット

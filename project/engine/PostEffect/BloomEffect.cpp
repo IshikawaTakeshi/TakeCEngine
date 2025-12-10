@@ -3,11 +3,14 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+using namespace TakeC;
 
 //=============================================================================
 // 初期化
 //=============================================================================
-void BloomEffect::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath, ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
+void BloomEffect::Initialize(
+	TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, const std::wstring& CSFilePath, 
+	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
 	dxCommon_ = dxCommon;
 	PostEffect::Initialize(dxCommon_, srvManager, CSFilePath, inputResource, inputSrvIdx,outputResource);

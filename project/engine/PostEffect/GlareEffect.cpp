@@ -3,7 +3,7 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
-void GlareEffect::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,
+void GlareEffect::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager,
 	const std::wstring& CSFilePath, ComPtr<ID3D12Resource> inputResource,
 	uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
@@ -13,8 +13,8 @@ void GlareEffect::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,
 
 	//グレアエフェクト情報用バッファ生成
 	glareEffectInfoData_ = nullptr;
-	DirectXCommon::ComPtr<ID3D12Device> device = dxCommon_->GetDevice();
-	glareEffectInfoResource_ = DirectXCommon::CreateBufferResource(device.Get(), sizeof(GlareEffectInfo));
+	TakeC::DirectXCommon::ComPtr<ID3D12Device> device = dxCommon_->GetDevice();
+	glareEffectInfoResource_ = TakeC::DirectXCommon::CreateBufferResource(device.Get(), sizeof(GlareEffectInfo));
 	//バッファマッピング
 	glareEffectInfoResource_->Map(0, nullptr, (void**)&glareEffectInfoData_);
 
@@ -49,7 +49,7 @@ void GlareEffect::Dispatch() {
 	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(
 		computePSO_->GetComputeBindResourceIndex("gBoxFilterInfo"), glareEffectInfoResource_->GetGPUVirtualAddress());
 	//Dispatch
-	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 8, WinApp::kScreenHeight / 8, 1);
+	dxCommon_->GetCommandList()->Dispatch(TakeC::WinApp::kScreenWidth / 8, TakeC::WinApp::kScreenHeight / 8, 1);
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,

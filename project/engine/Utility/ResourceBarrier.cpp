@@ -14,7 +14,7 @@ ResourceBarrier& ResourceBarrier::GetInstance() {
 //=============================================================================
 // 初期化
 //=============================================================================
-void ResourceBarrier::Initialize(DirectXCommon* dxCommon) {
+void ResourceBarrier::Initialize(TakeC::DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 }
 

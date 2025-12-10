@@ -25,7 +25,7 @@ public:
 	/// </summary>
 	/// <param name="particleManager"></param>
 	/// <param name="particleCommon"></param>
-	void Initialize(ParticleManager* particleManager,ParticleCommon* particleCommon);
+	void Initialize(ParticleCommon* particleCommon);
 
 	/// <summary>
 	/// 更新処理
@@ -74,8 +74,6 @@ private:
 
 private:
 
-	// パーティクルマネージャー
-	ParticleManager* particleManager_ = nullptr;
 	// パーティクル共通情報
 	ParticleCommon* particleCommon_ = nullptr;
 	//エディター専用エミッター

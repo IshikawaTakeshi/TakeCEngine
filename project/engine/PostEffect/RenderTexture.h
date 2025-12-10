@@ -26,7 +26,7 @@ public:
 	/// <param name="dxCommon"></param>
 	/// <param name="srvManager"></param>
 	/// <param name="postEffectManager"></param>
-	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, PostEffectManager* postEffectManager);
+	void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, TakeC::PostEffectManager* postEffectManager);
 
 	/// <summary>
 	/// レンダーターゲットのクリア
@@ -65,10 +65,10 @@ public:
 
 private:
 
-	DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
-	SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
-	RtvManager* rtvManager_ = nullptr; //RtvManagerのポインタ
-	PostEffectManager* postEffectManager_ = nullptr; //PostEffectManagerのポインタ
+	TakeC::DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
+	TakeC::SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
+	TakeC::RtvManager* rtvManager_ = nullptr; //RtvManagerのポインタ
+	TakeC::PostEffectManager* postEffectManager_ = nullptr; //PostEffectManagerのポインタ
 	//clearValue
 	//clearValue
 	const Vector4 kRenderTargetClearColor_ = { 0.1f, 0.25f, 0.5f, 1.0f };

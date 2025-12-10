@@ -21,8 +21,11 @@ enum class CollisionLayer {
 
 // 前方宣言
 class Model;
-class DirectXCommon;
 class GameCharacter;
+
+namespace TakeC {
+	class DirectXCommon;
+}
 
 //=================================================================================
 // Collider class
@@ -49,7 +52,7 @@ public:
 	/// </summary>
 	/// <param name="dxCommon"></param>
 	/// <param name="collisionObject"></param>
-	virtual void Initialize(DirectXCommon* dxCommon, Object3d* collisionObject) = 0;
+	virtual void Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collisionObject) = 0;
 
 	/// <summary>
 	/// 更新処理
@@ -118,7 +121,7 @@ protected:
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	//DirectXCommon
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 
 	//Camera
 	Camera* camera_ = nullptr;

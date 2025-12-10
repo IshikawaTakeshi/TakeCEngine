@@ -9,7 +9,7 @@
 //=================================================================================
 //	初期化
 //=================================================================================
-void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath) {
+void Material::Initialize(TakeC::DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath) {
 
 	//マテリアルリソース初期化
 	InitializeMaterialResource(dxCommon->GetDevice());
@@ -17,9 +17,9 @@ void Material::Initialize(DirectXCommon* dxCommon, const std::string& filePath, 
 	textureFilePath_ = filePath;
 	envMapFilePath_ = envMapfilePath;
 	//テクスチャ初期化
-	TextureManager::GetInstance().LoadTexture(filePath,false);
+	TakeC::TextureManager::GetInstance().LoadTexture(filePath,false);
 	if(envMapfilePath != ""){
-		TextureManager::GetInstance().LoadTexture(envMapfilePath,false);
+		TakeC::TextureManager::GetInstance().LoadTexture(envMapfilePath,false);
 	}
 
 
@@ -76,7 +76,7 @@ void Material::UpdateMaterialImGui() {
 void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> device) {
 
 	//マテリアル用リソース作成
-	materialResource_ = DirectXCommon::CreateBufferResource(device.Get(), sizeof(MaterialData));
+	materialResource_ = TakeC::DirectXCommon::CreateBufferResource(device.Get(), sizeof(MaterialData));
 	materialResource_->SetName(L"Material::materialResource_");
 	//materialにデータを書き込む
 	materialData_ = nullptr;
