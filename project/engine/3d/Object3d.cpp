@@ -26,11 +26,11 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 
 	//モデルの設定
 	modelFilePath_ = filePath;
-	model_ = ModelManager::GetInstance()->CopyModel(modelFilePath_);
+	model_ = TakeC::ModelManager::GetInstance().CopyModel(modelFilePath_);
 	model_->GetMesh()->GetMaterial()->SetEnableLighting(true);
 
 	//TransformationMatrix用のResource生成
-	wvpResource_ = DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
+	wvpResource_ = TakeC::DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
 	wvpResource_->SetName(L"Object3d::wvpResource_");
 	//TransformationMatrix用
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
@@ -52,7 +52,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	camera_ = object3dCommon_->GetDefaultCamera();
 
 	//アニメーション初期化
-	animation_ = new Animation();
+	animation_ = std::make_unique<Animation>();
 	animation_->duration = 0.0f;
 	animationTime_ = 0.0f;
 }
@@ -75,7 +75,7 @@ void Object3d::Update() {
 	//wvpの更新
 	if (camera_) {
 		const Matrix4x4& viewProjectionMatrix =
-			CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+			TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
 		WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
 	} else {
 		WVPMatrix_ = worldMatrix_;
@@ -122,7 +122,7 @@ void Object3d::AnimationUpdate() {
 	}
 
 	//スケルトン・スキンクラスターの更新
-	model_->Update(animation_, animationTime_);
+	model_->Update(animation_.get(), animationTime_);
 
 	//最後まで行ったら最初からリピート再生する
 	animationTime_ = std::fmod(animationTime_, animation_->duration);
@@ -191,7 +191,7 @@ void Object3d::SetWorldMatrix(const Matrix4x4& worldMatrix) {
 
 void Object3d::SetAnimation(Animation* animation) {
 	if (animation) {
-		animation_ = new Animation(*animation);
+		animation_ = std::make_unique<Animation>(*animation);
 	}
 	animationTime_ = 0.0f;
 }

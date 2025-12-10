@@ -81,11 +81,11 @@ public:
 	virtual bool GetIsReloading() const;
 
 	//チャージ攻撃可能か
-	virtual bool IsChargeAttack() const = 0;
+	virtual bool CanChargeAttack() const;
 	//移動撃ち可能か
-	virtual bool IsMoveShootable() const = 0;
+	virtual bool CanMoveShootable() const;
 	//停止撃ち専用か
-	virtual bool IsStopShootOnly() const = 0;
+	virtual bool StopShootOnly() const;
 
 	//=============================================================================
 	// setter
@@ -96,7 +96,7 @@ public:
 	//攻撃対象の座標を設定
 	virtual void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
 	//攻撃対象の速度ベクトルを設定
-	virtual void SetTargetVelocity(const Vector3& targetVel) { targetVel_ = targetVel; }
+	virtual void SetTargetVelocity(const Vector3& targetVel) { targetVelocity_ = targetVel; }
 
 	virtual void SetRotate(const Vector3& rotate) { object3d_->SetRotate(rotate); }
 	//武器のユニットポジションを設定
@@ -132,7 +132,7 @@ protected:
 	//攻撃対象の座標
 	Vector3 targetPos_;
 	//攻撃対象の速度ベクトル
-	Vector3 targetVel_;
+	Vector3 targetVelocity_;
 
 	//武器の種類
 	WeaponType weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;

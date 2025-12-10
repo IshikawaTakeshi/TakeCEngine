@@ -32,11 +32,23 @@ void to_json(nlohmann::json& jsonData, const WeaponData& weaponData) {
 	jsonData["modelFilePath"] = weaponData.modelFilePath;
 	jsonData["weaponType"] = StringUtility::EnumToString(weaponData.weaponType);
 	jsonData["config"] = weaponData.config;
-	
-	if(weaponData.weaponType == WeaponType::WEAPON_TYPE_RIFLE) {
-		jsonData["actionData"] = std::get<RifleInfo>(weaponData.actionData);
-	} else if(weaponData.weaponType == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
-		jsonData["actionData"] = std::get<VerticalMissileLauncherInfo>(weaponData.actionData);
+
+	switch (weaponData.weaponType) {
+	case WeaponType::WEAPON_TYPE_RIFLE:{
+		const RifleInfo& rifleInfo = std::get<RifleInfo>(weaponData.actionData);
+		jsonData["actionData"] = rifleInfo;
+		break;
+	}
+	case WeaponType::WEAPON_TYPE_SHOTGUN:{
+		const ShotGunInfo& shotGunInfo = std::get<ShotGunInfo>(weaponData.actionData);
+		jsonData["actionData"] = shotGunInfo;
+		break;
+	}
+	case WeaponType::WEAPON_TYPE_VERTICAL_MISSILE:{
+		const VerticalMissileLauncherInfo& vmLauncherInfo = std::get<VerticalMissileLauncherInfo>(weaponData.actionData);
+		jsonData["actionData"] = vmLauncherInfo;
+		break;
+	}
 	}
 }
 
@@ -79,15 +91,29 @@ void from_json(const nlohmann::json& jsonData, WeaponData& weaponData) {
 	// actionDataの読み込み
 	if (jsonData.contains("actionData")) {
 		// weaponTypeに応じて適切な型で読み込む
-		if (weaponData.weaponType == WeaponType::WEAPON_TYPE_RIFLE) {
+		switch (weaponData.weaponType) {
+		case WeaponType::WEAPON_TYPE_RIFLE:
+		{
 			RifleInfo rifleInfo;
 			jsonData.at("actionData").get_to(rifleInfo);
 			weaponData.actionData = rifleInfo;
+			break;
 		}
-		else if (weaponData.weaponType == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
+		case WeaponType::WEAPON_TYPE_SHOTGUN:
+		{
+			ShotGunInfo shotGunInfo;
+			jsonData.at("actionData").get_to(shotGunInfo);
+			weaponData.actionData = shotGunInfo;
+			break;
+		}
+		case WeaponType::WEAPON_TYPE_VERTICAL_MISSILE:
+		{
+
 			VerticalMissileLauncherInfo vmLauncherInfo;
 			jsonData.at("actionData").get_to(vmLauncherInfo);
 			weaponData.actionData = vmLauncherInfo;
+			break;
+		}
 		}
 	}
 }

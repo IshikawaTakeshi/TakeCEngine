@@ -21,98 +21,100 @@ struct NamedPostEffect {
 //=============================================================================
 //	PostEffectManager class
 //=============================================================================
-class PostEffectManager {
-public:
+namespace TakeC {
+	class PostEffectManager {
+	public:
 
-	//=======================================================================
-	/// functions
-	//=======================================================================
+		//=======================================================================
+		/// functions
+		//=======================================================================
 
-	/// <summary>
-	/// コンストラクタ・デストラクタ
-	/// </summary>
-	PostEffectManager() = default;
-	~PostEffectManager() = default;
+		/// <summary>
+		/// コンストラクタ・デストラクタ
+		/// </summary>
+		PostEffectManager() = default;
+		~PostEffectManager() = default;
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
+		/// <summary>
+		/// 初期化
+		/// </summary>
+		void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager);
 
-	/// <summary>
-	/// ImGui更新処理
-	/// </summary>
-	void UpdateImGui();
+		/// <summary>
+		/// ImGui更新処理
+		/// </summary>
+		void UpdateImGui();
 
-	/// <summary>
-	/// 終了・開放処理
-	/// </summary>
-	void Finalize();
+		/// <summary>
+		/// 終了・開放処理
+		/// </summary>
+		void Finalize();
 
-	/// <summary>
-	///	描画処理
-	/// </summary>
-	void Draw(PSO* pso);
+		/// <summary>
+		///	描画処理
+		/// </summary>
+		void Draw(PSO* pso);
 
-	/// <summary>
-	/// 全PostEffectのCSによる処理
-	/// </summary>
-	void AllDispatch();
+		/// <summary>
+		/// 全PostEffectのCSによる処理
+		/// </summary>
+		void AllDispatch();
 
-	/// <summary>
-	/// エフェクトの適用
-	/// </summary>
-	/// <param name="name"></param>
-	void ApplyEffect(const std::string& name);
+		/// <summary>
+		/// エフェクトの適用
+		/// </summary>
+		/// <param name="name"></param>
+		void ApplyEffect(const std::string& name);
 
-	/// <summary>
-	/// エフェクトの初期化・追加
-	/// </summary>
-	/// <param name="name"></param>
-	/// <param name="csFilePath"></param>
-	void InitializeEffect(const std::string& name, const std::wstring& csFilePath);
+		/// <summary>
+		/// エフェクトの初期化・追加
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="csFilePath"></param>
+		void InitializeEffect(const std::string& name, const std::wstring& csFilePath);
 
-public:
+	public:
 
-	//=======================================================================
-	// accessors
-	//=======================================================================
+		//=======================================================================
+		// accessors
+		//=======================================================================
 
-	//----- getter ---------------------------
-	
-	// 最終出力SRVインデックスの取得
-	uint32_t GetFinalOutputSrvIndex() const;
+		//----- getter ---------------------------
 
-	//----- setter ---------------------------
+		// 最終出力SRVインデックスの取得
+		uint32_t GetFinalOutputSrvIndex() const;
 
-	// 最終出力SRVインデックスの設定
-	void SetRenderTextureResource(ComPtr<ID3D12Resource> renderTextureResource) {
-		renderTextureResource_ = renderTextureResource;
-	}
+		//----- setter ---------------------------
 
-	// 最終出力SRVインデックスの設定
-	void SetRenderTextureSrvIndex(uint32_t srvIndex) {
-		renderTextureSrvIndex_ = srvIndex;
-	}
+		// 最終出力SRVインデックスの設定
+		void SetRenderTextureResource(ComPtr<ID3D12Resource> renderTextureResource) {
+			renderTextureResource_ = renderTextureResource;
+		}
 
-private:
+		// 最終出力SRVインデックスの設定
+		void SetRenderTextureSrvIndex(uint32_t srvIndex) {
+			renderTextureSrvIndex_ = srvIndex;
+		}
 
-	DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
-	SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
+	private:
 
-	//srv/uavとして利用する中間リソース
-	ComPtr<ID3D12Resource> intermediateResource_[2];
-	uint32_t srvIndex_[2] = {};
-	uint32_t uavIndex_[2] = {};
+		TakeC::DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
+		TakeC::SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
 
-	//最終出力用テクスチャリソース
-	ComPtr<ID3D12Resource> renderTextureResource_; 
-	uint32_t renderTextureSrvIndex_ = 0;
-	uint32_t finalOutputSrvIndex_ = 0;
+		//srv/uavとして利用する中間リソース
+		ComPtr<ID3D12Resource> intermediateResource_[2];
+		uint32_t srvIndex_[2] = {};
+		uint32_t uavIndex_[2] = {};
 
-	// Ping-Pongバッファの切り替えフラグ
-	bool currentWriteBufferIsA_ = true; 
+		//最終出力用テクスチャリソース
+		ComPtr<ID3D12Resource> renderTextureResource_;
+		uint32_t renderTextureSrvIndex_ = 0;
+		uint32_t finalOutputSrvIndex_ = 0;
 
-	//postEffectのコンテナ
-	std::vector<NamedPostEffect> postEffects_;
-};
+		// Ping-Pongバッファの切り替えフラグ
+		bool currentWriteBufferIsA_ = true;
+
+		//postEffectのコンテナ
+		std::vector<NamedPostEffect> postEffects_;
+	};
+}

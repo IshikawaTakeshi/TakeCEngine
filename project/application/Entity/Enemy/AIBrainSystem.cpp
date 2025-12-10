@@ -231,7 +231,7 @@ float AIBrainSystem::CalculateFloatingScore() {
 
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
-	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask) == true) {
+	if (CollisionManager::GetInstance().RayCast(ray, hitInfo,layerMask) == true) {
 
 		// プレイヤーとのY軸方向の位置差を計算
 		float verticalDiff = characterInfo_->focusTargetPos.y - characterInfo_->transform.translate.y;

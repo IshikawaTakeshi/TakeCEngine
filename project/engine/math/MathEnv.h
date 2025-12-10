@@ -9,6 +9,8 @@
 #include <cstdint>
 #include <limits>
 #include <numbers>
+#include <random>
+#include <variant>
 
 /// ----------------------------------------------
 /// 円周率関連
@@ -64,3 +66,11 @@ float degreeToRadian(float degree);
 constexpr float kMinNormalizedFloat = -1.0f;
 constexpr float kMaxNormalizedFloat = 1.0f;
 constexpr float kUnitLength         = 1.0f;
+
+/// ----------------------------------------------
+/// 乱数関連
+/// ----------------------------------------------
+
+std::mt19937& GetRandomEngine(); // 乱数エンジン取得
+float GetRandomFloat(float min, float max); // 指定範囲の乱数取得
+int GetRandomInt(int min, int max); // 指定範囲の乱数取得

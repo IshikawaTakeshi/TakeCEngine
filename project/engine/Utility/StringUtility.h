@@ -4,7 +4,7 @@
 
 // enumのみに制約をかける
 template<typename T>
-concept InputEnum = std::is_enum_v<T>;
+concept ConvertEnum = std::is_enum_v<T>;
 
 //============================================================
 // StringUtility namespace
@@ -17,10 +17,10 @@ namespace StringUtility {
 	std::string ConvertString(const std::wstring& str);
 
 	//enumをstringに変換するテンプレート関数
-	template<InputEnum Enum>
+	template<ConvertEnum Enum>
 	std::string EnumToString(Enum e);
 
-	template<InputEnum Enum>
+	template<ConvertEnum Enum>
 	Enum StringToEnum(const std::string& str);
 
 }
@@ -28,12 +28,12 @@ namespace StringUtility {
 //------------------------------------------------------------
 // enumをstringに変換するテンプレート関数
 //------------------------------------------------------------
-template<InputEnum Enum>
+template<ConvertEnum Enum>
 std::string StringUtility::EnumToString(Enum e) {
 	return std::string(magic_enum::enum_name(e));
 }
 
-template<InputEnum Enum>
+template<ConvertEnum Enum>
 Enum StringUtility::StringToEnum(const std::string& str) {
 	auto e = magic_enum::enum_cast<Enum>(str);
 	if (e.has_value()) {

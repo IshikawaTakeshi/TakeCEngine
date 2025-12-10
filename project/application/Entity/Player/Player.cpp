@@ -4,7 +4,7 @@
 #include "engine/3d/Object3d.h"
 #include "engine/3d/Object3dCommon.h"
 #include "engine/3d/Model.h"
-#include "engine/io/Input.h"
+#include "engine/Input/Input.h"
 #include "engine/camera/CameraManager.h"
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/math/Vector3Math.h"
@@ -16,6 +16,7 @@
 #include "application/Weapon/Bazooka/Bazooka.h"
 #include "application/Weapon/Launcher/VerticalMissileLauncher.h"
 #include "application/Weapon/MachineGun/MachineGun.h"
+#include "application/Weapon/ShotGun/ShotGun.h"
 #include "application/Entity/WeaponUnit.h"
 
 #include "application/Entity/Behavior/BehaviorRunning.h"
@@ -89,7 +90,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
 	//武器の初期化
-	for (int i = 0; i < weapons_.size(); i++) {
+	for (int i = 0; i < weapons_.size() - 1; i++) {
 		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
 			weapons_[i] = std::make_unique<Rifle>();
 			weapons_[i]->Initialize(object3dCommon, bulletManager);
@@ -108,9 +109,18 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bul
 			weapons_[i] = std::make_unique<MachineGun>();
 			weapons_[i]->Initialize(object3dCommon, bulletManager);
 			weapons_[i]->SetOwnerObject(this);
+		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_SHOTGUN) {
+			//ショットガンの武器を初期化
+			weapons_[i] = std::make_unique<ShotGun>();
+			weapons_[i]->Initialize(object3dCommon, bulletManager);
+			weapons_[i]->SetOwnerObject(this);
 		} else {
-			weapons_[i] = nullptr; // 未使用の武器スロットはnullptrに設定
+			//武器が設定されていない場合はnullptrのまま
+			weapons_[i] = nullptr;
 		}
+		weapons_[3] = std::make_unique<ShotGun>();
+		weapons_[3]->Initialize(object3dCommon, bulletManager);
+		weapons_[3]->SetOwnerObject(this);
 	}
 
 	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
@@ -128,7 +138,7 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bul
 //===================================================================================
 // 武器の取得
 //===================================================================================
-BaseWeapon* Player::GetWeapon(int index) const {
+BaseWeapon* Player::GetCurrentWeapon(int index) const {
 	return weapons_[index].get();
 }
 
@@ -159,7 +169,7 @@ void Player::Update() {
 		if (playerData_.characterInfo.overHeatInfo.isOverheated == false) {
 			//StepBoost入力判定
 			// LTボタン＋スティック入力で発動
-			if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::LT)) {
+			if (inputProvider_->RequestStepBoost()) {
 				RequestActiveBoostEffect();
 				behaviorManager_->RequestBehavior(GameCharacterBehavior::STEPBOOST);
 			}
@@ -167,7 +177,7 @@ void Player::Update() {
 			//RTで発動
 			if (playerData_.characterInfo.onGround == true) {
 
-				if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RT)) {
+				if (inputProvider_->RequestJumpInput()) {
 					//ジャンプのリクエスト
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::JUMP);
 					playerData_.characterInfo.onGround = false; // ジャンプしたので地上ではない
@@ -178,6 +188,9 @@ void Player::Update() {
 
 	//移動方向の取得
 	playerData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
+	//カメラ方向のベクトルを取得
+	camera_->SetStick(inputProvider_->GetCameraRotateInput());
+
 	//Behaviorの更新
 	behaviorManager_->Update(playerData_.characterInfo);
 
@@ -238,6 +251,7 @@ void Player::Update() {
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::ToEuler(playerData_.characterInfo.transform.rotate);
 	//カメラの設定
+	
 	camera_->SetFollowTargetPos(*object3d_->GetModel()->GetSkeleton()->GetJointPosition("neck", object3d_->GetWorldMatrix()));
 	camera_->SetFollowTargetRot(eulerRotate);
 	camera_->SetFocusTargetPos(playerData_.characterInfo.focusTargetPos);
@@ -314,6 +328,7 @@ void Player::UpdateImGui() {
 	weapons_[0]->UpdateImGui();
 	weapons_[1]->UpdateImGui();
 	weapons_[2]->UpdateImGui();
+	weapons_[3]->UpdateImGui();
 	ImGui::End();
 
 #endif // _DEBUG
@@ -449,10 +464,10 @@ void Player::OnCollisionAction(GameCharacter* other) {
 
 void Player::UpdateAttack() {
 
-	WeaponAttack(R_ARMS, GamepadButtonType::RB); // 1つ目の武器の攻撃
-	WeaponAttack(L_ARMS, GamepadButtonType::LB); // 2つ目の武器の攻撃
-	WeaponAttack(R_BACK, GamepadButtonType::X); // 3つ目の武器の攻撃
-	WeaponAttack(L_BACK, GamepadButtonType::Y); // 4つ目の武器の攻撃
+	WeaponAttack(CharacterActionInput::ATTACK_LA); // 1つ目の武器の攻撃
+	WeaponAttack(CharacterActionInput::ATTACK_RA); // 2つ目の武器の攻撃
+	WeaponAttack(CharacterActionInput::ATTACK_LB); // 3つ目の武器の攻撃
+	WeaponAttack(CharacterActionInput::ATTACK_RB); // 4つ目の武器の攻撃
 
 	//チャージ攻撃可能なユニットの処理
 	for (int i = 0; i < chargeShootableUnits_.size(); i++) {
@@ -483,22 +498,23 @@ void Player::UpdateAttack() {
 	}
 }
 
-void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
+void Player::WeaponAttack(CharacterActionInput actionInput) {
 
-	
+	int weaponIndex = static_cast<int>(actionInput) - static_cast<int>(CharacterActionInput::ATTACK_RA);
 	auto* weapon = weapons_[weaponIndex].get();
-	if (Input::GetInstance()->PushButton(0, buttonType)) {
+
+	if (inputProvider_->RequestAttack(actionInput) == true) {
 		//武器を選択したことを記録
 		isUseWeapon_ = true;
 		//チャージ攻撃可能な場合
-		if (weapon->IsChargeAttack()) {
+		if (weapon->CanChargeAttack()) {
 
 			//武器のチャージ処理
 			weapon->Charge(deltaTime_);
-			if (Input::GetInstance()->ReleaseButton(0, buttonType)) {
+			if (inputProvider_->ReleaseAttackInput(actionInput) == true) {
 				//チャージ攻撃実行
 				weapon->ChargeAttack();
-				if (weapon->IsStopShootOnly()) {
+				if (weapon->StopShootOnly()) {
 					// 停止撃ち専用の場合はチャージ後に硬直状態へ
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 				} else {
@@ -508,7 +524,7 @@ void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
 			}
 		} else {
 			//チャージ攻撃不可:通常攻撃
-			if (weapon->IsStopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
+			if (weapon->StopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
 				// 停止撃ち専用:硬直処理を行う
 				playerData_.characterInfo.isChargeShooting = true; // チャージ撃ち中フラグを立てる
 				chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
@@ -519,13 +535,13 @@ void Player::WeaponAttack(int weaponIndex, GamepadButtonType buttonType) {
 				weapon->Attack();
 			}
 		}
-	} else if (Input::GetInstance()->ReleaseButton(0, buttonType)) {
+	} else if (inputProvider_->ReleaseAttackInput(actionInput) == true) {
 		// LBボタンが離された場合
 
 		if (weapon->IsCharging()) {
 			// チャージ中の場合はチャージ攻撃を終了
 			weapon->ChargeAttack();
-			if (weapon->IsStopShootOnly()) {
+			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
 				behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 			} else {

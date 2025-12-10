@@ -6,7 +6,7 @@
 #include "engine/audio/Audio.h"
 #include "engine/camera/Camera.h"
 #include "engine/camera/CameraManager.h"
-#include "engine/io/Input.h"
+#include "engine/Input/Input.h"
 #include "engine/base/ModelManager.h"
 #include "engine/2d/Sprite.h"
 #include "engine/2d/SpriteCommon.h"

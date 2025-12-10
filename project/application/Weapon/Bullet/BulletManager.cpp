@@ -65,21 +65,26 @@ void BulletManager::DrawCollider() {
 void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,const Vector3& targetVel,const float& speed,float power,CharacterType type) {
 
 	Bullet* bullet = bulletPool_->GetBullet();
-	//bullet->Initialize(object3dCommon_, bulletFilePath_);
 	bullet->Create(weaponPos, targetPos,targetVel,speed,power,type);
+}
+
+void BulletManager::ShootBullet(const Vector3& weaponPos, const Vector3& direction, const float& speed, float power, CharacterType type) {
+
+	Bullet* bullet = bulletPool_->GetBullet();
+	bullet->Create(weaponPos, direction, speed, power, type);
 }
 
 //========================================================================================================
 // ミサイルの発射処理
 //========================================================================================================
-void BulletManager::ShootMissile(BaseWeapon* ownerWeapon, float speed,float homingRate,float power, CharacterType type) {
+void BulletManager::ShootMissile(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo, float speed,float power, CharacterType type) {
 
 	VerticalMissile* missile = missilePool_->GetMissile();
 	if (missile == nullptr) {
 		return; // ミサイルが取得できなかった場合は何もしない
 	}
 	missile->Initialize(object3dCommon_, missileFilePath_);
-	missile->Create(ownerWeapon, speed,homingRate,power, type);
+	missile->Create(ownerWeapon,vmInfo, speed,power, type);
 }
 
 //========================================================================================================

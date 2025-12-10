@@ -4,10 +4,11 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
+using namespace TakeC;
 //=============================================================================
 // 初期化
 //=============================================================================
-void Dissolve::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
+void Dissolve::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
 	//PostEffectの初期化
@@ -19,17 +20,16 @@ void Dissolve::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 	outputResource_->SetName(L"Dissolve::outputResource_");
 
 	//dissolveInfoResource生成
-	dissolveInfoResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DissolveInfo));
+	dissolveInfoResource_ = TakeC::DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(DissolveInfo));
 	dissolveInfoResource_->SetName(L"Dissolve::dissolveInfoResource_");
 	dissolveInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&dissolveInfoData_));
 
 	//dissolveInfo初期化
 	dissolveInfoData_->threshold = 0.5f;
 	dissolveInfoData_->isDissolve = false;
-
 	//maskTexture読み込み
 	maskTextureFilePath_ = "cloudNoise.png";
-	TextureManager::GetInstance()->LoadTexture(maskTextureFilePath_,false);
+	TextureManager::GetInstance().LoadTexture(maskTextureFilePath_,false);
 }
 
 //=============================================================================
@@ -59,7 +59,7 @@ void Dissolve::UpdateImGui() {
 void Dissolve::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		outputResource_.Get());
@@ -73,7 +73,7 @@ void Dissolve::Dispatch() {
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gOutputTexture"), outputTexUavIndex_);
 	//maskTexture
 	srvManager_->SetComputeRootDescriptorTable(
-		computePSO_->GetComputeBindResourceIndex("gMaskTexture"),TextureManager::GetInstance()->GetSrvIndex(maskTextureFilePath_));
+		computePSO_->GetComputeBindResourceIndex("gMaskTexture"),TextureManager::GetInstance().GetSrvIndex(maskTextureFilePath_));
 	//dissolveInfo
 	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(
 		computePSO_->GetComputeBindResourceIndex("gDissolveInfo"), dissolveInfoResource_->GetGPUVirtualAddress());
@@ -81,7 +81,7 @@ void Dissolve::Dispatch() {
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 2, WinApp::kScreenHeight / 2, 1);
 
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());

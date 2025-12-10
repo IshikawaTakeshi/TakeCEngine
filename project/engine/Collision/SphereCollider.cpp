@@ -12,7 +12,7 @@
 // 初期化
 //=============================================================================
 
-void SphereCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject) {
+void SphereCollider::Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collisionObject) {
 
 	dxCommon_ = dxCommon;
 
@@ -35,7 +35,7 @@ void SphereCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObje
 	);
 
 	//カメラのセット
-	camera_ = CameraManager::GetInstance()->GetActiveCamera();
+	camera_ = TakeC::CameraManager::GetInstance().GetActiveCamera();
 }
 
 //=============================================================================

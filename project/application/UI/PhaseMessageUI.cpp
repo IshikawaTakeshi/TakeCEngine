@@ -11,18 +11,18 @@
 void PhaseMessageUI::Initialize() {
 
 	screenCenter_ = {
-		WinApp::kDebugScreenWidth_ / 2.0f,
-		WinApp::kDebugScreenHeight_ / 2.0f
+		TakeC::WinApp::kDebugScreenWidth_ / 2.0f,
+		TakeC::WinApp::kDebugScreenHeight_ / 2.0f
 	};
 
-	TextureManager::GetInstance()->LoadTexture("UI/PhaseMessage_ReadyText.png",false);
-	TextureManager::GetInstance()->LoadTexture("UI/PhaseMessage_FightText.png",false);
-	TextureManager::GetInstance()->LoadTexture("UI/GameClearText.png", false);
-	TextureManager::GetInstance()->LoadTexture("UI/GameOverText.png", false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/PhaseMessage_ReadyText.png",false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/PhaseMessage_FightText.png",false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/GameClearText.png", false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/GameOverText.png", false);
 
 	// フェーズメッセージスプライトの生成
 	phaseMessageText_ = std::make_unique<Sprite>();
-	phaseMessageText_->Initialize(SpriteCommon::GetInstance(), "UI/PhaseMessage_ReadyText.png");
+	phaseMessageText_->Initialize(&SpriteCommon::GetInstance(), "UI/PhaseMessage_ReadyText.png");
 	phaseMessageText_->AdjustTextureSize();
 	phaseMessageText_->SetAnchorPoint({ 0.5f,0.5f });
 	phaseMessageText_->SetTranslate(screenCenter_);
@@ -33,7 +33,7 @@ void PhaseMessageUI::Initialize() {
 
 	// 帯スプライトの生成
 	bandSprite_ = std::make_unique<Sprite>();
-	bandSprite_->Initialize(SpriteCommon::GetInstance(),"UI/PhaseMessageBand.png");
+	bandSprite_->Initialize(&SpriteCommon::GetInstance(),"UI/PhaseMessageBand.png");
 	bandSprite_->AdjustTextureSize();
 	bandSprite_->SetAnchorPoint({ 0.5f,0.5f });
 	bandSprite_->SetTranslate(screenCenter_);

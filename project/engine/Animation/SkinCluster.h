@@ -50,7 +50,7 @@ struct SkinCluster {
 	/// <summary>
 	/// SkinCluster生成
 	/// </summary>
-	void Create(const ComPtr<ID3D12Device>& device,SrvManager* srvManager,
+	void Create(const ComPtr<ID3D12Device>& device,TakeC::SrvManager* srvManager,
 				Skeleton* skeleton,const ModelData* modelData);
 
 	/// <summary>

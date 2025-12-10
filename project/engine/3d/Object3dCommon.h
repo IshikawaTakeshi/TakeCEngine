@@ -12,8 +12,11 @@
 
 //前方宣言
 class Camera;
-class DirectXCommon;
-class LightManager;
+namespace TakeC {
+	class DirectXCommon;
+	class LightManager;
+}
+
 
 //============================================================================
 // Object3dCommon class
@@ -38,12 +41,12 @@ public:
 	/// インスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static Object3dCommon* GetInstance();
+	static Object3dCommon& GetInstance();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* directXCommon,LightManager* lightManager);
+	void Initialize(TakeC::DirectXCommon* directXCommon,TakeC::LightManager* lightManager);
 
 	/// <summary>
 	/// ImGuiの更新
@@ -78,7 +81,7 @@ public:
 	//----- getter ---------------------------
 
 	/// DirectXCommonの取得
-	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
+	TakeC::DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
 	/// 平行光源データの取得
 	Camera* GetDefaultCamera() const { return defaultCamera_; }
 	/// PSOの取得
@@ -99,13 +102,10 @@ private:
 
 private:
 
-	//インスタンス
-	static Object3dCommon* instance_;
-
 	//DirectXCommon
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 	//LightManager
-	LightManager* lightManager_ = nullptr;
+	TakeC::LightManager* lightManager_ = nullptr;
 
 
 	std::unique_ptr<DirectionalLightData> directionalLightData_ = nullptr;

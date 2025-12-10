@@ -8,93 +8,95 @@
 #include "Camera.h"
 
 //前方宣言
-class DirectXCommon;
 class Camera;
+
 
 //============================================================================
 // CameraManager class
 //============================================================================
-class CameraManager {
-private:
+namespace TakeC {
 
-	//コピーコンストラクタ・代入演算子禁止
-	CameraManager() = default;
-	~CameraManager() = default;
-	CameraManager(const CameraManager&) = delete;
-	CameraManager& operator=(const CameraManager&) = delete;
+	class DirectXCommon;
 
-public:
-	
-	//=============================================================================
-	// functions
-	//=============================================================================
+	class CameraManager {
+	private:
 
-	/// <summary>
-	/// インスタンスの取得
-	/// </summary>
-	static CameraManager* GetInstance();
+		//コピーコンストラクタ・代入演算子禁止
+		CameraManager() = default;
+		~CameraManager() = default;
+		CameraManager(const CameraManager&) = delete;
+		CameraManager& operator=(const CameraManager&) = delete;
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	/// <param name="dxCommon"></param>
-	void Initialize(DirectXCommon* dxCommon);
+	public:
 
-	/// <summary>
-	/// 更新処理
-	/// </summary>
-	void Update();
+		//=============================================================================
+		// functions
+		//=============================================================================
 
-	/// <summary>
-	/// ImGui更新処理
-	/// </summary>
-	void UpdateImGui();
+		/// <summary>
+		/// インスタンスの取得
+		/// </summary>
+		static CameraManager& GetInstance();
 
-	/// <summary>
-	/// 終了・開放処理
-	/// </summary>
-	void Finalize();
+		/// <summary>
+		/// 初期化
+		/// </summary>
+		/// <param name="dxCommon"></param>
+		void Initialize(TakeC::DirectXCommon* dxCommon);
 
-	/// <summary>
-	/// カメラの追加
-	/// </summary>
-	/// <param name="name"></param>
-	/// <param name="camera"></param>
-	void AddCamera(std::string name, const Camera& camera);
+		/// <summary>
+		/// 更新処理
+		/// </summary>
+		void Update();
 
-	/// <summary>
-	/// カメラのリセット
-	/// </summary>
-	void ResetCameras();
+		/// <summary>
+		/// ImGui更新処理
+		/// </summary>
+		void UpdateImGui();
 
-public:
+		/// <summary>
+		/// 終了・開放処理
+		/// </summary>
+		void Finalize();
 
-	//=============================================================================
-	// accessors
-	//=============================================================================
+		/// <summary>
+		/// カメラの追加
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="camera"></param>
+		void AddCamera(std::string name, const Camera& camera);
 
-	//----- getter ----------------
+		/// <summary>
+		/// カメラのリセット
+		/// </summary>
+		void ResetCameras();
 
-	/// アクティブなカメラの取得
-	Camera* GetActiveCamera();
-	/// カメラの数の取得
-	int GetCameraCount() const;
-	/// DirectXCommonの取得
-	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
+	public:
 
-	//----- setter ----------------
+		//=============================================================================
+		// accessors
+		//=============================================================================
 
-	/// アクティブなカメラの設定
-	void SetActiveCamera(std::string name);
+		//----- getter ----------------
 
-private:
+		/// アクティブなカメラの取得
+		Camera* GetActiveCamera();
+		/// カメラの数の取得
+		int GetCameraCount() const;
+		/// DirectXCommonの取得
+		TakeC::DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
 
-	//DirectXCommon
-	DirectXCommon* dxCommon_ = nullptr;
+		//----- setter ----------------
 
-	//シングルトンインスタンス
-	static CameraManager* instance_;
-	//登録したカメラのマップ
-	std::unordered_map<std::string, std::unique_ptr<Camera>> cameras_;
-	Camera* activeCamera_;  // 現在アクティブなカメラ
-};
+		/// アクティブなカメラの設定
+		void SetActiveCamera(std::string name);
+
+	private:
+
+		//DirectXCommon
+		TakeC::DirectXCommon* dxCommon_ = nullptr;
+		//登録したカメラのマップ
+		std::unordered_map<std::string, std::unique_ptr<Camera>> cameras_;
+		Camera* activeCamera_;  // 現在アクティブなカメラ
+	};
+}

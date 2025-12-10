@@ -1,5 +1,5 @@
 #include "BehaviorFloating.h"
-#include "engine/io/Input.h"
+#include "engine/Input/Input.h"
 #include "engine/math/Vector3Math.h"
 #include "application/Provider/BaseInputProvider.h"
 #include "engine/base/TakeCFrameWork.h"
@@ -62,7 +62,7 @@ void BehaviorFloating::Update(PlayableCharacterInfo& characterInfo) {
 	}
 
 	//ジャンプボタンの追加入力でさらに上昇
-	if(inputProvider_->IsJumpRequested()) {
+	if(inputProvider_->RequestJumpInput()) {
 
 		if( characterInfo.overHeatInfo.isOverheated) {
 			// オーバーヒート中はジャンプできない

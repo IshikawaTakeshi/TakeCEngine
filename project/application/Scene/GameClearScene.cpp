@@ -14,22 +14,22 @@ void GameClearScene::Initialize() {
 	isSoundPlay = false;
 	// GameCamera
 	gameClearCamera_ = std::make_unique<Camera>();
-	gameClearCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
+	gameClearCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	gameClearCamera_->SetTranslate({ 43.0f, 1.5f, -20.0f });
 	gameClearCamera_->SetRotate({ -0.03f, -0.5f, -0.02f,0.85f });
-	CameraManager::GetInstance()->AddCamera("GameOverCamera", *gameClearCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("GameOverCamera", *gameClearCamera_);
 	// デフォルトカメラの設定
-	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
-	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
+	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
+	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 
 	//SkyBox
 	skybox_ = std::make_unique<SkyBox>();
-	skybox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
+	skybox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(), "skyBox_blueSky.dds");
 	skybox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//whiteOutSprite
 	clearTextSprite_ = std::make_unique<Sprite>();
-	clearTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/GameClearText.png");
+	clearTextSprite_->Initialize(&SpriteCommon::GetInstance(), "UI/GameClearText.png");
 	clearTextSprite_->LoadConfig("GameClearText.json");
 
 }
@@ -39,9 +39,9 @@ void GameClearScene::Initialize() {
 //====================================================================
 void GameClearScene::Finalize() {
 	// サウンドデータの解放
-	AudioManager::GetInstance()->SoundUnload(&gameClearBGM);
+	AudioManager::GetInstance().SoundUnload(&gameClearBGM);
 	// カメラの解放
-	CameraManager::GetInstance()->ResetCameras();
+	TakeC::CameraManager::GetInstance().ResetCameras();
 }
 
 //====================================================================
@@ -55,7 +55,7 @@ void GameClearScene::Update() {
 		isSoundPlay = true;
 	}
 	// カメラの更新
-	CameraManager::GetInstance()->Update();
+	TakeC::CameraManager::GetInstance().Update();
 	// 天球の更新
 	skybox_->Update();
 
@@ -64,9 +64,9 @@ void GameClearScene::Update() {
 	TakeCFrameWork::GetParticleManager()->Update();
 
 		// シーン遷移
-		if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::A)) {
+		if (TakeC::Input::GetInstance().TriggerButton(0, GamepadButtonType::A)) {
 
-			SceneManager::GetInstance()->ChangeScene("TITLE", 1.0f);
+			SceneManager::GetInstance().ChangeScene("TITLE", 1.0f);
 		}
 }
 
@@ -74,8 +74,8 @@ void GameClearScene::Update() {
 //			ImGui更新処理
 //====================================================================
 void GameClearScene::UpdateImGui() {
-	CameraManager::GetInstance()->UpdateImGui();
-	Object3dCommon::GetInstance()->UpdateImGui();
+	TakeC::CameraManager::GetInstance().UpdateImGui();
+	Object3dCommon::GetInstance().UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 	clearTextSprite_->UpdateImGui("ClearText");
 }
@@ -88,7 +88,7 @@ void GameClearScene::Draw() {
 	skybox_->Draw(); // 天球の描画
 
 	
-	Object3dCommon::GetInstance()->PreDraw();   //Object3dの描画前処理
+	Object3dCommon::GetInstance().PreDraw();   //Object3dの描画前処理
 
 	TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
@@ -100,6 +100,6 @@ void GameClearScene::Draw() {
 
 void GameClearScene::DrawSprite() {
 
-	SpriteCommon::GetInstance()->PreDraw(); // Spriteの描画前処理
+	SpriteCommon::GetInstance().PreDraw(); // Spriteの描画前処理
 	clearTextSprite_->Draw();
 }

@@ -9,7 +9,7 @@ void BulletPool::Initialize(size_t size) {
 
 	for (int i = 0; i < size; i++) {
 		pool_.emplace_back(std::make_unique<Bullet>());
-		pool_[i]->Initialize(Object3dCommon::GetInstance(), "Bullet.gltf");
+		pool_[i]->Initialize(&Object3dCommon::GetInstance(), "Bullet.gltf");
 	}
 }
 

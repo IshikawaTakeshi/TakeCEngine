@@ -1,16 +1,18 @@
 #include "TakeCFrameWork.h"
 #include <cassert>
 
+using namespace TakeC;
+
 //Clockの宣言
 using Clock = std::chrono::high_resolution_clock;
 
-std::unique_ptr<Animator> TakeCFrameWork::animator_ = nullptr;
-std::unique_ptr<JsonLoader> TakeCFrameWork::jsonLoader_ = nullptr;
-std::unique_ptr<LightManager> TakeCFrameWork::lightManager_ = nullptr;
-std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
-std::unique_ptr<PrimitiveDrawer> TakeCFrameWork::primitiveDrawer_ = nullptr;
-std::unique_ptr<PostEffectManager> TakeCFrameWork::postEffectManager_= nullptr;
-std::unique_ptr<WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
+std::unique_ptr<TakeC::AnimationManager> TakeCFrameWork::animationManager_ = nullptr;
+std::unique_ptr<TakeC::JsonLoader> TakeCFrameWork::jsonLoader_ = nullptr;
+std::unique_ptr<TakeC::LightManager> TakeCFrameWork::lightManager_ = nullptr;
+std::unique_ptr<TakeC::ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
+std::unique_ptr<TakeC::PrimitiveDrawer> TakeCFrameWork::primitiveDrawer_ = nullptr;
+std::unique_ptr<TakeC::PostEffectManager> TakeCFrameWork::postEffectManager_= nullptr;
+std::unique_ptr<TakeC::WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
 std::chrono::steady_clock::time_point TakeCFrameWork::gameTime_ = Clock::now();
 float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
 
@@ -21,58 +23,58 @@ float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデルタ�
 void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//タイトルバーの名前の入力
-	winApp_ = std::make_unique<WinApp>();
+	winApp_ = std::make_unique<TakeC::WinApp>();
 	winApp_->Initialize(titleName.c_str());
 
 	////DirectX初期化
-	directXCommon_ = std::make_unique<DirectXCommon>();
+	directXCommon_ = std::make_unique<TakeC::DirectXCommon>();
 	directXCommon_->Initialize(winApp_.get());
 	//SrvManager
-	srvManager_ = std::make_unique<SrvManager>();
+	srvManager_ = std::make_unique<TakeC::SrvManager>();
 	srvManager_->Initialize(directXCommon_.get());
 
 	//ResourceBarrier
-	ResourceBarrier::GetInstance()->Initialize(directXCommon_.get());
+	ResourceBarrier::GetInstance().Initialize(directXCommon_.get());
 
 	
 	//入力初期化
-	input_ = Input::GetInstance();
+	input_ = &Input::GetInstance();
 	input_->Initialize(winApp_.get());
 
 	//Audio
-	audio_ = AudioManager::GetInstance();
+	audio_ = &AudioManager::GetInstance();
 	audio_->Initialize();
 
 	//JsonLoader
 	jsonLoader_ = std::make_unique<JsonLoader>();
 
 	//lightManager
-	lightManager_ = std::make_unique<LightManager>();
+	lightManager_ = std::make_unique<TakeC::LightManager>();
 	lightManager_->Initialize(directXCommon_.get(), srvManager_.get());
 
 	//SpriteCommon
-	spriteCommon_ = SpriteCommon::GetInstance();
+	spriteCommon_ = &SpriteCommon::GetInstance();
 	spriteCommon_->Initialize(directXCommon_.get());
 
 	//Object3dCommon
-	object3dCommon_ = Object3dCommon::GetInstance();
+	object3dCommon_ = &Object3dCommon::GetInstance();
 	object3dCommon_->Initialize(directXCommon_.get(),lightManager_.get());
 
 	//ParticleCommon
-	particleCommon_ = ParticleCommon::GetInstance();
+	particleCommon_ = &ParticleCommon::GetInstance();
 	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get(),lightManager_.get());
 
-	//Animator
-	animator_ = std::make_unique<Animator>();
+	//AnimationManager
+	animationManager_ = std::make_unique<AnimationManager>();
 
 	//CameraManager
-	CameraManager::GetInstance()->Initialize(directXCommon_.get());
+	TakeC::CameraManager::GetInstance().Initialize(directXCommon_.get());
 
 	//ModelManager
-	ModelManager::GetInstance()->Initialize(directXCommon_.get(), srvManager_.get());
+	TakeC::ModelManager::GetInstance().Initialize(directXCommon_.get(), srvManager_.get());
 
 	//TextureManager
-	TextureManager::GetInstance()->Initialize(directXCommon_.get(), srvManager_.get());
+	TakeC::TextureManager::GetInstance().Initialize(directXCommon_.get(), srvManager_.get());
 
 	//ParticleManager
 	particleManager_ = std::make_unique<ParticleManager>();
@@ -101,7 +103,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 #endif
 
 	//sceneManager
-	sceneManager_ = SceneManager::GetInstance();
+	sceneManager_ = &SceneManager::GetInstance();
 
 	//sceneTransition
 	sceneTransition_ = SceneTransition::GetInstance();
@@ -119,11 +121,10 @@ void TakeCFrameWork::Finalize() {
 #endif
 
 	wireFrame_->Finalize();
-	animator_->Finalize();
-	TextureManager::GetInstance()->Finalize();
-	ModelManager::GetInstance()->Finalize();
-	CameraManager::GetInstance()->Finalize();
-	ResourceBarrier::GetInstance()->Finalize();
+	animationManager_->Finalize();
+	TakeC::TextureManager::GetInstance().Finalize();
+	TakeC::ModelManager::GetInstance().Finalize();
+	CameraManager::GetInstance().Finalize();
 	postEffectManager_->Finalize();
 	renderTexture_.reset();
 	particleManager_->Finalize();
@@ -168,7 +169,7 @@ void TakeCFrameWork::Update() {
 	ImGui::Begin("FrameWork");
 	directXCommon_->DrawFPS();
 	ImGui::Text("DeltaTime: %.4f", kDeltaTime);
-	ImGui::Text("TimeScale: %.2f", timeScale_);
+	ImGui::DragFloat("TimeScale", &timeScale_, 0.01f, 0.0f, 5.0f);
 	ImGui::End();
 #endif
 	
@@ -211,57 +212,8 @@ void TakeCFrameWork::Run(const std::wstring& titleName) {
 }
 
 //====================================================================
-//			パーティクルマネージャの取得
+//			ゲーム起動時間の取得
 //====================================================================
-
-ParticleManager* TakeCFrameWork::GetParticleManager() {
-	assert(particleManager_ != nullptr);
-	return particleManager_.get();
-}
-
-//====================================================================
-//			アニメーターの取得
-//====================================================================
-
-Animator* TakeCFrameWork::GetAnimator() {
-	assert(animator_ != nullptr);
-	return animator_.get();
-}
-//====================================================================
-//			JSONローダーの取得
-//====================================================================
-JsonLoader* TakeCFrameWork::GetJsonLoader() {
-	assert(jsonLoader_ != nullptr);
-	return jsonLoader_.get();
-}
-
-PrimitiveDrawer* TakeCFrameWork::GetPrimitiveDrawer() {
-	assert(primitiveDrawer_ != nullptr);
-	return primitiveDrawer_.get();
-}
-
-//====================================================================
-//			ポストエフェクトマネージャーの取得
-//====================================================================
-PostEffectManager* TakeCFrameWork::GetPostEffectManager() {
-	assert(postEffectManager_ != nullptr);
-	return postEffectManager_.get();
-}
-
-//====================================================================
-//			ワイヤーフレーム管理クラスの取得
-//====================================================================
-
-WireFrame* TakeCFrameWork::GetWireFrame() {
-	assert(wireFrame_ != nullptr);
-	return wireFrame_.get();
-}
-
-LightManager* TakeCFrameWork::GetLightManager() {
-	assert(lightManager_ != nullptr);
-	return lightManager_.get();
-}
-
 float TakeCFrameWork::GetGameTime() {
 	
 	//現在の時間を取得
@@ -272,4 +224,67 @@ float TakeCFrameWork::GetGameTime() {
 
 	//秒に変換
 	return duration / 1000.0f;
+}
+
+//====================================================================
+//			ParticleManagerの取得
+//====================================================================
+
+TakeC::ParticleManager* TakeCFrameWork::GetParticleManager() {
+	assert(particleManager_ && "ParticleManagerが生成されていません");
+	return particleManager_.get();
+}
+
+//====================================================================
+//			AnimationManagerの取得
+//====================================================================
+
+TakeC::AnimationManager* TakeCFrameWork::GetAnimationManager() {
+	assert(animationManager_ && "AnimationManagerが生成されていません");
+	return animationManager_.get();
+}
+
+//====================================================================
+//			JsonLoaderの取得
+//====================================================================
+
+TakeC::JsonLoader* TakeCFrameWork::GetJsonLoader() {
+	assert(jsonLoader_ && "JsonLoaderが生成されていません");
+	return jsonLoader_.get();
+}
+
+//====================================================================
+//			PrimitiveDrawerの取得
+//====================================================================
+
+TakeC::PrimitiveDrawer* TakeCFrameWork::GetPrimitiveDrawer() {
+	assert(primitiveDrawer_ && "PrimitiveDrawerが生成されていません");
+	return primitiveDrawer_.get();
+}
+
+//====================================================================
+//			PostEffectManagerの取得
+//====================================================================
+
+TakeC::PostEffectManager* TakeCFrameWork::GetPostEffectManager() {
+	assert(postEffectManager_ && "PostEffectManagerが生成されていません");
+	return postEffectManager_.get();
+}
+
+//====================================================================
+//			WireFrameの取得
+//====================================================================
+
+TakeC::WireFrame* TakeCFrameWork::GetWireFrame() {
+	assert(wireFrame_ && "WireFrameが生成されていません");
+	return wireFrame_.get();
+}
+
+//====================================================================
+//			LightManagerの取得
+//====================================================================
+
+TakeC::LightManager* TakeCFrameWork::GetLightManager() {
+	assert(lightManager_ && "LightManagerが生成されていません");
+	return lightManager_.get();
 }

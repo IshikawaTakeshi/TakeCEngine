@@ -51,6 +51,8 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 void Bullet::Update() {
 
+	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+
 	if (isActive_ == false) {
 		pointLightData_.enabled_ = 0;
 		return;
@@ -164,6 +166,7 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos,const Vec
 	//ターゲットまでの方向を求める
 	float distance = Vector3Math::Length(targetPos_ - transform_.translate);
 	float travelTime = distance / speed_;
+	//予測位置を計算
 	Vector3 predictedTargetPos = targetPos_ + targetVel * travelTime;
 	direction_ = Vector3Math::Normalize(predictedTargetPos - transform_.translate);
 	//ターゲットの方向にモデルを向ける
@@ -173,6 +176,23 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos,const Vec
 	lifeTime_ = 2.0f; // 弾のライフタイムを設定
 	pointLightData_.enabled_ = 1;
 
+	//速度の設定
+	velocity_ = direction_ * speed_;
+	isActive_ = true;
+}
+
+void Bullet::Create(const Vector3& weaponPos, const Vector3& direction, float speed, float damage, CharacterType type) {
+
+	transform_.translate = weaponPos;
+	characterType_ = type;
+	damage_ = damage;
+	speed_ = speed;
+	direction_ = Vector3Math::Normalize(direction);
+	//ターゲットの方向にモデルを向ける
+	float angle = std::atan2(direction_.x, direction_.z);
+	transform_.rotate.y = angle;
+	lifeTime_ = 2.0f; // 弾のライフタイムを設定
+	pointLightData_.enabled_ = 1;
 	//速度の設定
 	velocity_ = direction_ * speed_;
 	isActive_ = true;

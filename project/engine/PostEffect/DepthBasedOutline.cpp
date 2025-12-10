@@ -4,10 +4,12 @@
 #include "engine/camera/CameraManager.h"
 #include <cassert>
 
+using namespace TakeC;
+
 //=============================================================================
 // 初期化
 //=============================================================================
-void DepthBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,
+void DepthBasedOutline::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager,
 	const std::wstring& CSFilePath, ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx, outputResource);
@@ -67,14 +69,14 @@ void DepthBasedOutline::Dispatch() {
 
 	//outputTexure
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		outputResource_.Get());
 
 	//depthTexture
 	//DEPTH_WRITE >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		dxCommon_->GetDepthStencilResource().Get());
@@ -95,21 +97,21 @@ void DepthBasedOutline::Dispatch() {
 	//cameraInfo
 	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(
 		computePSO_->GetComputeBindResourceIndex("gCameraInfo"),
-		CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
+		CameraManager::GetInstance().GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
 
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 8, WinApp::kScreenHeight / 8, 1);
 
 	//depthTexture
 	//NON_PIXEL_SHADER_RESOURCE >> DEPTH_WRITE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		dxCommon_->GetDepthStencilResource().Get());
 
 	//outputTexure
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());

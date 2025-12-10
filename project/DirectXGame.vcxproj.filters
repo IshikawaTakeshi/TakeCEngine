@@ -88,13 +88,14 @@
     <FxCompile Include="Resources\shaders\PostEffect\BloomBrightPass.CS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\BloomBlurHorizontal.CS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\BloomBlurVertical.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\ShadowMapEffect.CS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\Animation\Animator.cpp">
       <Filter>engine\animation</Filter>
     </ClCompile>
-    <ClCompile Include="engine\audio\Audio.cpp">
+    <ClCompile Include="engine\Audio\Audio.cpp">
       <Filter>engine\audio</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Particle\BaseParticleGroup.cpp">
@@ -121,10 +122,10 @@
     <ClCompile Include="application\Weapon\Bullet\BulletPool.cpp">
       <Filter>application\weapon\Bullet</Filter>
     </ClCompile>
-    <ClCompile Include="engine\camera\Camera.cpp">
+    <ClCompile Include="engine\Camera\Camera.cpp">
       <Filter>engine\camera</Filter>
     </ClCompile>
-    <ClCompile Include="engine\camera\CameraManager.cpp">
+    <ClCompile Include="engine\Camera\CameraManager.cpp">
       <Filter>engine\camera</Filter>
     </ClCompile>
     <ClCompile Include="engine\Collision\Collider.cpp">
@@ -133,19 +134,19 @@
     <ClCompile Include="engine\Collision\CollisionManager.cpp">
       <Filter>engine\collision</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\D3DResourceLeakChecker.cpp">
+    <ClCompile Include="engine\Base\D3DResourceLeakChecker.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon.cpp">
+    <ClCompile Include="engine\Base\DirectXCommon.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\DirectXShaderCompiler.cpp">
+    <ClCompile Include="engine\Base\DirectXShaderCompiler.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\PostEffect\Dissolve.cpp">
       <Filter>engine\postEffect</Filter>
     </ClCompile>
-    <ClCompile Include="engine\math\Easing.cpp">
+    <ClCompile Include="engine\Math\Easing.cpp">
       <Filter>engine\math</Filter>
     </ClCompile>
     <ClCompile Include="application\Entity\Enemy\Enemy.cpp">
@@ -160,7 +161,7 @@
     <ClCompile Include="application\Scene\GamePlayScene.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="engine\io\Gamepad.cpp">
+    <ClCompile Include="engine\Input\Gamepad.cpp">
       <Filter>engine\io</Filter>
     </ClCompile>
     <ClCompile Include="engine\PostEffect\GrayScale.cpp">
@@ -187,7 +188,7 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>externals\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="engine\io\Input.cpp">
+    <ClCompile Include="engine\Input\Input.cpp">
       <Filter>engine\io</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Particle\GPUParticle.cpp">
@@ -202,7 +203,7 @@
     <ClCompile Include="engine\Utility\JsonLoader.cpp">
       <Filter>engine\utility</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\ImGuiManager.cpp">
+    <ClCompile Include="engine\Base\ImGuiManager.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\Entity\LevelObject\LevelObject.cpp">
@@ -217,10 +218,10 @@
     <ClCompile Include="engine\3d\Material.cpp">
       <Filter>engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\math\Matrix4x4.cpp">
+    <ClCompile Include="engine\Math\Matrix4x4.cpp">
       <Filter>engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="engine\math\MatrixMath.cpp">
+    <ClCompile Include="engine\Math\MatrixMath.cpp">
       <Filter>engine\math</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Mesh\Mesh.cpp">
@@ -232,7 +233,7 @@
     <ClCompile Include="engine\3d\ModelCommon.cpp">
       <Filter>engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\ModelManager.cpp">
+    <ClCompile Include="engine\Base\ModelManager.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Particle\Particle3d.cpp">
@@ -256,7 +257,7 @@
     <ClCompile Include="engine\3d\Particle\ParticleEmitterAllocater.cpp">
       <Filter>engine\3d\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\Particle\ParticleManager.cpp">
+    <ClCompile Include="engine\Base\Particle\ParticleManager.cpp">
       <Filter>engine\3d\Particle</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Object3d.cpp">
@@ -265,7 +266,7 @@
     <ClCompile Include="engine\3d\Object3dCommon.cpp">
       <Filter>engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\PipelineStateObject.cpp">
+    <ClCompile Include="engine\Base\PipelineStateObject.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\PostEffect\PostEffect.cpp">
@@ -307,7 +308,7 @@
     <ClCompile Include="application\Weapon\Rifle\Rifle.cpp">
       <Filter>application\weapon</Filter>
     </ClCompile>
-    <ClCompile Include="engine\math\Quaternion.cpp">
+    <ClCompile Include="engine\Math\Quaternion.cpp">
       <Filter>engine\math</Filter>
     </ClCompile>
     <ClCompile Include="engine\2d\Sprite.cpp">
@@ -325,16 +326,16 @@
     <ClCompile Include="engine\Animation\SkinCluster.cpp">
       <Filter>engine\animation</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\TakeCFrameWork.cpp">
+    <ClCompile Include="engine\Base\TakeCFrameWork.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\TextureManager.cpp">
+    <ClCompile Include="engine\Base\TextureManager.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\SrvManager.cpp">
+    <ClCompile Include="engine\Base\SrvManager.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\RtvManager.cpp">
+    <ClCompile Include="engine\Base\RtvManager.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
     <ClCompile Include="application\Scene\TitleScene.cpp">
@@ -346,10 +347,10 @@
     <ClCompile Include="engine\Utility\StringUtility.cpp">
       <Filter>engine\utility</Filter>
     </ClCompile>
-    <ClCompile Include="engine\math\Vector3.cpp">
+    <ClCompile Include="engine\Math\Vector3.cpp">
       <Filter>engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="engine\math\Vector3Math.cpp">
+    <ClCompile Include="engine\Math\Vector3Math.cpp">
       <Filter>engine\math</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Primitive\Ring.cpp">
@@ -361,14 +362,11 @@
     <ClCompile Include="engine\PostEffect\Vignette.cpp">
       <Filter>engine\postEffect</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\WinApp.cpp">
+    <ClCompile Include="engine\Base\WinApp.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\SkyBox\SkyBox.cpp">
       <Filter>engine\3d\SkyBox</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\3d\Primitive\Triangle.cpp">
-      <Filter>engine\3d\Primitive</Filter>
     </ClCompile>
     <ClCompile Include="application\Entity\Behavior\BaseBehavior.cpp">
       <Filter>application\Entity\Behavior</Filter>
@@ -430,7 +428,7 @@
     <ClCompile Include="application\Scene\SceneTransition.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="engine\math\Vector2.cpp">
+    <ClCompile Include="engine\Math\Vector2.cpp">
       <Filter>engine\math</Filter>
     </ClCompile>
     <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp">
@@ -516,7 +514,7 @@
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
     <ClCompile Include="engine\3d\Light\LightManager.cpp" />
     <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
-    <ClCompile Include="engine\math\Transform.cpp" />
+    <ClCompile Include="engine\Math\Transform.cpp" />
     <ClCompile Include="application\Scene\EnemySelectScene.cpp" />
     <ClCompile Include="application\Tool\CharacterEdit\CharacterEditTool.cpp" />
     <ClCompile Include="application\Weapon\WeaponData.cpp" />
@@ -525,25 +523,30 @@
     <ClCompile Include="engine\Animation\SpriteAnimation.cpp" />
     <ClCompile Include="application\Weapon\Action\BurstShotInfo.cpp" />
     <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
-    <ClCompile Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.cpp" />
-    <ClCompile Include="engine\math\MathEnv.cpp" />
-    <ClCompile Include="engine\camera\CameraForGPU.cpp" />
+    <ClCompile Include="engine\Math\MathEnv.cpp" />
+    <ClCompile Include="engine\Camera\CameraForGPU.cpp" />
     <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
     <ClCompile Include="engine\2d\SpriteConfig.cpp" />
     <ClCompile Include="engine\PostEffect\GlareEffect.cpp" />
+    <ClCompile Include="application\Provider\PlayerPadInput.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\VerticalMissileInfo.cpp" />
+    <ClCompile Include="application\Weapon\ShotGun\ShotGun.cpp" />
+    <ClCompile Include="application\Weapon\ShotGun\ShotGunInfo.cpp" />
+    <ClCompile Include="ShadowMapEffect.cpp" />
+    <ClCompile Include="LightCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="application\Scene\AbstractSceneFactory.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\AABB.h">
+    <ClInclude Include="engine\Math\AABB.h">
       <Filter>engine\math</Filter>
     </ClInclude>
     <ClInclude Include="engine\Animation\Animator.h">
       <Filter>engine\animation</Filter>
     </ClInclude>
-    <ClInclude Include="engine\audio\Audio.h">
+    <ClInclude Include="engine\Audio\Audio.h">
       <Filter>engine\audio</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Particle\BaseParticleGroup.h">
@@ -573,10 +576,10 @@
     <ClInclude Include="application\Weapon\Bullet\BulletPool.h">
       <Filter>application\weapon\Bullet</Filter>
     </ClInclude>
-    <ClInclude Include="engine\camera\Camera.h">
+    <ClInclude Include="engine\Camera\Camera.h">
       <Filter>engine\camera</Filter>
     </ClInclude>
-    <ClInclude Include="engine\camera\CameraManager.h">
+    <ClInclude Include="engine\Camera\CameraManager.h">
       <Filter>engine\camera</Filter>
     </ClInclude>
     <ClInclude Include="engine\Collision\Collider.h">
@@ -585,19 +588,19 @@
     <ClInclude Include="engine\Collision\CollisionManager.h">
       <Filter>engine\collision</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\D3DResourceLeakChecker.h">
+    <ClInclude Include="engine\Base\D3DResourceLeakChecker.h">
       <Filter>engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon.h">
+    <ClInclude Include="engine\Base\DirectXCommon.h">
       <Filter>engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\DirectXShaderCompiler.h">
+    <ClInclude Include="engine\Base\DirectXShaderCompiler.h">
       <Filter>engine\base</Filter>
     </ClInclude>
     <ClInclude Include="engine\PostEffect\Dissolve.h">
       <Filter>engine\postEffect</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\Easing.h">
+    <ClInclude Include="engine\Math\Easing.h">
       <Filter>engine\math</Filter>
     </ClInclude>
     <ClInclude Include="application\Entity\Enemy\Enemy.h">
@@ -615,7 +618,7 @@
     <ClInclude Include="application\Scene\GamePlayScene.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="engine\io\Gamepad.h">
+    <ClInclude Include="engine\Input\Gamepad.h">
       <Filter>engine\io</Filter>
     </ClInclude>
     <ClInclude Include="engine\PostEffect\GrayScale.h">
@@ -645,7 +648,7 @@
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>externals\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="engine\io\Input.h">
+    <ClInclude Include="engine\Input\Input.h">
       <Filter>engine\io</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Particle\GPUParticle.h">
@@ -660,7 +663,7 @@
     <ClInclude Include="engine\Utility\JsonLoader.h">
       <Filter>engine\utility</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\ImGuiManager.h">
+    <ClInclude Include="engine\Base\ImGuiManager.h">
       <Filter>engine\base</Filter>
     </ClInclude>
     <ClInclude Include="application\Scene\LevelData.h">
@@ -672,7 +675,7 @@
     <ClInclude Include="engine\Animation\Keyflame.h">
       <Filter>engine\animation</Filter>
     </ClInclude>
-    <ClInclude Include="engine\io\InputData.h">
+    <ClInclude Include="engine\Input\InputData.h">
       <Filter>engine\io</Filter>
     </ClInclude>
     <ClInclude Include="engine\Utility\Logger.h">
@@ -684,13 +687,13 @@
     <ClInclude Include="engine\3d\Material.h">
       <Filter>engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\Matrix3x3.h">
+    <ClInclude Include="engine\Math\Matrix3x3.h">
       <Filter>engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\Matrix4x4.h">
+    <ClInclude Include="engine\Math\Matrix4x4.h">
       <Filter>engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\MatrixMath.h">
+    <ClInclude Include="engine\Math\MatrixMath.h">
       <Filter>engine\math</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Mesh\Mesh.h">
@@ -702,7 +705,7 @@
     <ClInclude Include="engine\3d\ModelCommon.h">
       <Filter>engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\ModelManager.h">
+    <ClInclude Include="engine\Base\ModelManager.h">
       <Filter>engine\base</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Particle\Particle3d.h">
@@ -723,7 +726,7 @@
     <ClInclude Include="engine\3d\Particle\ParticleEmitterAllocater.h">
       <Filter>engine\3d\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\Particle\ParticleManager.h">
+    <ClInclude Include="engine\Base\Particle\ParticleManager.h">
       <Filter>engine\3d\Particle</Filter>
     </ClInclude>
     <ClInclude Include="engine\Animation\NodeAnimation.h">
@@ -738,10 +741,10 @@
     <ClInclude Include="engine\3d\Particle\ParticleEmitter.h">
       <Filter>engine\3d\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\PipelineStateObject.h">
+    <ClInclude Include="engine\Base\PipelineStateObject.h">
       <Filter>engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\OBB.h">
+    <ClInclude Include="engine\Math\OBB.h">
       <Filter>engine\math</Filter>
     </ClInclude>
     <ClInclude Include="engine\PostEffect\PostEffect.h">
@@ -783,7 +786,7 @@
     <ClInclude Include="application\Weapon\Rifle\Rifle.h">
       <Filter>application\weapon</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\Quaternion.h">
+    <ClInclude Include="engine\Math\Quaternion.h">
       <Filter>engine\math</Filter>
     </ClInclude>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -801,19 +804,19 @@
     <ClInclude Include="engine\Animation\SkinCluster.h">
       <Filter>engine\animation</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\TextureManager.h">
+    <ClInclude Include="engine\Base\TextureManager.h">
       <Filter>engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\TakeCFrameWork.h">
+    <ClInclude Include="engine\Base\TakeCFrameWork.h">
       <Filter>engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\SrvManager.h">
+    <ClInclude Include="engine\Base\SrvManager.h">
       <Filter>engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\RtvManager.h">
+    <ClInclude Include="engine\Base\RtvManager.h">
       <Filter>engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\PSOType.h">
+    <ClInclude Include="engine\Base\PSOType.h">
       <Filter>engine\base</Filter>
     </ClInclude>
     <ClInclude Include="application\Scene\TitleScene.h">
@@ -825,22 +828,22 @@
     <ClInclude Include="engine\Utility\StringUtility.h">
       <Filter>engine\utility</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\Vector4.h">
+    <ClInclude Include="engine\Math\Vector4.h">
       <Filter>engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\Vector2.h">
+    <ClInclude Include="engine\Math\Vector2.h">
       <Filter>engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\Vector3.h">
+    <ClInclude Include="engine\Math\Vector3.h">
       <Filter>engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\Vector3Math.h">
+    <ClInclude Include="engine\Math\Vector3Math.h">
       <Filter>engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\TransformMatrix.h">
+    <ClInclude Include="engine\Math\TransformMatrix.h">
       <Filter>engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\Transform.h">
+    <ClInclude Include="engine\Math\Transform.h">
       <Filter>engine\math</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Primitive\Ring.h">
@@ -852,14 +855,11 @@
     <ClInclude Include="engine\PostEffect\Vignette.h">
       <Filter>engine\postEffect</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\WinApp.h">
+    <ClInclude Include="engine\Base\WinApp.h">
       <Filter>engine\base</Filter>
     </ClInclude>
     <ClInclude Include="engine\SkyBox\SkyBox.h">
       <Filter>engine\3d\SkyBox</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\3d\Primitive\Triangle.h">
-      <Filter>engine\3d\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\WeaponType.h">
       <Filter>application\weapon</Filter>
@@ -915,16 +915,16 @@
     <ClInclude Include="application\Entity\Enemy\BulletSensor.h">
       <Filter>application\Entity\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="engine\camera\CameraForGPU.h">
+    <ClInclude Include="engine\Camera\CameraForGPU.h">
       <Filter>engine\camera</Filter>
     </ClInclude>
     <ClInclude Include="engine\PostEffect\DepthBasedOutline.h">
       <Filter>engine\postEffect</Filter>
     </ClInclude>
-    <ClInclude Include="engine\io\IInputDevice.h">
+    <ClInclude Include="engine\Input\IInputDevice.h">
       <Filter>engine\io</Filter>
     </ClInclude>
-    <ClInclude Include="engine\io\InputMapper.h">
+    <ClInclude Include="engine\Input\InputMapper.h">
       <Filter>engine\io</Filter>
     </ClInclude>
     <ClInclude Include="application\Weapon\Bullet\MissilePool.h">
@@ -933,7 +933,7 @@
     <ClInclude Include="application\Entity\GameCharacterBehavior.h">
       <Filter>application\Entity\Behavior</Filter>
     </ClInclude>
-    <ClInclude Include="engine\camera\PerView.h">
+    <ClInclude Include="engine\Camera\PerView.h">
       <Filter>engine\camera</Filter>
     </ClInclude>
     <ClInclude Include="application\Provider\PlayerKeyInput.h">
@@ -942,7 +942,7 @@
     <ClInclude Include="application\UI\PlayerReticle.h">
       <Filter>application\UI</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\physics\Ray.h">
+    <ClInclude Include="engine\Math\physics\Ray.h">
       <Filter>engine\math\Physics</Filter>
     </ClInclude>
     <ClInclude Include="application\Entity\GameCharacterInfo.h">
@@ -1035,12 +1035,6 @@
     <ClInclude Include="application\Weapon\Bullet\MissilePool.h">
       <Filter>application\weapon\Bullet</Filter>
     </ClInclude>
-    <ClInclude Include="engine\io\InputMapper.h">
-      <Filter>engine\io</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\io\IInputDevice.h">
-      <Filter>engine\io</Filter>
-    </ClInclude>
     <ClInclude Include="application\Provider\PlayerInputProvider.h">
       <Filter>application\provider</Filter>
     </ClInclude>
@@ -1069,14 +1063,14 @@
       <Filter>engine\collision</Filter>
     </ClInclude>
     <ClInclude Include="engine\Utility\Timer.h" />
-    <ClInclude Include="engine\base\BlendModeStateEnum.h" />
+    <ClInclude Include="engine\Base\BlendModeStateEnum.h" />
     <ClInclude Include="application\Effect\DeadEffect.h" />
     <ClInclude Include="engine\3d\Light\DirectionalLight.h" />
     <ClInclude Include="engine\3d\Light\PointLight.h" />
     <ClInclude Include="engine\3d\Light\SpotLight.h" />
     <ClInclude Include="engine\3d\Light\LightCounter.h" />
     <ClInclude Include="engine\3d\Light\LightManager.h" />
-    <ClInclude Include="engine\base\ComPtrAliasTemplates.h" />
+    <ClInclude Include="engine\Base\ComPtrAliasTemplates.h" />
     <ClInclude Include="application\Scene\EnemySelectScene.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
     <ClInclude Include="application\Weapon\WeaponData.h" />
@@ -1091,24 +1085,30 @@
     <ClInclude Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditMenuEnum.h" />
     <ClInclude Include="application\Entity\Player\PlayerData.h" />
-    <ClInclude Include="engine\math\MathEnv.h" />
+    <ClInclude Include="engine\Math\MathEnv.h" />
     <ClInclude Include="engine\3d\Mesh\SubMesh.h" />
     <ClInclude Include="engine\3d\ModelData.h" />
-    <ClInclude Include="engine\base\PerFrame.h" />
+    <ClInclude Include="engine\Base\PerFrame.h" />
     <ClInclude Include="engine\3d\Particle\ParticleForGPU.h" />
     <ClInclude Include="engine\3d\VertexData.h" />
     <ClInclude Include="application\Weapon\MachineGun\MachineGun.h" />
     <ClInclude Include="engine\2d\SpriteConfig.h" />
     <ClInclude Include="engine\PostEffect\GlareEffect.h" />
+    <ClInclude Include="application\Provider\PlayerPadInput.h" />
+    <ClInclude Include="application\Weapon\Bullet\VerticalMissileInfo.h" />
+    <ClInclude Include="application\Weapon\ShotGun\ShotGun.h" />
+    <ClInclude Include="application\Weapon\ShotGun\ShotGunInfo.h" />
+    <ClInclude Include="ShadowMapEffect.h" />
+    <ClInclude Include="LightCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\images\gradationLine.png">
+    <Image Include="Resources\Images\gradationLine.png">
       <Filter>Resources\image</Filter>
     </Image>
-    <Image Include="Resources\images\simpleCircle.png">
+    <Image Include="Resources\Images\simpleCircle.png">
       <Filter>Resources\image</Filter>
     </Image>
     <Image Include="Resources\rick.png">

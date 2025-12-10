@@ -27,7 +27,7 @@ void ParticleEmitter::Initialize(const std::string& emitterName, EulerTransform 
 	
 }
 
-void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManager* srvManager) {
+void ParticleEmitter::InitializeEmitterSphere(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager) {
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
@@ -42,11 +42,11 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 
 	//EmitterSphereResource生成
 	emitterSphereResource_ = 
-		DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(EmitterSphereInfo));
+		TakeC::DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(EmitterSphereInfo));
 	emitterSphereResource_->SetName(L"EmitterSphereInfo::emitterSphereResource_");
 	//PerFrameResource生成
 	perFrameResource_ = 
-		DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(PerFrame));
+		TakeC::DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(PerFrame));
 	perFrameResource_->SetName(L"EmitterSphereInfo::perFrameResource_");
 
 	//Mapping

@@ -10,7 +10,10 @@
 #include <d3d12.h>
 #include <wrl.h>
 
-class DirectXCommon;
+//前方宣言
+namespace TakeC {
+	class DirectXCommon;
+}
 class Sphere {
 public:
 	Sphere() = default;
@@ -19,7 +22,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std::string& textureFilePath);
+	void Initialize(TakeC::DirectXCommon* dxCommon, Matrix4x4 cameraView, const std::string& textureFilePath);
 
 	/// <summary>
 	/// 更新処理
@@ -29,7 +32,7 @@ public:
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void Draw(DirectXCommon* dxCommon);
+	void Draw(TakeC::DirectXCommon* dxCommon);
 
 public: //ゲッター
 

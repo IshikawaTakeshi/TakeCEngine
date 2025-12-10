@@ -12,11 +12,13 @@
 #include "PostEffect/DepthBasedOutline.h"
 #include "PostEffect/Vignette.h"
 
+using namespace TakeC;
+
 //====================================================================
 //	初期化
 //====================================================================
 
-void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
+void PostEffectManager::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager) {
 
 	dxCommon_ = dxCommon; //DirectXCommonのセット
 	srvManager_ = srvManager; //SrvManagerのセット
@@ -59,7 +61,7 @@ void PostEffectManager::Finalize() {
 void PostEffectManager::AllDispatch() {
 
 	// RENDER_TARGET >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_RENDER_TARGET,         //stateBefore
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, //stateAfter
 		renderTextureResource_.Get());              //currentResource
@@ -69,7 +71,7 @@ void PostEffectManager::AllDispatch() {
 	}
 
 	//NON_PIXCEL_SHADER_RESOURCE >> RENDER_TARGET
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		renderTextureResource_.Get());

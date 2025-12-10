@@ -1,30 +1,20 @@
 #include "CameraManager.h"
+#include "engine/Base/ImGuiManager.h"
 
-#pragma region imgui
-#ifdef _DEBUG
-#include "externals/imgui/imgui.h"
-#include "externals/imgui/imgui_impl_dx12.h"
-#include "externals/imgui/imgui_impl_win32.h"
-#endif 
-#pragma endregion
-
-//シングルトンインスタンスの初期化
-CameraManager* CameraManager::instance_ = nullptr;
+using namespace TakeC;
 
 //============================================================================
 // インスタンスの取得
 //============================================================================
-CameraManager* CameraManager::GetInstance() {
-	if (instance_ == nullptr) {
-		instance_ = new CameraManager();
-	}
-	return instance_;
+CameraManager& CameraManager::GetInstance() {
+	static CameraManager instance;
+	return instance;
 }
 
 //============================================================================
 // 初期化
 //============================================================================
-void CameraManager::Initialize(DirectXCommon* dxCommon) {
+void CameraManager::Initialize(TakeC::DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 }
 
@@ -62,10 +52,7 @@ void CameraManager::UpdateImGui() {
 // 終了・開放処理
 //============================================================================
 void CameraManager::Finalize() {
-
 	cameras_.clear();
-	delete instance_;
-	instance_ = nullptr;
 }
 
 //============================================================================

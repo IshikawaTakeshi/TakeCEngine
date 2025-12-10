@@ -111,3 +111,15 @@ void BaseWeapon::SetEffectiveRange(float range) {
 	// 有効射程距離を設定
 	weaponData_.config.effectiveRange = range;
 }
+
+bool BaseWeapon::CanChargeAttack() const {
+	return weaponData_.config.canChargeAttack;
+}
+
+bool BaseWeapon::CanMoveShootable() const {
+	return weaponData_.config.canMoveShootable;
+}
+
+bool BaseWeapon::StopShootOnly() const {
+	return weaponData_.config.isStopShootOnly;
+}

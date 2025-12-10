@@ -32,4 +32,6 @@ namespace Vector3Math {
 
 	//正規化
 	Vector3 Normalize(const Vector3& v);
+
+	Vector3 ApplyYawPitch(const Vector3& baseDir, float yawDeg, float pitchDeg);
 };

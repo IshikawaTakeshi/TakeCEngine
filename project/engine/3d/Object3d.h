@@ -3,12 +3,12 @@
 #include <wrl.h>
 #include <memory>
 
-#include "camera/Camera.h"
-#include "3d/Model.h"
-#include "Animation/Animator.h"
-#include "Transform.h"
-#include "TransformMatrix.h"
-#include "PSOType.h"
+#include "engine/camera/Camera.h"
+#include "engine/3d/Model.h"
+#include "engine/Animation/Animator.h"
+#include "engine/math/Transform.h"
+#include "engine/math/TransformMatrix.h"
+#include "engine/base/PSOType.h"
 
 //前方宣言
 class Object3dCommon;
@@ -18,9 +18,6 @@ class Object3dCommon;
 //============================================================================
 class Object3d {
 public:
-
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 	//========================================================================
 	// functions
@@ -74,7 +71,7 @@ public:
 	Model* GetModel() { return model_.get(); }
 
 	//Animationの取得
-	Animation* GetAnimation() { return animation_; }
+	Animation* GetAnimation() { return animation_.get(); }
 	//アニメーションの尺の取得
 	float GetDuration() { return animation_->duration; }
 	//アニメーションの再生時間の取得
@@ -119,7 +116,7 @@ protected: // privateメンバ変数
 	std::string modelFilePath_;
 
 	//アニメーション
-	Animation* animation_;
+	std::unique_ptr<Animation> animation_;
 	float animationTime_ = 0.0f;
 	bool isAnimation_ = true;
 

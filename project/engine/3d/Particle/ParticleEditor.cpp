@@ -5,21 +5,22 @@
 #include "engine/Utility/StringUtility.h"
 #include <cassert>
 
+using namespace TakeC;
+
 //======================================================================
 //			初期化
 //======================================================================
 
-void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon* particleCommon) {
+void ParticleEditor::Initialize(ParticleCommon* particleCommon) {
 
 	// ParticleManager初期化
-	particleManager_ = particleManager;
 	particleCommon_ = particleCommon;
 	//デフォルトのパーティクルグループを作成
 	currentGroupName_ = "DefaultGroup";
 	currentPreset_.textureFilePath = "white1x1.png";
 	currentPreset_.presetName = currentGroupName_;
 	currentPreset_.primitiveType = PRIMITIVE_PLANE;
-	particleManager_->CreateParticleGroup(particleCommon_,currentGroupName_, "white1x1.png", currentPreset_.primitiveType);
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(particleCommon_, currentGroupName_, "white1x1.png", currentPreset_.primitiveType);
 
 	// エディター専用エミッターの初期化
 	previewEmitter_ = std::make_unique<ParticleEmitter>();
@@ -34,10 +35,10 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 	//全プリセットの読み込み
 	LoadAllPresets();
 
-	TextureManager::GetInstance()->LoadTextureAll();
+	TextureManager::GetInstance().LoadTextureAll();
 
 	//テクスチャ名一覧の取得
-	textureFileNames_ = TextureManager::GetInstance()->GetLoadedTextureFileNames();
+	textureFileNames_ = TextureManager::GetInstance().GetLoadedTextureFileNames();
 }
 
 //======================================================================
@@ -48,10 +49,10 @@ void ParticleEditor::Update() {
 
 	if (autoApply_) {
 		//属性を自動的に適用する場合、現在の属性をグループに適用
-		particleManager_->SetPreset(currentGroupName_, currentPreset_);
+		TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
 	}
 
-	particleManager_->Update();
+	TakeCFrameWork::GetParticleManager()->Update();
 
 	// プレビューエミッターの更新
 	previewEmitter_->SetTranslate(emitterTransform_.translate);
@@ -60,7 +61,7 @@ void ParticleEditor::Update() {
 	previewEmitter_->SetIsEmit(autoEmit_);
 	previewEmitter_->SetParticleCount(emitCount_);
 	previewEmitter_->SetFrequency(emitFrequency_);
-	particleManager_->GetParticleGroup(currentGroupName_)->SetEmitterPosition(emitterTransform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup(currentGroupName_)->SetEmitterPosition(emitterTransform_.translate);
 	previewEmitter_->Update();
 
 }
@@ -152,7 +153,7 @@ void ParticleEditor::Draw() {
 void ParticleEditor::DrawParticleAttributesEditor() {
 
 	//テクスチャが再ロードされたかチェック
-	TextureManager::GetInstance()->CheckAndReloadTextures();
+	TextureManager::GetInstance().CheckAndReloadTextures();
 
 	ParticleAttributes& attributes = currentPreset_.attribute;
 
@@ -199,13 +200,14 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	//設定の適用
 	if (ImGui::Button("Apply Attributes")) {
 		// 現在のグループに属性を適用
-		particleManager_->SetPreset(currentGroupName_, currentPreset_);
+		TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
 	}
 #pragma endregion
 
 	//テクスチャファイルの設定
 #pragma region texture setting
 	ImGui::SeparatorText("Texture Setting");
+
 	//テクスチャファイル名の選択
 	static int selectedTextureIndex = 0;
 
@@ -256,7 +258,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 			if (ImGui::Selectable(primitiveTypes[i].second.data(), isSelected)) {
 				currentPreset_.primitiveType = primitiveTypes[i].first;
 				// プリミティブタイプが変更された場合、グループのプリミティブを更新
-				particleManager_->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParameters);
+				TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParameters);
 			}
 			if (isSelected) {
 				ImGui::SetItemDefaultFocus();
@@ -268,7 +270,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::DragFloat3("Primitive Parameters", &currentPreset_.primitiveParameters.x, 0.01f, 0.0f, 10.0f);
 	if (ImGui::Button("Update Primitive")) {
 		// プリミティブの更新
-		particleManager_->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParameters);
+		TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParameters);
 	}
 
 #pragma endregion
@@ -493,7 +495,7 @@ void ParticleEditor::LoadPreset(const std::string& presetName) {
 	currentPreset_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetName + ".json");
 
 	// 現在のグループに属性を適用
-	particleManager_->SetPreset(currentGroupName_, currentPreset_);
+	TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
 }
 
 //========================================================================
@@ -522,7 +524,7 @@ void ParticleEditor::LoadDefaultPreset() {
 	// デフォルトプリセットの読み込み
 	currentPreset_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>("DefaultPreset.json");
 	// 現在のグループに属性を適用
-	particleManager_->SetPreset(currentGroupName_, currentPreset_);
+	TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
 }
 
 //=======================================================================

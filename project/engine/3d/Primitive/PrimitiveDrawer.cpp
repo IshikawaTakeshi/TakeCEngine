@@ -11,7 +11,7 @@
 // 初期化
 //============================================================================
 
-void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
+void TakeC::PrimitiveDrawer::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager) {
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
@@ -20,7 +20,7 @@ void PrimitiveDrawer::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 //============================================================================
 // 終了処理
 //============================================================================
-void PrimitiveDrawer::Finalize() {
+void TakeC::PrimitiveDrawer::Finalize() {
 
 	// 各プリミティブデータの解放
 	for (auto& pair : ringDatas_) {
@@ -56,7 +56,7 @@ void PrimitiveDrawer::Finalize() {
 //============================================================================
 // ImGui更新処理
 //============================================================================
-void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type) {
+void TakeC::PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type) {
 
 	switch (type) {
 	case PRIMITIVE_RING:
@@ -103,7 +103,7 @@ void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type) {
 //============================================================================
 // ImGui更新処理（パラメータ付き）
 //============================================================================
-void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param) {
+void TakeC::PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param) {
 
 	switch (type) {
 	case PRIMITIVE_RING:
@@ -173,7 +173,7 @@ void PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vec
 //=================================================================================
 //	プリミティブデータ生成処理(リング)
 //=================================================================================
-uint32_t PrimitiveDrawer::GenerateRing(float outerRadius,float innerRadius, const std::string& textureFilePath) {
+uint32_t TakeC::PrimitiveDrawer::GenerateRing(float outerRadius,float innerRadius, const std::string& textureFilePath) {
 
 	auto ring = std::make_unique<RingData>();
 	ring->innerRadius_ = innerRadius;
@@ -188,7 +188,7 @@ uint32_t PrimitiveDrawer::GenerateRing(float outerRadius,float innerRadius, cons
 //=================================================================================
 //	プリミティブデータ生成処理(平面)
 //=================================================================================
-uint32_t PrimitiveDrawer::GeneratePlane(float width, float height, const std::string& textureFilePath) {
+uint32_t TakeC::PrimitiveDrawer::GeneratePlane(float width, float height, const std::string& textureFilePath) {
 
 	auto plane = std::make_unique<PlaneData>();
 	plane->width_ = width;
@@ -203,7 +203,7 @@ uint32_t PrimitiveDrawer::GeneratePlane(float width, float height, const std::st
 //=================================================================================
 //	プリミティブデータ生成処理(球)
 //=================================================================================
-uint32_t PrimitiveDrawer::GenerateSphere(float radius, const std::string& textureFilePath) {
+uint32_t TakeC::PrimitiveDrawer::GenerateSphere(float radius, const std::string& textureFilePath) {
 
 	auto sphere = std::make_unique<SphereData>();
 	sphere->radius_ = radius;
@@ -217,7 +217,7 @@ uint32_t PrimitiveDrawer::GenerateSphere(float radius, const std::string& textur
 //=================================================================================
 //	プリミティブデータ生成処理(円錐)
 //=================================================================================
-uint32_t PrimitiveDrawer::GenerateCone(float radius,float height, uint32_t subDivision, const std::string& textureFilePath) {
+uint32_t TakeC::PrimitiveDrawer::GenerateCone(float radius,float height, uint32_t subDivision, const std::string& textureFilePath) {
 
 	auto cone = std::make_unique<ConeData>();
 	cone->radius_ = radius;
@@ -233,7 +233,7 @@ uint32_t PrimitiveDrawer::GenerateCone(float radius,float height, uint32_t subDi
 //=================================================================================
 //	プリミティブデータ生成処理(cube)
 //=================================================================================
-uint32_t PrimitiveDrawer::GenerateCube(const AABB& size, const std::string& textureFilePath) {
+uint32_t TakeC::PrimitiveDrawer::GenerateCube(const AABB& size, const std::string& textureFilePath) {
 	
 	auto cube = std::make_unique<CubeData>();
 	cube->size_ = size;
@@ -248,7 +248,7 @@ uint32_t PrimitiveDrawer::GenerateCube(const AABB& size, const std::string& text
 //	描画処理
 //=================================================================================
 
-void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType type, uint32_t handle) {
+void TakeC::PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType type, uint32_t handle) {
 
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
@@ -277,7 +277,7 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 			pso->GetGraphicBindResourceIndex("gMaterial"), ringData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(ringData->material_->GetTextureFilePath()));
 
 		//描画
 		commandList->DrawInstanced(ringVertexCount_, instanceCount, 0, 0);
@@ -306,7 +306,7 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 			pso->GetGraphicBindResourceIndex("gMaterial"), planeData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(planeData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(planeData->material_->GetTextureFilePath()));
 		//描画
 		commandList->DrawInstanced(planeVertexCount_, instanceCount, 0, 0);
 
@@ -332,7 +332,7 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 			pso->GetGraphicBindResourceIndex("gMaterial"), sphereData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(sphereData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(sphereData->material_->GetTextureFilePath()));
 
 		//描画
 		commandList->DrawInstanced(sphereVertexCount_, instanceCount, 0, 0);
@@ -357,7 +357,7 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 			pso->GetGraphicBindResourceIndex("gMaterial"), coneData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(coneData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(coneData->material_->GetTextureFilePath()));
 		//描画
 		commandList->DrawInstanced(coneVertexCount_, instanceCount, 0, 0);
 		break;
@@ -374,7 +374,7 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 //=================================================================================
 //	描画処理(オブジェクト用)
 //=================================================================================
-void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handle) {
+void TakeC::PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handle) {
 
 
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
@@ -397,7 +397,7 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 			pso->GetGraphicBindResourceIndex("gMaterial"), ringData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(ringData->material_->GetTextureFilePath()));
 		//描画
 		commandList->DrawInstanced(ringVertexCount_, 1, 0, 0);
 		break;
@@ -418,7 +418,7 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 			pso->GetGraphicBindResourceIndex("gMaterial"), planeData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(planeData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(planeData->material_->GetTextureFilePath()));
 		//描画
 		commandList->DrawInstanced(planeVertexCount_, 1, 0, 0);
 		break;
@@ -440,7 +440,7 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 			pso->GetGraphicBindResourceIndex("gMaterial"), sphereData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(sphereData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(sphereData->material_->GetTextureFilePath()));
 		//IBVの設定
 		//commandList->IASetIndexBuffer(&sphereData->primitiveData_.indexBufferView_);
 		//描画
@@ -463,7 +463,7 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 			pso->GetGraphicBindResourceIndex("gMaterial"), coneData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(coneData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(coneData->material_->GetTextureFilePath()));
 		//IBVの設定
 		//commandList->IASetIndexBuffer(&coneData->primitiveData_.indexBufferView_);
 		//描画
@@ -486,7 +486,7 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 			pso->GetGraphicBindResourceIndex("gMaterial"), cubeData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(cubeData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(cubeData->material_->GetTextureFilePath()));
 		//IBVの設定
 		//commandList->IASetIndexBuffer(&cubeData->primitiveData_.indexBufferView_);
 		//描画
@@ -504,7 +504,7 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 //=================================================================================
 //	頂点データの作成関数(リング)
 //=================================================================================
-void PrimitiveDrawer::CreateRingVertexData(RingData* ringData) {
+void TakeC::PrimitiveDrawer::CreateRingVertexData(RingData* ringData) {
 
 	UINT size = sizeof(VertexData) * ringData->subDivision_ * kMaxVertexCount_;
 
@@ -559,7 +559,7 @@ void PrimitiveDrawer::CreateRingVertexData(RingData* ringData) {
 //=================================================================================
 //	頂点データの作成関数(平面)
 //=================================================================================
-void PrimitiveDrawer::CreatePlaneVertexData(PlaneData* planeData) {
+void TakeC::PrimitiveDrawer::CreatePlaneVertexData(PlaneData* planeData) {
 
 	UINT size = sizeof(VertexData) * 6 * kMaxVertexCount_;
 	//bufferをカウント分確保
@@ -601,7 +601,7 @@ void PrimitiveDrawer::CreatePlaneVertexData(PlaneData* planeData) {
 //====================================================================
 // Sphereの頂点データの作成関数
 //====================================================================
-void PrimitiveDrawer::CreateSphereVertexData(SphereData* sphereData) {
+void TakeC::PrimitiveDrawer::CreateSphereVertexData(SphereData* sphereData) {
 
 	auto CreateSphereVertex = [&](const Vector3& pos, uint32_t lonIndex, uint32_t latIndex, uint32_t kSubdivision, float radius) {
 		VertexData v{};
@@ -691,7 +691,7 @@ void PrimitiveDrawer::CreateSphereVertexData(SphereData* sphereData) {
 //====================================================================
 // 頂点データの作成関数(cube)
 //====================================================================
-void PrimitiveDrawer::CreateCubeVertexData(CubeData* cubeData) {
+void TakeC::PrimitiveDrawer::CreateCubeVertexData(CubeData* cubeData) {
 
 	UINT size = sizeof(VertexData) * 36 * kMaxVertexCount_;
 
@@ -819,7 +819,7 @@ void PrimitiveDrawer::CreateCubeVertexData(CubeData* cubeData) {
 // 頂点データの作成関数(円錐)
 //====================================================================
 
-void PrimitiveDrawer::CreateConeVertexData(ConeData* coneData) {
+void TakeC::PrimitiveDrawer::CreateConeVertexData(ConeData* coneData) {
 
 	auto CreateConeVertex = [&](const Vector3& pos, float u, float v, const Vector3& normal) {
 		VertexData vertex{};
@@ -934,7 +934,7 @@ void PrimitiveDrawer::CreateConeVertexData(ConeData* coneData) {
 // マテリアルの作成関数(リング、平面、球、円錐)
 //====================================================================
 
-void PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath, RingData* ringData) {
+void TakeC::PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath, RingData* ringData) {
 
 	ringData->material_ = new Material();
 	ringData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
@@ -944,7 +944,7 @@ void PrimitiveDrawer::CreateRingMaterial(const std::string& textureFilePath, Rin
 	ringData->material_->SetUvScale({ 2.5f, 0.5f,1.0f }); // UVスケールを設定
 }
 
-void PrimitiveDrawer::CreatePlaneMaterial(const std::string& textureFilePath, PlaneData* planeData) {
+void TakeC::PrimitiveDrawer::CreatePlaneMaterial(const std::string& textureFilePath, PlaneData* planeData) {
 
 	planeData->material_ = new Material();
 	planeData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
@@ -953,7 +953,7 @@ void PrimitiveDrawer::CreatePlaneMaterial(const std::string& textureFilePath, Pl
 	planeData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
 }
 
-void PrimitiveDrawer::CreateSphereMaterial(const std::string& textureFilePath, SphereData* sphereData) {
+void TakeC::PrimitiveDrawer::CreateSphereMaterial(const std::string& textureFilePath, SphereData* sphereData) {
 
 	sphereData->material_ = new Material();
 	sphereData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
@@ -962,7 +962,7 @@ void PrimitiveDrawer::CreateSphereMaterial(const std::string& textureFilePath, S
 	sphereData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
 }
 
-void PrimitiveDrawer::CreateConeMaterial(const std::string& textureFilePath, ConeData* coneData) {
+void TakeC::PrimitiveDrawer::CreateConeMaterial(const std::string& textureFilePath, ConeData* coneData) {
 
 	coneData->material_ = new Material();
 	coneData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
@@ -971,7 +971,7 @@ void PrimitiveDrawer::CreateConeMaterial(const std::string& textureFilePath, Con
 	coneData->material_->SetMaterialColor({ 1.0f,1.0f,1.0f,1.0f });
 }
 
-void PrimitiveDrawer::CreateCubeMaterial(const std::string& textureFilePath, CubeData* cubeData) {
+void TakeC::PrimitiveDrawer::CreateCubeMaterial(const std::string& textureFilePath, CubeData* cubeData) {
 
 	cubeData->material_ = new Material();
 	cubeData->material_->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
@@ -984,27 +984,27 @@ void PrimitiveDrawer::CreateCubeMaterial(const std::string& textureFilePath, Cub
 //	データ取得関数
 //====================================================================
 
-PrimitiveDrawer::PlaneData* PrimitiveDrawer::GetPlaneData(uint32_t handle) {
+TakeC::PrimitiveDrawer::PlaneData* TakeC::PrimitiveDrawer::GetPlaneData(uint32_t handle) {
 	// planeDataを返す
 	return planeDatas_[handle].get();
 }
 
-PrimitiveDrawer::SphereData* PrimitiveDrawer::GetSphereData(uint32_t handle) {
+TakeC::PrimitiveDrawer::SphereData* TakeC::PrimitiveDrawer::GetSphereData(uint32_t handle) {
 	// sphereDataを返す
 	return sphereDatas_[handle].get();
 }
 
-PrimitiveDrawer::RingData* PrimitiveDrawer::GetRingData(uint32_t handle) {
+TakeC::PrimitiveDrawer::RingData* TakeC::PrimitiveDrawer::GetRingData(uint32_t handle) {
 	// ringDataを返す
 	return ringDatas_[handle].get();
 }
 
-PrimitiveDrawer::ConeData* PrimitiveDrawer::GetConeData(uint32_t handle) {
+TakeC::PrimitiveDrawer::ConeData* TakeC::PrimitiveDrawer::GetConeData(uint32_t handle) {
 	// coneDataを返す
 	return coneDatas_[handle].get();
 }
 
-void PrimitiveDrawer::SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color) {
+void TakeC::PrimitiveDrawer::SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color) {
 
 	switch (type) {
 	case PRIMITIVE_RING:

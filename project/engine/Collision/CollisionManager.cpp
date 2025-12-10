@@ -5,20 +5,16 @@
 #include "Collision/BoxCollider.h"
 #include "Collision/SphereCollider.h"
 
-CollisionManager* CollisionManager::instance_ = nullptr;
-
-CollisionManager* CollisionManager::GetInstance() {
-	if (instance_ == nullptr) {
-		instance_ = new CollisionManager();
-	}
-	return instance_;
+CollisionManager& CollisionManager::GetInstance() {
+	static CollisionManager instance;
+	return instance;
 }
 
 //=============================================================================
 // 初期化
 //=============================================================================
 
-void CollisionManager::Initialize(DirectXCommon* dxCommon) {
+void CollisionManager::Initialize(TakeC::DirectXCommon* dxCommon) {
 
 	dxCommon_ = dxCommon;
 
@@ -50,8 +46,6 @@ void CollisionManager::PreDraw() {
 void CollisionManager::Finalize() {
 	pso_.reset();
 	rootSignature_.Reset();
-	delete instance_;
-	instance_ = nullptr;
 }
 
 //=============================================================================

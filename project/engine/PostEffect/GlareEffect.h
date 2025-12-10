@@ -1,8 +1,6 @@
 #pragma once
 #include "engine/PostEffect/PostEffect.h"
 
-
-
 class GlareEffect : public PostEffect {
 public:
 	//========================================================================
@@ -16,7 +14,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
+	void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, const std::wstring& CSFilePath,
 		ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) override;
 	/// <summary>
 	/// ImGui更新処理

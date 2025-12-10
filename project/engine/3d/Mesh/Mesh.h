@@ -8,7 +8,10 @@
 #include <vector>
 
 // 前方宣言
-class DirectXCommon;
+namespace TakeC {
+	class DirectXCommon;
+
+}
 
 //============================================================================
 // Meshクラス
@@ -29,9 +32,9 @@ public:
 	/// <param name="dxCommon"></param>
 	/// <param name="filePath"></param>
 	/// <param name="envMapfilePath"></param>
-	void InitializeMesh(DirectXCommon* dxCommon,std::vector<ModelMaterialData> materialData);
+	void InitializeMesh(TakeC::DirectXCommon* dxCommon,std::vector<ModelMaterialData> materialData);
 
-	void InitializeMesh(DirectXCommon* dxCommon, const std::string& texturePath, const std::string& envMapPath = "");
+	void InitializeMesh(TakeC::DirectXCommon* dxCommon, const std::string& texturePath, const std::string& envMapPath = "");
 
 	/// <summary>
 	/// 描画処理時に使用する頂点バッファを設定

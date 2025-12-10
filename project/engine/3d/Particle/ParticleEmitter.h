@@ -17,8 +17,10 @@ struct EmitterSphereInfo {
 };
 
 // 前方宣言
-class DirectXCommon;
-class SrvManager;
+namespace TakeC {
+	class DirectXCommon;
+	class SrvManager;
+}
 class GPUParticle;
 
 //============================================================================
@@ -44,7 +46,7 @@ public:
 	/// </summary>
 	/// <param name="dxCommon"></param>
 	/// <param name="srvManager"></param>
-	void InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManager* srvManager);
+	void InitializeEmitterSphere(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager);
 
 	/// <summary>
 	/// 更新処理
@@ -123,9 +125,9 @@ private:
 	static const uint32_t kNumMaxInstance_ = 1024;
 
 	//DirectXCommon
-	DirectXCommon* dxCommon_;
+	TakeC::DirectXCommon* dxCommon_;
 	//SrvManager
-	SrvManager* srvManager_;
+	TakeC::SrvManager* srvManager_;
 	//PSO
 	std::unique_ptr<PSO> emitParticlePso_;
 	//RootSignature

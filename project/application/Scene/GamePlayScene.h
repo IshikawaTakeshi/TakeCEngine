@@ -2,7 +2,7 @@
 #include "BaseScene.h"
 
 #include "audio/Audio.h"
-#include "io/Input.h"
+#include "Input/Input.h"
 #include "engine/camera/Camera.h"
 #include "engine/camera/CameraManager.h"
 #include "ModelManager.h"

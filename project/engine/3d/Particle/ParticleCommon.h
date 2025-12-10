@@ -8,9 +8,11 @@
 
 // 前方宣言
 class Camera;
+namespace TakeC {
 class DirectXCommon;
 class LightManager;
 class SrvManager;
+}
 
 //============================================================================
 // ParticleCommon class
@@ -34,14 +36,14 @@ public:
 	/// インスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static ParticleCommon* GetInstance();
+	static ParticleCommon& GetInstance();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	/// <param name="dxCommon"></param>
 	/// <param name="srvManager"></param>
-	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager,LightManager* lightManager);
+	void Initialize(TakeC::DirectXCommon* dxCommon,TakeC::SrvManager* srvManager,TakeC::LightManager* lightManager);
 
 	/// <summary>
 	/// ImGuiの更新
@@ -82,9 +84,9 @@ public:
 	//----- getter ---------------------------
 
 	//DirectXCommonの取得
-	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
+	TakeC::DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
 	//SrvManagerの取得
-	SrvManager* GetSrvManager() const { return srvManager_; }
+	TakeC::SrvManager* GetSrvManager() const { return srvManager_; }
 	//RootSignatureの取得
 	PSO* GetGraphicPSO(BlendState state) const { return graphicPso_.at(state).get(); }
 	//GPUパーティクル用PSOの取得
@@ -102,12 +104,10 @@ public:
 
 private:
 
-	//インスタンス
-	static ParticleCommon* instance_;
 	//DirectXCommon
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 	//LightManager
-	LightManager* lightManager_ = nullptr;
+	TakeC::LightManager* lightManager_ = nullptr;
 
 	//PSO
 	std::unordered_map<BlendState, std::unique_ptr<PSO>> graphicPso_;
@@ -116,7 +116,7 @@ private:
 	std::unique_ptr<PSO> psoUpdateParticle_ = nullptr;
 
 	//SrvManager
-	SrvManager* srvManager_ = nullptr;
+	TakeC::SrvManager* srvManager_ = nullptr;
 
 	//RootSignature
 	ComPtr<ID3D12RootSignature> graphicRootSignature_ = nullptr;

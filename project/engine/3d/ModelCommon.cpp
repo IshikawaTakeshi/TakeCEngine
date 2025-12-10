@@ -2,23 +2,19 @@
 #include "DirectXCommon.h"
 #include "SrvManager.h"
 
-// 静的メンバ変数の初期化
-ModelCommon* ModelCommon::instance_ = nullptr;
 
 //============================================================================
 // インスタンスの取得
 //============================================================================
-ModelCommon* ModelCommon::GetInstance() {
-	if(instance_ == nullptr) {
-		instance_ = new ModelCommon();
-	}
+ModelCommon& ModelCommon::GetInstance() {
+	static ModelCommon instance_;
 	return instance_;
 }
 
 //============================================================================
 // 初期化
 //============================================================================
-void ModelCommon::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager) {
+void ModelCommon::Initialize(TakeC::DirectXCommon* dxCommon,TakeC::SrvManager* srvManager) {
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
 }
@@ -28,6 +24,4 @@ void ModelCommon::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager) {
 //============================================================================
 void ModelCommon::Finalize() {
 	dxCommon_ = nullptr;
-	delete instance_;
-	instance_ = nullptr;
 }

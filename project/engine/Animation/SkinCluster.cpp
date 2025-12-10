@@ -8,12 +8,12 @@
 // SkinCluster生成
 //====================================================================
 void SkinCluster::Create(
-	const ComPtr<ID3D12Device>& device,SrvManager* srvManager,
+	const ComPtr<ID3D12Device>& device,TakeC::SrvManager* srvManager,
 	Skeleton* skeleton, const ModelData* modelData) {
 
 	//palette用のResource確保
 	//MEMO:sizeInBytesはWellForGPUのサイズ×ジョイント数
-	paletteResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(WellForGPU) * skeleton->GetJoints().size());
+	paletteResource = TakeC::DirectXCommon::CreateBufferResource(device.Get(), sizeof(WellForGPU) * skeleton->GetJoints().size());
 	paletteResource->SetName(L"SkinCluster::paletteResource");
 	
 	//paletteのSRVのIndexを取得
@@ -30,7 +30,7 @@ void SkinCluster::Create(
 
 	//influence用のResource確保
 	//VertexInfluence * std::vector<VertexData>
-	influenceResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData->vertices.size());
+	influenceResource = TakeC::DirectXCommon::CreateBufferResource(device.Get(), sizeof(VertexInfluence) * modelData->vertices.size());
 	influenceResource->SetName(L"SkinCluster::influenceResource");
 	
 	//influenceのSRV作成
@@ -44,7 +44,7 @@ void SkinCluster::Create(
 	mappedInfluences = { mappedInfluenceData, modelData->vertices.size() };
 
 	//skinningInfoResourceの作成
-	skinningInfoResource = DirectXCommon::CreateBufferResource(device.Get(), sizeof(SkinningInfo));
+	skinningInfoResource = TakeC::DirectXCommon::CreateBufferResource(device.Get(), sizeof(SkinningInfo));
 	skinningInfoResource->Map(0, nullptr, reinterpret_cast<void**>(&skinningInfoData));
 	*skinningInfoData = modelData->skinningInfoData;
 

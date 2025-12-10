@@ -12,14 +12,14 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 #pragma endregion
 
 //静的メンバ変数の初期化
-float WinApp::widthPercent_ = float(WinApp::kScreenWidth) / WinApp::kDebugScreenWidth_;
-float WinApp::heightPercent_ = float(WinApp::kScreenHeight) / WinApp::kDebugScreenHeight_;
+float TakeC::WinApp::widthPercent_ = float(WinApp::kScreenWidth) / WinApp::kDebugScreenWidth_;
+float TakeC::WinApp::heightPercent_ = float(WinApp::kScreenHeight) / WinApp::kDebugScreenHeight_;
 
 //=====================================================================
 //			初期化
 //=====================================================================
 
-void WinApp::Initialize(const wchar_t title[]) {
+void TakeC::WinApp::Initialize(const wchar_t title[]) {
 
 	HRESULT hr;
 	hr = CoInitializeEx(0, COINIT_MULTITHREADED);
@@ -58,7 +58,7 @@ void WinApp::Initialize(const wchar_t title[]) {
 //			終了・開放処理
 //=====================================================================
 
-void WinApp::Finalize() {
+void TakeC::WinApp::Finalize() {
 
 	CloseWindow(hwnd_);
 	CoUninitialize();
@@ -68,7 +68,7 @@ void WinApp::Finalize() {
 //			メッセージの処理
 //=======================================================================
 
-bool WinApp::ProcessMessage() {
+bool TakeC::WinApp::ProcessMessage() {
 
 	MSG msg{};//メッセージ
 
@@ -90,7 +90,7 @@ bool WinApp::ProcessMessage() {
 //			ビューポートの取得
 //=======================================================================
 
-D3D12_VIEWPORT WinApp::GetViewport() const {
+D3D12_VIEWPORT TakeC::WinApp::GetViewport() const {
 	D3D12_VIEWPORT viewport = {};
 	viewport.TopLeftX = offsetX_;
 	viewport.TopLeftY = offsetY_;
@@ -105,7 +105,7 @@ D3D12_VIEWPORT WinApp::GetViewport() const {
 //			ウィンドウのクライアント領域のサイズを取得
 //=======================================================================
 
-D3D12_RECT WinApp::GetScissorRect() const {
+D3D12_RECT TakeC::WinApp::GetScissorRect() const {
 	
 	D3D12_RECT scissorRect = {};
 	scissorRect.left = static_cast<LONG>(offsetX_);
@@ -119,7 +119,7 @@ D3D12_RECT WinApp::GetScissorRect() const {
 //ウィンドウプロシージャ
 //=======================================================================
 
-LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK TakeC::WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 #ifdef _DEBUG
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam)) {
 		return true;
@@ -144,7 +144,7 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
 //			ゲームウィンドウの作成
 //=======================================================================
 
-void WinApp::CreateGameWindow(const wchar_t title[]) {
+void TakeC::WinApp::CreateGameWindow(const wchar_t title[]) {
 
 	//ウィンドウサイズを表す構造体にクライアント領域を入れる
 	wrc_ = { 0,0,kWindowWidth,kWindowHeight };

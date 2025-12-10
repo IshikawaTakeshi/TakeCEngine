@@ -13,19 +13,30 @@
 void BoostEffect::Initialize(GameCharacter* owner) {
 	//effectObject初期化
 	boostEffectObject_ = std::make_unique<Object3d>();
-	boostEffectObject_->Initialize(Object3dCommon::GetInstance(), "boostEffectCone.gltf");
+	boostEffectObject_->Initialize(&Object3dCommon::GetInstance(), "boostEffectCone.gltf");
 	boostEffectObject_->GetModel()->GetModelData()->material.textureFilePath = "BlueBoostEffect.png";
 	//effectObject2初期化
 	boostEffectObject2_ = std::make_unique<Object3d>();
-	boostEffectObject2_->Initialize(Object3dCommon::GetInstance(), "boostEffectCone.gltf");
+	boostEffectObject2_->Initialize(&Object3dCommon::GetInstance(), "boostEffectCone.gltf");
 	boostEffectObject2_->GetModel()->GetModelData()->material.textureFilePath = "BlueBoostEffect.png";
 	boostEffectObject2_->SetScale({ 1.1f,1.1f,1.1f });
 
 	//エミッター初期化
 	particleEmitter_ = std::make_unique<ParticleEmitter>();
 	particleEmitter_->Initialize("BoostEffectEmitter", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} }, 10, 0.1f);
-	particleEmitter_->SetParticleName("BoostEffect4");
+	particleEmitter_->SetParticleName("BoostEffect5");
+	particleEmitter_->SetFrequency(0.05f);
+	particleEmitter_->SetParticleCount(40);
 	ownerObject_ = owner;
+
+	//pointLight設定
+	pointLightData_.enabled_ = 1;
+	pointLightData_.color_ = { 0.1f,0.5f,1.0f,1.0f };
+	pointLightData_.intensity_ = 5.0f;
+	pointLightData_.radius_ = 1.0f;
+	pointLightData_.decay_ = 1.0f;
+	//ポイントライトの追加
+	pointLightIndex_ = TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
 }
 
 //===================================================================================
@@ -42,7 +53,9 @@ void BoostEffect::Update() {
 		//スケールを徐々に小さくしていく
 		if (isActive_) {
 			effectTime_ += TakeCFrameWork::GetDeltaTime();
+			pointLightData_.intensity_ = 5.0f * (1.0f - effectTime_ / duration_);
 			if (effectTime_ >= duration_) {
+				pointLightData_.intensity_ = 0.0f;
 				effectTime_ = 0.0f;
 				isActive_ = false;
 			}
@@ -77,6 +90,8 @@ void BoostEffect::Update() {
 		float finalScaleFactor = 1.0f + wave; 
 		// スケールを進行度に基づいて設定
 		Vector3 newScale = activeScale_ * finalScaleFactor; 
+		pointLightData_.intensity_ = 50.0f;
+		pointLightData_.radius_ = 5.0f * finalScaleFactor;
 
 		boostEffectObject_->SetScale(newScale);
 		boostEffectObject_->GetModel()->GetMesh()->GetMaterial()->SetAlpha(alpha_);
@@ -108,7 +123,9 @@ void BoostEffect::Update() {
 		if (isActive_) {
 
 			effectTime_ += TakeCFrameWork::GetDeltaTime();
+			pointLightData_.intensity_ = 20.0f * (1.0f - effectTime_ / duration_);
 			if (effectTime_ >= duration_) {
+				pointLightData_.intensity_ = 0.0f;
 				effectTime_ = 0.0f;
 				isActive_ = false;
 			}
@@ -145,6 +162,10 @@ void BoostEffect::Update() {
 		boostEffectObject2_->SetParent(*jointWorldMatrixOpt);
 	}
 
+	//ポイントライト更新
+	pointLightData_.position_ = boostEffectObject_->GetCenterPosition();
+	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
+
 	//effectObject更新
 	boostEffectObject_->Update();
 	boostEffectObject2_->Update();
@@ -152,7 +173,8 @@ void BoostEffect::Update() {
 	//particleエミッター更新
 	particleEmitter_->SetIsEmit(isActive_);
 	particleEmitter_->SetTranslate(boostEffectObject_->GetCenterPosition());
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BoostEffect2")->SetEmitterPosition(boostEffectObject_->GetCenterPosition());
+	particleEmitter_->SetRotate(boostEffectObject_->GetRotate());
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BoostEffect5")->SetEmitterPosition(boostEffectObject_->GetCenterPosition());
 	particleEmitter_->Update();
 }
 

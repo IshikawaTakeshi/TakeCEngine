@@ -12,6 +12,7 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "winmm.lib")
 
+using namespace TakeC;
 
 //==============================================================================================
 //		初期化

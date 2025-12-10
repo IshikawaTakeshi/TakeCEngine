@@ -1,5 +1,5 @@
 #pragma once
-#include "engine/io/IInputDevice.h"
+#include "engine/Input/IInputDevice.h"
 #include "application/Provider/Enum/CharacterActionInputEnum.h"
 
 //============================================================================
@@ -18,5 +18,9 @@ public:
 	// 単入力
 	bool IsPressed(CharacterActionInput button) const override;
 	bool IsTriggered(CharacterActionInput button) const override;
-};
+	bool IsReleased(CharacterActionInput button) const override;
 
+private:
+
+	float mouseMoveScale_ = 2.5f;
+};

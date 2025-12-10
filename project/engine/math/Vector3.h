@@ -15,7 +15,9 @@ struct Vector3 final {
 	Vector3 operator-=(const Vector3& v);
 	Vector3 operator*=(float s);
 	Vector3 operator/=(float s);
-	bool operator==(const Vector3& v) const;
+	
+	Vector3 operator+() const;
+	Vector3 operator-() const;
 
 	//内積
 	float Dot(const Vector3& other) const;
@@ -28,18 +30,18 @@ struct Vector3 final {
 };
 
 Vector3 operator+(const Vector3& v1, const Vector3& v2);
-Vector3 operator+(const Vector3& v);
 Vector3 operator-(const Vector3& v1, const Vector3& v2);
-Vector3 operator-(const Vector3& v);
 Vector3 operator*(float s, const Vector3& v);
 Vector3 operator*(const Vector3& v, float s);
 Vector3 operator*(const Vector3& v1, const Vector3& v2);
 Vector3 operator/(float s, const Vector3& v);
 Vector3 operator/(const Vector3& v, float s);
 
-using json = nlohmann::json;
+bool operator==(const Vector3& lhs, const Vector3& rhs);
+bool operator!=(const Vector3& lhs, const Vector3& rhs);
+bool operator<(const Vector3& lhs, const Vector3& rhs);
+bool operator<=(const Vector3& lhs, const Vector3& rhs);
+bool operator>(const Vector3& lhs, const Vector3& rhs);
+bool operator>=(const Vector3& lhs, const Vector3& rhs);
 
-/// JSON形式に変換
-void to_json(nlohmann::json& j, const Vector3& v);
-/// JSONから変換
-void from_json(const nlohmann::json& j, Vector3& v);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Vector3, x, y, z)

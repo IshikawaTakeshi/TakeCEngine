@@ -10,7 +10,7 @@
 #include "3d/Model.h"
 #include "camera/CameraManager.h"
 #include "ParticleCommon.h"
-#include "Input.h"
+#include "Input/Input.h"
 #include <numbers>
 
 //=============================================================================
@@ -23,11 +23,11 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 
 	//instancing用のResource生成
 	particleResource_ =
-		DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
+		TakeC::DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
 	particleResource_->SetName(L"Particle3d::particleResource_");
 
 	//perViewResource生成
-	perViewResource_ = DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
+	perViewResource_ = TakeC::DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
 	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));
 	perViewResource_->SetName(L"Particle3d::perViewResource_");
 
@@ -106,8 +106,8 @@ void Particle3d::Update() {
 			particleData_[numInstance_].currentTime = (*particleIterator).currentTime_;
 
 			// データをGPUに転送  
-			perViewData_->viewProjection = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
-			perViewData_->billboardMatrix = CameraManager::GetInstance()->GetActiveCamera()->GetRotationMatrix();
+			perViewData_->viewProjection = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
+			perViewData_->billboardMatrix = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetRotationMatrix();
 
 			++numInstance_; // 次のインスタンスに進める  
 		}
@@ -184,7 +184,7 @@ void Particle3d::SpliceParticles(std::list<Particle> particles) {
 //=============================================================================
 
 void Particle3d::SetModel(const std::string& filePath) {
-	model_ = ModelManager::GetInstance()->FindModel(filePath);
+	model_ = TakeC::ModelManager::GetInstance().FindModel(filePath);
 }
 
 void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) {

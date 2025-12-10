@@ -64,7 +64,7 @@ public:
 	///			publicメンバ関数
 	//===================================================================================
 
-	static AudioManager* GetInstance();
+	static AudioManager& GetInstance();
 
 	/// <summary>
 	/// 初期化処理
@@ -120,7 +120,6 @@ public:
 	IXAudio2MasteringVoice* GetMasteringVoice() const { return masteringVoice_; }
 
 private:
-	static AudioManager* instance_;
 
 	AudioManager() = default;
 	~AudioManager() = default;

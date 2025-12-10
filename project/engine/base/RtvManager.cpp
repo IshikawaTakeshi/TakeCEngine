@@ -1,13 +1,16 @@
 #include "rtvManager.h"
 #include "DirectXCommon.h"
 #include <cassert>
+
+using namespace TakeC;
+
 const uint32_t RtvManager::kMaxRTVCount_ = 16;
 
 //===================================================================================================
 // 初期化
 //===================================================================================================
 
-void RtvManager::Initialize(DirectXCommon* directXCommon) {
+void RtvManager::Initialize(TakeC::DirectXCommon* directXCommon) {
 	//dxCommon_の取得
 	dxCommon_ = directXCommon;
 	//ディスクリプタヒープの生成

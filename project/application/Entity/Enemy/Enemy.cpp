@@ -4,7 +4,7 @@
 #include "engine/3d/Object3d.h"
 #include "engine/3d/Object3dCommon.h"
 #include "engine/3d/Model.h"
-#include "engine/io/Input.h"
+#include "engine/Input/Input.h"
 #include "engine/camera/CameraManager.h"
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/Utility/JsonLoader.h"
@@ -22,7 +22,6 @@
 //========================================================================================================
 void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
-
 	//キャラクタータイプ設定
 	characterType_ = CharacterType::ENEMY;
 
@@ -38,7 +37,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	characterInfo_.transform = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,30.0f} };
 	object3d_->SetScale(characterInfo_.transform.scale);
 
-	//emiiter設定
+	//emitter設定
 	//emitter0
 	particleEmitter_.resize(3);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
@@ -87,6 +86,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	behaviorManager_ = std::make_unique<BehaviorManager>();
 	behaviorManager_->Initialize(inputProvider_.get());
 	behaviorManager_->InitializeBehaviors(characterInfo_);
+
+	
 }
 
 //========================================================================================================
@@ -254,6 +255,7 @@ void Enemy::Update() {
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(characterInfo_.transform.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(characterInfo_.transform.translate);
 
+	
 	// 着地判定の毎フレームリセット
 	characterInfo_.onGround = false; 
 
@@ -443,14 +445,14 @@ void Enemy::WeaponAttack(int weaponIndex) {
 	auto* weapon = weapons_[weaponIndex].get();
 
 	//チャージ攻撃可能な場合
-	if (weapon->IsChargeAttack()) {
+	if (weapon->CanChargeAttack()) {
 
 		//武器のチャージ処理
 		weapon->Charge(deltaTime_);
 		if (ShouldReleaseAttack(weaponIndex)) {
 			//チャージ攻撃実行
 			weapon->ChargeAttack();
-			if (weapon->IsStopShootOnly()) {
+			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
 				behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 			} else {
@@ -460,7 +462,7 @@ void Enemy::WeaponAttack(int weaponIndex) {
 		}
 	} else {
 		//チャージ攻撃不可:通常攻撃
-		if (weapon->IsStopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
+		if (weapon->StopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
 			// 停止撃ち専用:硬直処理を行う
 			characterInfo_.isChargeShooting = true; // チャージ撃ち中フラグを立てる
 			chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
@@ -477,7 +479,7 @@ void Enemy::WeaponAttack(int weaponIndex) {
 		if (weapon->IsCharging()) {
 			// チャージ中の場合はチャージ攻撃を終了
 			weapon->ChargeAttack();
-			if (weapon->IsStopShootOnly()) {
+			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
 				behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 			} else {

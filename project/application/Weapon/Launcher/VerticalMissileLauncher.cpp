@@ -59,16 +59,16 @@ void VerticalMissileLauncher::Update() {
 			if (ownerObject_->GetCharacterType() == CharacterType::PLAYER) {
 				bulletManager_->ShootMissile(
 					this,
+					vmLauncherInfo_.vmInfo,
 					weaponData_.config.bulletSpeed,
-					vmLauncherInfo_.homingRate,
 					weaponData_.config.power,
 					CharacterType::PLAYER_MISSILE);
 
 			} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
 				bulletManager_->ShootMissile(
 					this,
+					vmLauncherInfo_.vmInfo,
 					weaponData_.config.bulletSpeed,
-					vmLauncherInfo_.homingRate,
 					weaponData_.config.power,
 					CharacterType::ENEMY_MISSILE);
 			}
@@ -114,6 +114,8 @@ void VerticalMissileLauncher::UpdateImGui() {
 
 	//連射情報のImGui表示
 	vmLauncherInfo_.burstShotInfo.EditConfigImGui();
+	//垂直ミサイル情報のImGui表示
+	vmLauncherInfo_.vmInfo.EditConfigImGui();
 	if (ImGui::Button("Save VerticalMissileLauncher config")) {
 		// 設定をJSONに保存
 		weaponData_.actionData = vmLauncherInfo_;
@@ -166,30 +168,4 @@ void VerticalMissileLauncher::Charge(float deltaTime) {
 //================================================================================
 void VerticalMissileLauncher::ChargeAttack() {
 	// チャージ攻撃処理なし
-}
-
-
-//================================================================================
-//　所有者の設定
-//================================================================================
-void VerticalMissileLauncher::SetOwnerObject(GameCharacter* owner) {
-	ownerObject_ = owner;
-}
-
-//チャージ攻撃可能か
-bool VerticalMissileLauncher::IsChargeAttack() const {
-	// バーティカルミサイルはチャージ攻撃不可
-	return weaponData_.config.canChargeAttack;
-}
-
-//移動撃ち可能か
-bool VerticalMissileLauncher::IsMoveShootable() const {
-	//移動撃ち可能
-	return weaponData_.config.canMoveShootable;
-}
-
-//停止撃ち専用か
-bool VerticalMissileLauncher::IsStopShootOnly() const {
-	//停止撃ち専用ではない
-	return weaponData_.config.isStopShootOnly;
 }

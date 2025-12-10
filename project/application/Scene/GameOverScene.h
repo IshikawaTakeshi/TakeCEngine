@@ -3,7 +3,7 @@
 #include "Audio.h"
 #include "Camera.h"
 #include "CameraManager.h"
-#include "Input.h"
+#include "Input/Input.h"
 #include "ModelManager.h"
 #include "Sprite.h"
 #include "Object3d.h"

@@ -4,21 +4,15 @@
 #include <algorithm>
 #include <vector>
 
-
-
-AudioManager* AudioManager::instance_ = nullptr;
-
 using SoundData = AudioManager::SoundData;
 
 //================================================================================================
 // 初期化処理
 //================================================================================================
 
-AudioManager* AudioManager::GetInstance() {
-	if (instance_ == nullptr) {
-		instance_ = new AudioManager();
-	}
-	return instance_;
+AudioManager& AudioManager::GetInstance() {
+	static AudioManager instance;
+	return instance;
 }
 
 void AudioManager::Initialize() {

@@ -1,6 +1,6 @@
 #pragma once
 #include "engine/Entity/GameCharacter.h"
-#include "engine/io/Gamepad.h"
+#include "engine/Input/Gamepad.h"
 #include "engine/camera/Camera.h"
 #include "engine/3d/Particle/ParticleEmitter.h"
 #include <optional>
@@ -69,7 +69,7 @@ public:
 	//==============================================================================
 
 	//武器の取得
-	BaseWeapon* GetWeapon(int index) const;
+	BaseWeapon* GetCurrentWeapon(int index) const;
 	//全武器の取得
 	std::vector<std::unique_ptr<BaseWeapon>>& GetWeapons();
 
@@ -153,7 +153,7 @@ private:
 	void UpdateAttack();
 
 	//武器一つ当たりの攻撃処理
-	void WeaponAttack(int weaponIndex, GamepadButtonType buttonType);
+	void WeaponAttack(CharacterActionInput actionInput);
 
 	//エネルギーの更新
 	void UpdateEnergy();

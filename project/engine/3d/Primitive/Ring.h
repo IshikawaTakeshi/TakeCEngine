@@ -11,14 +11,14 @@ class Ring {
 public:
 	Ring() = default;
 	~Ring() = default;
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize(TakeC::DirectXCommon* dxCommon);
 	void Update();
 	void Draw();
 	//void CreateRing(const uint32_t divide, const float outerRadius, const float innerRadius, const Vector3& center, const Vector4& color);
 
 private:
 
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 	std::unique_ptr<PSO> pso_;
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 	EulerTransform transform_;

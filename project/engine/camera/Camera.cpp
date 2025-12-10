@@ -3,7 +3,7 @@
 #include "base/DirectXCommon.h"
 #include "base/ImGuiManager.h"
 #include "base/TakeCFrameWork.h"
-#include "io/Input.h"
+#include "Input/Input.h"
 #include "Collision/CollisionManager.h"
 #include "math/MatrixMath.h"
 #include "math/Easing.h"
@@ -33,7 +33,7 @@ void Camera::Initialize(ID3D12Device* device,const std::string& configData) {
 	rotationSpeed_ = 0.1f;
 
 	//カメラ用バッファリソース生成
-	cameraResource_ = DirectXCommon::CreateBufferResource(device, sizeof(CameraForGPU));
+	cameraResource_ = TakeC::DirectXCommon::CreateBufferResource(device, sizeof(CameraForGPU));
 	cameraResource_->SetName(L"Camera::cameraResource_");
 	cameraForGPU_ = nullptr;
 	cameraResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraForGPU_));
@@ -47,7 +47,7 @@ void Camera::Initialize(ID3D12Device* device,const std::string& configData) {
 void Camera::Update() {
 #ifdef _DEBUG
 	//デバッグカメラとゲームカメラの切り替え
-	if (Input::GetInstance()->TriggerKey(DIK_F1)) {
+	if (TakeC::Input::GetInstance().TriggerKey(DIK_F1)) {
 		isDebug_ = !isDebug_;
 	}
 #endif // _DEBUG
@@ -180,10 +180,10 @@ void Camera::UpdateDebugCamera() {
 	// クォータニオンで回転を管理
 	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
 
-	if (Input::GetInstance()->IsPressMouse(1)) {
+	if (TakeC::Input::GetInstance().PressMouse(1)) {
 		// マウス入力による回転計算
-		float deltaPitch = (float)Input::GetInstance()->GetMouseMove().lY * 0.001f; // X軸回転
-		float deltaYaw = (float)Input::GetInstance()->GetMouseMove().lX * 0.001f;   // Y軸回転
+		float deltaPitch = (float)TakeC::Input::GetInstance().GetMouseMove().lY * 0.001f; // X軸回転
+		float deltaYaw   = (float)TakeC::Input::GetInstance().GetMouseMove().lX * 0.001f;   // Y軸回転
 
 		// クォータニオンを用いた回転計算
 		Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
@@ -198,13 +198,13 @@ void Camera::UpdateDebugCamera() {
 	// 累積回転を更新
 	cameraConfig_.transform_.rotate = rotationDelta * cameraConfig_.transform_.rotate;
 
-	if (Input::GetInstance()->IsPressMouse(2)) {
-		cameraConfig_.offsetDelta_.x += (float)Input::GetInstance()->GetMouseMove().lX * 0.1f;
-		cameraConfig_.offsetDelta_.y -= (float)Input::GetInstance()->GetMouseMove().lY * 0.1f;
+	if (TakeC::Input::GetInstance().PressMouse(2)) {
+		cameraConfig_.offsetDelta_.x += (float)TakeC::Input::GetInstance().GetMouseMove().lX * 0.1f;
+		cameraConfig_.offsetDelta_.y -= (float)TakeC::Input::GetInstance().GetMouseMove().lY * 0.1f;
 	}
 
 	// オフセットを考慮したワールド行列の計算
-	cameraConfig_.offsetDelta_.z += (float)Input::GetInstance()->GetWheel() * 0.1f;
+	cameraConfig_.offsetDelta_.z += (float)TakeC::Input::GetInstance().GetWheel() * 0.1f;
 
 	// 回転を適用
 	cameraConfig_.offset_ = cameraConfig_.offsetDelta_;
@@ -226,8 +226,8 @@ void Camera::UpdateGameCamera() {
 		case Camera::GameCameraState::FOLLOW:
 			InitializeCameraFollow();
 			break;
-		case Camera::GameCameraState::LOOKAT:
-			InitializeCameraLookAt();
+		case Camera::GameCameraState::LOCKON:
+			InitializeCameraLockOn();
 			break;
 		case Camera::GameCameraState::ENEMY_DESTROYED:
 			InitializeCameraEnemyDestroyed();
@@ -243,7 +243,7 @@ void Camera::UpdateGameCamera() {
 	case Camera::GameCameraState::FOLLOW:
 		UpdateCameraFollow();
 		break;
-	case Camera::GameCameraState::LOOKAT:
+	case Camera::GameCameraState::LOCKON:
 		UpdateCameraLockOn();
 		break;
 	case Camera::GameCameraState::ENEMY_DESTROYED:
@@ -313,7 +313,7 @@ void Camera::UpdateCameraFollow() {
 
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
-	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+	if (CollisionManager::GetInstance().RayCast(ray, hitInfo,layerMask)) {
 		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
 		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
 		cameraConfig_.transform_.translate = hitInfo.position - direction_ * margin;
@@ -323,9 +323,10 @@ void Camera::UpdateCameraFollow() {
 	}
 	cameraConfig_.transform_.rotate = Easing::Slerp(cameraConfig_.transform_.rotate, rotationDelta, rotationSpeed_);
 
-	//Rスティック押し込みでカメラの状態変更
-	if (Input::GetInstance()->TriggerButton(0,GamepadButtonType::RightStick)) {
-		cameraStateRequest_ = GameCameraState::LOOKAT;
+	//ロックオン要求があったら状態遷移
+	if (requestedChangeCameraMode_ == true) {
+		cameraStateRequest_ = GameCameraState::LOCKON;
+		requestedChangeCameraMode_ = false;
 	}
 }
 
@@ -337,7 +338,7 @@ void Camera::UpdateCameraFollow() {
 // LookAt状態の処理
 //=============================================================================
 
-void Camera::InitializeCameraLookAt() {
+void Camera::InitializeCameraLockOn() {
 
 	followSpeed_ = 0.4f;
 	cameraConfig_.offsetDelta_ = Vector3(0.0f, 5.0f, -50.0f);
@@ -370,7 +371,7 @@ void Camera::UpdateCameraLockOn() {
 
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
-	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+	if (CollisionManager::GetInstance().RayCast(ray, hitInfo,layerMask)) {
 		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
 		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
 		cameraConfig_.transform_.translate = hitInfo.position - direction_ * margin;
@@ -383,7 +384,7 @@ void Camera::UpdateCameraLockOn() {
 	cameraConfig_.transform_.rotate = Easing::Slerp(cameraConfig_.transform_.rotate, targetRotation, rotationSpeed_);
 
 	// 状態切り替え
-	if (Input::GetInstance()->TriggerButton(0, GamepadButtonType::RightStick)) {
+	if (requestedChangeCameraMode_ == true) {
 		// transform_.rotateからforwardベクトルを算出
 		Vector3 forward = QuaternionMath::RotateVector(Vector3(0,0,1), cameraConfig_.transform_.rotate);
 		//yaw
@@ -395,6 +396,7 @@ void Camera::UpdateCameraLockOn() {
 
 		//状態遷移リクエスト(FOLLOW)
 		cameraStateRequest_ = GameCameraState::FOLLOW;
+		requestedChangeCameraMode_ = false;
 	}
 }
 #pragma endregion
@@ -439,7 +441,7 @@ void Camera::UpdateCameraEnemyDestroyed() {
 
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
-	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+	if (CollisionManager::GetInstance().RayCast(ray, hitInfo,layerMask)) {
 		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
 		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
 		cameraConfig_.transform_.translate = hitInfo.position - direction_ * margin;
