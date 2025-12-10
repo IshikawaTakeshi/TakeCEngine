@@ -35,7 +35,7 @@ void SphereCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObje
 	);
 
 	//カメラのセット
-	camera_ = CameraManager::GetInstance()->GetActiveCamera();
+	camera_ = CameraManager::GetInstance().GetActiveCamera();
 }
 
 //=============================================================================

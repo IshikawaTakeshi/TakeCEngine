@@ -26,7 +26,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 
 	//モデルの設定
 	modelFilePath_ = filePath;
-	model_ = ModelManager::GetInstance()->CopyModel(modelFilePath_);
+	model_ = ModelManager::GetInstance().CopyModel(modelFilePath_);
 	model_->GetMesh()->GetMaterial()->SetEnableLighting(true);
 
 	//TransformationMatrix用のResource生成
@@ -75,7 +75,7 @@ void Object3d::Update() {
 	//wvpの更新
 	if (camera_) {
 		const Matrix4x4& viewProjectionMatrix =
-			CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+			CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
 		WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
 	} else {
 		WVPMatrix_ = worldMatrix_;

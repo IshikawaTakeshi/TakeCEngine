@@ -177,7 +177,7 @@ void Sprite::UpdateVertexData() {
 	float top = 0.0f - spriteConfig_.anchorPoint_.y;
 	float bottom = 1.0f - spriteConfig_.anchorPoint_.y;
 	//テクスチャ範囲指定
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(spriteConfig_.textureFilePath_);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance().GetMetadata(spriteConfig_.textureFilePath_);
 	float tex_left = spriteConfig_.textureLeftTop_.x / metadata.width;
 	float tex_top = spriteConfig_.textureLeftTop_.y / metadata.height;
 	float tex_right = (spriteConfig_.textureLeftTop_.x + spriteConfig_.textureSize_.x) / metadata.width;
@@ -225,7 +225,7 @@ void Sprite::SetFilePath(const std::string& filePath) {
 void Sprite::AdjustTextureSize() {
 
 	//テクスチャメタデータを取得
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(spriteConfig_.textureFilePath_);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance().GetMetadata(spriteConfig_.textureFilePath_);
 
 	spriteConfig_.textureSize_.x = static_cast<float>(metadata.width);
 	spriteConfig_.textureSize_.y = static_cast<float>(metadata.height);
@@ -253,7 +253,7 @@ void Sprite::Draw() {
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(
 		1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//gTextureの設定
-	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(spriteConfig_.textureFilePath_));
+	spriteCommon_->GetDirectXCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance().GetSrvHandleGPU(spriteConfig_.textureFilePath_));
 	//IBVの設定
 	spriteCommon_->GetDirectXCommon()->GetCommandList()->IASetIndexBuffer(&mesh_->GetIndexBufferView());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。

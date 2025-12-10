@@ -8,17 +8,12 @@
 #endif 
 #pragma endregion
 
-//シングルトンインスタンスの初期化
-CameraManager* CameraManager::instance_ = nullptr;
-
 //============================================================================
 // インスタンスの取得
 //============================================================================
-CameraManager* CameraManager::GetInstance() {
-	if (instance_ == nullptr) {
-		instance_ = new CameraManager();
-	}
-	return instance_;
+CameraManager& CameraManager::GetInstance() {
+	static CameraManager instance;
+	return instance;
 }
 
 //============================================================================
@@ -62,10 +57,7 @@ void CameraManager::UpdateImGui() {
 // 終了・開放処理
 //============================================================================
 void CameraManager::Finalize() {
-
 	cameras_.clear();
-	delete instance_;
-	instance_ = nullptr;
 }
 
 //============================================================================

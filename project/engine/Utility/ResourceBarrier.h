@@ -24,17 +24,12 @@ public:
 	/// インスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static ResourceBarrier* GetInstance();
+	static ResourceBarrier& GetInstance();
 
 	/// <summary>
 	/// リソースバリアの初期化
 	/// </summary>
 	void Initialize(DirectXCommon* dxCommon);
-
-	/// <summary>
-	/// リソースバリアの終了処理
-	/// </summary>
-	void Finalize();
 
 	/// <summary>
 	/// リソースの状態遷移
@@ -47,8 +42,6 @@ public:
 
 private:
 
-	/// シングルトンインスタンス
-	static ResourceBarrier* instance_;
 	//dxCommon
 	DirectXCommon* dxCommon_ = nullptr;
 	

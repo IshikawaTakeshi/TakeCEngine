@@ -6,19 +6,12 @@
 #include <filesystem>
 #include <chrono>
 
-
-//シングルトンインスタンスの初期化
-TextureManager* TextureManager::instance_ = nullptr;
-
-
 //================================================================
 // シングルトンインスタンスの取得
 //================================================================
-TextureManager* TextureManager::GetInstance() {
-	if (instance_ == nullptr) {
-		instance_ = new TextureManager();
-	}
-	return instance_;
+TextureManager& TextureManager::GetInstance() {
+	static TextureManager instance;
+	return instance;
 }
 
 //================================================================
@@ -43,9 +36,6 @@ void TextureManager::Finalize() {
 	srvManager_ = nullptr;
 	dxCommon_ = nullptr;
 	textureDatas_.clear();
-	delete instance_;
-	instance_ = nullptr;
-	
 }
 
 //=============================================================================================

@@ -11,13 +11,13 @@
 void PlayerReticle::Initialize() {
 		// レティクルのスプライトを初期化
 	reticleSprite_ = std::make_unique<Sprite>();
-	reticleSprite_->Initialize(SpriteCommon::GetInstance(), "UI/reticle_focusTarget.png");
+	reticleSprite_->Initialize(&SpriteCommon::GetInstance(), "UI/reticle_focusTarget.png");
 	reticleSprite_->SetAnchorPoint({ 0.5f, 0.5f }); // アンカーポイントを中心に設定
 	reticleSprite_->AdjustTextureSize(); // テクスチャサイズをイメージに合わせる
 	reticleSprite_->SetSize({ size_, size_ }); // レティクルのサイズを設定
 
 	predictedImpactReticle_ = std::make_unique<Sprite>();
-	predictedImpactReticle_->Initialize(SpriteCommon::GetInstance(), "UI/DiamondReticle2.png");
+	predictedImpactReticle_->Initialize(&SpriteCommon::GetInstance(), "UI/DiamondReticle2.png");
 	predictedImpactReticle_->SetAnchorPoint({ 0.5f, 0.5f }); // アンカーポイントを中心に設定
 	predictedImpactReticle_->AdjustTextureSize(); // テクスチャサイズをイメージに合わせる
 	predictedImpactReticle_->SetSize({ size_ * reticleSizeScale_, size_ * reticleSizeScale_ }); 
@@ -39,7 +39,7 @@ void PlayerReticle::Update(const Vector3& targetPosition, const Vector3& predict
 	if (isFocus_) {
 
 		//ターゲットのワールド座標をスクリーン座標に変換
-		Matrix4x4 viewProjectionMatrix = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+		Matrix4x4 viewProjectionMatrix = CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
 		Vector3 screenPos = MatrixMath::Transform(targetPosition_, viewProjectionMatrix);
 		Vector3 predictedScreenPos = MatrixMath::Transform(predictedImpactPosition_, viewProjectionMatrix);
 		//スクリーン座標に変換（-1～1の範囲）

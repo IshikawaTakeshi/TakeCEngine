@@ -16,9 +16,6 @@ class Collider;
 class CollisionManager {
 private:
 
-	//シングルトンインスタンス
-	static CollisionManager* instance_;
-
 	//コピーコンストラクタ・代入演算子禁止
 	CollisionManager() = default;
 	~CollisionManager() = default;
@@ -35,7 +32,7 @@ public:
 	/// シングルトンインスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static CollisionManager* GetInstance();
+	static CollisionManager& GetInstance();
 
 	/// <summary>
 	/// 初期化

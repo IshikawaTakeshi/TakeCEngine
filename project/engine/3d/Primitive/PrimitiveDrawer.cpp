@@ -277,7 +277,7 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 			pso->GetGraphicBindResourceIndex("gMaterial"), ringData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(ringData->material_->GetTextureFilePath()));
 
 		//描画
 		commandList->DrawInstanced(ringVertexCount_, instanceCount, 0, 0);
@@ -306,7 +306,7 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 			pso->GetGraphicBindResourceIndex("gMaterial"), planeData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(planeData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(planeData->material_->GetTextureFilePath()));
 		//描画
 		commandList->DrawInstanced(planeVertexCount_, instanceCount, 0, 0);
 
@@ -332,7 +332,7 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 			pso->GetGraphicBindResourceIndex("gMaterial"), sphereData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(sphereData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(sphereData->material_->GetTextureFilePath()));
 
 		//描画
 		commandList->DrawInstanced(sphereVertexCount_, instanceCount, 0, 0);
@@ -357,7 +357,7 @@ void PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType t
 			pso->GetGraphicBindResourceIndex("gMaterial"), coneData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(coneData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(coneData->material_->GetTextureFilePath()));
 		//描画
 		commandList->DrawInstanced(coneVertexCount_, instanceCount, 0, 0);
 		break;
@@ -397,7 +397,7 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 			pso->GetGraphicBindResourceIndex("gMaterial"), ringData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(ringData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(ringData->material_->GetTextureFilePath()));
 		//描画
 		commandList->DrawInstanced(ringVertexCount_, 1, 0, 0);
 		break;
@@ -418,7 +418,7 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 			pso->GetGraphicBindResourceIndex("gMaterial"), planeData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(planeData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(planeData->material_->GetTextureFilePath()));
 		//描画
 		commandList->DrawInstanced(planeVertexCount_, 1, 0, 0);
 		break;
@@ -440,7 +440,7 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 			pso->GetGraphicBindResourceIndex("gMaterial"), sphereData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(sphereData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(sphereData->material_->GetTextureFilePath()));
 		//IBVの設定
 		//commandList->IASetIndexBuffer(&sphereData->primitiveData_.indexBufferView_);
 		//描画
@@ -463,7 +463,7 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 			pso->GetGraphicBindResourceIndex("gMaterial"), coneData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(coneData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(coneData->material_->GetTextureFilePath()));
 		//IBVの設定
 		//commandList->IASetIndexBuffer(&coneData->primitiveData_.indexBufferView_);
 		//描画
@@ -486,7 +486,7 @@ void PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handl
 			pso->GetGraphicBindResourceIndex("gMaterial"), cubeData->material_->GetMaterialResource()->GetGPUVirtualAddress());
 		// texture
 		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance()->GetSrvIndex(cubeData->material_->GetTextureFilePath()));
+			pso->GetGraphicBindResourceIndex("gTexture"), TextureManager::GetInstance().GetSrvIndex(cubeData->material_->GetTextureFilePath()));
 		//IBVの設定
 		//commandList->IASetIndexBuffer(&cubeData->primitiveData_.indexBufferView_);
 		//描画

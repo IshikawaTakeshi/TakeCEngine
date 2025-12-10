@@ -21,7 +21,7 @@ void CharacterEditTool::Initialize() {
 	weaponNameTexts_.resize(maxWeaponMenuItems_);
 	for(size_t i =0;i<weaponItemSprites_.size();++i){
 		weaponItemSprites_[i] = std::make_unique<Sprite>();
-		weaponItemSprites_[i]->Initialize(SpriteCommon::GetInstance(), "white1x1.png");
+		weaponItemSprites_[i]->Initialize(&SpriteCommon::GetInstance(), "white1x1.png");
 		weaponItemSprites_[i]->SetSize(menuBarSpriteSize_);
 		weaponItemSprites_[i]->SetTranslate({
 			menuBarLeftTop_.x,
@@ -31,7 +31,7 @@ void CharacterEditTool::Initialize() {
 
 		if (i < 4) {
 			weaponIconTexts_[i] = std::make_unique<Sprite>();
-			weaponIconTexts_[i]->Initialize(SpriteCommon::GetInstance(), "UI/EditWeaponIcon.png");
+			weaponIconTexts_[i]->Initialize(&SpriteCommon::GetInstance(), "UI/EditWeaponIcon.png");
 			weaponIconTexts_[i]->LoadConfig("EditWeaponIconText" + std::to_string(i) + ".json");
 			weaponIconTexts_[i]->SetTranslate({
 				menuBarLeftTop_.x,
@@ -39,7 +39,7 @@ void CharacterEditTool::Initialize() {
 				});
 		}
 		weaponNameTexts_[i] = std::make_unique<Sprite>();
-		weaponNameTexts_[i]->Initialize(SpriteCommon::GetInstance(), "UI/EditWeaponNameText.png");
+		weaponNameTexts_[i]->Initialize(&SpriteCommon::GetInstance(), "UI/EditWeaponNameText.png");
 		weaponNameTexts_[i]->LoadConfig("WeaponNameText" + std::to_string(i) + ".json");
 		weaponNameTexts_[i]->SetTranslate({
 			menuBarLeftTop_.x,
@@ -51,7 +51,7 @@ void CharacterEditTool::Initialize() {
 	characterItemSprites_.resize(maxCharacterMenuItems_);
 	for(size_t i =0;i<characterItemSprites_.size();++i){
 		characterItemSprites_[i] = std::make_unique<Sprite>();
-		characterItemSprites_[i]->Initialize(SpriteCommon::GetInstance(), "white1x1.png");
+		characterItemSprites_[i]->Initialize(&SpriteCommon::GetInstance(), "white1x1.png");
 		characterItemSprites_[i]->SetSize(menuBarSpriteSize_);
 		characterItemSprites_[i]->SetTranslate({
 			menuBarLeftTop_.x,
@@ -62,14 +62,14 @@ void CharacterEditTool::Initialize() {
 
 	//カーソルスプライト初期化
 	cursorSprite_ = std::make_unique<Sprite>();
-	cursorSprite_->Initialize(SpriteCommon::GetInstance(), "white1x1.png");
+	cursorSprite_->Initialize(&SpriteCommon::GetInstance(), "white1x1.png");
 	cursorSprite_->SetSize(menuBarSpriteSize_);
 	cursorSprite_->SetTranslate(menuBarLeftTop_);
 
 	//メニューバー用スプライト群初期化
 	for (size_t i = 0; i < CharacterEditMenuEnum::MENU_SIZE; ++i) {
 		menuBarSprites_[i] = std::make_unique<Sprite>();
-		menuBarSprites_[i]->Initialize(SpriteCommon::GetInstance(), "white1x1.png");
+		menuBarSprites_[i]->Initialize(&SpriteCommon::GetInstance(), "white1x1.png");
 		menuBarSprites_[i]->SetSize(menuBarSpriteSize_);
 		menuBarSprites_[i]->SetTranslate({
 			menuBarLeftTop_.x,
@@ -80,7 +80,7 @@ void CharacterEditTool::Initialize() {
 
 	//ゲーム開始テキストスプライト初期化
 	startGameTextSprite_ = std::make_unique<Sprite>();
-	startGameTextSprite_->Initialize(SpriteCommon::GetInstance(), "UI/GameStartText.png");
+	startGameTextSprite_->Initialize(&SpriteCommon::GetInstance(), "UI/GameStartText.png");
 	startGameTextSprite_->LoadConfig("GameStartText.json");
 	startGameTextSpritePos_ = menuBarSprites_[6]->GetTranslate();
 	startGameTextSprite_->SetTranslate(startGameTextSpritePos_);
@@ -95,13 +95,13 @@ void CharacterEditTool::Initialize() {
 
 	//プレビュー用キャラクターモデル初期化
 	previewCharacterModel_ = std::make_unique<Object3d>();
-	previewCharacterModel_->Initialize(Object3dCommon::GetInstance(),currentCharacterData_.characterInfo.modelFilePath);
+	previewCharacterModel_->Initialize(&Object3dCommon::GetInstance(),currentCharacterData_.characterInfo.modelFilePath);
 
 	//プレビュー用武器モデル群初期化
 	previewWeaponModels_.resize(WeaponUnit::Size);
 	for(size_t i =0;i<previewWeaponModels_.size();++i){
 		previewWeaponModels_[i] = std::make_unique<Object3d>();
-		previewWeaponModels_[i]->Initialize(Object3dCommon::GetInstance(),currentCharacterData_.weaponData[i].modelFilePath);
+		previewWeaponModels_[i]->Initialize(&Object3dCommon::GetInstance(),currentCharacterData_.weaponData[i].modelFilePath);
 	}
 
 	//編集モード初期化
@@ -690,7 +690,7 @@ void CharacterEditTool::UpdateWeaponEdit() {
 		// 武器の適用
 		currentCharacterData_.weaponData[editingItemIndex_] = *AttachWeapon(weaponNames_[editingWeaponUnitIndex_]);
 		//武器モデルの再初期化
-		previewWeaponModels_[editingItemIndex_]->Initialize(Object3dCommon::GetInstance(), currentCharacterData_.weaponData[editingItemIndex_].modelFilePath);
+		previewWeaponModels_[editingItemIndex_]->Initialize(&Object3dCommon::GetInstance(), currentCharacterData_.weaponData[editingItemIndex_].modelFilePath);
 	}
 
 	//戻るボタンが押されたときの処理

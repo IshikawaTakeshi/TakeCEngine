@@ -59,7 +59,7 @@ void PostEffectManager::Finalize() {
 void PostEffectManager::AllDispatch() {
 
 	// RENDER_TARGET >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_RENDER_TARGET,         //stateBefore
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, //stateAfter
 		renderTextureResource_.Get());              //currentResource
@@ -69,7 +69,7 @@ void PostEffectManager::AllDispatch() {
 	}
 
 	//NON_PIXCEL_SHADER_RESOURCE >> RENDER_TARGET
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		renderTextureResource_.Get());

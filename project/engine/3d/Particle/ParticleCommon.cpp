@@ -6,17 +6,14 @@
 #include "engine/3d/Object3dCommon.h"
 #include "engine/3d/Light/LightManager.h"
 
-ParticleCommon* ParticleCommon::instance_ = nullptr;
 
 //==================================================================================
 // インスタンス取得
 //==================================================================================
-ParticleCommon* ParticleCommon::GetInstance() {
+ParticleCommon& ParticleCommon::GetInstance() {
 
-	if (instance_ == nullptr) {
-		instance_ = new ParticleCommon();
-	}
-	return instance_;
+	static ParticleCommon instance;
+	return instance;
 }
 
 //==================================================================================

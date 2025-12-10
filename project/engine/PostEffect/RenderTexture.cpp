@@ -96,7 +96,7 @@ void RenderTexture::PreDraw() {
 void RenderTexture::Draw() {
 
 	// RENDER_TARGET >> PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_RENDER_TARGET,         //stateBefore
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, //stateAfter
 		renderTextureResource_.Get());              //currentResource
@@ -122,7 +122,7 @@ void RenderTexture::PostDraw() {
 
 
 	//PIXCEL_SHADER_RESOURCE >> GENERIC_READ
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		renderTextureResource_.Get());

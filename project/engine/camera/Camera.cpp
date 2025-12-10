@@ -313,7 +313,7 @@ void Camera::UpdateCameraFollow() {
 
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
-	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+	if (CollisionManager::GetInstance().RayCast(ray, hitInfo,layerMask)) {
 		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
 		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
 		cameraConfig_.transform_.translate = hitInfo.position - direction_ * margin;
@@ -371,7 +371,7 @@ void Camera::UpdateCameraLockOn() {
 
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
-	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+	if (CollisionManager::GetInstance().RayCast(ray, hitInfo,layerMask)) {
 		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
 		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
 		cameraConfig_.transform_.translate = hitInfo.position - direction_ * margin;
@@ -441,7 +441,7 @@ void Camera::UpdateCameraEnemyDestroyed() {
 
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
-	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+	if (CollisionManager::GetInstance().RayCast(ray, hitInfo,layerMask)) {
 		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
 		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
 		cameraConfig_.transform_.translate = hitInfo.position - direction_ * margin;

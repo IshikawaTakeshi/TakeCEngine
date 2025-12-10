@@ -26,9 +26,6 @@ class SrvManager;
 class TextureManager {
 private:
 
-	//シングルトンインスタンス
-	static TextureManager* instance_;
-
 	//コンストラクタ・デストラクタ・コピー禁止
 	TextureManager() = default;
 	~TextureManager() = default;
@@ -44,7 +41,7 @@ public:
 	/// <summary>
 	/// インスタンス取得
 	/// </summary>
-	static TextureManager* GetInstance();
+	static TextureManager& GetInstance();
 
 	/// <summary>
 	/// 初期化

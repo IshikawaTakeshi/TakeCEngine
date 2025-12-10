@@ -53,7 +53,7 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 	);
 
 	//カメラのセット
-	camera_ = CameraManager::GetInstance()->GetActiveCamera();
+	camera_ = CameraManager::GetInstance().GetActiveCamera();
 }
 
 //=============================================================================

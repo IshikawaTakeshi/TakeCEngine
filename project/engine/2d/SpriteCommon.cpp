@@ -2,16 +2,13 @@
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
 
-SpriteCommon* SpriteCommon::instance_ = nullptr;
 
 //====================================================================
 // インスタンスの取得
 //====================================================================
-SpriteCommon* SpriteCommon::GetInstance() {	
-	if(instance_ == nullptr) {
-		instance_ = new SpriteCommon();
-	}
-	return instance_;
+SpriteCommon& SpriteCommon::GetInstance() {	
+	static SpriteCommon instance;
+	return instance;
 }
 
 //====================================================================
@@ -43,8 +40,6 @@ void SpriteCommon::Finalize() {
 	rootSignature_.Reset();
 	pso_.reset();
 	dxCommon_ = nullptr;
-	delete instance_;
-	instance_ = nullptr;
 }
 
 //====================================================================

@@ -153,7 +153,7 @@ void BloomEffect::DispatchBrightPass() {
 
 	//Computeパイプラインのセット
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		brightPassResource_.Get());
@@ -170,7 +170,7 @@ void BloomEffect::DispatchBrightPass() {
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 16, WinApp::kScreenHeight / 16, 1);
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		brightPassResource_.Get());
@@ -182,7 +182,7 @@ void BloomEffect::DispatchBrightPass() {
 void BloomEffect::DispatchHorizontalBlur() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		horizontalBlurResource_.Get());
@@ -199,7 +199,7 @@ void BloomEffect::DispatchHorizontalBlur() {
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch((halfWidth_ + 255) / 256, halfHeight_, 1);
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		horizontalBlurResource_.Get());
@@ -211,7 +211,7 @@ void BloomEffect::DispatchHorizontalBlur() {
 void BloomEffect::DispatchVerticalBlur() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		verticalBlurResource_.Get());
@@ -228,7 +228,7 @@ void BloomEffect::DispatchVerticalBlur() {
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(halfWidth_, (halfHeight_ + 255) / 256, 1);
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		verticalBlurResource_.Get());
@@ -240,7 +240,7 @@ void BloomEffect::DispatchVerticalBlur() {
 void BloomEffect::DispatchComposite() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		outputResource_.Get());
@@ -259,7 +259,7 @@ void BloomEffect::DispatchComposite() {
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 16, WinApp::kScreenHeight / 16, 1);
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());

@@ -32,7 +32,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	srvManager_->Initialize(directXCommon_.get());
 
 	//ResourceBarrier
-	ResourceBarrier::GetInstance()->Initialize(directXCommon_.get());
+	ResourceBarrier::GetInstance().Initialize(directXCommon_.get());
 
 	
 	//入力初期化
@@ -40,7 +40,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	input_->Initialize(winApp_.get());
 
 	//Audio
-	audio_ = AudioManager::GetInstance();
+	audio_ = &AudioManager::GetInstance();
 	audio_->Initialize();
 
 	//JsonLoader
@@ -51,28 +51,28 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	lightManager_->Initialize(directXCommon_.get(), srvManager_.get());
 
 	//SpriteCommon
-	spriteCommon_ = SpriteCommon::GetInstance();
+	spriteCommon_ = &SpriteCommon::GetInstance();
 	spriteCommon_->Initialize(directXCommon_.get());
 
 	//Object3dCommon
-	object3dCommon_ = Object3dCommon::GetInstance();
+	object3dCommon_ = &Object3dCommon::GetInstance();
 	object3dCommon_->Initialize(directXCommon_.get(),lightManager_.get());
 
 	//ParticleCommon
-	particleCommon_ = ParticleCommon::GetInstance();
+	particleCommon_ = &ParticleCommon::GetInstance();
 	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get(),lightManager_.get());
 
 	//Animator
 	animator_ = std::make_unique<Animator>();
 
 	//CameraManager
-	CameraManager::GetInstance()->Initialize(directXCommon_.get());
+	CameraManager::GetInstance().Initialize(directXCommon_.get());
 
 	//ModelManager
-	ModelManager::GetInstance()->Initialize(directXCommon_.get(), srvManager_.get());
+	ModelManager::GetInstance().Initialize(directXCommon_.get(), srvManager_.get());
 
 	//TextureManager
-	TextureManager::GetInstance()->Initialize(directXCommon_.get(), srvManager_.get());
+	TextureManager::GetInstance().Initialize(directXCommon_.get(), srvManager_.get());
 
 	//ParticleManager
 	particleManager_ = std::make_unique<ParticleManager>();
@@ -101,7 +101,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 #endif
 
 	//sceneManager
-	sceneManager_ = SceneManager::GetInstance();
+	sceneManager_ = &SceneManager::GetInstance();
 
 	//sceneTransition
 	sceneTransition_ = SceneTransition::GetInstance();
@@ -120,10 +120,9 @@ void TakeCFrameWork::Finalize() {
 
 	wireFrame_->Finalize();
 	animator_->Finalize();
-	TextureManager::GetInstance()->Finalize();
-	ModelManager::GetInstance()->Finalize();
-	CameraManager::GetInstance()->Finalize();
-	ResourceBarrier::GetInstance()->Finalize();
+	TextureManager::GetInstance().Finalize();
+	ModelManager::GetInstance().Finalize();
+	CameraManager::GetInstance().Finalize();
 	postEffectManager_->Finalize();
 	renderTexture_.reset();
 	particleManager_->Finalize();

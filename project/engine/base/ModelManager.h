@@ -38,7 +38,7 @@ public:
 	/// <summary>
 	/// シングルトンインスタンス取得
 	/// </summary>
-	static ModelManager* GetInstance();
+	static ModelManager& GetInstance();
 
 	/// <summary>
 	/// 初期化
@@ -90,9 +90,6 @@ public:
 	void ApplyModelReloads();
 
 private:
-
-	//インスタンス
-	static ModelManager* instance_;
 
 	//モデル共通データ
 	ModelCommon* modelCommon_ = nullptr;

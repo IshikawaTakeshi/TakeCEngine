@@ -34,10 +34,10 @@ void ParticleEditor::Initialize(ParticleManager* particleManager,ParticleCommon*
 	//全プリセットの読み込み
 	LoadAllPresets();
 
-	TextureManager::GetInstance()->LoadTextureAll();
+	TextureManager::GetInstance().LoadTextureAll();
 
 	//テクスチャ名一覧の取得
-	textureFileNames_ = TextureManager::GetInstance()->GetLoadedTextureFileNames();
+	textureFileNames_ = TextureManager::GetInstance().GetLoadedTextureFileNames();
 }
 
 //======================================================================
@@ -152,7 +152,7 @@ void ParticleEditor::Draw() {
 void ParticleEditor::DrawParticleAttributesEditor() {
 
 	//テクスチャが再ロードされたかチェック
-	TextureManager::GetInstance()->CheckAndReloadTextures();
+	TextureManager::GetInstance().CheckAndReloadTextures();
 
 	ParticleAttributes& attributes = currentPreset_.attribute;
 

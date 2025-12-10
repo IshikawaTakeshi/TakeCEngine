@@ -32,7 +32,7 @@ public:
 	/// <summary>
 	/// インスタンスの取得
 	/// </summary>
-	static CameraManager* GetInstance();
+	static CameraManager& GetInstance();
 
 	/// <summary>
 	/// 初期化
@@ -91,9 +91,6 @@ private:
 
 	//DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
-
-	//シングルトンインスタンス
-	static CameraManager* instance_;
 	//登録したカメラのマップ
 	std::unordered_map<std::string, std::unique_ptr<Camera>> cameras_;
 	Camera* activeCamera_;  // 現在アクティブなカメラ

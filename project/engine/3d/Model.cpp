@@ -128,12 +128,12 @@ void Model::UpdateImGui() {
 
 		//モデルのリロード
 		if(ImGui::Button("Reload Model")) {
-			ModelManager::GetInstance()->RequestReload(modelData_->fileName);
+			ModelManager::GetInstance().RequestReload(modelData_->fileName);
 		}
 
 		//テクスチャのリロード
 		if (ImGui::Button("Reload Texture")) {
-			TextureManager::GetInstance()->LoadTexture(modelData_->material.textureFilePath, true);
+			TextureManager::GetInstance().LoadTexture(modelData_->material.textureFilePath, true);
 		}
 	}
 }
@@ -164,12 +164,12 @@ void Model::Draw(PSO* pso) {
 		// Texture SRV
 		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
 			pso->GetGraphicBindResourceIndex("gTexture"),
-			TextureManager::GetInstance()->GetSrvIndex(mat.textureFilePath));
+			TextureManager::GetInstance().GetSrvIndex(mat.textureFilePath));
 
 		// EnvMap SRV
 		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
 			pso->GetGraphicBindResourceIndex("gEnvMapTexture"),
-			TextureManager::GetInstance()->GetSrvIndex(mat.envMapFilePath));
+			TextureManager::GetInstance().GetSrvIndex(mat.envMapFilePath));
 
 		// DrawObject 呼び出し
 		commandList->DrawIndexedInstanced(
@@ -192,7 +192,7 @@ void Model::Dispatch(PSO* skinningPso) {
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
 
 	// VERTEX_AND_CONSTANT_BUFFER >> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		mesh_->GetOutputVertexResource());
@@ -216,7 +216,7 @@ void Model::Dispatch(PSO* skinningPso) {
 	commandList->Dispatch(UINT(modelData_->skinningInfoData.numVertices + 1023) / 1024, 1, 1);
 
 	//UNORDERED_ACCESS >> VERTEX_AND_CONSTANT_BUFFER
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
 		mesh_->GetOutputVertexResource());
@@ -237,7 +237,7 @@ void Model::DrawForParticle(UINT instanceCount_) {
 	//materialCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance().GetSrvIndex(modelData_->material.textureFilePath));
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount_, 0, 0);
 
@@ -253,7 +253,7 @@ void Model::DrawForGPUParticle(UINT instanceCount) {
 	//materialCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, mesh_->GetMaterial()->GetMaterialResource()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(modelData_->material.textureFilePath));
+	modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance().GetSrvIndex(modelData_->material.textureFilePath));
 	//DrawCall
 	commandList->DrawInstanced(UINT(modelData_->vertices.size()), instanceCount, 0, 0);
 }

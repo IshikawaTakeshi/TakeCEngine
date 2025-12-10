@@ -47,7 +47,7 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& texturef
 	);
 
 	//カメラのセット
-	camera_ = CameraManager::GetInstance()->GetActiveCamera();
+	camera_ = CameraManager::GetInstance().GetActiveCamera();
 }
 
 //=============================================================================
@@ -61,7 +61,7 @@ void SkyBox::Update() {
 	//wvpの更新
 	if (camera_) {
 		const Matrix4x4& viewProjectionMatrix =
-			CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+			CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
 		WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
 	} else {
 		WVPMatrix_ = worldMatrix_;

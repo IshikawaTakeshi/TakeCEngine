@@ -48,7 +48,7 @@ void WireFrame::Initialize(DirectXCommon* directXCommon) {
 void WireFrame::Update() {
 
 	// ビュープロジェクション行列の取得
-	TransformMatrixData_->WVP = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+	TransformMatrixData_->WVP = CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
 }
 
 //=============================================================================
@@ -281,7 +281,7 @@ void WireFrame::DrawCone(const Vector3& apex, const Vector3& direction, float an
 //=============================================================================
 void WireFrame::DrawRing(const Vector3& center, const Vector3& normal, float radius, const Vector4& color, bool isBillboard) {
 	// ビルボードの場合、カメラの向きを考慮
-	Vector3 up = isBillboard ? CameraManager::GetInstance()->GetActiveCamera()->GetUpVector() : Vector3(0.0f, 1.0f, 0.0f);
+	Vector3 up = isBillboard ? CameraManager::GetInstance().GetActiveCamera()->GetUpVector() : Vector3(0.0f, 1.0f, 0.0f);
 	Vector3 right = normal.Cross(up).Normalize();
 	up = right.Cross(normal).Normalize();
 	const int segments = 32; // 円周の分割数

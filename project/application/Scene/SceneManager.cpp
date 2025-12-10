@@ -6,19 +6,14 @@
 #include "scene/SceneTransition.h"
 #include <cassert>
 
-//シングルトンインスタンスの初期化
-SceneManager* SceneManager::instance_ = nullptr;
-
 //========================================================================
 //	インスタンス取得
 //========================================================================
 
-SceneManager* SceneManager::GetInstance() {
+SceneManager& SceneManager::GetInstance() {
 	
-	if (instance_ == nullptr) {
-		instance_ = new SceneManager();
-	}
-	return instance_;
+	static SceneManager instance;
+	return instance;
 }
 
 //========================================================================
@@ -28,7 +23,6 @@ SceneManager* SceneManager::GetInstance() {
 void SceneManager::Finalize() {
 	currentScene_->Finalize();
 	currentScene_.reset();
-	instance_ = nullptr;
 }
 
 //========================================================================
@@ -146,9 +140,9 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 
 	for (auto& objectData : levelData_->objects) {
 		Model* model = nullptr;
-		model = ModelManager::GetInstance()->FindModel(objectData.file_name);
+		model = ModelManager::GetInstance().FindModel(objectData.file_name);
 		std::pair<std::string, std::unique_ptr<LevelObject>> newObject = { objectData.name, std::make_unique<LevelObject>() };
-		newObject.second->Initialize(Object3dCommon::GetInstance(), objectData.file_name);
+		newObject.second->Initialize(&Object3dCommon::GetInstance(), objectData.file_name);
 		newObject.second->SetName(objectData.name);
 		if (objectData.collider.isValid) {
 

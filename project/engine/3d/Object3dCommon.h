@@ -38,7 +38,7 @@ public:
 	/// インスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static Object3dCommon* GetInstance();
+	static Object3dCommon& GetInstance();
 
 	/// <summary>
 	/// 初期化
@@ -98,9 +98,6 @@ private:
 	void SetCBufferViewCamera(PSO* pso);
 
 private:
-
-	//インスタンス
-	static Object3dCommon* instance_;
 
 	//DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;

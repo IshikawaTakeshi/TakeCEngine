@@ -27,7 +27,7 @@ void SceneTransition::Initialize() {
 	state_ = TransitionState::NONE;
 
 	fadeSprite_ = std::make_unique<Sprite>();
-	fadeSprite_->Initialize(SpriteCommon::GetInstance(), "black.png");
+	fadeSprite_->Initialize(&SpriteCommon::GetInstance(), "black.png");
 	fadeSprite_->SetTextureSize({ WinApp::kScreenWidth,WinApp::kScreenHeight });
 	fadeSprite_->SetSize({ WinApp::kScreenWidth,WinApp::kScreenHeight });
 	duration_ = 0.0f;
@@ -115,7 +115,7 @@ void SceneTransition::Draw() {
 	}
 
 	//描画前処理
-	SpriteCommon::GetInstance()->PreDraw();
+	SpriteCommon::GetInstance().PreDraw();
 	//スプライト描画
 	fadeSprite_->Draw();
 }

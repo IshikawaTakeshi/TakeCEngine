@@ -123,8 +123,8 @@ void PrimitiveParticle::Update() {
 
 	// データをGPUに転送  
 	perViewData_->isBillboard = particlePreset_.attribute.isBillboard;
-	perViewData_->viewProjection = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
-	perViewData_->billboardMatrix = CameraManager::GetInstance()->GetActiveCamera()->GetRotationMatrix();
+	perViewData_->viewProjection = CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
+	perViewData_->billboardMatrix = CameraManager::GetInstance().GetActiveCamera()->GetRotationMatrix();
 }
 
 //=============================================================================

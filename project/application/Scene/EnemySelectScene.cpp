@@ -14,23 +14,23 @@
 void EnemySelectScene::Initialize() {
 
 	//BGM読み込み
-	BGM_ = AudioManager::GetInstance()->LoadSound("SelectSceneBGM.mp3");
+	BGM_ = AudioManager::GetInstance().LoadSound("SelectSceneBGM.mp3");
 
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
-	gameCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
+	gameCamera_->Initialize(CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	gameCamera_->SetYawRot(2.5f);
-	CameraManager::GetInstance()->AddCamera("gameCamera", *gameCamera_);
+	CameraManager::GetInstance().AddCamera("gameCamera", *gameCamera_);
 
 	//Camera1
 	debugCamera_ = std::make_shared<Camera>();
-	debugCamera_->Initialize(CameraManager::GetInstance()->GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
+	debugCamera_->Initialize(CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	debugCamera_->SetIsDebug(true);
-	CameraManager::GetInstance()->AddCamera("debugCamera", *debugCamera_);
+	CameraManager::GetInstance().AddCamera("debugCamera", *debugCamera_);
 
 	//デフォルトカメラの設定
-	Object3dCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
-	ParticleCommon::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetActiveCamera());
+	Object3dCommon::GetInstance().SetDefaultCamera(CameraManager::GetInstance().GetActiveCamera());
+	ParticleCommon::GetInstance().SetDefaultCamera(CameraManager::GetInstance().GetActiveCamera());
 
 	//Animation読み込み
 	TakeCFrameWork::GetAnimator()->LoadAnimation("Animation", "walk.gltf");
@@ -41,7 +41,7 @@ void EnemySelectScene::Initialize() {
 
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize(Object3dCommon::GetInstance()->GetDirectXCommon(), "skyBox_blueSky.dds");
+	skyBox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(), "skyBox_blueSky.dds");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//キャラクター編集ツール
@@ -54,9 +54,9 @@ void EnemySelectScene::Initialize() {
 //====================================================================
 
 void EnemySelectScene::Finalize() {
-	AudioManager::GetInstance()->SoundUnload(&BGM_); // BGM停止
-	CollisionManager::GetInstance()->ClearGameCharacter(); // 当たり判定の解放
-	CameraManager::GetInstance()->ResetCameras(); //カメラのリセット
+	AudioManager::GetInstance().SoundUnload(&BGM_); // BGM停止
+	CollisionManager::GetInstance().ClearGameCharacter(); // 当たり判定の解放
+	CameraManager::GetInstance().ResetCameras(); //カメラのリセット
 	skyBox_.reset();
 }
 
@@ -67,12 +67,12 @@ void EnemySelectScene::Update() {
 
 	//BGM再生
 	if (!isSoundPlay_) {
-		AudioManager::GetInstance()->SoundPlayWave(BGM_, bgmVolume_,true);
+		AudioManager::GetInstance().SoundPlayWave(BGM_, bgmVolume_,true);
 		isSoundPlay_ = true;
 	}
 
 	//カメラの更新
-	CameraManager::GetInstance()->Update();
+	CameraManager::GetInstance().Update();
 	//SkyBoxの更新
 	skyBox_->Update();
 	//キャラクター編集ツールの更新
@@ -148,7 +148,7 @@ void EnemySelectScene::Update() {
 	if (characterEditTool_->IsNextMenuRequested() == true) {
 		
 		//ゲームプレイシーンへ移動
-		SceneManager::GetInstance()->ChangeScene("GAMEPLAY", 1.0f);
+		SceneManager::GetInstance().ChangeScene("GAMEPLAY", 1.0f);
 		//リクエストフラグを下ろす
 		characterEditTool_->SetNextMenuRequested(false);
 	}
@@ -156,8 +156,8 @@ void EnemySelectScene::Update() {
 
 void EnemySelectScene::UpdateImGui() {
 
-	CameraManager::GetInstance()->UpdateImGui();
-	Object3dCommon::GetInstance()->UpdateImGui();
+	CameraManager::GetInstance().UpdateImGui();
+	Object3dCommon::GetInstance().UpdateImGui();
 
 	ImGui::Begin("Level Objects");
 	characterEditTool_->UpdateImGui();
@@ -177,13 +177,13 @@ void EnemySelectScene::Draw() {
 #pragma region Object3d描画
 
 	//Object3dの描画前処理
-	Object3dCommon::GetInstance()->Dispatch();
+	Object3dCommon::GetInstance().Dispatch();
 	characterEditTool_->DispatchObject();
 	
-	Object3dCommon::GetInstance()->PreDraw();
+	Object3dCommon::GetInstance().PreDraw();
 	characterEditTool_->DrawObject();
 	
-	Object3dCommon::GetInstance()->PreDrawAddBlend();
+	Object3dCommon::GetInstance().PreDrawAddBlend();
 	
 
 #pragma endregion
@@ -197,7 +197,7 @@ void EnemySelectScene::Draw() {
 void EnemySelectScene::DrawSprite() {
 
 	//スプライトの描画前処理
-	SpriteCommon::GetInstance()->PreDraw();
+	SpriteCommon::GetInstance().PreDraw();
 
 	characterEditTool_->DrawUI();
 }
@@ -228,7 +228,7 @@ void EnemySelectScene::InitializeEnemyDestroyed() {
 	//スローモーションにする
 	MyGame::RequestTimeScale(-1.0f, 1.0f, 1.0f);
 	//カメラをズームする
-	CameraManager::GetInstance()->GetActiveCamera()->RequestCameraState(Camera::GameCameraState::ENEMY_DESTROYED);
+	CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::ENEMY_DESTROYED);
 	//changeBehaviorTimerを初期化
 	changeBehaviorTimer_.Initialize(2.4f, 0.0f);
 }
@@ -245,7 +245,7 @@ void EnemySelectScene::UpdateEnemyDestroyed() {
 		behaviorRequest_ = SceneBehavior::GAMECLEAR;
 
 		//ズーム解除
-		CameraManager::GetInstance()->GetActiveCamera()->RequestCameraState(Camera::GameCameraState::FOLLOW);
+		CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::FOLLOW);
 	}
 }
 
@@ -256,7 +256,7 @@ void EnemySelectScene::UpdateEnemyDestroyed() {
 void EnemySelectScene::InitializeGameOver() {
 
 	fadeTimer_ = 2.0f;
-	SceneManager::GetInstance()->ChangeScene("GAMEOVER", fadeTimer_);
+	SceneManager::GetInstance().ChangeScene("GAMEOVER", fadeTimer_);
 }
 
 void EnemySelectScene::UpdateGameOver() {}

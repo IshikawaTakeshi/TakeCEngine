@@ -34,7 +34,7 @@ public:
 	/// インスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static ParticleCommon* GetInstance();
+	static ParticleCommon& GetInstance();
 
 	/// <summary>
 	/// 初期化
@@ -102,8 +102,6 @@ public:
 
 private:
 
-	//インスタンス
-	static ParticleCommon* instance_;
 	//DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
 	//LightManager

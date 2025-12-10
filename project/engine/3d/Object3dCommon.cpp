@@ -8,18 +8,12 @@
 #include "engine/math/Vector3Math.h"
 #include "engine/3d/Light/LightManager.h"
 
-//シングルトンインスタンスの初期化
-Object3dCommon* Object3dCommon::instance_ = nullptr;
-
 //================================================================================================
 // インスタンスの取得
 //================================================================================================
-Object3dCommon* Object3dCommon::GetInstance() {
-	if (instance_ == nullptr) {
-		instance_ = new Object3dCommon();
-	}
-	return instance_;
-	
+Object3dCommon& Object3dCommon::GetInstance() {
+	static Object3dCommon instance;
+	return instance;
 }
 
 //================================================================================================
@@ -82,8 +76,6 @@ void Object3dCommon::Finalize() {
 	computeRootSignature_.Reset();
 	pso_.reset();
 	dxCommon_ = nullptr;
-	delete instance_;
-	instance_ = nullptr;
 }
 
 //================================================================================================
@@ -142,6 +134,6 @@ ID3D12Resource* Object3dCommon::GetDirectionalLightResource() const {
 void Object3dCommon::SetCBufferViewCamera(PSO* pso) {
 	//カメラ情報のCBufferの場所を指定
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gCamera"), CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
+		pso->GetGraphicBindResourceIndex("gCamera"), CameraManager::GetInstance().GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
 
 }

@@ -118,7 +118,7 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 void GPUParticle::Update() {
 
 	//cameraの情報取得
-	camera_ = CameraManager::GetInstance()->GetActiveCamera();
+	camera_ = CameraManager::GetInstance().GetActiveCamera();
 
 	//CSによる更新処理
 	DisPatchUpdateParticle();
@@ -160,7 +160,7 @@ void GPUParticle::DisPatchInitializeParticle() {
 	particleCommon_->GetSrvManager()->SetDescriptorHeap();
 
 	// VERTEX_AND_CONSTANT_BUFFER -> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		particleUavResource_.Get());
@@ -176,7 +176,7 @@ void GPUParticle::DisPatchInitializeParticle() {
 	particleCommon_->GetDirectXCommon()->GetCommandList()->Dispatch(1, 1, 1);
 	
 	//UNORDERED_ACCESS -> VERTEX_AND_CONSTANT_BUFFER
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
 		particleUavResource_.Get());
@@ -193,7 +193,7 @@ void GPUParticle::DisPatchUpdateParticle() {
 	particleCommon_->GetSrvManager()->SetDescriptorHeap();
 
 	//VERTEX_AND_CONSTANT_BUFFER -> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		particleUavResource_.Get());
@@ -211,7 +211,7 @@ void GPUParticle::DisPatchUpdateParticle() {
 	particleCommon_->GetDirectXCommon()->GetCommandList()->Dispatch(1, 1, 1);
 
 	//UNORDERED_ACCESS -> VERTEX_AND_CONSTANT_BUFFER
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
 		particleUavResource_.Get());

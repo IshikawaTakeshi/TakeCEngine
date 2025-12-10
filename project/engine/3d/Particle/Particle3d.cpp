@@ -106,8 +106,8 @@ void Particle3d::Update() {
 			particleData_[numInstance_].currentTime = (*particleIterator).currentTime_;
 
 			// データをGPUに転送  
-			perViewData_->viewProjection = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
-			perViewData_->billboardMatrix = CameraManager::GetInstance()->GetActiveCamera()->GetRotationMatrix();
+			perViewData_->viewProjection = CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
+			perViewData_->billboardMatrix = CameraManager::GetInstance().GetActiveCamera()->GetRotationMatrix();
 
 			++numInstance_; // 次のインスタンスに進める  
 		}
@@ -184,7 +184,7 @@ void Particle3d::SpliceParticles(std::list<Particle> particles) {
 //=============================================================================
 
 void Particle3d::SetModel(const std::string& filePath) {
-	model_ = ModelManager::GetInstance()->FindModel(filePath);
+	model_ = ModelManager::GetInstance().FindModel(filePath);
 }
 
 void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) {

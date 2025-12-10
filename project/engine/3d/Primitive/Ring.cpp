@@ -41,7 +41,7 @@ void Ring::Update() {
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	//wvpの更新
-	WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix());
+	WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix());
 	WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
 	TransformMatrixData_->World = worldMatrix_;
 	TransformMatrixData_->WVP = WVPMatrix_;

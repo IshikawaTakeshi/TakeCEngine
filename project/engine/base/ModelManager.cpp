@@ -7,17 +7,11 @@
 
 #include <cassert>
 
-//シングルトンインスタンスの初期化
-ModelManager* ModelManager::instance_ = nullptr;
-
 //=============================================================================
 // シングルトンインスタンスの取得
 //=============================================================================
-ModelManager* ModelManager::GetInstance() {
-
-	if (instance_ == nullptr) {
-		instance_ = new ModelManager();
-	}
+ModelManager& ModelManager::GetInstance() {
+	static ModelManager instance_;
 	return instance_;
 }
 
@@ -36,9 +30,6 @@ void ModelManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 //=============================================================================
 void ModelManager::Finalize() {
 	modelCommon_->Finalize();
-
-	delete instance_;
-	instance_ = nullptr;
 }
 
 //=============================================================================
