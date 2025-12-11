@@ -13,11 +13,11 @@
 void BoostEffect::Initialize(GameCharacter* owner) {
 	//effectObject初期化
 	boostEffectObject_ = std::make_unique<Object3d>();
-	boostEffectObject_->Initialize(Object3dCommon::GetInstance(), "boostEffectCone.gltf");
+	boostEffectObject_->Initialize(&Object3dCommon::GetInstance(), "boostEffectCone.gltf");
 	boostEffectObject_->GetModel()->GetModelData()->material.textureFilePath = "BlueBoostEffect.png";
 	//effectObject2初期化
 	boostEffectObject2_ = std::make_unique<Object3d>();
-	boostEffectObject2_->Initialize(Object3dCommon::GetInstance(), "boostEffectCone.gltf");
+	boostEffectObject2_->Initialize(&Object3dCommon::GetInstance(), "boostEffectCone.gltf");
 	boostEffectObject2_->GetModel()->GetModelData()->material.textureFilePath = "BlueBoostEffect.png";
 	boostEffectObject2_->SetScale({ 1.1f,1.1f,1.1f });
 

@@ -7,20 +7,18 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "xinput.lib")
 
-Input* Input::instance_ = nullptr;
+using namespace TakeC;
 
-Input* Input::GetInstance() {
-	if (instance_ == nullptr) {
-		instance_ = new Input();
-	}
-	return instance_;
+Input& Input::GetInstance() {
+	static Input instance;
+	return instance;
 }
 
 //=========================================================
 // 初期化
 //=========================================================
 
-void Input::Initialize(WinApp* winApp) {
+void Input::Initialize(TakeC::WinApp* winApp) {
 	HRESULT result;
 
 	winApp_ = winApp;
@@ -94,8 +92,6 @@ void Input::Finalize() {
 	if (directInput_) {
 		directInput_.Reset();
 	}
-	delete instance_;
-	instance_ = nullptr;
 }
 
 //=========================================================

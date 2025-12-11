@@ -20,7 +20,7 @@ public:
 	/// </summary>
 	/// <param name="dxCommon"></param>
 	/// <param name="collisionObject"></param>
-	void Initialize(DirectXCommon* dxCommon, Object3d* collisionObject) override;
+	void Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collisionObject) override;
 
 	/// <summary>
 	/// 更新処理

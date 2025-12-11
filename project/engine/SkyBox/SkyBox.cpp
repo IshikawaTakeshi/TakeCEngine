@@ -10,7 +10,7 @@
 //=============================================================================
 // 初期化
 //=============================================================================
-void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& texturefilePath) {
+void SkyBox::Initialize(TakeC::DirectXCommon* directXCommon,const std::string& texturefilePath) {
 
 	dxCommon_ = directXCommon;
 
@@ -29,7 +29,7 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& texturef
 	);
 	
 	//TransformationMatrix用のResource生成
-	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
+	wvpResource_ = TakeC::DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
 	wvpResource_->SetName(L"SkyBox::wvpResource_");
 	//TransformationMatrix用
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
@@ -47,7 +47,7 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& texturef
 	);
 
 	//カメラのセット
-	camera_ = CameraManager::GetInstance()->GetActiveCamera();
+	camera_ = TakeC::CameraManager::GetInstance().GetActiveCamera();
 }
 
 //=============================================================================
@@ -61,7 +61,7 @@ void SkyBox::Update() {
 	//wvpの更新
 	if (camera_) {
 		const Matrix4x4& viewProjectionMatrix =
-			CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+			TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
 		WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
 	} else {
 		WVPMatrix_ = worldMatrix_;

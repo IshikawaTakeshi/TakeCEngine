@@ -33,7 +33,7 @@ void Camera::Initialize(ID3D12Device* device,const std::string& configData) {
 	rotationSpeed_ = 0.1f;
 
 	//カメラ用バッファリソース生成
-	cameraResource_ = DirectXCommon::CreateBufferResource(device, sizeof(CameraForGPU));
+	cameraResource_ = TakeC::DirectXCommon::CreateBufferResource(device, sizeof(CameraForGPU));
 	cameraResource_->SetName(L"Camera::cameraResource_");
 	cameraForGPU_ = nullptr;
 	cameraResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraForGPU_));
@@ -47,7 +47,7 @@ void Camera::Initialize(ID3D12Device* device,const std::string& configData) {
 void Camera::Update() {
 #ifdef _DEBUG
 	//デバッグカメラとゲームカメラの切り替え
-	if (Input::GetInstance()->TriggerKey(DIK_F1)) {
+	if (TakeC::Input::GetInstance().TriggerKey(DIK_F1)) {
 		isDebug_ = !isDebug_;
 	}
 #endif // _DEBUG
@@ -180,10 +180,10 @@ void Camera::UpdateDebugCamera() {
 	// クォータニオンで回転を管理
 	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
 
-	if (Input::GetInstance()->PressMouse(1)) {
+	if (TakeC::Input::GetInstance().PressMouse(1)) {
 		// マウス入力による回転計算
-		float deltaPitch = (float)Input::GetInstance()->GetMouseMove().lY * 0.001f; // X軸回転
-		float deltaYaw = (float)Input::GetInstance()->GetMouseMove().lX * 0.001f;   // Y軸回転
+		float deltaPitch = (float)TakeC::Input::GetInstance().GetMouseMove().lY * 0.001f; // X軸回転
+		float deltaYaw   = (float)TakeC::Input::GetInstance().GetMouseMove().lX * 0.001f;   // Y軸回転
 
 		// クォータニオンを用いた回転計算
 		Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
@@ -198,13 +198,13 @@ void Camera::UpdateDebugCamera() {
 	// 累積回転を更新
 	cameraConfig_.transform_.rotate = rotationDelta * cameraConfig_.transform_.rotate;
 
-	if (Input::GetInstance()->PressMouse(2)) {
-		cameraConfig_.offsetDelta_.x += (float)Input::GetInstance()->GetMouseMove().lX * 0.1f;
-		cameraConfig_.offsetDelta_.y -= (float)Input::GetInstance()->GetMouseMove().lY * 0.1f;
+	if (TakeC::Input::GetInstance().PressMouse(2)) {
+		cameraConfig_.offsetDelta_.x += (float)TakeC::Input::GetInstance().GetMouseMove().lX * 0.1f;
+		cameraConfig_.offsetDelta_.y -= (float)TakeC::Input::GetInstance().GetMouseMove().lY * 0.1f;
 	}
 
 	// オフセットを考慮したワールド行列の計算
-	cameraConfig_.offsetDelta_.z += (float)Input::GetInstance()->GetWheel() * 0.1f;
+	cameraConfig_.offsetDelta_.z += (float)TakeC::Input::GetInstance().GetWheel() * 0.1f;
 
 	// 回転を適用
 	cameraConfig_.offset_ = cameraConfig_.offsetDelta_;
@@ -313,7 +313,7 @@ void Camera::UpdateCameraFollow() {
 
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
-	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+	if (CollisionManager::GetInstance().RayCast(ray, hitInfo,layerMask)) {
 		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
 		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
 		cameraConfig_.transform_.translate = hitInfo.position - direction_ * margin;
@@ -371,7 +371,7 @@ void Camera::UpdateCameraLockOn() {
 
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
-	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+	if (CollisionManager::GetInstance().RayCast(ray, hitInfo,layerMask)) {
 		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
 		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
 		cameraConfig_.transform_.translate = hitInfo.position - direction_ * margin;
@@ -441,7 +441,7 @@ void Camera::UpdateCameraEnemyDestroyed() {
 
 	//コライダーのマスク
 	uint32_t layerMask = ~static_cast<uint32_t>(CollisionLayer::Ignoe);
-	if (CollisionManager::GetInstance()->RayCast(ray, hitInfo,layerMask)) {
+	if (CollisionManager::GetInstance().RayCast(ray, hitInfo,layerMask)) {
 		// 衝突した場合は、ヒット位置の少し手前にカメラを配置するなど
 		float margin = 0.1f; // 衝突位置から少し手前に移動するマージン
 		cameraConfig_.transform_.translate = hitInfo.position - direction_ * margin;

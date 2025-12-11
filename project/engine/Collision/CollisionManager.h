@@ -16,9 +16,6 @@ class Collider;
 class CollisionManager {
 private:
 
-	//シングルトンインスタンス
-	static CollisionManager* instance_;
-
 	//コピーコンストラクタ・代入演算子禁止
 	CollisionManager() = default;
 	~CollisionManager() = default;
@@ -35,13 +32,13 @@ public:
 	/// シングルトンインスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static CollisionManager* GetInstance();
+	static CollisionManager& GetInstance();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	/// <param name="dxCommon"></param>
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize(TakeC::DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// 描画前処理
@@ -98,7 +95,7 @@ private:
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	//dxCommon
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 
 	//コライダーリスト
 	std::vector<Collider*> colliders_;

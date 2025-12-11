@@ -2,33 +2,20 @@
 #include <cassert>
 #include <format>
 
-//インスタンス初期化
-ResourceBarrier* ResourceBarrier::instance_ = nullptr;
 
 //=============================================================================
 // インスタンス取得
 //=============================================================================
-ResourceBarrier* ResourceBarrier::GetInstance() {
- 
-	if(instance_ == nullptr) {
-		instance_ = new ResourceBarrier();
-	}
+ResourceBarrier& ResourceBarrier::GetInstance() {
+	static ResourceBarrier instance_;
 	return instance_;
 }
 
 //=============================================================================
 // 初期化
 //=============================================================================
-void ResourceBarrier::Initialize(DirectXCommon* dxCommon) {
+void ResourceBarrier::Initialize(TakeC::DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
-}
-
-//=============================================================================
-// 終了処理
-//=============================================================================
-void ResourceBarrier::Finalize() {
-	delete instance_;
-	instance_ = nullptr;
 }
 
 //=============================================================================

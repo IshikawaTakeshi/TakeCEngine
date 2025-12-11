@@ -24,17 +24,12 @@ public:
 	/// インスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static ResourceBarrier* GetInstance();
+	static ResourceBarrier& GetInstance();
 
 	/// <summary>
 	/// リソースバリアの初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon);
-
-	/// <summary>
-	/// リソースバリアの終了処理
-	/// </summary>
-	void Finalize();
+	void Initialize(TakeC::DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// リソースの状態遷移
@@ -47,10 +42,8 @@ public:
 
 private:
 
-	/// シングルトンインスタンス
-	static ResourceBarrier* instance_;
 	//dxCommon
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 	
 	//リソースごとの状態を管理するためのマップ
 	std::unordered_map<ID3D12Resource*, D3D12_RESOURCE_STATES> resourceStates_;

@@ -86,27 +86,23 @@
     },
     "weaponData": [
         {
-            "actionData": {
-                "pelletCount": 6,
-                "spreadDeg": 10.0
-            },
             "config": {
-                "bulletSpeed": 400.0,
+                "bulletSpeed": 500.0,
                 "canChargeAttack": false,
                 "canMoveShootable": false,
-                "effectiveRange": 300.0,
+                "effectiveRange": 1000.0,
                 "homingRate": 0.0,
-                "isStopShootOnly": false,
-                "kAttackInterval": 1.0,
-                "magazineCount_": 2,
-                "maxBulletCount": 20,
-                "maxReloadTime": 2.0,
-                "power": 10.0,
+                "isStopShootOnly": true,
+                "kAttackInterval": 2.0,
+                "magazineCount_": 5,
+                "maxBulletCount": 50,
+                "maxReloadTime": 4.0,
+                "power": 1500.0,
                 "requiredChargeTime": 0.0
             },
-            "modelFilePath": "ShotGun.gltf",
-            "weaponName": "ShotGun",
-            "weaponType": "WEAPON_TYPE_SHOTGUN"
+            "modelFilePath": "Bazooka.gltf",
+            "weaponName": "Bazooka",
+            "weaponType": "WEAPON_TYPE_BAZOOKA"
         },
         {
             "actionData": {
@@ -166,26 +162,34 @@
         },
         {
             "actionData": {
-                "pelletCount": 6,
-                "spreadDeg": 10.0
+                "burstShotInfo": {
+                    "kInterval": 0.10000000149011612,
+                    "kMaxBurstCount": 3
+                },
+                "vmInfo": {
+                    "ascendSpeed": 183.39999389648438,
+                    "explosionRadius": 5.0,
+                    "homingRate": 0.375,
+                    "maxAltitude": 0.0
+                }
             },
             "config": {
-                "bulletSpeed": 400.0,
+                "bulletSpeed": 300.0,
                 "canChargeAttack": false,
-                "canMoveShootable": false,
-                "effectiveRange": 300.0,
-                "homingRate": 0.0,
+                "canMoveShootable": true,
+                "effectiveRange": 1000.0,
+                "homingRate": 0.10000000149011612,
                 "isStopShootOnly": false,
-                "kAttackInterval": 1.0,
-                "magazineCount_": 2,
-                "maxBulletCount": 20,
+                "kAttackInterval": 5.0,
+                "magazineCount_": 3,
+                "maxBulletCount": 120,
                 "maxReloadTime": 2.0,
-                "power": 10.0,
+                "power": 400.0,
                 "requiredChargeTime": 0.0
             },
-            "modelFilePath": "ShotGun.gltf",
-            "weaponName": "ShotGun",
-            "weaponType": "WEAPON_TYPE_SHOTGUN"
+            "modelFilePath": "VerticalMissileLauncher.gltf",
+            "weaponName": "VerticalMissileLauncher",
+            "weaponType": "WEAPON_TYPE_VERTICAL_MISSILE"
         }
     ]
 }

@@ -74,19 +74,20 @@ public:
 	//=========================================================================
 
 	//ParticleManagerの取得
-	static ParticleManager* GetParticleManager();
+	static TakeC::ParticleManager* GetParticleManager();
 	//PostEffectManagerの取得
-	static Animator* GetAnimator();
+	static TakeC::AnimationManager* GetAnimationManager();
 	//JsonLoaderの取得
-	static JsonLoader* GetJsonLoader();
+	static TakeC::JsonLoader* GetJsonLoader();
 	//PrimitiveDrawerの取得
-	static PrimitiveDrawer* GetPrimitiveDrawer();
+	static TakeC::PrimitiveDrawer* GetPrimitiveDrawer();
 	//PostEffectManagerの取得
-	static PostEffectManager* GetPostEffectManager();
+	static TakeC::PostEffectManager* GetPostEffectManager();
 	//WireFrameの取得
-	static WireFrame* GetWireFrame();
+	static TakeC::WireFrame* GetWireFrame();
 	//LightManagerの取得
-	static LightManager* GetLightManager();
+	static TakeC::LightManager* GetLightManager();
+
 	//ゲーム起動時間の取得
 	static float GetGameTime();
 	//経過時間の取得
@@ -99,15 +100,15 @@ protected:
 	//=========================================================================
 
 	//windowsアプリケーション
-	std::unique_ptr<WinApp> winApp_ = nullptr;
+	std::unique_ptr<TakeC::WinApp> winApp_ = nullptr;
 	//DirectX共通部分
-	std::unique_ptr<DirectXCommon> directXCommon_ = nullptr;
+	std::unique_ptr<TakeC::DirectXCommon> directXCommon_ = nullptr;
 	//srvマネージャー
-	std::unique_ptr<SrvManager> srvManager_ = nullptr;
+	std::unique_ptr<TakeC::SrvManager> srvManager_ = nullptr;
 	//描画先テクスチャ
 	std::unique_ptr<RenderTexture> renderTexture_ = nullptr;
 	//入力管理クラス
-	Input* input_ = nullptr;
+	TakeC::Input* input_ = nullptr;
 	//オーディオ管理クラス
 	AudioManager* audio_ = nullptr;
 	//スプライト共通クラス
@@ -121,25 +122,25 @@ protected:
 	//シーン遷移管理クラス
 	SceneTransition* sceneTransition_ = nullptr;
 	//ImGui管理クラス
-	ImGuiManager* imguiManager_ = nullptr;
+	TakeC::ImGuiManager* imguiManager_ = nullptr;
 
 	//シーンファクトリー
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;
 
 	//アニメーション管理クラス
-	static std::unique_ptr<Animator> animator_;
+	static std::unique_ptr<TakeC::AnimationManager> animationManager_;
 	//Jsonローダー
-	static std::unique_ptr<JsonLoader> jsonLoader_;
+	static std::unique_ptr<TakeC::JsonLoader> jsonLoader_;
 	//パーティクルマネージャー
-	static std::unique_ptr<ParticleManager> particleManager_;
+	static std::unique_ptr<TakeC::ParticleManager> particleManager_;
 	//プリミティブ描画クラス
-	static std::unique_ptr<PrimitiveDrawer> primitiveDrawer_;
+	static std::unique_ptr<TakeC::PrimitiveDrawer> primitiveDrawer_;
 	//ポストエフェクトマネージャー
-	static std::unique_ptr<PostEffectManager> postEffectManager_;
+	static std::unique_ptr<TakeC::PostEffectManager> postEffectManager_;
 	//ワイヤーフレーム描画クラス
-	static std::unique_ptr<WireFrame> wireFrame_;
+	static std::unique_ptr<TakeC::WireFrame> wireFrame_;
 	//LightManager
-	static std::unique_ptr<LightManager> lightManager_;
+	static std::unique_ptr<TakeC::LightManager> lightManager_;
 	
 	// ゲームの起動時間
 	static std::chrono::steady_clock::time_point gameTime_;
@@ -150,3 +151,4 @@ protected:
 	//時間倍率
 	float timeScale_ = 1.0f;
 };
+

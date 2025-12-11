@@ -15,77 +15,77 @@
 //=============================================================================================
 /// JsonLoader class
 //=============================================================================================
+namespace TakeC {
+	class JsonLoader {
+	public:
 
-class JsonLoader {
-public:
+		//==========================================================================================
+		// functions
+		//==========================================================================================
 
-	//==========================================================================================
-	// functions
-	//==========================================================================================
+		/// <summary>
+		/// コンストラクタ・デストラクタ
+		/// </summary>
+		JsonLoader() = default;
+		~JsonLoader() = default;
 
-	/// <summary>
-	/// コンストラクタ・デストラクタ
-	/// </summary>
-	JsonLoader() = default;
-	~JsonLoader() = default;
-
-	/// <summary>
-	/// ファイルから読み込む
-	/// </summary>
-	/// <param name="groupName">グループ名</param>
-	LevelData* LoadLevelFile(const std::string& groupName);
+		/// <summary>
+		/// ファイルから読み込む
+		/// </summary>
+		/// <param name="groupName">グループ名</param>
+		LevelData* LoadLevelFile(const std::string& groupName);
 
 
-	/// <summary>
-	/// JSONデータの保存
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="filePath"></param>
-	/// <param name="data"></param>
-	template<typename T>
-	void SaveJsonData(const std::string& filePath, const T& data);
+		/// <summary>
+		/// JSONデータの保存
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="filePath"></param>
+		/// <param name="data"></param>
+		template<typename T>
+		void SaveJsonData(const std::string& filePath, const T& data);
 
-	/// <summary>
-	/// JSONデータの読み込み
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="filePath"></param>
-	/// <returns></returns>
-	template<typename T>
-	T LoadJsonData(const std::string& filePath) const;
+		/// <summary>
+		/// JSONデータの読み込み
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="filePath"></param>
+		/// <returns></returns>
+		template<typename T>
+		T LoadJsonData(const std::string& filePath) const;
 
-	/// <summary>
-	/// JSONデータの削除
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="filePath"></param>
-	template<typename T>
-	void DeleteJsonData(const std::string& filePath);
+		/// <summary>
+		/// JSONデータの削除
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="filePath"></param>
+		template<typename T>
+		void DeleteJsonData(const std::string& filePath);
 
-	/// <summary>
-	/// JSONデータリストの取得
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <returns></returns>
-	template<typename T>
-	std::vector<std::string> GetJsonDataList() const;
+		/// <summary>
+		/// JSONデータリストの取得
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		template<typename T>
+		std::vector<std::string> GetJsonDataList() const;
 
-	/// <summary>
-	/// JSONデータの存在チェック
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="filePath"></param>
-	/// <returns></returns>
-	template<typename T>
-	bool IsJsonDataExists(const std::string& filePath) const;
-};
-
+		/// <summary>
+		/// JSONデータの存在チェック
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="filePath"></param>
+		/// <returns></returns>
+		template<typename T>
+		bool IsJsonDataExists(const std::string& filePath) const;
+	};
+}
 
 //-------------------------------------------------------------------------------
 // JSONデータの保存
 //-------------------------------------------------------------------------------
 template<typename T>
-inline void JsonLoader::SaveJsonData(const std::string& filePath, const T& data) {
+inline void TakeC::JsonLoader::SaveJsonData(const std::string& filePath, const T& data) {
 	// フルパスを生成
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
 	std::string fileFullPath = directory.string() + filePath;
@@ -114,7 +114,7 @@ inline void JsonLoader::SaveJsonData(const std::string& filePath, const T& data)
 // JSONデータの読み込み
 //-------------------------------------------------------------------------------
 template<typename T>
-inline T JsonLoader::LoadJsonData(const std::string& filePath) const {
+inline T TakeC::JsonLoader::LoadJsonData(const std::string& filePath) const {
 	
 	// フルパスを生成
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
@@ -139,7 +139,7 @@ inline T JsonLoader::LoadJsonData(const std::string& filePath) const {
 // JSONデータの削除
 //-------------------------------------------------------------------------------
 template<typename T>
-inline void JsonLoader::DeleteJsonData(const std::string& filePath) {
+inline void TakeC::JsonLoader::DeleteJsonData(const std::string& filePath) {
 
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
 	std::string fileFullPath = directory.string() + filePath;
@@ -158,7 +158,7 @@ inline void JsonLoader::DeleteJsonData(const std::string& filePath) {
 // JSONデータリストの取得
 //-------------------------------------------------------------------------------
 template<typename T>
-inline std::vector<std::string> JsonLoader::GetJsonDataList() const {
+inline std::vector<std::string> TakeC::JsonLoader::GetJsonDataList() const {
 	
 	std::vector<std::string> dataList;
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
@@ -182,7 +182,7 @@ inline std::vector<std::string> JsonLoader::GetJsonDataList() const {
 // JSONデータの存在チェック
 //-------------------------------------------------------------------------------
 template<typename T>
-inline bool JsonLoader::IsJsonDataExists(const std::string& filePath) const {
+inline bool TakeC::JsonLoader::IsJsonDataExists(const std::string& filePath) const {
 	
 	// フルパスを生成して存在チェック
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();

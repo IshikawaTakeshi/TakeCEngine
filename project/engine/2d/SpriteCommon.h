@@ -7,7 +7,10 @@
 
 // 前方宣言
 class PSO;
-class DirectXCommon;
+
+namespace TakeC {
+	class DirectXCommon;
+}
 
 //============================================================================
 // SpriteCommon class
@@ -26,12 +29,12 @@ public:
 	//========================================================================
 	// functions
 	//========================================================================
-	static SpriteCommon* GetInstance();
+	static SpriteCommon& GetInstance();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* directXCommon);
+	void Initialize(TakeC::DirectXCommon* directXCommon);
 
 	/// <summary>
 	/// 終了処理
@@ -52,13 +55,13 @@ public:
 	//----- getter ---------------------------
 
 	//DirectXCommonの取得
-	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
+	TakeC::DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
 
 
 	//----- setter ---------------------------
 
 	//DirectXCommonの設定
-	void SetDirectXCommon(DirectXCommon* dxCommon) { dxCommon_ = dxCommon; }
+	void SetDirectXCommon(TakeC::DirectXCommon* dxCommon) { dxCommon_ = dxCommon; }
 
 
 
@@ -68,11 +71,8 @@ private:
 	///			privateメンバ変数
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	//シングルトンインスタンス
-	static SpriteCommon* instance_;
-
 	//DirectXCommon
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 
 	//RootSignature
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;

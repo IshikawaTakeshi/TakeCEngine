@@ -11,7 +11,7 @@
 //=============================================================================
 // 初期化
 //=============================================================================
-void LightManager::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager) {
+void TakeC::LightManager::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager) {
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
@@ -75,7 +75,7 @@ void LightManager::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager) {
 //=============================================================================
 // 終了・開放処理
 //=============================================================================
-void LightManager::Finalize() {
+void TakeC::LightManager::Finalize() {
 	dirLightResource_.Reset();
 	pointLightResource_.Reset();
 	spotLightResource_.Reset();
@@ -88,7 +88,7 @@ void LightManager::Finalize() {
 //=============================================================================
 // ポイントライト追加
 //=============================================================================
-uint32_t LightManager::AddPointLight(const PointLightData& lightData) {
+uint32_t TakeC::LightManager::AddPointLight(const PointLightData& lightData) {
 	if (activePointLightCount_ >= kMaxPointLights) {
 		return UINT32_MAX; // エラー
 	}
@@ -109,7 +109,7 @@ uint32_t LightManager::AddPointLight(const PointLightData& lightData) {
 // スポットライト追加
 //=============================================================================
 
-uint32_t LightManager::AddSpotLight(const SpotLightData& lightData) {
+uint32_t TakeC::LightManager::AddSpotLight(const SpotLightData& lightData) {
 	
 	if(activePointLightCount_>= kMaxSpotLights) {
 		return UINT32_MAX; // エラー
@@ -130,7 +130,7 @@ uint32_t LightManager::AddSpotLight(const SpotLightData& lightData) {
 //=============================================================================
 // ポイントライト削除
 //=============================================================================
-bool LightManager::RemovePointLight(uint32_t index) {
+bool TakeC::LightManager::RemovePointLight(uint32_t index) {
 	if (index >= activePointLightCount_) {
 		return false;
 	}
@@ -153,7 +153,7 @@ bool LightManager::RemovePointLight(uint32_t index) {
 // スポットライト削除
 //=============================================================================
 
-bool LightManager::RemoveSpotLight(uint32_t index) {
+bool TakeC::LightManager::RemoveSpotLight(uint32_t index) {
 	if (index >= activeSpotLightCount_) {
 		return false;
 	}
@@ -171,7 +171,7 @@ bool LightManager::RemoveSpotLight(uint32_t index) {
 //=============================================================================
 // ポイントライト更新
 //=============================================================================
-void LightManager::UpdatePointLight(uint32_t index, const PointLightData& light) {
+void TakeC::LightManager::UpdatePointLight(uint32_t index, const PointLightData& light) {
 	if (index >= activePointLightCount_) {
 		return;
 	}
@@ -183,7 +183,7 @@ void LightManager::UpdatePointLight(uint32_t index, const PointLightData& light)
 //=============================================================================
 // スポットライト更新
 //=============================================================================
-void LightManager::UpdateSpotLight(uint32_t index, const SpotLightData& light) {
+void TakeC::LightManager::UpdateSpotLight(uint32_t index, const SpotLightData& light) {
 	if(index >= activeSpotLightCount_) {
 		return;
 	}
@@ -194,7 +194,7 @@ void LightManager::UpdateSpotLight(uint32_t index, const SpotLightData& light) {
 //=============================================================================
 // ポイントライト描画
 //=============================================================================
-void LightManager::DrawPointLights() {
+void TakeC::LightManager::DrawPointLights() {
 
 	// アクティブなポイントライトが無ければ終了
 	if(activePointLightCount_ == 0) {
@@ -216,7 +216,7 @@ void LightManager::DrawPointLights() {
 //=============================================================================
 // スポットライト描画
 //=============================================================================
-void LightManager::DrawSpotLights() {
+void TakeC::LightManager::DrawSpotLights() {
 
 	// アクティブなスポットライトが無ければ終了
 	if (activeSpotLightCount_ == 0) {
@@ -238,7 +238,7 @@ void LightManager::DrawSpotLights() {
 // PointLightData取得
 //=============================================================================
 
-PointLightData* LightManager::GetPointLightData(uint32_t index) const {
+PointLightData* TakeC::LightManager::GetPointLightData(uint32_t index) const {
 	if (index >= activePointLightCount_) {
 		return nullptr;
 	}
@@ -248,7 +248,7 @@ PointLightData* LightManager::GetPointLightData(uint32_t index) const {
 //=============================================================================
 // SpotLightData取得
 //=============================================================================
-SpotLightData* LightManager::GetSpotLightData(uint32_t index) const {
+SpotLightData* TakeC::LightManager::GetSpotLightData(uint32_t index) const {
 	if (index >= activeSpotLightCount_) {
 		return nullptr;
 	}
@@ -259,7 +259,7 @@ SpotLightData* LightManager::GetSpotLightData(uint32_t index) const {
 // ライト用リソースの設定
 //=============================================================================
 
-void LightManager::SetLightResources(PSO* pso) {
+void TakeC::LightManager::SetLightResources(PSO* pso) {
 
 	//コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
@@ -284,7 +284,7 @@ void LightManager::SetLightResources(PSO* pso) {
 //=============================================================================
 // ImGui更新
 //=============================================================================
-void LightManager::UpdateImGui() {
+void TakeC::LightManager::UpdateImGui() {
 #ifdef _DEBUG
 	ImGui::Begin("LightManager");
 

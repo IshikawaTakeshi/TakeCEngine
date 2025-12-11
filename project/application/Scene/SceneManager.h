@@ -27,7 +27,7 @@ public:
 	/// インスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static SceneManager* GetInstance();
+	static SceneManager& GetInstance();
 
 	/// <summary>
 	/// インスタンスの解放
@@ -95,8 +95,6 @@ public:
 
 private:
 
-	//シングルトンインスタンス
-	static SceneManager* instance_;
 	//現在のシーン
 	std::shared_ptr<BaseScene> currentScene_ = nullptr;
 	//次のシーン

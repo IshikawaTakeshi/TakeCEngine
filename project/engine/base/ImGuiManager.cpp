@@ -10,7 +10,7 @@
 //====================================================================
 //			初期化
 //====================================================================
-void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, SrvManager* srvManager) {
+void TakeC::ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, SrvManager* srvManager) {
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
@@ -48,7 +48,7 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, SrvManage
 //====================================================================
 //			終了処理
 //====================================================================
-void ImGuiManager::Finalize() {
+void TakeC::ImGuiManager::Finalize() {
 
 	//ImGuiの終了処理
 	ImGui_ImplDX12_Shutdown();
@@ -60,7 +60,7 @@ void ImGuiManager::Finalize() {
 //====================================================================
 // ImGui受付開始・終了
 //====================================================================
-void ImGuiManager::Begin() {
+void TakeC::ImGuiManager::Begin() {
 
 	//ImGui受付開始
 	ImGui_ImplDX12_NewFrame();
@@ -68,7 +68,7 @@ void ImGuiManager::Begin() {
 	ImGui::NewFrame();
 }
 
-void ImGuiManager::End() {
+void TakeC::ImGuiManager::End() {
 	//ImGuiの内部コマンドを生成する
 	ImGui::Render();
 }
@@ -76,7 +76,7 @@ void ImGuiManager::End() {
 //====================================================================
 // デバッグ画面の描画
 //====================================================================
-void ImGuiManager::DrawDebugScreen() {
+void TakeC::ImGuiManager::DrawDebugScreen() {
 	ImGui::SetNextWindowBgAlpha(1.0f); // 完全透明
 	// 画像サイズを先に決定
 	const ImVec2 imageSize = useReleaseSize_
@@ -106,7 +106,7 @@ void ImGuiManager::DrawDebugScreen() {
 //====================================================================
 // ImGui描画後処理
 //====================================================================
-void ImGuiManager::PostDraw() {
+void TakeC::ImGuiManager::PostDraw() {
 
 	ID3D12GraphicsCommandList* commandList =  dxCommon_->GetCommandList();
 
@@ -117,17 +117,17 @@ void ImGuiManager::PostDraw() {
 //====================================================================
 // 各種デバッグ表示用関数
 //====================================================================
-void ImGuiManager::QuaternionScreenPrintf(const std::string& label, const Quaternion& q) {
+void TakeC::ImGuiManager::QuaternionScreenPrintf(const std::string& label, const Quaternion& q) {
 	// ImGuiでクォータニオンを画面表示
 	ImGui::Text("%s : %.2f %.2f %.2f %.2f", label.c_str(), q.x, q.y, q.z, q.w);
 }
 
-void ImGuiManager::Vector3ScreenPrintf(const std::string& label, const Vector3& v) {
+void TakeC::ImGuiManager::Vector3ScreenPrintf(const std::string& label, const Vector3& v) {
 	// ImGuiでベクトルを画面表示
 	ImGui::Text("%s : %.2f %.2f %.2f", label.c_str(), v.x, v.y, v.z);
 }
 
-void ImGuiManager::Matrix4x4ScreenPrintf(const std::string& label, const Matrix4x4& m) {
+void TakeC::ImGuiManager::Matrix4x4ScreenPrintf(const std::string& label, const Matrix4x4& m) {
 	// ImGuiで4x4行列を画面表示
 	ImGui::Text(label.c_str());
 	ImGui::Text("%.3f %.3f %.3f %.3f", m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3]);

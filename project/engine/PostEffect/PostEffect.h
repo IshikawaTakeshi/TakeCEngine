@@ -28,7 +28,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	virtual void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,const std::wstring& CSFilePath,
+	virtual void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager,const std::wstring& CSFilePath,
 		ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource);
 
 	/// <summary>
@@ -60,8 +60,8 @@ public:
 
 protected:
 
-	DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
-	SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
+	TakeC::DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
+	TakeC::SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
 
 	//RenderTextureリソース
 	ComPtr<ID3D12Resource> inputResource_;

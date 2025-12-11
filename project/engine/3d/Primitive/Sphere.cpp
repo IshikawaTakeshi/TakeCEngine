@@ -19,7 +19,7 @@ Sphere::~Sphere() {
 	wvpResource_.Reset();
 }
 
-void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std::string& textureFilePath) {
+void Sphere::Initialize(TakeC::DirectXCommon* dxCommon, Matrix4x4 cameraView, const std::string& textureFilePath) {
 
 	//メッシュ初期化
 	mesh_ = std::make_unique<Mesh>();
@@ -31,7 +31,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 	//======================= transformationMatrix用のVertexResource ===========================//
 
 	//TransformationMatrix用のVertexResource生成
-	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(TransformMatrix));
+	wvpResource_ = TakeC::DirectXCommon::CreateBufferResource(dxCommon->GetDevice(), sizeof(TransformMatrix));
 
 	//TransformationMatrix用
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
@@ -54,7 +54,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std
 	//ViewProjectionの初期化
 	viewMatrix_ = MatrixMath::Inverse(cameraView);
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
-		0.45f, float(WinApp::kScreenWidth) / float(WinApp::kScreenHeight), 0.1f, 100.0f
+		0.45f, float(TakeC::WinApp::kScreenWidth) / float(TakeC::WinApp::kScreenHeight), 0.1f, 100.0f
 	);
 }
 
@@ -88,7 +88,7 @@ void Sphere::Update() {
 }
 
 
-void Sphere::Draw(DirectXCommon* dxCommon) {
+void Sphere::Draw(TakeC::DirectXCommon* dxCommon) {
 
 	mesh_->SetVertexBuffers(dxCommon->GetCommandList(),0);
 

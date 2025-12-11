@@ -27,7 +27,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* directXCommon,const std::string& texturefilePath);
+	void Initialize(TakeC::DirectXCommon* directXCommon,const std::string& texturefilePath);
 
 	/// <summary>
 	/// 更新処理
@@ -49,7 +49,7 @@ public:
 private: // privateメンバ変数
 
 	//DirectXCommon
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 	//PSO
 	std::unique_ptr<PSO> pso_ = nullptr;
 	//RootSignature

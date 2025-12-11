@@ -6,23 +6,20 @@
 #include "engine/3d/Object3dCommon.h"
 #include "engine/3d/Light/LightManager.h"
 
-ParticleCommon* ParticleCommon::instance_ = nullptr;
 
 //==================================================================================
 // インスタンス取得
 //==================================================================================
-ParticleCommon* ParticleCommon::GetInstance() {
+ParticleCommon& ParticleCommon::GetInstance() {
 
-	if (instance_ == nullptr) {
-		instance_ = new ParticleCommon();
-	}
-	return instance_;
+	static ParticleCommon instance;
+	return instance;
 }
 
 //==================================================================================
 // 初期化
 //==================================================================================
-void ParticleCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,LightManager* lightManager) {
+void ParticleCommon::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager,TakeC::LightManager* lightManager) {
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;

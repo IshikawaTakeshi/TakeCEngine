@@ -4,6 +4,8 @@
 #include "Utility/Logger.h"
 #include "PostEffect/PostEffectManager.h"
 
+using namespace TakeC;
+
 //======================================================================
 // デストラクタ
 //======================================================================
@@ -17,7 +19,7 @@ RenderTexture::~RenderTexture() {
 // 初期化
 //======================================================================
 
-void RenderTexture::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, PostEffectManager* postEffectManager ){
+void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, TakeC::PostEffectManager* postEffectManager ){
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
@@ -96,7 +98,7 @@ void RenderTexture::PreDraw() {
 void RenderTexture::Draw() {
 
 	// RENDER_TARGET >> PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_RENDER_TARGET,         //stateBefore
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, //stateAfter
 		renderTextureResource_.Get());              //currentResource
@@ -122,7 +124,7 @@ void RenderTexture::PostDraw() {
 
 
 	//PIXCEL_SHADER_RESOURCE >> GENERIC_READ
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		renderTextureResource_.Get());

@@ -109,9 +109,9 @@ void Skeleton::ApplyAnimation(Animation* animation, float animationTime) {
 		//対象のJointのAnimationがあれば、値の適用を行う。
 		if (auto it = animation->nodeAnimations.find(joint.name); it != animation->nodeAnimations.end()) {
 			const NodeAnimation& rootNodeAnimation = (*it).second;
-			joint.transform.scale = Animator::CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
-			joint.transform.rotate = Animator::CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
-			joint.transform.translate = Animator::CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
+			joint.transform.scale = TakeC::AnimationManager::CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+			joint.transform.rotate = TakeC::AnimationManager::CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
+			joint.transform.translate = TakeC::AnimationManager::CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
 		}
 	}
 }

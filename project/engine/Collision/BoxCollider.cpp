@@ -15,7 +15,7 @@
 // 初期化
 //=============================================================================
 
-void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject) {
+void BoxCollider::Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collisionObject) {
 
 	dxCommon_ = dxCommon;
 
@@ -53,7 +53,7 @@ void BoxCollider::Initialize(DirectXCommon* dxCommon, Object3d* collisionObject)
 	);
 
 	//カメラのセット
-	camera_ = CameraManager::GetInstance()->GetActiveCamera();
+	camera_ = TakeC::CameraManager::GetInstance().GetActiveCamera();
 }
 
 //=============================================================================

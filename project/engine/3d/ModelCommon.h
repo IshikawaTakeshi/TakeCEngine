@@ -1,8 +1,10 @@
 #pragma once
 
 //前方宣言
-class DirectXCommon;
-class SrvManager;
+namespace TakeC {
+	class DirectXCommon;
+	class SrvManager;
+}
 
 //============================================================================
 // ModelCommon class
@@ -26,14 +28,14 @@ public:
 	/// インスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static ModelCommon* GetInstance();
+	static ModelCommon& GetInstance();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	/// <param name="dxCommon"></param>
 	/// <param name="srvManager"></param>
-	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
+	void Initialize(TakeC::DirectXCommon* dxCommon,TakeC::SrvManager* srvManager);
 
 	/// <summary>
 	/// 終了処理
@@ -44,21 +46,19 @@ public:
 	/// DirectXCommonの取得
 	/// </summary>
 	/// <returns></returns>
-	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
+	TakeC::DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
 
 	/// <summary>
 	/// SrvManagerの取得
 	/// </summary>
 	/// <returns></returns>
-	SrvManager* GetSrvManager() const { return srvManager_; }
+	TakeC::SrvManager* GetSrvManager() const { return srvManager_; }
 
 
 private:
 
-	//インスタンス
-	static ModelCommon* instance_;
 	//DirectXCommon
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 	//SrvManager
-	SrvManager* srvManager_ = nullptr;
+	TakeC::SrvManager* srvManager_ = nullptr;
 };
