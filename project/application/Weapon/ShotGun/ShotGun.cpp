@@ -109,8 +109,7 @@ void ShotGun::Attack() {
 		// Bullet 生成
 		bulletManager_->ShootBullet(
 			object3d_->GetCenterPosition(),
-			targetPos_,
-			targetVelocity_,
+			dir,
 			weaponData_.config.bulletSpeed,
 			weaponData_.config.power,
 			static_cast<CharacterType>(static_cast<int>(ownerType) + 1));

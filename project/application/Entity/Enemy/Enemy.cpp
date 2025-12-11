@@ -98,25 +98,19 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 	for (int i = 0; i < weapons_.size(); i++) {
 		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
 			weapons_[i] = std::make_unique<Rifle>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
 		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
 			weapons_[i] = std::make_unique<Bazooka>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
 		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
 			//垂直ミサイルの武器を初期化
 			weapons_[i] = std::make_unique<VerticalMissileLauncher>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
 		} else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_MACHINE_GUN) {
 			//マシンガンの武器を初期化
 			weapons_[i] = std::make_unique<MachineGun>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
 		} else {
 			weapons_[i] = nullptr; // 未使用の武器スロットはnullptrに設定
 		}
+		weapons_[i]->Initialize(object3dCommon, bulletManager);
+		weapons_[i]->SetOwnerObject(this);
 	}
 
 	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
