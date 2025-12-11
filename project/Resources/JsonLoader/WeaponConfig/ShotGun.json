@@ -1,6 +1,6 @@
 {
     "actionData": {
-        "pelletCount": 6,
+        "pelletCount": 20,
         "spreadDeg": 10.0
     },
     "config": {
@@ -14,7 +14,7 @@
         "magazineCount_": 2,
         "maxBulletCount": 20,
         "maxReloadTime": 2.0,
-        "power": 10.0,
+        "power": 40.0,
         "requiredChargeTime": 0.0
     },
     "modelFilePath": "ShotGun.gltf",
