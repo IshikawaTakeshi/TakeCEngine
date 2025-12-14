@@ -54,6 +54,8 @@ public:
 	/// </summary>
 	void DrawSprite();
 
+	void DrawShadow();
+
 	/// <summary>
 	/// シーンの変更
 	/// </summary>

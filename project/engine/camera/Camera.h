@@ -67,6 +67,8 @@ public:
 	const Matrix4x4& GetViewProjectionMatrix() const { return viewProjectionMatrix_; }
 	//回転行列の取得
 	const Matrix4x4& GetRotationMatrix() const { return rotationMatrix_; }
+	//正射影行列の取得
+	const Matrix4x4& GetOrthographicMatrix() const { return orthographicMatrix_; }
 
 	//カメラの回転の取得
 	const Quaternion& GetRotate()const { return cameraConfig_.transform_.rotate; }
@@ -76,6 +78,8 @@ public:
 	const Vector3& GetOffset() const { return cameraConfig_.offset_; }
 
 	const Vector3& GetUpVector() const;
+
+	const Vector3& GetDirection() const;
 	
 	//シェイクするかどうかの取得
 	const bool& GetIsShaking() const { return isShaking_; }
@@ -140,6 +144,7 @@ private:
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 viewMatrix_;
 	Matrix4x4 projectionMatrix_;
+	Matrix4x4 orthographicMatrix_;
 	Matrix4x4 viewProjectionMatrix_;
 	//回転行列
 	Matrix4x4 rotationMatrix_;

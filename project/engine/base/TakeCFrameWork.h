@@ -24,6 +24,7 @@
 #include "camera/CameraManager.h"
 #include "primitive/Sphere.h"
 #include "PostEffect/PostEffectManager.h"
+#include "PostEffect/PostEffectFactory.h"
 #include "PostEffect/RenderTexture.h"
 #include "scene/SceneManager.h"
 #include "scene/SceneTransition.h"
@@ -126,6 +127,8 @@ protected:
 
 	//シーンファクトリー
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;
+	//ポストエフェクトファクトリー
+	std::unique_ptr<PostEffectFactory> postEffectFactory_ = nullptr;
 
 	//アニメーション管理クラス
 	static std::unique_ptr<TakeC::AnimationManager> animationManager_;

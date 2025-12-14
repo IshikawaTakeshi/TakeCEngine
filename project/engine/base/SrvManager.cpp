@@ -1,6 +1,7 @@
 #include "SrvManager.h"
 #include "DirectXCommon.h"
 #include <cassert>
+#include "DsvManager.h"
 
 // 最大SRV数
 const uint32_t TakeC::SrvManager::kMaxSRVCount_ = 512;
@@ -193,5 +194,3 @@ void TakeC::SrvManager::SetDescriptorHeap() {
 	ID3D12DescriptorHeap* drawHeaps_[] = { descriptorHeap_.Get() };
 	dxCommon_->GetCommandList()->SetDescriptorHeaps(1, drawHeaps_);
 }
-
-

@@ -1,6 +1,7 @@
 #pragma once
 #include "engine/math/Vector3.h"
 #include "engine/math/Vector4.h"
+#include "engine/math/Matrix4x4.h"
 
 //============================================================================
 //DirectionalLightのデータ
@@ -10,3 +11,4 @@ struct DirectionalLightData {
 	Vector3 direction_; //ライトの向き
 	float intensity_; //輝度
 };
+

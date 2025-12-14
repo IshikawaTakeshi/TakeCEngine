@@ -3,7 +3,6 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <cstdint>
-#include <array>
 
 #include "engine/base/ComPtrAliasTemplates.h"
 
@@ -43,11 +42,6 @@ namespace TakeC {
 		/// </summary>
 		/// <returns></returns>
 		uint32_t Allocate();
-
-		/// <summary>
-		/// 描画前処理
-		/// </summary>
-		//void SetDescriptorHeap();
 
 		/// <summary>
 		/// RTV生成

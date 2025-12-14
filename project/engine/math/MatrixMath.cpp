@@ -477,3 +477,17 @@ Matrix4x4 MatrixMath::DirectionToDirection(const Vector3& from, const Vector3& t
 	result.m[3][3] = 1.0f;
 	return result;
 }
+
+Matrix4x4 MatrixMath::LookAt(const Vector3& eye, const Vector3& target, const Vector3& up) {
+	
+	Vector3 zAxis = Vector3Math::Normalize(target - eye);
+	Vector3 xAxis = Vector3Math::Normalize(Vector3Math::Cross(up, zAxis));
+	Vector3 yAxis = Vector3Math::Cross(zAxis, xAxis);
+	Matrix4x4 result = {
+		xAxis.x, yAxis.x, zAxis.x, 0.0f,
+		xAxis.y, yAxis.y, zAxis.y, 0.0f,
+		xAxis.z, yAxis.z, zAxis.z, 0.0f,
+		-Vector3Math::Dot(xAxis, eye), -Vector3Math::Dot(yAxis, eye), -Vector3Math::Dot(zAxis, eye), 1.0f
+	};
+	return result;
+}

@@ -26,7 +26,7 @@ public:
 	/// <param name="dxCommon"></param>
 	/// <param name="srvManager"></param>
 	/// <param name="postEffectManager"></param>
-	void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, TakeC::PostEffectManager* postEffectManager);
+	void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager);
 
 	/// <summary>
 	/// レンダーターゲットのクリア
@@ -48,6 +48,10 @@ public:
 	/// </summary>
 	void PostDraw();
 
+	void TransitionToSRV();
+
+	void TransitionToDepthWrite();
+
 public:
 
 	//========================================================
@@ -60,15 +64,24 @@ public:
 	ComPtr<ID3D12Resource> GetRenderTextureResource() const {
 		return renderTextureResource_;
 	}
-	//RTVハンドルの取得
+	ComPtr<ID3D12Resource> GetDepthStencilResource() const {
+		return depthStencilResource_;
+	}
+	PSO* GetRenderTexturePSO() const {
+		return renderTexturePSO_.get();
+	}
+
 	uint32_t GetSrvIndex() const {return srvIndex_;}
+	uint32_t GetDepthSrvIndex() const { return depthSrvIndex_; }
+
+	uint32_t GetRtvIndex() const { return rtvIndex_; }
+	uint32_t GetDsvIndex() const { return dsvIndex_; }
 
 private:
 
 	TakeC::DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
 	TakeC::SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
 	TakeC::RtvManager* rtvManager_ = nullptr; //RtvManagerのポインタ
-	TakeC::PostEffectManager* postEffectManager_ = nullptr; //PostEffectManagerのポインタ
 	//clearValue
 	//clearValue
 	const Vector4 kRenderTargetClearColor_ = { 0.1f, 0.25f, 0.5f, 1.0f };
@@ -76,15 +89,19 @@ private:
 
 	//RTVのハンドル
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_;
+	uint32_t rtvIndex_ = {};
 	//DSVのハンドル
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
-	//RTVのインデックス
-	uint32_t rtvIndex_ = {};
-	//SRVのインデックス
+	uint32_t dsvIndex_ = {};
+	//レンダーテクスチャのSRVインデックス
 	uint32_t srvIndex_ = 0;
+	//深度テクスチャのSRVインデックス
+	uint32_t depthSrvIndex_ = 0;
 
 	ComPtr<ID3D12Resource> renderTextureResource_; 
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_;
+
+	ComPtr<ID3D12Resource> depthStencilResource_; //深度ステンシルバッファリソース
 
 	std::unique_ptr<PSO> renderTexturePSO_; //PSO
 	ComPtr<ID3D12RootSignature> rootSignature_; //ルートシグネチャ

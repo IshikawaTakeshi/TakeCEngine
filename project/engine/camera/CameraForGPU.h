@@ -12,6 +12,7 @@
 
 //定数バッファ用の構造体
 struct CameraForGPU {
+	Matrix4x4 viewProjectionInverse; // ビュー射影行列の逆行列
 	Matrix4x4 ProjectionInverse; // 投影行列の逆行列
 	Vector3 worldPosition;
 	float padding;

@@ -3,6 +3,7 @@
 #include "base/SrvManager.h"
 #include "base/PipelineStateObject.h"
 #include "PostEffect/PostEffect.h"
+#include "PostEffect/PostEffectFactory.h"
 #include <string>
 #include <vector>
 
@@ -21,6 +22,10 @@ struct NamedPostEffect {
 //=============================================================================
 //	PostEffectManager class
 //=============================================================================
+
+//前方宣言
+class RenderTexture;
+
 namespace TakeC {
 	class PostEffectManager {
 	public:
@@ -38,7 +43,7 @@ namespace TakeC {
 		/// <summary>
 		/// 初期化
 		/// </summary>
-		void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager);
+		void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager,RenderTexture* renderTexture);
 
 		/// <summary>
 		/// ImGui更新処理
@@ -86,20 +91,22 @@ namespace TakeC {
 
 		//----- setter ---------------------------
 
-		// 最終出力SRVインデックスの設定
-		void SetRenderTextureResource(ComPtr<ID3D12Resource> renderTextureResource) {
-			renderTextureResource_ = renderTextureResource;
+		void SetPostEffectFactory(PostEffectFactory* factory) {
+			postEffectFactory_ = factory;
 		}
 
-		// 最終出力SRVインデックスの設定
-		void SetRenderTextureSrvIndex(uint32_t srvIndex) {
-			renderTextureSrvIndex_ = srvIndex;
+		void SetLightCameraRenderTexture(RenderTexture* renderTexture) {
+			lightCameraRenderTexture_ = renderTexture;
 		}
 
 	private:
 
 		TakeC::DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
 		TakeC::SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
+		PostEffectFactory* postEffectFactory_; //PostEffectFactoryのポインタ
+
+		RenderTexture* renderTexture_ = nullptr; //RenderTextureのポインタ
+		RenderTexture* lightCameraRenderTexture_ = nullptr; //ライトカメラ用RenderTextureのポインタ
 
 		//srv/uavとして利用する中間リソース
 		ComPtr<ID3D12Resource> intermediateResource_[2];

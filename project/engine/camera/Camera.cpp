@@ -74,11 +74,20 @@ void Camera::Update() {
 		cameraConfig_.nearClip_,
 		cameraConfig_.farClip_
 	);
+	orthographicMatrix_ = MatrixMath::MakeOrthographicMatrix(
+		TakeC::WinApp::kScreenWidth / 2.0f * -1.0f,
+		TakeC::WinApp::kScreenHeight / 2.0f * -1.0f,
+		TakeC::WinApp::kScreenWidth / 2.0f,
+		TakeC::WinApp::kScreenHeight / 2.0f,
+		cameraConfig_.nearClip_,
+		cameraConfig_.farClip_);
+
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
 
 	//GPUに転送するパラメータの更新
 	cameraForGPU_->worldPosition = cameraConfig_.transform_.translate;
 	cameraForGPU_->ProjectionInverse = MatrixMath::Inverse(projectionMatrix_);
+	cameraForGPU_->viewProjectionInverse = MatrixMath::Inverse(viewProjectionMatrix_);
 }
 
 //=============================================================================
@@ -133,6 +142,7 @@ void Camera::UpdateImGui() {
 	ImGui::DragFloat("pitchRot", &pitchRot_, 0.01f);
 	ImGui::DragFloat("FovX", &cameraConfig_.fovX_, 0.01f);
 	ImGui::DragFloat("followSpeed", &followSpeed_, 0.01f);
+	ImGui::DragFloat("farClip", &cameraConfig_.farClip_, 1.0f);
 	ImGui::DragFloat("rotationSpeed", &rotationSpeed_, 0.01f);
 	ImGui::Checkbox("isDebug", &isDebug_);
 
@@ -486,4 +496,8 @@ const Vector3& Camera::GetUpVector() const {
 
 	static Vector3 upVector = QuaternionMath::RotateVector(Vector3(0, 1, 0), cameraConfig_.transform_.rotate);
 	return upVector;
+}
+
+const Vector3& Camera::GetDirection() const {
+	return direction_;
 }

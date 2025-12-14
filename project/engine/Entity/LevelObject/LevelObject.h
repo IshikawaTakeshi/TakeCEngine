@@ -54,6 +54,8 @@ public:
 	/// </summary>
 	void Draw() override;
 
+	void DrawShadow(const LightCameraInfo& lightCamera);
+
 	/// <summary>
 	/// コライダー描画処理
 	/// </summary>

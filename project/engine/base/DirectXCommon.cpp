@@ -34,19 +34,19 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	InitializeCommand();
 	// スワップチェーンの生成
 	CreateSwapChain();
-	//深度ステンシルテクスチャの生成
-	CreateDepthStencilTextureResource(device_, WinApp::kScreenWidth, WinApp::kScreenHeight);
-	//DSV生成
-	CreateDSV();
 
 	//rtvManager初期化
 	rtvManager_ = std::make_unique<RtvManager>();
 	rtvManager_->Initialize(this);
+	//dsvManager初期化
+	dsvManager_ = std::make_unique<DsvManager>();
+	dsvManager_->Initialize(this);
+
+
+	
 
 	// RTVの初期化
 	InitializeRenderTargetView();
-	// DSVの初期化
-	InitializeDepthStencilView();
 	// フェンス生成
 	CreateFence();
 	//Viewport初期化
@@ -72,12 +72,10 @@ void DirectXCommon::Finalize() {
 	commandList_.Reset();
 	commandAllocator_.Reset();
 	commandQueue_.Reset();
-	dsvHeap_.Reset();
 	rtvManager_->Finalize();
 	swapChainResources_[0].Reset();
 	swapChainResources_[1].Reset();
 	swapChain_.Reset();
-
 
 	device_.Reset();
 	useAdapter_.Reset();
@@ -338,8 +336,9 @@ void DirectXCommon::CreateSwapChain() {
 //		深度バッファ生成
 //==============================================================================================
 
-void DirectXCommon::CreateDepthStencilTextureResource(const Microsoft::WRL::ComPtr<ID3D12Device>& device, int32_t width, int32_t height) {
-
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateDepthStencilTextureResource(const Microsoft::WRL::ComPtr<ID3D12Device>& device, int32_t width, int32_t height) {
+	
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
 	//生成するResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = width; //Texureの幅
@@ -368,23 +367,11 @@ void DirectXCommon::CreateDepthStencilTextureResource(const Microsoft::WRL::ComP
 		&resourceDesc, //Resourceの設定
 		D3D12_RESOURCE_STATE_DEPTH_WRITE, //深度値を書き込む状態にしておく
 		&depthCLearValue, //Clear最適値。
-		IID_PPV_ARGS(&depthStencilResource_) //作成するResourceポインタへのポインタ
+		IID_PPV_ARGS(&resource) //作成するResourceポインタへのポインタ
 	);
 	assert(SUCCEEDED(hr));
-}
 
-//==============================================================================================
-// 各デスクリプタヒープ生成
-//==============================================================================================
-
-void DirectXCommon::CreateDSV() {
-
-	//ディスクリプタヒープのサイズを取得
-	descriptorSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
-	//DSV用のディスクリプタヒープ生成。DSVはShader内で触るものではないので、ShaderVisibleはfalse
-	dsvHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
-
+	return resource;
 }
 
 //==============================================================================================
@@ -412,20 +399,6 @@ void DirectXCommon::InitializeRenderTargetView() {
 		swapchainRtvIndex_[i] = rtvManager_->Allocate();
 		rtvManager_->CreateRTV(swapChainResources_[i].Get(), swapchainRtvIndex_[i]);
 	}
-}
-
-//==============================================================================================
-//		DSV初期化
-//==============================================================================================
-
-void DirectXCommon::InitializeDepthStencilView() {
-
-	//DSVの設定
-	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
-	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //format.基本的にはResourceに合わせる
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; //2dTexture
-	//DSVHeapの先頭にDSVを作る
-	device_->CreateDepthStencilView(depthStencilResource_.Get(), &dsvDesc, dsvHeap_->GetCPUDescriptorHandleForHeapStart());
 }
 
 //==============================================================================================

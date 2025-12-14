@@ -19,14 +19,13 @@ RenderTexture::~RenderTexture() {
 // 初期化
 //======================================================================
 
-void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, TakeC::PostEffectManager* postEffectManager ){
+void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager){
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
 	//RTVManagerの取得
 	rtvManager_ = dxCommon_->GetRtvManager();
-	postEffectManager_ = postEffectManager;
-
+	
 	//rtvDescの初期化
 	rtvDesc_ = {};
 	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
@@ -38,18 +37,29 @@ void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager
 		dxCommon_->GetDevice(),WinApp::kScreenWidth,WinApp::kScreenHeight,DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,kRenderTargetClearColor_);
 	renderTextureResource_->SetName(L"renderTextureResource_front");
 
+	//深度ステンシルバッファリソースの生成
+	depthStencilResource_ = dxCommon_->CreateDepthStencilTextureResource(
+		dxCommon_->GetDevice(), WinApp::kScreenWidth, WinApp::kScreenHeight);
+
 	//RTVの生成
 	rtvIndex_ = rtvManager_->Allocate();
 	rtvManager_->CreateRTV(renderTextureResource_.Get(), rtvIndex_);
 
-	//SRVの生成
+	//DSVの生成
+	dsvIndex_ = dxCommon_->GetDsvManager()->Allocate();
+	dxCommon_->GetDsvManager()->CreateDSV(depthStencilResource_, dsvIndex_);
+	//深度テクスチャのSRV生成
+	depthSrvIndex_ = srvManager_->Allocate();
+	srvManager_->CreateSRVforDepthTexture(depthStencilResource_.Get(), depthSrvIndex_);
+
+	//レンダーテクスチャのSRV生成
 	srvIndex_ = srvManager_->Allocate();
 	srvManager_->CreateSRVforRenderTexture(renderTextureResource_.Get(),DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, srvIndex_);
 
 	//RTVのハンドルの取得
 	rtvHandle_ = rtvManager_->GetRtvDescriptorHandleCPU(rtvIndex_);
 	//DSVHandleの設定
-	dsvHandle_ = dxCommon_->GetDsvHeap()->GetCPUDescriptorHandleForHeapStart();
+	dsvHandle_ = dxCommon_->GetDsvManager()->GetDsvDescriptorHandleCPU(dsvIndex_);
 
 	//PSO初期化
 	renderTexturePSO_ = std::make_unique<PSO>();
@@ -58,10 +68,6 @@ void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager
 	renderTexturePSO_->CreateRenderTexturePSO(dxCommon_->GetDevice());
 	renderTexturePSO_->SetGraphicPipelineName("RenderTexturePSO");
 	rootSignature_ = renderTexturePSO_->GetGraphicRootSignature();
-
-	//postEffectManagerにRenderTextureReosurceを渡す
-	postEffectManager_->SetRenderTextureResource(renderTextureResource_);
-	postEffectManager_->SetRenderTextureSrvIndex(srvIndex_);
 }
 
 //=======================================================================
@@ -87,16 +93,6 @@ void RenderTexture::ClearRenderTarget() {
 //========================================================================
 
 void RenderTexture::PreDraw() {
-	//レンダーターゲットのクリア
-	ClearRenderTarget();
-}
-
-//=======================================================================
-// 描画
-//========================================================================
-
-void RenderTexture::Draw() {
-
 	// RENDER_TARGET >> PIXEL_SHADER_RESOURCE
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_RENDER_TARGET,         //stateBefore
@@ -109,9 +105,13 @@ void RenderTexture::Draw() {
 	dxCommon_->GetCommandList()->SetPipelineState(renderTexturePSO_->GetGraphicPipelineState());
 	// プリミティブトポロジー設定
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
 
-	// ポストエフェクトのリソース
-	postEffectManager_->Draw(renderTexturePSO_.get());
+//=======================================================================
+// 描画
+//========================================================================
+
+void RenderTexture::Draw() {
 	// 描画コマンドを発行
 	dxCommon_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }
@@ -122,10 +122,25 @@ void RenderTexture::Draw() {
 
 void RenderTexture::PostDraw() {
 
-
 	//PIXCEL_SHADER_RESOURCE >> GENERIC_READ
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		renderTextureResource_.Get());
+}
+
+void RenderTexture::TransitionToSRV() {
+	// DEPTH_WRITE >> NON_PIXEL_SHADER_RESOURCE
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+		depthStencilResource_.Get());
+}
+
+void RenderTexture::TransitionToDepthWrite() {
+	//PIXEL_SHADER_RESOURCE >> DEPTH_WRITE
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		depthStencilResource_.Get());
 }

@@ -34,6 +34,7 @@ void Object3dCommon::Initialize(TakeC::DirectXCommon* directXCommon,TakeC::Light
 	pso_->CompileComputeShader(dxCommon_->GetDXC(), L"Skinning.CS.hlsl");
 	pso_->CreateComputePSO(dxCommon_->GetDevice());
 	pso_->SetComputePipelineName("Object3dPSO:Conpute");
+
 	//加算ブレンド用PSO生成
 	addBlendPso_ = std::make_unique<PSO>();
 	addBlendPso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
@@ -41,10 +42,20 @@ void Object3dCommon::Initialize(TakeC::DirectXCommon* directXCommon,TakeC::Light
 	addBlendPso_->CreateGraphicPSO(dxCommon_->GetDevice(),
 		D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL, BlendState::ADD);
 	pso_->SetGraphicPipelineName("Object3dPSO:graphic:AddBlend");
+
+	//影描画用PSO生成
+	shadowPassPso_ = std::make_unique<PSO>();
+	shadowPassPso_->CompileVertexShader(dxCommon_->GetDXC(), L"Shadow/ShadowPass.VS.hlsl");
+	shadowPassPso_->CompilePixelShader(dxCommon_->GetDXC(), L"Shadow/ShadowPass.PS.hlsl");
+	shadowPassPso_->CreateGraphicPSO(dxCommon_->GetDevice(),D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL);
+
 	//RootSignatureの取得
 	graphicRootSignature_ = pso_->GetGraphicRootSignature();
 	computeRootSignature_ = pso_->GetComputeRootSignature();
 	addBlendRootSignature_ = addBlendPso_->GetGraphicRootSignature();
+
+	//影描画用RootSignatureの取得
+	shadowPassRootSignature_ = shadowPassPso_->GetGraphicRootSignature();
 
 	//TODO:ライト関連の初期化処理を別のクラスに移動させる
 #pragma region "Lighting"
@@ -94,6 +105,19 @@ void Object3dCommon::PreDraw() {
 	SetCBufferViewCamera(pso_.get());
 	// ライトリソース設定
 	lightManager_->SetLightResources(pso_.get());
+}
+
+//================================================================================================
+// 影描画前処理
+//================================================================================================
+void Object3dCommon::PreDrawShadowPass() {
+
+	//PSO設定
+	dxCommon_->GetCommandList()->SetPipelineState(shadowPassPso_->GetGraphicPipelineState());
+	// ルートシグネチャ設定
+	dxCommon_->GetCommandList()->SetGraphicsRootSignature(shadowPassRootSignature_.Get());
+	//プリミティブトポロジー設定
+	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 //================================================================================================

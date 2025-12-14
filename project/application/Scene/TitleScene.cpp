@@ -108,3 +108,6 @@ void TitleScene::DrawSprite() {
 	titleTextSprite_->Draw();
 	pushStartUI_->Draw();
 }
+
+void TitleScene::DrawShadow() {
+}

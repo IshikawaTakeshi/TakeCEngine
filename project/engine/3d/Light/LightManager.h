@@ -3,6 +3,7 @@
 #include "engine/3d/Light/DirectionalLight.h"
 #include "engine/3d/Light/PointLight.h"
 #include "engine/3d/Light/SpotLight.h"
+#include "engine/3d/Light/LightCameraInfo.h"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
@@ -18,6 +19,7 @@ struct LightCountData {
 //		LightManager class
 //============================================================================
 
+class Camera;
 class PSO;
 namespace TakeC {
 
@@ -91,6 +93,8 @@ class SrvManager;
 		/// <param name="light"></param>
 		void UpdateSpotLight(uint32_t index, const SpotLightData& light);
 
+		void UpdateShadowMatrix(Camera* camera);
+
 		/// <summary>
 		/// ポイントライト描画
 		/// </summary>
@@ -124,6 +128,14 @@ class SrvManager;
 			return spotLightResource_.Get();
 		}
 
+		ID3D12Resource* GetLightCameraInfoResource() const {
+			return lightCameraInfoResource_.Get();
+		}
+
+		const LightCameraInfo& GetLightCameraInfo() const {
+			return *lightCameraInfo_;
+		}
+
 		//----- setter ---------------------------
 
 		/// ライト用リソースの設定
@@ -139,6 +151,10 @@ class SrvManager;
 
 		ComPtr<ID3D12Resource> dirLightResource_;
 		DirectionalLightData* dirLightData_ = nullptr;
+
+		Camera* lightCamera_ = nullptr;
+		ComPtr<ID3D12Resource> lightCameraInfoResource_;
+		LightCameraInfo* lightCameraInfo_ = nullptr;
 
 		ComPtr<ID3D12Resource> pointLightResource_;
 		PointLightData* pointLightData_;
