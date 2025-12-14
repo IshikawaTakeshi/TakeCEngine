@@ -125,9 +125,6 @@ void MyGame::Draw() {
 	srvManager_->SetDescriptorHeap();
 	sceneManager_->DrawShadow();  // ライトカメラ視点で深度のみ描画
 
-	// バリア：シャドウマップを SRV として読めるようにする
-	//shadowRenderTexture_->TransitionToSRV();
-
 	//===========================================
 	// 3. ポストエフェクト
 	//===========================================

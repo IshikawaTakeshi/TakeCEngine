@@ -36,6 +36,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//オブジェクト初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
+	
 	//コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());

@@ -15,8 +15,8 @@ struct ShadowMapEffectInfo {
 };
 
 Texture2D<float4> gInputTexture : register(t0); // 入力テクスチャ
-Texture2D<float> gShadowMap : register(t1); // ライトカメラの深度テクスチャ
-Texture2D<float3> gSceneDepth : register(t2); // メインカメラの深度テクスチャ
+Texture2D<float> gShadowMapDepth : register(t1); // ライトカメラの深度テクスチャ
+Texture2D<float> gSceneDepth : register(t2); // メインカメラの深度テクスチャ
 RWTexture2D<float4> gOutputTexture : register(u0); // 出力テクスチャ
 SamplerState gSampler : register(s0); // サンプラー
 
@@ -42,31 +42,31 @@ float3 ReconstructWorldPos(float2 uv, float depth01) {
 }
 
 //--------------------------------------------------------------
-// PCF シャドウサンプリング（法線バイアスなし）
+// シャドウ判定（PCF なし）
 //--------------------------------------------------------------
-float SampleShadowPCF(float4 posLS, float2 texelSize, float bias) {
+float SampleShadow(float4 posLS, float bias) {
+    // 同次座標を正規化
 	float3 proj = posLS.xyz / posLS.w;
-
-    // 0-1 空間外なら影の外（照らされる扱い）
-	if ( any(proj < 0) || any(proj > 1) )
-		return 1.0;
-
-	int r = (int)ceil(gShadowMapEffectInfo.pcfRange);
-	float shadow = 0.0;
-	float count = 0.0;
-
-    [loop]
-	for ( int y = -r; y <= r; ++y ) {
-        [loop]
-		for ( int x = -r; x <= r; ++x ) {
-			float2 offset = float2(x, y) * texelSize;
-			float sampleDepth = gShadowMap.SampleLevel(gSampler, proj.xy + offset, 0).r;
-			float compare = proj.z - bias;
-			shadow += (compare <= sampleDepth) ? 1.0 : 0.0;
-			count += 1.0;
-		}
+    
+    // NDC → UV 座標（0〜1）に変換
+	float2 shadowUV = proj.xy * 0.5f + 0.5f;
+	shadowUV.y = 1.0f - shadowUV.y; // Y 反転
+    
+    // 範囲外チェック
+	if ( shadowUV.x < 0.0f || shadowUV.x > 1.0f ||
+        shadowUV.y < 0.0f || shadowUV.y > 1.0f ||
+        proj.z < 0.0f || proj.z > 1.0f ) {
+		return 1.0f; // 範囲外は影なし
 	}
-	return shadow / max(count, 1.0);
+    
+    // シャドウマップから深度をサンプル
+	float shadowDepth = gShadowMapDepth.SampleLevel(gSampler, shadowUV, 0).r;
+    
+    // 深度比較
+	float currentDepth = proj.z - bias;
+    
+    // 影の中なら 0、そうでなければ 1
+	return (currentDepth <= shadowDepth) ? 1.0f : 0.0f;
 }
 
 
@@ -75,36 +75,63 @@ float SampleShadowPCF(float4 posLS, float2 texelSize, float bias) {
 //--------------------------------------------------------------
 [numthreads(8, 8, 1)]
 void main(uint3 DTid : SV_DispatchThreadID) {
-	
+    
 	uint w, h;
 	gOutputTexture.GetDimensions(w, h);
 	if ( DTid.x >= w || DTid.y >= h )
 		return;
-
-	float2 uv = (DTid.xy + 0.5) / float2(w, h);
+    
+    // UV 座標
+	float2 uv = (DTid.xy + 0.5f) / float2(w, h);
+    
+    // 入力カラー
 	float4 baseColor = gInputTexture.Load(int3(DTid.xy, 0));
-	float depth01 = gSceneDepth.Load(int3(DTid.xy, 0)).r;
-
-	//エフェクト無効ならそのまま出力
+    
+    // メインカメラの
+	float depth = gSceneDepth.Load(int3(DTid.xy, 0)).r;
+    
+    // エフェクト無効ならそのまま出力
 	if ( !gShadowMapEffectInfo.isActive ) {
 		gOutputTexture[DTid.xy] = baseColor;
 		return;
 	}
-
-	//ワールド座標を再構成
-	float3 worldPos = ReconstructWorldPos(uv, depth01);
-
-	//ライト空間へ変換
-	float4 posLS = mul(float4(worldPos, 1.0), gLightCameraInfo.viewProjection);
-
-	//シャドウマップ解像度からtexelSizeを算出（別解像度ならCPUから渡す）
-	uint smW, smH;
-	gShadowMap.GetDimensions(smW, smH);
-	float2 texelSize = 1.0 / float2(smW, smH);
-
-	//シャドウ値を取得
-	float shadow = SampleShadowPCF(posLS, texelSize, gShadowMapEffectInfo.bias);
-
-	//結果を出力（影部分を暗くする）
+    
+    // スカイボックス等（深度が遠い）はスキップ
+	if ( depth >= 0.9999f ) {
+		gOutputTexture[DTid.xy] = baseColor;
+		return;
+	}
+    
+    // ワールド座標を再構成
+	float3 worldPos = ReconstructWorldPos(uv, depth);
+    
+    // ライト空間へ変換
+	float4 posLS = mul(float4(worldPos, 1.0f), gLightCameraInfo.viewProjection);
+    
+    // シャドウ判定
+	float shadow = SampleShadow(posLS, gShadowMapEffectInfo.bias);
+    
+    // 結果を出力
 	gOutputTexture[DTid.xy] = float4(baseColor.rgb * shadow, baseColor.a);
+	
+// 【デバッグ3】ライト空間UVの可視化
+// これで「ライトが当たっているはずの範囲」がカラフルに表示されます。
+
+//	float3 proj = posLS.xyz / posLS.w;
+//	float2 shadowUV = proj.xy * 0.5f + 0.5f;
+//	shadowUV.y = 1.0f - shadowUV.y;
+
+//// 範囲外（ライトカメラの撮影範囲外）なら「赤」を表示
+//	if ( shadowUV.x < 0.0f || shadowUV.x > 1.0f ||
+//    shadowUV.y < 0.0f || shadowUV.y > 1.0f ||
+//    proj.z < 0.0f || proj.z > 1.0f ) {
+//    // 赤色 = 影の計算範囲外（設定したWidth/HeightやNear/Farの外側）
+//		gOutputTexture[DTid.xy] = float4(1.0f, 0.0f, 0.0f, 1.0f);
+//	}
+//	else {
+//    // 緑〜黄色グラデーション = 影の計算範囲内（正常）
+//    // UV座標を色として出す
+//		gOutputTexture[DTid.xy] = float4(shadowUV.x, shadowUV.y, 0.0f, 1.0f);
+//	}
+//	return;
 }

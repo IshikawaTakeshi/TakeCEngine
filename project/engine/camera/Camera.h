@@ -79,6 +79,8 @@ public:
 
 	const Vector3& GetUpVector() const;
 
+	const Vector3& GetTargetPosition() const { return focusTargetPosition_; }
+
 	const Vector3& GetDirection() const;
 	
 	//シェイクするかどうかの取得
@@ -131,6 +133,14 @@ public:
 	void SetEZoomEnemy(bool isEZoomEnemy) { isEZoomEnemy_ = isEZoomEnemy; }
 	//カメラモード変更要求の設定
 	void SetRequestedChangeCameraMode(bool requested) { requestedChangeCameraMode_ = requested; }
+
+	void SetViewProjectionInverse(Matrix4x4 vpInverse) {
+		cameraForGPU_->viewProjectionInverse = vpInverse;
+	}
+
+	void SetProjectionChanged(bool changed) {
+		projectionChanged = changed;
+	}
 private:
 
 	//バッファリソース
@@ -183,6 +193,8 @@ private:
 	const float kPitchLimit = std::numbers::pi_v<float> / 180.0f * 70.0f; 
 	//セーブフィールドの表示
 	bool showSaveField = false;
+
+	bool projectionChanged = false;
 
 private:
 

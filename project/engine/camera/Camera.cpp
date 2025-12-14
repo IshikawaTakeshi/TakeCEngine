@@ -74,15 +74,19 @@ void Camera::Update() {
 		cameraConfig_.nearClip_,
 		cameraConfig_.farClip_
 	);
-	orthographicMatrix_ = MatrixMath::MakeOrthographicMatrix(
-		TakeC::WinApp::kScreenWidth / 2.0f * -1.0f,
-		TakeC::WinApp::kScreenHeight / 2.0f * -1.0f,
-		TakeC::WinApp::kScreenWidth / 2.0f,
-		TakeC::WinApp::kScreenHeight / 2.0f,
+	Matrix4x4 orthographicMatrix = MatrixMath::MakeOrthographicMatrix(
+		-TakeC::WinApp::kScreenWidth / 2.0f,  TakeC::WinApp::kScreenHeight / 2.0f,
+		TakeC::WinApp::kScreenWidth / 2.0f, -TakeC::WinApp::kScreenHeight / 2.0f,
 		cameraConfig_.nearClip_,
-		cameraConfig_.farClip_);
+		cameraConfig_.farClip_
+	);
 
-	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
+	if (projectionChanged) {
+		viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, orthographicMatrix);
+	} else {
+
+		viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
+	}
 
 	//GPUに転送するパラメータの更新
 	cameraForGPU_->worldPosition = cameraConfig_.transform_.translate;
@@ -138,8 +142,8 @@ void Camera::UpdateImGui() {
 	ImGui::DragFloat4("Rotate", &cameraConfig_.transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("offset", &cameraConfig_.offset_.x, 0.01f);
 	ImGui::DragFloat3("offsetDelta", &cameraConfig_.offsetDelta_.x, 0.01f);
-	ImGui::DragFloat("yawRot", &yawRot_, 0.01f);
-	ImGui::DragFloat("pitchRot", &pitchRot_, 0.01f);
+	ImGui::DragFloat("yawRot", &cameraConfig_.yaw_, 0.01f);
+	ImGui::DragFloat("pitchRot", &cameraConfig_.pitch_, 0.01f);
 	ImGui::DragFloat("FovX", &cameraConfig_.fovX_, 0.01f);
 	ImGui::DragFloat("followSpeed", &followSpeed_, 0.01f);
 	ImGui::DragFloat("farClip", &cameraConfig_.farClip_, 1.0f);
@@ -291,16 +295,16 @@ void Camera::UpdateCameraFollow() {
 	float deltaPitch = stick_.y * 0.02f; // X軸回転
 	float deltaYaw = stick_.x * 0.02f;   // Y軸回転
 
-	yawRot_ += deltaYaw;
-	pitchRot_ += deltaPitch;
+	cameraConfig_.yaw_ += deltaYaw;
+	cameraConfig_.pitch_ += deltaPitch;
 
-	pitchRot_ = std::clamp(pitchRot_, -kPitchLimit,kPitchLimit);
+	cameraConfig_.pitch_ = std::clamp(cameraConfig_.pitch_, -kPitchLimit,kPitchLimit);
 
 	// クォータニオンを用いた回転計算
 	Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
-		Vector3(0, 1, 0), yawRot_);
+		Vector3(0, 1, 0), cameraConfig_.yaw_);
 	Quaternion pitchRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
-		QuaternionMath::RotateVector(Vector3(1, 0, 0), yawRotation), pitchRot_);
+		QuaternionMath::RotateVector(Vector3(1, 0, 0), yawRotation), cameraConfig_.pitch_);
 
 	//回転の合成
 	rotationDelta = pitchRotation * yawRotation;
@@ -398,11 +402,11 @@ void Camera::UpdateCameraLockOn() {
 		// transform_.rotateからforwardベクトルを算出
 		Vector3 forward = QuaternionMath::RotateVector(Vector3(0,0,1), cameraConfig_.transform_.rotate);
 		//yaw
-		yawRot_ = std::atan2(forward.x, forward.z);
+		cameraConfig_.yaw_ = std::atan2(forward.x, forward.z);
 		//pitch
-		pitchRot_ = std::asin(-forward.y);
+		cameraConfig_.pitch_ = std::asin(-forward.y);
 		//必要ならclampする
-		pitchRot_ = std::clamp(pitchRot_, -kPitchLimit, kPitchLimit);
+		cameraConfig_.pitch_ = std::clamp(cameraConfig_.pitch_, -kPitchLimit, kPitchLimit);
 
 		//状態遷移リクエスト(FOLLOW)
 		cameraStateRequest_ = GameCameraState::FOLLOW;
@@ -465,11 +469,11 @@ void Camera::UpdateCameraEnemyDestroyed() {
 	// transform_.rotateからforwardベクトルを算出
 	Vector3 forward = QuaternionMath::RotateVector(Vector3(0,0,1), cameraConfig_.transform_.rotate);
 	//yaw
-	yawRot_ = std::atan2(forward.x, forward.z);
+	cameraConfig_.yaw_ = std::atan2(forward.x, forward.z);
 	//pitch
-	pitchRot_ = std::asin(-forward.y);
+	cameraConfig_.pitch_ = std::asin(-forward.y);
 	//必要ならclampする
-	pitchRot_ = std::clamp(pitchRot_, -kPitchLimit, kPitchLimit);
+	cameraConfig_.pitch_ = std::clamp(cameraConfig_.pitch_, -kPitchLimit, kPitchLimit);
 
 	// 状態切り替え
 	if (isEZoomEnemy_ == false) {

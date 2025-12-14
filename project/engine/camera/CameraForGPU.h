@@ -30,6 +30,8 @@ struct CameraConfig {
 	float aspectRatio_ = float(TakeC::WinApp::kScreenWidth / 2) / float(TakeC::WinApp::kScreenHeight / 2);
 	float nearClip_ = 0.1f;
 	float farClip_ = 3800.0f;
+	float yaw_ = 0.0f;
+	float pitch_ = 0.0f;
 };
 
 // JSON変換関数

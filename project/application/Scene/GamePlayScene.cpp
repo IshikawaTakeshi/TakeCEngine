@@ -15,6 +15,7 @@ void GamePlayScene::Initialize() {
 
 	//BGM読み込み
 	BGM_ = AudioManager::GetInstance().LoadSound("GamePlaySceneBGM.mp3");
+	bgmVolume_ = 0.0f;
 
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
@@ -30,6 +31,7 @@ void GamePlayScene::Initialize() {
 	//lightCamera
 	lightCamera_ = std::make_shared<Camera>();
 	lightCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(), "CameraConfig_LightCamera.json");
+	lightCamera_->SetProjectionChanged(true);
 	TakeC::CameraManager::GetInstance().AddCamera("lightCamera", *lightCamera_);
 
 	//デフォルトカメラの設定
@@ -65,7 +67,7 @@ void GamePlayScene::Initialize() {
 	player_->Initialize(&Object3dCommon::GetInstance(), "player_MultiMesh.gltf");
 	player_->WeaponInitialize(&Object3dCommon::GetInstance(), bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"));
-	player_->SetTranslate({ 0.0f, 0.0f, -30.0f });
+	player_->SetTranslate({ 0.0f, 0.0f, 0.0f });
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->LoadEnemyData("Enemy.json"); //Enemyという名前の敵データを読み込み
@@ -351,10 +353,7 @@ void GamePlayScene::DrawShadow() {
 	Object3dCommon::GetInstance().PreDrawShadowPass();
 	//影の描画
 	player_->DrawShadow(lightCameraInfo);
-	/*enemy_->DrawShadow();
-	for (auto& object : levelObjects_) {
-		object.second->DrawShadow();
-	}*/
+	enemy_->DrawShadow(lightCameraInfo);
 	for (auto& object : levelObjects_) {
 		object.second->DrawShadow(lightCameraInfo);
 	}

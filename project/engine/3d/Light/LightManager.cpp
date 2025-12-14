@@ -207,12 +207,27 @@ void TakeC::LightManager::UpdateShadowMatrix(Camera* camera) {
 	//directionalLightをカメラの方向に向ける
 	dirLightData_->direction_ = Vector3Math::Normalize(lightCamera_->GetDirection());
 
-	Vector3 sceneCenter = Vector3(0.0f, 0.0f, 0.0f);
-	Vector3 lightPos = sceneCenter - dirLightData_->direction_ * 300.0f;
-	Matrix4x4 lightView = MatrixMath::LookAt(lightPos, sceneCenter, Vector3(0.0f, 1.0f, 0.0f));
+	//シーンの中心位置を取得
+	//Vector3 sceneCenter = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetTargetPosition();
 
-	lightCameraInfo_->viewProjection_ = lightView * lightCamera_->GetOrthographicMatrix();
-		lightCameraInfo_->position_ = lightCamera_->GetTranslate();
+	Vector3 lightPos = { 0.0f,128.0f,0.0f };
+
+	Matrix4x4 translationMat = MatrixMath::MakeTranslateMatrix(lightPos);
+	
+	Matrix4x4 rotateMat = MatrixMath::LookAt(lightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+
+	Matrix4x4 lightView = MatrixMath::Inverse(rotateMat * translationMat);
+
+	//ライト射影行列の計算
+	Matrix4x4 lightProj = MatrixMath::MakeOrthographicMatrix(
+		-WinApp::kScreenWidth * 0.5f, WinApp::kScreenHeight * 0.5f,
+		WinApp::kScreenWidth * 0.5f, -WinApp::kScreenHeight * 0.5f,
+		10.0f, farClip_
+	);
+
+	lightCamera_->SetTranslate(lightPos);
+	lightCameraInfo_->viewProjection_ = lightView * lightProj;
+	lightCameraInfo_->position_ = lightPos;
 }
 
 //=============================================================================
@@ -406,6 +421,11 @@ void TakeC::LightManager::UpdateImGui() {
 		}
 		ImGui::TreePop();
 	}
+
+	ImGui::Separator();
+	ImGui::DragFloat("Light Camera Distance", &lightCameraDistance_, 1.0f, 1.0f, 100.0f);
+	ImGui::DragFloat("Shadow Range", &shadowRange_, 1.0f, 1.0f, 100.0f);
+	ImGui::DragFloat("Far Clip", &farClip_, 1.0f, 10.0f, 1000.0f);
 
 	ImGui::End();
 #endif

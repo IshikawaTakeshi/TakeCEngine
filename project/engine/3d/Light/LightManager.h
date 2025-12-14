@@ -171,5 +171,9 @@ class SrvManager;
 
 		static const uint32_t kMaxPointLights = 512;   // 最大ポイントライト数
 		static const uint32_t kMaxSpotLights = 128;    // 最大スポットライト数
+
+		float lightCameraDistance_ = 100.0f; // ライトカメラ距離
+		float shadowRange_ = 1280.0f;        // シャドウマップ範囲
+		float farClip_ = 1200.0f;             // ライトカメラ遠クリップ距離
 	};
 }

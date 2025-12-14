@@ -310,6 +310,13 @@ void Enemy::Draw() {
 
 }
 
+void Enemy::DrawShadow(const LightCameraInfo& lightCamera) {
+	object3d_->DrawShadow(lightCamera);
+	for (const auto& weapon : weapons_) {
+		weapon->DrawShadow(lightCamera);
+	}
+}
+
 void Enemy::DrawCollider() {
 
 #ifdef _DEBUG

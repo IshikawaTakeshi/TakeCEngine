@@ -81,7 +81,7 @@ void ShadowMapEffect::Dispatch() {
 	//outputTex
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gOutputTexture"), outputTexUavIndex_);
 	//slightCameraDepth
-	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gShadowMap"), lightCameraDepthTextureSrvIndex_);
+	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gShadowMapDepth"), lightCameraDepthTextureSrvIndex_);
 	//sceneDepth
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gSceneDepth"), depthTextureSrvIndex_);
 

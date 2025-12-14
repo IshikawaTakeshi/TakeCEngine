@@ -372,13 +372,20 @@ Matrix4x4 MatrixMath::MakePerspectiveFovMatrix(float fovY, float aspectRatio, fl
 //正射影行列
 //============================================================================
 Matrix4x4 MatrixMath::MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
-	Matrix4x4 result = {
-		2.0f / (right - left),0,0,0,
-		0,2.0f / (top - bottom),0,0,
-		0,0,1.0f / (farClip - nearClip),0,
-		(left + right) / (left - right),(top + bottom) / (bottom - top),
-		nearClip / (nearClip - farClip),1.0f
-	};
+	Matrix4x4 result = {};
+
+	float width = right - left;
+	float height = top - bottom;
+	float depth = farClip - nearClip;
+
+	result.m[0][0] = 2.0f / width;
+	result.m[1][1] = 2.0f / height;
+	result.m[2][2] = 1.0f / depth;
+	result.m[3][0] = -(right + left) / width;
+	result.m[3][1] = -(top + bottom) / height;
+	result.m[3][2] = -nearClip / depth;
+	result.m[3][3] = 1.0f;
+
 	return result;
 }
 
