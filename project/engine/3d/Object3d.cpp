@@ -32,8 +32,12 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	//TransformationMatrix用のResource生成
 	wvpResource_ = TakeC::DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
 	wvpResource_->SetName(L"Object3d::wvpResource_");
+	shadowWvpResource_ = TakeC::DirectXCommon::CreateBufferResource(object3dCommon_->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
+	shadowWvpResource_->SetName(L"Object3d::shadowWvpResource_");
+
 	//TransformationMatrix用
-	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformMatrixData_));
+	shadowWvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&shadowTransformMatrixData_));
 	//CPUで動かす用のTransform
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
@@ -45,8 +49,10 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	);
 
 	//単位行列を書き込んでおく
-	TransformMatrixData_->World = worldMatrix_;
-	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
+	transformMatrixData_->World = worldMatrix_;
+	transformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
+	shadowTransformMatrixData_->World = worldMatrix_;
+	shadowTransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
 	//カメラのセット
 	camera_ = object3dCommon_->GetDefaultCamera();
@@ -74,8 +80,7 @@ void Object3d::Update() {
 
 	//wvpの更新
 	if (camera_) {
-		const Matrix4x4& viewProjectionMatrix =
-			TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
+		const Matrix4x4& viewProjectionMatrix = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
 		WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
 	} else {
 		WVPMatrix_ = worldMatrix_;
@@ -86,23 +91,23 @@ void Object3d::Update() {
 	//Skeletonがある場合は更新
 	if (model_->GetSkeleton()) {
 		WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
-		TransformMatrixData_->World = worldMatrix_;
-		TransformMatrixData_->WVP = WVPMatrix_;
-		TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
+		transformMatrixData_->World = worldMatrix_;
+		transformMatrixData_->WVP = WVPMatrix_;
+		transformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 		AnimationUpdate();
 	} 
 	else { //Skeletonがない場合
 		if (animation_->duration != 0.0f) {
 			WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
-			TransformMatrixData_->World = model_->GetLocalMatrix() * worldMatrix_;
-			TransformMatrixData_->WVP = model_->GetLocalMatrix() * WVPMatrix_;
-			TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
+			transformMatrixData_->World = model_->GetLocalMatrix() * worldMatrix_;
+			transformMatrixData_->WVP = model_->GetLocalMatrix() * WVPMatrix_;
+			transformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 			AnimationUpdate();
 		} else {
 			WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
-			TransformMatrixData_->World = worldMatrix_;
-			TransformMatrixData_->WVP = model_->GetModelData()->rootNode.localMatrix * WVPMatrix_;
-			TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
+			transformMatrixData_->World = worldMatrix_;
+			transformMatrixData_->WVP = model_->GetModelData()->rootNode.localMatrix * WVPMatrix_;
+			transformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 			AnimationUpdate();
 		}
 	}
@@ -167,6 +172,30 @@ void Object3d::Draw() {
 	}
 }
 
+//=============================================================================
+// シャドウ描画
+//=============================================================================
+void Object3d::DrawShadow(const LightCameraInfo& lightCamera) {
+
+	//viewProjection行列の設定
+	shadowWVPMatrix_ = worldMatrix_ * lightCamera.viewProjection_;
+	shadowTransformMatrixData_->World = worldMatrix_;
+	shadowTransformMatrixData_->WVP = shadowWVPMatrix_;
+	shadowTransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
+
+	ID3D12GraphicsCommandList* commandList = object3dCommon_->GetDirectXCommon()->GetCommandList();
+
+	//wvp用のCBufferの場所を指定
+	commandList->SetGraphicsRootConstantBufferView(0, shadowWvpResource_->GetGPUVirtualAddress());
+
+	if (model_ != nullptr) {
+		model_->DrawShadow();
+	}
+}
+
+//=============================================================================
+// スキニング計算
+//=============================================================================
 void Object3d::Dispatch() {
 	if (model_ != nullptr) {
 		if (model_->GetSkeleton()) {

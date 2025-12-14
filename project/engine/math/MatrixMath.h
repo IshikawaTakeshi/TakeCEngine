@@ -77,4 +77,6 @@ namespace MatrixMath {
 
 	//ある方向からある方向へ向ける回転行列
 	Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
+
+	Matrix4x4 LookAt(const Vector3& eye, const Vector3& target, const Vector3& up);
 };

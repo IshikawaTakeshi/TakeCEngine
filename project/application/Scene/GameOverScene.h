@@ -45,6 +45,8 @@ public:
 	void Draw() override;
 	//Sprite描画処理
 	void DrawSprite() override;
+	//シャドウ描画処理
+	void DrawShadow() override;
 private:
 
 

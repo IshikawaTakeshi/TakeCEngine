@@ -49,6 +49,8 @@ public:
 	/// </summary>
 	void Draw(PSO* pso);
 
+	void DrawShadow();
+
 	/// <summary>
 	/// スキニング計算
 	/// </summary>

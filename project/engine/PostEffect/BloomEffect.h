@@ -1,5 +1,6 @@
 #pragma once
 #include "engine/PostEffect/PostEffect.h"
+#include "engine/PostEffect/PostEffectFactory.h"
 
 //============================================================
 //	BloomEffect class

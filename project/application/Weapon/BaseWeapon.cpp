@@ -1,5 +1,12 @@
 #include "BaseWeapon.h"
 
+void BaseWeapon::DrawShadow(const LightCameraInfo& lightCamera) {
+	// シャドウマップ用の描画
+	if (object3d_) {
+		object3d_->DrawShadow(lightCamera);
+	}
+}
+
 // 武器をスケルトンのジョイントに取り付ける
 void BaseWeapon::AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName) {
 	parentSkeleton_ = skeleton;

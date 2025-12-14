@@ -7,6 +7,8 @@
 #include "engine/base/ImGuiManager.h"
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/math/Vector3Math.h"
+#include "engine/Math/MatrixMath.h"
+#include "engine/Camera/Camera.h"
 
 //=============================================================================
 // 初期化
@@ -40,6 +42,12 @@ void TakeC::LightManager::Initialize(DirectXCommon* dxCommon,SrvManager* srvMana
 	lightCountResource_->SetName(L"Object3dCommon::lightCountResource_");
 	lightCountData_ = nullptr;
 	lightCountResource_->Map(0, nullptr, reinterpret_cast<void**>(&lightCountData_));
+
+	//LightCameraInfo用のResourceの作成
+	lightCameraInfoResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(LightCameraInfo));
+	lightCameraInfoResource_->SetName(L"LightManager::lightCameraInfoResource_");
+	lightCameraInfo_ = nullptr;
+	lightCameraInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&lightCameraInfo_));
 	
 	//SRVの生成(PointLight)
 	pointLightSrvIndex_ = srvManager_->Allocate();
@@ -65,7 +73,6 @@ void TakeC::LightManager::Initialize(DirectXCommon* dxCommon,SrvManager* srvMana
 	dirLightData_->direction_ = { 0.0f,-0.05f,-0.95f };
 	//光源の輝度書き込む
 	dirLightData_->intensity_ = 1.0f;
-
 
 	//ライト数データ初期化
 	lightCountData_->pointLightCount = 0;
@@ -189,6 +196,23 @@ void TakeC::LightManager::UpdateSpotLight(uint32_t index, const SpotLightData& l
 	}
 	// マップされたメモリに直接書き込み
 	spotLightData_[index] = light;
+}
+
+//=============================================================================
+// シャドウマトリックス更新
+//=============================================================================
+void TakeC::LightManager::UpdateShadowMatrix(Camera* camera) {
+	lightCamera_ = camera;
+
+	//directionalLightをカメラの方向に向ける
+	dirLightData_->direction_ = Vector3Math::Normalize(lightCamera_->GetDirection());
+
+	Vector3 sceneCenter = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 lightPos = sceneCenter - dirLightData_->direction_ * 300.0f;
+	Matrix4x4 lightView = MatrixMath::LookAt(lightPos, sceneCenter, Vector3(0.0f, 1.0f, 0.0f));
+
+	lightCameraInfo_->viewProjection_ = lightView * lightCamera_->GetOrthographicMatrix();
+		lightCameraInfo_->position_ = lightCamera_->GetTranslate();
 }
 
 //=============================================================================

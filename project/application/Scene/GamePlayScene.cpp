@@ -27,6 +27,11 @@ void GamePlayScene::Initialize() {
 	debugCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
 	TakeC::CameraManager::GetInstance().AddCamera("debugCamera", *debugCamera_);
 
+	//lightCamera
+	lightCamera_ = std::make_shared<Camera>();
+	lightCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(), "CameraConfig_LightCamera.json");
+	TakeC::CameraManager::GetInstance().AddCamera("lightCamera", *lightCamera_);
+
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
@@ -229,6 +234,10 @@ void GamePlayScene::Update() {
 
 	//particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
+	//LightManager更新
+	Camera* lightCam = TakeC::CameraManager::GetInstance().FindCameraByName("lightCamera");
+	lightCam->Update();
+	TakeCFrameWork::GetLightManager()->UpdateShadowMatrix(lightCam);
 
 	//当たり判定の更新
 	CheckAllCollisions();
@@ -329,6 +338,26 @@ void GamePlayScene::DrawSprite() {
 		//フェーズメッセージUIの描画
 		phaseMessageUI_->Draw();
 	}
+}
+
+//====================================================================
+//			影描画処理
+//====================================================================
+void GamePlayScene::DrawShadow() {
+
+	//ライトカメラのセット
+	const LightCameraInfo& lightCameraInfo = TakeCFrameWork::GetLightManager()->GetLightCameraInfo();
+	//Object3dの影描画前処理
+	Object3dCommon::GetInstance().PreDrawShadowPass();
+	//影の描画
+	player_->DrawShadow(lightCameraInfo);
+	/*enemy_->DrawShadow();
+	for (auto& object : levelObjects_) {
+		object.second->DrawShadow();
+	}*/
+	/*for (auto& object : levelObjects_) {
+		object.second->DrawShadow(lightCameraInfo);
+	}*/
 }
 
 //====================================================================
@@ -455,7 +484,7 @@ void GamePlayScene::InitializeGameClear() {
 	//スローモーション解除
 	MyGame::RequestTimeScale(1.0f, 0.6f, 0.0f);
 	fadeTimer_ = 3.0f;
-	SceneManager::GetInstance().ChangeScene("GAMECLEAR", fadeTimer_);
+	//SceneManager::GetInstance().ChangeScene("GAMECLEAR", fadeTimer_);
 }
 
 void GamePlayScene::UpdateGameClear() {

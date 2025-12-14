@@ -10,9 +10,10 @@
 #include <chrono>
 #include <memory>
 
-#include "engine/base/DirectXShaderCompiler.h"
-#include "engine/base/WinApp.h"
-#include "engine/base/RtvManager.h"
+#include "engine/Base/DirectXShaderCompiler.h"
+#include "engine/Base/WinApp.h"
+#include "engine/Base/RtvManager.h"
+#include "engine/Base/DsvManager.h"
 #include "engine/math/Vector4.h"
 
 //============================================================================
@@ -70,6 +71,13 @@ namespace TakeC {
 		static ComPtr<ID3D12Resource> CreateBufferResourceUAV(ID3D12Device* device, size_t sizeInBytes);
 
 		/// <summary>
+		/// 深度バッファの生成
+		/// </summary>
+		static ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(
+			const Microsoft::WRL::ComPtr<ID3D12Device>& device, int32_t width, int32_t height);
+
+
+		/// <summary>
 		/// DescriptorHeap作成関数
 		/// </summary>
 		ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(
@@ -96,21 +104,13 @@ namespace TakeC {
 		/// 描画コマンドリストの取得
 		ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 
-		/// dsvHeapの取得
-		ID3D12DescriptorHeap* GetDsvHeap() { return dsvHeap_.Get(); }
-
 		/// Dxcの取得
 		DXC* GetDXC() { return dxc_.get(); }
 
 		/// RTVManagerの取得
 		RtvManager* GetRtvManager() { return rtvManager_.get(); }
-
-		///DepthStencilのリソース取得
-		ComPtr<ID3D12Resource> GetDepthStencilResource() { return depthStencilResource_; }
-
-		/// DSVのデスクリプタサイズ取得
-		uint32_t GetDescriptorSizeDSV() { return descriptorSizeDSV_; }
-
+		/// DSVManagerの取得
+		DsvManager* GetDsvManager() { return dsvManager_.get(); }
 		/// BufferCountの取得
 		const UINT& GetBufferCount() { return swapChainDesc_.BufferCount; }
 
@@ -155,13 +155,12 @@ namespace TakeC {
 		//rtvManager
 		std::unique_ptr<RtvManager> rtvManager_ = nullptr;
 		uint32_t swapchainRtvIndex_[2];
-
+		//dsvManager
+		std::unique_ptr<DsvManager> dsvManager_ = nullptr;
+		uint32_t dsvIndex_ = 0;
 
 		//depthStencil
-		ComPtr<ID3D12DescriptorHeap> dsvHeap_ = nullptr;
 		Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
-		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
-		uint32_t descriptorSizeDSV_;
 
 		//fence
 		ComPtr<ID3D12Fence> fence_ = nullptr;
@@ -217,17 +216,6 @@ namespace TakeC {
 		void CreateSwapChain();
 
 		/// <summary>
-		/// 深度バッファの生成
-		/// </summary>
-		void CreateDepthStencilTextureResource(
-			const Microsoft::WRL::ComPtr<ID3D12Device>& device, int32_t width, int32_t height);
-
-		/// <summary>
-		/// ディスクリプタヒープ生成
-		/// </summary>
-		void CreateDSV();
-
-		/// <summary>
 		/// レンダーターゲットのクリア
 		/// </summary>
 		void ClearRenderTarget();
@@ -236,11 +224,6 @@ namespace TakeC {
 		/// RTVの初期化
 		/// </summary>
 		void InitializeRenderTargetView();
-
-		/// <summary>
-		/// DSVの初期化
-		/// </summary>
-		void InitializeDepthStencilView();
 
 		/// <summary>
 		/// フェンス生成

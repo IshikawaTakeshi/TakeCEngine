@@ -21,10 +21,6 @@ void DepthBasedOutline::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvMan
 	inputResource_->SetName(L"DepthBasedOutline::InputResource");
 	outputResource_->SetName(L"DepthBasedOutline::_OutputResource");
 
-	//depthテクスチャリソースを取得
-	depthTextureSrvIndex_ = srvManager_->Allocate();
-	srvManager_->CreateSRVforDepthTexture(dxCommon_->GetDepthStencilResource().Get(), depthTextureSrvIndex_);
-
 	//アウトライン情報のリソースを作成
 	outlineInfoResource_ = dxCommon->CreateBufferResource(dxCommon->GetDevice(), sizeof(DepthBasedOutlineInfo));
 	outlineInfoResource_->SetName(L"DepthBasedOutline::InfoResource");
@@ -67,19 +63,19 @@ void DepthBasedOutline::Dispatch() {
 		return; // アウトラインが無効な場合は処理をスキップ
 	}
 
-	//outputTexure
+	//outputTexture
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		outputResource_.Get());
-
 	//depthTexture
 	//DEPTH_WRITE >> NON_PIXEL_SHADER_RESOURCE
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-		dxCommon_->GetDepthStencilResource().Get());
+		depthTextureResource_.Get());
+
 
 	//Computeパイプラインのセット
 	dxCommon_->GetCommandList()->SetComputeRootSignature(rootSignature_.Get());
@@ -102,12 +98,6 @@ void DepthBasedOutline::Dispatch() {
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 8, WinApp::kScreenHeight / 8, 1);
 
-	//depthTexture
-	//NON_PIXEL_SHADER_RESOURCE >> DEPTH_WRITE
-	ResourceBarrier::GetInstance().Transition(
-		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		dxCommon_->GetDepthStencilResource().Get());
 
 	//outputTexure
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
@@ -115,4 +105,10 @@ void DepthBasedOutline::Dispatch() {
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());
+	//depthTexture
+	// NON_PIXEL_SHADER_RESOURCE >> DEPTH_WRITE
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		depthTextureResource_.Get());
 }

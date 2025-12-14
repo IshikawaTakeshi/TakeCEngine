@@ -1,6 +1,7 @@
-#include "../Light/SpotLight.hlsli"
-#include "../Light/LightCountData.hlsli"
-#include "../CameraData.hlsli"
+#include "Light/DirectionalLight.hlsli"
+#include "Light/LightCountData.hlsli"
+#include "Light/LightCamera.hlsli"
+#include "CameraData.hlsli"
 
 //==============================================================
 // ShadowMapEffect.CS.hlsl
@@ -9,70 +10,101 @@
 struct ShadowMapEffectInfo {
 	bool isActive; // エフェクトの有効無効
 	float bias; // シャドウのバイアス値
-	float normalBiasf; // シャドウのノーマルバイアス値
+	float normalBias; // シャドウのノーマルバイアス値
 	float pcfRange; // テクセル半径	
 };
 
-Texture2D<float4> gInputTexture : register(t0); 　　// 入力テクスチャ
-Texture2D<float> gDepthTexture : register(t1);     // 深度テクスチャ
-Texture2D<float3> gNormalTexture : register(t2);   // 法線テクスチャ
-StructuredBuffer<SpotLight> gSpotLight : register(t3); //スポットライト
+Texture2D<float4> gInputTexture : register(t0); // 入力テクスチャ
+Texture2D<float> gShadowMap : register(t1); // ライトカメラの深度テクスチャ
+Texture2D<float3> gSceneDepth : register(t2); // メインカメラの深度テクスチャ
 RWTexture2D<float4> gOutputTexture : register(u0); // 出力テクスチャ
-SamplerState gSampler : register(s0);
+SamplerState gSampler : register(s0); // サンプラー
 
 // エフェクト情報
 ConstantBuffer<ShadowMapEffectInfo> gShadowMapEffectInfo : register(b0);
-// ライト数カウンター
-ConstantBuffer<LightCountData> gLightCount : register(b1);
-//カメラ
-ConstantBuffer<CameraData> gCamera : register(b2);
+//ライトカメラ情報
+ConstantBuffer<LightCameraInfo> gLightCameraInfo : register(b2);
+//メインカメラ情報
+ConstantBuffer<CameraData> gMainCameraInfo : register(b3);
 
+
+//--------------------------------------------------------------
+// ワールド座標復元
+//--------------------------------------------------------------
 float3 ReconstructWorldPos(float2 uv, float depth01) {
     // depth01 が 0-1 の線形深度を想定。非線形の場合は線形化してから使う。
-	float4 ndc = float4(uv * 2.0f - 1.0f, depth01, 1.0f);
-	float4 wp = mul(ndc, );
+	float2 ndc_xy = uv * 2.0f - 1.0f;
+	ndc_xy.y = -ndc_xy.y;
+    
+	float4 ndc = float4(ndc_xy, depth01, 1.0f);
+	float4 wp = mul(ndc, gMainCameraInfo.viewProjectionInverse);
 	return wp.xyz / wp.w;
 }
 
-float SampleShadowPCF(float4 posLS, float2 texelSize, float bias, float normalBias, float pcfRange) {
+//--------------------------------------------------------------
+// PCF シャドウサンプリング（法線バイアスなし）
+//--------------------------------------------------------------
+float SampleShadowPCF(float4 posLS, float2 texelSize, float bias) {
 	float3 proj = posLS.xyz / posLS.w;
-	if (proj.x < 0 || proj.x > 1 || proj.y < 0 || proj.y > 1 || proj.z < 0 || proj.z > 1)
-		return 1.0f;
 
-	int radius = (int) ceil(pcfRange); // pcfRange=1 → 3x3 相当
-	float shadow = 0.0f;
-	float count = 0.0f;
+    // 0-1 空間外なら影の外（照らされる扱い）
+	if ( any(proj < 0) || any(proj > 1) )
+		return 1.0;
+
+	int r = (int)ceil(gShadowMapEffectInfo.pcfRange);
+	float shadow = 0.0;
+	float count = 0.0;
 
     [loop]
-	for (int y = -radius; y <= radius; ++y) {
+	for ( int y = -r; y <= r; ++y ) {
         [loop]
-		for (int x = -radius; x <= radius; ++x) {
-			float2 o = float2(x, y) * texelSize;
-			float sampleDepth = gDepthTexture.SampleLevel(gSampler, proj.xy + o, 0).r;
-			float compareDepth = proj.z - bias - normalBias;
-			shadow += (compareDepth <= sampleDepth) ? 1.0f : 0.0f;
-			count += 1.0f;
+		for ( int x = -r; x <= r; ++x ) {
+			float2 offset = float2(x, y) * texelSize;
+			float sampleDepth = gShadowMap.SampleLevel(gSampler, proj.xy + offset, 0).r;
+			float compare = proj.z - bias;
+			shadow += (compare <= sampleDepth) ? 1.0 : 0.0;
+			count += 1.0;
 		}
 	}
-	return shadow / max(count, 1.0f);
+	return shadow / max(count, 1.0);
 }
 
-[numthreads(8, 8, 1)]
-void main( uint3 DTid : SV_DispatchThreadID ){
-	
-	// 出力テクスチャのサイズ取得
-	uint width, height;
-	gOutputTexture.GetDimensions(width, height);
-	// 処理中のピクセル
-	int2 pixelPos = int2(DTid.xy);
 
-	// 範囲外チェック
-	if (pixelPos.x >= width || pixelPos.y >= height) {
+//--------------------------------------------------------------
+// main
+//--------------------------------------------------------------
+[numthreads(8, 8, 1)]
+void main(uint3 DTid : SV_DispatchThreadID) {
+	
+	uint w, h;
+	gOutputTexture.GetDimensions(w, h);
+	if ( DTid.x >= w || DTid.y >= h )
+		return;
+
+	float2 uv = (DTid.xy + 0.5) / float2(w, h);
+	float4 baseColor = gInputTexture.Load(int3(DTid.xy, 0));
+	float depth01 = gSceneDepth.Load(int3(DTid.xy, 0)).r;
+
+	//エフェクト無効ならそのまま出力
+	if ( !gShadowMapEffectInfo.isActive ) {
+		gOutputTexture[DTid.xy] = baseColor;
 		return;
 	}
 
-	// 元のシーンカラーを取得
-	float4 originalColor = gInputTexture.Load(int3(pixelPos, 0));
-	
-	
+	//ワールド座標を再構成
+	float3 worldPos = ReconstructWorldPos(uv, depth01);
+
+	//ライト空間へ変換
+	float4 posLS = mul(float4(worldPos, 1.0), gLightCameraInfo.viewProjection);
+
+	//シャドウマップ解像度からtexelSizeを算出（別解像度ならCPUから渡す）
+	uint smW, smH;
+	gShadowMap.GetDimensions(smW, smH);
+	float2 texelSize = 1.0 / float2(smW, smH);
+
+	//シャドウ値を取得
+	float shadow = SampleShadowPCF(posLS, texelSize, gShadowMapEffectInfo.bias);
+
+	//結果を出力（影部分を暗くする）
+	gOutputTexture[DTid.xy] = float4(baseColor.rgb * shadow, baseColor.a);
 }

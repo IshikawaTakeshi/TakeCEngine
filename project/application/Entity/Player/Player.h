@@ -40,6 +40,7 @@ public:
 	void UpdateImGui();
 	//描画
 	void Draw() override;
+	void DrawShadow(const LightCameraInfo& lightCamera);
 	//コライダーの描画
 	void DrawCollider() override;
 	//衝突時の処理

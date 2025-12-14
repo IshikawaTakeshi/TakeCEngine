@@ -348,6 +348,15 @@ void Player::Draw() {
 
 }
 
+void Player::DrawShadow(const LightCameraInfo& lightCamera) {
+	object3d_->DrawShadow(lightCamera);
+	for (const auto& weapon : weapons_) {
+		if (weapon) {
+			weapon->DrawShadow(lightCamera);
+		}
+	}
+}
+
 //===================================================================================
 // ブーストエフェクトの描画処理
 //===================================================================================

@@ -4,13 +4,8 @@
 #include "Utility/ResourceBarrier.h"
 #include "Utility/Logger.h"
 #include "PostEffect/BloomEffect.h"
-#include "PostEffect/BoxFilter.h"
-#include "PostEffect/Dissolve.h"
-#include "PostEffect/GrayScale.h"
-#include "PostEffect/RadialBluer.h"
-#include "PostEffect/LuminanceBasedOutline.h"
 #include "PostEffect/DepthBasedOutline.h"
-#include "PostEffect/Vignette.h"
+#include "PostEffect/RenderTexture.h"
 
 using namespace TakeC;
 
@@ -18,10 +13,11 @@ using namespace TakeC;
 //	初期化
 //====================================================================
 
-void PostEffectManager::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager) {
+void PostEffectManager::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager,RenderTexture* renderTexture) {
 
 	dxCommon_ = dxCommon; //DirectXCommonのセット
 	srvManager_ = srvManager; //SrvManagerのセット
+	renderTexture_ = renderTexture; //RenderTextureのセット
 
 	//中間リソースの生成
 	intermediateResource_[FRONT] = dxCommon_->CreateTextureResourceUAV(
@@ -30,6 +26,9 @@ void PostEffectManager::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvMan
 	intermediateResource_[BACK] = dxCommon_->CreateTextureResourceUAV(
 		dxCommon_->GetDevice(), WinApp::kScreenWidth, WinApp::kScreenHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 	intermediateResource_[BACK]->SetName(L"intermediateResource_B");
+
+	renderTextureResource_ = renderTexture_->GetRenderTextureResource();
+	renderTextureSrvIndex_ = renderTexture_->GetSrvIndex();
 }
 
 //====================================================================
@@ -124,26 +123,25 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 	ComPtr<ID3D12Resource> outputResource = nullptr;
 
 	// PostEffectの初期化
-	if (name == "GrayScale") {
-		postEffect = std::make_unique<GrayScale>();
-	} else if (name == "Vignette") {
-		postEffect = std::make_unique<Vignette>();
-	} else if (name == "BoxFilter") {
-		postEffect = std::make_unique<BoxFilter>();
-	} else if (name == "RadialBluer") {
-		postEffect = std::make_unique<RadialBluer>();
-	} else if (name == "Dissolve") {
-		postEffect = std::make_unique<Dissolve>();
-	} else if (name == "LuminanceBasedOutline") {
-		postEffect = std::make_unique<LuminanceBasedOutline>();
-	}else if(name == "DepthBasedOutline") {
-		postEffect = std::make_unique<DepthBasedOutline>();
-	} else if(name == "BloomEffect") {
-		postEffect = std::make_unique<BloomEffect>();
-	} else {
-		Logger::Log("PostEffectManager::InitializeEffect() : Unknown PostEffect name.");
+	// ファクトリーからPostEffectを生成
+	postEffect = postEffectFactory_->Create(name);
+	if (!postEffect) {
+		Logger::Log("PostEffectManager:: InitializeEffect() : Unknown PostEffect name:  " + name);
 		return;
-	} 
+	}
+	if(name == "DepthBasedOutline" || name == "ShadowMapEffect") {
+		// 深度テクスチャリソースとSRVインデックスを設定
+		postEffect->SetDepthTextureResource(
+			renderTexture_->GetDepthStencilResource(),
+			renderTexture_->GetDepthSrvIndex());
+
+		if(name == "ShadowMapEffect") {
+			// ShadowMapEffectの場合,lightCameraの深度テクスチャの設定も行う
+			postEffect->SetLightCameraDepthTextureResource(
+				lightCameraRenderTexture_->GetDepthStencilResource(),
+				lightCameraRenderTexture_->GetDepthSrvIndex());
+		}
+	}
 
 	if (postEffects_.empty()) {
 
