@@ -57,10 +57,10 @@ void ShadowMapEffect::Dispatch() {
 
 
 	//DEPTH_WRITE >> NON_PIXEL_SHADER_RESOURCE
-	/*ResourceBarrier::GetInstance().Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-		lightCameraDepthTextureResource_.Get());*/
+		lightCameraDepthTextureResource_.Get());
 
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
@@ -112,10 +112,10 @@ void ShadowMapEffect::Dispatch() {
 		outputResource_.Get());
 
 	//NON_PIXEL_SHADER_RESOURCE >> DEPTH_WRITE
-	/*ResourceBarrier::GetInstance().Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		lightCameraDepthTextureResource_.Get());*/
+		lightCameraDepthTextureResource_.Get());
 
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,

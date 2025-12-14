@@ -108,15 +108,7 @@ void MyGame::Update() {
 //====================================================================
 
 void MyGame::Draw() {
-	//===========================================
-	// 1. シャドウパス
-	//===========================================
-	shadowRenderTexture_->ClearRenderTarget();
-	srvManager_->SetDescriptorHeap();
-	//sceneManager_->DrawShadow();  // ライトカメラ視点で深度のみ描画
-
-	// バリア：シャドウマップを SRV として読めるようにする
-	shadowRenderTexture_->TransitionToSRV();
+	
 
 	//===========================================
 	// 2. メインパス（シーン描画）
@@ -125,6 +117,16 @@ void MyGame::Draw() {
 	srvManager_->SetDescriptorHeap();
 	sceneManager_->DrawObject();  // 通常のオブジェクト描画
 	sceneManager_->DrawSprite();  // スプライト描画
+
+	//===========================================
+	// 1. シャドウパス
+	//===========================================
+	shadowRenderTexture_->ClearRenderTarget();
+	srvManager_->SetDescriptorHeap();
+	sceneManager_->DrawShadow();  // ライトカメラ視点で深度のみ描画
+
+	// バリア：シャドウマップを SRV として読めるようにする
+	//shadowRenderTexture_->TransitionToSRV();
 
 	//===========================================
 	// 3. ポストエフェクト
@@ -152,7 +154,7 @@ void MyGame::Draw() {
 	// 5. 次フレーム準備
 	//===========================================
 	// シャドウマップを DEPTH_WRITE 状態に戻す（次フレーム用）
-	shadowRenderTexture_->TransitionToDepthWrite();
+	//shadowRenderTexture_->TransitionToDepthWrite();
 
 	TakeC::ModelManager::GetInstance().ApplyModelReloads();
 }
