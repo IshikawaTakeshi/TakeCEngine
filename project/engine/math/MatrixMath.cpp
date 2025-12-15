@@ -487,14 +487,45 @@ Matrix4x4 MatrixMath::DirectionToDirection(const Vector3& from, const Vector3& t
 
 Matrix4x4 MatrixMath::LookAt(const Vector3& eye, const Vector3& target, const Vector3& up) {
 	
-	Vector3 zAxis = Vector3Math::Normalize(target - eye);
-	Vector3 xAxis = Vector3Math::Normalize(Vector3Math::Cross(up, zAxis));
+	// 1. Z 軸（視線方向）を計算
+	Vector3 zAxis = target - eye;
+
+	// eye と target が同じ位置の場合のフォールバック
+	float zLength = Vector3Math:: Length(zAxis);
+	if (zLength < 1e-6f) {
+		zAxis = Vector3(0.0f, 0.0f, 1.0f);  // デフォルトの前方向
+	} else {
+		zAxis = zAxis / zLength;  // 正規化
+	}
+
+	// 2. X 軸（右方向）を計算
+	Vector3 xAxis = Vector3Math::Cross(up, zAxis);
+
+	// up と zAxis が平行な場合のフォールバック
+	float xLength = Vector3Math::Length(xAxis);
+	if (xLength < 1e-6f) {
+		// 別の up ベクトルを試す
+		Vector3 altUp = (std::abs(zAxis.y) < 0.99f) 
+			? Vector3(0.0f, 1.0f, 0.0f) 
+			: Vector3(1.0f, 0.0f, 0.0f);
+		xAxis = Vector3Math:: Cross(altUp, zAxis);
+		xLength = Vector3Math::Length(xAxis);
+	}
+	xAxis = xAxis / xLength;  // 正規化
+
+	// 3. Y 軸（上方向）を計算（正規化済みの x, z から計算するので正規化不要）
 	Vector3 yAxis = Vector3Math::Cross(zAxis, xAxis);
+
+	// 4. ビュー行列を構築
 	Matrix4x4 result = {
 		xAxis.x, yAxis.x, zAxis.x, 0.0f,
 		xAxis.y, yAxis.y, zAxis.y, 0.0f,
 		xAxis.z, yAxis.z, zAxis.z, 0.0f,
-		-Vector3Math::Dot(xAxis, eye), -Vector3Math::Dot(yAxis, eye), -Vector3Math::Dot(zAxis, eye), 1.0f
+		-Vector3Math::Dot(xAxis, eye),
+		-Vector3Math::Dot(yAxis, eye),
+		-Vector3Math::Dot(zAxis, eye),
+		1.0f
 	};
+
 	return result;
 }

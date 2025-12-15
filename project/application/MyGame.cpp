@@ -115,6 +115,7 @@ void MyGame::Draw() {
 	shadowRenderTexture_->ClearRenderTarget();
 	srvManager_->SetDescriptorHeap();
 	sceneManager_->DrawShadow();  // ライトカメラ視点で深度のみ描画
+	//shadowRenderTexture_->TransitionToSRV();
 	//===========================================
 	// 2. メインパス（シーン描画）
 	//===========================================

@@ -1,5 +1,5 @@
 #include "RenderTexture.h"
-#include "engine/base/WinApp.h"
+
 #include "Utility/ResourceBarrier.h"
 #include "Utility/Logger.h"
 #include "PostEffect/PostEffectManager.h"
@@ -19,7 +19,8 @@ RenderTexture::~RenderTexture() {
 // 初期化
 //======================================================================
 
-void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager){
+void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager,
+	int32_t depthWidth,int32_t depthHeight){
 
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
@@ -39,7 +40,7 @@ void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager
 
 	//深度ステンシルバッファリソースの生成
 	depthStencilResource_ = dxCommon_->CreateDepthStencilTextureResource(
-		dxCommon_->GetDevice(), WinApp::kScreenWidth, WinApp::kScreenHeight);
+		dxCommon_->GetDevice(), depthWidth, depthHeight);
 
 	//RTVの生成
 	rtvIndex_ = rtvManager_->Allocate();

@@ -240,7 +240,7 @@ void TakeC::LightManager::UpdateShadowMatrix(Camera* camera) {
 		halfRange,         // Top
 		halfRange,         // Right
 		-halfRange,        // Bottom
-		10.0f, farClip_    // Near, Far (farClip も LightManager.hで定義)
+		nearClip_, farClip_    // Near, Far (farClip も LightManager.hで定義)
 	);
 
 	lightCameraInfo_->viewProjection_ = lightView * lightProj;
@@ -443,6 +443,7 @@ void TakeC::LightManager::UpdateImGui() {
 	ImGui::DragFloat("Light Camera Distance", &lightCameraDistance_, 1.0f, 1.0f, 10000.0f);
 	ImGui::DragFloat("Shadow Range", &shadowRange_, 1.0f, 1.0f, 10000.0f);
 	ImGui::DragFloat("Far Clip", &farClip_, 1.0f, 10.0f, 10000.0f);
+	ImGui::DragFloat("Near Clip", &nearClip_, 0.1f, 0.1f, 1000.0f);
 
 	ImGui::End();
 #endif

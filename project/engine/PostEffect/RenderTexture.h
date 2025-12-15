@@ -3,6 +3,7 @@
 #include "base/SrvManager.h"
 #include "base/PipelineStateObject.h"
 #include "PostEffect/PostEffectManager.h"
+#include "engine/base/WinApp.h"
 
 //============================================================
 //	RenderTexture class
@@ -26,7 +27,9 @@ public:
 	/// <param name="dxCommon"></param>
 	/// <param name="srvManager"></param>
 	/// <param name="postEffectManager"></param>
-	void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager);
+	void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager,
+		int32_t depthWidth = TakeC::WinApp::kScreenWidth,
+		int32_t depthHeight = TakeC::WinApp::kScreenHeight);
 
 	/// <summary>
 	/// レンダーターゲットのクリア
@@ -104,5 +107,5 @@ private:
 	ComPtr<ID3D12Resource> depthStencilResource_; //深度ステンシルバッファリソース
 
 	std::unique_ptr<PSO> renderTexturePSO_; //PSO
-	ComPtr<ID3D12RootSignature> rootSignature_; //ルートシグネチャ
+	ComPtr<ID3D12RootSignature> rootSignature_; //ルートシグネチャmn
 };

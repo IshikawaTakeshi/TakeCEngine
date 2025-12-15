@@ -82,6 +82,7 @@ public:
 	const Vector3& GetTargetPosition() const { return focusTargetPosition_; }
 
 	const Vector3& GetDirection() const;
+	const Vector3& GetFollowTargetPosition() const { return followTargetPosition_; }
 	
 	//シェイクするかどうかの取得
 	const bool& GetIsShaking() const { return isShaking_; }
