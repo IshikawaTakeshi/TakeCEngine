@@ -192,6 +192,10 @@ void Player::Update() {
 	//カメラ方向のベクトルを取得
 	camera_->SetStick(inputProvider_->GetCameraRotateInput());
 
+	if (inputProvider_->RequestChangeCameraMode()) {
+		camera_->SetRequestedChangeCameraMode(true);
+	}
+
 	//Behaviorの更新
 	behaviorManager_->Update(playerData_.characterInfo);
 

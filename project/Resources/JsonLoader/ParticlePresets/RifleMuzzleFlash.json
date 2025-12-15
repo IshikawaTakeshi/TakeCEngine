@@ -1,0 +1,64 @@
+{
+    "attributes": {
+        "color": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 1,
+        "enableFollowEmitter": false,
+        "frequency": 0.10000000149011612,
+        "isBillboard": true,
+        "isDirectional": false,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": false,
+        "lifetimeRange": {
+            "max": 0.14000000059604645,
+            "min": 0.019999999552965164
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 0.20999999344348907,
+            "min": -0.27000001072883606
+        },
+        "rotateRange": {
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "scaleRange": {
+            "max": 10.0,
+            "min": 0.0
+        },
+        "scaleSetting": 1,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityRange": {
+            "max": 1.0,
+            "min": -1.0
+        }
+    },
+    "blendState": 6,
+    "name": "RifleMuzzleFlash",
+    "primitiveParameters": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+    },
+    "primitiveType": "PRIMITIVE_PLANE",
+    "textureFilePath": "MazzleEffect1.png"
+}

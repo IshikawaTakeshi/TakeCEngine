@@ -4,6 +4,8 @@
 #include "Entity/GameCharacter.h"
 #include "Weapon/WeaponType.h"
 #include "Weapon/WeaponData.h"
+#include "3d/Particle/ParticleEmitter.h"
+#include "engine/audio/Audio.h"
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -123,6 +125,8 @@ protected:
 	//武器の3Dオブジェクト
 	std::unique_ptr<Object3d> object3d_ = nullptr;
 
+	std::unique_ptr<ParticleEmitter> muzzleFlashEmitter_ = nullptr;
+
 	//武器の親Joint名
 	std::string parentJointName_;
 	// 親スケルトン
@@ -142,4 +146,8 @@ protected:
 	WeaponState weaponState_{};
 	// 武器のユニットポジション
 	uint32_t unitPosition_ = 0; 
+
+	//サウンドデータ
+	AudioManager::SoundData shotSE_;
+	float seVolume_ = 0.05f;
 };

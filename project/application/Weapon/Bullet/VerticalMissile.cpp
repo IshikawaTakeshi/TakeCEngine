@@ -11,7 +11,6 @@
 
 void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
-
 	//オブジェクト初期化
 	if (!object3d_) {
 		object3d_ = std::make_unique<Object3d>();

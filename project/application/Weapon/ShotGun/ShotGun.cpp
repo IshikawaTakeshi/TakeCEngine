@@ -11,6 +11,9 @@
 //====================================================================
 void ShotGun::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
 
+	shotSE_ = AudioManager::GetInstance().LoadSound("SE/ShotGun.mp3");
+	seVolume_ = 0.2f;
+
 	bulletManager_ = bulletManager;
 
 	//武器の初期化
@@ -120,6 +123,7 @@ void ShotGun::Attack() {
 		weaponState_.isReloading = true; // 弾がなくなったらリロード中にする
 		weaponState_.reloadTime = weaponData_.config.maxReloadTime; // リロード時間をリセット
 	}
+	AudioManager::GetInstance().SoundPlayWave(shotSE_, seVolume_);
 	//攻撃間隔のリセット
 	weaponState_.attackInterval = weaponData_.config.attackInterval;
 }

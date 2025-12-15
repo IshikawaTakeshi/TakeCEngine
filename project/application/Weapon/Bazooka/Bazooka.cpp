@@ -9,6 +9,9 @@
 //=============================================================================
 void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
 
+	shotSE_ = AudioManager::GetInstance().LoadSound("SE/ShotBazooka.mp3");
+	seVolume_ = 0.2f;
+
 	//弾薬マネージャの設定
 	bulletManager_ = bulletManager;
 	//武器の初期化
@@ -25,6 +28,12 @@ void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 	weaponState_.attackInterval = weaponData_.config.attackInterval; // 攻撃間隔を設定
 	weaponState_.bulletCount = weaponData_.config.maxMagazineCount;           // 初期弾数を設定
 	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定
+
+	muzzleFlashEmitter_ = std::make_unique<ParticleEmitter>();
+	muzzleFlashEmitter_->Initialize("RifleMuzzleFlashEmitter",
+		object3d_->GetTransform(),
+		10, 0.01f);
+	muzzleFlashEmitter_->SetParticleName("RifleMuzzleFlash2");
 }
 
 //=============================================================================
@@ -65,6 +74,11 @@ void Bazooka::Update() {
 
 	//3Dオブジェクトの更新
 	object3d_->Update();
+
+	muzzleFlashEmitter_->SetTranslate(object3d_->GetWorldPosition());
+	muzzleFlashEmitter_->Update();
+
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("RifleMuzzleFlash2")->SetEmitterPosition(object3d_->GetWorldPosition());
 }
 
 //=============================================================================
@@ -127,6 +141,9 @@ void Bazooka::Attack() {
 		weaponState_.isReloading = true; // 弾がなくなったらリロード中にする
 		weaponState_.reloadTime = weaponData_.config.maxReloadTime; // リロード時間をリセット
 	}
+
+	muzzleFlashEmitter_->Emit();
+	AudioManager::GetInstance().SoundPlayWave(shotSE_, seVolume_);
 	//攻撃間隔のリセット
 	weaponState_.attackInterval = weaponData_.config.attackInterval;
 }

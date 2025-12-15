@@ -173,8 +173,8 @@ class SrvManager;
 		static const uint32_t kMaxSpotLights = 128;    // 最大スポットライト数
 
 		float lightCameraDistance_ = 100.0f; // ライトカメラ距離
-		float shadowRange_ = 100.0f;        // シャドウマップ範囲
-		float farClip_ = 150.0f;             // ライトカメラ遠クリップ距離
+		float shadowRange_ = 1500.0f;        // シャドウマップ範囲
+		float farClip_ = 2500.0f;             // ライトカメラ遠クリップ距離
 		float nearClip_ = 1.0f;             // ライトカメラ近クリップ距離
 	};
 }
