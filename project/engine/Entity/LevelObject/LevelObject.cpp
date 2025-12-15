@@ -100,6 +100,11 @@ void LevelObject::Draw() {
 	object3d_->Draw();
 }
 
+void LevelObject::DrawShadow(const LightCameraInfo& lightCamera) {
+	// Object3dの影描画
+	object3d_->DrawShadow(lightCamera);
+}
+
 //====================================================================
 //			コライダーの描画
 //====================================================================

@@ -103,3 +103,6 @@ void GameClearScene::DrawSprite() {
 	SpriteCommon::GetInstance().PreDraw(); // Spriteの描画前処理
 	clearTextSprite_->Draw();
 }
+
+void GameClearScene::DrawShadow() {
+}

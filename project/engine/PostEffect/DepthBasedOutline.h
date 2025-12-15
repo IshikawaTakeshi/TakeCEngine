@@ -43,7 +43,4 @@ private:
 
 	DepthBasedOutlineInfo* outlineInfoData_ = nullptr; // アウトライン情報データ
 	ComPtr<ID3D12Resource> outlineInfoResource_;       // アウトライン情報リソース
-
-	uint32_t depthTextureSrvIndex_ = 0;           // 深度テクスチャのSRVインデックス
-	ComPtr<ID3D12Resource> depthTextureResource_; // 深度テクスチャリソース
 };

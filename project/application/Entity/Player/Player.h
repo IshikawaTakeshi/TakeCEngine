@@ -40,6 +40,7 @@ public:
 	void UpdateImGui();
 	//描画
 	void Draw() override;
+	void DrawShadow(const LightCameraInfo& lightCamera);
 	//コライダーの描画
 	void DrawCollider() override;
 	//衝突時の処理
@@ -126,7 +127,6 @@ private:
 	std::vector<WeaponType> weaponTypes_;
 	//チャージ撃ちをする武器ユニット
 	std::vector<bool> chargeShootableUnits_;
-
 
 	//背部のパーティクルエミッター
 	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;

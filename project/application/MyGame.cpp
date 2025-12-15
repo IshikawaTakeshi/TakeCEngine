@@ -26,6 +26,12 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//シーンマネージャーのセット
 	SceneManager::GetInstance().SetSceneFactory(sceneFactory_.get());
 
+	//影描画用レンダーテクスチャの生成
+	shadowRenderTexture_ = std::make_unique<RenderTexture>();
+	shadowRenderTexture_->Initialize(directXCommon_.get(), srvManager_.get());
+	//PostEffectManagerに影描画用レンダーテクスチャをセット
+	postEffectManager_->SetLightCameraRenderTexture(shadowRenderTexture_.get());
+
 	//Model読み込み
 	LoadModel();
 	//Animation読み込み
@@ -45,6 +51,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
 	//postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
 	postEffectManager_->InitializeEffect("DepthBasedOutline",     L"PostEffect/DepthBasedOutline.CS.hlsl");
+	postEffectManager_->InitializeEffect("ShadowMapEffect", L"PostEffect/ShadowMapEffect.CS.hlsl");
 
 	CollisionManager::GetInstance().Initialize(directXCommon_.get());
 
@@ -101,31 +108,52 @@ void MyGame::Update() {
 //====================================================================
 
 void MyGame::Draw() {
-
-	//renderTextureの描画前処理
-	renderTexture_->PreDraw();
-	//SRV描画前処理
-	srvManager_->SetDescriptorHeap(); 
-	//オブジェクト描画
-	sceneManager_->DrawObject();
-	//スプライト描画
-	sceneManager_->DrawSprite();
-	//postEffect計算処理
-	postEffectManager_->AllDispatch();
-	 //描画前処理
-	directXCommon_->PreDraw();
-	//RenderTexture描画
-	renderTexture_->Draw();
 	
-	//renderTexture描画後処理
+	//===========================================
+	// 1. シャドウパス
+	//===========================================
+	shadowRenderTexture_->ClearRenderTarget();
+	srvManager_->SetDescriptorHeap();
+	sceneManager_->DrawShadow();  // ライトカメラ視点で深度のみ描画
+	//shadowRenderTexture_->TransitionToSRV();
+	//===========================================
+	// 2. メインパス（シーン描画）
+	//===========================================
+	renderTexture_->ClearRenderTarget();
+	srvManager_->SetDescriptorHeap();
+	sceneManager_->DrawObject();  // 通常のオブジェクト描画
+	sceneManager_->DrawSprite();  // スプライト描画
+
+	
+
+	//===========================================
+	// 3. ポストエフェクト
+	//===========================================
+	// シャドウマップ + メインカラー + 深度 を使って影を適用
+	postEffectManager_->AllDispatch();
+
+	//===========================================
+	// 4. 最終描画（スワップチェーンへ）
+	//===========================================
+	directXCommon_->PreDraw();
+
+	renderTexture_->PreDraw();
+	postEffectManager_->Draw(renderTexture_->GetRenderTexturePSO());
+	renderTexture_->Draw();
 	renderTexture_->PostDraw();
 
 #ifdef _DEBUG
 	imguiManager_->PostDraw();
 #endif
-	//描画後処理
+
 	directXCommon_->PostDraw();
-	//モデルのリロード適用
+
+	//===========================================
+	// 5. 次フレーム準備
+	//===========================================
+	// シャドウマップを DEPTH_WRITE 状態に戻す（次フレーム用）
+	//shadowRenderTexture_->TransitionToDepthWrite();
+
 	TakeC::ModelManager::GetInstance().ApplyModelReloads();
 }
 

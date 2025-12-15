@@ -71,6 +71,9 @@ namespace TakeC {
 		/// </summary>
 		void ResetCameras();
 
+		//登録されたカメラの取得
+		Camera* FindCameraByName(std::string name);
+
 	public:
 
 		//=============================================================================

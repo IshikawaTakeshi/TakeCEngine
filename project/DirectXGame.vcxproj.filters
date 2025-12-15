@@ -89,6 +89,8 @@
     <FxCompile Include="Resources\shaders\PostEffect\BloomBlurHorizontal.CS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\BloomBlurVertical.CS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\ShadowMapEffect.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\Shadow\ShadowPass.VS.hlsl" />
+    <FxCompile Include="Resources\shaders\Shadow\ShadowPass.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -532,8 +534,9 @@
     <ClCompile Include="application\Weapon\Bullet\VerticalMissileInfo.cpp" />
     <ClCompile Include="application\Weapon\ShotGun\ShotGun.cpp" />
     <ClCompile Include="application\Weapon\ShotGun\ShotGunInfo.cpp" />
-    <ClCompile Include="ShadowMapEffect.cpp" />
-    <ClCompile Include="LightCamera.cpp" />
+    <ClCompile Include="engine\PostEffect\ShadowMapEffect.cpp" />
+    <ClCompile Include="engine\PostEffect\PostEffectFactory.cpp" />
+    <ClCompile Include="engine\Base\DsvManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1098,8 +1101,10 @@
     <ClInclude Include="application\Weapon\Bullet\VerticalMissileInfo.h" />
     <ClInclude Include="application\Weapon\ShotGun\ShotGun.h" />
     <ClInclude Include="application\Weapon\ShotGun\ShotGunInfo.h" />
-    <ClInclude Include="ShadowMapEffect.h" />
-    <ClInclude Include="LightCamera.h" />
+    <ClInclude Include="engine\PostEffect\ShadowMapEffect.h" />
+    <ClInclude Include="engine\PostEffect\PostEffectFactory.h" />
+    <ClInclude Include="engine\Base\DsvManager.h" />
+    <ClInclude Include="engine\3d\Light\LightCameraInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -1195,6 +1200,8 @@
     <None Include="Resources\shaders\Light\SpotLight.hlsli" />
     <None Include="Resources\shaders\Light\LightCountData.hlsli" />
     <None Include="Resources\shaders\PostEffect\BloomEffectInfo.hlsli" />
+    <None Include="Resources\shaders\Light\LightCamera.hlsli" />
+    <None Include="Resources\shaders\Shadow\Shadowpass.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">

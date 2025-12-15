@@ -182,6 +182,28 @@ void Model::Draw(PSO* pso) {
 	}
 }
 
+void Model::DrawShadow() {
+
+	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
+
+	// VBV/IBV の設定（共通）
+	mesh_->SetVertexBuffers(commandList, 0);
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	commandList->IASetIndexBuffer(&mesh_->GetIndexBufferView());
+
+	// サブメッシュごとに描画
+	for (const SubMesh& sub : modelData_->subMeshes) {
+		// DrawObject 呼び出し
+		commandList->DrawIndexedInstanced(
+			sub.indexCount,    // インデックス数
+			1,                 // インスタンス数
+			sub.indexStart,    // StartIndexLocation
+			0,                 // BaseVertexLocation
+			0                  // StartInstanceLocation
+		);
+	}
+}
+
 
 //=============================================================================
 // スキンメッシュの計算処理

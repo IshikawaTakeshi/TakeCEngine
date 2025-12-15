@@ -55,4 +55,7 @@ private:
 	static float requestedTimeScale_;
 	//タイムスケール変更用タイマー
 	static Timer timeScaleTimer_;
+
+	//影描画用レンダーテクスチャ
+	std::unique_ptr<RenderTexture> shadowRenderTexture_;
 };

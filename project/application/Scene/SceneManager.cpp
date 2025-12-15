@@ -183,6 +183,10 @@ void SceneManager::DrawSprite() {
 	SceneTransition::GetInstance()->Draw();
 }
 
+void SceneManager::DrawShadow() {
+	currentScene_->DrawShadow();
+}
+
 //========================================================================
 //	シーンの変更
 //========================================================================

@@ -43,6 +43,8 @@ public:
 
 	virtual void DrawSprite() = 0;
 
+	virtual void DrawShadow() = 0;
+
 	/// <summary>
 	/// シーンマネージャーのセット
 	/// </summary>

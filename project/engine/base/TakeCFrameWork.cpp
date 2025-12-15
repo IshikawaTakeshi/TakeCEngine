@@ -84,13 +84,15 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	primitiveDrawer_ = std::make_unique<PrimitiveDrawer>();
 	primitiveDrawer_->Initialize(directXCommon_.get(), srvManager_.get());
 
-	//PostEffectManager
-	postEffectManager_ = std::make_unique<PostEffectManager>();
-	postEffectManager_->Initialize(directXCommon_.get(), srvManager_.get());
-
 	//RenderTexture
 	renderTexture_ = std::make_unique<RenderTexture>();
-	renderTexture_->Initialize(directXCommon_.get(), srvManager_.get(),postEffectManager_.get());
+	renderTexture_->Initialize(directXCommon_.get(), srvManager_.get());
+	//PostEffectFactory
+	postEffectFactory_ = std::make_unique<PostEffectFactory>();
+	//PostEffectManager
+	postEffectManager_ = std::make_unique<PostEffectManager>();
+	postEffectManager_->Initialize(directXCommon_.get(), srvManager_.get(),renderTexture_.get());
+	postEffectManager_->SetPostEffectFactory(postEffectFactory_.get());
 
 	//WireFrame
 	wireFrame_ = std::make_unique<WireFrame>();

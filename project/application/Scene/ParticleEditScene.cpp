@@ -93,3 +93,6 @@ void ParticleEditScene::Draw() {
 void ParticleEditScene::DrawSprite() {
 
 }
+
+void ParticleEditScene::DrawShadow() {
+}

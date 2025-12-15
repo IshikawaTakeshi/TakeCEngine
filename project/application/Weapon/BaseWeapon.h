@@ -28,6 +28,7 @@ public:
 	virtual void UpdateImGui() = 0;
 	//武器の描画
 	virtual void Draw() = 0;
+	void DrawShadow(const LightCameraInfo& lightCamera);
 	//武器の攻撃
 	virtual void Attack() = 0;
 	//武器のチャージ処理
@@ -92,26 +93,26 @@ public:
 	//=============================================================================
 
 	//所有者の設定
-	virtual void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
+	void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
 	//攻撃対象の座標を設定
-	virtual void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
+	void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
 	//攻撃対象の速度ベクトルを設定
-	virtual void SetTargetVelocity(const Vector3& targetVel) { targetVelocity_ = targetVel; }
+	void SetTargetVelocity(const Vector3& targetVel) { targetVelocity_ = targetVel; }
 
-	virtual void SetRotate(const Vector3& rotate) { object3d_->SetRotate(rotate); }
+	void SetRotate(const Vector3& rotate) { object3d_->SetRotate(rotate); }
 	//武器のユニットポジションを設定
-	virtual void SetUnitPosition(uint32_t position);
+	void SetUnitPosition(uint32_t position);
 	//有効射程距離の設定
-	virtual void SetEffectiveRange(float range);
+	void SetEffectiveRange(float range);
 
 	//弾速の設定
-	virtual void SetBulletSpeed(float speed);
+	void SetBulletSpeed(float speed);
 	//攻撃力の設定
-	virtual void SetAttackPower(float power);
+	void SetAttackPower(float power);
 	//弾数の設定
-	virtual void SetBulletCount(int32_t count);
+	void SetBulletCount(int32_t count);
 	//残弾数の設定
-	virtual void SetRemainingBulletCount(int32_t count);
+	void SetRemainingBulletCount(int32_t count);
 
 
 protected:

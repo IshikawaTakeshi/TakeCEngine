@@ -58,6 +58,18 @@ public:
 	//outputRenderTextureのポインタを取得
 	ComPtr<ID3D12Resource> GetOutputTextureResource() const { return outputResource_; }
 
+	//----- setter ----------------------------
+
+	//深度テクスチャリソースとSRVインデックスを設定
+	void SetDepthTextureResource(ComPtr<ID3D12Resource> depthTextureResource, uint32_t depthTextureSrvIndex) {
+		depthTextureResource_ = depthTextureResource;
+		depthTextureSrvIndex_ = depthTextureSrvIndex;
+	}
+	//ライトカメラ深度テクスチャリソースとSRVインデックスを設定
+	void SetLightCameraDepthTextureResource(ComPtr<ID3D12Resource> lightCameraDepthTextureResource, uint32_t lightCameraDepthTextureSrvIndex) {
+		lightCameraDepthTextureResource_ = lightCameraDepthTextureResource;
+		lightCameraDepthTextureSrvIndex_ = lightCameraDepthTextureSrvIndex;
+	}
 protected:
 
 	TakeC::DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
@@ -76,4 +88,10 @@ protected:
 
 	//CSファイルパス
 	std::wstring csFilePath_ = L"";
+
+	ComPtr<ID3D12Resource> depthTextureResource_; // 深度テクスチャリソース
+	uint32_t depthTextureSrvIndex_ = 0;           // 深度テクスチャのDSVインデックス
+
+	ComPtr<ID3D12Resource> lightCameraDepthTextureResource_; // ライトカメラ深度テクスチャリソース
+	uint32_t lightCameraDepthTextureSrvIndex_ = 0;           // ライトカメラ深度テクスチャのDSVインデックス
 };

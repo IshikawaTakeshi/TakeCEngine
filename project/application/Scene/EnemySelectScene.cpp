@@ -203,6 +203,9 @@ void EnemySelectScene::DrawSprite() {
 	characterEditTool_->DrawUI();
 }
 
+void EnemySelectScene::DrawShadow() {
+}
+
 //====================================================================
 // ゲームスタート時の処理
 //====================================================================

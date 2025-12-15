@@ -82,6 +82,17 @@ void CameraManager::ResetCameras() {
 }
 
 //============================================================================
+// 登録されたカメラの取得
+//============================================================================
+Camera* TakeC::CameraManager::FindCameraByName(std::string name) {
+	auto it = cameras_.find(name);
+	if (it != cameras_.end()) {
+		return it->second.get();
+	}
+	return nullptr;
+}
+
+//============================================================================
 // アクティブカメラの設定
 //============================================================================
 void CameraManager::SetActiveCamera(std::string name) {

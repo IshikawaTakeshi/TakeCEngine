@@ -5,6 +5,7 @@
 
 #include "engine/camera/Camera.h"
 #include "engine/3d/Model.h"
+#include "engine/3d/Light/LightCameraInfo.h"
 #include "engine/Animation/Animator.h"
 #include "engine/math/Transform.h"
 #include "engine/math/TransformMatrix.h"
@@ -42,6 +43,8 @@ public:
 	/// 描画
 	/// </summary>
 	void Draw();
+
+	void DrawShadow(const LightCameraInfo& lightCamera);
 
 	/// <summary>
 	/// スキニング計算
@@ -121,9 +124,11 @@ protected: // privateメンバ変数
 	bool isAnimation_ = true;
 
 	//TransformationMatrix用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
+	ComPtr<ID3D12Resource> wvpResource_;
+	ComPtr<ID3D12Resource> shadowWvpResource_;
 	//TransformationMatrix用の頂点データ
-	TransformMatrix* TransformMatrixData_ = nullptr;
+	TransformMatrix* transformMatrixData_ = nullptr;
+	TransformMatrix* shadowTransformMatrixData_ = nullptr;
 
 	//Transform
 	EulerTransform transform_{};
@@ -131,6 +136,7 @@ protected: // privateメンバ変数
 	//TransformMatrix
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 WVPMatrix_;
+	Matrix4x4 shadowWVPMatrix_;
 	Matrix4x4 WorldInverseTransposeMatrix_;
 	//Camera
 	Camera* camera_ = nullptr;

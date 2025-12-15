@@ -104,3 +104,6 @@ void GameOverScene::DrawSprite() {
 	gameOverTextSprite_->Draw(); // スプライトの描画
 
 }
+
+void GameOverScene::DrawShadow() {
+}

@@ -12,6 +12,7 @@
 
 //定数バッファ用の構造体
 struct CameraForGPU {
+	Matrix4x4 viewProjectionInverse; // ビュー射影行列の逆行列
 	Matrix4x4 ProjectionInverse; // 投影行列の逆行列
 	Vector3 worldPosition;
 	float padding;
@@ -29,6 +30,8 @@ struct CameraConfig {
 	float aspectRatio_ = float(TakeC::WinApp::kScreenWidth / 2) / float(TakeC::WinApp::kScreenHeight / 2);
 	float nearClip_ = 0.1f;
 	float farClip_ = 3800.0f;
+	float yaw_ = 0.0f;
+	float pitch_ = 0.0f;
 };
 
 // JSON変換関数

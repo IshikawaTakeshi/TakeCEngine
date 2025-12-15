@@ -56,6 +56,8 @@ public:
 	void Draw() override;
 	//スプライト描画処理
 	void DrawSprite() override;
+	//シャドウ描画処理
+	void DrawShadow() override;
 
 private:
 
@@ -96,6 +98,7 @@ private:
 	// カメラ
 	std::shared_ptr<Camera> gameCamera_ = nullptr;
 	std::shared_ptr<Camera> debugCamera_ = nullptr;
+	std::shared_ptr<Camera> lightCamera_ = nullptr;
 	//SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 
