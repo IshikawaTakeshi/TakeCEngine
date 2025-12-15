@@ -35,4 +35,7 @@ private:
 	//連射情報
 	RifleInfo rifleInfo_{};
 	BurstShotState burstShotState_{};
+
+	//マズルフラッシュエミッター
+	std::unique_ptr<ParticleEmitter> muzzleFlashEmitter2_ = nullptr;
 };

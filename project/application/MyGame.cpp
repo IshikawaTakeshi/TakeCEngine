@@ -50,17 +50,17 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
 	postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
 	//postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
-	postEffectManager_->InitializeEffect("DepthBasedOutline",     L"PostEffect/DepthBasedOutline.CS.hlsl");
-	postEffectManager_->InitializeEffect("ShadowMapEffect", L"PostEffect/ShadowMapEffect.CS.hlsl");
+	postEffectManager_->InitializeEffect("DepthBasedOutline", L"PostEffect/DepthBasedOutline.CS.hlsl");
+	postEffectManager_->InitializeEffect("ShadowMapEffect",   L"PostEffect/ShadowMapEffect.CS.hlsl");
 
 	CollisionManager::GetInstance().Initialize(directXCommon_.get());
 
 	//最初のシーンを設定
 #ifdef _DEBUG
 
-	SceneManager::GetInstance().ChangeScene("TITLE",0.0f);
+	sceneManager_->ChangeScene("TITLE",0.0f);
 #else
-	SceneManager::GetInstance().ChangeScene("TITLE", 0.0f);
+	sceneManager_->ChangeScene("TITLE", 0.0f);
 #endif // _DEBUG
 
 
@@ -246,4 +246,6 @@ void MyGame::LoadParticlePreset() {
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(&ParticleCommon::GetInstance(), "MissileExplosion.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(&ParticleCommon::GetInstance(), "DeadExplosionEffect.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(&ParticleCommon::GetInstance(), "DeadSmokeEffect.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(&ParticleCommon::GetInstance(), "RifleMuzzleFlash.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(&ParticleCommon::GetInstance(), "RifleMuzzleFlash2.json");
 }

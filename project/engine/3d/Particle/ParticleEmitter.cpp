@@ -23,8 +23,6 @@ void ParticleEmitter::Initialize(const std::string& emitterName, EulerTransform 
 	frequency_ = frequency;
 	frequencyTime_ = 0.0f;
 	isEmit_ = false;
-
-	
 }
 
 void ParticleEmitter::InitializeEmitterSphere(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager) {
