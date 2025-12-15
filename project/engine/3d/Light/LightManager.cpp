@@ -204,28 +204,45 @@ void TakeC::LightManager::UpdateSpotLight(uint32_t index, const SpotLightData& l
 void TakeC::LightManager::UpdateShadowMatrix(Camera* camera) {
 	lightCamera_ = camera;
 
-	//directionalLightをカメラの方向に向ける
+	// directionalLightをカメラの方向に向ける（これは問題ないので維持）
 	dirLightData_->direction_ = Vector3Math::Normalize(lightCamera_->GetDirection());
 
-	//シーンの中心位置を取得
-	//Vector3 sceneCenter = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetTargetPosition();
+	// --- 修正箇所：ライトのカメラの中心点を決定 ---
 
-	Vector3 lightPos = { 0.0f,128.0f,0.0f };
+	// 1. シーンの中心位置（＝シャドウマップを合わせたい場所）を取得
+	// プレイヤーの位置や、メインカメラの注視点（ターゲット）を利用する
+	// 仮に、渡されたカメラが持つターゲット位置をシーンの中心とします。
+	Vector3 sceneCenter = camera->GetTargetPosition(); // ※ 適切なメソッド名に置き換えてください
 
-	Matrix4x4 translationMat = MatrixMath::MakeTranslateMatrix(lightPos);
-	
-	Matrix4x4 rotateMat = MatrixMath::LookAt(lightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+	// 2. ライトの方向と距離に基づいて、ライトカメラの位置を決定
+	Vector3 lightDir = dirLightData_->direction_;
+	float distance = lightCameraDistance_; // LightManager.h で定義: 100.0f
 
-	Matrix4x4 lightView = MatrixMath::Inverse(rotateMat * translationMat);
+	// ライトカメラの位置: 中心からライトの逆方向に distance 離れた位置
+	Vector3 lightPos = sceneCenter - lightDir * distance;
 
-	//ライト射影行列の計算
-	Matrix4x4 lightProj = MatrixMath::MakeOrthographicMatrix(
-		-WinApp::kScreenWidth * 0.5f, WinApp::kScreenHeight * 0.5f,
-		WinApp::kScreenWidth * 0.5f, -WinApp::kScreenHeight * 0.5f,
-		10.0f, farClip_
+	// 3. ライトのビュー行列の計算
+	// lightPos から sceneCenter を見ているビュー行列
+	Matrix4x4 lightView = MatrixMath::LookAt(
+		lightPos,
+		sceneCenter,
+		Vector3(0.0f, 1.0f, 0.0f) // アップベクトル
 	);
 
-	lightCamera_->SetTranslate(lightPos);
+	// --- 修正箇所：正射影範囲に shadowRange を使用 ---
+
+	// 4. ライト射影行列の計算
+	// LightManager.h で定義された shadowRange を利用
+	float halfRange = shadowRange_ * 0.5f;
+
+	Matrix4x4 lightProj = MatrixMath::MakeOrthographicMatrix(
+		-halfRange,        // Left
+		halfRange,         // Top
+		halfRange,         // Right
+		-halfRange,        // Bottom
+		10.0f, farClip_    // Near, Far (farClip も LightManager.hで定義)
+	);
+
 	lightCameraInfo_->viewProjection_ = lightView * lightProj;
 	lightCameraInfo_->position_ = lightPos;
 }
@@ -423,9 +440,9 @@ void TakeC::LightManager::UpdateImGui() {
 	}
 
 	ImGui::Separator();
-	ImGui::DragFloat("Light Camera Distance", &lightCameraDistance_, 1.0f, 1.0f, 100.0f);
-	ImGui::DragFloat("Shadow Range", &shadowRange_, 1.0f, 1.0f, 100.0f);
-	ImGui::DragFloat("Far Clip", &farClip_, 1.0f, 10.0f, 1000.0f);
+	ImGui::DragFloat("Light Camera Distance", &lightCameraDistance_, 1.0f, 1.0f, 10000.0f);
+	ImGui::DragFloat("Shadow Range", &shadowRange_, 1.0f, 1.0f, 10000.0f);
+	ImGui::DragFloat("Far Clip", &farClip_, 1.0f, 10.0f, 10000.0f);
 
 	ImGui::End();
 #endif

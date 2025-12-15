@@ -109,7 +109,12 @@ void MyGame::Update() {
 
 void MyGame::Draw() {
 	
-
+	//===========================================
+	// 1. シャドウパス
+	//===========================================
+	shadowRenderTexture_->ClearRenderTarget();
+	srvManager_->SetDescriptorHeap();
+	sceneManager_->DrawShadow();  // ライトカメラ視点で深度のみ描画
 	//===========================================
 	// 2. メインパス（シーン描画）
 	//===========================================
@@ -118,12 +123,7 @@ void MyGame::Draw() {
 	sceneManager_->DrawObject();  // 通常のオブジェクト描画
 	sceneManager_->DrawSprite();  // スプライト描画
 
-	//===========================================
-	// 1. シャドウパス
-	//===========================================
-	shadowRenderTexture_->ClearRenderTarget();
-	srvManager_->SetDescriptorHeap();
-	sceneManager_->DrawShadow();  // ライトカメラ視点で深度のみ描画
+	
 
 	//===========================================
 	// 3. ポストエフェクト
