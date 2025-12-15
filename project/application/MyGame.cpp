@@ -28,7 +28,9 @@ void MyGame::Initialize(const std::wstring& titleName) {
 
 	//影描画用レンダーテクスチャの生成
 	shadowRenderTexture_ = std::make_unique<RenderTexture>();
-	shadowRenderTexture_->Initialize(directXCommon_.get(), srvManager_.get());
+	shadowRenderTexture_->Initialize(directXCommon_.get(), srvManager_.get(),
+		TakeC::WinApp::kScreenWidth, TakeC::WinApp::kScreenHeight
+	);
 	//PostEffectManagerに影描画用レンダーテクスチャをセット
 	postEffectManager_->SetLightCameraRenderTexture(shadowRenderTexture_.get());
 
