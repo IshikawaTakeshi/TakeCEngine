@@ -68,7 +68,7 @@ void TitleScene::Update() {
 	if (TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::A)) {
 		//シーン切り替え依頼
 		//EnemySelectSceneへ
-		SceneManager::GetInstance().ChangeScene("ENEMYSELECT",1.0f);
+		SceneManager::GetInstance().ChangeScene("GAMEPLAY",1.0f);
 	}
 }
 

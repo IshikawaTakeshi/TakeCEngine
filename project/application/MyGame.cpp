@@ -60,7 +60,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 
 	SceneManager::GetInstance().ChangeScene("TITLE",0.0f);
 #else
-	SceneManager::GetInstance()->ChangeScene("TITLE", 0.0f);
+	SceneManager::GetInstance().ChangeScene("TITLE", 0.0f);
 #endif // _DEBUG
 
 
