@@ -1,15 +1,7 @@
 #include "WinApp.h"
-
+#include "engine/Input/Input.h"
+#include "engine/base/ImGuiManager.h"
 #include <cassert>
-#pragma region imgui
-#ifdef _DEBUG
-#include "../externals/imgui/imgui.h"
-#include "../externals/imgui/imgui_impl_dx12.h"
-#include "../externals/imgui/imgui_impl_win32.h"
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
-	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-#endif // DEBUG
-#pragma endregion
 
 //静的メンバ変数の初期化
 float TakeC::WinApp::widthPercent_ = float(WinApp::kScreenWidth) / WinApp::kDebugScreenWidth_;
@@ -137,7 +129,7 @@ LRESULT CALLBACK TakeC::WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, L
 
 		// F11 でフルスクリーン切替
 	case WM_KEYDOWN:
-		if (wParam == VK_F11) {
+		if (TakeC::Input::GetInstance().TriggerKey(DIK_F11)) {
 			// hwnd を使ってインスタンスのフラグを取得するため、ウィンドウユーザーデータにポインタを設定しておく必要があります。
 			// ここでは SetWindowLongPtr / GetWindowLongPtr を使って保存されているポインタを取得する想定です。
 			LONG_PTR ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);

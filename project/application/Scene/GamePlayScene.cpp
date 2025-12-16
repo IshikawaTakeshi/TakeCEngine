@@ -483,7 +483,7 @@ void GamePlayScene::InitializeGameClear() {
 	//スローモーション解除
 	MyGame::RequestTimeScale(1.0f, 0.6f, 0.0f);
 	fadeTimer_ = 3.0f;
-	//SceneManager::GetInstance().ChangeScene("GAMECLEAR", fadeTimer_);
+	SceneManager::GetInstance().ChangeScene("GAMECLEAR", fadeTimer_);
 }
 
 void GamePlayScene::UpdateGameClear() {
