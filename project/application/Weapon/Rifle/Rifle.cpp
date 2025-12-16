@@ -13,7 +13,7 @@ void Rifle::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMana
 
 	//SE読み込み
 	shotSE_ = AudioManager::GetInstance().LoadSound("SE/ShotRifle.mp3");
-	seVolume_ = 0.2f;
+	seVolume_ = 0.05f;
 
 	//武器の初期化
 	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Rifle.json");

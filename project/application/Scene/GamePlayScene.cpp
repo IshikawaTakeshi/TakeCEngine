@@ -15,7 +15,7 @@ void GamePlayScene::Initialize() {
 
 	//BGM読み込み
 	BGM_ = AudioManager::GetInstance().LoadSound("GamePlaySceneBGM.mp3");
-	bgmVolume_ = 0.0f;
+	bgmVolume_ = 0.1f;
 
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
