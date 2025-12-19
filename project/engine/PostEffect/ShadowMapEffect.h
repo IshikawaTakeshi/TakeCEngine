@@ -34,7 +34,6 @@ private:
 	struct ShadowMapEffectInfo {
 		bool isActive = false; // エフェクトの有効無効
 		float bias = 0.005f; // シャドウのバイアス値
-		float normalBias = 0.05f; // シャドウのノーマルバイアス値
 		float pcfRange = 1.0f; // テクセル半径	
 	};
 	ShadowMapEffectInfo* shadowMapEffectInfo_ = nullptr; // シャドウマップエフェクト情報データ

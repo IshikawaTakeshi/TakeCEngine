@@ -55,6 +55,9 @@ public:
 
 	void TransitionToDepthWrite();
 
+	void SetViewport(int32_t width, int32_t height);
+	void SetScissorRect(int32_t width, int32_t height);
+
 public:
 
 	//========================================================
@@ -107,5 +110,8 @@ private:
 	ComPtr<ID3D12Resource> depthStencilResource_; //深度ステンシルバッファリソース
 
 	std::unique_ptr<PSO> renderTexturePSO_; //PSO
-	ComPtr<ID3D12RootSignature> rootSignature_; //ルートシグネチャmn
+	ComPtr<ID3D12RootSignature> rootSignature_; //ルートシグネチャ
+	D3D12_VIEWPORT viewport_{};
+	D3D12_RECT scissorRect_ = {};
+
 };

@@ -1,7 +1,9 @@
-#include "Light/DirectionalLight.hlsli"
-#include "Light/LightCountData.hlsli"
-#include "Light/LightCamera.hlsli"
-#include "CameraData.hlsli"
+#include "../Light/DirectionalLight.hlsli"
+#include "../Light/LightCountData.hlsli"
+#include "../Light/LightCamera.hlsli"
+#include "../CameraData.hlsli"
+
+
 
 //==============================================================
 // ShadowMapEffect.CS.hlsl
@@ -10,7 +12,6 @@
 struct ShadowMapEffectInfo {
 	bool isActive; // エフェクトの有効無効
 	float bias; // シャドウのバイアス値
-	float normalBias; // シャドウのノーマルバイアス値
 	float pcfRange; // テクセル半径	
 };
 
@@ -46,34 +47,35 @@ float SampleShadowPCF(float4 posLS, float bias, float pcfRange) {
 	float2 shadowUV = proj.xy * 0.5f + 0.5f;
 	shadowUV.y = 1.0f - shadowUV.y;
     
-    // 範囲外チェック
+	// 範囲外チェック
 	if ( shadowUV.x < 0.0f || shadowUV.x > 1.0f ||
-        shadowUV.y < 0.0f || shadowUV.y > 1.0f ||
-        proj.z < 0.0f || proj.z > 1.0f ) {
+		shadowUV.y < 0.0f || shadowUV.y > 1.0f ||
+		proj.z < 0.0f || proj.z > 1.0f ) {
 		return 1.0f;
 	}
     
 	float currentDepth = proj.z - bias;
     
-    // シャドウマップの解像度を取得
+	// シャドウマップの解像度を取得
 	uint w, h;
 	gShadowMapDepth.GetDimensions(w, h);
 	float2 texelSize = 1.0f / float2(w, h);
     
-    // 3x3 PCFサンプリング
+	// 3x3 PCFサンプリング（手動比較）
 	float shadow = 0.0f;
 	int sampleCount = 0;
     
-	for ( int y = -1; y <= 1; y++ ) {
-		for ( int x = -1; x <= 1; x++ ) {
-			float2 offset = float2(x, y) * texelSize * pcfRange;
-			float depth = gShadowMapDepth.SampleLevel(gSampler, shadowUV + offset, 0).r;
-			shadow += (currentDepth <= depth) ? 1.0f : 0.0f;
+	for ( int y = -pcfRange; y <= pcfRange; y++ ) {
+		for ( int x = -pcfRange; x <= pcfRange; x++ ) {
+			float2 offset = float2(x, y) * texelSize;
+			float sampledDepth = gShadowMapDepth.SampleLevel(gSampler, shadowUV + offset, 0).r;
+			// 深度比較:  currentDepthがsampledDepth以下なら光が当たる（影でない）
+			shadow += (currentDepth <= sampledDepth) ? 1.0f : 0.0f;
 			sampleCount++;
 		}
 	}
     
-	return shadow / float(sampleCount); // 0.0〜1.0 の滑らかな値
+	return shadow / float(sampleCount); // 0.0〜1.0の滑らかな値
 }
 
 //--------------------------------------------------------------
@@ -144,7 +146,7 @@ void main(uint3 DTid : SV_DispatchThreadID) {
 	float4 posLS = mul(float4(worldPos, 1.0f), gLightCameraInfo.viewProjection);
     
     // シャドウ判定
-	float shadow = SampleShadow(posLS, gShadowMapEffectInfo.bias);
+	float shadow = SampleShadowPCF(posLS, gShadowMapEffectInfo.bias,gShadowMapEffectInfo.pcfRange);
     
     // 結果を出力
 	gOutputTexture[DTid.xy] = float4(baseColor.rgb * shadow, baseColor.a);

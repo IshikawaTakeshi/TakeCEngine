@@ -32,7 +32,6 @@ void ShadowMapEffect::Initialize(
 	//初期値設定
 	shadowMapEffectInfo_->isActive = true;
 	shadowMapEffectInfo_->bias = 0.005f;
-	shadowMapEffectInfo_->normalBias = 0.05f;
 	shadowMapEffectInfo_->pcfRange = 1.0f;
 }
 
@@ -44,7 +43,6 @@ void ShadowMapEffect::UpdateImGui() {
 	if(ImGui::TreeNode("ShadowMapEffect")){
 		ImGui::Checkbox("Enable", &shadowMapEffectInfo_->isActive);
 		ImGui::SliderFloat("Bias", &shadowMapEffectInfo_->bias, 0.0f, 0.05f, "%.5f");
-		ImGui::SliderFloat("NormalBias", &shadowMapEffectInfo_->normalBias, 0.0f, 0.2f, "%.5f");
 		ImGui::SliderFloat("PCFRange", &shadowMapEffectInfo_->pcfRange, 0.0f, 5.0f, "%.5f");
 		ImGui::TreePop();
 	}

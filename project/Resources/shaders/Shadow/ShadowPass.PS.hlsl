@@ -1,4 +1,4 @@
-#include "Object3d.hlsli"
+#include "../3d/Object3d.hlsli"
 
 PixelShaderOutput main(VertexShaderOutput input) {
 	PixelShaderOutput output;

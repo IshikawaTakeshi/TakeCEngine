@@ -80,13 +80,12 @@ Microsoft::WRL::ComPtr<IDxcBlob> DXC::CompileShader(
 	shaderSourceBuffer.Encoding = DXC_CP_UTF8; //UTF8の文字コードであることを通知
 
 	LPCWSTR arguments[] = {
-		filePath.c_str(), //コンパイル対象のhlslファイル名
+		fullPath.c_str(), //コンパイル対象のhlslファイル名
 		L"-E",L"main", //エントリーポイントの指定。基本的にmain以外にはしない
 		L"-T",profile, //ShaderProfileの設定
 		L"-Zi",L"-Qembed_debug", //デバッグ用の情報を埋め込む
 		L"-Od", //最適化を外しておく
 		L"-Zpr", //メモリレイアウトは行優先
-		L"-I", L"Resources/shaders",
 	};
 
 	//実際にShaderをコンパイルする

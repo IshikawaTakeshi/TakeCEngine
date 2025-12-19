@@ -1,4 +1,4 @@
-#include "PostEffect/FullScreen.hlsli"
+#include "../PostEffect/FullScreen.hlsli"
 
 struct DissolveInfo {
 	float threshold; //閾値

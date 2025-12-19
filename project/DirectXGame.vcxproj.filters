@@ -52,13 +52,13 @@
     <FxCompile Include="Resources\shaders\UpdateParticle.CS.hlsl">
       <Filter>Resources\shader\Particle</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\shaders\Object3d.PS.hlsl">
+    <FxCompile Include="Resources\shaders\3d\Object3d.PS.hlsl">
       <Filter>Resources\shader\Object</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\shaders\Object3d.VS.hlsl">
+    <FxCompile Include="Resources\shaders\3d\Object3d.VS.hlsl">
       <Filter>Resources\shader\Object</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\shaders\Skinning.CS.hlsl">
+    <FxCompile Include="Resources\shaders\3d\Skinning.CS.hlsl">
       <Filter>Resources\shader\Object</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\WireFrame\WireFrame.VS.hlsl">
@@ -67,19 +67,16 @@
     <FxCompile Include="Resources\shaders\WireFrame\WireFrame.PS.hlsl">
       <Filter>Resources\shader\WireFrame</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\shaders\Sprite.VS.hlsl">
+    <FxCompile Include="Resources\shaders\Sprite\Sprite.VS.hlsl">
       <Filter>Resources\shader\Sprite</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\shaders\Sprite.PS.hlsl">
+    <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">
       <Filter>Resources\shader\Sprite</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\shaders\SkyBox.PS.hlsl">
+    <FxCompile Include="Resources\shaders\3d\SkyBox.PS.hlsl">
       <Filter>Resources\shader\Object</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\shaders\SkyBox.VS.hlsl">
-      <Filter>Resources\shader\Object</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\SkinningObject3d.VS.hlsl">
+    <FxCompile Include="Resources\shaders\3d\SkyBox.VS.hlsl">
       <Filter>Resources\shader\Object</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\PostEffect\DepthBasedOutline.CS.hlsl">
@@ -1179,16 +1176,16 @@
     <None Include="Resources\shaders\RandomGenerator.hlsli">
       <Filter>Resources\shader\Particle</Filter>
     </None>
-    <None Include="Resources\shaders\Object3d.hlsli">
+    <None Include="Resources\shaders\3d\Object3d.hlsli">
       <Filter>Resources\shader\Object</Filter>
     </None>
     <None Include="Resources\shaders\WireFrame\WireFrame.hlsli">
       <Filter>Resources\shader\WireFrame</Filter>
     </None>
-    <None Include="Resources\shaders\Sprite.hlsli">
+    <None Include="Resources\shaders\Sprite\Sprite.hlsli">
       <Filter>Resources\shader\Sprite</Filter>
     </None>
-    <None Include="Resources\shaders\SkyBox.hlsli">
+    <None Include="Resources\shaders\3d\SkyBox.hlsli">
       <Filter>Resources\shader\Object</Filter>
     </None>
     <None Include="Resources\shaders\CameraData.hlsli">
