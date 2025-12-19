@@ -305,6 +305,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Base\BlendModeStateEnum.h" />
     <ClInclude Include="engine\Base\ComPtrAliasTemplates.h" />
     <ClInclude Include="engine\Base\PerFrame.h" />
+    <ClInclude Include="engine\Camera\ShakeCameraModeEnum.h" />
     <ClInclude Include="engine\Math\MathEnv.h" />
     <ClInclude Include="engine\PostEffect\BloomEffect.h" />
     <ClInclude Include="engine\Camera\CameraForGPU.h" />

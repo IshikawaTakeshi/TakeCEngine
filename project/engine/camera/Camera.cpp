@@ -98,12 +98,13 @@ void Camera::Update() {
 // シェイクの設定
 //=============================================================================
 
-void Camera::SetShake(float duration, float range) {
+void Camera::RequestShake(ShakeCameraMode shakeMode,float duration, float range) {
 	if (!isShaking_) {
 		isShaking_ = true;
-		shakeDuration_ = duration;                // シェイク継続時間を設定
+		shakeTimer_.Initialize(duration, 0.0f);               // シェイク継続時間を設定
 		shakeRange_ = range;                      // シェイクの振幅を設定
 		originalPosition_ = cameraConfig_.offsetDelta_; // 元の位置を保存
+		shakeCameraMode_ = shakeMode;
 	}
 }
 
@@ -113,21 +114,55 @@ void Camera::SetShake(float duration, float range) {
 
 void Camera::ShakeCamera() {
 	if (isShaking_) {
-		if (shakeDuration_ > 0.0f) {
-			// ランダムな揺れを計算
-			float offsetX = (static_cast<float>(rand()) / RAND_MAX) * shakeRange_ * 2.0f - shakeRange_;
-			float offsetY = (static_cast<float>(rand()) / RAND_MAX) * shakeRange_ * 2.0f - shakeRange_;
-			float offsetZ = (static_cast<float>(rand()) / RAND_MAX) * shakeRange_ * 2.0f - shakeRange_;
-
-			// カメラの位置を揺らす
-			cameraConfig_.offsetDelta_ = originalPosition_ + Vector3{ offsetX, offsetY, offsetZ };
-
-			// 残り時間を減らす
-			shakeDuration_ -= 1.0f;
-		} else {
+		
+		shakeTimer_.Update();
+		if (shakeTimer_.IsFinished()) {
 			// シェイク終了
-			cameraConfig_.offsetDelta_ = originalPosition_; // 元の位置に戻す
 			isShaking_ = false;
+			cameraConfig_.offsetDelta_ = originalPosition_; // 元の位置に戻す
+		} else {
+			// シェイク中
+			float progress = shakeTimer_.GetProgress();
+			float easeProgress = Easing::EaseOutQuad(progress);
+
+			float offsetX, offsetY,offsetZ;
+			
+			switch (shakeCameraMode_) {
+			case ShakeCameraMode::NONE:
+				break;
+			case ShakeCameraMode::HORIZONTAL:
+
+				offsetX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				cameraConfig_.offsetDelta_.x = originalPosition_.x + offsetX;
+				break;
+			case ShakeCameraMode::VERTICAL:
+				offsetY = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				cameraConfig_.offsetDelta_.y = originalPosition_.y + offsetY;
+				break;
+			case ShakeCameraMode::BOTH:
+
+				// ランダムなオフセットを計算
+				offsetX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				offsetY = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				// オフセットを適用
+				cameraConfig_.offsetDelta_.x = originalPosition_.x + offsetX;
+				cameraConfig_.offsetDelta_.y = originalPosition_.y + offsetY;
+				break;
+			case ShakeCameraMode::Z_SHAKE:
+				break;
+			case ShakeCameraMode::FULL_SHAKE:
+				// ランダムなオフセットを計算
+				offsetX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				offsetY = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				offsetZ = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				// オフセットを適用
+				cameraConfig_.offsetDelta_.x = originalPosition_.x + offsetX;
+				cameraConfig_.offsetDelta_.y = originalPosition_.y + offsetY;
+				cameraConfig_.offsetDelta_.z = originalPosition_.z + offsetZ;
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }

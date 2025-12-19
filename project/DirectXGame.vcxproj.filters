@@ -1105,6 +1105,7 @@
     <ClInclude Include="engine\PostEffect\PostEffectFactory.h" />
     <ClInclude Include="engine\Base\DsvManager.h" />
     <ClInclude Include="engine\3d\Light\LightCameraInfo.h" />
+    <ClInclude Include="engine\Camera\ShakeCameraModeEnum.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
