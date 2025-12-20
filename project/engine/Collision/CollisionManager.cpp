@@ -19,8 +19,8 @@ void CollisionManager::Initialize(TakeC::DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 
 	pso_ = std::make_unique<PSO>();
-	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"SkyBox.VS.hlsl");
-	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"SkyBox.PS.hlsl");
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"3d/SkyBox.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"3d/SkyBox.PS.hlsl");
 	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_WIREFRAME, D3D12_DEPTH_WRITE_MASK_ZERO);
 	pso_->SetGraphicPipelineName("CollisionPSO");
 	rootSignature_ = pso_->GetGraphicRootSignature();

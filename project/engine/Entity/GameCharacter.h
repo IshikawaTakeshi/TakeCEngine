@@ -3,7 +3,7 @@
 #include "engine/Collision/Collider.h"
 
 //キャラクターの種類列挙型
-enum CharacterType {
+enum class CharacterType {
 	NONE,
 	PLAYER,
 	PLAYER_BULLET,

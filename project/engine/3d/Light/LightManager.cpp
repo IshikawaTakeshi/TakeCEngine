@@ -201,7 +201,7 @@ void TakeC::LightManager::UpdateSpotLight(uint32_t index, const SpotLightData& l
 //=============================================================================
 // シャドウマトリックス更新
 //=============================================================================
-void TakeC::LightManager::UpdateShadowMatrix(Camera* camera) {
+void TakeC::LightManager::UpdateShadowMatrix(Camera* camera,const Vector3& target) {
 	lightCamera_ = camera;
 
 	// directionalLightをカメラの方向に向ける（これは問題ないので維持）
@@ -212,7 +212,7 @@ void TakeC::LightManager::UpdateShadowMatrix(Camera* camera) {
 	// 1. シーンの中心位置（＝シャドウマップを合わせたい場所）を取得
 	// プレイヤーの位置や、メインカメラの注視点（ターゲット）を利用する
 	// 仮に、渡されたカメラが持つターゲット位置をシーンの中心とします。
-	Vector3 sceneCenter = camera->GetTargetPosition(); // ※ 適切なメソッド名に置き換えてください
+	Vector3 sceneCenter = target;
 
 	// 2. ライトの方向と距離に基づいて、ライトカメラの位置を決定
 	Vector3 lightDir = dirLightData_->direction_;

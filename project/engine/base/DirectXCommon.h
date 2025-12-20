@@ -119,10 +119,7 @@ namespace TakeC {
 
 		/// GPUディスクリプタハンドルの取得
 		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
-		/// ビューポートの取得
-		const D3D12_VIEWPORT& GetViewport() { return viewport_; }
-		/// シザー矩形の取得
-		const D3D12_RECT& GetScissorRect() { return scissorRect_; }
+
 		/// 現在のFPSの取得
 		float GetCurrentFPS() const { return currentFPS_; }
 
@@ -199,16 +196,6 @@ namespace TakeC {
 		/// コマンドキュー・リスト・アロケータ初期化
 		/// </summary>
 		void InitializeCommand();
-
-		/// <summary>
-		/// Viewport初期化
-		/// </summary>
-		void InitViewport();
-
-		/// <summary>
-		/// シザー矩形初期化
-		/// </summary>
-		void InitScissorRect();
 
 		/// <summary>
 		/// スワップチェーンの生成

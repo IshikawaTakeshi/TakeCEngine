@@ -27,18 +27,18 @@ void Object3dCommon::Initialize(TakeC::DirectXCommon* directXCommon,TakeC::Light
 	lightManager_ = lightManager;
 	//PSO生成
 	pso_ = std::make_unique<PSO>();
-	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
-	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"Object3d.PS.hlsl");
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"3d/Object3d.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"3d/Object3d.PS.hlsl");
 	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL);
 	pso_->SetGraphicPipelineName("Object3dPSO:graphic");
-	pso_->CompileComputeShader(dxCommon_->GetDXC(), L"Skinning.CS.hlsl");
+	pso_->CompileComputeShader(dxCommon_->GetDXC(), L"3d/Skinning.CS.hlsl");
 	pso_->CreateComputePSO(dxCommon_->GetDevice());
 	pso_->SetComputePipelineName("Object3dPSO:Conpute");
 
 	//加算ブレンド用PSO生成
 	addBlendPso_ = std::make_unique<PSO>();
-	addBlendPso_->CompileVertexShader(dxCommon_->GetDXC(), L"Object3d.VS.hlsl");
-	addBlendPso_->CompilePixelShader(dxCommon_->GetDXC(), L"Object3d.PS.hlsl");
+	addBlendPso_->CompileVertexShader(dxCommon_->GetDXC(), L"3d/Object3d.VS.hlsl");
+	addBlendPso_->CompilePixelShader(dxCommon_->GetDXC(), L"3d/Object3d.PS.hlsl");
 	addBlendPso_->CreateGraphicPSO(dxCommon_->GetDevice(),
 		D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL, BlendState::ADD);
 	pso_->SetGraphicPipelineName("Object3dPSO:graphic:AddBlend");

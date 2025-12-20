@@ -15,7 +15,7 @@ void GamePlayScene::Initialize() {
 
 	//BGM読み込み
 	BGM_ = AudioManager::GetInstance().LoadSound("GamePlaySceneBGM.mp3");
-	bgmVolume_ = 0.1f;
+	bgmVolume_ = 0.0f;
 
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
@@ -239,7 +239,7 @@ void GamePlayScene::Update() {
 	//LightManager更新
 	Camera* lightCam = TakeC::CameraManager::GetInstance().FindCameraByName("lightCamera");
 	lightCam->Update();
-	TakeCFrameWork::GetLightManager()->UpdateShadowMatrix(lightCam);
+	TakeCFrameWork::GetLightManager()->UpdateShadowMatrix(lightCam,player_->GetObject3d()->GetWorldPosition());
 
 	//当たり判定の更新
 	CheckAllCollisions();

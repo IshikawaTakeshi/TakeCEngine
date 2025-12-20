@@ -1,7 +1,15 @@
 #include "WinApp.h"
 #include "engine/Input/Input.h"
-#include "engine/base/ImGuiManager.h"
 #include <cassert>
+
+#pragma region imgui
+#ifdef _DEBUG
+#include "../externals/imgui/imgui.h"
+#include "../externals/imgui/imgui_impl_dx12.h"
+#include "../externals/imgui/imgui_impl_win32.h"
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
+	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#endif // DEBUG
 
 //静的メンバ変数の初期化
 float TakeC::WinApp::widthPercent_ = float(WinApp::kScreenWidth) / WinApp::kDebugScreenWidth_;
@@ -76,35 +84,6 @@ bool TakeC::WinApp::ProcessMessage() {
 	}
 
 	return false;
-}
-
-//=======================================================================
-//			ビューポートの取得
-//=======================================================================
-
-D3D12_VIEWPORT TakeC::WinApp::GetViewport() const {
-	D3D12_VIEWPORT viewport = {};
-	viewport.TopLeftX = offsetX_;
-	viewport.TopLeftY = offsetY_;
-	viewport.Width = static_cast<float>(kScreenWidth);
-	viewport.Height = static_cast<float>(kScreenHeight);
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	return viewport;
-}
-
-//=======================================================================
-//			ウィンドウのクライアント領域のサイズを取得
-//=======================================================================
-
-D3D12_RECT TakeC::WinApp::GetScissorRect() const {
-	
-	D3D12_RECT scissorRect = {};
-	scissorRect.left = static_cast<LONG>(offsetX_);
-	scissorRect.top = static_cast<LONG>(offsetY_);
-	scissorRect.right = static_cast<LONG>(kScreenWidth + offsetX_);
-	scissorRect.bottom = static_cast<LONG>(kScreenHeight + offsetY_);
-	return scissorRect;
 }
 
 //=======================================================================

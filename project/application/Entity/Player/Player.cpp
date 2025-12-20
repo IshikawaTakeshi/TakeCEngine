@@ -493,6 +493,8 @@ void Player::UpdateAttack() {
 				chargeShootTimer_ -= deltaTime_;
 				if (chargeShootTimer_ <= 0.0f) {
 					weapon->Attack();
+					camera_->RequestShake(ShakeCameraMode::VERTICAL,0.5f, 2.0f); // カメラシェイクをリクエスト
+
 					playerData_.characterInfo.isChargeShooting = false; // チャージ撃ち中フラグをリセット
 					chargeShootTimer_ = 0.0f; // タイマーをリセット
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
@@ -528,6 +530,7 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 			if (inputProvider_->ReleaseAttackInput(actionInput) == true) {
 				//チャージ攻撃実行
 				weapon->ChargeAttack();
+				
 				if (weapon->StopShootOnly()) {
 					// 停止撃ち専用の場合はチャージ後に硬直状態へ
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
@@ -543,10 +546,11 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 				playerData_.characterInfo.isChargeShooting = true; // チャージ撃ち中フラグを立てる
 				chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
 				chargeShootableUnits_[weaponIndex] = true; // チャージ撃ち可能なユニットとしてマーク
-
+				
 			} else {
 				// 移動撃ち可能
 				weapon->Attack();
+				camera_->RequestShake(ShakeCameraMode::HORIZONTAL,0.1f, 1.0f); // カメラシェイクをリクエスト
 			}
 		}
 	} else if (inputProvider_->ReleaseAttackInput(actionInput) == true) {
@@ -564,7 +568,6 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 			}
 		}
 	}
-
 
 }
 

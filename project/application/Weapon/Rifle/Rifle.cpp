@@ -1,6 +1,7 @@
 #include "Rifle.h"
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/base/ImGuiManager.h"
+#include "engine/Camera/CameraManager.h"
 #include "engine/math/MatrixMath.h"
 #include "application/Weapon/Bullet/BulletManager.h"
 

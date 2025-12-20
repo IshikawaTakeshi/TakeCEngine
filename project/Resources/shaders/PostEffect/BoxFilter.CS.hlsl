@@ -1,5 +1,5 @@
-#include "PostEffect/FullScreen.hlsli"
-#include "PostEffect/BoxFilter.hlsli"
+#include "../PostEffect/FullScreen.hlsli"
+#include "../PostEffect/BoxFilter.hlsli"
 
 struct BoxFilterInfo {
 	bool isActive;

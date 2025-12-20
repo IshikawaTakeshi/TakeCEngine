@@ -98,11 +98,6 @@ namespace TakeC {
 		/// 描画位置のオフセットY取得
 		float GetOffsetY() const { return offsetY_; }
 
-		/// ビューポートの取得
-		D3D12_VIEWPORT GetViewport() const;
-		/// ウィンドウのクライアント領域のサイズを取得
-		D3D12_RECT GetScissorRect() const;
-
 	private:
 
 		//ウィンドウクラス

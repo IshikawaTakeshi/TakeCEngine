@@ -42,18 +42,12 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	dsvManager_ = std::make_unique<DsvManager>();
 	dsvManager_->Initialize(this);
 
-
-	
-
 	// RTVの初期化
 	InitializeRenderTargetView();
 	// フェンス生成
 	CreateFence();
-	//Viewport初期化
-	InitViewport();
-	//Scissor矩形初期化
-	InitScissorRect();
 
+	//DXC初期化
 	dxc_ = std::make_unique<DXC>();
 	dxc_->InitializeDxc();
 }
@@ -707,12 +701,4 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResourceUAV(ID
 	assert(SUCCEEDED(result));
 
 	return resource;
-}
-
-void DirectXCommon::InitViewport() {
-	viewport_ = winApp_->GetViewport();
-}
-
-void DirectXCommon::InitScissorRect() {
-	scissorRect_ = winApp_->GetScissorRect();
 }

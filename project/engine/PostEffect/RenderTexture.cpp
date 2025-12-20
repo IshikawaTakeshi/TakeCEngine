@@ -35,7 +35,7 @@ void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager
 
 	//RenderTextureResourceの生成
 	renderTextureResource_ = dxCommon_->CreateRenderTextureResource(
-		dxCommon_->GetDevice(),WinApp::kScreenWidth,WinApp::kScreenHeight,DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,kRenderTargetClearColor_);
+		dxCommon_->GetDevice(),depthWidth,depthHeight,DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,kRenderTargetClearColor_);
 	renderTextureResource_->SetName(L"renderTextureResource_front");
 
 	//深度ステンシルバッファリソースの生成
@@ -69,6 +69,10 @@ void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager
 	renderTexturePSO_->CreateRenderTexturePSO(dxCommon_->GetDevice());
 	renderTexturePSO_->SetGraphicPipelineName("RenderTexturePSO");
 	rootSignature_ = renderTexturePSO_->GetGraphicRootSignature();
+	//Viewportの設定
+	SetViewport(depthWidth, depthHeight);
+	//ScissorRectの設定
+	SetScissorRect(depthWidth, depthHeight);
 }
 
 //=======================================================================
@@ -84,9 +88,9 @@ void RenderTexture::ClearRenderTarget() {
 	//指定した深度で画面全体をクリアにする
 	dxCommon_->GetCommandList()->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	// Viewportを設定
-	dxCommon_->GetCommandList()->RSSetViewports(1, &dxCommon_->GetViewport());
+	dxCommon_->GetCommandList()->RSSetViewports(1, &viewport_);
 	// Scissorの設定
-	dxCommon_->GetCommandList()->RSSetScissorRects(1, &dxCommon_->GetScissorRect());
+	dxCommon_->GetCommandList()->RSSetScissorRects(1, &scissorRect_);
 }
 
 //========================================================================
@@ -144,4 +148,20 @@ void RenderTexture::TransitionToDepthWrite() {
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		depthStencilResource_.Get());
+}
+
+void RenderTexture::SetViewport(int32_t width, int32_t height) {
+	viewport_.TopLeftX = 0.0f;
+	viewport_.TopLeftY = 0.0f;
+	viewport_.Width = static_cast<float>(width);
+	viewport_.Height = static_cast<float>(height);
+	viewport_.MinDepth = 0.0f;
+	viewport_.MaxDepth = 1.0f;
+}
+
+void RenderTexture::SetScissorRect(int32_t width, int32_t height) {
+	scissorRect_.left = LONG(0);
+	scissorRect_.top = LONG(0);
+	scissorRect_.right = static_cast<LONG>(width);
+	scissorRect_.bottom = static_cast<LONG>(height);
 }
