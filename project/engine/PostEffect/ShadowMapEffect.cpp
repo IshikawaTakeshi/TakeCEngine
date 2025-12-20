@@ -32,7 +32,7 @@ void ShadowMapEffect::Initialize(
 	//初期値設定
 	shadowMapEffectInfo_->isActive = true;
 	shadowMapEffectInfo_->bias = 0.005f;
-	shadowMapEffectInfo_->pcfRange = 1.0f;
+	shadowMapEffectInfo_->pcfRange = 2.5f;
 }
 
 //=========================================================

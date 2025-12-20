@@ -239,7 +239,7 @@ void GamePlayScene::Update() {
 	//LightManager更新
 	Camera* lightCam = TakeC::CameraManager::GetInstance().FindCameraByName("lightCamera");
 	lightCam->Update();
-	TakeCFrameWork::GetLightManager()->UpdateShadowMatrix(lightCam);
+	TakeCFrameWork::GetLightManager()->UpdateShadowMatrix(lightCam,player_->GetObject3d()->GetWorldPosition());
 
 	//当たり判定の更新
 	CheckAllCollisions();

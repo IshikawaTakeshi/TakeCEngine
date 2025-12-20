@@ -138,6 +138,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
     <ClCompile Include="engine\Animation\SpriteAnimation.cpp" />
     <ClCompile Include="engine\Camera\CameraForGPU.cpp" />
+    <ClCompile Include="engine\Math\AABB.cpp" />
     <ClCompile Include="engine\Math\MathEnv.cpp" />
     <ClCompile Include="engine\Math\Transform.cpp" />
     <ClCompile Include="engine\PostEffect\BloomEffect.cpp" />

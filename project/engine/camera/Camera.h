@@ -69,6 +69,8 @@ public:
 	const Matrix4x4& GetProjectionMatrix() const { return projectionMatrix_; }
 	//ビュープロジェクション行列の取得
 	const Matrix4x4& GetViewProjectionMatrix() const { return viewProjectionMatrix_; }
+	//ビュープロジェクション逆行列の取得
+	const Matrix4x4& GetViewProjectionInverse() const { return viewProjectionInverse_; }
 	//回転行列の取得
 	const Matrix4x4& GetRotationMatrix() const { return rotationMatrix_; }
 	//正射影行列の取得
@@ -162,6 +164,7 @@ private:
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 orthographicMatrix_;
 	Matrix4x4 viewProjectionMatrix_;
+	Matrix4x4 viewProjectionInverse_;
 	//回転行列
 	Matrix4x4 rotationMatrix_;
 

@@ -27,6 +27,7 @@ void Camera::Initialize(ID3D12Device* device,const std::string& configData) {
 		cameraConfig_.nearClip_,
 		cameraConfig_.farClip_);
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
+	viewProjectionInverse_ = MatrixMath::Inverse(viewProjectionMatrix_);
 	rotationMatrix_ = MatrixMath::MakeIdentity4x4();
 
 	followSpeed_ = 0.3f;
@@ -59,6 +60,11 @@ void Camera::Update() {
 	} else {
 		//ゲームカメラの更新
 		UpdateGameCamera();
+	}
+
+	if(isShaking_){
+		//カメラシェイクの更新
+		ShakeCamera();
 	}
 	
 	// クォータニオンを正規化して数値誤差を防ぐ

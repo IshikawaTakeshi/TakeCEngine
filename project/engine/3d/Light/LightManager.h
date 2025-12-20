@@ -93,7 +93,7 @@ class SrvManager;
 		/// <param name="light"></param>
 		void UpdateSpotLight(uint32_t index, const SpotLightData& light);
 
-		void UpdateShadowMatrix(Camera* camera);
+		void UpdateShadowMatrix(Camera* camera,const Vector3& target = {0.0f,0.0f,0.0f});
 
 		/// <summary>
 		/// ポイントライト描画
@@ -172,9 +172,10 @@ class SrvManager;
 		static const uint32_t kMaxPointLights = 512;   // 最大ポイントライト数
 		static const uint32_t kMaxSpotLights = 128;    // 最大スポットライト数
 
-		float lightCameraDistance_ = 1500.0f; // ライトカメラ距離
-		float shadowRange_ = 3000.0f;        // シャドウマップ範囲
-		float farClip_ = 2500.0f;             // ライトカメラ遠クリップ距離
+		float lightCameraDistance_ = 500.0f; // ライトカメラ距離
+		float shadowRange_ = 350.0f;        // シャドウマップ範囲
+		float farClip_ = 1000.0f;             // ライトカメラ遠クリップ距離
 		float nearClip_ = 1.0f;             // ライトカメラ近クリップ距離
+		float shadowCasterMargin_ = 50.0f;   // シャドウキャスター余裕距離
 	};
 }
