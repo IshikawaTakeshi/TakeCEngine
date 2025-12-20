@@ -4,7 +4,7 @@
 #include "TransformMatrix.h"
 #include "Transform.h"
 #include "Mesh/Mesh.h"
-#include "engine/3d/Primitive/PrimitiveMesh.h"
+#include "engine/3d/Primitive/PrimitiveBase.h"
 #include "engine/Base/SrvManager.h"
 
 #include <memory>
