@@ -43,6 +43,7 @@ void TitleScene::Initialize() {
 void TitleScene::Finalize() {
 	titleTextSprite_.reset();
 	pushStartUI_.reset();
+	skyBox_.reset();
 	camera0_.reset();
 	camera1_.reset();
 	TakeC::CameraManager::GetInstance().ResetCameras();

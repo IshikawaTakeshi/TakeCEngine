@@ -87,6 +87,7 @@ void TakeC::LightManager::Finalize() {
 	pointLightResource_.Reset();
 	spotLightResource_.Reset();
 	lightCountResource_.Reset();
+	lightCameraInfoResource_.Reset();
 	dxCommon_ = nullptr;
 	srvManager_ = nullptr;
 	

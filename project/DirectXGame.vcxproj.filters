@@ -1104,6 +1104,7 @@
     <ClInclude Include="engine\Base\DsvManager.h" />
     <ClInclude Include="engine\3d\Light\LightCameraInfo.h" />
     <ClInclude Include="engine\Camera\ShakeCameraModeEnum.h" />
+    <ClInclude Include="engine\3d\Primitive\PrimitiveMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

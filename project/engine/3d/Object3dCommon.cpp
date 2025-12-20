@@ -48,6 +48,7 @@ void Object3dCommon::Initialize(TakeC::DirectXCommon* directXCommon,TakeC::Light
 	shadowPassPso_->CompileVertexShader(dxCommon_->GetDXC(), L"Shadow/ShadowPass.VS.hlsl");
 	shadowPassPso_->CompilePixelShader(dxCommon_->GetDXC(), L"Shadow/ShadowPass.PS.hlsl");
 	shadowPassPso_->CreateGraphicPSO(dxCommon_->GetDevice(),D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL);
+	shadowPassPso_->SetGraphicPipelineName("Object3dPSO:graphic:ShadowPass");
 
 	//RootSignatureの取得
 	graphicRootSignature_ = pso_->GetGraphicRootSignature();
@@ -85,7 +86,11 @@ void Object3dCommon::Finalize() {
 
 	graphicRootSignature_.Reset();
 	computeRootSignature_.Reset();
+	shadowPassRootSignature_.Reset();
+	addBlendRootSignature_.Reset();
 	pso_.reset();
+	shadowPassPso_.reset();
+	addBlendPso_.reset();
 	dxCommon_ = nullptr;
 }
 

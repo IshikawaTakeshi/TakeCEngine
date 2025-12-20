@@ -62,6 +62,11 @@ void BloomEffect::Initialize(
 	verticalBlurPSO_->CreateComputePSO(dxCommon_->GetDevice());
 	rootSignatureForBloomTexture_ = brightPassPSO_->GetComputeRootSignature();
 
+	//パイプラインの名前設定
+	brightPassPSO_->SetComputePipelineName("BloomBrightPassPSO");
+	horizontalBlurPSO_->SetComputePipelineName("BloomHorizontalBlurPSO");
+	verticalBlurPSO_->SetComputePipelineName("BloomVerticalBlurPSO");
+
 	//UAVインデックス取得/UAV生成
 	brightPassUavIndex_ = srvManager_->Allocate();
 	srvManager_->CreateUAVforRenderTexture(

@@ -29,6 +29,8 @@ void TakeC::ModelManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvMan
 // 終了処理
 //=============================================================================
 void TakeC::ModelManager::Finalize() {
+	models_.clear();
+	modelInstances_.clear();
 	modelCommon_->Finalize();
 }
 

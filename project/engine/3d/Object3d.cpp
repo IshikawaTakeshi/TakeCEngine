@@ -14,6 +14,7 @@
 
 Object3d::~Object3d() {
 	wvpResource_.Reset();
+	shadowWvpResource_.Reset();
 	model_ = nullptr;
 }
 

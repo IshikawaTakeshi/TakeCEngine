@@ -292,6 +292,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Effect\DeadEffect.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
     <ClInclude Include="engine\3d\Light\LightCameraInfo.h" />
+    <ClInclude Include="engine\3d\Primitive\PrimitiveMesh.h" />
     <ClInclude Include="engine\Base\DsvManager.h" />
     <ClInclude Include="engine\2d\SpriteConfig.h" />
     <ClInclude Include="engine\3d\Light\DirectionalLight.h" />
