@@ -7,7 +7,7 @@
         "vmInfo": {
             "ascendSpeed": 183.39999389648438,
             "explosionRadius": 5.0,
-            "homingRate": 0.375,
+            "homingRate": 0.14,
             "maxAltitude": 0.0
         }
     },
@@ -16,13 +16,13 @@
         "canChargeAttack": false,
         "canMoveShootable": true,
         "effectiveRange": 1000.0,
-        "homingRate": 0.10000000149011612,
+        "homingRate": 0.14,
         "isStopShootOnly": false,
         "kAttackInterval": 5.0,
         "magazineCount_": 3,
         "maxBulletCount": 120,
         "maxReloadTime": 2.0,
-        "power": 400.0,
+        "power": 300.0,
         "requiredChargeTime": 0.0
     },
     "modelFilePath": "VerticalMissileLauncher.gltf",

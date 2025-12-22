@@ -1,0 +1,64 @@
+{
+    "attributes": {
+        "color": {
+            "x": 1.0,
+            "y": 0.2235294133424759,
+            "z": 0.03921568766236305
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 1,
+        "enableFollowEmitter": true,
+        "frequency": 0.10000000149011612,
+        "isBillboard": true,
+        "isDirectional": false,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeRange": {
+            "max": 0.28999999165534973,
+            "min": 0.25999999046325684
+        },
+        "particlesPerInterpolation": 3,
+        "positionRange": {
+            "max": 1.0,
+            "min": -1.0
+        },
+        "rotateRange": {
+            "max": 0.0,
+            "min": 0.0
+        },
+        "scale": {
+            "x": 15.0,
+            "y": 30.0,
+            "z": 1.0
+        },
+        "scaleRange": {
+            "max": 60.119999885559082,
+            "min": 20.10000000149011612
+        },
+        "scaleSetting": 0,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityRange": {
+            "max": 5.960000038146973,
+            "min": -1.0
+        }
+    },
+    "blendState": 1,
+    "name": "RifleMuzzleFlash2",
+    "primitiveParameters": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+    },
+    "primitiveType": "PRIMITIVE_PLANE",
+    "textureFilePath": "Cross.png"
+}

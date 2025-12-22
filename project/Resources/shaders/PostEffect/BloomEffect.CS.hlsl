@@ -1,4 +1,4 @@
-#include "PostEffect/BloomEffectInfo.hlsli"
+#include "../PostEffect/BloomEffectInfo.hlsli"
 
 //================================================================
 // BloomEffect.CS.hlsl

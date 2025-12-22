@@ -208,6 +208,10 @@ void TakeCFrameWork::Run(const std::wstring& titleName) {
 		}
 		Update(); //更新処理
 		Draw();   //描画処理
+
+		if(Input::GetInstance().TriggerKey(DIK_ESCAPE)) {
+			break;
+		}
 	}
 
 	Finalize();   //終了処理

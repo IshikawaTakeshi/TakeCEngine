@@ -43,6 +43,7 @@ void TitleScene::Initialize() {
 void TitleScene::Finalize() {
 	titleTextSprite_.reset();
 	pushStartUI_.reset();
+	skyBox_.reset();
 	camera0_.reset();
 	camera1_.reset();
 	TakeC::CameraManager::GetInstance().ResetCameras();
@@ -68,7 +69,7 @@ void TitleScene::Update() {
 	if (TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::A)) {
 		//シーン切り替え依頼
 		//EnemySelectSceneへ
-		SceneManager::GetInstance().ChangeScene("ENEMYSELECT",1.0f);
+		SceneManager::GetInstance().ChangeScene("GAMEPLAY",1.0f);
 	}
 }
 

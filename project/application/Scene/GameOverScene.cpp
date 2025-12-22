@@ -63,8 +63,8 @@ void GameOverScene::Update() {
 	// スプライトの更新
 	gameOverTextSprite_->Update();
 
-	// パーティクルの更新
-	TakeC::ParticleManager().Update();
+	//particleManager更新
+	TakeCFrameWork::GetParticleManager()->Update();
 	
 		// シーン遷移
 	if (TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::A)) {

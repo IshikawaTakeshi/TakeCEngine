@@ -1,8 +1,10 @@
 #pragma once
+#include "engine/Camera/ShakeCameraModeEnum.h"
+#include "engine/Camera/CameraForGPU.h"
 #include "engine/math/Transform.h"
 #include "engine/math/Matrix4x4.h"
 #include "engine/math/Vector2.h"
-#include "engine/camera/CameraForGPU.h"
+#include "engine/Utility/Timer.h"
 #include <string>
 #include <d3d12.h>
 #include <wrl.h>
@@ -40,6 +42,8 @@ public:
 	void Update();
 	//カメラシェイク
 	void ShakeCamera();
+	//カメラシェイクのリクエスト
+	void RequestShake(ShakeCameraMode shakeMode, float duration, float range);
 	//ImGuiの更新処理
 	void UpdateImGui();
 public: 
@@ -65,6 +69,8 @@ public:
 	const Matrix4x4& GetProjectionMatrix() const { return projectionMatrix_; }
 	//ビュープロジェクション行列の取得
 	const Matrix4x4& GetViewProjectionMatrix() const { return viewProjectionMatrix_; }
+	//ビュープロジェクション逆行列の取得
+	const Matrix4x4& GetViewProjectionInverse() const { return viewProjectionInverse_; }
 	//回転行列の取得
 	const Matrix4x4& GetRotationMatrix() const { return rotationMatrix_; }
 	//正射影行列の取得
@@ -79,7 +85,10 @@ public:
 
 	const Vector3& GetUpVector() const;
 
+	const Vector3& GetTargetPosition() const { return focusTargetPosition_; }
+
 	const Vector3& GetDirection() const;
+	const Vector3& GetFollowTargetPosition() const { return followTargetPosition_; }
 	
 	//シェイクするかどうかの取得
 	const bool& GetIsShaking() const { return isShaking_; }
@@ -110,8 +119,7 @@ public:
 	void SetIsShaking(bool isShaking) { isShaking_ = isShaking; }
 	//デバッグ状態かの設定
 	void SetIsDebug(bool isDebug){ isDebug_ = isDebug; }
-	//カメラシェイクの設定
-	void SetShake(float duration, float range);
+	
 	//ヨー回転量の設定
 	void SetYawRot(float yaw) { yawRot_ = yaw; }
 	//ピッチ回転量の設定
@@ -131,12 +139,22 @@ public:
 	void SetEZoomEnemy(bool isEZoomEnemy) { isEZoomEnemy_ = isEZoomEnemy; }
 	//カメラモード変更要求の設定
 	void SetRequestedChangeCameraMode(bool requested) { requestedChangeCameraMode_ = requested; }
+
+	void SetViewProjectionInverse(Matrix4x4 vpInverse) {
+		cameraForGPU_->viewProjectionInverse = vpInverse;
+	}
+
+	void SetProjectionChanged(bool changed) {
+		projectionChanged = changed;
+	}
 private:
 
 	//バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource_;
 	CameraForGPU* cameraForGPU_;
 	CameraConfig cameraConfig_;
+	float yawRot_ = 0.0f;
+	float pitchRot_ = 0.0f;
 
 	Vector3 nextPosition_;
 	Vector3 direction_;
@@ -146,6 +164,7 @@ private:
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 orthographicMatrix_;
 	Matrix4x4 viewProjectionMatrix_;
+	Matrix4x4 viewProjectionInverse_;
 	//回転行列
 	Matrix4x4 rotationMatrix_;
 
@@ -162,27 +181,30 @@ private:
 	Vector3 followTargetRotation_;
 	float followSpeed_ = 0.3f; //追従速度
 	float rotationSpeed_ = 0.1f; //回転追従速度
-
 	//補足対象
 	Vector3 focusTargetPosition_;
-	
-	float yawRot_ = 0.0f;
-	float pitchRot_ = 0.0f;
-	//デバッグ状態か
-	bool isDebug_ = false;
 
+	//カメラのシェイクモード
+	ShakeCameraMode shakeCameraMode_ = ShakeCameraMode::NONE;
 	bool isShaking_ = false;     //シェイク中かどうか
-	float shakeDuration_ = 0.0f; //シェイクの残り時間
+	Timer shakeTimer_;        //シェイク用タイマー
 	Vector3 originalPosition_;   //シェイク開始前のカメラ位置
 	float shakeRange_ = 0.2f;    //シェイクの振幅
 
-	bool requestedChangeCameraMode_ = false; //ロックオン要求があったか
+	//ロックオン要求があったか
+	bool requestedChangeCameraMode_ = false;
 	//敵をズームしているか
 	bool isEZoomEnemy_ = false;
 	//ピッチの制限角度(70度)
 	const float kPitchLimit = std::numbers::pi_v<float> / 180.0f * 70.0f; 
 	//セーブフィールドの表示
 	bool showSaveField = false;
+
+	//投影行列が変更されたか
+	bool projectionChanged = false;
+
+	//デバッグ状態か
+	bool isDebug_ = false;
 
 private:
 

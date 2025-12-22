@@ -1,9 +1,9 @@
 #include "Object3d.hlsli"
-#include "CameraData.hlsli"
-#include "Light/DirectionalLight.hlsli"
-#include "Light/PointLight.hlsli"
-#include "Light/SpotLight.hlsli"
-#include "Light/LightCountData.hlsli"
+#include "../CameraData.hlsli"
+#include "../Light/DirectionalLight.hlsli"
+#include "../Light/PointLight.hlsli"
+#include "../Light/SpotLight.hlsli"
+#include "../Light/LightCountData.hlsli"
 
 //マテリアル
 ConstantBuffer<Material> gMaterial : register(b0);

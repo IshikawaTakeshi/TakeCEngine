@@ -68,6 +68,8 @@ public:
 	const Vector3& GetRotate() const { return transform_.rotate; }
 	//位置の取得
 	const Vector3& GetTranslate() const { return transform_.translate; }
+
+	const Vector3& GetWorldPosition() const { return worldPosition_; }
 	//モデルの中心位置の取得
 	const Vector3& GetCenterPosition() const;
 	//モデルの取得

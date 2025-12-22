@@ -27,6 +27,7 @@ void Camera::Initialize(ID3D12Device* device,const std::string& configData) {
 		cameraConfig_.nearClip_,
 		cameraConfig_.farClip_);
 	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
+	viewProjectionInverse_ = MatrixMath::Inverse(viewProjectionMatrix_);
 	rotationMatrix_ = MatrixMath::MakeIdentity4x4();
 
 	followSpeed_ = 0.3f;
@@ -60,6 +61,11 @@ void Camera::Update() {
 		//ゲームカメラの更新
 		UpdateGameCamera();
 	}
+
+	if(isShaking_){
+		//カメラシェイクの更新
+		ShakeCamera();
+	}
 	
 	// クォータニオンを正規化して数値誤差を防ぐ
 	cameraConfig_.transform_.rotate = QuaternionMath::Normalize(cameraConfig_.transform_.rotate);
@@ -74,15 +80,19 @@ void Camera::Update() {
 		cameraConfig_.nearClip_,
 		cameraConfig_.farClip_
 	);
-	orthographicMatrix_ = MatrixMath::MakeOrthographicMatrix(
-		TakeC::WinApp::kScreenWidth / 2.0f * -1.0f,
-		TakeC::WinApp::kScreenHeight / 2.0f * -1.0f,
-		TakeC::WinApp::kScreenWidth / 2.0f,
-		TakeC::WinApp::kScreenHeight / 2.0f,
+	Matrix4x4 orthographicMatrix = MatrixMath::MakeOrthographicMatrix(
+		-TakeC::WinApp::kScreenWidth / 2.0f,  TakeC::WinApp::kScreenHeight / 2.0f,
+		TakeC::WinApp::kScreenWidth / 2.0f, -TakeC::WinApp::kScreenHeight / 2.0f,
 		cameraConfig_.nearClip_,
-		cameraConfig_.farClip_);
+		cameraConfig_.farClip_
+	);
 
-	viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
+	if (projectionChanged) {
+		viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, orthographicMatrix);
+	} else {
+
+		viewProjectionMatrix_ = MatrixMath::Multiply(viewMatrix_, projectionMatrix_);
+	}
 
 	//GPUに転送するパラメータの更新
 	cameraForGPU_->worldPosition = cameraConfig_.transform_.translate;
@@ -94,12 +104,13 @@ void Camera::Update() {
 // シェイクの設定
 //=============================================================================
 
-void Camera::SetShake(float duration, float range) {
+void Camera::RequestShake(ShakeCameraMode shakeMode,float duration, float range) {
 	if (!isShaking_) {
 		isShaking_ = true;
-		shakeDuration_ = duration;                // シェイク継続時間を設定
+		shakeTimer_.Initialize(duration, 0.0f);               // シェイク継続時間を設定
 		shakeRange_ = range;                      // シェイクの振幅を設定
 		originalPosition_ = cameraConfig_.offsetDelta_; // 元の位置を保存
+		shakeCameraMode_ = shakeMode;
 	}
 }
 
@@ -109,21 +120,55 @@ void Camera::SetShake(float duration, float range) {
 
 void Camera::ShakeCamera() {
 	if (isShaking_) {
-		if (shakeDuration_ > 0.0f) {
-			// ランダムな揺れを計算
-			float offsetX = (static_cast<float>(rand()) / RAND_MAX) * shakeRange_ * 2.0f - shakeRange_;
-			float offsetY = (static_cast<float>(rand()) / RAND_MAX) * shakeRange_ * 2.0f - shakeRange_;
-			float offsetZ = (static_cast<float>(rand()) / RAND_MAX) * shakeRange_ * 2.0f - shakeRange_;
-
-			// カメラの位置を揺らす
-			cameraConfig_.offsetDelta_ = originalPosition_ + Vector3{ offsetX, offsetY, offsetZ };
-
-			// 残り時間を減らす
-			shakeDuration_ -= 1.0f;
-		} else {
+		
+		shakeTimer_.Update();
+		if (shakeTimer_.IsFinished()) {
 			// シェイク終了
-			cameraConfig_.offsetDelta_ = originalPosition_; // 元の位置に戻す
 			isShaking_ = false;
+			cameraConfig_.offsetDelta_ = originalPosition_; // 元の位置に戻す
+		} else {
+			// シェイク中
+			float progress = shakeTimer_.GetProgress();
+			float easeProgress = Easing::EaseOutQuad(progress);
+
+			float offsetX, offsetY,offsetZ;
+			
+			switch (shakeCameraMode_) {
+			case ShakeCameraMode::NONE:
+				break;
+			case ShakeCameraMode::HORIZONTAL:
+
+				offsetX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				cameraConfig_.offsetDelta_.x = originalPosition_.x + offsetX;
+				break;
+			case ShakeCameraMode::VERTICAL:
+				offsetY = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				cameraConfig_.offsetDelta_.y = originalPosition_.y + offsetY;
+				break;
+			case ShakeCameraMode::BOTH:
+
+				// ランダムなオフセットを計算
+				offsetX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				offsetY = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				// オフセットを適用
+				cameraConfig_.offsetDelta_.x = originalPosition_.x + offsetX;
+				cameraConfig_.offsetDelta_.y = originalPosition_.y + offsetY;
+				break;
+			case ShakeCameraMode::Z_SHAKE:
+				break;
+			case ShakeCameraMode::FULL_SHAKE:
+				// ランダムなオフセットを計算
+				offsetX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				offsetY = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				offsetZ = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * shakeRange_ * (1.0f - easeProgress);
+				// オフセットを適用
+				cameraConfig_.offsetDelta_.x = originalPosition_.x + offsetX;
+				cameraConfig_.offsetDelta_.y = originalPosition_.y + offsetY;
+				cameraConfig_.offsetDelta_.z = originalPosition_.z + offsetZ;
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
@@ -138,8 +183,8 @@ void Camera::UpdateImGui() {
 	ImGui::DragFloat4("Rotate", &cameraConfig_.transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("offset", &cameraConfig_.offset_.x, 0.01f);
 	ImGui::DragFloat3("offsetDelta", &cameraConfig_.offsetDelta_.x, 0.01f);
-	ImGui::DragFloat("yawRot", &yawRot_, 0.01f);
-	ImGui::DragFloat("pitchRot", &pitchRot_, 0.01f);
+	ImGui::DragFloat("yawRot", &cameraConfig_.yaw_, 0.01f);
+	ImGui::DragFloat("pitchRot", &cameraConfig_.pitch_, 0.01f);
 	ImGui::DragFloat("FovX", &cameraConfig_.fovX_, 0.01f);
 	ImGui::DragFloat("followSpeed", &followSpeed_, 0.01f);
 	ImGui::DragFloat("farClip", &cameraConfig_.farClip_, 1.0f);
@@ -291,16 +336,16 @@ void Camera::UpdateCameraFollow() {
 	float deltaPitch = stick_.y * 0.02f; // X軸回転
 	float deltaYaw = stick_.x * 0.02f;   // Y軸回転
 
-	yawRot_ += deltaYaw;
-	pitchRot_ += deltaPitch;
+	cameraConfig_.yaw_ += deltaYaw;
+	cameraConfig_.pitch_ += deltaPitch;
 
-	pitchRot_ = std::clamp(pitchRot_, -kPitchLimit,kPitchLimit);
+	cameraConfig_.pitch_ = std::clamp(cameraConfig_.pitch_, -kPitchLimit,kPitchLimit);
 
 	// クォータニオンを用いた回転計算
 	Quaternion yawRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
-		Vector3(0, 1, 0), yawRot_);
+		Vector3(0, 1, 0), cameraConfig_.yaw_);
 	Quaternion pitchRotation = QuaternionMath::MakeRotateAxisAngleQuaternion(
-		QuaternionMath::RotateVector(Vector3(1, 0, 0), yawRotation), pitchRot_);
+		QuaternionMath::RotateVector(Vector3(1, 0, 0), yawRotation), cameraConfig_.pitch_);
 
 	//回転の合成
 	rotationDelta = pitchRotation * yawRotation;
@@ -398,11 +443,11 @@ void Camera::UpdateCameraLockOn() {
 		// transform_.rotateからforwardベクトルを算出
 		Vector3 forward = QuaternionMath::RotateVector(Vector3(0,0,1), cameraConfig_.transform_.rotate);
 		//yaw
-		yawRot_ = std::atan2(forward.x, forward.z);
+		cameraConfig_.yaw_ = std::atan2(forward.x, forward.z);
 		//pitch
-		pitchRot_ = std::asin(-forward.y);
+		cameraConfig_.pitch_ = std::asin(-forward.y);
 		//必要ならclampする
-		pitchRot_ = std::clamp(pitchRot_, -kPitchLimit, kPitchLimit);
+		cameraConfig_.pitch_ = std::clamp(cameraConfig_.pitch_, -kPitchLimit, kPitchLimit);
 
 		//状態遷移リクエスト(FOLLOW)
 		cameraStateRequest_ = GameCameraState::FOLLOW;
@@ -465,11 +510,11 @@ void Camera::UpdateCameraEnemyDestroyed() {
 	// transform_.rotateからforwardベクトルを算出
 	Vector3 forward = QuaternionMath::RotateVector(Vector3(0,0,1), cameraConfig_.transform_.rotate);
 	//yaw
-	yawRot_ = std::atan2(forward.x, forward.z);
+	cameraConfig_.yaw_ = std::atan2(forward.x, forward.z);
 	//pitch
-	pitchRot_ = std::asin(-forward.y);
+	cameraConfig_.pitch_ = std::asin(-forward.y);
 	//必要ならclampする
-	pitchRot_ = std::clamp(pitchRot_, -kPitchLimit, kPitchLimit);
+	cameraConfig_.pitch_ = std::clamp(cameraConfig_.pitch_, -kPitchLimit, kPitchLimit);
 
 	// 状態切り替え
 	if (isEZoomEnemy_ == false) {

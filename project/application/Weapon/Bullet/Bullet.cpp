@@ -71,6 +71,7 @@ void Bullet::Update() {
 	//ライフタイムが0以下になったら弾を無効化
 	if (lifeTime_ <= 0.0f) {
 		pointLightData_.enabled_ = 0;
+		pointLightData_.intensity_ = 0.0f;
 		isActive_ = false;
 		return;
 	}
@@ -130,6 +131,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 
 			//パーティクル射出
 			pointLightData_.enabled_ = 0;
+			pointLightData_.intensity_ = 0.0f;
 			isActive_ = false; //弾を無効化
 		}
 	} else if (characterType_ == CharacterType::ENEMY_BULLET) {
@@ -137,6 +139,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 		if (other->GetCharacterType() == CharacterType::PLAYER) {
 			//プレイヤーに当たった場合の処理
 			pointLightData_.enabled_ = 0;
+			pointLightData_.intensity_ = 0.0f;
 			isActive_ = false; //弾を無効化
 		}
 	}
@@ -147,6 +150,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 		//パーティクル射出
 		//particleEmitter_[0]->Emit();
 		pointLightData_.enabled_ = 0;
+		pointLightData_.intensity_ = 0.0f;
 		isActive_ = false; //弾を無効化
 	}
 }
@@ -175,6 +179,7 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos,const Vec
 	
 	lifeTime_ = 2.0f; // 弾のライフタイムを設定
 	pointLightData_.enabled_ = 1;
+	pointLightData_.intensity_ = 120.0f;
 
 	//速度の設定
 	velocity_ = direction_ * speed_;
@@ -193,6 +198,7 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& direction, float sp
 	transform_.rotate.y = angle;
 	lifeTime_ = 2.0f; // 弾のライフタイムを設定
 	pointLightData_.enabled_ = 1;
+	pointLightData_.intensity_ = 120.0f;
 	//速度の設定
 	velocity_ = direction_ * speed_;
 	isActive_ = true;

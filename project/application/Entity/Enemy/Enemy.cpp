@@ -15,6 +15,7 @@
 #include "application/Weapon/Bazooka/Bazooka.h"
 #include "application/Weapon/Launcher/VerticalMissileLauncher.h"
 #include "application/Weapon/MachineGun/MachineGun.h"
+#include "application/Weapon/ShotGun/ShotGun.h"
 #include "application/Entity/WeaponUnit.h"
 
 //========================================================================================================
@@ -34,22 +35,22 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Enemy));
 
-	characterInfo_.transform = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,30.0f} };
-	object3d_->SetScale(characterInfo_.transform.scale);
+	enemyData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>("EnemyData.json");
+	object3d_->SetScale(enemyData_.characterInfo.transform.scale);
 
 	//emitter設定
 	//emitter0
 	particleEmitter_.resize(3);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, characterInfo_.transform.translate }, 5, 1.0f);
+	particleEmitter_[0]->Initialize("EnemyEmitter0", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, enemyData_.characterInfo.transform.translate }, 5, 1.0f);
 	particleEmitter_[0]->SetParticleName("DamageSpark");
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, characterInfo_.transform.translate }, 10, 1.0f);
+	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, enemyData_.characterInfo.transform.translate }, 10, 1.0f);
 	particleEmitter_[1]->SetParticleName("CrossEffect");
 	//emitter2
 	particleEmitter_[2] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[2]->Initialize("EnemyEmitter2", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, characterInfo_.transform.translate }, 10, 1.0f);
+	particleEmitter_[2]->Initialize("EnemyEmitter2", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, enemyData_.characterInfo.transform.translate }, 10, 1.0f);
 	particleEmitter_[2]->SetParticleName("SparkExplosion");
 	//背部エミッターの初期化
 	backEmitter_ = std::make_unique<ParticleEmitter>();
@@ -60,12 +61,15 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	deadEffect_ = std::make_unique<DeadEffect>();
 	deadEffect_->Initialize();
 
-	weapons_.resize(2); // 武器の数を2つに設定
-	weaponTypes_.resize(2);
-	weaponTypes_[R_ARMS] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
-	weaponTypes_[L_ARMS] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
+	//武器の初期化
+	weapons_.resize(WeaponUnit::Size);
+	weaponTypes_.resize(WeaponUnit::Size);
+	for(size_t i = 0; i < weaponTypes_.size(); i++) {
+		weaponTypes_[i] = enemyData_.weaponData[i].weaponType;
+	}
 	chargeShootableUnits_.resize(weapons_.size());
 
+	//デルタタイムの取得
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
 	//bulletSensor_の初期化
@@ -75,7 +79,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 
 	//AIBrainSystemの初期化
 	aiBrainSystem_ = std::make_unique<AIBrainSystem>();
-	aiBrainSystem_->Initialize(&characterInfo_, weapons_.size());
+	aiBrainSystem_->Initialize(&enemyData_.characterInfo, weapons_.size());
 	aiBrainSystem_->SetOrbitRadius(orbitRadius_);
 
 	//InputProviderの初期化
@@ -85,7 +89,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//BehaviorManagerの初期化
 	behaviorManager_ = std::make_unique<BehaviorManager>();
 	behaviorManager_->Initialize(inputProvider_.get());
-	behaviorManager_->InitializeBehaviors(characterInfo_);
+	behaviorManager_->InitializeBehaviors(enemyData_.characterInfo);
 
 	
 }
@@ -97,30 +101,44 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 	//武器の初期化
 	for (int i = 0; i < weapons_.size(); i++) {
 		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
+			//ライフルの武器を初期化
 			weapons_[i] = std::make_unique<Rifle>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
+			
 		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
+			//バズーカの武器を初期化
 			weapons_[i] = std::make_unique<Bazooka>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
+			
 		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
 			//垂直ミサイルの武器を初期化
 			weapons_[i] = std::make_unique<VerticalMissileLauncher>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
+			
 		} else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_MACHINE_GUN) {
 			//マシンガンの武器を初期化
 			weapons_[i] = std::make_unique<MachineGun>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
+			
+		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_SHOTGUN) {
+			//ショットガンの武器を初期化
+			weapons_[i] = std::make_unique<ShotGun>();
+			
 		} else {
-			weapons_[i] = nullptr; // 未使用の武器スロットはnullptrに設定
+			//武器が設定されていない場合はnullptrのまま
+			weapons_[i] = nullptr;
 		}
+
+		weapons_[i]->Initialize(object3dCommon, bulletManager);
+		weapons_[i]->SetOwnerObject(this);
 	}
 
 	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
+	weapons_[R_ARMS]->SetUnitPosition(R_ARMS); // 1つ目の武器のユニットポジションを設定
 	weapons_[L_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
+	weapons_[L_ARMS]->SetUnitPosition(L_ARMS); // 2つ目の武器のユニットポジションを設定
+	weapons_[R_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Left.Tip"); // 3つ目の武器を背中に取り付け
+	weapons_[R_BACK]->SetUnitPosition(R_BACK); // 3つ目の武器のユニットポジションを設定
+	weapons_[R_BACK]->SetRotate({ -1.0f, 0.0f, -2.0f }); // 背中の武器の回転を初期化
+	weapons_[L_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Right.Tip"); // 4つ目の武器を背中に取り付け
+	weapons_[L_BACK]->SetUnitPosition(L_BACK); // 4つ目の武器のユニットポジションを設定
+	weapons_[L_BACK]->SetRotate({ -1.0f, 0.0f, 2.0f }); // 背中の武器の回転を初期化
 }
 
 //========================================================================================================
@@ -129,14 +147,14 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 void Enemy::LoadEnemyData(const std::string& characterJsonPath) {
 
 	//JsonLoaderを使ってEnemyのGameCharacterContextを読み込み
-	characterInfo_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(characterJsonPath);
+	enemyData_.characterInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(characterJsonPath);
 }
 
 void Enemy::SaveEnemyData(const std::string& characterJsonPath) {
 
 	//JsonLoaderを使ってEnemyのGameCharacterContextを保存
-	characterInfo_.characterName = characterJsonPath;
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<PlayableCharacterInfo>(characterJsonPath, characterInfo_);
+	enemyData_.characterInfo.characterName = characterJsonPath;
+	TakeCFrameWork::GetJsonLoader()->SaveJsonData<PlayableCharacterInfo>(characterJsonPath, enemyData_.characterInfo);
 }
 
 //========================================================================================================
@@ -146,8 +164,8 @@ void Enemy::SaveEnemyData(const std::string& characterJsonPath) {
 void Enemy::Update() {
 
 	//stepBoostのインターバルの更新
-	if (characterInfo_.stepBoostInfo.intervalTimer > 0.0f) {
-		characterInfo_.stepBoostInfo.intervalTimer -= deltaTime_;
+	if (enemyData_.characterInfo.stepBoostInfo.intervalTimer > 0.0f) {
+		enemyData_.characterInfo.stepBoostInfo.intervalTimer -= deltaTime_;
 	}
 
 	// RUNNING時のBehavior遷移リクエスト
@@ -170,76 +188,77 @@ void Enemy::Update() {
 	//エネルギーの更新
 	UpdateEnergy();
 	//移動方向の取得
-	characterInfo_.moveDirection = inputProvider_->GetMoveDirection();
+	enemyData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
 	//Behaviorの更新
-	behaviorManager_->Update(characterInfo_);
+	behaviorManager_->Update(enemyData_.characterInfo);
 
 	// 地面に着地したらRUNNINGに戻る
-	if (characterInfo_.onGround == true &&
+	if (enemyData_.characterInfo.onGround == true &&
 		(behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::JUMP ||
 			behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING)) {
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
-	} else if (characterInfo_.onGround == false &&
+	} else if (enemyData_.characterInfo.onGround == false &&
 		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING) {
 		//空中にいる場合はFLOATINGに切り替え
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
 	}
 
 	//攻撃処理
-	if (characterInfo_.isAlive == true) {
+	if (enemyData_.characterInfo.isAlive == true) {
 		UpdateAttack();
 	}
 
 	//ダメージエフェクトの更新
-	if (characterInfo_.isDamaged) {
+	if (enemyData_.characterInfo.isDamaged) {
 		damageEffectTime_ -= deltaTime_;
 		particleEmitter_[0]->Emit();
 		if (damageEffectTime_ <= 0.0f) {
-			characterInfo_.isDamaged = false;
+			enemyData_.characterInfo.isDamaged = false;
 		}
 	}
 
-	if (characterInfo_.health <= 0.0f) {
+	if (enemyData_.characterInfo.health <= 0.0f) {
 		//死亡状態のリクエスト
-		characterInfo_.isAlive = false;
+		enemyData_.characterInfo.isAlive = false;
 		behaviorManager_->RequestBehavior(Behavior::DEAD);
 		deadEffect_->Start();
 	}
 
 	//bulletSensorの更新
-	bulletSensor_->SetTranslate(characterInfo_.transform.translate);
+	bulletSensor_->SetTranslate(enemyData_.characterInfo.transform.translate);
 	bulletSensor_->Update();
 
 	//AIの更新
-	float distance = (characterInfo_.focusTargetPos - characterInfo_.transform.translate).Length();
+	float distance = (enemyData_.characterInfo.focusTargetPos - enemyData_.characterInfo.transform.translate).Length();
 	aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
 	aiBrainSystem_->SetDistanceToTarget(distance);
 	aiBrainSystem_->Update();
 
-	if (characterInfo_.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING || behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
+	if (enemyData_.characterInfo.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING || behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
 		backEmitter_->SetIsEmit(true);
 	} else {
 		backEmitter_->SetIsEmit(false);
 	}
 	
 	//Quaternionからオイラー角に変換
-	Vector3 eulerRotate = QuaternionMath::ToEuler(characterInfo_.transform.rotate);
-	object3d_->SetTranslate(characterInfo_.transform.translate);
+	Vector3 eulerRotate = QuaternionMath::ToEuler(enemyData_.characterInfo.transform.rotate);
+	object3d_->SetTranslate(enemyData_.characterInfo.transform.translate);
 	object3d_->SetRotate(eulerRotate);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
 	//武器の更新
-	weapons_[0]->SetTarget(characterInfo_.focusTargetPos);
-	weapons_[0]->SetTargetVelocity(focusTargetVelocity_);
-	weapons_[0]->Update();
-	weapons_[1]->SetTarget(characterInfo_.focusTargetPos);
-	weapons_[1]->SetTargetVelocity(focusTargetVelocity_);
-	weapons_[1]->Update();
+	for(auto& weapon : weapons_) {
+		if(weapon) {
+			weapon->SetTarget(enemyData_.characterInfo.focusTargetPos);
+			weapon->SetTargetVelocity(focusTargetVelocity_);
+			weapon->Update();
+		}
+	}
 
 	//パーティクルエミッターの更新
 	for (auto& emitter : particleEmitter_) {
-		emitter->SetTranslate(characterInfo_.transform.translate);
+		emitter->SetTranslate(enemyData_.characterInfo.transform.translate);
 		emitter->Update();
 	}
 
@@ -249,15 +268,15 @@ void Enemy::Update() {
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
 	backEmitter_->Update();
 	//死亡エフェクトの更新
-	deadEffect_->Update(characterInfo_.transform.translate);
+	deadEffect_->Update(enemyData_.characterInfo.transform.translate);
 
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark")->SetEmitterPosition(characterInfo_.transform.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(characterInfo_.transform.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(characterInfo_.transform.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark")->SetEmitterPosition(enemyData_.characterInfo.transform.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(enemyData_.characterInfo.transform.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(enemyData_.characterInfo.transform.translate);
 
 	
 	// 着地判定の毎フレームリセット
-	characterInfo_.onGround = false; 
+	enemyData_.characterInfo.onGround = false; 
 
 }
 
@@ -265,34 +284,38 @@ void Enemy::UpdateImGui() {
 
 #ifdef _DEBUG
 	ImGui::Begin("Enemy");
-	ImGui::DragFloat3("Translate", &characterInfo_.transform.translate.x, 0.01f);
-	ImGui::DragFloat3("Scale", &characterInfo_.transform.scale.x, 0.01f);
-	ImGui::DragFloat4("Rotate", &characterInfo_.transform.rotate.x, 0.01f);
+	ImGui::DragFloat3("Translate", &enemyData_.characterInfo.transform.translate.x, 0.01f);
+	ImGui::DragFloat3("Scale", &enemyData_.characterInfo.transform.scale.x, 0.01f);
+	ImGui::DragFloat4("Rotate", &enemyData_.characterInfo.transform.rotate.x, 0.01f);
 	ImGui::Separator();
-	ImGui::DragFloat("Health", &characterInfo_.health, 1.0f, 0.0f, characterInfo_.maxHealth);
-	ImGui::DragFloat("Energy", &characterInfo_.energyInfo.energy, 1.0f, 0.0f, characterInfo_.energyInfo.maxEnergy);
-	ImGui::DragFloat3("Velocity", &characterInfo_.velocity.x, 0.01f);
-	ImGui::DragFloat3("MoveDirection", &characterInfo_.moveDirection.x, 0.01f);
-	ImGui::Checkbox("OnGround", &characterInfo_.onGround);
+	ImGui::DragFloat("Health", &enemyData_.characterInfo.health, 1.0f, 0.0f, enemyData_.characterInfo.maxHealth);
+	ImGui::DragFloat("Energy", &enemyData_.characterInfo.energyInfo.energy, 1.0f, 0.0f, enemyData_.characterInfo.energyInfo.maxEnergy);
+	ImGui::DragFloat3("Velocity", &enemyData_.characterInfo.velocity.x, 0.01f);
+	ImGui::DragFloat3("MoveDirection", &enemyData_.characterInfo.moveDirection.x, 0.01f);
+	ImGui::Checkbox("OnGround", &enemyData_.characterInfo.onGround);
 
 	// ダメージ処理テスト用ボタン
 	if(ImGui::Button("Damage 1000")) {
-		characterInfo_.health -= 1000.0f;
-		characterInfo_.isDamaged = true;
+		enemyData_.characterInfo.health -= 1000.0f;
+		enemyData_.characterInfo.isDamaged = true;
 		damageEffectTime_ = 0.5f;
 		particleEmitter_[1]->Emit();
 	}
 	//データ保存ボタン
 	if (ImGui::Button("Save Enemy Data")) {
-		SaveEnemyData(characterInfo_.characterName);
+		SaveEnemyData(enemyData_.characterInfo.characterName);
 	}
 	ImGui::Separator();
 	bulletSensor_->UpdateImGui();
 	behaviorManager_->UpdateImGui();
 	aiBrainSystem_->UpdateImGui();
 	collider_->UpdateImGui("Enemy");
-	weapons_[0]->UpdateImGui();
-	weapons_[1]->UpdateImGui();
+	for(auto& weapon : weapons_) {
+		if(weapon) {
+			weapon->UpdateImGui();
+		}
+	}
+	
 	ImGui::End();
 #endif // _DEBUG
 }
@@ -308,6 +331,13 @@ void Enemy::Draw() {
 		weapon->Draw();
 	}
 
+}
+
+void Enemy::DrawShadow(const LightCameraInfo& lightCamera) {
+	object3d_->DrawShadow(lightCamera);
+	for (const auto& weapon : weapons_) {
+		weapon->DrawShadow(lightCamera);
+	}
 }
 
 void Enemy::DrawCollider() {
@@ -335,21 +365,21 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 		Bullet* bullet = dynamic_cast<Bullet*>(other);
 		//プレイヤーの弾に当たった場合の処理
 		particleEmitter_[1]->Emit();
-		characterInfo_.isDamaged = true;
+		enemyData_.characterInfo.isDamaged = true;
 		//ダメージを受けた時のエフェクト時間を設定
 		damageEffectTime_ = 0.5f;
 		//体力を減らす
-		characterInfo_.health -= bullet->GetDamage();
+		enemyData_.characterInfo.health -= bullet->GetDamage();
 	}
 	if (other->GetCharacterType() == CharacterType::PLAYER_MISSILE) {
 		//プレイヤーのミサイルに当たった場合の処理
 		//particleEmitter_[2]->Emit();
-		characterInfo_.isDamaged = true;
+		enemyData_.characterInfo.isDamaged = true;
 		//ダメージを受けた時のエフェクト時間を設定
 		damageEffectTime_ = 0.5f;
 		//体力を減らす
 		VerticalMissile* missile = dynamic_cast<VerticalMissile*>(other);
-		characterInfo_.health -= missile->GetDamage();
+		enemyData_.characterInfo.health -= missile->GetDamage();
 	}
 
 
@@ -359,18 +389,18 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 		if (collider_->GetSurfaceType() == SurfaceType::BOTTOM) {
 
 			//playerが下面で接触している場合は地面にいると判定
-			characterInfo_.onGround = true;
+			enemyData_.characterInfo.onGround = true;
 			if (BoxCollider* box = dynamic_cast<BoxCollider*>(collider_.get())) {
 				Vector3 normal = box->GetMinAxis();
 				float penetrationDepth = box->GetMinPenetration();
 
 				//貫通している分だけ押し戻す
 				//過剰な押し戻しを防ぐために、penetrationDepthを2で割ると良い感じになる
-				characterInfo_.transform.translate += -normal * penetrationDepth * 0.5f;
+				enemyData_.characterInfo.transform.translate += -normal * penetrationDepth * 0.5f;
 
 				//接触面方向の速度を打ち消す
-				float velocityAlongNormal = Vector3Math::Dot(characterInfo_.velocity, normal);
-				characterInfo_.velocity -= normal * velocityAlongNormal;
+				float velocityAlongNormal = Vector3Math::Dot(enemyData_.characterInfo.velocity, normal);
+				enemyData_.characterInfo.velocity -= normal * velocityAlongNormal;
 
 			}
 
@@ -385,11 +415,11 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 				float penetrationDepth = box->GetMinPenetration();
 
 				//貫通している分だけ押し戻す
-				characterInfo_.transform.translate += -normal * penetrationDepth;
+				enemyData_.characterInfo.transform.translate += -normal * penetrationDepth;
 
 				//接触面方向の速度を打ち消す
-				float dot = Vector3Math::Dot(characterInfo_.velocity, normal);
-				characterInfo_.velocity -= normal * dot;
+				float dot = Vector3Math::Dot(enemyData_.characterInfo.velocity, normal);
+				enemyData_.characterInfo.velocity -= normal * dot;
 
 			}
 
@@ -397,8 +427,8 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 
 		} else if (collider_->GetSurfaceType() == SurfaceType::TOP) {
 			//天井に接触した場合
-			if (characterInfo_.velocity.y > 0.0f) {
-				characterInfo_.velocity.y = 0.0f;
+			if (enemyData_.characterInfo.velocity.y > 0.0f) {
+				enemyData_.characterInfo.velocity.y = 0.0f;
 			}
 
 			collider_->SetColor({ 1.0f,1.0f,0.0f,1.0f }); // コライダーの色を黄色に変更
@@ -425,12 +455,12 @@ void Enemy::UpdateAttack() {
 		if (chargeShootableUnits_[i] == true) {
 			//チャージ撃ち可能なユニットの処理
 			auto* weapon = weapons_[i].get();
-			if (characterInfo_.isChargeShooting == true) {
+			if (enemyData_.characterInfo.isChargeShooting == true) {
 				// チャージ撃ち中の処理
 				chargeShootTimer_ -= deltaTime_;
 				if (chargeShootTimer_ <= 0.0f) {
 					weapon->Attack();
-					characterInfo_.isChargeShooting = false; // チャージ撃ち中フラグをリセット
+					enemyData_.characterInfo.isChargeShooting = false; // チャージ撃ち中フラグをリセット
 					chargeShootTimer_ = 0.0f; // タイマーをリセット
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 					chargeShootableUnits_[i] = false; // チャージ撃ち可能なユニットのマークをリセット
@@ -464,7 +494,7 @@ void Enemy::WeaponAttack(int weaponIndex) {
 		//チャージ攻撃不可:通常攻撃
 		if (weapon->StopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
 			// 停止撃ち専用:硬直処理を行う
-			characterInfo_.isChargeShooting = true; // チャージ撃ち中フラグを立てる
+			enemyData_.characterInfo.isChargeShooting = true; // チャージ撃ち中フラグを立てる
 			chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
 			chargeShootableUnits_[weaponIndex] = true; // チャージ撃ち可能なユニットとしてマーク
 
@@ -507,21 +537,21 @@ bool Enemy::ShouldReleaseAttack(int weaponIndex) {
 
 void Enemy::UpdateEnergy() {
 
-	float& overheatTimer = characterInfo_.overHeatInfo.overheatTimer; // オーバーヒートタイマー
-	float maxEnergy = characterInfo_.energyInfo.maxEnergy; // 最大エネルギー
+	float& overheatTimer = enemyData_.characterInfo.overHeatInfo.overheatTimer; // オーバーヒートタイマー
+	float maxEnergy = enemyData_.characterInfo.energyInfo.maxEnergy; // 最大エネルギー
 
 	//オーバーヒートしているかどうか
-	if (!characterInfo_.overHeatInfo.isOverheated) {
+	if (!enemyData_.characterInfo.overHeatInfo.isOverheated) {
 
-		if (characterInfo_.energyInfo.energy <= 0.0f) {
+		if (enemyData_.characterInfo.energyInfo.energy <= 0.0f) {
 			// エネルギーが0以下になったらオーバーヒート状態にする
-			characterInfo_.overHeatInfo.isOverheated = true;
-			overheatTimer = characterInfo_.overHeatInfo.overheatDuration; // オーバーヒートのタイマーを設定
-			characterInfo_.energyInfo.energy = 0.0f; // エネルギーを0にする
+			enemyData_.characterInfo.overHeatInfo.isOverheated = true;
+			overheatTimer = enemyData_.characterInfo.overHeatInfo.overheatDuration; // オーバーヒートのタイマーを設定
+			enemyData_.characterInfo.energyInfo.energy = 0.0f; // エネルギーを0にする
 		}
 
 		// エネルギーの回復
-		if (characterInfo_.energyInfo.energy < maxEnergy) {
+		if (enemyData_.characterInfo.energyInfo.energy < maxEnergy) {
 
 			//浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
 			if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING ||
@@ -530,9 +560,9 @@ void Enemy::UpdateEnergy() {
 				return; // エネルギーの回復を行わない
 			}
 
-			characterInfo_.energyInfo.energy += characterInfo_.energyInfo.recoveryRate * deltaTime_;
-			if (characterInfo_.energyInfo.energy > maxEnergy) {
-				characterInfo_.energyInfo.energy = maxEnergy;
+			enemyData_.characterInfo.energyInfo.energy += enemyData_.characterInfo.energyInfo.recoveryRate * deltaTime_;
+			if (enemyData_.characterInfo.energyInfo.energy > maxEnergy) {
+				enemyData_.characterInfo.energyInfo.energy = maxEnergy;
 			}
 		}
 
@@ -543,9 +573,9 @@ void Enemy::UpdateEnergy() {
 			overheatTimer -= deltaTime_;
 			if (overheatTimer <= 0.0f) {
 				// オーバーヒートが終了したらエネルギーを半分回復
-				characterInfo_.energyInfo.energy = maxEnergy / 2.0f;
+				enemyData_.characterInfo.energyInfo.energy = maxEnergy / 2.0f;
 				// オーバーヒート状態を解除
-				characterInfo_.overHeatInfo.isOverheated = false;
+				enemyData_.characterInfo.overHeatInfo.isOverheated = false;
 			}
 		}
 

@@ -73,6 +73,12 @@ namespace TakeC {
 		/// <returns>終了かどうか</returns>
 		bool ProcessMessage();
 
+		// --- 新規追加 API ---
+		// フルスクリーンに切り替える。true でフルスクリーン、false でウィンドウモードに復帰
+		void SetFullscreen(bool enable);
+		// トグル
+		void ToggleFullscreen();
+
 	public:
 
 		//============================================================================
@@ -92,11 +98,6 @@ namespace TakeC {
 		/// 描画位置のオフセットY取得
 		float GetOffsetY() const { return offsetY_; }
 
-		/// ビューポートの取得
-		D3D12_VIEWPORT GetViewport() const;
-		/// ウィンドウのクライアント領域のサイズを取得
-		D3D12_RECT GetScissorRect() const;
-
 	private:
 
 		//ウィンドウクラス
@@ -107,6 +108,12 @@ namespace TakeC {
 		HWND hwnd_;
 		//debugController
 		Microsoft::WRL::ComPtr<ID3D12Debug1> debugController_;
+
+		// --- フルスクリーン用に保持する以前の状態 ---
+		bool isFullscreen_ = false;
+		LONG_PTR prevStyle_ = 0;
+		LONG_PTR prevExStyle_ = 0;
+		RECT prevWindowRect_{};
 
 		//描画位置のオフセット
 		float offsetX_ = 0.0f;

@@ -1,15 +1,20 @@
 #include "Rifle.h"
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/base/ImGuiManager.h"
+#include "engine/Camera/CameraManager.h"
 #include "engine/math/MatrixMath.h"
 #include "application/Weapon/Bullet/BulletManager.h"
 
 //===================================================================================
 //　初期化処理
 //===================================================================================
-void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManager) {
+void Rifle::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
 
 	bulletManager_ = bulletManager;
+
+	//SE読み込み
+	shotSE_ = AudioManager::GetInstance().LoadSound("SE/ShotRifle.mp3");
+	seVolume_ = 0.05f;
 
 	//武器の初期化
 	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Rifle.json");
@@ -19,13 +24,25 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManag
 	object3d_->Initialize(object3dCommon, weaponData_.modelFilePath);
 
 	// ライフルの色を設定
-	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
-	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.8f);
+	//object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
+	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.01f);
 
 
 	weaponState_.attackInterval = rifleInfo_.burstShotInfo.kInterval; // 連射の間隔を攻撃間隔に設定
 	weaponState_.bulletCount = weaponData_.config.maxMagazineCount;
 	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定
+
+	muzzleFlashEmitter_ = std::make_unique<ParticleEmitter>();
+	muzzleFlashEmitter_->Initialize("RifleMuzzleFlashEmitter",
+		object3d_->GetTransform(),
+		10, 0.01f);
+	muzzleFlashEmitter_->SetParticleName("RifleMuzzleFlash");
+
+	muzzleFlashEmitter2_ = std::make_unique<ParticleEmitter>();
+	muzzleFlashEmitter2_->Initialize("RifleMuzzleFlashEmitter2",
+		object3d_->GetTransform(),
+		10, 0.01f);
+	muzzleFlashEmitter2_->SetParticleName("RifleMuzzleFlash2");
 }
 
 //===================================================================================
@@ -107,6 +124,14 @@ void Rifle::Update() {
 	}
 
 	object3d_->Update();
+
+	muzzleFlashEmitter_->SetTranslate(object3d_->GetWorldPosition());
+	muzzleFlashEmitter_->Update();
+	muzzleFlashEmitter2_->SetTranslate(object3d_->GetWorldPosition());
+	muzzleFlashEmitter2_->Update();
+
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("RifleMuzzleFlash")->SetEmitterPosition(object3d_->GetWorldPosition());
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("RifleMuzzleFlash2")->SetEmitterPosition(object3d_->GetWorldPosition());
 }
 
 //===================================================================================
@@ -181,6 +206,9 @@ void Rifle::Attack() {
 		weaponState_.isReloading = true; // 弾がなくなったらリロード中にする
 		weaponState_.reloadTime = weaponData_.config.maxReloadTime; // リロード時間をリセット
 	}
+	muzzleFlashEmitter_->Emit();
+	muzzleFlashEmitter2_->Emit();
+	AudioManager::GetInstance().SoundPlayWave(shotSE_, seVolume_);
 	//攻撃間隔のリセット
 	weaponState_.attackInterval = weaponData_.config.attackInterval;
 }

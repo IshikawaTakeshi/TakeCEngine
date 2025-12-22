@@ -7,9 +7,9 @@
         "homingRate": 0.0,
         "isStopShootOnly": true,
         "kAttackInterval": 2.0,
-        "magazineCount_": 5,
+        "magazineCount_": 1,
         "maxBulletCount": 50,
-        "maxReloadTime": 4.0,
+        "maxReloadTime": 2.0,
         "power": 1500.0,
         "requiredChargeTime": 0.0
     },

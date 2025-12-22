@@ -1,4 +1,4 @@
-#include "PostEffect/FullScreen.hlsli"
+#include "../PostEffect/FullScreen.hlsli"
 
 Texture2D<float4> gTexture : register(t0);
 SamplerState gSampler : register(s0);

@@ -28,7 +28,9 @@ void MyGame::Initialize(const std::wstring& titleName) {
 
 	//影描画用レンダーテクスチャの生成
 	shadowRenderTexture_ = std::make_unique<RenderTexture>();
-	shadowRenderTexture_->Initialize(directXCommon_.get(), srvManager_.get());
+	shadowRenderTexture_->Initialize(directXCommon_.get(), srvManager_.get(),
+		1024 * 4, 1024 * 4
+	);
 	//PostEffectManagerに影描画用レンダーテクスチャをセット
 	postEffectManager_->SetLightCameraRenderTexture(shadowRenderTexture_.get());
 
@@ -50,17 +52,17 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
 	postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
 	//postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
-	postEffectManager_->InitializeEffect("DepthBasedOutline",     L"PostEffect/DepthBasedOutline.CS.hlsl");
-	postEffectManager_->InitializeEffect("ShadowMapEffect", L"PostEffect/ShadowMapEffect.CS.hlsl");
+	postEffectManager_->InitializeEffect("DepthBasedOutline", L"PostEffect/DepthBasedOutline.CS.hlsl");
+	postEffectManager_->InitializeEffect("ShadowMapEffect",   L"PostEffect/ShadowMapEffect.CS.hlsl");
 
 	CollisionManager::GetInstance().Initialize(directXCommon_.get());
 
 	//最初のシーンを設定
 #ifdef _DEBUG
 
-	SceneManager::GetInstance().ChangeScene("TITLE",0.0f);
+	sceneManager_->ChangeScene("TITLE",0.0f);
 #else
-	SceneManager::GetInstance()->ChangeScene("TITLE", 0.0f);
+	sceneManager_->ChangeScene("TITLE", 0.0f);
 #endif // _DEBUG
 
 
@@ -108,15 +110,13 @@ void MyGame::Update() {
 //====================================================================
 
 void MyGame::Draw() {
+	
 	//===========================================
 	// 1. シャドウパス
 	//===========================================
 	shadowRenderTexture_->ClearRenderTarget();
 	srvManager_->SetDescriptorHeap();
-	//sceneManager_->DrawShadow();  // ライトカメラ視点で深度のみ描画
-
-	// バリア：シャドウマップを SRV として読めるようにする
-	shadowRenderTexture_->TransitionToSRV();
+	sceneManager_->DrawShadow();  // ライトカメラ視点で深度のみ描画
 
 	//===========================================
 	// 2. メインパス（シーン描画）
@@ -125,6 +125,8 @@ void MyGame::Draw() {
 	srvManager_->SetDescriptorHeap();
 	sceneManager_->DrawObject();  // 通常のオブジェクト描画
 	sceneManager_->DrawSprite();  // スプライト描画
+
+	
 
 	//===========================================
 	// 3. ポストエフェクト
@@ -152,7 +154,7 @@ void MyGame::Draw() {
 	// 5. 次フレーム準備
 	//===========================================
 	// シャドウマップを DEPTH_WRITE 状態に戻す（次フレーム用）
-	shadowRenderTexture_->TransitionToDepthWrite();
+	//shadowRenderTexture_->TransitionToDepthWrite();
 
 	TakeC::ModelManager::GetInstance().ApplyModelReloads();
 }
@@ -172,6 +174,7 @@ void MyGame::LoadModel() {
 	TakeC::ModelManager::GetInstance().LoadModel("plane.gltf","skyBox_blueSky.dds");
 	TakeC::ModelManager::GetInstance().LoadModel("player_singleMesh.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("player_MultiMesh.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Enemy.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("cube.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("ICOBall.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Rifle.gltf");
@@ -246,4 +249,6 @@ void MyGame::LoadParticlePreset() {
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(&ParticleCommon::GetInstance(), "MissileExplosion.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(&ParticleCommon::GetInstance(), "DeadExplosionEffect.json");
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(&ParticleCommon::GetInstance(), "DeadSmokeEffect.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(&ParticleCommon::GetInstance(), "RifleMuzzleFlash.json");
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(&ParticleCommon::GetInstance(), "RifleMuzzleFlash2.json");
 }

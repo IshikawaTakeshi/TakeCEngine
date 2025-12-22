@@ -32,8 +32,7 @@ void ShadowMapEffect::Initialize(
 	//初期値設定
 	shadowMapEffectInfo_->isActive = true;
 	shadowMapEffectInfo_->bias = 0.005f;
-	shadowMapEffectInfo_->normalBias = 0.05f;
-	shadowMapEffectInfo_->pcfRange = 1.0f;
+	shadowMapEffectInfo_->pcfRange = 2.5f;
 }
 
 //=========================================================
@@ -44,7 +43,6 @@ void ShadowMapEffect::UpdateImGui() {
 	if(ImGui::TreeNode("ShadowMapEffect")){
 		ImGui::Checkbox("Enable", &shadowMapEffectInfo_->isActive);
 		ImGui::SliderFloat("Bias", &shadowMapEffectInfo_->bias, 0.0f, 0.05f, "%.5f");
-		ImGui::SliderFloat("NormalBias", &shadowMapEffectInfo_->normalBias, 0.0f, 0.2f, "%.5f");
 		ImGui::SliderFloat("PCFRange", &shadowMapEffectInfo_->pcfRange, 0.0f, 5.0f, "%.5f");
 		ImGui::TreePop();
 	}
@@ -57,10 +55,10 @@ void ShadowMapEffect::Dispatch() {
 
 
 	//DEPTH_WRITE >> NON_PIXEL_SHADER_RESOURCE
-	/*ResourceBarrier::GetInstance().Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-		lightCameraDepthTextureResource_.Get());*/
+		lightCameraDepthTextureResource_.Get());
 
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
@@ -81,7 +79,7 @@ void ShadowMapEffect::Dispatch() {
 	//outputTex
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gOutputTexture"), outputTexUavIndex_);
 	//slightCameraDepth
-	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gShadowMap"), lightCameraDepthTextureSrvIndex_);
+	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gShadowMapDepth"), lightCameraDepthTextureSrvIndex_);
 	//sceneDepth
 	srvManager_->SetComputeRootDescriptorTable(computePSO_->GetComputeBindResourceIndex("gSceneDepth"), depthTextureSrvIndex_);
 
@@ -112,10 +110,10 @@ void ShadowMapEffect::Dispatch() {
 		outputResource_.Get());
 
 	//NON_PIXEL_SHADER_RESOURCE >> DEPTH_WRITE
-	/*ResourceBarrier::GetInstance().Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		lightCameraDepthTextureResource_.Get());*/
+		lightCameraDepthTextureResource_.Get());
 
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,

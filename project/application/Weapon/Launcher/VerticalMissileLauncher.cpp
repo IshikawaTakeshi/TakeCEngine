@@ -8,6 +8,10 @@
 //　初期化
 //================================================================================
 void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
+
+	shotSE_ = AudioManager::GetInstance().LoadSound("SE/launcher1.mp3");
+	seVolume_ = 0.1f;
+
 	bulletManager_ = bulletManager;
 
 	//武器の初期化
@@ -77,6 +81,7 @@ void VerticalMissileLauncher::Update() {
 				weaponState_.isReloading = true; // 弾がなくなったらリロード中にする
 				weaponState_.reloadTime = weaponData_.config.maxReloadTime; // リロード時間をリセット
 			}
+			AudioManager::GetInstance().SoundPlayWave(shotSE_, seVolume_);
 
 			burstShotState_.count--;
 			if (burstShotState_.count > 0) {

@@ -1,6 +1,7 @@
 #include "WinApp.h"
-
+#include "engine/Input/Input.h"
 #include <cassert>
+
 #pragma region imgui
 #ifdef _DEBUG
 #include "../externals/imgui/imgui.h"
@@ -9,7 +10,6 @@
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif // DEBUG
-#pragma endregion
 
 //静的メンバ変数の初期化
 float TakeC::WinApp::widthPercent_ = float(WinApp::kScreenWidth) / WinApp::kDebugScreenWidth_;
@@ -87,35 +87,6 @@ bool TakeC::WinApp::ProcessMessage() {
 }
 
 //=======================================================================
-//			ビューポートの取得
-//=======================================================================
-
-D3D12_VIEWPORT TakeC::WinApp::GetViewport() const {
-	D3D12_VIEWPORT viewport = {};
-	viewport.TopLeftX = offsetX_;
-	viewport.TopLeftY = offsetY_;
-	viewport.Width = static_cast<float>(kScreenWidth);
-	viewport.Height = static_cast<float>(kScreenHeight);
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	return viewport;
-}
-
-//=======================================================================
-//			ウィンドウのクライアント領域のサイズを取得
-//=======================================================================
-
-D3D12_RECT TakeC::WinApp::GetScissorRect() const {
-	
-	D3D12_RECT scissorRect = {};
-	scissorRect.left = static_cast<LONG>(offsetX_);
-	scissorRect.top = static_cast<LONG>(offsetY_);
-	scissorRect.right = static_cast<LONG>(kScreenWidth + offsetX_);
-	scissorRect.bottom = static_cast<LONG>(kScreenHeight + offsetY_);
-	return scissorRect;
-}
-
-//=======================================================================
 //ウィンドウプロシージャ
 //=======================================================================
 
@@ -134,6 +105,19 @@ LRESULT CALLBACK TakeC::WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, L
 		//OSに対して、アプリの終了を伝える
 		PostQuitMessage(0);
 		return 0;
+
+		// F11 でフルスクリーン切替
+	case WM_KEYDOWN:
+		if (TakeC::Input::GetInstance().PushKey(DIK_F11)) {
+			// hwnd を使ってインスタンスのフラグを取得するため、ウィンドウユーザーデータにポインタを設定しておく必要があります。
+			// ここでは SetWindowLongPtr / GetWindowLongPtr を使って保存されているポインタを取得する想定です。
+			LONG_PTR ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);
+			if (ptr) {
+				WinApp* app = reinterpret_cast<WinApp*>(ptr);
+				app->ToggleFullscreen();
+			}
+		}
+		break;
 	}
 
 	//標準のメッセージ処理を行う
@@ -166,6 +150,62 @@ void TakeC::WinApp::CreateGameWindow(const wchar_t title[]) {
 		nullptr                 //オプション
 	);
 
+	// ウィンドウインスタンスを WindowLongPtr に保存（WindowProc で参照するため）
+	SetWindowLongPtr(hwnd_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+
 	//ウィンドウを表示する
 	ShowWindow(hwnd_, SW_SHOW);
+}
+
+//=======================================================================
+//            フルスクリーン切替の実装
+//=======================================================================
+
+void TakeC::WinApp::SetFullscreen(bool enable) {
+	if (enable == isFullscreen_) {
+		return; // 既にその状態
+	}
+
+	if (enable) {
+		// ウィンドウモード -> フルスクリーン（ボーダレス）
+		// 現在のウィンドウスタイル/位置を保存
+		prevStyle_ = GetWindowLongPtr(hwnd_, GWL_STYLE);
+		prevExStyle_ = GetWindowLongPtr(hwnd_, GWL_EXSTYLE);
+		GetWindowRect();
+
+		// モニタのワークエリアを取得（モニタ全体を使いたければ rcMonitor を使う）
+		HMONITOR hMon = MonitorFromWindow(hwnd_, MONITOR_DEFAULTTONEAREST);
+		MONITORINFO mi = { sizeof(mi) };
+		GetMonitorInfo(hMon, &mi);
+		RECT rc = mi.rcMonitor; // 全画面
+		//RECT rc = mi.rcWork; // タスクバーを除いたワークエリア
+
+		// スタイルを取り除く
+		SetWindowLongPtr(hwnd_, GWL_STYLE, WS_VISIBLE | WS_POPUP);
+		SetWindowLongPtr(hwnd_, GWL_EXSTYLE, prevExStyle_ & ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
+
+		// 大きさと位置をモニタ全面に
+		SetWindowPos(hwnd_, HWND_TOP,
+			rc.left, rc.top,
+			rc.right - rc.left, rc.bottom - rc.top,
+			SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+
+		isFullscreen_ = true;
+	}
+	else {
+		// フルスクリーン -> ウィンドウモードに戻す
+		SetWindowLongPtr(hwnd_, GWL_STYLE, prevStyle_);
+		SetWindowLongPtr(hwnd_, GWL_EXSTYLE, prevExStyle_);
+		SetWindowPos(hwnd_, HWND_TOP,
+			wrc_.left, wrc_.top,
+			wrc_.right,
+			wrc_.bottom,
+			SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+
+		isFullscreen_ = false;
+	}
+}
+
+void TakeC::WinApp::ToggleFullscreen() {
+	SetFullscreen(!isFullscreen_);
 }

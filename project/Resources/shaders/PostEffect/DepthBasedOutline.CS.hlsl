@@ -1,6 +1,6 @@
-#include "PostEffect/Fullscreen.hlsli"
-#include "PostEffect/Outline.hlsli"
-#include "CameraData.hlsli"
+#include "../PostEffect/Fullscreen.hlsli"
+#include "../PostEffect/Outline.hlsli"
+#include "../CameraData.hlsli"
 
 struct DepthBasedOutlineInfo {
 	float4 Color;

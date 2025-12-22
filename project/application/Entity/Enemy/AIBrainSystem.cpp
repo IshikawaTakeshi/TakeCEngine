@@ -28,8 +28,8 @@ void AIBrainSystem::Update() {
 	actionScores_[Action::ATTACK_LA] = attackScores_[1]; // 左手武器のスコア
 
 	//TODO: Enemyの肩武器の設定
-	//actionScores_[Action::ATTACK_RB] = attackScores_[2]; // 右肩武器のスコア
-	//actionScores_[Action::ATTACK_LB] = attackScores_[3]; // 左肩武器のスコア
+	actionScores_[Action::ATTACK_RB] = attackScores_[2]; // 右肩武器のスコア
+	actionScores_[Action::ATTACK_LB] = attackScores_[3]; // 左肩武器のスコア
 
 	bestAction_ = ChooseBestAction();
 }

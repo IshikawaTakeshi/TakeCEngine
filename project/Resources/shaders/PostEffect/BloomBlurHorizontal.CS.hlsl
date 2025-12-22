@@ -1,4 +1,4 @@
-#include "PostEffect/BloomEffectInfo.hlsli"
+#include "../PostEffect/BloomEffectInfo.hlsli"
 
 //================================================================
 // BloomBlurHorizontal.CS.hlsl - 水平方向ガウシアンブラー
