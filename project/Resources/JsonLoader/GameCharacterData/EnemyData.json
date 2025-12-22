@@ -21,6 +21,7 @@
             "z": -135.4304656982422
         },
         "health": 5000.0,
+        "maxHealth": 5000.0,
         "isAlive": true,
         "isChargeShooting": false,
         "isDamaged": false,
@@ -33,7 +34,6 @@
             "useEnergy": 150.0
         },
         "kMaxMoveSpeed": 120.0,
-        "maxHealth": 10000.0,
         "modelFilePath": "Enemy.gltf",
         "moveDirection": {
             "x": 0.0,
