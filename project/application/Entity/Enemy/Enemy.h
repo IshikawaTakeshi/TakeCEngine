@@ -72,29 +72,29 @@ public:
 	BulletSensor* GetBulletSensor() const { return bulletSensor_.get(); }
 
 	//移動方向ベクトルの取得
-	const Vector3& GetMoveDirection() const { return characterInfo_.moveDirection; }
+	const Vector3& GetMoveDirection() const { return enemyData_.characterInfo.moveDirection; }
 	//移動ベクトルの取得
-	const Vector3& GetVelocity() const { return characterInfo_.velocity; }
+	const Vector3& GetVelocity() const { return enemyData_.characterInfo.velocity; }
 	//transformの取得
-	const QuaternionTransform& GetTransform() const { return characterInfo_.transform; }
+	const QuaternionTransform& GetTransform() const { return enemyData_.characterInfo.transform; }
 
 	//体力の取得
-	float GetHealth() const { return characterInfo_.health; }
+	float GetHealth() const { return enemyData_.characterInfo.health; }
 	//最大体力の取得
-	const float GetMaxHealth() const { return characterInfo_.maxHealth; }
+	const float GetMaxHealth() const { return enemyData_.characterInfo.maxHealth; }
 	//フォーカス対象の座標を取得
-	const Vector3& GetFocusTargetPos() const { return characterInfo_.focusTargetPos; }
+	const Vector3& GetFocusTargetPos() const { return enemyData_.characterInfo.focusTargetPos; }
 
 	//エネルギーの取得
-	float GetEnergy() const { return characterInfo_.energyInfo.energy; }
+	float GetEnergy() const { return enemyData_.characterInfo.energyInfo.energy; }
 	//最大エネルギーの取得
-	float GetMaxEnergy() const { return characterInfo_.energyInfo.maxEnergy; }
+	float GetMaxEnergy() const { return enemyData_.characterInfo.energyInfo.maxEnergy; }
 	//エネルギーの回復速度の取得
-	float GetEnergyRegenRate() const { return characterInfo_.energyInfo.recoveryRate; }
+	float GetEnergyRegenRate() const { return enemyData_.characterInfo.energyInfo.recoveryRate; }
 	//エネルギー枯渇中かどうか
-	bool GetIsOverHeated() const { return characterInfo_.overHeatInfo.isOverheated; }
+	bool GetIsOverHeated() const { return enemyData_.characterInfo.overHeatInfo.isOverheated; }
 	//生存しているかどうか
-	bool GetIsAlive() const { return characterInfo_.isAlive; }
+	bool GetIsAlive() const { return enemyData_.characterInfo.isAlive; }
 
 	//周回角度の取得
 	float GetOrbitAngle() const { return orbitAngle_; }
@@ -108,7 +108,7 @@ public:
 	//================================================================================
 
 	//フォーカス対象の座標を設定
-	void SetFocusTargetPos(const Vector3& targetPos) { characterInfo_.focusTargetPos = targetPos; }
+	void SetFocusTargetPos(const Vector3& targetPos) { enemyData_.characterInfo.focusTargetPos = targetPos; }
 	//移動ベクトルの設定
 	void SetOrbitAngle(float angle) { orbitAngle_ = angle; }
 
@@ -154,7 +154,7 @@ private:
 	std::unique_ptr<DeadEffect> deadEffect_ = nullptr;
 
 	// プレイヤーの情報
-	PlayableCharacterInfo characterInfo_;
+	CharacterData enemyData_;
 	// デルタタイム
 	float deltaTime_ = 0.0f; 
 	float gravity_ = 9.8f; // 重力の強さ

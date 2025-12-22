@@ -179,7 +179,7 @@ void TakeC::ParticleManager::ClearParticleGroups() {
 //================================================================================================
 void TakeC::ParticleManager::ClearParticles() {
 	for (auto& [name, particleGroup] : particleGroups_) {
-		particleGroup->SpliceParticles(std::list<Particle>{});
+		particleGroup->EraseParticle();
 	}
 }
 

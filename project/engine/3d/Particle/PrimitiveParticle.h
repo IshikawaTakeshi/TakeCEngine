@@ -61,6 +61,8 @@ public:
 	/// </summary>
 	void SetPrimitiveHandle(uint32_t handle) { primitiveHandle_ = handle; }
 
+	void EraseParticle();
+
 private:
 	uint32_t primitiveHandle_ = 0; // プリミティブのハンドル
 

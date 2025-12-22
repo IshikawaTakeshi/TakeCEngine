@@ -205,6 +205,12 @@ void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
 	}
 }
 
+void PrimitiveParticle::EraseParticle() {
+
+	// 全パーティクルの削除
+	particles_.clear();
+}
+
 //=============================================================================
 // パーティクル1つの位置更新
 //=============================================================================

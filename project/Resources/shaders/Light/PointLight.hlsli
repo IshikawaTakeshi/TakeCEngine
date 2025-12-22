@@ -32,7 +32,7 @@ float3 CalcPointLighting(
 		PointLight pLight = pointLights[i];
 		
 		if( pLight.enabled == 0 ) {
-			continue; // 無効なライトはスキップ
+			return totalLighting;
 		}
 		
 		//距離を先に計算して、範囲外なら早期スキップ

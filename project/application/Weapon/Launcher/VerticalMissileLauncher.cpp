@@ -10,7 +10,7 @@
 void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
 
 	shotSE_ = AudioManager::GetInstance().LoadSound("SE/launcher1.mp3");
-	seVolume_ = 0.2f;
+	seVolume_ = 0.1f;
 
 	bulletManager_ = bulletManager;
 

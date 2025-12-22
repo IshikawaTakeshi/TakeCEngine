@@ -117,7 +117,7 @@ void MyGame::Draw() {
 	shadowRenderTexture_->ClearRenderTarget();
 	srvManager_->SetDescriptorHeap();
 	sceneManager_->DrawShadow();  // ライトカメラ視点で深度のみ描画
-	//shadowRenderTexture_->TransitionToSRV();
+
 	//===========================================
 	// 2. メインパス（シーン描画）
 	//===========================================
@@ -174,6 +174,7 @@ void MyGame::LoadModel() {
 	TakeC::ModelManager::GetInstance().LoadModel("plane.gltf","skyBox_blueSky.dds");
 	TakeC::ModelManager::GetInstance().LoadModel("player_singleMesh.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("player_MultiMesh.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Enemy.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("cube.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("ICOBall.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Rifle.gltf");

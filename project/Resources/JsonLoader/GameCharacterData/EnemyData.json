@@ -1,0 +1,195 @@
+{
+    "info": {
+        "characterName": "Enemy",
+        "chargeAttackStunInfo": {
+            "isStunned": false,
+            "stunDuration": 0.5,
+            "stunTimer": 0.0
+        },
+        "deceleration": 1.100000023841858,
+        "energyInfo": {
+            "energy": 1000.0,
+            "energyCooldown": 1.0,
+            "isEnergyDepleted": false,
+            "maxEnergy": 1000.0,
+            "recoveryRate": 200.0
+        },
+        "fallSpeed": 40.0,
+        "focusTargetPos": {
+            "x": -57.15410232543945,
+            "y": -73.17855834960938,
+            "z": -135.4304656982422
+        },
+        "health": 5000.0,
+        "isAlive": true,
+        "isChargeShooting": false,
+        "isDamaged": false,
+        "jumpInfo": {
+            "deceleration": 40.0,
+            "isJumping": false,
+            "jumpTimer": 0.0,
+            "maxJumpTime": 0.30000001192092896,
+            "speed": 50.0,
+            "useEnergy": 150.0
+        },
+        "kMaxMoveSpeed": 120.0,
+        "maxHealth": 10000.0,
+        "modelFilePath": "Enemy.gltf",
+        "moveDirection": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "moveSpeed": 200.0,
+        "onGround": true,
+        "overHeatInfo": {
+            "isOverheated": false,
+            "overheatDuration": 3.0,
+            "overheatTimer": 0.0
+        },
+        "stepBoostInfo": {
+            "Direction": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "boostTimer": 0.0,
+            "duration": 0.30000001192092896,
+            "interval": 0.20000000298023224,
+            "intervalTimer": 0.0,
+            "speed": 230.0,
+            "useEnergy": 100.0
+        },
+        "transform": {
+            "rotate": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.5,
+                "y": 1.5,
+                "z": 1.5
+            },
+            "translate": {
+                "x": 0.0,
+                "y": 10.0,
+                "z": 1100.0
+            }
+        },
+        "velocity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        }
+    },
+    "weaponData": [
+        {
+            "config": {
+                "bulletSpeed": 500.0,
+                "canChargeAttack": false,
+                "canMoveShootable": false,
+                "effectiveRange": 1000.0,
+                "homingRate": 0.0,
+                "isStopShootOnly": true,
+                "kAttackInterval": 2.0,
+                "magazineCount_": 5,
+                "maxBulletCount": 50,
+                "maxReloadTime": 4.0,
+                "power": 1500.0,
+                "requiredChargeTime": 0.0
+            },
+            "modelFilePath": "Bazooka.gltf",
+            "weaponName": "Bazooka",
+            "weaponType": "WEAPON_TYPE_BAZOOKA"
+        },
+        {
+            "actionData": {
+                "burstShotInfo": {
+                    "kInterval": 0.10000000149011612,
+                    "kMaxBurstCount": 3
+                }
+            },
+            "config": {
+                "bulletSpeed": 550.0,
+                "canChargeAttack": false,
+                "canMoveShootable": true,
+                "effectiveRange": 700.0,
+                "homingRate": 0.0,
+                "isStopShootOnly": false,
+                "kAttackInterval": 0.30000001192092896,
+                "magazineCount_": 30,
+                "maxBulletCount": 600,
+                "maxReloadTime": 3.0,
+                "power": 90.0,
+                "requiredChargeTime": 0.0
+            },
+            "modelFilePath": "Rifle.gltf",
+            "weaponName": "Rifle",
+            "weaponType": "WEAPON_TYPE_RIFLE"
+        },
+        {
+            "actionData": {
+                "burstShotInfo": {
+                    "kInterval": 0.10000000149011612,
+                    "kMaxBurstCount": 3
+                },
+                "vmInfo": {
+                    "ascendSpeed": 183.39999389648438,
+                    "explosionRadius": 5.0,
+                    "homingRate": 0.375,
+                    "maxAltitude": 0.0
+                }
+            },
+            "config": {
+                "bulletSpeed": 300.0,
+                "canChargeAttack": false,
+                "canMoveShootable": true,
+                "effectiveRange": 1000.0,
+                "homingRate": 0.10000000149011612,
+                "isStopShootOnly": false,
+                "kAttackInterval": 5.0,
+                "magazineCount_": 3,
+                "maxBulletCount": 120,
+                "maxReloadTime": 2.0,
+                "power": 400.0,
+                "requiredChargeTime": 0.0
+            },
+            "modelFilePath": "VerticalMissileLauncher.gltf",
+            "weaponName": "VerticalMissileLauncher",
+            "weaponType": "WEAPON_TYPE_VERTICAL_MISSILE"
+        },
+        {
+            "actionData": {
+                "burstShotInfo": {
+                    "kInterval": 0.10000000149011612,
+                    "kMaxBurstCount": 3
+                },
+                "vmInfo": {
+                    "ascendSpeed": 183.39999389648438,
+                    "explosionRadius": 5.0,
+                    "homingRate": 0.375,
+                    "maxAltitude": 0.0
+                }
+            },
+            "config": {
+                "bulletSpeed": 300.0,
+                "canChargeAttack": false,
+                "canMoveShootable": true,
+                "effectiveRange": 1000.0,
+                "homingRate": 0.10000000149011612,
+                "isStopShootOnly": false,
+                "kAttackInterval": 5.0,
+                "magazineCount_": 3,
+                "maxBulletCount": 120,
+                "maxReloadTime": 2.0,
+                "power": 400.0,
+                "requiredChargeTime": 0.0
+            },
+            "modelFilePath": "VerticalMissileLauncher.gltf",
+            "weaponName": "VerticalMissileLauncher",
+            "weaponType": "WEAPON_TYPE_VERTICAL_MISSILE"
+        }
+    ]
+}

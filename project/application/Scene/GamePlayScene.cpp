@@ -70,8 +70,8 @@ void GamePlayScene::Initialize() {
 	player_->SetTranslate({ 0.0f, 0.0f, 0.0f });
 	//Enemy
 	enemy_ = std::make_unique<Enemy>();
-	enemy_->LoadEnemyData("Enemy.json"); //Enemyという名前の敵データを読み込み
-	enemy_->Initialize(&Object3dCommon::GetInstance(), "player_singleMesh.gltf");
+	
+	enemy_->Initialize(&Object3dCommon::GetInstance(), "Enemy.gltf");
 	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(), bulletManager_.get());
 	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"));
 
@@ -128,7 +128,7 @@ void GamePlayScene::Finalize() {
 	AudioManager::GetInstance().SoundUnload(&BGM_); // BGMの解放
 	CollisionManager::GetInstance().ClearGameCharacter(); // 当たり判定の解放
 	TakeC::CameraManager::GetInstance().ResetCameras(); //カメラのリセット
-	//TakeCFrameWork::GetParticleManager()->ClearParticleGroups(); //パーティクルグループの解放
+	TakeCFrameWork::GetParticleManager()->ClearParticles(); //パーティクルの解放
 	player_.reset();
 	skyBox_.reset();
 }

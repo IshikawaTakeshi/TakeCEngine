@@ -108,7 +108,7 @@ LRESULT CALLBACK TakeC::WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, L
 
 		// F11 でフルスクリーン切替
 	case WM_KEYDOWN:
-		if (TakeC::Input::GetInstance().TriggerKey(DIK_F11)) {
+		if (TakeC::Input::GetInstance().PushKey(DIK_F11)) {
 			// hwnd を使ってインスタンスのフラグを取得するため、ウィンドウユーザーデータにポインタを設定しておく必要があります。
 			// ここでは SetWindowLongPtr / GetWindowLongPtr を使って保存されているポインタを取得する想定です。
 			LONG_PTR ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);
@@ -197,9 +197,9 @@ void TakeC::WinApp::SetFullscreen(bool enable) {
 		SetWindowLongPtr(hwnd_, GWL_STYLE, prevStyle_);
 		SetWindowLongPtr(hwnd_, GWL_EXSTYLE, prevExStyle_);
 		SetWindowPos(hwnd_, HWND_TOP,
-			prevWindowRect_.left, prevWindowRect_.top,
-			prevWindowRect_.right - prevWindowRect_.left,
-			prevWindowRect_.bottom - prevWindowRect_.top,
+			wrc_.left, wrc_.top,
+			wrc_.right,
+			wrc_.bottom,
 			SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 
 		isFullscreen_ = false;

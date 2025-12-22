@@ -24,8 +24,8 @@ void Rifle::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMana
 	object3d_->Initialize(object3dCommon, weaponData_.modelFilePath);
 
 	// ライフルの色を設定
-	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
-	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.8f);
+	//object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
+	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.01f);
 
 
 	weaponState_.attackInterval = rifleInfo_.burstShotInfo.kInterval; // 連射の間隔を攻撃間隔に設定

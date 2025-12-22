@@ -27,6 +27,35 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 
 	//winapp初期化
 	winApp_ = winApp;
+	// Viewportの設定
+	viewport_.TopLeftX = 0.0f;
+	viewport_.TopLeftY = 0.0f;
+	
+	viewport_.MinDepth = 0.0f;
+	viewport_.MaxDepth = 1.0f;
+	// Scissorの設定
+	scissorRect_.left = 0;
+	scissorRect_.top = 0;
+	
+
+#ifdef _DEBUG
+
+	viewport_.Width = 0.0f;
+	viewport_.Height = 0.0f;
+
+	scissorRect_.right = 0;
+	scissorRect_.bottom = 0;
+
+#else 
+
+	viewport_.Width = static_cast<float>(WinApp::kWindowWidth);
+	viewport_.Height = static_cast<float>(WinApp::kWindowHeight);
+
+	scissorRect_.right = WinApp::kWindowWidth;
+	scissorRect_.bottom = WinApp::kWindowHeight;
+
+#endif // _DEBUG
+
 
 	//DXGIデバイス初期化
 	InitializeDXGIDevice();
