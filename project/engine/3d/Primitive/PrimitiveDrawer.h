@@ -4,8 +4,11 @@
 #include "base/SrvManager.h"
 #include "3d/Material.h"
 #include "3d/VertexData.h"
+#include "engine/3d/Primitive/Ring.h"
+#include "engine/3d/Primitive/Plane.h"
+#include "engine/3d/Primitive/Sphere.h"
+#include "engine/3d/Primitive/Cube.h"
 #include "math/TransformMatrix.h"
-#include "math/AABB.h"
 #include "Primitive/PrimitiveType.h"
 #include <memory>
 #include <cstdint>
@@ -24,6 +27,7 @@ struct PrimitiveMesh {
 // PrimitiveDrawer class
 //============================================================================
 namespace TakeC {
+
 	class PrimitiveDrawer {
 	public:
 
@@ -35,34 +39,6 @@ namespace TakeC {
 
 	public:
 
-		// Ring全体のデータ
-		struct RingData {
-			PrimitiveMesh primitiveData_;
-			VertexData* vertexData_ = nullptr;
-			Material* material_ = nullptr;
-			float outerRadius_ = 1.0f; // 外側の半径
-			float innerRadius_ = 0.01f; // 内側の半径
-			uint32_t subDivision_ = 32; // 分割数
-		};
-
-		//plane全体のデータ
-		struct PlaneData {
-			PrimitiveMesh primitiveData_;
-			VertexData* vertexData_ = nullptr;
-			Material* material_ = nullptr;
-			float width_;
-			float height_;
-		};
-
-		//sphere全体のデータ
-		struct SphereData {
-			PrimitiveMesh primitiveData_;
-			VertexData* vertexData_ = nullptr;
-			Material* material_ = nullptr;
-			float radius_;
-			uint32_t subDivision_ = 16; // 分割数
-		};
-
 		//cone全体のデータ
 		struct ConeData {
 			PrimitiveMesh primitiveData_;
@@ -71,14 +47,6 @@ namespace TakeC {
 			float radius_;
 			float height_;
 			uint32_t subDivision_ = 32; // 分割数
-		};
-
-		//cube全体のデータ
-		struct CubeData {
-			PrimitiveMesh primitiveData_;
-			VertexData* vertexData_ = nullptr;
-			Material* material_ = nullptr;
-			AABB size_;
 		};
 
 		//cylinder全体のデータ
@@ -103,7 +71,6 @@ namespace TakeC {
 		void Finalize();
 
 		// ImGui更新処理
-		void UpdateImGui(uint32_t handle, PrimitiveType type);
 		void UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param);
 
 		//リングデータの生成
@@ -122,32 +89,20 @@ namespace TakeC {
 		// 描画処理(オブジェクト用)
 		void DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handle);
 
-		PlaneData* GetPlaneData(uint32_t handle);
-		SphereData* GetSphereData(uint32_t handle);
-		RingData* GetRingData(uint32_t handle);
+		Plane::PlaneData* GetPlaneData(uint32_t handle);
+		Sphere::SphereData* GetSphereData(uint32_t handle);
+		Ring::RingData* GetRingData(uint32_t handle);
 		ConeData* GetConeData(uint32_t handle);
 
 		void SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color);
 
 	private:
 
-		// リングの頂点データの作成関数
-		void CreateRingVertexData(RingData* ringData);
-		// 平面の頂点データの作成関数
-		void CreatePlaneVertexData(PlaneData* planeData);
-		// 球の頂点データの作成関数
-		void CreateSphereVertexData(SphereData* sphereData);
-		// Cube
-		void CreateCubeVertexData(CubeData* cubeData);
 		// Cone
 		void CreateConeVertexData(ConeData* coneData);
 
-		// マテリアルの作成関数(リング、平面、球、円錐)
-		void CreateRingMaterial(const std::string& textureFilePath, RingData* ringData);
-		void CreatePlaneMaterial(const std::string& textureFilePath, PlaneData* planeData);
-		void CreateSphereMaterial(const std::string& textureFilePath, SphereData* sphereData);
+		// マテリアルの作成関数
 		void CreateConeMaterial(const std::string& textureFilePath, ConeData* coneData);
-		void CreateCubeMaterial(const std::string& textureFilePath, CubeData* cubeData);
 
 	private:
 
@@ -159,25 +114,13 @@ namespace TakeC {
 
 		// プリミティブデータ管理用マップ
 		//ring
-		std::unordered_map<uint32_t, std::unique_ptr<RingData>> ringDatas_;
-		uint32_t ringDivide_ = 32;
-		uint32_t ringVertexIndex_ = 0;
-		uint32_t ringVertexCount_ = 0;
-		uint32_t ringHandle_ = 0;
+		std::unique_ptr<TakeC::Ring> ring_ = nullptr;
 
 		//plane
-		std::unordered_map<uint32_t, std::unique_ptr<PlaneData>> planeDatas_;
-		uint32_t planeVertexIndex_ = 0;
-		uint32_t planeVertexCount_ = 0;
-		uint32_t planeHandle_ = 0;
+		std::unique_ptr<TakeC::Plane> plane_ = nullptr;
 
 		//sphere
-		std::unordered_map<uint32_t, std::unique_ptr<SphereData>> sphereDatas_;
-		uint32_t sphereDivide_ = 16; // 球の分割数
-		uint32_t sphereVertexIndex_ = 0;
-		uint32_t sphereVertexCount_ = 0;
-		uint32_t sphereIndexCount_ = 0;
-		uint32_t sphereHandle_ = 0;
+		std::unique_ptr<TakeC::Sphere> sphere_ = nullptr;
 
 		//cone
 		std::unordered_map<uint32_t, std::unique_ptr<ConeData>> coneDatas_;
@@ -186,10 +129,7 @@ namespace TakeC {
 		uint32_t coneHandle_ = 0;
 
 		//cube
-		std::unordered_map<uint32_t, std::unique_ptr<CubeData>> cubeDatas_;
-		uint32_t cubeVertexIndex_ = 0;
-		uint32_t cubeVertexCount_ = 0;
-		uint32_t cubeHandle_ = 0;
+		std::unique_ptr<TakeC::Cube> cube_ = nullptr;
 
 		const uint32_t kMaxVertexCount_ = 32000;
 	};

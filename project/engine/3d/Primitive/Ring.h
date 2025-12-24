@@ -16,8 +16,6 @@
 //============================================================
 namespace TakeC {
 
-	class DirectXCommon;
-
 	class Ring {
 	public:
 

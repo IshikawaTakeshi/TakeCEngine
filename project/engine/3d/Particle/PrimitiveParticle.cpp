@@ -189,13 +189,13 @@ void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
 	particlePreset_ = preset;
 	//テクスチャファイルパスの設定
 	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetRingData(primitiveHandle_)->material_;
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetRingData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	}else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
-		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetPlaneData(primitiveHandle_)->material_;
+		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetPlaneData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
-		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetSphereData(primitiveHandle_)->material_;
+		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetSphereData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
 		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetConeData(primitiveHandle_)->material_;
