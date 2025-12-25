@@ -8,7 +8,7 @@ void BulletManager::Initialize(Object3dCommon* object3dCommon,size_t size) {
 	bulletPool_ = std::make_unique<BulletPool>();
 	bulletPool_->Initialize(size);
 	missilePool_ = std::make_unique<MissilePool>();
-	missilePool_->Initialize(size); 
+	missilePool_->Initialize(size * 2); 
 	object3dCommon_ = object3dCommon;
 	bulletFilePath_ = "Bullet.gltf";
 	missileFilePath_ = "ICOBall.gltf";
@@ -20,8 +20,8 @@ void BulletManager::Initialize(Object3dCommon* object3dCommon,size_t size) {
 
 void BulletManager::Finalize() {
 
-	bulletPool_->Finalize();
 	missilePool_->Finalize();
+	bulletPool_->Finalize();
 	object3dCommon_ = nullptr;
 }
 
@@ -83,7 +83,6 @@ void BulletManager::ShootMissile(BaseWeapon* ownerWeapon,VerticalMissileInfo vmI
 	if (missile == nullptr) {
 		return; // ミサイルが取得できなかった場合は何もしない
 	}
-	missile->Initialize(object3dCommon_, missileFilePath_);
 	missile->Create(ownerWeapon,vmInfo, speed,power, type);
 }
 

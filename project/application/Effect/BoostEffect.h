@@ -14,7 +14,7 @@ class BoostEffect {
 public:
 
 	BoostEffect() = default;
-	~BoostEffect() = default;
+	~BoostEffect();
 
 	//初期化
 	void Initialize(GameCharacter* owner);
