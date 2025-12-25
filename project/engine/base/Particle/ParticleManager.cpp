@@ -116,8 +116,7 @@ void TakeC::ParticleManager::UpdatePrimitiveType(const std::string& groupName, P
 // パーティクルグループの生成
 //================================================================================================
 
-void TakeC::ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& name,
-		const std::string& filePath,PrimitiveType primitiveType) {
+void TakeC::ParticleManager::CreateParticleGroup(const std::string& name,const std::string& filePath,PrimitiveType primitiveType) {
 
 	if (particleGroups_.contains(name)) {
 		//既に同名のparticleGroupが存在する場合は生成しない
@@ -126,11 +125,11 @@ void TakeC::ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon,
 
 	//particleGroupの生成
 	std::unique_ptr<PrimitiveParticle> particleGroup = std::make_unique<PrimitiveParticle>(primitiveType);
-	particleGroup->Initialize(particleCommon, filePath);
+	particleGroup->Initialize(particleCommon_, filePath);
 	particleGroups_.insert(std::make_pair(name, std::move(particleGroup)));
 }
 
-void TakeC::ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon, const std::string& presetJson) {
+void TakeC::ParticleManager::CreateParticleGroup(const std::string& presetJson) {
 	ParticlePreset preset = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetJson);
 	if(particleGroups_.contains(preset.presetName)) {
 		//既に同名のparticleGroupが存在する場合は生成しない
@@ -139,7 +138,7 @@ void TakeC::ParticleManager::CreateParticleGroup(ParticleCommon* particleCommon,
 
 	//particleGroupの生成
 	std::unique_ptr<PrimitiveParticle> particleGroup = std::make_unique<PrimitiveParticle>(preset.primitiveType);
-	particleGroup->Initialize(particleCommon, preset.textureFilePath);
+	particleGroup->Initialize(particleCommon_, preset.textureFilePath);
 	particleGroup->SetPreset(preset);
 	particleGroups_.insert(std::make_pair(preset.presetName, std::move(particleGroup)));
 }

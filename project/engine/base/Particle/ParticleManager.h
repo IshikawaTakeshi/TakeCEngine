@@ -41,11 +41,11 @@ namespace TakeC {
 		/// <param name="particleCommon">パーティクル共通情報</param>
 		/// <param name="name">グループ名(固有名)</param>
 		/// <param name="filePath">objファイルパス</param>
-		void CreateParticleGroup(ParticleCommon* particleCommon, const std::string& name,
+		void CreateParticleGroup( const std::string& name,
 			const std::string& filePath, PrimitiveType primitiveType = PRIMITIVE_PLANE);
 
 		//パーティクルグループの生成(JSONから)
-		void CreateParticleGroup(ParticleCommon* particleCommon, const std::string& presetJson);
+		void CreateParticleGroup(const std::string& presetJson);
 		//パーティクル射出
 		void Emit(const std::string& name, const Vector3& emitPosition, const Vector3& direction, uint32_t count);
 		//エミッター用のハンドルの割り当て
