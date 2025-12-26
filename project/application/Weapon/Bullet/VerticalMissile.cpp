@@ -35,7 +35,7 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 	particleEmitter_[1]->SetParticleName("MissileSmoke");
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
-	phase_ = VerticalMissilePhase::ASCENDING;
+	
 
 	//transform初期化
 	transform_.translate = { 0.0f, 200.0f, 0.0f };
@@ -204,6 +204,8 @@ void VerticalMissile::Create(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo,
 	vmInfo_ = vmInfo;
 	damage_ = damage;
 	targetPos_ = ownerWeapon_->GetTargetPos();
+	//phaseの初期化	
+	phase_ = VerticalMissilePhase::ASCENDING;
 	//ターゲットまでの方向を求める
 	direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
 	

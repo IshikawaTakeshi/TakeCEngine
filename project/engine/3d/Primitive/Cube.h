@@ -6,6 +6,7 @@
 #include "Mesh/Mesh.h"
 #include "engine/3d/Primitive/PrimitiveBase.h"
 #include "engine/Base/SrvManager.h"
+#include "math/AABB.h"
 
 #include <memory>
 #include <unordered_map>
@@ -14,47 +15,40 @@
 namespace TakeC {
 
 	//============================================================
-	//	Sphere class
+	//	Cube class
 	//============================================================
 
-	class Sphere {
+	class Cube {
 	public:
 
 		//========================================================
-		// sphere情報の構造体
+		//	cubeデータ構造体
 		//========================================================
-
-		struct SphereData {
+		// Cube全体のデータ
+		struct CubeData {
 			PrimitiveMesh mesh;
 			VertexData* vertexData = nullptr;
 			std::unique_ptr<Material> material = nullptr;
-			float radius = 1.0f; // 半径
-			uint32_t subDivision = 16; // 分割数
-			uint32_t vertexCount = 0; // このインスタンスの頂点数
+			AABB size;
+			uint32_t vertexCount = 0;
 		};
-
 		//========================================================
-		// functions
+		//	functions
 		//========================================================
-
 
 		/// <summary>
 		/// コンストラクタ・デストラクタ
 		/// </summary>
-		Sphere() = default;
-		~Sphere() = default;
+		Cube() = default;
+		~Cube() = default;
+
+		void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager);
 
 		/// <summary>
-		/// 初期化
-		/// </summary>
-		/// <param name="dxCommon"></param>
-		void Initialize(TakeC::DirectXCommon* dxCommon,TakeC::SrvManager* srvManager);
-
-		/// <summary>
-		/// リングデータの生成
+		/// cubeデータの作成
 		/// </summary>
 		/// <returns>生成したハンドル</returns>
-		uint32_t Generate(float radius, const std::string& textureFilePath);
+		uint32_t Generate(const AABB& size, const std::string& textureFilePath);
 
 		/// <summary>
 		/// 描画処理(パーティクル用)
@@ -73,7 +67,7 @@ namespace TakeC {
 		// accessors
 		//========================================================================
 		/// データ取得
-		SphereData* GetData(uint32_t handle);
+		CubeData* GetData(uint32_t handle);
 		/// マテリアル色設定
 		void SetMaterialColor(uint32_t handle, const Vector4& color);
 
@@ -83,9 +77,12 @@ namespace TakeC {
 		// private functions
 		//========================================================================
 		/// 頂点データ作成
-		void CreateVertexData(SphereData* sphereData);
+		void CreateVertexData(CubeData* planeData);
+		/// 頂点インデックスデータ作成
+		//void CreateVertexIndexData(CubeData* planeData);
+
 		/// マテリアル作成
-		void CreateMaterial(const std::string& textureFilePath, SphereData* sphereData);
+		void CreateMaterial(const std::string& textureFilePath, CubeData* planeData);
 
 	private:
 
@@ -93,15 +90,17 @@ namespace TakeC {
 		// member variables
 		//========================================================================
 
+		// DirectXCommonへのポインタ
 		DirectXCommon* dxCommon_ = nullptr;
+		// SrvManagerへのポインタ
 		SrvManager* srvManager_ = nullptr;
 		// プリミティブデータ管理用マップ
-		std::unordered_map<uint32_t, std::unique_ptr<SphereData>> datas_;
+		std::unordered_map<uint32_t, std::unique_ptr<CubeData>> datas_;
+		// ハンドル生成用カウンタ
 		uint32_t nextHandle_ = 0;
-
-		// 定数
-		static constexpr uint32_t kVerticesPerSegment = 6;  // 1セグメントあたりの頂点数
-
+		//頂点数
+		static constexpr uint32_t kVertexCount = 36;
+		//頂点インデックス数
+		static constexpr uint32_t kIndexCount = 36;
 	};
-
 }

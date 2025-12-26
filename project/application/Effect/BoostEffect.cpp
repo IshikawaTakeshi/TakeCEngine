@@ -7,6 +7,12 @@
 #include "engine/math/MathEnv.h"
 #include <algorithm>
 
+BoostEffect::~BoostEffect() {
+
+	//ポイントライトの削除
+	TakeCFrameWork::GetLightManager()->RemovePointLight(pointLightIndex_);
+}
+
 //===================================================================================
 //　初期化
 //===================================================================================

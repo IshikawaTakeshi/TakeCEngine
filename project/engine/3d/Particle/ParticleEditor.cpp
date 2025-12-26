@@ -20,7 +20,7 @@ void ParticleEditor::Initialize(ParticleCommon* particleCommon) {
 	currentPreset_.textureFilePath = "white1x1.png";
 	currentPreset_.presetName = currentGroupName_;
 	currentPreset_.primitiveType = PRIMITIVE_PLANE;
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(particleCommon_, currentGroupName_, "white1x1.png", currentPreset_.primitiveType);
+	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(currentGroupName_, "white1x1.png", currentPreset_.primitiveType);
 
 	// エディター専用エミッターの初期化
 	previewEmitter_ = std::make_unique<ParticleEmitter>();

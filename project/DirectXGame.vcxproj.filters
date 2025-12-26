@@ -535,6 +535,8 @@
     <ClCompile Include="engine\PostEffect\PostEffectFactory.cpp" />
     <ClCompile Include="engine\Base\DsvManager.cpp" />
     <ClCompile Include="engine\Math\AABB.cpp" />
+    <ClCompile Include="engine\3d\Primitive\Plane.cpp" />
+    <ClCompile Include="engine\3d\Primitive\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1105,6 +1107,8 @@
     <ClInclude Include="engine\3d\Light\LightCameraInfo.h" />
     <ClInclude Include="engine\Camera\ShakeCameraModeEnum.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveBase.h" />
+    <ClInclude Include="engine\3d\Primitive\Plane.h" />
+    <ClInclude Include="engine\3d\Primitive\Cube.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
