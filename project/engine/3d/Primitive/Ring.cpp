@@ -78,6 +78,7 @@ void Ring::CreateVertexData(RingData* ringData) {
 		}
 		vertexIndex += kVerticesPerSegment;
 	}
+	ringData->vertexCount = vertexIndex;
 }
 //============================================================================
 // マテリアル作成

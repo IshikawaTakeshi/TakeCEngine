@@ -199,6 +199,7 @@ void TakeC::Sphere::CreateVertexData(SphereData* sphereData) {
 		}
 	}
 
+	sphereData->vertexCount = vertexIndex;
 }
 
 void TakeC::Sphere::CreateMaterial(const std::string& textureFilePath, SphereData* sphereData) {
