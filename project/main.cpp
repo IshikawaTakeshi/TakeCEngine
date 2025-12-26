@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ゲームクラスの生成
 	std::unique_ptr<TakeCFrameWork> game = std::make_unique<MyGame>();
 	//ゲームの実行
-	game->Run(L"TakeCEngine");
+	game->Run(L"A_CORE");
 	
 	return 0; //終了
 }

@@ -292,6 +292,28 @@ void TakeC::LightManager::DrawSpotLights() {
 }
 
 //=============================================================================
+// pointLightをクリア
+//=============================================================================
+void TakeC::LightManager::ClearAllPointLights() {
+
+	//全ライトデータをクリア
+	std::memset(pointLightData_, 0, sizeof(PointLightData) * kMaxPointLights);
+	//カウントをリセットする
+	activePointLightCount_ = 0;
+	lightCountData_->pointLightCount = 0;
+}
+
+//=============================================================================
+// spotLightをクリア
+//=============================================================================
+void TakeC::LightManager::ClearAllSpotLights() {
+
+	std::memset(spotLightData_, 0, sizeof(SpotLightData) * kMaxSpotLights);
+	activeSpotLightCount_ = 0;
+	lightCountData_->spotLightCount = 0;
+}
+
+//=============================================================================
 // PointLightData取得
 //=============================================================================
 

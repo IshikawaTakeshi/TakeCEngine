@@ -1,4 +1,5 @@
 #include "MissilePool.h"
+#include "engine/Base/TakeCFrameWork.h"
 
 //===================================================================================
 //　初期化
@@ -6,6 +7,7 @@
 void MissilePool::Initialize(size_t size) {
 	for (size_t i = 0; i < size; i++) {
 		pool_.emplace_back(std::make_unique<VerticalMissile>());
+		pool_[i]->Initialize(&Object3dCommon::GetInstance(), "ICOBall.gltf");
 	}
 }
 

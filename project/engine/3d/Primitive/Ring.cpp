@@ -37,7 +37,7 @@ uint32_t Ring::Generate(float outerRadius, float innerRadius, const std::string&
 void Ring::CreateVertexData(RingData* ringData) {
 	// この Ring 固有の頂点数を計算
 	uint32_t vertexCount = ringData->subDivision * kVerticesPerSegment;
-	ringData->vertexCount = vertexCount;  // ★個別に保存
+	ringData->vertexCount = vertexCount;  // 個別に保存
 	UINT size = sizeof(VertexData) * vertexCount;
 	// バッファ確保
 	ringData->mesh.vertexBuffer_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
@@ -78,6 +78,7 @@ void Ring::CreateVertexData(RingData* ringData) {
 		}
 		vertexIndex += kVerticesPerSegment;
 	}
+	ringData->vertexCount = vertexIndex;
 }
 //============================================================================
 // マテリアル作成
@@ -141,7 +142,7 @@ void Ring::DrawObject(PSO* pso, uint32_t handle) {
 	srvManager_->SetGraphicsRootDescriptorTable(
 		pso->GetGraphicBindResourceIndex("gTexture"),
 		TextureManager::GetInstance().GetSrvIndex(ringData->material->GetTextureFilePath()));
-	// ★この Ring 固有の頂点数を使用（インスタンス数は1）
+	// このRing固有の頂点数を使用（インスタンス数は1）
 	commandList->DrawInstanced(ringData->vertexCount, 1, 0, 0);
 }
 //============================================================================

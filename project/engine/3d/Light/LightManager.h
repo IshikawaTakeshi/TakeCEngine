@@ -105,6 +105,10 @@ class SrvManager;
 		/// </summary>
 		void DrawSpotLights();
 
+		void ClearAllPointLights();
+
+		void ClearAllSpotLights();
+
 	public:
 
 		//========================================================================

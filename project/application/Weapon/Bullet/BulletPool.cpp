@@ -1,5 +1,6 @@
 #include "BulletPool.h"
 #include "3d/Object3dCommon.h"
+#include "Base/TakeCFrameWork.h"
 #include <cassert>
 
 //===================================================================================
@@ -17,7 +18,6 @@ void BulletPool::Initialize(size_t size) {
 //　開放処理
 //===================================================================================
 void BulletPool::Finalize() {
-
 	pool_.clear();
 }
 

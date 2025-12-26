@@ -21,7 +21,7 @@ public:
 	};
 
 	VerticalMissile() = default;
-	~VerticalMissile() override = default;
+	~VerticalMissile() = default;
 	
 	//========================================================================
 	// functions

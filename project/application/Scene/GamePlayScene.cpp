@@ -15,7 +15,7 @@ void GamePlayScene::Initialize() {
 
 	//BGM読み込み
 	BGM_ = AudioManager::GetInstance().LoadSound("GamePlaySceneBGM.mp3");
-	bgmVolume_ = 0.0f;
+	bgmVolume_ = 0.1f;
 
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
@@ -129,6 +129,8 @@ void GamePlayScene::Finalize() {
 	CollisionManager::GetInstance().ClearGameCharacter(); // 当たり判定の解放
 	TakeC::CameraManager::GetInstance().ResetCameras(); //カメラのリセット
 	TakeCFrameWork::GetParticleManager()->ClearParticles(); //パーティクルの解放
+	TakeCFrameWork::GetLightManager()->ClearAllPointLights();
+	bulletManager_->Finalize(); //弾マネージャーの解放
 	player_.reset();
 	skyBox_.reset();
 }
