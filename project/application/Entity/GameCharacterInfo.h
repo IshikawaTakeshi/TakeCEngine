@@ -103,17 +103,7 @@ void from_json(const nlohmann::json& j, ChargeAttackStunInfo& info);
 void from_json(const nlohmann::json& j, EnergyInfo& info);
 void from_json(const nlohmann::json& j, OverHeatInfo& info);
 
-//ディレクトリパス取得用テンプレート特殊化
-template<>
-struct JsonPath<PlayableCharacterInfo> {
-	static std::filesystem::path GetDirectory() {
-		return kGameCharacterContextPath;
-	}
-};
 
-template<>
-struct JsonPath<CharacterData> {
-	static std::filesystem::path GetDirectory() {
-		return kGameCharacterDataPath;
-	}
-};
+//データ保存先ディレクトリパスの設定
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(PlayableCharacterInfo, "Resources/JsonLoader/GameCharacters/");
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(CharacterData, "Resources/JsonLoader/GameCharacterData/");

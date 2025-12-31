@@ -134,6 +134,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\ShotGun\ShotGunInfo.cpp" />
     <ClCompile Include="application\Weapon\WeaponData.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cube.cpp" />
+    <ClCompile Include="engine\Animation\SpriteSheetSettings.cpp" />
     <ClCompile Include="engine\Base\DsvManager.cpp" />
     <ClCompile Include="engine\2d\SpriteConfig.cpp" />
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
@@ -257,6 +258,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\PostEffect\ShadowMapEffect.cpp" />
     <ClCompile Include="engine\PostEffect\PostEffectFactory.cpp" />
     <ClCompile Include="engine\3d\Primitive\Plane.cpp" />
+    <ClCompile Include="engine\Animation\TextureAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
@@ -296,6 +298,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Primitive\Cube.h" />
     <ClInclude Include="engine\3d\Light\LightCameraInfo.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveBase.h" />
+    <ClInclude Include="engine\Animation\SpriteSheetSttings.h" />
     <ClInclude Include="engine\Base\DsvManager.h" />
     <ClInclude Include="engine\2d\SpriteConfig.h" />
     <ClInclude Include="engine\3d\Light\DirectionalLight.h" />
@@ -450,6 +453,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Utility\Timer.h" />
     <ClInclude Include="application\Weapon\ShotGun\ShotGun.h" />
     <ClInclude Include="engine\PostEffect\ShadowMapEffect.h" />
+    <ClInclude Include="engine\Animation\TextureAnimation.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

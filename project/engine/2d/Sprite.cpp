@@ -103,6 +103,8 @@ void Sprite::Update() {
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
 	wvpData_->WVP = worldViewProjectionMatrix_;
 	wvpData_->World = worldMatrix_;
+
+	mesh_->GetMaterial()->Update();
 }
 
 //=============================================================================================

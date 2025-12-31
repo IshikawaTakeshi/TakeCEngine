@@ -15,16 +15,21 @@ struct JsonPath {
 	}
 };
 
+// マクロ定義
+#define TAKEC_DEFINE_JSON_DIRECTORY_PATH(Type, Directory) \
+template<> \
+struct JsonPath<Type> { \
+    static std::string GetDirectory() { \
+        return Directory; \
+    } \
+}
+
 //グローバル変数の保存先ファイルパス
 const std::string kDirectoryPath = "Resources/JsonLoader/";
 
 //パーティクルプリセットの保存先
 const std::string kParticlePresetPath = "Resources/JsonLoader/ParticlePresets/";
 
-//ゲームキャラクターコンテキストの保存先
-const std::string kGameCharacterContextPath = "Resources/JsonLoader/GameCharacters/";
-
-const std::string kGameCharacterDataPath = "Resources/JsonLoader/GameCharacterData/";
 //WeaponDataの保存先
 const std::string kWeaponDataPath = "Resources/JsonLoader/WeaponConfig/";
 //拡張ショット情報の保存先
@@ -33,3 +38,4 @@ const std::string kWeaponActionDataPath = "Resources/JsonLoader/WeaponConfig/Ext
 const std::string kCameraDataPath = "Resources/JsonLoader/Camera/";
 //SpriteCongigの保存先
 const std::string kSpriteConfigPath = "Resources/JsonLoader/SpriteConfig/";
+
