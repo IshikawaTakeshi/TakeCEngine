@@ -73,10 +73,6 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 //=============================================================================
 void PrimitiveParticle::Update() {
 
-	// ランダムエンジンの初期化  
-	std::random_device seedGenerator;
-	std::mt19937 randomEngine(seedGenerator());
-
 	numInstance_ = 0;
 	for (std::list<Particle>::iterator particleIterator = particles_.begin();
 		particleIterator != particles_.end(); ) {

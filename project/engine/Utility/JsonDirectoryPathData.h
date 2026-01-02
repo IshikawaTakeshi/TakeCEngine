@@ -27,9 +27,6 @@ struct JsonPath<Type> { \
 //グローバル変数の保存先ファイルパス
 const std::string kDirectoryPath = "Resources/JsonLoader/";
 
-//パーティクルプリセットの保存先
-const std::string kParticlePresetPath = "Resources/JsonLoader/ParticlePresets/";
-
 //WeaponDataの保存先
 const std::string kWeaponDataPath = "Resources/JsonLoader/WeaponConfig/";
 //拡張ショット情報の保存先
