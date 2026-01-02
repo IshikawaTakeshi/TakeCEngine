@@ -227,7 +227,7 @@ void TakeC::PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, Primitiv
 //=================================================================================
 //	描画処理(オブジェクト用)
 //=================================================================================
-void TakeC::PrimitiveDrawer::DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handle) {
+void TakeC::PrimitiveDrawer::DrawObject(PSO* pso, PrimitiveType type, uint32_t handle) {
 
 
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();

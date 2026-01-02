@@ -539,6 +539,7 @@
     <ClCompile Include="engine\3d\Primitive\Cube.cpp" />
     <ClCompile Include="engine\Animation\TextureAnimation.cpp" />
     <ClCompile Include="engine\Animation\SpriteSheetSettings.cpp" />
+    <ClCompile Include="application\Effect\MuzzleFlashEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1113,6 +1114,7 @@
     <ClInclude Include="engine\3d\Primitive\Cube.h" />
     <ClInclude Include="engine\Animation\TextureAnimation.h" />
     <ClInclude Include="engine\Animation\SpriteSheetSttings.h" />
+    <ClInclude Include="application\Effect\MuzzleFlashEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

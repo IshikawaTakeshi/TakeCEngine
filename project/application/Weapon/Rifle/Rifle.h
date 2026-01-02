@@ -2,6 +2,7 @@
 #include "Weapon/BaseWeapon.h"
 #include "Weapon/Bullet/Bullet.h"
 #include "Weapon/Rifle/RifleInfo.h"
+#include "application/Effect/MuzzleFlashEffect.h"
 
 //============================================================================
 // Rifle class
@@ -36,6 +37,6 @@ private:
 	RifleInfo rifleInfo_{};
 	BurstShotState burstShotState_{};
 
-	//マズルフラッシュエミッター
-	std::unique_ptr<ParticleEmitter> muzzleFlashEmitter2_ = nullptr;
+	//マズルフラッシュエフェクト
+	std::unique_ptr<MuzzleFlashEffect> muzzleFlashEffect_ = nullptr;
 };

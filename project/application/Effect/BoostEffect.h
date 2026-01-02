@@ -33,9 +33,9 @@ public:
 
 	//----- setter ---------------------------
 
-	//エフェクトのアクティブ設定
+	//エフェクトの所有者設定
 	void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
-	//エフェクトの持続時間設定
+	//エフェクトのアクティブ設定
 	void SetIsActive(bool isActive) { isActive_ = isActive; }
 	//GameCharacterの行動を参照
 	void SetBehavior(GameCharacterBehavior behavior) { behavior_ = behavior; }

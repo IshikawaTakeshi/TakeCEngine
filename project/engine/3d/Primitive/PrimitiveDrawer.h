@@ -87,7 +87,7 @@ namespace TakeC {
 		// 描画処理(particle用)
 		void DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType type, uint32_t handle);
 		// 描画処理(オブジェクト用)
-		void DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handle);
+		void DrawObject(PSO* pso, PrimitiveType type, uint32_t handle);
 
 		Plane::PlaneData* GetPlaneData(uint32_t handle);
 		Sphere::SphereData* GetSphereData(uint32_t handle);

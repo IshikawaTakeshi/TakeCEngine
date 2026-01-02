@@ -259,6 +259,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\PostEffect\PostEffectFactory.cpp" />
     <ClCompile Include="engine\3d\Primitive\Plane.cpp" />
     <ClCompile Include="engine\Animation\TextureAnimation.cpp" />
+    <ClCompile Include="application\Effect\MuzzleFlashEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
@@ -419,6 +420,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Provider\PlayerPadInput.h" />
     <ClInclude Include="engine\PostEffect\PostEffectFactory.h" />
     <ClInclude Include="engine\3d\Primitive\Plane.h" />
+    <ClInclude Include="application\Effect\MuzzleFlashEffect.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />
