@@ -1,4 +1,5 @@
 #pragma once
+
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
 #include "TransformMatrix.h"
@@ -15,32 +16,33 @@
 namespace TakeC {
 
 	//============================================================
-	//	Cube class
+	//	Cone class
 	//============================================================
 
-	class Cube {
-	public:
-
+	class Cone {
+		
+		public:
 		//========================================================
-		//	cubeデータ構造体
+		//	coneデータ構造体
 		//========================================================
-		// Cube全体のデータ
-		struct CubeData {
+		// Cone全体のデータ
+		struct ConeData {
 			PrimitiveMesh mesh;
 			VertexData* vertexData = nullptr;
 			std::unique_ptr<Material> material = nullptr;
-			AABB size;
+			float radius = 0.0f;
+			float height = 0.0f;
+			uint32_t subDivision = 32; // 分割数
 			uint32_t vertexCount = 0;
 		};
 		//========================================================
 		//	functions
 		//========================================================
-
 		/// <summary>
 		/// コンストラクタ・デストラクタ
 		/// </summary>
-		Cube() = default;
-		~Cube() = default;
+		Cone() = default;
+		~Cone() = default;
 
 		/// <summary>
 		/// 初期化
@@ -48,13 +50,11 @@ namespace TakeC {
 		/// <param name="dxCommon"></param>
 		/// <param name="srvManager"></param>
 		void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager);
-
 		/// <summary>
-		/// cubeデータの作成
+		/// coneデータの作成
 		/// </summary>
 		/// <returns>生成したハンドル</returns>
-		uint32_t Generate(const AABB& size, const std::string& textureFilePath);
-
+		uint32_t Generate(float radius, float height, uint32_t subDivision, const std::string& textureFilePath);
 		/// <summary>
 		/// 描画処理(パーティクル用)
 		/// </summary>
@@ -72,40 +72,32 @@ namespace TakeC {
 		// accessors
 		//========================================================================
 		/// データ取得
-		CubeData* GetData(uint32_t handle);
+		ConeData* GetData(uint32_t handle);
 		/// マテリアル色設定
 		void SetMaterialColor(uint32_t handle, const Vector4& color);
 
 	private:
 
-		//========================================================================
+		//========================================================
 		// private functions
-		//========================================================================
-		/// 頂点データ作成
-		void CreateVertexData(CubeData* planeData);
-		/// 頂点インデックスデータ作成
-		//void CreateVertexIndexData(CubeData* planeData);
+		//========================================================
 
-		/// マテリアル作成
-		void CreateMaterial(const std::string& textureFilePath, CubeData* planeData);
+		//頂点データ作成
+		void CreateVertexData(ConeData* coneData);
+		//マテリアル作成関数
+		void CreateMaterial(const std::string& textureFilePath, ConeData* coneData);
+
 
 	private:
-
-		//========================================================================
-		// member variables
-		//========================================================================
 
 		// DirectXCommonへのポインタ
 		DirectXCommon* dxCommon_ = nullptr;
 		// SrvManagerへのポインタ
 		SrvManager* srvManager_ = nullptr;
-		// プリミティブデータ管理用マップ
-		std::unordered_map<uint32_t, std::unique_ptr<CubeData>> datas_;
-		// ハンドル生成用カウンタ
+		// coneデータマップ
+		std::unordered_map<uint32_t, std::unique_ptr<ConeData>> coneDataMap_;
+		// 次のハンドル値
 		uint32_t nextHandle_ = 0;
-		//頂点数
-		static constexpr uint32_t kVertexCount = 36;
-		//頂点インデックス数
-		static constexpr uint32_t kIndexCount = 36;
 	};
+
 }
