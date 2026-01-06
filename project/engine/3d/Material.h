@@ -2,6 +2,7 @@
 #include "engine/math/Transform.h"
 #include "engine/math/Vector4.h"
 #include "engine/math/Matrix4x4.h"
+#include "engine/Animation/TextureAnimation.h"
 
 #include <d3d12.h>
 #include <wrl.h>
@@ -69,6 +70,8 @@ public:
 	// 環境マップ用テクスチャファイルパスの取得
 	const std::string& GetEnvMapFilePath() const { return envMapFilePath_; }
 
+	TakeC::UVTextureAnimation* Animation() const { return textureAnimation_.get(); }
+
 
 	//----- setter ---------------------------
 
@@ -106,6 +109,9 @@ private:
 
 	//uvTransform
 	EulerTransform uvTransform_;
+
+	//textureAnimation
+	std::unique_ptr<TakeC::UVTextureAnimation> textureAnimation_;
 
 	//テクスチャファイルパス
 	std::string textureFilePath_;

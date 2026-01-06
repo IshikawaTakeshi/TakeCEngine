@@ -39,7 +39,7 @@ void GamePlayScene::Initialize() {
 	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 
 	//levelObjectの初期化
-	sceneManager_->LoadLevelData("levelData_gameScene_3");
+	sceneManager_->LoadLevelData("levelData_gameScene_4");
 	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
 
 	for (auto& object : levelObjects_) {

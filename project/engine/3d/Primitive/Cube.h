@@ -42,6 +42,11 @@ namespace TakeC {
 		Cube() = default;
 		~Cube() = default;
 
+		/// <summary>
+		/// 初期化
+		/// </summary>
+		/// <param name="dxCommon"></param>
+		/// <param name="srvManager"></param>
 		void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager);
 
 		/// <summary>

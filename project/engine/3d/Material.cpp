@@ -1,8 +1,9 @@
 #include "Material.h"
-#include "DirectXCommon.h"
-#include "MatrixMath.h"
-#include "TextureManager.h"
-#include "ImGuiManager.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/TextureManager.h"
+#include "engine/base/ImGuiManager.h"
+#include "engine/base/TakeCFrameWork.h"
+#include "engine/Math/MatrixMath.h"
 
 #include <algorithm>
 
@@ -22,13 +23,16 @@ void Material::Initialize(TakeC::DirectXCommon* dxCommon, const std::string& fil
 		TakeC::TextureManager::GetInstance().LoadTexture(envMapfilePath,false);
 	}
 
-
 	//uvTransform
 	uvTransform_ = {
 		{1.0f,1.0f,1.0f},
 		{0.0f,0.0f,0.0f},
 		{0.0f,0.0f,0.0f}
 	};
+
+	//textureAnimation初期化
+	textureAnimation_ = std::make_unique<TakeC::UVTextureAnimation>();
+	textureAnimation_->Initialize(this);
 }
 
 //=================================================================================
@@ -36,10 +40,17 @@ void Material::Initialize(TakeC::DirectXCommon* dxCommon, const std::string& fil
 //=================================================================================
 void Material::Update() {
 
+	//textureAnimation更新
+	//MEMO: timeScaleは編集時に変更できるようにする予定
+	textureAnimation_->Update(1.0f);
+
 	Matrix4x4 scaleMatrix = MatrixMath::MakeScaleMatrix(uvTransform_.scale);
 	Matrix4x4 rotateMatrix = MatrixMath::MakeRotateZMatrix(uvTransform_.rotate.z);
 	Matrix4x4 translateMatrix = MatrixMath::MakeTranslateMatrix(uvTransform_.translate);
 	materialData_->uvTransform = MatrixMath::Multiply(MatrixMath::Multiply(scaleMatrix, rotateMatrix), translateMatrix);
+
+
+
 }
 
 //=================================================================================
@@ -56,6 +67,7 @@ void Material::UpdateMaterialImGui() {
 		ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
 		ImGui::DragFloat("Shininess", &materialData_->shininess, 0.1f, 0.1f, 100.0f);
 		ImGui::DragFloat("EnvCoefficient", &materialData_->envCoefficient, 0.001f, 0.0f, 1.0f);
+		textureAnimation_->UpdateImGui("Texture Animation");
 
 		bool enableLighting = materialData_->enableLighting;
 		ImGui::Checkbox("EnableLighting", &enableLighting);

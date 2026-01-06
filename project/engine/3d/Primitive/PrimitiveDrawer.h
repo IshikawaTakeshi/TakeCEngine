@@ -8,6 +8,7 @@
 #include "engine/3d/Primitive/Plane.h"
 #include "engine/3d/Primitive/Sphere.h"
 #include "engine/3d/Primitive/Cube.h"
+#include "engine/3d/Primitive/Cone.h"
 #include "math/TransformMatrix.h"
 #include "Primitive/PrimitiveType.h"
 #include <memory>
@@ -38,16 +39,6 @@ namespace TakeC {
 		~PrimitiveDrawer() = default;
 
 	public:
-
-		//cone全体のデータ
-		struct ConeData {
-			PrimitiveMesh primitiveData_;
-			VertexData* vertexData_ = nullptr;
-			Material* material_ = nullptr;
-			float radius_;
-			float height_;
-			uint32_t subDivision_ = 32; // 分割数
-		};
 
 		//cylinder全体のデータ
 		struct CylinderData {
@@ -87,22 +78,14 @@ namespace TakeC {
 		// 描画処理(particle用)
 		void DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType type, uint32_t handle);
 		// 描画処理(オブジェクト用)
-		void DrawAllObject(PSO* pso, PrimitiveType type, uint32_t handle);
+		void DrawObject(PSO* pso, PrimitiveType type, uint32_t handle);
 
 		Plane::PlaneData* GetPlaneData(uint32_t handle);
 		Sphere::SphereData* GetSphereData(uint32_t handle);
 		Ring::RingData* GetRingData(uint32_t handle);
-		ConeData* GetConeData(uint32_t handle);
+		Cone::ConeData* GetConeData(uint32_t handle);
 
 		void SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color);
-
-	private:
-
-		// Cone
-		void CreateConeVertexData(ConeData* coneData);
-
-		// マテリアルの作成関数
-		void CreateConeMaterial(const std::string& textureFilePath, ConeData* coneData);
 
 	private:
 
@@ -123,10 +106,7 @@ namespace TakeC {
 		std::unique_ptr<TakeC::Sphere> sphere_ = nullptr;
 
 		//cone
-		std::unordered_map<uint32_t, std::unique_ptr<ConeData>> coneDatas_;
-		uint32_t coneVertexIndex_ = 0;
-		uint32_t coneVertexCount_ = 0;
-		uint32_t coneHandle_ = 0;
+		std::unique_ptr<TakeC::Cone> cone_ = nullptr;
 
 		//cube
 		std::unique_ptr<TakeC::Cube> cube_ = nullptr;

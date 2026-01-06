@@ -102,7 +102,7 @@ void SkyBox::Draw() {
 	commandList->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
 	//プリミティブ描画
-	TakeCFrameWork::GetPrimitiveDrawer()->DrawAllObject(
+	TakeCFrameWork::GetPrimitiveDrawer()->DrawObject(
 		pso_.get(),
 		PRIMITIVE_CUBE,
 		primitiveHandle_
