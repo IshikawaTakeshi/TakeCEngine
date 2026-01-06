@@ -11,6 +11,7 @@
 #include <memory>
 #include <unordered_map>
 #include <string>
+#include <cstdint>
 
 namespace TakeC {
 
@@ -106,14 +107,14 @@ namespace TakeC {
 		/// </summary>
 		/// <param name="handle"></param>
 		/// <param name="textureFilePath"></param>
-		virtual void CreateMaterial(uint32_t handle, const std::string& textureFilePath);
+		virtual void CreateMaterial(TData* data, const std::string& textureFilePath);
 
 		/// <summary>
 		/// 共通描画処理
 		/// </summary>
 		/// <param name="pso"></param>
 		/// <param name="handle"></param>
-		void DrawCommon(PSO* pso, uint32_t handle);
+		void DrawCommon(PSO* pso, TData* data);
 
 		/// <summary>
 		/// データ登録
@@ -237,7 +238,7 @@ namespace TakeC {
 		if (it == datas_.end()) {
 			return;  // ハンドルが無効
 		}
-		it->second->material->SetColor(color);
+		it->second->material->SetMaterialColor(color);
 	}
 
 
@@ -254,9 +255,8 @@ namespace TakeC {
 	// 共通描画処理
 	//----------------------------------------------------------------------------
 	template<typename TData>
-	inline void PrimitiveBase<TData>::DrawCommon(PSO* pso, uint32_t handle) {
+	inline void PrimitiveBase<TData>::DrawCommon(PSO* pso, TData* data) {
 
-		auto& data = datas_[handle];
 		ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 		// プリミティブトポロジー設定
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -286,8 +286,7 @@ namespace TakeC {
 	// マテリアル作成
 	//----------------------------------------------------------------------------
 	template<typename TData>
-	inline void PrimitiveBase<TData>::CreateMaterial(uint32_t handle, const std::string& textureFilePath) {
-		auto& data = datas_[handle];
+	inline void PrimitiveBase<TData>::CreateMaterial(TData* data, const std::string& textureFilePath) {
 		data->material = std::make_unique<Material>();
 		data->material->Initialize(dxCommon_, textureFilePath, "");
 		data->material->InitializeMaterialResource(dxCommon_->GetDevice());

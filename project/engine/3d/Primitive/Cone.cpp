@@ -7,15 +7,6 @@
 using namespace TakeC;
 
 //============================================================================
-// 初期化
-//============================================================================
-
-void Cone::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager) {
-	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
-}
-
-//============================================================================
 // cone生成
 //============================================================================
 
@@ -27,10 +18,9 @@ uint32_t TakeC::Cone::Generate(float radius, float height, uint32_t subDivision,
 	// 頂点データ作成
 	CreateVertexData(coneData.get());
 	// マテリアル作成
-	CreateMaterial(textureFilePath, coneData.get());
+	CreateMaterial(coneData.get(),textureFilePath);
 	// ハンドルを発行して登録
-	uint32_t handle = nextHandle_++;
-	datas_[handle] = std::move(coneData);
+	uint32_t handle = RegisterData(std::move(coneData));
 	return handle;
 }
 
@@ -150,92 +140,12 @@ void TakeC::Cone::CreateVertexData(ConeData* coneData) {
 }
 
 //============================================================================
-// マテリアル作成関数
+// プリミティブデータ編集
 //============================================================================
+void TakeC::Cone::EditPrimitiveData(ConeData* data) {
 
-void TakeC::Cone::CreateMaterial(const std::string& textureFilePath, ConeData* coneData) {
-
-	coneData->material = std::make_unique<Material>();
-	coneData->material->Initialize(dxCommon_, textureFilePath, "");
-}
-
-//============================================================================
-// 描画処理(パーティクル用)
-//============================================================================
-
-void Cone::DrawParticle(PSO* pso, UINT instanceCount, uint32_t handle) {
-	// インスタンス数が0の場合は早期リターン
-	if (instanceCount == 0) {
-		return;
-	}
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;  // ハンドルが無効
-	}
-	auto& data = it->second;
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-	// プリミティブトポロジー設定
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// VertexBufferView 設定
-	commandList->IASetVertexBuffers(0, 1, &data->mesh.vertexBufferView_);
-	// マテリアル CBuffer 設定
-	commandList->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gMaterial"),
-		data->material->GetMaterialResource()->GetGPUVirtualAddress());
-	// テクスチャ設定
-	srvManager_->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance().GetSrvIndex(data->material->GetTextureFilePath()));
-	// 描画コマンド
-	commandList->DrawInstanced(data->vertexCount, instanceCount, 0, 0);
-}
-
-//============================================================================
-// 描画処理（オブジェクト用）
-//============================================================================
-
-void Cone::DrawObject(PSO* pso, uint32_t handle) {
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;  // ハンドルが無効
-	}
-	auto& data = it->second;
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-	// プリミティブトポロジー設定
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// VertexBufferView 設定
-	commandList->IASetVertexBuffers(0, 1, &data->mesh.vertexBufferView_);
-	// マテリアル CBuffer 設定
-	commandList->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gMaterial"),
-		data->material->GetMaterialResource()->GetGPUVirtualAddress());
-	// テクスチャ設定
-	srvManager_->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance().GetSrvIndex(data->material->GetTextureFilePath()));
-	// 描画コマンド
-	commandList->DrawInstanced(data->vertexCount, 1, 0, 0);
-}
-
-//============================================================================
-// データ取得
-//============================================================================
-
-Cone::ConeData* Cone::GetData(uint32_t handle) {
-	auto it = datas_.find(handle);
-	if (it != datas_.end()) {
-		return it->second.get();
-	}
-	return nullptr;
-}
-
-//============================================================================
-// マテリアル色設定
-//============================================================================
-
-void Cone::SetMaterialColor(uint32_t handle, const Vector4& color) {
-	auto it = datas_.find(handle);
-	if (it != datas_.end()) {
-		it->second->material->SetMaterialColor(color);
-	}
+	ImGui::Text("Cone Parameters");
+	ImGui::DragFloat("Radius", &data->radius, 0.1f, 0.1f, 100.0f);
+	ImGui::DragFloat("Height", &data->height, 0.1f, 0.1f, 100.0f);
+	ImGui::DragInt("Subdivision", reinterpret_cast<int*>(&data->subDivision), 1, 3, 100);
 }

@@ -53,29 +53,38 @@ void TakeC::PrimitiveDrawer::Finalize() {
 //============================================================================
 // ImGui更新処理（パラメータ付き）
 //============================================================================
-void TakeC::PrimitiveDrawer::UpdateImGui(uint32_t, PrimitiveType type, const Vector3&) {
+void TakeC::PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3&) {
 
 	switch (type) {
 	case PRIMITIVE_RING:
 	{
-
+		cube_->UpdateImGui(handle, "Edit Cube");
 	}
 	case PRIMITIVE_PLANE:
 	{
 		//Planeのパラメータ更新と表示
+		plane_->UpdateImGui(handle, "Edit Plane");
 		
 		break;
 	}
 	case PRIMITIVE_SPHERE:
 	{
 		//Sphereのパラメータ更新と表示
+		sphere_->UpdateImGui(handle, "Edit Sphere");
 		
 		break;
 	}
 	case PRIMITIVE_CONE:
 	{
 		//Coneのパラメータ更新と表示
+		cone_->UpdateImGui(handle, "Edit Cone");
 		
+		break;
+	}
+	case PRIMITIVE_CUBE:
+	{
+		//Cubeのパラメータ更新と表示
+		cube_->UpdateImGui(handle, "Edit Cube");
 		break;
 	}
 	default:
@@ -253,27 +262,27 @@ void TakeC::PrimitiveDrawer::DrawObject(PSO* pso, PrimitiveType type, uint32_t h
 //	データ取得関数
 //====================================================================
 
-Plane::PlaneData* TakeC::PrimitiveDrawer::GetPlaneData(uint32_t handle) {
+PlaneData* TakeC::PrimitiveDrawer::GetPlaneData(uint32_t handle) {
 	// planeDataを返す
 	return plane_->GetData(handle);
 }
 
-Sphere::SphereData* TakeC::PrimitiveDrawer::GetSphereData(uint32_t handle) {
+SphereData* TakeC::PrimitiveDrawer::GetSphereData(uint32_t handle) {
 	// sphereDataを返す
 	return sphere_->GetData(handle);
 }
 
-Ring::RingData* TakeC::PrimitiveDrawer::GetRingData(uint32_t handle) {
+RingData* TakeC::PrimitiveDrawer::GetRingData(uint32_t handle) {
 	return ring_->GetData(handle);
 }
 
 
-Cone::ConeData* TakeC::PrimitiveDrawer::GetConeData(uint32_t handle) {
+ConeData* TakeC::PrimitiveDrawer::GetConeData(uint32_t handle) {
 	// coneDataを返す
 	return cone_->GetData(handle);
 }
 
-Cube::CubeData* TakeC::PrimitiveDrawer::GetCubeData(uint32_t handle) {
+CubeData* TakeC::PrimitiveDrawer::GetCubeData(uint32_t handle) {
 	return cube_->GetData(handle);
 }
 
