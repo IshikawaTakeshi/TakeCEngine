@@ -32,6 +32,9 @@ void TakeC::PrimitiveDrawer::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::S
 	sphere_ = std::make_unique<TakeC::Sphere>();
 	sphere_->Initialize(dxCommon_, srvManager_);
 
+	cone_ = std::make_unique<TakeC::Cone>();
+	cone_->Initialize(dxCommon_, srvManager_);
+
 }
 
 //============================================================================
@@ -50,7 +53,7 @@ void TakeC::PrimitiveDrawer::Finalize() {
 //============================================================================
 // ImGui更新処理（パラメータ付き）
 //============================================================================
-void TakeC::PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param) {
+void TakeC::PrimitiveDrawer::UpdateImGui(uint32_t, PrimitiveType type, const Vector3&) {
 
 	switch (type) {
 	case PRIMITIVE_RING:
@@ -125,9 +128,6 @@ uint32_t TakeC::PrimitiveDrawer::GenerateCube(const AABB& size, const std::strin
 
 void TakeC::PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType type, uint32_t handle) {
 
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-
-
 	switch (type) {
 	case PRIMITIVE_RING:
 	{
@@ -193,8 +193,6 @@ void TakeC::PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, Primitiv
 //=================================================================================
 void TakeC::PrimitiveDrawer::DrawObject(PSO* pso, PrimitiveType type, uint32_t handle) {
 
-
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 	switch (type) {
 	case PRIMITIVE_RING:
 	{
@@ -222,7 +220,7 @@ void TakeC::PrimitiveDrawer::DrawObject(PSO* pso, PrimitiveType type, uint32_t h
 		//		sphereの描画
 		//--------------------------------------------------
 		
-		ring_->DrawObject(pso, handle);
+		sphere_->DrawObject(pso, handle);
 		break;
 	}
 	case PRIMITIVE_CONE:
@@ -273,6 +271,10 @@ Ring::RingData* TakeC::PrimitiveDrawer::GetRingData(uint32_t handle) {
 Cone::ConeData* TakeC::PrimitiveDrawer::GetConeData(uint32_t handle) {
 	// coneDataを返す
 	return cone_->GetData(handle);
+}
+
+Cube::CubeData* TakeC::PrimitiveDrawer::GetCubeData(uint32_t handle) {
+	return cube_->GetData(handle);
 }
 
 void TakeC::PrimitiveDrawer::SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color) {

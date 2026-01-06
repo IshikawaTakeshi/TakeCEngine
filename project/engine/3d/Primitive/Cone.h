@@ -95,7 +95,7 @@ namespace TakeC {
 		// SrvManagerへのポインタ
 		SrvManager* srvManager_ = nullptr;
 		// coneデータマップ
-		std::unordered_map<uint32_t, std::unique_ptr<ConeData>> coneDataMap_;
+		std::unordered_map<uint32_t, std::unique_ptr<ConeData>> datas_;
 		// 次のハンドル値
 		uint32_t nextHandle_ = 0;
 	};

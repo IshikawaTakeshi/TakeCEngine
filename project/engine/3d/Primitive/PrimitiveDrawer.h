@@ -84,6 +84,7 @@ namespace TakeC {
 		Sphere::SphereData* GetSphereData(uint32_t handle);
 		Ring::RingData* GetRingData(uint32_t handle);
 		Cone::ConeData* GetConeData(uint32_t handle);
+		Cube::CubeData* GetCubeData(uint32_t handle);
 
 		void SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color);
 

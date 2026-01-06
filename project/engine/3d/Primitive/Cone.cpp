@@ -30,7 +30,7 @@ uint32_t TakeC::Cone::Generate(float radius, float height, uint32_t subDivision,
 	CreateMaterial(textureFilePath, coneData.get());
 	// ハンドルを発行して登録
 	uint32_t handle = nextHandle_++;
-	coneDataMap_[handle] = std::move(coneData);
+	datas_[handle] = std::move(coneData);
 	return handle;
 }
 
@@ -149,8 +149,93 @@ void TakeC::Cone::CreateVertexData(ConeData* coneData) {
 	coneData->vertexCount += vertexIndex;
 }
 
+//============================================================================
+// マテリアル作成関数
+//============================================================================
+
 void TakeC::Cone::CreateMaterial(const std::string& textureFilePath, ConeData* coneData) {
 
 	coneData->material = std::make_unique<Material>();
 	coneData->material->Initialize(dxCommon_, textureFilePath, "");
+}
+
+//============================================================================
+// 描画処理(パーティクル用)
+//============================================================================
+
+void Cone::DrawParticle(PSO* pso, UINT instanceCount, uint32_t handle) {
+	// インスタンス数が0の場合は早期リターン
+	if (instanceCount == 0) {
+		return;
+	}
+	auto it = datas_.find(handle);
+	if (it == datas_.end()) {
+		return;  // ハンドルが無効
+	}
+	auto& data = it->second;
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+	// プリミティブトポロジー設定
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// VertexBufferView 設定
+	commandList->IASetVertexBuffers(0, 1, &data->mesh.vertexBufferView_);
+	// マテリアル CBuffer 設定
+	commandList->SetGraphicsRootConstantBufferView(
+		pso->GetGraphicBindResourceIndex("gMaterial"),
+		data->material->GetMaterialResource()->GetGPUVirtualAddress());
+	// テクスチャ設定
+	srvManager_->SetGraphicsRootDescriptorTable(
+		pso->GetGraphicBindResourceIndex("gTexture"),
+		TextureManager::GetInstance().GetSrvIndex(data->material->GetTextureFilePath()));
+	// 描画コマンド
+	commandList->DrawInstanced(data->vertexCount, instanceCount, 0, 0);
+}
+
+//============================================================================
+// 描画処理（オブジェクト用）
+//============================================================================
+
+void Cone::DrawObject(PSO* pso, uint32_t handle) {
+	auto it = datas_.find(handle);
+	if (it == datas_.end()) {
+		return;  // ハンドルが無効
+	}
+	auto& data = it->second;
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+	// プリミティブトポロジー設定
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// VertexBufferView 設定
+	commandList->IASetVertexBuffers(0, 1, &data->mesh.vertexBufferView_);
+	// マテリアル CBuffer 設定
+	commandList->SetGraphicsRootConstantBufferView(
+		pso->GetGraphicBindResourceIndex("gMaterial"),
+		data->material->GetMaterialResource()->GetGPUVirtualAddress());
+	// テクスチャ設定
+	srvManager_->SetGraphicsRootDescriptorTable(
+		pso->GetGraphicBindResourceIndex("gTexture"),
+		TextureManager::GetInstance().GetSrvIndex(data->material->GetTextureFilePath()));
+	// 描画コマンド
+	commandList->DrawInstanced(data->vertexCount, 1, 0, 0);
+}
+
+//============================================================================
+// データ取得
+//============================================================================
+
+Cone::ConeData* Cone::GetData(uint32_t handle) {
+	auto it = datas_.find(handle);
+	if (it != datas_.end()) {
+		return it->second.get();
+	}
+	return nullptr;
+}
+
+//============================================================================
+// マテリアル色設定
+//============================================================================
+
+void Cone::SetMaterialColor(uint32_t handle, const Vector4& color) {
+	auto it = datas_.find(handle);
+	if (it != datas_.end()) {
+		it->second->material->SetMaterialColor(color);
+	}
 }
