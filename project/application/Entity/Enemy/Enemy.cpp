@@ -234,10 +234,31 @@ void Enemy::Update() {
 	aiBrainSystem_->SetDistanceToTarget(distance);
 	aiBrainSystem_->Update();
 
-	if (enemyData_.characterInfo.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING || behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
+	if (enemyData_.characterInfo.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING ||
+		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
 		backEmitter_->SetIsEmit(true);
 	} else {
 		backEmitter_->SetIsEmit(false);
+	}
+
+	//モデルの回転処理
+	if (enemyData_.characterInfo.isAlive) {
+		//生存中はフォーカス対象に向く
+		Quaternion targetRotate = QuaternionMath::LookRotation(
+			Vector3Math::Normalize(enemyData_.characterInfo.focusTargetPos - enemyData_.characterInfo.transform.translate),
+			{ 0.0f,1.0f,0.0f });
+		
+		enemyData_.characterInfo.transform.rotate = Easing::Slerp(enemyData_.characterInfo.transform.rotate, targetRotate, 0.1f);
+		enemyData_.characterInfo.transform.rotate = QuaternionMath::Normalize(enemyData_.characterInfo.transform.rotate);
+
+	} else {
+		if (enemyData_.characterInfo.moveDirection.x != 0.0f || enemyData_.characterInfo.moveDirection.z != 0.0f) {
+			//移動方向に合わせて回転
+			float targetAngle = atan2(enemyData_.characterInfo.moveDirection.x, enemyData_.characterInfo.moveDirection.z);
+			Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
+			enemyData_.characterInfo.transform.rotate = Easing::Slerp(enemyData_.characterInfo.transform.rotate, targetRotate, 0.05f);
+			enemyData_.characterInfo.transform.rotate = QuaternionMath::Normalize(enemyData_.characterInfo.transform.rotate);
+		}
 	}
 	
 	//Quaternionからオイラー角に変換
@@ -274,7 +295,6 @@ void Enemy::Update() {
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(enemyData_.characterInfo.transform.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(enemyData_.characterInfo.transform.translate);
 
-	
 	// 着地判定の毎フレームリセット
 	enemyData_.characterInfo.onGround = false; 
 

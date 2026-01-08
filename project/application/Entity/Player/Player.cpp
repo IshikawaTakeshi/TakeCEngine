@@ -238,8 +238,9 @@ void Player::Update() {
 
 
 	//モデルの回転処理
-	if (isUseWeapon_) {
-		//武器使用中はカメラの向きに合わせる
+	if (camera_->GetCameraState() == Camera::GameCameraState::LOCKON ||
+		camera_->GetCameraState() == Camera::GameCameraState::ENEMY_DESTROYED) {
+		//ロックオン中はカメラの向きに合わせる
 		Quaternion targetRotate = camera_->GetRotate();
 		playerData_.characterInfo.transform.rotate = Easing::Slerp(playerData_.characterInfo.transform.rotate, targetRotate, 0.25f);
 		playerData_.characterInfo.transform.rotate = QuaternionMath::Normalize(playerData_.characterInfo.transform.rotate);
@@ -256,7 +257,6 @@ void Player::Update() {
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::ToEuler(playerData_.characterInfo.transform.rotate);
 	//カメラの設定
-	
 	camera_->SetFollowTargetPos(*object3d_->GetModel()->GetSkeleton()->GetJointPosition("neck", object3d_->GetWorldMatrix()));
 	camera_->SetFollowTargetRot(eulerRotate);
 	camera_->SetFocusTargetPos(playerData_.characterInfo.focusTargetPos);
