@@ -1,118 +1,25 @@
 #include "Plane.h"
 #include "engine/Math/MatrixMath.h"
 #include "engine/Math/MathEnv.h"
-#include "engine/Base/TextureManager.h"
+#include "engine/Base/ImGuiManager.h"
 
 using namespace TakeC;
 
 //============================================================================
-// 初期化
-//============================================================================
-
-void Plane::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager) {
-	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
-}
-
-//============================================================================
-// plane生成
+// planeデータの生成
 //============================================================================
 
 uint32_t Plane::Generate(float width, float height, const std::string& textureFilePath) {
-	auto plane = std::make_unique<PlaneData>();
-	plane->width = width;
-	plane->height = height;
+	auto planeData = std::make_unique<PlaneData>();
+	planeData->width = width;
+	planeData->height = height;
 	// 頂点データ作成
-	CreateVertexData(plane.get());
+	CreateVertexData(planeData.get());
 	// マテリアル作成
-	CreateMaterial(textureFilePath, plane.get());
+	CreateMaterial(planeData.get(), textureFilePath);
 	// ハンドルを発行して登録
-	uint32_t handle = nextHandle_++;
-	datas_[handle] = std::move(plane);
+	uint32_t handle = RegisterData(std::move(planeData));
 	return handle;
-}
-
-//============================================================================
-// 描画処理(パーティクル用)
-//============================================================================
-
-void Plane::DrawParticle(PSO* pso, UINT instanceCount, uint32_t handle) {
-	// インスタンス数が0の場合は早期リターン
-	if (instanceCount == 0) {
-		return;
-	}
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;  // ハンドルが無効
-	}
-	auto& planeData = it->second;
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-	// プリミティブトポロジー設定
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// VertexBufferView 設定
-	commandList->IASetVertexBuffers(0, 1, &planeData->mesh.vertexBufferView_);
-	// マテリアル CBuffer 設定
-	commandList->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gMaterial"),
-		planeData->material->GetMaterialResource()->GetGPUVirtualAddress());
-	// テクスチャ設定
-	srvManager_->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance().GetSrvIndex(planeData->material->GetTextureFilePath()));
-
-	//このRing固有の頂点数を使用
-	commandList->DrawInstanced(planeData->vertexCount, instanceCount, 0, 0);
-}
-
-//============================================================================
-// 描画処理（オブジェクト用）
-//============================================================================
-
-void Plane::DrawObject(PSO* pso, uint32_t handle) {
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;  // ハンドルが無効
-	}
-	auto& planeData = it->second;
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-	// プリミティブトポロジー設定
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// VertexBufferView 設定
-	commandList->IASetVertexBuffers(0, 1, &planeData->mesh.vertexBufferView_);
-	// マテリアル CBuffer 設定
-	commandList->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gMaterial"),
-		planeData->material->GetMaterialResource()->GetGPUVirtualAddress());
-	// テクスチャ設定
-	srvManager_->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance().GetSrvIndex(planeData->material->GetTextureFilePath()));
-	//このRing固有の頂点数を使用
-	commandList->DrawInstanced(planeData->vertexCount, 1, 0, 0);
-}
-
-//============================================================================
-// planeデータ取得
-//============================================================================
-
-Plane::PlaneData* Plane::GetData(uint32_t handle) {
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return nullptr;  // ハンドルが無効
-	}
-	return it->second.get();
-}
-
-//============================================================================
-// マテリアル色設定
-//============================================================================
-
-void Plane::SetMaterialColor(uint32_t handle, const Vector4& color) {
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;  // ハンドルが無効
-	}
-	it->second->material->SetMaterialColor(color);
 }
 
 //============================================================================
@@ -157,11 +64,9 @@ void Plane::CreateVertexData(PlaneData* planeData) {
 
 }
 
-//============================================================================
-// マテリアル作成
-//============================================================================
+void TakeC::Plane::EditPrimitiveData(PlaneData* planeData) {
 
-void Plane::CreateMaterial(const std::string& textureFilePath, PlaneData* planeData) {
-	planeData->material = std::make_unique<Material>();
-	planeData->material->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
+	ImGui::Text("Plane Parameters");
+	ImGui::DragFloat("Width", &planeData->width, 0.1f);
+	ImGui::DragFloat("Height", &planeData->height, 0.1f);
 }

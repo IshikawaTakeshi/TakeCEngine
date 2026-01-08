@@ -193,8 +193,11 @@ void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
 		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetSphereData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
-	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetConeData(primitiveHandle_)->material_;
+	} else if (particlePreset_.primitiveType == PRIMITIVE_CONE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetConeData(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+	}else if(particlePreset_.primitiveType == PRIMITIVE_CUBE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetCubeData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");

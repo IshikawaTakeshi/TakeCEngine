@@ -7,15 +7,6 @@
 using namespace TakeC;
 
 //============================================================================
-// 初期化
-//============================================================================
-
-void Cone::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager) {
-	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
-}
-
-//============================================================================
 // cone生成
 //============================================================================
 
@@ -27,10 +18,9 @@ uint32_t TakeC::Cone::Generate(float radius, float height, uint32_t subDivision,
 	// 頂点データ作成
 	CreateVertexData(coneData.get());
 	// マテリアル作成
-	CreateMaterial(textureFilePath, coneData.get());
+	CreateMaterial(coneData.get(),textureFilePath);
 	// ハンドルを発行して登録
-	uint32_t handle = nextHandle_++;
-	coneDataMap_[handle] = std::move(coneData);
+	uint32_t handle = RegisterData(std::move(coneData));
 	return handle;
 }
 
@@ -149,8 +139,13 @@ void TakeC::Cone::CreateVertexData(ConeData* coneData) {
 	coneData->vertexCount += vertexIndex;
 }
 
-void TakeC::Cone::CreateMaterial(const std::string& textureFilePath, ConeData* coneData) {
+//============================================================================
+// プリミティブデータ編集
+//============================================================================
+void TakeC::Cone::EditPrimitiveData(ConeData* data) {
 
-	coneData->material = std::make_unique<Material>();
-	coneData->material->Initialize(dxCommon_, textureFilePath, "");
+	ImGui::Text("Cone Parameters");
+	ImGui::DragFloat("Radius", &data->radius, 0.1f, 0.1f, 100.0f);
+	ImGui::DragFloat("Height", &data->height, 0.1f, 0.1f, 100.0f);
+	ImGui::DragInt("Subdivision", reinterpret_cast<int*>(&data->subDivision), 1, 3, 100);
 }

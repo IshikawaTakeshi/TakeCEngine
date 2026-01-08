@@ -6,15 +6,6 @@
 using namespace TakeC;
 
 //============================================================================
-// 初期化
-//============================================================================
-
-void Sphere::Initialize(TakeC::DirectXCommon* dxCommon,TakeC::SrvManager* srvManager) {
-	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
-}
-
-//============================================================================
 // sphereデータの生成
 //============================================================================
 
@@ -24,97 +15,15 @@ uint32_t Sphere::Generate(float radius, const std::string& textureFilePath) {
 	// 頂点データ作成
 	CreateVertexData(sphere.get());
 	// マテリアル作成
-	CreateMaterial(textureFilePath, sphere.get());
+	CreateMaterial(sphere.get(),textureFilePath);
 	// ハンドルを発行して登録
-	uint32_t handle = nextHandle_++;
-	datas_[handle] = std::move(sphere);
+	uint32_t handle = RegisterData(std::move(sphere));
 	return handle;
 }
 
 //============================================================================
-// 描画処理(パーティクル用)
+// 頂点データ作成
 //============================================================================
-
-void Sphere::DrawParticle(PSO* pso, UINT instanceCount, uint32_t handle) {
-	// インスタンス数が0の場合は早期リターン
-	if (instanceCount == 0) {
-		return;
-	}
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;  // ハンドルが無効
-	}
-	auto& sphereData = it->second;
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-	// プリミティブトポロジー設定
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// VertexBufferView 設定
-	commandList->IASetVertexBuffers(0, 1, &sphereData->mesh.vertexBufferView_);
-	// マテリアル CBuffer 設定
-	commandList->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gMaterial"),
-		sphereData->material->GetMaterialResource()->GetGPUVirtualAddress());
-	// テクスチャ設定
-	srvManager_->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance().GetSrvIndex(sphereData->material->GetTextureFilePath()));
-
-	//このsphereData固有の頂点数を使用
-	commandList->DrawInstanced(sphereData->vertexCount, instanceCount, 0, 0);
-}
-
-//============================================================================
-// 描画処理（オブジェクト用）
-//============================================================================
-
-void Sphere::DrawObject(PSO* pso, uint32_t handle) {
-
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;  // ハンドルが無効
-	}
-	auto& sphereData = it->second;
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-	// プリミティブトポロジー設定
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// VertexBufferView 設定
-	commandList->IASetVertexBuffers(0, 1, &sphereData->mesh.vertexBufferView_);
-	// マテリアル CBuffer 設定
-	commandList->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gMaterial"),
-		sphereData->material->GetMaterialResource()->GetGPUVirtualAddress());
-	// テクスチャ設定
-	srvManager_->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance().GetSrvIndex(sphereData->material->GetTextureFilePath()));
-	//このSphere固有の頂点数を使用
-	commandList->DrawInstanced(sphereData->vertexCount, 1, 0, 0);
-}
-
-//============================================================================
-// データ取得
-//============================================================================
-
-Sphere::SphereData* Sphere::GetData(uint32_t handle) {
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return nullptr;  // ハンドルが無効
-	}
-	return it->second.get();
-}
-
-//============================================================================
-// マテリアル色設定
-//============================================================================
-
-void Sphere::SetMaterialColor(uint32_t handle, const Vector4& color) {
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;  // ハンドルが無効
-	}
-	it->second->material->GetMaterialData()->color = color;
-}
-
 void TakeC::Sphere::CreateVertexData(SphereData* sphereData) {
 	
 	auto CreateSphereVertex = [&](const Vector3& pos, uint32_t lonIndex, uint32_t latIndex, uint32_t kSubdivision, float radius) {
@@ -202,9 +111,12 @@ void TakeC::Sphere::CreateVertexData(SphereData* sphereData) {
 	sphereData->vertexCount = vertexIndex;
 }
 
-void TakeC::Sphere::CreateMaterial(const std::string& textureFilePath, SphereData* sphereData) {
+//============================================================================
+// プリミティブデータ編集
+//============================================================================
+void TakeC::Sphere::EditPrimitiveData(SphereData* data) {
 
-	sphereData->material = std::make_unique<Material>();
-	sphereData->material->Initialize(dxCommon_, textureFilePath, "");
-	sphereData->material->InitializeMaterialResource(dxCommon_->GetDevice());
+	ImGui::Text("Sphere Parameters");
+	ImGui::DragFloat("Radius", &data->radius, 0.1f, 0.1f, 100.0f);
+	ImGui::DragInt("Subdivision", reinterpret_cast<int*>(&data->subDivision), 1.0f, 4, 64);
 }

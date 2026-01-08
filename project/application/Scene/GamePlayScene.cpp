@@ -356,9 +356,9 @@ void GamePlayScene::DrawShadow() {
 	//影の描画
 	player_->DrawShadow(lightCameraInfo);
 	enemy_->DrawShadow(lightCameraInfo);
-	/*for (auto& object : levelObjects_) {
+	for (auto& object : levelObjects_) {
 		object.second->DrawShadow(lightCameraInfo);
-	}*/
+	}
 }
 
 //====================================================================

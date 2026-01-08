@@ -6,14 +6,6 @@
 using namespace TakeC;
 
 //============================================================================
-// 初期化
-//============================================================================
-void Ring::Initialize(TakeC::DirectXCommon* dxCommon,TakeC::SrvManager* srvManager) {
-	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
-}
-
-//============================================================================
 // リングデータの生成
 //============================================================================
 uint32_t Ring::Generate(float outerRadius, float innerRadius, const std::string& textureFilePath) {
@@ -24,10 +16,9 @@ uint32_t Ring::Generate(float outerRadius, float innerRadius, const std::string&
 	// 頂点データ作成
 	CreateVertexData(ring.get());
 	// マテリアル作成
-	CreateMaterial(textureFilePath, ring.get());
+	CreateMaterial(ring.get(),textureFilePath);
 	// ハンドルを発行して登録
-	uint32_t handle = nextHandle_++;
-	datas_[handle] = std::move(ring);
+	uint32_t handle = RegisterData(std::move(ring));
 	return handle;
 }
 
@@ -78,90 +69,15 @@ void Ring::CreateVertexData(RingData* ringData) {
 		}
 		vertexIndex += kVerticesPerSegment;
 	}
-	ringData->vertexCount = vertexIndex;
-}
-//============================================================================
-// マテリアル作成
-//============================================================================
-void Ring::CreateMaterial(const std::string& textureFilePath, RingData* ringData) {
-	ringData->material = std::make_unique<Material>();
-	ringData->material->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
-	ringData->material->SetEnableLighting(false);
-	ringData->material->SetEnvCoefficient(0.0f);
-	ringData->material->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-	ringData->material->SetUvScale({ 2.5f, 0.5f, 1.0f });
 }
 
 //============================================================================
-// 描画処理(パーティクル用)
+// プリミティブデータ編集
 //============================================================================
-void Ring::DrawParticle(PSO* pso, UINT instanceCount, uint32_t handle) {
+void TakeC::Ring::EditPrimitiveData(RingData* data) {
 
-	// インスタンス数が0の場合は早期リターン
-	if (instanceCount == 0) {
-		return;
-	}
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;  // ハンドルが無効
-	}
-	auto& ringData = it->second;
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-	// プリミティブトポロジー設定
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// VertexBufferView 設定
-	commandList->IASetVertexBuffers(0, 1, &ringData->mesh.vertexBufferView_);
-	// マテリアル CBuffer 設定
-	commandList->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gMaterial"),
-		ringData->material->GetMaterialResource()->GetGPUVirtualAddress());
-	// テクスチャ設定
-	srvManager_->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance().GetSrvIndex(ringData->material->GetTextureFilePath()));
+	ImGui::Text("Ring Parameters");
+	ImGui::DragFloat("Outer Radius", &data->outerRadius, 0.1f, 0.1f, 100.0f);
+	ImGui::DragFloat("Inner Radius", &data->innerRadius, 0.1f, 0.01f, data->outerRadius - 0.01f);
 
-	//このRing固有の頂点数を使用
-	commandList->DrawInstanced(ringData->vertexCount, instanceCount, 0, 0);
-}
-
-//============================================================================
-// 描画処理（オブジェクト用）
-//============================================================================
-void Ring::DrawObject(PSO* pso, uint32_t handle) {
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;
-	}
-	auto& ringData = it->second;
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	commandList->IASetVertexBuffers(0, 1, &ringData->mesh.vertexBufferView_);
-	commandList->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gMaterial"),
-		ringData->material->GetMaterialResource()->GetGPUVirtualAddress());
-	srvManager_->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance().GetSrvIndex(ringData->material->GetTextureFilePath()));
-	// このRing固有の頂点数を使用（インスタンス数は1）
-	commandList->DrawInstanced(ringData->vertexCount, 1, 0, 0);
-}
-//============================================================================
-// データ取得
-//============================================================================
-Ring::RingData* Ring::GetData(uint32_t handle) {
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return nullptr;
-	}
-	return it->second.get();
-}
-//============================================================================
-// マテリアル色設定
-//============================================================================
-void Ring::SetMaterialColor(uint32_t handle, const Vector4& color) {
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;
-	}
-	it->second->material->SetMaterialColor(color);
 }

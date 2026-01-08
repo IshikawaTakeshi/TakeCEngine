@@ -15,15 +15,6 @@
 #include <cstdint>
 #include <unordered_map>
 
-// プリミティブメッシュ構造体
-struct PrimitiveMesh {
-	ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
-	ComPtr<ID3D12Resource> indexBuffer_ = nullptr;
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
-};
-
-
 //============================================================================
 // PrimitiveDrawer class
 //============================================================================
@@ -80,10 +71,11 @@ namespace TakeC {
 		// 描画処理(オブジェクト用)
 		void DrawObject(PSO* pso, PrimitiveType type, uint32_t handle);
 
-		Plane::PlaneData* GetPlaneData(uint32_t handle);
-		Sphere::SphereData* GetSphereData(uint32_t handle);
-		Ring::RingData* GetRingData(uint32_t handle);
-		Cone::ConeData* GetConeData(uint32_t handle);
+		PlaneData* GetPlaneData(uint32_t handle);
+		SphereData* GetSphereData(uint32_t handle);
+		RingData* GetRingData(uint32_t handle);
+		ConeData* GetConeData(uint32_t handle);
+		CubeData* GetCubeData(uint32_t handle);
 
 		void SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color);
 
@@ -92,8 +84,9 @@ namespace TakeC {
 		TakeC::DirectXCommon* dxCommon_ = nullptr;
 		TakeC::SrvManager* srvManager_ = nullptr;
 
-		TransformMatrix* TransformMatrixData_ = nullptr;
-		EulerTransform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+		// 統一されたプリミティブデータマップ
+		//std::unordered_map<uint32_t, std::unique_ptr<PrimitiveDataHolder>> primitiveDataMap_;
+		//uint32_t nextHandle_ = 0;
 
 		// プリミティブデータ管理用マップ
 		//ring

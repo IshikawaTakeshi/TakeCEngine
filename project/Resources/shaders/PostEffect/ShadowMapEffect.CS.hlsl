@@ -70,7 +70,7 @@ float SampleShadowPCF(float4 posLS, float bias, float pcfRange) {
 			float2 offset = float2(x, y) * texelSize;
 			float sampledDepth = gShadowMapDepth.SampleLevel(gSampler, shadowUV + offset, 0).r;
 			// 深度比較:  currentDepthがsampledDepth以下なら光が当たる（影でない）
-			shadow += (currentDepth <= sampledDepth) ? 1.0f : 0.0f;
+			shadow += (currentDepth <= sampledDepth) ? 1.0f : 0.5f;
 			sampleCount++;
 		}
 	}
@@ -103,7 +103,7 @@ float SampleShadow(float4 posLS, float bias) {
 	float currentDepth = proj.z - bias;
     
     // 影の中なら 0、そうでなければ 1
-	return (currentDepth <= shadowDepth) ? 1.0f : 0.0f;
+	return (currentDepth <= shadowDepth) ? 1.0f : 0.5f;
 }
 
 

@@ -85,8 +85,8 @@ namespace TakeC {
 // JSONデータの保存
 //-------------------------------------------------------------------------------
 template<typename T>
-inline void TakeC::JsonLoader::SaveJsonData(const std::string& filePath, const T& data) {
 	// フルパスを生成
+inline void TakeC::JsonLoader::SaveJsonData(const std::string& filePath, const T& data) {
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
 	std::string fileFullPath = directory.string() + filePath;
 
