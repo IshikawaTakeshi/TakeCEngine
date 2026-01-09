@@ -73,10 +73,6 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 //=============================================================================
 void PrimitiveParticle::Update() {
 
-	// ランダムエンジンの初期化  
-	std::random_device seedGenerator;
-	std::mt19937 randomEngine(seedGenerator());
-
 	numInstance_ = 0;
 	for (std::list<Particle>::iterator particleIterator = particles_.begin();
 		particleIterator != particles_.end(); ) {
@@ -197,8 +193,11 @@ void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
 		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetSphereData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
-	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetConeData(primitiveHandle_)->material_;
+	} else if (particlePreset_.primitiveType == PRIMITIVE_CONE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetConeData(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+	}else if(particlePreset_.primitiveType == PRIMITIVE_CUBE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetCubeData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");

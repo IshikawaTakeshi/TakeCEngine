@@ -39,7 +39,7 @@ void GamePlayScene::Initialize() {
 	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 
 	//levelObjectの初期化
-	sceneManager_->LoadLevelData("levelData_gameScene_3");
+	sceneManager_->LoadLevelData("levelData_gameScene_4");
 	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
 
 	for (auto& object : levelObjects_) {
@@ -356,9 +356,9 @@ void GamePlayScene::DrawShadow() {
 	//影の描画
 	player_->DrawShadow(lightCameraInfo);
 	enemy_->DrawShadow(lightCameraInfo);
-	/*for (auto& object : levelObjects_) {
+	for (auto& object : levelObjects_) {
 		object.second->DrawShadow(lightCameraInfo);
-	}*/
+	}
 }
 
 //====================================================================

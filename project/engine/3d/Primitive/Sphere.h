@@ -1,42 +1,27 @@
 #pragma once
-#include "DirectXCommon.h"
-#include "PipelineStateObject.h"
-#include "TransformMatrix.h"
-#include "Transform.h"
-#include "Mesh/Mesh.h"
 #include "engine/3d/Primitive/PrimitiveBase.h"
-#include "engine/Base/SrvManager.h"
-
-#include <memory>
-#include <unordered_map>
-#include <string>
 
 namespace TakeC {
+
+	//========================================================
+	// sphere情報の構造体
+	//========================================================
+
+	struct SphereData : public PrimitiveBaseData {
+		float radius = 1.0f; // 半径
+		uint32_t subDivision = 16; // 分割数
+	};
 
 	//============================================================
 	//	Sphere class
 	//============================================================
 
-	class Sphere {
+	class Sphere : public PrimitiveBase<SphereData> {
 	public:
-
-		//========================================================
-		// sphere情報の構造体
-		//========================================================
-
-		struct SphereData {
-			PrimitiveMesh mesh;
-			VertexData* vertexData = nullptr;
-			std::unique_ptr<Material> material = nullptr;
-			float radius = 1.0f; // 半径
-			uint32_t subDivision = 16; // 分割数
-			uint32_t vertexCount = 0; // このインスタンスの頂点数
-		};
 
 		//========================================================
 		// functions
 		//========================================================
-
 
 		/// <summary>
 		/// コンストラクタ・デストラクタ
@@ -45,63 +30,29 @@ namespace TakeC {
 		~Sphere() = default;
 
 		/// <summary>
-		/// 初期化
-		/// </summary>
-		/// <param name="dxCommon"></param>
-		void Initialize(TakeC::DirectXCommon* dxCommon,TakeC::SrvManager* srvManager);
-
-		/// <summary>
 		/// リングデータの生成
 		/// </summary>
 		/// <returns>生成したハンドル</returns>
 		uint32_t Generate(float radius, const std::string& textureFilePath);
 
-		/// <summary>
-		/// 描画処理(パーティクル用)
-		/// </summary>
-		/// <param name="pso"></param>
-		/// <param name="instanceCount"></param>
-		/// <param name="handle"></param>
-		void DrawParticle(PSO* pso, UINT instanceCount, uint32_t handle);
+	protected:
 
 		/// <summary>
-		/// 描画処理（オブジェクト用）
-		/// </summary>
-		void DrawObject(PSO* pso, uint32_t handle);
-
-		//========================================================================
-		// accessors
-		//========================================================================
-		/// データ取得
-		SphereData* GetData(uint32_t handle);
-		/// マテリアル色設定
-		void SetMaterialColor(uint32_t handle, const Vector4& color);
-
-	private:
-
-		//========================================================================
-		// private functions
-		//========================================================================
 		/// 頂点データ作成
+		/// </summary>
+		/// <param name="sphereData"></param>
 		void CreateVertexData(SphereData* sphereData);
-		/// マテリアル作成
-		void CreateMaterial(const std::string& textureFilePath, SphereData* sphereData);
+		/// <summary>
+		/// プリミティブデータ編集
+		/// </summary>
+		/// <param name="data"></param>
+		void EditPrimitiveData(SphereData* data);
+
 
 	private:
-
-		//========================================================================
-		// member variables
-		//========================================================================
-
-		DirectXCommon* dxCommon_ = nullptr;
-		SrvManager* srvManager_ = nullptr;
-		// プリミティブデータ管理用マップ
-		std::unordered_map<uint32_t, std::unique_ptr<SphereData>> datas_;
-		uint32_t nextHandle_ = 0;
 
 		// 定数
 		static constexpr uint32_t kVerticesPerSegment = 6;  // 1セグメントあたりの頂点数
 
 	};
-
 }

@@ -6,15 +6,6 @@
 using namespace TakeC;
 
 //============================================================================
-// 初期化
-//============================================================================
-
-void Cube::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager) {
-	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
-}
-
-//============================================================================
 // cube生成
 //============================================================================
 
@@ -25,94 +16,10 @@ uint32_t TakeC::Cube::Generate(const AABB& size, const std::string& textureFileP
 	// 頂点データ作成
 	CreateVertexData(cube.get());
 	// マテリアル作成
-	CreateMaterial(textureFilePath, cube.get());
+	CreateMaterial(cube.get(),textureFilePath);
 	// ハンドルを発行して登録
-	uint32_t handle = nextHandle_++;
-	datas_[handle] = std::move(cube);
+	uint32_t handle = RegisterData(std::move(cube));
 	return handle;
-}
-
-//============================================================================
-// 描画処理(パーティクル用)
-//============================================================================
-
-void TakeC::Cube::DrawParticle(PSO* pso, UINT instanceCount, uint32_t handle) {
-	// インスタンス数が0の場合は早期リターン
-	if (instanceCount == 0) {
-		return;
-	}
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;  // ハンドルが無効
-	}
-	auto& cubeData = it->second;
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-	// プリミティブトポロジー設定
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// VertexBufferView 設定
-	commandList->IASetVertexBuffers(0, 1, &cubeData->mesh.vertexBufferView_);
-	// マテリアル CBuffer 設定
-	commandList->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gMaterial"),
-		cubeData->material->GetMaterialResource()->GetGPUVirtualAddress());
-	// テクスチャ設定
-	srvManager_->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance().GetSrvIndex(cubeData->material->GetTextureFilePath()));
-	// 描画コマンド
-	commandList->DrawInstanced(cubeData->vertexCount, instanceCount, 0, 0);
-}
-
-//============================================================================
-// 描画処理（オブジェクト用）
-//============================================================================
-
-void TakeC::Cube::DrawObject(PSO* pso, uint32_t handle) {
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;  // ハンドルが無効
-	}
-	auto& cubeData = it->second;
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-	// プリミティブトポロジー設定
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// VertexBufferView 設定
-	commandList->IASetVertexBuffers(0, 1, &cubeData->mesh.vertexBufferView_);
-	// マテリアル CBuffer 設定
-	commandList->SetGraphicsRootConstantBufferView(
-		pso->GetGraphicBindResourceIndex("gMaterial"),
-		cubeData->material->GetMaterialResource()->GetGPUVirtualAddress());
-	// テクスチャ設定
-	srvManager_->SetGraphicsRootDescriptorTable(
-		pso->GetGraphicBindResourceIndex("gTexture"),
-		TextureManager::GetInstance().GetSrvIndex(cubeData->material->GetTextureFilePath()));
-	// 描画コマンド
-	commandList->DrawInstanced(cubeData->vertexCount, 1, 0, 0);
-}
-
-//============================================================================
-// データ取得
-//============================================================================
-
-Cube::CubeData* Cube::GetData(uint32_t handle) {
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return nullptr;  // ハンドルが無効
-	}
-	return it->second.get();
-}
-
-//============================================================================
-// マテリアル色設定
-//============================================================================
-
-void Cube::SetMaterialColor(uint32_t handle, const Vector4& color) {
-	auto it = datas_.find(handle);
-	if (it == datas_.end()) {
-		return;  // ハンドルが無効
-	}
-	auto& cubeData = it->second;
-	cubeData->material->GetMaterialData()->color = color;
 }
 
 //============================================================================
@@ -242,12 +149,9 @@ void Cube::CreateVertexData(CubeData* cubeData) {
 	cubeData->vertexCount = 36;
 }
 
-//============================================================================
-// マテリアル作成
-//============================================================================
+void TakeC::Cube::EditPrimitiveData(CubeData* data) {
 
-void TakeC::Cube::CreateMaterial(const std::string& textureFilePath, CubeData* planeData) {
-
-	planeData->material = std::make_unique<Material>();
-	planeData->material->Initialize(dxCommon_, textureFilePath, "rostock_laage_airport_4k.dds");
+	ImGui::Text("Cube Parameters");
+	ImGui::DragFloat3("Min", &data->size.min.x, 0.1f);
+	ImGui::DragFloat3("Max", &data->size.max.x, 0.1f);
 }

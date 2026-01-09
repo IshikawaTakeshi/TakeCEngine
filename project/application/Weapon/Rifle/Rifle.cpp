@@ -24,7 +24,6 @@ void Rifle::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMana
 	object3d_->Initialize(object3dCommon, weaponData_.modelFilePath);
 
 	// ライフルの色を設定
-	//object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.01f);
 
 
@@ -38,11 +37,10 @@ void Rifle::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMana
 		10, 0.01f);
 	muzzleFlashEmitter_->SetParticleName("RifleMuzzleFlash");
 
-	muzzleFlashEmitter2_ = std::make_unique<ParticleEmitter>();
-	muzzleFlashEmitter2_->Initialize("RifleMuzzleFlashEmitter2",
-		object3d_->GetTransform(),
-		10, 0.01f);
-	muzzleFlashEmitter2_->SetParticleName("RifleMuzzleFlash2");
+	// マズルフラッシュエフェクトの初期化
+	muzzleFlashEffect_ = std::make_unique<MuzzleFlashEffect>();
+	muzzleFlashEffect_->Initialize();
+	muzzleFlashEffect_->SetOwnerWeapon(this);
 }
 
 //===================================================================================
@@ -123,15 +121,17 @@ void Rifle::Update() {
 		object3d_->SetParent(*jointWorldMatrixOpt);
 	}
 
+	//3dオブジェクト更新
 	object3d_->Update();
 
+	//マズルフラッシュエミッター更新
 	muzzleFlashEmitter_->SetTranslate(object3d_->GetWorldPosition());
 	muzzleFlashEmitter_->Update();
-	muzzleFlashEmitter2_->SetTranslate(object3d_->GetWorldPosition());
-	muzzleFlashEmitter2_->Update();
+
+	//マズルフラッシュエフェクト更新
+	muzzleFlashEffect_->Update();
 
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("RifleMuzzleFlash")->SetEmitterPosition(object3d_->GetWorldPosition());
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("RifleMuzzleFlash2")->SetEmitterPosition(object3d_->GetWorldPosition());
 }
 
 //===================================================================================
@@ -165,6 +165,7 @@ void Rifle::Draw() {
 		return; // 弾がなくなったら描画しない
 	}
 	object3d_->Draw();
+	muzzleFlashEffect_->Draw();
 }
 
 //=====================================================================================
@@ -206,8 +207,12 @@ void Rifle::Attack() {
 		weaponState_.isReloading = true; // 弾がなくなったらリロード中にする
 		weaponState_.reloadTime = weaponData_.config.maxReloadTime; // リロード時間をリセット
 	}
-	muzzleFlashEmitter_->Emit();
-	muzzleFlashEmitter2_->Emit();
+
+	//マズルフラッシュパーティクルの発生
+	//muzzleFlashEmitter_->Emit();
+	// マズルフラッシュエフェクトの発生
+	muzzleFlashEffect_->Emit();
+	//射撃音の再生
 	AudioManager::GetInstance().SoundPlayWave(shotSE_, seVolume_);
 	//攻撃間隔のリセット
 	weaponState_.attackInterval = weaponData_.config.attackInterval;

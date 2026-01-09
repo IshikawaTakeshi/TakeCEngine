@@ -62,7 +62,7 @@ struct ParticleAttributes {
 // パーティクルプリセットを保持する構造体
 struct ParticlePreset {
 	std::string presetName; //プリセットの名前
-	ParticleAttributes attribute; //属性のマップ
+	ParticleAttributes attribute; //パーティクルの属性情報
 	BlendState blendState = BlendState::ADD;
 	std::string textureFilePath; //テクスチャファイル名
 	PrimitiveType primitiveType; //プリミティブの種類
@@ -82,10 +82,5 @@ void from_json(const json& j, ParticleAttributes& attributes);
 void from_json(const json& j, AttributeRange& attributeRange);
 void from_json(const json& j, ParticlePreset& preset);
 
-//型毎のディレクトリパス取得用テンプレート特殊化
-template<>
-struct JsonPath<ParticlePreset> {
-	static std::string GetDirectory() {
-		return kParticlePresetPath;
-	}
-};
+//ディレクトリパス設定
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(ParticlePreset, "Resources/JsonLoader/ParticlePresets/");

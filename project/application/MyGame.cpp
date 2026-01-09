@@ -186,15 +186,10 @@ void MyGame::LoadModel() {
 	TakeC::ModelManager::GetInstance().LoadModel("MultiICO.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Deer.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Bullet.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Rail.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Floor.gltf");
 	//obj
-	TakeC::ModelManager::GetInstance().LoadModel("plane.obj");
-	TakeC::ModelManager::GetInstance().LoadModel("sphere.obj");
-	TakeC::ModelManager::GetInstance().LoadModel("skyBox_airport.obj","rostock_laage_airport_4k.dds");
-	TakeC::ModelManager::GetInstance().LoadModel("skyBox_blueSky.obj","skyBox_blueSky.dds");
-	TakeC::ModelManager::GetInstance().LoadModel("skyBox_pool.obj","pool_4k.dds");
-	TakeC::ModelManager::GetInstance().LoadModel("ground.obj");
-	TakeC::ModelManager::GetInstance().LoadModel("axis.obj");
-	TakeC::ModelManager::GetInstance().LoadModel("cube.obj","pool_4k.dds");
+
 }
 
 //====================================================================
