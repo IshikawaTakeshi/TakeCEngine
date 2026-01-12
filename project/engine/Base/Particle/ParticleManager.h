@@ -3,6 +3,7 @@
 #include "engine/3d/Particle/PrimitiveParticle.h"
 #include "engine/3d/Particle/ParticleEmitterAllocater.h"
 #include "engine/base/BlendModeStateEnum.h"
+#include "base/TakeCFrameWork.h"
 #include <list>
 #include <wrl.h>
 #include <unordered_map>
@@ -33,7 +34,8 @@ namespace TakeC {
 		// 終了処理
 		void Finalize();
 
-		void UpdatePrimitiveType(const std::string& groupName, PrimitiveType type, const Vector3& param);
+		template<typename TPrimitive, typename...  Args>
+		void UpdatePrimitiveType(const std::string& groupName, Args&&... args);
 
 		/// <summary>
 		/// パーティクルグループの生成
@@ -70,4 +72,18 @@ namespace TakeC {
 		//パーティクル共通情報
 		ParticleCommon* particleCommon_ = nullptr;
 	};
+
+	template<typename TPrimitive, typename ...Args>
+	inline void ParticleManager::UpdatePrimitiveType(const std::string& groupName, Args && ...args) {
+
+		auto it = particleGroups_.find(groupName);
+		if (it != particleGroups_.end()) {
+			auto newHandle = TakeCFrameWork::GetPrimitiveDrawer()->Generate<TPrimitive>(std::forward<Args>(args)...)
+		} else {
+			// グループが存在しない場合、新規作成
+			auto newPrimitiveParticle = std::make_unique<PrimitiveParticle>(args...);
+			newPrimitiveParticle->Initialize(particleCommon_, ""); // 適切なファイルパスを指定
+			particleGroups_[groupName] = std::move(newPrimitiveParticle);
+		}
+	}
 }

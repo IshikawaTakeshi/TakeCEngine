@@ -1,6 +1,6 @@
 #include "ParticleManager.h"
 #include "base/ImGuiManager.h"
-#include "base/TakeCFrameWork.h"
+
 #include "engine/3d/Particle/ParticleCommon.h"
 #include <cassert>
 
@@ -78,38 +78,6 @@ void TakeC::ParticleManager::Draw() {
 
 void TakeC::ParticleManager::Finalize() {
 	particleGroups_.clear();
-}
-
-void TakeC::ParticleManager::UpdatePrimitiveType(const std::string& groupName, PrimitiveType type,const Vector3& param) {
-
-	if (!particleGroups_.contains(groupName)) {
-		assert(false && "ParticleGroup not found! Please check the name.");
-		return;
-	}
-
-	uint32_t newHandle = 0;
-	//指定されたグループのプリミティブタイプを更新
-	switch (type) {
-	case PRIMITIVE_RING:
-		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
-			param.x,param.y,particleGroups_.at(groupName)->GetPreset().textureFilePath);
-		break;
-	case PRIMITIVE_PLANE:
-		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
-			param.x, param.y, particleGroups_.at(groupName)->GetPreset().textureFilePath);
-		break;
-	case PRIMITIVE_SPHERE:
-		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
-			param.x, particleGroups_.at(groupName)->GetPreset().textureFilePath);
-		break;
-	case PRIMITIVE_CONE:
-		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
-			param.x, param.y,16, particleGroups_.at(groupName)->GetPreset().textureFilePath);
-		break;
-	default:
-		break;
-	}
-	particleGroups_.at(groupName)->SetPrimitiveHandle(newHandle);
 }
 
 //================================================================================================

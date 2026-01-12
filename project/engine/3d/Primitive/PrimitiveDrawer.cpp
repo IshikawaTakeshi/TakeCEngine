@@ -94,6 +94,25 @@ void TakeC::PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, co
 }
 
 //=================================================================================
+//	プリミティブベースデータ取得処理
+//=================================================================================
+PrimitiveBaseData* TakeC::PrimitiveDrawer::GetBaseData(uint32_t handleId) {
+	auto it = primitiveMap_.find(handleId);
+	if (it == primitiveMap_.end()) {
+		return nullptr;
+	}
+	return it->second.data.get();
+}
+
+PrimitiveType TakeC::PrimitiveDrawer::GetPrimitiveType(uint32_t handleId) {
+	auto it = primitiveMap_. find(handleId);
+	if (it == primitiveMap_.end()) {
+		return PRIMITIVE_COUNT;
+	}
+	return it->second.type;
+}
+
+//=================================================================================
 //	プリミティブデータ生成処理(リング)
 //=================================================================================
 uint32_t TakeC::PrimitiveDrawer::GenerateRing(float outerRadius, float innerRadius, const std::string& textureFilePath) {

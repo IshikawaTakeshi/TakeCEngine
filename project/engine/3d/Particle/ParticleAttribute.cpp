@@ -51,7 +51,7 @@ void to_json(json& j, const ParticlePreset& preset) {
 	j["blendState"] = preset.blendState;
 	j["attributes"] = preset.attribute;
 	j["primitiveType"] = preset.primitiveType;
-	j["primitiveParameters"] = preset.primitiveParameters;
+	j["primitiveParameters"] = preset.primitiveParam;
 }
 
 //============================================================================
@@ -101,5 +101,5 @@ void from_json(const json& j, ParticlePreset& preset) {
 	j.at("blendState").get_to(preset.blendState);
 	j.at("attributes").get_to(preset.attribute);
 	j.at("primitiveType").get_to(preset.primitiveType);
-	j.at("primitiveParameters").get_to(preset.primitiveParameters);
+	j.at("primitiveParameters").get_to(preset.primitiveParam);
 }

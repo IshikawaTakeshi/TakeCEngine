@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <string>
 #include <cstdint>
+#include "PrimitiveDrawer.h"
 
 namespace TakeC {
 
@@ -224,7 +225,7 @@ namespace TakeC {
 	inline const EulerTransform& PrimitiveBase<TData>::GetTransform(uint32_t handle) {
 		auto it = datas_.find(handle);
 		if (it == datas_.end()) {
-			return nullptr;  // ハンドルが無効
+			return EulerTransform();  // ハンドルが無効
 		}
 		return it->second->transform;
 	}

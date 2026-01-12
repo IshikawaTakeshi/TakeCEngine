@@ -258,7 +258,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 			if (ImGui::Selectable(primitiveTypes[i].second.data(), isSelected)) {
 				currentPreset_.primitiveType = primitiveTypes[i].first;
 				// プリミティブタイプが変更された場合、グループのプリミティブを更新
-				TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParameters);
+				TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParam);
 			}
 			if (isSelected) {
 				ImGui::SetItemDefaultFocus();

@@ -40,6 +40,45 @@ namespace TakeC {
 			float height_;
 		};
 
+		//=================================================================================
+		// ハンドル構造体（型情報を含む）
+		//=================================================================================
+		struct PrimitiveHandle {
+			uint32_t id;
+			PrimitiveType type;
+
+			PrimitiveHandle(uint32_t _id, PrimitiveType _type) 
+				: id(_id), type(_type) {}
+
+			// 暗黙の型変換（後方互換性のため）
+			operator uint32_t() const { return id; }
+		};
+
+	private:
+
+		//=================================================================================
+		// プリミティブエントリ（マップに格納するデータ）
+		//=================================================================================
+		struct PrimitiveEntry {
+			std::unique_ptr<PrimitiveBaseData> data;  // 実際のデータ
+			PrimitiveType type;                        // プリミティブタイプ
+			void* primitiveInstance;                   // 対応するプリミティブクラスのインスタンス
+
+			// 型安全なインスタンス取得用テンプレート
+			template<typename TPrimitive>
+			TPrimitive* GetPrimitiveAs() {
+				return static_cast<TPrimitive*>(primitiveInstance);
+			}
+		};
+
+		/// <summary>
+		/// 型からPrimitiveTypeへの変換
+		/// </summary>
+		/// <typeparam name="TPrimitive"></typeparam>
+		/// <returns></returns>
+		template<typename TPrimitive>
+		static constexpr PrimitiveType GetPrimitiveTypeFromClass();
+
 	public:
 
 		//=================================================================================
@@ -54,6 +93,67 @@ namespace TakeC {
 
 		// ImGui更新処理
 		void UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param);
+
+		/// <summary>
+		/// プリミティブデータを取得（型指定版）
+		/// </summary>
+		template<typename TPrimitive>
+		typename TPrimitive::DataType* GetData(const PrimitiveHandle& handle);
+
+		/// <summary>
+		/// プリミティブデータを取得
+		/// </summary>
+		template<typename TPrimitive>
+		typename TPrimitive::DataType* GetData(uint32_t handleId);
+
+		// プリミティブベースデータを取得
+		PrimitiveBaseData* GetBaseData(uint32_t handleId);
+
+		// ハンドルからプリミティブタイプを取得
+		PrimitiveType GetPrimitiveType(uint32_t handleId);
+
+		//=================================================================================
+		// 操作関数
+		//=================================================================================
+
+		/// <summary>
+		/// Transform取得
+		/// </summary>
+		EulerTransform* GetTransform(const PrimitiveHandle& handle) {
+			return GetTransform(handle.id);
+		}
+
+		EulerTransform* GetTransform(uint32_t handleId) {
+			auto* baseData = GetBaseData(handleId);
+			return baseData ? &baseData->transform : nullptr;
+		}
+
+		/// <summary>
+		/// Transform設定
+		/// </summary>
+		void SetTransform(const PrimitiveHandle& handle, const EulerTransform& transform) {
+			SetTransform(handle.id, transform);
+		}
+
+		void SetTransform(uint32_t handleId, const EulerTransform& transform) {
+			if (auto* baseData = GetBaseData(handleId)) {
+				baseData->transform = transform;
+			}
+		}
+
+		/// <summary>
+		/// マテリアル色設定
+		/// </summary>
+		void SetMaterialColor(const PrimitiveHandle& handle, const Vector4& color) {
+			SetMaterialColor(handle.id, color);
+		}
+
+		void SetMaterialColor(uint32_t handleId, const Vector4& color) {
+			auto* baseData = GetBaseData(handleId);
+			if (baseData && baseData->material) {
+				baseData->material->SetMaterialColor(color);
+			}
+		}
 
 		//リングデータの生成
 		uint32_t GenerateRing(float outerRadius, float innerRadius, const std::string& textureFilePath);
@@ -85,25 +185,77 @@ namespace TakeC {
 		TakeC::SrvManager* srvManager_ = nullptr;
 
 		// 統一されたプリミティブデータマップ
-		//std::unordered_map<uint32_t, std::unique_ptr<PrimitiveDataHolder>> primitiveDataMap_;
-		//uint32_t nextHandle_ = 0;
+		std::unordered_map<uint32_t, PrimitiveEntry> primitiveMap_;
+		uint32_t nextHandle_ = 0;
 
 		// プリミティブデータ管理用マップ
 		//ring
 		std::unique_ptr<TakeC::Ring> ring_ = nullptr;
-
 		//plane
 		std::unique_ptr<TakeC::Plane> plane_ = nullptr;
-
 		//sphere
 		std::unique_ptr<TakeC::Sphere> sphere_ = nullptr;
-
 		//cone
 		std::unique_ptr<TakeC::Cone> cone_ = nullptr;
-
 		//cube
 		std::unique_ptr<TakeC::Cube> cube_ = nullptr;
 
 		const uint32_t kMaxVertexCount_ = 32000;
 	};
+
+
+
+	//----------------------------------------------------------------------------
+	// 型からPrimitiveTypeへの変換
+	//----------------------------------------------------------------------------
+	template<typename TPrimitive>
+	inline constexpr PrimitiveType PrimitiveDrawer::GetPrimitiveTypeFromClass() {
+		if constexpr (std::is_same_v<TPrimitive, Ring>) {
+			return PRIMITIVE_RING;
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Plane>) {
+			return PRIMITIVE_PLANE;
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Sphere>) {
+			return PRIMITIVE_SPHERE;
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Cube>) {
+			return PRIMITIVE_CUBE;
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Cone>) {
+			return PRIMITIVE_CONE;
+		}
+		else {
+			static_assert(sizeof(TPrimitive) == 0, "Unsupported primitive type");
+			return PRIMITIVE_COUNT;
+		}
+	}
+
+	//----------------------------------------------------------------------------
+	// プリミティブデータを取得（型指定版）
+	//----------------------------------------------------------------------------
+	template<typename TPrimitive>
+	inline typename TPrimitive::DataType* PrimitiveDrawer::GetData(const PrimitiveHandle& handle) {
+		return nullptr;
+	}
+
+	//----------------------------------------------------------------------------
+	// プリミティブデータを取得
+	//----------------------------------------------------------------------------
+	template<typename TPrimitive>
+	inline typename TPrimitive::DataType* PrimitiveDrawer::GetData(uint32_t handleId) {
+		auto it = primitiveMap_.find(handleId);
+		if (it == primitiveMap_.end()) {
+			return nullptr;
+		}
+
+		// 型チェック
+		PrimitiveType expectedType = GetPrimitiveTypeFromClass<TPrimitive>();
+		if (it->second.type != expectedType) {
+			return nullptr;
+		}
+
+		// ダウンキャストして返す
+		return static_cast<typename TPrimitive::DataType*>(it->second.data.get());
+	}
 }
