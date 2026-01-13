@@ -242,6 +242,8 @@ namespace TakeC {
 			// 何もしない
 		}
 
+		void DrawCommon(PSO* pso, PrimitiveBaseData* data);
+
 	private:
 
 		TakeC::DirectXCommon* dxCommon_ = nullptr;

@@ -51,50 +51,7 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 	//Mapping
 	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
 
-	PrimitiveParameter primitiveParam = particlePreset_.primitiveParam;
-
-	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
-
-		//RingParamとして取得
-		const RingParam& ringParam = std::get<RingParam>(primitiveParam);
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
-			ringParam.innerRadius,
-			ringParam.outerRadius,
-			ringParam.subDivision,
-			particlePreset_.textureFilePath);
-	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
-
-		//PlaneParamとして取得
-		const PlaneParam& planeParam = std::get<PlaneParam>(primitiveParam);
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
-			planeParam.width,
-			planeParam.height,
-			particlePreset_.textureFilePath);
-	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
-
-		//SphereParamとして取得
-		const SphereParam& sphereParam = std::get<SphereParam>(primitiveParam);
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
-			sphereParam.radius,
-			sphereParam.subDivision,
-			particlePreset_.textureFilePath);
-	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
-
-		//ConeParamとして取得
-		const ConeParam& coneParam = std::get<ConeParam>(primitiveParam);
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
-			coneParam.radius,
-			coneParam.height,
-			coneParam.subDivision,
-			particlePreset_.textureFilePath);
-	} else if (particlePreset_.primitiveType == PRIMITIVE_CUBE) {
-
-		//CubeParamとして取得
-		const CubeParam& cubeParam = std::get<CubeParam>(primitiveParam);
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
-			cubeParam.size,
-			particlePreset_.textureFilePath);
-	}
+	
 
 	//テクスチャファイルパスの設定
 	particlePreset_.textureFilePath = filePath;
@@ -217,22 +174,26 @@ void PrimitiveParticle::SpliceParticles(std::list<Particle> particles) {
 //=============================================================================
 void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
 	particlePreset_ = preset;
+}
+
+void PrimitiveParticle::SetTextureFilePath(const std::string& filePath) {
+	particlePreset_.textureFilePath = filePath;
 	//テクスチャファイルパスの設定
 	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
-		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
-	}else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
-		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
-		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetData<Ring>(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(filePath);
+	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetData<Plane>(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(filePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
-		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
-		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(filePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_CONE) {
 		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
-		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
-	}else if(particlePreset_.primitiveType == PRIMITIVE_CUBE) {
+		primitiveMaterial->SetTextureFilePath(filePath);
+	} else if (particlePreset_.primitiveType == PRIMITIVE_CUBE) {
 		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
-		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+		primitiveMaterial->SetTextureFilePath(filePath);
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");
 	}
@@ -242,6 +203,55 @@ void PrimitiveParticle::EraseParticle() {
 
 	// 全パーティクルの削除
 	particles_.clear();
+}
+
+void PrimitiveParticle::GeneratePrimitive() {
+	PrimitiveParameter primitiveParam = particlePreset_.primitiveParam;
+
+	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
+
+		//RingParamとして取得
+		const RingParam& ringParam = std::get<RingParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
+			ringParam.innerRadius,
+			ringParam.outerRadius,
+			ringParam.subDivision,
+			particlePreset_.textureFilePath);
+	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
+
+		//PlaneParamとして取得
+		const PlaneParam& planeParam = std::get<PlaneParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
+			planeParam.width,
+			planeParam.height,
+			particlePreset_.textureFilePath);
+	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
+
+		//SphereParamとして取得
+		const SphereParam& sphereParam = std::get<SphereParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
+			sphereParam.radius,
+			sphereParam.subDivision,
+			particlePreset_.textureFilePath);
+	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
+
+		//ConeParamとして取得
+		const ConeParam& coneParam = std::get<ConeParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
+			coneParam.radius,
+			coneParam.height,
+			coneParam.subDivision,
+			particlePreset_.textureFilePath);
+	} else if (particlePreset_.primitiveType == PRIMITIVE_CUBE) {
+
+		//CubeParamとして取得
+		const CubeParam& cubeParam = std::get<CubeParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
+			cubeParam.size,
+			particlePreset_.textureFilePath);
+	}
+	//テクスチャファイルパスの設定
+	SetTextureFilePath(particlePreset_.textureFilePath);
 }
 
 //=============================================================================

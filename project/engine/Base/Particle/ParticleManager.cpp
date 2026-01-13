@@ -110,6 +110,7 @@ void TakeC::ParticleManager::CreateParticleGroup(const std::string& presetJson) 
 	std::unique_ptr<PrimitiveParticle> particleGroup = std::make_unique<PrimitiveParticle>(preset.primitiveType);
 	particleGroup->Initialize(particleCommon_, preset.textureFilePath);
 	particleGroup->SetPreset(preset);
+	particleGroup->GeneratePrimitive();
 	particleGroups_.insert(std::make_pair(preset.presetName, std::move(particleGroup)));
 }
 

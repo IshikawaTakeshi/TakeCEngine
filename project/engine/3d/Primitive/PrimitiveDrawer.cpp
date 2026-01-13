@@ -155,126 +155,23 @@ uint32_t TakeC::PrimitiveDrawer::GenerateCube(const AABB& size, const std::strin
 //=================================================================================
 
 void TakeC::PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType type, uint32_t handle) {
-
-	switch (type) {
-	case PRIMITIVE_RING:
-	{
-
-		//--------------------------------------------------
-		//		ringの描画
-		//--------------------------------------------------
-
-		ring_->DrawParticle(pso, instanceCount, handle);
-
-		break;
-	}
-	case PRIMITIVE_PLANE:
-	{
-
-		//--------------------------------------------------
-		//		planeの描画
-		//--------------------------------------------------
-
-		plane_->DrawParticle(pso, instanceCount, handle);
-
-		break;
-	}
-	case PRIMITIVE_SPHERE:
-	{
-		//--------------------------------------------------
-		//		sphereの描画
-		//--------------------------------------------------
-
-		sphere_->DrawParticle(pso, instanceCount, handle);
-
-		break;
-	}
-	case PRIMITIVE_CONE:
-	{
-		//--------------------------------------------------
-		//		coneの描画
-		//--------------------------------------------------
-		
-		cone_->DrawParticle(pso, instanceCount, handle);
-		break;
-	}
-	case PRIMITIVE_CUBE:
-	{
-		//--------------------------------------------------
-		//		cubeの描画
-		//--------------------------------------------------
-
-		cube_->DrawParticle(pso, instanceCount, handle);
-		break;
-	}
-
-	case PRIMITIVE_COUNT:
-		break;
-	default:
-		assert(0 && "未対応の PrimitiveType が指定されました");
-		break;
-	}
+	type;
+	if (instanceCount == 0) return;
+	auto* baseData = GetBaseData(handle);
+	if (!baseData) return;
+	DrawCommon(pso, baseData);
+	dxCommon_->GetCommandList()->DrawInstanced(baseData->vertexCount, instanceCount, 0, 0);
 }
 
 //=================================================================================
 //	描画処理(オブジェクト用)
 //=================================================================================
 void TakeC::PrimitiveDrawer::DrawObject(PSO* pso, PrimitiveType type, uint32_t handle) {
-
-	switch (type) {
-	case PRIMITIVE_RING:
-	{
-		//--------------------------------------------------
-		//		ringの描画
-		//--------------------------------------------------
-
-		ring_->DrawObject(pso, handle);
-		
-		break;
-	}
-	case PRIMITIVE_PLANE:
-	{
-		//--------------------------------------------------
-		//		planeの描画
-		//--------------------------------------------------
-		
-		plane_->DrawObject(pso, handle);
-		break;
-
-	}
-	case PRIMITIVE_SPHERE:
-	{
-		//--------------------------------------------------
-		//		sphereの描画
-		//--------------------------------------------------
-		
-		sphere_->DrawObject(pso, handle);
-		break;
-	}
-	case PRIMITIVE_CONE:
-	{
-		//--------------------------------------------------
-		//		coneの描画
-		//--------------------------------------------------
-		
-		cone_->DrawObject(pso, handle);
-		break;
-	}
-	case PRIMITIVE_CUBE:
-	{
-		//--------------------------------------------------
-		//		cubeの描画
-		//--------------------------------------------------
-		
-		cube_->DrawObject(pso, handle);
-		break;
-	}
-	case PRIMITIVE_COUNT:
-		break;
-	default:
-		assert(0 && "未対応の PrimitiveType が指定されました");
-		break;
-	}
+	type;
+	auto* baseData = GetBaseData(handle);
+	if (!baseData) return;
+	DrawCommon(pso, baseData);
+	dxCommon_->GetCommandList()->DrawInstanced(baseData->vertexCount, 1, 0, 0);
 }
 
 //====================================================================
@@ -339,4 +236,20 @@ void TakeC::PrimitiveDrawer::SetMaterialColor(uint32_t handle, PrimitiveType typ
 		assert(0 && "未対応の PrimitiveType が指定されました");
 		break;
 	}
+}
+
+void TakeC::PrimitiveDrawer::DrawCommon(PSO* pso, PrimitiveBaseData* data) {
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+	// プリミティブトポロジー設定
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// VertexBufferView 設定
+	commandList->IASetVertexBuffers(0, 1, &data->mesh.vertexBufferView_);
+	// マテリアル CBuffer 設定
+	commandList->SetGraphicsRootConstantBufferView(
+		pso->GetGraphicBindResourceIndex("gMaterial"),
+		data->material->GetMaterialResource()->GetGPUVirtualAddress());
+	// テクスチャ設定
+	srvManager_->SetGraphicsRootDescriptorTable(
+		pso->GetGraphicBindResourceIndex("gTexture"),
+		TextureManager::GetInstance().GetSrvIndex(data->material->GetTextureFilePath()));
 }

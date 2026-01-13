@@ -28,7 +28,7 @@ void ParticleEditor::Initialize(ParticleCommon* particleCommon) {
 	// エミッターの初期設定
 	emitterTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	previewEmitter_->Initialize("PreviewEmitter", emitterTransform_, emitCount_, emitFrequency_);
-	
+
 	//エミッターに発生させるパーティクルを設定
 	previewEmitter_->SetParticleName(currentGroupName_);
 
@@ -174,7 +174,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	if (attributes.isTranslate) {
 		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -100.0f, 100.0f);
 	}
-	
+
 	//Color
 	ImGui::Checkbox("Edit Color", &attributes.editColor);
 	if (attributes.editColor) {
@@ -213,13 +213,13 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 
 	//今の設定がリストにあればインデックスを合わせる
 	auto it = std::find(textureFileNames_.begin(), textureFileNames_.end(), currentPreset_.textureFilePath);
-	if(it != textureFileNames_.end()) {
+	if (it != textureFileNames_.end()) {
 		selectedTextureIndex = static_cast<int>(std::distance(textureFileNames_.begin(), it));
 	}
 
 	//コンボボックスの表示
-	if(ImGui::BeginCombo("Texture File",textureFileNames_.empty() ? "None":textureFileNames_[selectedTextureIndex].c_str())) {
-		
+	if (ImGui::BeginCombo("Texture File", textureFileNames_.empty() ? "None" : textureFileNames_[selectedTextureIndex].c_str())) {
+
 		//テクスチャ名一覧の表示
 		for (int i = 0; i < textureFileNames_.size(); ++i) {
 			bool isSelected = (selectedTextureIndex == i);
@@ -236,7 +236,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 				ImGui::SetItemDefaultFocus();
 			}
 		}
-		
+
 		ImGui::EndCombo();
 	}
 #pragma endregion
@@ -276,17 +276,17 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	}
 
 	// プリミティブ固有のパラメータ編集UI
-	ImGui:: Separator();
+	ImGui::Separator();
 	ImGui::Text("Primitive Parameters");
 	// パラメータが変更されたかどうかのフラグ
-	bool parametersChanged = DrawPrimitiveParametersUI(currentPreset_.primitiveType, currentPreset_.primitiveParam);
+	DrawPrimitiveParametersUI(currentPreset_.primitiveType, currentPreset_.primitiveParam);
 	// プリミティブの更新ボタン
-	if (parametersChanged || (oldType != currentPreset_.primitiveType)) {
-		if (ImGui::Button("Update Primitive")) {
-			// プリミティブの更新
-			UpdatePrimitiveFromParameters(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParam);
-		}
+
+	if (ImGui::Button("Update Primitive")) {
+		// プリミティブの更新
+		UpdatePrimitiveFromParameters(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParam);
 	}
+
 
 #pragma endregion
 
@@ -340,7 +340,7 @@ void ParticleEditor::DrawEmitterControls() {
 	//エミッターの発生ボタン
 	if (ImGui::Button("Manual Emit")) {
 		emitterDirection_ = previewEmitter_->GetEmitDirection();
-		TakeCFrameWork::GetParticleManager()->Emit(currentGroupName_, emitterTransform_.translate,emitterDirection_, emitCount_);
+		TakeCFrameWork::GetParticleManager()->Emit(currentGroupName_, emitterTransform_.translate, emitterDirection_, emitCount_);
 	}
 
 	ImGui::Separator();
@@ -420,7 +420,7 @@ void ParticleEditor::DrawPresetManager() {
 		bool isSelected = (selectedPresetName_ == presetName);
 
 		// プリセット名を表示し、選択可能にする
-		if (ImGui::Selectable(presetName.c_str(),isSelected)) {
+		if (ImGui::Selectable(presetName.c_str(), isSelected)) {
 			selectedPresetName_ = presetName;
 		}
 
@@ -579,7 +579,7 @@ void ParticleEditor::InitPrimitiveParam(PrimitiveType type, PrimitiveParameter& 
 	case PRIMITIVE_RING:
 		params = RingParam{};
 		break;
-	case PRIMITIVE_PLANE: 
+	case PRIMITIVE_PLANE:
 		params = PlaneParam{};
 		break;
 	case PRIMITIVE_SPHERE:
@@ -606,7 +606,7 @@ bool ParticleEditor::DrawPrimitiveParametersUI(PrimitiveType type, TakeC::Primit
 	std::visit([&changed, type](auto&& arg) {
 		using T = std::decay_t<decltype(arg)>;
 
-		if constexpr (std:: is_same_v<T, RingParam>) {
+		if constexpr (std::is_same_v<T, RingParam>) {
 			ImGui::Text("Ring Parameters");
 			changed |= ImGui::DragFloat("Outer Radius", &arg.outerRadius, 0.01f, 0.1f, 10.0f);
 			changed |= ImGui::DragFloat("Inner Radius", &arg.innerRadius, 0.01f, 0.01f, arg.outerRadius - 0.01f);
@@ -617,11 +617,10 @@ bool ParticleEditor::DrawPrimitiveParametersUI(PrimitiveType type, TakeC::Primit
 			}
 
 			// プレビュー
-			ImGui:: Separator();
-			ImGui::BulletText("Outer:  %.2f, Inner: %.2f", arg. outerRadius, arg.innerRadius);
+			ImGui::Separator();
+			ImGui::BulletText("Outer:  %.2f, Inner: %.2f", arg.outerRadius, arg.innerRadius);
 			ImGui::BulletText("Subdivision: %u", arg.subDivision);
-		}
-		else if constexpr (std::is_same_v<T, PlaneParam>) {
+		} else if constexpr (std::is_same_v<T, PlaneParam>) {
 			ImGui::Text("Plane Parameters");
 			changed |= ImGui::DragFloat("Width", &arg.width, 0.01f, 0.1f, 100.0f);
 			changed |= ImGui::DragFloat("Height", &arg.height, 0.01f, 0.1f, 100.0f);
@@ -629,8 +628,7 @@ bool ParticleEditor::DrawPrimitiveParametersUI(PrimitiveType type, TakeC::Primit
 			// プレビュー
 			ImGui::Separator();
 			ImGui::BulletText("Size: %.2f x %.2f", arg.width, arg.height);
-		}
-		else if constexpr (std::is_same_v<T, SphereParam>) {
+		} else if constexpr (std::is_same_v<T, SphereParam>) {
 			ImGui::Text("Sphere Parameters");
 			changed |= ImGui::DragFloat("Radius", &arg.radius, 0.01f, 0.1f, 10.0f);
 			int subdivision = static_cast<int>(arg.subDivision);
@@ -642,9 +640,8 @@ bool ParticleEditor::DrawPrimitiveParametersUI(PrimitiveType type, TakeC::Primit
 			// プレビュー
 			ImGui::Separator();
 			ImGui::BulletText("Radius: %.2f", arg.radius);
-			ImGui::BulletText("Subdivision: %u", arg. subDivision);
-		}
-		else if constexpr (std::is_same_v<T, ConeParam>) {
+			ImGui::BulletText("Subdivision: %u", arg.subDivision);
+		} else if constexpr (std::is_same_v<T, ConeParam>) {
 			ImGui::Text("Cone Parameters");
 			changed |= ImGui::DragFloat("Radius", &arg.radius, 0.01f, 0.1f, 10.0f);
 			changed |= ImGui::DragFloat("Height", &arg.height, 0.01f, 0.1f, 10.0f);
@@ -656,17 +653,16 @@ bool ParticleEditor::DrawPrimitiveParametersUI(PrimitiveType type, TakeC::Primit
 
 			// プレビュー
 			ImGui::Separator();
-			ImGui::BulletText("Radius: %.2f, Height: %.2f", arg. radius, arg.height);
-			ImGui::BulletText("Subdivision: %u", arg. subDivision);
-		}
-		else if constexpr (std::is_same_v<T, CubeParam>) {
+			ImGui::BulletText("Radius: %.2f, Height: %.2f", arg.radius, arg.height);
+			ImGui::BulletText("Subdivision: %u", arg.subDivision);
+		} else if constexpr (std::is_same_v<T, CubeParam>) {
 			ImGui::Text("Cube Parameters");
-			changed |= ImGui:: DragFloat3("Min", &arg.size.min.x, 0.01f, -10.0f, arg.size.max.x - 0.01f);
+			changed |= ImGui::DragFloat3("Min", &arg.size.min.x, 0.01f, -10.0f, arg.size.max.x - 0.01f);
 			changed |= ImGui::DragFloat3("Max", &arg.size.max.x, 0.01f, arg.size.min.x + 0.01f, 10.0f);
 
 			// プレビュー
 			ImGui::Separator();
-			Vector3 size = {arg.size.max.x - arg.size.min.x, arg.size.max. y - arg.size.min.y, arg.size.max.z - arg.size.min.z};
+			Vector3 size = { arg.size.max.x - arg.size.min.x, arg.size.max.y - arg.size.min.y, arg.size.max.z - arg.size.min.z };
 			ImGui::BulletText("Size:  (%.2f, %.2f, %.2f)", size.x, size.y, size.z);
 		}
 		}, params);
@@ -684,42 +680,38 @@ void ParticleEditor::UpdatePrimitiveFromParameters(
 		using T = std::decay_t<decltype(arg)>;
 
 		if constexpr (std::is_same_v<T, RingParam>) {
-			TakeCFrameWork:: GetParticleManager()->UpdatePrimitiveType<Ring>(
-				groupName, 
-				arg.outerRadius, 
+			TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Ring>(
+				groupName,
+				arg.outerRadius,
 				arg.innerRadius,
 				arg.subDivision,
 				currentPreset_.textureFilePath);
-		}
-		else if constexpr (std::is_same_v<T, PlaneParam>) {
+		} else if constexpr (std::is_same_v<T, PlaneParam>) {
 			TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Plane>(
-				groupName, 
-				arg.width, 
-				arg.height, 
+				groupName,
+				arg.width,
+				arg.height,
 				currentPreset_.textureFilePath);
-		}
-		else if constexpr (std::is_same_v<T, SphereParam>) {
+		} else if constexpr (std::is_same_v<T, SphereParam>) {
 			TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Sphere>(
-				groupName, 
+				groupName,
 				arg.radius,
 				arg.subDivision,
 				currentPreset_.textureFilePath);
-		}
-		else if constexpr (std::is_same_v<T, ConeParam>) {
+		} else if constexpr (std::is_same_v<T, ConeParam>) {
 			TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Cone>(
-				groupName, 
-				arg.radius, 
-				arg.height, 
+				groupName,
+				arg.radius,
+				arg.height,
 				arg.subDivision,
 				currentPreset_.textureFilePath);
-		}
-		else if constexpr (std:: is_same_v<T, CubeParam>) {
+		} else if constexpr (std::is_same_v<T, CubeParam>) {
 			AABB aabb;
 			aabb.min = arg.size.min;
-			aabb. max = arg.size.max;
+			aabb.max = arg.size.max;
 			TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Cube>(
-				groupName, 
-				aabb, 
+				groupName,
+				aabb,
 				currentPreset_.textureFilePath);
 		}
 		}, params);

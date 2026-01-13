@@ -44,15 +44,12 @@ namespace TakeC {
 		PlaneParam
 	>;
 
-	void to_json(nlohmann::json& jsonData, const PrimitiveParameter& param);
-	void from_json(const nlohmann::json& jsonData, PrimitiveParameter& param);
-
 	//JSON変換定義
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ConeParam, radius, height, subDivision);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(CubeParam, size);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PlaneParam, width, height);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RingParam, outerRadius, innerRadius, subDivision);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SphereParam, radius, subDivision);
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ConeParam, radius, height, subDivision)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(CubeParam, size)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PlaneParam, width, height)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RingParam, outerRadius, innerRadius, subDivision)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SphereParam, radius, subDivision)
 
 	//JSONディレクトリパス定義
 	TAKEC_DEFINE_JSON_DIRECTORY_PATH(PrimitiveParameter, "Resources/JsonLoader/PrimitiveParameters/");
