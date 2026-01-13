@@ -11,6 +11,8 @@
 #include "3d/Particle/ParticleCommon.h"
 #include <numbers>
 
+using namespace TakeC;
+
 //=============================================================================
 // コンストラクタ・デストラクタ
 //=============================================================================
@@ -49,15 +51,31 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 	//Mapping
 	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
 
+	PrimitiveParameter primitiveParam = particlePreset_.primitiveParam;
+
 	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
 		//プリミティブの初期化
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(1.0f, 0.5f, filePath);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
+			std::get<RingParam>(primitiveParam).outerRadius,
+			std::get<RingParam>(primitiveParam).innerRadius,
+			std::get<RingParam>(primitiveParam).subDivision,
+			particlePreset_.textureFilePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(1.0f, 1.0f, filePath);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
+			std::get<PlaneParam>(primitiveParam).width,
+			std::get<PlaneParam>(primitiveParam).height,
+			particlePreset_.textureFilePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(1.0f, filePath);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
+			std::get<SphereParam>(primitiveParam).radius,
+			std::get<SphereParam>(primitiveParam).subDivision,
+			particlePreset_.textureFilePath);
 	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(1.0f, 5.0f, 16, filePath);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
+			std::get<ConeParam>(primitiveParam).radius,
+			std::get<ConeParam>(primitiveParam).height,
+			std::get<ConeParam>(primitiveParam).subDivision,
+			particlePreset_.textureFilePath);
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");
 	}
@@ -185,19 +203,19 @@ void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
 	particlePreset_ = preset;
 	//テクスチャファイルパスの設定
 	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetRingData(primitiveHandle_)->material;
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	}else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
-		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetPlaneData(primitiveHandle_)->material;
+		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
-		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetSphereData(primitiveHandle_)->material;
+		auto& primitiveMaterial =  TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_CONE) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetConeData(primitiveHandle_)->material;
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	}else if(particlePreset_.primitiveType == PRIMITIVE_CUBE) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetCubeData(primitiveHandle_)->material;
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");

@@ -115,8 +115,8 @@ PrimitiveType TakeC::PrimitiveDrawer::GetPrimitiveType(uint32_t handleId) {
 //=================================================================================
 //	プリミティブデータ生成処理(リング)
 //=================================================================================
-uint32_t TakeC::PrimitiveDrawer::GenerateRing(float outerRadius, float innerRadius, const std::string& textureFilePath) {
-	return ring_->Generate(outerRadius, innerRadius, textureFilePath);
+uint32_t TakeC::PrimitiveDrawer::GenerateRing(float outerRadius, float innerRadius,uint32_t subDivision, const std::string& textureFilePath) {
+	return Generate<Ring>(outerRadius, innerRadius, subDivision, textureFilePath);
 }
 
 //=================================================================================
@@ -124,15 +124,15 @@ uint32_t TakeC::PrimitiveDrawer::GenerateRing(float outerRadius, float innerRadi
 //=================================================================================
 uint32_t TakeC::PrimitiveDrawer::GeneratePlane(float width, float height, const std::string& textureFilePath) {
 
-	return plane_->Generate(width, height, textureFilePath);
+	return Generate<Plane>(width, height, textureFilePath);
 }
 
 //=================================================================================
 //	プリミティブデータ生成処理(球)
 //=================================================================================
-uint32_t TakeC::PrimitiveDrawer::GenerateSphere(float radius, const std::string& textureFilePath) {
+uint32_t TakeC::PrimitiveDrawer::GenerateSphere(float radius,uint32_t subDivision, const std::string& textureFilePath) {
 
-	return sphere_->Generate(radius, textureFilePath);
+	return Generate<Sphere>(radius,subDivision, textureFilePath);
 }
 
 //=================================================================================
@@ -140,14 +140,14 @@ uint32_t TakeC::PrimitiveDrawer::GenerateSphere(float radius, const std::string&
 //=================================================================================
 uint32_t TakeC::PrimitiveDrawer::GenerateCone(float radius,float height, uint32_t subDivision, const std::string& textureFilePath) {
 
-	return cone_->Generate(radius, height, subDivision, textureFilePath);
+	return Generate<Cone>(radius, height, subDivision, textureFilePath);
 }
 
 //=================================================================================
 //	プリミティブデータ生成処理(cube)
 //=================================================================================
 uint32_t TakeC::PrimitiveDrawer::GenerateCube(const AABB& size, const std::string& textureFilePath) {
-	return cube_->Generate(size, textureFilePath);
+	return Generate<Cube>(size, textureFilePath);
 }
 
 //=================================================================================
@@ -283,26 +283,26 @@ void TakeC::PrimitiveDrawer::DrawObject(PSO* pso, PrimitiveType type, uint32_t h
 
 PlaneData* TakeC::PrimitiveDrawer::GetPlaneData(uint32_t handle) {
 	// planeDataを返す
-	return plane_->GetData(handle);
+	return GetData<Plane>(handle);
 }
 
 SphereData* TakeC::PrimitiveDrawer::GetSphereData(uint32_t handle) {
 	// sphereDataを返す
-	return sphere_->GetData(handle);
+	return GetData<Sphere>(handle);
 }
 
 RingData* TakeC::PrimitiveDrawer::GetRingData(uint32_t handle) {
-	return ring_->GetData(handle);
+	return GetData<Ring>(handle);
 }
 
 
 ConeData* TakeC::PrimitiveDrawer::GetConeData(uint32_t handle) {
 	// coneDataを返す
-	return cone_->GetData(handle);
+	return GetData<Cone>(handle);
 }
 
 CubeData* TakeC::PrimitiveDrawer::GetCubeData(uint32_t handle) {
-	return cube_->GetData(handle);
+	return GetData<Cube>(handle);
 }
 
 void TakeC::PrimitiveDrawer::SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color) {

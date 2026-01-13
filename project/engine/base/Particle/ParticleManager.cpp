@@ -1,8 +1,10 @@
 #include "ParticleManager.h"
 #include "base/ImGuiManager.h"
-
 #include "engine/3d/Particle/ParticleCommon.h"
+#include "engine/Base/TakeCFrameWork.h"
 #include <cassert>
+
+using namespace TakeC;
 
 //================================================================================================
 // 初期化

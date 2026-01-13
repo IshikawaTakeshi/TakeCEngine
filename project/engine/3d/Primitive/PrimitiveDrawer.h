@@ -112,6 +112,12 @@ namespace TakeC {
 		// ハンドルからプリミティブタイプを取得
 		PrimitiveType GetPrimitiveType(uint32_t handleId);
 
+		/// <summary>
+		/// プリミティブインスタンスを取得
+		/// </summary>
+		template<typename TPrimitive>
+		TPrimitive* GetPrimitiveInstance();
+
 		//=================================================================================
 		// 操作関数
 		//=================================================================================
@@ -155,12 +161,47 @@ namespace TakeC {
 			}
 		}
 
+		/// <summary>
+		/// 生成パラメータを設定（Ring用）
+		/// </summary>
+		void SetGenerateParameters(RingData* data, float outerRadius, float innerRadius,uint32_t subDivision,const std::string&) {
+			data->outerRadius = outerRadius;
+			data->innerRadius = innerRadius;
+			data->subDivision = subDivision;
+		}
+
+		void SetGenerateParameters(PlaneData* data, float width, float height,const std::string&) {
+			data->width = width;
+			data->height = height;
+		}
+
+		void SetGenerateParameters(SphereData* data, float radius,const std::string&) {
+			data->radius = radius;
+		}
+
+		void SetGenerateParameters(ConeData* data, float radius, float height, uint32_t subDivision,const std::string&) {
+			data->radius = radius;
+			data->height = height;
+			data->subDivision = subDivision;
+		}
+
+		void SetGenerateParameters(CubeData* data, const AABB& size) {
+			data->size = size;
+		}
+
+		/// <summary>
+		/// プリミティブを生成（テンプレート版）
+		/// 使用例: auto handle = drawer. Generate<Ring>(2.0f, 1.0f, "texture.png");
+		/// </summary>
+		template<typename TPrimitive, typename... Args>
+		PrimitiveHandle Generate(Args&&... args);
+
 		//リングデータの生成
-		uint32_t GenerateRing(float outerRadius, float innerRadius, const std::string& textureFilePath);
+		uint32_t GenerateRing(float outerRadius, float innerRadius,uint32_t subDivision, const std::string& textureFilePath);
 		// 平面データの生成
 		uint32_t GeneratePlane(float width, float height, const std::string& textureFilePath);
 		// 球データの生成
-		uint32_t GenerateSphere(float radius, const std::string& textureFilePath);
+		uint32_t GenerateSphere(float radius,uint32_t subDivision, const std::string& textureFilePath);
 		// 円錐データの生成
 		uint32_t GenerateCone(float radius, float height, uint32_t subDivision, const std::string& textureFilePath);
 		//cubeデータの作成
@@ -178,6 +219,21 @@ namespace TakeC {
 		CubeData* GetCubeData(uint32_t handle);
 
 		void SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color);
+
+		/// <summary>
+		/// 可変長引数からテクスチャファイルパスを抽出
+		/// </summary>
+		template<typename...  Args>
+		std::string ExtractTextureFilePath(Args&&... args);
+
+		/// <summary>
+		/// 可変長引数から文字列を抽出（再帰終了用）
+		/// </summary>
+		/// <param name="out"></param>
+		/// <param name="value"></param>
+		void ExtractIfString(std::string& out, const std::string& value) {
+			out = value;
+		}
 
 	private:
 
@@ -236,7 +292,7 @@ namespace TakeC {
 	//----------------------------------------------------------------------------
 	template<typename TPrimitive>
 	inline typename TPrimitive::DataType* PrimitiveDrawer::GetData(const PrimitiveHandle& handle) {
-		return nullptr;
+		return GetData<TPrimitive>(handle. id);
 	}
 
 	//----------------------------------------------------------------------------
@@ -257,5 +313,76 @@ namespace TakeC {
 
 		// ダウンキャストして返す
 		return static_cast<typename TPrimitive::DataType*>(it->second.data.get());
+	}
+
+	template<typename TPrimitive>
+	inline TPrimitive* PrimitiveDrawer::GetPrimitiveInstance() {
+		if constexpr (std::is_same_v<TPrimitive, Ring>) {
+			return ring_. get();
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Plane>) {
+			return plane_.get();
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Sphere>) {
+			return sphere_.get();
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Cube>) {
+			return cube_.get();
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Cone>) {
+			return cone_.get();
+		}
+		else {
+			static_assert(sizeof(TPrimitive) == 0, "Unsupported primitive type");
+			return nullptr;
+		}
+	}
+
+	//----------------------------------------------------------------------------
+	// プリミティブデータを生成（テンプレート版）
+	//----------------------------------------------------------------------------
+	template<typename TPrimitive, typename ...Args>
+	inline PrimitiveDrawer::PrimitiveHandle PrimitiveDrawer::Generate(Args && ...args) {
+		using DataType = typename TPrimitive::DataType;
+
+		// データを作成（基底クラスのユニークポインタとして保持）
+		auto data = std::make_unique<DataType>();
+
+		// プリミティブインスタンスを取得
+		TPrimitive* primitive = GetPrimitiveInstance<TPrimitive>();
+
+		// パラメータ設定
+		SetGenerateParameters(data.get(), std::forward<Args>(args)...);
+
+		// 頂点データ作成
+		primitive->CreateVertexData(data.get());
+
+		// テクスチャファイルパスを取得
+		std::string textureFilePath = ExtractTextureFilePath(std::forward<Args>(args)...);
+		primitive->CreateMaterial(data.get(), textureFilePath);
+
+		// ハンドルを生成
+		uint32_t handleId = nextHandle_++;
+		PrimitiveType type = GetPrimitiveTypeFromClass<TPrimitive>();
+
+		// エントリを作成してマップに登録
+		PrimitiveEntry entry;
+		entry.data = std:: move(data);  // 基底クラスポインタとして格納
+		entry.type = type;
+		entry.primitiveInstance = primitive;
+
+		primitiveMap_[handleId] = std::move(entry);
+
+		return PrimitiveHandle(handleId, type);
+	}
+
+	//----------------------------------------------------------------------------
+	// 可変長引数からテクスチャファイルパスを抽出
+	//----------------------------------------------------------------------------
+	template<typename ...Args>
+	inline std::string PrimitiveDrawer::ExtractTextureFilePath(Args && ...args) {
+		std::string result;
+		((ExtractIfString(result, std::forward<Args>(args))), ...);
+		return result;
 	}
 }

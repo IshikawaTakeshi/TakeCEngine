@@ -19,6 +19,9 @@ namespace TakeC {
 	class Sphere : public PrimitiveBase<SphereData> {
 	public:
 
+		//データ型エイリアス
+		using DataType = SphereData;
+
 		//========================================================
 		// functions
 		//========================================================
@@ -33,15 +36,15 @@ namespace TakeC {
 		/// リングデータの生成
 		/// </summary>
 		/// <returns>生成したハンドル</returns>
-		uint32_t Generate(float radius, const std::string& textureFilePath);
-
-	protected:
+		uint32_t Generate(float radius,uint32_t subDivision, const std::string& textureFilePath);
 
 		/// <summary>
 		/// 頂点データ作成
 		/// </summary>
 		/// <param name="sphereData"></param>
 		void CreateVertexData(SphereData* sphereData);
+	protected:
+
 		/// <summary>
 		/// プリミティブデータ編集
 		/// </summary>

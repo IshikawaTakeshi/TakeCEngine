@@ -12,7 +12,6 @@
 #include <unordered_map>
 #include <string>
 #include <cstdint>
-#include "PrimitiveDrawer.h"
 
 namespace TakeC {
 
@@ -97,6 +96,8 @@ namespace TakeC {
 
 	protected:
 
+	public:
+
 		/// <summary>
 		/// 頂点データ作成
 		/// </summary>
@@ -109,6 +110,7 @@ namespace TakeC {
 		/// <param name="handle"></param>
 		/// <param name="textureFilePath"></param>
 		virtual void CreateMaterial(TData* data, const std::string& textureFilePath);
+
 
 		/// <summary>
 		/// 共通描画処理

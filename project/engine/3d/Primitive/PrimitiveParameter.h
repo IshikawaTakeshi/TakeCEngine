@@ -9,18 +9,18 @@ namespace TakeC {
 
 
 	struct SphereParam {
-		float radius;
-		uint32_t subDivision;
+		float radius = 1.0f;
+		uint32_t subDivision = 16;
 	};
 
 	struct ConeParam {
-		float radius;
-		float height;
-		uint32_t subDivision;
+		float radius = 1.0f;
+		float height = 1.0f;
+		uint32_t subDivision = 16;
 	};
 
 	struct CubeParam {
-		AABB size;
+		AABB size = { { -0.5f, -0.5f, -0.5f }, { 0.5f, 0.5f, 0.5f } };
 	};
 
 	struct RingParam {
@@ -30,8 +30,8 @@ namespace TakeC {
 	};
 
 	struct PlaneParam {
-		float width;
-		float height;
+		float width = 1.0f;
+		float height = 1.0f;
 	};
 
 	//各プリミティブのパラメータを保持するためのvariant型

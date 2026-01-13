@@ -2,14 +2,13 @@
 #include "engine/3d/Particle/Particle3d.h"
 #include "engine/3d/Particle/PrimitiveParticle.h"
 #include "engine/3d/Particle/ParticleEmitterAllocater.h"
-#include "engine/base/BlendModeStateEnum.h"
-#include "base/TakeCFrameWork.h"
-#include <list>
-#include <wrl.h>
+#include "engine/3d/Primitive/PrimitiveDrawer.h"
+#include "engine/Base/BlendModeStateEnum.h"
+
 #include <unordered_map>
 #include <string>
 #include <memory>
-#include <random>
+#include <utility>
 
 // 前方宣言
 class ParticleCommon;
@@ -71,19 +70,54 @@ namespace TakeC {
 		std::unordered_map<std::string, std::unique_ptr<PrimitiveParticle>> particleGroups_;
 		//パーティクル共通情報
 		ParticleCommon* particleCommon_ = nullptr;
+		//プリミティブドロワー
+		PrimitiveDrawer* primitiveDrawer_ = nullptr;
 	};
 
-	template<typename TPrimitive, typename ...Args>
-	inline void ParticleManager::UpdatePrimitiveType(const std::string& groupName, Args && ...args) {
 
+	//---------------------------------------------------------------------------------
+	// プリミティブタイプの更新
+	//---------------------------------------------------------------------------------
+	template<typename TPrimitive, typename ...Args>
+	void ParticleManager::UpdatePrimitiveType(const std::string& groupName, Args && ...args) {
+
+		PrimitiveType type = PRIMITIVE_PLANE; 
+		uint32_t handle = 0;
+		if constexpr (std::is_same_v<TPrimitive, Ring>) {
+			type = PRIMITIVE_RING;
+			// Verify implicit conversion or cast if needed, but GenerateRing returns uint32_t
+			handle = primitiveDrawer_->GenerateRing(std::forward<Args>(args)...);
+		} 
+		else if constexpr (std::is_same_v<TPrimitive, Plane>) {
+			type = PRIMITIVE_PLANE;
+			handle = primitiveDrawer_->GeneratePlane(std::forward<Args>(args)...);
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Sphere>) {
+			type = PRIMITIVE_SPHERE;
+			handle = primitiveDrawer_->GenerateSphere(std::forward<Args>(args)...);
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Cone>) {
+			type = PRIMITIVE_CONE;
+			handle = primitiveDrawer_->GenerateCone(std::forward<Args>(args)...);
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Cube>) {
+			type = PRIMITIVE_CUBE;
+			handle = primitiveDrawer_->GenerateCube(std::forward<Args>(args)...);
+		}
+		else {
+			static_assert(sizeof(TPrimitive) == 0, "Unsupported primitive type");
+			return;
+		}
+		//既に存在する場合は更新、存在しない場合は新規作成
 		auto it = particleGroups_.find(groupName);
-		if (it != particleGroups_.end()) {
-			auto newHandle = TakeCFrameWork::GetPrimitiveDrawer()->Generate<TPrimitive>(std::forward<Args>(args)...)
-		} else {
-			// グループが存在しない場合、新規作成
-			auto newPrimitiveParticle = std::make_unique<PrimitiveParticle>(args...);
-			newPrimitiveParticle->Initialize(particleCommon_, ""); // 適切なファイルパスを指定
+		if (it == particleGroups_.end()) {
+			auto newPrimitiveParticle = std::make_unique<PrimitiveParticle>(type);
+			newPrimitiveParticle->Initialize(particleCommon_, ""); 
+			newPrimitiveParticle->SetPrimitiveHandle(handle); // Set handle immediately
 			particleGroups_[groupName] = std::move(newPrimitiveParticle);
+		} else {
+			// 既存のプリミティブパーティクルのプリミティブハンドルを更新
+			particleGroups_[groupName]->SetPrimitiveHandle(handle);
 		}
 	}
 }

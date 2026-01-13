@@ -1,5 +1,6 @@
 #pragma once
 #include "engine/3d/Primitive/PrimitiveBase.h"
+#include "engine/3d/Primitive/PrimitiveParameter.h"
 
 namespace TakeC {
 
@@ -17,9 +18,11 @@ namespace TakeC {
 	//	Cone class
 	//============================================================
 
-	class Cone : public PrimitiveBase<ConeData> {
-		
-		public:
+	class Cone : public PrimitiveBase<ConeData> {	
+	public:
+
+		//データ型エイリアス
+		using DataType = ConeData;
 
 		//========================================================
 		//	functions
@@ -36,14 +39,14 @@ namespace TakeC {
 		/// <returns>生成したハンドル</returns>
 		uint32_t Generate(float radius, float height, uint32_t subDivision, const std::string& textureFilePath);
 
-	protected:
-
-
+	public:
 		/// <summary>
 		/// 頂点データ作成
 		/// </summary>
 		/// <param name="coneData"></param>
 		void CreateVertexData(ConeData* coneData);
+
+	protected:
 		
 		/// <summary>
 		/// プリミティブデータ編集
