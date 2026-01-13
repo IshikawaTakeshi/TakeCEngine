@@ -56,5 +56,11 @@
   },
     "blendState": 1,
     "primitiveType": "PRIMITIVE_PLANE",
+    "prmitiveParam": {
+        "PlaneParam":{
+            "width": 1.0,
+            "height": 1.0
+        }
+    },
     "textureFilePath": "white1x1.png"
 }

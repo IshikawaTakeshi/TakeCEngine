@@ -8,11 +8,12 @@ using namespace TakeC;
 //============================================================================
 // リングデータの生成
 //============================================================================
-uint32_t Ring::Generate(float outerRadius, float innerRadius, const std::string& textureFilePath) {
+uint32_t Ring::Generate(float outerRadius, float innerRadius,uint32_t subDivision, const std::string& textureFilePath) {
 
 	auto ring = std::make_unique<RingData>();
 	ring->innerRadius = innerRadius;
 	ring->outerRadius = outerRadius;
+	ring->subDivision = subDivision;
 	// 頂点データ作成
 	CreateVertexData(ring.get());
 	// マテリアル作成

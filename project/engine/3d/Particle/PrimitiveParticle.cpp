@@ -54,30 +54,46 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 	PrimitiveParameter primitiveParam = particlePreset_.primitiveParam;
 
 	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
-		//プリミティブの初期化
+
+		//RingParamとして取得
+		const RingParam& ringParam = std::get<RingParam>(primitiveParam);
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
-			std::get<RingParam>(primitiveParam).outerRadius,
-			std::get<RingParam>(primitiveParam).innerRadius,
-			std::get<RingParam>(primitiveParam).subDivision,
+			ringParam.innerRadius,
+			ringParam.outerRadius,
+			ringParam.subDivision,
 			particlePreset_.textureFilePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
+
+		//PlaneParamとして取得
+		const PlaneParam& planeParam = std::get<PlaneParam>(primitiveParam);
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
-			std::get<PlaneParam>(primitiveParam).width,
-			std::get<PlaneParam>(primitiveParam).height,
+			planeParam.width,
+			planeParam.height,
 			particlePreset_.textureFilePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
+
+		//SphereParamとして取得
+		const SphereParam& sphereParam = std::get<SphereParam>(primitiveParam);
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
-			std::get<SphereParam>(primitiveParam).radius,
-			std::get<SphereParam>(primitiveParam).subDivision,
+			sphereParam.radius,
+			sphereParam.subDivision,
 			particlePreset_.textureFilePath);
 	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
+
+		//ConeParamとして取得
+		const ConeParam& coneParam = std::get<ConeParam>(primitiveParam);
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
-			std::get<ConeParam>(primitiveParam).radius,
-			std::get<ConeParam>(primitiveParam).height,
-			std::get<ConeParam>(primitiveParam).subDivision,
+			coneParam.radius,
+			coneParam.height,
+			coneParam.subDivision,
 			particlePreset_.textureFilePath);
-	} else {
-		assert(0 && "未対応の PrimitiveType が指定されました");
+	} else if (particlePreset_.primitiveType == PRIMITIVE_CUBE) {
+
+		//CubeParamとして取得
+		const CubeParam& cubeParam = std::get<CubeParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
+			cubeParam.size,
+			particlePreset_.textureFilePath);
 	}
 
 	//テクスチャファイルパスの設定

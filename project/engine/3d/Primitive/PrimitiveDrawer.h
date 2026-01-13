@@ -175,8 +175,9 @@ namespace TakeC {
 			data->height = height;
 		}
 
-		void SetGenerateParameters(SphereData* data, float radius,const std::string&) {
+		void SetGenerateParameters(SphereData* data, float radius,uint32_t subDivision,const std::string&) {
 			data->radius = radius;
+			data->subDivision = subDivision;
 		}
 
 		void SetGenerateParameters(ConeData* data, float radius, float height, uint32_t subDivision,const std::string&) {
@@ -185,7 +186,7 @@ namespace TakeC {
 			data->subDivision = subDivision;
 		}
 
-		void SetGenerateParameters(CubeData* data, const AABB& size) {
+		void SetGenerateParameters(CubeData* data, const AABB& size,const std::string&) {
 			data->size = size;
 		}
 
@@ -233,6 +234,12 @@ namespace TakeC {
 		/// <param name="value"></param>
 		void ExtractIfString(std::string& out, const std::string& value) {
 			out = value;
+		}
+
+		//テンプレートオーバーロード（string以外は何もしない）
+		template<typename T>
+		void ExtractIfString(std::string&, const T&) {
+			// 何もしない
 		}
 
 	private:

@@ -49,7 +49,7 @@ namespace TakeC {
 		/// リングデータの生成
 		/// </summary>
 		/// <returns>生成したハンドル</returns>
-		uint32_t Generate(float outerRadius, float innerRadius, const std::string& textureFilePath);
+		uint32_t Generate(float outerRadius, float innerRadius,uint32_t subDivision, const std::string& textureFilePath);
 
 
 	public:
