@@ -19,6 +19,8 @@ namespace TakeC {
 	class Cube : public PrimitiveBase<CubeData> {
 	public:
 
+		//データ型エイリアス
+		using DataType = CubeData;
 
 		//========================================================
 		//	functions
@@ -35,17 +37,15 @@ namespace TakeC {
 		/// </summary>
 		/// <returns>生成したハンドル</returns>
 		uint32_t Generate(const AABB& size, const std::string& textureFilePath);
+		/// 頂点データ作成
+		void CreateVertexData(CubeData* cubeData) override;
 
 	protected:
 
 		//========================================================================
 		// private functions
 		//========================================================================
-		/// 頂点データ作成
-		void CreateVertexData(CubeData* cubeData) override;
-		/// 頂点インデックスデータ作成
-		//void CreateVertexIndexData(CubeData* planeData);
-
+		
 		void EditPrimitiveData(CubeData* data) override;
 
 	private:

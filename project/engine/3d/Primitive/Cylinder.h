@@ -4,58 +4,49 @@
 namespace TakeC {
 
 	//========================================================
-	// sphere情報の構造体
+	//cylinderのデータ
 	//========================================================
-
-	struct SphereData : public PrimitiveBaseData {
-		float radius = 1.0f; // 半径
-		uint32_t subDivision = 16; // 分割数
+	struct CylinderData : public PrimitiveBaseData {
+		float radius = 1.0f;
+		float height = 1.0f;
+		uint32_t subDivision = 16;
 	};
 
 	//============================================================
-	//	Sphere class
+	//	Cylinder class
 	//============================================================
-
-	class Sphere : public PrimitiveBase<SphereData> {
+	class Cylinder : public PrimitiveBase<CylinderData> {
 	public:
 
 		//データ型エイリアス
-		using DataType = SphereData;
+		using DataType = CylinderData;
 
 		//========================================================
-		// functions
+		//	functions
 		//========================================================
-
 		/// <summary>
 		/// コンストラクタ・デストラクタ
 		/// </summary>
-		Sphere() = default;
-		~Sphere() = default;
-
+		Cylinder() = default;
+		~Cylinder() = default;
 		/// <summary>
-		/// リングデータの生成
+		/// cylinderデータの作成
 		/// </summary>
 		/// <returns>生成したハンドル</returns>
-		uint32_t Generate(float radius,uint32_t subDivision, const std::string& textureFilePath);
+		uint32_t Generate(float radius, float height, uint32_t subDivision, const std::string& textureFilePath);
 
 		/// <summary>
 		/// 頂点データ作成
 		/// </summary>
-		/// <param name="sphereData"></param>
-		void CreateVertexData(SphereData* sphereData);
+		/// <param name="cylinderData"></param>
+		void CreateVertexData(CylinderData* cylinderData) override;
+
 	protected:
 
 		/// <summary>
 		/// プリミティブデータ編集
 		/// </summary>
 		/// <param name="data"></param>
-		void EditPrimitiveData(SphereData* data);
-
-
-	private:
-
-		// 定数
-		static constexpr uint32_t kVerticesPerSegment = 6;  // 1セグメントあたりの頂点数
-
+		void EditPrimitiveData(CylinderData* data) override;
 	};
 }

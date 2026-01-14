@@ -61,7 +61,11 @@ public:
 	/// </summary>
 	void SetPrimitiveHandle(uint32_t handle) { primitiveHandle_ = handle; }
 
+	void SetTextureFilePath(const std::string& filePath);
+
 	void EraseParticle();
+
+	void GeneratePrimitive();
 
 private:
 	uint32_t primitiveHandle_ = 0; // プリミティブのハンドル

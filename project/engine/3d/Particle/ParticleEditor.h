@@ -1,8 +1,9 @@
 #pragma once
-#include "Particle/BaseParticleGroup.h"
-#include "Particle/ParticleEmitter.h"
-#include "Particle/ParticleManager.h"
-#include "Particle/ParticleCommon.h"
+#include "engine/3d/Particle/BaseParticleGroup.h"
+#include "engine/3d/Particle/ParticleEmitter.h"
+#include "engine/3d/Particle/ParticleCommon.h"
+#include "engine/3d/Primitive/PrimitiveParameter.h"
+#include "engine/base/Particle/ParticleManager.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -71,6 +72,10 @@ private:
 
 	//上書き確認ダイアログの描画
 	void DrawOverwriteConfirmDialog();
+
+	void InitPrimitiveParam(PrimitiveType type, TakeC::PrimitiveParameter& params);
+	bool DrawPrimitiveParametersUI(PrimitiveType type, TakeC::PrimitiveParameter& params);
+	void UpdatePrimitiveFromParameters(const std::string& groupName, PrimitiveType type, const TakeC::PrimitiveParameter& params);
 
 private:
 

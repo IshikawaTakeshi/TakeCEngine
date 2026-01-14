@@ -9,9 +9,10 @@ using namespace TakeC;
 // sphereデータの生成
 //============================================================================
 
-uint32_t Sphere::Generate(float radius, const std::string& textureFilePath) {
+uint32_t Sphere::Generate(float radius,uint32_t subDivision, const std::string& textureFilePath) {
 	auto sphere = std::make_unique<SphereData>();
 	sphere->radius = radius;
+	sphere->subDivision = subDivision;
 	// 頂点データ作成
 	CreateVertexData(sphere.get());
 	// マテリアル作成

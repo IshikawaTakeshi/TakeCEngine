@@ -35,6 +35,9 @@ void TakeC::PrimitiveDrawer::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::S
 	cone_ = std::make_unique<TakeC::Cone>();
 	cone_->Initialize(dxCommon_, srvManager_);
 
+	cylinder_ = std::make_unique<TakeC::Cylinder>();
+	cylinder_->Initialize(dxCommon_, srvManager_);
+
 }
 
 //============================================================================
@@ -48,56 +51,33 @@ void TakeC::PrimitiveDrawer::Finalize() {
 	ring_.reset();
 	sphere_.reset();
 	cone_.reset();
+	cylinder_.reset();
 }
 
-//============================================================================
-// ImGui更新処理（パラメータ付き）
-//============================================================================
-void TakeC::PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3&) {
+//=================================================================================
+//	プリミティブベースデータ取得処理
+//=================================================================================
+PrimitiveBaseData* TakeC::PrimitiveDrawer::GetBaseData(uint32_t handleId) {
+	auto it = primitiveMap_.find(handleId);
+	if (it == primitiveMap_.end()) {
+		return nullptr;
+	}
+	return it->second.data.get();
+}
 
-	switch (type) {
-	case PRIMITIVE_RING:
-	{
-		cube_->UpdateImGui(handle, "Edit Cube");
+PrimitiveType TakeC::PrimitiveDrawer::GetPrimitiveType(uint32_t handleId) {
+	auto it = primitiveMap_. find(handleId);
+	if (it == primitiveMap_.end()) {
+		return PRIMITIVE_COUNT;
 	}
-	case PRIMITIVE_PLANE:
-	{
-		//Planeのパラメータ更新と表示
-		plane_->UpdateImGui(handle, "Edit Plane");
-		
-		break;
-	}
-	case PRIMITIVE_SPHERE:
-	{
-		//Sphereのパラメータ更新と表示
-		sphere_->UpdateImGui(handle, "Edit Sphere");
-		
-		break;
-	}
-	case PRIMITIVE_CONE:
-	{
-		//Coneのパラメータ更新と表示
-		cone_->UpdateImGui(handle, "Edit Cone");
-		
-		break;
-	}
-	case PRIMITIVE_CUBE:
-	{
-		//Cubeのパラメータ更新と表示
-		cube_->UpdateImGui(handle, "Edit Cube");
-		break;
-	}
-	default:
-		assert(0 && "未対応の PrimitiveType が指定されました");
-		break;
-	}
+	return it->second.type;
 }
 
 //=================================================================================
 //	プリミティブデータ生成処理(リング)
 //=================================================================================
-uint32_t TakeC::PrimitiveDrawer::GenerateRing(float outerRadius, float innerRadius, const std::string& textureFilePath) {
-	return ring_->Generate(outerRadius, innerRadius, textureFilePath);
+uint32_t TakeC::PrimitiveDrawer::GenerateRing(float outerRadius, float innerRadius,uint32_t subDivision, const std::string& textureFilePath) {
+	return Generate<Ring>(outerRadius, innerRadius, subDivision, textureFilePath);
 }
 
 //=================================================================================
@@ -105,15 +85,15 @@ uint32_t TakeC::PrimitiveDrawer::GenerateRing(float outerRadius, float innerRadi
 //=================================================================================
 uint32_t TakeC::PrimitiveDrawer::GeneratePlane(float width, float height, const std::string& textureFilePath) {
 
-	return plane_->Generate(width, height, textureFilePath);
+	return Generate<Plane>(width, height, textureFilePath);
 }
 
 //=================================================================================
 //	プリミティブデータ生成処理(球)
 //=================================================================================
-uint32_t TakeC::PrimitiveDrawer::GenerateSphere(float radius, const std::string& textureFilePath) {
+uint32_t TakeC::PrimitiveDrawer::GenerateSphere(float radius,uint32_t subDivision, const std::string& textureFilePath) {
 
-	return sphere_->Generate(radius, textureFilePath);
+	return Generate<Sphere>(radius,subDivision, textureFilePath);
 }
 
 //=================================================================================
@@ -121,14 +101,21 @@ uint32_t TakeC::PrimitiveDrawer::GenerateSphere(float radius, const std::string&
 //=================================================================================
 uint32_t TakeC::PrimitiveDrawer::GenerateCone(float radius,float height, uint32_t subDivision, const std::string& textureFilePath) {
 
-	return cone_->Generate(radius, height, subDivision, textureFilePath);
+	return Generate<Cone>(radius, height, subDivision, textureFilePath);
 }
 
 //=================================================================================
 //	プリミティブデータ生成処理(cube)
 //=================================================================================
 uint32_t TakeC::PrimitiveDrawer::GenerateCube(const AABB& size, const std::string& textureFilePath) {
-	return cube_->Generate(size, textureFilePath);
+	return Generate<Cube>(size, textureFilePath);
+}
+
+//=================================================================================
+//	プリミティブデータ生成処理(cylinder)
+//=================================================================================
+uint32_t TakeC::PrimitiveDrawer::GenerateCylinder(float radius, float height, uint32_t subDivision, const std::string& textureFilePath) {
+	return Generate<Cylinder>(radius, height, subDivision, textureFilePath);
 }
 
 //=================================================================================
@@ -136,126 +123,23 @@ uint32_t TakeC::PrimitiveDrawer::GenerateCube(const AABB& size, const std::strin
 //=================================================================================
 
 void TakeC::PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType type, uint32_t handle) {
-
-	switch (type) {
-	case PRIMITIVE_RING:
-	{
-
-		//--------------------------------------------------
-		//		ringの描画
-		//--------------------------------------------------
-
-		ring_->DrawParticle(pso, instanceCount, handle);
-
-		break;
-	}
-	case PRIMITIVE_PLANE:
-	{
-
-		//--------------------------------------------------
-		//		planeの描画
-		//--------------------------------------------------
-
-		plane_->DrawParticle(pso, instanceCount, handle);
-
-		break;
-	}
-	case PRIMITIVE_SPHERE:
-	{
-		//--------------------------------------------------
-		//		sphereの描画
-		//--------------------------------------------------
-
-		sphere_->DrawParticle(pso, instanceCount, handle);
-
-		break;
-	}
-	case PRIMITIVE_CONE:
-	{
-		//--------------------------------------------------
-		//		coneの描画
-		//--------------------------------------------------
-		
-		cone_->DrawParticle(pso, instanceCount, handle);
-		break;
-	}
-	case PRIMITIVE_CUBE:
-	{
-		//--------------------------------------------------
-		//		cubeの描画
-		//--------------------------------------------------
-
-		cube_->DrawParticle(pso, instanceCount, handle);
-		break;
-	}
-
-	case PRIMITIVE_COUNT:
-		break;
-	default:
-		assert(0 && "未対応の PrimitiveType が指定されました");
-		break;
-	}
+	type;
+	if (instanceCount == 0) return;
+	auto* baseData = GetBaseData(handle);
+	if (!baseData) return;
+	DrawCommon(pso, baseData);
+	dxCommon_->GetCommandList()->DrawInstanced(baseData->vertexCount, instanceCount, 0, 0);
 }
 
 //=================================================================================
 //	描画処理(オブジェクト用)
 //=================================================================================
 void TakeC::PrimitiveDrawer::DrawObject(PSO* pso, PrimitiveType type, uint32_t handle) {
-
-	switch (type) {
-	case PRIMITIVE_RING:
-	{
-		//--------------------------------------------------
-		//		ringの描画
-		//--------------------------------------------------
-
-		ring_->DrawObject(pso, handle);
-		
-		break;
-	}
-	case PRIMITIVE_PLANE:
-	{
-		//--------------------------------------------------
-		//		planeの描画
-		//--------------------------------------------------
-		
-		plane_->DrawObject(pso, handle);
-		break;
-
-	}
-	case PRIMITIVE_SPHERE:
-	{
-		//--------------------------------------------------
-		//		sphereの描画
-		//--------------------------------------------------
-		
-		sphere_->DrawObject(pso, handle);
-		break;
-	}
-	case PRIMITIVE_CONE:
-	{
-		//--------------------------------------------------
-		//		coneの描画
-		//--------------------------------------------------
-		
-		cone_->DrawObject(pso, handle);
-		break;
-	}
-	case PRIMITIVE_CUBE:
-	{
-		//--------------------------------------------------
-		//		cubeの描画
-		//--------------------------------------------------
-		
-		cube_->DrawObject(pso, handle);
-		break;
-	}
-	case PRIMITIVE_COUNT:
-		break;
-	default:
-		assert(0 && "未対応の PrimitiveType が指定されました");
-		break;
-	}
+	type;
+	auto* baseData = GetBaseData(handle);
+	if (!baseData) return;
+	DrawCommon(pso, baseData);
+	dxCommon_->GetCommandList()->DrawInstanced(baseData->vertexCount, 1, 0, 0);
 }
 
 //====================================================================
@@ -264,60 +148,44 @@ void TakeC::PrimitiveDrawer::DrawObject(PSO* pso, PrimitiveType type, uint32_t h
 
 PlaneData* TakeC::PrimitiveDrawer::GetPlaneData(uint32_t handle) {
 	// planeDataを返す
-	return plane_->GetData(handle);
+	return GetData<Plane>(handle);
 }
 
 SphereData* TakeC::PrimitiveDrawer::GetSphereData(uint32_t handle) {
 	// sphereDataを返す
-	return sphere_->GetData(handle);
+	return GetData<Sphere>(handle);
 }
 
 RingData* TakeC::PrimitiveDrawer::GetRingData(uint32_t handle) {
-	return ring_->GetData(handle);
+	return GetData<Ring>(handle);
 }
 
 
 ConeData* TakeC::PrimitiveDrawer::GetConeData(uint32_t handle) {
 	// coneDataを返す
-	return cone_->GetData(handle);
+	return GetData<Cone>(handle);
 }
 
 CubeData* TakeC::PrimitiveDrawer::GetCubeData(uint32_t handle) {
-	return cube_->GetData(handle);
+	return GetData<Cube>(handle);
 }
 
-void TakeC::PrimitiveDrawer::SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color) {
+CylinderData* TakeC::PrimitiveDrawer::GetCylinderData(uint32_t handle) {
+	return GetData<Cylinder>(handle);
+}
 
-	switch (type) {
-	case PRIMITIVE_RING:
-	{
-		ring_->SetMaterialColor(handle, color);
-		break;
-	}
-	case PRIMITIVE_PLANE:
-	{
-		plane_->SetMaterialColor(handle, color);		
-		break;
-	}
-	case PRIMITIVE_SPHERE:
-	{
-		sphere_->SetMaterialColor(handle, color);
-		break;
-	}
-	case PRIMITIVE_CONE:
-	{
-		cone_->SetMaterialColor(handle, color);
-		break;
-	}
-	case PRIMITIVE_CUBE:
-	{
-		cube_->SetMaterialColor(handle, color);
-		break;
-	}
-	case PRIMITIVE_COUNT:
-		break;
-	default:
-		assert(0 && "未対応の PrimitiveType が指定されました");
-		break;
-	}
+void TakeC::PrimitiveDrawer::DrawCommon(PSO* pso, PrimitiveBaseData* data) {
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+	// プリミティブトポロジー設定
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// VertexBufferView 設定
+	commandList->IASetVertexBuffers(0, 1, &data->mesh.vertexBufferView_);
+	// マテリアル CBuffer 設定
+	commandList->SetGraphicsRootConstantBufferView(
+		pso->GetGraphicBindResourceIndex("gMaterial"),
+		data->material->GetMaterialResource()->GetGPUVirtualAddress());
+	// テクスチャ設定
+	srvManager_->SetGraphicsRootDescriptorTable(
+		pso->GetGraphicBindResourceIndex("gTexture"),
+		TextureManager::GetInstance().GetSrvIndex(data->material->GetTextureFilePath()));
 }

@@ -54,10 +54,10 @@
     },
     "blendState": 1,
     "name": "RifleMuzzleFlash2",
-    "primitiveParameters": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+    "primitiveParam": {
+        "width": 1.0,
+        "height": 1.0
+
     },
     "primitiveType": "PRIMITIVE_PLANE",
     "textureFilePath": "Cross.png"

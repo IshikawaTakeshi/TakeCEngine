@@ -1,16 +1,19 @@
 #include "ParticleManager.h"
 #include "base/ImGuiManager.h"
-#include "base/TakeCFrameWork.h"
 #include "engine/3d/Particle/ParticleCommon.h"
+#include "engine/Base/TakeCFrameWork.h"
 #include <cassert>
+
+using namespace TakeC;
 
 //================================================================================================
 // 初期化
 //================================================================================================
 
-void TakeC::ParticleManager::Initialize(ParticleCommon* particleCommon) {
+void TakeC::ParticleManager::Initialize(ParticleCommon* particleCommon,PrimitiveDrawer* primitiveDrawer) {
 	emitterAllocator_ = std::make_unique<ParticleEmitterAllocator>();
 	particleCommon_ = particleCommon;
+	primitiveDrawer_ = primitiveDrawer;
 }
 
 //================================================================================================
@@ -80,38 +83,6 @@ void TakeC::ParticleManager::Finalize() {
 	particleGroups_.clear();
 }
 
-void TakeC::ParticleManager::UpdatePrimitiveType(const std::string& groupName, PrimitiveType type,const Vector3& param) {
-
-	if (!particleGroups_.contains(groupName)) {
-		assert(false && "ParticleGroup not found! Please check the name.");
-		return;
-	}
-
-	uint32_t newHandle = 0;
-	//指定されたグループのプリミティブタイプを更新
-	switch (type) {
-	case PRIMITIVE_RING:
-		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
-			param.x,param.y,particleGroups_.at(groupName)->GetPreset().textureFilePath);
-		break;
-	case PRIMITIVE_PLANE:
-		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
-			param.x, param.y, particleGroups_.at(groupName)->GetPreset().textureFilePath);
-		break;
-	case PRIMITIVE_SPHERE:
-		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
-			param.x, particleGroups_.at(groupName)->GetPreset().textureFilePath);
-		break;
-	case PRIMITIVE_CONE:
-		newHandle = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
-			param.x, param.y,16, particleGroups_.at(groupName)->GetPreset().textureFilePath);
-		break;
-	default:
-		break;
-	}
-	particleGroups_.at(groupName)->SetPrimitiveHandle(newHandle);
-}
-
 //================================================================================================
 // パーティクルグループの生成
 //================================================================================================
@@ -140,6 +111,7 @@ void TakeC::ParticleManager::CreateParticleGroup(const std::string& presetJson) 
 	std::unique_ptr<PrimitiveParticle> particleGroup = std::make_unique<PrimitiveParticle>(preset.primitiveType);
 	particleGroup->Initialize(particleCommon_, preset.textureFilePath);
 	particleGroup->SetPreset(preset);
+	particleGroup->GeneratePrimitive();
 	particleGroups_.insert(std::make_pair(preset.presetName, std::move(particleGroup)));
 }
 
