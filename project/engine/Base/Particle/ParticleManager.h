@@ -104,6 +104,10 @@ namespace TakeC {
 			type = PRIMITIVE_CUBE;
 			handle = primitiveDrawer_->GenerateCube(std::forward<Args>(args)...);
 		}
+		else if constexpr (std::is_same_v<TPrimitive, Cylinder>) {
+			type = PRIMITIVE_CYLINDER;
+			handle = primitiveDrawer_->GenerateCylinder(std::forward<Args>(args)...);
+		}
 		else {
 			static_assert(sizeof(TPrimitive) == 0, "Unsupported primitive type");
 			return;

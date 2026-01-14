@@ -15,6 +15,15 @@ void to_json(nlohmann::json& j, const PrimitiveType& type) {
 	case PRIMITIVE_SPHERE:
 		j = "PRIMITIVE_SPHERE";
 		break;
+	case PRIMITIVE_CUBE:
+		j = "PRIMITIVE_CUBE";
+		break;
+	case PRIMITIVE_CONE:
+		j = "PRIMITIVE_CONE";
+		break;
+	case PRIMITIVE_CYLINDER:
+		j = "PRIMITIVE_CYLINDER";
+		break;
 	default:
 		j = "UNKNOWN";
 		break;
@@ -33,6 +42,12 @@ void from_json(const nlohmann::json& j, PrimitiveType& type) {
 		type = PRIMITIVE_PLANE;
 	} else if (str == "PRIMITIVE_SPHERE") {
 		type = PRIMITIVE_SPHERE;
+	} else if (str == "PRIMITIVE_CUBE") {
+		type = PRIMITIVE_CUBE;
+	} else if (str == "PRIMITIVE_CONE") {
+		type = PRIMITIVE_CONE;
+	} else if (str == "PRIMITIVE_CYLINDER") {
+		type = PRIMITIVE_CYLINDER;
 	} else {
 		type = PRIMITIVE_COUNT; // 不明なタイプ
 	}

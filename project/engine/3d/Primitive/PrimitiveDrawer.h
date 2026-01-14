@@ -9,6 +9,7 @@
 #include "engine/3d/Primitive/Sphere.h"
 #include "engine/3d/Primitive/Cube.h"
 #include "engine/3d/Primitive/Cone.h"
+#include "engine/3d/Primitive/Cylinder.h"
 #include "math/TransformMatrix.h"
 #include "Primitive/PrimitiveType.h"
 #include <memory>
@@ -28,17 +29,6 @@ namespace TakeC {
 		/// </summary>
 		PrimitiveDrawer() = default;
 		~PrimitiveDrawer() = default;
-
-	public:
-
-		//cylinder全体のデータ
-		struct CylinderData {
-			PrimitiveMesh primitiveData_;
-			VertexData* vertexData_ = nullptr;
-			Material* material_ = nullptr;
-			float radius_;
-			float height_;
-		};
 
 		//=================================================================================
 		// ハンドル構造体（型情報を含む）
@@ -91,8 +81,64 @@ namespace TakeC {
 		/// 終了処理
 		void Finalize();
 
-		// ImGui更新処理
-		void UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3& param);
+		/// <summary>
+		/// プリミティブを生成（テンプレート版）
+		/// 使用例: auto handle = drawer. Generate<Ring>(2.0f, 1.0f, "texture.png");
+		/// </summary>
+		template<typename TPrimitive, typename... Args>
+		PrimitiveHandle Generate(Args&&... args);
+
+		//リングデータの生成
+		uint32_t GenerateRing(float outerRadius, float innerRadius,uint32_t subDivision, const std::string& textureFilePath);
+		// 平面データの生成
+		uint32_t GeneratePlane(float width, float height, const std::string& textureFilePath);
+		// 球データの生成
+		uint32_t GenerateSphere(float radius,uint32_t subDivision, const std::string& textureFilePath);
+		// 円錐データの生成
+		uint32_t GenerateCone(float radius, float height, uint32_t subDivision, const std::string& textureFilePath);
+		//cubeデータの作成
+		uint32_t GenerateCube(const AABB& size, const std::string& textureFilePath);
+		//cylinderデータの作成
+		uint32_t GenerateCylinder(float radius, float height, uint32_t subDivision, const std::string& textureFilePath);
+
+		// 描画処理(particle用)
+		void DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType type, uint32_t handle);
+		// 描画処理(オブジェクト用)
+		void DrawObject(PSO* pso, PrimitiveType type, uint32_t handle);
+
+		PlaneData* GetPlaneData(uint32_t handle);
+		SphereData* GetSphereData(uint32_t handle);
+		RingData* GetRingData(uint32_t handle);
+		ConeData* GetConeData(uint32_t handle);
+		CubeData* GetCubeData(uint32_t handle);
+		CylinderData* GetCylinderData(uint32_t handle);
+
+		/// <summary>
+		/// 可変長引数からテクスチャファイルパスを抽出
+		/// </summary>
+		template<typename...  Args>
+		std::string ExtractTextureFilePath(Args&&... args);
+
+		/// <summary>
+		/// 可変長引数から文字列を抽出（再帰終了用）
+		/// </summary>
+		/// <param name="out"></param>
+		/// <param name="value"></param>
+		void ExtractIfString(std::string& out, const std::string& value) {
+			out = value;
+		}
+
+		//テンプレートオーバーロード（string以外は何もしない）
+		template<typename T>
+		void ExtractIfString(std::string&, const T&) {
+			// 何もしない
+		}
+
+		//=================================================================================
+		// accessors
+		//=================================================================================
+
+		//---- getter ------------------------------------------------------------------
 
 		/// <summary>
 		/// プリミティブデータを取得（型指定版）
@@ -118,10 +164,6 @@ namespace TakeC {
 		template<typename TPrimitive>
 		TPrimitive* GetPrimitiveInstance();
 
-		//=================================================================================
-		// 操作関数
-		//=================================================================================
-
 		/// <summary>
 		/// Transform取得
 		/// </summary>
@@ -129,117 +171,83 @@ namespace TakeC {
 			return GetTransform(handle.id);
 		}
 
+		/// <summary>
+		/// Transform取得
+		/// </summary>
+		/// <param name="handleId"></param>
+		/// <returns></returns>
 		EulerTransform* GetTransform(uint32_t handleId) {
 			auto* baseData = GetBaseData(handleId);
 			return baseData ? &baseData->transform : nullptr;
 		}
 
-		/// <summary>
+		//---- setter ------------------------------------------------------------------
+
 		/// Transform設定
-		/// </summary>
 		void SetTransform(const PrimitiveHandle& handle, const EulerTransform& transform) {
 			SetTransform(handle.id, transform);
 		}
 
+		/// Transform設定
 		void SetTransform(uint32_t handleId, const EulerTransform& transform) {
 			if (auto* baseData = GetBaseData(handleId)) {
 				baseData->transform = transform;
 			}
 		}
 
-		/// <summary>
 		/// マテリアル色設定
-		/// </summary>
 		void SetMaterialColor(const PrimitiveHandle& handle, const Vector4& color) {
 			SetMaterialColor(handle.id, color);
 		}
 
+		/// マテリアル色設定
 		void SetMaterialColor(uint32_t handleId, const Vector4& color) {
 			auto* baseData = GetBaseData(handleId);
 			if (baseData && baseData->material) {
 				baseData->material->SetMaterialColor(color);
 			}
 		}
-
-		/// <summary>
 		/// 生成パラメータを設定（Ring用）
-		/// </summary>
 		void SetGenerateParameters(RingData* data, float outerRadius, float innerRadius,uint32_t subDivision,const std::string&) {
 			data->outerRadius = outerRadius;
 			data->innerRadius = innerRadius;
 			data->subDivision = subDivision;
 		}
-
+		/// 生成パラメータを設定（Plane用）
 		void SetGenerateParameters(PlaneData* data, float width, float height,const std::string&) {
 			data->width = width;
 			data->height = height;
 		}
-
+		/// 生成パラメータを設定（Sphere用）
 		void SetGenerateParameters(SphereData* data, float radius,uint32_t subDivision,const std::string&) {
 			data->radius = radius;
 			data->subDivision = subDivision;
 		}
-
+		/// 生成パラメータを設定（Cone用）
 		void SetGenerateParameters(ConeData* data, float radius, float height, uint32_t subDivision,const std::string&) {
 			data->radius = radius;
 			data->height = height;
 			data->subDivision = subDivision;
 		}
-
+		/// 生成パラメータを設定（Cube用）
 		void SetGenerateParameters(CubeData* data, const AABB& size,const std::string&) {
 			data->size = size;
 		}
-
-		/// <summary>
-		/// プリミティブを生成（テンプレート版）
-		/// 使用例: auto handle = drawer. Generate<Ring>(2.0f, 1.0f, "texture.png");
-		/// </summary>
-		template<typename TPrimitive, typename... Args>
-		PrimitiveHandle Generate(Args&&... args);
-
-		//リングデータの生成
-		uint32_t GenerateRing(float outerRadius, float innerRadius,uint32_t subDivision, const std::string& textureFilePath);
-		// 平面データの生成
-		uint32_t GeneratePlane(float width, float height, const std::string& textureFilePath);
-		// 球データの生成
-		uint32_t GenerateSphere(float radius,uint32_t subDivision, const std::string& textureFilePath);
-		// 円錐データの生成
-		uint32_t GenerateCone(float radius, float height, uint32_t subDivision, const std::string& textureFilePath);
-		//cubeデータの作成
-		uint32_t GenerateCube(const AABB& size, const std::string& textureFilePath);
-
-		// 描画処理(particle用)
-		void DrawParticle(PSO* pso, UINT instanceCount, PrimitiveType type, uint32_t handle);
-		// 描画処理(オブジェクト用)
-		void DrawObject(PSO* pso, PrimitiveType type, uint32_t handle);
-
-		PlaneData* GetPlaneData(uint32_t handle);
-		SphereData* GetSphereData(uint32_t handle);
-		RingData* GetRingData(uint32_t handle);
-		ConeData* GetConeData(uint32_t handle);
-		CubeData* GetCubeData(uint32_t handle);
-
-		/// <summary>
-		/// 可変長引数からテクスチャファイルパスを抽出
-		/// </summary>
-		template<typename...  Args>
-		std::string ExtractTextureFilePath(Args&&... args);
-
-		/// <summary>
-		/// 可変長引数から文字列を抽出（再帰終了用）
-		/// </summary>
-		/// <param name="out"></param>
-		/// <param name="value"></param>
-		void ExtractIfString(std::string& out, const std::string& value) {
-			out = value;
+		/// 生成パラメータを設定（Cylinder用）
+		void SetGenerateParameters(CylinderData* data, float radius, float height, uint32_t subDivision,const std::string&) {
+			data->radius = radius;
+			data->height = height;
+			data->subDivision = subDivision;
 		}
 
-		//テンプレートオーバーロード（string以外は何もしない）
-		template<typename T>
-		void ExtractIfString(std::string&, const T&) {
-			// 何もしない
-		}
+		
+private:
 
+		/// <summary>
+		/// 描画共通処理
+		/// </summary>
+		/// <param name="pso"></param>
+		/// <param name="data"></param>
 		void DrawCommon(PSO* pso, PrimitiveBaseData* data);
 
 	private:
@@ -262,6 +270,8 @@ namespace TakeC {
 		std::unique_ptr<TakeC::Cone> cone_ = nullptr;
 		//cube
 		std::unique_ptr<TakeC::Cube> cube_ = nullptr;
+		//cylinder
+		std::unique_ptr<TakeC::Cylinder> cylinder_ = nullptr;
 
 		const uint32_t kMaxVertexCount_ = 32000;
 	};
@@ -287,6 +297,9 @@ namespace TakeC {
 		}
 		else if constexpr (std::is_same_v<TPrimitive, Cone>) {
 			return PRIMITIVE_CONE;
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Cylinder>) {
+			return PRIMITIVE_CYLINDER;
 		}
 		else {
 			static_assert(sizeof(TPrimitive) == 0, "Unsupported primitive type");
@@ -338,6 +351,9 @@ namespace TakeC {
 		}
 		else if constexpr (std::is_same_v<TPrimitive, Cone>) {
 			return cone_.get();
+		}
+		else if constexpr (std::is_same_v<TPrimitive, Cylinder>) {
+			return cylinder_.get();
 		}
 		else {
 			static_assert(sizeof(TPrimitive) == 0, "Unsupported primitive type");

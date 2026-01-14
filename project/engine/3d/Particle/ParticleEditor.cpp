@@ -588,6 +588,9 @@ void ParticleEditor::InitPrimitiveParam(PrimitiveType type, PrimitiveParameter& 
 	case PRIMITIVE_CUBE:
 		params = CubeParam{};
 		break;
+	case PRIMITIVE_CYLINDER:
+		params = CylinderParam{};
+		break;
 	default:
 		params = PlaneParam{};
 		break;
@@ -604,6 +607,8 @@ bool ParticleEditor::DrawPrimitiveParametersUI(PrimitiveType type, TakeC::Primit
 		using T = std::decay_t<decltype(arg)>;
 
 		if constexpr (std::is_same_v<T, RingParam>) {
+
+			//----- Ring プレビュー -----
 			ImGui::Text("Ring Parameters");
 			changed |= ImGui::DragFloat("Outer Radius", &arg.outerRadius, 0.01f, 0.1f, 10.0f);
 			changed |= ImGui::DragFloat("Inner Radius", &arg.innerRadius, 0.01f, 0.01f, arg.outerRadius - 0.01f);
@@ -613,19 +618,23 @@ bool ParticleEditor::DrawPrimitiveParametersUI(PrimitiveType type, TakeC::Primit
 				changed = true;
 			}
 
-			// プレビュー
 			ImGui::Separator();
 			ImGui::BulletText("Outer:  %.2f, Inner: %.2f", arg.outerRadius, arg.innerRadius);
 			ImGui::BulletText("Subdivision: %u", arg.subDivision);
+
 		} else if constexpr (std::is_same_v<T, PlaneParam>) {
+
+			//----- plane プレビュー -----
 			ImGui::Text("Plane Parameters");
 			changed |= ImGui::DragFloat("Width", &arg.width, 0.01f, 0.1f, 100.0f);
 			changed |= ImGui::DragFloat("Height", &arg.height, 0.01f, 0.1f, 100.0f);
 
-			// プレビュー
 			ImGui::Separator();
 			ImGui::BulletText("Size: %.2f x %.2f", arg.width, arg.height);
+
 		} else if constexpr (std::is_same_v<T, SphereParam>) {
+
+			//----- Sphere プレビュー -----
 			ImGui::Text("Sphere Parameters");
 			changed |= ImGui::DragFloat("Radius", &arg.radius, 0.01f, 0.1f, 10.0f);
 			int subdivision = static_cast<int>(arg.subDivision);
@@ -634,11 +643,13 @@ bool ParticleEditor::DrawPrimitiveParametersUI(PrimitiveType type, TakeC::Primit
 				changed = true;
 			}
 
-			// プレビュー
 			ImGui::Separator();
 			ImGui::BulletText("Radius: %.2f", arg.radius);
 			ImGui::BulletText("Subdivision: %u", arg.subDivision);
+
 		} else if constexpr (std::is_same_v<T, ConeParam>) {
+
+			//----- Cone プレビュー -----
 			ImGui::Text("Cone Parameters");
 			changed |= ImGui::DragFloat("Radius", &arg.radius, 0.01f, 0.1f, 10.0f);
 			changed |= ImGui::DragFloat("Height", &arg.height, 0.01f, 0.1f, 10.0f);
@@ -652,7 +663,10 @@ bool ParticleEditor::DrawPrimitiveParametersUI(PrimitiveType type, TakeC::Primit
 			ImGui::Separator();
 			ImGui::BulletText("Radius: %.2f, Height: %.2f", arg.radius, arg.height);
 			ImGui::BulletText("Subdivision: %u", arg.subDivision);
+
 		} else if constexpr (std::is_same_v<T, CubeParam>) {
+
+			//----- Cube プレビュー -----
 			ImGui::Text("Cube Parameters");
 			changed |= ImGui::DragFloat3("Min", &arg.size.min.x, 0.01f, -10.0f, arg.size.max.x - 0.01f);
 			changed |= ImGui::DragFloat3("Max", &arg.size.max.x, 0.01f, arg.size.min.x + 0.01f, 10.0f);
@@ -661,8 +675,24 @@ bool ParticleEditor::DrawPrimitiveParametersUI(PrimitiveType type, TakeC::Primit
 			ImGui::Separator();
 			Vector3 size = { arg.size.max.x - arg.size.min.x, arg.size.max.y - arg.size.min.y, arg.size.max.z - arg.size.min.z };
 			ImGui::BulletText("Size:  (%.2f, %.2f, %.2f)", size.x, size.y, size.z);
+
+		} else if constexpr (std::is_same_v<T, CylinderParam>) {
+
+			//----- Cylinder プレビュー -----
+			ImGui::Text("Cylinder Parameters");
+			changed |= ImGui::DragFloat("Radius", &arg.radius, 0.01f, 0.1f, 10.0f);
+			changed |= ImGui::DragFloat("Height", &arg.height, 0.01f, 0.1f, 10.0f);
+			int subdivision = static_cast<int>(arg.subDivision);
+			if (ImGui::SliderInt("Subdivision", &subdivision, 3, 128)) {
+				arg.subDivision = static_cast<uint32_t>(subdivision);
+				changed = true;
+			}
+			// プレビュー
+			ImGui::Separator();
+			ImGui::BulletText("Radius: %.2f, Height: %.2f", arg.radius, arg.height);
+			ImGui::BulletText("Subdivision: %u", arg.subDivision);
 		}
-		}, params);
+	}, params);
 
 	return changed;
 }
@@ -710,6 +740,13 @@ void ParticleEditor::UpdatePrimitiveFromParameters(
 				groupName,
 				aabb,
 				currentPreset_.textureFilePath);
+		} else if constexpr (std::is_same_v<T, CylinderParam>) {
+			TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Cylinder>(
+				groupName,
+				arg.radius,
+				arg.height,
+				arg.subDivision,
+				currentPreset_.textureFilePath);
 		}
-		}, params);
+	}, params);
 }

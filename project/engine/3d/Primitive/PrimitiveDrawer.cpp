@@ -35,6 +35,9 @@ void TakeC::PrimitiveDrawer::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::S
 	cone_ = std::make_unique<TakeC::Cone>();
 	cone_->Initialize(dxCommon_, srvManager_);
 
+	cylinder_ = std::make_unique<TakeC::Cylinder>();
+	cylinder_->Initialize(dxCommon_, srvManager_);
+
 }
 
 //============================================================================
@@ -48,49 +51,7 @@ void TakeC::PrimitiveDrawer::Finalize() {
 	ring_.reset();
 	sphere_.reset();
 	cone_.reset();
-}
-
-//============================================================================
-// ImGui更新処理（パラメータ付き）
-//============================================================================
-void TakeC::PrimitiveDrawer::UpdateImGui(uint32_t handle, PrimitiveType type, const Vector3&) {
-
-	switch (type) {
-	case PRIMITIVE_RING:
-	{
-		cube_->UpdateImGui(handle, "Edit Cube");
-	}
-	case PRIMITIVE_PLANE:
-	{
-		//Planeのパラメータ更新と表示
-		plane_->UpdateImGui(handle, "Edit Plane");
-		
-		break;
-	}
-	case PRIMITIVE_SPHERE:
-	{
-		//Sphereのパラメータ更新と表示
-		sphere_->UpdateImGui(handle, "Edit Sphere");
-		
-		break;
-	}
-	case PRIMITIVE_CONE:
-	{
-		//Coneのパラメータ更新と表示
-		cone_->UpdateImGui(handle, "Edit Cone");
-		
-		break;
-	}
-	case PRIMITIVE_CUBE:
-	{
-		//Cubeのパラメータ更新と表示
-		cube_->UpdateImGui(handle, "Edit Cube");
-		break;
-	}
-	default:
-		assert(0 && "未対応の PrimitiveType が指定されました");
-		break;
-	}
+	cylinder_.reset();
 }
 
 //=================================================================================
@@ -151,6 +112,13 @@ uint32_t TakeC::PrimitiveDrawer::GenerateCube(const AABB& size, const std::strin
 }
 
 //=================================================================================
+//	プリミティブデータ生成処理(cylinder)
+//=================================================================================
+uint32_t TakeC::PrimitiveDrawer::GenerateCylinder(float radius, float height, uint32_t subDivision, const std::string& textureFilePath) {
+	return Generate<Cylinder>(radius, height, subDivision, textureFilePath);
+}
+
+//=================================================================================
 //	描画処理
 //=================================================================================
 
@@ -200,6 +168,10 @@ ConeData* TakeC::PrimitiveDrawer::GetConeData(uint32_t handle) {
 
 CubeData* TakeC::PrimitiveDrawer::GetCubeData(uint32_t handle) {
 	return GetData<Cube>(handle);
+}
+
+CylinderData* TakeC::PrimitiveDrawer::GetCylinderData(uint32_t handle) {
+	return GetData<Cylinder>(handle);
 }
 
 void TakeC::PrimitiveDrawer::DrawCommon(PSO* pso, PrimitiveBaseData* data) {

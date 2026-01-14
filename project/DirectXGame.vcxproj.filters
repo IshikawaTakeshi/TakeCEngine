@@ -541,7 +541,7 @@
     <ClCompile Include="engine\Animation\SpriteSheetSettings.cpp" />
     <ClCompile Include="application\Effect\MuzzleFlashEffect.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cone.cpp" />
-    <ClCompile Include="engine\3d\Primitive\PrimitiveParameter.cpp" />
+    <ClCompile Include="engine\3d\Primitive\Cylinder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1119,6 +1119,7 @@
     <ClInclude Include="application\Effect\MuzzleFlashEffect.h" />
     <ClInclude Include="engine\3d\Primitive\Cone.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveParameter.h" />
+    <ClInclude Include="engine\3d\Primitive\Cylinder.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

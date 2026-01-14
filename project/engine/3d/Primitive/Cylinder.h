@@ -4,24 +4,22 @@
 namespace TakeC {
 
 	//========================================================
-	//	coneデータ構造体
+	//cylinderのデータ
 	//========================================================
-	// Cone全体のデータ
-	struct ConeData : public PrimitiveBaseData {
-		float radius = 0.0f;
-		float height = 0.0f;
-		uint32_t subDivision = 32; // 分割数
+	struct CylinderData : public PrimitiveBaseData {
+		float radius = 1.0f;
+		float height = 1.0f;
+		uint32_t subDivision = 16;
 	};
 
 	//============================================================
-	//	Cone class
+	//	Cylinder class
 	//============================================================
-
-	class Cone : public PrimitiveBase<ConeData> {	
+	class Cylinder : public PrimitiveBase<CylinderData> {
 	public:
 
 		//データ型エイリアス
-		using DataType = ConeData;
+		using DataType = CylinderData;
 
 		//========================================================
 		//	functions
@@ -29,29 +27,26 @@ namespace TakeC {
 		/// <summary>
 		/// コンストラクタ・デストラクタ
 		/// </summary>
-		Cone() = default;
-		~Cone() = default;
-
+		Cylinder() = default;
+		~Cylinder() = default;
 		/// <summary>
-		/// coneデータの作成
+		/// cylinderデータの作成
 		/// </summary>
 		/// <returns>生成したハンドル</returns>
 		uint32_t Generate(float radius, float height, uint32_t subDivision, const std::string& textureFilePath);
 
-	public:
 		/// <summary>
 		/// 頂点データ作成
 		/// </summary>
-		/// <param name="coneData"></param>
-		void CreateVertexData(ConeData* coneData);
+		/// <param name="cylinderData"></param>
+		void CreateVertexData(CylinderData* cylinderData) override;
 
 	protected:
-		
+
 		/// <summary>
 		/// プリミティブデータ編集
 		/// </summary>
 		/// <param name="data"></param>
-		void EditPrimitiveData(ConeData* data) override;
-
+		void EditPrimitiveData(CylinderData* data) override;
 	};
 }
