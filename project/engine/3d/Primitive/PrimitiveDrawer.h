@@ -219,8 +219,6 @@ namespace TakeC {
 		ConeData* GetConeData(uint32_t handle);
 		CubeData* GetCubeData(uint32_t handle);
 
-		void SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color);
-
 		/// <summary>
 		/// 可変長引数からテクスチャファイルパスを抽出
 		/// </summary>

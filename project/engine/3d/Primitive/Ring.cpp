@@ -50,20 +50,23 @@ void Ring::CreateVertexData(RingData* ringData) {
 		float cosNext = std::cos((index + 1) * radianPerDivide);
 		float uv = static_cast<float>(index) / static_cast<float>(ringData->subDivision);
 		float uvNext = static_cast<float>(index + 1) / static_cast<float>(ringData->subDivision);
-		// 頂点座標
+// 頂点座標（反時計回りに修正）
+		// 第1三角形:  外側 -> 内側次 -> 内側現在
 		ringData->vertexData[vertexIndex].position = { ringData->outerRadius * -sin, ringData->outerRadius * cos, 0.0f, 1.0f };
-		ringData->vertexData[vertexIndex + 1].position = { ringData->innerRadius * -sin, ringData->innerRadius * cos, 0.0f, 1.0f };
-		ringData->vertexData[vertexIndex + 2].position = { ringData->innerRadius * -sinNext, ringData->innerRadius * cosNext, 0.0f, 1.0f };
+		ringData->vertexData[vertexIndex + 1].position = { ringData->innerRadius * -sinNext, ringData->innerRadius * cosNext, 0.0f, 1.0f };
+		ringData->vertexData[vertexIndex + 2].position = { ringData->innerRadius * -sin, ringData->innerRadius * cos, 0.0f, 1.0f };
+
+		// 第2三角形: 外側現在 -> 外側次 -> 内側次
 		ringData->vertexData[vertexIndex + 3].position = ringData->vertexData[vertexIndex].position;
-		ringData->vertexData[vertexIndex + 4].position = ringData->vertexData[vertexIndex + 2].position;
-		ringData->vertexData[vertexIndex + 5].position = { ringData->outerRadius * -sinNext, ringData->outerRadius * cosNext, 0.0f, 1.0f };
+		ringData->vertexData[vertexIndex + 4].position = { ringData->outerRadius * -sinNext, ringData->outerRadius * cosNext, 0.0f, 1.0f };
+		ringData->vertexData[vertexIndex + 5].position = ringData->vertexData[vertexIndex + 1].position;
 		// UV座標
 		ringData->vertexData[vertexIndex].texcoord = { uv, 0.0f };
-		ringData->vertexData[vertexIndex + 1].texcoord = { uv, 1.0f };
-		ringData->vertexData[vertexIndex + 2].texcoord = { uvNext, 1.0f };
+		ringData->vertexData[vertexIndex + 1].texcoord = { uvNext, 1.0f };
+		ringData->vertexData[vertexIndex + 2]. texcoord = { uv, 1.0f };
 		ringData->vertexData[vertexIndex + 3].texcoord = { uv, 0.0f };
-		ringData->vertexData[vertexIndex + 4].texcoord = { uvNext, 1.0f };
-		ringData->vertexData[vertexIndex + 5].texcoord = { uvNext, 0.0f };
+		ringData->vertexData[vertexIndex + 4].texcoord = { uvNext, 0.0f };
+		ringData->vertexData[vertexIndex + 5].texcoord = { uvNext, 1.0f };
 		// 法線
 		for (int i = 0; i < 6; ++i) {
 			ringData->vertexData[vertexIndex + i].normal = { 0.0f, 0.0f, 1.0f };
@@ -80,5 +83,5 @@ void TakeC::Ring::EditPrimitiveData(RingData* data) {
 	ImGui::Text("Ring Parameters");
 	ImGui::DragFloat("Outer Radius", &data->outerRadius, 0.1f, 0.1f, 100.0f);
 	ImGui::DragFloat("Inner Radius", &data->innerRadius, 0.1f, 0.01f, data->outerRadius - 0.01f);
-
+	ImGui::DragInt("Subdivision", reinterpret_cast<int*>(&data->subDivision), 1.0f, 3, 128);
 }

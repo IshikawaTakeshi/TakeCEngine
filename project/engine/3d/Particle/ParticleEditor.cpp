@@ -280,12 +280,9 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::Text("Primitive Parameters");
 	// パラメータが変更されたかどうかのフラグ
 	DrawPrimitiveParametersUI(currentPreset_.primitiveType, currentPreset_.primitiveParam);
-	// プリミティブの更新ボタン
+	// プリミティブの更新
+	UpdatePrimitiveFromParameters(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParam);
 
-	if (ImGui::Button("Update Primitive")) {
-		// プリミティブの更新
-		UpdatePrimitiveFromParameters(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParam);
-	}
 
 
 #pragma endregion

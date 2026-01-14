@@ -202,42 +202,6 @@ CubeData* TakeC::PrimitiveDrawer::GetCubeData(uint32_t handle) {
 	return GetData<Cube>(handle);
 }
 
-void TakeC::PrimitiveDrawer::SetMaterialColor(uint32_t handle, PrimitiveType type, const Vector4& color) {
-
-	switch (type) {
-	case PRIMITIVE_RING:
-	{
-		ring_->SetMaterialColor(handle, color);
-		break;
-	}
-	case PRIMITIVE_PLANE:
-	{
-		plane_->SetMaterialColor(handle, color);		
-		break;
-	}
-	case PRIMITIVE_SPHERE:
-	{
-		sphere_->SetMaterialColor(handle, color);
-		break;
-	}
-	case PRIMITIVE_CONE:
-	{
-		cone_->SetMaterialColor(handle, color);
-		break;
-	}
-	case PRIMITIVE_CUBE:
-	{
-		cube_->SetMaterialColor(handle, color);
-		break;
-	}
-	case PRIMITIVE_COUNT:
-		break;
-	default:
-		assert(0 && "未対応の PrimitiveType が指定されました");
-		break;
-	}
-}
-
 void TakeC::PrimitiveDrawer::DrawCommon(PSO* pso, PrimitiveBaseData* data) {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 	// プリミティブトポロジー設定

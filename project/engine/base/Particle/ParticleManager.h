@@ -23,7 +23,7 @@ namespace TakeC {
 		~ParticleManager() = default;
 
 		// 初期化
-		void Initialize(ParticleCommon* particleCommon);
+		void Initialize(ParticleCommon* particleCommon,PrimitiveDrawer* primitiveDrawer);
 		// 更新処理
 		void Update();
 		// ImGuiの更新処理

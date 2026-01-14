@@ -10,9 +10,10 @@ using namespace TakeC;
 // 初期化
 //================================================================================================
 
-void TakeC::ParticleManager::Initialize(ParticleCommon* particleCommon) {
+void TakeC::ParticleManager::Initialize(ParticleCommon* particleCommon,PrimitiveDrawer* primitiveDrawer) {
 	emitterAllocator_ = std::make_unique<ParticleEmitterAllocator>();
 	particleCommon_ = particleCommon;
+	primitiveDrawer_ = primitiveDrawer;
 }
 
 //================================================================================================
