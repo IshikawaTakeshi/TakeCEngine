@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector3.h"
+#include <json.hpp>
 
 //============================================================================
 // AABB struct
@@ -15,3 +16,5 @@ struct AABB {
 	Vector3 GetSize() const;
 	Vector3 GetCenter() const;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AABB, min, max)

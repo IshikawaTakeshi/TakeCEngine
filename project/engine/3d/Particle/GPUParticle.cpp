@@ -7,6 +7,9 @@
 #include "ImGuiManager.h"
 #include "TakeCFrameWork.h"
 #include "Utility/ResourceBarrier.h"
+#include "engine/3d/Primitive/PrimitiveParameter.h"
+
+using namespace TakeC;
 
 //==================================================================================
 //		Initialize
@@ -94,15 +97,31 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 		attributeResource_.Get(), attributeSrvIndex_);
 
 	particleAttributes_ = &particlePreset_.attribute;
-
+	particlePreset_.textureFilePath = filePath;
 
 	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
 		//プリミティブの初期化
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(1.0f, 0.5f, filePath);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
+			std::get<RingParam>(particlePreset_.primitiveParam).outerRadius,
+			std::get<RingParam>(particlePreset_.primitiveParam).innerRadius,
+			std::get<RingParam>(particlePreset_.primitiveParam).subDivision,
+			particlePreset_.textureFilePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(1.0f, 1.0f, filePath);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
+			std::get<PlaneParam>(particlePreset_.primitiveParam).width,
+			std::get<PlaneParam>(particlePreset_.primitiveParam).height,
+			particlePreset_.textureFilePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(1.0f, filePath);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
+			std::get<SphereParam>(particlePreset_.primitiveParam).radius,
+			std::get<SphereParam>(particlePreset_.primitiveParam).subDivision,
+			particlePreset_.textureFilePath);
+	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
+			std::get<ConeParam>(particlePreset_.primitiveParam).radius,
+			std::get<ConeParam>(particlePreset_.primitiveParam).height,
+			std::get<ConeParam>(particlePreset_.primitiveParam).subDivision,
+			particlePreset_.textureFilePath);
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");
 	}

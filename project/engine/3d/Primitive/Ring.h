@@ -32,6 +32,9 @@ namespace TakeC {
 	class Ring : public PrimitiveBase<RingData> {
 	public:
 
+		//データ型エイリアス
+		using DataType = RingData;
+
 		//========================================================
 		// functions
 		//========================================================
@@ -46,16 +49,19 @@ namespace TakeC {
 		/// リングデータの生成
 		/// </summary>
 		/// <returns>生成したハンドル</returns>
-		uint32_t Generate(float outerRadius, float innerRadius, const std::string& textureFilePath);
+		uint32_t Generate(float outerRadius, float innerRadius,uint32_t subDivision, const std::string& textureFilePath);
 
+
+	public:
+		/// 頂点データ作成
+		void CreateVertexData(RingData* ringData);
 
 	protected:
 
 		//========================================================================
 		// private functions
 		//========================================================================
-		/// 頂点データ作成
-		void CreateVertexData(RingData* ringData);
+
 		
 		void EditPrimitiveData(RingData* data);
 

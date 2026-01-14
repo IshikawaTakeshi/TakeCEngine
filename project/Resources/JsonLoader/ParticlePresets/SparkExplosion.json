@@ -56,5 +56,9 @@
   },
   "blendState": 1,
   "primitiveType": "PRIMITIVE_SPHERE",
+  "primitiveParam": {
+        "radius": 1.0,
+        "subDivision": 16
+    },
   "textureFilePath": "Spark2.png"
 }

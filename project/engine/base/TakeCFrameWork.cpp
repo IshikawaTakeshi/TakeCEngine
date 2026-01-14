@@ -76,13 +76,13 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//TextureManager
 	TakeC::TextureManager::GetInstance().Initialize(directXCommon_.get(), srvManager_.get());
 
-	//ParticleManager
-	particleManager_ = std::make_unique<ParticleManager>();
-	particleManager_->Initialize(particleCommon_);
-	
 	//PrimitiveDrawer
 	primitiveDrawer_ = std::make_unique<PrimitiveDrawer>();
 	primitiveDrawer_->Initialize(directXCommon_.get(), srvManager_.get());
+
+	//ParticleManager
+	particleManager_ = std::make_unique<ParticleManager>();
+	particleManager_->Initialize(particleCommon_,primitiveDrawer_.get());
 
 	//RenderTexture
 	renderTexture_ = std::make_unique<RenderTexture>();

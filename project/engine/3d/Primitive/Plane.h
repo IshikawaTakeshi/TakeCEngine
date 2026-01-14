@@ -20,6 +20,8 @@ namespace TakeC {
 	class Plane : public PrimitiveBase<PlaneData> {
 	public:
 
+		//データ型エイリアス
+		using DataType = PlaneData;
 
 		//========================================================
 		//	functions
@@ -39,14 +41,15 @@ namespace TakeC {
 		/// <returns></returns>
 		uint32_t Generate(float width, float height, const std::string& textureFilePath);
 
-	protected:
-		
+	public:
 		/// <summary>
 		/// 頂点データ作成
 		/// </summary>
 		/// <param name="planeData"></param>
 		void CreateVertexData(PlaneData* planeData) override;
 
+	protected:
+		
 		/// <summary>
 		/// プリミティブデータ編集
 		/// </summary>

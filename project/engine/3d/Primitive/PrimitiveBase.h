@@ -58,23 +58,6 @@ namespace TakeC {
 		/// </summary>
 		void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager);
 
-		void UpdateImGui(uint32_t handle, const std::string& windowName = "PrimitiveEdit");
-
-		/// <summary>
-		/// 描画処理(パーティクル用)
-		/// </summary>
-		/// <param name="pso"></param>
-		/// <param name="instanceCount"></param>
-		/// <param name="handle"></param>
-		void DrawParticle(PSO* pso, UINT instanceCount, uint32_t handle);
-
-		/// <summary>
-		/// 描画処理（オブジェクト用）
-		/// </summary>
-		/// <param name="pso"></param>
-		/// <param name="handle"></param>
-		void DrawObject(PSO* pso, uint32_t handle);
-
 	public:
 
 		/// <summary>
@@ -96,6 +79,8 @@ namespace TakeC {
 
 	protected:
 
+	public:
+
 		/// <summary>
 		/// 頂点データ作成
 		/// </summary>
@@ -108,13 +93,6 @@ namespace TakeC {
 		/// <param name="handle"></param>
 		/// <param name="textureFilePath"></param>
 		virtual void CreateMaterial(TData* data, const std::string& textureFilePath);
-
-		/// <summary>
-		/// 共通描画処理
-		/// </summary>
-		/// <param name="pso"></param>
-		/// <param name="handle"></param>
-		void DrawCommon(PSO* pso, TData* data);
 
 		/// <summary>
 		/// データ登録
@@ -151,59 +129,6 @@ namespace TakeC {
 		srvManager_ = srvManager;
 	}
 
-
-	//----------------------------------------------------------------------------
-	// ImGui更新
-	//----------------------------------------------------------------------------
-	template<typename TData>
-	inline void PrimitiveBase<TData>::UpdateImGui(uint32_t handle, const std::string& windowName) {
-		auto it = datas_.find(handle);
-		if (it == datas_.end()) {
-			return;  // ハンドルが無効
-		}
-		auto& data = it->second;
-		ImGui::SeparatorText(windowName.c_str());
-
-		//Transform編集
-		data->transform.EditConfig("Transform");
-		EditPrimitiveData(data.get());
-	}
-
-	//----------------------------------------------------------------------------
-	// 描画処理(パーティクル用)
-	//----------------------------------------------------------------------------
-	template<typename TData>
-	inline void PrimitiveBase<TData>::DrawParticle(PSO* pso, UINT instanceCount, uint32_t handle) {
-
-		// インスタンス数が0の場合は早期リターン
-		if (instanceCount == 0) {
-			return;
-		}
-		auto it = datas_.find(handle);
-		if (it == datas_.end()) {
-			return;  // ハンドルが無効
-		}
-		auto& data = it->second;
-		DrawCommon(pso, data.get());
-		// 描画コマンド
-		dxCommon_->GetCommandList()->DrawInstanced(data->vertexCount, instanceCount, 0, 0);
-	}
-
-	//----------------------------------------------------------------------------
-	// 描画処理（オブジェクト用）
-	//----------------------------------------------------------------------------
-	template<typename TData>
-	inline void PrimitiveBase<TData>::DrawObject(PSO* pso, uint32_t handle) {
-		auto it = datas_.find(handle);
-		if (it == datas_.end()) {
-			return;  // ハンドルが無効
-		}
-		auto& data = it->second;
-		DrawCommon(pso, data.get());
-		// 描画コマンド
-		dxCommon_->GetCommandList()->DrawInstanced(data->vertexCount, 1, 0, 0);
-	}
-
 	//----------------------------------------------------------------------------
 	// データ取得
 	//----------------------------------------------------------------------------
@@ -224,7 +149,7 @@ namespace TakeC {
 	inline const EulerTransform& PrimitiveBase<TData>::GetTransform(uint32_t handle) {
 		auto it = datas_.find(handle);
 		if (it == datas_.end()) {
-			return nullptr;  // ハンドルが無効
+			return EulerTransform();  // ハンドルが無効
 		}
 		return it->second->transform;
 	}
@@ -249,27 +174,6 @@ namespace TakeC {
 	inline void PrimitiveBase<TData>::SetTransform(uint32_t handle, const EulerTransform& transform) {
 
 		datas_[handle]->transform = transform;
-	}
-
-	//----------------------------------------------------------------------------
-	// 共通描画処理
-	//----------------------------------------------------------------------------
-	template<typename TData>
-	inline void PrimitiveBase<TData>::DrawCommon(PSO* pso, TData* data) {
-
-		ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-		// プリミティブトポロジー設定
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		// VertexBufferView 設定
-		commandList->IASetVertexBuffers(0, 1, &data->mesh.vertexBufferView_);
-		// マテリアル CBuffer 設定
-		commandList->SetGraphicsRootConstantBufferView(
-			pso->GetGraphicBindResourceIndex("gMaterial"),
-			data->material->GetMaterialResource()->GetGPUVirtualAddress());
-		// テクスチャ設定
-		srvManager_->SetGraphicsRootDescriptorTable(
-			pso->GetGraphicBindResourceIndex("gTexture"),
-			TextureManager::GetInstance().GetSrvIndex(data->material->GetTextureFilePath()));
 	}
 
 	//----------------------------------------------------------------------------

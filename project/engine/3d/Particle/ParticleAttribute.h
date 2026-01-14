@@ -1,6 +1,7 @@
 #pragma once
 #include "engine/math/Vector3.h"
 #include "engine/3d/Primitive/PrimitiveType.h"
+#include "engine/3d/Primitive/PrimitiveParameter.h"
 #include "engine/base/BlendModeStateEnum.h"
 #include "engine/Utility/JsonDirectoryPathData.h"
 #include <json.hpp>
@@ -66,7 +67,7 @@ struct ParticlePreset {
 	BlendState blendState = BlendState::ADD;
 	std::string textureFilePath; //テクスチャファイル名
 	PrimitiveType primitiveType; //プリミティブの種類
-	Vector3 primitiveParameters = {1.0f,1.0f,1.0f}; //プリミティブのパラメータ
+	TakeC::PrimitiveParameter primitiveParam; //プリミティブのパラメータ
 };
 
 // nlohmann::jsonのエイリアス

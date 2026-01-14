@@ -27,6 +27,10 @@ void SkyBox::Initialize(TakeC::DirectXCommon* directXCommon,const std::string& t
 	primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
 		{ {-50.0f,-50.0f,-50.0f},{50.0f,50.0f,50.0f} }, texturefilePath
 	);
+	TakeCFrameWork::GetPrimitiveDrawer()->SetMaterialColor(
+		primitiveHandle_,
+		{ 0.5f,0.5f,0.5f,1.0f }
+	);
 	
 	//TransformationMatrix用のResource生成
 	wvpResource_ = TakeC::DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
@@ -113,7 +117,6 @@ void SkyBox::SetMaterialColor(const Vector4& color) {
 
 	TakeCFrameWork::GetPrimitiveDrawer()->SetMaterialColor(
 		primitiveHandle_,
-		PRIMITIVE_CUBE,
 		{ color.x,color.y,color.z,1.0f }
 	);
 }

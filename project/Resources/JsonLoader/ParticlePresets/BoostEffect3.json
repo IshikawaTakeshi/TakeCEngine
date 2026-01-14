@@ -49,11 +49,11 @@
         }
     },
     "name": "BoostEffect3",
-  "primitiveParameters": {
-    "x": 1.0,
-    "y": 1.0,
-    "z": 1.0
-  },
+    "primitiveParam": {
+        "width": 1.0,
+        "height": 1.0
+
+    },
     "blendState": 1,
     "primitiveType": "PRIMITIVE_PLANE",
     "textureFilePath": "white1x1.png"
