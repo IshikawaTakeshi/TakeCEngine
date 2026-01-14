@@ -3,32 +3,14 @@
 #include "engine/math/Vector3.h"
 #include "engine/Utility/Timer.h"
 #include "engine/Animation/SpriteSheetSttings.h"
+#include "engine/Animation/UVScrollSettings.h"
+#include "engine/Animation/TextureAnimationTypeEnum.h"
 #include <cstdint>
 #include <vector>
 
 class Material;
 
 namespace TakeC {
-
-	//============================================================================
-	// テクスチャアニメーションの種類
-	//============================================================================
-	enum class TextureAnimationType {
-		None,           // アニメーションなし
-		UVScroll,       // UVスクロール
-		SpriteSheet,    // スプライトシート
-	};
-
-	
-
-	//============================================================================
-	// UVスクロール設定
-	//============================================================================
-	struct UVScrollSettings {
-		Vector2 scrollSpeed = { 0.0f, 0.0f }; // スクロール速度（UV単位/秒）
-		bool wrapU = true;  // U座標をラップするか
-		bool wrapV = true;  // V座標をラップするか
-	};
 
 	//============================================================================
 	// UVTextureAnimation class

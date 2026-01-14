@@ -554,9 +554,6 @@ void ParticleEditor::LoadAllPresets() {
 		// プリセットを読み込む
 		presets_[presetName] = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetName + ".json");
 	}
-
-	// デバッグ出力（必要に応じて削除）
-	OutputDebugStringA(("Loaded " + std::to_string(presets_.size()) + " presets from folder\n").c_str());
 }
 
 //=======================================================================

@@ -33,6 +33,13 @@ namespace TakeC {
 		// 終了処理
 		void Finalize();
 
+		/// <summary>
+		/// プリミティブタイプの更新
+		/// </summary>
+		/// <typeparam name="TPrimitive"></typeparam>
+		/// <typeparam name="...Args"></typeparam>
+		/// <param name="groupName"></param>
+		/// <param name="...args"></param>
 		template<typename TPrimitive, typename...  Args>
 		void UpdatePrimitiveType(const std::string& groupName, Args&&... args);
 
@@ -56,6 +63,8 @@ namespace TakeC {
 
 		//出現しているパーティクルのクリア
 		void ClearParticles();
+
+		void LoadAllPresets();
 
 		//パーティクルグループの取得
 		BaseParticleGroup* GetParticleGroup(const std::string& name);
