@@ -27,7 +27,7 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	particleEmitter_.resize(2);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[0]->Initialize("EnemyEmitter0", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 5, 0.001f);
-	particleEmitter_[0]->SetParticleName("SparkExplosion");
+	particleEmitter_[0]->SetParticleName("DamageSpark2");
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 8, 0.001f);
@@ -90,7 +90,7 @@ void Bullet::Update() {
 	//MEMO: パーティクルの毎フレーム発生
 	particleEmitter_[1]->Emit();
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BulletMoveEffect")->SetEmitterPosition(transform_.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark2")->SetEmitterPosition(transform_.translate);
 
 }
 

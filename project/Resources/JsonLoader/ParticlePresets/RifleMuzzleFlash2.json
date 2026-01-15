@@ -23,6 +23,7 @@
         "isEmitterTrail": false,
         "isParticleTrail": false,
         "isTraslate": true,
+        "lifetimeEasingType": 0,
         "lifetimeRange": {
             "max": 0.28999999165534973,
             "min": 0.25999999046325684
@@ -41,24 +42,28 @@
             "y": 30.0,
             "z": 1.0
         },
+        "scaleEasingType": 0,
         "scaleRange": {
-            "max": 60.119999885559082,
-            "min": 20.10000000149011612
+            "max": 60.119998931884766,
+            "min": 20.100000381469727
         },
         "scaleSetting": 0,
         "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
         "velocityRange": {
             "max": 5.960000038146973,
             "min": -1.0
         }
     },
     "blendState": 1,
+    "isUseTextureAnimation": false,
     "name": "RifleMuzzleFlash2",
     "primitiveParam": {
-        "width": 1.0,
-        "height": 1.0
-
+        "height": 1.0,
+        "width": 1.0
     },
     "primitiveType": "PRIMITIVE_PLANE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
     "textureFilePath": "Cross.png"
 }

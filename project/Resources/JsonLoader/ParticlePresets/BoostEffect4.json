@@ -20,8 +20,10 @@
         "frequency": 0.0,
         "isBillboard": true,
         "isDirectional": true,
-        "isTrail": true,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
         "isTraslate": true,
+        "lifetimeEasingType": 0,
         "lifetimeRange": {
             "max": 0.3199999928474426,
             "min": 0.20999999344348907
@@ -40,24 +42,28 @@
             "y": 0.1599999964237213,
             "z": 0.1599999964237213
         },
+        "scaleEasingType": 0,
         "scaleRange": {
             "max": 0.5600000023841858,
             "min": 0.14000000059604645
         },
         "scaleSetting": 1,
         "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
         "velocityRange": {
             "max": 15.729999542236328,
             "min": 0.46000000834465027
         }
     },
     "blendState": 1,
+    "isUseTextureAnimation": false,
     "name": "BoostEffect4",
     "primitiveParam": {
-        "width": 1.0,
-        "height": 1.0
-
+        "height": 1.0,
+        "width": 1.0
     },
     "primitiveType": "PRIMITIVE_PLANE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
     "textureFilePath": "white1x1.png"
 }

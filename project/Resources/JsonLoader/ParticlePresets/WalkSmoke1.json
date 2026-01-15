@@ -1,60 +1,69 @@
 {
-  "attributes": {
-    "color": {
-      "x": 0.0117647061124444,
-      "y": 0.0117647061124444,
-      "z": 0.0117647061124444
+    "attributes": {
+        "color": {
+            "x": 0.0117647061124444,
+            "y": 0.0117647061124444,
+            "z": 0.0117647061124444
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 0,
+        "enableFollowEmitter": false,
+        "frequency": 0.0,
+        "isBillboard": true,
+        "isDirectional": false,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
+        "lifetimeRange": {
+            "max": 6.699999809265137,
+            "min": 1.0
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 1.0,
+            "min": -1.0
+        },
+        "rotateRange": {
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "scaleEasingType": 0,
+        "scaleRange": {
+            "max": 7.0,
+            "min": 2.390000104904175
+        },
+        "scaleSetting": 0,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
+        "velocityRange": {
+            "max": 10.0,
+            "min": -0.019999999552965164
+        }
     },
-    "direction": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
+    "blendState": 1,
+    "isUseTextureAnimation": false,
+    "name": "WalkSmoke1",
+    "primitiveParam": {
+        "height": 1.0,
+        "width": 1.0
     },
-    "colorRange": {
-      "max": 1.0,
-      "min": 0.0
-    },
-    "editColor": true,
-    "emitCount": 0,
-    "enableFollowEmitter": false,
-    "frequency": 0.0,
-    "isBillboard": true,
-    "isTraslate": true,
-    "isDirectional": false,
-    "lifetimeRange": {
-      "max": 6.699999809265137,
-      "min": 1.0
-    },
-    "positionRange": {
-      "max": 1.0,
-      "min": -1.0
-    },
-    "rotateRange": {
-      "max": 3.1415927410125732,
-      "min": -3.1415927410125732
-    },
-    "scale": {
-      "x": 1.0,
-      "y": 1.0,
-      "z": 1.0
-    },
-    "scaleRange": {
-      "max": 7.0,
-      "min": 2.390000104904175
-    },
-    "scaleSetting": 0,
-    "velocityRange": {
-      "max": 10.0,
-      "min": -0.019999999552965164
-    }
-  },
-  "name": "WalkSmoke1",
-  "primitiveParam": {
-        "width": 1.0,
-        "height": 1.0
-
-    },
-  "blendState": 1,
-  "primitiveType": "PRIMITIVE_PLANE",
-  "textureFilePath": "Spark2.png"
+    "primitiveType": "PRIMITIVE_PLANE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
+    "textureFilePath": "Spark2.png"
 }

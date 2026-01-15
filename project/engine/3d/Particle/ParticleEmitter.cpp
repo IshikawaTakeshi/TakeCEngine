@@ -233,4 +233,6 @@ void ParticleEmitter::EmitParticle(GPUParticle* gpuParticle) {
 
 void ParticleEmitter::SetParticleName(const std::string& particleName) {
 	particleName_ = particleName;
+	frequency_ = TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.frequency;
+	particleCount_ = TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.emitCount;
 }

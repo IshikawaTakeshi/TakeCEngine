@@ -170,9 +170,9 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::DragFloat2("Rotate Range", &attributes.rotateRange.min, 0.01f, -3.14f, 3.14f);
 
 	//Translate,Velocity
-	ImGui::DragFloat2("Position Range", &attributes.positionRange.min, 0.01f, -100.0f, 100.0f);
+	ImGui::DragFloat2("Position Range", &attributes.positionRange.min, 0.01f, -1000.0f, 1000.0f);
 	if (attributes.isTranslate) {
-		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -100.0f, 100.0f);
+		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -1000.0f, 1000.0f);
 	}
 
 	//Color
@@ -393,6 +393,9 @@ void ParticleEditor::DrawEmitterControls() {
 
 		previewEmitter_->UpdateImGui();
 	}
+
+	currentPreset_.attribute.frequency = emitFrequency_;
+	currentPreset_.attribute.emitCount = emitCount_;
 }
 
 //======================================================================

@@ -1,60 +1,69 @@
 {
-  "attributes": {
-    "color": {
-      "x": 1.0,
-      "y": 0.05882352963089943,
-      "z": 0.03921568766236305
-    },
-    "direction": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
-    },
-    "colorRange": {
-      "max": 1.0,
-      "min": 0.0
-    },
-    "editColor": true,
-    "emitCount": 0,
-    "enableFollowEmitter": false,
-    "frequency": 0.0,
-    "isBillboard": true,
-    "isTraslate": true,
-    "isDirectional": false,
-    "lifetimeRange": {
-      "max": 3.0,
-      "min": 1.0
-    },
-    "positionRange": {
-      "max": 0.6100000143051147,
-      "min": -0.4399999976158142
-    },
-    "rotateRange": {
-      "max": 2.421999931335449,
-      "min": -0.6620000004768372
-    },
-    "scale": {
-      "x": 0.09000000357627869,
-      "y": 0.09000000357627869,
-      "z": 0.019999999552965164
-    },
-    "scaleRange": {
-      "max": 7.050000190734863,
-      "min": 0.05000000074505806
-    },
-    "scaleSetting": 0,
-    "velocityRange": {
-      "max": 5.659999847412109,
-      "min": -4.03000020980835
-    }
-  },
-    "name": "DefaultGroup",
-  "primitiveParam": {
-        "width": 1.0,
-        "height": 1.0
-
+    "attributes": {
+        "color": {
+            "x": 1.0,
+            "y": 0.05882352963089943,
+            "z": 0.03921568766236305
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 10,
+        "enableFollowEmitter": false,
+        "frequency": 0.10000000149011612,
+        "isBillboard": true,
+        "isDirectional": false,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
+        "lifetimeRange": {
+            "max": 3.0,
+            "min": 1.0
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 0.6100000143051147,
+            "min": -0.4399999976158142
+        },
+        "rotateRange": {
+            "max": 2.421999931335449,
+            "min": -0.6620000004768372
+        },
+        "scale": {
+            "x": 0.09000000357627869,
+            "y": 0.09000000357627869,
+            "z": 0.019999999552965164
+        },
+        "scaleEasingType": 0,
+        "scaleRange": {
+            "max": 7.050000190734863,
+            "min": 0.05000000074505806
+        },
+        "scaleSetting": 0,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
+        "velocityRange": {
+            "max": 5.659999847412109,
+            "min": -4.03000020980835
+        }
     },
     "blendState": 1,
+    "isUseTextureAnimation": false,
+    "name": "BoostEffect1",
+    "primitiveParam": {
+        "height": 1.0,
+        "width": 1.0
+    },
     "primitiveType": "PRIMITIVE_PLANE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
     "textureFilePath": "white1x1.png"
 }

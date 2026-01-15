@@ -1,9 +1,9 @@
 {
     "attributes": {
         "color": {
-            "x": 0.1568627506494522,
-            "y": 0.09803921729326248,
-            "z": 1.0
+            "x": 1.0,
+            "y": 0.29411765933036804,
+            "z": 0.0
         },
         "colorRange": {
             "max": 1.0,
@@ -15,49 +15,49 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 0,
+        "emitCount": 64,
         "enableFollowEmitter": false,
-        "frequency": 0.0,
+        "frequency": 0.10000000149011612,
         "isBillboard": true,
         "isDirectional": false,
         "isEmitterTrail": false,
-        "isParticleTrail": false,
+        "isParticleTrail": true,
         "isTraslate": true,
-        "lifetimeEasingType": 0,
+        "lifetimeEasingType": 12,
         "lifetimeRange": {
-            "max": 0.05000000074505806,
-            "min": 0.05000000074505806
+            "max": 0.15000000596046448,
+            "min": 0.01600000075995922
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
-            "max": 1.0,
-            "min": -1.0
+            "max": 0.3799999952316284,
+            "min": -0.25999999046325684
         },
         "rotateRange": {
-            "max": 3.140000104904175,
-            "min": -3.140000104904175
+            "max": 0.46000000834465027,
+            "min": -0.6100000143051147
         },
         "scale": {
-            "x": 10.0,
-            "y": 10.0,
+            "x": 1.0,
+            "y": 1.0,
             "z": 1.0
         },
-        "scaleEasingType": 0,
+        "scaleEasingType": 13,
         "scaleRange": {
-            "max": 10.0,
-            "min": 1.0
+            "max": 1.0,
+            "min": 0.10000000149011612
         },
         "scaleSetting": 2,
-        "trailEmitInterval": 0.01600000075995922,
-        "velocityEasingType": 0,
+        "trailEmitInterval": 0.014999999664723873,
+        "velocityEasingType": 7,
         "velocityRange": {
-            "max": 1.0,
-            "min": -1.0
+            "max": 150.0,
+            "min": -155.02999877929688
         }
     },
     "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "DamageSpark",
+    "name": "DamageSpark2",
     "primitiveParam": {
         "height": 1.0,
         "width": 1.0
@@ -65,5 +65,5 @@
     "primitiveType": "PRIMITIVE_PLANE",
     "textureAnimationParam": null,
     "textureAnimationType": 0,
-    "textureFilePath": "Spark.png"
+    "textureFilePath": "white1x1.png"
 }

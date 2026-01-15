@@ -23,6 +23,7 @@
         "isEmitterTrail": false,
         "isParticleTrail": false,
         "isTraslate": false,
+        "lifetimeEasingType": 0,
         "lifetimeRange": {
             "max": 0.14000000059604645,
             "min": 0.019999999552965164
@@ -41,24 +42,28 @@
             "y": 1.0,
             "z": 1.0
         },
+        "scaleEasingType": 0,
         "scaleRange": {
             "max": 10.0,
             "min": 0.0
         },
         "scaleSetting": 1,
         "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
         "velocityRange": {
             "max": 1.0,
             "min": -1.0
         }
     },
     "blendState": 6,
+    "isUseTextureAnimation": false,
     "name": "RifleMuzzleFlash",
     "primitiveParam": {
-        "width": 1.0,
-        "height": 1.0
-
+        "height": 1.0,
+        "width": 1.0
     },
     "primitiveType": "PRIMITIVE_PLANE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
     "textureFilePath": "MazzleEffect1.png"
 }

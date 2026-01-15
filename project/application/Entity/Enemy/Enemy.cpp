@@ -47,7 +47,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, enemyData_.characterInfo.transform.translate }, 10, 1.0f);
-	particleEmitter_[1]->SetParticleName("CrossEffect");
+	particleEmitter_[1]->SetParticleName("DamageSpark2");
 	//emitter2
 	particleEmitter_[2] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[2]->Initialize("EnemyEmitter2", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, enemyData_.characterInfo.transform.translate }, 10, 1.0f);
@@ -393,7 +393,7 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 	}
 	if (other->GetCharacterType() == CharacterType::PLAYER_MISSILE) {
 		//プレイヤーのミサイルに当たった場合の処理
-		//particleEmitter_[2]->Emit();
+		particleEmitter_[1]->Emit();
 		enemyData_.characterInfo.isDamaged = true;
 		//ダメージを受けた時のエフェクト時間を設定
 		damageEffectTime_ = 0.5f;
