@@ -183,6 +183,12 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	}
 	//lifetime
 	ImGui::DragFloat2("Lifetime Range", &attributes.lifetimeRange.min, 0.01f, 0.0f, 10.0f);
+	//lifetimeEasingType
+	ImGuiManager::ComboBoxEnum("Lifetime Easing Type", attributes.lifeTimeEasingType);
+	//velocityEasingType
+	ImGuiManager::ComboBoxEnum("Velocity Easing Type", attributes.velocityEasingType);
+	//scaleEasingType
+	ImGuiManager::ComboBoxEnum("Scale Easing Type", attributes.scaleEasingType);
 
 	//Billboard
 	ImGui::Checkbox("Is Billboard", &attributes.isBillboard);

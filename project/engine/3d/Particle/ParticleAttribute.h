@@ -6,6 +6,7 @@
 #include "engine/Utility/JsonDirectoryPathData.h"
 #include "engine/Animation/TextureAnimationTypeEnum.h"
 #include "engine/Animation/TextureAnimationVariant.h"
+#include "engine/math/Easing.h"
 #include <json.hpp>
 #include <numbers>
 #include <string>
@@ -41,11 +42,14 @@ struct ParticleAttributes {
 	Vector3 color = { 1.0f,1.0f,1.0f };
 	Vector3 direction = { 0.0f,0.0f,0.0f };
 	AttributeRange scaleRange = { 0.1f,3.0f };
+	Easing::EasingType scaleEasingType = Easing::EasingType::LINEAR; //スケールのイージングタイプ
 	AttributeRange rotateRange = { -std::numbers::pi_v<float>, std::numbers::pi_v<float> };
 	AttributeRange positionRange = {-1.0f, 1.0f};
 	AttributeRange velocityRange = { -1.0f,1.0f };
+	Easing::EasingType velocityEasingType = Easing::EasingType::LINEAR; //速度のイージングタイプ
 	AttributeRange colorRange = { 0.0f,1.0f };
 	AttributeRange lifetimeRange = { 1.0f,3.0f };
+	Easing::EasingType lifeTimeEasingType = Easing::EasingType::LINEAR; //寿命のイージングタイプ
 	float frequency = 0.1f; //パーティクルの発生頻度
 	uint32_t emitCount = 1; //1回あたりのパーティクル発生数
 	bool isBillboard = false; //Billboardかどうか

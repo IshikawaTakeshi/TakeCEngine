@@ -82,7 +82,7 @@ void Particle3d::Update() {
 		if (numInstance_ < kNumMaxInstance_) {
 
 			// 寿命が来たら削除  
-			if ((*particleIterator).lifeTime_ <= (*particleIterator).currentTime_) {
+			if ((*particleIterator).lifeTimer_.IsFinished()) {
 				particleIterator = particles_.erase(particleIterator);
 				continue;
 			}
@@ -90,7 +90,7 @@ void Particle3d::Update() {
 			// particle1つの位置更新  
 			UpdateMovement(particleIterator);
 			//alphaの計算
-			float alpha = 1.0f - ((*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			float alpha = 1.0f - ((*particleIterator).lifeTimer_.GetProgress());
 
 			particleData_[numInstance_].color = {
 				(*particleIterator).color_.x,
@@ -102,8 +102,8 @@ void Particle3d::Update() {
 			particleData_[numInstance_].rotate = (*particleIterator).transforms_.rotate;
 			particleData_[numInstance_].translate = (*particleIterator).transforms_.translate;
 			particleData_[numInstance_].velocity = (*particleIterator).velocity_;
-			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTime_;
-			particleData_[numInstance_].currentTime = (*particleIterator).currentTime_;
+			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTimer_.GetDuration();
+			particleData_[numInstance_].currentTime = (*particleIterator).lifeTimer_.GetProgress() * (*particleIterator).lifeTimer_.GetDuration();
 
 			// データをGPUに転送  
 			perViewData_->viewProjection = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
@@ -206,11 +206,11 @@ void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) 
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
 			attributes.scaleRange.min,
 			attributes.scaleRange.max,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			(*particleIterator).lifeTimer_.GetProgress());
 
 		(*particleIterator).transforms_.scale.y = (*particleIterator).transforms_.scale.x;
 		(*particleIterator).transforms_.scale.z = (*particleIterator).transforms_.scale.x;
 	}
-
-	(*particleIterator).currentTime_ += kDeltaTime_; //経過時間の更新
+	//経過時間の更新
+	(*particleIterator).lifeTimer_.Update();
 }

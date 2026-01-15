@@ -48,6 +48,12 @@ public:
     float GetDuration() const;
 
     /// <summary>
+	/// 現在時間の取得
+    /// </summary>
+    /// <returns></returns>
+    float GetTimerCurrentTime() const;
+
+    /// <summary>
 	/// イージング適用後の進捗の取得
     /// </summary>
     /// <param name="easeType"></param>

@@ -1,4 +1,5 @@
 #include "Easing.h"
+#include "engine/Utility/StringUtility.h"
 
 //=============================================================================
 // 線形補間(float)
@@ -113,4 +114,18 @@ float Easing::EaseInQuad(float x) {
 
 float Easing::EaseOutQuad(float x) {
 	return x * (2.0f - x);
+}
+
+//=============================================================================
+// EasingType to_json
+//=============================================================================
+void to_json(nlohmann::json& j, const Easing::EasingType& type) {
+    
+	j = StringUtility::EnumToString(type);
+}
+
+void from_json(const nlohmann::json& j, Easing::EasingType& type) {
+
+    std::string typeStr = j.get<std::string>();
+	type = StringUtility::StringToEnum<Easing::EasingType>(typeStr);
 }

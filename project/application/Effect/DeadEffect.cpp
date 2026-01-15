@@ -48,7 +48,7 @@ void DeadEffect::Update(const Vector3& translate) {
 
 	//ポイントライトの更新
 	pointLightData_.position_ = translate + Vector3{ 0.0f,20.0f,0.0f };
-	pointLightData_.intensity_ = 120.0f * (1.0f - timer_.GetEase(Easing::OUT_QUAD));
+	pointLightData_.intensity_ = 120.0f * (1.0f - timer_.GetEase(Easing::EasingType::OUT_QUAD));
 	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
 }
 
