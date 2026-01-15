@@ -69,7 +69,7 @@ namespace TakeC {
 		/// <summary>
 		/// UVスクロールアニメーションを設定
 		/// </summary>
-		void SetUVScrollAnimation(const Vector2& scrollSpeed);
+		void SetUVScrollAnimation(const Vector2& scrollSpeed,bool wrapU = true, bool wrapV = true);
 		void SetUVScrollAnimation(const UVScrollSettings& settings);
 
 		//========================================================================

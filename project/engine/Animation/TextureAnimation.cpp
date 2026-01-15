@@ -153,9 +153,11 @@ bool UVTextureAnimation::IsFinished() const {
 //=================================================================================
 // UVスクロールアニメーション設定
 //=================================================================================
-void UVTextureAnimation::SetUVScrollAnimation(const Vector2& scrollSpeed) {
+void UVTextureAnimation::SetUVScrollAnimation(const Vector2& scrollSpeed, bool wrapU, bool wrapV) {
 	UVScrollSettings settings;
 	settings.scrollSpeed = scrollSpeed;
+	settings.wrapU = wrapU;
+	settings.wrapV = wrapV;
 	SetUVScrollAnimation(settings);
 }
 

@@ -4,7 +4,7 @@
 #include "engine/3d/Primitive/PrimitiveParameter.h"
 #include "engine/base/BlendModeStateEnum.h"
 #include "engine/Utility/JsonDirectoryPathData.h"
-#include "engine/Animation/TextureAnimation.h"
+#include "engine/Animation/TextureAnimationTypeEnum.h"
 #include "engine/Animation/TextureAnimationVariant.h"
 #include <json.hpp>
 #include <numbers>
@@ -70,7 +70,7 @@ struct ParticlePreset {
 	std::string textureFilePath; //テクスチャファイル名
 	PrimitiveType primitiveType; //プリミティブの種類
 	TakeC::PrimitiveParameter primitiveParam; //プリミティブのパラメータ
-
+	bool isUseTextureAnimation = false; //テクスチャアニメーションを使用するかどうか
 	TakeC::TextureAnimationType textureAnimationType = TakeC::TextureAnimationType::None; //テクスチャアニメーションの種類
 	TextureAnimationVariant textureAnimationParam; //テクスチャアニメーションのパラメータ
 };

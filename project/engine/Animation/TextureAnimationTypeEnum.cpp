@@ -1,5 +1,7 @@
 #include "TextureAnimationTypeEnum.h"
 
+using namespace TakeC;
+
 void to_json(nlohmann::json& j, const TextureAnimationType& type) {
 	switch (type) {
 	case TextureAnimationType::None:

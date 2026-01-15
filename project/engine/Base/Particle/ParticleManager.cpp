@@ -81,6 +81,7 @@ void TakeC::ParticleManager::Draw() {
 
 void TakeC::ParticleManager::Finalize() {
 	particleGroups_.clear();
+	primitiveDrawer_ = nullptr;
 }
 
 //================================================================================================
@@ -165,6 +166,18 @@ BaseParticleGroup* TakeC::ParticleManager::GetParticleGroup(const std::string& n
 
 	assert(false && "ParticleGroup not found! Please check the name.");
 	return nullptr;
+}
+
+//================================================================================================
+// groupnameからプリミティブハンドルの取得
+//================================================================================================
+uint32_t TakeC::ParticleManager::GetPrimitiveHandle(const std::string& groupName) {
+	
+	if (particleGroups_.contains(groupName)) {
+		return particleGroups_.at(groupName)->GetPrimitiveHandle();
+	}
+	assert(false && "ParticleGroup not found! Please check the name.");
+	return 0;
 }
 
 //================================================================================================
