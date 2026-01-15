@@ -62,6 +62,19 @@ void to_json(json& j, const ParticlePreset& preset) {
 			j["primitiveParam"] = arg; // 利用可能な型の場合、そのままJSONに変換
 		}
 		}, preset.primitiveParam);
+
+	j["isUseTextureAnimation"] = preset.isUseTextureAnimation;
+	j["textureAnimationType"] = preset.textureAnimationType;
+	std::visit([&j](auto&& arg) {
+		using T = std::decay_t<decltype(arg)>;
+		if constexpr (std::is_same_v<T, UVScrollSettings>) {
+			j["textureAnimationParam"] = arg;
+		} else if constexpr (std::is_same_v<T, SpriteSheetSettings>) {
+			j["textureAnimationParam"] = arg;
+		} else {
+			j["textureAnimationParam"] = nullptr; // or any representation for unsupported types
+		}
+		}, preset.textureAnimationParam);
 }
 
 //============================================================================
@@ -150,5 +163,28 @@ void from_json(const json& j, ParticlePreset& preset) {
 	}
 	default:
 		break;
+	}
+
+	if (j.contains("isUseTextureAnimation"))j.at("isUseTextureAnimation").get_to(preset.isUseTextureAnimation);
+	if (j.contains("textureAnimationType"))j.at("textureAnimationType").get_to(preset.textureAnimationType);
+	if (j.contains("textureAnimationParam")) {
+		switch (preset.textureAnimationType) {
+		case TextureAnimationType::UVScroll:
+		{
+			UVScrollSettings uvScrollSettings;
+			j.at("textureAnimationParam").get_to(uvScrollSettings);
+			preset.textureAnimationParam = uvScrollSettings;
+			break;
+		}
+		case TextureAnimationType::SpriteSheet:
+		{
+			SpriteSheetSettings spriteSheetSettings;
+			j.at("textureAnimationParam").get_to(spriteSheetSettings);
+			preset.textureAnimationParam = spriteSheetSettings;
+			break;
+		}
+		default:
+			break;
+		}
 	}
 }

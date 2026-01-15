@@ -52,6 +52,15 @@ void TakeC::PrimitiveDrawer::Finalize() {
 	sphere_.reset();
 	cone_.reset();
 	cylinder_.reset();
+
+	primitiveMap_.clear();
+}
+
+//============================================================================
+// 解放処理
+//============================================================================
+void TakeC::PrimitiveDrawer::Release(uint32_t handle) {
+	primitiveMap_.erase(handle);
 }
 
 //=================================================================================
@@ -127,6 +136,7 @@ void TakeC::PrimitiveDrawer::DrawParticle(PSO* pso, UINT instanceCount, Primitiv
 	if (instanceCount == 0) return;
 	auto* baseData = GetBaseData(handle);
 	if (!baseData) return;
+	baseData->material->Update();
 	DrawCommon(pso, baseData);
 	dxCommon_->GetCommandList()->DrawInstanced(baseData->vertexCount, instanceCount, 0, 0);
 }
@@ -138,6 +148,7 @@ void TakeC::PrimitiveDrawer::DrawObject(PSO* pso, PrimitiveType type, uint32_t h
 	type;
 	auto* baseData = GetBaseData(handle);
 	if (!baseData) return;
+	baseData->material->Update();
 	DrawCommon(pso, baseData);
 	dxCommon_->GetCommandList()->DrawInstanced(baseData->vertexCount, 1, 0, 0);
 }

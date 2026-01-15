@@ -45,6 +45,8 @@ public:
 	/// </summary>
 	std::list<Particle> Emit(const Vector3& emitterPos,const Vector3& direction, uint32_t particleCount);
 
+	uint32_t GetPrimitiveHandle() const { return primitiveHandle_; }
+
 	/// <summary>
 	/// パーティクルの配列の結合処理
 	/// </summary>

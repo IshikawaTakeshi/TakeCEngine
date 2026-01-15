@@ -31,7 +31,7 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 8, 0.001f);
-	particleEmitter_[1]->SetParticleName("SmokeEffect");
+	particleEmitter_[1]->SetParticleName("BulletMoveEffect");
 	//deltaTime取得
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 	//transform初期化
@@ -89,7 +89,7 @@ void Bullet::Update() {
 	particleEmitter_[1]->Update();
 	//MEMO: パーティクルの毎フレーム発生
 	particleEmitter_[1]->Emit();
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(transform_.translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BulletMoveEffect")->SetEmitterPosition(transform_.translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(transform_.translate);
 
 }

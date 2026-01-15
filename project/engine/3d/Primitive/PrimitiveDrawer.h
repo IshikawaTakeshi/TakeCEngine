@@ -82,6 +82,12 @@ namespace TakeC {
 		void Finalize();
 
 		/// <summary>
+		/// プリミティブの解放
+		/// </summary>
+		/// <param name="handle"></param>
+		void Release(uint32_t handle);
+
+		/// <summary>
 		/// プリミティブを生成（テンプレート版）
 		/// 使用例: auto handle = drawer. Generate<Ring>(2.0f, 1.0f, "texture.png");
 		/// </summary>

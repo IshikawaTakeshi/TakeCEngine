@@ -81,6 +81,7 @@ void TakeC::ParticleManager::Draw() {
 
 void TakeC::ParticleManager::Finalize() {
 	particleGroups_.clear();
+	primitiveDrawer_ = nullptr;
 }
 
 //================================================================================================
@@ -154,6 +155,9 @@ void TakeC::ParticleManager::ClearParticles() {
 	}
 }
 
+//================================================================================================
+// 全プリセットの読み込み
+//================================================================================================
 BaseParticleGroup* TakeC::ParticleManager::GetParticleGroup(const std::string& name) {
 
 	if (particleGroups_.contains(name)) {
@@ -164,6 +168,21 @@ BaseParticleGroup* TakeC::ParticleManager::GetParticleGroup(const std::string& n
 	return nullptr;
 }
 
+//================================================================================================
+// groupnameからプリミティブハンドルの取得
+//================================================================================================
+uint32_t TakeC::ParticleManager::GetPrimitiveHandle(const std::string& groupName) {
+	
+	if (particleGroups_.contains(groupName)) {
+		return particleGroups_.at(groupName)->GetPrimitiveHandle();
+	}
+	assert(false && "ParticleGroup not found! Please check the name.");
+	return 0;
+}
+
+//================================================================================================
+// プリセットの設定
+//================================================================================================
 void TakeC::ParticleManager::SetPreset(const std::string& name, const ParticlePreset& preset) {
 
 	//存在しない場合は処理しない
@@ -172,4 +191,15 @@ void TakeC::ParticleManager::SetPreset(const std::string& name, const ParticlePr
 	}
 	//particleGroupsに発生させたパーティクルを登録させる
 	particleGroups_.at(name)->SetPreset(preset);
+}
+
+//================================================================================================
+// 全プリセットの読み込み
+//================================================================================================
+void TakeC::ParticleManager::LoadAllPresets() {
+	auto jsonLoader = TakeCFrameWork::GetJsonLoader();
+	auto presetFiles = jsonLoader->GetJsonDataList<ParticlePreset>();
+	for (const auto& presetFile : presetFiles) {
+		CreateParticleGroup(presetFile + ".json");
+	}
 }
