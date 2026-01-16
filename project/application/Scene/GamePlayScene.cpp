@@ -152,11 +152,11 @@ void GamePlayScene::Update() {
 	skyBox_->Update();
 
 	//enemy
-	enemy_->SetFocusTargetPos(player_->GetObject3d()->GetTranslate());
+	enemy_->SetFocusTargetPos(player_->GetBodyPosition());
 	enemy_->SetFocusTargetVelocity(player_->GetVelocity());
 
 	//player
-	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
+	player_->SetFocusTargetPos(enemy_->GetBodyPosition());
 	player_->SetFocusTargetVelocity(enemy_->GetVelocity());
 
 

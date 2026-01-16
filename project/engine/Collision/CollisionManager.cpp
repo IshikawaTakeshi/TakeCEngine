@@ -123,6 +123,7 @@ bool CollisionManager::RayCast(const Ray& ray, RayCastHit& outHit,uint32_t layer
 	RayCastHit tempHit;
 	for (auto* collider : colliders_) {
 		// レイヤーマスクによる絞り込み
+		// もしコライダーのレイヤーIDがlayerMaskに含まれていなければスキップ
 		if (!(static_cast<uint32_t>(collider->GetCollisionLayerID()) & layerMask)) continue;
 
 		// レイとコライダーの交差判定

@@ -64,10 +64,6 @@ public:
 	// getter
 	//==============================================================================
 
-	//武器の取得
-	BaseWeapon* GetWeapon(int index) const;
-	//全武器の取得
-	std::vector<std::unique_ptr<BaseWeapon>>& GetWeapons();
 	//BulletSensorの取得
 	BulletSensor* GetBulletSensor() const { return bulletSensor_.get(); }
 
@@ -84,6 +80,8 @@ public:
 	const float GetMaxHealth() const { return enemyData_.characterInfo.maxHealth; }
 	//フォーカス対象の座標を取得
 	const Vector3& GetFocusTargetPos() const { return enemyData_.characterInfo.focusTargetPos; }
+	//胴体位置の取得
+	const Vector3& GetBodyPosition() const { return bodyPosition_; }
 
 	//エネルギーの取得
 	float GetEnergy() const { return enemyData_.characterInfo.energyInfo.energy; }
@@ -171,5 +169,5 @@ private:
 
 	Vector3 focusTargetVelocity_ = { 0.0f,0.0f,0.0f }; // フォーカス対象の移動ベクトル
 
-	
+	Vector3 bodyPosition_ = { 0.0f,0.0f,0.0f }; // キャラクターの胴体位置
 };

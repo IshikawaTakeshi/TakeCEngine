@@ -81,6 +81,8 @@ public:
 	const Vector3& GetMoveDirection() const { return playerData_.characterInfo.moveDirection; }
 	//移動ベクトルの取得
 	const Vector3& GetVelocity() const { return playerData_.characterInfo.velocity; }
+	//胴体位置の取得
+	const Vector3& GetBodyPosition() const { return bodyPosition_; }
 	//transformの取得
 	const QuaternionTransform& GetTransform() const { return playerData_.characterInfo.transform; }
 
@@ -146,6 +148,7 @@ private:
 	float weaponUseDuration_ = 1.0f; //武器を使用してからのクールダウン時間
 
 	Vector3 focusTargetVelocity_ = { 0.0f,0.0f,0.0f }; // フォーカス対象の移動ベクトル
+	Vector3 bodyPosition_ = { 0.0f,0.0f,0.0f }; // キャラクターの胴体位置
 
 private:
 

@@ -161,9 +161,8 @@ bool BoxCollider::Intersects(const Ray& ray, RayCastHit& outHit) {
 	outHit.distance = tNear;
 	outHit.position = ray.origin + ray.direction * tNear;
 	outHit.normal = (outHit.position - obb_.center).Normalize(); // 衝突点からOBBの中心への法線ベクトル
+	outHit.hitCollider = this; // 衝突したコライダーを設定
 	return true; // レイとOBBは交差する
-
-
 }
 
 //=============================================================================

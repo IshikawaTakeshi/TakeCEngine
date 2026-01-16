@@ -32,6 +32,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
+	collider_->SetOwner(this);
 	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Enemy));
 
@@ -241,6 +242,13 @@ void Enemy::Update() {
 		backEmitter_->SetIsEmit(false);
 	}
 
+	auto jointWorldMatrixOpt = object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix("neck", object3d_->GetWorldMatrix());
+	bodyPosition_ = {
+		jointWorldMatrixOpt->m[3][0],
+		jointWorldMatrixOpt->m[3][1],
+		jointWorldMatrixOpt->m[3][2]
+	};
+
 	//モデルの回転処理
 	if (enemyData_.characterInfo.isAlive) {
 		//生存中はフォーカス対象に向く
@@ -321,6 +329,14 @@ void Enemy::UpdateImGui() {
 		damageEffectTime_ = 0.5f;
 		particleEmitter_[1]->Emit();
 	}
+	// スピードを0にするボタン
+	if (ImGui::Button("Stop Movement")) {
+		enemyData_.characterInfo.velocity = { 0.0f,0.0f,0.0f };
+		enemyData_.characterInfo.jumpInfo.speed = 0.0f;
+		enemyData_.characterInfo.moveSpeed = 0.0f;
+		enemyData_.characterInfo.stepBoostInfo.speed = 0.0f;
+	}
+
 	//データ保存ボタン
 	if (ImGui::Button("Save Enemy Data")) {
 		SaveEnemyData(enemyData_.characterInfo.characterName);
