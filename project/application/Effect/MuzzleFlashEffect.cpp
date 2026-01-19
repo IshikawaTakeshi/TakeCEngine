@@ -13,7 +13,7 @@ void MuzzleFlashEffect::Initialize() {
 
 	//エミッター初期化
 	particleEmitter_ = std::make_unique<ParticleEmitter>();
-	particleEmitter_->Initialize("MuzzleFlushEffectEmitter", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} }, 10, 0.1f);
+	particleEmitter_->Initialize("MuzzleFlushEffectEmitter", "RifleMuzzleFlash.json");
 	particleEmitter_->SetParticleName("RifleMuzzleFlash");
 	particleEmitter_->SetFrequency(0.01f);
 	particleEmitter_->SetParticleCount(20);

@@ -28,12 +28,10 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//emitter0
 	particleEmitter_.resize(2);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 5, 0.001f);
-	particleEmitter_[0]->SetParticleName("DamageSpark2");
+	particleEmitter_[0]->Initialize("EnemyEmitter0", "DamageSpark2.json");
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 8, 0.001f);
-	particleEmitter_[1]->SetParticleName("BulletMoveEffect");
+	particleEmitter_[1]->Initialize("EnemyEmitter1", "BulletMoveEffect.json");
 	//deltaTime取得
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 	//transform初期化

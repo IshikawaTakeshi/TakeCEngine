@@ -29,7 +29,7 @@ void BoostEffect::Initialize(GameCharacter* owner) {
 
 	//エミッター初期化
 	particleEmitter_ = std::make_unique<ParticleEmitter>();
-	particleEmitter_->Initialize("BoostEffectEmitter", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} }, 10, 0.1f);
+	particleEmitter_->Initialize("BoostEffectEmitter", "BoostEffect5.json");
 	particleEmitter_->SetParticleName("BoostEffect5");
 	particleEmitter_->SetFrequency(0.05f);
 	particleEmitter_->SetParticleCount(40);

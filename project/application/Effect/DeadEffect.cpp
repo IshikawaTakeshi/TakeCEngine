@@ -8,13 +8,15 @@
 //===================================================================================
 void DeadEffect::Initialize() {
 	//パーティクルエミッターの生成
-	explosionParticleEmitter_ = std::make_unique<ParticleEmitter>();
-	explosionParticleEmitter_->Initialize("explosion", {}, 6, 0.5f);
-	explosionParticleEmitter_->SetParticleName("DeadExplosionEffect");
-	smokeParticleEmitter_ = std::make_unique<ParticleEmitter>();
-	smokeParticleEmitter_->Initialize("smoke", {}, 20, 0.1f);
-	smokeParticleEmitter_->SetRotate({ -1.4f,0.0f,0.0f });
-	smokeParticleEmitter_->SetParticleName("DeadSmokeEffect");
+	particleEmitter_.resize(3);
+	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
+	particleEmitter_[0]->Initialize("explosion", "DeadExplosionEffect.json");
+	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
+	particleEmitter_[1]->Initialize("smoke", "DeadSmokeEffect.json");
+	particleEmitter_[1]->SetRotate({ -1.4f,0.0f,0.0f });
+	particleEmitter_[1]->SetParticleName("DeadSmokeEffect");
+	particleEmitter_[2] = std::make_unique<ParticleEmitter>(); 
+	particleEmitter_[2]->Initialize("DamageSpark2", "DamageSpark2.json");
 
 	//PointLightの設定
 	pointLightData_.enabled_ = 0;
@@ -34,17 +36,18 @@ void DeadEffect::Update(const Vector3& translate) {
 
 	if (timer_.IsFinished()) {
 		//タイマーが終了したらパーティクル発生停止
-		explosionParticleEmitter_->SetIsEmit(false);
+		particleEmitter_[0]->SetIsEmit(false);
 	}
 	
-	explosionParticleEmitter_->SetTranslate(translate);
-	smokeParticleEmitter_->SetTranslate(translate);
-
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DeadExplosionEffect")->SetEmitterPosition(translate);
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DeadSmokeEffect")->SetEmitterPosition(translate);
+	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark2")->SetEmitterPosition(translate);
+
 	//パーティクルエミッター更新
-	explosionParticleEmitter_->Update();
-	smokeParticleEmitter_->Update();
+	for (auto& emitter : particleEmitter_) {
+		emitter->SetTranslate(translate);
+		emitter->Update();
+	}
 
 	//ポイントライトの更新
 	pointLightData_.position_ = translate + Vector3{ 0.0f,20.0f,0.0f };
@@ -56,8 +59,9 @@ void DeadEffect::Update(const Vector3& translate) {
 //　開始
 //===================================================================================
 void DeadEffect::Start() {
-	timer_.Initialize(0.01f, 0.0f); //タイマー初期化
-	explosionParticleEmitter_->SetIsEmit(true); //パーティクル発生開始
-	smokeParticleEmitter_->SetIsEmit(true);
+	timer_.Initialize(1.0f, 0.0f); //タイマー初期化
+	for (auto& emitter : particleEmitter_) {
+		emitter->SetIsEmit(true); //パーティクル発生開始
+	}
 	pointLightData_.enabled_ = 1; //ライト有効化
 }

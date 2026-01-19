@@ -43,20 +43,16 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//emitter0
 	particleEmitter_.resize(3);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, enemyData_.characterInfo.transform.translate }, 5, 1.0f);
-	particleEmitter_[0]->SetParticleName("DamageSpark");
+	particleEmitter_[0]->Initialize("EnemyEmitter0", "DamageSpark.json");
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, enemyData_.characterInfo.transform.translate }, 10, 1.0f);
-	particleEmitter_[1]->SetParticleName("DamageSpark2");
+	particleEmitter_[1]->Initialize("EnemyEmitter1", "DamageSpark2.json");
 	//emitter2
 	particleEmitter_[2] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[2]->Initialize("EnemyEmitter2", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, enemyData_.characterInfo.transform.translate }, 10, 1.0f);
-	particleEmitter_[2]->SetParticleName("SparkExplosion");
+	particleEmitter_[2]->Initialize("EnemyEmitter2", "SparkExplosion.json");
 	//背部エミッターの初期化
 	backEmitter_ = std::make_unique<ParticleEmitter>();
-	backEmitter_->Initialize("EnemyBackpack", object3d_->GetTransform(), 10, 0.01f);
-	backEmitter_->SetParticleName("WalkSmoke2");
+	backEmitter_->Initialize("EnemyBackpack", "WalkSmoke2.json");
 
 	//死亡エフェクト初期化
 	deadEffect_ = std::make_unique<DeadEffect>();

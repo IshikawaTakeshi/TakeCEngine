@@ -24,6 +24,9 @@ void BehaviorDead::Initialize([[maybe_unused]]PlayableCharacterInfo& characterIn
 //===================================================================================
 void BehaviorDead::Update(PlayableCharacterInfo& characterInfo) {
 	if(characterInfo.onGround == false){
+		//速度の減衰
+		characterInfo.velocity.x /= characterInfo.deceleration;
+		characterInfo.velocity.z /= characterInfo.deceleration;
 		//重力の影響を受ける
 		characterInfo.velocity.y -= (gravity_ + characterInfo.fallSpeed) * deltaTime_;
 		//位置の更新

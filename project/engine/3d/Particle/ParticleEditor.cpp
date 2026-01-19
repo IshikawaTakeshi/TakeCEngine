@@ -27,7 +27,7 @@ void ParticleEditor::Initialize(ParticleCommon* particleCommon) {
 
 	// エミッターの初期設定
 	emitterTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
-	previewEmitter_->Initialize("PreviewEmitter", emitterTransform_, emitCount_, emitFrequency_);
+	previewEmitter_->Initialize("PreviewEmitter", currentGroupName_);
 
 	//エミッターに発生させるパーティクルを設定
 	previewEmitter_->SetParticleName(currentGroupName_);

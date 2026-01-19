@@ -1,5 +1,6 @@
 #pragma once
 #include "engine/math/Vector2.h"
+#include "engine/Utility/Timer.h"
 #include <memory>
 #include <string>
 
@@ -53,7 +54,8 @@ public:
 private:
 
 	std::unique_ptr<Sprite> backgroundSprite_; // 背景スプライト
-	std::unique_ptr<Sprite> foregroundSprite_; // 前景スプライト
+	std::unique_ptr<Sprite> foregroundSprite_; // 前景スプライト	
+	std::unique_ptr<Sprite> damageBarSprite_; //hpの消費量を表すバー
 	Vector2 position_ = { 0.0f, 0.0f };          // HPバーの位置
 
 	// アウトライン（枠）の太さ
@@ -62,6 +64,14 @@ private:
 	bool isActive_ = true; // アクティブ状態
 	float alpha_ = 1.0f; // アルファ値（透明度）
 	float fadeSpeed_ = 1.0f; // フェード速度
-	float timer_ = 0.0f; // タイマー
+
+	float currentHP_ = 0.0f; // 現在のHP
+	float previousHP_ = 0.0f; // 前回のHP
+	float maxHP_ = 0.0f;     // 最大HP
+	float hpRatio_ = 1.0f;    // HPの割合
+
+	Timer damageDelayTimer_; // ダメージバーの遅延タイマー
+	float damageBarRatio_ = 1.0f; // ダメージバーの割合
+	float damageLerpSpeed_ = 2.0f; // ダメージバーの補間速度
 
 };

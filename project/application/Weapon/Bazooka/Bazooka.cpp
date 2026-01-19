@@ -30,10 +30,7 @@ void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定
 
 	muzzleFlashEmitter_ = std::make_unique<ParticleEmitter>();
-	muzzleFlashEmitter_->Initialize("RifleMuzzleFlashEmitter",
-		object3d_->GetTransform(),
-		10, 0.01f);
-	muzzleFlashEmitter_->SetParticleName("RifleMuzzleFlash2");
+	muzzleFlashEmitter_->Initialize("RifleMuzzleFlashEmitter","RifleMuzzleFlash2.json");
 }
 
 //=============================================================================

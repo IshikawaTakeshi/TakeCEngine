@@ -29,11 +29,11 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 	//emitter0
 	particleEmitter_.resize(2);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 30, 0.001f);
+	particleEmitter_[0]->Initialize("EnemyEmitter0", "MissileExplosion.json");
 	particleEmitter_[0]->SetParticleName("MissileExplosion");
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 10, 0.001f);
+	particleEmitter_[1]->Initialize("EnemyEmitter1", "MissileSmoke.json");
 	particleEmitter_[1]->SetParticleName("MissileSmoke");
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();

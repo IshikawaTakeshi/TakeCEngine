@@ -2,6 +2,7 @@
 #include "engine/math/Transform.h"
 #include "engine/base/PipelineStateObject.h"
 #include "engine/base/PerFrame.h"
+#include "engine/3d/Particle/ParticleAttribute.h"
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -39,7 +40,7 @@ public:
 	/// <param name="transforms">SRT</param>
 	/// <param name="count">発生させるパーティクルの数</param>
 	/// <param name="frequency">発生頻度</param>
-	void Initialize(const std::string& emitterName, EulerTransform transforms,uint32_t count, float frequency);
+	void Initialize(const std::string& emitterName, const std::string& presetInfo);
 
 	/// <summary>
 	/// 球状エミッター初期化
@@ -144,6 +145,7 @@ private:
 	ComPtr<ID3D12Resource> perFrameResource_;
 
 	bool isEmit_; //発生フラグ
+	ParticlePreset preset_; //プリセット情報
 	EulerTransform transforms_;   //エミッターの位置
 	Vector3 prevTranslate_; //前回のエミッター位置
 	uint32_t particleCount_; //発生するParticleの数

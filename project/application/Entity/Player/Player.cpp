@@ -61,7 +61,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 	//背部エミッターの初期化
 	backEmitter_ = std::make_unique<ParticleEmitter>();
-	backEmitter_->Initialize("PlayerBackpack", object3d_->GetTransform(), 10, 0.01f);
+	backEmitter_->Initialize("PlayerBackpack", "WalkSmoke2.json");
 	backEmitter_->SetParticleName("WalkSmoke2");
 	//backEmitter_->SetIsEmit(true);
 

@@ -32,10 +32,7 @@ void Rifle::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMana
 	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定
 
 	muzzleFlashEmitter_ = std::make_unique<ParticleEmitter>();
-	muzzleFlashEmitter_->Initialize("RifleMuzzleFlashEmitter",
-		object3d_->GetTransform(),
-		10, 0.01f);
-	muzzleFlashEmitter_->SetParticleName("RifleMuzzleFlash");
+	muzzleFlashEmitter_->Initialize("RifleMuzzleFlashEmitter","RifleMuzzleFlash.json");
 
 	// マズルフラッシュエフェクトの初期化
 	muzzleFlashEffect_ = std::make_unique<MuzzleFlashEffect>();
