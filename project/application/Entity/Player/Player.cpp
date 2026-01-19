@@ -525,7 +525,7 @@ void Player::UpdateAttack() {
 
 void Player::WeaponAttack(CharacterActionInput actionInput) {
 
-	int weaponIndex = static_cast<int>(actionInput) - static_cast<int>(CharacterActionInput::ATTACK_RA);
+	int weaponIndex = static_cast<int>(actionInput) - static_cast<int>(CharacterActionInput::ATTACK_LA);
 	auto* weapon = weapons_[weaponIndex].get();
 
 	if (inputProvider_->RequestAttack(actionInput) == true) {

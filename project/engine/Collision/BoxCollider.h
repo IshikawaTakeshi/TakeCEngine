@@ -50,6 +50,15 @@ public:
 	bool Intersects(const Ray& ray, RayCastHit& outHit) override;
 
 	/// <summary>
+	/// 球レイとの当たり判定
+	/// </summary>
+	/// <param name="ray"></param>
+	/// <param name="radius"></param>
+	/// <param name="outHit"></param>
+	/// <returns></returns>
+	bool IntersectsSphere(const Ray& ray, float radius, RayCastHit& outHit) override;
+
+	/// <summary>
 	/// 当たり判定の描画
 	/// </summary>
 	void DrawCollider() override;

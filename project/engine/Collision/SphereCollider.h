@@ -53,6 +53,8 @@ public:
 	/// <param name="outHit"></param>
 	/// <returns></returns>
 	bool Intersects(const Ray& ray, RayCastHit& outHit) override;
+
+	bool IntersectsSphere(const Ray& ray, float radius, RayCastHit& outHit) override;
 	
 	/// <summary>
 	/// サーフェスタイプの取得

@@ -169,6 +169,85 @@ bool BoxCollider::Intersects(const Ray& ray, RayCastHit& outHit) {
 // 当たり判定範囲の描画
 //=============================================================================
 
+bool BoxCollider::IntersectsSphere(const Ray& ray, float radius, RayCastHit& outHit) {
+	// 1. RayをOBBのローカル座標系（箱が回転していない状態）に変換する
+	Vector3 diff = ray.origin - obb_.center;
+
+	// ローカルでのRayの始点
+	Vector3 localOrigin = {
+		diff.Dot(obb_.axis[0]),
+		diff.Dot(obb_.axis[1]),
+		diff.Dot(obb_.axis[2])
+	};
+
+	// ローカルでのRayの方向
+	Vector3 localDirection = {
+		ray.direction.Dot(obb_.axis[0]),
+		ray.direction.Dot(obb_.axis[1]),
+		ray.direction.Dot(obb_.axis[2])
+	};
+
+	// 2. AABB vs Ray の判定を行う（ただし箱のサイズを球の半径分拡張する）
+	// これにより、箱の角も「丸く」ではなく「四角く」拡張される近似になるが、
+	// すり抜け防止としては十分かつ計算が高速。
+
+	Vector3 expandedHalfSize = obb_.halfSize + Vector3{radius, radius, radius};
+
+	// スラブ法による判定
+	// ゼロ除算対策を含めた逆数計算
+	Vector3 invDir;
+	invDir.x = (std::abs(localDirection.x) < 1e-6f) ? 1e20f : 1.0f / localDirection.x;
+	invDir.y = (std::abs(localDirection.y) < 1e-6f) ? 1e20f : 1.0f / localDirection.y;
+	invDir.z = (std::abs(localDirection.z) < 1e-6f) ? 1e20f : 1.0f / localDirection.z;
+
+	Vector3 tMin = (-expandedHalfSize - localOrigin) * invDir;
+	Vector3 tMax = (expandedHalfSize - localOrigin) * invDir;
+
+	// 各軸の min/max を整理
+	Vector3 tNear = { std::min(tMin.x, tMax.x), std::min(tMin.y, tMax.y), std::min(tMin.z, tMax.z) };
+	Vector3 tFar  = { std::max(tMin.x, tMax.x), std::max(tMin.y, tMax.y), std::max(tMin.z, tMax.z) };
+
+	// 最も遅い突入時間と、最も早い脱出時間を求める
+	float tEnter = std::max(std::max(tNear.x, tNear.y), tNear.z);
+	float tExit  = std::min(std::min(tFar.x, tFar.y), tFar.z);
+
+	// 衝突していない条件
+	if (tEnter > tExit || tExit < 0 || tEnter > ray.distance) {
+		return false;
+	}
+
+	// 衝突情報の構築
+	if (tEnter < 0) tEnter = 0; // 既に内部にいる場合
+
+	outHit.isHit = true;
+	outHit.distance = tEnter;
+	// ワールド座標での衝突点を計算
+	outHit.position = ray.origin + ray.direction * tEnter;
+	outHit.hitCollider = this;
+
+	// 法線の計算（ローカル座標系でどの面に当たったか）
+	Vector3 localHitPos = localOrigin + localDirection * tEnter;
+	Vector3 localNormal = { 0, 0, 0 };
+
+	// 許容誤差
+	const float epsilon = 0.001f;
+
+	// どの面に一番近いかで法線を決定
+	if (std::abs(localHitPos.x - expandedHalfSize.x) < epsilon) localNormal = { 1, 0, 0 };
+	else if (std::abs(localHitPos.x + expandedHalfSize.x) < epsilon) localNormal = { -1, 0, 0 };
+	else if (std::abs(localHitPos.y - expandedHalfSize.y) < epsilon) localNormal = { 0, 1, 0 };
+	else if (std::abs(localHitPos.y + expandedHalfSize.y) < epsilon) localNormal = { 0, -1, 0 };
+	else if (std::abs(localHitPos.z - expandedHalfSize.z) < epsilon) localNormal = { 0, 0, 1 };
+	else if (std::abs(localHitPos.z + expandedHalfSize.z) < epsilon) localNormal = { 0, 0, -1 };
+
+	// ローカル法線をワールド法線へ変換
+	outHit.normal = (obb_.axis[0] * localNormal.x + 
+		obb_.axis[1] * localNormal.y + 
+		obb_.axis[2] * localNormal.z).Normalize();
+
+	return true;
+}
+
 void BoxCollider::DrawCollider() {
 
 	TakeCFrameWork::GetWireFrame()->DrawOBB(obb_, color_);

@@ -134,7 +134,9 @@ void VerticalMissileLauncher::UpdateImGui() {
 void VerticalMissileLauncher::Draw() {
 
 	// モデル描画
-	object3d_->Draw();
+	if (weaponState_.isAvailable == true) {
+		object3d_->Draw();
+	}
 
 }
 

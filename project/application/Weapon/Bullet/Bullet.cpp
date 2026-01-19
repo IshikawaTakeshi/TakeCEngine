@@ -90,8 +90,8 @@ void Bullet::Update() {
 			targetMask = static_cast<uint32_t>(CollisionLayer::Player);
 		}
 
-		// RayCast実行 (CollisionManagerのインスタンス取得が必要)
-		if (CollisionManager::GetInstance().RayCast(ray, hitInfo, targetMask)) {
+		// RayCast実行
+		if (CollisionManager::GetInstance().SphereCast(ray,bulletRadius_, hitInfo, targetMask)) {
 
 			// --- 衝突した場合 ---
 			isHit = true;

@@ -138,3 +138,29 @@ bool CollisionManager::RayCast(const Ray& ray, RayCastHit& outHit,uint32_t layer
 	}
 	return result;
 }
+
+//=============================================================================
+// 球キャスト処理
+//=============================================================================
+bool CollisionManager::SphereCast(const Ray& ray, float radius, RayCastHit& outHit, uint32_t layerMask) {
+	bool result = false;
+	float closestDistance = ray.distance;
+	RayCastHit tempHit;
+
+	for (auto* collider : colliders_) {
+		// レイヤーマスクによる絞り込み
+		if (!(static_cast<uint32_t>(collider->GetCollisionLayerID()) & layerMask)) continue;
+
+		// スフィアキャスト判定
+		// IntersectsSphere を呼び出す
+		if (collider->IntersectsSphere(ray, radius, tempHit)) {
+			// 最も近いヒットを記録
+			if (tempHit.distance < closestDistance) {
+				closestDistance = tempHit.distance;
+				outHit = tempHit;
+				result = true;
+			}
+		}
+	}
+	return result;
+}
