@@ -111,6 +111,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp" />
     <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
+    <ClCompile Include="application\UI\RingUI.cpp" />
     <ClCompile Include="application\Weapon\Bazooka\Bazooka.cpp" />
     <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
     <ClCompile Include="application\UI\BulletCounterUI.cpp" />
@@ -275,6 +276,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Scene\EnemySelectScene.h" />
     <ClInclude Include="application\Scene\GamePlaySceneBehavior.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditMenuEnum.h" />
+    <ClInclude Include="application\UI\RingUI.h" />
     <ClInclude Include="application\Weapon\Action\WeaponActionData.h" />
     <ClInclude Include="application\Weapon\Bazooka\Bazooka.h" />
     <ClInclude Include="application\Weapon\Action\BurstShotInfo.h" />

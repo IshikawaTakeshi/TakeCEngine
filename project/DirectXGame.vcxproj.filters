@@ -543,6 +543,7 @@
     <ClCompile Include="engine\3d\Primitive\Cone.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cylinder.cpp" />
     <ClCompile Include="engine\Animation\TextureAnimationTypeEnum.cpp" />
+    <ClCompile Include="application\UI\RingUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1124,6 +1125,7 @@
     <ClInclude Include="engine\Animation\UVScrollSettings.h" />
     <ClInclude Include="engine\Animation\TextureAnimationVariant.h" />
     <ClInclude Include="engine\Animation\TextureAnimationTypeEnum.h" />
+    <ClInclude Include="application\UI\RingUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
