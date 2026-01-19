@@ -122,6 +122,36 @@ bool SphereCollider::Intersects(const Ray& ray, RayCastHit& outHit) {
 	return true;
 }
 
+bool SphereCollider::IntersectsSphere(const Ray& ray, float radius, RayCastHit& outHit) {
+
+	// 相手の半径分だけ、自分の当たり判定を大きくしてRayCastするのと同じ計算
+	float totalRadius = radius_ + radius;
+
+	Vector3 oc = ray.origin - transform_.translate;
+	float a = ray.direction.Dot(ray.direction);
+	float b = 2.0f * oc.Dot(ray.direction);
+	float c = oc.Dot(oc) - totalRadius * totalRadius; // ここで半径を合成
+	float discriminant = b * b - 4 * a * c;
+
+	if (discriminant < 0) return false;
+
+	float sqrtDiscriminant = std::sqrt(discriminant);
+	float t1 = (-b - sqrtDiscriminant) / (2.0f * a);
+	float t2 = (-b + sqrtDiscriminant) / (2.0f * a);
+
+	float t = t1;
+	if (t < 0 || t > ray.distance) t = t2;
+	if (t < 0 || t > ray.distance) return false;
+
+	outHit.isHit = true;
+	outHit.distance = t;
+	outHit.position = ray.origin + ray.direction * t;
+	outHit.normal = (outHit.position - transform_.translate).Normalize();
+	outHit.hitCollider = this;
+
+	return true;
+}
+
 //=============================================================================
 // 衝突面のタイプを判定
 //=============================================================================

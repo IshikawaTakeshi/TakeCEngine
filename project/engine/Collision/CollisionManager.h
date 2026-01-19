@@ -51,11 +51,6 @@ public:
 	void Finalize();
 
 	/// <summary>
-	/// 全てのコライダーの衝突判定を行う関数
-	/// </summary>
-	void CheckAllCollisions();
-
-	/// <summary>
 	/// ゲームキャラクターの登録
 	/// </summary>
 	/// <param name="gameCharacter"></param>
@@ -86,6 +81,16 @@ public:
 	/// <param name="layerMask"></param>
 	/// <returns></returns>
 	bool RayCast(const Ray& ray, RayCastHit& outHit,uint32_t layerMask);
+
+	/// <summary>
+	/// 球キャスト処理
+	/// </summary>
+	/// <param name="ray"></param>
+	/// <param name="radius"></param>
+	/// <param name="outHit"></param>
+	/// <param name="layerMask"></param>
+	/// <returns></returns>
+	bool SphereCast(const Ray& ray, float radius, RayCastHit& outHit, uint32_t layerMask);
 
 
 private:

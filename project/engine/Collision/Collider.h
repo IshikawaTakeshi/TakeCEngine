@@ -80,6 +80,8 @@ public:
 
 	virtual bool Intersects(const Ray& ray, RayCastHit& outHit) = 0;
 
+	virtual bool IntersectsSphere(const Ray& ray, float radius, RayCastHit& outHit) = 0;
+
 public:
 
 	//=============================================================================
