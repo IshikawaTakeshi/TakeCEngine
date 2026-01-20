@@ -7,6 +7,8 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/base/ImGuiManager.h"
 
+using namespace TakeC;
+
 //==================================================================================
 // 初期化
 //==================================================================================
@@ -122,44 +124,15 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 		ImGui::Checkbox("adjustSwitch", &adjustSwitch_);
 		mesh_->GetMaterial()->UpdateMaterialImGui();
 
-		//設定保存
-		if (ImGui::Button("Save Config"))
-		{
-			ImGui::OpenPopup("Save Camera");
-		}
 
 		// 保存ポップアップ
-		if (ImGui::BeginPopupModal("Save Camera", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-		{
-			static char filenameBuf[256] = "SpriteConfig.json";
+		ImGuiManager::ShowSavePopup<SpriteConfig>(
+			TakeCFrameWork::GetJsonLoader(),
+			"Save Camera",
+			"default_sprite.json",
+			spriteConfig_,
+			spriteConfig_.jsonFilePath);
 
-			//jsonFilePathがある場合はfileNameBufにセット
-			if(!spriteConfig_.jsonFilePath.empty()) {
-				strncpy_s(filenameBuf, sizeof(filenameBuf),
-					spriteConfig_.jsonFilePath.c_str(),
-					_TRUNCATE);
-			}
-			
-			ImGui::Text("Input filename for camera data:");
-			ImGui::InputText("Filename", filenameBuf, sizeof(filenameBuf));
-
-			ImGui::Separator();
-
-			if (ImGui::Button("OK", ImVec2(120, 0)))
-			{
-				// ファイル保存
-				spriteConfig_.jsonFilePath = std::string(filenameBuf);
-				TakeCFrameWork::GetJsonLoader()->SaveJsonData<SpriteConfig>(spriteConfig_.jsonFilePath,spriteConfig_);
-				ImGui::CloseCurrentPopup();
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Cancel", ImVec2(120, 0)))
-			{
-				ImGui::CloseCurrentPopup();
-			}
-
-			ImGui::EndPopup();
-		}
 		ImGui::TreePop();
 	}
 	ImGui::End();

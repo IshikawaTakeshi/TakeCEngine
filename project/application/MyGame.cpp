@@ -153,9 +153,8 @@ void MyGame::Draw() {
 	//===========================================
 	// 5. 次フレーム準備
 	//===========================================
-	// シャドウマップを DEPTH_WRITE 状態に戻す（次フレーム用）
-	//shadowRenderTexture_->TransitionToDepthWrite();
 
+	// モデルのリロード適用
 	TakeC::ModelManager::GetInstance().ApplyModelReloads();
 }
 
@@ -226,26 +225,6 @@ void MyGame::LoadSound() {
 //			パーティクルプリセットの読み込み
 //====================================================================
 void MyGame::LoadParticlePreset() {
-
-	//CreateParticle
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("BoostEffect2.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("BoostEffect3.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("BoostEffect4.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("BoostEffect5.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("BulletLight.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("CrossEffect.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("DamageSpark.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("SmokeEffect.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("SparkExplosion.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("ItemPointEffect.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("WalkSmoke1.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("WalkSmoke2.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("MissileSmoke.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("MissileExplosion.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("DeadExplosionEffect.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("DeadSmokeEffect.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("RifleMuzzleFlash.json");
-	//TakeCFrameWork::GetParticleManager()->CreateParticleGroup("RifleMuzzleFlash2.json");
 
 	TakeCFrameWork::GetParticleManager()->LoadAllPresets();
 }
