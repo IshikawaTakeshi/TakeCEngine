@@ -34,6 +34,8 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//PostEffectManagerに影描画用レンダーテクスチャをセット
 	postEffectManager_->SetLightCameraRenderTexture(shadowRenderTexture_.get());
 
+	//Texture読み込み
+	TakeC::TextureManager::GetInstance().LoadTextureAll();
 	//Model読み込み
 	LoadModel();
 	//Animation読み込み
@@ -42,8 +44,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	LoadSound();
 	//ParticlePreset読み込み
 	LoadParticlePreset();
-	//Texture読み込み
-	TakeC::TextureManager::GetInstance().LoadTextureAll();
+	
 
 	//postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
 	//postEffectManager_->InitializeEffect("GrayScale",   L"PostEffect/GrayScale.CS.hlsl");
