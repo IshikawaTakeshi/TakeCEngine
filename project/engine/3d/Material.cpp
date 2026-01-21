@@ -23,13 +23,6 @@ void Material::Initialize(TakeC::DirectXCommon* dxCommon, const std::string& fil
 		TakeC::TextureManager::GetInstance().LoadTexture(envMapfilePath,false);
 	}
 
-	//uvTransform
-	uvTransform_ = {
-		{1.0f,1.0f,1.0f},
-		{0.0f,0.0f,0.0f},
-		{0.0f,0.0f,0.0f}
-	};
-
 	//textureAnimation初期化
 	textureAnimation_ = std::make_unique<TakeC::UVTextureAnimation>();
 	textureAnimation_->Initialize(this);
