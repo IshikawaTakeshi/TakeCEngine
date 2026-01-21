@@ -72,6 +72,11 @@ public:
 
 	TakeC::UVTextureAnimation* Animation() const { return textureAnimation_.get(); }
 
+	const EulerTransform& GetUvTransform() const { return uvTransform_; }
+	const Vector3& GetUvScale() const { return uvTransform_.scale; }
+	const Vector3& GetUvRotate() const { return uvTransform_.rotate; }
+	const Vector3& GetUvTranslate() const { return uvTransform_.translate; }
+
 
 	//----- setter ---------------------------
 

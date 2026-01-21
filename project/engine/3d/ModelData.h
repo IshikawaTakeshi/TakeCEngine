@@ -20,6 +20,7 @@ struct ModelMaterialData {
 	uint32_t textureIndex; //テクスチャのインデックス
 
 	Vector4 baseColor = { 1.0f,1.0f,1.0f,1.0f }; //ベースカラー(ディフューズカラー)
+	EulerTransform uvTransform; //UVトランスフォーム
 };
 
 //アニメーションノード構造体

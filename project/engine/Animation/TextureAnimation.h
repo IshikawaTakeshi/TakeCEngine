@@ -102,6 +102,9 @@ namespace TakeC {
 		// 現在のUVスケールを取得
 		Vector2 GetCurrentUVScale() const { return currentUVScale_; }
 
+		void SetCurrentUVOffset(const Vector2& uvOffset) { currentUVOffset_ = uvOffset; }
+		void SetCurrentUVScale(const Vector2& uvScale) { currentUVScale_ = uvScale; }
+
 	private: 
 
 		//========================================================================

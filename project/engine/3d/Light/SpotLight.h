@@ -16,3 +16,14 @@ struct SpotLightData {
 	float penumbraAngle_; //影のぼかし角度
 	float padding;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+	SpotLightData,
+	color_,
+	position_,
+	intensity_,
+	direction_,
+	distance_,
+	decay_,
+	cosAngle_,
+	penumbraAngle_)

@@ -188,6 +188,7 @@ void MyGame::LoadModel() {
 	TakeC::ModelManager::GetInstance().LoadModel("Bullet.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Rail.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Floor.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Ground.gltf");
 	//obj
 
 }

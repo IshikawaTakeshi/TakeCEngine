@@ -155,6 +155,7 @@ class SrvManager;
 
 		ComPtr<ID3D12Resource> dirLightResource_;
 		DirectionalLightData* dirLightData_ = nullptr;
+		std::string dirLightConfigFilePath_;
 
 		Camera* lightCamera_ = nullptr;
 		ComPtr<ID3D12Resource> lightCameraInfoResource_;

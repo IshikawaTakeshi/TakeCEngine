@@ -1126,6 +1126,7 @@
     <ClInclude Include="engine\Animation\TextureAnimationVariant.h" />
     <ClInclude Include="engine\Animation\TextureAnimationTypeEnum.h" />
     <ClInclude Include="application\UI\RingUI.h" />
+    <ClInclude Include="engine\2d\ArcGaugeParam.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -1214,15 +1215,14 @@
     <None Include="Resources\shaders\CameraData.hlsli">
       <Filter>Resources\shader\Object</Filter>
     </None>
-    <None Include="Resources\shaders\Light\Lighting.hlsli" />
     <None Include="Resources\shaders\Light\DirectionalLight.hlsli" />
     <None Include="Resources\shaders\Material.hlsli" />
     <None Include="Resources\shaders\Light\PointLight.hlsli" />
     <None Include="Resources\shaders\Light\SpotLight.hlsli" />
     <None Include="Resources\shaders\Light\LightCountData.hlsli" />
     <None Include="Resources\shaders\PostEffect\BloomEffectInfo.hlsli" />
-    <None Include="Resources\shaders\Light\LightCamera.hlsli" />
     <None Include="Resources\shaders\Shadow\Shadowpass.hlsli" />
+    <None Include="Resources\shaders\Sprite\ArcGaugeParam.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">
