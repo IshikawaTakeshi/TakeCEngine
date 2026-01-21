@@ -301,6 +301,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Effect\BoostEffect.h" />
     <ClInclude Include="application\Effect\DeadEffect.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
+    <ClInclude Include="engine\2d\ArcGaugeParam.h" />
     <ClInclude Include="engine\3d\Primitive\Cylinder.h" />
     <ClInclude Include="engine\3d\Primitive\Cone.h" />
     <ClInclude Include="engine\3d\Primitive\Cube.h" />
@@ -573,6 +574,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
+    <None Include="Resources\shaders\Sprite\ArcGaugeParam.hlsli" />
     <None Include="Resources\shaders\Sprite\Sprite.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

@@ -1126,6 +1126,7 @@
     <ClInclude Include="engine\Animation\TextureAnimationVariant.h" />
     <ClInclude Include="engine\Animation\TextureAnimationTypeEnum.h" />
     <ClInclude Include="application\UI\RingUI.h" />
+    <ClInclude Include="engine\2d\ArcGaugeParam.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -1223,6 +1224,7 @@
     <None Include="Resources\shaders\PostEffect\BloomEffectInfo.hlsli" />
     <None Include="Resources\shaders\Light\LightCamera.hlsli" />
     <None Include="Resources\shaders\Shadow\Shadowpass.hlsli" />
+    <None Include="Resources\shaders\Sprite\ArcGaugeParam.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">
