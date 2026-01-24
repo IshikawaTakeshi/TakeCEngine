@@ -133,6 +133,12 @@ namespace TakeC {
 		// 保存完了フラグ
 		bool saved = false;
 
+		//保存ボタン
+		if (ImGui::Button("SaveConfig"))
+		{
+			ImGui::OpenPopup(popupId);
+		}
+
 		// 保存ポップアップの表示
 		if (ImGui::BeginPopupModal(popupId, NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 			static char filenameBuf[256];

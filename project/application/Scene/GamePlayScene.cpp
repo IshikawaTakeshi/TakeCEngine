@@ -77,12 +77,12 @@ void GamePlayScene::Initialize() {
 
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
-	playerHpBar_->Initialize(&SpriteCommon::GetInstance(), "black.png", "flontHp.png");
+	playerHpBar_->Initialize(&SpriteCommon::GetInstance(),"PlayerHPName.json", "black.png", "flontHp.png");
 	playerHpBar_->SetSize({ 200.0f, 10.0f }); // HPバーのサイズ
 	playerHpBar_->SetPosition({ 50.0f, 500.0f }); // HPバーの位置
 	// enemyHpBar
 	enemyHpBar_ = std::make_unique<HPBar>();
-	enemyHpBar_->Initialize(&SpriteCommon::GetInstance(), "black.png", "flontHp.png");
+	enemyHpBar_->Initialize(&SpriteCommon::GetInstance(),"EnemyHPName.json", "black.png", "flontHp.png");
 	enemyHpBar_->SetSize({ 400.0f, 10.0f }); // HPバーのサイズ
 	enemyHpBar_->SetPosition({ 300.0f, 35.0f }); // HPバーの位置
 	//playerReticle

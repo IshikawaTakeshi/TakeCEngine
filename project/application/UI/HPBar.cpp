@@ -7,7 +7,7 @@
 //===================================================================================
 //　初期化
 //===================================================================================
-void HPBar::Initialize(SpriteCommon* spriteCommon, const std::string& backgroundFilePath, const std::string& foregroundFilePath) {
+void HPBar::Initialize(SpriteCommon* spriteCommon,const std::string& ownerName, const std::string& backgroundFilePath, const std::string& foregroundFilePath) {
 	// 背景スプライトの初期化
 	backgroundSprite_ = std::make_unique<Sprite>();
 	backgroundSprite_->Initialize(spriteCommon, backgroundFilePath);
@@ -20,6 +20,11 @@ void HPBar::Initialize(SpriteCommon* spriteCommon, const std::string& background
 	damageBarSprite_ = std::make_unique<Sprite>();
 	damageBarSprite_->Initialize(spriteCommon, foregroundFilePath);
 	damageBarSprite_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f }); // ダメージバーは赤色に設定
+
+	ownerNameSprite_ = std::make_unique<Sprite>();
+	ownerNameJsonFile_ = ownerName;
+	ownerNameSprite_->LoadConfig(ownerNameJsonFile_); // 所有者名のJSONファイルを読み込む
+	ownerNameSprite_->Initialize(spriteCommon);
 
 	margin_ = 2.0f; // 枠の太さを設定
 
@@ -96,6 +101,7 @@ void HPBar::Update(float currentHP, float maxHP) {
 	backgroundSprite_->Update();
 	foregroundSprite_->Update();
 	damageBarSprite_->Update();
+	ownerNameSprite_->Update();
 }
 
 //===================================================================================
@@ -112,6 +118,8 @@ void HPBar::Draw() {
 
 	// フォアグラウンドスプライトを描画
 	foregroundSprite_->Draw();
+	// 所有者名スプライトを描画
+	ownerNameSprite_->Draw();
 }
 
 //===================================================================================
@@ -123,6 +131,7 @@ void HPBar::UpdateImGui([[maybe_unused]]std::string name) {
 	backgroundSprite_->UpdateImGui(name + "_Background");
 	damageBarSprite_->UpdateImGui(name + "_DamageBar");
 	foregroundSprite_->UpdateImGui(name + "_Foreground");
+	ownerNameSprite_->UpdateImGui(name + "_OwnerName");
 #endif // DEBUG
 }
 

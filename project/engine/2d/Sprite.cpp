@@ -64,6 +64,54 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 	wvpData_->World = worldMatrix_;
 }
 
+void Sprite::Initialize(SpriteCommon* spriteCommon) {
+	//SpriteCommonの設定
+	spriteCommon_ = spriteCommon;
+
+	//メッシュ初期化
+	mesh_ = std::make_unique<Mesh>();
+	mesh_->InitializeMesh(spriteCommon_->GetDirectXCommon(),spriteConfig_.textureFilePath_);
+	//vertexResource初期化
+	mesh_->InitializeVertexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice(),spriteConfig_.anchorPoint_);
+	//IndexResource初期化
+	mesh_->InitializeIndexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice());
+
+	//======================= transformationMatrix用のVertexResource ===========================//
+
+	//スプライト用のTransformationMatrix用のVertexResource生成
+	wvpResource_ = TakeC::DirectXCommon::CreateBufferResource(spriteCommon->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
+
+	//TransformationMatrix用
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
+
+	//単位行列を書き込んでおく
+	wvpData_->WVP = MatrixMath::MakeIdentity4x4();
+
+	//======================= Transform・各行列の初期化 ===========================//
+
+	//CPUで動かす用のTransform
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+
+	//アフィン行列
+	worldMatrix_ = MatrixMath::MakeAffineMatrix(
+		transform_.scale,
+		transform_.rotate,
+		transform_.translate
+	);
+
+	//SpriteAnimatorの初期化(targetの設定)
+	spriteAnimator_ = std::make_unique<SpriteAnimator>();
+	spriteAnimator_->Initialize(this);
+
+	//ViewProjectionの初期化
+	viewMatrix_ = MatrixMath::MakeIdentity4x4();
+	projectionMatrix_ = MatrixMath::MakeOrthographicMatrix(
+		0.0f, 0.0f, TakeC::WinApp::kScreenWidth, TakeC::WinApp::kScreenHeight, 0.1f, 1000.0f);
+	worldViewProjectionMatrix_ = worldMatrix_ * viewMatrix_ * projectionMatrix_;
+	wvpData_->WVP = worldViewProjectionMatrix_;
+	wvpData_->World = worldMatrix_;
+}
+
 //=============================================================================================
 // 更新処理
 //=============================================================================================
@@ -124,11 +172,10 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 		ImGui::Checkbox("adjustSwitch", &adjustSwitch_);
 		mesh_->GetMaterial()->UpdateMaterialImGui();
 
-
 		// 保存ポップアップ
 		ImGuiManager::ShowSavePopup<SpriteConfig>(
 			TakeCFrameWork::GetJsonLoader(),
-			"Save Camera",
+			"Save_Sprite",
 			"default_sprite.json",
 			spriteConfig_,
 			spriteConfig_.jsonFilePath);
@@ -209,7 +256,15 @@ void Sprite::AdjustTextureSize() {
 	spriteConfig_.size_ = spriteConfig_.textureSize_;
 }
 
+//=============================================================================================
+// JSONファイルから設定読み込み
+//=============================================================================================
 void Sprite::LoadConfig(const std::string& jsonFilePath) {
+
+	//jsonファイルパスが空の場合は処理しない
+	if (jsonFilePath.empty()) {
+		return;
+	}
 
 	//jsonファイルから設定読み込み
 	spriteConfig_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<SpriteConfig>(jsonFilePath);
