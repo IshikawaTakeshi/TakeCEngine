@@ -5,11 +5,11 @@
 //========================================================================================================
 
 void BulletManager::Initialize(Object3dCommon* object3dCommon,size_t size) {
-	bulletPool_ = std::make_unique<BulletPool>();
-	bulletPool_->Initialize(size);
-	missilePool_ = std::make_unique<MissilePool>();
-	missilePool_->Initialize(size * 2); 
 	object3dCommon_ = object3dCommon;
+	bulletPool_ = std::make_unique<BulletPool>();
+	bulletPool_->Initialize(object3dCommon_,size);
+	missilePool_ = std::make_unique<MissilePool>();
+	missilePool_->Initialize(object3dCommon_,size * 2); 
 	bulletFilePath_ = "Bullet.gltf";
 	missileFilePath_ = "ICOBall.gltf";
 }
@@ -31,9 +31,9 @@ void BulletManager::Finalize() {
 
 void BulletManager::Update() {
 	// 弾の更新
-	bulletPool_->UpdateAllBullet();
+	bulletPool_->UpdateAll();
 	// ミサイルの更新
-	missilePool_->UpdateAllMissiles();
+	missilePool_->UpdateAll();
 }
 
 
@@ -44,12 +44,12 @@ void BulletManager::Update() {
 
 void BulletManager::DrawBullet() {
 	// 弾の描画
-	bulletPool_->DrawAllBullet();
+	bulletPool_->DrawAll();
 }
 
 void BulletManager::DrawMissile() {
 	// ミサイルの描画
-	missilePool_->DrawAllMissiles();
+	missilePool_->DrawAll();
 }
 
 void BulletManager::DrawCollider() {
@@ -64,13 +64,13 @@ void BulletManager::DrawCollider() {
 
 void BulletManager::ShootBullet(const Vector3& weaponPos,const Vector3& targetPos,const Vector3& targetVel,const float& speed,float power,CharacterType type) {
 
-	Bullet* bullet = bulletPool_->GetBullet();
+	Bullet* bullet = bulletPool_->GetObject();
 	bullet->Create(weaponPos, targetPos,targetVel,speed,power,type);
 }
 
 void BulletManager::ShootBullet(const Vector3& weaponPos, const Vector3& direction, const float& speed, float power, CharacterType type) {
 
-	Bullet* bullet = bulletPool_->GetBullet();
+	Bullet* bullet = bulletPool_->GetObject();
 	bullet->Create(weaponPos, direction, speed, power, type);
 }
 
@@ -79,7 +79,7 @@ void BulletManager::ShootBullet(const Vector3& weaponPos, const Vector3& directi
 //========================================================================================================
 void BulletManager::ShootMissile(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo, float speed,float power, CharacterType type) {
 
-	VerticalMissile* missile = missilePool_->GetMissile();
+	VerticalMissile* missile = missilePool_->GetObject();
 	if (missile == nullptr) {
 		return; // ミサイルが取得できなかった場合は何もしない
 	}
@@ -93,7 +93,7 @@ std::vector<Bullet*> BulletManager::GetAllBullets() {
 	
 	std::vector<Bullet*> bullets;
 	for (const auto& bullet : bulletPool_->GetPool()) {
-		if (bullet->GetIsActive()) {
+		if (bullet->IsActive()) {
 			bullets.push_back(bullet);
 		}
 	}
@@ -107,7 +107,7 @@ std::vector<VerticalMissile*> BulletManager::GetAllMissiles() {
 	
 	std::vector<VerticalMissile*> missiles;
 	for (const auto& missile : missilePool_->GetPool()) {
-		if (missile->GetIsActive()) {
+		if (missile->IsActive()) {
 			missiles.push_back(missile);
 		}
 	}

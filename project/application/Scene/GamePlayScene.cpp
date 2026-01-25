@@ -519,13 +519,13 @@ void GamePlayScene::CheckAllCollisions() {
 
 	//弾の登録
 	for (const auto& bullet : bullets) {
-		if (bullet->GetIsActive()) {
+		if (bullet->IsActive()) {
 			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
 		}
 	}
 	//垂直ミサイルの登録
 	for (const auto& missile : missiles) {
-		if (missile->GetIsActive()) {
+		if (missile->IsActive()) {
 			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(missile));
 		}
 	}

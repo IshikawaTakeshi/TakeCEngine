@@ -266,7 +266,7 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& direction, float sp
 // Transformの取得
 const EulerTransform& Bullet::GetTransform() const { return transform_; }
 // 生存フラグの取得
-bool Bullet::GetIsActive() { return isActive_; }
+bool Bullet::IsActive() { return isActive_; }
 // 速度の取得
 const Vector3& Bullet::GetVelocity() const { return velocity_; }
 // ターゲット位置の取得

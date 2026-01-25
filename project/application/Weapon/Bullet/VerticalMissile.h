@@ -49,7 +49,7 @@ public:
 	//===========================================================================
 
 	const EulerTransform& GetTransform() const;
-	bool GetIsActive() const;
+	bool IsActive() const;
 	const Vector3& GetVelocity() const;
 	const Vector3& GetTargetPos() const;
 	float GetDamage() const;

@@ -64,7 +64,7 @@ public:
 	//transformの取得
 	const EulerTransform& GetTransform() const;
 	//生存フラグの取得
-	bool GetIsActive();
+	bool IsActive();
 
 	//速度の取得
 	const Vector3& GetVelocity() const;

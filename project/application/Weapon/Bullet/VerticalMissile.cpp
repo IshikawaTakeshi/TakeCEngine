@@ -279,7 +279,7 @@ void VerticalMissile::Create(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo,
 //transformの取得
 const EulerTransform& VerticalMissile::GetTransform() const { return transform_; }
 //弾が有効かどうか
-bool VerticalMissile::GetIsActive() const { return isActive_; }
+bool VerticalMissile::IsActive() const { return isActive_; }
 //弾の速度の取得
 const Vector3& VerticalMissile::GetVelocity() const { return velocity_; }
 //ターゲットの座標の取得

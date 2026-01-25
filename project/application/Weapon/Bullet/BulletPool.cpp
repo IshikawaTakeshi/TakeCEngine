@@ -3,82 +3,8 @@
 #include "Base/TakeCFrameWork.h"
 #include <cassert>
 
-//===================================================================================
-//　初期化
-//===================================================================================
-void BulletPool::Initialize(size_t size) {
+void BulletPool::OnInitializeObject(Bullet& object) {
 
-	for (int i = 0; i < size; i++) {
-		pool_.emplace_back(std::make_unique<Bullet>());
-		pool_[i]->Initialize(&Object3dCommon::GetInstance(), "Bullet.gltf");
-	}
-}
-
-//===================================================================================
-//　開放処理
-//===================================================================================
-void BulletPool::Finalize() {
-	pool_.clear();
-}
-
-//===================================================================================
-//　弾の取得
-//===================================================================================
-Bullet* BulletPool::GetBullet() {
-	for (const auto& bullet : pool_) {
-		if (!bullet->GetIsActive()) {
-			bullet->SetIsActive(true);
-			return bullet.get();
-		}
-	}
-
-	return nullptr;
-}
-
-//===================================================================================
-//　全弾の更新
-//===================================================================================
-void BulletPool::UpdateAllBullet() {
-
-	for (const auto& bullet : pool_) {
-		//アクティブな弾のみ更新
-		bullet->Update();
-	}
-}
-
-//===================================================================================
-//　全弾の描画
-//===================================================================================
-void BulletPool::DrawAllBullet() {
-
-	for (const auto& bullet : pool_) {
-		//アクティブな弾のみ描画
-		if (bullet->GetIsActive()) {
-			bullet->Draw();
-		}
-	}
-}
-
-//===================================================================================
-//　全弾のコライダー描画
-//===================================================================================
-void BulletPool::DrawAllCollider() {
-
-	for (const auto& bullet : pool_) {
-		if (bullet->GetIsActive()) {
-			bullet->DrawCollider();
-		}
-	}
-}
-
-//===================================================================================
-//　プールの取得
-//===================================================================================
-std::vector<Bullet*> BulletPool::GetPool() {
-	
-	std::vector<Bullet*> bullets;
-	for (const auto& bullet : pool_) {
-		bullets.push_back(bullet.get());
-	}
-	return bullets;
+	// 共通の初期化処理
+	object.Initialize(objectCommon_, "Bullet.gltf");
 }
