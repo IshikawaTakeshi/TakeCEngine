@@ -1,6 +1,7 @@
 #pragma once
 #include "application/Weapon/BaseWeapon.h"
 #include "application/Weapon/Bullet/VerticalMissileInfo.h"
+#include "application/Weapon/Bullet/BulletEffectConfig.h"
 #include "engine/Entity/GameCharacter.h"
 #include "engine/3d/Object3d.h"
 #include "engine/3d/Object3dCommon.h"
@@ -29,6 +30,7 @@ public:
 
 	// 初期化
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
+	void InitializeEffect(const BulletEffectConfig& effectConfig);
 	// 更新処理
 	void Update() override;
 	// ImGuiの更新
@@ -86,6 +88,8 @@ private:
 
 	PointLightData pointLightData_;
 	uint32_t pointLightIndex_ = 0;
+
+	BulletEffectConfig effectConfig_;
 
 	//パーティクルエミッター
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;

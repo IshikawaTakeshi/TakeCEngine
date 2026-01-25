@@ -24,14 +24,21 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	collider_->SetOwner(this); // 持ち主を設定
 	collider_->SetRadius(bulletRadius_); // 半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Bullet)); // 種別IDを設定
+	
+}
+
+void Bullet::InitializeEffect(const BulletEffectConfig& effectConfig) {
+
+	effectConfig_ = effectConfig;
+
 	//emiiter設定
 	//emitter0
 	particleEmitter_.resize(2);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0", "DamageSpark2.json");
+	particleEmitter_[0]->Initialize("EnemyEmitter0", effectConfig_.explosionEffectFilePath[0]);
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", "BulletMoveEffect.json");
+	particleEmitter_[1]->Initialize("EnemyEmitter1", effectConfig_.trailEffectFilePath[0]);
 	//deltaTime取得
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 	//transform初期化

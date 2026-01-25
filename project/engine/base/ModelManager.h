@@ -58,7 +58,9 @@ namespace TakeC {
 		/// モデルの読み込み
 		/// </summary>
 		/// <param name="filePath">モデルのファイルパス</param>
-		void LoadModel(const std::string& modelFile, const std::string& envMapFile = "rostock_laage_airport_4k.dds");
+		void LoadModel(const std::string& modelFile, const std::string& envMapFile = "skyBox_blueSky.dds");
+
+		void LoadModelAll(const std::string& envMapFile = "skyBox_blueSky.dds");
 
 		/// <summary>
 		/// モデルの検索

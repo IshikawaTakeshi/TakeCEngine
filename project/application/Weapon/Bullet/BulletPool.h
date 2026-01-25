@@ -20,5 +20,6 @@ public:
 protected:
 
 	//型ごとの初期化処理
-	void OnInitializeObject(Bullet& object) override;
+	void OnInitializeObject(Bullet& object,const std::string& modelFilePath,const BulletEffectConfig& effectConfig) override;
+
 };

@@ -282,7 +282,7 @@ void GamePlayScene::Draw() {
 
 #pragma region Object3d描画
 
-	//Object3dの描画前処理
+	//Object3dの描画前Dispatch処理
 	Object3dCommon::GetInstance().Dispatch();
 	player_->GetObject3d()->Dispatch();
 	enemy_->GetObject3d()->Dispatch();
@@ -291,11 +291,14 @@ void GamePlayScene::Draw() {
 	//	object->DisPatch();
 	//}
 
+	//Object3dの描画前処理
 	Object3dCommon::GetInstance().PreDraw();
+	// プレイヤーの描画
 	player_->Draw();
+	// 敵の描画
 	enemy_->Draw();
-	bulletManager_->DrawMissile();
-	bulletManager_->DrawBullet();
+	//弾の描画
+	bulletManager_->Draw();
 	for (auto& object : levelObjects_) {
 		object.second->Draw();
 	}
@@ -307,8 +310,6 @@ void GamePlayScene::Draw() {
 
 	//当たり判定の描画前処理
 	enemy_->DrawCollider();
-	//pointLightの描画
-	//TakeCFrameWork::GetLightManager()->DrawPointLights();
 	//spotLightの描画
 	TakeCFrameWork::GetLightManager()->DrawSpotLights();
 	//登録されたワイヤーフレームをすべて描画させる

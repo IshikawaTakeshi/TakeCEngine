@@ -3,8 +3,11 @@
 #include "Base/TakeCFrameWork.h"
 #include <cassert>
 
-void BulletPool::OnInitializeObject(Bullet& object) {
+void BulletPool::OnInitializeObject(Bullet& object,const std::string& modelFilePath,const BulletEffectConfig& effectConfig) {
 
-	// 共通の初期化処理
-	object.Initialize(objectCommon_, "Bullet.gltf");
+	effectConfig_ = effectConfig;
+
+	//初期化処理
+	object.Initialize(objectCommon_, modelFilePath);
+	object.InitializeEffect(effectConfig_);
 }

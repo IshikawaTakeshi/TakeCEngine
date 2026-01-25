@@ -1,7 +1,9 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <string>
 #include "engine/3d/Object3dCommon.h"
+#include "Weapon/Bullet/BulletEffectConfig.h"
 
 //=============================================================================================
 /// ObjectPool class
@@ -20,7 +22,9 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="size"></param>
-	void Initialize(Object3dCommon* objectCommon, size_t size);
+	void Initialize(Object3dCommon* objectCommon, size_t size,
+		const std::string& modelFilePath,
+		const BulletEffectConfig& effectConfig);
 
 	/// <summary>
 	/// 終了処理
@@ -57,13 +61,12 @@ public:
 protected:
 	// 型ごとの初期化処理
 
-	virtual void OnInitializeObject([[maybe_unused]]T& object) {
-		// デフォルトは何もしない
-	}
+	virtual void OnInitializeObject(T& object,const std::string& modelFilePath, const BulletEffectConfig& effectConfig) = 0;
 
 	// Object3dCommonのポインタ
 	Object3dCommon* objectCommon_ = nullptr;
 
+	BulletEffectConfig effectConfig_{};
 	// オブジェクトプール
 	std::vector<std::unique_ptr<T>> pool_;
 };
@@ -72,15 +75,17 @@ protected:
 /// 初期化
 ///-------------------------------------------------------------------------------
 template<class T>
-inline void ObjectPool<T>::Initialize(Object3dCommon* objectCommon, size_t size) {
+inline void ObjectPool<T>::Initialize(Object3dCommon* objectCommon, size_t size,
+	const std::string& modelFilePath,const BulletEffectConfig& effectConfig) {
 	//objectCommonの保存
 	objectCommon_ = objectCommon;
+	effectConfig_ = effectConfig;
 
 	// プールの生成
 	pool_.reserve(size);
 	for (size_t i = 0; i < size; ++i) {
 		pool_.emplace_back(std::make_unique<T>());
-		OnInitializeObject(*pool_.back());
+		OnInitializeObject(*pool_.back(),modelFilePath,effectConfig_);
 	}
 }
 

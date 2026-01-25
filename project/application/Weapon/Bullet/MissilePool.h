@@ -1,6 +1,7 @@
 #pragma once
 #include "application/Weapon/Bullet/VerticalMissile.h"
 #include "application/Weapon/Bullet/ObjectPool.h"
+#include "Weapon/Bullet/BulletEffectConfig.h"
 #include <cstdint>
 #include <vector>
 #include <memory>
@@ -20,5 +21,6 @@ public:
 protected:
 
 	//型ごとの初期化処理
-	void OnInitializeObject(VerticalMissile& object) override;
+	void OnInitializeObject(VerticalMissile& object,const std::string& modelFilePath,const BulletEffectConfig& effectConfig) override;
+
 };

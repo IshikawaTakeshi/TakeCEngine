@@ -116,14 +116,14 @@ void Bazooka::Attack() {
 
 	//弾の発射
 	if (ownerObject_->GetCharacterType() == CharacterType::PLAYER){
-		bulletManager_->ShootBullet(
+		bulletManager_->ShootBazookaBullet(
 			object3d_->GetCenterPosition(),
 			targetPos_,targetVelocity_,
 			weaponData_.config.bulletSpeed,
 			weaponData_.config.power,
 			CharacterType::PLAYER_BULLET);
 	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
-		bulletManager_->ShootBullet(
+		bulletManager_->ShootBazookaBullet(
 			object3d_->GetCenterPosition(),
 			targetPos_,targetVelocity_,
 			weaponData_.config.bulletSpeed,

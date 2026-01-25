@@ -15,7 +15,12 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"Bullet"
+			"name":"\u5186\u67f1",
+			"scale":[
+				1.0809690952301025,
+				1.0809690952301025,
+				0.7159370183944702
+			]
 		}
 	],
 	"materials":[
@@ -36,7 +41,7 @@
 	],
 	"meshes":[
 		{
-			"name":"\u7acb\u65b9\u4f53",
+			"name":"\u5186\u67f1",
 			"primitives":[
 				{
 					"attributes":{
@@ -54,68 +59,68 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":61,
+			"count":432,
 			"max":[
-				0.3164762258529663,
-				0.259311705827713,
-				3.3273720741271973
+				0.47657155990600586,
+				0.47657158970832825,
+				1.7728811502456665
 			],
 			"min":[
-				-0.3164762258529663,
-				-0.259311705827713,
-				-0.6400648355484009
+				-0.47657155990600586,
+				-0.47657153010368347,
+				-0.6167159676551819
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":61,
+			"count":432,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":61,
+			"count":432,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":114,
+			"count":612,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":732,
+			"byteLength":5184,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":732,
-			"byteOffset":732,
+			"byteLength":5184,
+			"byteOffset":5184,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":488,
-			"byteOffset":1464,
+			"byteLength":3456,
+			"byteOffset":10368,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":228,
-			"byteOffset":1952,
+			"byteLength":1224,
+			"byteOffset":13824,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":2180,
-			"uri":"Bullet.bin"
+			"byteLength":15048,
+			"uri":"BazookaBullet.bin"
 		}
 	]
 }

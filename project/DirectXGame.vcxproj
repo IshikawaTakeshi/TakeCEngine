@@ -283,6 +283,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\Action\WeaponActionData.h" />
     <ClInclude Include="application\Weapon\Bazooka\Bazooka.h" />
     <ClInclude Include="application\Weapon\Action\BurstShotInfo.h" />
+    <ClInclude Include="application\Weapon\Bullet\BulletEffectConfig.h" />
     <ClInclude Include="application\Weapon\Bullet\VerticalMissileInfo.h" />
     <ClInclude Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.h" />
     <ClInclude Include="application\Weapon\Rifle\RifleInfo.h" />
