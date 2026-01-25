@@ -152,6 +152,17 @@ void VerticalMissile::Update() {
 		// ターゲット位置を更新
 		targetPos_ = ownerWeapon_->GetTargetPos();
 
+		//ターゲットの方向にモデルを向ける
+		Quaternion targetRotate = QuaternionMath::LookRotation(
+			Vector3Math::Normalize(targetPos_ - transform_.translate),{ 0.0f,1.0f,0.0f });
+		
+		transform_.rotate = Easing::Slerp(
+			transform_.rotate,
+			targetRotate,
+			0.3f
+		);
+		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
+
 		// ターゲット方向への単位ベクトルを計算
 		Vector3 desired = targetPos_ - transform_.translate;
 		desired = Vector3Math::Normalize(desired);
@@ -282,7 +293,7 @@ void VerticalMissile::Create(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo,
 //====================================================================================
 
 //transformの取得
-const EulerTransform& VerticalMissile::GetTransform() const { return transform_; }
+const QuaternionTransform& VerticalMissile::GetTransform() const { return transform_; }
 //弾が有効かどうか
 bool VerticalMissile::IsActive() const { return isActive_; }
 //弾の速度の取得

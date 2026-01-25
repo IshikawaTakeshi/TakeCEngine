@@ -244,6 +244,22 @@ void PrimitiveParticle::GeneratePrimitive() {
 	}
 	//テクスチャファイルパスの設定
 	SetTextureFilePath(particlePreset_.textureFilePath);
+
+	//テクスチャアニメーションの設定
+	if (particlePreset_.isUseTextureAnimation == true) {
+		if (particlePreset_.textureAnimationType == TakeC::TextureAnimationType::UVScroll) {
+			//UVスクロールアニメーション適用
+			const UVScrollSettings& uvScrollSettings =
+				std::get<UVScrollSettings>(particlePreset_.textureAnimationParam);
+			TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material->Animation()->SetUVScrollAnimation(uvScrollSettings);
+		}
+		else if (particlePreset_.textureAnimationType == TakeC::TextureAnimationType::SpriteSheet) {
+			//スプライトシートアニメーション適用
+			const SpriteSheetSettings& spriteSheetSettings =
+				std::get<SpriteSheetSettings>(particlePreset_.textureAnimationParam);
+			TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material->Animation()->SetSpriteSheetAnimation(spriteSheetSettings);
+		}
+	}
 }
 
 //=============================================================================
@@ -363,4 +379,6 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 			}
 		}
 	}
+
+	
 }

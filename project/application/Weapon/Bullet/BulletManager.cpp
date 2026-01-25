@@ -13,15 +13,19 @@ void BulletManager::Initialize(Object3dCommon* object3dCommon,size_t size) {
 	missileEffectConfig_.trailEffectFilePath.push_back("MissileSmoke.json");
 	missileEffectConfig_.explosionEffectFilePath.push_back("MissileExplosion.json");
 
+	bazookaBulletEffectConfig_.trailEffectFilePath.push_back("BazookaBulletTrail.json");
+	bazookaBulletEffectConfig_.explosionEffectFilePath.push_back("BazookaBulletExplosion1.json");
+	bazookaBulletEffectConfig_.explosionEffectFilePath.push_back("BazookaBulletExplosion2.json");
+
 	bulletFilePath_ = "Bullet.gltf";
-	missileFilePath_ = "ICOBall.gltf";
+	missileFilePath_ = "Missile.gltf";
 	bazookaBulletFilePath_ = "BazookaBullet.gltf";
 	bulletPool_ = std::make_unique<BulletPool>();
 	bulletPool_->Initialize(object3dCommon_,size,bulletFilePath_, bulletEffectConfig_);
 	missilePool_ = std::make_unique<MissilePool>();
 	missilePool_->Initialize(object3dCommon_,size * 2,missileFilePath_, missileEffectConfig_);
 	bazookaBulletPool_ = std::make_unique<BulletPool>();
-	bazookaBulletPool_->Initialize(object3dCommon_, size,bazookaBulletFilePath_, bulletEffectConfig_);
+	bazookaBulletPool_->Initialize(object3dCommon_, size,bazookaBulletFilePath_, bazookaBulletEffectConfig_);
 
 }
 

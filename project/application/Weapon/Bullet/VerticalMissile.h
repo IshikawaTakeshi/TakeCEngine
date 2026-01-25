@@ -50,7 +50,7 @@ public:
 	// getter
 	//===========================================================================
 
-	const EulerTransform& GetTransform() const;
+	const QuaternionTransform& GetTransform() const;
 	bool IsActive() const;
 	const Vector3& GetVelocity() const;
 	const Vector3& GetTargetPos() const;
@@ -70,12 +70,12 @@ public:
 	void SetTargetPos(const Vector3& targetPos) { targetPos_ = targetPos; }
 	void SetSpeed(float speed) { speed_ = speed; }
 	void SetLifeTime(float lifeTime) { lifeTime_ = lifeTime; }
-	void SetTransform(const EulerTransform& transform) { transform_ = transform; }
+	void SetTransform(const QuaternionTransform& transform) { transform_ = transform; }
 
 private:
 
 	BaseWeapon* ownerWeapon_ = nullptr; // 所有者の武器
-	EulerTransform transform_{};
+	QuaternionTransform transform_{};
 	float deltaTime_ = 0.0f;
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
 	Vector3 targetPos_ = { 0.0f,0.0f,0.0f };

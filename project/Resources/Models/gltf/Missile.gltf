@@ -8,31 +8,49 @@
 		{
 			"name":"Scene",
 			"nodes":[
-				1
+				0
 			]
 		}
 	],
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"ICO\u7403.001",
-			"translation":[
-				1.1266534328460693,
-				1.325549602508545,
-				0
-			]
+			"name":"\u5186\u67f1"
+		}
+	],
+	"materials":[
+		{
+			"doubleSided":true,
+			"name":"\u30de\u30c6\u30ea\u30a2\u30eb",
+			"pbrMetallicRoughness":{
+				"baseColorFactor":[
+					0.05828733742237091,
+					0.0593501478433609,
+					0.09514777362346649,
+					1
+				],
+				"metallicFactor":0,
+				"roughnessFactor":0.5
+			}
 		},
 		{
-			"children":[
-				0
-			],
-			"mesh":1,
-			"name":"ICO\u7403"
+			"doubleSided":true,
+			"name":"\u30de\u30c6\u30ea\u30a2\u30eb.001",
+			"pbrMetallicRoughness":{
+				"baseColorFactor":[
+					0.42228788137435913,
+					0.006273753009736538,
+					0.018853789195418358,
+					1
+				],
+				"metallicFactor":0,
+				"roughnessFactor":0.5
+			}
 		}
 	],
 	"meshes":[
 		{
-			"name":"ICO\u7403.002",
+			"name":"\u5186\u67f1",
 			"primitives":[
 				{
 					"attributes":{
@@ -40,20 +58,17 @@
 						"NORMAL":1,
 						"TEXCOORD_0":2
 					},
-					"indices":3
-				}
-			]
-		},
-		{
-			"name":"ICO\u7403.001",
-			"primitives":[
+					"indices":3,
+					"material":0
+				},
 				{
 					"attributes":{
 						"POSITION":4,
 						"NORMAL":5,
 						"TEXCOORD_0":6
 					},
-					"indices":3
+					"indices":7,
+					"material":1
 				}
 			]
 		}
@@ -62,35 +77,35 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":240,
+			"count":192,
 			"max":[
-				0.9510578513145447,
-				1,
-				0.9999999403953552
+				1.5148903131484985,
+				1.5148903131484985,
+				2.227414131164551
 			],
 			"min":[
-				-0.9510578513145447,
-				-1,
-				-0.9999999403953552
+				-1.5148903131484985,
+				-1.514890193939209,
+				-1.8513154983520508
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":240,
+			"count":192,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":240,
+			"count":192,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":240,
+			"count":372,
 			"type":"SCALAR"
 		},
 		{
@@ -99,13 +114,13 @@
 			"count":240,
 			"max":[
 				0.9510578513145447,
-				1,
-				0.9999999403953552
+				0.9999999403953552,
+				3.9000210762023926
 			],
 			"min":[
 				-0.9510578513145447,
 				-1,
-				-0.9999999403953552
+				-0.34786492586135864
 			],
 			"type":"VEC3"
 		},
@@ -120,56 +135,68 @@
 			"componentType":5126,
 			"count":240,
 			"type":"VEC2"
+		},
+		{
+			"bufferView":7,
+			"componentType":5123,
+			"count":240,
+			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":2880,
+			"byteLength":2304,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":2880,
-			"byteOffset":2880,
+			"byteLength":2304,
+			"byteOffset":2304,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":1920,
-			"byteOffset":5760,
+			"byteLength":1536,
+			"byteOffset":4608,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":480,
-			"byteOffset":7680,
+			"byteLength":744,
+			"byteOffset":6144,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":2880,
-			"byteOffset":8160,
+			"byteOffset":6888,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":2880,
-			"byteOffset":11040,
+			"byteOffset":9768,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":1920,
-			"byteOffset":13920,
+			"byteOffset":12648,
 			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":480,
+			"byteOffset":14568,
+			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":15840,
-			"uri":"MultiICO.bin"
+			"byteLength":15048,
+			"uri":"Missile.bin"
 		}
 	]
 }

@@ -1,0 +1,76 @@
+{
+    "attributes": {
+        "color": {
+            "x": 1.0,
+            "y": 0.1411764770746231,
+            "z": 0.0
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 45,
+        "enableFollowEmitter": true,
+        "frequency": 1.0,
+        "isBillboard": false,
+        "isDirectional": false,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 10,
+        "lifetimeRange": {
+            "max": 0.8899999856948853,
+            "min": 0.5099999904632568
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 0.0,
+            "min": 0.0
+        },
+        "rotateRange": {
+            "max": 0.0,
+            "min": 0.0
+        },
+        "scale": {
+            "x": 15.0,
+            "y": 15.0,
+            "z": 15.0
+        },
+        "scaleEasingType": 10,
+        "scaleRange": {
+            "max": 16.799999237060547,
+            "min": 10.680000305175781
+        },
+        "scaleSetting": 2,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 5,
+        "velocityRange": {
+            "max": 1.0,
+            "min": -1.0
+        }
+    },
+    "blendState": 1,
+    "name": "BazookaBulletExplosion1",
+    "primitiveParam": {
+        "radius": 1.0,
+        "subDivision": 16
+    },
+    "primitiveType": "PRIMITIVE_SPHERE",
+    "isUseTextureAnimation": true,
+    "textureAnimationParam": {
+        "scrollSpeed": {
+            "x": 0.8399999737739563,
+            "y": 1.2999999523162842
+        },
+        "wrapU": true,
+        "wrapV": true
+    },
+    "textureAnimationType": 1,
+    "textureFilePath": "BoostEffect4.png"
+}
