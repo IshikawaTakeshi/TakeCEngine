@@ -309,7 +309,7 @@ void GamePlayScene::Draw() {
 #pragma endregion
 
 	//当たり判定の描画前処理
-	enemy_->DrawCollider();
+	//enemy_->DrawCollider();
 	//spotLightの描画
 	TakeCFrameWork::GetLightManager()->DrawSpotLights();
 	//登録されたワイヤーフレームをすべて描画させる
