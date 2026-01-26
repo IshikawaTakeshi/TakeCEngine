@@ -323,7 +323,7 @@ void Camera::InitializeCameraFollow() {
 
 	followSpeed_ = 0.3f;
 	cameraConfig_.offset_ = cameraConfig_.offsetDelta_;
-	cameraConfig_.offsetDelta_ = Vector3(0.0f, 5.0f, -75.0f);
+	cameraConfig_.offsetDelta_ = Vector3(0.0f, 5.0f, -115.0f);
 }
 
 
@@ -396,7 +396,7 @@ void Camera::UpdateCameraFollow() {
 void Camera::InitializeCameraLockOn() {
 
 	followSpeed_ = 0.4f;
-	cameraConfig_.offsetDelta_ = Vector3(0.0f, 5.0f, -70.0f);
+	cameraConfig_.offsetDelta_ = Vector3(0.0f, 5.0f, -110.0f);
 }
 
 void Camera::UpdateCameraLockOn() {
