@@ -32,14 +32,18 @@ void VerticalMissile::InitializeEffect(const BulletEffectConfig& effectConfig) {
 	effectConfig_ = effectConfig;
 	//emiiter設定
 	//emitter0
-	particleEmitter_.resize(2);
-	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0", effectConfig_.explosionEffectFilePath[0]);
-	particleEmitter_[0]->SetParticleName("MissileExplosion");
+	explosionEmitter_.resize(effectConfig_.explosionEffectFilePath.size());
+	for (int i = 0; i < effectConfig_.explosionEffectFilePath.size(); i++) {
+		explosionEmitter_[i] = std::make_unique<ParticleEmitter>();
+		explosionEmitter_[i]->Initialize("MissileExplosionEffect" + std::to_string(i), effectConfig_.explosionEffectFilePath[i]);
+	}
+
 	//emitter1
-	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", effectConfig_.trailEffectFilePath[0]);
-	particleEmitter_[1]->SetParticleName("MissileSmoke");
+	trailEmitter_.resize(effectConfig_.trailEffectFilePath.size());
+	for (int i = 0; i < effectConfig_.trailEffectFilePath.size(); i++) {
+		trailEmitter_[i] = std::make_unique<ParticleEmitter>();
+		trailEmitter_[i]->Initialize("MissileMoveEffect" + std::to_string(i), effectConfig_.trailEffectFilePath[i]);
+	}
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
@@ -199,21 +203,25 @@ void VerticalMissile::Update() {
 
 
 	//パーティクルエミッターの更新
-	particleEmitter_[0]->SetTranslate(transform_.translate);
-	particleEmitter_[0]->Update();
+	for (int i = 0; i < explosionEmitter_.size(); i++) {
+		explosionEmitter_[i]->SetTranslate(transform_.translate);
+		explosionEmitter_[i]->Update();
+		std::string explosionEffectName = effectConfig_.explosionEffectFilePath[i];
+		TakeCFrameWork::GetParticleManager()->GetParticleGroup(explosionEffectName)->SetEmitterPosition(transform_.translate);
+	}
 
-	particleEmitter_[1]->SetTranslate(transform_.translate);
-	particleEmitter_[1]->Update();
+	for (int i = 0; i < trailEmitter_.size(); i++) {
+		trailEmitter_[i]->SetTranslate(transform_.translate);
+		trailEmitter_[i]->Update();
+		trailEmitter_[i]->Emit(); // トレイルエフェクトを常に発生させる
+		std::string trailEffectName = effectConfig_.trailEffectFilePath[i];
+		TakeCFrameWork::GetParticleManager()->GetParticleGroup(trailEffectName)->SetEmitterPosition(transform_.translate);
+	}
 
 	//オブジェクト、コライダーの更新
 	object3d_->SetTranslate(transform_.translate);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
-
-	//MEMO: パーティクルの毎フレーム発生
-	particleEmitter_[1]->Emit();
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("MissileSmoke")->SetEmitterPosition(transform_.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("MissileExplosion")->SetEmitterPosition(transform_.translate);
 
 }
 
@@ -243,7 +251,9 @@ void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 	if(characterType_ == CharacterType::PLAYER_MISSILE && other->GetCharacterType() == CharacterType::ENEMY ||
 	   characterType_ == CharacterType::ENEMY_MISSILE && other->GetCharacterType() == CharacterType::PLAYER) {
 		//パーティクル射出
-		particleEmitter_[0]->Emit();
+		for (int i = 0; i < explosionEmitter_.size(); i++) {
+			explosionEmitter_[i]->Emit();
+		}
 		//弾を無効化
 		isActive_ = false; 
 		//ポイントライト無効化
@@ -254,7 +264,9 @@ void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
 
 		//パーティクル射出
-		particleEmitter_[0]->Emit();
+		for (int i = 0; i < explosionEmitter_.size(); i++) {
+			explosionEmitter_[i]->Emit();
+		}
 		//弾を無効化
 		isActive_ = false; 
 		//ポイントライト無効化

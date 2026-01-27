@@ -141,7 +141,7 @@ private:
 	float deltaTime_ = 0.0f; 
 	
 	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
-	float chargeShootTimer_ = 0.0f; //停止撃ちまでの残り猶予時間
+	Timer chargeShootTimer_; // 停止撃ちのタイマー
 
 	bool isUseWeapon_ = false; //武器を使用しているかどうか
 	float weaponUseTimer_ = 0.0f; //武器を使用している時間
