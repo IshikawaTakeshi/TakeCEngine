@@ -1,5 +1,6 @@
 #include "Vector3Math.h"
-#include "engine/math/MathEnv.h"
+#include "engine/Math/MathEnv.h"
+#include "engine/Math/Quaternion.h"
 #include <cmath>
 
 /////////////////////////////////////////////////////////////////
@@ -108,4 +109,25 @@ Vector3 Vector3Math::ApplyYawPitch(const Vector3& baseDir, float yawDeg, float p
 	};
 
 	return dirYawPitch;
+}
+
+Quaternion Vector3Math::ToQuaternion(const Vector3& eulerAngles) {
+	
+	// オイラー角をラジアンに変換
+	float yaw   = degreeToRadian(eulerAngles.y);
+	float pitch = degreeToRadian(eulerAngles.x);
+	float roll  = degreeToRadian(eulerAngles.z);
+	// 各軸の半角のサインとコサインを計算
+	float cy = cosf(yaw * 0.5f);
+	float sy = sinf(yaw * 0.5f);
+	float cp = cosf(pitch * 0.5f);
+	float sp = sinf(pitch * 0.5f);
+	float cr = cosf(roll * 0.5f);
+	float sr = sinf(roll * 0.5f);
+	Quaternion q;
+	q.w = cr * cp * cy + sr * sp * sy;
+	q.x = sr * cp * cy - cr * sp * sy;
+	q.y = cr * sp * cy + sr * cp * sy;
+	q.z = cr * cp * sy - sr * sp * cy;
+	return q;
 }

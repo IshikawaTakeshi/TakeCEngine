@@ -17,6 +17,7 @@ void ParticleEmitter::Initialize(const std::string& emitterName, const std::stri
 	//Emitter初期化
 	emitterName_ = emitterName;
 
+
 	//prest情報の取得
 	preset_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetInfo);
 	particleName_ = preset_.presetName;

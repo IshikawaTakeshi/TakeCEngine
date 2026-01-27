@@ -25,19 +25,24 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 	collider_->SetOwner(this); // 持ち主を設定
 	collider_->SetRadius(bulletRadius_); // 半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Missile)); // 種別IDを設定
+	
+}
+
+void VerticalMissile::InitializeEffect(const BulletEffectConfig& effectConfig) {
+	effectConfig_ = effectConfig;
 	//emiiter設定
 	//emitter0
 	particleEmitter_.resize(2);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0", "MissileExplosion.json");
+	particleEmitter_[0]->Initialize("EnemyEmitter0", effectConfig_.explosionEffectFilePath[0]);
 	particleEmitter_[0]->SetParticleName("MissileExplosion");
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", "MissileSmoke.json");
+	particleEmitter_[1]->Initialize("EnemyEmitter1", effectConfig_.trailEffectFilePath[0]);
 	particleEmitter_[1]->SetParticleName("MissileSmoke");
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
-	
+
 
 	//transform初期化
 	transform_.translate = { 0.0f, 200.0f, 0.0f };
@@ -146,6 +151,17 @@ void VerticalMissile::Update() {
 
 		// ターゲット位置を更新
 		targetPos_ = ownerWeapon_->GetTargetPos();
+
+		//ターゲットの方向にモデルを向ける
+		Quaternion targetRotate = QuaternionMath::LookRotation(
+			Vector3Math::Normalize(targetPos_ - transform_.translate),{ 0.0f,1.0f,0.0f });
+		
+		transform_.rotate = Easing::Slerp(
+			transform_.rotate,
+			targetRotate,
+			0.3f
+		);
+		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
 
 		// ターゲット方向への単位ベクトルを計算
 		Vector3 desired = targetPos_ - transform_.translate;
@@ -277,9 +293,9 @@ void VerticalMissile::Create(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo,
 //====================================================================================
 
 //transformの取得
-const EulerTransform& VerticalMissile::GetTransform() const { return transform_; }
+const QuaternionTransform& VerticalMissile::GetTransform() const { return transform_; }
 //弾が有効かどうか
-bool VerticalMissile::GetIsActive() const { return isActive_; }
+bool VerticalMissile::IsActive() const { return isActive_; }
 //弾の速度の取得
 const Vector3& VerticalMissile::GetVelocity() const { return velocity_; }
 //ターゲットの座標の取得

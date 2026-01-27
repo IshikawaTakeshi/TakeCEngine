@@ -160,6 +160,17 @@ void TakeC::ParticleManager::ClearParticles() {
 //================================================================================================
 BaseParticleGroup* TakeC::ParticleManager::GetParticleGroup(const std::string& name) {
 
+	//拡張子の削除
+	namespace fs = std::filesystem;
+	fs::path pathName = name;
+	std::string nameWithoutExt = pathName.stem().string();
+	//拡張子が書かれている場合拡張子を削除した名前で検索
+	if (name != nameWithoutExt) {
+		if (particleGroups_.contains(nameWithoutExt)) {
+			return particleGroups_.at(nameWithoutExt).get();
+		}
+	}
+
 	if (particleGroups_.contains(name)) {
 		return particleGroups_.at(name).get();
 	}

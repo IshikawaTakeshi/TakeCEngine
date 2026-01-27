@@ -57,6 +57,38 @@ void TakeC::ModelManager::LoadModel(const std::string& modelFile,const std::stri
 }
 
 //=============================================================================
+// ディレクトリ内のモデルをすべて読み込む
+//=============================================================================
+void TakeC::ModelManager::LoadModelAll(const std::string& envMapFile) {
+
+	//Resources/Modelsフォルダ内の全てのモデルファイルを読み込む
+	namespace fs = std::filesystem;
+	std::string directoryPath = "Resources/Models/";
+
+	if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
+		return;
+	}
+
+	//再帰走査
+	for (const auto& entry : fs::recursive_directory_iterator(directoryPath)) {
+		if (entry.is_regular_file()) {
+			std::string extension = entry.path().extension().string();
+
+			//
+			if (extension == ".bin") continue;
+
+			if (extension == ".fbx" || extension == ".obj" || extension == ".gltf" || extension == ".glb") {
+				// ルートからの相対パスを作成
+				fs::path relative = fs::relative(entry.path(), directoryPath);
+				std::string normalizedPath = relative.generic_string();
+
+				LoadModel(normalizedPath, envMapFile);
+			}
+		}
+	}
+}
+
+//=============================================================================
 // モデルの検索
 //=============================================================================
 Model* TakeC::ModelManager::FindModel(const std::string& filePath) {
@@ -105,18 +137,21 @@ ModelData* TakeC::ModelManager::LoadModelFile(const std::string& modelFile,const
 	// ベースディレクトリ
 	fs::path baseDir = "./Resources/Models/";
 
-	// 拡張子ごとの検索ディレクトリを決める
-	fs::path modelDir;
-	if (ext == ".fbx") {
-		modelDir = baseDir / "fbx/";
-	} else if (ext == ".obj") {
-		modelDir = baseDir / "obj/";
-	} else if (ext == ".gltf" || ext == ".glb") {
-		modelDir = baseDir / "gltf/";
-	}
-
 	// 最終的なフルパス
-	fs::path fullPath = modelDir / modelFile;
+	fs::path fullPath = baseDir / modelFile;
+
+	// ファイルが存在しない場合は、従来のフォルダ構成（fbx/, obj/, gltf/）を探索
+	if (!fs::exists(fullPath)) {
+		fs::path modelDir;
+		if (ext == ".fbx") {
+			modelDir = baseDir / "fbx/";
+		} else if (ext == ".obj") {
+			modelDir = baseDir / "obj/";
+		} else if (ext == ".gltf" || ext == ".glb") {
+			modelDir = baseDir / "gltf/";
+		}
+		fullPath = modelDir / modelFile;
+	}
 
 	ModelData* modelData = new ModelData();
 	Assimp::Importer importer;

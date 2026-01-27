@@ -266,6 +266,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Primitive\Plane.cpp" />
     <ClCompile Include="engine\Animation\TextureAnimation.cpp" />
     <ClCompile Include="application\Effect\MuzzleFlashEffect.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\ObjectPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
@@ -282,6 +283,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\Action\WeaponActionData.h" />
     <ClInclude Include="application\Weapon\Bazooka\Bazooka.h" />
     <ClInclude Include="application\Weapon\Action\BurstShotInfo.h" />
+    <ClInclude Include="application\Weapon\Bullet\BulletEffectConfig.h" />
     <ClInclude Include="application\Weapon\Bullet\VerticalMissileInfo.h" />
     <ClInclude Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.h" />
     <ClInclude Include="application\Weapon\Rifle\RifleInfo.h" />
@@ -437,6 +439,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\PostEffect\PostEffectFactory.h" />
     <ClInclude Include="engine\3d\Primitive\Plane.h" />
     <ClInclude Include="application\Effect\MuzzleFlashEffect.h" />
+    <ClInclude Include="application\Weapon\Bullet\ObjectPool.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

@@ -4,6 +4,7 @@
 #include "camera/CameraManager.h"
 #include "base/TakeCFrameWork.h"
 #include "math/Vector3Math.h"
+#include "Math/Quaternion.h"
 #include "math/Easing.h"
 
 //========================================================================================================
@@ -24,14 +25,28 @@ void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	collider_->SetOwner(this); // 持ち主を設定
 	collider_->SetRadius(bulletRadius_); // 半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Bullet)); // 種別IDを設定
+	
+}
+
+void Bullet::InitializeEffect(const BulletEffectConfig& effectConfig) {
+
+	effectConfig_ = effectConfig;
+
 	//emiiter設定
 	//emitter0
-	particleEmitter_.resize(2);
-	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0", "DamageSpark2.json");
+	explosionEmitter_.resize(effectConfig_.explosionEffectFilePath.size());
+	for (int i = 0; i < effectConfig_.explosionEffectFilePath.size(); i++) {
+		explosionEmitter_[i] = std::make_unique<ParticleEmitter>();
+		explosionEmitter_[i]->Initialize("BulletExplosionEffect" + std::to_string(i), effectConfig_.explosionEffectFilePath[i]);
+	}
+
 	//emitter1
-	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", "BulletMoveEffect.json");
+	trailEmitter_.resize(effectConfig_.trailEffectFilePath.size());
+	for (int i = 0; i < effectConfig_.trailEffectFilePath.size(); i++) {
+		trailEmitter_[i] = std::make_unique<ParticleEmitter>();
+		trailEmitter_[i]->Initialize("BulletMoveEffect" + std::to_string(i), effectConfig_.trailEffectFilePath[i]);
+	}
+
 	//deltaTime取得
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 	//transform初期化
@@ -137,15 +152,20 @@ void Bullet::Update() {
 	collider_->Update(object3d_.get());
 
 	//パーティクルエミッターの更新
-	particleEmitter_[0]->SetTranslate(transform_.translate);
-	particleEmitter_[0]->Update();
+	for (int i = 0; i < explosionEmitter_.size(); i++) {
+		explosionEmitter_[i]->SetTranslate(transform_.translate);
+		explosionEmitter_[i]->Update();
+		std::string explosionEffectName = effectConfig_.explosionEffectFilePath[i];
+		TakeCFrameWork::GetParticleManager()->GetParticleGroup(explosionEffectName)->SetEmitterPosition(transform_.translate);
+	}
 
-	particleEmitter_[1]->SetTranslate(transform_.translate);
-	particleEmitter_[1]->Update();
-	//MEMO: パーティクルの毎フレーム発生
-	particleEmitter_[1]->Emit();
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BulletMoveEffect")->SetEmitterPosition(transform_.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark2")->SetEmitterPosition(transform_.translate);
+	for (int i = 0; i < trailEmitter_.size(); i++) {
+		trailEmitter_[i]->SetTranslate(transform_.translate);
+		trailEmitter_[i]->Update();
+		trailEmitter_[i]->Emit(); // トレイルエフェクトを常に発生させる
+		std::string trailEffectName = effectConfig_.trailEffectFilePath[i];
+		TakeCFrameWork::GetParticleManager()->GetParticleGroup(trailEffectName)->SetEmitterPosition(transform_.translate);
+	}
 
 }
 
@@ -181,8 +201,13 @@ void Bullet::DrawCollider() {
 void Bullet::OnCollisionAction(GameCharacter* other) {
 
 	if (characterType_ == CharacterType::PLAYER_BULLET) {
+		//敵に当たった場合の処理
 		if (other->GetCharacterType() == CharacterType::ENEMY) {
-			//敵に当たった場合の処理
+
+			//パーティクル射出
+			for (int i = 0; i < explosionEmitter_.size(); i++) {
+				explosionEmitter_[i]->Emit();
+			}
 
 			//パーティクル射出
 			pointLightData_.enabled_ = 0;
@@ -192,6 +217,11 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 	} else if (characterType_ == CharacterType::ENEMY_BULLET) {
 		//敵の弾の場合の処理
 		if (other->GetCharacterType() == CharacterType::PLAYER) {
+
+			//パーティクル射出
+			for (int i = 0; i < explosionEmitter_.size(); i++) {
+				explosionEmitter_[i]->Emit();
+			}
 			//プレイヤーに当たった場合の処理
 			pointLightData_.enabled_ = 0;
 			pointLightData_.intensity_ = 0.0f;
@@ -203,7 +233,10 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
 
 		//パーティクル射出
-		//particleEmitter_[0]->Emit();
+		for (int i = 0; i < explosionEmitter_.size(); i++) {
+			explosionEmitter_[i]->Emit();
+		}
+		
 		pointLightData_.enabled_ = 0;
 		pointLightData_.intensity_ = 0.0f;
 		isActive_ = false; //弾を無効化
@@ -229,9 +262,9 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos,const Vec
 	Vector3 predictedTargetPos = targetPos_ + targetVel * travelTime;
 	direction_ = Vector3Math::Normalize(predictedTargetPos - transform_.translate);
 	//ターゲットの方向にモデルを向ける
-	float angle = std::atan2(direction_.x, direction_.z);
-	transform_.rotate.y = angle;
-	
+	Quaternion targetRotate = QuaternionMath::LookRotation(
+		Vector3Math::Normalize(targetPos_ - transform_.translate),{ 0.0f,1.0f,0.0f });
+	transform_.rotate = QuaternionMath::ToEuler(targetRotate);
 	lifeTime_ = 2.0f; // 弾のライフタイムを設定
 	pointLightData_.enabled_ = 1;
 	pointLightData_.intensity_ = 120.0f;
@@ -266,7 +299,7 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& direction, float sp
 // Transformの取得
 const EulerTransform& Bullet::GetTransform() const { return transform_; }
 // 生存フラグの取得
-bool Bullet::GetIsActive() { return isActive_; }
+bool Bullet::IsActive() { return isActive_; }
 // 速度の取得
 const Vector3& Bullet::GetVelocity() const { return velocity_; }
 // ターゲット位置の取得

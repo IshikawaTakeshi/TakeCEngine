@@ -30,9 +30,9 @@ public:
 	void Finalize();
 	//更新
 	void Update();
-	//ImGuiの更新
-	void DrawBullet();
-	void DrawMissile();
+	// 描画
+	void Draw();
+
 	//コライダー描画
 	void DrawCollider();
 
@@ -48,12 +48,12 @@ public:
 		const Vector3& weaponPos,
 		const Vector3& targetPos,
 		const Vector3& targetVel,
-		const float& speed,float power,
+		float speed,float power,
 		CharacterType type);
 	void ShootBullet(
 		const Vector3& weaponPos,
 		const Vector3& direction,
-		const float& speed,
+		float speed,
 		float power,
 		CharacterType type);
 	
@@ -66,18 +66,41 @@ public:
 	/// <param name="type">        キャラクタータイプ</param>
 	void ShootMissile(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo, float speed,float power, CharacterType type);
 
+	void ShootBazookaBullet(
+		const Vector3& weaponPos,
+		const Vector3& targetPos,
+		const Vector3& targetVel,
+		float speed,float power,
+		CharacterType type);
+	void ShootBazookaBullet(
+		const Vector3& weaponPos,
+		const Vector3& direction,
+		float speed,
+		float power,
+		CharacterType type);
+
 	//----- getter ---------------------------
 	
 	//全ての弾を取得
 	std::vector<Bullet*> GetAllBullets();
 	//全てのミサイルを取得
 	std::vector<VerticalMissile*> GetAllMissiles();
+	//全てのバズーカ弾を取得
+	std::vector<Bullet*> GetAllBazookaBullets();
 
 private:
 
 	Object3dCommon* object3dCommon_ = nullptr; // 3Dオブジェクト共通クラス
+
 	std::string bulletFilePath_;               // 弾のファイルパス
 	std::string missileFilePath_;              // ミサイルのファイルパス
+	std::string bazookaBulletFilePath_;        // バズーカ弾のファイルパス
+
 	std::unique_ptr<BulletPool> bulletPool_;   // 弾プール
 	std::unique_ptr<MissilePool> missilePool_; // ミサイルプール
+	std::unique_ptr<BulletPool> bazookaBulletPool_; // バズーカ弾プール
+
+	BulletEffectConfig bulletEffectConfig_{};
+	BulletEffectConfig missileEffectConfig_{};
+	BulletEffectConfig bazookaBulletEffectConfig_{};
 };
