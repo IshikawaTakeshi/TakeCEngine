@@ -220,6 +220,7 @@ void VerticalMissile::Update() {
 
 	//オブジェクト、コライダーの更新
 	object3d_->SetTranslate(transform_.translate);
+	object3d_->SetRotate(QuaternionMath::ToEuler(transform_.rotate));
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 

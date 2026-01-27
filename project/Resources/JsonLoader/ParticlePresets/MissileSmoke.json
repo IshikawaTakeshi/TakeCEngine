@@ -15,7 +15,7 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 19,
+        "emitCount": 23,
         "enableFollowEmitter": false,
         "frequency": 0.10000000149011612,
         "isBillboard": true,
@@ -23,7 +23,7 @@
         "isEmitterTrail": true,
         "isParticleTrail": false,
         "isTraslate": true,
-        "lifetimeEasingType": 0,
+        "lifetimeEasingType": 4,
         "lifetimeRange": {
             "max": 3.0,
             "min": 1.0
@@ -44,7 +44,7 @@
         },
         "scaleEasingType": 0,
         "scaleRange": {
-            "max": 2.0,
+            "max": 1.0,
             "min": 1.0
         },
         "scaleSetting": 1,
@@ -63,7 +63,14 @@
         "width": 1.0
     },
     "primitiveType": "PRIMITIVE_PLANE",
-    "textureAnimationParam": null,
-    "textureAnimationType": 0,
+    "textureAnimationParam": {
+        "scrollSpeed": {
+            "x": 0.800000011920929,
+            "y": 0.8899999856948853
+        },
+        "wrapU": true,
+        "wrapV": true
+    },
+    "textureAnimationType": 1,
     "textureFilePath": "cloudNoise.png"
 }

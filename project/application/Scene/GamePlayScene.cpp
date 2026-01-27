@@ -400,6 +400,7 @@ void GamePlayScene::UpdateGamePlay() {
 	Vector3 predictedImpactPos = enemy_->GetObject3d()->GetTranslate() + enemy_->GetVelocity() * travelTime;
 
 	//playerReticleの更新
+	playerReticle_->SetIsFocus(player_->IsFocus());
 	playerReticle_->Update(player_->GetFocusTargetPos(),predictedImpactPos);
 
 	//playerのHPバーの更新

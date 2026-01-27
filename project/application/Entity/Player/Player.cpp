@@ -196,6 +196,7 @@ void Player::Update() {
 
 	if (inputProvider_->RequestChangeCameraMode()) {
 		camera_->SetRequestedChangeCameraMode(true);
+		isFocus_ = !isFocus_;
 	}
 
 	//Behaviorの更新
