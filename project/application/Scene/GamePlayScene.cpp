@@ -266,8 +266,8 @@ void GamePlayScene::UpdateImGui() {
 		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
 	//instructionSprite_->UpdateImGui("instruction");
-	for (auto& instructionSprite : instructionSprites_) {
-		instructionSprite->UpdateImGui("instructionSprite");
+	for (size_t i = 0; i < instructionSprites_.size(); i++) {
+		instructionSprites_[i]->UpdateImGui(std::format("instruction{}", i));
 	}
 }
 
