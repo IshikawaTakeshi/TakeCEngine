@@ -117,7 +117,7 @@ private:
 	std::map<std::string,std::unique_ptr<LevelObject>> levelObjects_;
 
 	//
-	std::unique_ptr<Sprite> instructionSprite_ = nullptr;
+	std::vector<std::unique_ptr<Sprite>> instructionSprites_;
 
 	// フェーズメッセージUI
 	std::unique_ptr<PhaseMessageUI> phaseMessageUI_ = nullptr;

@@ -109,11 +109,14 @@ void GamePlayScene::Initialize() {
 	phaseMessageUI_->Initialize();
 
 	//操作説明UI
-	instructionSprite_ = std::make_unique<Sprite>();
-	instructionSprite_->Initialize(&SpriteCommon::GetInstance(), "UI/OperationInstructions.png");
-	instructionSprite_->SetTranslate({ 0.0f, 100.0f });
-	instructionSprite_->AdjustTextureSize();
-	instructionSprite_->SetSize({ 250.0f, 200.0f });
+	instructionSprites_.resize(7);
+	for (auto& instructionSprite : instructionSprites_) {
+		instructionSprite = std::make_unique<Sprite>();
+		instructionSprite->Initialize(&SpriteCommon::GetInstance(), "UI/GamePad_KeyIcon.png");
+		instructionSprite->SetTranslate({ 0.0f, 100.0f });
+		instructionSprite->AdjustTextureSize();
+		instructionSprite->SetSize({ 250.0f, 200.0f });
+	}
 
 	//最初の状態設定
 	behaviorRequest_ = SceneBehavior::GAMESTART;
@@ -262,8 +265,10 @@ void GamePlayScene::UpdateImGui() {
 	for (int i = 0; i < 4; i++) {
 		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
-	instructionSprite_->UpdateImGui("instruction");
-
+	//instructionSprite_->UpdateImGui("instruction");
+	for (auto& instructionSprite : instructionSprites_) {
+		instructionSprite->UpdateImGui("instructionSprite");
+	}
 }
 
 //====================================================================
@@ -338,7 +343,9 @@ void GamePlayScene::DrawSprite() {
 		}
 
 		//操作説明UIの描画
-		instructionSprite_->Draw();
+		for (auto& instructionSprite : instructionSprites_) {
+			instructionSprite->Draw();
+		}
 
 		//フェーズメッセージUIの描画
 		phaseMessageUI_->Draw();
@@ -420,7 +427,9 @@ void GamePlayScene::UpdateGamePlay() {
 	}
 
 	//instructionSpriteの更新
-	instructionSprite_->Update();
+	for (auto& instructionSprite : instructionSprites_) {
+		instructionSprite->Update();
+	}
 
 	if (player_->GetHealth() <= 0.0f) {
 		//プレイヤーのHPが0以下になったらゲームオーバー
