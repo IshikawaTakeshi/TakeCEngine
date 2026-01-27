@@ -15,7 +15,7 @@ void GamePlayScene::Initialize() {
 
 	//BGM読み込み
 	BGM_ = AudioManager::GetInstance().LoadSound("GamePlaySceneBGM.mp3");
-	bgmVolume_ = 0.1f;
+	bgmVolume_ = 0.0f;
 
 	//Camera0
 	gameCamera_ = std::make_shared<Camera>();
@@ -39,7 +39,7 @@ void GamePlayScene::Initialize() {
 	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 
 	//levelObjectの初期化
-	sceneManager_->LoadLevelData("levelData_gameScene_4");
+	sceneManager_->LoadLevelData("levelData_gameScene_5");
 	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
 
 	for (auto& object : levelObjects_) {
@@ -77,12 +77,12 @@ void GamePlayScene::Initialize() {
 
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
-	playerHpBar_->Initialize(&SpriteCommon::GetInstance(), "black.png", "flontHp.png");
+	playerHpBar_->Initialize(&SpriteCommon::GetInstance(),"PlayerHPName.json", "black.png", "flontHp.png");
 	playerHpBar_->SetSize({ 200.0f, 10.0f }); // HPバーのサイズ
 	playerHpBar_->SetPosition({ 50.0f, 500.0f }); // HPバーの位置
 	// enemyHpBar
 	enemyHpBar_ = std::make_unique<HPBar>();
-	enemyHpBar_->Initialize(&SpriteCommon::GetInstance(), "black.png", "flontHp.png");
+	enemyHpBar_->Initialize(&SpriteCommon::GetInstance(),"EnemyHPName.json", "black.png", "flontHp.png");
 	enemyHpBar_->SetSize({ 400.0f, 10.0f }); // HPバーのサイズ
 	enemyHpBar_->SetPosition({ 300.0f, 35.0f }); // HPバーの位置
 	//playerReticle
@@ -152,11 +152,11 @@ void GamePlayScene::Update() {
 	skyBox_->Update();
 
 	//enemy
-	enemy_->SetFocusTargetPos(player_->GetObject3d()->GetTranslate());
+	enemy_->SetFocusTargetPos(player_->GetBodyPosition());
 	enemy_->SetFocusTargetVelocity(player_->GetVelocity());
 
 	//player
-	player_->SetFocusTargetPos(enemy_->GetObject3d()->GetTranslate());
+	player_->SetFocusTargetPos(enemy_->GetBodyPosition());
 	player_->SetFocusTargetVelocity(enemy_->GetVelocity());
 
 
@@ -282,7 +282,7 @@ void GamePlayScene::Draw() {
 
 #pragma region Object3d描画
 
-	//Object3dの描画前処理
+	//Object3dの描画前Dispatch処理
 	Object3dCommon::GetInstance().Dispatch();
 	player_->GetObject3d()->Dispatch();
 	enemy_->GetObject3d()->Dispatch();
@@ -291,11 +291,14 @@ void GamePlayScene::Draw() {
 	//	object->DisPatch();
 	//}
 
+	//Object3dの描画前処理
 	Object3dCommon::GetInstance().PreDraw();
+	// プレイヤーの描画
 	player_->Draw();
+	// 敵の描画
 	enemy_->Draw();
-	bulletManager_->DrawMissile();
-	bulletManager_->DrawBullet();
+	//弾の描画
+	bulletManager_->Draw();
 	for (auto& object : levelObjects_) {
 		object.second->Draw();
 	}
@@ -306,9 +309,7 @@ void GamePlayScene::Draw() {
 #pragma endregion
 
 	//当たり判定の描画前処理
-	enemy_->DrawCollider();
-	//pointLightの描画
-	//TakeCFrameWork::GetLightManager()->DrawPointLights();
+	//enemy_->DrawCollider();
 	//spotLightの描画
 	TakeCFrameWork::GetLightManager()->DrawSpotLights();
 	//登録されたワイヤーフレームをすべて描画させる
@@ -519,13 +520,13 @@ void GamePlayScene::CheckAllCollisions() {
 
 	//弾の登録
 	for (const auto& bullet : bullets) {
-		if (bullet->GetIsActive()) {
+		if (bullet->IsActive()) {
 			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
 		}
 	}
 	//垂直ミサイルの登録
 	for (const auto& missile : missiles) {
-		if (missile->GetIsActive()) {
+		if (missile->IsActive()) {
 			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(missile));
 		}
 	}

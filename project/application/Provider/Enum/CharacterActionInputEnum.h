@@ -10,10 +10,10 @@ enum class CharacterActionInput {
 	JUMP,
 	FLOATING,
 	STEPBOOST,
-	ATTACK_RA,
 	ATTACK_LA,
-	ATTACK_RB,
+	ATTACK_RA,
 	ATTACK_LB,
+	ATTACK_RB,
 	LOCKON,
 	USE_REAIR,
 };

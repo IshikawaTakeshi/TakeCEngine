@@ -1,0 +1,69 @@
+{
+    "attributes": {
+        "color": {
+            "x": 1.0,
+            "y": 0.29411765933036804,
+            "z": 0.0
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 32,
+        "enableFollowEmitter": false,
+        "frequency": 1.0,
+        "isBillboard": true,
+        "isDirectional": false,
+        "isEmitterTrail": false,
+        "isParticleTrail": true,
+        "isTraslate": true,
+        "lifetimeEasingType": 12,
+        "lifetimeRange": {
+            "max": 0.15,
+            "min": 0.01600000075995922
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 0.3799999952316284,
+            "min": -0.25999999046325684
+        },
+        "rotateRange": {
+            "max": 0.46000000834465027,
+            "min": -0.6100000143051147
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "scaleEasingType": 13,
+        "scaleRange": {
+            "max": 1.0,
+            "min": 0.10000000149011612
+        },
+        "scaleSetting": 2,
+        "trailEmitInterval": 0.014999999664723873,
+        "velocityEasingType": 7,
+        "velocityRange": {
+            "max": 250.0,
+            "min": -250.0
+        }
+    },
+    "blendState": 1,
+    "isUseTextureAnimation": false,
+    "name": "DamageSpark2",
+    "primitiveParam": {
+        "height": 1.0,
+        "width": 1.0
+    },
+    "primitiveType": "PRIMITIVE_PLANE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
+    "textureFilePath": "white1x1.png"
+}

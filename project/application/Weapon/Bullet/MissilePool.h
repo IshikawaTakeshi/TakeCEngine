@@ -1,5 +1,7 @@
 #pragma once
 #include "application/Weapon/Bullet/VerticalMissile.h"
+#include "application/Weapon/Bullet/ObjectPool.h"
+#include "Weapon/Bullet/BulletEffectConfig.h"
 #include <cstdint>
 #include <vector>
 #include <memory>
@@ -7,7 +9,7 @@
 //============================================================================
 // MissilePool class
 //============================================================================
-class MissilePool {
+class MissilePool : public ObjectPool<VerticalMissile> {
 public:
 	MissilePool() = default;
 	~MissilePool() = default;
@@ -16,24 +18,9 @@ public:
 	// function
 	//========================================================================
 
-	//初期化
-	void Initialize(size_t size);
-	//終了処理
-	void Finalize();
-	//ミサイルの取得
-	VerticalMissile* GetMissile();
-	//ミサイルの更新
-	void UpdateAllMissiles();
-	//ミサイルの描画
-	void DrawAllMissiles();
-	//ミサイルのコライダー描画
-	void DrawAllCollider();
+protected:
 
-	//プールの取得
-	std::vector<VerticalMissile*> GetPool();
+	//型ごとの初期化処理
+	void OnInitializeObject(VerticalMissile& object,const std::string& modelFilePath,const BulletEffectConfig& effectConfig) override;
 
-private:
-
-	//ミサイルプール
-	std::vector<std::unique_ptr<VerticalMissile>> pool_;
 };

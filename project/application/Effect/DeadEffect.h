@@ -3,6 +3,7 @@
 #include "engine/3d/Light/PointLight.h"
 #include "engine/Utility/Timer.h"
 #include <string>
+#include <vector>
 
 //============================================================================
 // DeadEffect class
@@ -24,8 +25,7 @@ private:
 
 
 	//パーティクルエミッター
-	std::unique_ptr<ParticleEmitter> explosionParticleEmitter_ = nullptr;
-	std::unique_ptr<ParticleEmitter> smokeParticleEmitter_ = nullptr;
+	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
 	//タイマー
 	Timer timer_;
 

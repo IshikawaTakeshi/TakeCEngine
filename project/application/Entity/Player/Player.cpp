@@ -7,8 +7,9 @@
 #include "engine/Input/Input.h"
 #include "engine/camera/CameraManager.h"
 #include "engine/base/TakeCFrameWork.h"
-#include "engine/math/Vector3Math.h"
-#include "engine/math/Easing.h"
+#include "engine/Math/Vector3Math.h"
+#include "engine/Math/MatrixMath.h"
+#include "engine/Math/Easing.h"
 #include "engine/Utility/StringUtility.h"
 #include "engine/Utility/JsonLoader.h"
 
@@ -40,6 +41,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
+	collider_->SetOwner(this);
 	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Player));
 
@@ -59,7 +61,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 	//背部エミッターの初期化
 	backEmitter_ = std::make_unique<ParticleEmitter>();
-	backEmitter_->Initialize("PlayerBackpack", object3d_->GetTransform(), 10, 0.01f);
+	backEmitter_->Initialize("PlayerBackpack", "WalkSmoke2.json");
 	backEmitter_->SetParticleName("WalkSmoke2");
 	//backEmitter_->SetIsEmit(true);
 
@@ -253,6 +255,13 @@ void Player::Update() {
 			playerData_.characterInfo.transform.rotate = QuaternionMath::Normalize(playerData_.characterInfo.transform.rotate);
 		}
 	}
+
+	auto jointWorldMatrixOpt = object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix("neck", object3d_->GetWorldMatrix());
+	bodyPosition_ = {
+		jointWorldMatrixOpt->m[3][0],
+		jointWorldMatrixOpt->m[3][1],
+		jointWorldMatrixOpt->m[3][2]
+	};
 
 	//Quaternionからオイラー角に変換
 	Vector3 eulerRotate = QuaternionMath::ToEuler(playerData_.characterInfo.transform.rotate);
@@ -516,7 +525,7 @@ void Player::UpdateAttack() {
 
 void Player::WeaponAttack(CharacterActionInput actionInput) {
 
-	int weaponIndex = static_cast<int>(actionInput) - static_cast<int>(CharacterActionInput::ATTACK_RA);
+	int weaponIndex = static_cast<int>(actionInput) - static_cast<int>(CharacterActionInput::ATTACK_LA);
 	auto* weapon = weapons_[weaponIndex].get();
 
 	if (inputProvider_->RequestAttack(actionInput) == true) {

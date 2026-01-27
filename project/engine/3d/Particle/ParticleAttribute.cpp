@@ -13,10 +13,13 @@ void to_json(nlohmann::json& j, const ParticleAttributes& attributes) {
 
 	j["positionRange"] = json{ {"min", attributes.positionRange.min},{"max", attributes.positionRange.max } };
 	j["scaleRange"] = json{ {"min", attributes.scaleRange.min},{"max", attributes.scaleRange.max } };
+	j["scaleEasingType"] = attributes.scaleEasingType;
 	j["rotateRange"] = json{ {"min", attributes.rotateRange.min},{"max", attributes.rotateRange.max } };
 	j["velocityRange"] = json{ { "min", attributes.velocityRange.min},{"max", attributes.velocityRange.max } };
+	j["velocityEasingType"] = attributes.velocityEasingType;
 	j["colorRange"] = json{ { "min", attributes.colorRange.min},{"max", attributes.colorRange.max } };
 	j["lifetimeRange"] = json{ { "min", attributes.lifetimeRange.min },{"max", attributes.lifetimeRange.max } };
+	j["lifetimeEasingType"] = attributes.lifeTimeEasingType;
 	j["frequency"] = attributes.frequency;
 	j["emitCount"] = attributes.emitCount;
 	j["editColor"] = attributes.editColor;
@@ -62,6 +65,19 @@ void to_json(json& j, const ParticlePreset& preset) {
 			j["primitiveParam"] = arg; // 利用可能な型の場合、そのままJSONに変換
 		}
 		}, preset.primitiveParam);
+
+	j["isUseTextureAnimation"] = preset.isUseTextureAnimation;
+	j["textureAnimationType"] = preset.textureAnimationType;
+	std::visit([&j](auto&& arg) {
+		using T = std::decay_t<decltype(arg)>;
+		if constexpr (std::is_same_v<T, UVScrollSettings>) {
+			j["textureAnimationParam"] = arg;
+		} else if constexpr (std::is_same_v<T, SpriteSheetSettings>) {
+			j["textureAnimationParam"] = arg;
+		} else {
+			j["textureAnimationParam"] = nullptr; // or any representation for unsupported types
+		}
+		}, preset.textureAnimationParam);
 }
 
 //============================================================================
@@ -73,11 +89,14 @@ void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
 	if (j.contains("color"))j.at("color").get_to(attributes.color);
 	if (j.contains("direction"))j.at("direction").get_to(attributes.direction);
 	if (j.contains("scaleRange"))j.at("scaleRange").get_to(attributes.scaleRange);
+	if (j.contains("scaleEasingType"))j.at("scaleEasingType").get_to(attributes.scaleEasingType);
 	if (j.contains("rotateRange"))j.at("rotateRange").get_to(attributes.rotateRange);
 	if (j.contains("positionRange"))j.at("positionRange").get_to(attributes.positionRange);
 	if (j.contains("velocityRange"))j.at("velocityRange").get_to(attributes.velocityRange);
+	if (j.contains("velocityEasingType"))j.at("velocityEasingType").get_to(attributes.velocityEasingType);
 	if (j.contains("colorRange"))j.at("colorRange").get_to(attributes.colorRange);
 	if (j.contains("lifetimeRange"))j.at("lifetimeRange").get_to(attributes.lifetimeRange);
+	if (j.contains("lifetimeEasingType"))j.at("lifetimeEasingType").get_to(attributes.lifeTimeEasingType);
 	if (j.contains("frequency"))j.at("frequency").get_to(attributes.frequency);
 	if (j.contains("emitCount"))j.at("emitCount").get_to(attributes.emitCount);
 	if (j.contains("isBillboard"))j.at("isBillboard").get_to(attributes.isBillboard);
@@ -150,5 +169,28 @@ void from_json(const json& j, ParticlePreset& preset) {
 	}
 	default:
 		break;
+	}
+
+	if (j.contains("isUseTextureAnimation"))j.at("isUseTextureAnimation").get_to(preset.isUseTextureAnimation);
+	if (j.contains("textureAnimationType"))j.at("textureAnimationType").get_to(preset.textureAnimationType);
+	if (j.contains("textureAnimationParam")) {
+		switch (preset.textureAnimationType) {
+		case TextureAnimationType::UVScroll:
+		{
+			UVScrollSettings uvScrollSettings;
+			j.at("textureAnimationParam").get_to(uvScrollSettings);
+			preset.textureAnimationParam = uvScrollSettings;
+			break;
+		}
+		case TextureAnimationType::SpriteSheet:
+		{
+			SpriteSheetSettings spriteSheetSettings;
+			j.at("textureAnimationParam").get_to(spriteSheetSettings);
+			preset.textureAnimationParam = spriteSheetSettings;
+			break;
+		}
+		default:
+			break;
+		}
 	}
 }

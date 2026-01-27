@@ -1,6 +1,7 @@
 #pragma once
 #include "Vector3.h"
 
+struct Quaternion;
 //============================================================================
 // Vector3Math namespace
 //============================================================================
@@ -34,4 +35,6 @@ namespace Vector3Math {
 	Vector3 Normalize(const Vector3& v);
 
 	Vector3 ApplyYawPitch(const Vector3& baseDir, float yawDeg, float pitchDeg);
+
+	Quaternion ToQuaternion(const Vector3& eulerAngles);
 };

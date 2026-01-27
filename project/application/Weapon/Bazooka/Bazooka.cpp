@@ -30,10 +30,7 @@ void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定
 
 	muzzleFlashEmitter_ = std::make_unique<ParticleEmitter>();
-	muzzleFlashEmitter_->Initialize("RifleMuzzleFlashEmitter",
-		object3d_->GetTransform(),
-		10, 0.01f);
-	muzzleFlashEmitter_->SetParticleName("RifleMuzzleFlash2");
+	muzzleFlashEmitter_->Initialize("RifleMuzzleFlashEmitter","RifleMuzzleFlash2.json");
 }
 
 //=============================================================================
@@ -119,14 +116,14 @@ void Bazooka::Attack() {
 
 	//弾の発射
 	if (ownerObject_->GetCharacterType() == CharacterType::PLAYER){
-		bulletManager_->ShootBullet(
+		bulletManager_->ShootBazookaBullet(
 			object3d_->GetCenterPosition(),
 			targetPos_,targetVelocity_,
 			weaponData_.config.bulletSpeed,
 			weaponData_.config.power,
 			CharacterType::PLAYER_BULLET);
 	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
-		bulletManager_->ShootBullet(
+		bulletManager_->ShootBazookaBullet(
 			object3d_->GetCenterPosition(),
 			targetPos_,targetVelocity_,
 			weaponData_.config.bulletSpeed,

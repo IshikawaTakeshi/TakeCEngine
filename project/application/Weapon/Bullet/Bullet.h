@@ -4,6 +4,7 @@
 #include "Entity/GameCharacter.h"
 #include "3d/Particle/ParticleEmitter.h"
 #include "3d/Light/PointLight.h"
+#include "application/Weapon/Bullet/BulletEffectConfig.h"
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -29,6 +30,7 @@ public:
 
 	//初期化
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath)override;
+	void InitializeEffect(const BulletEffectConfig& effectConfig);
 	//更新
 	void Update() override;
 	//ImGuiの更新
@@ -64,7 +66,7 @@ public:
 	//transformの取得
 	const EulerTransform& GetTransform() const;
 	//生存フラグの取得
-	bool GetIsActive();
+	bool IsActive();
 
 	//速度の取得
 	const Vector3& GetVelocity() const;
@@ -123,7 +125,11 @@ private:
 	PointLightData pointLightData_;
 	uint32_t pointLightIndex_ = 0;
 
+	//エフェクト設定
+	BulletEffectConfig effectConfig_;
+
 	//パーティクルエミッター
-	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
+	std::vector<std::unique_ptr<ParticleEmitter>> trailEmitter_;
+	std::vector<std::unique_ptr<ParticleEmitter>> explosionEmitter_;
 };
 

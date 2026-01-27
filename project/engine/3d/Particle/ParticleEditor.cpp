@@ -16,7 +16,7 @@ void ParticleEditor::Initialize(ParticleCommon* particleCommon) {
 	// ParticleManager初期化
 	particleCommon_ = particleCommon;
 	//デフォルトのパーティクルグループを作成
-	currentGroupName_ = "DefaultGroup";
+	currentGroupName_ = "DefaultParticlePreset";
 	currentPreset_.textureFilePath = "white1x1.png";
 	currentPreset_.presetName = currentGroupName_;
 	currentPreset_.primitiveType = PRIMITIVE_PLANE;
@@ -27,7 +27,7 @@ void ParticleEditor::Initialize(ParticleCommon* particleCommon) {
 
 	// エミッターの初期設定
 	emitterTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
-	previewEmitter_->Initialize("PreviewEmitter", emitterTransform_, emitCount_, emitFrequency_);
+	previewEmitter_->Initialize("PreviewEmitter", "DefaultParticlePreset.json");
 
 	//エミッターに発生させるパーティクルを設定
 	previewEmitter_->SetParticleName(currentGroupName_);
@@ -170,9 +170,9 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::DragFloat2("Rotate Range", &attributes.rotateRange.min, 0.01f, -3.14f, 3.14f);
 
 	//Translate,Velocity
-	ImGui::DragFloat2("Position Range", &attributes.positionRange.min, 0.01f, -100.0f, 100.0f);
+	ImGui::DragFloat2("Position Range", &attributes.positionRange.min, 0.01f, -1000.0f, 1000.0f);
 	if (attributes.isTranslate) {
-		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -100.0f, 100.0f);
+		ImGui::DragFloat2("Velocity Range", &attributes.velocityRange.min, 0.01f, -1000.0f, 1000.0f);
 	}
 
 	//Color
@@ -183,6 +183,12 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	}
 	//lifetime
 	ImGui::DragFloat2("Lifetime Range", &attributes.lifetimeRange.min, 0.01f, 0.0f, 10.0f);
+	//lifetimeEasingType
+	ImGuiManager::ComboBoxEnum("Lifetime Easing Type", attributes.lifeTimeEasingType);
+	//velocityEasingType
+	ImGuiManager::ComboBoxEnum("Velocity Easing Type", attributes.velocityEasingType);
+	//scaleEasingType
+	ImGuiManager::ComboBoxEnum("Scale Easing Type", attributes.scaleEasingType);
 
 	//Billboard
 	ImGui::Checkbox("Is Billboard", &attributes.isBillboard);
@@ -210,6 +216,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 
 	//テクスチャファイル名の選択
 	static int selectedTextureIndex = 0;
+	bool isTextureChanged = false;
 
 	//今の設定がリストにあればインデックスを合わせる
 	auto it = std::find(textureFileNames_.begin(), textureFileNames_.end(), currentPreset_.textureFilePath);
@@ -229,6 +236,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 				selectedTextureIndex = i;
 				// 選択されたテクスチャをプリセットに設定
 				currentPreset_.textureFilePath = textureFileNames_[i];
+				isTextureChanged = true;
 			}
 
 			//デフォルトフォーカスの設定
@@ -253,6 +261,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	int currentTypeIndex = static_cast<int>(magic_enum::enum_index(currentPreset_.primitiveType).value_or(0));
 	// 変更前のプリミティブタイプを保存
 	PrimitiveType oldType = currentPreset_.primitiveType;
+	bool isPrimitiveChanged = false;
 
 	if (ImGui::BeginCombo("Primitive Type", magic_enum::enum_name(currentPreset_.primitiveType).data())) {
 
@@ -264,6 +273,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 				// プリミティブタイプが変更された場合、グループのプリミティブを更新
 				if (oldType != currentPreset_.primitiveType) {
 					InitPrimitiveParam(currentPreset_.primitiveType, currentPreset_.primitiveParam);
+					isPrimitiveChanged = true;
 				}
 			}
 
@@ -279,10 +289,46 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::Separator();
 	ImGui::Text("Primitive Parameters");
 	// パラメータが変更されたかどうかのフラグ
-	DrawPrimitiveParametersUI(currentPreset_.primitiveType, currentPreset_.primitiveParam);
+	bool isParamChanged = DrawPrimitiveParametersUI(currentPreset_.primitiveType, currentPreset_.primitiveParam);
 	// プリミティブの更新
-	UpdatePrimitiveFromParameters(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParam);
+	if (isPrimitiveChanged || isParamChanged || isTextureChanged) {
+		UpdatePrimitiveFromParameters(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParam);
+	}
 
+
+
+#pragma endregion
+
+	//Texture Animationの設定
+#pragma region texture animation setting
+	ImGui::SeparatorText("Texture Animation Setting");
+	//テクスチャアニメーションタイプの選択
+	constexpr auto textureAnimTypes = magic_enum::enum_entries<TextureAnimationType>();
+	int currentAnimTypeIndex = static_cast<int>(magic_enum::enum_index(currentPreset_.textureAnimationType).value_or(0));
+	bool isTypeChanged = false;
+	if (ImGui::BeginCombo("Texture Animation Type", magic_enum::enum_name(currentPreset_.textureAnimationType).data())) {
+		for (size_t i = 0; i < textureAnimTypes.size(); ++i) {
+			const bool isSelected = (currentAnimTypeIndex == static_cast<int>(i));
+			if (ImGui::Selectable(textureAnimTypes[i].second.data(), isSelected)) {
+				currentPreset_.textureAnimationType = textureAnimTypes[i].first;
+				InitTextureAnimationParam(textureAnimTypes[i].first, currentPreset_.textureAnimationParam);
+				isTypeChanged = true;
+			}
+			if (isSelected) {
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	//テクスチャアニメーションパラメータの編集
+	ImGui::Separator();
+	ImGui::Text("Texture Animation Parameters");
+	bool isAnimParamChanged = DrawTextureAnimationUI(currentPreset_.textureAnimationType, currentPreset_.textureAnimationParam);
+	
+	if(isTypeChanged || isAnimParamChanged){
+		UpdateTextureAnimationFromParameters(currentPreset_.textureAnimationType, currentPreset_.textureAnimationParam);
+	}
 
 
 #pragma endregion
@@ -347,6 +393,9 @@ void ParticleEditor::DrawEmitterControls() {
 
 		previewEmitter_->UpdateImGui();
 	}
+
+	currentPreset_.attribute.frequency = emitFrequency_;
+	currentPreset_.attribute.emitCount = emitCount_;
 }
 
 //======================================================================
@@ -435,6 +484,9 @@ void ParticleEditor::DrawPresetManager() {
 	}
 }
 
+//=======================================================================
+//			上書き確認ダイアログの描画
+//=======================================================================
 void ParticleEditor::DrawOverwriteConfirmDialog() {
 	if (showOverwriteConfirm_) {
 		ImGui::OpenPopup("Overwrite Preset?");
@@ -472,8 +524,8 @@ void ParticleEditor::DrawOverwriteConfirmDialog() {
 void ParticleEditor::SavePreset(const std::string& presetName) {
 
 	// プリセット名が空でないか、既に存在しないか確認
-	if (presetName.empty() || presets_.find(presetName) != presets_.end()) {
-		ImGui::Text("Preset already exists or name is empty: %s", presetName.c_str());
+	if (presetName.empty()) {
+		ImGui::Text("Preset name is empty: %s", presetName.c_str());
 		return;
 	}
 
@@ -509,6 +561,9 @@ void ParticleEditor::LoadPreset(const std::string& presetName) {
 
 	// 現在のグループに属性を適用
 	TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
+
+	UpdatePrimitiveFromParameters(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParam);
+	UpdateTextureAnimationFromParameters(currentPreset_.textureAnimationType, currentPreset_.textureAnimationParam);
 }
 
 //========================================================================
@@ -538,6 +593,9 @@ void ParticleEditor::LoadDefaultPreset() {
 	currentPreset_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>("DefaultPreset.json");
 	// 現在のグループに属性を適用
 	TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
+
+	UpdatePrimitiveFromParameters(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParam);
+	UpdateTextureAnimationFromParameters(currentPreset_.textureAnimationType, currentPreset_.textureAnimationParam);
 }
 
 //=======================================================================
@@ -554,9 +612,6 @@ void ParticleEditor::LoadAllPresets() {
 		// プリセットを読み込む
 		presets_[presetName] = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetName + ".json");
 	}
-
-	// デバッグ出力（必要に応じて削除）
-	OutputDebugStringA(("Loaded " + std::to_string(presets_.size()) + " presets from folder\n").c_str());
 }
 
 //=======================================================================
@@ -692,7 +747,7 @@ bool ParticleEditor::DrawPrimitiveParametersUI(PrimitiveType type, TakeC::Primit
 			ImGui::BulletText("Radius: %.2f, Height: %.2f", arg.radius, arg.height);
 			ImGui::BulletText("Subdivision: %u", arg.subDivision);
 		}
-	}, params);
+		}, params);
 
 	return changed;
 }
@@ -748,5 +803,102 @@ void ParticleEditor::UpdatePrimitiveFromParameters(
 				arg.subDivision,
 				currentPreset_.textureFilePath);
 		}
-	}, params);
+		}, params);
+}
+
+//=======================================================================
+//			テクスチャアニメーションパラメータの初期化
+//========================================================================
+void ParticleEditor::InitTextureAnimationParam(TakeC::TextureAnimationType type, TextureAnimationVariant& params) {
+
+	switch (type) {
+	case TakeC::TextureAnimationType::UVScroll:
+		params = UVScrollSettings{};
+		break;
+	case TakeC::TextureAnimationType::SpriteSheet:
+		params = SpriteSheetSettings{};
+		break;
+	default:
+		params = {};
+		break;
+	}
+}
+
+//=======================================================================
+//			テクスチャアニメーションパラメータから更新
+//========================================================================
+void ParticleEditor::UpdateTextureAnimationFromParameters(TakeC::TextureAnimationType type, const TextureAnimationVariant& params) {
+
+	std::visit([&type, this](auto&& arg) {
+		using T = std::decay_t<decltype(arg)>;
+		if constexpr (std::is_same_v<T, UVScrollSettings>) {
+			TakeCFrameWork::GetParticleManager()->UpdateTextureAnimationType<UVScrollSettings>(
+				currentGroupName_,
+				arg.scrollSpeed,
+				arg.wrapU,
+				arg.wrapV);
+		} else if constexpr (std::is_same_v<T, SpriteSheetSettings>) {
+			TakeCFrameWork::GetParticleManager()->UpdateTextureAnimationType<SpriteSheetSettings>(
+				currentGroupName_,
+				arg.columns,
+				arg.rows,
+				arg.totalFrames,
+				arg.frameDuration,
+				arg.loop);
+		}
+		}, params);
+}
+
+//=======================================================================
+//			テクスチャアニメーションパラメータのUI描画
+//========================================================================
+bool ParticleEditor::DrawTextureAnimationUI(TakeC::TextureAnimationType type, TextureAnimationVariant& params) {
+
+	bool changed = false;
+	changed |= ImGui::Checkbox("Enable Texture Animation", &currentPreset_.isUseTextureAnimation);	
+
+	// テクスチャアニメーションパラメータの編集UI
+	std::visit([&changed, type](auto&& arg) {
+		using T = std::decay_t<decltype(arg)>;
+		if constexpr (std::is_same_v<T, UVScrollSettings>) {
+			//----- UVScrollSettings プレビュー -----
+			ImGui::Text("UV Scroll Settings");
+			changed |= ImGui::DragFloat2("Scroll Speed", &arg.scrollSpeed.x, 0.01f, -10.0f, 10.0f);
+			changed |= ImGui::Checkbox("Wrap U", &arg.wrapU);
+			changed |= ImGui::Checkbox("Wrap V", &arg.wrapV);
+			ImGui::Separator();
+			ImGui::BulletText("Scroll Speed: (%.2f, %.2f)", arg.scrollSpeed.x, arg.scrollSpeed.y);
+			ImGui::BulletText("Wrap U: %s", arg.wrapU ? "True" : "False");
+			ImGui::BulletText("Wrap V: %s", arg.wrapV ? "True" : "False");
+
+		} else if constexpr (std::is_same_v<T, SpriteSheetSettings>) {
+			//----- SpriteSheetSettings プレビュー -----
+			ImGui::Text("Sprite Sheet Settings");
+			int columns = static_cast<int>(arg.columns);
+			if (ImGui::InputInt("Columns", &columns)) {
+				arg.columns = static_cast<uint32_t>(columns);
+				changed = true;
+			}
+			int rows = static_cast<int>(arg.rows);
+			if (ImGui::InputInt("Rows", &rows)) {
+				arg.rows = static_cast<uint32_t>(rows);
+				changed = true;
+			}
+			int totalFrames = static_cast<int>(arg.totalFrames);
+			if (ImGui::InputInt("Total Frames", &totalFrames)) {
+				arg.totalFrames = static_cast<uint32_t>(totalFrames);
+				changed = true;
+			}
+			changed |= ImGui::DragFloat("Frame Duration", &arg.frameDuration, 0.01f, 0.01f, 10.0f);
+			changed |= ImGui::Checkbox("Loop", &arg.loop);
+
+			ImGui::Separator();
+			ImGui::BulletText("File Path: %s", arg.filePath.c_str());
+			ImGui::BulletText("Columns: %u, Rows: %u, Total Frames: %u", arg.columns, arg.rows, arg.totalFrames);
+			ImGui::BulletText("Frame Duration: %.2f", arg.frameDuration);
+
+		}
+		}, params);
+
+	return changed;
 }

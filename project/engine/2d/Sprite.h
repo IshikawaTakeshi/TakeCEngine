@@ -41,6 +41,8 @@ public:
 	/// </summary>
 	void Initialize(SpriteCommon* spriteCommon,const std::string& filePath);
 
+	void Initialize(SpriteCommon* spriteCommon);
+
 	/// <summary>
 	/// 更新処理
 	/// </summary>

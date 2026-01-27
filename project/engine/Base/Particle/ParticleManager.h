@@ -19,6 +19,10 @@ class ParticleCommon;
 namespace TakeC {
 	class ParticleManager {
 	public:
+
+		/// <summary>
+		/// コンストラクタ・デストラクタ
+		/// </summary>
 		ParticleManager() = default;
 		~ParticleManager() = default;
 
@@ -33,8 +37,19 @@ namespace TakeC {
 		// 終了処理
 		void Finalize();
 
+		/// <summary>
+		/// プリミティブタイプの更新
+		/// </summary>
+		/// <typeparam name="TPrimitive"></typeparam>
+		/// <typeparam name="...Args"></typeparam>
+		/// <param name="groupName"></param>
+		/// <param name="...args"></param>
 		template<typename TPrimitive, typename...  Args>
 		void UpdatePrimitiveType(const std::string& groupName, Args&&... args);
+
+		/// テクスチャアニメーションの更新
+		template<typename TAnimation, typename ...  Args>
+		void UpdateTextureAnimationType(const std::string& groupName, Args&&... args);
 
 		/// <summary>
 		/// パーティクルグループの生成
@@ -57,8 +72,13 @@ namespace TakeC {
 		//出現しているパーティクルのクリア
 		void ClearParticles();
 
+		void LoadAllPresets();
+
 		//パーティクルグループの取得
 		BaseParticleGroup* GetParticleGroup(const std::string& name);
+		//groupnameからプリミティブハンドルの取得
+		uint32_t GetPrimitiveHandle(const std::string& groupName);
+
 		//プリセットの設定
 		void SetPreset(const std::string& name, const ParticlePreset& preset);
 
@@ -115,13 +135,48 @@ namespace TakeC {
 		//既に存在する場合は更新、存在しない場合は新規作成
 		auto it = particleGroups_.find(groupName);
 		if (it == particleGroups_.end()) {
+			// 新しいプリミティブパーティクルを作成して初期化
 			auto newPrimitiveParticle = std::make_unique<PrimitiveParticle>(type);
-			newPrimitiveParticle->Initialize(particleCommon_, ""); 
+			//テクスチャファイルパスの取得
+			std::string textureFilePath = it->second->GetPreset().textureFilePath;
+			newPrimitiveParticle->Initialize(particleCommon_, textureFilePath); 
 			newPrimitiveParticle->SetPrimitiveHandle(handle); // Set handle immediately
 			particleGroups_[groupName] = std::move(newPrimitiveParticle);
 		} else {
 			// 既存のプリミティブパーティクルのプリミティブハンドルを更新
+			//古いハンドルを解放
+			primitiveDrawer_->Release(particleGroups_[groupName]->GetPrimitiveHandle());
 			particleGroups_[groupName]->SetPrimitiveHandle(handle);
+		}
+	}
+
+	//---------------------------------------------------------------------------------
+	// テクスチャアニメーションの更新
+	//---------------------------------------------------------------------------------
+	template<typename TAnimation, typename ...Args>
+	inline void ParticleManager::UpdateTextureAnimationType(const std::string& groupName, Args && ...args) {
+	
+		auto it = particleGroups_.find(groupName);
+		if (it != particleGroups_.end()) {
+			// プリミティブハンドルからベースデータを取得
+			PrimitiveBaseData* baseData = primitiveDrawer_->GetBaseData(it->second->GetPrimitiveHandle());
+
+			if (baseData && baseData->material) {
+				// Materialのアニメーションオブジェクトを取得
+				TakeC::UVTextureAnimation* animation = baseData->material->Animation();
+
+				if (animation) {
+					// テンプレート型に応じて適切なアニメーションを設定
+					if constexpr (std::is_same_v<TAnimation, UVScrollSettings>) {
+						// UVScrollの場合、設定オブジェクトを直接受け取って設定
+						animation->SetUVScrollAnimation(std::forward<Args>(args)...);
+					}
+					else if constexpr (std::is_same_v<TAnimation, SpriteSheetSettings>) {
+						// SpriteSheetの場合、設定オブジェクトを直接受け取って設定
+						animation->SetSpriteSheetAnimation(std:: forward<Args>(args)...);
+					}
+				}
+			}
 		}
 	}
 }

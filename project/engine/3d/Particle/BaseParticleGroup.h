@@ -19,8 +19,7 @@ struct Particle {
 	EulerTransform transforms_;  //位置
 	Vector3 velocity_; 	    //速度
 	Vector4 color_;         //色
-	float lifeTime_;        //寿命
-	float currentTime_;     //経過時間
+	Timer lifeTimer_;    //寿命タイマー
 
 	float trailSpawnTimer_ = 0.0f; //トレイルエフェクトの生成タイマー
 	bool isTrailParent_ = false; //トレイルエフェクトの親かどうか

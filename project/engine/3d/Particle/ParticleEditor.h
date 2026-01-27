@@ -73,9 +73,15 @@ private:
 	//上書き確認ダイアログの描画
 	void DrawOverwriteConfirmDialog();
 
+	//プリミティブパラメータ初期化・UI描画・更新
 	void InitPrimitiveParam(PrimitiveType type, TakeC::PrimitiveParameter& params);
 	bool DrawPrimitiveParametersUI(PrimitiveType type, TakeC::PrimitiveParameter& params);
 	void UpdatePrimitiveFromParameters(const std::string& groupName, PrimitiveType type, const TakeC::PrimitiveParameter& params);
+
+	//textureAnimation設定UI描画・更新
+	void InitTextureAnimationParam(TakeC::TextureAnimationType type, TextureAnimationVariant& params);
+	bool DrawTextureAnimationUI(TakeC::TextureAnimationType type, TextureAnimationVariant& params);
+	void UpdateTextureAnimationFromParameters(TakeC::TextureAnimationType type, const TextureAnimationVariant& params);
 
 private:
 
@@ -107,4 +113,8 @@ private:
 	bool showOverwriteConfirm_ = false;
 	// 上書き予定のプリセット名
 	std::string pendingPresetName_;
+
+	// エラーメッセージ表示用
+	std::string saveErrorMessage_;
+	float errorDisplayTimer_ = 0.0f;
 };

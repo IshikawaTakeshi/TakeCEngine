@@ -4,6 +4,7 @@
 #include "math/Quaternion.h"
 #include <cmath>
 #include <numbers>
+#include <json.hpp>
 
 //============================================================================
 // Easing namespace
@@ -86,7 +87,7 @@ namespace Easing {
 		GENTLE_RISE
 	};
 
-	// イージング関数配列
+	// イージング関数配列(float)
 	using EasingFunction = std::function<float(float)>;
 	inline EasingFunction Ease[] = {[](float t){ return t; },
 		EaseInSine,
@@ -104,3 +105,6 @@ namespace Easing {
 		GentleRise
 	};
 };
+
+void to_json(nlohmann::json& j, const Easing::EasingType& type);
+void from_json(const nlohmann::json& j, Easing::EasingType& type);

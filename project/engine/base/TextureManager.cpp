@@ -26,7 +26,7 @@ void TakeC::TextureManager::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::Sr
 	srvManager_ = srvManager;
 	//SRVの数と同数
 	textureDatas_.reserve(srvManager_->kMaxSRVCount_);
-	
+
 }
 
 //================================================================
@@ -45,7 +45,7 @@ void TakeC::TextureManager::Finalize() {
 void TakeC::TextureManager::CheckAndReloadTextures() {
 
 	//テクスチャの更新チェック
-	for(auto& [filePath, textureData] : textureDatas_) {
+	for (auto& [filePath, textureData] : textureDatas_) {
 		std::string fullPath = "Resources/Images/" + filePath;
 		//ファイルの最終更新日時を取得
 		time_t newTime = GetFileLastWriteTime(fullPath);
@@ -62,10 +62,13 @@ void TakeC::TextureManager::CheckAndReloadTextures() {
 //=============================================================================================
 ///			テクスチャの読み込み
 //=============================================================================================
-void TakeC::TextureManager::LoadTexture(const std::string& filePath,bool forceReload) {
+void TakeC::TextureManager::LoadTexture(const std::string& filePath, bool forceReload) {
 
-	//既に読み込み済みかどうか
-	const bool alreadyLoaded = textureDatas_.contains(filePath);
+	namespace fs = std::filesystem;
+
+	std::string normalizedPath = NormalizeTextureFilePath(filePath);
+	// normalizedPathを使う
+	const bool alreadyLoaded = textureDatas_.contains(normalizedPath);
 
 	// 通常ロードかつ既に読み込み済みなら何もしない
 	if (!forceReload && alreadyLoaded) {
@@ -77,7 +80,7 @@ void TakeC::TextureManager::LoadTexture(const std::string& filePath,bool forceRe
 
 	//テクスチャファイルを読み込んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
-	std::wstring filePathW = StringUtility::ConvertString(filePath);
+	std::wstring filePathW = StringUtility::ConvertString(normalizedPath);
 	std::wstring fullPathW = L"Resources/Images/" + filePathW;
 	HRESULT hr;
 	if (filePathW.empty()) {
@@ -85,9 +88,17 @@ void TakeC::TextureManager::LoadTexture(const std::string& filePath,bool forceRe
 		hr = DirectX::LoadFromWICFile(L"Resources/Images/white1x1.png", DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 		assert(SUCCEEDED(hr));
 
-	} else if(filePathW.ends_with(L".dds")){
+	} else if (filePathW.ends_with(L".dds")) {
+
+		// "dds/" が含まれていなければ付ける
+		if (filePathW.find(L"dds/") == std::wstring::npos &&
+			filePathW.find(L"dds\\") == std::wstring::npos) {
+			filePathW = L"dds/" + filePathW;
+		}
+
+		fullPathW = L"Resources/Images/" + filePathW;
+
 		//DDSファイルの場合
-		fullPathW = L"Resources/Images/dds/" + filePathW;
 		hr = DirectX::LoadFromDDSFile(fullPathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
 		assert(SUCCEEDED(hr));
 
@@ -119,7 +130,7 @@ void TakeC::TextureManager::LoadTexture(const std::string& filePath,bool forceRe
 		assert(SUCCEEDED(hr));
 	}
 	//テクスチャデータを追加して書き込む
-	TextureData& textureData = textureDatas_[filePath];
+	TextureData& textureData = textureDatas_[normalizedPath];
 
 	//テクスチャデータの設定
 	textureData.metadata = mipImages.GetMetadata();
@@ -151,29 +162,45 @@ void TakeC::TextureManager::LoadTextureAll() {
 	//Resources/imagesフォルダ内の全ての画像ファイルを読み込む
 	namespace fs = std::filesystem;
 	std::string directoryPath = "Resources/Images/";
-	try {
-		//ディレクトリの存在確認
-		if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
-			assert(false && "ディレクトリが存在しないか、ディレクトリではありません");
-			return;
-		}
-		//ディレクトリ内の全てのファイルを走査
-		for (const auto& entry : fs::directory_iterator(directoryPath)) {
-			if (entry.is_regular_file()) {
-				std::string filePath = entry.path().filename().string();
-				std::string extension = entry.path().extension().string();
-				//対応している拡張子のみ読み込む
-				if (extension == ".png" || extension == ".jpg" || extension == ".dds") {
-					LoadTexture(filePath, false);
-					//ファイルの最終更新日時を保存
-					fileUpdateTimes_[filePath] = GetFileLastWriteTime(entry.path().string());
-				}
+
+	if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
+		assert(false && "ディレクトリが存在しないか、ディレクトリではありません");
+		return;
+	}
+
+	//再帰走査
+	for (const auto& entry : fs::recursive_directory_iterator(directoryPath)) {
+		if (entry.is_regular_file()) {
+			std::string extension = entry.path().extension().string();
+
+			if (extension == ".png" || extension == ".jpg" || extension == ".dds") {
+				// ルートからの相対パスを作成
+				fs::path relative = fs::relative(entry.path(), directoryPath);
+				std::string normalizedPath = relative.generic_string();
+
+				LoadTexture(normalizedPath, false);
+				fileUpdateTimes_[normalizedPath] = GetFileLastWriteTime(entry.path().string());
 			}
 		}
-	} catch (const fs::filesystem_error& e) {
-		e;
-		assert(false && "ファイルシステムエラーが発生しました");
 	}
+}
+
+//=============================================================================================
+///			テクスチャファイルパスの正規化
+//=============================================================================================
+std::string TakeC::TextureManager::NormalizeTextureFilePath(const std::string& filePath) {
+	namespace fs = std::filesystem;
+
+	// すでに"Resources/Images/"を含む場合は相対に変換
+	const fs::path base = "Resources/Images";
+	fs::path p = fs::path(filePath);
+
+	// もしfilePathが絶対"Resources/Images"を含むなら相対化
+	if (p.is_absolute() || filePath.find("Resources/Images/") != std::string::npos) {
+		p = fs::relative(p, base); //ui/foo.pngなど
+	}
+
+	return p.generic_string();
 }
 
 ///=================================================================================================
@@ -226,15 +253,15 @@ ComPtr<ID3D12Resource> TakeC::TextureManager::UploadTextureData(
 		subresources);
 
 	//中間リソースのサイズの取得
-	uint64_t intermediateSize = GetRequiredIntermediateSize(texture.Get(),0,UINT(subresources.size()));
+	uint64_t intermediateSize = GetRequiredIntermediateSize(texture.Get(), 0, UINT(subresources.size()));
 
 	//中間リソースの作成
 	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = nullptr;
 	intermediateResource = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), intermediateSize);
 
 	//中間リソースにデータをコピー
-	UpdateSubresources(dxCommon_->GetCommandList(),texture.Get(),
-	intermediateResource.Get(),0,0,UINT(subresources.size()),subresources.data());
+	UpdateSubresources(dxCommon_->GetCommandList(), texture.Get(),
+		intermediateResource.Get(), 0, 0, UINT(subresources.size()), subresources.data());
 
 	//Textureへ転送後に利用できるようにResourseStateを変更
 	D3D12_RESOURCE_BARRIER barrier{};
@@ -301,7 +328,7 @@ time_t TakeC::TextureManager::GetFileLastWriteTime(const std::string& filePath) 
 	namespace fs = std::filesystem;
 	namespace chrono = std::chrono;
 	try {
-		if(!fs::exists(filePath)) {
+		if (!fs::exists(filePath)) {
 			return 0;
 		}
 
@@ -310,9 +337,10 @@ time_t TakeC::TextureManager::GetFileLastWriteTime(const std::string& filePath) 
 		// std::filesystem::file_time_typeはクロックの型なので、system_clockに変換
 		auto sctp = chrono::clock_cast<chrono::system_clock>(ftime);
 		return chrono::system_clock::to_time_t(sctp);
-		
 
-	}catch (...) {
+
+	}
+	catch (...) {
 		// エラー処理
 		assert(false && "ファイルの最終更新日時の取得に失敗しました。");
 		return 0;

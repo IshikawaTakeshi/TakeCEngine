@@ -1,0 +1,25 @@
+{
+    "anchorPoint": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "jsonFilePath": "PlayerHPName.json",
+    "position": {
+        "x": 51.0,
+        "y": 470.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 86.0,
+        "y": 27.0
+    },
+    "textureFilePath": "UI/hpBarOwnerName.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "textureSize": {
+        "x": 256.0,
+        "y": 86.0
+    }
+}

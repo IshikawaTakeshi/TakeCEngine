@@ -7,6 +7,8 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/base/ImGuiManager.h"
 
+using namespace TakeC;
+
 //==================================================================================
 // 初期化
 //==================================================================================
@@ -25,6 +27,54 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, const std::string& filePath)
 
 	//テクスチャ番号の検索と記録
 	spriteConfig_.textureFilePath_ = filePath;
+
+	//======================= transformationMatrix用のVertexResource ===========================//
+
+	//スプライト用のTransformationMatrix用のVertexResource生成
+	wvpResource_ = TakeC::DirectXCommon::CreateBufferResource(spriteCommon->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
+
+	//TransformationMatrix用
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
+
+	//単位行列を書き込んでおく
+	wvpData_->WVP = MatrixMath::MakeIdentity4x4();
+
+	//======================= Transform・各行列の初期化 ===========================//
+
+	//CPUで動かす用のTransform
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+
+	//アフィン行列
+	worldMatrix_ = MatrixMath::MakeAffineMatrix(
+		transform_.scale,
+		transform_.rotate,
+		transform_.translate
+	);
+
+	//SpriteAnimatorの初期化(targetの設定)
+	spriteAnimator_ = std::make_unique<SpriteAnimator>();
+	spriteAnimator_->Initialize(this);
+
+	//ViewProjectionの初期化
+	viewMatrix_ = MatrixMath::MakeIdentity4x4();
+	projectionMatrix_ = MatrixMath::MakeOrthographicMatrix(
+		0.0f, 0.0f, TakeC::WinApp::kScreenWidth, TakeC::WinApp::kScreenHeight, 0.1f, 1000.0f);
+	worldViewProjectionMatrix_ = worldMatrix_ * viewMatrix_ * projectionMatrix_;
+	wvpData_->WVP = worldViewProjectionMatrix_;
+	wvpData_->World = worldMatrix_;
+}
+
+void Sprite::Initialize(SpriteCommon* spriteCommon) {
+	//SpriteCommonの設定
+	spriteCommon_ = spriteCommon;
+
+	//メッシュ初期化
+	mesh_ = std::make_unique<Mesh>();
+	mesh_->InitializeMesh(spriteCommon_->GetDirectXCommon(),spriteConfig_.textureFilePath_);
+	//vertexResource初期化
+	mesh_->InitializeVertexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice(),spriteConfig_.anchorPoint_);
+	//IndexResource初期化
+	mesh_->InitializeIndexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice());
 
 	//======================= transformationMatrix用のVertexResource ===========================//
 
@@ -122,44 +172,14 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 		ImGui::Checkbox("adjustSwitch", &adjustSwitch_);
 		mesh_->GetMaterial()->UpdateMaterialImGui();
 
-		//設定保存
-		if (ImGui::Button("Save Config"))
-		{
-			ImGui::OpenPopup("Save Camera");
-		}
-
 		// 保存ポップアップ
-		if (ImGui::BeginPopupModal("Save Camera", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-		{
-			static char filenameBuf[256] = "SpriteConfig.json";
+		ImGuiManager::ShowSavePopup<SpriteConfig>(
+			TakeCFrameWork::GetJsonLoader(),
+			"Save_Sprite",
+			"default_sprite.json",
+			spriteConfig_,
+			spriteConfig_.jsonFilePath);
 
-			//jsonFilePathがある場合はfileNameBufにセット
-			if(!spriteConfig_.jsonFilePath.empty()) {
-				strncpy_s(filenameBuf, sizeof(filenameBuf),
-					spriteConfig_.jsonFilePath.c_str(),
-					_TRUNCATE);
-			}
-			
-			ImGui::Text("Input filename for camera data:");
-			ImGui::InputText("Filename", filenameBuf, sizeof(filenameBuf));
-
-			ImGui::Separator();
-
-			if (ImGui::Button("OK", ImVec2(120, 0)))
-			{
-				// ファイル保存
-				spriteConfig_.jsonFilePath = std::string(filenameBuf);
-				TakeCFrameWork::GetJsonLoader()->SaveJsonData<SpriteConfig>(spriteConfig_.jsonFilePath,spriteConfig_);
-				ImGui::CloseCurrentPopup();
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Cancel", ImVec2(120, 0)))
-			{
-				ImGui::CloseCurrentPopup();
-			}
-
-			ImGui::EndPopup();
-		}
 		ImGui::TreePop();
 	}
 	ImGui::End();
@@ -236,7 +256,15 @@ void Sprite::AdjustTextureSize() {
 	spriteConfig_.size_ = spriteConfig_.textureSize_;
 }
 
+//=============================================================================================
+// JSONファイルから設定読み込み
+//=============================================================================================
 void Sprite::LoadConfig(const std::string& jsonFilePath) {
+
+	//jsonファイルパスが空の場合は処理しない
+	if (jsonFilePath.empty()) {
+		return;
+	}
 
 	//jsonファイルから設定読み込み
 	spriteConfig_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<SpriteConfig>(jsonFilePath);

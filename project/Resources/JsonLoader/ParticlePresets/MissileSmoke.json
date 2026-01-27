@@ -1,61 +1,69 @@
 {
-  "attributes": {
-    "color": {
-      "x": 0.2666666805744171,
-      "y": 0.24313725531101227,
-      "z": 0.2235294133424759
+    "attributes": {
+        "color": {
+            "x": 0.2666666805744171,
+            "y": 0.24313725531101227,
+            "z": 0.2235294133424759
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 19,
+        "enableFollowEmitter": false,
+        "frequency": 0.10000000149011612,
+        "isBillboard": true,
+        "isDirectional": false,
+        "isEmitterTrail": true,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
+        "lifetimeRange": {
+            "max": 3.0,
+            "min": 1.0
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 1.0,
+            "min": -1.0
+        },
+        "rotateRange": {
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
+        },
+        "scale": {
+            "x": 1.4299999475479126,
+            "y": 1.2300000190734863,
+            "z": 1.2200000286102295
+        },
+        "scaleEasingType": 0,
+        "scaleRange": {
+            "max": 2.0,
+            "min": 1.0
+        },
+        "scaleSetting": 1,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
+        "velocityRange": {
+            "max": 1.0,
+            "min": -1.0
+        }
     },
-    "direction": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
+    "blendState": 1,
+    "isUseTextureAnimation": false,
+    "name": "MissileSmoke",
+    "primitiveParam": {
+        "height": 1.0,
+        "width": 1.0
     },
-    "colorRange": {
-      "max": 1.0,
-      "min": 0.0
-    },
-    "editColor": true,
-    "emitCount": 0,
-    "enableFollowEmitter": false,
-    "frequency": 0.0,
-    "isBillboard": true,
-    "isTraslate": true,
-    "isDirectional": false,
-    "isEmitterTrail": true,
-    "lifetimeRange": {
-      "max": 3.0,
-      "min": 1.0
-    },
-    "positionRange": {
-      "max": 1.0,
-      "min": -1.0
-    },
-    "rotateRange": {
-      "max": 3.1415927410125732,
-      "min": -3.1415927410125732
-    },
-    "scale": {
-      "x": 1.4299999475479126,
-      "y": 1.2300000190734863,
-      "z": 1.2200000286102295
-    },
-    "scaleRange": {
-      "max": 3.0,
-      "min": 0.10000000149011612
-    },
-    "scaleSetting": 0,
-    "velocityRange": {
-      "max": 1.0,
-      "min": -1.0
-    }
-  },
-  "name": "MissileSmoke",
-  "primitiveParam": {
-        "width": 1.0,
-        "height": 1.0
-
-    },
-  "blendState": 1,
-  "primitiveType": "PRIMITIVE_PLANE",
-  "textureFilePath": "cloudNoise.png"
+    "primitiveType": "PRIMITIVE_PLANE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
+    "textureFilePath": "cloudNoise.png"
 }

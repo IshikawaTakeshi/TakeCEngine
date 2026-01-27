@@ -15,16 +15,20 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 0,
+        "emitCount": 10,
         "enableFollowEmitter": false,
-        "frequency": 0.0,
+        "frequency": 1.0,
         "isBillboard": false,
         "isDirectional": false,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
         "isTraslate": true,
+        "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 1.69,
-            "min": 1.32
+            "max": 1.690000057220459,
+            "min": 1.3200000524520874
         },
+        "particlesPerInterpolation": 5,
         "positionRange": {
             "max": 3.9100000858306885,
             "min": -5.789999961853027
@@ -38,23 +42,28 @@
             "y": 6.010000228881836,
             "z": 4.809999942779541
         },
+        "scaleEasingType": 0,
         "scaleRange": {
             "max": 22.0,
             "min": 0.0
         },
         "scaleSetting": 1,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
         "velocityRange": {
             "max": 10.0,
             "min": -9.470000267028809
         }
     },
     "blendState": 1,
+    "isUseTextureAnimation": false,
     "name": "DeadExplosionEffect",
     "primitiveParam": {
         "radius": 1.0,
         "subDivision": 16
-
     },
     "primitiveType": "PRIMITIVE_SPHERE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
     "textureFilePath": "BoostEffect4.png"
 }

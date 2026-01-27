@@ -57,6 +57,38 @@ void TakeC::ModelManager::LoadModel(const std::string& modelFile,const std::stri
 }
 
 //=============================================================================
+// ディレクトリ内のモデルをすべて読み込む
+//=============================================================================
+void TakeC::ModelManager::LoadModelAll(const std::string& envMapFile) {
+
+	//Resources/Modelsフォルダ内の全てのモデルファイルを読み込む
+	namespace fs = std::filesystem;
+	std::string directoryPath = "Resources/Models/";
+
+	if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
+		return;
+	}
+
+	//再帰走査
+	for (const auto& entry : fs::recursive_directory_iterator(directoryPath)) {
+		if (entry.is_regular_file()) {
+			std::string extension = entry.path().extension().string();
+
+			//
+			if (extension == ".bin") continue;
+
+			if (extension == ".fbx" || extension == ".obj" || extension == ".gltf" || extension == ".glb") {
+				// ルートからの相対パスを作成
+				fs::path relative = fs::relative(entry.path(), directoryPath);
+				std::string normalizedPath = relative.generic_string();
+
+				LoadModel(normalizedPath, envMapFile);
+			}
+		}
+	}
+}
+
+//=============================================================================
 // モデルの検索
 //=============================================================================
 Model* TakeC::ModelManager::FindModel(const std::string& filePath) {
@@ -105,18 +137,21 @@ ModelData* TakeC::ModelManager::LoadModelFile(const std::string& modelFile,const
 	// ベースディレクトリ
 	fs::path baseDir = "./Resources/Models/";
 
-	// 拡張子ごとの検索ディレクトリを決める
-	fs::path modelDir;
-	if (ext == ".fbx") {
-		modelDir = baseDir / "fbx/";
-	} else if (ext == ".obj") {
-		modelDir = baseDir / "obj/";
-	} else if (ext == ".gltf" || ext == ".glb") {
-		modelDir = baseDir / "gltf/";
-	}
-
 	// 最終的なフルパス
-	fs::path fullPath = modelDir / modelFile;
+	fs::path fullPath = baseDir / modelFile;
+
+	// ファイルが存在しない場合は、従来のフォルダ構成（fbx/, obj/, gltf/）を探索
+	if (!fs::exists(fullPath)) {
+		fs::path modelDir;
+		if (ext == ".fbx") {
+			modelDir = baseDir / "fbx/";
+		} else if (ext == ".obj") {
+			modelDir = baseDir / "obj/";
+		} else if (ext == ".gltf" || ext == ".glb") {
+			modelDir = baseDir / "gltf/";
+		}
+		fullPath = modelDir / modelFile;
+	}
 
 	ModelData* modelData = new ModelData();
 	Assimp::Importer importer;
@@ -155,8 +190,7 @@ ModelData* TakeC::ModelManager::LoadModelFile(const std::string& modelFile,const
 				VertexData vtx{};
 				vtx.position = { -position.x, position.y, position.z, 1.0f };
 				vtx.normal   = { -normal.x,   normal.y,   normal.z   };
-				//vtx.texcoord = { texcoord.x,  texcoord.y };
-				
+
 				// UVがある場合は値を、無い場合は(0,0)を設定
 				if (mesh->HasTextureCoords(0)) {
 					vtx.texcoord = { texcoord.x,  texcoord.y };
@@ -277,6 +311,20 @@ ModelData* TakeC::ModelManager::LoadModelFile(const std::string& modelFile,const
 			mat.baseColor = { 1.0f,1.0f,1.0f,1.0f };
 		}
 
+		// -----------------------------------------
+		// uvトランスフォーム
+		// -----------------------------------------
+
+		aiUVTransform uvTransform;
+		if (AI_SUCCESS == material->Get(AI_MATKEY_UVTRANSFORM(aiTextureType_DIFFUSE, 0), uvTransform)) {
+			mat.uvTransform.translate = { uvTransform.mTranslation.x, uvTransform.mTranslation.y, 0.0f };
+			mat.uvTransform.scale     = { uvTransform.mScaling.x,     uvTransform.mScaling.y,     0.0f };
+			mat.uvTransform.rotate.z    = -uvTransform.mRotation; //反時計回りが正なので符号を反転
+		} else {
+			mat.uvTransform.translate = { 0.0f, 0.0f };
+			mat.uvTransform.scale     = { 1.0f, 1.0f };
+			mat.uvTransform.rotate.z   = 0.0f;
+		}
 
 		//-----------------------------------------
 		//環境マップテクスチャの設定

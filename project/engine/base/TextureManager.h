@@ -76,6 +76,8 @@ namespace TakeC {
 
 	private:
 
+		std::string NormalizeTextureFilePath(const std::string& filePath);
+
 		/// <summary>
 		/// テクスチャリソースの作成
 		/// </summary>

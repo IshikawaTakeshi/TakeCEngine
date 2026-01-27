@@ -24,6 +24,7 @@ void LevelObject::Initialize(Object3dCommon* object3dCommon, const std::string& 
 //====================================================================
 void LevelObject::CollisionInitialize(const LevelData::BoxCollider& boxInfo) {
 	collider_ = std::make_unique<BoxCollider>();
+	collider_->SetOwner(this);
 	collider_->SetHalfSize(boxInfo.size);
 	collider_->Initialize(object3dCommon_->GetDirectXCommon(), object3d_.get());
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Level_Object)); // レベルオブジェクトの衝突レイヤーを設定
@@ -36,6 +37,7 @@ void LevelObject::CollisionInitialize(const LevelData::BoxCollider& boxInfo) {
 //====================================================================
 void LevelObject::CollisionInitialize(const LevelData::SphereCollider& sphereInfo) {
 	collider_ = std::make_unique<SphereCollider>();
+	collider_->SetOwner(this);
 	collider_->SetRadius(sphereInfo.radius);
 	collider_->Initialize(object3dCommon_->GetDirectXCommon(), object3d_.get());
 	//水色に設定

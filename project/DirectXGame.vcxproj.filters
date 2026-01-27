@@ -542,6 +542,11 @@
     <ClCompile Include="application\Effect\MuzzleFlashEffect.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cone.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cylinder.cpp" />
+    <ClCompile Include="engine\Animation\TextureAnimationTypeEnum.cpp" />
+    <ClCompile Include="application\UI\RingUI.cpp" />
+    <ClCompile Include="engine\3d\EffectGroup.cpp" />
+    <ClCompile Include="engine\3d\EffectGroupConfig.cpp" />
+    <ClCompile Include="application\Weapon\Bullet\ObjectPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1120,6 +1125,15 @@
     <ClInclude Include="engine\3d\Primitive\Cone.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveParameter.h" />
     <ClInclude Include="engine\3d\Primitive\Cylinder.h" />
+    <ClInclude Include="engine\Animation\UVScrollSettings.h" />
+    <ClInclude Include="engine\Animation\TextureAnimationVariant.h" />
+    <ClInclude Include="engine\Animation\TextureAnimationTypeEnum.h" />
+    <ClInclude Include="application\UI\RingUI.h" />
+    <ClInclude Include="engine\2d\ArcGaugeParam.h" />
+    <ClInclude Include="engine\3d\EffectGroup.h" />
+    <ClInclude Include="engine\3d\EffectGroupConfig.h" />
+    <ClInclude Include="application\Weapon\Bullet\ObjectPool.h" />
+    <ClInclude Include="application\Weapon\Bullet\BulletEffectConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -1208,15 +1222,14 @@
     <None Include="Resources\shaders\CameraData.hlsli">
       <Filter>Resources\shader\Object</Filter>
     </None>
-    <None Include="Resources\shaders\Light\Lighting.hlsli" />
     <None Include="Resources\shaders\Light\DirectionalLight.hlsli" />
     <None Include="Resources\shaders\Material.hlsli" />
     <None Include="Resources\shaders\Light\PointLight.hlsli" />
     <None Include="Resources\shaders\Light\SpotLight.hlsli" />
     <None Include="Resources\shaders\Light\LightCountData.hlsli" />
     <None Include="Resources\shaders\PostEffect\BloomEffectInfo.hlsli" />
-    <None Include="Resources\shaders\Light\LightCamera.hlsli" />
     <None Include="Resources\shaders\Shadow\Shadowpass.hlsli" />
+    <None Include="Resources\shaders\Sprite\ArcGaugeParam.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">

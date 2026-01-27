@@ -72,28 +72,20 @@ void PrimitiveParticle::Update() {
 		if (numInstance_ < kNumMaxInstance_) {
 
 			// 寿命が来たら削除  
-			if ((*particleIterator).lifeTime_ <= (*particleIterator).currentTime_) {
+			if ((*particleIterator).lifeTimer_.IsFinished()) {
 				particleIterator = particles_.erase(particleIterator);
 				continue;
 			}
 
 			// particle1つの位置更新  
 			UpdateMovement(particleIterator);
-			//alphaの計算
-			float alpha = 1.0f - ((*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
-
-			particleData_[numInstance_].color = {
-				(*particleIterator).color_.x,
-				(*particleIterator).color_.y,
-				(*particleIterator).color_.z,
-				alpha
-			};
+			
 			particleData_[numInstance_].scale = (*particleIterator).transforms_.scale;
 			particleData_[numInstance_].rotate = (*particleIterator).transforms_.rotate;
 			particleData_[numInstance_].translate = (*particleIterator).transforms_.translate;
 			particleData_[numInstance_].velocity = (*particleIterator).velocity_;
-			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTime_;
-			particleData_[numInstance_].currentTime = (*particleIterator).currentTime_;
+			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTimer_.GetDuration();
+			particleData_[numInstance_].currentTime = (*particleIterator).lifeTimer_.GetProgress() * (*particleIterator).lifeTimer_.GetDuration();
 
 			
 
@@ -252,6 +244,22 @@ void PrimitiveParticle::GeneratePrimitive() {
 	}
 	//テクスチャファイルパスの設定
 	SetTextureFilePath(particlePreset_.textureFilePath);
+
+	//テクスチャアニメーションの設定
+	if (particlePreset_.isUseTextureAnimation == true) {
+		if (particlePreset_.textureAnimationType == TakeC::TextureAnimationType::UVScroll) {
+			//UVスクロールアニメーション適用
+			const UVScrollSettings& uvScrollSettings =
+				std::get<UVScrollSettings>(particlePreset_.textureAnimationParam);
+			TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material->Animation()->SetUVScrollAnimation(uvScrollSettings);
+		}
+		else if (particlePreset_.textureAnimationType == TakeC::TextureAnimationType::SpriteSheet) {
+			//スプライトシートアニメーション適用
+			const SpriteSheetSettings& spriteSheetSettings =
+				std::get<SpriteSheetSettings>(particlePreset_.textureAnimationParam);
+			TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material->Animation()->SetSpriteSheetAnimation(spriteSheetSettings);
+		}
+	}
 }
 
 //=============================================================================
@@ -264,7 +272,10 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 
 	// 前フレームの位置を保存
 	Vector3 oldPosition = (*particleIterator).transforms_.translate;
-	float oldTime = (*particleIterator).currentTime_;
+	float lifeTimeProgress = (*particleIterator).lifeTimer_.GetEase(attributes.lifeTimeEasingType);
+	float velocityProgress = (*particleIterator).lifeTimer_.GetEase(attributes.velocityEasingType);
+	float scaleProgress = (*particleIterator).lifeTimer_.GetEase(attributes.scaleEasingType);
+	float oldTime = (*particleIterator).lifeTimer_.GetProgress() * (*particleIterator).lifeTimer_.GetDuration();
 
 	if (attributes.isTranslate) {
 		if (attributes.enableFollowEmitter) {
@@ -272,14 +283,14 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 			(*particleIterator).transforms_.translate = emitterPos_;
 			//(*particleIterator).transforms_.rotate = emitter
 		} else {
-			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
+			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * velocityProgress * kDeltaTime_;
 
 		}
 
 		if(attributes.isDirectional){
 			//方向に沿って移動
 			(*particleIterator).velocity_ += attributes.direction * kDeltaTime_;
-			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
+			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * velocityProgress * kDeltaTime_;
 			
 		}
 	}
@@ -289,36 +300,47 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
 			attributes.scaleRange.min,
 			attributes.scaleRange.max,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			scaleProgress);
 
 		(*particleIterator).transforms_.scale.y = Easing::Lerp(
 			attributes.scaleRange.min,
 			attributes.scaleRange.max,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			scaleProgress);
 		(*particleIterator).transforms_.scale.z = Easing::Lerp(
 			attributes.scaleRange.min,
 			attributes.scaleRange.max,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			scaleProgress);
 
 	} else if (attributes.scaleSetting == static_cast<uint32_t>(ScaleSetting::ScaleDown)) {
 		//スケールの更新(縮小)
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
 			attributes.scaleRange.max,
 			attributes.scaleRange.min,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			scaleProgress);
 		(*particleIterator).transforms_.scale.y = Easing::Lerp(
 			attributes.scaleRange.max,
 			attributes.scaleRange.min,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			scaleProgress);
 		(*particleIterator).transforms_.scale.z = Easing::Lerp(
 			attributes.scaleRange.max,
 			attributes.scaleRange.min,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			scaleProgress);
 	}
 
+	//alphaの計算
+	float alpha = 1.0f - lifeTimeProgress;
+	//色の設定
+	particleData_[numInstance_].color = {
+		(*particleIterator).color_.x,
+		(*particleIterator).color_.y,
+		(*particleIterator).color_.z,
+		alpha
+	};
 
-	(*particleIterator).currentTime_ += kDeltaTime_; //経過時間の更新
-	float newTime = (*particleIterator).currentTime_;
+	//経過時間の更新
+	(*particleIterator).lifeTimer_.Update(); 
+
+	float newTime = (*particleIterator).lifeTimer_.GetProgress() * (*particleIterator).lifeTimer_.GetDuration();
 
 	// --- トレイル（補間）処理 ---
 	if (attributes.isParticleTrail && (*particleIterator).isTrailParent_) {
@@ -341,7 +363,8 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 				trailParticle.transforms_.translate =
 					Easing::Lerp(oldPosition, (*particleIterator).transforms_.translate, t);
 				// 補間経過時間（親の oldTime -> newTime）
-				trailParticle.currentTime_ = Easing::Lerp(oldTime, newTime, t);
+				float lerpedTime = Easing::Lerp(oldTime, newTime, t);
+				trailParticle.lifeTimer_.Initialize((*particleIterator).lifeTimer_.GetDuration(), lerpedTime);
 
 				//移動させる必要がないため、速度を0に設定
 				trailParticle.velocity_ = Vector3(0.0f, 0.0f, 0.0f);
@@ -356,4 +379,6 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 			}
 		}
 	}
+
+	
 }

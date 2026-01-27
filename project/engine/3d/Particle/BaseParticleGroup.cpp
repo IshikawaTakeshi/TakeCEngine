@@ -46,8 +46,6 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 	std::uniform_real_distribution<float> distColor(attributes.colorRange.min, attributes.colorRange.max);
 	//寿命をランダムに設定
 	std::uniform_real_distribution<float> distTime(attributes.lifetimeRange.min, attributes.lifetimeRange.max);
-	//射出方向の設定
-	//std::uniform_real_distribution<Vector2> distDirection({ -1.0f, -1.0f }, { 1.0f, 1.0f });
 
 	Particle particle;
 	particle.transforms_.scale = { attributes.scale.x,attributes.scale.y,attributes.scale.z };
@@ -77,9 +75,7 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 	}
 
 	//寿命の設定
-	particle.lifeTime_ = distTime(randomEngine);
-	//経過時間の初期化
-	particle.currentTime_ = 0.0f;
+	particle.lifeTimer_.Initialize(distTime(randomEngine), 0.0f);
 	//トレイルエフェクトの親フラグ初期化
 	particle.isTrailParent_ = true;
 

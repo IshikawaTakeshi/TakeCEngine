@@ -12,6 +12,10 @@ using namespace TakeC;
 //=================================================================================
 void UVTextureAnimation::Initialize(Material* material) {
 	material_ = material;
+
+	currentUVScale_ = { material_->GetUvScale().x, material_->GetUvScale().y };
+	currentUVOffset_ = { material_->GetUvTranslate().x, material_->GetUvTranslate().y };
+
 	Reset();
 }
 
@@ -153,9 +157,11 @@ bool UVTextureAnimation::IsFinished() const {
 //=================================================================================
 // UVスクロールアニメーション設定
 //=================================================================================
-void UVTextureAnimation::SetUVScrollAnimation(const Vector2& scrollSpeed) {
+void UVTextureAnimation::SetUVScrollAnimation(const Vector2& scrollSpeed, bool wrapU, bool wrapV) {
 	UVScrollSettings settings;
 	settings.scrollSpeed = scrollSpeed;
+	settings.wrapU = wrapU;
+	settings.wrapV = wrapV;
 	SetUVScrollAnimation(settings);
 }
 

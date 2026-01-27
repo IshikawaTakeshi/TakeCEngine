@@ -5,6 +5,7 @@
 #include "engine/math/Easing.h"
 #include "engine/math/Vector3Math.h"
 #include "engine/math/MatrixMath.h"
+#include "engine/Utility/JsonLoader.h"
 #include "3d/Particle/GPUParticle.h"
 #include "2d/WireFrame.h"
 
@@ -12,15 +13,18 @@
 // 初期化
 //================================================================================================
 
-void ParticleEmitter::Initialize(const std::string& emitterName, EulerTransform transforms, uint32_t count, float frequency) {
+void ParticleEmitter::Initialize(const std::string& emitterName, const std::string& presetInfo) {
 	//Emitter初期化
 	emitterName_ = emitterName;
-	transforms_.translate = transforms.translate;
-	transforms_.rotate = transforms.rotate;
-	transforms_.scale = transforms.scale;
+
+
+	//prest情報の取得
+	preset_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetInfo);
+	particleName_ = preset_.presetName;
 	emitDirection_ = { 0.0f,0.0f,1.0f };
-	particleCount_ = count;
-	frequency_ = frequency;
+	particleCount_ = preset_.attribute.emitCount; // 発生させるパーティクルの数
+	frequency_ = preset_.attribute.frequency; // 発生頻度
+	maxInterpolationCount_ = preset_.attribute.particlesPerInterpolation; // 最大補間回数
 	frequencyTime_ = 0.0f;
 	isEmit_ = false;
 }
@@ -78,8 +82,7 @@ void ParticleEmitter::InitializeEmitterSphere(TakeC::DirectXCommon* dxCommon, Ta
 
 void ParticleEmitter::Update() {
 
-	ParticlePreset preset = TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset();
-	maxInterpolationCount_ = preset.attribute.particlesPerInterpolation; // 最大補間回数
+	
 
 	//transform.rotateによってDirectionを更新
 	Matrix4x4 rotateMatrix = MatrixMath::MakeRotateMatrix(transforms_.rotate);
@@ -233,4 +236,6 @@ void ParticleEmitter::EmitParticle(GPUParticle* gpuParticle) {
 
 void ParticleEmitter::SetParticleName(const std::string& particleName) {
 	particleName_ = particleName;
+	frequency_ = TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.frequency;
+	particleCount_ = TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.emitCount;
 }

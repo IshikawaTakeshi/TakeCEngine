@@ -1,6 +1,7 @@
 #pragma once
 #include "application/Weapon/BaseWeapon.h"
 #include "application/Weapon/Bullet/VerticalMissileInfo.h"
+#include "application/Weapon/Bullet/BulletEffectConfig.h"
 #include "engine/Entity/GameCharacter.h"
 #include "engine/3d/Object3d.h"
 #include "engine/3d/Object3dCommon.h"
@@ -29,6 +30,7 @@ public:
 
 	// 初期化
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
+	void InitializeEffect(const BulletEffectConfig& effectConfig);
 	// 更新処理
 	void Update() override;
 	// ImGuiの更新
@@ -48,8 +50,8 @@ public:
 	// getter
 	//===========================================================================
 
-	const EulerTransform& GetTransform() const;
-	bool GetIsActive() const;
+	const QuaternionTransform& GetTransform() const;
+	bool IsActive() const;
 	const Vector3& GetVelocity() const;
 	const Vector3& GetTargetPos() const;
 	float GetDamage() const;
@@ -68,12 +70,12 @@ public:
 	void SetTargetPos(const Vector3& targetPos) { targetPos_ = targetPos; }
 	void SetSpeed(float speed) { speed_ = speed; }
 	void SetLifeTime(float lifeTime) { lifeTime_ = lifeTime; }
-	void SetTransform(const EulerTransform& transform) { transform_ = transform; }
+	void SetTransform(const QuaternionTransform& transform) { transform_ = transform; }
 
 private:
 
 	BaseWeapon* ownerWeapon_ = nullptr; // 所有者の武器
-	EulerTransform transform_{};
+	QuaternionTransform transform_{};
 	float deltaTime_ = 0.0f;
 	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
 	Vector3 targetPos_ = { 0.0f,0.0f,0.0f };
@@ -86,6 +88,8 @@ private:
 
 	PointLightData pointLightData_;
 	uint32_t pointLightIndex_ = 0;
+
+	BulletEffectConfig effectConfig_;
 
 	//パーティクルエミッター
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;

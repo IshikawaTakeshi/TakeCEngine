@@ -15,16 +15,20 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 0,
+        "emitCount": 20,
         "enableFollowEmitter": false,
-        "frequency": 0.0,
+        "frequency": 0.016,
         "isBillboard": true,
         "isDirectional": true,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
         "isTraslate": true,
+        "lifetimeEasingType": 0,
         "lifetimeRange": {
             "max": 5.300000190734863,
             "min": 3.5
         },
+        "particlesPerInterpolation": 5,
         "positionRange": {
             "max": 2.0899999141693115,
             "min": -2.490000009536743
@@ -38,23 +42,28 @@
             "y": 1.0,
             "z": 1.0
         },
+        "scaleEasingType": 0,
         "scaleRange": {
             "max": 4.28000020980835,
             "min": 0.0
         },
         "scaleSetting": 1,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
         "velocityRange": {
             "max": 10.0,
             "min": 3.2899999618530273
         }
     },
     "blendState": 6,
+    "isUseTextureAnimation": false,
     "name": "DeadSmokeEffect",
     "primitiveParam": {
-        "width": 1.0,
-        "height": 1.0
-
+        "height": 1.0,
+        "width": 1.0
     },
     "primitiveType": "PRIMITIVE_PLANE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
     "textureFilePath": "SparkNoise.png"
 }

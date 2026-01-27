@@ -34,6 +34,8 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//PostEffectManagerに影描画用レンダーテクスチャをセット
 	postEffectManager_->SetLightCameraRenderTexture(shadowRenderTexture_.get());
 
+	//Texture読み込み
+	TakeC::TextureManager::GetInstance().LoadTextureAll();
 	//Model読み込み
 	LoadModel();
 	//Animation読み込み
@@ -42,8 +44,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	LoadSound();
 	//ParticlePreset読み込み
 	LoadParticlePreset();
-	//Texture読み込み
-	TakeC::TextureManager::GetInstance().LoadTextureAll();
+	
 
 	//postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
 	//postEffectManager_->InitializeEffect("GrayScale",   L"PostEffect/GrayScale.CS.hlsl");
@@ -153,9 +154,8 @@ void MyGame::Draw() {
 	//===========================================
 	// 5. 次フレーム準備
 	//===========================================
-	// シャドウマップを DEPTH_WRITE 状態に戻す（次フレーム用）
-	//shadowRenderTexture_->TransitionToDepthWrite();
 
+	// モデルのリロード適用
 	TakeC::ModelManager::GetInstance().ApplyModelReloads();
 }
 
@@ -170,24 +170,26 @@ void MyGame::RequestTimeScale(float timeScale, float duration,float current) {
 
 void MyGame::LoadModel() {
 	//gltf
-	TakeC::ModelManager::GetInstance().LoadModel("walk.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Bazooka.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("BazookaBullet.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("boostEffectCone.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Bullet.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("cube.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Deer.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Floor.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Ground.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Missile.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("plane.gltf","skyBox_blueSky.dds");
 	TakeC::ModelManager::GetInstance().LoadModel("player_singleMesh.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("player_MultiMesh.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Enemy.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("cube.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("ICOBall.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Rifle.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Bazooka.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("VerticalMissileLauncher.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("ShotGun.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("MachineGun.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("boostEffectCone.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("MultiICO.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Deer.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Bullet.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Rail.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Floor.gltf");
+	//TakeC::ModelManager::GetInstance().LoadModelAll();
 	//obj
 
 }
@@ -227,23 +229,5 @@ void MyGame::LoadSound() {
 //====================================================================
 void MyGame::LoadParticlePreset() {
 
-	//CreateParticle
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("BoostEffect2.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("BoostEffect3.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("BoostEffect4.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("BoostEffect5.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("BulletLight.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("CrossEffect.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("DamageSpark.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("SmokeEffect.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("SparkExplosion.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("ItemPointEffect.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("WalkSmoke1.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("WalkSmoke2.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("MissileSmoke.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("MissileExplosion.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("DeadExplosionEffect.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("DeadSmokeEffect.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("RifleMuzzleFlash.json");
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup("RifleMuzzleFlash2.json");
+	TakeCFrameWork::GetParticleManager()->LoadAllPresets();
 }

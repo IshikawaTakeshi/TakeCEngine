@@ -7,15 +7,23 @@
 #include "engine/Base/DirectXCommon.h"
 #include "engine/Base/SrvManager.h"
 #include "engine/Utility/JsonLoader.h"
+#include "engine/Utility/StringUtility.h"
 #include "engine/Math/Quaternion.h"
 #include "engine/Math/Vector3.h"
 #include "engine/Math/Matrix4x4.h"
 #include <string>
 
+
+
 //============================================================================
 // ImGuiManager class
 //============================================================================
 namespace TakeC {
+
+	// enumのみに制約をかける
+	template<typename T>
+	concept InputEnum = std::is_enum_v<T>;
+
 	class ImGuiManager {
 	public:
 
@@ -67,6 +75,9 @@ namespace TakeC {
 		static bool ShowSavePopup(JsonLoader* jsonLoader,const char* popupId, const char* defaultFilename,
 			const T& data, std::string& outFilePath);
 
+		template<InputEnum TEnum>
+		static bool ComboBoxEnum(const char* label, TEnum& currentItem);
+
 		/// <summary>
 		/// 描画後処理
 		/// </summary>
@@ -111,9 +122,9 @@ namespace TakeC {
 	};
 
 
-	///====================================================================
+	///--------------------------------------------------------------------
 	/// 保存ポップアップの表示
-	///====================================================================
+	///---------------------------------------------------------------------
 	template<typename T>
 	inline bool ImGuiManager::ShowSavePopup(
 		JsonLoader* jsonLoader,
@@ -121,6 +132,12 @@ namespace TakeC {
 
 		// 保存完了フラグ
 		bool saved = false;
+
+		//保存ボタン
+		if (ImGui::Button("SaveConfig"))
+		{
+			ImGui::OpenPopup(popupId);
+		}
 
 		// 保存ポップアップの表示
 		if (ImGui::BeginPopupModal(popupId, NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
@@ -154,5 +171,44 @@ namespace TakeC {
 			ImGui::EndPopup();
 		}
 		return saved;
+	}
+
+	///--------------------------------------------------------------------
+	/// Enum用コンボボックス
+	///---------------------------------------------------------------------
+	template<InputEnum TEnum>
+	inline bool ImGuiManager::ComboBoxEnum(const char* label, TEnum& currentItem) {
+		
+		// 変更フラグ
+		bool valueChanged = false;
+
+		// enumの全エントリを取得
+		const auto enumTypes = magic_enum::enum_entries<TEnum>();
+		// 現在のenumのインデックスを取得
+		int currentIndex = static_cast<int>(magic_enum::enum_index(currentItem).value_or(0));
+		// 変更前の値を保存
+		TEnum oldValue = currentItem;
+
+		// コンボボックスの表示
+		if(ImGui::BeginCombo(label, magic_enum::enum_name(currentItem).data())) {
+			// enumエントリの表示
+			for (size_t i = 0; i < enumTypes.size(); ++i) {
+				const bool isSelected = (currentIndex == static_cast<int>(i));
+				if (ImGui::Selectable(enumTypes[i].second.data(), isSelected)) {
+					currentItem = enumTypes[i].first;
+					// 値が変更された場合、フラグを立てる
+					if (oldValue != currentItem) {
+						valueChanged = true;
+					}
+				}
+				// デフォルトフォーカスの設定
+				if (isSelected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+
+		return valueChanged;
 	}
 }

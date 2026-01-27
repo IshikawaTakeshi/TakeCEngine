@@ -32,6 +32,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
+	collider_->SetOwner(this);
 	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Enemy));
 
@@ -42,20 +43,16 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//emitter0
 	particleEmitter_.resize(3);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, enemyData_.characterInfo.transform.translate }, 5, 1.0f);
-	particleEmitter_[0]->SetParticleName("DamageSpark");
+	particleEmitter_[0]->Initialize("EnemyEmitter0", "DamageSpark.json");
 	//emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, enemyData_.characterInfo.transform.translate }, 10, 1.0f);
-	particleEmitter_[1]->SetParticleName("CrossEffect");
+	particleEmitter_[1]->Initialize("EnemyEmitter1", "DamageSpark2.json");
 	//emitter2
 	particleEmitter_[2] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[2]->Initialize("EnemyEmitter2", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, enemyData_.characterInfo.transform.translate }, 10, 1.0f);
-	particleEmitter_[2]->SetParticleName("SparkExplosion");
+	particleEmitter_[2]->Initialize("EnemyEmitter2", "SparkExplosion.json");
 	//背部エミッターの初期化
 	backEmitter_ = std::make_unique<ParticleEmitter>();
-	backEmitter_->Initialize("EnemyBackpack", object3d_->GetTransform(), 10, 0.01f);
-	backEmitter_->SetParticleName("WalkSmoke2");
+	backEmitter_->Initialize("EnemyBackpack", "WalkSmoke2.json");
 
 	//死亡エフェクト初期化
 	deadEffect_ = std::make_unique<DeadEffect>();
@@ -241,6 +238,13 @@ void Enemy::Update() {
 		backEmitter_->SetIsEmit(false);
 	}
 
+	auto jointWorldMatrixOpt = object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix("neck", object3d_->GetWorldMatrix());
+	bodyPosition_ = {
+		jointWorldMatrixOpt->m[3][0],
+		jointWorldMatrixOpt->m[3][1],
+		jointWorldMatrixOpt->m[3][2]
+	};
+
 	//モデルの回転処理
 	if (enemyData_.characterInfo.isAlive) {
 		//生存中はフォーカス対象に向く
@@ -321,6 +325,14 @@ void Enemy::UpdateImGui() {
 		damageEffectTime_ = 0.5f;
 		particleEmitter_[1]->Emit();
 	}
+	// スピードを0にするボタン
+	if (ImGui::Button("Stop Movement")) {
+		enemyData_.characterInfo.velocity = { 0.0f,0.0f,0.0f };
+		enemyData_.characterInfo.jumpInfo.speed = 0.0f;
+		enemyData_.characterInfo.moveSpeed = 0.0f;
+		enemyData_.characterInfo.stepBoostInfo.speed = 0.0f;
+	}
+
 	//データ保存ボタン
 	if (ImGui::Button("Save Enemy Data")) {
 		SaveEnemyData(enemyData_.characterInfo.characterName);
@@ -393,7 +405,7 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 	}
 	if (other->GetCharacterType() == CharacterType::PLAYER_MISSILE) {
 		//プレイヤーのミサイルに当たった場合の処理
-		//particleEmitter_[2]->Emit();
+		particleEmitter_[1]->Emit();
 		enemyData_.characterInfo.isDamaged = true;
 		//ダメージを受けた時のエフェクト時間を設定
 		damageEffectTime_ = 0.5f;
