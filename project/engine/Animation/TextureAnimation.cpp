@@ -12,6 +12,10 @@ using namespace TakeC;
 //=================================================================================
 void UVTextureAnimation::Initialize(Material* material) {
 	material_ = material;
+
+	currentUVScale_ = { material_->GetUvScale().x, material_->GetUvScale().y };
+	currentUVOffset_ = { material_->GetUvTranslate().x, material_->GetUvTranslate().y };
+
 	Reset();
 }
 

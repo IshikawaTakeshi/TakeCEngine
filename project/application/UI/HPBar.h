@@ -19,7 +19,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(SpriteCommon* spriteCommon, const std::string& backgroundFilePath, const std::string& foregroundFilePath);
+	void Initialize(SpriteCommon* spriteCommon,const std::string& ownerName, const std::string& backgroundFilePath, const std::string& foregroundFilePath);
 
 	/// <summary>
 	/// HPの更新
@@ -56,6 +56,8 @@ private:
 	std::unique_ptr<Sprite> backgroundSprite_; // 背景スプライト
 	std::unique_ptr<Sprite> foregroundSprite_; // 前景スプライト	
 	std::unique_ptr<Sprite> damageBarSprite_; //hpの消費量を表すバー
+	std::unique_ptr<Sprite> ownerNameSprite_; // 所有者名スプライト
+	std::string ownerNameJsonFile_; // 所有者名
 	Vector2 position_ = { 0.0f, 0.0f };          // HPバーの位置
 
 	// アウトライン（枠）の太さ

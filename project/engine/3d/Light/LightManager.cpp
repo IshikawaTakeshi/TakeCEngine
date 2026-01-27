@@ -72,7 +72,7 @@ void TakeC::LightManager::Initialize(DirectXCommon* dxCommon,SrvManager* srvMana
 	//光源の方向を書き込む
 	dirLightData_->direction_ = { 0.0f,-0.05f,-0.95f };
 	//光源の輝度書き込む
-	dirLightData_->intensity_ = 1.0f;
+	dirLightData_->intensity_ = 0.6f;
 
 	//ライト数データ初期化
 	lightCountData_->pointLightCount = 0;
@@ -373,6 +373,15 @@ void TakeC::LightManager::UpdateImGui() {
 		ImGui::DragFloat3("Direction", &dirLightData_->direction_.x, 0.01f);
 		dirLightData_->direction_ = Vector3Math::Normalize(dirLightData_->direction_);
 		ImGui::DragFloat("Intensity", &dirLightData_->intensity_, 0.01f, 0.0f, 10.0f);
+		
+		// 保存ポップアップの表示
+		ImGuiManager::ShowSavePopup<DirectionalLightData>(
+				TakeCFrameWork::GetJsonLoader(),
+				"SaveDirectionalLight",
+				"DirectionalLight.json",
+				*dirLightData_,
+			dirLightConfigFilePath_);
+
 		ImGui::TreePop();
 	}
 

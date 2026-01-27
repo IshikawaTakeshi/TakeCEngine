@@ -16,6 +16,11 @@ void Mesh::InitializeMesh(TakeC::DirectXCommon* dxCommon,std::vector<ModelMateri
 		material_.back()->Initialize(dxCommon,matData.textureFilePath,matData.envMapFilePath);
 		//マテリアルの各種データ設定
 		material_.back()->SetMaterialColor(matData.baseColor);
+		//UVトランスフォーム設定
+		material_.back()->SetUvTransform(matData.uvTransform);
+		material_.back()->Animation()->SetCurrentUVScale({
+			matData.uvTransform.scale.x,
+			matData.uvTransform.scale.y });
 	}
 	
 	vertexBufferViews_.resize(1);
