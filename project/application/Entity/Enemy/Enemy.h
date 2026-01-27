@@ -158,7 +158,7 @@ private:
 	float gravity_ = 9.8f; // 重力の強さ
 	
 	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
-	float chargeShootTimer_ = 0.0f; //停止撃ちまでの残り猶予時間
+	Timer chargeShootTimer_; // 停止撃ちのタイマー
 	float damageEffectTime_ = 0.0f; // ダメージエフェクトの時間
 
 	//ターゲットの周りを周回するための変数

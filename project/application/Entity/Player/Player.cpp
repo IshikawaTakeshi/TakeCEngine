@@ -196,6 +196,7 @@ void Player::Update() {
 
 	if (inputProvider_->RequestChangeCameraMode()) {
 		camera_->SetRequestedChangeCameraMode(true);
+		isFocus_ = !isFocus_;
 	}
 
 	//Behaviorの更新
@@ -497,15 +498,16 @@ void Player::UpdateAttack() {
 		if (chargeShootableUnits_[i] == true) {
 			//チャージ撃ち可能なユニットの処理
 			auto* weapon = weapons_[i].get();
+
 			if (playerData_.characterInfo.isChargeShooting == true) {
 				// チャージ撃ち中の処理
-				chargeShootTimer_ -= deltaTime_;
-				if (chargeShootTimer_ <= 0.0f) {
+				chargeShootTimer_.Update();
+				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();
 					camera_->RequestShake(ShakeCameraMode::VERTICAL,0.5f, 2.0f); // カメラシェイクをリクエスト
 
 					playerData_.characterInfo.isChargeShooting = false; // チャージ撃ち中フラグをリセット
-					chargeShootTimer_ = 0.0f; // タイマーをリセット
+					chargeShootTimer_.Stop();
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 					chargeShootableUnits_[i] = false; // チャージ撃ち可能なユニットのマークをリセット
 				}
@@ -553,8 +555,12 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 			if (weapon->StopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
 				// 停止撃ち専用:硬直処理を行う
 				playerData_.characterInfo.isChargeShooting = true; // チャージ撃ち中フラグを立てる
-				chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
 				chargeShootableUnits_[weaponIndex] = true; // チャージ撃ち可能なユニットとしてマーク
+
+				//タイマーが終了している場合は初期化
+				if (chargeShootTimer_.IsFinished() == true) {
+					chargeShootTimer_.Initialize(chargeShootDuration_, 0.0f);
+				}
 				
 			} else {
 				// 移動撃ち可能

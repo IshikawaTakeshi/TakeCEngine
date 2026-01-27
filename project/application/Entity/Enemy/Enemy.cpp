@@ -489,11 +489,11 @@ void Enemy::UpdateAttack() {
 			auto* weapon = weapons_[i].get();
 			if (enemyData_.characterInfo.isChargeShooting == true) {
 				// チャージ撃ち中の処理
-				chargeShootTimer_ -= deltaTime_;
-				if (chargeShootTimer_ <= 0.0f) {
+				chargeShootTimer_.Update();
+				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();
 					enemyData_.characterInfo.isChargeShooting = false; // チャージ撃ち中フラグをリセット
-					chargeShootTimer_ = 0.0f; // タイマーをリセット
+					chargeShootTimer_.Stop();
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 					chargeShootableUnits_[i] = false; // チャージ撃ち可能なユニットのマークをリセット
 				}
@@ -527,8 +527,11 @@ void Enemy::WeaponAttack(int weaponIndex) {
 		if (weapon->StopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
 			// 停止撃ち専用:硬直処理を行う
 			enemyData_.characterInfo.isChargeShooting = true; // チャージ撃ち中フラグを立てる
-			chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
 			chargeShootableUnits_[weaponIndex] = true; // チャージ撃ち可能なユニットとしてマーク
+
+			if(chargeShootTimer_.IsFinished()) {
+				chargeShootTimer_.Initialize(chargeShootDuration_, 0.0f);
+			}
 
 		} else {
 			// 移動撃ち可能
