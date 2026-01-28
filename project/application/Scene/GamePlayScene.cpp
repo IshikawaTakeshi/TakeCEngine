@@ -110,12 +110,18 @@ void GamePlayScene::Initialize() {
 
 	//操作説明UI
 	instructionSprites_.resize(7);
-	for (auto& instructionSprite : instructionSprites_) {
-		instructionSprite = std::make_unique<Sprite>();
-		instructionSprite->Initialize(&SpriteCommon::GetInstance(), "UI/GamePad_KeyIcon.png");
-		instructionSprite->SetTranslate({ 0.0f, 100.0f });
-		instructionSprite->AdjustTextureSize();
-		instructionSprite->SetSize({ 250.0f, 200.0f });
+	for (size_t i = 0; i < instructionSprites_.size(); i++) {
+		instructionSprites_[i] =  std::make_unique<Sprite>();
+		instructionSprites_[i]->LoadConfig("InstructionIcon" + std::to_string(i) + ".json");
+		instructionSprites_[i]->Initialize(&SpriteCommon::GetInstance());
+	}
+
+	//アクションアイコンUI
+	actionIconSprites_.resize(3);
+	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
+		actionIconSprites_[i] = std::make_unique<Sprite>();
+		actionIconSprites_[i]->LoadConfig("ActionIcon" + std::to_string(i) + ".json");
+		actionIconSprites_[i]->Initialize(&SpriteCommon::GetInstance());
 	}
 
 	//最初の状態設定
@@ -265,9 +271,13 @@ void GamePlayScene::UpdateImGui() {
 	for (int i = 0; i < 4; i++) {
 		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
-	//instructionSprite_->UpdateImGui("instruction");
+	//instructionSprite_
 	for (size_t i = 0; i < instructionSprites_.size(); i++) {
 		instructionSprites_[i]->UpdateImGui(std::format("instruction{}", i));
+	}
+	//actionIconSprite
+	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
+		actionIconSprites_[i]->UpdateImGui(std::format("actionIcon{}", i));
 	}
 }
 
@@ -345,6 +355,10 @@ void GamePlayScene::DrawSprite() {
 		//操作説明UIの描画
 		for (auto& instructionSprite : instructionSprites_) {
 			instructionSprite->Draw();
+		}
+		//アクションアイコンの描画
+		for (auto& actionIcon : actionIconSprites_) {
+			actionIcon->Draw();
 		}
 
 		//フェーズメッセージUIの描画
@@ -430,6 +444,10 @@ void GamePlayScene::UpdateGamePlay() {
 	//instructionSpriteの更新
 	for (auto& instructionSprite : instructionSprites_) {
 		instructionSprite->Update();
+	}
+	//actionIconSpriteの更新
+	for (auto& actionIcon : actionIconSprites_) {
+		actionIcon->Update();
 	}
 
 	if (player_->GetHealth() <= 0.0f) {
