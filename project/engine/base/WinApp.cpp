@@ -153,6 +153,15 @@ void TakeC::WinApp::CreateGameWindow(const wchar_t title[]) {
 	// ウィンドウインスタンスを WindowLongPtr に保存（WindowProc で参照するため）
 	SetWindowLongPtr(hwnd_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
+#ifdef _DEBUG
+
+#else
+
+	SetFullscreen(true); // 起動時はフルスクリーンにする
+
+#endif // DEBUG
+
+
 	//ウィンドウを表示する
 	ShowWindow(hwnd_, SW_SHOW);
 }
