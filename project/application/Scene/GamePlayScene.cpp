@@ -109,11 +109,20 @@ void GamePlayScene::Initialize() {
 	phaseMessageUI_->Initialize();
 
 	//操作説明UI
-	instructionSprite_ = std::make_unique<Sprite>();
-	instructionSprite_->Initialize(&SpriteCommon::GetInstance(), "UI/OperationInstructions.png");
-	instructionSprite_->SetTranslate({ 0.0f, 100.0f });
-	instructionSprite_->AdjustTextureSize();
-	instructionSprite_->SetSize({ 250.0f, 200.0f });
+	instructionSprites_.resize(7);
+	for (size_t i = 0; i < instructionSprites_.size(); i++) {
+		instructionSprites_[i] =  std::make_unique<Sprite>();
+		instructionSprites_[i]->LoadConfig("InstructionIcon" + std::to_string(i) + ".json");
+		instructionSprites_[i]->Initialize(&SpriteCommon::GetInstance());
+	}
+
+	//アクションアイコンUI
+	actionIconSprites_.resize(3);
+	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
+		actionIconSprites_[i] = std::make_unique<Sprite>();
+		actionIconSprites_[i]->LoadConfig("ActionIcon" + std::to_string(i) + ".json");
+		actionIconSprites_[i]->Initialize(&SpriteCommon::GetInstance());
+	}
 
 	//最初の状態設定
 	behaviorRequest_ = SceneBehavior::GAMESTART;
@@ -262,8 +271,14 @@ void GamePlayScene::UpdateImGui() {
 	for (int i = 0; i < 4; i++) {
 		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
-	instructionSprite_->UpdateImGui("instruction");
-
+	//instructionSprite_
+	for (size_t i = 0; i < instructionSprites_.size(); i++) {
+		instructionSprites_[i]->UpdateImGui(std::format("instruction{}", i));
+	}
+	//actionIconSprite
+	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
+		actionIconSprites_[i]->UpdateImGui(std::format("actionIcon{}", i));
+	}
 }
 
 //====================================================================
@@ -338,7 +353,13 @@ void GamePlayScene::DrawSprite() {
 		}
 
 		//操作説明UIの描画
-		instructionSprite_->Draw();
+		for (auto& instructionSprite : instructionSprites_) {
+			instructionSprite->Draw();
+		}
+		//アクションアイコンの描画
+		for (auto& actionIcon : actionIconSprites_) {
+			actionIcon->Draw();
+		}
 
 		//フェーズメッセージUIの描画
 		phaseMessageUI_->Draw();
@@ -421,7 +442,13 @@ void GamePlayScene::UpdateGamePlay() {
 	}
 
 	//instructionSpriteの更新
-	instructionSprite_->Update();
+	for (auto& instructionSprite : instructionSprites_) {
+		instructionSprite->Update();
+	}
+	//actionIconSpriteの更新
+	for (auto& actionIcon : actionIconSprites_) {
+		actionIcon->Update();
+	}
 
 	if (player_->GetHealth() <= 0.0f) {
 		//プレイヤーのHPが0以下になったらゲームオーバー
