@@ -411,6 +411,9 @@ void GamePlayScene::InitializeGamePlay() {
 	phaseMessageUI_->SetNextMessage(PhaseMessage::FIGHT);
 
 	TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::LOCKON);
+
+	player_->SetInCombat(true);
+	enemy_->SetInCombat(true);
 }
 
 void GamePlayScene::UpdateGamePlay() {

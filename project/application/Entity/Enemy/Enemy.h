@@ -94,12 +94,16 @@ public:
 	//生存しているかどうか
 	bool GetIsAlive() const { return enemyData_.characterInfo.isAlive; }
 
+	bool IsInCombat() const { return enemyData_.characterInfo.isInCombat; }
+
 	//周回角度の取得
 	float GetOrbitAngle() const { return orbitAngle_; }
 	//周回半径の取得
 	float GetOrbitRadius() const { return orbitRadius_; }
 	//周回速度の取得
 	float GetOrbitSpeed() const { return orbitSpeed_; }
+
+
 
 	//================================================================================
 	// setter
@@ -111,6 +115,8 @@ public:
 	void SetOrbitAngle(float angle) { orbitAngle_ = angle; }
 
 	void SetFocusTargetVelocity(const Vector3& targetVel) { focusTargetVelocity_ = targetVel; }
+
+	void SetInCombat(bool isInCombat) { enemyData_.characterInfo.isInCombat = isInCombat; }
 
 private:
 

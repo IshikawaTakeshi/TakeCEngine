@@ -166,26 +166,34 @@ void Enemy::Update() {
 	}
 
 	// RUNNING時のBehavior遷移リクエスト
-	if (behaviorManager_->GetCurrentBehaviorType() == Behavior::RUNNING) {
-		
-		//BestActionの取得
-		switch (aiBrainSystem_->GetBestAction()) {
-		case Action::JUMP: 
-			behaviorManager_->RequestBehavior(Behavior::JUMP);
-			break;
-		case Action::FLOATING: // FLOATINGへの遷移はJUMPで行う
-			behaviorManager_->RequestBehavior(Behavior::JUMP);
-			break;
-		case Action::STEPBOOST:
-			behaviorManager_->RequestBehavior(Behavior::STEPBOOST);
-			break;	
+	if (enemyData_.characterInfo.isInCombat) {
+		if (behaviorManager_->GetCurrentBehaviorType() == Behavior::RUNNING) {
+
+			//BestActionの取得
+			switch (aiBrainSystem_->GetBestAction()) {
+			case Action::JUMP:
+				behaviorManager_->RequestBehavior(Behavior::JUMP);
+				break;
+			case Action::FLOATING: // FLOATINGへの遷移はJUMPで行う
+				behaviorManager_->RequestBehavior(Behavior::JUMP);
+				break;
+			case Action::STEPBOOST:
+				behaviorManager_->RequestBehavior(Behavior::STEPBOOST);
+				break;
+			}
+		}
+
+		//移動方向の取得
+		enemyData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
+		//攻撃処理
+		if (enemyData_.characterInfo.isAlive == true) {
+			UpdateAttack();
 		}
 	}
 
 	//エネルギーの更新
 	UpdateEnergy();
-	//移動方向の取得
-	enemyData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
+	
 	//Behaviorの更新
 	behaviorManager_->Update(enemyData_.characterInfo);
 
@@ -200,10 +208,7 @@ void Enemy::Update() {
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
 	}
 
-	//攻撃処理
-	if (enemyData_.characterInfo.isAlive == true) {
-		UpdateAttack();
-	}
+	
 
 	//ダメージエフェクトの更新
 	if (enemyData_.characterInfo.isDamaged) {

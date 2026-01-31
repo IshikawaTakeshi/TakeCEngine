@@ -1,7 +1,7 @@
 {
     "actionData": {
-        "pelletCount": 20,
-        "spreadDeg": 10.0
+        "pelletCount": 15,
+        "spreadDeg": 1.0
     },
     "config": {
         "bulletSpeed": 400.0,
