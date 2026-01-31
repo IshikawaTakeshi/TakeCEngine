@@ -164,39 +164,47 @@ void Player::Update() {
 		playerData_.characterInfo.stepBoostInfo.intervalTimer -= deltaTime_;
 	}
 
-	// StepBoost入力判定を最初に追加
-	if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING ||
-		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING) {
+	if (playerData_.characterInfo.isInCombat) {
+		// StepBoost入力判定を最初に追加
+		if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING ||
+			behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING) {
 
-		//オーバーヒート状態のチェック
-		if (playerData_.characterInfo.overHeatInfo.isOverheated == false) {
-			//StepBoost入力判定
-			// LTボタン＋スティック入力で発動
-			if (inputProvider_->RequestStepBoost()) {
-				RequestActiveBoostEffect();
-				behaviorManager_->RequestBehavior(GameCharacterBehavior::STEPBOOST);
-			}
-			//Jump入力判定
-			//RTで発動
-			if (playerData_.characterInfo.onGround == true) {
+			//オーバーヒート状態のチェック
+			if (playerData_.characterInfo.overHeatInfo.isOverheated == false) {
+				//StepBoost入力判定
+				// LTボタン＋スティック入力で発動
+				if (inputProvider_->RequestStepBoost()) {
+					RequestActiveBoostEffect();
+					behaviorManager_->RequestBehavior(GameCharacterBehavior::STEPBOOST);
+				}
+				//Jump入力判定
+				//RTで発動
+				if (playerData_.characterInfo.onGround == true) {
 
-				if (inputProvider_->RequestJumpInput()) {
-					//ジャンプのリクエスト
-					behaviorManager_->RequestBehavior(GameCharacterBehavior::JUMP);
-					playerData_.characterInfo.onGround = false; // ジャンプしたので地上ではない
+					if (inputProvider_->RequestJumpInput()) {
+						//ジャンプのリクエスト
+						behaviorManager_->RequestBehavior(GameCharacterBehavior::JUMP);
+						playerData_.characterInfo.onGround = false; // ジャンプしたので地上ではない
+					}
 				}
 			}
 		}
-	}
 
-	//移動方向の取得
-	playerData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
-	//カメラ方向のベクトルを取得
-	camera_->SetStick(inputProvider_->GetCameraRotateInput());
+		//移動方向の取得
+		playerData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
+		//カメラ方向のベクトルを取得
+		camera_->SetStick(inputProvider_->GetCameraRotateInput());
 
-	if (inputProvider_->RequestChangeCameraMode()) {
-		camera_->SetRequestedChangeCameraMode(true);
-		isFocus_ = !isFocus_;
+		if (inputProvider_->RequestChangeCameraMode()) {
+			camera_->SetRequestedChangeCameraMode(true);
+			isFocus_ = !isFocus_;
+		}
+
+		//攻撃処理
+		if (playerData_.characterInfo.isAlive == true) {
+			//生存時のみ攻撃処理を行う
+			UpdateAttack();
+		}
 	}
 
 	//Behaviorの更新
@@ -218,11 +226,7 @@ void Player::Update() {
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
 	}
 
-	//攻撃処理
-	if (playerData_.characterInfo.isAlive == true) {
-		//生存時のみ攻撃処理を行う
-		UpdateAttack();
-	}
+	
 
 	//HPが0以下なら死亡処理
 	if (playerData_.characterInfo.health <= 0.0f) {

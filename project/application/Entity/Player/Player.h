@@ -106,6 +106,8 @@ public:
 	//フォーカス中かどうか
 	bool IsFocus() const { return isFocus_; }
 
+	bool IsInCombat() const { return playerData_.characterInfo.isInCombat; }
+
 	//================================================================================
 	// setter
 	//================================================================================
@@ -116,6 +118,8 @@ public:
 	void SetFocusTargetPos(const Vector3& targetPos) { playerData_.characterInfo.focusTargetPos = targetPos; }
 
 	void SetFocusTargetVelocity(const Vector3& targetVel) { focusTargetVelocity_ = targetVel; }
+
+	void SetInCombat(bool inCombat) { playerData_.characterInfo.isInCombat = inCombat; }
 
 private:
 

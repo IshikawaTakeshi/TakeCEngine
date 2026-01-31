@@ -31,6 +31,7 @@ void to_json(nlohmann::json& j, const PlayableCharacterInfo& info) {
 	j["onGround"] = info.onGround;
 	j["isChargeShooting"] = info.isChargeShooting;
 	j["isDamaged"] = info.isDamaged;
+	j["isInCombat"] = info.isInCombat;
 
 	j["stepBoostInfo"] = info.stepBoostInfo;
 	j["jumpInfo"] = info.jumpInfo;
@@ -103,10 +104,13 @@ void from_json(const nlohmann::json& j, PlayableCharacterInfo& info) {
 	if (j.contains("fallSpeed"))j.at("fallSpeed").get_to(info.fallSpeed);
 	if (j.contains("health"))j.at("health").get_to(info.health);
 	if (j.contains("maxHealth"))j.at("maxHealth").get_to(info.maxHealth);
+
 	if (j.contains("isAlive"))j.at("isAlive").get_to(info.isAlive);
 	if (j.contains("onGround"))j.at("onGround").get_to(info.onGround);
 	if (j.contains("isChargeShooting"))j.at("isChargeShooting").get_to(info.isChargeShooting);
 	if (j.contains("isDamaged"))j.at("isDamaged").get_to(info.isDamaged);
+	if (j.contains("isInCombat"))j.at("isInCombat").get_to(info.isInCombat);
+
 	if (j.contains("stepBoostInfo"))j.at("stepBoostInfo").get_to(info.stepBoostInfo);
 	if (j.contains("jumpInfo"))j.at("jumpInfo").get_to(info.jumpInfo);
 	if (j.contains("chargeAttackStunInfo"))j.at("chargeAttackStunInfo").get_to(info.chargeAttackStunInfo);
