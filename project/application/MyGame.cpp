@@ -182,6 +182,7 @@ void MyGame::LoadModel() {
 	TakeC::ModelManager::GetInstance().LoadModel("plane.gltf","skyBox_blueSky.dds");
 	TakeC::ModelManager::GetInstance().LoadModel("player_singleMesh.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("player_MultiMesh.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Player_Model_Ver2.0.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Enemy.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("ICOBall.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Rifle.gltf");

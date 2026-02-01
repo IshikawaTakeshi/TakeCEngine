@@ -14,7 +14,7 @@
 	],
 	"nodes":[
 		{
-			"name":"\u30dc\u30fc\u30f3.004",
+			"name":"neck",
 			"rotation":[
 				0.17290860414505005,
 				0.019642870873212814,
@@ -277,7 +277,7 @@
 			]
 		},
 		{
-			"name":"\u30dc\u30fc\u30f3.034",
+			"name":"weaponJointPoint_LT.tip",
 			"rotation":[
 				0.00034983656951226294,
 				3.7972326936142053e-06,
@@ -299,7 +299,7 @@
 			"children":[
 				14
 			],
-			"name":"\u30dc\u30fc\u30f3.028",
+			"name":"weaponJointPoint_LT",
 			"rotation":[
 				-0.19045694172382355,
 				-0.17864632606506348,
@@ -321,7 +321,7 @@
 			"children":[
 				15
 			],
-			"name":"\u30dc\u30fc\u30f3.026",
+			"name":"weaponArm_leftTop",
 			"rotation":[
 				0.24358762800693512,
 				3.175031793034577e-08,
@@ -340,7 +340,7 @@
 			]
 		},
 		{
-			"name":"\u30dc\u30fc\u30f3.035",
+			"name":"weaponJointPoint_LB.tip",
 			"rotation":[
 				0.005681108217686415,
 				-2.5908184397849254e-06,
@@ -362,7 +362,7 @@
 			"children":[
 				17
 			],
-			"name":"\u30dc\u30fc\u30f3.029",
+			"name":"weaponJointPoint_LB",
 			"rotation":[
 				-0.4713064730167389,
 				0.2136951982975006,
@@ -384,7 +384,7 @@
 			"children":[
 				18
 			],
-			"name":"\u30dc\u30fc\u30f3.027",
+			"name":"weaponArm_leftBottom",
 			"rotation":[
 				-0.43723565340042114,
 				9.672410428152034e-09,
@@ -403,7 +403,7 @@
 			]
 		},
 		{
-			"name":"\u30dc\u30fc\u30f3.036",
+			"name":"weaponJointPoint_RT.tip",
 			"rotation":[
 				-0.0003498204459901899,
 				-2.017591668845853e-06,
@@ -425,7 +425,7 @@
 			"children":[
 				20
 			],
-			"name":"\u30dc\u30fc\u30f3.032",
+			"name":"weaponJointPoint_RT",
 			"rotation":[
 				-0.6968504190444946,
 				-0.6820780634880066,
@@ -447,7 +447,7 @@
 			"children":[
 				21
 			],
-			"name":"\u30dc\u30fc\u30f3.030",
+			"name":"weaponArm_rightTop",
 			"rotation":[
 				0.7033059000968933,
 				-0.6395515203475952,
@@ -466,7 +466,7 @@
 			]
 		},
 		{
-			"name":"\u30dc\u30fc\u30f3.037",
+			"name":"weaponJointPoint_RB.tip",
 			"rotation":[
 				-0.005681120324879885,
 				2.434353064018069e-06,
@@ -488,7 +488,7 @@
 			"children":[
 				23
 			],
-			"name":"\u30dc\u30fc\u30f3.033",
+			"name":"weaponJointPoint_RB",
 			"rotation":[
 				0.1725570410490036,
 				0.65811687707901,
@@ -510,7 +510,7 @@
 			"children":[
 				24
 			],
-			"name":"\u30dc\u30fc\u30f3.031",
+			"name":"weaponArm_rightBottom",
 			"rotation":[
 				-0.6100102663040161,
 				0.4961204528808594,
@@ -535,7 +535,7 @@
 				22,
 				25
 			],
-			"name":"\u30dc\u30fc\u30f3.025",
+			"name":"backpack",
 			"rotation":[
 				-0.7992066144943237,
 				-0.04550168290734291,
@@ -738,7 +738,7 @@
 			]
 		},
 		{
-			"name":"\u30dc\u30fc\u30f3.024",
+			"name":"toes_left",
 			"rotation":[
 				-0.005436347331851721,
 				-0.006062149070203304,
@@ -757,7 +757,7 @@
 			]
 		},
 		{
-			"name":"\u30dc\u30fc\u30f3.039",
+			"name":"heels_left",
 			"rotation":[
 				-0.001998747466132045,
 				-2.9247704702584087e-08,
@@ -780,7 +780,7 @@
 				37,
 				38
 			],
-			"name":"\u30dc\u30fc\u30f3.023",
+			"name":"shin_left",
 			"rotation":[
 				0.002347402973100543,
 				-2.9292061753949383e-07,
@@ -797,7 +797,7 @@
 			"children":[
 				39
 			],
-			"name":"\u30dc\u30fc\u30f3.022",
+			"name":"knees_left",
 			"rotation":[
 				-9.31322907682386e-10,
 				-3.952349583139121e-14,
@@ -814,7 +814,7 @@
 			"children":[
 				40
 			],
-			"name":"\u30dc\u30fc\u30f3.021",
+			"name":"thighs_left",
 			"rotation":[
 				0.6974235773086548,
 				1.8528729128775012e-07,
@@ -1099,7 +1099,7 @@
 	"buffers":[
 		{
 			"byteLength":692308,
-			"uri":"Player_Model_ver2.0.bin"
+			"uri":"Player_Model_Ver2.0.bin"
 		}
 	]
 }

@@ -66,17 +66,17 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//backEmitter_->SetIsEmit(true);
 
 	//ブーストエフェクトの初期化
-	boostEffects_.resize(4);
-	for (int i = 0; i < 4; i++) {
-		boostEffects_[i] = std::make_unique<BoostEffect>();
-		boostEffects_[i]->Initialize(this);
-	}
-	boostEffects_[LEFT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Left.Tip");
-	boostEffects_[RIGHT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Right.Tip");
-	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftShoulder");
-	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightShoulder");
-	boostEffects_[LEFT_BACK]->SetRotate({ 0.7f,0.0f,1.3f });
-	boostEffects_[RIGHT_BACK]->SetRotate({ 0.7f,0.0f,-1.3f }); //エフェクトの向きを調整
+	//boostEffects_.resize(4);
+	//for (int i = 0; i < 4; i++) {
+	//	boostEffects_[i] = std::make_unique<BoostEffect>();
+	//	boostEffects_[i]->Initialize(this);
+	//}
+	//boostEffects_[LEFT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Left.Tip");
+	//boostEffects_[RIGHT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Right.Tip");
+	//boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftShoulder");
+	//boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightShoulder");
+	//boostEffects_[LEFT_BACK]->SetRotate({ 0.7f,0.0f,1.3f });
+	//boostEffects_[RIGHT_BACK]->SetRotate({ 0.7f,0.0f,-1.3f }); //エフェクトの向きを調整
 
 	//入力プロバイダーの初期化
 	inputProvider_ = std::make_unique<PlayerInputProvider>(this);
@@ -126,16 +126,16 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bul
 		weapons_[3]->SetOwnerObject(this);
 	}
 
-	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
+	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RB.tip"); // 1つ目の武器を右手に取り付け
 	weapons_[R_ARMS]->SetUnitPosition(R_ARMS); // 1つ目の武器のユニットポジションを設定
-	weapons_[L_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
+	weapons_[L_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LB.tip"); // 2つ目の武器を左手に取り付け
 	weapons_[L_ARMS]->SetUnitPosition(L_ARMS); // 2つ目の武器のユニットポジションを設定
-	weapons_[R_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Left.Tip"); // 3つ目の武器を背中に取り付け
+	weapons_[R_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LT.tip"); // 3つ目の武器を背中に取り付け
 	weapons_[R_BACK]->SetUnitPosition(R_BACK); // 3つ目の武器のユニットポジションを設定
-	weapons_[R_BACK]->SetRotate({ -1.0f, 0.0f, -2.0f }); // 背中の武器の回転を初期化
-	weapons_[L_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Right.Tip"); // 4つ目の武器を背中に取り付け
+	//weapons_[R_BACK]->SetRotate({ -1.0f, 0.0f, -2.0f }); // 背中の武器の回転を初期化
+	weapons_[L_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RT.tip"); // 4つ目の武器を背中に取り付け
 	weapons_[L_BACK]->SetUnitPosition(L_BACK); // 4つ目の武器のユニットポジションを設定
-	weapons_[L_BACK]->SetRotate({ -1.0f, 0.0f, 2.0f }); // 背中の武器の回転を初期化
+	//weapons_[L_BACK]->SetRotate({ -1.0f, 0.0f, 2.0f }); // 背中の武器の回転を初期化
 }
 
 //===================================================================================
@@ -174,7 +174,7 @@ void Player::Update() {
 				//StepBoost入力判定
 				// LTボタン＋スティック入力で発動
 				if (inputProvider_->RequestStepBoost()) {
-					RequestActiveBoostEffect();
+					//RequestActiveBoostEffect();
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::STEPBOOST);
 				}
 				//Jump入力判定
@@ -283,7 +283,7 @@ void Player::Update() {
 	collider_->Update(object3d_.get());
 
 	//背部エミッターの更新
-	std::optional<Vector3> backpackPosition = object3d_->GetModel()->GetSkeleton()->GetJointPosition("leg", object3d_->GetWorldMatrix());
+	std::optional<Vector3> backpackPosition = object3d_->GetModel()->GetSkeleton()->GetJointPosition("toes_left", object3d_->GetWorldMatrix());
 	backEmitter_->SetTranslate(backpackPosition.value());
 	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
 	//backEmitter_->Update();
@@ -298,10 +298,10 @@ void Player::Update() {
 	}
 
 	//ブーストエフェクトの更新
-	for (const auto& boostEffect : boostEffects_) {
-		boostEffect->Update();
-		boostEffect->SetBehavior(behaviorManager_->GetCurrentBehaviorType());
-	}
+	//for (const auto& boostEffect : boostEffects_) {
+	//	boostEffect->Update();
+	//	boostEffect->SetBehavior(behaviorManager_->GetCurrentBehaviorType());
+	//}
 
 	playerData_.characterInfo.onGround = false; // 毎フレームリセットし、衝突判定で更新されるようにする
 }
@@ -340,9 +340,9 @@ void Player::UpdateImGui() {
 	// コライダーのImGui更新
 	collider_->UpdateImGui("Player");
 	// ブーストエフェクトのImGui更新
-	for (int i = 0; i < chargeShootableUnits_.size(); i++) {
-		boostEffects_[i]->UpdateImGui(magic_enum::enum_name(static_cast<BoostEffectPosition>(i)).data());
-	}
+	//for (int i = 0; i < chargeShootableUnits_.size(); i++) {
+	//	boostEffects_[i]->UpdateImGui(magic_enum::enum_name(static_cast<BoostEffectPosition>(i)).data());
+	//}
 	// 武器のImGui更新
 	weapons_[0]->UpdateImGui();
 	weapons_[1]->UpdateImGui();
@@ -380,9 +380,9 @@ void Player::DrawShadow(const LightCameraInfo& lightCamera) {
 // ブーストエフェクトの描画処理
 //===================================================================================
 void Player::DrawBoostEffect() {
-	for (const auto& effect : boostEffects_) {
-		effect->Draw();
-	}
+	//for (const auto& effect : boostEffects_) {
+	//	effect->Draw();
+	//}
 }
 
 //===================================================================================
@@ -643,48 +643,48 @@ void Player::UpdateEnergy() {
 
 void Player::RequestActiveBoostEffect() {
 
-	//ステップブーストの方向とスティックの向きによってアクティブにするエフェクトを変更
-	Vector3 moveDir = playerData_.characterInfo.moveDirection;
-	if (moveDir.Length() <= 0.1f) return;
+	////ステップブーストの方向とスティックの向きによってアクティブにするエフェクトを変更
+	//Vector3 moveDir = playerData_.characterInfo.moveDirection;
+	//if (moveDir.Length() <= 0.1f) return;
 
-	// --- プレイヤーの向きをQuaternionから取得 ---
-	Vector3 localForward = Vector3(0.0f, 0.0f, 1.0f);
-	Vector3 playerForward = QuaternionMath::RotateVector(localForward, playerData_.characterInfo.transform.rotate);
-	playerForward.y = 0.0f; // 水平方向だけ見る
-	playerForward = Vector3Math::Normalize(playerForward);
+	//// --- プレイヤーの向きをQuaternionから取得 ---
+	//Vector3 localForward = Vector3(0.0f, 0.0f, 1.0f);
+	//Vector3 playerForward = QuaternionMath::RotateVector(localForward, playerData_.characterInfo.transform.rotate);
+	//playerForward.y = 0.0f; // 水平方向だけ見る
+	//playerForward = Vector3Math::Normalize(playerForward);
 
-	// --- スティック方向との角度差を求める ---
-	float dot = Vector3Math::Dot(playerForward, moveDir);
-	float crossY = playerForward.x * moveDir.z - playerForward.z * moveDir.x;
-	float angle = atan2(crossY, dot) * (180.0f / std::numbers::pi_v<float>); // -180°～180°
+	//// --- スティック方向との角度差を求める ---
+	//float dot = Vector3Math::Dot(playerForward, moveDir);
+	//float crossY = playerForward.x * moveDir.z - playerForward.z * moveDir.x;
+	//float angle = atan2(crossY, dot) * (180.0f / std::numbers::pi_v<float>); // -180°～180°
 
-	// --- エフェクト制御 ---
-	if (angle >= -45.0f && angle < 45.0f) {
-		// 前方向
-		boostEffects_[LEFT_BACK]->SetIsActive(true);
-		boostEffects_[RIGHT_BACK]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
-	}
-	else if (angle >= 45.0f && angle < 135.0f) {
-		// 右方向
-		boostEffects_[LEFT_BACK]->SetIsActive(false);
-		boostEffects_[RIGHT_BACK]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
-	}
-	else if (angle <= -45.0f && angle > -135.0f) {
-		// 左方向
-		boostEffects_[LEFT_BACK]->SetIsActive(true);
-		boostEffects_[RIGHT_BACK]->SetIsActive(false);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
-	}
-	else {
-		// 後方向
-		boostEffects_[LEFT_BACK]->SetIsActive(true);
-		boostEffects_[RIGHT_BACK]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
-	}
+	//// --- エフェクト制御 ---
+	//if (angle >= -45.0f && angle < 45.0f) {
+	//	// 前方向
+	//	boostEffects_[LEFT_BACK]->SetIsActive(true);
+	//	boostEffects_[RIGHT_BACK]->SetIsActive(true);
+	//	boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
+	//	boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+	//}
+	//else if (angle >= 45.0f && angle < 135.0f) {
+	//	// 右方向
+	//	boostEffects_[LEFT_BACK]->SetIsActive(false);
+	//	boostEffects_[RIGHT_BACK]->SetIsActive(true);
+	//	boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
+	//	boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
+	//}
+	//else if (angle <= -45.0f && angle > -135.0f) {
+	//	// 左方向
+	//	boostEffects_[LEFT_BACK]->SetIsActive(true);
+	//	boostEffects_[RIGHT_BACK]->SetIsActive(false);
+	//	boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
+	//	boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+	//}
+	//else {
+	//	// 後方向
+	//	boostEffects_[LEFT_BACK]->SetIsActive(true);
+	//	boostEffects_[RIGHT_BACK]->SetIsActive(true);
+	//	boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
+	//	boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+	//}
 }
