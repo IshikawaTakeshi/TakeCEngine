@@ -139,7 +139,7 @@ private:
 	//背部のパーティクルエミッター
 	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
 	//ブーストエフェクト
-	//std::vector<std::unique_ptr<BoostEffect>> boostEffects_;
+	std::vector<std::unique_ptr<BoostEffect>> boostEffects_;
 	// プレイヤーの基本情報
 	CharacterData playerData_;
 
