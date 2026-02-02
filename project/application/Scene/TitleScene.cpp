@@ -21,7 +21,7 @@ void TitleScene::Initialize() {
 
 	// Sprite
 	titleTextSprite_ = std::make_unique<Sprite>();
-	titleTextSprite_->Initialize(&SpriteCommon::GetInstance(), "UI/TitleText.png");
+	titleTextSprite_->Initialize(&SpriteCommon::GetInstance(), "Exit8.dds");
 	titleTextSprite_->AdjustTextureSize();
 	titleTextSprite_->SetTranslate({ 200.0f, 256.0f});
 
