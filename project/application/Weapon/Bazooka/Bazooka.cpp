@@ -74,8 +74,6 @@ void Bazooka::Update() {
 
 	muzzleFlashEmitter_->SetTranslate(object3d_->GetWorldPosition());
 	muzzleFlashEmitter_->Update();
-
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("RifleMuzzleFlash2")->SetEmitterPosition(object3d_->GetWorldPosition());
 }
 
 //=============================================================================

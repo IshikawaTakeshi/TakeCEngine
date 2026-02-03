@@ -295,14 +295,10 @@ void Enemy::Update() {
 	//背部エミッターの更新
 	std::optional<Vector3> backpackPosition = object3d_->GetModel()->GetSkeleton()->GetJointPosition("leg", object3d_->GetWorldMatrix());
 	backEmitter_->SetTranslate(backpackPosition.value());
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
+	
 	backEmitter_->Update();
 	//死亡エフェクトの更新
 	deadEffect_->Update(enemyData_.characterInfo.transform.translate);
-
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark")->SetEmitterPosition(enemyData_.characterInfo.transform.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(enemyData_.characterInfo.transform.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(enemyData_.characterInfo.transform.translate);
 
 	// 着地判定の毎フレームリセット
 	enemyData_.characterInfo.onGround = false; 

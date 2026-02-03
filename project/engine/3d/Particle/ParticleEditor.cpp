@@ -61,7 +61,6 @@ void ParticleEditor::Update() {
 	previewEmitter_->SetIsEmit(autoEmit_);
 	previewEmitter_->SetParticleCount(emitCount_);
 	previewEmitter_->SetFrequency(emitFrequency_);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup(currentGroupName_)->SetEmitterPosition(emitterTransform_.translate);
 	previewEmitter_->Update();
 
 }

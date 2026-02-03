@@ -127,8 +127,6 @@ void Rifle::Update() {
 
 	//マズルフラッシュエフェクト更新
 	muzzleFlashEffect_->Update();
-
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("RifleMuzzleFlash")->SetEmitterPosition(object3d_->GetWorldPosition());
 }
 
 //===================================================================================

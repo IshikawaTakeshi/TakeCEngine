@@ -43,21 +43,9 @@ public:
 	void Initialize(const std::string& emitterName, const std::string& presetInfo);
 
 	/// <summary>
-	/// 球状エミッター初期化
-	/// </summary>
-	/// <param name="dxCommon"></param>
-	/// <param name="srvManager"></param>
-	void InitializeEmitterSphere(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager);
-
-	/// <summary>
 	/// 更新処理
 	/// </summary>
 	void Update();
-
-	/// <summary>
-	/// GPUパーティクル用の更新処理
-	/// </summary>
-	void UpdateForGPU();
 
 	/// <summary>
 	/// ImGuiの更新
@@ -75,8 +63,6 @@ public:
 	void Emit();
 	void Emit(const Vector3& position);
 
-	void EmitParticle(GPUParticle* gpuParticle);
-
 public:
 
 	//==================================================================================
@@ -84,6 +70,8 @@ public:
 	//==================================================================================
 
 	//----- getter ---------------
+
+
 
 	//発生させるParticleの名前取得
 	const std::string& GetEmitterName() const { return emitterName_; }
@@ -97,6 +85,8 @@ public:
 	const float GetFrequency() const { return frequency_; }
 	//発生方向取得
 	const Vector3& GetEmitDirection() const { return emitDirection_; }
+
+	const Vector3& GetPosition() const { return transforms_.translate; }
 
 	//----- setter ---------------
 
@@ -127,23 +117,8 @@ private:
 
 	//DirectXCommon
 	TakeC::DirectXCommon* dxCommon_;
-	//SrvManager
-	TakeC::SrvManager* srvManager_;
-	//PSO
-	std::unique_ptr<PSO> emitParticlePso_;
-	//RootSignature
-	ComPtr<ID3D12RootSignature> emitParticleRootSignature_;
 
-	//球状エミッター情報
-	EmitterSphereInfo* emitterSphereInfo_ = nullptr;
-	uint32_t emitterSphereSrvIndex_ = 0;
-	//フレーム時間の情報
-	PerFrame* perFrameData_ = nullptr;
-
-	//リソース
-	ComPtr<ID3D12Resource> emitterSphereResource_;
-	ComPtr<ID3D12Resource> perFrameResource_;
-
+	uint32_t emitterID_ = 0;  // このエミッターのユニークID
 	bool isEmit_; //発生フラグ
 	ParticlePreset preset_; //プリセット情報
 	EulerTransform transforms_;   //エミッターの位置

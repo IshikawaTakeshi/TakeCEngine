@@ -23,6 +23,8 @@ struct Particle {
 
 	float trailSpawnTimer_ = 0.0f; //トレイルエフェクトの生成タイマー
 	bool isTrailParent_ = false; //トレイルエフェクトの親かどうか
+
+	int32_t emitterID_ = 0;  // 0 = エミッター追従なし
 };
 
 // 前方宣言
@@ -67,10 +69,15 @@ public:
 	/// </summary>
 	Particle MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate,const Vector3& directoin);
 
+	Particle MakeNewParticleWithEmitter(uint32_t emitterID, std::mt19937& randomEngine, const Vector3& translate, const Vector3& direction);
+
 	/// <summary>
 	/// パーティクルの発生
 	/// </summary>
 	std::list<Particle> Emit(const Vector3& emitterPos,const Vector3& direction, uint32_t particleCount);
+
+	//エミッターID付き
+	std::list<Particle> EmitWithEmitter(uint32_t emitterID, const Vector3& emitterPos, const Vector3& direction, uint32_t particleCount);
 
 	/// <summary>
 	/// パーティクルの追加
