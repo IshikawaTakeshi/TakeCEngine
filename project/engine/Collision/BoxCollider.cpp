@@ -1,11 +1,12 @@
 #include "BoxCollider.h"
 #include "3d/Object3dCommon.h"
-#include "MatrixMath.h"
-#include "SphereCollider.h"
-#include "Model.h"
-#include "ModelManager.h"
-#include "CameraManager.h"
-#include "DirectXCommon.h"
+#include "3d/Model.h"
+#include "engine/math/MatrixMath.h"
+#include "engine/math/Vector3Math.h"
+#include "Collision/SphereCollider.h"
+#include "Base/ModelManager.h"
+#include "Base/DirectXCommon.h"
+#include "Camera/CameraManager.h"
 #include "engine/Entity/GameCharacter.h"
 #include "TakeCFrameWork.h"
 
@@ -248,6 +249,80 @@ bool BoxCollider::IntersectsSphere(const Ray& ray, float radius, RayCastHit& out
 	return true;
 }
 
+bool BoxCollider::IntersectsCapsule(const Capsule& capsule, RayCastHit& outHit){
+	// カプセルの半径分だけOBBを膨張させて、線分との判定に変換
+	Vector3 expandedHalfSize = obb_.halfSize + Vector3(capsule.radius, capsule.radius, capsule.radius);
+
+	// カプセルの軸をOBBのローカル座標系に変換
+	Vector3 startLocal = WorldToLocal(capsule.start);
+	Vector3 endLocal = WorldToLocal(capsule.end);
+
+	// 膨張したAABBと線分の判定
+	Vector3 direction = endLocal - startLocal;
+	float length = Vector3Math::Length(direction);
+
+	if (length < 0.0001f) {
+		// 移動量がほぼ0の場合、点と膨張AABBの判定
+		if (std::abs(startLocal.x) <= expandedHalfSize.x &&
+			std::abs(startLocal.y) <= expandedHalfSize.y &&
+			std::abs(startLocal.z) <= expandedHalfSize.z) {
+			outHit.isHit = true;
+			outHit.distance = 0.0f;
+			outHit.position = capsule.start;
+			outHit.hitCollider = this;
+			CalculateBoxNormal(startLocal, expandedHalfSize, outHit.normal);
+			return true;
+		}
+		return false;
+	}
+
+	Vector3 dir = direction / length;
+
+	// スラブ法による線分とAABBの交差判定
+	float tMin = 0.0f;
+	float tMax = length;
+
+	for (int i = 0; i < 3; ++i) {
+		float d = (i == 0) ? dir.x : (i == 1) ? dir.y : dir.z;
+		float origin = (i == 0) ? startLocal.x : (i == 1) ? startLocal.y : startLocal.z;
+		float halfSize = (i == 0) ? expandedHalfSize.x : (i == 1) ? expandedHalfSize.y : expandedHalfSize.z;
+
+		if (std::abs(d) < 1e-6f) {
+			// 軸に平行な場合
+			if (std::abs(origin) > halfSize) {
+				return false;
+			}
+		}
+		else {
+			float t1 = (-halfSize - origin) / d;
+			float t2 = (halfSize - origin) / d;
+
+			if (t1 > t2) std::swap(t1, t2);
+
+			tMin = std::max(tMin, t1);
+			tMax = std::min(tMax, t2);
+
+			if (tMin > tMax) {
+				return false;
+			}
+		}
+	}
+
+	// 衝突情報の設定
+	outHit.isHit = true;
+	outHit.distance = tMin;
+
+	// ワールド座標での衝突点
+	Vector3 localHit = startLocal + dir * tMin;
+	outHit.position = LocalToWorld(localHit);
+	outHit.hitCollider = this;
+
+	// 法線の計算
+	CalculateBoxNormal(localHit, expandedHalfSize, outHit.normal);
+
+	return true;
+}
+
 void BoxCollider::DrawCollider() {
 
 	TakeCFrameWork::GetWireFrame()->DrawOBB(obb_, color_);
@@ -279,6 +354,8 @@ SurfaceType BoxCollider::CheckSurfaceType(const Vector3* Axis, const Vector3& no
 		return SurfaceType::WALL;
 	}
 }
+
+
 
 
 //=============================================================================
@@ -422,4 +499,46 @@ Vector3 BoxCollider::GetWorldPos() {
 void BoxCollider::SetHalfSize(const Vector3& halfSize) {
 	halfSize_ = halfSize;
 	obb_.halfSize = halfSize_;
+}
+
+//=============================================================================
+// ワールド座標 -> ローカル座標変換
+//=============================================================================
+Vector3 BoxCollider::WorldToLocal(const Vector3& worldPos){
+	Vector3 diff = worldPos - obb_.center;
+	return Vector3(
+		diff.Dot(obb_.axis[0]),
+		diff.Dot(obb_.axis[1]),
+		diff.Dot(obb_.axis[2])
+	);
+}
+
+//=============================================================================
+// ローカル座標 -> ワールド座標変換
+//=============================================================================
+Vector3 BoxCollider::LocalToWorld(const Vector3& localPos){
+	return obb_.center +
+		obb_.axis[0] * localPos.x +
+		obb_.axis[1] * localPos.y +
+		obb_.axis[2] * localPos.z;
+}
+
+//=============================================================================
+// AABBのどの面に当たったかを判定して法線を設定する関数
+//=============================================================================
+void BoxCollider::CalculateBoxNormal(const Vector3& localHit, const Vector3& halfSize, Vector3& outNormal) {
+	const float epsilon = 0.01f;
+	Vector3 localNormal(0, 0, 0);
+
+	if (std::abs(localHit.x - halfSize.x) < epsilon) localNormal = Vector3(1, 0, 0);
+	else if (std::abs(localHit.x + halfSize.x) < epsilon) localNormal = Vector3(-1, 0, 0);
+	else if (std::abs(localHit.y - halfSize.y) < epsilon) localNormal = Vector3(0, 1, 0);
+	else if (std::abs(localHit.y + halfSize.y) < epsilon) localNormal = Vector3(0, -1, 0);
+	else if (std::abs(localHit.z - halfSize.z) < epsilon) localNormal = Vector3(0, 0, 1);
+	else if (std::abs(localHit.z + halfSize.z) < epsilon) localNormal = Vector3(0, 0, -1);
+
+	// ローカル法線をワールド法線に変換
+	outNormal = (obb_.axis[0] * localNormal.x +
+		obb_.axis[1] * localNormal.y +
+		obb_.axis[2] * localNormal.z).Normalize();
 }

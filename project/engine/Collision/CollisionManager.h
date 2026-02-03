@@ -3,6 +3,7 @@
 #include "engine/base/PipelineStateObject.h"
 #include "engine/Entity/GameCharacter.h"
 #include "engine/math/physics/Ray.h"
+#include "engine/Collision/Capsule.h"
 #include <list>
 #include <memory>
 
@@ -92,6 +93,7 @@ public:
 	/// <returns></returns>
 	bool SphereCast(const Ray& ray, float radius, RayCastHit& outHit, uint32_t layerMask);
 
+	bool CapsuleCast(const Capsule& capsule, RayCastHit& outHit, uint32_t layerMask);
 
 private:
 

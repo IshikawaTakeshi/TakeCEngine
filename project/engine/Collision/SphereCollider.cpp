@@ -1,11 +1,12 @@
 #include "SphereCollider.h"
-#include "BoxCollider.h"
-#include "Model.h"
-#include "ModelManager.h"
-#include "CameraManager.h"
-#include "DirectXCommon.h"
-#include "MatrixMath.h"
-#include "TakeCFrameWork.h"
+#include "engine/Base/TakeCFrameWork.h"
+#include "engine/Base/ModelManager.h"
+#include "engine/Base/DirectXCommon.h"
+#include "engine/Collision/BoxCollider.h"
+#include "engine/3d/Model.h"
+#include "engine/Camera/CameraManager.h"
+#include "engine/math/MatrixMath.h"
+#include "engine/math/Vector3Math.h"
 #include <algorithm>
 
 //=============================================================================
@@ -122,6 +123,9 @@ bool SphereCollider::Intersects(const Ray& ray, RayCastHit& outHit) {
 	return true;
 }
 
+//=============================================================================
+// 球との衝突判定
+//=============================================================================
 bool SphereCollider::IntersectsSphere(const Ray& ray, float radius, RayCastHit& outHit) {
 
 	// 相手の半径分だけ、自分の当たり判定を大きくしてRayCastするのと同じ計算
@@ -150,6 +154,69 @@ bool SphereCollider::IntersectsSphere(const Ray& ray, float radius, RayCastHit& 
 	outHit.hitCollider = this;
 
 	return true;
+}
+
+//=============================================================================
+// カプセルとの衝突判定
+//=============================================================================
+bool SphereCollider::IntersectsCapsule(const Capsule& capsule, RayCastHit& outHit) {
+	// カプセルの軸ベクトル
+	Vector3 capsuleAxis = capsule.end - capsule.start;
+	float capsuleLength = Vector3Math::Length(capsuleAxis);
+
+	// カプセルが点の場合（移動量がほぼ0）
+	if (capsuleLength < 0.0001f) {
+		// 単純な球同士の判定
+		float totalRadius = radius_ + capsule.radius;
+		Vector3 diff = transform_.translate - capsule.start;
+		float distSq = Vector3Math::LengthSq(diff);
+
+		if (distSq <= totalRadius * totalRadius) {
+			outHit.isHit = true;
+			outHit.distance = 0.0f;
+			outHit.position = capsule.start;
+			outHit.normal = Vector3Math::Normalize(diff);
+			outHit.hitCollider = this;
+			return true;
+		}
+		return false;
+	}
+
+	Vector3 capsuleDir = capsuleAxis / capsuleLength;
+
+	// 球の中心からカプセル軸上の最近点を求める
+	Vector3 toSphere = transform_.translate - capsule.start;
+	float t = Vector3Math::Dot(toSphere, capsuleDir);
+
+	// tをカプセルの範囲[0, capsuleLength]にクランプ
+	t = std::max(0.0f, std::min(t, capsuleLength));
+
+	// カプセル軸上の最近点
+	Vector3 closestPoint = capsule.start + capsuleDir * t;
+
+	// 最近点から球の中心までの距離
+	Vector3 diff = transform_.translate - closestPoint;
+	float distSq = Vector3Math::LengthSq(diff);
+
+	// 衝突判定（カプセルの半径 + 球の半径）
+	float totalRadius = radius_ + capsule.radius;
+
+	if (distSq <= totalRadius * totalRadius) {
+		float dist = std::sqrt(distSq);
+
+		outHit.isHit = true;
+		// カプセルの開始点からの距離（衝突が発生した位置のパラメータt）
+		outHit.distance = t;
+		// 衝突点はカプセル表面上の点
+		outHit.position = closestPoint + Vector3Math::Normalize(diff) * capsule.radius;
+		// 法線は球の中心からの方向
+		outHit.normal = (dist > 0.0001f) ? (diff / dist) : Vector3(0, 1, 0);
+		outHit.hitCollider = this;
+
+		return true;
+	}
+
+	return false;
 }
 
 //=============================================================================

@@ -31,6 +31,9 @@ namespace Vector3Math {
 	//長さ(ノルム)
 	float Length(const Vector3& v);
 
+	//長さの二乗
+	float LengthSq(const Vector3& v);
+
 	//正規化
 	Vector3 Normalize(const Vector3& v);
 
