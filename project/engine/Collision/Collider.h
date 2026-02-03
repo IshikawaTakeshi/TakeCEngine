@@ -2,6 +2,7 @@
 #include "engine/3d/Object3d.h"
 #include "engine/math/physics/Ray.h"
 #include "engine/Collision/SurfaceType.h"
+#include "engine/Collision/Capsule.h"
 #include "engine/base/ComPtrAliasTemplates.h"
 #include <cstdint>
 #include <memory>
@@ -78,9 +79,20 @@ public:
 	/// <returns></returns>
 	virtual bool CheckCollision(Collider* other) = 0;
 
+	/// <summary>
+	/// レイとの交差判定
+	/// </summary>
 	virtual bool Intersects(const Ray& ray, RayCastHit& outHit) = 0;
 
+	/// <summary>
+	/// 球との交差判定
+	/// </summary>
 	virtual bool IntersectsSphere(const Ray& ray, float radius, RayCastHit& outHit) = 0;
+
+	/// <summary>
+	/// カプセルとの交差判定
+	/// </summary>
+	virtual bool IntersectsCapsule(const Capsule& capsule, RayCastHit& outHit) = 0;
 
 public:
 

@@ -1134,6 +1134,7 @@
     <ClInclude Include="engine\3d\EffectGroupConfig.h" />
     <ClInclude Include="application\Weapon\Bullet\ObjectPool.h" />
     <ClInclude Include="application\Weapon\Bullet\BulletEffectConfig.h" />
+    <ClInclude Include="engine\Collision\Capsule.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

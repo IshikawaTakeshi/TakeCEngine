@@ -73,6 +73,10 @@ void VerticalMissile::Update() {
 	}
 
 	
+	//========================================================================
+	// CCD (Continuous Collision Detection) - カプセル判定方式
+	//========================================================================
+
 	// 1フレームでの移動量を計算
 	Vector3 displacement = velocity_ * deltaTime_;
 	float moveDistance = Vector3Math::Length(displacement);
@@ -81,27 +85,25 @@ void VerticalMissile::Update() {
 
 	// 移動量がある場合のみ判定
 	if (moveDistance > 0.0001f) {
-		Ray ray;
-		ray.origin = transform_.translate; // 現在位置から
-		ray.direction = Vector3Math::Normalize(displacement); // 移動方向へ
-		ray.distance = moveDistance; // 移動距離分だけレイを飛ばす
+		// カプセルを構築（移動前→移動後）
+		Capsule capsule;
+		capsule.start = transform_.translate;           // 現在位置（移動前）
+		capsule.end = transform_.translate + displacement; // 移動後の位置
+		capsule.radius = bulletRadius_;                 // 弾の半径
 
 		RayCastHit hitInfo;
 
 		// 衝突対象のレイヤーマスクを設定
-		// 自分自身のタイプに応じて、当たるべき相手を指定する
 		uint32_t targetMask = 0;
-		if (characterType_ == CharacterType::PLAYER_BULLET) {
-			// プレイヤーの弾なら「敵」と「レベルオブジェクト」に当たる
+		if (characterType_ == CharacterType::PLAYER_MISSILE) {
 			targetMask = static_cast<uint32_t>(CollisionLayer::Enemy);
-		} else if (characterType_ == CharacterType::ENEMY_BULLET) {
-			// 敵の弾なら「プレイヤー」と「レベルオブジェクト」に当たる
+		}
+		else if (characterType_ == CharacterType::ENEMY_MISSILE) {
 			targetMask = static_cast<uint32_t>(CollisionLayer::Player);
 		}
 
-		// RayCast実行
-		if (CollisionManager::GetInstance().SphereCast(ray,bulletRadius_, hitInfo, targetMask)) {
-
+		// CapsuleCast実行
+		if (CollisionManager::GetInstance().CapsuleCast(capsule, hitInfo, targetMask)) {
 			// --- 衝突した場合 ---
 			isHit = true;
 
@@ -112,9 +114,7 @@ void VerticalMissile::Update() {
 			if (hitInfo.hitCollider) {
 				GameCharacter* owner = hitInfo.hitCollider->GetOwner();
 				if (owner) {
-					// 自分の衝突処理
 					OnCollisionAction(owner);
-					// 相手の衝突処理
 					owner->OnCollisionAction(this);
 				}
 			}

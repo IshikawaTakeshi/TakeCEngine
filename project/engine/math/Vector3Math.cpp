@@ -75,6 +75,13 @@ float Vector3Math::Length(const Vector3& v) {
 	return result;
 }
 
+//長さの二乗
+float Vector3Math::LengthSq(const Vector3& v) {
+	float result;
+	result = (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
+	return result;
+}
+
 //正規化
 Vector3 Vector3Math::Normalize(const Vector3& v) {
 	Vector3 result;

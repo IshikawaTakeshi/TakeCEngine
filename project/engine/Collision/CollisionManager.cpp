@@ -164,3 +164,28 @@ bool CollisionManager::SphereCast(const Ray& ray, float radius, RayCastHit& outH
 	}
 	return result;
 }
+
+//=============================================================================
+// カプセルキャスト処理
+//=============================================================================
+bool CollisionManager::CapsuleCast(const Capsule& capsule, RayCastHit& outHit, uint32_t layerMask){
+	bool result = false;
+	float closestDistance = Vector3Math::Length(capsule.end - capsule.start);
+	RayCastHit tempHit;
+
+	for (auto* collider : colliders_) {
+		// レイヤーマスクによる絞り込み
+		if (!(static_cast<uint32_t>(collider->GetCollisionLayerID()) & layerMask)) continue;
+
+		// カプセル判定
+		if (collider->IntersectsCapsule(capsule, tempHit)) {
+			// 最も近いヒットを記録
+			if (tempHit.distance < closestDistance) {
+				closestDistance = tempHit.distance;
+				outHit = tempHit;
+				result = true;
+			}
+		}
+	}
+	return result;
+}
