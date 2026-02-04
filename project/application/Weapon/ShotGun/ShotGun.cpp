@@ -27,6 +27,7 @@ void ShotGun::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetMaterialColor({ 0.5f, 0.5f, 0.0f, 1.0f });
 	object3d_->GetModel()->GetMesh()->GetMaterial()->SetEnvCoefficient(0.8f);
 
+	shotGunInfo_ = std::get<ShotGunInfo>(weaponData_.actionData);
 	weaponState_.attackInterval = weaponData_.config.attackInterval;
 	weaponState_.bulletCount = weaponData_.config.maxMagazineCount;
 	weaponState_.remainingBulletCount = weaponData_.config.maxBulletCount; // 残弾数を最大弾数に設定

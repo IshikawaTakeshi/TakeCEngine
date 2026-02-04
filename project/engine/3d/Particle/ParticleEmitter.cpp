@@ -9,6 +9,7 @@
 #include "3d/Particle/GPUParticle.h"
 #include "2d/WireFrame.h"
 
+
 //================================================================================================
 // 初期化
 //================================================================================================
@@ -38,8 +39,6 @@ void ParticleEmitter::Initialize(const std::string& emitterName, const std::stri
 //==================================================================================
 
 void ParticleEmitter::Update() {
-
-	
 
 	//transform.rotateによってDirectionを更新
 	Matrix4x4 rotateMatrix = MatrixMath::MakeRotateMatrix(transforms_.rotate);
