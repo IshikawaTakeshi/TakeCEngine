@@ -134,9 +134,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
     <ClCompile Include="application\Weapon\ShotGun\ShotGunInfo.cpp" />
     <ClCompile Include="application\Weapon\WeaponData.cpp" />
+    <ClCompile Include="engine\3d\Particle\EffectEditor.cpp" />
     <ClCompile Include="engine\3d\Particle\EffectGroup.cpp" />
-    <ClCompile Include="engine\3d\EffectGroup.cpp" />
-    <ClCompile Include="engine\3d\EffectGroupConfig.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cylinder.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cone.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cube.cpp" />
@@ -306,11 +305,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Effect\BoostEffect.h" />
     <ClInclude Include="application\Effect\DeadEffect.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
+    <ClInclude Include="engine\3d\Particle\EffectEditor.h" />
     <ClInclude Include="engine\3d\Particle\EffectGroup.h" />
-    <ClInclude Include="engine\3d\EffectGroup.h" />
     <ClInclude Include="engine\2d\ArcGaugeParam.h" />
-    <ClInclude Include="engine\3d\EffectGroupConfig.h" />
-    <ClInclude Include="engine\3d\Particle\EmitterConfig.h" />
+    <ClInclude Include="engine\3d\Particle\EffectGroupConfig.h" />
     <ClInclude Include="engine\3d\Primitive\Cylinder.h" />
     <ClInclude Include="engine\3d\Primitive\Cone.h" />
     <ClInclude Include="engine\3d\Primitive\Cube.h" />

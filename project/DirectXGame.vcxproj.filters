@@ -544,10 +544,9 @@
     <ClCompile Include="engine\3d\Primitive\Cylinder.cpp" />
     <ClCompile Include="engine\Animation\TextureAnimationTypeEnum.cpp" />
     <ClCompile Include="application\UI\RingUI.cpp" />
-    <ClCompile Include="engine\3d\EffectGroup.cpp" />
-    <ClCompile Include="engine\3d\EffectGroupConfig.cpp" />
     <ClCompile Include="application\Weapon\Bullet\ObjectPool.cpp" />
     <ClCompile Include="engine\3d\Particle\EffectGroup.cpp" />
+    <ClCompile Include="engine\3d\Particle\EffectEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1131,13 +1130,12 @@
     <ClInclude Include="engine\Animation\TextureAnimationTypeEnum.h" />
     <ClInclude Include="application\UI\RingUI.h" />
     <ClInclude Include="engine\2d\ArcGaugeParam.h" />
-    <ClInclude Include="engine\3d\EffectGroup.h" />
-    <ClInclude Include="engine\3d\EffectGroupConfig.h" />
     <ClInclude Include="application\Weapon\Bullet\ObjectPool.h" />
     <ClInclude Include="application\Weapon\Bullet\BulletEffectConfig.h" />
     <ClInclude Include="engine\Collision\Capsule.h" />
     <ClInclude Include="engine\3d\Particle\EffectGroup.h" />
-    <ClInclude Include="engine\3d\Particle\EmitterConfig.h" />
+    <ClInclude Include="engine\3d\Particle\EffectGroupConfig.h" />
+    <ClInclude Include="engine\3d\Particle\EffectEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
