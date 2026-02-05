@@ -279,9 +279,13 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 
 	if (attributes.isTranslate) {
 		if (attributes.enableFollowEmitter) {
-			//エミッターに追従する場合
-			(*particleIterator).transforms_.translate = emitterPos_;
-			//(*particleIterator).transforms_.rotate = emitter
+			// エミッターIDから現在のエミッター位置を取得
+			std::optional<Vector3> emitterPos = 
+				TakeCFrameWork::GetParticleManager()->GetEmitterPosition((*particleIterator).emitterID_);
+
+			if (emitterPos.has_value()) {
+				(*particleIterator).transforms_.translate = emitterPos.value();
+			}
 		} else {
 			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * velocityProgress * kDeltaTime_;
 

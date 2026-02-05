@@ -172,6 +172,26 @@ Quaternion QuaternionMath::FromMatrix(const Matrix4x4& m) {
 }
 
 //=============================================================================
+// オイラー角からクォータニオンに変換
+//=============================================================================
+Quaternion QuaternionMath::FromEuler(const Vector3& euler) {
+	
+	// オイラー角をラジアンに変換
+	float cy = cosf(euler.z * 0.5f);
+	float sy = sinf(euler.z * 0.5f);
+	float cp = cosf(euler.y * 0.5f);
+	float sp = sinf(euler.y * 0.5f);
+	float cr = cosf(euler.x * 0.5f);
+	float sr = sinf(euler.x * 0.5f);
+	Quaternion q;
+	q.w = cr * cp * cy + sr * sp * sy;
+	q.x = sr * cp * cy - cr * sp * sy;
+	q.y = cr * sp * cy + sr * cp * sy;
+	q.z = cr * cp * sy - sr * sp * cy;
+	return q;
+}
+
+//=============================================================================
 // ベクトルの回転
 //=============================================================================
 Vector3 QuaternionMath::RotateVector(const Vector3& vector, const Quaternion& quaternion) {

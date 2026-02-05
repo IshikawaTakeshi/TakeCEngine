@@ -50,7 +50,8 @@ namespace QuaternionMath {
 	Quaternion LookRotation(const Vector3& forward, const Vector3& up);
 	//行列からQuaternionに変換
 	Quaternion FromMatrix(const Matrix4x4& m);
-
+	//オイラー角からQuaternionに変換
+	Quaternion FromEuler(const Vector3& euler);
 	//Quaternionの回転結果をベクトルで返す
 	Vector3 RotateVector(const Vector3& vector,const Quaternion& quaternion);
 

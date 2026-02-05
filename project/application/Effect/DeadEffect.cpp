@@ -38,10 +38,6 @@ void DeadEffect::Update(const Vector3& translate) {
 		//タイマーが終了したらパーティクル発生停止
 		particleEmitter_[0]->SetIsEmit(false);
 	}
-	
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DeadExplosionEffect")->SetEmitterPosition(translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DeadSmokeEffect")->SetEmitterPosition(translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark2")->SetEmitterPosition(translate);
 
 	//パーティクルエミッター更新
 	for (auto& emitter : particleEmitter_) {

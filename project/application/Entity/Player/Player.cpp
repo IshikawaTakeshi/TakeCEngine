@@ -280,11 +280,10 @@ void Player::Update() {
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
-	//背部エミッターの更新
+	//歩行時パーティクルの更新
 	std::optional<Vector3> backpackPosition = object3d_->GetModel()->GetSkeleton()->GetJointPosition("toes_left", object3d_->GetWorldMatrix());
 	backEmitter_->SetTranslate(backpackPosition.value());
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
-	//backEmitter_->Update();
+	backEmitter_->Update();
 
 	//武器の更新
 	for (const auto& weapon : weapons_) {

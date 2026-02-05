@@ -180,7 +180,6 @@ void BoostEffect::Update() {
 	particleEmitter_->SetIsEmit(isActive_);
 	particleEmitter_->SetTranslate(boostEffectObject_->GetCenterPosition());
 	particleEmitter_->SetRotate(boostEffectObject_->GetRotate());
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("BoostEffect5")->SetEmitterPosition(boostEffectObject_->GetCenterPosition());
 	particleEmitter_->Update();
 }
 

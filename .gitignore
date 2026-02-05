@@ -318,3 +318,9 @@ TakeCEngine/project/imgui.ini
 # DirectXTex Compiled Shaders
 **/DirectXTex/Shaders/Compiled/
 /project/Resources/glTF/無題.gltf
+
+*.lib
+*.pdb
+*.dll
+**/Debug/
+**/Release/

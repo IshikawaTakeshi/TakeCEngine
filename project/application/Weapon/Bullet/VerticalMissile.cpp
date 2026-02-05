@@ -69,6 +69,10 @@ void VerticalMissile::Update() {
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 	if (isActive_ == false) {
 		pointLightData_.enabled_ = 0;
+
+		for (auto& trailEmitter : trailEmitter_) {
+			trailEmitter->SetIsEmit(false);
+		}
 		return;
 	}
 
@@ -207,15 +211,12 @@ void VerticalMissile::Update() {
 		explosionEmitter_[i]->SetTranslate(transform_.translate);
 		explosionEmitter_[i]->Update();
 		std::string explosionEffectName = effectConfig_.explosionEffectFilePath[i];
-		TakeCFrameWork::GetParticleManager()->GetParticleGroup(explosionEffectName)->SetEmitterPosition(transform_.translate);
 	}
 
 	for (int i = 0; i < trailEmitter_.size(); i++) {
 		trailEmitter_[i]->SetTranslate(transform_.translate);
 		trailEmitter_[i]->Update();
-		trailEmitter_[i]->Emit(); // トレイルエフェクトを常に発生させる
 		std::string trailEffectName = effectConfig_.trailEffectFilePath[i];
-		TakeCFrameWork::GetParticleManager()->GetParticleGroup(trailEffectName)->SetEmitterPosition(transform_.translate);
 	}
 
 	//オブジェクト、コライダーの更新
@@ -298,6 +299,10 @@ void VerticalMissile::Create(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo,
 	isActive_ = true;
 	//ポイントライト有効化
 	pointLightData_.enabled_ = 1;
+
+	for (auto& trailEmitter : trailEmitter_) {
+		trailEmitter->SetIsEmit(true);
+	}
 }
 
 

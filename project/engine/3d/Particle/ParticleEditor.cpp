@@ -7,6 +7,22 @@
 
 using namespace TakeC;
 
+namespace {
+
+	//-------------------------------------------------
+	// DDSファイルかどうか判定
+	//-------------------------------------------------
+	bool IsDdsFilePath(const std::string& filePath) {
+		if (filePath.size() < 4) {
+			return false;
+		}
+		std::string lower = filePath;
+		std::transform(lower.begin(), lower.end(), lower.begin(),
+			[](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+		return lower.rfind(".dds") == lower.size() - 4;
+	}
+}
+
 //======================================================================
 //			初期化
 //======================================================================
@@ -20,6 +36,7 @@ void ParticleEditor::Initialize(ParticleCommon* particleCommon) {
 	currentPreset_.textureFilePath = "white1x1.png";
 	currentPreset_.presetName = currentGroupName_;
 	currentPreset_.primitiveType = PRIMITIVE_PLANE;
+	currentPreset_.primitiveParam = TakeC::PrimitiveParameter{ PlaneParam{} };
 	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(currentGroupName_, "white1x1.png", currentPreset_.primitiveType);
 
 	// エディター専用エミッターの初期化
@@ -39,6 +56,12 @@ void ParticleEditor::Initialize(ParticleCommon* particleCommon) {
 
 	//テクスチャ名一覧の取得
 	textureFileNames_ = TextureManager::GetInstance().GetLoadedTextureFileNames();
+
+	// DDSを一覧から除外
+	textureFileNames_.erase(
+		std::remove_if(textureFileNames_.begin(), textureFileNames_.end(), IsDdsFilePath),
+		textureFileNames_.end()
+	);
 }
 
 //======================================================================
@@ -61,7 +84,6 @@ void ParticleEditor::Update() {
 	previewEmitter_->SetIsEmit(autoEmit_);
 	previewEmitter_->SetParticleCount(emitCount_);
 	previewEmitter_->SetFrequency(emitFrequency_);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup(currentGroupName_)->SetEmitterPosition(emitterTransform_.translate);
 	previewEmitter_->Update();
 
 }
@@ -214,39 +236,71 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 #pragma region texture setting
 	ImGui::SeparatorText("Texture Setting");
 
-	//テクスチャファイル名の選択
-	static int selectedTextureIndex = 0;
+	static char searchBuffer[64] = "";
+	ImGui::InputText("Search", searchBuffer, sizeof(searchBuffer));
+
+	const float thumbSize = 64.0f;
+	const float padding = 8.0f;
+	const float cellSize = thumbSize + padding;
+	const float availWidth = ImGui::GetContentRegionAvail().x;
+	const int columns = std::max(1, int(availWidth / cellSize));
 	bool isTextureChanged = false;
 
-	//今の設定がリストにあればインデックスを合わせる
-	auto it = std::find(textureFileNames_.begin(), textureFileNames_.end(), currentPreset_.textureFilePath);
-	if (it != textureFileNames_.end()) {
-		selectedTextureIndex = static_cast<int>(std::distance(textureFileNames_.begin(), it));
-	}
+	ImGui::BeginChild("TextureGrid", ImVec2(0, 300), true);
 
-	//コンボボックスの表示
-	if (ImGui::BeginCombo("Texture File", textureFileNames_.empty() ? "None" : textureFileNames_[selectedTextureIndex].c_str())) {
-
-		//テクスチャ名一覧の表示
-		for (int i = 0; i < textureFileNames_.size(); ++i) {
-			bool isSelected = (selectedTextureIndex == i);
-
-			//テクスチャ名の選択
-			if (ImGui::Selectable(textureFileNames_[i].c_str(), isSelected)) {
-				selectedTextureIndex = i;
-				// 選択されたテクスチャをプリセットに設定
-				currentPreset_.textureFilePath = textureFileNames_[i];
-				isTextureChanged = true;
-			}
-
-			//デフォルトフォーカスの設定
-			if (isSelected) {
-				ImGui::SetItemDefaultFocus();
+	int col = 0;
+	for (const auto& file : textureFileNames_) {
+		// 検索フィルタ
+		if (searchBuffer[0] != '\0') {
+			if (file.find(searchBuffer) == std::string::npos) {
+				continue;
 			}
 		}
 
-		ImGui::EndCombo();
+		// サムネイル表示
+		auto handle = TextureManager::GetInstance().GetSrvHandleGPU(file);
+		ImTextureID texID = (ImTextureID)handle.ptr;
+
+		// 選択状態のハイライト
+		const bool isSelected = (currentPreset_.textureFilePath == file);
+
+		if (isSelected) {
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.6f, 0.9f, 1.0f));
+		}
+
+		ImGui::PushID(file.c_str());
+		if (ImGui::ImageButton(file.c_str(), texID, ImVec2(thumbSize, thumbSize))) {
+			currentPreset_.textureFilePath = file;
+			isTextureChanged = true;
+		}
+		ImGui::PopID();
+
+		if (isSelected) {
+			ImGui::PopStyleColor();
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+			ImVec2 min = ImGui::GetItemRectMin();
+			ImVec2 max = ImGui::GetItemRectMax();
+			drawList->AddRect(min, max, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
+		}
+
+		// Tooltip
+		if (ImGui::IsItemHovered()) {
+			ImGui::BeginTooltip();
+			ImGui::Text("%s", file.c_str());
+			ImGui::EndTooltip();
+		}
+
+		// グリッド整列
+		col++;
+		if (col < columns) {
+			ImGui::SameLine();
+		}
+		else {
+			col = 0;
+		}
 	}
+
+	ImGui::EndChild();
 #pragma endregion
 
 	//プリミティブタイプの選択

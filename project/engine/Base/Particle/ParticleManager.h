@@ -64,16 +64,24 @@ namespace TakeC {
 		void CreateParticleGroup(const std::string& presetJson);
 		//パーティクル射出
 		void Emit(const std::string& name, const Vector3& emitPosition, const Vector3& direction, uint32_t count);
-		//エミッター用のハンドルの割り当て
-		uint32_t EmitterAllocate();
+		// エミッターIDを指定したパーティクル射出（新規）
+		void EmitWithEmitter(uint32_t emitterID, const std::string& name, const Vector3& emitPosition, const Vector3& direction, uint32_t count);
+
 		//パーティクルグループの開放
 		void ClearParticleGroups();
 
 		//出現しているパーティクルのクリア
 		void ClearParticles();
-
+		//全プリセットの読み込み
 		void LoadAllPresets();
 
+		//エミッター用のハンドルの割り当て
+		uint32_t EmitterAllocate(ParticleEmitter* emitter);
+		// エミッター用のハンドルの解放（新規）
+		void EmitterRelease(uint32_t emitterID);
+
+		// エミッターIDから位置を取得（新規）
+		std::optional<Vector3> GetEmitterPosition(uint32_t emitterID) const;
 		//パーティクルグループの取得
 		BaseParticleGroup* GetParticleGroup(const std::string& name);
 		//groupnameからプリミティブハンドルの取得
