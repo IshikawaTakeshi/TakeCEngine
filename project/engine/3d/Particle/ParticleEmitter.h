@@ -63,6 +63,11 @@ public:
 	void Emit();
 	void Emit(const Vector3& position);
 
+	/// <summary>
+	/// リセット
+	/// </summary>
+	void Reset();
+
 public:
 
 	//==================================================================================

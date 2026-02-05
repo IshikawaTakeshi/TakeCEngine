@@ -259,6 +259,7 @@ void EffectGroup::Reset() {
 		instance.emitCounter = 0;
 		instance.isActive = false;
 		instance.hasStarted = false;
+		instance.emitter->Reset();
 		instance.emitter->SetIsEmit(false);
 	}
 }

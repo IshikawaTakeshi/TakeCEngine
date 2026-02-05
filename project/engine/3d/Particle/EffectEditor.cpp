@@ -23,6 +23,9 @@ void EffectEditor::Initialize(ParticleCommon* particleCommon) {
 	// プレビュー用エフェクトグループを作成
 	previewEffect_ = std::make_unique<EffectGroup>();
 
+	//利用可能なエフェクトを読み込み
+	LoadSavedEffects();
+
 	// 利用可能なプリセットを読み込み
 	LoadAvailablePresets();
 }
@@ -72,50 +75,39 @@ void EffectEditor::Draw() {
 void EffectEditor::DrawMainWindow() {
 	ImGui::Begin("Effect Editor");
 
-	ImGui::Text("Effect Editor - Main Control");
-	ImGui::Separator();
+	DrawPreviewControlTab();
 
-	// ウィンドウ表示切り替え
-	ImGui::Checkbox("Effect List", &showEffectList_);
-	ImGui::SameLine();
-	ImGui::Checkbox("Effect Settings", &showEffectSettings_);
 
-	ImGui::Checkbox("Emitter List", &showEmitterList_);
-	ImGui::SameLine();
-	ImGui::Checkbox("Emitter Settings", &showEmitterSettings_);
-
-	ImGui::Checkbox("Preview Control", &showPreviewControl_);
-	ImGui::SameLine();
-	ImGui::Checkbox("File Operation", &showFileOperation_);
-
-	ImGui::Separator();
-
-	// 現在の状態表示
-	const char* stateText = "Idle";
-	switch (editorState_) {
-	case EditorState::Playing: stateText = "Playing"; break;
-	case EditorState::Paused: stateText = "Paused"; break;
-	case EditorState::EditingEmitter: stateText = "Editing Emitter"; break;
-	default: stateText = "Idle"; break;
+	if (ImGui::BeginTabBar("EffectEditorTabs")) {
+		if (ImGui::BeginTabItem("Effect List")) {
+			DrawEffectListTab();
+			ImGui::NewLine();
+			ImGui::NewLine();
+			DrawFileOperationTab();
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Effect Settings")) {
+			DrawEffectSettingsTab();
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Emitter List")) {
+			DrawEmitterListTab();
+			ImGui::EndTabItem();
+		}
+		
+	
+			
+	
+		ImGui::EndTabBar();
 	}
-	ImGui::Text("State: %s", stateText);
 
 	ImGui::End();
 }
 
 //==================================================================================
-// エフェクトリストウィンドウ
+// エフェクトリストタブ
 //==================================================================================
-void EffectEditor::DrawEffectListWindow() {
-	ImGui::Begin("Effect List", &showEffectList_);
-
-	// 新規作成ボタン
-	if (ImGui::Button("Create New Effect", ImVec2(-1, 0))) {
-		CreateNewEffect();
-	}
-
-	ImGui::Separator();
-
+void EffectEditor::DrawEffectListTab() {
 	// 保存済みエフェクトリスト
 	for (int i = 0; i < savedEffects_.size(); ++i) {
 		bool isSelected = (selectedEffectIndex_ == i);
@@ -135,16 +127,12 @@ void EffectEditor::DrawEffectListWindow() {
 			ImGui::EndPopup();
 		}
 	}
-
-	ImGui::End();
 }
 
 //==================================================================================
-// エフェクト設定ウィンドウ
+// エフェクト設定タブ
 //==================================================================================
-void EffectEditor::DrawEffectSettingsWindow() {
-	ImGui::Begin("Effect Settings", &showEffectSettings_);
-
+void EffectEditor::DrawEffectSettingsTab() {
 	// エフェクト名
 	ImGui::InputText("Effect Name", effectNameBuffer_, sizeof(effectNameBuffer_));
 	if (ImGui::IsItemDeactivatedAfterEdit()) {
@@ -184,22 +172,20 @@ void EffectEditor::DrawEffectSettingsWindow() {
 
 	// エミッター数表示
 	ImGui::Text("Emitters: %d", currentConfig_.emitters.size());
-
-	ImGui::End();
 }
 
 //==================================================================================
-// エミッターリストウィンドウ
+// エミッターリストタブ
 //==================================================================================
-void EffectEditor::DrawEmitterListWindow() {
-	ImGui::Begin("Emitter List", &showEmitterList_);
-
+void EffectEditor::DrawEmitterListTab() {
 	// エミッター追加ボタン
 	if (ImGui::Button("Add Emitter", ImVec2(-1, 0))) {
 		AddEmitter();
 	}
 
+	//余白+区切り線
 	ImGui::Separator();
+	ImGui::NewLine();
 
 	// エミッターリスト
 	for (int i = 0; i < currentConfig_.emitters.size(); ++i) {
@@ -229,15 +215,17 @@ void EffectEditor::DrawEmitterListWindow() {
 		}
 	}
 
-	ImGui::End();
+	//余白+区切り線
+	ImGui::NewLine();
+	ImGui::Separator();
+	// エミッター設定タブの表示
+	DrawEmitterSettingsTab();
 }
 
 //==================================================================================
-// エミッター設定ウィンドウ
+// エミッター設定タブ
 //==================================================================================
-void EffectEditor::DrawEmitterSettingsWindow() {
-	ImGui::Begin("Emitter Settings", &showEmitterSettings_);
-
+void EffectEditor::DrawEmitterSettingsTab() {
 	if (selectedEmitterIndex_ >= 0 && selectedEmitterIndex_ < currentConfig_.emitters.size()) {
 		auto& emitter = currentConfig_.emitters[selectedEmitterIndex_];
 
@@ -285,7 +273,7 @@ void EffectEditor::DrawEmitterSettingsWindow() {
 			RebuildEffectGroup();
 		}
 
-		// ��続時間
+		// 持続時間
 		if (ImGui::DragFloat("Duration", &emitter.duration, 0.1f, -1.0f, 100.0f)) {
 			RebuildEffectGroup();
 		}
@@ -319,14 +307,12 @@ void EffectEditor::DrawEmitterSettingsWindow() {
 	} else {
 		ImGui::Text("No emitter selected");
 	}
-
-	ImGui::End();
 }
 
 //==================================================================================
-// プレビューコントロールウィンドウ
+// プレビューコントロールタブ
 //==================================================================================
-void EffectEditor::DrawPreviewControlWindow() {
+void EffectEditor::DrawPreviewControlTab() {
 
 	// 再生コントロール
 	if (ImGui::Button("Play", ImVec2(60, 30))) {
@@ -379,16 +365,14 @@ void EffectEditor::DrawPreviewControlWindow() {
 }
 
 //==================================================================================
-// ファイル操作ウィンドウ
+// ファイル操作タブ
 //==================================================================================
-void EffectEditor::DrawFileOperationWindow() {
-	ImGui::Begin("File Operation", &showFileOperation_);
-
+void EffectEditor::DrawFileOperationTab() {
 	// 保存
-	ImGui::InputText("File Path", filePathBuffer_, sizeof(filePathBuffer_));
+	ImGui::Text("Effect Name: %s", currentConfig_.effectName.c_str());
 
 	if (ImGui::Button("Save Effect", ImVec2(-1, 0))) {
-		std::string fullPath = std::string(filePathBuffer_) + currentConfig_.effectName + ".json";
+		std::string fullPath = currentConfig_.effectName + ".json";
 		SaveEffectToJson(fullPath);
 	}
 
@@ -402,12 +386,15 @@ void EffectEditor::DrawFileOperationWindow() {
 
 	ImGui::Separator();
 
+	//エフェクトのリロード
+	if (ImGui::Button("Reload Effects", ImVec2(-1, 0))) {
+		LoadSavedEffects();
+	}
+
 	// プリセットのリロード
 	if (ImGui::Button("Reload Presets", ImVec2(-1, 0))) {
 		LoadAvailablePresets();
 	}
-
-	ImGui::End();
 }
 
 //==================================================================================
@@ -462,6 +449,22 @@ void TakeC::EffectEditor::SelectEffect(int index) {
 		selectedEmitterIndex_ = -1;
 		strcpy_s(effectNameBuffer_, currentConfig_.effectName.c_str());
 		RebuildEffectGroup();
+	}
+}
+
+void TakeC::EffectEditor::LoadSavedEffects() {
+
+	savedEffects_.clear();
+	// effects/ディレクトリ内の全JSONファイルを読み込み
+	std::string effectsDir = "Resources/JsonLoader/EffectGroup/";
+	if (std::filesystem::exists(effectsDir)) {
+		for (const auto& entry : std::filesystem::directory_iterator(effectsDir)) {
+			if (entry.path().extension() == ".json") {
+				EffectGroupConfig effectConfig;
+				effectConfig = TakeCFrameWork::GetJsonLoader()->LoadJsonData<EffectGroupConfig>(entry.path().filename().string());
+				savedEffects_.push_back(effectConfig);
+			}
+		}
 	}
 }
 

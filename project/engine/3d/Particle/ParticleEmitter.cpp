@@ -30,7 +30,7 @@ void ParticleEmitter::Initialize(const std::string& emitterName, const std::stri
 	particleCount_ = preset_.attribute.emitCount; // 発生させるパーティクルの数
 	frequency_ = preset_.attribute.frequency; // 発生頻度
 	maxInterpolationCount_ = preset_.attribute.particlesPerInterpolation; // 最大補間回数
-	frequencyTime_ = 0.0f;
+	frequencyTime_ = frequency_; // 最初から発生するように設定
 	isEmit_ = false;
 }
 
@@ -142,4 +142,12 @@ void ParticleEmitter::SetParticleName(const std::string& particleName) {
 	particleName_ = particleName;
 	frequency_ = TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.frequency;
 	particleCount_ = TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.emitCount;
+}
+
+//==================================================================================
+// リセット
+//==================================================================================
+void ParticleEmitter::Reset() {
+	frequencyTime_ = frequency_; // 最初から発生するようにリセット
+	prevTranslate_ = transforms_.translate; // 位置もリセットしてトレイルが変な場所に伸びないようにする
 }

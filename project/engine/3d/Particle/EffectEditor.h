@@ -69,34 +69,34 @@ namespace TakeC {
 		void DrawMainWindow();
 
 		/// <summary>
-		/// エフェクトリストウィンドウ
+		/// エフェクトリストタブ
 		/// </summary>
-		void DrawEffectListWindow();
+		void DrawEffectListTab();
 
 		/// <summary>
-		/// エフェクト設定ウィンドウ
+		/// エフェクト設定タブ
 		/// </summary>
-		void DrawEffectSettingsWindow();
+		void DrawEffectSettingsTab();
 
 		/// <summary>
-		/// エミッターリストウィンドウ
+		/// エミッターリストタブ
 		/// </summary>
-		void DrawEmitterListWindow();
+		void DrawEmitterListTab();
 
 		/// <summary>
-		/// エミッター設定ウィンドウ
+		/// エミッター設定タブ
 		/// </summary>
-		void DrawEmitterSettingsWindow();
+		void DrawEmitterSettingsTab();
 
 		/// <summary>
-		/// プレビューコントロールウィンドウ
+		/// プレビューコントロールタブ
 		/// </summary>
-		void DrawPreviewControlWindow();
+		void DrawPreviewControlTab();
 
 		/// <summary>
-		/// ファイル操作ウィンドウ
+		/// ファイル操作タブ
 		/// </summary>
-		void DrawFileOperationWindow();
+		void DrawFileOperationTab();
 
 		//======================================================================
 		// エフェクト操作
@@ -110,6 +110,8 @@ namespace TakeC {
 		void DeleteEffect(int index);
 		/// エフェクトを選択
 		void SelectEffect(int index);
+		/// 保存済みエフェクトを読み込み
+		void LoadSavedEffects();
 
 		//======================================================================
 		// エミッター操作
@@ -198,17 +200,11 @@ namespace TakeC {
 		Vector3 previewScale_ = { 1.0f, 1.0f, 1.0f };
 
 		// UI状態
-		bool showEffectList_ = true;
-		bool showEffectSettings_ = true;
-		bool showEmitterList_ = true;
-		bool showEmitterSettings_ = true;
-		bool showPreviewControl_ = true;
-		bool showFileOperation_ = true;
+		// タブ化に伴い表示フラグは削除
 
 		// 入力バッファ
 		char effectNameBuffer_[256] = "NewEffect";
 		char emitterNameBuffer_[256] = "NewEmitter";
-		char filePathBuffer_[256] = "effects/";
 		int selectedPresetIndex_ = 0;
 
 		// デルタタイム
