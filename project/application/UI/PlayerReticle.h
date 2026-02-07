@@ -24,6 +24,8 @@ public:
 	// ImGuiの更新
 	void UpdateImGui();
 
+	void SetIsFocus(bool isFocus) { isFocus_ = isFocus; }
+
 private:
 
 	// レティクルのスプライト

@@ -1,0 +1,25 @@
+{
+    "anchorPoint": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "jsonFilePath": "InstructionIcon0.json",
+    "position": {
+        "x": 806.0,
+        "y": 100.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 50.0,
+        "y": 41.0
+    },
+    "textureFilePath": "UI/GamePad_KeyIcon.png",
+    "textureLeftTop": {
+        "x": 33.0,
+        "y": 194.0
+    },
+    "textureSize": {
+        "x": 141.0,
+        "y": 135.0
+    }
+}

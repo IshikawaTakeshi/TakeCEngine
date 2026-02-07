@@ -27,7 +27,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -70,7 +70,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <AdditionalOptions>/ignore:4049 /ignore:4098 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ignore:4049 /ignore:4098 /ignore:4099 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories>$(ProjectDir)externals\assimp\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -134,8 +134,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
     <ClCompile Include="application\Weapon\ShotGun\ShotGunInfo.cpp" />
     <ClCompile Include="application\Weapon\WeaponData.cpp" />
-    <ClCompile Include="engine\3d\EffectGroup.cpp" />
-    <ClCompile Include="engine\3d\EffectGroupConfig.cpp" />
+    <ClCompile Include="engine\3d\Particle\EffectEditor.cpp" />
+    <ClCompile Include="engine\3d\Particle\EffectGroup.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cylinder.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cone.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cube.cpp" />
@@ -305,9 +305,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Effect\BoostEffect.h" />
     <ClInclude Include="application\Effect\DeadEffect.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
-    <ClInclude Include="engine\3d\EffectGroup.h" />
+    <ClInclude Include="engine\3d\Particle\EffectEditor.h" />
+    <ClInclude Include="engine\3d\Particle\EffectGroup.h" />
     <ClInclude Include="engine\2d\ArcGaugeParam.h" />
-    <ClInclude Include="engine\3d\EffectGroupConfig.h" />
+    <ClInclude Include="engine\3d\Particle\EffectGroupConfig.h" />
     <ClInclude Include="engine\3d\Primitive\Cylinder.h" />
     <ClInclude Include="engine\3d\Primitive\Cone.h" />
     <ClInclude Include="engine\3d\Primitive\Cube.h" />
@@ -333,6 +334,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Base\ComPtrAliasTemplates.h" />
     <ClInclude Include="engine\Base\PerFrame.h" />
     <ClInclude Include="engine\Camera\ShakeCameraModeEnum.h" />
+    <ClInclude Include="engine\Collision\Capsule.h" />
     <ClInclude Include="engine\Math\MathEnv.h" />
     <ClInclude Include="engine\PostEffect\BloomEffect.h" />
     <ClInclude Include="engine\Camera\CameraForGPU.h" />

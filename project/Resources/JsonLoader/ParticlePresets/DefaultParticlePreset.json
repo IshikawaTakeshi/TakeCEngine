@@ -15,9 +15,9 @@
             "z": 0.0
         },
         "editColor": false,
-        "emitCount": 0,
+        "emitCount": 20,
         "enableFollowEmitter": false,
-        "frequency": 0.0,
+        "frequency": 1.0,
         "isBillboard": true,
         "isDirectional": false,
         "isEmitterTrail": false,

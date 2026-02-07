@@ -1,0 +1,25 @@
+{
+    "anchorPoint": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "jsonFilePath": "actionIcon0.json",
+    "position": {
+        "x": 862.0,
+        "y": 208.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 101.0,
+        "y": 51.0
+    },
+    "textureFilePath": "UI/ActionIcon.png",
+    "textureLeftTop": {
+        "x": 83.0,
+        "y": 82.0
+    },
+    "textureSize": {
+        "x": 349.0,
+        "y": 221.0
+    }
+}

@@ -34,7 +34,7 @@
             "useEnergy": 150.0
         },
         "kMaxMoveSpeed": 120.0,
-        "modelFilePath": "player_singleMesh.gltf",
+        "modelFilePath": "player_Model_ver2.0.gltf",
         "moveDirection": {
             "x": 0.0,
             "y": 0.0,

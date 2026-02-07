@@ -166,26 +166,34 @@ void Enemy::Update() {
 	}
 
 	// RUNNING時のBehavior遷移リクエスト
-	if (behaviorManager_->GetCurrentBehaviorType() == Behavior::RUNNING) {
-		
-		//BestActionの取得
-		switch (aiBrainSystem_->GetBestAction()) {
-		case Action::JUMP: 
-			behaviorManager_->RequestBehavior(Behavior::JUMP);
-			break;
-		case Action::FLOATING: // FLOATINGへの遷移はJUMPで行う
-			behaviorManager_->RequestBehavior(Behavior::JUMP);
-			break;
-		case Action::STEPBOOST:
-			behaviorManager_->RequestBehavior(Behavior::STEPBOOST);
-			break;	
+	if (enemyData_.characterInfo.isInCombat) {
+		if (behaviorManager_->GetCurrentBehaviorType() == Behavior::RUNNING) {
+
+			//BestActionの取得
+			switch (aiBrainSystem_->GetBestAction()) {
+			case Action::JUMP:
+				behaviorManager_->RequestBehavior(Behavior::JUMP);
+				break;
+			case Action::FLOATING: // FLOATINGへの遷移はJUMPで行う
+				behaviorManager_->RequestBehavior(Behavior::JUMP);
+				break;
+			case Action::STEPBOOST:
+				behaviorManager_->RequestBehavior(Behavior::STEPBOOST);
+				break;
+			}
+		}
+
+		//移動方向の取得
+		enemyData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
+		//攻撃処理
+		if (enemyData_.characterInfo.isAlive == true) {
+			UpdateAttack();
 		}
 	}
 
 	//エネルギーの更新
 	UpdateEnergy();
-	//移動方向の取得
-	enemyData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
+	
 	//Behaviorの更新
 	behaviorManager_->Update(enemyData_.characterInfo);
 
@@ -200,10 +208,7 @@ void Enemy::Update() {
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
 	}
 
-	//攻撃処理
-	if (enemyData_.characterInfo.isAlive == true) {
-		UpdateAttack();
-	}
+	
 
 	//ダメージエフェクトの更新
 	if (enemyData_.characterInfo.isDamaged) {
@@ -290,14 +295,10 @@ void Enemy::Update() {
 	//背部エミッターの更新
 	std::optional<Vector3> backpackPosition = object3d_->GetModel()->GetSkeleton()->GetJointPosition("leg", object3d_->GetWorldMatrix());
 	backEmitter_->SetTranslate(backpackPosition.value());
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
+	
 	backEmitter_->Update();
 	//死亡エフェクトの更新
 	deadEffect_->Update(enemyData_.characterInfo.transform.translate);
-
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark")->SetEmitterPosition(enemyData_.characterInfo.transform.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(enemyData_.characterInfo.transform.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(enemyData_.characterInfo.transform.translate);
 
 	// 着地判定の毎フレームリセット
 	enemyData_.characterInfo.onGround = false; 
@@ -489,11 +490,11 @@ void Enemy::UpdateAttack() {
 			auto* weapon = weapons_[i].get();
 			if (enemyData_.characterInfo.isChargeShooting == true) {
 				// チャージ撃ち中の処理
-				chargeShootTimer_ -= deltaTime_;
-				if (chargeShootTimer_ <= 0.0f) {
+				chargeShootTimer_.Update();
+				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();
 					enemyData_.characterInfo.isChargeShooting = false; // チャージ撃ち中フラグをリセット
-					chargeShootTimer_ = 0.0f; // タイマーをリセット
+					chargeShootTimer_.Stop();
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 					chargeShootableUnits_[i] = false; // チャージ撃ち可能なユニットのマークをリセット
 				}
@@ -527,8 +528,11 @@ void Enemy::WeaponAttack(int weaponIndex) {
 		if (weapon->StopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
 			// 停止撃ち専用:硬直処理を行う
 			enemyData_.characterInfo.isChargeShooting = true; // チャージ撃ち中フラグを立てる
-			chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
 			chargeShootableUnits_[weaponIndex] = true; // チャージ撃ち可能なユニットとしてマーク
+
+			if(chargeShootTimer_.IsFinished()) {
+				chargeShootTimer_.Initialize(chargeShootDuration_, 0.0f);
+			}
 
 		} else {
 			// 移動撃ち可能

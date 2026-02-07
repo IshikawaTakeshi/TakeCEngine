@@ -115,9 +115,11 @@ private:
 	std::unique_ptr<BulletManager> bulletManager_ = nullptr;
 
 	std::map<std::string,std::unique_ptr<LevelObject>> levelObjects_;
-
-	//
-	std::unique_ptr<Sprite> instructionSprite_ = nullptr;
+	
+	//	操作説明スプライト
+	std::vector<std::unique_ptr<Sprite>> instructionSprites_;
+	//　アクションアイコン
+	std::vector<std::unique_ptr<Sprite>> actionIconSprites_;
 
 	// フェーズメッセージUI
 	std::unique_ptr<PhaseMessageUI> phaseMessageUI_ = nullptr;

@@ -87,6 +87,12 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 	return particle;
 }
 
+Particle BaseParticleGroup::MakeNewParticleWithEmitter(uint32_t emitterID, std::mt19937& randomEngine, const Vector3& translate, const Vector3& direction) {
+	Particle particle = MakeNewParticle(randomEngine, translate, direction);
+	particle.emitterID_ = emitterID;
+	return particle;
+}
+
 //=============================================================================
 // パーティクルの発生
 //=============================================================================
@@ -98,6 +104,17 @@ std::list<Particle> BaseParticleGroup::Emit(const Vector3& emitterPos,const Vect
 	std::list<Particle> particles;
 	for (uint32_t index = 0; index < particleCount; ++index) {
 		particles.push_back(MakeNewParticle(randomEngine, emitterPos,direction));
+	}
+	return particles;
+}
+
+std::list<Particle> BaseParticleGroup::EmitWithEmitter(uint32_t emitterID, const Vector3& emitterPos, const Vector3& direction, uint32_t particleCount) {
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
+
+	std::list<Particle> particles;
+	for (uint32_t index = 0; index < particleCount; ++index) {
+		particles.push_back(MakeNewParticleWithEmitter(emitterID, randomEngine, emitterPos, direction));
 	}
 	return particles;
 }

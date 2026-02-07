@@ -103,6 +103,10 @@ public:
 	bool GetIsOverHeated() const { return playerData_.characterInfo.overHeatInfo.isOverheated; }
 	//生存フラグの取得
 	bool GetIsAlive() const { return playerData_.characterInfo.isAlive; }
+	//フォーカス中かどうか
+	bool IsFocus() const { return isFocus_; }
+
+	bool IsInCombat() const { return playerData_.characterInfo.isInCombat; }
 
 	//================================================================================
 	// setter
@@ -114,6 +118,8 @@ public:
 	void SetFocusTargetPos(const Vector3& targetPos) { playerData_.characterInfo.focusTargetPos = targetPos; }
 
 	void SetFocusTargetVelocity(const Vector3& targetVel) { focusTargetVelocity_ = targetVel; }
+
+	void SetInCombat(bool inCombat) { playerData_.characterInfo.isInCombat = inCombat; }
 
 private:
 
@@ -141,12 +147,13 @@ private:
 	float deltaTime_ = 0.0f; 
 	
 	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
-	float chargeShootTimer_ = 0.0f; //停止撃ちまでの残り猶予時間
+	Timer chargeShootTimer_; // 停止撃ちのタイマー
 
 	bool isUseWeapon_ = false; //武器を使用しているかどうか
 	float weaponUseTimer_ = 0.0f; //武器を使用している時間
 	float weaponUseDuration_ = 1.0f; //武器を使用してからのクールダウン時間
 
+	bool isFocus_ = true; //フォーカス中かどうか
 	Vector3 focusTargetVelocity_ = { 0.0f,0.0f,0.0f }; // フォーカス対象の移動ベクトル
 	Vector3 bodyPosition_ = { 0.0f,0.0f,0.0f }; // キャラクターの胴体位置
 

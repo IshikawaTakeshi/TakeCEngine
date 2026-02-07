@@ -92,7 +92,8 @@ private:
 	BulletEffectConfig effectConfig_;
 
 	//パーティクルエミッター
-	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
+	std::vector<std::unique_ptr<ParticleEmitter>> trailEmitter_;
+	std::vector<std::unique_ptr<ParticleEmitter>> explosionEmitter_;
 
 	//ミサイルのフェーズ
 	VerticalMissilePhase phase_ = VerticalMissilePhase::ASCENDING;

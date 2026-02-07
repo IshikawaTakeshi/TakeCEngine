@@ -71,12 +71,10 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 		boostEffects_[i] = std::make_unique<BoostEffect>();
 		boostEffects_[i]->Initialize(this);
 	}
-	boostEffects_[LEFT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Left.Tip");
-	boostEffects_[RIGHT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Right.Tip");
-	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftShoulder");
-	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightShoulder");
-	boostEffects_[LEFT_BACK]->SetRotate({ 0.7f,0.0f,1.3f });
-	boostEffects_[RIGHT_BACK]->SetRotate({ 0.7f,0.0f,-1.3f }); //エフェクトの向きを調整
+	boostEffects_[LEFT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LB.tip");
+	boostEffects_[RIGHT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RB.tip");
+	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LT.tip");
+	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RT.tip");
 
 	//入力プロバイダーの初期化
 	inputProvider_ = std::make_unique<PlayerInputProvider>(this);
@@ -126,16 +124,16 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bul
 		weapons_[3]->SetOwnerObject(this);
 	}
 
-	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
+	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RB.tip"); // 1つ目の武器を右手に取り付け
 	weapons_[R_ARMS]->SetUnitPosition(R_ARMS); // 1つ目の武器のユニットポジションを設定
-	weapons_[L_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
+	weapons_[L_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LB.tip"); // 2つ目の武器を左手に取り付け
 	weapons_[L_ARMS]->SetUnitPosition(L_ARMS); // 2つ目の武器のユニットポジションを設定
-	weapons_[R_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Left.Tip"); // 3つ目の武器を背中に取り付け
+	weapons_[R_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LT.tip"); // 3つ目の武器を背中に取り付け
 	weapons_[R_BACK]->SetUnitPosition(R_BACK); // 3つ目の武器のユニットポジションを設定
-	weapons_[R_BACK]->SetRotate({ -1.0f, 0.0f, -2.0f }); // 背中の武器の回転を初期化
-	weapons_[L_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.Right.Tip"); // 4つ目の武器を背中に取り付け
+	//weapons_[R_BACK]->SetRotate({ -1.0f, 0.0f, -2.0f }); // 背中の武器の回転を初期化
+	weapons_[L_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RT.tip"); // 4つ目の武器を背中に取り付け
 	weapons_[L_BACK]->SetUnitPosition(L_BACK); // 4つ目の武器のユニットポジションを設定
-	weapons_[L_BACK]->SetRotate({ -1.0f, 0.0f, 2.0f }); // 背中の武器の回転を初期化
+	//weapons_[L_BACK]->SetRotate({ -1.0f, 0.0f, 2.0f }); // 背中の武器の回転を初期化
 }
 
 //===================================================================================
@@ -164,38 +162,47 @@ void Player::Update() {
 		playerData_.characterInfo.stepBoostInfo.intervalTimer -= deltaTime_;
 	}
 
-	// StepBoost入力判定を最初に追加
-	if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING ||
-		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING) {
+	if (playerData_.characterInfo.isInCombat) {
+		// StepBoost入力判定を最初に追加
+		if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING ||
+			behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING) {
 
-		//オーバーヒート状態のチェック
-		if (playerData_.characterInfo.overHeatInfo.isOverheated == false) {
-			//StepBoost入力判定
-			// LTボタン＋スティック入力で発動
-			if (inputProvider_->RequestStepBoost()) {
-				RequestActiveBoostEffect();
-				behaviorManager_->RequestBehavior(GameCharacterBehavior::STEPBOOST);
-			}
-			//Jump入力判定
-			//RTで発動
-			if (playerData_.characterInfo.onGround == true) {
+			//オーバーヒート状態のチェック
+			if (playerData_.characterInfo.overHeatInfo.isOverheated == false) {
+				//StepBoost入力判定
+				// LTボタン＋スティック入力で発動
+				if (inputProvider_->RequestStepBoost()) {
+					//RequestActiveBoostEffect();
+					behaviorManager_->RequestBehavior(GameCharacterBehavior::STEPBOOST);
+				}
+				//Jump入力判定
+				//RTで発動
+				if (playerData_.characterInfo.onGround == true) {
 
-				if (inputProvider_->RequestJumpInput()) {
-					//ジャンプのリクエスト
-					behaviorManager_->RequestBehavior(GameCharacterBehavior::JUMP);
-					playerData_.characterInfo.onGround = false; // ジャンプしたので地上ではない
+					if (inputProvider_->RequestJumpInput()) {
+						//ジャンプのリクエスト
+						behaviorManager_->RequestBehavior(GameCharacterBehavior::JUMP);
+						playerData_.characterInfo.onGround = false; // ジャンプしたので地上ではない
+					}
 				}
 			}
 		}
-	}
 
-	//移動方向の取得
-	playerData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
-	//カメラ方向のベクトルを取得
-	camera_->SetStick(inputProvider_->GetCameraRotateInput());
+		//移動方向の取得
+		playerData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
+		//カメラ方向のベクトルを取得
+		camera_->SetStick(inputProvider_->GetCameraRotateInput());
 
-	if (inputProvider_->RequestChangeCameraMode()) {
-		camera_->SetRequestedChangeCameraMode(true);
+		if (inputProvider_->RequestChangeCameraMode()) {
+			camera_->SetRequestedChangeCameraMode(true);
+			isFocus_ = !isFocus_;
+		}
+
+		//攻撃処理
+		if (playerData_.characterInfo.isAlive == true) {
+			//生存時のみ攻撃処理を行う
+			UpdateAttack();
+		}
 	}
 
 	//Behaviorの更新
@@ -217,11 +224,7 @@ void Player::Update() {
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
 	}
 
-	//攻撃処理
-	if (playerData_.characterInfo.isAlive == true) {
-		//生存時のみ攻撃処理を行う
-		UpdateAttack();
-	}
+	
 
 	//HPが0以下なら死亡処理
 	if (playerData_.characterInfo.health <= 0.0f) {
@@ -277,11 +280,10 @@ void Player::Update() {
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
-	//背部エミッターの更新
-	std::optional<Vector3> backpackPosition = object3d_->GetModel()->GetSkeleton()->GetJointPosition("leg", object3d_->GetWorldMatrix());
+	//歩行時パーティクルの更新
+	std::optional<Vector3> backpackPosition = object3d_->GetModel()->GetSkeleton()->GetJointPosition("toes_left", object3d_->GetWorldMatrix());
 	backEmitter_->SetTranslate(backpackPosition.value());
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("WalkSmoke2")->SetEmitterPosition(backpackPosition.value());
-	//backEmitter_->Update();
+	backEmitter_->Update();
 
 	//武器の更新
 	for (const auto& weapon : weapons_) {
@@ -497,15 +499,16 @@ void Player::UpdateAttack() {
 		if (chargeShootableUnits_[i] == true) {
 			//チャージ撃ち可能なユニットの処理
 			auto* weapon = weapons_[i].get();
+
 			if (playerData_.characterInfo.isChargeShooting == true) {
 				// チャージ撃ち中の処理
-				chargeShootTimer_ -= deltaTime_;
-				if (chargeShootTimer_ <= 0.0f) {
+				chargeShootTimer_.Update();
+				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();
 					camera_->RequestShake(ShakeCameraMode::VERTICAL,0.5f, 2.0f); // カメラシェイクをリクエスト
 
 					playerData_.characterInfo.isChargeShooting = false; // チャージ撃ち中フラグをリセット
-					chargeShootTimer_ = 0.0f; // タイマーをリセット
+					chargeShootTimer_.Stop();
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
 					chargeShootableUnits_[i] = false; // チャージ撃ち可能なユニットのマークをリセット
 				}
@@ -553,8 +556,12 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 			if (weapon->StopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
 				// 停止撃ち専用:硬直処理を行う
 				playerData_.characterInfo.isChargeShooting = true; // チャージ撃ち中フラグを立てる
-				chargeShootTimer_ = chargeShootDuration_; // チャージ撃ちのタイマーを設定
 				chargeShootableUnits_[weaponIndex] = true; // チャージ撃ち可能なユニットとしてマーク
+
+				//タイマーが終了している場合は初期化
+				if (chargeShootTimer_.IsFinished() == true) {
+					chargeShootTimer_.Initialize(chargeShootDuration_, 0.0f);
+				}
 				
 			} else {
 				// 移動撃ち可能

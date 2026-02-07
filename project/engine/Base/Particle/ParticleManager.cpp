@@ -132,11 +132,27 @@ void TakeC::ParticleManager::Emit(const std::string& name, const Vector3& emitPo
 	particleGroups_.at(name)->SpliceParticles(particleGroups_.at(name)->Emit(emitPosition,direction, count));
 }
 
+void TakeC::ParticleManager::EmitWithEmitter(uint32_t emitterID, const std::string& name, const Vector3& emitPosition, const Vector3& direction, uint32_t count) {
+	// 存在しない場合は処理しない
+	if (!particleGroups_.contains(name)) {
+		return;
+	}
+
+	// エミッターIDを含めてパーティクルを発生
+	particleGroups_.at(name)->SpliceParticles(
+		particleGroups_.at(name)->EmitWithEmitter(emitterID, emitPosition, direction, count)
+	);
+}
+
 //================================================================================================
 // エミッター用のハンドルの割り当て
 //================================================================================================
-uint32_t TakeC::ParticleManager::EmitterAllocate() {
-	return emitterAllocator_->Allocate();
+uint32_t TakeC::ParticleManager::EmitterAllocate(ParticleEmitter* emitter) {
+	return emitterAllocator_->Allocate(emitter);
+}
+
+void TakeC::ParticleManager::EmitterRelease(uint32_t emitterID) {
+	emitterAllocator_->Release(emitterID);
 }
 
 //================================================================================================
@@ -153,6 +169,10 @@ void TakeC::ParticleManager::ClearParticles() {
 	for (auto& [name, particleGroup] : particleGroups_) {
 		particleGroup->EraseParticle();
 	}
+}
+
+std::optional<Vector3> TakeC::ParticleManager::GetEmitterPosition(uint32_t emitterID) const {
+	return emitterAllocator_->GetEmitterPosition(emitterID);
 }
 
 //================================================================================================

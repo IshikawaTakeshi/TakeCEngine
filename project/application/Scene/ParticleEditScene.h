@@ -5,6 +5,7 @@
 #include "2d/Sprite.h"
 #include "3d/Particle/ParticleCommon.h"
 #include "3d/Particle/ParticleEditor.h"
+#include "3d/Particle/EffectEditor.h"
 
 //============================================================================
 // ParticleEditScene class
@@ -44,4 +45,13 @@ private:
 
 	//ParticleEditor
 	std::unique_ptr<ParticleEditor> particleEditor_ = nullptr;
+	//EffectEditor（追加）
+	std::unique_ptr<TakeC::EffectEditor> effectEditor_ = nullptr;
+
+	// エディタモード切り替え
+	enum class EditorMode {
+		Particle,  // パーティクル編集
+		Effect     // エフェクト編集
+	};
+	EditorMode currentMode_ = EditorMode::Particle;
 };

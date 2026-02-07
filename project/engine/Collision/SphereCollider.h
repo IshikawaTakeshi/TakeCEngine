@@ -54,7 +54,15 @@ public:
 	/// <returns></returns>
 	bool Intersects(const Ray& ray, RayCastHit& outHit) override;
 
+	/// <summary>
+	/// 球レイとの衝突判定
+	/// </summary>
 	bool IntersectsSphere(const Ray& ray, float radius, RayCastHit& outHit) override;
+
+	/// <summary>
+	/// カプセルとの衝突判定
+	/// </summary>
+	bool IntersectsCapsule(const Capsule& capsule, RayCastHit& outHit) override;
 	
 	/// <summary>
 	/// サーフェスタイプの取得

@@ -59,6 +59,11 @@ public:
 	bool IntersectsSphere(const Ray& ray, float radius, RayCastHit& outHit) override;
 
 	/// <summary>
+	/// カプセルとの当たり判定
+	/// </summary>
+	bool IntersectsCapsule(const Capsule& capsule, RayCastHit& outHit) override;
+
+	/// <summary>
 	/// 当たり判定の描画
 	/// </summary>
 	void DrawCollider() override;
@@ -70,6 +75,15 @@ public:
 	/// <param name="normal"></param>
 	/// <returns></returns>
 	SurfaceType CheckSurfaceType(const Vector3* Axis, const Vector3& normal) const;
+
+private:
+
+	//ワールド座標 -> ローカル座標変換
+	Vector3 WorldToLocal(const Vector3& worldPos);
+	//ローカル座標 -> ワールド座標変換
+	Vector3 LocalToWorld(const Vector3& localPos);
+	//AABBのどの面に当たったかを判定して法線を設定する関数
+	void CalculateBoxNormal(const Vector3& localHit, const Vector3& halfSize, Vector3& outNormal);
 
 
 public:

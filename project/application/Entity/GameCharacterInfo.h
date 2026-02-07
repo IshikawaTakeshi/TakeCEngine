@@ -69,7 +69,8 @@ struct PlayableCharacterInfo {
 	bool isAlive = true;          //生存しているかどうか
 	bool onGround = true; // 地面にいるかどうか
 	bool isChargeShooting = false; // チャージショット中かどうか
-	bool isDamaged = false; // ダメージを受けたかどうか
+	bool isDamaged = false; // ダメージを受けたかどうか	
+	bool isInCombat = false; // 戦闘状態フラグ
 
 	StepBoostInfo stepBoostInfo{};   // ステップブースト情報
 	JumpInfo jumpInfo{};             // ジャンプ情報

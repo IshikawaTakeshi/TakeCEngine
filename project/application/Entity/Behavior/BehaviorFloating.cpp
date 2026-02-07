@@ -16,7 +16,7 @@ BehaviorFloating::BehaviorFloating(baseInputProvider* provider) {
 //===================================================================================
 //　初期化
 //===================================================================================
-void BehaviorFloating::Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) {
+void BehaviorFloating::Initialize([[maybe_unused]] PlayableCharacterInfo& characterInfo) {
 	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 }
 
@@ -53,25 +53,29 @@ void BehaviorFloating::Update(PlayableCharacterInfo& characterInfo) {
 	// 空中での降下処理(fallSpeedを重力に加算)
 	velocity_.y -= (gravity_ + characterInfo.fallSpeed) * deltaTime_;
 	characterInfo.transform.translate += velocity_ * deltaTime_;
-	
+
 	// 地面に着地したらRUNNINGに戻る
-	if(characterInfo.onGround == true) {
+	if (characterInfo.onGround == true) {
 		isTransition_ = true;
 		nextBehavior_ = GameCharacterBehavior::RUNNING;
 		return;
 	}
 
 	//ジャンプボタンの追加入力でさらに上昇
-	if(inputProvider_->RequestJumpInput()) {
+	if (characterInfo.isInCombat) {
+		// 戦闘状態中のみジャンプ可能
 
-		if( characterInfo.overHeatInfo.isOverheated) {
-			// オーバーヒート中はジャンプできない
-			return;
+		if (inputProvider_->RequestJumpInput()) {
+
+			if (characterInfo.overHeatInfo.isOverheated) {
+				// オーバーヒート中はジャンプできない
+				return;
+			}
+
+			// ジャンプのエネルギー消費
+			characterInfo.energyInfo.energy -= characterInfo.jumpInfo.useEnergy * deltaTime_;
+			// ジャンプの速度を設定
+			velocity_.y = characterInfo.jumpInfo.speed;
 		}
-
-		// ジャンプのエネルギー消費
-		characterInfo.energyInfo.energy -= characterInfo.jumpInfo.useEnergy * deltaTime_;
-		// ジャンプの速度を設定
-		velocity_.y = characterInfo.jumpInfo.speed;
 	}
 }
