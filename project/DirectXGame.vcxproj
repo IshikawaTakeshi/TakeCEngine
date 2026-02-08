@@ -109,6 +109,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="application\UI\ActionButtonICon.cpp" />
     <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp" />
     <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
     <ClCompile Include="application\UI\RingUI.cpp" />
@@ -267,8 +268,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\Animation\TextureAnimation.cpp" />
     <ClCompile Include="application\Effect\MuzzleFlashEffect.cpp" />
     <ClCompile Include="application\Weapon\Bullet\ObjectPool.cpp" />
+    <ClCompile Include="engine\Base\SpriteManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\UI\ActionButtonICon.h" />
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
     <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h" />
     <ClInclude Include="application\Entity\GameCharacterInfo.h" />
@@ -477,6 +480,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\ShotGun\ShotGun.h" />
     <ClInclude Include="engine\PostEffect\ShadowMapEffect.h" />
     <ClInclude Include="engine\Animation\TextureAnimation.h" />
+    <ClInclude Include="engine\Base\SpriteManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

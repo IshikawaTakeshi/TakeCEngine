@@ -12,10 +12,17 @@ void SpriteConfig::UpdateImGui() {
 	ImGui::DragFloat2("Texture Left Top", &textureLeftTop_.x);
 	ImGui::DragFloat2("Texture Size", &textureSize_.x);
 	ImGui::DragFloat("Rotation", &rotation_);
+
+	TakeC::ImGuiManager::ShowSavePopup<SpriteConfig>(
+		TakeCFrameWork::GetJsonLoader(),
+		"Save_SpriteConfig",
+		"default_sprite_config.json",
+		*this,
+		jsonFilePath);
 }
 
 void to_json(nlohmann::json& j, const SpriteConfig& spriteConfig) {
-
+	j["name"] = spriteConfig.name;
 	j["jsonFilePath"] = spriteConfig.jsonFilePath;
 	j["textureFilePath"] = spriteConfig.textureFilePath_;
 	j["position"] = spriteConfig.position_;
@@ -27,7 +34,7 @@ void to_json(nlohmann::json& j, const SpriteConfig& spriteConfig) {
 }
 
 void from_json(const nlohmann::json& j, SpriteConfig& spriteConfig) {
-
+	if (j.contains("name")) j.at("name").get_to(spriteConfig.name);
 	j.at("jsonFilePath").get_to(spriteConfig.jsonFilePath);
 	j.at("textureFilePath").get_to(spriteConfig.textureFilePath_);
 	j.at("position").get_to(spriteConfig.position_);

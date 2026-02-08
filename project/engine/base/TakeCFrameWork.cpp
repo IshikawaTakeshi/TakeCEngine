@@ -13,6 +13,7 @@ std::unique_ptr<TakeC::ParticleManager> TakeCFrameWork::particleManager_ = nullp
 std::unique_ptr<TakeC::PrimitiveDrawer> TakeCFrameWork::primitiveDrawer_ = nullptr;
 std::unique_ptr<TakeC::PostEffectManager> TakeCFrameWork::postEffectManager_= nullptr;
 std::unique_ptr<TakeC::WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
+std::unique_ptr<TakeC::SpriteManager> TakeCFrameWork::spriteManager_ = nullptr;
 std::chrono::steady_clock::time_point TakeCFrameWork::gameTime_ = Clock::now();
 float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
 
@@ -75,6 +76,10 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//TextureManager
 	TakeC::TextureManager::GetInstance().Initialize(directXCommon_.get(), srvManager_.get());
+
+	//SpriteManager
+	spriteManager_ = std::make_unique<SpriteManager>();
+	spriteManager_->Initialize(spriteCommon_);
 
 	//PrimitiveDrawer
 	primitiveDrawer_ = std::make_unique<PrimitiveDrawer>();
@@ -293,4 +298,12 @@ TakeC::WireFrame* TakeCFrameWork::GetWireFrame() {
 TakeC::LightManager* TakeCFrameWork::GetLightManager() {
 	assert(lightManager_ && "LightManagerが生成されていません");
 	return lightManager_.get();
+}
+
+//====================================================================
+//			SpriteManagerの取得
+//====================================================================
+TakeC::SpriteManager* TakeCFrameWork::GetSpriteManager() {
+	assert(spriteManager_ && "SpriteManagerが生成されていません");
+	return spriteManager_.get();
 }

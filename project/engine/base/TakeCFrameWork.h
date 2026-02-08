@@ -3,14 +3,15 @@
 //C4023の警告を見なかったことにする
 #pragma warning(disable:4023)
 //Include
-#include "base/DirectXCommon.h"
-#include "base/D3DResourceLeakChecker.h"
-#include "base/TextureManager.h"
-#include "base/ModelManager.h"
-#include "base/SrvManager.h"
-#include "base/RtvManager.h"
-#include "base/WinApp.h"
-#include "base/Particle/ParticleManager.h"
+#include "Base/DirectXCommon.h"
+#include "Base/D3DResourceLeakChecker.h"
+#include "Base/TextureManager.h"
+#include "Base/ModelManager.h"
+#include "Base/SrvManager.h"
+#include "Base/RtvManager.h"
+#include "Base/WinApp.h"
+#include "Base/Particle/ParticleManager.h"
+#include "Base/SpriteManager.h"
 #include "3d/Object3dCommon.h"
 #include "3d/Primitive/PrimitiveDrawer.h"
 #include "3d/Particle/ParticleCommon.h"
@@ -88,6 +89,8 @@ public:
 	static TakeC::WireFrame* GetWireFrame();
 	//LightManagerの取得
 	static TakeC::LightManager* GetLightManager();
+	//SpriteManagerの取得
+	static TakeC::SpriteManager* GetSpriteManager();
 
 	//ゲーム起動時間の取得
 	static float GetGameTime();
@@ -144,6 +147,8 @@ protected:
 	static std::unique_ptr<TakeC::WireFrame> wireFrame_;
 	//LightManager
 	static std::unique_ptr<TakeC::LightManager> lightManager_;
+	//SpriteManager
+	static std::unique_ptr<TakeC::SpriteManager> spriteManager_;
 	
 	// ゲームの起動時間
 	static std::chrono::steady_clock::time_point gameTime_;
@@ -154,4 +159,3 @@ protected:
 	//時間倍率
 	float timeScale_ = 1.0f;
 };
-
