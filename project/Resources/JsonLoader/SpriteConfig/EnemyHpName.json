@@ -3,7 +3,7 @@
         "x": 0.0,
         "y": 0.0
     },
-    "jsonFilePath": "EnemyHpName.json",
+    "name": "EnemyHpName.json",
     "position": {
         "x": 300.0,
         "y": 8.0

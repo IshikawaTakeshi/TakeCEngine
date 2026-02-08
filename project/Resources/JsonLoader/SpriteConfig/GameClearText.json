@@ -3,7 +3,7 @@
         "x": 0.0,
         "y": 0.0
     },
-    "jsonFilePath": "GameClearText.json",
+    "name": "GameClearText.json",
     "position": {
         "x": 260.0,
         "y": 360.0

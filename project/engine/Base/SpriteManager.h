@@ -64,7 +64,7 @@ namespace TakeC {
 		/// <summary>
 		/// JSONファイルからスプライトを生成して登録
 		/// </summary>
-		/// <param name="jsonFilePath">設定JSONファイルのパス</param>
+		/// <param name="name">設定JSONファイルのパス</param>
 		/// <param name="name">登録名（省略可）。指定するとGetSpriteで取得可能になる</param>
 		/// <returns>生成されたスプライトへのポインタ</returns>
 		Sprite* CreateFromJson(const std::string& jsonFilePath);

@@ -119,7 +119,7 @@ private:
 	//	操作説明スプライト
 	std::vector<std::unique_ptr<Sprite>> instructionSprites_;
 	//　アクションアイコン
-	std::vector<std::unique_ptr<Sprite>> actionIconSprites_;
+	std::vector<Sprite*> actionIconSprites_;
 
 	// フェーズメッセージUI
 	std::unique_ptr<PhaseMessageUI> phaseMessageUI_ = nullptr;

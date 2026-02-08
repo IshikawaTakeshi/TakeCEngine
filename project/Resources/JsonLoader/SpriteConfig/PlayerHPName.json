@@ -3,7 +3,7 @@
         "x": 0.0,
         "y": 0.0
     },
-    "jsonFilePath": "PlayerHPName.json",
+    "name": "PlayerHPName.json",
     "position": {
         "x": 51.0,
         "y": 470.0

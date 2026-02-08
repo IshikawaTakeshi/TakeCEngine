@@ -119,9 +119,7 @@ void GamePlayScene::Initialize() {
 	//アクションアイコンUI
 	actionIconSprites_.resize(3);
 	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
-		actionIconSprites_[i] = std::make_unique<Sprite>();
-		actionIconSprites_[i]->LoadConfig("ActionIcon" + std::to_string(i) + ".json");
-		actionIconSprites_[i]->Initialize(&SpriteCommon::GetInstance());
+		actionIconSprites_[i] = TakeCFrameWork::GetSpriteManager()->CreateFromJson("ActionIcon" + std::to_string(i) + ".json");
 	}
 
 	//最初の状態設定
@@ -139,6 +137,7 @@ void GamePlayScene::Finalize() {
 	TakeC::CameraManager::GetInstance().ResetCameras(); //カメラのリセット
 	TakeCFrameWork::GetParticleManager()->ClearParticles(); //パーティクルの解放
 	TakeCFrameWork::GetLightManager()->ClearAllPointLights();
+	TakeCFrameWork::GetSpriteManager()->Clear(); //スプライトの解放
 	bulletManager_->Finalize(); //弾マネージャーの解放
 	player_.reset();
 	skyBox_.reset();
@@ -159,6 +158,7 @@ void GamePlayScene::Update() {
 	TakeC::CameraManager::GetInstance().Update();
 	//SkyBoxの更新
 	skyBox_->Update();
+	TakeCFrameWork::GetSpriteManager()->Update();
 
 	//enemy
 	enemy_->SetFocusTargetPos(player_->GetBodyPosition());
@@ -279,6 +279,8 @@ void GamePlayScene::UpdateImGui() {
 	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
 		actionIconSprites_[i]->UpdateImGui(std::format("actionIcon{}", i));
 	}
+
+	TakeCFrameWork::GetSpriteManager()->UpdateImGui("DefaultSprite");
 }
 
 //====================================================================
@@ -357,12 +359,14 @@ void GamePlayScene::DrawSprite() {
 			instructionSprite->Draw();
 		}
 		//アクションアイコンの描画
-		for (auto& actionIcon : actionIconSprites_) {
+		/*for (auto& actionIcon : actionIconSprites_) {
 			actionIcon->Draw();
-		}
+		}*/
 
 		//フェーズメッセージUIの描画
 		phaseMessageUI_->Draw();
+
+		TakeCFrameWork::GetSpriteManager()->Draw();
 	}
 }
 
@@ -449,9 +453,9 @@ void GamePlayScene::UpdateGamePlay() {
 		instructionSprite->Update();
 	}
 	//actionIconSpriteの更新
-	for (auto& actionIcon : actionIconSprites_) {
+	/*for (auto& actionIcon : actionIconSprites_) {
 		actionIcon->Update();
-	}
+	}*/
 
 	if (player_->GetHealth() <= 0.0f) {
 		//プレイヤーのHPが0以下になったらゲームオーバー
