@@ -13,13 +13,6 @@ void SpriteConfig::UpdateImGui() {
 	ImGui::DragFloat2("Texture Left Top", &textureLeftTop_.x);
 	ImGui::DragFloat2("Texture Size", &textureSize_.x);
 	ImGui::DragFloat("Rotation", &rotation_);
-
-	TakeC::ImGuiManager::ShowSavePopup<SpriteConfig>(
-		TakeCFrameWork::GetJsonLoader(),
-		"Save_SpriteConfig",
-		"default_sprite_config.json",
-		*this,
-		name);
 }
 
 void to_json(nlohmann::json& j, const SpriteConfig& spriteConfig) {

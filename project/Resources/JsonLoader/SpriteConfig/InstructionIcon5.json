@@ -1,12 +1,12 @@
 {
     "anchorPoint": {
-        "x": 0.0,
-        "y": 0.0
+        "x": 0.5,
+        "y": 0.5
     },
     "name": "InstructionIcon5.json",
     "position": {
-        "x": 854.0,
-        "y": 529.0
+        "x": 875.0,
+        "y": 547.0
     },
     "rotation": 0.0,
     "size": {

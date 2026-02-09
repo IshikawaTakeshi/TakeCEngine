@@ -1,58 +1,67 @@
 #include "ActionButtonICon.h"
 #include "engine/2d/Sprite.h"
-#include "engine/2d/SpriteCommon.h"
+#include "engine/Base/SpriteManager.h"
 #include "engine/Input/Input.h"
+#include "engine/base/ImGuiManager.h"
 
 using namespace TakeC;
 
-void ActionButtonICon::Initialize(TakeC::SpriteManager* spriteManager,
-	const Vector2& position,
-	GamepadButtonType targetButton) {
-	spriteManager_ = spriteManager;
-	targetButton_ = targetButton;
+//======================================================================
+//	初期化
+//======================================================================
+void ActionButtonICon::Initialize(const std::string& configName,SpriteManager* spriteManager, 
+	PlayerInputProvider* inputProvider, 
+	CharacterActionInput targetAction) {
 
-	sprite_ = spriteManager_->Create("GamePad_KeyIcon.png");
-	// 座標と初期サイズの設定
-	sprite_->SetTranslate(position);
-	sprite_->SetSize(baseSize_);
+	// 親クラスの初期化
+	BaseUI::Initialize(spriteManager);
 
-	// アンカーポイントを中心にしておくと、縮小時に中心に向かって縮むので自然に見えます
-	sprite_->SetAnchorPoint({ 0.5f, 0.5f });
+	inputProvider_ = inputProvider;
+	targetAction_ = targetAction;
 
-	targetButton_ = targetButton;
+	if (spriteManager_) {
+
+		sprite_ = spriteManager_->CreateFromJson(configName);
+		baseSize_ = sprite_->GetSize();
+	}
 }
 
+//======================================================================
+//	更新処理
+//======================================================================
 void ActionButtonICon::Update() {
-	// シングルトンからInputインスタンスを取得
-	Input& input = Input::GetInstance();
 
-	int stickNo = 0;
-	if (input.PushButton(stickNo, targetButton_)) {
-		// --- ボタンが押されているとき ---
+	// 指定されたボタンの入力をチェック
+	bool isPressed = false;
+	isPressed = inputProvider_->IsActionPressed(targetAction_);
 
-		// 1. サイズを少し小さくする
-		sprite_->SetSize({ baseSize_.x * pressScale_, baseSize_.y * pressScale_ });
-
-		// 2. 色を少し暗くする (RGBA: 0.7, 0.7, 0.7, 1.0)
-		sprite_->SetMaterialColor({ 0.7f, 0.7f, 0.7f, 1.0f });
-	} else {
-		// --- ボタンが押されていないとき ---
-
-		// サイズを元に戻す
-		sprite_->SetSize(baseSize_);
-
-		// 色を白（通常）に戻す
-		sprite_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+	// 特殊なアクション（ジャンプなど）の場合、RequestJumpInput() を呼ぶ必要があるなら分岐する
+	if (targetAction_ == CharacterActionInput::JUMP) {
+		isPressed = inputProvider_->RequestJumpInput();
 	}
 
-	// スプライト自体の更新はManagerが行うため不要
+	if (isPressed) {
+		sprite_->SetSize({ baseSize_.x * pressScale_, baseSize_.y * pressScale_ });
+		sprite_->SetMaterialColor({ 0.7f, 0.7f, 0.7f, 1.0f });
+	} else {
+		sprite_->SetSize(baseSize_);
+		sprite_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+	}
 }
 
-void ActionButtonICon::Draw() {
-	// 描画
-	// SpriteManagerが一括描画・破棄管理するため、ここでのDrawは不要
-}
-
+//======================================================================
+//	ImGuiの更新
+//======================================================================
 void ActionButtonICon::UpdateImGui(const std::string& name) {
-	sprite_->UpdateImGui(name);
+	// 親クラスのImGui（IsActiveやPositionの調整など）
+	BaseUI::UpdateImGui(name);
+
+#ifdef _DEBUG
+	if (ImGui::TreeNode((name + "_Details").c_str())) {
+		ImGui::DragFloat2("Base Size", &baseSize_.x);
+		ImGui::DragFloat("Press Scale", &pressScale_, 0.01f, 0.1f, 1.0f);
+		// ボタンタイプの表示などは必要に応じて追加
+		ImGui::TreePop();
+	}
+#endif
 }

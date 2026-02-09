@@ -38,8 +38,10 @@ public:
 	bool RequestChargeAttack(CharacterActionInput attackButton) override;
 	//ステップブースト入力の取得
 	bool RequestStepBoost() const override;
-
+	//カメラモード変更入力の取得
 	bool RequestChangeCameraMode() const;
+	//任意のアクションが押されているかチェック
+	virtual bool IsActionPressed(CharacterActionInput action) const;
 
 private:
 	//--------- variables ----------------------------------------------------

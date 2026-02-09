@@ -549,6 +549,8 @@
     <ClCompile Include="engine\3d\Particle\EffectEditor.cpp" />
     <ClCompile Include="application\UI\ActionButtonICon.cpp" />
     <ClCompile Include="engine\Base\SpriteManager.cpp" />
+    <ClCompile Include="engine\2d\BaseUI.cpp" />
+    <ClCompile Include="engine\Entity\GameCharacter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1140,6 +1142,7 @@
     <ClInclude Include="engine\3d\Particle\EffectEditor.h" />
     <ClInclude Include="application\UI\ActionButtonICon.h" />
     <ClInclude Include="engine\Base\SpriteManager.h" />
+    <ClInclude Include="engine\2d\BaseUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

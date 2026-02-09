@@ -1,21 +1,18 @@
 #pragma once
+#include "BaseUI.h"
 #include "engine/Input/InputData.h"
-#include "engine/Math/Vector2.h"
-#include "engine/Base/SpriteManager.h"
-#include <cstdint>
+#include "engine/math/Vector2.h"
+#include "application/Provider/PlayerInputProvider.h"
 #include <memory>
 #include <string>
-#include <vector>
-
 
 // 前方宣言
-class SpriteCommon;
 class Sprite;
 
 //============================================================================
 // ActionButtonICon class
 //============================================================================
-class ActionButtonICon {
+class ActionButtonICon : public BaseUI {
 public:
 	/// <summary>
 	/// コンストラクタ・デストラクタ
@@ -27,28 +24,37 @@ public:
 	// functions
 	//========================================================================
 
-	// 初期化
-	void Initialize(TakeC::SpriteManager* spriteManager, const Vector2& position,
-		GamepadButtonType targetButton);
-	// 更新
-	void Update();
-	// 描画
-	void Draw();
-	// ImGuiの更新
-	void UpdateImGui([[maybe_unused]] const std::string& name);
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="spriteManager">SpriteManagerへのポインタ</param>
+	/// <param name="position">表示座標</param>
+	/// <param name="targetButton">監視するゲームパッドボタン</param>
+	void Initialize(const std::string& configName,TakeC::SpriteManager* spriteManager, 
+		PlayerInputProvider* inputProvider,CharacterActionInput targetAction);
+
+	/// <summary>
+	/// 更新
+	/// </summary>
+	void Update() override;
+
+	/// <summary>
+	/// ImGuiの更新
+	/// </summary>
+	void UpdateImGui(const std::string& name) override;
 
 private:
-	TakeC::SpriteManager* spriteManager_ = nullptr;
-	SpriteCommon* spriteCommon_ = nullptr;
-	// アイコン表示用スプライト
-	Sprite* sprite_;
+	// アイコン表示用スプライト（操作用ポインタ）
+	Sprite* sprite_ = nullptr;
 
 	// 監視するボタン
-	GamepadButtonType targetButton_;
+	PlayerInputProvider* inputProvider_ = nullptr;
+	CharacterActionInput targetAction_ = CharacterActionInput::JUMP;
 
 	// 基準サイズ（押していないときのサイズ）
 	Vector2 baseSize_ = { 64.0f, 64.0f };
 
 	// 押し込み時の縮小率
 	float pressScale_ = 0.9f;
+
 };

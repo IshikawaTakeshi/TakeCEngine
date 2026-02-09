@@ -29,6 +29,7 @@
 #include "application/UI/BulletCounterUI.h"
 #include "application/Scene/GamePlaySceneBehavior.h"
 #include "application/UI/PhaseMessageUI.h"
+#include "application/UI/ActionButtonICon.h"
 
 //=============================================================================
 // GamePlayScene class
@@ -104,6 +105,8 @@ private:
 
 	//player
 	std::unique_ptr<Player> player_ = nullptr;
+	//プレイヤー入力プロバイダ
+	std::unique_ptr<PlayerInputProvider> inputProvider_ = nullptr;
 	std::unique_ptr<HPBar> playerHpBar_ = nullptr;
 	std::unique_ptr<PlayerReticle> playerReticle_ = nullptr;
 	std::unique_ptr<EnergyInfoUI> energyInfoUI_ = nullptr;
@@ -120,6 +123,7 @@ private:
 	std::vector<std::unique_ptr<Sprite>> instructionSprites_;
 	//　アクションアイコン
 	std::vector<Sprite*> actionIconSprites_;
+	std::vector<std::unique_ptr<ActionButtonICon>> actionButtonIcons_;
 
 	// フェーズメッセージUI
 	std::unique_ptr<PhaseMessageUI> phaseMessageUI_ = nullptr;

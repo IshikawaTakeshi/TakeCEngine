@@ -62,8 +62,13 @@ void GamePlayScene::Initialize() {
 	bulletManager_ = std::make_unique<BulletManager>();
 	bulletManager_->Initialize(&Object3dCommon::GetInstance(), 100); //弾の最大数:100
 
-	//player
+	//playerInputProvider
 	player_ = std::make_unique<Player>();
+	inputProvider_ = std::make_unique<PlayerInputProvider>(player_.get());
+
+	//player
+	
+	player_->SetInputProvider(inputProvider_.get());
 	player_->Initialize(&Object3dCommon::GetInstance(), "Player_Model_Ver2.0.gltf");
 	player_->WeaponInitialize(&Object3dCommon::GetInstance(), bulletManager_.get());
 	//player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"));
@@ -110,16 +115,24 @@ void GamePlayScene::Initialize() {
 
 	//操作説明UI
 	instructionSprites_.resize(7);
+	actionButtonIcons_.resize(7);
 	for (size_t i = 0; i < instructionSprites_.size(); i++) {
 		instructionSprites_[i] =  std::make_unique<Sprite>();
 		instructionSprites_[i]->LoadConfig("InstructionIcon" + std::to_string(i) + ".json");
 		instructionSprites_[i]->Initialize(&SpriteCommon::GetInstance());
+
+		actionButtonIcons_[i] = std::make_unique<ActionButtonICon>();
+		actionButtonIcons_[i]->Initialize("InstructionIcon" + std::to_string(i) + ".json",
+			TakeCFrameWork::GetSpriteManager(), inputProvider_.get(),
+			static_cast<CharacterActionInput>(i + 3));
 	}
 
 	//アクションアイコンUI
 	actionIconSprites_.resize(3);
+	
 	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
 		actionIconSprites_[i] = TakeCFrameWork::GetSpriteManager()->CreateFromJson("ActionIcon" + std::to_string(i) + ".json");
+		
 	}
 
 	//最初の状態設定
@@ -278,6 +291,7 @@ void GamePlayScene::UpdateImGui() {
 	//actionIconSprite
 	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
 		actionIconSprites_[i]->UpdateImGui(std::format("actionIcon{}", i));
+		actionButtonIcons_[i]->UpdateImGui(std::format("actionButtonIcon{}", i));
 	}
 
 	TakeCFrameWork::GetSpriteManager()->UpdateImGui("DefaultSprite");
@@ -355,9 +369,9 @@ void GamePlayScene::DrawSprite() {
 		}
 
 		//操作説明UIの描画
-		for (auto& instructionSprite : instructionSprites_) {
-			instructionSprite->Draw();
-		}
+		//for (auto& instructionSprite : instructionSprites_) {
+		//	//instructionSprite->Draw();
+		//}
 		//アクションアイコンの描画
 		/*for (auto& actionIcon : actionIconSprites_) {
 			actionIcon->Draw();
@@ -453,9 +467,9 @@ void GamePlayScene::UpdateGamePlay() {
 		instructionSprite->Update();
 	}
 	//actionIconSpriteの更新
-	/*for (auto& actionIcon : actionIconSprites_) {
-		actionIcon->Update();
-	}*/
+	for (int i = 0; i < actionButtonIcons_.size(); i++) {
+		actionButtonIcons_[i]->Update();
+	}
 
 	if (player_->GetHealth() <= 0.0f) {
 		//プレイヤーのHPが0以下になったらゲームオーバー

@@ -30,7 +30,7 @@ public:
 	//================================================================================
 
 	//初期化
-	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
+	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath);
 	//更新
 	void Update() override;
 	//ImGuiの更新

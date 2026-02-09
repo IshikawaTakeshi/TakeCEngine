@@ -36,7 +36,7 @@ public:
 	/// </summary>
 	/// <param name="object3dCommon"></param>
 	/// <param name="filePath"></param>
-	virtual void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) = 0;
+	virtual void Initialize(Object3dCommon* object3dCommon, const std::string& filePath);
 
 	/// <summary>
 	/// 更新処理

@@ -76,12 +76,10 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LT.tip");
 	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RT.tip");
 
-	//入力プロバイダーの初期化
-	inputProvider_ = std::make_unique<PlayerInputProvider>(this);
 
 	//BehaviorManagerの初期化
 	behaviorManager_ = std::make_unique<BehaviorManager>();
-	behaviorManager_->Initialize(inputProvider_.get());
+	behaviorManager_->Initialize(inputProvider_);
 	behaviorManager_->InitializeBehaviors(playerData_.characterInfo);
 }
 
