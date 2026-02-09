@@ -1,9 +1,9 @@
 {
     "attributes": {
         "color": {
-            "x": 1.0,
-            "y": 0.05882352963089943,
-            "z": 0.03921568766236305
+            "x": 0.886274516582489,
+            "y": 0.1764705926179886,
+            "z": 0.239215686917305
         },
         "colorRange": {
             "max": 1.0,
@@ -15,8 +15,8 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 10,
-        "enableFollowEmitter": false,
+        "emitCount": 70,
+        "enableFollowEmitter": true,
         "frequency": 0.10000000149011612,
         "isBillboard": true,
         "isDirectional": false,
@@ -25,39 +25,39 @@
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 3.0,
-            "min": 1.0
+            "max": 2.619999885559082,
+            "min": 0.029999999329447746
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
-            "max": 0.6100000143051147,
-            "min": -0.4399999976158142
+            "max": 1.4600000381469727,
+            "min": -1.7400000095367432
         },
         "rotateRange": {
-            "max": 2.421999931335449,
-            "min": -0.6620000004768372
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
         },
         "scale": {
-            "x": 0.09000000357627869,
-            "y": 0.09000000357627869,
-            "z": 0.019999999552965164
+            "x": 10.0,
+            "y": 10.0,
+            "z": 8.880000114440918
         },
         "scaleEasingType": 0,
         "scaleRange": {
-            "max": 7.050000190734863,
-            "min": 0.05000000074505806
+            "max": 30.0,
+            "min": 0.10000000149011612
         },
-        "scaleSetting": 0,
+        "scaleSetting": 1,
         "trailEmitInterval": 0.01600000075995922,
         "velocityEasingType": 0,
         "velocityRange": {
-            "max": 5.659999847412109,
-            "min": -4.03000020980835
+            "max": 10.0,
+            "min": -1.0
         }
     },
     "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "BoostEffect1",
+    "name": "MissileExplosion_Enemy",
     "primitiveParam": {
         "height": 1.0,
         "width": 1.0
@@ -65,5 +65,5 @@
     "primitiveType": "PRIMITIVE_PLANE",
     "textureAnimationParam": null,
     "textureAnimationType": 0,
-    "textureFilePath": "white1x1.png"
+    "textureFilePath": "MazzleEffect1.png"
 }

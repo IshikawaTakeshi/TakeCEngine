@@ -15,7 +15,7 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 23,
+        "emitCount": 10,
         "enableFollowEmitter": false,
         "frequency": 0.10000000149011612,
         "isBillboard": true,
@@ -28,7 +28,7 @@
             "max": 3.0,
             "min": 1.0
         },
-        "particlesPerInterpolation": 5,
+        "particlesPerInterpolation": 16,
         "positionRange": {
             "max": 1.0,
             "min": -1.0
@@ -48,7 +48,7 @@
             "min": 1.0
         },
         "scaleSetting": 1,
-        "trailEmitInterval": 0.01600000075995922,
+        "trailEmitInterval": 0.004999999888241291,
         "velocityEasingType": 0,
         "velocityRange": {
             "max": 1.0,

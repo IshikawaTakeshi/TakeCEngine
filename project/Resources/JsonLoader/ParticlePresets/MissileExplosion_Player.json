@@ -1,9 +1,9 @@
 {
     "attributes": {
         "color": {
-            "x": 0.5372549295425415,
-            "y": 0.1764705926179886,
-            "z": 0.1764705926179886
+            "x": 0.03529411926865578,
+            "y": 0.1882352977991104,
+            "z": 1.0
         },
         "colorRange": {
             "max": 1.0,
@@ -15,9 +15,9 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 0,
+        "emitCount": 70,
         "enableFollowEmitter": true,
-        "frequency": 0.0,
+        "frequency": 0.10000000149011612,
         "isBillboard": true,
         "isDirectional": false,
         "isEmitterTrail": false,
@@ -57,7 +57,7 @@
     },
     "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "MissileExplosion",
+    "name": "MissileExplosion_Player",
     "primitiveParam": {
         "height": 1.0,
         "width": 1.0
@@ -65,5 +65,5 @@
     "primitiveType": "PRIMITIVE_PLANE",
     "textureAnimationParam": null,
     "textureAnimationType": 0,
-    "textureFilePath": "cloudNoise.png"
+    "textureFilePath": "MazzleEffect1.png"
 }

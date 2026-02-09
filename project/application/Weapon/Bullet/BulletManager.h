@@ -82,11 +82,14 @@ public:
 	//----- getter ---------------------------
 	
 	//全ての弾を取得
-	std::vector<Bullet*> GetAllBullets();
+	std::vector<Bullet*> GetAllPlayerBullets();
+	std::vector<Bullet*> GetAllEnemyBullets();
 	//全てのミサイルを取得
-	std::vector<VerticalMissile*> GetAllMissiles();
+	std::vector<VerticalMissile*> GetAllPlayerMissiles();
+	std::vector<VerticalMissile*> GetAllEnemyMissiles();
 	//全てのバズーカ弾を取得
-	std::vector<Bullet*> GetAllBazookaBullets();
+	std::vector<Bullet*> GetAllPlayerBazookaBullets();
+	std::vector<Bullet*> GetAllEnemyBazookaBullets();
 
 private:
 
@@ -96,11 +99,17 @@ private:
 	std::string missileFilePath_;              // ミサイルのファイルパス
 	std::string bazookaBulletFilePath_;        // バズーカ弾のファイルパス
 
-	std::unique_ptr<BulletPool> bulletPool_;   // 弾プール
-	std::unique_ptr<MissilePool> missilePool_; // ミサイルプール
-	std::unique_ptr<BulletPool> bazookaBulletPool_; // バズーカ弾プール
+	std::unique_ptr<BulletPool> playerBulletPool_;   // 弾プール
+	std::unique_ptr<BulletPool> enemyBulletPool_;   // 弾プール
+	std::unique_ptr<MissilePool> playerMissilePool_; // ミサイルプール
+	std::unique_ptr<MissilePool> enemyMissilePool_; // ミサイルプール
+	std::unique_ptr<BulletPool> playerBazookaBulletPool_; // バズーカ弾プール
+	std::unique_ptr<BulletPool> enemyBazookaBulletPool_; // バズーカ弾プール
 
-	BulletEffectConfig bulletEffectConfig_{};
-	BulletEffectConfig missileEffectConfig_{};
-	BulletEffectConfig bazookaBulletEffectConfig_{};
+	BulletEffectConfig playerBulletEffectConfig_{};
+	BulletEffectConfig enemyBulletEffectConfig_{};
+	BulletEffectConfig playerMissileEffectConfig_{};
+	BulletEffectConfig enemyMissileEffectConfig_{};
+	BulletEffectConfig playerBazookaBulletEffectConfig_{};
+	BulletEffectConfig enemyBazookaBulletEffectConfig_{};
 };

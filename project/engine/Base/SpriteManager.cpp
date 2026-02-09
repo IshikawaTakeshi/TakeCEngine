@@ -49,7 +49,7 @@ void SpriteManager::UpdateImGui(const std::string& groupName) {
 					break;
 				}
 			}
-
+			groupName;
 			sprite->UpdateImGui(spriteLabel);
 			i++;
 		}

@@ -1,9 +1,9 @@
 {
     "attributes": {
         "color": {
-            "x": 0.9254902005195618,
-            "y": 0.0470588244497776,
-            "z": 0.0470588244497776
+            "x": 1.0,
+            "y": 0.11764705926179886,
+            "z": 0.11764705926179886
         },
         "colorRange": {
             "max": 1.0,
@@ -15,49 +15,49 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 0,
+        "emitCount": 10,
         "enableFollowEmitter": false,
-        "frequency": 0.0,
+        "frequency": 0.10000000149011612,
         "isBillboard": true,
-        "isDirectional": true,
-        "isEmitterTrail": false,
+        "isDirectional": false,
+        "isEmitterTrail": true,
         "isParticleTrail": false,
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 0.6499999761581421,
-            "min": 0.20999999344348907
+            "max": 0.4000000059604645,
+            "min": 0.4000000059604645
         },
-        "particlesPerInterpolation": 5,
+        "particlesPerInterpolation": 20,
         "positionRange": {
-            "max": 0.46000000834465027,
-            "min": -0.4099999964237213
+            "max": 0.0,
+            "min": 0.0
         },
         "rotateRange": {
             "max": 3.1415927410125732,
             "min": -3.1415927410125732
         },
         "scale": {
-            "x": 0.05000000074505806,
-            "y": 0.1599999964237213,
-            "z": 0.1599999964237213
+            "x": 100.0,
+            "y": 3.0,
+            "z": 1.0
         },
         "scaleEasingType": 0,
         "scaleRange": {
-            "max": 0.5600000023841858,
-            "min": 0.14000000059604645
+            "max": 1.0,
+            "min": 0.0
         },
-        "scaleSetting": 1,
-        "trailEmitInterval": 0.01600000075995922,
+        "scaleSetting": 2,
+        "trailEmitInterval": 0.00800000037997961,
         "velocityEasingType": 0,
         "velocityRange": {
-            "max": 4.059999942779541,
-            "min": 0.46000000834465027
+            "max": 1.0,
+            "min": -1.0
         }
     },
     "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "BoostEffect3",
+    "name": "BulletMoveEffect_Enemy",
     "primitiveParam": {
         "height": 1.0,
         "width": 1.0
@@ -65,5 +65,5 @@
     "primitiveType": "PRIMITIVE_PLANE",
     "textureAnimationParam": null,
     "textureAnimationType": 0,
-    "textureFilePath": "white1x1.png"
+    "textureFilePath": "circle.png"
 }

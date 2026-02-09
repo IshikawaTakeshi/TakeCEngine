@@ -556,9 +556,12 @@ void GamePlayScene::CheckAllCollisions() {
 
 	CollisionManager::GetInstance().ClearGameCharacter();
 
-	const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
-
-	const std::vector<VerticalMissile*>& missiles = bulletManager_->GetAllMissiles();
+	const std::vector<Bullet*>& playerBullets = bulletManager_->GetAllPlayerBullets();
+	const std::vector<Bullet*>& enemyBullets = bulletManager_->GetAllEnemyBullets();
+	const std::vector<Bullet*>& playerBazookaBullets = bulletManager_->GetAllPlayerBazookaBullets();
+	const std::vector<Bullet*>& enemyBazookaBullets = bulletManager_->GetAllEnemyBazookaBullets();
+	const std::vector<VerticalMissile*>& playerMissiles = bulletManager_->GetAllPlayerMissiles();
+	const std::vector<VerticalMissile*>& enemyMissiles = bulletManager_->GetAllEnemyMissiles();
 
 	// プレイヤーの登録
 	CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
@@ -568,13 +571,35 @@ void GamePlayScene::CheckAllCollisions() {
 	CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(enemy_->GetBulletSensor()));
 
 	//弾の登録
-	for (const auto& bullet : bullets) {
+	for (const auto& bullet : playerBullets) {
 		if (bullet->IsActive()) {
 			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
 		}
 	}
+	for (const auto& bullet : enemyBullets) {
+		if (bullet->IsActive()) {
+			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
+		}
+	}
+
+	//バズーカ弾の登録
+	for (const auto& bazookaBullet : playerBazookaBullets) {
+		if(bazookaBullet->IsActive()){
+			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bazookaBullet));
+		}
+	}
+	for (const auto& bazookaBullet : enemyBazookaBullets) {
+		if (bazookaBullet->IsActive()) {
+			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bazookaBullet));
+		}
+	}
 	//垂直ミサイルの登録
-	for (const auto& missile : missiles) {
+	for (const auto& missile : playerMissiles) {
+		if (missile->IsActive()) {
+			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(missile));
+		}
+	}
+	for (const auto& missile : enemyMissiles) {
 		if (missile->IsActive()) {
 			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(missile));
 		}

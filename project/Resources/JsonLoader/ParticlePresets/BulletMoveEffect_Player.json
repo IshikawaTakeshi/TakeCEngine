@@ -57,7 +57,7 @@
     },
     "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "BulletMoveEffect",
+    "name": "BulletMoveEffect_Player",
     "primitiveParam": {
         "height": 1.0,
         "width": 1.0

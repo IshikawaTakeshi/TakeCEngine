@@ -35,7 +35,7 @@ void BaseUI::UpdateImGui(const std::string& name) {
 		// マネージャーのデバッグ表示はマネージャーの持ち主が行うべきだが、
 		// ここで確認したい場合はコメントアウトを外すか検討する。
 		// 基本的にはBaseUIごとのパラメータのみ表示する。
-
+		name;
 		ImGui::TreePop();
 	}
 #endif
