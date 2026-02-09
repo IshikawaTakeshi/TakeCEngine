@@ -12,6 +12,7 @@
 #include "Base/WinApp.h"
 #include "Base/Particle/ParticleManager.h"
 #include "Base/SpriteManager.h"
+#include "Base/UIManager.h"
 #include "3d/Object3dCommon.h"
 #include "3d/Primitive/PrimitiveDrawer.h"
 #include "3d/Particle/ParticleCommon.h"
@@ -91,6 +92,8 @@ public:
 	static TakeC::LightManager* GetLightManager();
 	//SpriteManagerの取得
 	static TakeC::SpriteManager* GetSpriteManager();
+	//UIManagerの取得
+	static TakeC::UIManager* GetUIManager();
 
 	//ゲーム起動時間の取得
 	static float GetGameTime();
@@ -149,6 +152,8 @@ protected:
 	static std::unique_ptr<TakeC::LightManager> lightManager_;
 	//SpriteManager
 	static std::unique_ptr<TakeC::SpriteManager> spriteManager_;
+	//UIManager
+	static std::unique_ptr<TakeC::UIManager> uiManager_;
 	
 	// ゲームの起動時間
 	static std::chrono::steady_clock::time_point gameTime_;

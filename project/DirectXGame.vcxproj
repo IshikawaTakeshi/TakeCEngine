@@ -271,6 +271,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Effect\MuzzleFlashEffect.cpp" />
     <ClCompile Include="application\Weapon\Bullet\ObjectPool.cpp" />
     <ClCompile Include="engine\Base\SpriteManager.cpp" />
+    <ClCompile Include="engine\Base\UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\UI\ActionButtonICon.h" />
@@ -484,6 +485,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\PostEffect\ShadowMapEffect.h" />
     <ClInclude Include="engine\Animation\TextureAnimation.h" />
     <ClInclude Include="engine\Base\SpriteManager.h" />
+    <ClInclude Include="engine\Base\UIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

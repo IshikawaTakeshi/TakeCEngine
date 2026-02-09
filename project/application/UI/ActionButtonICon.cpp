@@ -9,7 +9,7 @@ using namespace TakeC;
 //======================================================================
 //	初期化
 //======================================================================
-void ActionButtonICon::Initialize(const std::string& configName,SpriteManager* spriteManager, 
+void ActionButtonICon::Initialize(SpriteManager* spriteManager, const std::string& configName,
 	PlayerInputProvider* inputProvider, 
 	CharacterActionInput targetAction) {
 

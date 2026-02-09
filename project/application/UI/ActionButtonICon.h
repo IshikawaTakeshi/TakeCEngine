@@ -30,7 +30,7 @@ public:
 	/// <param name="spriteManager">SpriteManagerへのポインタ</param>
 	/// <param name="position">表示座標</param>
 	/// <param name="targetButton">監視するゲームパッドボタン</param>
-	void Initialize(const std::string& configName,TakeC::SpriteManager* spriteManager, 
+	void Initialize(TakeC::SpriteManager* spriteManager,const std::string& configName, 
 		PlayerInputProvider* inputProvider,CharacterActionInput targetAction);
 
 	/// <summary>

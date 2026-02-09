@@ -115,15 +115,15 @@ void GamePlayScene::Initialize() {
 
 	//操作説明UI
 	instructionSprites_.resize(7);
-	actionButtonIcons_.resize(7);
 	for (size_t i = 0; i < instructionSprites_.size(); i++) {
 		instructionSprites_[i] =  std::make_unique<Sprite>();
 		instructionSprites_[i]->LoadConfig("InstructionIcon" + std::to_string(i) + ".json");
 		instructionSprites_[i]->Initialize(&SpriteCommon::GetInstance());
 
-		actionButtonIcons_[i] = std::make_unique<ActionButtonICon>();
-		actionButtonIcons_[i]->Initialize("InstructionIcon" + std::to_string(i) + ".json",
-			TakeCFrameWork::GetSpriteManager(), inputProvider_.get(),
+
+		TakeCFrameWork::GetUIManager()->CreateUI<ActionButtonICon>(
+			"InstructionIcon" + std::to_string(i) + ".json",
+			inputProvider_.get(),
 			static_cast<CharacterActionInput>(i + 3));
 	}
 
@@ -171,7 +171,7 @@ void GamePlayScene::Update() {
 	TakeC::CameraManager::GetInstance().Update();
 	//SkyBoxの更新
 	skyBox_->Update();
-	TakeCFrameWork::GetSpriteManager()->Update();
+	
 
 	//enemy
 	enemy_->SetFocusTargetPos(player_->GetBodyPosition());
@@ -258,6 +258,10 @@ void GamePlayScene::Update() {
 	//フェーズメッセージUIの更新
 	phaseMessageUI_->Update();
 
+	//UIManagerの更新
+	TakeCFrameWork::GetUIManager()->Update();
+	//SpriteManagerの更新
+	TakeCFrameWork::GetSpriteManager()->Update();
 	//particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
 	//LightManager更新
@@ -291,7 +295,6 @@ void GamePlayScene::UpdateImGui() {
 	//actionIconSprite
 	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
 		actionIconSprites_[i]->UpdateImGui(std::format("actionIcon{}", i));
-		actionButtonIcons_[i]->UpdateImGui(std::format("actionButtonIcon{}", i));
 	}
 
 	TakeCFrameWork::GetSpriteManager()->UpdateImGui("DefaultSprite");
@@ -467,9 +470,9 @@ void GamePlayScene::UpdateGamePlay() {
 		instructionSprite->Update();
 	}
 	//actionIconSpriteの更新
-	for (int i = 0; i < actionButtonIcons_.size(); i++) {
+	/*for (int i = 0; i < actionButtonIcons_.size(); i++) {
 		actionButtonIcons_[i]->Update();
-	}
+	}*/
 
 	if (player_->GetHealth() <= 0.0f) {
 		//プレイヤーのHPが0以下になったらゲームオーバー
