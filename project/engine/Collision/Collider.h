@@ -105,7 +105,9 @@ public:
 	// ワールド座標の取得
 	virtual Vector3 GetWorldPos() = 0;
 	// ワールド行列の取得
-	Vector3 GetHalfSize() const { return halfSize_; }
+	const Vector3& GetHalfSize() const { return halfSize_; }
+	// オフセットの取得
+	const Vector3& GetOffset() const { return offset_; }
 	// 色の取得
 	Vector4 GetColor() const;
 	// 衝突半径の取得
@@ -121,6 +123,8 @@ public:
 
 	/// 色設定
 	void SetColor(const Vector4& color) { color_ = color; }
+	/// オフセットの設定
+	virtual void SetOffset(const Vector3& offset) { offset_ = offset; }
 	/// 半径の設定
 	virtual void SetRadius(const float& radius) { radius_ = radius; }
 	/// 半分のサイズの設定
@@ -153,6 +157,9 @@ protected:
 
 	//衝突時の情報
 	SurfaceType surfaceType_;
+
+	//オフセット
+	Vector3 offset_ = { 0.0f,0.0f,0.0f };
 
 	//衝突半径
 	float radius_ = 1.0f;

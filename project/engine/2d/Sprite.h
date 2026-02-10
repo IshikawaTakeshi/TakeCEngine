@@ -5,22 +5,24 @@
 
 #include <dxcapi.h>
 
-#include <wrl.h>
 #include <cassert>
-#include <string>
-#include <vector>
 #include <iostream>
 #include <memory>
+#include <string>
+#include <vector>
+#include <wrl.h>
+
 
 #include "Matrix4x4.h"
-#include "Transform.h"
-#include "TransformMatrix.h"
 #include "Mesh/Mesh.h"
 #include "SpriteCommon.h"
-#include "engine/Animation/SpriteAnimation.h"
+#include "Transform.h"
+#include "TransformMatrix.h"
 #include "engine/2d/SpriteConfig.h"
+#include "engine/Animation/SpriteAnimation.h"
 
-//前方宣言
+
+// 前方宣言
 class DirectXCommon;
 
 //============================================================================
@@ -28,129 +30,146 @@ class DirectXCommon;
 //============================================================================
 class Sprite {
 public:
+  Sprite() = default;
+  ~Sprite() = default;
 
-	Sprite() = default;
-	~Sprite() = default;
+  //========================================================================
+  // functions
+  //========================================================================
 
-	//========================================================================
-	// functions
-	//========================================================================
+  /// <summary>
+  /// 初期化
+  /// </summary>
+  void Initialize(SpriteCommon *spriteCommon, const std::string &filePath);
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize(SpriteCommon* spriteCommon,const std::string& filePath);
+  void Initialize(SpriteCommon *spriteCommon);
 
-	void Initialize(SpriteCommon* spriteCommon);
+  /// <summary>
+  /// 更新処理
+  /// </summary>
+  void Update();
 
-	/// <summary>
-	/// 更新処理
-	/// </summary>
-	void Update();
+  void UpdateImGui([[maybe_unused]] const std::string &name);
 
-	void UpdateImGui([[maybe_unused]]const std::string& name);
+  /// <summary>
+  /// 描画処理
+  /// </summary>
+  void Draw();
 
-	/// <summary>
-	/// 描画処理
-	/// </summary>
-	void Draw();
+  // テクスチャサイズをイメージに合わせる
+  void AdjustTextureSize();
 
-	//テクスチャサイズをイメージに合わせる
-	void AdjustTextureSize();
-
-	void LoadConfig(const std::string& jsonFilePath);
+  void LoadConfig(const std::string &jsonFilePath);
 
 private:
-
-	//頂点データ更新
-	void UpdateVertexData();
-	//サイズを相対座標にセット
-	void SetSizeRelative();
+  // 頂点データ更新
+  void UpdateVertexData();
+  // サイズを相対座標にセット
+  void SetSizeRelative();
 
 public:
-	//========================================================================
-	// accessors
-	//========================================================================
+  //========================================================================
+  // accessors
+  //========================================================================
 
-	//----- getter ---------------------------
+  //----- getter ---------------------------
 
-	//トランスフォーム取得
-	EulerTransform GetTransform() { return transform_; }
-	//メッシュ取得
-	const std::unique_ptr<Mesh>& GetMesh() const { return mesh_; }
+  // トランスフォーム取得
+  EulerTransform GetTransform() { return transform_; }
+  // メッシュ取得
+  const std::unique_ptr<Mesh> &GetMesh() const { return mesh_; }
 
-	//SpriteAnimator取得
-	SpriteAnimator* Animation() const { return spriteAnimator_.get(); }
-	//アンカーポイント取得
-	const Vector2& GetAnchorPoint() const { return spriteConfig_.anchorPoint_; }
-	//座標取得
-	const Vector2& GetTranslate() const { return spriteConfig_.position_; }
-	//回転取得
-	const float GetRotate() const { return spriteConfig_.rotation_; }
-	//サイズ取得
-	const Vector2& GetSize() const { return spriteConfig_.size_; }
-	//左右フリップ取得
-	const bool GetIsFlipX() const { return isFlipX_; }
-	//上下フリップ取得
-	const bool GetIsFlipY() const { return isFlipY_; }
-	//テクスチャの左上座標取得
-	const Vector2& GetTextureLeftTop() const { return spriteConfig_.textureLeftTop_; }
-	//テクスチャの切り出しサイズ取得
-	const Vector2& GetTextureSize() const { return spriteConfig_.textureSize_; }
-	//マテリアルカラー取得
-	const Vector4& GetMaterialColor() const { return mesh_->GetMaterial()->GetMaterialData()->color; }
-	
-	//----- setter ---------------------------
-	
-	//アンカーポイント設定
-	void SetAnchorPoint(const Vector2& anchorPoint) { spriteConfig_.anchorPoint_ = anchorPoint; }
-	//座標設定
-	void SetTranslate(const Vector2& position) { spriteConfig_.position_ = position; }
-	//回転設定
-	void SetRotate(const float rotation) { spriteConfig_.rotation_ = rotation; }
-	//サイズ設定
-	void SetSize(const Vector2& size) { spriteConfig_.size_ = size; }
-	//左右フリップ設定
-	void SetIsFlipX(const bool isFlipX) { isFlipX_ = isFlipX; }
-	//上下フリップ設定
-	void SetIsFlipY(const bool isFlipY) { isFlipY_ = isFlipY; }
-	//テクスチャの左上座標設定
-	void SetTextureLeftTop(const Vector2& textureLeftTop) { spriteConfig_.textureLeftTop_ = textureLeftTop; }
-	//テクスチャの切り出しサイズ設定
-	void SetTextureSize(const Vector2& textureSize) { spriteConfig_.textureSize_ = textureSize; }
-	//マテリアルカラー設定
-	void SetMaterialColor(const Vector4& color) { mesh_->GetMaterial()->SetMaterialColor(color); }
-	//ファイルパス設定
-	void SetFilePath(const std::string& filePath);
+  // SpriteAnimator取得
+  SpriteAnimator *Animation() const { return spriteAnimator_.get(); }
+  // アンカーポイント取得
+  const Vector2 &GetAnchorPoint() const { return spriteConfig_.anchorPoint_; }
+  // 座標取得
+  const Vector2 &GetTranslate() const { return spriteConfig_.position_; }
+  // 回転取得
+  const float GetRotate() const { return spriteConfig_.rotation_; }
+  // サイズ取得
+  const Vector2 &GetSize() const { return spriteConfig_.size_; }
+  // 左右フリップ取得
+  const bool GetIsFlipX() const { return isFlipX_; }
+  // 上下フリップ取得
+  const bool GetIsFlipY() const { return isFlipY_; }
+  // テクスチャの左上座標取得
+  const Vector2 &GetTextureLeftTop() const {
+    return spriteConfig_.textureLeftTop_;
+  }
+  // テクスチャの切り出しサイズ取得
+  const Vector2 &GetTextureSize() const { return spriteConfig_.textureSize_; }
+  // マテリアルカラー取得
+  const Vector4 &GetMaterialColor() const {
+    return mesh_->GetMaterial()->GetMaterialData()->color;
+  }
+  // コンフィグデータの名前を取得
+  const std::string &GetName() const { return spriteConfig_.name; }
+  // Configへの参照取得（必要なら）
+  const SpriteConfig &GetConfig() const { return spriteConfig_; }
+
+  //----- setter ---------------------------
+
+  // アンカーポイント設定
+  void SetAnchorPoint(const Vector2 &anchorPoint) {
+    spriteConfig_.anchorPoint_ = anchorPoint;
+  }
+  // 座標設定
+  void SetTranslate(const Vector2 &position) {
+    spriteConfig_.position_ = position;
+  }
+  // 回転設定
+  void SetRotate(const float rotation) { spriteConfig_.rotation_ = rotation; }
+  // サイズ設定
+  void SetSize(const Vector2 &size) { spriteConfig_.size_ = size; }
+  // 左右フリップ設定
+  void SetIsFlipX(const bool isFlipX) { isFlipX_ = isFlipX; }
+  // 上下フリップ設定
+  void SetIsFlipY(const bool isFlipY) { isFlipY_ = isFlipY; }
+  // テクスチャの左上座標設定
+  void SetTextureLeftTop(const Vector2 &textureLeftTop) {
+    spriteConfig_.textureLeftTop_ = textureLeftTop;
+  }
+  // テクスチャの切り出しサイズ設定
+  void SetTextureSize(const Vector2 &textureSize) {
+    spriteConfig_.textureSize_ = textureSize;
+  }
+  // マテリアルカラー設定
+  void SetMaterialColor(const Vector4 &color) {
+    mesh_->GetMaterial()->SetMaterialColor(color);
+  }
+  // ファイルパス設定
+  void SetFilePath(const std::string &filePath);
+  // コンフィグデータの名前を設定
+  void SetName(const std::string &name) { spriteConfig_.name = name; }
 
 private:
+  // SpriteCommon
+  SpriteCommon *spriteCommon_ = nullptr;
 
-	//SpriteCommon
-	SpriteCommon* spriteCommon_ = nullptr;
+  // メッシュ
+  std::unique_ptr<Mesh> mesh_ = nullptr;
 
-	//メッシュ
-	std::unique_ptr<Mesh> mesh_ = nullptr;
+  // SpriteAnimator
+  std::unique_ptr<SpriteAnimator> spriteAnimator_{};
 
-	//SpriteAnimator
-	std::unique_ptr<SpriteAnimator> spriteAnimator_{};
+  // sprite用のTransformationMatrix用の頂点リソース
+  Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
+  // sprite用のTransformationMatrix用の頂点データ
+  TransformMatrix *wvpData_ = nullptr;
 
-	//sprite用のTransformationMatrix用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
-	//sprite用のTransformationMatrix用の頂点データ
-	TransformMatrix* wvpData_ = nullptr;
+  // Transform
+  EulerTransform transform_{};
+  Matrix4x4 worldMatrix_;
+  Matrix4x4 viewMatrix_;
+  Matrix4x4 projectionMatrix_;
+  Matrix4x4 worldViewProjectionMatrix_;
 
-	//Transform
-	EulerTransform transform_{};
-	Matrix4x4 worldMatrix_;
-	Matrix4x4 viewMatrix_;
-	Matrix4x4 projectionMatrix_;
-	Matrix4x4 worldViewProjectionMatrix_;
+  bool isFlipX_ = false;      // 左右フリップ
+  bool isFlipY_ = false;      // 上下フリップ
+  bool adjustSwitch_ = false; // テクスチャサイズ調整スイッチ
+  bool firstUpdate_ = true;   // 初回更新フラグ
 
-	bool isFlipX_ = false; //左右フリップ
-	bool isFlipY_ = false; //上下フリップ
-	bool adjustSwitch_ = false; //テクスチャサイズ調整スイッチ
-	bool firstUpdate_ = true; //初回更新フラグ
-
-	//Sprite設定データ
-	SpriteConfig spriteConfig_{};
+  // Sprite設定データ
+  SpriteConfig spriteConfig_{};
 };

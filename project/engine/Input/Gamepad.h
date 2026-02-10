@@ -1,5 +1,5 @@
 #pragma once
-#include "InputData.h"
+#include "engine/Input/InputData.h"
 #include "engine/math/Vector2.h"
 
 ///===================================================================== 
@@ -41,7 +41,7 @@ public:
 
     // ボタンの押し込み量を取得
     float GetTriggerValue(int stickNo, GamepadButtonType button) const;
-
+    
     // スティックの状況を取得
     Vector2 GetLeftStickState(int stickNo) const;
     Vector2 GetRightStickState(int stickNo) const;

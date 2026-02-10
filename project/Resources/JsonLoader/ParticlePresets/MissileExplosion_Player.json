@@ -1,8 +1,8 @@
 {
     "attributes": {
         "color": {
-            "x": 0.054901961237192154,
-            "y": 0.14901961386203766,
+            "x": 0.03529411926865578,
+            "y": 0.1882352977991104,
             "z": 1.0
         },
         "colorRange": {
@@ -15,49 +15,49 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 20,
-        "enableFollowEmitter": false,
+        "emitCount": 70,
+        "enableFollowEmitter": true,
         "frequency": 0.10000000149011612,
         "isBillboard": true,
         "isDirectional": false,
-        "isEmitterTrail": true,
+        "isEmitterTrail": false,
         "isParticleTrail": false,
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 0.8,
-            "min": 0.4
+            "max": 2.619999885559082,
+            "min": 0.029999999329447746
         },
-        "particlesPerInterpolation": 20,
+        "particlesPerInterpolation": 5,
         "positionRange": {
-            "max": 0.0,
-            "min": 0.0
+            "max": 1.4600000381469727,
+            "min": -1.7400000095367432
         },
         "rotateRange": {
             "max": 3.1415927410125732,
             "min": -3.1415927410125732
         },
         "scale": {
-            "x": 100.0,
-            "y": 3.0,
-            "z": 1.0
+            "x": 10.0,
+            "y": 10.0,
+            "z": 8.880000114440918
         },
         "scaleEasingType": 0,
         "scaleRange": {
-            "max": 1.0,
-            "min": 0.0
+            "max": 30.0,
+            "min": 0.10000000149011612
         },
-        "scaleSetting": 2,
-        "trailEmitInterval": 0.00800000037997961,
+        "scaleSetting": 1,
+        "trailEmitInterval": 0.01600000075995922,
         "velocityEasingType": 0,
         "velocityRange": {
-            "max": 1.0,
+            "max": 10.0,
             "min": -1.0
         }
     },
     "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "BulletMoveEffect",
+    "name": "MissileExplosion_Player",
     "primitiveParam": {
         "height": 1.0,
         "width": 1.0
@@ -65,5 +65,5 @@
     "primitiveType": "PRIMITIVE_PLANE",
     "textureAnimationParam": null,
     "textureAnimationType": 0,
-    "textureFilePath": "circle.png"
+    "textureFilePath": "MazzleEffect1.png"
 }

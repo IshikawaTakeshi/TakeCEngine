@@ -178,7 +178,7 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 			"Save_Sprite",
 			"default_sprite.json",
 			spriteConfig_,
-			spriteConfig_.jsonFilePath);
+			spriteConfig_.name);
 
 		ImGui::TreePop();
 	}

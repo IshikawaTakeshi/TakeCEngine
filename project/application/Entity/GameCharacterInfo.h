@@ -52,6 +52,12 @@ struct OverHeatInfo {
 	bool isOverheated = false;           // オーバーヒート中かどうか
 };
 
+//コライダーの情報（ボックスコライダー限定）
+struct ColliderInfo {
+	Vector3 offset{}; //コライダーのオフセット位置
+	Vector3 halfSize{}; //コライダーの半径
+};
+
 // 操作可能なキャラクターの基礎情報
 struct PlayableCharacterInfo {
 	std::string characterName; //キャラクター名
@@ -77,6 +83,7 @@ struct PlayableCharacterInfo {
 	ChargeAttackStunInfo chargeAttackStunInfo{}; // チャージ攻撃後の硬直情報
 	EnergyInfo energyInfo{};         // エネルギー情報
 	OverHeatInfo overHeatInfo{};     // オーバーヒート情報
+	ColliderInfo colliderInfo{};   // コライダー情報
 };
 
 // 実際に使用するゲームキャラクターデータ
@@ -89,21 +96,18 @@ struct CharacterData {
 // JSON形式に変換
 void to_json(nlohmann::json& j, const CharacterData& info);
 void to_json(nlohmann::json& j, const PlayableCharacterInfo& info);
-void to_json(nlohmann::json& j, const StepBoostInfo& info);
-void to_json(nlohmann::json& j, const JumpInfo& info);
-void to_json(nlohmann::json& j, const ChargeAttackStunInfo& info);
-void to_json(nlohmann::json& j, const EnergyInfo& info);
-void to_json(nlohmann::json& j, const OverHeatInfo& info);
 
 // JSON形式から変換
 void from_json(const nlohmann::json& j, CharacterData& info);
 void from_json(const nlohmann::json& j, PlayableCharacterInfo& info);
-void from_json(const nlohmann::json& j, StepBoostInfo& info);
-void from_json(const nlohmann::json& j, JumpInfo& info);
-void from_json(const nlohmann::json& j, ChargeAttackStunInfo& info);
-void from_json(const nlohmann::json& j, EnergyInfo& info);
-void from_json(const nlohmann::json& j, OverHeatInfo& info);
 
+// JSONへの変換関数
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(StepBoostInfo, direction, speed, duration, boostTimer, useEnergy, interval, intervalTimer)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JumpInfo, speed, jumpTimer, maxJumpTime, deceleration, useEnergy, isJumping)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ChargeAttackStunInfo, stunTimer, stunDuration, isStunned)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(EnergyInfo, energy, maxEnergy, recoveryRate, energyCooldown, isEnergyDepleted)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(OverHeatInfo, overheatTimer, overheatDuration, isOverheated)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ColliderInfo, offset, halfSize)
 
 //データ保存先ディレクトリパスの設定
 TAKEC_DEFINE_JSON_DIRECTORY_PATH(PlayableCharacterInfo, "Resources/JsonLoader/GameCharacters/");

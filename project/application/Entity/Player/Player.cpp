@@ -34,6 +34,10 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//キャラクタータイプ設定
 	characterType_ = CharacterType::PLAYER;
 
+	//PlayerDataの読み込み
+	playerData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>("PlayerData.json");
+	playerData_.characterInfo.transform = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
+
 	//オブジェクト初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
@@ -42,14 +46,14 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	collider_->SetOwner(this);
-	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
+	collider_->SetOffset(playerData_.characterInfo.colliderInfo.offset); // コライダーのオフセットを設定
+	collider_->SetHalfSize(playerData_.characterInfo.colliderInfo.halfSize); // コライダーの半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Player));
 
 	camera_ = object3dCommon->GetDefaultCamera();
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
-	playerData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>("PlayerData.json");
-	playerData_.characterInfo.transform = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
+	
 	object3d_->SetScale(playerData_.characterInfo.transform.scale);
 
 	weapons_.resize(WeaponUnit::Size);
@@ -76,12 +80,10 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LT.tip");
 	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RT.tip");
 
-	//入力プロバイダーの初期化
-	inputProvider_ = std::make_unique<PlayerInputProvider>(this);
 
 	//BehaviorManagerの初期化
 	behaviorManager_ = std::make_unique<BehaviorManager>();
-	behaviorManager_->Initialize(inputProvider_.get());
+	behaviorManager_->Initialize(inputProvider_);
 	behaviorManager_->InitializeBehaviors(playerData_.characterInfo);
 }
 
@@ -243,22 +245,30 @@ void Player::Update() {
 
 
 	//モデルの回転処理
+	Quaternion targetRotate;
+	Quaternion& characterRotate = playerData_.characterInfo.transform.rotate;
 	if (camera_->GetCameraState() == Camera::GameCameraState::LOCKON ||
 		camera_->GetCameraState() == Camera::GameCameraState::ENEMY_DESTROYED) {
-		//ロックオン中はカメラの向きに合わせる
-		Quaternion targetRotate = camera_->GetRotate();
-		playerData_.characterInfo.transform.rotate = Easing::Slerp(playerData_.characterInfo.transform.rotate, targetRotate, 0.25f);
-		playerData_.characterInfo.transform.rotate = QuaternionMath::Normalize(playerData_.characterInfo.transform.rotate);
+		//ロックオン中はフォーカス対象の方向に回転
+		Vector3 toTarget = playerData_.characterInfo.focusTargetPos - playerData_.characterInfo.transform.translate;
+		toTarget.y = 0.0f; //y成分を無視
+		toTarget = Vector3Math::Normalize(toTarget);
+		float targetAngle = atan2(toTarget.x, toTarget.z);
+		targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
+
+		characterRotate = Easing::Slerp(characterRotate, targetRotate, 0.9f);
+		characterRotate = QuaternionMath::Normalize(characterRotate);
 	} else {
 		if (playerData_.characterInfo.moveDirection.x != 0.0f || playerData_.characterInfo.moveDirection.z != 0.0f) {
 			//移動方向に合わせて回転
 			float targetAngle = atan2(playerData_.characterInfo.moveDirection.x, playerData_.characterInfo.moveDirection.z);
-			Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
-			playerData_.characterInfo.transform.rotate = Easing::Slerp(playerData_.characterInfo.transform.rotate, targetRotate, 0.05f);
-			playerData_.characterInfo.transform.rotate = QuaternionMath::Normalize(playerData_.characterInfo.transform.rotate);
+			targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
+			characterRotate = Easing::Slerp(characterRotate, targetRotate, 0.05f);
+			characterRotate = QuaternionMath::Normalize(characterRotate);
 		}
 	}
 
+	//首のジョイント位置を体の位置として取得
 	auto jointWorldMatrixOpt = object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix("neck", object3d_->GetWorldMatrix());
 	bodyPosition_ = {
 		jointWorldMatrixOpt->m[3][0],
@@ -267,7 +277,7 @@ void Player::Update() {
 	};
 
 	//Quaternionからオイラー角に変換
-	Vector3 eulerRotate = QuaternionMath::ToEuler(playerData_.characterInfo.transform.rotate);
+	Vector3 eulerRotate = QuaternionMath::ToEuler(characterRotate);
 	//カメラの設定
 	camera_->SetFollowTargetPos(*object3d_->GetModel()->GetSkeleton()->GetJointPosition("neck", object3d_->GetWorldMatrix()));
 	camera_->SetFollowTargetRot(eulerRotate);
@@ -320,6 +330,10 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat3("Velocity", &playerData_.characterInfo.velocity.x, 0.01f);
 	ImGui::DragFloat3("MoveDirection", &playerData_.characterInfo.moveDirection.x, 0.01f);
 	ImGui::Checkbox("OnGround", &playerData_.characterInfo.onGround);
+	ImGui::SeparatorText("Collider Info");
+	ImGui::DragFloat3("offset", &playerData_.characterInfo.colliderInfo.offset.x, 0.01f);
+	ImGui::DragFloat3("halfSize", &playerData_.characterInfo.colliderInfo.halfSize.x, 0.01f);
+	
 
 	object3d_->UpdateImGui("Player Object3d");
 
@@ -335,6 +349,8 @@ void Player::UpdateImGui() {
 	// 状態管理マネージャのImGui更新
 	behaviorManager_->UpdateImGui();
 	// コライダーのImGui更新
+	collider_->SetOffset(playerData_.characterInfo.colliderInfo.offset);
+	collider_->SetHalfSize(playerData_.characterInfo.colliderInfo.halfSize);
 	collider_->UpdateImGui("Player");
 	// ブーストエフェクトのImGui更新
 	for (int i = 0; i < chargeShootableUnits_.size(); i++) {
@@ -388,7 +404,7 @@ void Player::DrawBoostEffect() {
 void Player::LoadPlayerData(const std::string& characterName) {
 
 	//Jsonからデータを読み込み
-	playerData_.characterInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(characterName);
+	playerData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>(characterName);
 }
 
 void Player::SavePlayerData(const std::string& characterName) {
@@ -396,7 +412,7 @@ void Player::SavePlayerData(const std::string& characterName) {
 	//Jsonにデータを保存
 	playerData_.characterInfo.characterName = characterName;
 	playerData_.characterInfo.modelFilePath = object3d_->GetModelFilePath();
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<PlayableCharacterInfo>(characterName + ".json", playerData_.characterInfo);
+	TakeCFrameWork::GetJsonLoader()->SaveJsonData<CharacterData>("PlayerData.json", playerData_);
 }
 
 void Player::DrawCollider() {

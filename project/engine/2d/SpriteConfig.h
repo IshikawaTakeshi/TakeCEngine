@@ -10,8 +10,7 @@
 //=============================================================================
 
 struct SpriteConfig {
-
-	std::string jsonFilePath = ""; //JSONファイルパス
+	std::string name = ""; //JSONファイルパス
 	std::string textureFilePath_ = "white1x1.png"; //テクスチャファイルパス
 	Vector2 position_ = { 0.0f,0.0f };
 	Vector2 size_ = { 400.0f,200.0f };

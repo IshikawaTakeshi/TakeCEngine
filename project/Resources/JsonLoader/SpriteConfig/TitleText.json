@@ -3,7 +3,7 @@
         "x": 0.0,
         "y": 0.0
     },
-    "jsonFilePath": "TitleText.json",
+    "name": "TitleText.json",
     "position": {
         "x": 200.0,
         "y": 256.0
