@@ -34,6 +34,10 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//キャラクタータイプ設定
 	characterType_ = CharacterType::PLAYER;
 
+	//PlayerDataの読み込み
+	playerData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>("PlayerData.json");
+	playerData_.characterInfo.transform = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
+
 	//オブジェクト初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
@@ -42,14 +46,14 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	collider_->SetOwner(this);
-	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
+	collider_->SetOffset(playerData_.characterInfo.colliderInfo.offset); // コライダーのオフセットを設定
+	collider_->SetHalfSize(playerData_.characterInfo.colliderInfo.halfSize); // コライダーの半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Player));
 
 	camera_ = object3dCommon->GetDefaultCamera();
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
-	playerData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>("PlayerData.json");
-	playerData_.characterInfo.transform = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,-30.0f} };
+	
 	object3d_->SetScale(playerData_.characterInfo.transform.scale);
 
 	weapons_.resize(WeaponUnit::Size);
@@ -318,6 +322,10 @@ void Player::UpdateImGui() {
 	ImGui::DragFloat3("Velocity", &playerData_.characterInfo.velocity.x, 0.01f);
 	ImGui::DragFloat3("MoveDirection", &playerData_.characterInfo.moveDirection.x, 0.01f);
 	ImGui::Checkbox("OnGround", &playerData_.characterInfo.onGround);
+	ImGui::SeparatorText("Collider Info");
+	ImGui::DragFloat3("offset", &playerData_.characterInfo.colliderInfo.offset.x, 0.01f);
+	ImGui::DragFloat3("halfSize", &playerData_.characterInfo.colliderInfo.halfSize.x, 0.01f);
+	
 
 	object3d_->UpdateImGui("Player Object3d");
 
@@ -333,6 +341,8 @@ void Player::UpdateImGui() {
 	// 状態管理マネージャのImGui更新
 	behaviorManager_->UpdateImGui();
 	// コライダーのImGui更新
+	collider_->SetOffset(playerData_.characterInfo.colliderInfo.offset);
+	collider_->SetHalfSize(playerData_.characterInfo.colliderInfo.halfSize);
 	collider_->UpdateImGui("Player");
 	// ブーストエフェクトのImGui更新
 	for (int i = 0; i < chargeShootableUnits_.size(); i++) {
@@ -394,7 +404,7 @@ void Player::SavePlayerData(const std::string& characterName) {
 	//Jsonにデータを保存
 	playerData_.characterInfo.characterName = characterName;
 	playerData_.characterInfo.modelFilePath = object3d_->GetModelFilePath();
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<PlayableCharacterInfo>(characterName + ".json", playerData_.characterInfo);
+	TakeCFrameWork::GetJsonLoader()->SaveJsonData<CharacterData>("PlayerData.json", playerData_);
 }
 
 void Player::DrawCollider() {

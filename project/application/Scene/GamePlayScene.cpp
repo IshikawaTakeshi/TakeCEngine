@@ -114,13 +114,9 @@ void GamePlayScene::Initialize() {
 	phaseMessageUI_->Initialize();
 
 	//操作説明UI
-	instructionSprites_.resize(7);
-	for (size_t i = 0; i < instructionSprites_.size(); i++) {
-		instructionSprites_[i] =  std::make_unique<Sprite>();
-		instructionSprites_[i]->LoadConfig("InstructionIcon" + std::to_string(i) + ".json");
-		instructionSprites_[i]->Initialize(&SpriteCommon::GetInstance());
+	for (size_t i = 0; i < 7; i++) {
 
-
+		// アクションボタンアイコンUI
 		TakeCFrameWork::GetUIManager()->CreateUI<ActionButtonICon>(
 			"InstructionIcon" + std::to_string(i) + ".json",
 			inputProvider_.get(),
@@ -151,6 +147,7 @@ void GamePlayScene::Finalize() {
 	TakeCFrameWork::GetParticleManager()->ClearParticles(); //パーティクルの解放
 	TakeCFrameWork::GetLightManager()->ClearAllPointLights();
 	TakeCFrameWork::GetSpriteManager()->Clear(); //スプライトの解放
+	TakeCFrameWork::GetUIManager()->Clear(); //UIの解放
 	bulletManager_->Finalize(); //弾マネージャーの解放
 	player_.reset();
 	skyBox_.reset();
@@ -288,10 +285,7 @@ void GamePlayScene::UpdateImGui() {
 	for (int i = 0; i < 4; i++) {
 		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
-	//instructionSprite_
-	for (size_t i = 0; i < instructionSprites_.size(); i++) {
-		instructionSprites_[i]->UpdateImGui(std::format("instruction{}", i));
-	}
+
 	//actionIconSprite
 	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
 		actionIconSprites_[i]->UpdateImGui(std::format("actionIcon{}", i));
@@ -343,7 +337,8 @@ void GamePlayScene::Draw() {
 #pragma endregion
 
 	//当たり判定の描画前処理
-	//enemy_->DrawCollider();
+	enemy_->DrawCollider();
+	player_->DrawCollider();
 	//spotLightの描画
 	TakeCFrameWork::GetLightManager()->DrawSpotLights();
 	//登録されたワイヤーフレームをすべて描画させる
@@ -370,15 +365,6 @@ void GamePlayScene::DrawSprite() {
 		for (auto& bulletUI : bulletCounterUI_) {
 			bulletUI->Draw();
 		}
-
-		//操作説明UIの描画
-		//for (auto& instructionSprite : instructionSprites_) {
-		//	//instructionSprite->Draw();
-		//}
-		//アクションアイコンの描画
-		/*for (auto& actionIcon : actionIconSprites_) {
-			actionIcon->Draw();
-		}*/
 
 		//フェーズメッセージUIの描画
 		phaseMessageUI_->Draw();
@@ -465,14 +451,6 @@ void GamePlayScene::UpdateGamePlay() {
 		bulletCounterUI_[i]->Update();
 	}
 
-	//instructionSpriteの更新
-	for (auto& instructionSprite : instructionSprites_) {
-		instructionSprite->Update();
-	}
-	//actionIconSpriteの更新
-	/*for (int i = 0; i < actionButtonIcons_.size(); i++) {
-		actionButtonIcons_[i]->Update();
-	}*/
 
 	if (player_->GetHealth() <= 0.0f) {
 		//プレイヤーのHPが0以下になったらゲームオーバー

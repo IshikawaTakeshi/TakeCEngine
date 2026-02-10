@@ -46,7 +46,7 @@ void SphereCollider::Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collis
 void SphereCollider::Update(Object3d* collisionObject) {
 
 	transform_ = collisionObject->GetTransform();
-	transform_.translate = collisionObject->GetCenterPosition();
+	transform_.translate = collisionObject->GetCenterPosition() + offset_;
 
 	//アフィン行列の更新
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
