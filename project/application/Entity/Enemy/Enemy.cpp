@@ -269,7 +269,7 @@ void Enemy::Update() {
 			//移動方向に合わせて回転
 			float targetAngle = atan2(enemyData_.characterInfo.moveDirection.x, enemyData_.characterInfo.moveDirection.z);
 			Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
-			enemyData_.characterInfo.transform.rotate = Easing::Slerp(enemyData_.characterInfo.transform.rotate, targetRotate, 0.05f);
+			enemyData_.characterInfo.transform.rotate = Easing::Slerp(enemyData_.characterInfo.transform.rotate, targetRotate, 0.5f);
 			enemyData_.characterInfo.transform.rotate = QuaternionMath::Normalize(enemyData_.characterInfo.transform.rotate);
 		}
 	}

@@ -42,7 +42,7 @@
             "isJumping": false,
             "jumpTimer": 0.01600000075995922,
             "maxJumpTime": 0.30000001192092896,
-            "speed": 0.0,
+            "speed": 50.0,
             "useEnergy": 150.0
         },
         "kMaxMoveSpeed": 120.0,
@@ -53,7 +53,7 @@
             "y": 0.01305079460144043,
             "z": -0.9973659515380859
         },
-        "moveSpeed": 0.0,
+        "moveSpeed": 200.0,
         "onGround": true,
         "overHeatInfo": {
             "isOverheated": false,
@@ -61,16 +61,16 @@
             "overheatTimer": 0.0
         },
         "stepBoostInfo": {
-            "boostTimer": -0.0040000323206186295,
+            "boostTimer": 0.0,
             "direction": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0
             },
-            "duration": 0.30000001192092896,
-            "interval": 0.20000000298023224,
-            "intervalTimer": -0.008000025525689125,
-            "speed": 0.0,
+            "duration": 0.3,
+            "interval": 0.2,
+            "intervalTimer": 0.0,
+            "speed": 230.0,
             "useEnergy": 100.0
         },
         "transform": {

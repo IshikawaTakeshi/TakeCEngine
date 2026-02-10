@@ -245,22 +245,30 @@ void Player::Update() {
 
 
 	//モデルの回転処理
+	Quaternion targetRotate;
+	Quaternion& characterRotate = playerData_.characterInfo.transform.rotate;
 	if (camera_->GetCameraState() == Camera::GameCameraState::LOCKON ||
 		camera_->GetCameraState() == Camera::GameCameraState::ENEMY_DESTROYED) {
-		//ロックオン中はカメラの向きに合わせる
-		Quaternion targetRotate = camera_->GetRotate();
-		playerData_.characterInfo.transform.rotate = Easing::Slerp(playerData_.characterInfo.transform.rotate, targetRotate, 0.25f);
-		playerData_.characterInfo.transform.rotate = QuaternionMath::Normalize(playerData_.characterInfo.transform.rotate);
+		//ロックオン中はフォーカス対象の方向に回転
+		Vector3 toTarget = playerData_.characterInfo.focusTargetPos - playerData_.characterInfo.transform.translate;
+		toTarget.y = 0.0f; //y成分を無視
+		toTarget = Vector3Math::Normalize(toTarget);
+		float targetAngle = atan2(toTarget.x, toTarget.z);
+		targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
+
+		characterRotate = Easing::Slerp(characterRotate, targetRotate, 0.9f);
+		characterRotate = QuaternionMath::Normalize(characterRotate);
 	} else {
 		if (playerData_.characterInfo.moveDirection.x != 0.0f || playerData_.characterInfo.moveDirection.z != 0.0f) {
 			//移動方向に合わせて回転
 			float targetAngle = atan2(playerData_.characterInfo.moveDirection.x, playerData_.characterInfo.moveDirection.z);
-			Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
-			playerData_.characterInfo.transform.rotate = Easing::Slerp(playerData_.characterInfo.transform.rotate, targetRotate, 0.05f);
-			playerData_.characterInfo.transform.rotate = QuaternionMath::Normalize(playerData_.characterInfo.transform.rotate);
+			targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
+			characterRotate = Easing::Slerp(characterRotate, targetRotate, 0.05f);
+			characterRotate = QuaternionMath::Normalize(characterRotate);
 		}
 	}
 
+	//首のジョイント位置を体の位置として取得
 	auto jointWorldMatrixOpt = object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix("neck", object3d_->GetWorldMatrix());
 	bodyPosition_ = {
 		jointWorldMatrixOpt->m[3][0],
@@ -269,7 +277,7 @@ void Player::Update() {
 	};
 
 	//Quaternionからオイラー角に変換
-	Vector3 eulerRotate = QuaternionMath::ToEuler(playerData_.characterInfo.transform.rotate);
+	Vector3 eulerRotate = QuaternionMath::ToEuler(characterRotate);
 	//カメラの設定
 	camera_->SetFollowTargetPos(*object3d_->GetModel()->GetSkeleton()->GetJointPosition("neck", object3d_->GetWorldMatrix()));
 	camera_->SetFollowTargetRot(eulerRotate);
@@ -396,7 +404,7 @@ void Player::DrawBoostEffect() {
 void Player::LoadPlayerData(const std::string& characterName) {
 
 	//Jsonからデータを読み込み
-	playerData_.characterInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(characterName);
+	playerData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>(characterName);
 }
 
 void Player::SavePlayerData(const std::string& characterName) {
