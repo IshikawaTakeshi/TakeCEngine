@@ -61,11 +61,11 @@ public:
 
 	void LoadConfig(const std::string& jsonFilePath);
 
+	// サイズを相対座標にセット
+	void SetSizeRelative();
 private:
 	// 頂点データ更新
 	void UpdateVertexData();
-	// サイズを相対座標にセット
-	void SetSizeRelative();
 	//テクスチャセレクター描画関数
 	void DrawTextureSelector();
 

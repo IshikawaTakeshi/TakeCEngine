@@ -47,7 +47,7 @@ public:
 	/// <summary>
 	/// ImGui更新
 	/// </summary>
-	virtual void UpdateImGui(const std::string& name);
+	virtual void UpdateImGui([[maybe_unused]]const std::string& name);
 
 	
 	// スプライトを追加するヘルパー関数

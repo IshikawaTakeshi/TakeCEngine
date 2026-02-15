@@ -20,6 +20,7 @@ void ActionButtonICon::Initialize(SpriteManager* spriteManager, const std::strin
 	if (spriteManager_) {
 		sprites_.resize(1);
 		sprites_[0] = spriteManager_->CreateFromJson(configName);
+		sprites_[0]->SetSizeRelative();
 		baseSize_ = sprites_[0]->GetSize();
 	}
 }
