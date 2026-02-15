@@ -321,6 +321,19 @@ std::vector<std::string> TakeC::TextureManager::GetLoadedTextureFileNames() cons
 }
 
 //============================================================================================
+// CubeMapを除いたテクスチャのファイル名を取得
+//============================================================================================
+std::vector<std::string> TakeC::TextureManager::GetLoadedNonCubeTextureFileNames() const {
+	std::vector<std::string> fileNames;
+	for (const auto& pair : textureDatas_) {
+		if (!pair.second.metadata.IsCubemap()) {
+			fileNames.push_back(pair.first);
+		}
+	}
+	return fileNames;
+}
+
+//============================================================================================
 //			ファイルの最終更新日時を取得
 //============================================================================================
 

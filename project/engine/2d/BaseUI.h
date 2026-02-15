@@ -1,17 +1,11 @@
 #pragma once
 #include "engine/Math/Vector2.h"
 #include "engine/Math/Vector4.h"
+#include "engine/Base/SpriteManager.h"
+#include "engine/2d/Sprite.h"
 #include <memory>
 #include <vector>
 #include <string>
-
-// 前方宣言
-namespace TakeC {
-
-	class SpriteManager;
-}
-
-class Sprite;
 
 //============================================================================
 // BaseUI Class

@@ -30,6 +30,7 @@
 #include "application/Scene/GamePlaySceneBehavior.h"
 #include "application/UI/PhaseMessageUI.h"
 #include "application/UI/ActionButtonICon.h"
+#include "application/UI/WarningUI.h"
 
 //=============================================================================
 // GamePlayScene class

@@ -122,6 +122,8 @@ void GamePlayScene::Initialize() {
 			inputProvider_.get(),
 			static_cast<CharacterActionInput>(i + 3));
 	}
+	//警告表示UI
+	TakeCFrameWork::GetUIManager()->CreateUI<WarningUI>("WarningUI");
 
 	//アクションアイコンUI
 	actionIconSprites_.resize(3);

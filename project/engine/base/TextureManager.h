@@ -118,6 +118,8 @@ namespace TakeC {
 
 		//現在読み込み済みのファイル名一覧を取得する
 		std::vector<std::string> GetLoadedTextureFileNames() const;
+		//CubeMapを除いたテクスチャのファイル名一覧を取得する
+		std::vector<std::string> GetLoadedNonCubeTextureFileNames() const;
 
 	private:
 

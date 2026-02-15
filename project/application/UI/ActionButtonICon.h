@@ -6,9 +6,6 @@
 #include <memory>
 #include <string>
 
-// 前方宣言
-class Sprite;
-
 //============================================================================
 // ActionButtonICon class
 //============================================================================
@@ -44,8 +41,6 @@ public:
 	void UpdateImGui(const std::string& name) override;
 
 private:
-	// アイコン表示用スプライト（操作用ポインタ）
-	Sprite* sprite_ = nullptr;
 
 	// 監視するボタン
 	PlayerInputProvider* inputProvider_ = nullptr;

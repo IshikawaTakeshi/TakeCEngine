@@ -16,12 +16,12 @@
 /// 円周率関連
 /// ----------------------------------------------
 constexpr float kPi        = std::numbers::pi_v<float>;
-constexpr float kHalfPi    = std::numbers::pi_v<float> * 0.5f;
-constexpr float kQuarterPi = std::numbers::pi_v<float> * 0.25f;
-constexpr float kTao       = std::numbers::pi_v<float> * 2.0f; // 2π
+constexpr float kHalfPi    = std::numbers::pi_v<float> * 0.5f;  // π/2
+constexpr float kQuarterPi = std::numbers::pi_v<float> * 0.25f; // π/4
+constexpr float kTao       = std::numbers::pi_v<float> * 2.0f;  // 2π
 
-constexpr float kDeg2Rad = kPi / 180.0f;
-constexpr float kRad2Deg = 180.0f / kPi;
+constexpr float kDeg2Rad = kPi / 180.0f; // Radian を Degree に変換するための定数
+constexpr float kRad2Deg = 180.0f / kPi; // Degree を Radian に変換するための定数
 
 /// ----------------------------------------------
 /// 数値的な閾値や境界
@@ -48,6 +48,7 @@ constexpr float kInvSqrt3  = 1.0f / std::numbers::sqrt3_v<float>;
 constexpr float kRightAngle    = kHalfPi; // 90度
 constexpr float kStraightAngle = kPi; // 180度
 constexpr float kFullAngle     = kTao; // 360度
+
 
 /// <summary>
 /// Radian を Degree に変換

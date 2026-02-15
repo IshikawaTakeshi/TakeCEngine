@@ -92,7 +92,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	behaviorManager_->Initialize(inputProvider_.get());
 	behaviorManager_->InitializeBehaviors(enemyData_.characterInfo);
 
-	
+	//イベントの登録
+
 }
 
 //========================================================================================================
@@ -502,6 +503,8 @@ void Enemy::UpdateAttack() {
 			if (enemyData_.characterInfo.isChargeShooting == true) {
 				// チャージ撃ち中の処理
 				chargeShootTimer_.Update();
+				//イベントを発行して危険度の高い攻撃を行うことを知らせる
+				
 				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();
 					enemyData_.characterInfo.isChargeShooting = false; // チャージ撃ち中フラグをリセット
@@ -540,9 +543,13 @@ void Enemy::WeaponAttack(int weaponIndex) {
 			// 停止撃ち専用:硬直処理を行う
 			enemyData_.characterInfo.isChargeShooting = true; // チャージ撃ち中フラグを立てる
 			chargeShootableUnits_[weaponIndex] = true; // チャージ撃ち可能なユニットとしてマーク
-
+			
+			// チャージ撃ちのタイマーを初期化して開始
 			if(chargeShootTimer_.IsFinished()) {
 				chargeShootTimer_.Initialize(chargeShootDuration_, 0.0f);
+				// イベントを発行して危険度の高い攻撃を行うことを知らせる
+				TakeCFrameWork::GetEventManager()->PostEvent("EnemyHighPowerAttack", enemyData_.characterInfo.transform.translate);
+
 			}
 
 		} else {
