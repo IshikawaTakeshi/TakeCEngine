@@ -184,6 +184,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\Camera\CameraManager.cpp" />
     <ClCompile Include="engine\2d\Sprite.cpp" />
     <ClCompile Include="engine\Base\D3DResourceLeakChecker.cpp" />
+    <ClCompile Include="engine\Base\EventManager.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
     <ClCompile Include="externals\imgui\imgui_draw.cpp" />
@@ -272,6 +273,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\Bullet\ObjectPool.cpp" />
     <ClCompile Include="engine\Base\SpriteManager.cpp" />
     <ClCompile Include="engine\Base\UIManager.cpp" />
+    <ClCompile Include="application\UI\WarningUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\UI\ActionButtonICon.h" />
@@ -389,6 +391,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\2d\Sprite.h" />
     <ClInclude Include="engine\2d\SpriteCommon.h" />
     <ClInclude Include="engine\Base\D3DResourceLeakChecker.h" />
+    <ClInclude Include="engine\Base\EventManager.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
     <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
@@ -486,6 +489,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Animation\TextureAnimation.h" />
     <ClInclude Include="engine\Base\SpriteManager.h" />
     <ClInclude Include="engine\Base\UIManager.h" />
+    <ClInclude Include="application\UI\WarningUI.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

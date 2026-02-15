@@ -72,11 +72,19 @@ namespace TakeC {
 		/// <param name="outFilePath"></param>
 		/// <returns></returns>
 		template<typename T>
-		static bool ShowSavePopup(JsonLoader* jsonLoader,const char* popupId, const char* defaultFilename,
+		static bool ShowSavePopup(JsonLoader* jsonLoader, const char* popupId, const char* defaultFilename,
 			const T& data, std::string& outFilePath);
 
 		template<InputEnum TEnum>
 		static bool ComboBoxEnum(const char* label, TEnum& currentItem);
+
+		/// <summary>
+		/// テクスチャセレクターの表示
+		/// </summary>
+		/// <param name="label"></param>
+		/// <param name="currentFilePath"></param>
+		/// <returns></returns>
+		static bool TextureSelector(const char* label, std::string& currentFilePath);
 
 		/// <summary>
 		/// 描画後処理
@@ -134,8 +142,7 @@ namespace TakeC {
 		bool saved = false;
 
 		//保存ボタン
-		if (ImGui::Button("SaveConfig"))
-		{
+		if (ImGui::Button("SaveConfig")) {
 			ImGui::OpenPopup(popupId);
 		}
 
@@ -178,7 +185,7 @@ namespace TakeC {
 	///---------------------------------------------------------------------
 	template<InputEnum TEnum>
 	inline bool ImGuiManager::ComboBoxEnum(const char* label, TEnum& currentItem) {
-		
+
 		// 変更フラグ
 		bool valueChanged = false;
 
@@ -190,7 +197,7 @@ namespace TakeC {
 		TEnum oldValue = currentItem;
 
 		// コンボボックスの表示
-		if(ImGui::BeginCombo(label, magic_enum::enum_name(currentItem).data())) {
+		if (ImGui::BeginCombo(label, magic_enum::enum_name(currentItem).data())) {
 			// enumエントリの表示
 			for (size_t i = 0; i < enumTypes.size(); ++i) {
 				const bool isSelected = (currentIndex == static_cast<int>(i));

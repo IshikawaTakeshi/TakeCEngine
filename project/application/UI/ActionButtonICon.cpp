@@ -1,6 +1,4 @@
 #include "ActionButtonICon.h"
-#include "engine/2d/Sprite.h"
-#include "engine/Base/SpriteManager.h"
 #include "engine/Input/Input.h"
 #include "engine/base/ImGuiManager.h"
 
@@ -20,9 +18,9 @@ void ActionButtonICon::Initialize(SpriteManager* spriteManager, const std::strin
 	targetAction_ = targetAction;
 
 	if (spriteManager_) {
-
-		sprite_ = spriteManager_->CreateFromJson(configName);
-		baseSize_ = sprite_->GetSize();
+		sprites_.resize(1);
+		sprites_[0] = spriteManager_->CreateFromJson(configName);
+		baseSize_ = sprites_[0]->GetSize();
 	}
 }
 
@@ -41,11 +39,11 @@ void ActionButtonICon::Update() {
 	}
 
 	if (isPressed) {
-		sprite_->SetSize({ baseSize_.x * pressScale_, baseSize_.y * pressScale_ });
-		sprite_->SetMaterialColor({ 0.7f, 0.7f, 0.7f, 1.0f });
+		sprites_[0]->SetSize({ baseSize_.x * pressScale_, baseSize_.y * pressScale_ });
+		sprites_[0]->SetMaterialColor({ 0.7f, 0.7f, 0.7f, 1.0f });
 	} else {
-		sprite_->SetSize(baseSize_);
-		sprite_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+		sprites_[0]->SetSize(baseSize_);
+		sprites_[0]->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 	}
 }
 

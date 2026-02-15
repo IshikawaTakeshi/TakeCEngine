@@ -1,6 +1,4 @@
 #include "BaseUI.h"
-#include "engine/Base/SpriteManager.h"
-#include "engine/2d/Sprite.h"
 #include "engine/base/ImGuiManager.h"
 
 using namespace TakeC;

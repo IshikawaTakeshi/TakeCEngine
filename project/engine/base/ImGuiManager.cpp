@@ -1,4 +1,5 @@
 #include "ImGuiManager.h"
+#include "engine/Base/TextureManager.h"
 #include <wrl.h>
 #include <cassert>
 #include <format>
@@ -97,6 +98,78 @@ void TakeC::ImGuiManager::DrawDebugScreen() {
 		ImVec4(1, 1, 1, 1) // 色の設定（白）
 	);
 	ImGui::End();
+}
+
+//====================================================================
+// テクスチャセレクターの表示
+//====================================================================
+bool TakeC::ImGuiManager::TextureSelector(const char* label, std::string& currentFilePath) {
+	bool isChanged = false;
+
+	// Header
+	if (ImGui::CollapsingHeader(label)) {
+
+		// Reload check (optional but good)
+		TextureManager::GetInstance().CheckAndReloadTextures();
+
+		// Search
+		static char searchBuffer[64] = "";
+		ImGui::InputText("Search", searchBuffer, sizeof(searchBuffer));
+
+		// List
+		auto textureFileNames = TextureManager::GetInstance().GetLoadedNonCubeTextureFileNames();
+
+		// Grid setup
+		const float thumbSize = 64.0f;
+		const float padding = 8.0f;
+		const float cellSize = thumbSize + padding;
+		const float availWidth = ImGui::GetContentRegionAvail().x;
+		const int columns = std::max(1, int(availWidth / cellSize));
+
+		ImGui::BeginChild("TextureSelectorGrid", ImVec2(0, 300), true);
+
+		int col = 0;
+		for (const auto& file : textureFileNames) {
+			// Search filter
+			if (searchBuffer[0] != '\0' && file.find(searchBuffer) == std::string::npos) {
+				continue;
+			}
+
+			// Draw logic
+			auto handle = TextureManager::GetInstance().GetSrvHandleGPU(file);
+			ImTextureID texID = (ImTextureID)handle.ptr;
+
+			bool isSelected = (currentFilePath == file);
+			if (isSelected) {
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.6f, 0.9f, 1.0f));
+			}
+
+			ImGui::PushID(file.c_str());
+			if (ImGui::ImageButton(file.c_str(), texID, ImVec2(thumbSize, thumbSize))) {
+				currentFilePath = file;
+				isChanged = true;
+			}
+			ImGui::PopID();
+
+			if (isSelected) {
+				ImGui::PopStyleColor();
+				// Draw rect...
+				ImDrawList* drawList = ImGui::GetWindowDrawList();
+				ImVec2 min = ImGui::GetItemRectMin();
+				ImVec2 max = ImGui::GetItemRectMax();
+				drawList->AddRect(min, max, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
+			}
+
+			if (ImGui::IsItemHovered()) {
+				ImGui::SetTooltip("%s", file.c_str());
+			}
+
+			col++;
+			if (col < columns) ImGui::SameLine(); else col = 0;
+		}
+		ImGui::EndChild();
+	}
+	return isChanged;
 }
 
 //====================================================================

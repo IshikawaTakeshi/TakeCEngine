@@ -94,7 +94,9 @@ void Bazooka::UpdateImGui() {
 // 描画処理
 //=============================================================================
 void Bazooka::Draw() {
-
+	if(weaponState_.isAvailable == false) {
+		return; // 使用不可なら描画しない
+	}
 	object3d_->Draw();
 }
 
