@@ -65,3 +65,7 @@ bool PlayerInputProvider::RequestStepBoost() const {
 bool PlayerInputProvider::RequestChangeCameraMode() const {
 	return mapper_->IsTriggered(CharacterActionInput::LOCKON);
 }
+
+bool PlayerInputProvider::IsActionPressed(CharacterActionInput action) const {
+	return mapper_->IsPressed(action);
+}

@@ -172,13 +172,20 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 		ImGui::Checkbox("adjustSwitch", &adjustSwitch_);
 		mesh_->GetMaterial()->UpdateMaterialImGui();
 
+		// テクスチャセレクター
+		if (ImGuiManager::TextureSelector("Texture Select", spriteConfig_.textureFilePath_)) {
+			SetFilePath(spriteConfig_.textureFilePath_);
+			if (adjustSwitch_) {
+				AdjustTextureSize();
+			}
+		}
 		// 保存ポップアップ
 		ImGuiManager::ShowSavePopup<SpriteConfig>(
 			TakeCFrameWork::GetJsonLoader(),
 			"Save_Sprite",
 			"default_sprite.json",
 			spriteConfig_,
-			spriteConfig_.jsonFilePath);
+			spriteConfig_.name);
 
 		ImGui::TreePop();
 	}
@@ -233,6 +240,10 @@ void Sprite::UpdateVertexData() {
 void Sprite::SetSizeRelative() {
 	spriteConfig_.size_.x *= TakeC::WinApp::widthPercent_;
 	spriteConfig_.size_.y *= TakeC::WinApp::heightPercent_;
+}
+
+void Sprite::DrawTextureSelector() {
+
 }
 
 void Sprite::SetFilePath(const std::string& filePath) {

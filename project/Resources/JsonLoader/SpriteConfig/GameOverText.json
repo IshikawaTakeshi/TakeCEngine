@@ -3,7 +3,7 @@
         "x": 0.0,
         "y": 0.0
     },
-    "jsonFilePath": "GameOverText.json",
+    "name": "GameOverText.json",
     "position": {
         "x": 50.0,
         "y": 50.0

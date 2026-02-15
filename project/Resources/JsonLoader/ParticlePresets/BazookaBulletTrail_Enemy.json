@@ -15,18 +15,18 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 45,
+        "emitCount": 26,
         "enableFollowEmitter": true,
-        "frequency": 1.0,
-        "isBillboard": false,
+        "frequency": 0.10000000149011612,
+        "isBillboard": true,
         "isDirectional": false,
         "isEmitterTrail": false,
         "isParticleTrail": false,
         "isTraslate": true,
-        "lifetimeEasingType": 10,
+        "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 0.8899999856948853,
-            "min": 0.5099999904632568
+            "max": 0.38999998569488525,
+            "min": 0.15000000596046448
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
@@ -38,39 +38,32 @@
             "min": 0.0
         },
         "scale": {
-            "x": 15.0,
-            "y": 15.0,
-            "z": 15.0
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.5299999713897705
         },
-        "scaleEasingType": 10,
+        "scaleEasingType": 7,
         "scaleRange": {
             "max": 16.799999237060547,
             "min": 10.680000305175781
         },
         "scaleSetting": 2,
         "trailEmitInterval": 0.01600000075995922,
-        "velocityEasingType": 5,
+        "velocityEasingType": 0,
         "velocityRange": {
             "max": 1.0,
             "min": -1.0
         }
     },
     "blendState": 1,
-    "name": "BazookaBulletExplosion1",
+    "isUseTextureAnimation": false,
+    "name": "BazookaBulletTrail_Enemy",
     "primitiveParam": {
-        "radius": 1.0,
-        "subDivision": 16
+        "height": 1.0,
+        "width": 1.0
     },
-    "primitiveType": "PRIMITIVE_SPHERE",
-    "isUseTextureAnimation": true,
-    "textureAnimationParam": {
-        "scrollSpeed": {
-            "x": 0.8399999737739563,
-            "y": 1.2999999523162842
-        },
-        "wrapU": true,
-        "wrapV": true
-    },
-    "textureAnimationType": 1,
-    "textureFilePath": "BoostEffect4.png"
+    "primitiveType": "PRIMITIVE_PLANE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
+    "textureFilePath": "Cross.png"
 }

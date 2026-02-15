@@ -3,7 +3,7 @@
         "x": 0.0,
         "y": 0.0
     },
-    "jsonFilePath": "GameStartText.json",
+    "name": "GameStartText.json",
     "position": {
         "x": 40.0,
         "y": 391.0

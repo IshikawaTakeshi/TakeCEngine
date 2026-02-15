@@ -26,6 +26,9 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	//キャラクタータイプ設定
 	characterType_ = CharacterType::ENEMY;
 
+	//EnemyDataの読み込み
+	enemyData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>("EnemyData.json");
+
 	//オブジェクト初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
@@ -33,10 +36,11 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	collider_->SetOwner(this);
-	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
+	collider_->SetOffset(enemyData_.characterInfo.colliderInfo.offset); // コライダーのオフセットを設定
+	collider_->SetHalfSize(enemyData_.characterInfo.colliderInfo.halfSize); // コライダーの半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Enemy));
 
-	enemyData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>("EnemyData.json");
+	
 	object3d_->SetScale(enemyData_.characterInfo.transform.scale);
 
 	//emitter設定
@@ -88,7 +92,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePa
 	behaviorManager_->Initialize(inputProvider_.get());
 	behaviorManager_->InitializeBehaviors(enemyData_.characterInfo);
 
-	
+	//イベントの登録
+
 }
 
 //========================================================================================================
@@ -151,7 +156,7 @@ void Enemy::SaveEnemyData(const std::string& characterJsonPath) {
 
 	//JsonLoaderを使ってEnemyのGameCharacterContextを保存
 	enemyData_.characterInfo.characterName = characterJsonPath;
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<PlayableCharacterInfo>(characterJsonPath, enemyData_.characterInfo);
+	TakeCFrameWork::GetJsonLoader()->SaveJsonData<CharacterData>("EnemyData.json", enemyData_);
 }
 
 //========================================================================================================
@@ -265,7 +270,7 @@ void Enemy::Update() {
 			//移動方向に合わせて回転
 			float targetAngle = atan2(enemyData_.characterInfo.moveDirection.x, enemyData_.characterInfo.moveDirection.z);
 			Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
-			enemyData_.characterInfo.transform.rotate = Easing::Slerp(enemyData_.characterInfo.transform.rotate, targetRotate, 0.05f);
+			enemyData_.characterInfo.transform.rotate = Easing::Slerp(enemyData_.characterInfo.transform.rotate, targetRotate, 0.5f);
 			enemyData_.characterInfo.transform.rotate = QuaternionMath::Normalize(enemyData_.characterInfo.transform.rotate);
 		}
 	}
@@ -317,6 +322,9 @@ void Enemy::UpdateImGui() {
 	ImGui::DragFloat("Energy", &enemyData_.characterInfo.energyInfo.energy, 1.0f, 0.0f, enemyData_.characterInfo.energyInfo.maxEnergy);
 	ImGui::DragFloat3("Velocity", &enemyData_.characterInfo.velocity.x, 0.01f);
 	ImGui::DragFloat3("MoveDirection", &enemyData_.characterInfo.moveDirection.x, 0.01f);
+	ImGui::SeparatorText("Collider Info");
+	ImGui::DragFloat3("offset", &enemyData_.characterInfo.colliderInfo.offset.x, 0.01f);
+	ImGui::DragFloat3("halfSize", &enemyData_.characterInfo.colliderInfo.halfSize.x, 0.01f);
 	ImGui::Checkbox("OnGround", &enemyData_.characterInfo.onGround);
 
 	// ダメージ処理テスト用ボタン
@@ -342,6 +350,10 @@ void Enemy::UpdateImGui() {
 	bulletSensor_->UpdateImGui();
 	behaviorManager_->UpdateImGui();
 	aiBrainSystem_->UpdateImGui();
+
+	//コライダーの情報をEnemyDataから反映
+	collider_->SetOffset(enemyData_.characterInfo.colliderInfo.offset);
+	collider_->SetHalfSize(enemyData_.characterInfo.colliderInfo.halfSize);
 	collider_->UpdateImGui("Enemy");
 	for(auto& weapon : weapons_) {
 		if(weapon) {
@@ -376,7 +388,7 @@ void Enemy::DrawShadow(const LightCameraInfo& lightCamera) {
 void Enemy::DrawCollider() {
 
 #ifdef _DEBUG
-	//collider_->DrawCollider();
+	collider_->DrawCollider();
 	bulletSensor_->DrawCollider();
 
 #endif // _DEBUG
@@ -491,6 +503,8 @@ void Enemy::UpdateAttack() {
 			if (enemyData_.characterInfo.isChargeShooting == true) {
 				// チャージ撃ち中の処理
 				chargeShootTimer_.Update();
+				//イベントを発行して危険度の高い攻撃を行うことを知らせる
+				
 				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();
 					enemyData_.characterInfo.isChargeShooting = false; // チャージ撃ち中フラグをリセット
@@ -529,9 +543,13 @@ void Enemy::WeaponAttack(int weaponIndex) {
 			// 停止撃ち専用:硬直処理を行う
 			enemyData_.characterInfo.isChargeShooting = true; // チャージ撃ち中フラグを立てる
 			chargeShootableUnits_[weaponIndex] = true; // チャージ撃ち可能なユニットとしてマーク
-
+			
+			// チャージ撃ちのタイマーを初期化して開始
 			if(chargeShootTimer_.IsFinished()) {
 				chargeShootTimer_.Initialize(chargeShootDuration_, 0.0f);
+				// イベントを発行して危険度の高い攻撃を行うことを知らせる
+				TakeCFrameWork::GetEventManager()->PostEvent("EnemyHighPowerAttack", enemyData_.characterInfo.transform.translate);
+
 			}
 
 		} else {

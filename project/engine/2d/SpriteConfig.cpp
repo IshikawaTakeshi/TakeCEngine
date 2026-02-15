@@ -6,6 +6,7 @@
 // ImGui更新
 //==========================================================================================
 void SpriteConfig::UpdateImGui() {
+
 	ImGui::DragFloat2("Position", &position_.x);
 	ImGui::DragFloat2("Size", &size_.x);
 	ImGui::DragFloat2("Anchor Point", &anchorPoint_.x);
@@ -16,7 +17,7 @@ void SpriteConfig::UpdateImGui() {
 
 void to_json(nlohmann::json& j, const SpriteConfig& spriteConfig) {
 
-	j["jsonFilePath"] = spriteConfig.jsonFilePath;
+	j["name"] = spriteConfig.name;
 	j["textureFilePath"] = spriteConfig.textureFilePath_;
 	j["position"] = spriteConfig.position_;
 	j["size"] = spriteConfig.size_;
@@ -28,7 +29,7 @@ void to_json(nlohmann::json& j, const SpriteConfig& spriteConfig) {
 
 void from_json(const nlohmann::json& j, SpriteConfig& spriteConfig) {
 
-	j.at("jsonFilePath").get_to(spriteConfig.jsonFilePath);
+	j.at("name").get_to(spriteConfig.name);
 	j.at("textureFilePath").get_to(spriteConfig.textureFilePath_);
 	j.at("position").get_to(spriteConfig.position_);
 	j.at("size").get_to(spriteConfig.size_);

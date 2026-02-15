@@ -6,6 +6,18 @@
             "stunDuration": 0.5,
             "stunTimer": 0.0
         },
+        "colliderInfo": {
+            "halfSize": {
+                "x": 3.140000104904175,
+                "y": 7.510000228881836,
+                "z": 2.5199999809265137
+            },
+            "offset": {
+                "x": 0.0,
+                "y": 8.0,
+                "z": 0.0
+            }
+        },
         "deceleration": 1.100000023841858,
         "energyInfo": {
             "energy": 1000.0,
@@ -16,15 +28,15 @@
         },
         "fallSpeed": 40.0,
         "focusTargetPos": {
-            "x": -57.15410232543945,
-            "y": -73.17855834960938,
-            "z": -135.4304656982422
+            "x": 4.818485736846924,
+            "y": -29.54503059387207,
+            "z": 894.2275390625
         },
         "health": 9730.0,
-        "maxHealth": 9730.0,
         "isAlive": true,
         "isChargeShooting": false,
         "isDamaged": false,
+        "isInCombat": true,
         "jumpInfo": {
             "deceleration": 40.0,
             "isJumping": false,
@@ -34,7 +46,8 @@
             "useEnergy": 150.0
         },
         "kMaxMoveSpeed": 120.0,
-        "modelFilePath": "player_Model_ver2.0.gltf",
+        "maxHealth": 9730.0,
+        "modelFilePath": "Player_Model_Ver2.0.gltf",
         "moveDirection": {
             "x": 0.0,
             "y": 0.0,
@@ -48,24 +61,24 @@
             "overheatTimer": 0.0
         },
         "stepBoostInfo": {
-            "Direction": {
+            "boostTimer": 0.0,
+            "direction": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0
             },
-            "boostTimer": 0.0,
-            "duration": 0.30000001192092896,
-            "interval": 0.20000000298023224,
+            "duration": 0.3,
+            "interval": 0.2,
             "intervalTimer": 0.0,
             "speed": 230.0,
             "useEnergy": 100.0
         },
         "transform": {
             "rotate": {
-                "w": 1.0,
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
+                "w": 0.9999555349349976,
+                "x": 0.009062555618584156,
+                "y": 0.0026154660154134035,
+                "z": -2.3703865736024454e-05
             },
             "scale": {
                 "x": 1.5,
@@ -73,8 +86,8 @@
                 "z": 1.5
             },
             "translate": {
-                "x": 0.0,
-                "y": -29.43923568725586,
+                "x": 4.187044877479451e-10,
+                "y": -32.71565246582031,
                 "z": -30.0
             }
         },

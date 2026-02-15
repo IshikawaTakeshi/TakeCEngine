@@ -143,7 +143,7 @@ namespace TakeC {
 
 		//ボタンの押し込み量を取得
 		float GetTriggerValue(int stickNo, GamepadButtonType button) const;
-
+		
 		//スティックの状況を取得
 		Vector2 GetLeftStickState(int stickNo) const;
 		//スティックの状況を取得

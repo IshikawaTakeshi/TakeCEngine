@@ -62,8 +62,13 @@ void GamePlayScene::Initialize() {
 	bulletManager_ = std::make_unique<BulletManager>();
 	bulletManager_->Initialize(&Object3dCommon::GetInstance(), 100); //弾の最大数:100
 
-	//player
+	//playerInputProvider
 	player_ = std::make_unique<Player>();
+	inputProvider_ = std::make_unique<PlayerInputProvider>(player_.get());
+
+	//player
+	
+	player_->SetInputProvider(inputProvider_.get());
 	player_->Initialize(&Object3dCommon::GetInstance(), "Player_Model_Ver2.0.gltf");
 	player_->WeaponInitialize(&Object3dCommon::GetInstance(), bulletManager_.get());
 	//player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"));
@@ -109,19 +114,23 @@ void GamePlayScene::Initialize() {
 	phaseMessageUI_->Initialize();
 
 	//操作説明UI
-	instructionSprites_.resize(7);
-	for (size_t i = 0; i < instructionSprites_.size(); i++) {
-		instructionSprites_[i] =  std::make_unique<Sprite>();
-		instructionSprites_[i]->LoadConfig("InstructionIcon" + std::to_string(i) + ".json");
-		instructionSprites_[i]->Initialize(&SpriteCommon::GetInstance());
+	for (size_t i = 0; i < 7; i++) {
+
+		// アクションボタンアイコンUI
+		TakeCFrameWork::GetUIManager()->CreateUI<ActionButtonICon>(
+			"InstructionIcon" + std::to_string(i) + ".json",
+			inputProvider_.get(),
+			static_cast<CharacterActionInput>(i + 3));
 	}
+	//警告表示UI
+	TakeCFrameWork::GetUIManager()->CreateUI<WarningUI>("WarningUI");
 
 	//アクションアイコンUI
 	actionIconSprites_.resize(3);
+	
 	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
-		actionIconSprites_[i] = std::make_unique<Sprite>();
-		actionIconSprites_[i]->LoadConfig("ActionIcon" + std::to_string(i) + ".json");
-		actionIconSprites_[i]->Initialize(&SpriteCommon::GetInstance());
+		actionIconSprites_[i] = TakeCFrameWork::GetSpriteManager()->CreateFromJson("ActionIcon" + std::to_string(i) + ".json");
+		
 	}
 
 	//最初の状態設定
@@ -139,6 +148,8 @@ void GamePlayScene::Finalize() {
 	TakeC::CameraManager::GetInstance().ResetCameras(); //カメラのリセット
 	TakeCFrameWork::GetParticleManager()->ClearParticles(); //パーティクルの解放
 	TakeCFrameWork::GetLightManager()->ClearAllPointLights();
+	TakeCFrameWork::GetSpriteManager()->Clear(); //スプライトの解放
+	TakeCFrameWork::GetUIManager()->Clear(); //UIの解放
 	bulletManager_->Finalize(); //弾マネージャーの解放
 	player_.reset();
 	skyBox_.reset();
@@ -159,6 +170,7 @@ void GamePlayScene::Update() {
 	TakeC::CameraManager::GetInstance().Update();
 	//SkyBoxの更新
 	skyBox_->Update();
+	
 
 	//enemy
 	enemy_->SetFocusTargetPos(player_->GetBodyPosition());
@@ -245,6 +257,10 @@ void GamePlayScene::Update() {
 	//フェーズメッセージUIの更新
 	phaseMessageUI_->Update();
 
+	//UIManagerの更新
+	TakeCFrameWork::GetUIManager()->Update();
+	//SpriteManagerの更新
+	TakeCFrameWork::GetSpriteManager()->Update();
 	//particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
 	//LightManager更新
@@ -271,14 +287,13 @@ void GamePlayScene::UpdateImGui() {
 	for (int i = 0; i < 4; i++) {
 		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
-	//instructionSprite_
-	for (size_t i = 0; i < instructionSprites_.size(); i++) {
-		instructionSprites_[i]->UpdateImGui(std::format("instruction{}", i));
-	}
+
 	//actionIconSprite
 	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
 		actionIconSprites_[i]->UpdateImGui(std::format("actionIcon{}", i));
 	}
+
+	TakeCFrameWork::GetSpriteManager()->UpdateImGui("DefaultSprite");
 }
 
 //====================================================================
@@ -324,7 +339,8 @@ void GamePlayScene::Draw() {
 #pragma endregion
 
 	//当たり判定の描画前処理
-	//enemy_->DrawCollider();
+	enemy_->DrawCollider();
+	player_->DrawCollider();
 	//spotLightの描画
 	TakeCFrameWork::GetLightManager()->DrawSpotLights();
 	//登録されたワイヤーフレームをすべて描画させる
@@ -352,17 +368,10 @@ void GamePlayScene::DrawSprite() {
 			bulletUI->Draw();
 		}
 
-		//操作説明UIの描画
-		for (auto& instructionSprite : instructionSprites_) {
-			instructionSprite->Draw();
-		}
-		//アクションアイコンの描画
-		for (auto& actionIcon : actionIconSprites_) {
-			actionIcon->Draw();
-		}
-
 		//フェーズメッセージUIの描画
 		phaseMessageUI_->Draw();
+
+		TakeCFrameWork::GetSpriteManager()->Draw();
 	}
 }
 
@@ -444,14 +453,6 @@ void GamePlayScene::UpdateGamePlay() {
 		bulletCounterUI_[i]->Update();
 	}
 
-	//instructionSpriteの更新
-	for (auto& instructionSprite : instructionSprites_) {
-		instructionSprite->Update();
-	}
-	//actionIconSpriteの更新
-	for (auto& actionIcon : actionIconSprites_) {
-		actionIcon->Update();
-	}
 
 	if (player_->GetHealth() <= 0.0f) {
 		//プレイヤーのHPが0以下になったらゲームオーバー
@@ -538,9 +539,12 @@ void GamePlayScene::CheckAllCollisions() {
 
 	CollisionManager::GetInstance().ClearGameCharacter();
 
-	const std::vector<Bullet*>& bullets = bulletManager_->GetAllBullets();
-
-	const std::vector<VerticalMissile*>& missiles = bulletManager_->GetAllMissiles();
+	const std::vector<Bullet*>& playerBullets = bulletManager_->GetAllPlayerBullets();
+	const std::vector<Bullet*>& enemyBullets = bulletManager_->GetAllEnemyBullets();
+	const std::vector<Bullet*>& playerBazookaBullets = bulletManager_->GetAllPlayerBazookaBullets();
+	const std::vector<Bullet*>& enemyBazookaBullets = bulletManager_->GetAllEnemyBazookaBullets();
+	const std::vector<VerticalMissile*>& playerMissiles = bulletManager_->GetAllPlayerMissiles();
+	const std::vector<VerticalMissile*>& enemyMissiles = bulletManager_->GetAllEnemyMissiles();
 
 	// プレイヤーの登録
 	CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
@@ -550,13 +554,35 @@ void GamePlayScene::CheckAllCollisions() {
 	CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(enemy_->GetBulletSensor()));
 
 	//弾の登録
-	for (const auto& bullet : bullets) {
+	for (const auto& bullet : playerBullets) {
 		if (bullet->IsActive()) {
 			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
 		}
 	}
+	for (const auto& bullet : enemyBullets) {
+		if (bullet->IsActive()) {
+			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
+		}
+	}
+
+	//バズーカ弾の登録
+	for (const auto& bazookaBullet : playerBazookaBullets) {
+		if(bazookaBullet->IsActive()){
+			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bazookaBullet));
+		}
+	}
+	for (const auto& bazookaBullet : enemyBazookaBullets) {
+		if (bazookaBullet->IsActive()) {
+			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bazookaBullet));
+		}
+	}
 	//垂直ミサイルの登録
-	for (const auto& missile : missiles) {
+	for (const auto& missile : playerMissiles) {
+		if (missile->IsActive()) {
+			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(missile));
+		}
+	}
+	for (const auto& missile : enemyMissiles) {
 		if (missile->IsActive()) {
 			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(missile));
 		}

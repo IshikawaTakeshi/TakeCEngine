@@ -13,6 +13,7 @@ struct VerticalMissileLauncherInfo {
 	
 };
 
+// JSONへの変換関数
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(VerticalMissileLauncherInfo, burstShotInfo, vmInfo)
 
 template<>

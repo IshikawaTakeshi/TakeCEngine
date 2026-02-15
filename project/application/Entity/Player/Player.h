@@ -33,7 +33,7 @@ public:
 	~Player() override = default;
 
 	//初期化
-	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
+	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath);
 	//更新
 	void Update() override;
 	//ImGuiの更新
@@ -121,14 +121,16 @@ public:
 
 	void SetInCombat(bool inCombat) { playerData_.characterInfo.isInCombat = inCombat; }
 
+	void SetInputProvider(PlayerInputProvider* inputProvider) { inputProvider_ = inputProvider; }
+
 private:
 
 	//カメラ
 	Camera* camera_ = nullptr;
 	//状態管理マネージャ
 	std::unique_ptr<BehaviorManager> behaviorManager_ = nullptr;
-	//プレイヤー入力プロバイダ
-	std::unique_ptr<PlayerInputProvider> inputProvider_ = nullptr;
+	//プレイヤー入力プロバイダ(借りる)
+	PlayerInputProvider* inputProvider_ = nullptr;
 
 	//プレイヤーの武器
 	std::vector<std::unique_ptr<BaseWeapon>> weapons_;

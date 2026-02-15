@@ -1,9 +1,9 @@
 {
     "attributes": {
         "color": {
-            "x": 1.0,
+            "x": 0.019607843831181526,
             "y": 0.1411764770746231,
-            "z": 0.0
+            "z": 1.0
         },
         "colorRange": {
             "max": 1.0,
@@ -15,18 +15,18 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 26,
+        "emitCount": 10,
         "enableFollowEmitter": true,
         "frequency": 0.10000000149011612,
-        "isBillboard": true,
+        "isBillboard": false,
         "isDirectional": false,
         "isEmitterTrail": false,
         "isParticleTrail": false,
         "isTraslate": true,
-        "lifetimeEasingType": 0,
+        "lifetimeEasingType": 10,
         "lifetimeRange": {
-            "max": 0.38999998569488525,
-            "min": 0.15000000596046448
+            "max": 0.8899999856948853,
+            "min": 0.5099999904632568
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
@@ -38,32 +38,39 @@
             "min": 0.0
         },
         "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.5299999713897705
+            "x": 15.0,
+            "y": 15.0,
+            "z": 15.0
         },
-        "scaleEasingType": 7,
+        "scaleEasingType": 10,
         "scaleRange": {
             "max": 16.799999237060547,
             "min": 10.680000305175781
         },
         "scaleSetting": 2,
         "trailEmitInterval": 0.01600000075995922,
-        "velocityEasingType": 0,
+        "velocityEasingType": 5,
         "velocityRange": {
             "max": 1.0,
             "min": -1.0
         }
     },
     "blendState": 1,
-    "isUseTextureAnimation": false,
-    "name": "BazookaBulletTrail",
+    "isUseTextureAnimation": true,
+    "name": "BazookaBulletExplosion_Player",
     "primitiveParam": {
-        "height": 1.0,
-        "width": 1.0
+        "radius": 1.0,
+        "subDivision": 16
     },
-    "primitiveType": "PRIMITIVE_PLANE",
-    "textureAnimationParam": null,
-    "textureAnimationType": 0,
-    "textureFilePath": "Cross.png"
+    "primitiveType": "PRIMITIVE_SPHERE",
+    "textureAnimationParam": {
+        "scrollSpeed": {
+            "x": 0.8399999737739563,
+            "y": 1.2999999523162842
+        },
+        "wrapU": true,
+        "wrapV": true
+    },
+    "textureAnimationType": 1,
+    "textureFilePath": "BoostEffect4.png"
 }

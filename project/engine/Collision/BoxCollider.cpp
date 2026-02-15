@@ -43,7 +43,7 @@ void BoxCollider::Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collision
 	transform_ = {
 		collisionObject->GetScale(),
 		collisionObject->GetRotate(),
-		obb_.center
+		obb_.center + offset_
 	};
 
 	//アフィン行列
@@ -65,7 +65,7 @@ void BoxCollider::Update(Object3d* collisionObject) {
 	minPenetration_ = 0.0f;
 
 	transform_ = collisionObject->GetTransform();
-	obb_.center = collisionObject->GetCenterPosition();
+	obb_.center = collisionObject->GetCenterPosition() + offset_;
 
 	// スケール行列の更新
 	Matrix4x4 scaleMat = MatrixMath::MakeScaleMatrix(transform_.scale);

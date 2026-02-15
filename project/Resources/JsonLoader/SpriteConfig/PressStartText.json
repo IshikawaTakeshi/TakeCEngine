@@ -3,7 +3,7 @@
         "x": 0.5,
         "y": 0.5
     },
-    "jsonFilePath": "PressStartText.json",
+    "name": "PressStartText.json",
     "position": {
         "x": 512.0,
         "y": 500.0

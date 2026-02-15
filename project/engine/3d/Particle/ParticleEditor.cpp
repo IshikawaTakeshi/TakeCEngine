@@ -7,22 +7,6 @@
 
 using namespace TakeC;
 
-namespace {
-
-	//-------------------------------------------------
-	// DDSファイルかどうか判定
-	//-------------------------------------------------
-	bool IsDdsFilePath(const std::string& filePath) {
-		if (filePath.size() < 4) {
-			return false;
-		}
-		std::string lower = filePath;
-		std::transform(lower.begin(), lower.end(), lower.begin(),
-			[](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-		return lower.rfind(".dds") == lower.size() - 4;
-	}
-}
-
 //======================================================================
 //			初期化
 //======================================================================
@@ -55,13 +39,7 @@ void ParticleEditor::Initialize(ParticleCommon* particleCommon) {
 	TextureManager::GetInstance().LoadTextureAll();
 
 	//テクスチャ名一覧の取得
-	textureFileNames_ = TextureManager::GetInstance().GetLoadedTextureFileNames();
-
-	// DDSを一覧から除外
-	textureFileNames_.erase(
-		std::remove_if(textureFileNames_.begin(), textureFileNames_.end(), IsDdsFilePath),
-		textureFileNames_.end()
-	);
+	textureFileNames_ = TextureManager::GetInstance().GetLoadedNonCubeTextureFileNames();
 }
 
 //======================================================================
