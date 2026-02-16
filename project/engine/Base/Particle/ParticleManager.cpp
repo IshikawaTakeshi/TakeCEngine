@@ -171,6 +171,16 @@ void TakeC::ParticleManager::ClearParticles() {
 	}
 }
 
+//================================================================================================
+// エミッターの開放
+//================================================================================================
+void TakeC::ParticleManager::ClearEmitters() {
+	emitterAllocator_->Clear();
+}
+
+//================================================================================
+// エミッターIDから位置を取得
+//================================================================================
 std::optional<Vector3> TakeC::ParticleManager::GetEmitterPosition(uint32_t emitterID) const {
 	return emitterAllocator_->GetEmitterPosition(emitterID);
 }

@@ -167,6 +167,13 @@ void from_json(const json& j, ParticlePreset& preset) {
 		preset.primitiveParam = coneParam;
 		break;
 	}
+	case PRIMITIVE_CYLINDER:
+	{
+		CylinderParam cylinderParam;
+		j.at("primitiveParam").get_to(cylinderParam);
+		preset.primitiveParam = cylinderParam;
+		break;
+	}
 	default:
 		break;
 	}

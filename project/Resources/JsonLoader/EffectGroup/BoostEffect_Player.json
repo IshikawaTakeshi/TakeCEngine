@@ -1,0 +1,66 @@
+{
+    "defaultScale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+    },
+    "effectName": "BoostEffect_Player",
+    "emitters": [
+        {
+            "autoStart": true,
+            "delayTime": 0.0,
+            "duration": 1.0,
+            "emitCount": 10,
+            "emitterName": "NewEmitter_0",
+            "positionOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "presetFilePath": "BoostEffect_Player_1.json",
+            "rotationOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "autoStart": true,
+            "delayTime": 0.0,
+            "duration": 1.0,
+            "emitCount": 10,
+            "emitterName": "NewEmitter_1",
+            "positionOffset": {
+                "x": 0.0,
+                "y": -1.7999999523162842,
+                "z": 0.0
+            },
+            "presetFilePath": "BoostEffect_Player_2.json",
+            "rotationOffset": {
+                "x": 3.140000104904175,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "autoStart": true,
+            "delayTime": 0.0,
+            "duration": 1.0,
+            "emitCount": 10,
+            "emitterName": "NewEmitter_2",
+            "positionOffset": {
+                "x": 0.0,
+                "y": -1.899999976158142,
+                "z": 0.0
+            },
+            "presetFilePath": "BoostEffect_Player_3.json",
+            "rotationOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        }
+    ],
+    "isLooping": true,
+    "totalDuration": -1.0
+}

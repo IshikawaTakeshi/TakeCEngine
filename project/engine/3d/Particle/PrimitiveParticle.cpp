@@ -183,7 +183,11 @@ void PrimitiveParticle::SetTextureFilePath(const std::string& filePath) {
 	} else if (particlePreset_.primitiveType == PRIMITIVE_CONE) {
 		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(filePath);
-	} else if (particlePreset_.primitiveType == PRIMITIVE_CUBE) {
+	}
+	else if (particlePreset_.primitiveType == PRIMITIVE_CUBE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(filePath);
+	}else if (particlePreset_.primitiveType == PRIMITIVE_CYLINDER) {
 		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(filePath);
 	} else {
@@ -241,6 +245,16 @@ void PrimitiveParticle::GeneratePrimitive() {
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
 			cubeParam.size,
 			particlePreset_.textureFilePath);
+	}else if (particlePreset_.primitiveType == PRIMITIVE_CYLINDER) {
+		//CylinderParamとして取得
+		const CylinderParam& cylinderParam = std::get<CylinderParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCylinder(
+			cylinderParam.radius,
+			cylinderParam.height,
+			cylinderParam.subDivision,
+			particlePreset_.textureFilePath);
+	} else {
+		assert(0 && "未対応の PrimitiveType が指定されました");
 	}
 	//テクスチャファイルパスの設定
 	SetTextureFilePath(particlePreset_.textureFilePath);

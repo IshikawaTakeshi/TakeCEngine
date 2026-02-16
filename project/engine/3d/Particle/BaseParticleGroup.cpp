@@ -49,7 +49,18 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 
 	Particle particle;
 	particle.transforms_.scale = { attributes.scale.x,attributes.scale.y,attributes.scale.z };
-	particle.transforms_.rotate = { 0.0f,0.0f,distRotate(randomEngine) };
+
+	// 回転の設定を条件分岐で明確に分ける
+	if (attributes.isDirectional &&
+		(particlePreset_.primitiveType == PRIMITIVE_CONE ||
+			particlePreset_.primitiveType == PRIMITIVE_CYLINDER)) {
+		// 方向に沿って回転
+		particle.transforms_.rotate = Vector3Math::RotationFromDirection(directoin);
+	}
+	else {
+		// ランダムな回転を設定
+		particle.transforms_.rotate = { 0.0f, 0.0f, distRotate(randomEngine) };
+	}
 
 	Vector3 randomTranslate = { distPosition(randomEngine),distPosition(randomEngine),distPosition(randomEngine) };
 	particle.transforms_.translate = translate + randomTranslate;
@@ -62,6 +73,8 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 		//ランダムな方向に飛ばす
 		particle.velocity_ = { distVelocity(randomEngine),distVelocity(randomEngine),distVelocity(randomEngine) };
 	}
+
+
 	if (attributes.editColor) {
 		//色を編集する場合
 		particle.color_ = {

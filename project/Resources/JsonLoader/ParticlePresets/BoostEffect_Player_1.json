@@ -1,0 +1,77 @@
+{
+    "attributes": {
+        "color": {
+            "x": 0.3921568691730499,
+            "y": 0.2862745225429535,
+            "z": 1.0
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 10,
+        "enableFollowEmitter": true,
+        "frequency": 0.10000000149011612,
+        "isBillboard": false,
+        "isDirectional": true,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
+        "lifetimeRange": {
+            "max": 3.0,
+            "min": 1.0
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 1.0,
+            "min": -1.0
+        },
+        "rotateRange": {
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 4.989999771118164,
+            "z": 1.0
+        },
+        "scaleEasingType": 0,
+        "scaleRange": {
+            "max": 3.0,
+            "min": 0.10000000149011612
+        },
+        "scaleSetting": 0,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
+        "velocityRange": {
+            "max": 1.0,
+            "min": -1.0
+        }
+    },
+    "blendState": 1,
+    "isUseTextureAnimation": true,
+    "name": "BoostEffect_Player_1",
+    "primitiveParam": {
+        "height": 1.3899999856948853,
+        "radius": 1.440000057220459,
+        "subDivision": 16
+    },
+    "primitiveType": "PRIMITIVE_CYLINDER",
+    "textureAnimationParam": {
+        "scrollSpeed": {
+            "x": 0.8100000023841858,
+            "y": -9.4399995803833
+        },
+        "wrapU": true,
+        "wrapV": true
+    },
+    "textureAnimationType": 1,
+    "textureFilePath": "SparkNoise.png"
+}
