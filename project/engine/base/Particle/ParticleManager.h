@@ -69,6 +69,8 @@ namespace TakeC {
 
 		//パーティクルグループの開放
 		void ClearParticleGroups();
+		//エミッターの開放
+		void ClearEmitters();
 
 		//出現しているパーティクルのクリア
 		void ClearParticles();
