@@ -60,14 +60,14 @@
     "name": "BoostEffect_Player_1",
     "primitiveParam": {
         "height": 1.3899999856948853,
-        "radius": 1.440000057220459,
+        "radius": 0.6600000262260437,
         "subDivision": 16
     },
     "primitiveType": "PRIMITIVE_CYLINDER",
     "textureAnimationParam": {
         "scrollSpeed": {
             "x": 0.8100000023841858,
-            "y": -9.4399995803833
+            "y": -8.619999885559082
         },
         "wrapU": true,
         "wrapV": true

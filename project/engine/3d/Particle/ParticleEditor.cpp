@@ -535,6 +535,9 @@ void ParticleEditor::DrawOverwriteConfirmDialog() {
 				presetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ParticlePreset>();
 
 				showOverwriteConfirm_ = false;
+				//保存後、リスト内の情報を更新する
+				presets_[pendingPresetName_] = currentPreset_;
+
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::SameLine();

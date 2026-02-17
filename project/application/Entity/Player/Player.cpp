@@ -352,10 +352,6 @@ void Player::UpdateImGui() {
 	collider_->SetOffset(playerData_.characterInfo.colliderInfo.offset);
 	collider_->SetHalfSize(playerData_.characterInfo.colliderInfo.halfSize);
 	collider_->UpdateImGui("Player");
-	// ブーストエフェクトのImGui更新
-	for (int i = 0; i < chargeShootableUnits_.size(); i++) {
-		boostEffects_[i]->UpdateImGui(magic_enum::enum_name(static_cast<BoostEffectPosition>(i)).data());
-	}
 	// 武器のImGui更新
 	weapons_[0]->UpdateImGui();
 	weapons_[1]->UpdateImGui();
@@ -676,28 +672,28 @@ void Player::RequestActiveBoostEffect() {
 		// 前方向
 		boostEffects_[LEFT_BACK]->SetIsActive(true);
 		boostEffects_[RIGHT_BACK]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
 	}
 	else if (angle >= 45.0f && angle < 135.0f) {
 		// 右方向
-		boostEffects_[LEFT_BACK]->SetIsActive(false);
+		boostEffects_[LEFT_BACK]->SetIsActive(true);
 		boostEffects_[RIGHT_BACK]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
 		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
 	}
 	else if (angle <= -45.0f && angle > -135.0f) {
 		// 左方向
 		boostEffects_[LEFT_BACK]->SetIsActive(true);
-		boostEffects_[RIGHT_BACK]->SetIsActive(false);
+		boostEffects_[RIGHT_BACK]->SetIsActive(true);
 		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
 	}
 	else {
 		// 後方向
 		boostEffects_[LEFT_BACK]->SetIsActive(true);
 		boostEffects_[RIGHT_BACK]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
 	}
 }

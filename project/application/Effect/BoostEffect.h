@@ -2,72 +2,85 @@
 #include "engine/3d/Object3d.h"
 #include "engine/3d/Light/PointLight.h"
 #include "application/Entity/GameCharacterBehavior.h"
-#include "engine/3d/Particle/ParticleEmitter.h"
+#include "engine/3d/Particle/EffectGroup.h" 
 #include <string>
+#include <memory>
 
 class GameCharacter;
 
-//============================================================================
-// BoostEffect class
-//============================================================================
+//===================================================================================
+// BoostEffect class 
+//===================================================================================
 class BoostEffect {
 public:
 
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	BoostEffect() = default;
 	~BoostEffect();
 
-	//初期化
+	//===================================================================================
+	// functions
+	//===================================================================================
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="owner"></param>
 	void Initialize(GameCharacter* owner);
-	//更新
+
+	/// <summary>
+	/// 更新
+	/// </summary>
 	void Update();
-	//ImGuiの更新
-	void UpdateImGui(std::string label);
-	//描画
+
+	/// <summary>
+	///	描画
+	/// </summary>
 	void Draw();
-	//スケルトンのジョイントにアタッチ
+
+	/// <summary>
+	/// スケルトンのジョイントにエフェクトをアタッチ
+	/// </summary>
+	/// <param name="skeleton"></param>
+	/// <param name="jointName"></param>
 	void AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName);
 
-	//----- getter ---------------------------
-
-	Object3d* GetEffectObject() { return boostEffectObject_.get(); }
+	//===================================================================================
+	// accessors
+	//===================================================================================
 
 	//----- setter ---------------------------
-
-	//エフェクトの所有者設定
 	void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
-	//エフェクトのアクティブ設定
-	void SetIsActive(bool isActive) { isActive_ = isActive; }
-	//GameCharacterの行動を参照
+	void SetIsActive(bool isActive); 
 	void SetBehavior(GameCharacterBehavior behavior) { behavior_ = behavior; }
-	//エフェクトのスケール設定
-	void SetRotate(const Vector3& rotate);
 
 private:
 
-	//ブーストエフェクトオブジェクト
+	//EffectGroup のインスタンス
+	std::unique_ptr<TakeC::EffectGroup> effectGroup_ = nullptr;
+
+	// ブーストエフェクトオブジェクト (メッシュが必要な場合のみ残す)
 	std::unique_ptr<Object3d> boostEffectObject_ = nullptr;
 	std::unique_ptr<Object3d> boostEffectObject2_ = nullptr;
-	//パーティクルエミッター
-	std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
-	//武器の親Joint名
+
+	// 親関連
 	std::string parentJointName_;
-	// 親スケルトン
 	Skeleton* parentSkeleton_ = nullptr; 
-	//エフェクトの所有者
 	GameCharacter* ownerObject_ = nullptr;
+	// ジョイントのワールド行列
+	Matrix4x4 currentJointMatrix_;
 
-	GameCharacterBehavior behavior_;
+	GameCharacterBehavior behavior_ = GameCharacterBehavior::NONE;
 
-	//アクティブ時の可変スケール
-	Vector3 activeScale_ = { 1.0f,1.0f,1.0f };
-	//アルファ
-	float alpha_ = 0.0f;
-	// エフェクトの持続時間
-	float duration_ = 0.5f;
-	float effectTime_ = 0.0f;
-	//エフェクトのアクティブフラグ
-	bool isActive_ = false;
-
+	// ライト
 	PointLightData pointLightData_;
 	uint32_t pointLightIndex_ = 0;
+
+	// 制御用変数
+	bool isActive_ = false;
+	float effectTime_ = 0.0f;
+	float duration_ = 0.5f;
+	Vector3 activeScale_ = { 1.0f,1.0f,1.0f };
 };

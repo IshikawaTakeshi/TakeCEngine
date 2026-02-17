@@ -64,8 +64,6 @@ void EffectEditor::UpdateImGui() {
 // 描画処理
 //==================================================================================
 void EffectEditor::Draw() {
-
-
 	TakeCFrameWork::GetParticleManager()->Draw();
 }
 
@@ -74,11 +72,13 @@ void EffectEditor::Draw() {
 //==================================================================================
 void EffectEditor::DrawMainWindow() {
 	ImGui::Begin("Effect Editor");
-
+	//プレビューコントロールタブ
 	DrawPreviewControlTab();
 
-
+	//エディタータブ群
 	if (ImGui::BeginTabBar("EffectEditorTabs")) {
+
+		//エフェクトリストタブ
 		if (ImGui::BeginTabItem("Effect List")) {
 			DrawEffectListTab();
 			ImGui::NewLine();
@@ -86,21 +86,18 @@ void EffectEditor::DrawMainWindow() {
 			DrawFileOperationTab();
 			ImGui::EndTabItem();
 		}
+		//エフェクト設定タブ
 		if (ImGui::BeginTabItem("Effect Settings")) {
 			DrawEffectSettingsTab();
 			ImGui::EndTabItem();
 		}
+		//エミッターリストタブ
 		if (ImGui::BeginTabItem("Emitter List")) {
 			DrawEmitterListTab();
 			ImGui::EndTabItem();
 		}
-		
-	
-			
-	
 		ImGui::EndTabBar();
 	}
-
 	ImGui::End();
 }
 
@@ -113,6 +110,7 @@ void EffectEditor::DrawEffectListTab() {
 		bool isSelected = (selectedEffectIndex_ == i);
 
 		if (ImGui::Selectable(savedEffects_[i].effectName.c_str(), isSelected)) {
+			// エフェクトを選択
 			SelectEffect(i);
 		}
 
@@ -146,27 +144,22 @@ void EffectEditor::DrawEffectSettingsTab() {
 	bool isLooping = currentConfig_.isLooping;
 	if (ImGui::Checkbox("Looping", &isLooping)) {
 		currentConfig_.isLooping = isLooping;
-		RebuildEffectGroup();
 	}
 
 	// 持続時間
 	float totalDuration = currentConfig_.totalDuration;
 	if (ImGui::DragFloat("Total Duration", &totalDuration, 0.1f, -1.0f, 100.0f)) {
 		currentConfig_.totalDuration = totalDuration;
-		RebuildEffectGroup();
 	}
 	ImGui::SameLine();
+	// 無限に再生させるボタン
 	if (ImGui::Button("Infinite")) {
 		currentConfig_.totalDuration = -1.0f;
 		RebuildEffectGroup();
 	}
 
-	ImGui::Separator();
-
-	// デフォルトスケール
-	if (ImGui::DragFloat3("Default Scale", &currentConfig_.defaultScale.x, 0.01f, 0.01f, 10.0f)) {
-		RebuildEffectGroup();
-	}
+	// デフォルトスケール操作
+	ImGui::DragFloat3("Default Scale", &currentConfig_.defaultScale.x, 0.01f, 0.01f, 10.0f);
 
 	ImGui::Separator();
 
@@ -181,6 +174,12 @@ void EffectEditor::DrawEmitterListTab() {
 	// エミッター追加ボタン
 	if (ImGui::Button("Add Emitter", ImVec2(-1, 0))) {
 		AddEmitter();
+	}
+	// エミッター削除ボタン
+	if(ImGui::Button("Remove Emitter", ImVec2(-1, 0))){
+		if(selectedEmitterIndex_ >= 0){
+			RemoveEmitter(selectedEmitterIndex_);
+		}
 	}
 
 	//余白+区切り線
@@ -229,12 +228,19 @@ void EffectEditor::DrawEmitterSettingsTab() {
 	if (selectedEmitterIndex_ >= 0 && selectedEmitterIndex_ < currentConfig_.emitters.size()) {
 		auto& emitter = currentConfig_.emitters[selectedEmitterIndex_];
 
+		// 変更フラグ（Rebuild不要な、軽量な更新用）
+		bool isChanged = false;
+
+		// ---------------------------------------------------------
+		// Rebuildが必要な項目（構造が変わるもの）
+		// ---------------------------------------------------------
+
 		// エミッター名
 		char nameBuffer[256];
 		strcpy_s(nameBuffer, emitter.emitterName.c_str());
 		if (ImGui::InputText("Emitter Name", nameBuffer, sizeof(nameBuffer))) {
 			emitter.emitterName = nameBuffer;
-			RebuildEffectGroup();
+			RebuildEffectGroup(); // 名前が変わると検索等に影響するためRebuild推奨
 		}
 
 		ImGui::Separator();
@@ -245,7 +251,7 @@ void EffectEditor::DrawEmitterSettingsTab() {
 				bool isSelected = (emitter.presetFilePath == availablePresets_[i]);
 				if (ImGui::Selectable(availablePresets_[i].c_str(), isSelected)) {
 					emitter.presetFilePath = availablePresets_[i];
-					RebuildEffectGroup();
+					RebuildEffectGroup(); // 読み込むファイルが変わるのでRebuild必須
 				}
 				if (isSelected) {
 					ImGui::SetItemDefaultFocus();
@@ -256,52 +262,60 @@ void EffectEditor::DrawEmitterSettingsTab() {
 
 		ImGui::Separator();
 
+		// ---------------------------------------------------------
+		// 即時反映可能な項目（パラメータのみ）
+		// ---------------------------------------------------------
+
 		// 位置オフセット
 		if (ImGui::DragFloat3("Position Offset", &emitter.positionOffset.x, 0.1f)) {
-			RebuildEffectGroup();
+			isChanged = true;
 		}
-
 		// 回転オフセット
 		if (ImGui::DragFloat3("Rotation Offset", &emitter.rotationOffset.x, 0.01f)) {
-			RebuildEffectGroup();
+			isChanged = true;
 		}
 
 		ImGui::Separator();
 
 		// 遅延時間
 		if (ImGui::DragFloat("Delay Time", &emitter.delayTime, 0.01f, 0.0f, 10.0f)) {
-			RebuildEffectGroup();
+			isChanged = true;
 		}
 
 		// 持続時間
 		if (ImGui::DragFloat("Duration", &emitter.duration, 0.1f, -1.0f, 100.0f)) {
-			RebuildEffectGroup();
+			isChanged = true;
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Infinite##Duration")) {
 			emitter.duration = -1.0f;
-			RebuildEffectGroup();
+			isChanged = true;
 		}
 
 		ImGui::Separator();
 
-		// 自動開始
+		// 自動開始（動作フラグなので即時反映でも良いが、Rebuildの方が安全な場合もある。今回は即時反映に含める）
 		bool autoStart = emitter.autoStart;
 		if (ImGui::Checkbox("Auto Start", &autoStart)) {
 			emitter.autoStart = autoStart;
-			RebuildEffectGroup();
+			RebuildEffectGroup(); // Start状態のリセットを含むためRebuildにしておくのが無難
 		}
 
 		// 発生回数
 		int emitCount = static_cast<int>(emitter.emitCount);
 		if (ImGui::DragInt("Emit Count", &emitCount, 1, 0, 1000)) {
 			emitter.emitCount = static_cast<uint32_t>(emitCount);
-			RebuildEffectGroup();
+			isChanged = true;
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Continuous##EmitCount")) {
 			emitter.emitCount = 0;
-			RebuildEffectGroup();
+			isChanged = true;
+		}
+
+		//変更があった場合、プレビューへ即時反映
+		if (isChanged && previewEffect_) {
+			previewEffect_->UpdateEmitterConfig(selectedEmitterIndex_, emitter);
 		}
 
 	} else {
@@ -674,16 +688,14 @@ void TakeC::EffectEditor::UpdateEffectGroupConfig() {
 	if (std::string(effectNameBuffer_) != currentConfig_.effectName) {
 		currentConfig_.effectName = std::string(effectNameBuffer_);
 	}
-
+	// プレビューエフェクトが存在しない場合は更新しない
 	if (!previewEffect_) {
 		return;
 	}
-
 	// ループ設定
 	if (previewEffect_->IsLooping() != currentConfig_.isLooping) {
 		previewEffect_->SetLooping(currentConfig_.isLooping);
 	}
-
 	// デフォルトスケール
 	if (previewEffect_->GetScale() != currentConfig_.defaultScale) {
 		previewEffect_->SetScale(currentConfig_.defaultScale);

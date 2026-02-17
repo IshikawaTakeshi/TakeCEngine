@@ -60,7 +60,7 @@ void GamePlayScene::Initialize() {
 
 	//BulletManager
 	bulletManager_ = std::make_unique<BulletManager>();
-	bulletManager_->Initialize(&Object3dCommon::GetInstance(), 100); //弾の最大数:100
+	bulletManager_->Initialize(&Object3dCommon::GetInstance(), 50); //弾の最大数
 
 	//playerInputProvider
 	player_ = std::make_unique<Player>();

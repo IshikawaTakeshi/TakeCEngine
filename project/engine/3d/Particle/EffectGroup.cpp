@@ -26,6 +26,10 @@ void EffectGroup::Initialize(const EffectGroupConfig& config) {
 	InitializeCommon();
 }
 
+void TakeC::EffectGroup::SetParentMatrix(const Matrix4x4* parentMatrix) {
+	parentMatrix_ = parentMatrix;	
+}
+
 //==================================================================================
 // 共通初期化処理
 //==================================================================================
@@ -34,7 +38,7 @@ void EffectGroup::InitializeCommon() {
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
 	// デフォルトスケール適用
-	scale_ = config_.defaultScale;
+	transform_.scale = config_.defaultScale;
 
 	// エミッターインスタンスを作成
 	CreateEmitterInstances();
@@ -73,37 +77,73 @@ void EffectGroup::Update() {
 		return;
 	}
 
-	// 総経過時間を更新
 	totalElapsedTime_ += deltaTime_;
 
-	// ジョイント追従の更新
-	if (attachedSkeleton_ != nullptr) {
-		UpdateJointAttachment();
+	// -------------------------------------------------------------
+	// 親行列がある場合、位置情報を同期する
+	// -------------------------------------------------------------
+	if (parentMatrix_) {
+		// 親行列から位置成分を抽出して自身のtranslateに適用
+		transform_.translate.x = parentMatrix_->m[3][0];
+		transform_.translate.y = parentMatrix_->m[3][1];
+		transform_.translate.z = parentMatrix_->m[3][2];
 	}
 
-	// 各エミッターを更新
+	// グループ全体のワールド行列を計算
+	Matrix4x4 groupWorldMatrix = MatrixMath::MakeAffineMatrix(
+		transform_.scale, 
+		transform_.rotate, 
+		transform_.translate
+	);
+
+	// 親行列がある場合は乗算
+	if (parentMatrix_) {
+		groupWorldMatrix = MatrixMath::Multiply(groupWorldMatrix, *parentMatrix_);
+	}
+
 	bool anyEmitterActive = false;
+	// グループの回転クォータニオンを作成
+	Quaternion groupRot = QuaternionMath::FromEuler(transform_.rotate);
+
+	// 親行列がある場合、親の回転も考慮する必要があるかもしれません。
+	// ここでは親の位置だけ同期しているので、回転はEffectGroup自身のものを使います。
 
 	for (auto& instance : emitterInstances_) {
-		// 経過時間を更新
 		instance.elapsedTime += deltaTime_;
 
-		// 開始判定
 		if (!instance.hasStarted) {
 			CheckEmitterStart(instance);
 		}
 
-		// アクティブなら更新
 		if (instance.isActive) {
 			anyEmitterActive = true;
 
-			// 位置更新
-			UpdateEmitterPositions();
+			// ▼▼▼ 行列を使わずベクトル演算で計算 ▼▼▼
 
-			// エミッター更新
+			// A. エミッターのローカルオフセットを取り出す
+			Vector3 offset = instance.config.positionOffset;
+
+			// B. グループのスケールを適用
+			offset.x *= transform_.scale.x;
+			offset.y *= transform_.scale.y;
+			offset.z *= transform_.scale.z;
+
+			// C. グループの回転でオフセットを回転させる
+			// (オフセット(0,0,0)ならここは(0,0,0)のまま)
+			offset = QuaternionMath::RotateVector(offset, groupRot);
+
+			// D. グループの現在位置(親位置)を加算して最終位置とする
+			Vector3 finalPos = transform_.translate + offset;
+
+			// 適用
+			instance.emitter->SetTranslate(finalPos);
+
+			// E. 回転の適用 (単純加算)
+			// グループ回転 + エミッターオフセット回転
+			Vector3 finalRot = transform_.rotate + instance.config.rotationOffset;
+			instance.emitter->SetRotate(finalRot);
+
 			instance.emitter->Update();
-
-			// 終了判定
 			CheckEmitterEnd(instance);
 		}
 	}
@@ -115,10 +155,46 @@ void EffectGroup::Update() {
 	}
 
 	// ループ再生
-	if (isFinished_ && config_.isLooping) {
+	if (!isFinished_ && config_.isLooping) {
 		Reset();
-		Play(position_);
+		Play(transform_.translate);
 	}
+}
+//==================================================================================
+// 実行中にエミッターの設定を更新する
+//==================================================================================
+void TakeC::EffectGroup::UpdateEmitterConfig(int index, const EmitterConfig& config) {
+
+	// 範囲チェック
+	if (index < 0 || index >= emitterInstances_.size()) {
+		return;
+	}
+
+	// 設定を上書き
+	auto& instance = emitterInstances_[index];
+	instance.config = config;
+
+	// 即座に位置・回転を反映させる（一時停止中でも動かせるようにするため）
+
+	// オフセットを適用
+	Vector3 offsetPos = instance.config.positionOffset;
+
+	// スケールを適用
+	offsetPos.x *= transform_.scale.x;
+	offsetPos.y *= transform_.scale.y;
+	offsetPos.z *= transform_.scale.z;
+
+	// 回転を適用（quaternion使用）
+	Quaternion rot = QuaternionMath::FromEuler(transform_.rotate);
+	offsetPos = QuaternionMath::RotateVector(offsetPos, rot);
+
+	// 最終位置を設定
+	Vector3 finalPosition = transform_.translate + offsetPos;
+	instance.emitter->SetTranslate(finalPosition);
+
+	// 回転も適用
+	Vector3 finalRotation = transform_.rotate + instance.config.rotationOffset;
+	instance.emitter->SetRotate(finalRotation);
 }
 
 //==================================================================================
@@ -163,36 +239,21 @@ void EffectGroup::UpdateEmitterPositions() {
 		Vector3 offsetPos = instance.config.positionOffset;
 
 		// スケールを適用
-		offsetPos.x *= scale_.x;
-		offsetPos.y *= scale_.y;
-		offsetPos.z *= scale_.z;
+		offsetPos.x *= transform_.scale.x;
+		offsetPos.y *= transform_.scale.y;
+		offsetPos.z *= transform_.scale.z;
 
 		// 回転を適用（quaternion使用）
-		Quaternion rot = QuaternionMath::FromEuler(rotation_);
+		Quaternion rot = QuaternionMath::FromEuler(transform_.rotate);
 		offsetPos = QuaternionMath::RotateVector(offsetPos, rot);
 
 		// 最終位置を設定
-		Vector3 finalPosition = position_ + offsetPos;
+		Vector3 finalPosition = transform_.translate + offsetPos;
 		instance.emitter->SetTranslate(finalPosition);
 
 		// 回転も適用
-		Vector3 finalRotation = rotation_ + instance.config.rotationOffset;
+		Vector3 finalRotation = transform_.rotate + instance.config.rotationOffset;
 		instance.emitter->SetRotate(finalRotation);
-	}
-}
-
-//==================================================================================
-// ジョイント追従の更新
-//==================================================================================
-void EffectGroup::UpdateJointAttachment() {
-	if (attachedSkeleton_ != nullptr && !attachedJointName_.empty()) {
-		// ジョイント位置を取得
-		std::optional<Vector3> jointPos = 
-			attachedSkeleton_->GetJointPosition(attachedJointName_, MatrixMath::MakeIdentity4x4());
-
-		if (jointPos.has_value()) {
-			position_ = jointPos.value();
-		}
 	}
 }
 
@@ -201,7 +262,7 @@ void EffectGroup::UpdateJointAttachment() {
 //==================================================================================
 void EffectGroup::Play(const Vector3& position) {
 	Reset();
-	position_ = position;
+	transform_.translate = position;
 	isPlaying_ = true;
 	isFinished_ = false;
 	isPaused_ = false;
@@ -265,14 +326,6 @@ void EffectGroup::Reset() {
 }
 
 //==================================================================================
-// ジョイントにアタッチ
-//==================================================================================
-void EffectGroup::AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName) {
-	attachedSkeleton_ = skeleton;
-	attachedJointName_ = jointName;
-}
-
-//==================================================================================
 // 特定のエミッターを有効/無効化
 //==================================================================================
 void TakeC::EffectGroup::SetEmitterActive(const std::string& emitterName, bool isActive) {
@@ -331,15 +384,15 @@ void TakeC::EffectGroup::SetEmitterRotation(const std::string& emitterName, cons
 // 位置設定
 //==================================================================================
 void EffectGroup::SetPosition(const Vector3& position) {
-	position_ = position;
+	transform_.translate = position;
 }
 
 void EffectGroup::SetRotation(const Vector3& rotation) {
-	rotation_ = rotation;
+	transform_.rotate = rotation;
 }
 
 void EffectGroup::SetScale(const Vector3& scale) {
-	scale_ = scale;
+	transform_.scale = scale;
 }
 
 void EffectGroup::SetDirection(const Vector3& direction) {
@@ -363,13 +416,13 @@ void EffectGroup::UpdateImGui() {
 	ImGui::Text("Elapsed Time: %.2f", totalElapsedTime_);
 
 	ImGui::Separator();
-	ImGui::DragFloat3("Position", &position_.x, 0.1f);
-	ImGui::DragFloat3("Rotation", &rotation_.x, 0.01f);
-	ImGui::DragFloat3("Scale", &scale_.x, 0.01f);
+	ImGui::DragFloat3("Position", &transform_.translate.x, 0.1f);
+	ImGui::DragFloat3("Rotation", &transform_.rotate.x, 0.01f);
+	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
 
 	ImGui::Separator();
 	if (ImGui::Button("Play")) {
-		Play(position_);
+		Play(transform_.translate);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Stop")) {
