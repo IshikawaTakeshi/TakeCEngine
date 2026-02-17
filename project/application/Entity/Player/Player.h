@@ -48,8 +48,6 @@ public:
 
 	//武器の初期化
 	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager);
-	//ブーストエフェクトの描画
-	void DrawBoostEffect();
 
 	/// <summary>
 	/// PlayerのGameCharacterContextの読み込み

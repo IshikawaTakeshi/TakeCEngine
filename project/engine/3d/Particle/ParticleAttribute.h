@@ -56,6 +56,7 @@ struct ParticleAttributes {
 	bool editColor = false; //色を編集するかどうか
 	bool isTranslate = false; //位置を更新するかどうか
 	bool isDirectional = false; //方向に沿って移動するかどうか
+	bool enableLighting = true; //ライティングを有効にするかどうか
 	uint32_t scaleSetting = 0;    //スケールの更新処理方法
 	bool enableFollowEmitter = false; //エミッターに追従するかどうか
 

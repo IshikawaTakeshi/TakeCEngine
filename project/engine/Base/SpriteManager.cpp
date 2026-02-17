@@ -35,6 +35,7 @@ void SpriteManager::Draw() {
 // ImGuiの更新
 //============================================================================
 void SpriteManager::UpdateImGui(const std::string& groupName) {
+	groupName;
 #ifdef _DEBUG
 	if (ImGui::TreeNode(groupName.c_str())) {
 		int i = 0;

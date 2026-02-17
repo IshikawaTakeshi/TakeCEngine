@@ -80,34 +80,50 @@ void EffectGroup::Update() {
 	totalElapsedTime_ += deltaTime_;
 
 	// -------------------------------------------------------------
-	// 親行列がある場合、位置情報を同期する
+	// 1. 基本となる位置と回転を決定
 	// -------------------------------------------------------------
-	if (parentMatrix_) {
-		// 親行列から位置成分を抽出して自身のtranslateに適用
-		transform_.translate.x = parentMatrix_->m[3][0];
-		transform_.translate.y = parentMatrix_->m[3][1];
-		transform_.translate.z = parentMatrix_->m[3][2];
-	}
+	Vector3 currentPos = transform_.translate;
 
-	// グループ全体のワールド行列を計算
-	Matrix4x4 groupWorldMatrix = MatrixMath::MakeAffineMatrix(
-		transform_.scale, 
-		transform_.rotate, 
-		transform_.translate
-	);
+	// ▼▼▼ 変更: transform_.rotate は既に Quaternion なのでそのまま使用 ▼▼▼
+	Quaternion currentRot = transform_.rotate; 
 
-	// 親行列がある場合は乗算
+	// 親行列がある場合、親の位置と回転を反映させる
 	if (parentMatrix_) {
-		groupWorldMatrix = MatrixMath::Multiply(groupWorldMatrix, *parentMatrix_);
+		// A. 位置の同期（親のワールド座標）
+		currentPos.x = parentMatrix_->m[3][0];
+		currentPos.y = parentMatrix_->m[3][1];
+		currentPos.z = parentMatrix_->m[3][2];
+
+		// B. 回転の同期（親の回転 × 自分の回転）
+		// 行列から回転成分を抽出してクォータニオン化
+		Matrix4x4 rotationMatrix = *parentMatrix_;
+		rotationMatrix.m[3][0] = 0.0f; rotationMatrix.m[3][1] = 0.0f; rotationMatrix.m[3][2] = 0.0f;
+
+		// スケールを除去（各軸を正規化）
+		Vector3 right = { rotationMatrix.m[0][0], rotationMatrix.m[0][1], rotationMatrix.m[0][2] };
+		Vector3 up    = { rotationMatrix.m[1][0], rotationMatrix.m[1][1], rotationMatrix.m[1][2] };
+		Vector3 fwd   = { rotationMatrix.m[2][0], rotationMatrix.m[2][1], rotationMatrix.m[2][2] };
+		right = Vector3Math::Normalize(right);
+		up = Vector3Math::Normalize(up);
+		fwd = Vector3Math::Normalize(fwd);
+
+		rotationMatrix.m[0][0] = right.x; rotationMatrix.m[0][1] = right.y; rotationMatrix.m[0][2] = right.z;
+		rotationMatrix.m[1][0] = up.x;    rotationMatrix.m[1][1] = up.y;    rotationMatrix.m[1][2] = up.z;
+		rotationMatrix.m[2][0] = fwd.x;   rotationMatrix.m[2][1] = fwd.y;   rotationMatrix.m[2][2] = fwd.z;
+
+		// 行列からクォータニオンを作成
+		// (QuaternionMath::MakeFromMatrix などの関数を使用)
+		Quaternion parentQ = QuaternionMath::FromMatrix(rotationMatrix);
+
+		// 親の回転 × 自分の回転
+		currentRot = QuaternionMath::Multiply(parentQ, currentRot);
 	}
 
 	bool anyEmitterActive = false;
-	// グループの回転クォータニオンを作成
-	Quaternion groupRot = QuaternionMath::FromEuler(transform_.rotate);
 
-	// 親行列がある場合、親の回転も考慮する必要があるかもしれません。
-	// ここでは親の位置だけ同期しているので、回転はEffectGroup自身のものを使います。
-
+	// -------------------------------------------------------------
+	// 2. 各エミッターの更新
+	// -------------------------------------------------------------
 	for (auto& instance : emitterInstances_) {
 		instance.elapsedTime += deltaTime_;
 
@@ -118,8 +134,6 @@ void EffectGroup::Update() {
 		if (instance.isActive) {
 			anyEmitterActive = true;
 
-			// ▼▼▼ 行列を使わずベクトル演算で計算 ▼▼▼
-
 			// A. エミッターのローカルオフセットを取り出す
 			Vector3 offset = instance.config.positionOffset;
 
@@ -128,20 +142,22 @@ void EffectGroup::Update() {
 			offset.y *= transform_.scale.y;
 			offset.z *= transform_.scale.z;
 
-			// C. グループの回転でオフセットを回転させる
-			// (オフセット(0,0,0)ならここは(0,0,0)のまま)
-			offset = QuaternionMath::RotateVector(offset, groupRot);
+			// C. 合成した回転(親×自分)でオフセットを回転させる
+			offset = QuaternionMath::RotateVector(offset, currentRot);
 
-			// D. グループの現在位置(親位置)を加算して最終位置とする
-			Vector3 finalPos = transform_.translate + offset;
-
-			// 適用
+			// D. 最終的なワールド座標
+			Vector3 finalPos = currentPos + offset;
 			instance.emitter->SetTranslate(finalPos);
 
-			// E. 回転の適用 (単純加算)
-			// グループ回転 + エミッターオフセット回転
-			Vector3 finalRot = transform_.rotate + instance.config.rotationOffset;
-			instance.emitter->SetRotate(finalRot);
+			// E. エミッターの回転設定
+			// エミッターオフセット回転も加味する
+			// instance.config.rotationOffset はオイラー角(Vector3)のままなので変換が必要
+			Quaternion offsetRotQ = QuaternionMath::FromEuler(instance.config.rotationOffset);
+			Quaternion finalRotQ = QuaternionMath::Multiply(currentRot, offsetRotQ);
+			finalRotQ = QuaternionMath::Normalize(finalRotQ);
+			// Quaternionからオイラー角に戻して設定 (ParticleEmitterがオイラー角を受け取る場合)
+			Vector3 finalRotEuler = QuaternionMath::ToEuler(finalRotQ);
+			instance.emitter->SetRotate(finalRotEuler);
 
 			instance.emitter->Update();
 			CheckEmitterEnd(instance);
@@ -155,9 +171,11 @@ void EffectGroup::Update() {
 	}
 
 	// ループ再生
-	if (!isFinished_ && config_.isLooping) {
+	if (!anyEmitterActive && config_.isLooping) { 
 		Reset();
-		Play(transform_.translate);
+		// Play(Vector3) は transform_.translate を更新するだけなので、
+		// QuaternionTransform版になっても同じロジックで動作します
+		Play(currentPos);
 	}
 }
 //==================================================================================
@@ -185,7 +203,7 @@ void TakeC::EffectGroup::UpdateEmitterConfig(int index, const EmitterConfig& con
 	offsetPos.z *= transform_.scale.z;
 
 	// 回転を適用（quaternion使用）
-	Quaternion rot = QuaternionMath::FromEuler(transform_.rotate);
+	Quaternion rot = transform_.rotate;
 	offsetPos = QuaternionMath::RotateVector(offsetPos, rot);
 
 	// 最終位置を設定
@@ -193,7 +211,7 @@ void TakeC::EffectGroup::UpdateEmitterConfig(int index, const EmitterConfig& con
 	instance.emitter->SetTranslate(finalPosition);
 
 	// 回転も適用
-	Vector3 finalRotation = transform_.rotate + instance.config.rotationOffset;
+	Vector3 finalRotation = QuaternionMath::ToEuler(transform_.rotate + QuaternionMath::FromEuler(instance.config.rotationOffset));
 	instance.emitter->SetRotate(finalRotation);
 }
 
@@ -244,7 +262,7 @@ void EffectGroup::UpdateEmitterPositions() {
 		offsetPos.z *= transform_.scale.z;
 
 		// 回転を適用（quaternion使用）
-		Quaternion rot = QuaternionMath::FromEuler(transform_.rotate);
+		Quaternion rot = transform_.rotate;
 		offsetPos = QuaternionMath::RotateVector(offsetPos, rot);
 
 		// 最終位置を設定
@@ -252,7 +270,7 @@ void EffectGroup::UpdateEmitterPositions() {
 		instance.emitter->SetTranslate(finalPosition);
 
 		// 回転も適用
-		Vector3 finalRotation = transform_.rotate + instance.config.rotationOffset;
+		Vector3 finalRotation = QuaternionMath::ToEuler(transform_.rotate + QuaternionMath::FromEuler(instance.config.rotationOffset));
 		instance.emitter->SetRotate(finalRotation);
 	}
 }
@@ -387,10 +405,6 @@ void EffectGroup::SetPosition(const Vector3& position) {
 	transform_.translate = position;
 }
 
-void EffectGroup::SetRotation(const Vector3& rotation) {
-	transform_.rotate = rotation;
-}
-
 void EffectGroup::SetScale(const Vector3& scale) {
 	transform_.scale = scale;
 }
@@ -416,9 +430,7 @@ void EffectGroup::UpdateImGui() {
 	ImGui::Text("Elapsed Time: %.2f", totalElapsedTime_);
 
 	ImGui::Separator();
-	ImGui::DragFloat3("Position", &transform_.translate.x, 0.1f);
-	ImGui::DragFloat3("Rotation", &transform_.rotate.x, 0.01f);
-	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
+	transform_.EditConfig("Effect Transform");
 
 	ImGui::Separator();
 	if (ImGui::Button("Play")) {
@@ -434,14 +446,21 @@ void EffectGroup::UpdateImGui() {
 	}
 
 	ImGui::Separator();
+	// エミッター情報の表示
 	ImGui::Text("Emitters:");
 	for (size_t i = 0; i < emitterInstances_.size(); ++i) {
 		auto& instance = emitterInstances_[i];
 		if (ImGui::TreeNode((void*)(intptr_t)i, "%s", instance.config.emitterName.c_str())) {
 			ImGui::Text("Active: %s", instance.isActive ? "Yes" : "No");
 			ImGui::Text("Elapsed: %.2f", instance.elapsedTime);
+			ImGui::DragFloat3("Position Offset", &instance.config.positionOffset.x, 0.1f);
+			ImGui::DragFloat3("Rotation Offset", &instance.config.rotationOffset.x, 0.1f);
 			ImGui::TreePop();
 		}
+	}
+	// 設定保存
+	if(ImGui::Button("Save Config")){
+		TakeCFrameWork::GetJsonLoader()->SaveJsonData<EffectGroupConfig>(config_.effectName,config_);
 	}
 
 	ImGui::End();

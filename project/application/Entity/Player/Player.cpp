@@ -352,6 +352,11 @@ void Player::UpdateImGui() {
 	collider_->SetOffset(playerData_.characterInfo.colliderInfo.offset);
 	collider_->SetHalfSize(playerData_.characterInfo.colliderInfo.halfSize);
 	collider_->UpdateImGui("Player");
+	// ブーストエフェクトのImGui更新
+	for (int i = 0; i < boostEffects_.size(); i++) {
+		boostEffects_[i]->UpdateImGui();
+	}
+
 	// 武器のImGui更新
 	weapons_[0]->UpdateImGui();
 	weapons_[1]->UpdateImGui();
@@ -382,15 +387,6 @@ void Player::DrawShadow(const LightCameraInfo& lightCamera) {
 		if (weapon) {
 			weapon->DrawShadow(lightCamera);
 		}
-	}
-}
-
-//===================================================================================
-// ブーストエフェクトの描画処理
-//===================================================================================
-void Player::DrawBoostEffect() {
-	for (const auto& effect : boostEffects_) {
-		effect->Draw();
 	}
 }
 

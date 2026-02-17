@@ -21,16 +21,6 @@ void BoostEffect::Initialize(GameCharacter* owner) {
 	effectGroup_ = std::make_unique<EffectGroup>();
 	effectGroup_->Initialize("BoostEffect_Player.json");
 
-	// --- 既存のMesh初期化 (そのまま残す場合) ---
-	boostEffectObject_ = std::make_unique<Object3d>();
-	boostEffectObject_->Initialize(&Object3dCommon::GetInstance(), "boostEffectCone.gltf");
-	boostEffectObject_->GetModel()->GetModelData()->material.textureFilePath = "BlueBoostEffect.png";
-
-	boostEffectObject2_ = std::make_unique<Object3d>();
-	boostEffectObject2_->Initialize(&Object3dCommon::GetInstance(), "boostEffectCone.gltf");
-	boostEffectObject2_->GetModel()->GetModelData()->material.textureFilePath = "BlueBoostEffect.png";
-	boostEffectObject2_->SetScale({ 1.1f,1.1f,1.1f });
-
 	// --- PointLight設定 ---
 	pointLightData_.enabled_ = 1;
 	pointLightData_.color_ = { 0.1f,0.5f,1.0f,1.0f };
@@ -66,9 +56,6 @@ void BoostEffect::Update() {
 		currentJointMatrix_ = jointWorldMatrix; // メンバ変数に保存
 		effectGroup_->SetParentMatrix(&currentJointMatrix_); // アドレスを渡す
 
-		// Meshも追従
-		boostEffectObject_->SetParent(currentJointMatrix_);
-		boostEffectObject2_->SetParent(currentJointMatrix_);
 	} else {
 		effectGroup_->SetParentMatrix(nullptr);
 	}
@@ -80,13 +67,16 @@ void BoostEffect::Update() {
 	}
 
 	// 4. 更新実行
+	pointLightData_.position_ = {
+		currentJointMatrix_.m[3][0], currentJointMatrix_.m[3][1], currentJointMatrix_.m[3][2]
+	};
 	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
 	effectGroup_->Update();
+}
 
-	if (isActive_) {
-		boostEffectObject_->Update();
-		boostEffectObject2_->Update();
-	}
+void BoostEffect::UpdateImGui() {
+
+	effectGroup_->UpdateImGui();
 }
 
 //===================================================================================
@@ -100,21 +90,11 @@ void BoostEffect::SetIsActive(bool isActive) {
 	if (isActive_) {
 		// 再生開始
 		// Meshの位置や回転がセットされていれば、その位置で再生開始
-		effectGroup_->Play(boostEffectObject_->GetCenterPosition());
+		effectGroup_->Play(pointLightData_.position_);
 		effectTime_ = 0.0f;
 	} else {
 		// 停止
 		effectGroup_->Stop();
-	}
-}
-
-//===================================================================================
-//　描画
-//===================================================================================
-void BoostEffect::Draw() {
-	if (isActive_) {
-		// Mesh描画
-		boostEffectObject_->Draw();
 	}
 }
 

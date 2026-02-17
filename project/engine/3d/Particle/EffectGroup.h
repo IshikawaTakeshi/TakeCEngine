@@ -82,11 +82,6 @@ namespace TakeC {
 		void SetPosition(const Vector3& position);
 
 		/// <summary>
-		/// エフェクト全体の回転を設定
-		/// </summary>
-		void SetRotation(const Vector3& rotation);
-
-		/// <summary>
 		/// エフェクト全体のスケールを設定
 		/// </summary>
 		void SetScale(const Vector3& scale);
@@ -154,7 +149,7 @@ namespace TakeC {
 
 		const std::string& GetEffectName() const { return config_.effectName; }
 		const Vector3& GetPosition() const { return transform_.translate; }
-		const Vector3& GetRotation() const { return transform_.rotate; }
+		const Quaternion& GetRotation() const { return transform_.rotate; }
 		const Vector3& GetScale() const { return transform_.scale; }
 		const EffectGroupConfig& GetConfig() const { return config_; }
 		float GetElapsedTime() const { return totalElapsedTime_; }
@@ -165,6 +160,7 @@ namespace TakeC {
 		void SetConfig(const EffectGroupConfig& config) { config_ = config; CreateEmitterInstances(); }
 		// 親行列の設定
 		void SetParentMatrix(const Matrix4x4* parentMatrix);
+		void SetRotate(const Quaternion& rotation) { transform_.rotate = rotation; }
 
 
 	private:
@@ -209,7 +205,7 @@ namespace TakeC {
 		std::vector<EmitterInstance> emitterInstances_;
 
 		// トランスフォーム
-		EulerTransform transform_;
+		QuaternionTransform transform_;
 		Vector3 direction_ = {0.0f, 1.0f, 0.0f}; // デフォルトは上向き
 
 		// 状態

@@ -24,6 +24,7 @@ void BaseUI::Draw() {
 }
 
 void BaseUI::UpdateImGui(const std::string& name) {
+	name;
 #ifdef _DEBUG
 	if (ImGui::TreeNode(name.c_str())) {
 		ImGui::Checkbox("Is Active", &isActive_);

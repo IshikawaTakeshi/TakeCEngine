@@ -200,6 +200,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	//isParticleTrail
 	ImGui::Checkbox("Is ParticleTrail", &attributes.isParticleTrail);
 	ImGui::Checkbox("Is EmitterTrail", &attributes.isEmitterTrail);
+	ImGui::Checkbox("Enable Lighting", &attributes.enableLighting);
 	ImGui::SliderInt("Particles Per Interpolation", reinterpret_cast<int*>(&attributes.particlesPerInterpolation), 1, 20);
 	ImGui::DragFloat("Trail Emit Interval", &attributes.trailEmitInterval, 0.001f, 0.001f, 1.0f);
 

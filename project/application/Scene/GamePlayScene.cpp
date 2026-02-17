@@ -333,9 +333,8 @@ void GamePlayScene::Draw() {
 	for (auto& object : levelObjects_) {
 		object.second->Draw();
 	}
-	Object3dCommon::GetInstance().PreDrawAddBlend();
-	player_->DrawBoostEffect();
-	
+	//Object3dCommon::GetInstance().PreDrawAddBlend();
+
 
 #pragma endregion
 

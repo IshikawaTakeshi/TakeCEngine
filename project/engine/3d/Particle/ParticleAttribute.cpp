@@ -27,6 +27,7 @@ void to_json(nlohmann::json& j, const ParticleAttributes& attributes) {
 	j["scaleSetting"] = attributes.scaleSetting;
 	j["isTraslate"] = attributes.isTranslate;
 	j["isDirectional"] = attributes.isDirectional;
+	j["enableLighting"] = attributes.enableLighting;
 	j["enableFollowEmitter"] = attributes.enableFollowEmitter;
 
 	j["isParticleTrail"] = attributes.isParticleTrail;
@@ -109,6 +110,7 @@ void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
 	if (j.contains("particlesPerInterpolation"))j.at("particlesPerInterpolation").get_to(attributes.particlesPerInterpolation);
 	if (j.contains("trailEmitInterval"))j.at("trailEmitInterval").get_to(attributes.trailEmitInterval);
 	if (j.contains("isEmitterTrail"))j.at("isEmitterTrail").get_to(attributes.isEmitterTrail);
+	if (j.contains("enableLighting"))j.at("enableLighting").get_to(attributes.enableLighting);
 }
 
 //============================================================================

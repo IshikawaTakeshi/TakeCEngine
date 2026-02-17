@@ -104,6 +104,8 @@ void PrimitiveParticle::Update() {
 	perViewData_->isBillboard = particlePreset_.attribute.isBillboard;
 	perViewData_->viewProjection = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
 	perViewData_->billboardMatrix = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetRotationMatrix();
+	auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+	primitiveMaterial->SetEnableLighting(particlePreset_.attribute.enableLighting);
 }
 
 //=============================================================================
@@ -171,6 +173,7 @@ void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
 void PrimitiveParticle::SetTextureFilePath(const std::string& filePath) {
 	particlePreset_.textureFilePath = filePath;
 	//テクスチャファイルパスの設定
+
 	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
 		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetData<Ring>(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(filePath);
@@ -258,6 +261,9 @@ void PrimitiveParticle::GeneratePrimitive() {
 	}
 	//テクスチャファイルパスの設定
 	SetTextureFilePath(particlePreset_.textureFilePath);
+	//ライティングの設定
+	auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+	primitiveMaterial->SetEnableLighting(particlePreset_.attribute.enableLighting);
 
 	//テクスチャアニメーションの設定
 	if (particlePreset_.isUseTextureAnimation == true) {

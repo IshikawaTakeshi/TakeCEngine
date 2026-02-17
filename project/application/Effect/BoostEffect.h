@@ -35,10 +35,7 @@ public:
 	/// </summary>
 	void Update();
 
-	/// <summary>
-	///	描画
-	/// </summary>
-	void Draw();
+	void UpdateImGui();
 
 	/// <summary>
 	/// スケルトンのジョイントにエフェクトをアタッチ
@@ -60,10 +57,6 @@ private:
 
 	//EffectGroup のインスタンス
 	std::unique_ptr<TakeC::EffectGroup> effectGroup_ = nullptr;
-
-	// ブーストエフェクトオブジェクト (メッシュが必要な場合のみ残す)
-	std::unique_ptr<Object3d> boostEffectObject_ = nullptr;
-	std::unique_ptr<Object3d> boostEffectObject2_ = nullptr;
 
 	// 親関連
 	std::string parentJointName_;

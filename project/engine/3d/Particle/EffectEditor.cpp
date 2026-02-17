@@ -355,9 +355,9 @@ void EffectEditor::DrawPreviewControlTab() {
 	}
 
 	// プレビュー回転
-	if (ImGui::DragFloat3("Preview Rotation", &previewRotation_.x, 0.01f)) {
+	if (ImGui::DragFloat4("Preview Rotation", &previewRotation_.x, 0.01f)) {
 		if (previewEffect_) {
-			previewEffect_->SetRotation(previewRotation_);
+			previewEffect_->SetRotate(previewRotation_);
 		}
 	}
 
@@ -621,7 +621,7 @@ void EffectEditor::RebuildEffectGroup() {
 	previewEffect_ = std::make_unique<EffectGroup>();
 	previewEffect_->Initialize(currentConfig_);
 	previewEffect_->SetPosition(previewPosition_);
-	previewEffect_->SetRotation(previewRotation_);
+	previewEffect_->SetRotate(previewRotation_);
 	previewEffect_->SetScale(previewScale_);
 }
 
