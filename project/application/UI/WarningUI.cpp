@@ -64,6 +64,8 @@ void WarningUI::Initialize(TakeC::SpriteManager* spriteManager, const std::strin
 //======================================================================
 void WarningUI::Update() {
 
+    targetCamera_ = TakeC::CameraManager::GetInstance().GetActiveCamera();
+
     // 全方向の状態更新
     for (int i = 0; i < static_cast<int>(WarningDirection::COUNT); ++i) {
         auto& state = directionStates_[i];
