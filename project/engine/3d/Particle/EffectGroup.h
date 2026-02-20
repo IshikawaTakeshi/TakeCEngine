@@ -160,7 +160,7 @@ namespace TakeC {
 		void SetConfig(const EffectGroupConfig& config) { config_ = config; CreateEmitterInstances(); }
 		// 親行列の設定
 		void SetParentMatrix(const Matrix4x4* parentMatrix);
-		void SetRotate(const Quaternion& rotation) { transform_.rotate = rotation; }
+		void SetRotate(const Quaternion& rotation);
 
 
 	private:

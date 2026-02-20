@@ -75,10 +75,10 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 		boostEffects_[i] = std::make_unique<BoostEffect>();
 		boostEffects_[i]->Initialize(this);
 	}
-	boostEffects_[LEFT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LB.tip");
-	boostEffects_[RIGHT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RB.tip");
-	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LT.tip");
-	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RT.tip");
+	boostEffects_[LEFT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "knees_left.001");
+	boostEffects_[RIGHT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "knees_right.001");
+	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LT.001");
+	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RT.001");
 
 
 	//BehaviorManagerの初期化

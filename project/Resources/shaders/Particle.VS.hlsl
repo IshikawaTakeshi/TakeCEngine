@@ -34,43 +34,36 @@ static const float3 HL2Basis2 = float3(0, 0, 1);
 //----------------------------------------------------
 // 回転行列生成関数
 //----------------------------------------------------
-float4x4 MakeRotationMatrix(float3 rotate)
+float4x4 MakeRotationMatrix(float4 q)
 {
-	// X軸回転
-    float cosX = cos(rotate.x);
-    float sinX = sin(rotate.x);
-    float4x4 rotX =
+    float x = q.x;
+    float y = q.y;
+    float z = q.z;
+    float w = q.w;
+
+    float xx = x * x;
+    float yy = y * y;
+    float zz = z * z;
+
+    float xy = x * y;
+    float xz = x * z;
+    float yz = y * z;
+
+    float wx = w * x;
+    float wy = w * y;
+    float wz = w * z;
+
+    // 3x3 回転成分を組み立て
+    // （右手/左手・row/column の違いで転置が必要な場合があります）
+    float4x4 m =
     {
-        float4(1.0f, 0.0f, 0.0f, 0.0f),
-		float4(0.0f, cosX, sinX, 0.0f),
-		float4(0.0f, -sinX, cosX, 0.0f),
-		float4(0.0f, 0.0f, 0.0f, 1.0f)
+        float4(1.0f - 2.0f * (yy + zz), 2.0f * (xy + wz), 2.0f * (xz - wy), 0.0f),
+        float4(2.0f * (xy - wz), 1.0f - 2.0f * (xx + zz), 2.0f * (yz + wx), 0.0f),
+        float4(2.0f * (xz + wy), 2.0f * (yz - wx), 1.0f - 2.0f * (xx + yy), 0.0f),
+        float4(0.0f, 0.0f, 0.0f, 1.0f)
     };
-	
-	// Y軸回転
-    float cosY = cos(rotate.y);
-    float sinY = sin(rotate.y);
-    float4x4 rotY =
-    {
-        float4(cosY, 0.0f, -sinY, 0.0f),
-		float4(0.0f, 1.0f, 0.0f, 0.0f),
-		float4(sinY, 0.0f, cosY, 0.0f),
-		float4(0.0f, 0.0f, 0.0f, 1.0f)
-    };
-	
-	// Z軸回転
-    float cosZ = cos(rotate.z);
-    float sinZ = sin(rotate.z);
-    float4x4 rotZ =
-    {
-        float4(cosZ, sinZ, 0.0f, 0.0f),
-		float4(-sinZ, cosZ, 0.0f, 0.0f),
-		float4(0.0f, 0.0f, 1.0f, 0.0f),
-		float4(0.0f, 0.0f, 0.0f, 1.0f)
-    };
-	
-	// 回転順序: X -> Y -> Z
-    return mul(mul(rotX, rotY), rotZ);
+
+    return m;
 }
 
 //====================================================

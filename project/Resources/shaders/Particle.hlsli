@@ -11,7 +11,7 @@ struct VertexShaderOutput {
 
 struct ParticleForGPU {
 	float3 translate;
-	float3 rotate;
+	float4 rotate;
 	float3 scale;
 	float3 velocity;
 	float4 color;

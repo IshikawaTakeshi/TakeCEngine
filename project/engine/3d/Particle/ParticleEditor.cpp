@@ -144,6 +144,7 @@ void ParticleEditor::Finalize() {
 
 void ParticleEditor::Draw() {
 	TakeCFrameWork::GetParticleManager()->Draw();
+	previewEmitter_->DrawWireFrame();
 }
 
 //======================================================================

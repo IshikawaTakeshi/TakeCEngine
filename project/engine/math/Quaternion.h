@@ -48,12 +48,14 @@ namespace QuaternionMath {
 	Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle);
 	//2つのベクトル間の回転クォータニオン
 	Quaternion LookRotation(const Vector3& forward, const Vector3& up);
+	Quaternion LookRotation_RowMajor(const Vector3& forwardIn);
 	//行列からQuaternionに変換
 	Quaternion FromMatrix(const Matrix4x4& m);
 	//オイラー角からQuaternionに変換
 	Quaternion FromEuler(const Vector3& euler);
 	//直交基底からQuaternionに変換
 	Quaternion FromBasis(const Vector3& right, const Vector3& up, const Vector3& forward);
+	Quaternion FromBasis_RowMajor(const Vector3& right, const Vector3& up, const Vector3& forward);
 	//Quaternionの回転結果をベクトルで返す
 	Vector3 RotateVector(const Vector3& vector,const Quaternion& quaternion);
 
