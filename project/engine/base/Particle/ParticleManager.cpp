@@ -185,6 +185,10 @@ std::optional<Vector3> TakeC::ParticleManager::GetEmitterPosition(uint32_t emitt
 	return emitterAllocator_->GetEmitterPosition(emitterID);
 }
 
+std::optional<Vector3> TakeC::ParticleManager::GetEmitDirection(uint32_t emitterID) const {
+	return emitterAllocator_->GetEmitDirection(emitterID);
+}
+
 //================================================================================================
 // 全プリセットの読み込み
 //================================================================================================

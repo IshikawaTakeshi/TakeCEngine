@@ -112,6 +112,7 @@ public:
 	/// </summary>
 	/// <param name="position"></param>
 	void SetEmitterPosition(const Vector3& position);
+	void SetEmitDirection(const Vector3& direction);
 
 protected:
 
@@ -134,6 +135,7 @@ protected:
 
 	//エミッターの座標
 	Vector3 emitterPos_ = { 0.0f, 0.0f, 0.0f };
+	Vector3 emitDirection_ = { 0.0f, 0.0f, 1.0f };
 
 	//instancing用のデータ
 	ParticleForGPU* particleData_ = nullptr;

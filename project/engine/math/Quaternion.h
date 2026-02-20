@@ -52,6 +52,8 @@ namespace QuaternionMath {
 	Quaternion FromMatrix(const Matrix4x4& m);
 	//オイラー角からQuaternionに変換
 	Quaternion FromEuler(const Vector3& euler);
+	//直交基底からQuaternionに変換
+	Quaternion FromBasis(const Vector3& right, const Vector3& up, const Vector3& forward);
 	//Quaternionの回転結果をベクトルで返す
 	Vector3 RotateVector(const Vector3& vector,const Quaternion& quaternion);
 

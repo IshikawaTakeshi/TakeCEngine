@@ -36,6 +36,8 @@ public:
 	/// <returns>エミッター位置（存在しない場合はnullopt）</returns>
 	std::optional<Vector3> GetEmitterPosition(uint32_t emitterID) const;
 
+	std::optional<Vector3> GetEmitDirection(uint32_t emitterID )const;
+
 	/// <summary>
 	/// エミッターIDからエミッターポインタを取得
 	/// </summary>

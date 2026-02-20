@@ -86,9 +86,7 @@ void PrimitiveParticle::Update() {
 			particleData_[numInstance_].velocity = (*particleIterator).velocity_;
 			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTimer_.GetDuration();
 			particleData_[numInstance_].currentTime = (*particleIterator).lifeTimer_.GetProgress() * (*particleIterator).lifeTimer_.GetDuration();
-
 			
-
 			++numInstance_; // 次のインスタンスに進める  
 		}
 		++particleIterator; // 次のイテレータに進める  
@@ -300,12 +298,26 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 	if (attributes.isTranslate) {
 		if (attributes.enableFollowEmitter) {
 			// エミッターIDから現在のエミッター位置を取得
-			std::optional<Vector3> emitterPos = 
+			std::optional<Vector3> emitterPos =
 				TakeCFrameWork::GetParticleManager()->GetEmitterPosition((*particleIterator).emitterID_);
 
 			if (emitterPos.has_value()) {
 				(*particleIterator).transforms_.translate = emitterPos.value();
 			}
+
+			if (attributes.alignRotationToEmitter) {
+				auto emitDir = TakeCFrameWork::GetParticleManager()->GetEmitDirection((*particleIterator).emitterID_);
+				if (emitDir.has_value()) {
+					
+					Vector3 foward = emitDir.value();
+					Vector3 up = { 0.0f, 1.0f, 0.0f };
+					Quaternion lookRotation = QuaternionMath::LookRotation(foward, up);
+					(*particleIterator).transforms_.rotate = QuaternionMath::ToEuler(lookRotation);
+					
+				}
+			}
+		
+
 		} else {
 			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * velocityProgress * kDeltaTime_;
 

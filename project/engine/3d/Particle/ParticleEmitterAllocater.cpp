@@ -58,6 +58,17 @@ std::optional<Vector3> ParticleEmitterAllocator::GetEmitterPosition(uint32_t emi
 	return std::nullopt; // エミッターが見つからない
 }
 
+//=================================================================================
+// エミッターIDから発射方向を取得
+//=================================================================================
+std::optional<Vector3> ParticleEmitterAllocator::GetEmitDirection(uint32_t emitterID) const {
+	auto it = activeEmitters_.find(emitterID);
+	if (it != activeEmitters_.end() && it->second != nullptr) {
+		return it->second->GetEmitDirection();
+	}
+	return std::nullopt; // エミッターが見つからない
+}
+
 //==================================================================================
 // エミッターIDからエミッターポインタを取得
 //==================================================================================

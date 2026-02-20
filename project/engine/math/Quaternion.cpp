@@ -192,6 +192,22 @@ Quaternion QuaternionMath::FromEuler(const Vector3& euler) {
 }
 
 //=============================================================================
+// 直交基底からクォータニオンに変換
+//=============================================================================
+Quaternion QuaternionMath::FromBasis(const Vector3& right, const Vector3& up, const Vector3& forward) {
+	
+	// 回転行列を作成
+	Matrix4x4 rotationMatrix = {
+		right.x, up.x, forward.x, 0.0f,
+		right.y, up.y, forward.y, 0.0f,
+		right.z, up.z, forward.z, 0.0f,
+		0.0f,    0.0f, 0.0f,     1.0f
+	};
+	// 回転行列からクォータニオンを作成
+	return QuaternionMath::FromMatrix(rotationMatrix);
+}
+
+//=============================================================================
 // ベクトルの回転
 //=============================================================================
 Vector3 QuaternionMath::RotateVector(const Vector3& vector, const Quaternion& quaternion) {

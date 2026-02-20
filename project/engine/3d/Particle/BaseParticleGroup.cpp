@@ -51,13 +51,7 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 	particle.transforms_.scale = { attributes.scale.x,attributes.scale.y,attributes.scale.z };
 
 	// 回転の設定を条件分岐で明確に分ける
-	if (attributes.isDirectional &&
-		(particlePreset_.primitiveType == PRIMITIVE_CONE ||
-			particlePreset_.primitiveType == PRIMITIVE_CYLINDER)) {
-		// 方向に沿って回転
-		particle.transforms_.rotate = Vector3Math::RotationFromDirection(directoin);
-	}
-	else {
+	if (!attributes.isDirectional ){
 		// ランダムな回転を設定
 		particle.transforms_.rotate = { 0.0f, 0.0f, distRotate(randomEngine) };
 	}
@@ -148,5 +142,10 @@ void BaseParticleGroup::SetPreset(const ParticlePreset& preset) {
 void BaseParticleGroup::SetEmitterPosition(const Vector3& position) {
 	//エミッターの位置設定
 	emitterPos_ = position;
+}
+
+void BaseParticleGroup::SetEmitDirection(const Vector3& direction) {
+	//発生方向の設定
+	emitDirection_ = direction;
 }
 
