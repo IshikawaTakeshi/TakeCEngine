@@ -107,12 +107,13 @@ private:
 	//player
 	std::unique_ptr<Player> player_ = nullptr;
 	//プレイヤー入力プロバイダ
-	std::unique_ptr<PlayerInputProvider> inputProvider_ = nullptr;
+	std::unique_ptr<PlayerInputProvider> inputProvider_Player = nullptr;
 	std::unique_ptr<HPBar> playerHpBar_ = nullptr;
 	std::unique_ptr<PlayerReticle> playerReticle_ = nullptr;
 	std::unique_ptr<EnergyInfoUI> energyInfoUI_ = nullptr;
 	std::vector<std::unique_ptr<BulletCounterUI>> bulletCounterUI_;
 	//enemy
+	std::unique_ptr<EnemyInputProvider> inputProvider_Enemy = nullptr;
 	std::unique_ptr<Enemy> enemy_ = nullptr;
 	std::unique_ptr<HPBar> enemyHpBar_ = nullptr;
 

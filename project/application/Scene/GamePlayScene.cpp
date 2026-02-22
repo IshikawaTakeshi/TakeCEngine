@@ -1,44 +1,53 @@
 #include "GamePlayScene.h"
-#include "TitleScene.h"
-#include "SceneManager.h"
-#include "Vector3Math.h"
-#include "ImGuiManager.h"
 #include "Collision/CollisionManager.h"
+#include "ImGuiManager.h"
 #include "MyGame.h"
+#include "SceneManager.h"
+#include "TitleScene.h"
+#include "Vector3Math.h"
 #include <format>
 #include <numbers>
+
 //====================================================================
 //			初期化
 //====================================================================
 
 void GamePlayScene::Initialize() {
 
-	//BGM読み込み
+	// BGM読み込み
 	BGM_ = AudioManager::GetInstance().LoadSound("GamePlaySceneBGM.mp3");
 	bgmVolume_ = 0.2f;
 
-	//Camera0
+	// Camera0
 	gameCamera_ = std::make_shared<Camera>();
-	gameCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
+	gameCamera_->Initialize(
+		TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),
+		"CameraConfig_GameScene.json");
 	gameCamera_->RequestCameraState(Camera::GameCameraState::FOLLOW);
 	TakeC::CameraManager::GetInstance().AddCamera("gameCamera", *gameCamera_);
 
-	//Camera1
+	// Camera1
 	debugCamera_ = std::make_shared<Camera>();
-	debugCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_GameScene.json");
+	debugCamera_->Initialize(
+		TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),
+		"CameraConfig_GameScene.json");
 	TakeC::CameraManager::GetInstance().AddCamera("debugCamera", *debugCamera_);
 
-	//lightCamera
+	// lightCamera
 	lightCamera_ = std::make_shared<Camera>();
-	lightCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(), "CameraConfig_LightCamera.json");
+	lightCamera_->Initialize(
+		TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),
+		"CameraConfig_LightCamera.json");
 	lightCamera_->SetProjectionChanged(true);
 	TakeC::CameraManager::GetInstance().AddCamera("lightCamera", *lightCamera_);
 
-	//デフォルトカメラの設定
-	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
-	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
+	// デフォルトカメラの設定
+	Object3dCommon::GetInstance().SetDefaultCamera(
+		TakeC::CameraManager::GetInstance().GetActiveCamera());
+	ParticleCommon::GetInstance().SetDefaultCamera(
+		TakeC::CameraManager::GetInstance().GetActiveCamera());
 
-	//levelObjectの初期化
+	// levelObjectの初期化
 	sceneManager_->LoadLevelData("levelData_gameScene_5");
 	levelObjects_ = std::move(sceneManager_->GetLevelObjects());
 
@@ -46,94 +55,109 @@ void GamePlayScene::Initialize() {
 		object.second->SetCamera(Object3dCommon::GetInstance().GetDefaultCamera());
 	}
 
-	//Animation読み込み
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "walk.gltf");
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "Idle.gltf");
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "running.gltf");
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "throwAttack.gltf");
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Models/gltf", "player_singleMesh.gltf");
+	// Animation読み込み
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation",
+		"walk.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation",
+		"Idle.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation",
+		"running.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation",
+		"throwAttack.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation(
+		"Models/gltf", "player_singleMesh.gltf");
 
-	//SkyBox
+	// SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(), "skyBox_blueSky.dds");
-	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
+	skyBox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(),
+		"skyBox_blueSky.dds");
+	skyBox_->SetMaterialColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 
-	//BulletManager
+	// BulletManager
 	bulletManager_ = std::make_unique<BulletManager>();
-	bulletManager_->Initialize(&Object3dCommon::GetInstance(), 50); //弾の最大数
+	bulletManager_->Initialize(&Object3dCommon::GetInstance(), 50); // 弾の最大数
 
-	//playerInputProvider
+	// playerInputProvider
 	player_ = std::make_unique<Player>();
-	inputProvider_ = std::make_unique<PlayerInputProvider>(player_.get());
+	inputProvider_Player = std::make_unique<PlayerInputProvider>(player_.get());
 
-	//player
-	
-	player_->SetInputProvider(inputProvider_.get());
-	player_->Initialize(&Object3dCommon::GetInstance(), "Player_Model_Ver2.0.gltf");
-	player_->WeaponInitialize(&Object3dCommon::GetInstance(), bulletManager_.get());
-	//player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"));
+	// player
+	player_->SetInputProvider(inputProvider_Player.get());
+	player_->Initialize(&Object3dCommon::GetInstance(),"Player_Model_Ver2.0.gltf");
+	player_->WeaponInitialize(&Object3dCommon::GetInstance(),bulletManager_.get());
+	// player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf",
+	// "moveshot"));
 	player_->SetTranslate({ 0.0f, 0.0f, 0.0f });
-	//Enemy
+	// Enemy
 	enemy_ = std::make_unique<Enemy>();
-	
-	enemy_->Initialize(&Object3dCommon::GetInstance(), "Enemy.gltf");
-	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(), bulletManager_.get());
-	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"));
+	inputProvider_Enemy = std::make_unique<EnemyInputProvider>(enemy_.get());
+	enemy_->SetInputProvider(inputProvider_Enemy.get());
+	enemy_->Initialize(&Object3dCommon::GetInstance(),"Player_Model_Ver2.0.gltf");
+	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(),
+		bulletManager_.get());
+	// enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf",
+	// "moveshot"));
 
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
-	playerHpBar_->Initialize(&SpriteCommon::GetInstance(),"PlayerHPName.json", "black.png", "flontHp.png");
-	playerHpBar_->SetSize({ 200.0f, 10.0f }); // HPバーのサイズ
+	playerHpBar_->Initialize(&SpriteCommon::GetInstance(), "PlayerHPName.json",
+		"black.png", "flontHp.png");
+	playerHpBar_->SetSize({ 200.0f, 10.0f });     // HPバーのサイズ
 	playerHpBar_->SetPosition({ 50.0f, 500.0f }); // HPバーの位置
 	// enemyHpBar
 	enemyHpBar_ = std::make_unique<HPBar>();
-	enemyHpBar_->Initialize(&SpriteCommon::GetInstance(),"EnemyHPName.json", "black.png", "flontHp.png");
-	enemyHpBar_->SetSize({ 400.0f, 10.0f }); // HPバーのサイズ
+	enemyHpBar_->Initialize(&SpriteCommon::GetInstance(), "EnemyHPName.json",
+		"black.png", "flontHp.png");
+	enemyHpBar_->SetSize({ 400.0f, 10.0f });     // HPバーのサイズ
 	enemyHpBar_->SetPosition({ 300.0f, 35.0f }); // HPバーの位置
-	//playerReticle
+	// playerReticle
 	playerReticle_ = std::make_unique<PlayerReticle>();
 	playerReticle_->Initialize();
-	//energyInfoUI
+	// energyInfoUI
 	energyInfoUI_ = std::make_unique<EnergyInfoUI>();
-	energyInfoUI_->Initialize(&SpriteCommon::GetInstance(), "black.png", "flontHp.png");
-	energyInfoUI_->SetSize({ 400.0f, 10.0f }); // エネルギーUIのサイズ
+	energyInfoUI_->Initialize(&SpriteCommon::GetInstance(), "black.png",
+		"flontHp.png");
+	energyInfoUI_->SetSize({ 400.0f, 10.0f });      // エネルギーUIのサイズ
 	energyInfoUI_->SetPosition({ 300.0f, 525.0f }); // エネルギーUIの位置
-	//bulletCounterUI
+	// bulletCounterUI
 	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
 	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[0]->Initialize(&SpriteCommon::GetInstance(), { 760.0f,470.0f });
+	bulletCounterUI_[0]->Initialize(&SpriteCommon::GetInstance(),
+		{ 760.0f, 470.0f });
 	bulletCounterUI_[1] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[1]->Initialize(&SpriteCommon::GetInstance(), { 900.0f,470.0f });
+	bulletCounterUI_[1]->Initialize(&SpriteCommon::GetInstance(),
+		{ 900.0f, 470.0f });
 	bulletCounterUI_[2] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[2]->Initialize(&SpriteCommon::GetInstance(), { 760.0f,540.0f });
+	bulletCounterUI_[2]->Initialize(&SpriteCommon::GetInstance(),
+		{ 760.0f, 540.0f });
 	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[3]->Initialize(&SpriteCommon::GetInstance(), { 900.0f,540.0f });
+	bulletCounterUI_[3]->Initialize(&SpriteCommon::GetInstance(),
+		{ 900.0f, 540.0f });
 
 	// フェーズメッセージUI
 	phaseMessageUI_ = std::make_unique<PhaseMessageUI>();
 	phaseMessageUI_->Initialize();
 
-	//操作説明UI
+	// 操作説明UI
 	for (size_t i = 0; i < 7; i++) {
 
 		// アクションボタンアイコンUI
 		TakeCFrameWork::GetUIManager()->CreateUI<ActionButtonICon>(
-			"InstructionIcon" + std::to_string(i) + ".json",
-			inputProvider_.get(),
+			"InstructionIcon" + std::to_string(i) + ".json", inputProvider_Player.get(),
 			static_cast<CharacterActionInput>(i + 3));
 	}
-	//警告表示UI
+	// 警告表示UI
 	TakeCFrameWork::GetUIManager()->CreateUI<WarningUI>("WarningUI");
 
-	//アクションアイコンUI
+	// アクションアイコンUI
 	actionIconSprites_.resize(3);
-	
+
 	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
-		actionIconSprites_[i] = TakeCFrameWork::GetSpriteManager()->CreateFromJson("ActionIcon" + std::to_string(i) + ".json");
-		
+		actionIconSprites_[i] = TakeCFrameWork::GetSpriteManager()->CreateFromJson(
+			"ActionIcon" + std::to_string(i) + ".json");
 	}
 
-	//最初の状態設定
+	// 最初の状態設定
 	behaviorRequest_ = SceneBehavior::GAMESTART;
 }
 
@@ -142,16 +166,17 @@ void GamePlayScene::Initialize() {
 //====================================================================
 
 void GamePlayScene::Finalize() {
-	
-	AudioManager::GetInstance().SoundUnload(&BGM_); // BGMの解放
+
+	AudioManager::GetInstance().SoundUnload(&BGM_);       // BGMの解放
 	CollisionManager::GetInstance().ClearGameCharacter(); // 当たり判定の解放
-	TakeC::CameraManager::GetInstance().ResetCameras(); //カメラのリセット
-	TakeCFrameWork::GetParticleManager()->ClearParticles(); //パーティクルの解放
-	TakeCFrameWork::GetParticleManager()->ClearEmitters(); //エミッターの解放
-	TakeCFrameWork::GetLightManager()->ClearAllPointLights(); //ポイントライトの解放
-	TakeCFrameWork::GetSpriteManager()->Clear(); //スプライトの解放
-	TakeCFrameWork::GetUIManager()->Clear(); //UIの解放
-	bulletManager_->Finalize(); //弾マネージャーの解放
+	TakeC::CameraManager::GetInstance().ResetCameras(); // カメラのリセット
+	TakeCFrameWork::GetParticleManager()->ClearParticles(); // パーティクルの解放
+	TakeCFrameWork::GetParticleManager()->ClearEmitters(); // エミッターの解放
+	TakeCFrameWork::GetLightManager()
+		->ClearAllPointLights();                 // ポイントライトの解放
+	TakeCFrameWork::GetSpriteManager()->Clear(); // スプライトの解放
+	TakeCFrameWork::GetUIManager()->Clear();     // UIの解放
+	bulletManager_->Finalize();                  // 弾マネージャーの解放
 	player_.reset();
 	skyBox_.reset();
 }
@@ -161,26 +186,24 @@ void GamePlayScene::Finalize() {
 //====================================================================
 void GamePlayScene::Update() {
 
-	//BGM再生
+	// BGM再生
 	if (!isSoundPlay_) {
-		AudioManager::GetInstance().SoundPlayWave(BGM_, bgmVolume_,true);
+		AudioManager::GetInstance().SoundPlayWave(BGM_, bgmVolume_, true);
 		isSoundPlay_ = true;
 	}
 
-	//カメラの更新
+	// カメラの更新
 	TakeC::CameraManager::GetInstance().Update();
-	//SkyBoxの更新
+	// SkyBoxの更新
 	skyBox_->Update();
-	
 
-	//enemy
+	// enemy
 	enemy_->SetFocusTargetPos(player_->GetBodyPosition());
 	enemy_->SetFocusTargetVelocity(player_->GetVelocity());
 
-	//player
+	// player
 	player_->SetFocusTargetPos(enemy_->GetBodyPosition());
 	player_->SetFocusTargetVelocity(enemy_->GetVelocity());
-
 
 	if (behaviorRequest_) {
 
@@ -248,28 +271,30 @@ void GamePlayScene::Update() {
 	enemy_->Update();
 	player_->Update();
 
-	//弾の更新
+	// 弾の更新
 	bulletManager_->Update();
 
 	for (auto& object : levelObjects_) {
 		object.second->Update();
 	}
 
-	//フェーズメッセージUIの更新
+	// フェーズメッセージUIの更新
 	phaseMessageUI_->Update();
 
-	//UIManagerの更新
+	// UIManagerの更新
 	TakeCFrameWork::GetUIManager()->Update();
-	//SpriteManagerの更新
+	// SpriteManagerの更新
 	TakeCFrameWork::GetSpriteManager()->Update();
-	//particleManager更新
+	// particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
-	//LightManager更新
-	Camera* lightCam = TakeC::CameraManager::GetInstance().FindCameraByName("lightCamera");
+	// LightManager更新
+	Camera* lightCam =
+		TakeC::CameraManager::GetInstance().FindCameraByName("lightCamera");
 	lightCam->Update();
-	TakeCFrameWork::GetLightManager()->UpdateShadowMatrix(lightCam,player_->GetObject3d()->GetWorldPosition());
+	TakeCFrameWork::GetLightManager()->UpdateShadowMatrix(
+		lightCam, player_->GetObject3d()->GetWorldPosition());
 
-	//当たり判定の更新
+	// 当たり判定の更新
 	CheckAllCollisions();
 }
 
@@ -289,7 +314,7 @@ void GamePlayScene::UpdateImGui() {
 		bulletCounterUI_[i]->UpdateImGui(std::format("bulletCounter{}", i));
 	}
 
-	//actionIconSprite
+	// actionIconSprite
 	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
 		actionIconSprites_[i]->UpdateImGui(std::format("actionIcon{}", i));
 	}
@@ -303,72 +328,71 @@ void GamePlayScene::UpdateImGui() {
 
 void GamePlayScene::Draw() {
 
-	skyBox_->Draw();    //天球の描画
+	skyBox_->Draw(); // 天球の描画
 
 #pragma region 背景スプライト描画
-	//スプライトの描画前処理
+	// スプライトの描画前処理
 	SpriteCommon::GetInstance().PreDraw();
-	
+
 #pragma endregion
 
 #pragma region Object3d描画
 
-	//Object3dの描画前Dispatch処理
+	// Object3dの描画前Dispatch処理
 	Object3dCommon::GetInstance().Dispatch();
 	player_->GetObject3d()->Dispatch();
 	enemy_->GetObject3d()->Dispatch();
 
-	//for (auto& object : levelObjects_) {
+	// for (auto& object : levelObjects_) {
 	//	object->DisPatch();
-	//}
+	// }
 
-	//Object3dの描画前処理
+	// Object3dの描画前処理
 	Object3dCommon::GetInstance().PreDraw();
 	// プレイヤーの描画
 	player_->Draw();
 	// 敵の描画
 	enemy_->Draw();
-	//弾の描画
+	// 弾の描画
 	bulletManager_->Draw();
 	for (auto& object : levelObjects_) {
 		object.second->Draw();
 	}
-	//Object3dCommon::GetInstance().PreDrawAddBlend();
-
+	// Object3dCommon::GetInstance().PreDrawAddBlend();
 
 #pragma endregion
 
-	//当たり判定の描画前処理
+  // 当たり判定の描画前処理
 	enemy_->DrawCollider();
 	player_->DrawCollider();
-	//spotLightの描画
+	// spotLightの描画
 	TakeCFrameWork::GetLightManager()->DrawSpotLights();
-	//登録されたワイヤーフレームをすべて描画させる
+	// 登録されたワイヤーフレームをすべて描画させる
 	TakeCFrameWork::GetWireFrame()->Draw();
 
-	//パーティクルの描画
+	// パーティクルの描画
 	TakeCFrameWork::GetParticleManager()->Draw();
 }
 
 void GamePlayScene::DrawSprite() {
 
-	//スプライトの描画前処理
+	// スプライトの描画前処理
 	SpriteCommon::GetInstance().PreDraw();
 
 	if (behavior_ != SceneBehavior::ENEMYDESTROYED) {
-		//プレイヤーのレティクルの描画
+		// プレイヤーのレティクルの描画
 		playerReticle_->Draw();
-		//HPバーの描画
-		playerHpBar_->Draw(); //プレイヤーのHPバーの描画
-		enemyHpBar_->Draw();  //敵のHPバーの描画
-		//エネルギーUIの描画
+		// HPバーの描画
+		playerHpBar_->Draw(); // プレイヤーのHPバーの描画
+		enemyHpBar_->Draw();  // 敵のHPバーの描画
+		// エネルギーUIの描画
 		energyInfoUI_->Draw();
-		//弾カウンターUIの描画
+		// 弾カウンターUIの描画
 		for (auto& bulletUI : bulletCounterUI_) {
 			bulletUI->Draw();
 		}
 
-		//フェーズメッセージUIの描画
+		// フェーズメッセージUIの描画
 		phaseMessageUI_->Draw();
 
 		TakeCFrameWork::GetSpriteManager()->Draw();
@@ -380,11 +404,12 @@ void GamePlayScene::DrawSprite() {
 //====================================================================
 void GamePlayScene::DrawShadow() {
 
-	//ライトカメラのセット
-	const LightCameraInfo& lightCameraInfo = TakeCFrameWork::GetLightManager()->GetLightCameraInfo();
-	//Object3dの影描画前処理
+	// ライトカメラのセット
+	const LightCameraInfo& lightCameraInfo =
+		TakeCFrameWork::GetLightManager()->GetLightCameraInfo();
+	// Object3dの影描画前処理
 	Object3dCommon::GetInstance().PreDrawShadowPass();
-	//影の描画
+	// 影の描画
 	player_->DrawShadow(lightCameraInfo);
 	enemy_->DrawShadow(lightCameraInfo);
 	for (auto& object : levelObjects_) {
@@ -398,14 +423,13 @@ void GamePlayScene::DrawShadow() {
 
 void GamePlayScene::InitializeGameStart() {
 
-	//フェーズメッセージUIにREADYメッセージをセット
+	// フェーズメッセージUIにREADYメッセージをセット
 	phaseMessageUI_->SetNextMessage(PhaseMessage::READY);
 }
 
 void GamePlayScene::UpdateGameStart() {
 
-	
-	//フェーズメッセージUIが終了したらゲームプレイへ
+	// フェーズメッセージUIが終了したらゲームプレイへ
 	if (phaseMessageUI_->GetCurrentMessage() == PhaseMessage::FIGHT) {
 		behaviorRequest_ = SceneBehavior::GAMEPLAY;
 	}
@@ -416,10 +440,11 @@ void GamePlayScene::UpdateGameStart() {
 //====================================================================
 void GamePlayScene::InitializeGamePlay() {
 
-	//フェーズメッセージUIにGOメッセージをセット
+	// フェーズメッセージUIにGOメッセージをセット
 	phaseMessageUI_->SetNextMessage(PhaseMessage::FIGHT);
 
-	TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::LOCKON);
+	TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(
+		Camera::GameCameraState::LOCKON);
 
 	player_->SetInCombat(true);
 	enemy_->SetInCombat(true);
@@ -427,42 +452,47 @@ void GamePlayScene::InitializeGamePlay() {
 
 void GamePlayScene::UpdateGamePlay() {
 
-	//予測命中位置の計算
-	Vector3 toEnemy = enemy_->GetObject3d()->GetTranslate() - player_->GetObject3d()->GetTranslate();
-	float travelTime = Vector3Math::Length(toEnemy) / player_->GetCurrentWeapon(0)->GetBulletSpeed();
-	Vector3 predictedImpactPos = enemy_->GetObject3d()->GetTranslate() + enemy_->GetVelocity() * travelTime;
+	// 予測命中位置の計算
+	Vector3 toEnemy = enemy_->GetObject3d()->GetTranslate() -
+		player_->GetObject3d()->GetTranslate();
+	float travelTime = Vector3Math::Length(toEnemy) /
+		player_->GetCurrentWeapon(0)->GetBulletSpeed();
+	Vector3 predictedImpactPos = enemy_->GetObject3d()->GetTranslate() +
+		enemy_->GetVelocity() * travelTime;
 
-	//playerReticleの更新
+	// playerReticleの更新
 	playerReticle_->SetIsFocus(player_->IsFocus());
-	playerReticle_->Update(player_->GetFocusTargetPos(),predictedImpactPos);
+	playerReticle_->Update(player_->GetFocusTargetPos(), predictedImpactPos);
 
-	//playerのHPバーの更新
+	// playerのHPバーの更新
 	playerHpBar_->Update(player_->GetHealth(), player_->GetMaxHealth());
-	//enemyのHPバーの更新
+	// enemyのHPバーの更新
 	enemyHpBar_->Update(enemy_->GetHealth(), enemy_->GetMaxHealth());
 
-	//playerのエネルギーUIの更新
+	// playerのエネルギーUIの更新
 	energyInfoUI_->SetOverHeatState(player_->GetIsOverHeated());
 	energyInfoUI_->Update(player_->GetEnergy(), player_->GetMaxEnergy());
-	//bulletCounterUIの更新
+	// bulletCounterUIの更新
 	for (int i = 0; i < 4; i++) {
-		bulletCounterUI_[i]->SetBulletCount(player_->GetCurrentWeapon(i)->GetBulletCount());
-		bulletCounterUI_[i]->SetRemainingBulletCount(player_->GetCurrentWeapon(i)->GetRemainingBulletCount());
-		bulletCounterUI_[i]->SetReloadingState(player_->GetCurrentWeapon(i)->GetIsReloading());
-		bulletCounterUI_[i]->SetWeaponIconUV(static_cast<int>(player_->GetCurrentWeapon(i)->GetUnitPosition()));
+		bulletCounterUI_[i]->SetBulletCount(
+			player_->GetCurrentWeapon(i)->GetBulletCount());
+		bulletCounterUI_[i]->SetRemainingBulletCount(
+			player_->GetCurrentWeapon(i)->GetRemainingBulletCount());
+		bulletCounterUI_[i]->SetReloadingState(
+			player_->GetCurrentWeapon(i)->GetIsReloading());
+		bulletCounterUI_[i]->SetWeaponIconUV(
+			static_cast<int>(player_->GetCurrentWeapon(i)->GetUnitPosition()));
 		bulletCounterUI_[i]->Update();
 	}
 
-
 	if (player_->GetHealth() <= 0.0f) {
-		//プレイヤーのHPが0以下になったらゲームオーバー
+		// プレイヤーのHPが0以下になったらゲームオーバー
 		behaviorRequest_ = SceneBehavior::GAMEOVER;
 
 	} else if (enemy_->GetHealth() <= 0.0f) {
-		//エネミーのHPが0以下になったらゲームクリア
+		// エネミーのHPが0以下になったらゲームクリア
 		behaviorRequest_ = SceneBehavior::ENEMYDESTROYED;
 	}
-
 }
 
 //====================================================================
@@ -471,30 +501,31 @@ void GamePlayScene::UpdateGamePlay() {
 
 void GamePlayScene::InitializeEnemyDestroyed() {
 
-	//スローモーションにする
+	// スローモーションにする
 	MyGame::RequestTimeScale(-1.0f, 1.0f, 1.0f);
-	//カメラをズームする
-	TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::ENEMY_DESTROYED);
-	//changeBehaviorTimerを初期化
+	// カメラをズームする
+	TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(
+		Camera::GameCameraState::ENEMY_DESTROYED);
+	// changeBehaviorTimerを初期化
 	changeBehaviorTimer_.Initialize(2.0f, 0.0f);
 }
 
 void GamePlayScene::UpdateEnemyDestroyed() {
 
-	//changeBehaviorTimerの更新
+	// changeBehaviorTimerの更新
 	changeBehaviorTimer_.Update();
 
-	//changeBehaviorTimerが終了したらゲームクリアへ
+	// changeBehaviorTimerが終了したらゲームクリアへ
 	if (changeBehaviorTimer_.IsFinished()) {
 
-		//ゲームクリアへ
+		// ゲームクリアへ
 		behaviorRequest_ = SceneBehavior::GAMECLEAR;
 
-		//ズーム解除
-		TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::FOLLOW);
+		// ズーム解除
+		TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(
+			Camera::GameCameraState::FOLLOW);
 	}
 }
-
 
 //====================================================================
 // ゲームオーバー時の処理
@@ -515,15 +546,13 @@ void GamePlayScene::InitializeGameClear() {
 
 	phaseMessageUI_->SetNextMessage(PhaseMessage::WIN);
 
-	//スローモーション解除
+	// スローモーション解除
 	MyGame::RequestTimeScale(1.0f, 0.6f, 0.0f);
 	fadeTimer_ = 3.0f;
 	SceneManager::GetInstance().ChangeScene("GAMECLEAR", fadeTimer_);
 }
 
-void GamePlayScene::UpdateGameClear() {
-
-}
+void GamePlayScene::UpdateGameClear() {}
 
 //====================================================================
 // ポーズ時の処理
@@ -539,60 +568,75 @@ void GamePlayScene::CheckAllCollisions() {
 
 	CollisionManager::GetInstance().ClearGameCharacter();
 
-	const std::vector<Bullet*>& playerBullets = bulletManager_->GetAllPlayerBullets();
-	const std::vector<Bullet*>& enemyBullets = bulletManager_->GetAllEnemyBullets();
-	const std::vector<Bullet*>& playerBazookaBullets = bulletManager_->GetAllPlayerBazookaBullets();
-	const std::vector<Bullet*>& enemyBazookaBullets = bulletManager_->GetAllEnemyBazookaBullets();
-	const std::vector<VerticalMissile*>& playerMissiles = bulletManager_->GetAllPlayerMissiles();
-	const std::vector<VerticalMissile*>& enemyMissiles = bulletManager_->GetAllEnemyMissiles();
+	const std::vector<Bullet*>& playerBullets =
+		bulletManager_->GetAllPlayerBullets();
+	const std::vector<Bullet*>& enemyBullets =
+		bulletManager_->GetAllEnemyBullets();
+	const std::vector<Bullet*>& playerBazookaBullets =
+		bulletManager_->GetAllPlayerBazookaBullets();
+	const std::vector<Bullet*>& enemyBazookaBullets =
+		bulletManager_->GetAllEnemyBazookaBullets();
+	const std::vector<VerticalMissile*>& playerMissiles =
+		bulletManager_->GetAllPlayerMissiles();
+	const std::vector<VerticalMissile*>& enemyMissiles =
+		bulletManager_->GetAllEnemyMissiles();
 
 	// プレイヤーの登録
-	CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(player_.get()));
+	CollisionManager::GetInstance().RegisterGameCharacter(
+		static_cast<GameCharacter*>(player_.get()));
 	// 敵キャラクターの登録
-	CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(enemy_.get()));
-	//BulletSensorの登録
-	CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(enemy_->GetBulletSensor()));
+	CollisionManager::GetInstance().RegisterGameCharacter(
+		static_cast<GameCharacter*>(enemy_.get()));
+	// BulletSensorの登録
+	CollisionManager::GetInstance().RegisterGameCharacter(
+		static_cast<GameCharacter*>(enemy_->GetBulletSensor()));
 
-	//弾の登録
+	// 弾の登録
 	for (const auto& bullet : playerBullets) {
 		if (bullet->IsActive()) {
-			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
+			CollisionManager::GetInstance().RegisterGameCharacter(
+				static_cast<GameCharacter*>(bullet));
 		}
 	}
 	for (const auto& bullet : enemyBullets) {
 		if (bullet->IsActive()) {
-			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bullet));
+			CollisionManager::GetInstance().RegisterGameCharacter(
+				static_cast<GameCharacter*>(bullet));
 		}
 	}
 
-	//バズーカ弾の登録
+	// バズーカ弾の登録
 	for (const auto& bazookaBullet : playerBazookaBullets) {
-		if(bazookaBullet->IsActive()){
-			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bazookaBullet));
+		if (bazookaBullet->IsActive()) {
+			CollisionManager::GetInstance().RegisterGameCharacter(
+				static_cast<GameCharacter*>(bazookaBullet));
 		}
 	}
 	for (const auto& bazookaBullet : enemyBazookaBullets) {
 		if (bazookaBullet->IsActive()) {
-			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(bazookaBullet));
+			CollisionManager::GetInstance().RegisterGameCharacter(
+				static_cast<GameCharacter*>(bazookaBullet));
 		}
 	}
-	//垂直ミサイルの登録
+	// 垂直ミサイルの登録
 	for (const auto& missile : playerMissiles) {
 		if (missile->IsActive()) {
-			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(missile));
+			CollisionManager::GetInstance().RegisterGameCharacter(
+				static_cast<GameCharacter*>(missile));
 		}
 	}
 	for (const auto& missile : enemyMissiles) {
 		if (missile->IsActive()) {
-			CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(missile));
+			CollisionManager::GetInstance().RegisterGameCharacter(
+				static_cast<GameCharacter*>(missile));
 		}
 	}
 
 	// レベルオブジェクトの登録
 	for (const auto& object : levelObjects_) {
-		CollisionManager::GetInstance().RegisterGameCharacter(static_cast<GameCharacter*>(object.second.get()));
+		CollisionManager::GetInstance().RegisterGameCharacter(
+			static_cast<GameCharacter*>(object.second.get()));
 	}
-
 
 	CollisionManager::GetInstance().CheckAllCollisionsForGameCharacter();
 }
