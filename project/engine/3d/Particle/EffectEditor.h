@@ -196,7 +196,7 @@ namespace TakeC {
 
 		// プレビュー設定
 		Vector3 previewPosition_ = { 0.0f, 0.0f, 0.0f };
-		Vector3 previewRotation_ = { 0.0f, 0.0f, 0.0f };
+		Quaternion previewRotation_ = { 0.0f, 0.0f, 0.0f,1.0f };
 		Vector3 previewScale_ = { 1.0f, 1.0f, 1.0f };
 
 		// UI状態

@@ -69,6 +69,8 @@ namespace TakeC {
 
 		//パーティクルグループの開放
 		void ClearParticleGroups();
+		//エミッターの開放
+		void ClearEmitters();
 
 		//出現しているパーティクルのクリア
 		void ClearParticles();
@@ -77,11 +79,18 @@ namespace TakeC {
 
 		//エミッター用のハンドルの割り当て
 		uint32_t EmitterAllocate(ParticleEmitter* emitter);
-		// エミッター用のハンドルの解放（新規）
+		// エミッター用のハンドルの解放
 		void EmitterRelease(uint32_t emitterID);
 
-		// エミッターIDから位置を取得（新規）
+		//=====================================================================================
+		// accsusser
+		//=====================================================================================
+
+		// エミッターIDから位置を取得
 		std::optional<Vector3> GetEmitterPosition(uint32_t emitterID) const;
+		// エミッターIDから回転を取得
+		std::optional<Vector3> GetEmitDirection(uint32_t emitterID) const;
+
 		//パーティクルグループの取得
 		BaseParticleGroup* GetParticleGroup(const std::string& name);
 		//groupnameからプリミティブハンドルの取得

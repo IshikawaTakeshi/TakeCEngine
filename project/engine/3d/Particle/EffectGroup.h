@@ -1,8 +1,11 @@
 #pragma once
 #include "engine/3d/Particle/EffectGroupConfig.h"
-#include "engine/math/Vector3.h"
 #include "engine/Animation/Skeleton.h"
+#include "engine/Math/Matrix4x4.h"
+#include "engine/Math/Transform.h"
+#include "engine/math/Vector3.h"
 #include <string>
+
 //============================================================================
 // EffectGroup class
 //============================================================================
@@ -11,7 +14,6 @@ namespace TakeC {
 
 	class EffectGroup {
 	public:
-
 		EffectGroup() = default;
 		~EffectGroup() = default;
 
@@ -34,10 +36,12 @@ namespace TakeC {
 		/// </summary>
 		void Update();
 
+		void UpdateEmitterConfig(int index, const EmitterConfig& config);
+
 		/// <summary>
 		/// ImGui更新処理
 		/// </summary>
-		void UpdateImGui();
+		void UpdateImGui([[maybe_unused]] const std::string& windowName = nullptr);
 
 		//======================================================================
 		// エフェクト制御
@@ -78,11 +82,6 @@ namespace TakeC {
 		void SetPosition(const Vector3& position);
 
 		/// <summary>
-		/// エフェクト全体の回転を設定
-		/// </summary>
-		void SetRotation(const Vector3& rotation);
-
-		/// <summary>
 		/// エフェクト全体のスケールを設定
 		/// </summary>
 		void SetScale(const Vector3& scale);
@@ -91,11 +90,6 @@ namespace TakeC {
 		/// エフェクトの向きを設定（発生方向）
 		/// </summary>
 		void SetDirection(const Vector3& direction);
-
-		/// <summary>
-		/// スケルトンのジョイントにアタッチ
-		/// </summary>
-		void AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName);
 
 		//======================================================================
 		// 状態取得
@@ -145,20 +139,34 @@ namespace TakeC {
 		/// </summary>
 		void SetEmitterOffset(const std::string& emitterName, const Vector3& offset);
 
-		void SetEmitterRotation(const std::string& emitterName, const Vector3& rotation);
+		void SetEmitterRotation(const std::string& emitterName,
+			const Vector3& rotation);
 
 		//======================================================================
-		// Getter
+		// accessors
 		//======================================================================
+
+		//---- getters ----------------
 
 		const std::string& GetEffectName() const { return config_.effectName; }
-		const Vector3& GetPosition() const { return position_; }
-		const Vector3& GetRotation() const { return rotation_; }
-		const Vector3& GetScale() const { return scale_; }
+		const Vector3& GetPosition() const { return transform_.translate; }
+		const Quaternion& GetRotation() const { return transform_.rotate; }
+		const Vector3& GetScale() const { return transform_.scale; }
+		const EffectGroupConfig& GetConfig() const { return config_; }
 		float GetElapsedTime() const { return totalElapsedTime_; }
 
-	private:
+		///---- setters ----------------
 
+		void SetEffectName(const std::string& name) { config_.effectName = name; }
+		void SetConfig(const EffectGroupConfig& config) {
+			config_ = config;
+			CreateEmitterInstances();
+		}
+		// 親行列の設定
+		void SetParentMatrix(const Matrix4x4* parentMatrix);
+		void SetRotate(const Quaternion& rotation);
+
+	private:
 		//======================================================================
 		// 内部処理
 		//======================================================================
@@ -177,11 +185,6 @@ namespace TakeC {
 		/// 各エミッターの位置を更新
 		/// </summary>
 		void UpdateEmitterPositions();
-
-		/// <summary>
-		/// ジョイント追従の更新
-		/// </summary>
-		void UpdateJointAttachment();
 
 		/// <summary>
 		/// エミッターの開始判定
@@ -204,24 +207,20 @@ namespace TakeC {
 		std::vector<EmitterInstance> emitterInstances_;
 
 		// トランスフォーム
-		Vector3 position_ = {0.0f, 0.0f, 0.0f};
-		Vector3 rotation_ = {0.0f, 0.0f, 0.0f};
-		Vector3 scale_ = {1.0f, 1.0f, 1.0f};
-		Vector3 direction_ = {0.0f, 1.0f, 0.0f}; // デフォルトは上向き
+		QuaternionTransform transform_;
+		Vector3 direction_ = { 0.0f, 1.0f, 0.0f }; // デフォルトは上向き
 
 		// 状態
 		bool isPlaying_ = false;
 		bool isFinished_ = false;
 		bool isPaused_ = false;
+		bool isLoopingSuspended_ =false; // Stop()で停止された場合、ループを再開しないためのフラグ
 		float totalElapsedTime_ = 0.0f;
 
-		// ジョイント追従
-		Skeleton* attachedSkeleton_ = nullptr;
-		std::string attachedJointName_;
+		// 親行列
+		const Matrix4x4* parentMatrix_ = nullptr;
 
 		// デルタタイム
 		float deltaTime_;
 	};
-}
-
-
+} // namespace TakeC

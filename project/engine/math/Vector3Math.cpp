@@ -118,6 +118,25 @@ Vector3 Vector3Math::ApplyYawPitch(const Vector3& baseDir, float yawDeg, float p
 	return dirYawPitch;
 }
 
+//ベクトルから回転を求める
+Vector3 Vector3Math::RotationFromDirection(const Vector3& direction) {
+	
+	// ベクトルを正規化
+	Vector3 dirNorm = Normalize(direction);
+	// ピッチ（X軸回りの回転）を計算
+	float pitch = std::atan2(-dirNorm.y, std::sqrt(dirNorm.x * dirNorm.x + dirNorm.z * dirNorm.z));
+	// ヨー（Y軸回りの回転）を計算
+	float yaw = std::atan2(dirNorm.x, dirNorm.z);
+	// ロールは0とする
+	float roll = 0.0f;
+	// ラジアンから度に変換して返す
+	return Vector3{
+		pitch,
+		yaw,
+		roll
+	};
+}
+
 Quaternion Vector3Math::ToQuaternion(const Vector3& eulerAngles) {
 	
 	// オイラー角をラジアンに変換

@@ -38,6 +38,8 @@ namespace Vector3Math {
 	Vector3 Normalize(const Vector3& v);
 
 	Vector3 ApplyYawPitch(const Vector3& baseDir, float yawDeg, float pitchDeg);
+	//ベクトルから回転を求める
+	Vector3 RotationFromDirection(const Vector3& direction);
 
 	Quaternion ToQuaternion(const Vector3& eulerAngles);
 };

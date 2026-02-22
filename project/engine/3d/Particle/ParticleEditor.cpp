@@ -144,6 +144,7 @@ void ParticleEditor::Finalize() {
 
 void ParticleEditor::Draw() {
 	TakeCFrameWork::GetParticleManager()->Draw();
+	previewEmitter_->DrawWireFrame();
 }
 
 //======================================================================
@@ -200,6 +201,8 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	//isParticleTrail
 	ImGui::Checkbox("Is ParticleTrail", &attributes.isParticleTrail);
 	ImGui::Checkbox("Is EmitterTrail", &attributes.isEmitterTrail);
+	ImGui::Checkbox("Enable Lighting", &attributes.enableLighting);
+	ImGui::Checkbox("Align Rotation To Emitter", &attributes.alignRotationToEmitter);
 	ImGui::SliderInt("Particles Per Interpolation", reinterpret_cast<int*>(&attributes.particlesPerInterpolation), 1, 20);
 	ImGui::DragFloat("Trail Emit Interval", &attributes.trailEmitInterval, 0.001f, 0.001f, 1.0f);
 
@@ -535,6 +538,9 @@ void ParticleEditor::DrawOverwriteConfirmDialog() {
 				presetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ParticlePreset>();
 
 				showOverwriteConfirm_ = false;
+				//保存後、リスト内の情報を更新する
+				presets_[pendingPresetName_] = currentPreset_;
+
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::SameLine();

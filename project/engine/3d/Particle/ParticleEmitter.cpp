@@ -120,6 +120,8 @@ void ParticleEmitter::UpdateImGui() {
 void ParticleEmitter::DrawWireFrame() {
 
 	TakeCFrameWork::GetWireFrame()->DrawSphere(transforms_.translate, 0.3f, { 1.0f, 0.0f, 1.0f, 1.0f });
+	//発射方向の描画
+	TakeCFrameWork::GetWireFrame()->DrawLine(transforms_.translate, emitDirection_, { 1.0f,1.0f,0.0f,1.0f });
 }
 
 //==================================================================================

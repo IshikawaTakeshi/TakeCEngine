@@ -50,20 +50,22 @@ struct ParticleAttributes {
 	AttributeRange colorRange = { 0.0f,1.0f };
 	AttributeRange lifetimeRange = { 1.0f,3.0f };
 	Easing::EasingType lifeTimeEasingType = Easing::EasingType::LINEAR; //寿命のイージングタイプ
-	float frequency = 0.1f; //パーティクルの発生頻度
-	uint32_t emitCount = 1; //1回あたりのパーティクル発生数
-	bool isBillboard = false; //Billboardかどうか
-	bool editColor = false; //色を編集するかどうか
-	bool isTranslate = false; //位置を更新するかどうか
-	bool isDirectional = false; //方向に沿って移動するかどうか
-	uint32_t scaleSetting = 0;    //スケールの更新処理方法
-	bool enableFollowEmitter = false; //エミッターに追従するかどうか
-
-	bool isParticleTrail = false; //パーティクルによるトレイルを有効にするかどうか
+	float frequency = 0.1f;              //パーティクルの発生頻度
+	bool isBillboard = false;            //Billboardかどうか
+	bool editColor = false;              //色を編集するかどうか
+	bool isTranslate = false;            //位置を更新するかどうか
+	bool isDirectional = false;          //方向に沿って移動するかどうか
+	bool enableLighting = true;          //ライティングを有効にするかどうか
+	bool alignRotationToEmitter = false; //エミッターの回転にパーティクルの回転を合わせるかどうか
+	bool enableFollowEmitter = false;    //エミッターに追従するかどうか
+	bool isEmitterTrail = false;         //エミッターの移動に応じてトレイルを生成するかどうか
+	bool isParticleTrail = false;        //パーティクルによるトレイルを有効にするかどうか
+	uint32_t scaleSetting = 0;           //スケールの更新処理方法
 	uint32_t particlesPerInterpolation = 5; //一度の補間で生成するパーティクル数
+	uint32_t emitCount = 1;                 //1回あたりのパーティクル発生数
+
 	float trailEmitInterval = 0.016f; //トレイルエフェクトの生成間隔
 
-	bool isEmitterTrail = false; //エミッターの移動に応じてトレイルを生成するかどうか
 };
 
 // パーティクルプリセットを保持する構造体

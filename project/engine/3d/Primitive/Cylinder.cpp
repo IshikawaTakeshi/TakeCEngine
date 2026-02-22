@@ -32,17 +32,17 @@ void TakeC::Cylinder::CreateVertexData(CylinderData* cylinderData) {
 	const uint32_t kSubdivision = cylinderData->subDivision;  // 円の分割数
 	const float kAngleEvery = 2.0f * std::numbers::pi_v<float> / static_cast<float>(kSubdivision);
 
-	// 頂点数 = 側面(kSubdivision * 6) + 上面(kSubdivision * 3) + 底面(kSubdivision * 3)
-	uint32_t vertexCount = kSubdivision * 6 + kSubdivision * 3 + kSubdivision * 3;
+	// 頂点数 = 側面のみ(kSubdivision * 6)
+	uint32_t vertexCount = kSubdivision * 6;
 	UINT size = static_cast<UINT>(sizeof(VertexData) * vertexCount);
 
 	// bufferを確保
 	cylinderData->mesh.vertexBuffer_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), size);
-	cylinderData->mesh. vertexBuffer_->SetName(L"Cylinder:: vertexResource_");
+	cylinderData->mesh.vertexBuffer_->SetName(L"Cylinder::vertexResource_");
 
 	// bufferview設定
-	cylinderData->mesh.vertexBufferView_. BufferLocation = cylinderData->mesh.vertexBuffer_->GetGPUVirtualAddress();
-	cylinderData->mesh.vertexBufferView_. StrideInBytes = sizeof(VertexData);
+	cylinderData->mesh.vertexBufferView_.BufferLocation = cylinderData->mesh.vertexBuffer_->GetGPUVirtualAddress();
+	cylinderData->mesh.vertexBufferView_.StrideInBytes = sizeof(VertexData);
 	cylinderData->mesh.vertexBufferView_.SizeInBytes = size;
 
 	// mapping
@@ -53,8 +53,6 @@ void TakeC::Cylinder::CreateVertexData(CylinderData* cylinderData) {
 
 	// 円柱の中心位置
 	float halfHeight = cylinderData->height * 0.5f;
-	Vector3 topCenter = { 0.0f, halfHeight, 0.0f };
-	Vector3 bottomCenter = { 0.0f, -halfHeight, 0.0f };
 
 	// ===== 側面の生成 =====
 	for (uint32_t i = 0; i < kSubdivision; ++i) {
@@ -114,70 +112,6 @@ void TakeC::Cylinder::CreateVertexData(CylinderData* cylinderData) {
 		vertexData[vertexIndex++] = CreateCylinderVertex(bottomPosNext, uNext, 1.0f, normalNext);
 		vertexData[vertexIndex++] = CreateCylinderVertex(topPos, u, 0.0f, normal);
 		vertexData[vertexIndex++] = CreateCylinderVertex(topPosNext, uNext, 0.0f, normalNext);
-	}
-
-	// ===== 上面の生成 =====
-	Vector3 topNormal = { 0.0f, 1.0f, 0.0f };  // 上面の法線は上向き
-
-	for (uint32_t i = 0; i < kSubdivision; ++i) {
-		float angle = i * kAngleEvery;
-		float angleNext = (i + 1) * kAngleEvery;
-
-		// 上面の円周上の点
-		Vector3 topPos = {
-			cylinderData->radius * cosf(angle),
-			halfHeight,
-			cylinderData->radius * sinf(angle)
-		};
-
-		Vector3 topPosNext = {
-			cylinderData->radius * cosf(angleNext),
-			halfHeight,
-			cylinderData->radius * sinf(angleNext)
-		};
-
-		// テクスチャ座標（0.5を中心とした円）
-		float u = 0.5f + 0.5f * cosf(angle);
-		float v = 0.5f + 0.5f * sinf(angle);
-		float uNext = 0.5f + 0.5f * cosf(angleNext);
-		float vNext = 0.5f + 0.5f * sinf(angleNext);
-
-		// 上面の三角形（反時計回り）:  中心 -> 現在 -> 次
-		vertexData[vertexIndex++] = CreateCylinderVertex(topCenter, 0.5f, 0.5f, topNormal);
-		vertexData[vertexIndex++] = CreateCylinderVertex(topPos, u, v, topNormal);
-		vertexData[vertexIndex++] = CreateCylinderVertex(topPosNext, uNext, vNext, topNormal);
-	}
-
-	// ===== 底面の生成 =====
-	Vector3 bottomNormal = { 0.0f, -1.0f, 0.0f };  // 底面の法線は下向き
-
-	for (uint32_t i = 0; i < kSubdivision; ++i) {
-		float angle = i * kAngleEvery;
-		float angleNext = (i + 1) * kAngleEvery;
-
-		// 底面の円周上の点
-		Vector3 bottomPos = {
-			cylinderData->radius * cosf(angle),
-			-halfHeight,
-			cylinderData->radius * sinf(angle)
-		};
-
-		Vector3 bottomPosNext = {
-			cylinderData->radius * cosf(angleNext),
-			-halfHeight,
-			cylinderData->radius * sinf(angleNext)
-		};
-
-		// テクスチャ座標（0.5を中心とした円）
-		float u = 0.5f + 0.5f * cosf(angle);
-		float v = 0.5f + 0.5f * sinf(angle);
-		float uNext = 0.5f + 0.5f * cosf(angleNext);
-		float vNext = 0.5f + 0.5f * sinf(angleNext);
-
-		// 底面の三角形（反時計回り）: 中心 -> 次 -> 現在
-		vertexData[vertexIndex++] = CreateCylinderVertex(bottomCenter, 0.5f, 0.5f, bottomNormal);
-		vertexData[vertexIndex++] = CreateCylinderVertex(bottomPosNext, uNext, vNext, bottomNormal);
-		vertexData[vertexIndex++] = CreateCylinderVertex(bottomPos, u, v, bottomNormal);
 	}
 
 	cylinderData->vertexCount += vertexIndex;

@@ -60,7 +60,7 @@ void GamePlayScene::Initialize() {
 
 	//BulletManager
 	bulletManager_ = std::make_unique<BulletManager>();
-	bulletManager_->Initialize(&Object3dCommon::GetInstance(), 100); //弾の最大数:100
+	bulletManager_->Initialize(&Object3dCommon::GetInstance(), 50); //弾の最大数
 
 	//playerInputProvider
 	player_ = std::make_unique<Player>();
@@ -147,7 +147,8 @@ void GamePlayScene::Finalize() {
 	CollisionManager::GetInstance().ClearGameCharacter(); // 当たり判定の解放
 	TakeC::CameraManager::GetInstance().ResetCameras(); //カメラのリセット
 	TakeCFrameWork::GetParticleManager()->ClearParticles(); //パーティクルの解放
-	TakeCFrameWork::GetLightManager()->ClearAllPointLights();
+	TakeCFrameWork::GetParticleManager()->ClearEmitters(); //エミッターの解放
+	TakeCFrameWork::GetLightManager()->ClearAllPointLights(); //ポイントライトの解放
 	TakeCFrameWork::GetSpriteManager()->Clear(); //スプライトの解放
 	TakeCFrameWork::GetUIManager()->Clear(); //UIの解放
 	bulletManager_->Finalize(); //弾マネージャーの解放
@@ -332,9 +333,8 @@ void GamePlayScene::Draw() {
 	for (auto& object : levelObjects_) {
 		object.second->Draw();
 	}
-	Object3dCommon::GetInstance().PreDrawAddBlend();
-	player_->DrawBoostEffect();
-	
+	//Object3dCommon::GetInstance().PreDrawAddBlend();
+
 
 #pragma endregion
 

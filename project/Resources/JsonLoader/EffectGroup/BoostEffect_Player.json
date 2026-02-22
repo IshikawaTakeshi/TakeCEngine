@@ -4,26 +4,8 @@
         "y": 1.0,
         "z": 1.0
     },
-    "effectName": "SampleEffect1",
+    "effectName": "BoostEffect_Player",
     "emitters": [
-        {
-            "autoStart": true,
-            "delayTime": 0.0,
-            "duration": 1.0,
-            "emitCount": 10,
-            "emitterName": "NewEmitter_0",
-            "positionOffset": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "presetFilePath": "BazookaBulletExplosion2.json",
-            "rotationOffset": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            }
-        },
         {
             "autoStart": true,
             "delayTime": 0.0,
@@ -35,9 +17,9 @@
                 "y": 0.0,
                 "z": 0.0
             },
-            "presetFilePath": "BazookaBulletExplosion2.json",
+            "presetFilePath": "BoostEffect_Player_2.json",
             "rotationOffset": {
-                "x": 0.0,
+                "x": -1.5,
                 "y": 0.0,
                 "z": 0.0
             }
@@ -50,17 +32,17 @@
             "emitterName": "NewEmitter_2",
             "positionOffset": {
                 "x": 0.0,
-                "y": 3.5999999046325684,
+                "y": 0.0,
                 "z": 0.0
             },
-            "presetFilePath": "BulletMoveEffect.json",
+            "presetFilePath": "BoostEffect_Player_3.json",
             "rotationOffset": {
-                "x": 0.0,
+                "x": -1.5,
                 "y": 0.0,
                 "z": 0.0
             }
         }
     ],
-    "isLooping": false,
+    "isLooping": true,
     "totalDuration": -1.0
 }

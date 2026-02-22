@@ -133,6 +133,25 @@ Quaternion QuaternionMath::LookRotation(const Vector3& forward, const Vector3& u
 	return QuaternionMath::FromMatrix(rotationMatrix);
 }
 
+Quaternion QuaternionMath::LookRotation_RowMajor(const Vector3& forwardIn) {
+	Vector3 forward = forwardIn;
+	if (Vector3Math::LengthSq(forward) < 1e-6f) {
+		return Quaternion{ 0,0,0,1 };
+	}
+	forward = forward.Normalize();
+
+	Vector3 up = Vector3(0.0f, 1.0f, 0.0f);
+	float d = Vector3Math::Dot(forward, up);
+	if (std::fabs(d) > 0.999f) {
+		up = Vector3(1.0f, 0.0f, 0.0f);
+	}
+
+	Vector3 right = Vector3Math::Cross(up, forward).Normalize();
+	Vector3 newUp = Vector3Math::Cross(forward, right);
+
+	return FromBasis_RowMajor(right, newUp, forward);
+}
+
 //=============================================================================
 // 回転行列からクォータニオンを作成
 //=============================================================================
@@ -146,20 +165,23 @@ Quaternion QuaternionMath::FromMatrix(const Matrix4x4& m) {
 		q.x = (m.m[2][1] - m.m[1][2]) / s;
 		q.y = (m.m[0][2] - m.m[2][0]) / s;
 		q.z = (m.m[1][0] - m.m[0][1]) / s;
-	} else {
+	}
+	else {
 		if (m.m[0][0] > m.m[1][1] && m.m[0][0] > m.m[2][2]) {
 			float s = sqrtf(1.0f + m.m[0][0] - m.m[1][1] - m.m[2][2]) * 2.0f;
 			q.w = (m.m[2][1] - m.m[1][2]) / s;
 			q.x = 0.25f * s;
 			q.y = (m.m[0][1] + m.m[1][0]) / s;
 			q.z = (m.m[0][2] + m.m[2][0]) / s;
-		} else if (m.m[1][1] > m.m[2][2]) {
+		}
+		else if (m.m[1][1] > m.m[2][2]) {
 			float s = sqrtf(1.0f + m.m[1][1] - m.m[0][0] - m.m[2][2]) * 2.0f;
 			q.w = (m.m[0][2] - m.m[2][0]) / s;
 			q.x = (m.m[0][1] + m.m[1][0]) / s;
 			q.y = 0.25f * s;
 			q.z = (m.m[1][2] + m.m[2][1]) / s;
-		} else {
+		}
+		else {
 			float s = sqrtf(1.0f + m.m[2][2] - m.m[0][0] - m.m[1][1]) * 2.0f;
 			q.w = (m.m[1][0] - m.m[0][1]) / s;
 			q.x = (m.m[0][2] + m.m[2][0]) / s;
@@ -175,7 +197,7 @@ Quaternion QuaternionMath::FromMatrix(const Matrix4x4& m) {
 // オイラー角からクォータニオンに変換
 //=============================================================================
 Quaternion QuaternionMath::FromEuler(const Vector3& euler) {
-	
+
 	// オイラー角をラジアンに変換
 	float cy = cosf(euler.z * 0.5f);
 	float sy = sinf(euler.z * 0.5f);
@@ -188,6 +210,78 @@ Quaternion QuaternionMath::FromEuler(const Vector3& euler) {
 	q.x = sr * cp * cy - cr * sp * sy;
 	q.y = cr * sp * cy + sr * cp * sy;
 	q.z = cr * cp * sy - sr * sp * cy;
+	return q;
+}
+
+//=============================================================================
+// 直交基底からクォータニオンに変換
+//=============================================================================
+Quaternion QuaternionMath::FromBasis(const Vector3& right, const Vector3& up, const Vector3& forward) {
+
+	// 回転行列を作成
+	Matrix4x4 rotationMatrix = {
+		right.x, up.x, forward.x, 0.0f,
+		right.y, up.y, forward.y, 0.0f,
+		right.z, up.z, forward.z, 0.0f,
+		0.0f,    0.0f, 0.0f,     1.0f
+	};
+	// 回転行列からクォータニオンを作成
+	return QuaternionMath::FromMatrix(rotationMatrix);
+}
+
+Quaternion QuaternionMath::FromBasis_RowMajor(const Vector3& right, const Vector3& up, const Vector3& forward) {
+	// row-major 3x3:
+	// [ right.x   right.y   right.z ]
+	// [ up.x      up.y      up.z    ]
+	// [ forward.x forward.y forward.z ]
+
+	// ※この「row-majorの基底の置き方」を HLSL 側の変換と揃える意図
+
+	float m00 = right.x, m01 = right.y, m02 = right.z;
+	float m10 = up.x, m11 = up.y, m12 = up.z;
+	float m20 = forward.x, m21 = forward.y, m22 = forward.z;
+
+	Quaternion q{};
+
+	float trace = m00 + m11 + m22;
+	if (trace > 0.0f) {
+		float s = std::sqrt(trace + 1.0f) * 2.0f; // s = 4*w
+		q.w = 0.25f * s;
+		q.x = (m12 - m21) / s;
+		q.y = (m20 - m02) / s;
+		q.z = (m01 - m10) / s;
+	}
+	else if (m00 > m11 && m00 > m22) {
+		float s = std::sqrt(1.0f + m00 - m11 - m22) * 2.0f; // s = 4*x
+		q.w = (m12 - m21) / s;
+		q.x = 0.25f * s;
+		q.y = (m01 + m10) / s;
+		q.z = (m02 + m20) / s;
+	}
+	else if (m11 > m22) {
+		float s = std::sqrt(1.0f + m11 - m00 - m22) * 2.0f; // s = 4*y
+		q.w = (m20 - m02) / s;
+		q.x = (m01 + m10) / s;
+		q.y = 0.25f * s;
+		q.z = (m12 + m21) / s;
+	}
+	else {
+		float s = std::sqrt(1.0f + m22 - m00 - m11) * 2.0f; // s = 4*z
+		q.w = (m01 - m10) / s;
+		q.x = (m02 + m20) / s;
+		q.y = (m12 + m21) / s;
+		q.z = 0.25f * s;
+	}
+
+	// 正規化（誤差対策）
+	float len = std::sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
+	if (len > 1e-6f) {
+		float inv = 1.0f / len;
+		q.x *= inv; q.y *= inv; q.z *= inv; q.w *= inv;
+	}
+	else {
+		q = { 0,0,0,1 };
+	}
 	return q;
 }
 

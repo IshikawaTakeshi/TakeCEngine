@@ -39,7 +39,13 @@ PixelShaderOutPut main(VertexShaderOutput input) {
     ));
 
 	float3 diffuse = input.basisColor1 * w.x + input.basisColor2 * w.y + input.basisColor3 * w.z;
-	float3 finalColor = baseColor.rgb * diffuse;
+	
+	float3 finalColor;
+	if(gMaterial.enableLighting == 1) {
+		finalColor = baseColor.rgb * diffuse;
+	}else {
+		finalColor = baseColor.rgb;
+	}
 	
 	output.color = float4(finalColor, baseColor.a);
 

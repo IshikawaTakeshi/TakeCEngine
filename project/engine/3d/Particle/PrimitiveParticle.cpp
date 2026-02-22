@@ -86,9 +86,7 @@ void PrimitiveParticle::Update() {
 			particleData_[numInstance_].velocity = (*particleIterator).velocity_;
 			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTimer_.GetDuration();
 			particleData_[numInstance_].currentTime = (*particleIterator).lifeTimer_.GetProgress() * (*particleIterator).lifeTimer_.GetDuration();
-
 			
-
 			++numInstance_; // 次のインスタンスに進める  
 		}
 		++particleIterator; // 次のイテレータに進める  
@@ -104,6 +102,8 @@ void PrimitiveParticle::Update() {
 	perViewData_->isBillboard = particlePreset_.attribute.isBillboard;
 	perViewData_->viewProjection = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
 	perViewData_->billboardMatrix = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetRotationMatrix();
+	auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+	primitiveMaterial->SetEnableLighting(particlePreset_.attribute.enableLighting);
 }
 
 //=============================================================================
@@ -171,6 +171,7 @@ void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
 void PrimitiveParticle::SetTextureFilePath(const std::string& filePath) {
 	particlePreset_.textureFilePath = filePath;
 	//テクスチャファイルパスの設定
+
 	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
 		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetData<Ring>(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(filePath);
@@ -183,7 +184,11 @@ void PrimitiveParticle::SetTextureFilePath(const std::string& filePath) {
 	} else if (particlePreset_.primitiveType == PRIMITIVE_CONE) {
 		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(filePath);
-	} else if (particlePreset_.primitiveType == PRIMITIVE_CUBE) {
+	}
+	else if (particlePreset_.primitiveType == PRIMITIVE_CUBE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(filePath);
+	}else if (particlePreset_.primitiveType == PRIMITIVE_CYLINDER) {
 		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(filePath);
 	} else {
@@ -241,9 +246,22 @@ void PrimitiveParticle::GeneratePrimitive() {
 		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
 			cubeParam.size,
 			particlePreset_.textureFilePath);
+	}else if (particlePreset_.primitiveType == PRIMITIVE_CYLINDER) {
+		//CylinderParamとして取得
+		const CylinderParam& cylinderParam = std::get<CylinderParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCylinder(
+			cylinderParam.radius,
+			cylinderParam.height,
+			cylinderParam.subDivision,
+			particlePreset_.textureFilePath);
+	} else {
+		assert(0 && "未対応の PrimitiveType が指定されました");
 	}
 	//テクスチャファイルパスの設定
 	SetTextureFilePath(particlePreset_.textureFilePath);
+	//ライティングの設定
+	auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+	primitiveMaterial->SetEnableLighting(particlePreset_.attribute.enableLighting);
 
 	//テクスチャアニメーションの設定
 	if (particlePreset_.isUseTextureAnimation == true) {
@@ -280,12 +298,72 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 	if (attributes.isTranslate) {
 		if (attributes.enableFollowEmitter) {
 			// エミッターIDから現在のエミッター位置を取得
-			std::optional<Vector3> emitterPos = 
+			std::optional<Vector3> emitterPos =
 				TakeCFrameWork::GetParticleManager()->GetEmitterPosition((*particleIterator).emitterID_);
 
 			if (emitterPos.has_value()) {
 				(*particleIterator).transforms_.translate = emitterPos.value();
 			}
+
+			if (attributes.alignRotationToEmitter) {
+				auto emitDir = TakeCFrameWork::GetParticleManager()->GetEmitDirection((*particleIterator).emitterID_);
+				if (emitDir.has_value()) {
+
+					Vector3 dir = emitDir.value();
+					if (Vector3Math::LengthSq(dir) > 1e-6f) {
+
+						Vector3 to = Vector3Math::Normalize(dir);
+
+						// パーティクルの基準前方向（ローカル +Z を前と仮定）
+						Vector3 from = { 0.0f, 0.0f, 1.0f };
+						// PrimitiveTypeごとのデフォルトの向きに合わせて基準ベクトルを変更
+						switch (particlePreset_.primitiveType) {
+						case PRIMITIVE_CONE:
+						case PRIMITIVE_CYLINDER:
+							from = { 0.0f, 1.0f, 0.0f }; // 円錐・円柱はY軸が高さ方向
+							break;
+						case PRIMITIVE_PLANE:
+							from = { 0.0f, 0.0f, -1.0f }; // Planeは法線が-Zを向いている
+							break;
+						default:
+							from = { 0.0f, 0.0f, 1.0f }; // その他（Ring, Sphere, Cube）はZ軸基準
+							break;
+						}
+
+						float d = Vector3Math::Dot(from, to);
+						d = std::clamp(d, -1.0f, 1.0f);
+
+						Quaternion targetRotate;
+
+						if (d > 1.0f - 1e-5f) {
+							targetRotate = QuaternionMath::IdentityQuaternion();
+						}
+						else if (d < -1.0f + 1e-5f) {
+							// 真逆(180度)は軸が不定なので、fromと直交する軸を適当に選ぶ
+							Vector3 ortho = (std::fabs(from.y) < 0.999f) ? Vector3{ 0,1,0 } : Vector3{ 1,0,0 };
+							Vector3 axis = Vector3Math::Normalize(Vector3Math::Cross(from, ortho));
+							targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion(axis, std::numbers::pi_v<float>);
+						}
+						else {
+							Vector3 axis = Vector3Math::Cross(from, to);
+							axis = Vector3Math::Normalize(axis);
+							float angle = std::acos(d);
+							targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion(axis, angle);
+						}
+
+						Quaternion& current = (*particleIterator).transforms_.rotate;
+
+						// shortest-arc
+						if (QuaternionMath::Dot(current, targetRotate) < 0.0f) {
+							targetRotate = -targetRotate;
+						}
+
+						current = Easing::Slerp(current, targetRotate, 0.3f); // 例: 0.05f〜0.3f
+						current = QuaternionMath::Normalize(current);
+					}
+				}
+			}
+		
 		} else {
 			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * velocityProgress * kDeltaTime_;
 
