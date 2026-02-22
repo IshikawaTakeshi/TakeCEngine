@@ -201,7 +201,7 @@ void MyGame::LoadModel() {
 
 void MyGame::LoadAnimation() {
 
-	//TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Player_Model_Ver2.0.gltf");
 	//TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
 	//TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
 }

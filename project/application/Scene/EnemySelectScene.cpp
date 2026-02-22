@@ -32,13 +32,6 @@ void EnemySelectScene::Initialize() {
 	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 
-	//Animation読み込み
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "walk.gltf");
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "Idle.gltf");
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "running.gltf");
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation", "throwAttack.gltf");
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Models/gltf", "player_singleMesh.gltf");
-
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(), "skyBox_blueSky.dds");
