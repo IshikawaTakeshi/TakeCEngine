@@ -35,7 +35,7 @@ public:
 	/// </summary>
 	void Update();
 
-	void UpdateImGui();
+	void UpdateImGui([[maybe_unused]] const std::string& windowName = nullptr);
 
 	/// <summary>
 	/// スケルトンのジョイントにエフェクトをアタッチ

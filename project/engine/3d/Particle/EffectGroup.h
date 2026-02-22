@@ -41,7 +41,7 @@ namespace TakeC {
 		/// <summary>
 		/// ImGui更新処理
 		/// </summary>
-		void UpdateImGui();
+		void UpdateImGui([[maybe_unused]] const std::string& windowName = nullptr);
 
 		//======================================================================
 		// エフェクト制御

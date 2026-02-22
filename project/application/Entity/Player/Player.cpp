@@ -354,7 +354,7 @@ void Player::UpdateImGui() {
 	collider_->UpdateImGui("Player");
 	// ブーストエフェクトのImGui更新
 	for (int i = 0; i < boostEffects_.size(); i++) {
-		boostEffects_[i]->UpdateImGui();
+		boostEffects_[i]->UpdateImGui("boostEffect" + std::to_string(i));
 	}
 
 	// 武器のImGui更新
@@ -685,11 +685,18 @@ void Player::RequestActiveBoostEffect() {
 		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
 		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
 	}
-	else {
+	else if (angle >= 135.0f || angle <= -135.0f) {
 		// 後方向
 		boostEffects_[LEFT_BACK]->SetIsActive(true);
 		boostEffects_[RIGHT_BACK]->SetIsActive(true);
 		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
 		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
+	}
+	else {
+		//何も入力していない場合
+		boostEffects_[LEFT_BACK]->SetIsActive(false);
+		boostEffects_[RIGHT_BACK]->SetIsActive(false);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
 	}
 }

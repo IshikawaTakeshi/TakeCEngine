@@ -63,7 +63,6 @@ void BoostEffect::Update() {
 	// 3. 挙動制御 (既存コード)
 	if (isActive_) {
 		effectTime_ += TakeCFrameWork::GetDeltaTime();
-		// ... (既存の処理)
 	}
 
 	// 4. 更新実行
@@ -74,9 +73,9 @@ void BoostEffect::Update() {
 	effectGroup_->Update();
 }
 
-void BoostEffect::UpdateImGui() {
+void BoostEffect::UpdateImGui([[maybe_unused]] const std::string& windowName) {
 
-	effectGroup_->UpdateImGui();
+	effectGroup_->UpdateImGui(windowName);
 }
 
 //===================================================================================

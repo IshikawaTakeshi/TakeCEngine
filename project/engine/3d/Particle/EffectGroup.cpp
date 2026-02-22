@@ -39,6 +39,7 @@ void EffectGroup::InitializeCommon() {
 
 	// デフォルトスケール適用
 	transform_.scale = config_.defaultScale;
+	transform_.rotate = { 0.0f, 0.0f, 0.0f, 1.0f }; // 単位クォータニオン
 
 	// エミッターインスタンスを作成
 	CreateEmitterInstances();
@@ -110,6 +111,11 @@ void EffectGroup::Update() {
 		currentRot = QuaternionMath::Multiply(parentRot, currentRot);
 	}
 
+	//emitDirection をボーン(親×自分回転)に合わせる
+	const Vector3 localForward = { 0.0f, 0.0f, 1.0f };
+	Vector3 worldForward = QuaternionMath::RotateVector(localForward, currentRot);
+	SetDirection(worldForward);
+
 	bool anyEmitterActive = false;
 
 	// -------------------------------------------------------------
@@ -158,7 +164,6 @@ void EffectGroup::Update() {
 
 	// ループ再生
 	if (!anyEmitterActive && config_.isLooping) { 
-		Reset();
 		Play(currentPos);
 	}
 }
@@ -240,11 +245,6 @@ void EffectGroup::UpdateEmitterPositions() {
 	for (auto& instance : emitterInstances_) {
 		// オフセットを適用
 		Vector3 offsetPos = instance.config.positionOffset;
-
-		// スケールを適用
-		offsetPos.x *= transform_.scale.x;
-		offsetPos.y *= transform_.scale.y;
-		offsetPos.z *= transform_.scale.z;
 
 		// 回転を適用（quaternion使用）
 		Quaternion rot = transform_.rotate;
@@ -414,9 +414,9 @@ void EffectGroup::SetDirection(const Vector3& direction) {
 //==================================================================================
 // ImGui更新処理
 //==================================================================================
-void EffectGroup::UpdateImGui() {
+void EffectGroup::UpdateImGui([[maybe_unused]] const std::string& windowName) {
 #ifdef _DEBUG
-	ImGui::Begin(config_.effectName.c_str());
+	ImGui::SeparatorText((windowName + config_.effectName).c_str());
 
 	ImGui::Text("Playing: %s", isPlaying_ ? "Yes" : "No");
 	ImGui::Text("Finished: %s", isFinished_ ? "Yes" : "No");
@@ -455,7 +455,5 @@ void EffectGroup::UpdateImGui() {
 	if(ImGui::Button("Save Config")){
 		TakeCFrameWork::GetJsonLoader()->SaveJsonData<EffectGroupConfig>(config_.effectName,config_);
 	}
-
-	ImGui::End();
 #endif
 }

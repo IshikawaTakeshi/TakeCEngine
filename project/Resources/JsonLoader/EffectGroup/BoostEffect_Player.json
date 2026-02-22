@@ -19,7 +19,7 @@
             },
             "presetFilePath": "BoostEffect_Player_2.json",
             "rotationOffset": {
-                "x": 0.0,
+                "x": -1.5,
                 "y": 0.0,
                 "z": 0.0
             }
@@ -37,7 +37,7 @@
             },
             "presetFilePath": "BoostEffect_Player_3.json",
             "rotationOffset": {
-                "x": 0.0,
+                "x": -1.5,
                 "y": 0.0,
                 "z": 0.0
             }
