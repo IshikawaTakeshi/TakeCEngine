@@ -1,62 +1,62 @@
 {
-  "attributes": {
-    "color": {
-      "x": 0.3921568691730499,
-      "y": 0.2862745225429535,
-      "z": 1.0
+    "attributes": {
+        "alignRotationToEmitter": true,
+        "color": {
+            "x": 0.3921568691730499,
+            "y": 0.2862745225429535,
+            "z": 1.0
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 10,
+        "enableFollowEmitter": true,
+        "enableLighting": false,
+        "frequency": 0.10000000149011612,
+        "isBillboard": false,
+        "isDirectional": true,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
+        "lifetimeRange": {
+            "max": 0.5,
+            "min": 0.5
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 1.0,
+            "min": -1.0
+        },
+        "rotateRange": {
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
+        },
+        "scale": {
+            "x": 0.5699999928474426,
+            "y": 6.150000095367432,
+            "z": 0.5
+        },
+        "scaleEasingType": 0,
+        "scaleRange": {
+            "max": 3.0,
+            "min": 0.10000000149011612
+        },
+        "scaleSetting": 0,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
+        "velocityRange": {
+            "max": 1.0,
+            "min": -1.0
+        }
     },
-    "colorRange": {
-      "max": 1.0,
-      "min": 0.0
-    },
-    "direction": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
-    },
-    "editColor": true,
-    "emitCount": 10,
-    "enableFollowEmitter": true,
-    "frequency": 0.10000000149011612,
-    "isBillboard": false,
-    "isDirectional": true,
-    "isEmitterTrail": false,
-    "isParticleTrail": false,
-    "isTraslate": true,
-    "enableLighting": false,
-    "alignRotationToEmitter": true,
-    "lifetimeEasingType": 0,
-    "lifetimeRange": {
-      "max": 0.5,
-      "min": 0.5
-    },
-    "particlesPerInterpolation": 5,
-    "positionRange": {
-      "max": 1.0,
-      "min": -1.0
-    },
-    "rotateRange": {
-      "max": 3.1415927410125732,
-      "min": -3.1415927410125732
-    },
-    "scale": {
-      "x": 1.340000033378601,
-      "y": 4.989999771118164,
-      "z": 1.2599999904632568
-    },
-    "scaleEasingType": 0,
-    "scaleRange": {
-      "max": 3.0,
-      "min": 0.10000000149011612
-    },
-    "scaleSetting": 0,
-    "trailEmitInterval": 0.01600000075995922,
-    "velocityEasingType": 0,
-    "velocityRange": {
-      "max": 1.0,
-      "min": -1.0
-    }
-  },
     "blendState": 1,
     "isUseTextureAnimation": true,
     "name": "BoostEffect_Player_2",

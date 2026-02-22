@@ -73,7 +73,6 @@ private:
 
 	// 制御用変数
 	bool isActive_ = false;
-	float effectTime_ = 0.0f;
 	float duration_ = 0.5f;
 	Vector3 activeScale_ = { 1.0f,1.0f,1.0f };
 };

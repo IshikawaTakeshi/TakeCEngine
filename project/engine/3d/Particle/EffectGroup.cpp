@@ -1,9 +1,10 @@
 #include "EffectGroup.h"
-#include "engine/base/TakeCFrameWork.h"
-#include "Math/Quaternion.h"
 #include "Math/MatrixMath.h"
+#include "Math/Quaternion.h"
 #include "Math/Vector3Math.h"
+#include "engine/base/TakeCFrameWork.h"
 #include <cassert>
+
 
 using namespace TakeC;
 
@@ -12,7 +13,8 @@ using namespace TakeC;
 //==================================================================================
 void EffectGroup::Initialize(const std::string& configFilePath) {
 	// JSONから設定を読み込み
-	config_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<EffectGroupConfig>(configFilePath);
+	config_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<EffectGroupConfig>(
+		configFilePath);
 
 	// 共通初期化
 	InitializeCommon();
@@ -27,7 +29,7 @@ void EffectGroup::Initialize(const EffectGroupConfig& config) {
 }
 
 void TakeC::EffectGroup::SetParentMatrix(const Matrix4x4* parentMatrix) {
-	parentMatrix_ = parentMatrix;	
+	parentMatrix_ = parentMatrix;
 }
 
 //==================================================================================
@@ -59,10 +61,12 @@ void EffectGroup::CreateEmitterInstances() {
 
 		if (emitterConfig.presetFilePath.empty()) {
 			// プリセットファイルパスが空の場合,DefaultParticlePreset.jsonを使用
-			instance.emitter->Initialize(emitterConfig.emitterName, "DefaultParticlePreset.json");
-		}else {
+			instance.emitter->Initialize(emitterConfig.emitterName,
+				"DefaultParticlePreset.json");
+		} else {
 			// 指定されたプリセットファイルパスを使用
-			instance.emitter->Initialize(emitterConfig.emitterName, emitterConfig.presetFilePath);
+			instance.emitter->Initialize(emitterConfig.emitterName,
+				emitterConfig.presetFilePath);
 		}
 		instance.emitter->SetIsEmit(false); // 最初は停止
 
@@ -74,9 +78,6 @@ void EffectGroup::CreateEmitterInstances() {
 // 更新処理
 //==================================================================================
 void EffectGroup::Update() {
-	if (!isPlaying_ || isPaused_) {
-		return;
-	}
 
 	totalElapsedTime_ += deltaTime_;
 
@@ -84,7 +85,7 @@ void EffectGroup::Update() {
 	// 1. 基本となる位置と回転を決定
 	// -------------------------------------------------------------
 	Vector3 currentPos = transform_.translate;
-	Quaternion currentRot = transform_.rotate; 
+	Quaternion currentRot = transform_.rotate;
 
 	// 親行列がある場合、親の位置と回転を反映させる
 	if (parentMatrix_) {
@@ -96,11 +97,15 @@ void EffectGroup::Update() {
 		// B. 回転の同期（親の回転 × 自分の回転）
 		// 行列から回転成分を抽出してクォータニオン化
 		Matrix4x4 rotationMatrix = *parentMatrix_;
-		rotationMatrix.m[3][0] = 0.0f; rotationMatrix.m[3][1] = 0.0f; rotationMatrix.m[3][2] = 0.0f;
+		rotationMatrix.m[3][0] = 0.0f;
+		rotationMatrix.m[3][1] = 0.0f;
+		rotationMatrix.m[3][2] = 0.0f;
 
 		// スケールを除去（各軸を正規化）
-		Vector3 up    = { rotationMatrix.m[1][0], rotationMatrix.m[1][1], rotationMatrix.m[1][2] };
-		Vector3 fwd   = { rotationMatrix.m[2][0], rotationMatrix.m[2][1], rotationMatrix.m[2][2] };
+		Vector3 up = { rotationMatrix.m[1][0], rotationMatrix.m[1][1],
+			rotationMatrix.m[1][2] };
+		Vector3 fwd = { rotationMatrix.m[2][0], rotationMatrix.m[2][1],
+			rotationMatrix.m[2][2] };
 		up = Vector3Math::Normalize(up);
 		fwd = Vector3Math::Normalize(fwd);
 
@@ -110,11 +115,6 @@ void EffectGroup::Update() {
 		// 親の回転 × 自分の回転
 		currentRot = QuaternionMath::Multiply(parentRot, currentRot);
 	}
-
-	//emitDirection をボーン(親×自分回転)に合わせる
-	const Vector3 localForward = { 0.0f, 0.0f, 1.0f };
-	Vector3 worldForward = QuaternionMath::RotateVector(localForward, currentRot);
-	SetDirection(worldForward);
 
 	bool anyEmitterActive = false;
 
@@ -131,28 +131,40 @@ void EffectGroup::Update() {
 		if (instance.isActive) {
 			anyEmitterActive = true;
 
-			// A. エミッターのローカルオフセットを取り出す
+			// エミッターのローカルオフセットを取り出す
 			Vector3 offset = instance.config.positionOffset;
 
-			// C. 合成した回転(親×自分)でオフセットを回転させる
+			// 合成した回転(親×自分)でオフセットを回転させる
 			offset = QuaternionMath::RotateVector(offset, currentRot);
 
-			// D. 最終的なワールド座標
+			// 最終的なワールド座標
 			Vector3 finalPos = currentPos + offset;
 			instance.emitter->SetTranslate(finalPos);
 
-			// E. エミッターの回転設定
-			// エミッターオフセット回転も加味する
-			// instance.config.rotationOffset はオイラー角(Vector3)のままなので変換が必要
-			Quaternion offsetRotQ = QuaternionMath::FromEuler(instance.config.rotationOffset);
+			// エミッターの回転設定
+			//  エミッターオフセット回転も加味する
+			//  instance.config.rotationOffset
+			//  はオイラー角(Vector3)のままなので変換が必要
+			Quaternion offsetRotQ =
+				QuaternionMath::FromEuler(instance.config.rotationOffset);
 			Quaternion finalRotQ = QuaternionMath::Multiply(currentRot, offsetRotQ);
 			finalRotQ = QuaternionMath::Normalize(finalRotQ);
-			// Quaternionからオイラー角に戻して設定 (ParticleEmitterがオイラー角を受け取る場合)
+			// Quaternionからオイラー角に戻して設定
+			// (ParticleEmitterがオイラー角を受け取る場合)
 			Vector3 finalRotEuler = QuaternionMath::ToEuler(finalRotQ);
 			instance.emitter->SetRotate(finalRotEuler);
 
 			instance.emitter->Update();
 			CheckEmitterEnd(instance);
+		} else {
+			// エミッターのローカルオフセットを取り出す
+			Vector3 offset = instance.config.positionOffset;
+
+			// 合成した回転(親×自分)でオフセットを回転させる
+			offset = QuaternionMath::RotateVector(offset, currentRot);
+
+			Vector3 finalPos = currentPos + offset;
+			instance.emitter->SetTranslate(finalPos);
 		}
 	}
 
@@ -162,15 +174,20 @@ void EffectGroup::Update() {
 		isPlaying_ = false;
 	}
 
-	// ループ再生
-	if (!anyEmitterActive && config_.isLooping) { 
-		Play(currentPos);
+	// ループ再生（Stop()で明示的に止められた場合はループしない）
+	if (!anyEmitterActive && config_.isLooping && !isLoopingSuspended_) {
+		Reset(); // 1回
+		transform_.translate = currentPos;
+		isPlaying_ = true;
+		isFinished_ = false;
+		isPaused_ = false;
 	}
 }
 //==================================================================================
 // 実行中にエミッターの設定を更新する
 //==================================================================================
-void TakeC::EffectGroup::UpdateEmitterConfig(int index, const EmitterConfig& config) {
+void TakeC::EffectGroup::UpdateEmitterConfig(int index,
+	const EmitterConfig& config) {
 
 	// 範囲チェック
 	if (index < 0 || index >= emitterInstances_.size()) {
@@ -200,8 +217,10 @@ void TakeC::EffectGroup::UpdateEmitterConfig(int index, const EmitterConfig& con
 	instance.emitter->SetTranslate(finalPosition);
 
 	// 回転も適用
-	Quaternion offsetRotQ = QuaternionMath::FromEuler(instance.config.rotationOffset);
-	Vector3 finalRotation = QuaternionMath::ToEuler(transform_.rotate * offsetRotQ);
+	Quaternion offsetRotQ =
+		QuaternionMath::FromEuler(instance.config.rotationOffset);
+	Vector3 finalRotation =
+		QuaternionMath::ToEuler(transform_.rotate * offsetRotQ);
 	instance.emitter->SetRotate(finalRotation);
 }
 
@@ -223,7 +242,8 @@ void EffectGroup::CheckEmitterStart(EmitterInstance& instance) {
 void EffectGroup::CheckEmitterEnd(EmitterInstance& instance) {
 	// 持続時間が設定されている場合
 	if (instance.config.duration > 0.0f) {
-		if (instance.elapsedTime >= instance.config.delayTime + instance.config.duration) {
+		if (instance.elapsedTime >=
+			instance.config.delayTime + instance.config.duration) {
 			instance.isActive = false;
 			instance.emitter->SetIsEmit(false);
 		}
@@ -255,8 +275,10 @@ void EffectGroup::UpdateEmitterPositions() {
 		instance.emitter->SetTranslate(finalPosition);
 
 		// 回転も適用
-		Quaternion offsetRotQ = QuaternionMath::FromEuler(instance.config.rotationOffset);
-		Vector3 finalRotation = QuaternionMath::ToEuler(transform_.rotate * offsetRotQ);
+		Quaternion offsetRotQ =
+			QuaternionMath::FromEuler(instance.config.rotationOffset);
+		Vector3 finalRotation =
+			QuaternionMath::ToEuler(transform_.rotate * offsetRotQ);
 		instance.emitter->SetRotate(finalRotation);
 	}
 }
@@ -265,6 +287,7 @@ void EffectGroup::UpdateEmitterPositions() {
 // エフェクトを再生
 //==================================================================================
 void EffectGroup::Play(const Vector3& position) {
+	isLoopingSuspended_ = false; // Stop()で止めていた場合はループを再開
 	Reset();
 	transform_.translate = position;
 	isPlaying_ = true;
@@ -278,11 +301,13 @@ void EffectGroup::Play(const Vector3& position) {
 void EffectGroup::Stop() {
 	isPlaying_ = false;
 	isFinished_ = true;
+	isLoopingSuspended_ = true; // ループ再生を抑制する
 
 	// 全エミッターを停止
 	for (auto& instance : emitterInstances_) {
 		instance.emitter->SetIsEmit(false);
 		instance.isActive = false;
+		instance.hasStarted = false;
 	}
 }
 
@@ -332,7 +357,8 @@ void EffectGroup::Reset() {
 //==================================================================================
 // 特定のエミッターを有効/無効化
 //==================================================================================
-void TakeC::EffectGroup::SetEmitterActive(const std::string& emitterName, bool isActive) {
+void TakeC::EffectGroup::SetEmitterActive(const std::string& emitterName,
+	bool isActive) {
 
 	for (auto& instance : emitterInstances_) {
 		if (instance.config.emitterName == emitterName) {
@@ -348,7 +374,8 @@ void TakeC::EffectGroup::SetEmitterActive(const std::string& emitterName, bool i
 //==================================================================================
 // 特定のエミッターの遅延時間を設定
 //==================================================================================
-void TakeC::EffectGroup::SetEmitterDelay(const std::string& emitterName, float delay) {
+void TakeC::EffectGroup::SetEmitterDelay(const std::string& emitterName,
+	float delay) {
 
 	for (auto& instance : emitterInstances_) {
 		if (instance.config.emitterName == emitterName) {
@@ -361,7 +388,8 @@ void TakeC::EffectGroup::SetEmitterDelay(const std::string& emitterName, float d
 //==================================================================================
 // エミッター個別の位置オフセットを設定
 //==================================================================================
-void TakeC::EffectGroup::SetEmitterOffset(const std::string& emitterName, const Vector3& offset) {
+void TakeC::EffectGroup::SetEmitterOffset(const std::string& emitterName,
+	const Vector3& offset) {
 
 	for (auto& instance : emitterInstances_) {
 		if (instance.config.emitterName == emitterName) {
@@ -374,7 +402,8 @@ void TakeC::EffectGroup::SetEmitterOffset(const std::string& emitterName, const 
 //==================================================================================
 // エミッター個別の回転オフセットを設定
 //==================================================================================
-void TakeC::EffectGroup::SetEmitterRotation(const std::string& emitterName, const Vector3& rotation) {
+void TakeC::EffectGroup::SetEmitterRotation(const std::string& emitterName,
+	const Vector3& rotation) {
 
 	for (auto& instance : emitterInstances_) {
 		if (instance.config.emitterName == emitterName) {
@@ -443,17 +472,21 @@ void EffectGroup::UpdateImGui([[maybe_unused]] const std::string& windowName) {
 	ImGui::Text("Emitters:");
 	for (size_t i = 0; i < emitterInstances_.size(); ++i) {
 		auto& instance = emitterInstances_[i];
-		if (ImGui::TreeNode((void*)(intptr_t)i, "%s", instance.config.emitterName.c_str())) {
+		if (ImGui::TreeNode((void*)(intptr_t)i, "%s",
+			instance.config.emitterName.c_str())) {
 			ImGui::Text("Active: %s", instance.isActive ? "Yes" : "No");
 			ImGui::Text("Elapsed: %.2f", instance.elapsedTime);
-			ImGui::DragFloat3("Position Offset", &instance.config.positionOffset.x, 0.1f);
-			ImGui::DragFloat3("Rotation Offset", &instance.config.rotationOffset.x, 0.1f);
+			ImGui::DragFloat3("Position Offset", &instance.config.positionOffset.x,
+				0.1f);
+			ImGui::DragFloat3("Rotation Offset", &instance.config.rotationOffset.x,
+				0.1f);
 			ImGui::TreePop();
 		}
 	}
 	// 設定保存
-	if(ImGui::Button("Save Config")){
-		TakeCFrameWork::GetJsonLoader()->SaveJsonData<EffectGroupConfig>(config_.effectName,config_);
+	if (ImGui::Button("Save Config")) {
+		TakeCFrameWork::GetJsonLoader()->SaveJsonData<EffectGroupConfig>(
+			config_.effectName, config_);
 	}
 #endif
 }

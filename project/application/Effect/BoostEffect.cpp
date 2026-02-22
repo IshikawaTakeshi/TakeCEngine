@@ -35,7 +35,7 @@ void BoostEffect::Initialize(GameCharacter* owner) {
 //===================================================================================
 void BoostEffect::Update() {
 
-	// 1. 親行列の取得と設定
+	// 親行列の取得と設定
 	// Skeletonからジョイントのワールド行列を計算して取得する必要がある
 	Matrix4x4 jointWorldMatrix = MatrixMath::MakeIdentity4x4();
 	bool hasParent = false;
@@ -51,18 +51,13 @@ void BoostEffect::Update() {
 		}
 	}
 
-	// 2. EffectGroupへの行列登録
+	// EffectGroupへの行列登録
 	if (hasParent) {
 		currentJointMatrix_ = jointWorldMatrix; // メンバ変数に保存
 		effectGroup_->SetParentMatrix(&currentJointMatrix_); // アドレスを渡す
 
 	} else {
 		effectGroup_->SetParentMatrix(nullptr);
-	}
-
-	// 3. 挙動制御 (既存コード)
-	if (isActive_) {
-		effectTime_ += TakeCFrameWork::GetDeltaTime();
 	}
 
 	// 4. 更新実行
@@ -90,7 +85,7 @@ void BoostEffect::SetIsActive(bool isActive) {
 		// 再生開始
 		// Meshの位置や回転がセットされていれば、その位置で再生開始
 		effectGroup_->Play(pointLightData_.position_);
-		effectTime_ = 0.0f;
+
 	} else {
 		// 停止
 		effectGroup_->Stop();
