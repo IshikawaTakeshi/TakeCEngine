@@ -1,10 +1,11 @@
 #pragma once
 #include "engine/3d/Particle/EffectGroupConfig.h"
-#include "engine/math/Vector3.h"
 #include "engine/Animation/Skeleton.h"
 #include "engine/Math/Matrix4x4.h"
 #include "engine/Math/Transform.h"
+#include "engine/math/Vector3.h"
 #include <string>
+
 //============================================================================
 // EffectGroup class
 //============================================================================
@@ -13,7 +14,6 @@ namespace TakeC {
 
 	class EffectGroup {
 	public:
-
 		EffectGroup() = default;
 		~EffectGroup() = default;
 
@@ -41,7 +41,7 @@ namespace TakeC {
 		/// <summary>
 		/// ImGui更新処理
 		/// </summary>
-		void UpdateImGui();
+		void UpdateImGui([[maybe_unused]] const std::string& windowName = nullptr);
 
 		//======================================================================
 		// エフェクト制御
@@ -139,7 +139,8 @@ namespace TakeC {
 		/// </summary>
 		void SetEmitterOffset(const std::string& emitterName, const Vector3& offset);
 
-		void SetEmitterRotation(const std::string& emitterName, const Vector3& rotation);
+		void SetEmitterRotation(const std::string& emitterName,
+			const Vector3& rotation);
 
 		//======================================================================
 		// accessors
@@ -157,14 +158,15 @@ namespace TakeC {
 		///---- setters ----------------
 
 		void SetEffectName(const std::string& name) { config_.effectName = name; }
-		void SetConfig(const EffectGroupConfig& config) { config_ = config; CreateEmitterInstances(); }
+		void SetConfig(const EffectGroupConfig& config) {
+			config_ = config;
+			CreateEmitterInstances();
+		}
 		// 親行列の設定
 		void SetParentMatrix(const Matrix4x4* parentMatrix);
-		void SetRotate(const Quaternion& rotation) { transform_.rotate = rotation; }
-
+		void SetRotate(const Quaternion& rotation);
 
 	private:
-
 		//======================================================================
 		// 内部処理
 		//======================================================================
@@ -206,12 +208,13 @@ namespace TakeC {
 
 		// トランスフォーム
 		QuaternionTransform transform_;
-		Vector3 direction_ = {0.0f, 1.0f, 0.0f}; // デフォルトは上向き
+		Vector3 direction_ = { 0.0f, 1.0f, 0.0f }; // デフォルトは上向き
 
 		// 状態
 		bool isPlaying_ = false;
 		bool isFinished_ = false;
 		bool isPaused_ = false;
+		bool isLoopingSuspended_ =false; // Stop()で停止された場合、ループを再開しないためのフラグ
 		float totalElapsedTime_ = 0.0f;
 
 		// 親行列
@@ -220,6 +223,4 @@ namespace TakeC {
 		// デルタタイム
 		float deltaTime_;
 	};
-}
-
-
+} // namespace TakeC

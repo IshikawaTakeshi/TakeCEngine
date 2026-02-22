@@ -41,7 +41,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//オブジェクト初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
-	
+
 	//コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
@@ -53,12 +53,12 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	camera_ = object3dCommon->GetDefaultCamera();
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
-	
+
 	object3d_->SetScale(playerData_.characterInfo.transform.scale);
 
 	weapons_.resize(WeaponUnit::Size);
 	weaponTypes_.resize(WeaponUnit::Size);
-	for(size_t i = 0; i < weaponTypes_.size(); i++) {
+	for (size_t i = 0; i < weaponTypes_.size(); i++) {
 		weaponTypes_[i] = playerData_.weaponData[i].weaponType;
 	}
 	chargeShootableUnits_.resize(4);
@@ -70,15 +70,14 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//backEmitter_->SetIsEmit(true);
 
 	//ブーストエフェクトの初期化
-	boostEffects_.resize(4);
-	for (int i = 0; i < 4; i++) {
+	boostEffects_.resize(3);
+	for (int i = 0; i < boostEffects_.size(); i++) {
 		boostEffects_[i] = std::make_unique<BoostEffect>();
 		boostEffects_[i]->Initialize(this);
 	}
-	boostEffects_[LEFT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LB.tip");
-	boostEffects_[RIGHT_BACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RB.tip");
-	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_LT.tip");
-	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "weaponJointPoint_RT.tip");
+	boostEffects_[LEFT_LEG]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "knees_left.002");
+	boostEffects_[RIGHT_LEG]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "knees_right.002");
+	boostEffects_[BACKPACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.001");
 
 
 	//BehaviorManagerの初期化
@@ -107,7 +106,7 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bul
 			weapons_[i] = std::make_unique<VerticalMissileLauncher>();
 			weapons_[i]->Initialize(object3dCommon, bulletManager);
 			weapons_[i]->SetOwnerObject(this);
-		} else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_MACHINE_GUN) {
+		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_MACHINE_GUN) {
 			//マシンガンの武器を初期化
 			weapons_[i] = std::make_unique<MachineGun>();
 			weapons_[i]->Initialize(object3dCommon, bulletManager);
@@ -226,7 +225,7 @@ void Player::Update() {
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
 	}
 
-	
+
 
 	//HPが0以下なら死亡処理
 	if (playerData_.characterInfo.health <= 0.0f) {
@@ -333,16 +332,16 @@ void Player::UpdateImGui() {
 	ImGui::SeparatorText("Collider Info");
 	ImGui::DragFloat3("offset", &playerData_.characterInfo.colliderInfo.offset.x, 0.01f);
 	ImGui::DragFloat3("halfSize", &playerData_.characterInfo.colliderInfo.halfSize.x, 0.01f);
-	
+
 
 	object3d_->UpdateImGui("Player Object3d");
 
 	// デバッグ用ダメージボタン
-	if(ImGui::Button("Damage 1000")) {
+	if (ImGui::Button("Damage 1000")) {
 		playerData_.characterInfo.health -= 1000.0f;
 	}
 	// プレイヤーデータの保存ボタン
-	if(ImGui::Button("Save Player Data")) {
+	if (ImGui::Button("Save Player Data")) {
 		SavePlayerData("Player");
 	}
 	ImGui::Separator();
@@ -354,7 +353,7 @@ void Player::UpdateImGui() {
 	collider_->UpdateImGui("Player");
 	// ブーストエフェクトのImGui更新
 	for (int i = 0; i < boostEffects_.size(); i++) {
-		boostEffects_[i]->UpdateImGui();
+		boostEffects_[i]->UpdateImGui("boostEffect" + std::to_string(i));
 	}
 
 	// 武器のImGui更新
@@ -487,7 +486,7 @@ void Player::OnCollisionAction(GameCharacter* other) {
 			}
 
 			collider_->SetColor({ 1.0f,1.0f,0.0f,1.0f }); // コライダーの色を黄色に変更
-		} 
+		}
 	}
 }
 
@@ -513,7 +512,7 @@ void Player::UpdateAttack() {
 				chargeShootTimer_.Update();
 				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();
-					camera_->RequestShake(ShakeCameraMode::VERTICAL,0.5f, 2.0f); // カメラシェイクをリクエスト
+					camera_->RequestShake(ShakeCameraMode::VERTICAL, 0.5f, 2.0f); // カメラシェイクをリクエスト
 
 					playerData_.characterInfo.isChargeShooting = false; // チャージ撃ち中フラグをリセット
 					chargeShootTimer_.Stop();
@@ -524,7 +523,7 @@ void Player::UpdateAttack() {
 		}
 	}
 
-	if(isUseWeapon_ == true) {
+	if (isUseWeapon_ == true) {
 		//武器を使用した場合は一定時間経過後にリセット
 		weaponUseTimer_ += deltaTime_;
 		if (weaponUseTimer_ >= weaponUseDuration_) {
@@ -550,7 +549,7 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 			if (inputProvider_->ReleaseAttackInput(actionInput) == true) {
 				//チャージ攻撃実行
 				weapon->ChargeAttack();
-				
+
 				if (weapon->StopShootOnly()) {
 					// 停止撃ち専用の場合はチャージ後に硬直状態へ
 					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
@@ -570,11 +569,11 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 				if (chargeShootTimer_.IsFinished() == true) {
 					chargeShootTimer_.Initialize(chargeShootDuration_, 0.0f);
 				}
-				
+
 			} else {
 				// 移動撃ち可能
 				weapon->Attack();
-				camera_->RequestShake(ShakeCameraMode::HORIZONTAL,0.1f, 1.0f); // カメラシェイクをリクエスト
+				camera_->RequestShake(ShakeCameraMode::HORIZONTAL, 0.1f, 1.0f); // カメラシェイクをリクエスト
 			}
 		}
 	} else if (inputProvider_->ReleaseAttackInput(actionInput) == true) {
@@ -592,7 +591,6 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 			}
 		}
 	}
-
 }
 
 //===================================================================================
@@ -629,9 +627,7 @@ void Player::UpdateEnergy() {
 				playerData_.characterInfo.energyInfo.energy = maxEnergy;
 			}
 		}
-
 	} else {
-
 		// オーバーヒートの処理
 		if (overheatTimer > 0.0f) {
 			overheatTimer -= deltaTime_;
@@ -650,46 +646,16 @@ void Player::RequestActiveBoostEffect() {
 
 	//ステップブーストの方向とスティックの向きによってアクティブにするエフェクトを変更
 	Vector3 moveDir = playerData_.characterInfo.moveDirection;
-	if (moveDir.Length() <= 0.1f) return;
+	if (moveDir.Length() <= 0.1f) {
+		//スティックがほぼニュートラルの場合はすべてのエフェクトを非アクティブにして終了
+		for (const auto& boostEffect : boostEffects_) {
+			boostEffect->SetIsActive(false);
+		}
 
-	// --- プレイヤーの向きをQuaternionから取得 ---
-	Vector3 localForward = Vector3(0.0f, 0.0f, 1.0f);
-	Vector3 playerForward = QuaternionMath::RotateVector(localForward, playerData_.characterInfo.transform.rotate);
-	playerForward.y = 0.0f; // 水平方向だけ見る
-	playerForward = Vector3Math::Normalize(playerForward);
+	} else {
 
-	// --- スティック方向との角度差を求める ---
-	float dot = Vector3Math::Dot(playerForward, moveDir);
-	float crossY = playerForward.x * moveDir.z - playerForward.z * moveDir.x;
-	float angle = atan2(crossY, dot) * (180.0f / std::numbers::pi_v<float>); // -180°～180°
-
-	// --- エフェクト制御 ---
-	if (angle >= -45.0f && angle < 45.0f) {
-		// 前方向
-		boostEffects_[LEFT_BACK]->SetIsActive(true);
-		boostEffects_[RIGHT_BACK]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
-	}
-	else if (angle >= 45.0f && angle < 135.0f) {
-		// 右方向
-		boostEffects_[LEFT_BACK]->SetIsActive(true);
-		boostEffects_[RIGHT_BACK]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
-	}
-	else if (angle <= -45.0f && angle > -135.0f) {
-		// 左方向
-		boostEffects_[LEFT_BACK]->SetIsActive(true);
-		boostEffects_[RIGHT_BACK]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
-	}
-	else {
-		// 後方向
-		boostEffects_[LEFT_BACK]->SetIsActive(true);
-		boostEffects_[RIGHT_BACK]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
+		for (const auto& boostEffect : boostEffects_) {
+			boostEffect->SetIsActive(true);
+		}
 	}
 }

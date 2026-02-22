@@ -51,7 +51,7 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 	particle.transforms_.scale = { attributes.scale.x,attributes.scale.y,attributes.scale.z };
 
 	// 回転の設定を条件分岐で明確に分ける
-	if (!attributes.isDirectional ){
+	if (!attributes.isDirectional) {
 		// ランダムな回転を設定
 		particle.transforms_.rotate = { 0.0f, 0.0f, distRotate(randomEngine) };
 	}
@@ -63,9 +63,67 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 		//方向に沿って移動
 		attributes.direction = directoin;
 		particle.velocity_ = attributes.direction * distVelocity(randomEngine);
-	} else{
+	}
+	else {
 		//ランダムな方向に飛ばす
 		particle.velocity_ = { distVelocity(randomEngine),distVelocity(randomEngine),distVelocity(randomEngine) };
+	}
+
+	if (attributes.alignRotationToEmitter) {
+
+		Vector3 dir = attributes.direction;
+		if (Vector3Math::LengthSq(dir) > 1e-6f) {
+
+			Vector3 to = Vector3Math::Normalize(dir);
+
+			// パーティクルの基準前方向（ローカル +Z を前と仮定）
+			Vector3 from = { 0.0f, 0.0f, 1.0f };
+			// PrimitiveTypeごとのデフォルトの向きに合わせて基準ベクトルを変更
+			switch (particlePreset_.primitiveType) {
+			case PRIMITIVE_CONE:
+			case PRIMITIVE_CYLINDER:
+				from = { 0.0f, 1.0f, 0.0f }; // 円錐・円柱はY軸が高さ方向
+				break;
+			case PRIMITIVE_PLANE:
+				from = { 0.0f, 0.0f, -1.0f }; // Planeは法線が-Zを向いている
+				break;
+			default:
+				from = { 0.0f, 0.0f, 1.0f }; // その他（Ring, Sphere, Cube）はZ軸基準
+				break;
+			}
+
+			float d = Vector3Math::Dot(from, to);
+			d = std::clamp(d, -1.0f, 1.0f);
+
+			Quaternion targetRotate;
+
+			if (d > 1.0f - 1e-5f) {
+				targetRotate = QuaternionMath::IdentityQuaternion();
+			}
+			else if (d < -1.0f + 1e-5f) {
+				// 真逆(180度)は軸が不定なので、fromと直交する軸を適当に選ぶ
+				Vector3 ortho = (std::fabs(from.y) < 0.999f) ? Vector3{ 0,1,0 } : Vector3{ 1,0,0 };
+				Vector3 axis = Vector3Math::Normalize(Vector3Math::Cross(from, ortho));
+				targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion(axis, std::numbers::pi_v<float>);
+			}
+			else {
+				Vector3 axis = Vector3Math::Cross(from, to);
+				axis = Vector3Math::Normalize(axis);
+				float angle = std::acos(d);
+				targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion(axis, angle);
+			}
+
+			Quaternion& current = particle.transforms_.rotate;
+
+			// shortest-arc
+			if (QuaternionMath::Dot(current, targetRotate) < 0.0f) {
+				targetRotate = -targetRotate;
+			}
+
+			current = Easing::Slerp(current, targetRotate, 0.1f); // 例: 0.05f〜0.3f
+			current = QuaternionMath::Normalize(current);
+		}
+
 	}
 
 
@@ -76,7 +134,8 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 			attributes.color.y,
 			attributes.color.z,
 			1.0f };
-	} else {
+	}
+	else {
 		//ランダムな色にする場合
 		particle.color_ = { distColor(randomEngine),distColor(randomEngine),distColor(randomEngine),1.0f };
 	}
@@ -103,14 +162,14 @@ Particle BaseParticleGroup::MakeNewParticleWithEmitter(uint32_t emitterID, std::
 //=============================================================================
 // パーティクルの発生
 //=============================================================================
-std::list<Particle> BaseParticleGroup::Emit(const Vector3& emitterPos,const Vector3& direction, uint32_t particleCount) {
+std::list<Particle> BaseParticleGroup::Emit(const Vector3& emitterPos, const Vector3& direction, uint32_t particleCount) {
 	//ランダムエンジン
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
 	std::list<Particle> particles;
 	for (uint32_t index = 0; index < particleCount; ++index) {
-		particles.push_back(MakeNewParticle(randomEngine, emitterPos,direction));
+		particles.push_back(MakeNewParticle(randomEngine, emitterPos, direction));
 	}
 	return particles;
 }
@@ -136,7 +195,7 @@ void BaseParticleGroup::SpliceParticles(std::list<Particle> particles) {
 void BaseParticleGroup::SetPreset(const ParticlePreset& preset) {
 	//プリセットの設定
 	particlePreset_ = preset;
-	
+
 }
 
 void BaseParticleGroup::SetEmitterPosition(const Vector3& position) {

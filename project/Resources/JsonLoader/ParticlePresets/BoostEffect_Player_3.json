@@ -1,5 +1,6 @@
 {
     "attributes": {
+        "alignRotationToEmitter": true,
         "color": {
             "x": 0.3921568691730499,
             "y": 0.2862745225429535,
@@ -17,13 +18,13 @@
         "editColor": true,
         "emitCount": 10,
         "enableFollowEmitter": true,
+        "enableLighting": false,
         "frequency": 0.10000000149011612,
         "isBillboard": false,
         "isDirectional": true,
         "isEmitterTrail": false,
         "isParticleTrail": false,
         "isTraslate": true,
-        "enableLighting": false,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
             "max": 0.5,
@@ -39,9 +40,9 @@
             "min": -3.1415927410125732
         },
         "scale": {
-            "x": 1.340000033378601,
-            "y": 4.989999771118164,
-            "z": 1.2599999904632568
+            "x": 0.49000000953674316,
+            "y": 6.139999866485596,
+            "z": 0.5
         },
         "scaleEasingType": 0,
         "scaleRange": {
@@ -68,7 +69,7 @@
     "textureAnimationParam": {
         "scrollSpeed": {
             "x": 0.0,
-            "y": -10.0
+            "y": 10.0
         },
         "wrapU": true,
         "wrapV": true
