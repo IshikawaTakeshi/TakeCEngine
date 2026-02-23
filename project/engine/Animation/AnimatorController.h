@@ -1,53 +1,43 @@
 #pragma once
 #include "engine/Animation/AnimationState.h"
-
-class Skeleton;
+#include "engine/Animation/Skeleton.h"
 
 //============================================================================
-// AnimatorController
+// AnimatorController class
 //============================================================================
 class AnimatorController {
 public:
-	AnimatorController() = default;
-	~AnimatorController() = default;
+
+	//========================================================================
+	// functions
+	//========================================================================
 
 	/// <summary>
-	/// 初期化。対象のSkeletonを設定する
+	/// 初期化
 	/// </summary>
+	/// <param name="skeleton">スケルトンへのポインタ</param>
 	void Initialize(Skeleton* skeleton);
 
 	/// <summary>
-	/// 毎フレーム呼ぶ。アニメ時間を進め、ブレンドしてSkeletonに適用する
+	/// アニメーション遷移の開始
 	/// </summary>
-	/// <param name="dt">デルタタイム（秒）</param>
+	/// <param name="animation">遷移先アニメーション</param>
+	/// <param name="blendDuration">ブレンドにかかる時間（秒）</param>
+	void TransitionTo(Animation* animation, float blendDuration);
+
+	/// <summary>
+	/// 更新（スケルトンにブレンド済みアニメーションを適用）
+	/// </summary>
+	/// <param name="dt">デルタタイム</param>
 	void Update(float dt);
 
-	/// <summary>
-	/// アニメーションの遷移をリクエストする
-	/// </summary>
-	void TransitionTo(Animation* animation, float blendDuration = 0.2f);
-
-	//-------------------------------------------------------------------
-	// accessors
-	//-------------------------------------------------------------------
-
-	/// <summary>
-	/// アニメーターが有効かどうか（animationが1つ以上セットされている）
-	/// </summary>
-	bool IsValid() const { return currentState_.IsValid(); }
-
-	/// <summary>
-	/// 現在の再生時間取得
-	/// </summary>
-	float GetCurrentTime() const { return currentState_.time; }
-
 private:
-	Skeleton* skeleton_ = nullptr;
 
-	AnimationState currentState_; // 現在再生中のアニメ
-	AnimationState nextState_;    // ブレンド先のアニメ
+	Skeleton* skeleton_ = nullptr;     //スケルトンへの非所有ポインタ
+	AnimationState currentState_;      //現在のアニメーション状態
+	AnimationState nextState_;         //遷移先のアニメーション状態
+	float blendTimer_ = 0.0f;         //ブレンド経過時間
+	float blendDuration_ = 0.0f;      //ブレンド時間
+	bool isBlending_ = false;         //ブレンド中かどうか
 
-	float blendTimer_ = 0.0f;    // ブレンド経過時間
-	float blendDuration_ = 0.0f; // ブレンド全体時間
-	bool isBlending_ = false;    // ブレンド中フラグ
 };

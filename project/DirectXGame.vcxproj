@@ -224,6 +224,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Particle\BaseParticleGroup.cpp" />
     <ClCompile Include="engine\2d\WireFrame.cpp" />
     <ClCompile Include="engine\Animation\Animator.cpp" />
+    <ClCompile Include="engine\Animation\AnimatorController.cpp" />
     <ClCompile Include="engine\Animation\Skeleton.cpp" />
     <ClCompile Include="engine\Animation\SkinCluster.cpp" />
     <ClCompile Include="engine\Input\Gamepad.cpp" />
@@ -330,6 +331,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\UI\ActionButtonICon.h" />
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
     <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h" />
+    <ClInclude Include="application\Entity\AnimationMapper.h" />
     <ClInclude Include="application\Entity\GameCharacterInfo.h" />
     <ClInclude Include="application\Entity\GameCharacterBehavior.h" />
     <ClInclude Include="application\Entity\Player\PlayerData.h" />
@@ -425,6 +427,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Particle\BaseParticleGroup.h" />
     <ClInclude Include="engine\2d\WireFrame.h" />
     <ClInclude Include="engine\Animation\Animator.h" />
+    <ClInclude Include="engine\Animation\AnimationState.h" />
+    <ClInclude Include="engine\Animation\AnimatorController.h" />
     <ClInclude Include="engine\Animation\Keyflame.h" />
     <ClInclude Include="engine\Animation\NodeAnimation.h" />
     <ClInclude Include="engine\Animation\Skeleton.h" />

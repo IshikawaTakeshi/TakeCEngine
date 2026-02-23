@@ -98,6 +98,26 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	behaviorManager_->Initialize(inputProvider_);
 	behaviorManager_->InitializeBehaviors(enemyData_.characterInfo);
 
+	// アニメーションマッパーの登録
+	animationMapper_.Register(GameCharacterBehavior::RUNNING,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "running"), 0.2f);
+	animationMapper_.Register(GameCharacterBehavior::FLOATING,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"), 0.2f);
+	animationMapper_.Register(GameCharacterBehavior::JUMP,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "runnning.001"), 0.15f);
+	animationMapper_.Register(GameCharacterBehavior::STEPBOOST,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "running"), 0.1f);
+	animationMapper_.Register(GameCharacterBehavior::CHARGESHOOT_STUN,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"), 0.2f);
+	animationMapper_.Register(GameCharacterBehavior::DEAD,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"), 0.3f);
+
+	// アニメーションコントローラの初期化
+	animatorController_.Initialize(object3d_->GetModel()->GetSkeleton());
+
+	// BehaviorManagerにアニメーションコンポーネントを設定
+	behaviorManager_->SetAnimationComponents(&animatorController_, &animationMapper_);
+
 	// ブーストエフェクトの初期化
 	boostEffects_.resize(3);
 	for (int i = 0; i < boostEffects_.size(); i++) {
@@ -323,6 +343,8 @@ void Enemy::Update() {
 		QuaternionMath::ToEuler(enemyData_.characterInfo.transform.rotate);
 	object3d_->SetTranslate(enemyData_.characterInfo.transform.translate);
 	object3d_->SetRotate(eulerRotate);
+	//アニメーションコントローラの更新（object3d_->Update()より前に呼ぶ）
+	animatorController_.Update(deltaTime_);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 

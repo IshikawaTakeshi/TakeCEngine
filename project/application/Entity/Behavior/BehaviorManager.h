@@ -4,6 +4,8 @@
 #include <unordered_map>
 
 class baseInputProvider;
+class AnimatorController;
+class AnimationMapper;
 
 //============================================================================
 // BehaviorManager class
@@ -21,6 +23,13 @@ public:
 	void UpdateImGui();
 	// ビヘイビアの遷移リクエスト
 	void RequestBehavior(Behavior nextBehavior);
+
+	/// <summary>
+	/// アニメーションコンポーネントの設定
+	/// </summary>
+	/// <param name="animatorController">AnimatorControllerへのポインタ</param>
+	/// <param name="animationMapper">AnimationMapperへのポインタ</param>
+	void SetAnimationComponents(AnimatorController* animatorController, AnimationMapper* animationMapper);
 
 	//----- getter ---------------------------
 
@@ -48,4 +57,9 @@ private:
 	bool isChanged_ = false;
 	// 入力プロバイダ
 	baseInputProvider* inputProvider_ = nullptr;
+
+	// アニメーションコントローラ（非所有）
+	AnimatorController* animatorController_ = nullptr;
+	// アニメーションマッパー（非所有）
+	AnimationMapper* animationMapper_ = nullptr;
 };

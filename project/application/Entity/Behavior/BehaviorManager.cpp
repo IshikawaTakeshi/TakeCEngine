@@ -6,6 +6,8 @@
 #include "application/Entity/Behavior/BehaviorStepBoost.h"
 #include "application/Entity/Behavior/BehaviorChargeShootStun.h"
 #include "application/Entity/Behavior/BehaviorDead.h"
+#include "application/Entity/AnimationMapper.h"
+#include "engine/Animation/AnimatorController.h"
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/Utility/StringUtility.h"
 
@@ -48,6 +50,15 @@ void BehaviorManager::Update(PlayableCharacterInfo& characterContext) {
 		currentBehavior_ = std::move(behaviors_[nextBehavior_]);
 		currentBehaviorType_ = nextBehavior_;
 		currentBehavior_->Initialize(characterContext);
+
+		// アニメーション遷移を開始
+		if (animatorController_ && animationMapper_) {
+			const AnimationEntry* entry = animationMapper_->Find(currentBehaviorType_);
+			if (entry && entry->animation) {
+				animatorController_->TransitionTo(entry->animation, entry->blendDuration);
+			}
+		}
+
 		isChanged_ = false;
 	}
 	// 現在のビヘイビアを更新
@@ -90,4 +101,20 @@ void BehaviorManager::CreateDefaultBehaviors() {
 	behaviors_.emplace(GameCharacterBehavior::STEPBOOST, std::make_unique<BehaviorStepBoost>(inputProvider_));
 	behaviors_.emplace(GameCharacterBehavior::CHARGESHOOT_STUN, std::make_unique<BehaviorChargeShootStun>(inputProvider_));
 	behaviors_.emplace(GameCharacterBehavior::DEAD, std::make_unique<BehaviorDead>(inputProvider_));
+}
+
+//=====================================================================================
+// アニメーションコンポーネントの設定
+//=====================================================================================
+void BehaviorManager::SetAnimationComponents(AnimatorController* animatorController, AnimationMapper* animationMapper) {
+	animatorController_ = animatorController;
+	animationMapper_ = animationMapper;
+
+	// 現在のビヘイビアに対応するアニメーションで初期遷移を行う
+	if (animatorController_ && animationMapper_) {
+		const AnimationEntry* entry = animationMapper_->Find(currentBehaviorType_);
+		if (entry && entry->animation) {
+			animatorController_->TransitionTo(entry->animation, 0.0f);
+		}
+	}
 }

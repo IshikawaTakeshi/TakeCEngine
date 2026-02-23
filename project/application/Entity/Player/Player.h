@@ -11,9 +11,11 @@
 #include "application/Weapon/Bullet/BulletManager.h"
 #include "application/Entity/GameCharacterBehavior.h"
 #include "application/Entity/GameCharacterInfo.h"
+#include "application/Entity/AnimationMapper.h"
 #include "application/Provider/PlayerInputProvider.h"
 #include "application/Entity/Behavior/BehaviorManager.h"
 #include "application/Effect/BoostEffect.h"
+#include "engine/Animation/AnimatorController.h"
 
 //==================================================================================
 // Player class
@@ -129,6 +131,11 @@ private:
 	std::unique_ptr<BehaviorManager> behaviorManager_ = nullptr;
 	//プレイヤー入力プロバイダ(借りる)
 	PlayerInputProvider* inputProvider_ = nullptr;
+
+	//アニメーションコントローラ
+	AnimatorController animatorController_;
+	//アニメーションマッパー
+	AnimationMapper animationMapper_;
 
 	//プレイヤーの武器
 	std::vector<std::unique_ptr<BaseWeapon>> weapons_;

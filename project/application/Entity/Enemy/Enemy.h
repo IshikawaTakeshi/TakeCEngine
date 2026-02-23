@@ -2,6 +2,7 @@
 #include "engine/3d/Particle/ParticleEmitter.h"
 #include "engine/Entity/GameCharacter.h"
 #include "engine/camera/Camera.h"
+#include "engine/Animation/AnimatorController.h"
 #include <chrono>
 #include <optional>
 #include <random>
@@ -9,6 +10,7 @@
 
 #include "application/Effect/BoostEffect.h"
 #include "application/Effect/DeadEffect.h"
+#include "application/Entity/AnimationMapper.h"
 #include "application/Entity/Behavior/BehaviorManager.h"
 #include "application/Entity/Enemy/AIBrainSystem.h"
 #include "application/Entity/Enemy/BulletSensor.h"
@@ -176,6 +178,11 @@ private:
 	std::unique_ptr<BehaviorManager> behaviorManager_ = nullptr;
 	// プレイヤー入力プロバイダ
 	EnemyInputProvider* inputProvider_ = nullptr;
+
+	// アニメーションコントローラ
+	AnimatorController animatorController_;
+	// アニメーションマッパー
+	AnimationMapper animationMapper_;
 
 	// プレイヤーの武器
 	std::vector<std::unique_ptr<BaseWeapon>> weapons_;
