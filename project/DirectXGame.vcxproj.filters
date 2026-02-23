@@ -554,6 +554,8 @@
     <ClCompile Include="engine\Base\UIManager.cpp" />
     <ClCompile Include="engine\Base\EventManager.cpp" />
     <ClCompile Include="application\UI\WarningUI.cpp" />
+    <ClCompile Include="application\Entity\Animation\AnimationMapper.cpp" />
+    <ClCompile Include="engine\Animation\AnimatorController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1149,6 +1151,9 @@
     <ClInclude Include="engine\Base\UIManager.h" />
     <ClInclude Include="engine\Base\EventManager.h" />
     <ClInclude Include="application\UI\WarningUI.h" />
+    <ClInclude Include="engine\Animation\AnimationState.h" />
+    <ClInclude Include="engine\Animation\AnimatorController.h" />
+    <ClInclude Include="application\Entity\Animation\AnimationMapper.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
