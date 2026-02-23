@@ -38,7 +38,7 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	scissorRect_.top = 0;
 	
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	viewport_.Width = 0.0f;
 	viewport_.Height = 0.0f;
@@ -272,7 +272,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 	//初期化完了のログを出す
 	Logger::Log("Complete create D3D12Device!!!\n");
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ID3D12InfoQueue* infoQueue = nullptr;
 	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
 		//ヤバいエラーの時に止まる
@@ -634,7 +634,7 @@ ComPtr<ID3D12Resource> DirectXCommon::CreateTextureResourceUAV(ComPtr<ID3D12Devi
 }
 
 void DirectXCommon::DrawFPS() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	float currentFPS = GetCurrentFPS();
 	ImGui::Text("FPS: %.2f", currentFPS);
 #endif // _DEBUG

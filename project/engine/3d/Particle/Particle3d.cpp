@@ -120,7 +120,7 @@ void Particle3d::Update() {
 //=============================================================================
 
 void Particle3d::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	ParticleAttributes& attributes = particlePreset_.attribute;
 

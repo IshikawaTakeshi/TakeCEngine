@@ -36,7 +36,7 @@ void Dissolve::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srv
 // ImGuiの更新
 //=============================================================================
 void Dissolve::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	//Dissolve設定
 	if(ImGui::TreeNode("Dissolve")) {

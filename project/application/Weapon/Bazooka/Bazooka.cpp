@@ -64,9 +64,9 @@ void Bazooka::Update() {
 
 	//親スケルトンのジョイントに追従させる
 	if (parentSkeleton_ && !parentJointName_.empty()) {
-		Matrix4x4 characterWorldMatrix = ownerObject_->GetObject3d()->GetWorldMatrix();
+		const Matrix4x4& characterWorldMatrix = ownerObject_->GetObject3d()->GetWorldMatrix();
 		auto jointWorldMatrixOpt = parentSkeleton_->GetJointWorldMatrix(parentJointName_, characterWorldMatrix);
-		object3d_->SetParent(*jointWorldMatrixOpt);
+		object3d_->SetParent(jointWorldMatrixOpt.value());
 	}
 
 	//3Dオブジェクトの更新

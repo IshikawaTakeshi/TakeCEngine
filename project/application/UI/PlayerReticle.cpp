@@ -79,7 +79,7 @@ void PlayerReticle::Draw() {
 //　ImGuiの更新
 //===================================================================================
 void PlayerReticle::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	reticleSprite_->UpdateImGui("Reticle Sprite");
 	predictedImpactReticle_->UpdateImGui("Predicted Impact Reticle Sprite");
 #endif

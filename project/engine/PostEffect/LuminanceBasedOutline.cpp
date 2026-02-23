@@ -33,7 +33,7 @@ void LuminanceBasedOutline::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::Sr
 //=============================================================================
 void LuminanceBasedOutline::UpdateImGui() {
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	// Info表示
 	if (ImGui::TreeNode("LuminanceBasedOutline")) {

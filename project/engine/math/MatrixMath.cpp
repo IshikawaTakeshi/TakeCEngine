@@ -7,12 +7,7 @@
 //行列の加法
 //============================================================================
 Matrix4x4 MatrixMath::Add(const Matrix4x4& m1, const Matrix4x4& m2) {
-	Matrix4x4 result = {
-		m1.m[0][0] + m2.m[0][0],m1.m[0][1] + m2.m[0][1],m1.m[0][2] + m2.m[0][2],m1.m[0][3] + m2.m[0][3],
-		m1.m[1][0] + m2.m[1][0],m1.m[1][1] + m2.m[1][1],m1.m[1][2] + m2.m[1][2],m1.m[1][3] + m2.m[1][3],
-		m1.m[2][0] + m2.m[2][0],m1.m[2][1] + m2.m[2][1],m1.m[2][2] + m2.m[2][2],m1.m[2][3] + m2.m[2][3],
-		m1.m[3][0] + m2.m[3][0],m1.m[3][1] + m2.m[3][1],m1.m[3][2] + m2.m[3][2],m1.m[3][3] + m2.m[3][3]
-	};
+	Matrix4x4 result = m1 + m2;
 	return result;
 }
 
@@ -20,12 +15,7 @@ Matrix4x4 MatrixMath::Add(const Matrix4x4& m1, const Matrix4x4& m2) {
 //行列の減法
 //============================================================================
 Matrix4x4 MatrixMath::Subtract(const Matrix4x4& m1, const Matrix4x4& m2) {
-	Matrix4x4 result = {
-		m1.m[0][0] - m2.m[0][0],m1.m[0][1] - m2.m[0][1],m1.m[0][2] - m2.m[0][2],m1.m[0][3] - m2.m[0][3],
-		m1.m[1][0] - m2.m[1][0],m1.m[1][1] - m2.m[1][1],m1.m[1][2] - m2.m[1][2],m1.m[1][3] - m2.m[1][3],
-		m1.m[2][0] - m2.m[2][0],m1.m[2][1] - m2.m[2][1],m1.m[2][2] - m2.m[2][2],m1.m[2][3] - m2.m[2][3],
-		m1.m[3][0] - m2.m[3][0],m1.m[3][1] - m2.m[3][1],m1.m[3][2] - m2.m[3][2],m1.m[3][3] - m2.m[3][3]
-	};
+	Matrix4x4 result = m1 - m2;
 	return result;
 }
 
@@ -160,12 +150,11 @@ Matrix4x4 MatrixMath::Transpose(const Matrix4x4& m) {
 //単位行列の作成
 //============================================================================
 Matrix4x4 MatrixMath::MakeIdentity4x4() {
-	Matrix4x4 result = {
-		1,0,0,0,
-		0,1,0,0,
-		0,0,1,0,
-		0,0,0,1
-	};
+	Matrix4x4 result = {};
+	result.m[0][0] = 1.0f;
+	result.m[1][1] = 1.0f;
+	result.m[2][2] = 1.0f;
+	result.m[3][3] = 1.0f;
 	return result;
 }
 
@@ -173,12 +162,14 @@ Matrix4x4 MatrixMath::MakeIdentity4x4() {
 //平行移動行列
 //============================================================================
 Matrix4x4 MatrixMath::MakeTranslateMatrix(const Vector3& translate) {
-	Matrix4x4 result = {
-		1.0f,0,0,0,
-		0,1.0f,0,0,
-		0,0,1.0f,0,
-		translate.x,translate.y,translate.z,1.0f
-	};
+	Matrix4x4 result = {};
+	result.m[0][0] = 1.0f;
+	result.m[1][1] = 1.0f;
+	result.m[2][2] = 1.0f;
+	result.m[3][3] = 1.0f;
+	result.m[3][0] = translate.x;
+	result.m[3][1] = translate.y;
+	result.m[3][2] = translate.z;
 	return result;
 }
 
@@ -186,12 +177,11 @@ Matrix4x4 MatrixMath::MakeTranslateMatrix(const Vector3& translate) {
 //拡大縮小行列
 //============================================================================
 Matrix4x4 MatrixMath::MakeScaleMatrix(const Vector3& scale) {
-	Matrix4x4 result = {
-		scale.x,0,0,0,
-		0,scale.y,0,0,
-		0,0,scale.z,0,
-		0,0,0,1
-	};
+	Matrix4x4 result = {};
+	result.m[0][0] = scale.x;
+	result.m[1][1] = scale.y;
+	result.m[2][2] = scale.z;
+	result.m[3][3] = 1.0f;
 	return result;
 }
 
@@ -199,12 +189,13 @@ Matrix4x4 MatrixMath::MakeScaleMatrix(const Vector3& scale) {
 //X軸回転行列
 //============================================================================
 Matrix4x4 MatrixMath::MakeRotateXMatrix(float radian) {
-	Matrix4x4 result = {
-		1.0f,0,0,0,
-		0,std::cos(radian),std::sin(radian),0,
-		0,std::sin(-radian),std::cos(radian),0,
-		0,0,0,1.0f
-	};
+	Matrix4x4 result = {};
+	result.m[0][0] = 1.0f;
+	result.m[1][1] = std::cos(radian);
+	result.m[1][2] = std::sin(radian);
+	result.m[2][1] = std::sin(-radian);
+	result.m[2][2] = std::cos(radian);
+	result.m[3][3] = 1.0f;
 	return result;
 }
 
@@ -212,12 +203,13 @@ Matrix4x4 MatrixMath::MakeRotateXMatrix(float radian) {
 //Y軸回転行列
 //============================================================================
 Matrix4x4 MatrixMath::MakeRotateYMatrix(float radian) {
-	Matrix4x4 result = {
-		std::cos(radian),0,std::sin(-radian),0,
-		0,1.0f,0,0,
-		std::sin(radian),0,std::cos(radian),0,
-		0,0,0,1.0f
-	};
+	Matrix4x4 result = {};
+	result.m[0][0] = std::cos(radian);
+	result.m[0][2] = std::sin(-radian);
+	result.m[1][1] = 1.0f;
+	result.m[2][0] = std::sin(radian);
+	result.m[2][2] = std::cos(radian);
+	result.m[3][3] = 1.0f;
 	return result;
 }
 
@@ -225,12 +217,13 @@ Matrix4x4 MatrixMath::MakeRotateYMatrix(float radian) {
 //Z軸回転行列
 //============================================================================
 Matrix4x4 MatrixMath::MakeRotateZMatrix(float radian) {
-	Matrix4x4 result = {
-		std::cos(radian),std::sin(radian),0,0,
-		std::sin(-radian),std::cos(radian),0,0,
-		0,0,1.0f,0,
-		0,0,0,1.0f
-	};
+	Matrix4x4 result = {};
+	result.m[0][0] = std::cos(radian);
+	result.m[0][1] = std::sin(radian);
+	result.m[1][0] = std::sin(-radian);
+	result.m[1][1] = std::cos(radian);
+	result.m[2][2] = 1.0f;
+	result.m[3][3] = 1.0f;
 	return result;
 }
 
@@ -310,23 +303,39 @@ Matrix4x4 MatrixMath::MakeRotateMatrix(const Quaternion& quaternion) {
 //============================================================================
 Matrix4x4 MatrixMath::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
 	Matrix4x4 rotateMatrix = MakeRotateMatrix(rotate);
-	Matrix4x4 result = {
-		scale.x * rotateMatrix.m[0][0],scale.x * rotateMatrix.m[0][1],scale.x * rotateMatrix.m[0][2],0,
-		scale.y * rotateMatrix.m[1][0],scale.y * rotateMatrix.m[1][1],scale.y * rotateMatrix.m[1][2],0,
-		scale.z * rotateMatrix.m[2][0],scale.z * rotateMatrix.m[2][1],scale.z * rotateMatrix.m[2][2],0,
-		translate.x,translate.y,translate.z,1.0f
-	};
+	Matrix4x4 result = {};
+	result.m[0][0] = scale.x * rotateMatrix.m[0][0];
+	result.m[0][1] = scale.x * rotateMatrix.m[0][1];
+	result.m[0][2] = scale.x * rotateMatrix.m[0][2];
+	result.m[1][0] = scale.y * rotateMatrix.m[1][0];
+	result.m[1][1] = scale.y * rotateMatrix.m[1][1];
+	result.m[1][2] = scale.y * rotateMatrix.m[1][2];
+	result.m[2][0] = scale.z * rotateMatrix.m[2][0];
+	result.m[2][1] = scale.z * rotateMatrix.m[2][1];
+	result.m[2][2] = scale.z * rotateMatrix.m[2][2];
+	result.m[3][0] = translate.x;
+	result.m[3][1] = translate.y;
+	result.m[3][2] = translate.z;
+	result.m[3][3] = 1.0f;
 	return result;
 }
 
 Matrix4x4 MatrixMath::MakeAffineMatrix(const EulerTransform& transform) {
 	Matrix4x4 rotateMatrix = MakeRotateMatrix(transform.rotate);
-	Matrix4x4 result = {
-		transform.scale.x * rotateMatrix.m[0][0],transform.scale.x * rotateMatrix.m[0][1],transform.scale.x * rotateMatrix.m[0][2],0,
-		transform.scale.y * rotateMatrix.m[1][0],transform.scale.y * rotateMatrix.m[1][1],transform.scale.y * rotateMatrix.m[1][2],0,
-		transform.scale.z * rotateMatrix.m[2][0],transform.scale.z * rotateMatrix.m[2][1],transform.scale.z * rotateMatrix.m[2][2],0,
-		transform.translate.x,transform.translate.y,transform.translate.z,1.0f
-	};
+	Matrix4x4 result = {};
+	result.m[0][0] = transform.scale.x * rotateMatrix.m[0][0];
+	result.m[0][1] = transform.scale.x * rotateMatrix.m[0][1];
+	result.m[0][2] = transform.scale.x * rotateMatrix.m[0][2];
+	result.m[1][0] = transform.scale.y * rotateMatrix.m[1][0];
+	result.m[1][1] = transform.scale.y * rotateMatrix.m[1][1];
+	result.m[1][2] = transform.scale.y * rotateMatrix.m[1][2];
+	result.m[2][0] = transform.scale.z * rotateMatrix.m[2][0];
+	result.m[2][1] = transform.scale.z * rotateMatrix.m[2][1];
+	result.m[2][2] = transform.scale.z * rotateMatrix.m[2][2];
+	result.m[3][0] = transform.translate.x;
+	result.m[3][1] = transform.translate.y;
+	result.m[3][2] = transform.translate.z;
+	result.m[3][3] = 1.0f;
 	return result;
 }
 
@@ -335,23 +344,39 @@ Matrix4x4 MatrixMath::MakeAffineMatrix(const EulerTransform& transform) {
 //============================================================================
 Matrix4x4 MatrixMath::MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate) {
 	Matrix4x4 rotateMatrix = MakeRotateMatrix(rotate);
-	Matrix4x4 result = {
-		scale.x * rotateMatrix.m[0][0],scale.x * rotateMatrix.m[0][1],scale.x * rotateMatrix.m[0][2],0,
-		scale.y * rotateMatrix.m[1][0],scale.y * rotateMatrix.m[1][1],scale.y * rotateMatrix.m[1][2],0,
-		scale.z * rotateMatrix.m[2][0],scale.z * rotateMatrix.m[2][1],scale.z * rotateMatrix.m[2][2],0,
-		translate.x,translate.y,translate.z,1.0f
-	};
+	Matrix4x4 result = {};
+	result.m[0][0] = scale.x * rotateMatrix.m[0][0];
+	result.m[0][1] = scale.x * rotateMatrix.m[0][1];
+	result.m[0][2] = scale.x * rotateMatrix.m[0][2];
+	result.m[1][0] = scale.y * rotateMatrix.m[1][0];
+	result.m[1][1] = scale.y * rotateMatrix.m[1][1];
+	result.m[1][2] = scale.y * rotateMatrix.m[1][2];
+	result.m[2][0] = scale.z * rotateMatrix.m[2][0];
+	result.m[2][1] = scale.z * rotateMatrix.m[2][1];
+	result.m[2][2] = scale.z * rotateMatrix.m[2][2];
+	result.m[3][0] = translate.x;
+	result.m[3][1] = translate.y;
+	result.m[3][2] = translate.z;
+	result.m[3][3] = 1.0f;
 	return result;
 }
 
 Matrix4x4 MatrixMath::MakeAffineMatrix(const QuaternionTransform& transform) {
 	Matrix4x4 rotateMatrix = MakeRotateMatrix(transform.rotate);
-	Matrix4x4 result = {
-		transform.scale.x * rotateMatrix.m[0][0],transform.scale.x * rotateMatrix.m[0][1],transform.scale.x * rotateMatrix.m[0][2],0,
-		transform.scale.y * rotateMatrix.m[1][0],transform.scale.y * rotateMatrix.m[1][1],transform.scale.y * rotateMatrix.m[1][2],0,
-		transform.scale.z * rotateMatrix.m[2][0],transform.scale.z * rotateMatrix.m[2][1],transform.scale.z * rotateMatrix.m[2][2],0,
-		transform.translate.x,transform.translate.y,transform.translate.z,1.0f
-	};
+	Matrix4x4 result = {};
+	result.m[0][0] = transform.scale.x * rotateMatrix.m[0][0];
+	result.m[0][1] = transform.scale.x * rotateMatrix.m[0][1];
+	result.m[0][2] = transform.scale.x * rotateMatrix.m[0][2];
+	result.m[1][0] = transform.scale.y * rotateMatrix.m[1][0];
+	result.m[1][1] = transform.scale.y * rotateMatrix.m[1][1];
+	result.m[1][2] = transform.scale.y * rotateMatrix.m[1][2];
+	result.m[2][0] = transform.scale.z * rotateMatrix.m[2][0];
+	result.m[2][1] = transform.scale.z * rotateMatrix.m[2][1];
+	result.m[2][2] = transform.scale.z * rotateMatrix.m[2][2];
+	result.m[3][0] = transform.translate.x;
+	result.m[3][1] = transform.translate.y;
+	result.m[3][2] = transform.translate.z;
+	result.m[3][3] = 1.0f;
 	return result;
 }
 
@@ -359,12 +384,13 @@ Matrix4x4 MatrixMath::MakeAffineMatrix(const QuaternionTransform& transform) {
 //透視投影行列
 //============================================================================
 Matrix4x4 MatrixMath::MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
-	Matrix4x4 result = {
-		1.0f / aspectRatio * (1.0f / std::tan(fovY / 2.0f)),0,0,0,
-		0,1.0f / std::tan(fovY / 2.0f),0,0,
-		0,0,farClip / (farClip - nearClip),1.0f,
-		0,0,-(nearClip * farClip) / (farClip - nearClip),0
-	};
+	Matrix4x4 result = {};
+	float f = 1.0f / std::tan(fovY / 2.0f);
+	result.m[0][0] = f / aspectRatio;
+	result.m[1][1] = f;
+	result.m[2][2] = farClip / (farClip - nearClip);
+	result.m[2][3] = 1.0f;
+	result.m[3][2] = -(farClip * nearClip) / (farClip - nearClip);
 	return result;
 }
 
@@ -393,12 +419,14 @@ Matrix4x4 MatrixMath::MakeOrthographicMatrix(float left, float top, float right,
 //ビューポート変換行列
 //============================================================================
 Matrix4x4 MatrixMath::MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
-	Matrix4x4 result = {
-		width / 2.0f,0,0,0,
-		0,-height / 2.0f,0,0,
-		0,0,maxDepth - minDepth,0,
-		left + width / 2.0f, top + height / 2.0f,minDepth,1.0f
-	};
+	Matrix4x4 result = {};
+	result.m[0][0] = width / 2.0f;
+	result.m[1][1] = -height / 2.0f; // Y軸を反転
+	result.m[2][2] = maxDepth - minDepth;
+	result.m[3][0] = left + width / 2.0f;
+	result.m[3][1] = top + height / 2.0f;
+	result.m[3][2] = minDepth;
+	result.m[3][3] = 1.0f;
 	return result;
 }
 
@@ -517,15 +545,22 @@ Matrix4x4 MatrixMath::LookAt(const Vector3& eye, const Vector3& target, const Ve
 	Vector3 yAxis = Vector3Math::Cross(zAxis, xAxis);
 
 	// 4. ビュー行列を構築
-	Matrix4x4 result = {
-		xAxis.x, yAxis.x, zAxis.x, 0.0f,
-		xAxis.y, yAxis.y, zAxis.y, 0.0f,
-		xAxis.z, yAxis.z, zAxis.z, 0.0f,
-		-Vector3Math::Dot(xAxis, eye),
-		-Vector3Math::Dot(yAxis, eye),
-		-Vector3Math::Dot(zAxis, eye),
-		1.0f
-	};
-
+	Matrix4x4 result = {};
+	result.m[0][0] = xAxis.x;
+	result.m[0][1] = yAxis.x;
+	result.m[0][2] = zAxis.x;
+	result.m[0][3] = 0.0f;
+	result.m[1][0] = xAxis.y;
+	result.m[1][1] = yAxis.y;
+	result.m[1][2] = zAxis.y;
+	result.m[1][3] = 0.0f;
+	result.m[2][0] = xAxis.z;
+	result.m[2][1] = yAxis.z;
+	result.m[2][2] = zAxis.z;
+	result.m[2][3] = 0.0f;
+	result.m[3][0] = -Vector3Math::Dot(xAxis, eye);
+	result.m[3][1] = -Vector3Math::Dot(yAxis, eye);
+	result.m[3][2] = -Vector3Math::Dot(zAxis, eye);
+	result.m[3][3] = 1.0f;
 	return result;
 }

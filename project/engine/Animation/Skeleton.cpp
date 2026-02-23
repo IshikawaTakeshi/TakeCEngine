@@ -56,7 +56,7 @@ void Skeleton::Update() {
 // ImGui更新
 //====================================================================
 void Skeleton::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	for (Joint& joint : joints) {
 		ImGui::SeparatorText(joint.name.c_str());
 		ImGui::DragFloat3("Scale", &joint.transform.scale.x, 0.01f);

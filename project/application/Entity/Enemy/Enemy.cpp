@@ -385,7 +385,7 @@ void Enemy::Update() {
 
 void Enemy::UpdateImGui() {
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::Begin("Enemy");
 	ImGui::DragFloat3("Translate",
 		&enemyData_.characterInfo.transform.translate.x, 0.01f);
@@ -469,7 +469,7 @@ void Enemy::DrawShadow(const LightCameraInfo& lightCamera) {
 
 void Enemy::DrawCollider() {
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	collider_->DrawCollider();
 	bulletSensor_->DrawCollider();
 	object3d_->GetModel()->GetSkeleton()->Draw(object3d_->GetWorldMatrix());

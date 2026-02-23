@@ -36,7 +36,7 @@ void SpriteManager::Draw() {
 //============================================================================
 void SpriteManager::UpdateImGui(const std::string& groupName) {
 	groupName;
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	if (ImGui::TreeNode(groupName.c_str())) {
 		int i = 0;
 		for (auto& sprite : sprites_) {

@@ -84,7 +84,7 @@ void EnergyInfoUI::Draw() {
 //　ImGuiの更新
 //===================================================================================
 void EnergyInfoUI::UpdateImGui([[maybe_unused]] std::string name) {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::SeparatorText("Energy Info UI Settings");
 	backgroundSprite_->UpdateImGui(name + "bg Sprite");
 	foregroundSprite_->UpdateImGui(name + "fg Sprite");

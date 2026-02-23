@@ -32,7 +32,7 @@ void TakeC::ParticleManager::Update() {
 
 void TakeC::ParticleManager::UpdateImGui() {
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::Begin("ParticleManager");
 	ImGui::Text("ParticleGroup Count : %d", particleGroups_.size());
 	ImGui::Separator();

@@ -38,7 +38,7 @@ void DepthBasedOutline::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvMan
 // ImGuiの更新
 //=============================================================================
 void DepthBasedOutline::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	if (ImGui::TreeNode("DepthBasedOutline")) {
 		ImGui::SliderFloat("weight", &outlineInfoData_->weight, 0.0f, 10.0f);

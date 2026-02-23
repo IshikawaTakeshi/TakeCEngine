@@ -59,7 +59,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	CollisionManager::GetInstance().Initialize(directXCommon_.get());
 
 	//最初のシーンを設定
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	sceneManager_->ChangeScene("TITLE",0.0f);
 #else
@@ -145,7 +145,7 @@ void MyGame::Draw() {
 	renderTexture_->Draw();
 	renderTexture_->PostDraw();
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	imguiManager_->PostDraw();
 #endif
 

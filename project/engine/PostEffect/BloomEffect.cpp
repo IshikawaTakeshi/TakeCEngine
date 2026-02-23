@@ -112,7 +112,7 @@ void BloomEffect::Initialize(
 //=============================================================================
 void BloomEffect::UpdateImGui() {
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::Text("BloomEffect");
 	
 	if (ImGui::TreeNode("BloomEffect")) {

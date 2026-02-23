@@ -111,7 +111,7 @@ void LevelObject::DrawShadow(const LightCameraInfo& lightCamera) {
 //			コライダーの描画
 //====================================================================
 void LevelObject::DrawCollider() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	//collider_->DrawCollider();
 #endif
 }

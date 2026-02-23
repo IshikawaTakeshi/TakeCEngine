@@ -97,7 +97,7 @@ void BoxCollider::Update(Object3d* collisionObject) {
 // ImGuiによるパラメータ調整
 //=============================================================================
 void BoxCollider::UpdateImGui([[maybe_unused]]const std::string& name) {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	std::string windowName = "BoxCollider" + name;
 	std::vector<std::string> surfaceTypes = { "FLOOR", "WALL", "CEILING" };
 	if (ImGui::TreeNode("BoxCollider")) {

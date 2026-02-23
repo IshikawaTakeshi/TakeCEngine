@@ -71,7 +71,7 @@ void BehaviorManager::Update(PlayableCharacterInfo& characterContext) {
 // ImGuiの更新
 //=====================================================================================
 void BehaviorManager::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	//現在の項目
 	std::string currentBehaviorStr = "Current Behavior:" + StringUtility::EnumToString(currentBehaviorType_);

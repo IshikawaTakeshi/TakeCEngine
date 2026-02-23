@@ -106,7 +106,7 @@ void WarningUI::Update() {
 void WarningUI::UpdateImGui(const std::string& name) {
     BaseUI::UpdateImGui(name);
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
     if (ImGui::TreeNode("WarningUI Debug")) {
         const char* dirNames[] = { "Front", "Right","Back", "Left" };
         for (int i = 0; i < static_cast<int>(WarningDirection::COUNT); ++i) {

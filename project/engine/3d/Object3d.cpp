@@ -142,7 +142,7 @@ void Object3d::AnimationUpdate() {
 
 void Object3d::UpdateImGui([[maybe_unused]]const std::string& name) {
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	//ImGuiの更新
 	std::string windowName = "Object3d" + name;
 	ImGui::Begin("Object3d");

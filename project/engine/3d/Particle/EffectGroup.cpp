@@ -444,7 +444,7 @@ void EffectGroup::SetDirection(const Vector3& direction) {
 // ImGui更新処理
 //==================================================================================
 void EffectGroup::UpdateImGui([[maybe_unused]] const std::string& windowName) {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::SeparatorText((windowName + config_.effectName).c_str());
 
 	ImGui::Text("Playing: %s", isPlaying_ ? "Yes" : "No");

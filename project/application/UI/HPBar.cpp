@@ -127,7 +127,7 @@ void HPBar::Draw() {
 //===================================================================================
 void HPBar::UpdateImGui([[maybe_unused]]std::string name) {
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	backgroundSprite_->UpdateImGui(name + "_Background");
 	damageBarSprite_->UpdateImGui(name + "_DamageBar");
 	foregroundSprite_->UpdateImGui(name + "_Foreground");

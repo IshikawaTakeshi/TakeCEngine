@@ -43,7 +43,7 @@ void UIManager::Draw() {
 // ImGuiの一括更新
 //============================================================================
 void UIManager::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	if (ImGui::TreeNode("UI Manager")) {
 
 		int i = 0;

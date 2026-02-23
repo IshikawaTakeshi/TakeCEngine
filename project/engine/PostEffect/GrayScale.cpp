@@ -30,7 +30,7 @@ void GrayScale::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* sr
 // ImGuiの更新
 //=============================================================================
 void GrayScale::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	//GrayScaleの設定
 	if(ImGui::TreeNode("GrayScale")){

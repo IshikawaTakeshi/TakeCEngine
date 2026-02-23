@@ -161,7 +161,7 @@ void Sprite::Update() {
 // ImGuiの更新
 //=============================================================================================
 void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	//ImGuiの更新
 	std::string windowName = "Sprite" + name;
 	ImGui::Begin("Sprite");

@@ -32,7 +32,7 @@ void Vignette::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srv
 // ImGuiの更新
 //=============================================================================
 void Vignette::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	if (ImGui::TreeNode("Vignette")) {
 		ImGui::SliderFloat("VignetteScale", &vignetteInfoData_->vignetteScale, 0.0f, 3.0f, "%.5f");
 		ImGui::SliderFloat("VignettePower", &vignetteInfoData_->vignettePower, 0.1f, 1.0f);

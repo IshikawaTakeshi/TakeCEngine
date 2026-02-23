@@ -341,7 +341,7 @@ void Player::Update() {
 //===================================================================================
 
 void Player::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	ImGui::Begin("Player");
 	ImGui::DragFloat3("Translate", &playerData_.characterInfo.transform.translate.x, 0.01f);
@@ -431,7 +431,7 @@ void Player::SavePlayerData(const std::string& characterName) {
 }
 
 void Player::DrawCollider() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	collider_->DrawCollider();
 	object3d_->GetModel()->GetSkeleton()->Draw(object3d_->GetWorldMatrix());
 	backEmitter_->DrawWireFrame();

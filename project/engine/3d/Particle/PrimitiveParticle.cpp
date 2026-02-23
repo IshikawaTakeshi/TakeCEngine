@@ -110,7 +110,7 @@ void PrimitiveParticle::Update() {
 // ImGui更新処理
 //=============================================================================
 void PrimitiveParticle::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ParticleAttributes& attributes = particlePreset_.attribute;
 
 	ImGui::Begin("Particle");

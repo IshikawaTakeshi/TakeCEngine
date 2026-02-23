@@ -12,7 +12,7 @@ namespace TakeC {
 	public:
 
 		// ゲームスクリーンのサイズ
-	#ifdef _DEBUG
+	#if defined(_DEBUG) || defined(_DEVELOP)
 		static const int32_t kScreenWidth = 1024;
 		static const int32_t kScreenHeight = 576;
 		// クライアント領域のサイズ（デバッグ用）

@@ -122,12 +122,17 @@ Quaternion QuaternionMath::LookRotation(const Vector3& forward, const Vector3& u
 	Vector3 yAxis = Vector3Math::Cross(zAxis, xAxis);
 
 	// 回転行列を作成
-	Matrix4x4 rotationMatrix = {
-		xAxis.x, yAxis.x, zAxis.x, 0.0f,
-		xAxis.y, yAxis.y, zAxis.y, 0.0f,
-		xAxis.z, yAxis.z, zAxis.z, 0.0f,
-		0.0f,    0.0f,    0.0f,    1.0f
-	};
+	Matrix4x4 rotationMatrix = {};
+	rotationMatrix.m[0][0] = xAxis.x;
+	rotationMatrix.m[0][1] = yAxis.x;
+	rotationMatrix.m[0][2] = zAxis.x;
+	rotationMatrix.m[1][0] = xAxis.y;
+	rotationMatrix.m[1][1] = yAxis.y;
+	rotationMatrix.m[1][2] = zAxis.y;
+	rotationMatrix.m[2][0] = xAxis.z;
+	rotationMatrix.m[2][1] = yAxis.z;
+	rotationMatrix.m[2][2] = zAxis.z;
+	rotationMatrix.m[3][3] = 1.0f;
 
 	// 回転行列からクォータニオンを作成
 	return QuaternionMath::FromMatrix(rotationMatrix);
@@ -219,12 +224,17 @@ Quaternion QuaternionMath::FromEuler(const Vector3& euler) {
 Quaternion QuaternionMath::FromBasis(const Vector3& right, const Vector3& up, const Vector3& forward) {
 
 	// 回転行列を作成
-	Matrix4x4 rotationMatrix = {
-		right.x, up.x, forward.x, 0.0f,
-		right.y, up.y, forward.y, 0.0f,
-		right.z, up.z, forward.z, 0.0f,
-		0.0f,    0.0f, 0.0f,     1.0f
-	};
+	Matrix4x4 rotationMatrix = {};
+	rotationMatrix.m[0][0] = right.x;
+	rotationMatrix.m[0][1] = right.y;
+	rotationMatrix.m[0][2] = right.z;
+	rotationMatrix.m[1][0] = up.x;
+	rotationMatrix.m[1][1] = up.y;
+	rotationMatrix.m[1][2] = up.z;
+	rotationMatrix.m[2][0] = forward.x;
+	rotationMatrix.m[2][1] = forward.y;
+	rotationMatrix.m[2][2] = forward.z;
+	rotationMatrix.m[3][3] = 1.0f;
 	// 回転行列からクォータニオンを作成
 	return QuaternionMath::FromMatrix(rotationMatrix);
 }

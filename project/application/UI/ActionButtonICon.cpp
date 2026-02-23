@@ -55,7 +55,7 @@ void ActionButtonICon::UpdateImGui(const std::string& name) {
 	// 親クラスのImGui（IsActiveやPositionの調整など）
 	BaseUI::UpdateImGui(name);
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	if (ImGui::TreeNode((name + "_Details").c_str())) {
 		ImGui::DragFloat2("Base Size", &baseSize_.x);
 		ImGui::DragFloat("Press Scale", &pressScale_, 0.01f, 0.1f, 1.0f);

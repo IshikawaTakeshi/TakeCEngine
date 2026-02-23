@@ -3,7 +3,7 @@
 #include <cassert>
 
 #pragma region imgui
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 #include "../externals/imgui/imgui.h"
 #include "../externals/imgui/imgui_impl_dx12.h"
 #include "../externals/imgui/imgui_impl_win32.h"
@@ -40,7 +40,7 @@ void TakeC::WinApp::Initialize(const wchar_t title[]) {
 
 	assert(SUCCEEDED(hr));
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	//debugController
 	debugController_ = nullptr;
@@ -91,7 +91,7 @@ bool TakeC::WinApp::ProcessMessage() {
 //=======================================================================
 
 LRESULT CALLBACK TakeC::WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam)) {
 		return true;
 	}
@@ -153,7 +153,7 @@ void TakeC::WinApp::CreateGameWindow(const wchar_t title[]) {
 	// ウィンドウインスタンスを WindowLongPtr に保存（WindowProc で参照するため）
 	SetWindowLongPtr(hwnd_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 #else
 

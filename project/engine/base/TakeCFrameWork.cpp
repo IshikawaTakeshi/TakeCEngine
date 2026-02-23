@@ -114,7 +114,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	wireFrame_->Initialize(directXCommon_.get());
 
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	imguiManager_ = new ImGuiManager();
 	imguiManager_->Initialize(winApp_.get(), directXCommon_.get(), srvManager_.get());
 #endif
@@ -133,7 +133,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 //====================================================================
 
 void TakeCFrameWork::Finalize() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	imguiManager_->Finalize();
 #endif
 
@@ -180,7 +180,7 @@ void TakeCFrameWork::Update() {
 
 	kDeltaTime = 0.016f * timeScale_;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	imguiManager_->Begin();
 
 	ImGui::Begin("FrameWork");
@@ -196,7 +196,7 @@ void TakeCFrameWork::Update() {
 	//シーンの更新
 	sceneManager_->Update();
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	sceneManager_->UpdateImGui();
 	postEffectManager_->UpdateImGui();
 

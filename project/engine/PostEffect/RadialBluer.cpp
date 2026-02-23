@@ -33,7 +33,7 @@ void RadialBluer::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* 
 // ImGuiの更新
 //=============================================================================
 void RadialBluer::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	if(ImGui::TreeNode("RadialBlur")){
 	ImGui::SliderFloat2("Center", &radialBlurInfo_->center.x, 0.0f, 1.0f, "%.5f");

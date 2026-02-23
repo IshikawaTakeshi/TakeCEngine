@@ -364,7 +364,7 @@ void TakeC::LightManager::SetLightResources(PSO* pso) {
 // ImGui更新
 //=============================================================================
 void TakeC::LightManager::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::Begin("LightManager");
 
 	// DirectionalLight

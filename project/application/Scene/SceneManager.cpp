@@ -44,7 +44,7 @@ void SceneManager::Update() {
 }
 
 void SceneManager::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	//コンボボックスの項目
 	std::vector<std::string> items = { "GAMEPLAY","TITLE", "GAMEOVER","GAMECLEAR","PARTICLEEDITOR","ENEMYSELECT"};

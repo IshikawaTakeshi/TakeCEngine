@@ -123,9 +123,13 @@ void Rifle::Update() {
 
 	//親スケルトンのジョイントに追従させる
 	if (parentSkeleton_ && !parentJointName_.empty()) {
-		Matrix4x4 characterWorldMatrix = ownerObject_->GetObject3d()->GetWorldMatrix();
-		auto jointWorldMatrixOpt = parentSkeleton_->GetJointWorldMatrix(parentJointName_, characterWorldMatrix);
-		object3d_->SetParent(*jointWorldMatrixOpt);
+		//Matrix4x4 characterWorldMatrix = ownerObject_->GetObject3d()->GetWorldMatrix();
+		auto jointWorldMatrixOpt = parentSkeleton_->GetJointWorldMatrix(parentJointName_, ownerObject_->GetObject3d()->GetWorldMatrix());
+		if (jointWorldMatrixOpt.has_value()) {
+			 object3d_->SetParent(jointWorldMatrixOpt.value());
+		} else {
+			 assert(false && "Failed to get joint world matrix for rifle.");
+		}
 	}
 
 	//3dオブジェクト更新

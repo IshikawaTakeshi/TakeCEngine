@@ -33,7 +33,7 @@ void CameraManager::Update() {
 //============================================================================
 void CameraManager::UpdateImGui() {
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::Begin("CameraManager");
 	ImGui::Text("Camera Count : %d", cameras_.size());
 	ImGui::Separator();

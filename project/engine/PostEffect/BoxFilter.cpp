@@ -28,7 +28,7 @@ void BoxFilter::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* sr
 // ImGuiの更新
 //=============================================================================
 void BoxFilter::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::Text("BoxFilter");
 	ImGui::SameLine();
 	ImGui::Checkbox("##BoxFilter::isActive", &filterInfoData_->isActive);

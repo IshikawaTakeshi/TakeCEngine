@@ -75,7 +75,7 @@ void TitleScene::Update() {
 //			ImGui更新処理
 //====================================================================
 void TitleScene::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	//ImGuiの更新
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	titleTextSprite_->UpdateImGui("title");

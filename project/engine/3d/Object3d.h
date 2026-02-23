@@ -61,7 +61,9 @@ public:
 	//Transformの取得
 	const EulerTransform& GetTransform() const { return transform_; }
 	//ワールド行列の取得
-	const Matrix4x4& GetWorldMatrix() const { return worldMatrix_; }
+	const Matrix4x4& GetWorldMatrix() const { 
+		return worldMatrix_;
+ }
 	//WVP行列の取得
 	const Vector3& GetScale() const { return transform_.scale; }
 	//回転量の取得

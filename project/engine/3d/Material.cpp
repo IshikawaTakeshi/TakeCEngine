@@ -50,7 +50,7 @@ void Material::Update() {
 //	ImGui更新処理
 //=================================================================================
 void Material::UpdateMaterialImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	//ImGuiの更新
 	if (ImGui::TreeNode("Material")) {
 		ImGui::ColorEdit4("Color", &materialData_->color.x);

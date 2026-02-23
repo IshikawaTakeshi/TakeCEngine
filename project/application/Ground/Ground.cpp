@@ -14,7 +14,7 @@
 #include <iostream>
 #include <memory>
 #include <numbers>
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 #include "ImGuiManager.h"
 #endif // DEBUG
 
@@ -61,7 +61,7 @@ void Ground::DrawGridGround() {
 //　ImGuiデバッグ
 //===================================================================================
 void Ground::ImGuiDebug() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	ImGui::Begin("Ground");
 

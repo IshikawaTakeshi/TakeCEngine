@@ -23,6 +23,15 @@ Matrix4x4 operator*(const Matrix4x4& m, float scalar) {
 	return result;
 }
 
+Matrix4x4::Matrix4x4(const Matrix4x4& other) {
+
+	for (int row = 0; row < 4; row++) {
+		for (int column = 0; column < 4; column++) {
+			this->m[row][column] = other.m[row][column];
+		}
+	}
+}
+
 Matrix4x4 Matrix4x4::operator+() const {
 	return *this;
 }

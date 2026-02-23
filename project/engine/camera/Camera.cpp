@@ -46,7 +46,7 @@ void Camera::Initialize(ID3D12Device* device,const std::string& configData) {
 //=============================================================================
 
 void Camera::Update() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	//デバッグカメラとゲームカメラの切り替え
 	if (TakeC::Input::GetInstance().TriggerKey(DIK_F1)) {
 		isDebug_ = !isDebug_;
@@ -178,7 +178,7 @@ void Camera::ShakeCamera() {
 //=============================================================================
 
 void Camera::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::DragFloat3("Translate", &cameraConfig_.transform_.translate.x, 0.01f);
 	ImGui::DragFloat4("Rotate", &cameraConfig_.transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("offset", &cameraConfig_.offset_.x, 0.01f);
