@@ -56,6 +56,16 @@ public:
 	/// </summary>
 	void ApplyAnimation(Animation* animation,float animationTime);
 
+	/// <summary>
+	/// ブレンドアニメーションの適用（クロスフェード）
+	/// </summary>
+	/// <param name="from">遷移元アニメーション</param>
+	/// <param name="tFrom">遷移元の再生時間</param>
+	/// <param name="to">遷移先アニメーション（nullptr可）</param>
+	/// <param name="tTo">遷移先の再生時間</param>
+	/// <param name="blend">ブレンド比率（0=from のみ、1=to のみ）</param>
+	void ApplyBlendedAnimation(Animation* from, float tFrom, Animation* to, float tTo, float blend);
+
 
 	//=====================================================
 	// accessors

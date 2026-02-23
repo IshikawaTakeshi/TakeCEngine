@@ -1,5 +1,6 @@
 #include "Skeleton.h"
 #include "engine/math/MatrixMath.h"
+#include "engine/math/Easing.h"
 #include "engine/base/TakeCFrameWork.h"
 
 //====================================================================
@@ -113,6 +114,53 @@ void Skeleton::ApplyAnimation(Animation* animation, float animationTime) {
 			joint.transform.rotate = TakeC::AnimationManager::CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
 			joint.transform.translate = TakeC::AnimationManager::CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
 		}
+	}
+}
+
+//====================================================================
+// ブレンドアニメーションの適用（クロスフェード）
+//====================================================================
+void Skeleton::ApplyBlendedAnimation(Animation* from, float tFrom, Animation* to, float tTo, float blend) {
+	for (Joint& joint : joints) {
+		QuaternionTransform fromTransform = joint.transform;
+
+		// 遷移元アニメーションのサンプリング
+		if (from && from->duration > 0.0f) {
+			auto it = from->nodeAnimations.find(joint.name);
+			if (it != from->nodeAnimations.end()) {
+				const NodeAnimation& nodeAnim = it->second;
+				fromTransform.scale = TakeC::AnimationManager::CalculateValue(nodeAnim.scale.keyframes, tFrom);
+				fromTransform.rotate = TakeC::AnimationManager::CalculateValue(nodeAnim.rotate.keyframes, tFrom);
+				fromTransform.translate = TakeC::AnimationManager::CalculateValue(nodeAnim.translate.keyframes, tFrom);
+			}
+		}
+
+		// ブレンド比率が0ならfromのみ適用
+		if (!to || to->duration <= 0.0f || blend <= 0.0f) {
+			joint.transform = fromTransform;
+			continue;
+		}
+
+		// 遷移先アニメーションのサンプリング
+		QuaternionTransform toTransform = fromTransform;
+		auto it = to->nodeAnimations.find(joint.name);
+		if (it != to->nodeAnimations.end()) {
+			const NodeAnimation& nodeAnim = it->second;
+			toTransform.scale = TakeC::AnimationManager::CalculateValue(nodeAnim.scale.keyframes, tTo);
+			toTransform.rotate = TakeC::AnimationManager::CalculateValue(nodeAnim.rotate.keyframes, tTo);
+			toTransform.translate = TakeC::AnimationManager::CalculateValue(nodeAnim.translate.keyframes, tTo);
+		}
+
+		// ブレンド比率が1ならtoのみ適用
+		if (blend >= 1.0f) {
+			joint.transform = toTransform;
+			continue;
+		}
+
+		// Lerp/Slerpによるブレンド
+		joint.transform.scale = Easing::Lerp(fromTransform.scale, toTransform.scale, blend);
+		joint.transform.rotate = Easing::Slerp(fromTransform.rotate, toTransform.rotate, blend);
+		joint.transform.translate = Easing::Lerp(fromTransform.translate, toTransform.translate, blend);
 	}
 }
 

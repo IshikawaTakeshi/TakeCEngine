@@ -322,6 +322,9 @@
     <ClCompile Include="engine\Animation\Skeleton.cpp">
       <Filter>engine\animation</Filter>
     </ClCompile>
+    <ClCompile Include="engine\Animation\AnimatorController.cpp">
+      <Filter>engine\animation</Filter>
+    </ClCompile>
     <ClCompile Include="engine\Animation\SkinCluster.cpp">
       <Filter>engine\animation</Filter>
     </ClCompile>
@@ -564,6 +567,12 @@
       <Filter>engine\math</Filter>
     </ClInclude>
     <ClInclude Include="engine\Animation\Animator.h">
+      <Filter>engine\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Animation\AnimationState.h">
+      <Filter>engine\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Animation\AnimatorController.h">
       <Filter>engine\animation</Filter>
     </ClInclude>
     <ClInclude Include="engine\Audio\Audio.h">
@@ -910,6 +919,9 @@
     </ClInclude>
     <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h">
       <Filter>application\Entity\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Entity\AnimationMapper.h">
+      <Filter>application\Entity</Filter>
     </ClInclude>
     <ClInclude Include="application\UI\BulletCounterUI.h">
       <Filter>application\UI</Filter>

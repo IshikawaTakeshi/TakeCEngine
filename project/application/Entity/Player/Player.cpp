@@ -84,6 +84,26 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	behaviorManager_ = std::make_unique<BehaviorManager>();
 	behaviorManager_->Initialize(inputProvider_);
 	behaviorManager_->InitializeBehaviors(playerData_.characterInfo);
+
+	//アニメーションマッパーの登録
+	animationMapper_.Register(GameCharacterBehavior::RUNNING,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "running"), 0.2f);
+	animationMapper_.Register(GameCharacterBehavior::FLOATING,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"), 0.2f);
+	animationMapper_.Register(GameCharacterBehavior::JUMP,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "runnning.001"), 0.15f);
+	animationMapper_.Register(GameCharacterBehavior::STEPBOOST,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "running"), 0.1f);
+	animationMapper_.Register(GameCharacterBehavior::CHARGESHOOT_STUN,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"), 0.2f);
+	animationMapper_.Register(GameCharacterBehavior::DEAD,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"), 0.3f);
+
+	//アニメーションコントローラの初期化
+	animatorController_.Initialize(object3d_->GetModel()->GetSkeleton());
+
+	//BehaviorManagerにアニメーションコンポーネントを設定
+	behaviorManager_->SetAnimationComponents(&animatorController_, &animationMapper_);
 }
 
 //===================================================================================
@@ -286,6 +306,8 @@ void Player::Update() {
 	object3d_->SetTranslate(playerData_.characterInfo.transform.translate);
 	object3d_->SetRotate(eulerRotate);
 	object3d_->SetScale(playerData_.characterInfo.transform.scale);
+	//アニメーションコントローラの更新（object3d_->Update()より前に呼ぶ）
+	animatorController_.Update(deltaTime_);
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
