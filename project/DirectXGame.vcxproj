@@ -157,6 +157,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="application\Entity\Animation\AnimationMapper.cpp" />
     <ClCompile Include="application\UI\ActionButtonICon.cpp" />
     <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp" />
     <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
@@ -189,6 +190,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Primitive\Cylinder.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cone.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cube.cpp" />
+    <ClCompile Include="engine\Animation\AnimatorController.cpp" />
     <ClCompile Include="engine\Animation\SpriteSheetSettings.cpp" />
     <ClCompile Include="engine\Animation\TextureAnimationTypeEnum.cpp" />
     <ClCompile Include="engine\Base\DsvManager.cpp" />
@@ -324,6 +326,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\UI\WarningUI.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\Entity\Animation\AnimationMapper.h" />
     <ClInclude Include="application\UI\ActionButtonICon.h" />
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
     <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h" />
@@ -372,6 +375,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Light\LightCameraInfo.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveBase.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveParameter.h" />
+    <ClInclude Include="engine\Animation\AnimationState.h" />
+    <ClInclude Include="engine\Animation\AnimatorController.h" />
     <ClInclude Include="engine\Animation\SpriteSheetSttings.h" />
     <ClInclude Include="engine\Animation\TextureAnimationTypeEnum.h" />
     <ClInclude Include="engine\Animation\TextureAnimationVariant.h" />
