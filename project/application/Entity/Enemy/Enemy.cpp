@@ -306,7 +306,7 @@ void Enemy::Update() {
 
 	auto jointWorldMatrixOpt =
 		object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix(
-			"neck", object3d_->GetWorldMatrix());
+			"body.002", object3d_->GetWorldMatrix());
 	bodyPosition_ = { jointWorldMatrixOpt->m[3][0], jointWorldMatrixOpt->m[3][1],
 					 jointWorldMatrixOpt->m[3][2] };
 
@@ -372,12 +372,12 @@ void Enemy::Update() {
 
 	// 背部エミッターの更新
 	std::optional<Vector3> backpackPosition =
-		object3d_->GetModel()->GetSkeleton()->GetJointPosition("heels_left", object3d_->GetWorldMatrix());
+		object3d_->GetModel()->GetSkeleton()->GetJointPosition("backpack.001", object3d_->GetWorldMatrix());
 	backEmitter_->SetTranslate(backpackPosition.value());
 
 	backEmitter_->Update();
 	// 死亡エフェクトの更新
-	deadEffect_->Update(enemyData_.characterInfo.transform.translate);
+	deadEffect_->Update(bodyPosition_);
 
 	// 着地判定の毎フレームリセット
 	enemyData_.characterInfo.onGround = false;

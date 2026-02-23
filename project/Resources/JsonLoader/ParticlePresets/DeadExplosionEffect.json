@@ -19,7 +19,7 @@
         "enableFollowEmitter": false,
         "frequency": 1.0,
         "isBillboard": false,
-        "isDirectional": false,
+        "isDirectional": true,
         "isEmitterTrail": false,
         "isParticleTrail": false,
         "isTraslate": true,
