@@ -31,7 +31,7 @@ namespace TakeC {
 		/// </summary>
 		/// <param name="directoryPath"></param>
 		/// <param name="filePath"></param>
-		void LoadAnimation(const std::string& directoryPath, const std::string& filePath);
+		void LoadAnimation(const std::string& filePath);
 
 		/// <summary>
 		/// アニメーション検索
@@ -47,7 +47,7 @@ namespace TakeC {
 		/// <param name="directoryPath"></param>
 		/// <param name="filename"></param>
 		/// <returns></returns>
-		static std::map<std::string, Animation*> LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
+		static std::map<std::string, Animation*> LoadAnimationFile(const std::string& filename);
 
 		/// <summary>
 		/// ベクトルの補間値を計算

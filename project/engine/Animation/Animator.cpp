@@ -20,7 +20,7 @@ void AnimationManager::Finalize() {
 //	アニメーションの読み込み/登録
 //=============================================================================
 
-void AnimationManager::LoadAnimation(const std::string& directoryPath,const std::string& filePath) {
+void AnimationManager::LoadAnimation(const std::string& filePath) {
 
 	//読み込み済みアニメーションを検索
 	if (animations_.contains(filePath)) {
@@ -29,7 +29,7 @@ void AnimationManager::LoadAnimation(const std::string& directoryPath,const std:
 	}
 
 	//アニメーションの生成とファイル読み込み、初期化
-	std::map<std::string, Animation*> animation = LoadAnimationFile(directoryPath, filePath);
+	std::map<std::string, Animation*> animation = LoadAnimationFile(filePath);
 	//アニメーションをコンテナに追加
 	animations_.insert(std::make_pair(filePath, animation));
 }
@@ -56,11 +56,36 @@ Animation* AnimationManager::FindAnimation(const std::string& filePath, const st
 //=============================================================================
 //	アニメーションファイルの読み込み
 //=============================================================================
-std::map<std::string, Animation*> AnimationManager::LoadAnimationFile(const std::string& directoryPath, const std::string& filename) {
+std::map<std::string, Animation*> AnimationManager::LoadAnimationFile(const std::string& filename) {
+
+	namespace fs = std::filesystem;
+
+	// 拡張子から検索ルートを決める
+	fs::path fileNamePath(filename);
+	std::string ext = fileNamePath.extension().string();
+
+	// ベースディレクトリ
+	fs::path baseDir = "./Resources/Models/";
+
+	// 最終的なフルパス
+	fs::path fullPath = baseDir / filename;
+
+	// ファイルが存在しない場合は、従来のフォルダ構成（fbx/, obj/, gltf/）を探索
+	if (!fs::exists(fullPath)) {
+		fs::path modelDir;
+		if (ext == ".fbx") {
+			modelDir = baseDir / "fbx/";
+		} else if (ext == ".obj") {
+			modelDir = baseDir / "obj/";
+		} else if (ext == ".gltf" || ext == ".glb") {
+			modelDir = baseDir / "gltf/";
+		}
+		fullPath = modelDir / filename;
+	}
+
 	std::map<std::string, Animation*> animations = {};
     Assimp::Importer importer;
-    std::string filePath ="./Resources/" + directoryPath + "/" + filename;
-    const aiScene* scene = importer.ReadFile(filePath.c_str(), 0);
+    const aiScene* scene = importer.ReadFile(fullPath.string().c_str(), 0);
     //アニメーションがない場合
 	if(scene->mNumAnimations == 0) {
 		return animations = {};

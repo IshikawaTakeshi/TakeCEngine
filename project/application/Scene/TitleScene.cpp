@@ -29,8 +29,6 @@ void TitleScene::Initialize() {
 	pushStartUI_ = std::make_unique<PushStartUI>();
 	pushStartUI_->Initialize();
 
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Models/gltf", "Deer.gltf");
-
 	//SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(), "skyBox_blueSky.dds");

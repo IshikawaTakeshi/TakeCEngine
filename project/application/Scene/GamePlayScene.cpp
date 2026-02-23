@@ -55,18 +55,6 @@ void GamePlayScene::Initialize() {
 		object.second->SetCamera(Object3dCommon::GetInstance().GetDefaultCamera());
 	}
 
-	// Animation読み込み
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation",
-		"walk.gltf");
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation",
-		"Idle.gltf");
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation",
-		"running.gltf");
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Animation",
-		"throwAttack.gltf");
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation(
-		"Models/gltf", "player_singleMesh.gltf");
-
 	// SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(),
@@ -85,8 +73,7 @@ void GamePlayScene::Initialize() {
 	player_->SetInputProvider(inputProvider_Player.get());
 	player_->Initialize(&Object3dCommon::GetInstance(),"Player_Model_Ver2.0.gltf");
 	player_->WeaponInitialize(&Object3dCommon::GetInstance(),bulletManager_.get());
-	// player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf",
-	// "moveshot"));
+	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf","Running"));
 	player_->SetTranslate({ 0.0f, 0.0f, 0.0f });
 	// Enemy
 	enemy_ = std::make_unique<Enemy>();

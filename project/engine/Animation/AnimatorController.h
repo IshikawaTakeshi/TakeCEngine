@@ -39,4 +39,5 @@ private:
 	float blendTimer_ = 0.0f;         //ブレンド経過時間
 	float blendDuration_ = 0.0f;      //ブレンド時間
 	bool isBlending_ = false;         //ブレンド中かどうか
+
 };
