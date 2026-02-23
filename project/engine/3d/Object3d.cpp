@@ -95,7 +95,9 @@ void Object3d::Update() {
 		transformMatrixData_->World = worldMatrix_;
 		transformMatrixData_->WVP = WVPMatrix_;
 		transformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
-		AnimationUpdate();
+		if (!useExternalAnimation_) {
+			AnimationUpdate();
+		}
 	} 
 	else { //Skeletonがない場合
 		if (animation_->duration != 0.0f) {

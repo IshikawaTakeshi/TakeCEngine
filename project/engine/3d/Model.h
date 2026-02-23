@@ -38,6 +38,7 @@ public:
 	/// 更新処理
 	/// </summary>
 	void Update(Animation* animation, float animationTime);
+	void UpdateSkinningFromSkeleton();
 
 	/// <summary>
 	/// ImGui更新

@@ -10,7 +10,7 @@
 
 #include "application/Effect/BoostEffect.h"
 #include "application/Effect/DeadEffect.h"
-#include "application/Entity/AnimationMapper.h"
+#include "application/Entity/Animation/AnimationMapper.h"
 #include "application/Entity/Behavior/BehaviorManager.h"
 #include "application/Entity/Enemy/AIBrainSystem.h"
 #include "application/Entity/Enemy/BulletSensor.h"

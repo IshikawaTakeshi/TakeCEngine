@@ -41,6 +41,8 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	//オブジェクト初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
+	object3d_->SetScale(playerData_.characterInfo.transform.scale);
+	object3d_->SetUseExternalAnimation(true); // 外部からアニメーションを設定するようにする
 
 	//コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
@@ -54,7 +56,6 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
 
-	object3d_->SetScale(playerData_.characterInfo.transform.scale);
 
 	weapons_.resize(WeaponUnit::Size);
 	weaponTypes_.resize(WeaponUnit::Size);
@@ -87,17 +88,17 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 
 	//アニメーションマッパーの登録
 	animationMapper_.Register(GameCharacterBehavior::RUNNING,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "running"), 0.2f);
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.2f);
 	animationMapper_.Register(GameCharacterBehavior::FLOATING,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"), 0.2f);
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Floating"), 0.2f);
 	animationMapper_.Register(GameCharacterBehavior::JUMP,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "runnning.001"), 0.15f);
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Jump"), 0.15f);
 	animationMapper_.Register(GameCharacterBehavior::STEPBOOST,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "running"), 0.1f);
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.1f);
 	animationMapper_.Register(GameCharacterBehavior::CHARGESHOOT_STUN,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"), 0.2f);
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.2f);
 	animationMapper_.Register(GameCharacterBehavior::DEAD,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"), 0.3f);
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.3f);
 
 	//アニメーションコントローラの初期化
 	animatorController_.Initialize(object3d_->GetModel()->GetSkeleton());
@@ -309,6 +310,7 @@ void Player::Update() {
 	//アニメーションコントローラの更新（object3d_->Update()より前に呼ぶ）
 	animatorController_.Update(deltaTime_);
 	object3d_->Update();
+	object3d_->GetModel()->UpdateSkinningFromSkeleton();
 	collider_->Update(object3d_.get());
 
 	//歩行時パーティクルの更新

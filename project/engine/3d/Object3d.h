@@ -83,6 +83,8 @@ public:
 	float GetAnimationTime() { return animationTime_; }
 	//モデルファイルパスの取得
 	const std::string& GetModelFilePath() const { return modelFilePath_; }
+	//外部からアニメーションを設定するかどうかの取得
+	bool GetUseExternalAnimation() const { return useExternalAnimation_; }
 
 	//----- setter ---------------------------
 
@@ -101,6 +103,8 @@ public:
 	void SetParent(const Matrix4x4& parent) { parentWorldMatrix_ = &parent; }
 	//モデルファイルパスの設定
 	void SetModelFilePath(const std::string& filePath) { modelFilePath_ = filePath; }
+	//外部からアニメーションを設定するかどうかの設定
+	void SetUseExternalAnimation(bool useExternal) { useExternalAnimation_ = useExternal; }
 
 private:
 
@@ -124,6 +128,8 @@ protected: // privateメンバ変数
 	std::unique_ptr<Animation> animation_;
 	float animationTime_ = 0.0f;
 	bool isAnimation_ = true;
+	//外部からアニメーションを設定するかどうか
+	bool useExternalAnimation_ = false;
 
 	//TransformationMatrix用の頂点リソース
 	ComPtr<ID3D12Resource> wvpResource_;

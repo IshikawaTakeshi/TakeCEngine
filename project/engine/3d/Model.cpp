@@ -83,8 +83,6 @@ void Model::Update(Animation* animation,float animationTime) {
 	}
 
 	if (haveSkeleton_) {
-		//アニメーションの更新とボーンへの適用
-		skeleton_->ApplyAnimation(animation, animationTime);
 
 		//スケルトンの更新
 		skeleton_->Update();
@@ -100,6 +98,15 @@ void Model::Update(Animation* animation,float animationTime) {
 		scale_ = TakeC::AnimationManager::CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 		localMatrix_ = MatrixMath::MakeAffineMatrix(scale_, rotate_, translate_);
 	}
+}
+
+void Model::UpdateSkinningFromSkeleton() {
+
+	if (!haveSkeleton_) { return; }
+	if (!skeleton_) { return; }
+
+	// Skeletonのjoint.skeletonSpaceMatrix は AnimatorController が skeleton_->Update() まで済ませている前提
+	skinCluster_.Update(skeleton_.get());
 }
 
 //=============================================================================

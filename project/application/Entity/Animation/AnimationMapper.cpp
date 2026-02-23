@@ -5,15 +5,15 @@
 //===================================================================================
 void AnimationMapper::Register(GameCharacterBehavior behavior, Animation* animation, float blendDuration) {
 
-	map_[behavior] = { animation, blendDuration };
+	entries_[behavior] = { animation, blendDuration };
 }
 
 //===================================================================================
 //　ビヘイビア → アニメーション の検索
 //===================================================================================
-const AnimationMapper::Entry* AnimationMapper::Get(GameCharacterBehavior behavior) const {
-	auto it = map_.find(behavior);
-	if (it != map_.end()) {
+const AnimationEntry* AnimationMapper::Find(GameCharacterBehavior behavior) const {
+	auto it = entries_.find(behavior);
+	if (it != entries_.end()) {
 		return &it->second;
 	}
 	return nullptr;

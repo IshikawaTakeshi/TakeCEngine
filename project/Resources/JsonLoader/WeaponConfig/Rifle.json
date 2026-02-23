@@ -9,7 +9,7 @@
         "bulletSpeed": 500.0,
         "canChargeAttack": false,
         "canMoveShootable": true,
-        "effectiveRange": 790.5280151367188,
+        "effectiveRange": 880.0,
         "homingRate": 0.0,
         "isStopShootOnly": false,
         "kAttackInterval": 0.20900000631809235,

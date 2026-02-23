@@ -190,9 +190,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Primitive\Cylinder.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cone.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cube.cpp" />
-    <ClCompile Include="engine\Animation\AnimatorController.cpp" />
-    <ClCompile Include="engine\Animation\SpriteSheetSettings.cpp" />
-    <ClCompile Include="engine\Animation\TextureAnimationTypeEnum.cpp" />
     <ClCompile Include="engine\Base\DsvManager.cpp" />
     <ClCompile Include="engine\2d\SpriteConfig.cpp" />
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
@@ -227,6 +224,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\Animation\AnimatorController.cpp" />
     <ClCompile Include="engine\Animation\Skeleton.cpp" />
     <ClCompile Include="engine\Animation\SkinCluster.cpp" />
+    <ClCompile Include="engine\Animation\SpriteSheetSettings.cpp" />
+    <ClCompile Include="engine\Animation\TextureAnimationTypeEnum.cpp" />
     <ClCompile Include="engine\Input\Gamepad.cpp" />
     <ClCompile Include="engine\Math\Easing.cpp" />
     <ClCompile Include="engine\Math\Quaternion.cpp" />
@@ -331,7 +330,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\UI\ActionButtonICon.h" />
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
     <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h" />
-    <ClInclude Include="application\Entity\AnimationMapper.h" />
     <ClInclude Include="application\Entity\GameCharacterInfo.h" />
     <ClInclude Include="application\Entity\GameCharacterBehavior.h" />
     <ClInclude Include="application\Entity\Player\PlayerData.h" />
@@ -377,8 +375,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Light\LightCameraInfo.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveBase.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveParameter.h" />
-    <ClInclude Include="engine\Animation\AnimationState.h" />
-    <ClInclude Include="engine\Animation\AnimatorController.h" />
     <ClInclude Include="engine\Animation\SpriteSheetSttings.h" />
     <ClInclude Include="engine\Animation\TextureAnimationTypeEnum.h" />
     <ClInclude Include="engine\Animation\TextureAnimationVariant.h" />

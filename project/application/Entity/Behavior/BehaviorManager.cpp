@@ -6,7 +6,7 @@
 #include "application/Entity/Behavior/BehaviorStepBoost.h"
 #include "application/Entity/Behavior/BehaviorChargeShootStun.h"
 #include "application/Entity/Behavior/BehaviorDead.h"
-#include "application/Entity/AnimationMapper.h"
+#include "application/Entity/Animation/AnimationMapper.h"
 #include "engine/Animation/AnimatorController.h"
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/Utility/StringUtility.h"

@@ -1,36 +1,38 @@
 #pragma once
-#include "application/Entity/GameCharacterBehavior.h"
 #include "engine/Animation/NodeAnimation.h"
-#include <unordered_map>
-
+#include "application/Entity/GameCharacterBehavior.h"
+#include <map>
 
 //============================================================================
-// AnimationMapper
+// AnimationEntry struct
+//============================================================================
+struct AnimationEntry {
+	Animation* animation = nullptr; //アニメーションへの非所有ポインタ
+	float blendDuration = 0.2f;    //ブレンドにかかる時間（秒）
+};
+
+//============================================================================
+// AnimationMapper class
+// GameCharacterBehavior から AnimationEntry へのマッピングを管理する
 //============================================================================
 class AnimationMapper {
 public:
-	//--------------------------------------------------------------------
-	// ビヘイビア → アニメーション のエントリ
-	//--------------------------------------------------------------------
-	struct Entry {
-		Animation* animation = nullptr;
-		float blendDuration = 0.2f; // 遷移にかける時間（秒）
-	};
 
 	/// <summary>
-	/// Behaviorとアニメーションを登録する
+	/// ビヘイビアとアニメーションの対応を登録
 	/// </summary>
 	/// <param name="behavior">対象のビヘイビア</param>
-	/// <param name="animation">対応するアニメーション（AnimationManagerから取得）</param>
-	/// <param name="blendDuration">遷移時間（秒）</param>
-	void Register(GameCharacterBehavior behavior, Animation* animation,
-		float blendDuration = 0.2f);
+	/// <param name="animation">対応するアニメーション（非所有）</param>
+	/// <param name="blendDuration">ブレンドにかかる時間（秒）</param>
+	void Register(GameCharacterBehavior behavior, Animation* animation, float blendDuration = 0.2f);
 
 	/// <summary>
-	/// Behaviorに対応するEntryを返す。登録されていない場合はnullptrを返す
+	/// ビヘイビアに対応するエントリを検索
 	/// </summary>
-	const Entry* Get(GameCharacterBehavior behavior) const;
+	/// <param name="behavior">検索するビヘイビア</param>
+	/// <returns>見つかった場合はエントリのポインタ、なければ nullptr</returns>
+	const AnimationEntry* Find(GameCharacterBehavior behavior) const;
 
 private:
-	std::unordered_map<GameCharacterBehavior, Entry> map_;
+	std::map<GameCharacterBehavior, AnimationEntry> entries_;
 };

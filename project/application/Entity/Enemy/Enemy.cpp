@@ -34,12 +34,13 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	characterType_ = CharacterType::ENEMY;
 
 	// EnemyDataの読み込み
-	enemyData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>(
-		"EnemyData.json");
+	enemyData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>("EnemyData.json");
 
 	// オブジェクト初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
+	object3d_->SetScale(enemyData_.characterInfo.transform.scale);
+	object3d_->SetUseExternalAnimation(true); // 外部からアニメーションを設定するようにする
 	// コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
@@ -50,7 +51,6 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 		enemyData_.characterInfo.colliderInfo.halfSize); // コライダーの半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Enemy));
 
-	object3d_->SetScale(enemyData_.characterInfo.transform.scale);
 
 	// emitter設定
 	// emitter0
@@ -100,17 +100,17 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 
 	// アニメーションマッパーの登録
 	animationMapper_.Register(GameCharacterBehavior::RUNNING,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "running"), 0.2f);
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.2f);
 	animationMapper_.Register(GameCharacterBehavior::FLOATING,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"), 0.2f);
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Floating"), 0.2f);
 	animationMapper_.Register(GameCharacterBehavior::JUMP,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "runnning.001"), 0.15f);
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Jump"), 0.15f);
 	animationMapper_.Register(GameCharacterBehavior::STEPBOOST,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "running"), 0.1f);
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.1f);
 	animationMapper_.Register(GameCharacterBehavior::CHARGESHOOT_STUN,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"), 0.2f);
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.2f);
 	animationMapper_.Register(GameCharacterBehavior::DEAD,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf", "moveshot"), 0.3f);
+		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.3f);
 
 	// アニメーションコントローラの初期化
 	animatorController_.Initialize(object3d_->GetModel()->GetSkeleton());
@@ -346,6 +346,7 @@ void Enemy::Update() {
 	//アニメーションコントローラの更新（object3d_->Update()より前に呼ぶ）
 	animatorController_.Update(deltaTime_);
 	object3d_->Update();
+	object3d_->GetModel()->UpdateSkinningFromSkeleton();
 	collider_->Update(object3d_.get());
 
 	// 武器の更新

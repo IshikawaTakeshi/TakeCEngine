@@ -922,9 +922,6 @@
     <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h">
       <Filter>application\Entity\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\AnimationMapper.h">
-      <Filter>application\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="application\UI\BulletCounterUI.h">
       <Filter>application\UI</Filter>
     </ClInclude>

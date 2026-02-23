@@ -75,12 +75,22 @@ void Rifle::Update() {
 	if (burstShotState_.isActive) {
 		burstShotState_.intervalTimer -= TakeCFrameWork::GetDeltaTime();
 		if (burstShotState_.intervalTimer <= 0.0f && burstShotState_.count > 0) {
+
+			//発射方向の計算
+			Vector3 direction = targetPos_ - object3d_->GetCenterPosition();
+			 direction.Normalize();
+			 //移動撃ち可能な場合は、ターゲットの速度も考慮して発射方向を調整
+			 if (CanMoveShootable()) {
+				 direction += targetVelocity_ * 0.1f; // ターゲットの速度を加味（調整係数0.1fは適宜変更）
+				 direction.Normalize();
+			 }
+
 			// 弾発射
 			if (ownerObject_->GetCharacterType() == CharacterType::PLAYER) {
 				//プレイヤーの弾として発射
 				bulletManager_->ShootBullet(
 					object3d_->GetCenterPosition(),
-					targetPos_,targetVelocity_,
+					direction,
 					weaponData_.config.bulletSpeed,
 					weaponData_.config.power,
 					CharacterType::PLAYER_BULLET);
