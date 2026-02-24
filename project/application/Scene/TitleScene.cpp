@@ -1,7 +1,7 @@
 #include "TitleScene.h"
-#include "GamePlayScene.h"
 #include "SceneManager.h"
 #include "engine/base/TakeCFrameWork.h"
+#include "engine/Math/Quaternion.h"
 #include <algorithm>
 
 //====================================================================
@@ -11,10 +11,11 @@ void TitleScene::Initialize() {
 
 	//Camera0
 	camera0_ = std::make_shared<Camera>();
-	camera0_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_TitleScene.json");
-	camera0_->SetTranslate({ 0.0f,0.0f,-20.0f });
-	camera0_->SetRotate({ 0.1f,0.0f,0.0f });
+	camera0_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"Title_ViewCamera.json");
+	camera0_->SetRotationSpeed(1.0f);
+	camera0_->SetFollowSpeed(1.0f);
 	TakeC::CameraManager::GetInstance().AddCamera("Tcamera0", *camera0_);
+	cameraRotateSpeed_ = 0.5f;
 
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
@@ -33,6 +34,13 @@ void TitleScene::Initialize() {
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(), "skyBox_blueSky.dds");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
+
+	playerModel_ = std::make_unique<Object3d>();
+	playerModel_->Initialize(&Object3dCommon::GetInstance(), "Player_Model_Ver2.0.gltf");
+	playerModel_->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf","Floating"));
+	playerModel_->SetRotate( { 0.0f, 180.0f, 0.0f });
+	// ShadowMapEffectを無効化
+	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect", false);
 }
 
 //====================================================================
@@ -53,6 +61,10 @@ void TitleScene::Finalize() {
 //====================================================================
 void TitleScene::Update() {
 
+	//カメラの回転(Yaw回転)
+	cameraYaw_ += cameraRotateSpeed_ * TakeCFrameWork::GetDeltaTime();
+	cameraYaw_ = std::fmod(cameraYaw_, 360.0f); // 360度を超えないようにする
+	TakeC::CameraManager::GetInstance().GetActiveCamera()->SetYawRot(cameraYaw_);
 	//カメラの更新
 	TakeC::CameraManager::GetInstance().Update();
 
@@ -62,6 +74,9 @@ void TitleScene::Update() {
 	//タイトルテキストの更新
 	titleTextSprite_->Update();
 	pushStartUI_->Update();
+
+	//プレイヤーモデルの更新
+	playerModel_->Update();
 
 	//シーン遷移
 	if (TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::A)) {
@@ -80,7 +95,12 @@ void TitleScene::UpdateImGui() {
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	titleTextSprite_->UpdateImGui("title");
 	pushStartUI_->UpdateImGui();
-	
+	playerModel_->UpdateImGui("playerModel");
+
+	ImGui::Begin("cameraYaw");
+	ImGui::SliderFloat("cameraYaw", &cameraYaw_, 0.0f, 360.0f);
+	ImGui::End();
+	Object3dCommon::GetInstance().UpdateImGui();
 
 #endif
 }
@@ -93,11 +113,11 @@ void TitleScene::Draw() {
 	//SkyBox描画
 	skyBox_->Draw();
 
-	
-	//phaseMessageUI_->DrawObject();
 	Object3dCommon::GetInstance().Dispatch();
+	playerModel_->Dispatch();
 
 	Object3dCommon::GetInstance().PreDraw();
+	playerModel_->Draw();
 
 }
 

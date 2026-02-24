@@ -115,15 +115,17 @@ public:
 	void SetNearClip(float nearClip) { cameraConfig_.nearClip_ = nearClip; }
 	//farクリップ距離の設定
 	void SetFarClip(float farClip) { cameraConfig_.farClip_ = farClip; }
+	//回転追従速度の設定
+	void SetRotationSpeed(float speed) { rotationSpeed_ = speed; }
 	//シェイクするかどうかの設定
 	void SetIsShaking(bool isShaking) { isShaking_ = isShaking; }
 	//デバッグ状態かの設定
 	void SetIsDebug(bool isDebug){ isDebug_ = isDebug; }
 	
 	//ヨー回転量の設定
-	void SetYawRot(float yaw) { yawRot_ = yaw; }
+	void SetYawRot(float yaw) { cameraConfig_.yaw_ = yaw; }
 	//ピッチ回転量の設定
-	void SetPitchRot(float pitch) { pitchRot_ = pitch; }
+	void SetPitchRot(float pitch) { cameraConfig_.pitch_ = pitch; }
 	void SetFollowSpeed(float speed) { followSpeed_ = speed; }
 	
 	//追従対象の位置の設定
@@ -153,8 +155,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource_;
 	CameraForGPU* cameraForGPU_;
 	CameraConfig cameraConfig_;
-	float yawRot_ = 0.0f;
-	float pitchRot_ = 0.0f;
 
 	Vector3 nextPosition_;
 	Vector3 direction_;

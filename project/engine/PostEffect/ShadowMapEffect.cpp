@@ -41,11 +41,14 @@ void ShadowMapEffect::Initialize(
 void ShadowMapEffect::UpdateImGui() {
 
 	if(ImGui::TreeNode("ShadowMapEffect")){
-		ImGui::Checkbox("Enable", &shadowMapEffectInfo_->isActive);
+		
 		ImGui::SliderFloat("Bias", &shadowMapEffectInfo_->bias, 0.0f, 0.05f, "%.5f");
 		ImGui::SliderFloat("PCFRange", &shadowMapEffectInfo_->pcfRange, 0.0f, 5.0f, "%.5f");
 		ImGui::TreePop();
 	}
+
+	ImGui::SameLine();
+	ImGui::Checkbox("##ShadowMap::isActive", &shadowMapEffectInfo_->isActive);
 }
 
 //=========================================================

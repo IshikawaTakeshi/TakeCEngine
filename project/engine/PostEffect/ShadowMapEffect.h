@@ -28,6 +28,12 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	void SetIsActive(bool isActive) override {
+		if (shadowMapEffectInfo_) {
+			shadowMapEffectInfo_->isActive = isActive;
+		}
+	}
+
 private:
 
 	// シャドウマップエフェクト情報構造体

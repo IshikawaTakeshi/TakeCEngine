@@ -40,6 +40,8 @@ public:
 	/// </summary>
 	virtual void Dispatch() = 0;
 
+	virtual void SetIsActive(bool isActive) = 0;
+
 public:
 	//=========================================================
 	// accessors

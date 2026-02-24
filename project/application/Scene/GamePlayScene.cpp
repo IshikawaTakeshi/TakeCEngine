@@ -146,6 +146,9 @@ void GamePlayScene::Initialize() {
 
 	// 最初の状態設定
 	behaviorRequest_ = SceneBehavior::GAMESTART;
+
+	// ShadowMapEffectを有効化
+	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect", true);
 }
 
 //====================================================================

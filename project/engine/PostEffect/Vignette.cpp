@@ -40,7 +40,7 @@ void Vignette::UpdateImGui() {
 	}
 
 	ImGui::SameLine();
-	ImGui::Checkbox("##Vinette::isActive", &vignetteInfoData_->flag);
+	ImGui::Checkbox("##Vinette::isActive", &vignetteInfoData_->isActive);
 #endif // _DEBUG
 }
 

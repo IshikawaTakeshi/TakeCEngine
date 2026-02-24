@@ -175,21 +175,16 @@ void MyGame::LoadModel() {
 	TakeC::ModelManager::GetInstance().LoadModel("boostEffectCone.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Bullet.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("cube.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Deer.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Floor.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Ground.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Missile.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("plane.gltf","skyBox_blueSky.dds");
-	TakeC::ModelManager::GetInstance().LoadModel("player_singleMesh.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("player_MultiMesh.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Player_Model_Ver2.0.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Enemy.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("ICOBall.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Rifle.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("VerticalMissileLauncher.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("ShotGun.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("MachineGun.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Rail.gltf");
 	//TakeC::ModelManager::GetInstance().LoadModelAll();
 	//obj
 

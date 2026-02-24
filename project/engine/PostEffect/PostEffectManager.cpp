@@ -172,6 +172,32 @@ void PostEffectManager::InitializeEffect(const std::string& name, const std::wst
 }
 
 //======================================================================
+// 特定のPostEffectが存在するか検索
+//======================================================================
+PostEffect* TakeC::PostEffectManager::FindEffect(const std::string& name) const {
+	
+	for (const auto& postEffect : postEffects_) {
+		if (postEffect.name == name) {
+			return postEffect.postEffect.get();
+		}
+	}
+	return nullptr; // 見つからない場合はnullptrを返す
+}
+
+void TakeC::PostEffectManager::SetEffectActive(const std::string& name, bool isActive) {
+
+	PostEffect* effect = FindEffect(name);
+	if (effect) {
+		
+		effect->SetIsActive(isActive);
+	}
+	else {
+		Logger::Log("PostEffectManager::SetEffectActive() : PostEffect not found: " + name);
+	}
+}
+
+
+//======================================================================
 // 最終出力テクスチャのSRVインデックスを取得
 //======================================================================
 uint32_t PostEffectManager::GetFinalOutputSrvIndex() const {
