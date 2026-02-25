@@ -442,17 +442,9 @@ void GamePlayScene::InitializeGamePlay() {
 
 void GamePlayScene::UpdateGamePlay() {
 
-	// 予測命中位置の計算
-	Vector3 toEnemy = enemy_->GetObject3d()->GetTranslate() -
-		player_->GetObject3d()->GetTranslate();
-	float travelTime = Vector3Math::Length(toEnemy) /
-		player_->GetCurrentWeapon(0)->GetBulletSpeed();
-	Vector3 predictedImpactPos = enemy_->GetObject3d()->GetTranslate() +
-		enemy_->GetVelocity() * travelTime;
-
 	// playerReticleの更新
 	playerReticle_->SetIsFocus(player_->IsFocus());
-	playerReticle_->Update(player_->GetFocusTargetPos(), predictedImpactPos);
+	playerReticle_->Update(player_->GetFocusTargetPos(), enemy_->GetBodyPosition());
 
 	// playerのHPバーの更新
 	playerHpBar_->Update(player_->GetHealth(), player_->GetMaxHealth());

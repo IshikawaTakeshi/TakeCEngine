@@ -235,9 +235,6 @@
     <ClCompile Include="engine\Base\ModelManager.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Particle\Particle3d.cpp">
-      <Filter>engine\3d\Particle</Filter>
-    </ClCompile>
     <ClCompile Include="engine\3d\Particle\ParticleAttribute.cpp">
       <Filter>engine\3d\Particle</Filter>
     </ClCompile>
@@ -738,9 +735,6 @@
     </ClInclude>
     <ClInclude Include="engine\Base\ModelManager.h">
       <Filter>engine\base</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\3d\Particle\Particle3d.h">
-      <Filter>engine\3d\Particle</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Particle\ParticleAttribute.h">
       <Filter>engine\3d\Particle</Filter>

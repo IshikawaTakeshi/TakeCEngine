@@ -182,6 +182,7 @@ void MyGame::LoadModel() {
 	TakeC::ModelManager::GetInstance().LoadModel("Player_Model_Ver2.0.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("ICOBall.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("Rifle.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Rail.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("VerticalMissileLauncher.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("ShotGun.gltf");
 	TakeC::ModelManager::GetInstance().LoadModel("MachineGun.gltf");
