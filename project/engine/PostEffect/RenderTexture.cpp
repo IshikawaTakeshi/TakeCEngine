@@ -2,6 +2,7 @@
 
 #include "Utility/ResourceBarrier.h"
 #include "Utility/Logger.h"
+#include "Utility/StringUtility.h"
 #include "PostEffect/PostEffectManager.h"
 
 using namespace TakeC;
@@ -74,19 +75,56 @@ void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager
 	SetViewport(depthWidth, depthHeight);
 	//ScissorRectの設定
 	SetScissorRect(depthWidth, depthHeight);
+
+	//GBufferのフォーマット
+	DXGI_FORMAT formats[kNumGBuffers] = {
+		DXGI_FORMAT_R8G8B8A8_UNORM,       // Albedo
+		DXGI_FORMAT_R16G16B16A16_FLOAT,   // Normal
+		DXGI_FORMAT_R8G8B8A8_UNORM,       // Material
+	};
+
+	//GBufferの生成
+	for (int i = 0; i < kNumGBuffers; i++) {
+		//Gバッファリソースの生成
+		gBufferResources_[i] = dxCommon_->CreateRenderTextureResource(
+			dxCommon_->GetDevice(), depthWidth, depthHeight, formats[i], kRenderTargetClearColor_);
+		gBufferResources_[i]->SetName(StringUtility::ConvertString("gBufferResource_" + std::to_string(i)).c_str());
+		//GバッファのRTV生成
+		gBufferRtvIndices_[i] = rtvManager_->Allocate();
+		rtvManager_->CreateRTV(gBufferResources_[i].Get(), gBufferRtvIndices_[i]);
+		gBufferRtvHandles_[i] = rtvManager_->GetRtvDescriptorHandleCPU(gBufferRtvIndices_[i]);
+		//GバッファのSRV生成
+		gBufferSrvIndices_[i] = srvManager_->Allocate();
+		srvManager_->CreateSRVforRenderTexture(gBufferResources_[i].Get(), DXGI_FORMAT_R16G16B16A16_FLOAT, gBufferSrvIndices_[i]);
+	}
 }
 
 //=======================================================================
 // レンダーターターゲットのクリア
 //=======================================================================
 
-void RenderTexture::ClearRenderTarget() {
+void RenderTexture::ClearRenderTarget(RenderTargetType type) {
 
-	//描画先のRTVとDSVを設定する
-	dxCommon_->GetCommandList()->OMSetRenderTargets(1, &rtvHandle_, false, &dsvHandle_);
-	// 全画面クリア
-	dxCommon_->GetCommandList()->ClearRenderTargetView(rtvHandle_, clearValue_, 0, nullptr);
-	//指定した深度で画面全体をクリアにする
+	if (type == RenderTargetType::Forward) {
+		//描画先のRTVとDSVを設定
+		dxCommon_->GetCommandList()->OMSetRenderTargets(1, &rtvHandle_, FALSE, &dsvHandle_);
+		//レンダーテクスチャのクリア
+		dxCommon_->GetCommandList()->ClearRenderTargetView(rtvHandle_, clearValue_, 0, nullptr);
+	}
+	else if(type == RenderTargetType::Deferred){
+
+		//描画先のRTVとDSVを設定
+		dxCommon_->GetCommandList()->OMSetRenderTargets(kNumGBuffers, gBufferRtvHandles_.data(), FALSE, &dsvHandle_);
+		for (int i = 0; i < kNumGBuffers; i++) {
+			//Gバッファのクリア
+			dxCommon_->GetCommandList()->ClearRenderTargetView(gBufferRtvHandles_[i], clearValue_, 0, nullptr);
+		}
+		
+	} else {
+		assert(0 && "Invalid RenderTargetType");
+	}
+
+	//深度ステンシルバッファのクリア
 	dxCommon_->GetCommandList()->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	// Viewportを設定
 	dxCommon_->GetCommandList()->RSSetViewports(1, &viewport_);

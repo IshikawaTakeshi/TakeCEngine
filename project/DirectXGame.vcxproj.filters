@@ -88,6 +88,8 @@
     <FxCompile Include="Resources\shaders\PostEffect\ShadowMapEffect.CS.hlsl" />
     <FxCompile Include="Resources\shaders\Shadow\ShadowPass.VS.hlsl" />
     <FxCompile Include="Resources\shaders\Shadow\ShadowPass.PS.hlsl" />
+    <FxCompile Include="Resources\shaders\GBuffer.VS.hlsl" />
+    <FxCompile Include="Resources\shaders\GBuffer.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -1157,6 +1159,7 @@
     <ClInclude Include="engine\Animation\AnimationState.h" />
     <ClInclude Include="engine\Animation\AnimatorController.h" />
     <ClInclude Include="application\Entity\Animation\AnimationMapper.h" />
+    <ClInclude Include="engine\Base\GBufferTypeEnum.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -1253,6 +1256,7 @@
     <None Include="Resources\shaders\PostEffect\BloomEffectInfo.hlsli" />
     <None Include="Resources\shaders\Shadow\Shadowpass.hlsli" />
     <None Include="Resources\shaders\Sprite\ArcGaugeParam.hlsli" />
+    <None Include="Resources\shaders\GBuffer.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">

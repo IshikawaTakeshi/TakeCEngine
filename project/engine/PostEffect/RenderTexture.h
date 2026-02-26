@@ -1,15 +1,22 @@
 #pragma once
-#include "base/DirectXCommon.h"
-#include "base/SrvManager.h"
-#include "base/PipelineStateObject.h"
+#include "engine/Base/DirectXCommon.h"
+#include "engine/Base/SrvManager.h"
+#include "engine/Base/PipelineStateObject.h"
+#include "engine/Base/WinApp.h"
+#include "engine/Base/GBufferTypeEnum.h"
 #include "PostEffect/PostEffectManager.h"
-#include "engine/base/WinApp.h"
+#include <array>
 
 //============================================================
 //	RenderTexture class
 //============================================================
 class RenderTexture {
 public:
+
+	enum class RenderTargetType {
+		Forward,
+		Deferred,
+	};
 
 	//=========================================================
 	// functions
@@ -34,7 +41,7 @@ public:
 	/// <summary>
 	/// レンダーターゲットのクリア
 	/// </summary>
-	void ClearRenderTarget();
+	void ClearRenderTarget(RenderTargetType type = RenderTargetType::Forward);
 
 	/// <summary>
 	/// 描画前処理
@@ -89,7 +96,6 @@ private:
 	TakeC::SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
 	TakeC::RtvManager* rtvManager_ = nullptr; //RtvManagerのポインタ
 	//clearValue
-	//clearValue
 	const Vector4 kRenderTargetClearColor_ = { 0.1f, 0.25f, 0.5f, 1.0f };
 	const float clearValue_[4] = { kRenderTargetClearColor_.x, kRenderTargetClearColor_.y, kRenderTargetClearColor_.z, kRenderTargetClearColor_.w };
 
@@ -109,9 +115,14 @@ private:
 
 	ComPtr<ID3D12Resource> depthStencilResource_; //深度ステンシルバッファリソース
 
-	std::unique_ptr<PSO> renderTexturePSO_; //PSO
+	std::array<ComPtr<ID3D12Resource>, kNumGBuffers> gBufferResources_; //Gバッファリソース
+	std::array<uint32_t, kNumGBuffers> gBufferRtvIndices_; //GバッファのRTVインデックス
+	std::array<uint32_t, kNumGBuffers> gBufferSrvIndices_; //GバッファのSRVインデックス
+	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, kNumGBuffers> gBufferRtvHandles_; //GバッファのRTVハンドル
+
+	std::unique_ptr<PSO> renderTexturePSO_;     //PSO
 	ComPtr<ID3D12RootSignature> rootSignature_; //ルートシグネチャ
-	D3D12_VIEWPORT viewport_{};
-	D3D12_RECT scissorRect_ = {};
+	D3D12_VIEWPORT viewport_{};   //ビューポート
+	D3D12_RECT scissorRect_ = {}; //シザー矩形
 
 };
