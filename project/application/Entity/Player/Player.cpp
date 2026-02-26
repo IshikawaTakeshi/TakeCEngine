@@ -433,7 +433,7 @@ void Player::SavePlayerData(const std::string& characterName) {
 void Player::DrawCollider() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	collider_->DrawCollider();
-	object3d_->GetModel()->GetSkeleton()->Draw(object3d_->GetWorldMatrix());
+	//object3d_->GetModel()->GetSkeleton()->Draw(object3d_->GetWorldMatrix());
 	backEmitter_->DrawWireFrame();
 #endif
 }
