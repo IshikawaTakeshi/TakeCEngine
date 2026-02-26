@@ -94,4 +94,8 @@ void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> d
 	materialData_->enableLighting = false;
 	materialData_->shininess = 60.0f;
 	materialData_->envCoefficient = 0.01f;
+
+	materialData_->metallic = 0.0f;
+	materialData_->roughness = 0.5f;
+	materialData_->ao = 1.0f;
 }

@@ -16,6 +16,10 @@ struct MaterialData {
 	uint32_t enableLighting; //ライティングを有効にするフラグ
 	float shininess; //鏡面反射の強さ
 	float envCoefficient; //環境光の強さ
+
+	float metallic; //金属度
+	float roughness; //粗さ
+	float ao; //環境光遮蔽
 };
 
 //前方宣言
@@ -77,6 +81,10 @@ public:
 	const Vector3& GetUvRotate() const { return uvTransform_.rotate; }
 	const Vector3& GetUvTranslate() const { return uvTransform_.translate; }
 
+	float GetMetallic() const        { return materialData_->metallic; }
+	float GetRoughness() const       { return materialData_->roughness; }
+	float GetAo() const              { return materialData_->ao; }
+
 
 	//----- setter ---------------------------
 
@@ -105,6 +113,10 @@ public:
 	void SetTextureFilePath(const std::string& filePath) { textureFilePath_ = filePath; }
 	// 環境マップ用テクスチャファイルパスの設定
 	void SetEnvMapFilePath(const std::string& filePath) { envMapFilePath_ = filePath; }
+
+	void SetMetallic(float metallic) { materialData_->metallic = metallic; }
+	void SetRoughness(float roughness) { materialData_->roughness = roughness; }
+	void SetAo(float ao) { materialData_->ao = ao; }
 
 private:
 
