@@ -47,7 +47,7 @@
         },
         "kMaxMoveSpeed": 120.0,
         "maxHealth": 5000.0,
-        "modelFilePath": "Enemy.gltf",
+        "modelFilePath": "Enemy_Model.gltf",
         "moveDirection": {
             "x": -0.8068184852600098,
             "y": 0.08713945746421814,

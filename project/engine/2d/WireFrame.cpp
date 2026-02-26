@@ -326,7 +326,7 @@ void TakeC::WireFrame::Draw() {
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
 	//描画
-	dxCommon_->GetCommandList()->DrawInstanced(lineIndex_, lineIndex_ / kLineVertexCount_, 0, 0);
+	dxCommon_->GetCommandList()->DrawInstanced(lineIndex_, 1, 0, 0);
 
 	//リセット
 	lineIndex_ = 0;

@@ -28,7 +28,7 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="owner"></param>
-	void Initialize(GameCharacter* owner);
+	void Initialize(GameCharacter* owner,const std::string& effectName);
 
 	/// <summary>
 	/// 更新

@@ -74,7 +74,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	boostEffects_.resize(3);
 	for (int i = 0; i < boostEffects_.size(); i++) {
 		boostEffects_[i] = std::make_unique<BoostEffect>();
-		boostEffects_[i]->Initialize(this);
+		boostEffects_[i]->Initialize(this,"BoostEffect_Player.json");
 	}
 	boostEffects_[LEFT_LEG]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "knees_left.002");
 	boostEffects_[RIGHT_LEG]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "knees_right.002");

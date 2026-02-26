@@ -79,11 +79,10 @@ void GamePlayScene::Initialize() {
 	enemy_ = std::make_unique<Enemy>();
 	inputProvider_Enemy = std::make_unique<EnemyInputProvider>(enemy_.get());
 	enemy_->SetInputProvider(inputProvider_Enemy.get());
-	enemy_->Initialize(&Object3dCommon::GetInstance(),"Player_Model_Ver2.0.gltf");
+	enemy_->Initialize(&Object3dCommon::GetInstance(),"Enemy_Model.gltf");
 	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(),
 		bulletManager_.get());
-	// enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("player_singleMesh.gltf",
-	// "moveshot"));
+	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf","Running"));
 
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();

@@ -358,7 +358,7 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 							targetRotate = -targetRotate;
 						}
 
-						current = Easing::Slerp(current, targetRotate, 0.3f); // 例: 0.05f〜0.3f
+						current = Easing::Slerp(current, targetRotate, 1.0f); // 例: 0.05f〜0.3f
 						current = QuaternionMath::Normalize(current);
 					}
 				}
