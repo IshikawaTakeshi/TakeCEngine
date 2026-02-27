@@ -13,8 +13,8 @@ static const float2 kTexCoords[kNumVertex] = {
 	float2(0.0f, 2.0f)  //LeftBottom
 };
 
-VertexShaderOutput main(uint vertexId : SV_VertexID) {
-	VertexShaderOutput output;
+VSOutput_FullScreen main(uint vertexId : SV_VertexID) {
+	VSOutput_FullScreen output;
 	output.position = kPositions[vertexId];
 	output.texcoord = kTexCoords[vertexId];
 	return output;

@@ -64,9 +64,14 @@ public:
 	void PreDraw();
 
 	/// <summary>
+	/// GeometryPass描画前処理
+	/// </summary>
+	void PreDraw_GeometryPass();
+
+	/// <summary>
 	/// 影描画前処理
 	/// </summary>
-	void PreDrawShadowPass();
+	void PreDraw_ShadowPass();
 
 	/// <summary>
 	/// 加算ブレンド描画前処理
@@ -91,6 +96,8 @@ public:
 	Camera* GetDefaultCamera() const { return defaultCamera_; }
 	/// PSOの取得
 	PSO* GetPSO() const { return pso_.get(); }
+	/// geometryPass用PSOの取得
+	PSO* GetGeometryPassPSO() const { return geometryPassPso_.get(); }
 	/// 加算ブレンド用PSOの取得
 	PSO* GetAddBlendPSO() const { return addBlendPso_.get(); }
 	/// 影描画用PSOの取得
@@ -109,8 +116,6 @@ private:
 
 	void SetCBufferViewCamera(PSO* pso);
 
-	void SetCBufferViewLightCamera(PSO* pso);
-
 private:
 
 	//DirectXCommon
@@ -128,6 +133,8 @@ private:
 
 	//PSO
 	std::unique_ptr<PSO> pso_ = nullptr;
+	//geometryPass用PSO
+	std::unique_ptr<PSO> geometryPassPso_ = nullptr;
 	//加算ブレンド用PSO
 	std::unique_ptr<PSO> addBlendPso_ = nullptr;
 
@@ -136,6 +143,7 @@ private:
 	
 	//RootSignature
 	ComPtr<ID3D12RootSignature> graphicRootSignature_ = nullptr;
+	ComPtr<ID3D12RootSignature> geometryPassRootSignature_ = nullptr;
 	ComPtr<ID3D12RootSignature> computeRootSignature_ = nullptr;
 	ComPtr<ID3D12RootSignature> addBlendRootSignature_ = nullptr;
 	//影描画用RootSignature

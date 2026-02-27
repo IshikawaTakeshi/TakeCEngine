@@ -18,7 +18,7 @@ struct SpotLight {
 //===============================
 float3 CalcSpotLighting(
 	StructuredBuffer<SpotLight> spotLights,
-	Material gMaterial,
+	float shininess,
 	uint lightCount,
 	float3 N, float3 worldPos, float3 viewDir, float3 albedo) {
 	
@@ -57,7 +57,7 @@ float3 CalcSpotLighting(
 		
 		// specular
 		float3 halfVec = normalize(L + viewDir);
-		float spec = pow(saturate(dot(N, halfVec)), gMaterial.shininess);
+		float spec = pow(saturate(dot(N, halfVec)), shininess);
 		
 		// 減衰率が0の場合は一定、そうでない場合は減衰計算
 		float baseAtten = saturate(1.0f - distanceSpot / sLight.distance);

@@ -4,13 +4,15 @@
 //	GBufferTypeEnum
 //============================================================
 
-enum GBufferTypeEnum {
-	// 法線
-	Normal,
-	// アルベド
-	Albedo,
-	//マテリアル
-	Material,
-	// カウンター
-	kNumGBuffers,
-};
+namespace TakeC {
+	enum GBufferTypeEnum {
+		// 法線
+		GBUFFER_Normal,
+		// アルベド
+		GBUFFER_Albedo,
+		//マテリアル
+		GBUFFER_Material,
+		// カウンター
+		kNumGBuffers,
+	};
+}

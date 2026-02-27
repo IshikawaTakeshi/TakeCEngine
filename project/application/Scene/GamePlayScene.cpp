@@ -315,15 +315,9 @@ void GamePlayScene::UpdateImGui() {
 //			描画処理
 //====================================================================
 
-void GamePlayScene::Draw() {
+void GamePlayScene::DrawObject_GBuffer() {
 
-	skyBox_->Draw(); // 天球の描画
-
-#pragma region 背景スプライト描画
-	// スプライトの描画前処理
-	SpriteCommon::GetInstance().PreDraw();
-
-#pragma endregion
+	
 
 #pragma region Object3d描画
 
@@ -332,12 +326,8 @@ void GamePlayScene::Draw() {
 	player_->GetObject3d()->Dispatch();
 	enemy_->GetObject3d()->Dispatch();
 
-	// for (auto& object : levelObjects_) {
-	//	object->DisPatch();
-	// }
-
 	// Object3dの描画前処理
-	Object3dCommon::GetInstance().PreDraw();
+	Object3dCommon::GetInstance().PreDraw_GeometryPass();
 	// プレイヤーの描画
 	player_->Draw();
 	// 敵の描画
@@ -347,11 +337,18 @@ void GamePlayScene::Draw() {
 	for (auto& object : levelObjects_) {
 		object.second->Draw();
 	}
-	// Object3dCommon::GetInstance().PreDrawAddBlend();
 
 #pragma endregion
 
-  // 当たり判定の描画前処理
+ 
+}
+
+void GamePlayScene::DrawObject_Forward() {
+
+	// 天球の描画
+	skyBox_->Draw();
+
+	// 当たり判定の描画前処理
 	enemy_->DrawCollider();
 	player_->DrawCollider();
 	// spotLightの描画
@@ -397,7 +394,7 @@ void GamePlayScene::DrawShadow() {
 	const LightCameraInfo& lightCameraInfo =
 		TakeCFrameWork::GetLightManager()->GetLightCameraInfo();
 	// Object3dの影描画前処理
-	Object3dCommon::GetInstance().PreDrawShadowPass();
+	Object3dCommon::GetInstance().PreDraw_ShadowPass();
 	// 影の描画
 	player_->DrawShadow(lightCameraInfo);
 	enemy_->DrawShadow(lightCameraInfo);

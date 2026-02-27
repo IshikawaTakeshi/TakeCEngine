@@ -89,14 +89,18 @@ void GameOverScene::UpdateImGui() {
 //====================================================================
 //			描画処理
 //====================================================================
-void GameOverScene::Draw() {
-	skybox_->Draw();
+void GameOverScene::DrawObject_GBuffer() {
 
 	
 	Object3dCommon::GetInstance().PreDraw(); // Object3dの描画前処理
 	
 	//ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); // パーティクルの描画
+}
+
+void GameOverScene::DrawObject_Forward() {
+	skybox_->Draw();
+
 }
 
 void GameOverScene::DrawSprite() {

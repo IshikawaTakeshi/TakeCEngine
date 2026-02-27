@@ -20,6 +20,7 @@ struct MaterialData {
 	float metallic; //金属度
 	float roughness; //粗さ
 	float ao; //環境光遮蔽
+	uint32_t envMapTexutreIndex; //環境マップ用テクスチャインデックス
 };
 
 //前方宣言

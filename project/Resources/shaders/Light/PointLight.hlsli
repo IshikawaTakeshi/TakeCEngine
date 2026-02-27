@@ -20,7 +20,7 @@ struct PointLight {
 
 float3 CalcPointLighting(
 	StructuredBuffer<PointLight> pointLights,
-	Material gMaterial,
+	float shininess,
 	uint lightCount,
 	float3 N,float3 worldPos, float3 viewDir, float3 albedo) {
 	
@@ -52,7 +52,7 @@ float3 CalcPointLighting(
 		// スペキュラ計算
 		float3 halfVec = normalize(dir + viewDir);
 		float NdotH = dot(N, halfVec);
-		float spec = pow(saturate(NdotH), gMaterial.shininess);
+		float spec = pow(saturate(NdotH), shininess);
 
 		//decayが常に使われる前提で簡略化
 		float attenuation = pow(saturate(1.0f - distancePoint / pLight.radius), pLight.decay);

@@ -108,16 +108,21 @@ void TitleScene::UpdateImGui() {
 //====================================================================
 //			描画処理
 //====================================================================
-void TitleScene::Draw() {
+void TitleScene::DrawObject_GBuffer() {
 
-	//SkyBox描画
-	skyBox_->Draw();
-
+	
 	Object3dCommon::GetInstance().Dispatch();
 	playerModel_->Dispatch();
 
-	Object3dCommon::GetInstance().PreDraw();
+	Object3dCommon::GetInstance().PreDraw_GeometryPass();
 	playerModel_->Draw();
+
+}
+
+void TitleScene::DrawObject_Forward() {
+
+	//SkyBox描画
+	skyBox_->Draw();
 
 }
 

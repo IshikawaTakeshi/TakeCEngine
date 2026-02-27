@@ -163,7 +163,7 @@ void EnemySelectScene::UpdateImGui() {
 //			描画処理
 //====================================================================
 
-void EnemySelectScene::Draw() {
+void EnemySelectScene::DrawObject_GBuffer() {
 
 	skyBox_->Draw();    //天球の描画
 
@@ -186,6 +186,9 @@ void EnemySelectScene::Draw() {
 
 	//パーティクルの描画
 	TakeCFrameWork::GetParticleManager()->Draw();
+}
+
+void EnemySelectScene::DrawObject_Forward() {
 }
 
 void EnemySelectScene::DrawSprite() {

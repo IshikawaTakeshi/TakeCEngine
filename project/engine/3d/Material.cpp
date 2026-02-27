@@ -98,4 +98,5 @@ void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> d
 	materialData_->metallic = 0.0f;
 	materialData_->roughness = 0.5f;
 	materialData_->ao = 1.0f;
+	materialData_->envMapTexutreIndex = TakeC::TextureManager::GetInstance().GetSrvIndex(envMapFilePath_);
 }

@@ -7,7 +7,7 @@ struct PixcelShaderOutput {
 	float4 color : SV_TARGET0;
 };
 
-PixcelShaderOutput main(VertexShaderOutput input) {
+PixcelShaderOutput main(VSOutput_FullScreen input) {
 	PixcelShaderOutput output;
 	output.color = gTexture.Sample(gSampler, input.texcoord);
 	return output;

@@ -39,7 +39,10 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	virtual void Draw() = 0;
+	virtual void DrawObject_GBuffer() = 0;
+
+	//描画処理(Forward)
+	virtual void DrawObject_Forward() = 0;
 
 	virtual void DrawSprite() = 0;
 

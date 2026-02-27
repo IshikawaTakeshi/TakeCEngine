@@ -47,7 +47,12 @@ public:
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void DrawObject();
+	void DrawObject_Deferred();
+
+	/// <summary>
+	/// 描画処理(forward)
+	/// </summary>
+	void DrawObject_Forward();
 
 	/// <summary>
 	/// スプライト描画処理

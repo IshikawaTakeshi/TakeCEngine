@@ -35,6 +35,13 @@ void Object3dCommon::Initialize(TakeC::DirectXCommon* directXCommon,TakeC::Light
 	pso_->CreateComputePSO(dxCommon_->GetDevice());
 	pso_->SetComputePipelineName("Object3dPSO:Conpute");
 
+	//geometryPass用PSO生成
+	geometryPassPso_ = std::make_unique<PSO>();
+	geometryPassPso_->CompileVertexShader(dxCommon_->GetDXC(), L"GBuffer.VS.hlsl");
+	geometryPassPso_->CompilePixelShader(dxCommon_->GetDXC(), L"GBuffer.PS.hlsl");
+	geometryPassPso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL);
+	geometryPassPso_->SetGraphicPipelineName("Object3dPSO:graphic:GBuffer");
+
 	//加算ブレンド用PSO生成
 	addBlendPso_ = std::make_unique<PSO>();
 	addBlendPso_->CompileVertexShader(dxCommon_->GetDXC(), L"3d/Object3d.VS.hlsl");
@@ -52,6 +59,7 @@ void Object3dCommon::Initialize(TakeC::DirectXCommon* directXCommon,TakeC::Light
 
 	//RootSignatureの取得
 	graphicRootSignature_ = pso_->GetGraphicRootSignature();
+	geometryPassRootSignature_ = geometryPassPso_->GetGraphicRootSignature();
 	computeRootSignature_ = pso_->GetComputeRootSignature();
 	addBlendRootSignature_ = addBlendPso_->GetGraphicRootSignature();
 
@@ -112,10 +120,20 @@ void Object3dCommon::PreDraw() {
 	lightManager_->SetLightResources(pso_.get());
 }
 
+void Object3dCommon::PreDraw_GeometryPass() {
+
+	//PSO設定
+	dxCommon_->GetCommandList()->SetPipelineState(geometryPassPso_->GetGraphicPipelineState());
+	// ルートシグネチャ設定
+	dxCommon_->GetCommandList()->SetGraphicsRootSignature(geometryPassRootSignature_.Get());
+	//プリミティブトポロジー設定
+	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
 //================================================================================================
 // 影描画前処理
 //================================================================================================
-void Object3dCommon::PreDrawShadowPass() {
+void Object3dCommon::PreDraw_ShadowPass() {
 
 	//PSO設定
 	dxCommon_->GetCommandList()->SetPipelineState(shadowPassPso_->GetGraphicPipelineState());

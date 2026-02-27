@@ -112,32 +112,49 @@ void MyGame::Update() {
 
 void MyGame::Draw() {
 	
-	//===========================================
-	// 1. シャドウパス
-	//===========================================
+	//==================================================
+	// 1. ShadowMap Pass（ライトカメラ視点で深度のみ描画）
+	//==================================================
 	shadowRenderTexture_->ClearRenderTarget();
 	srvManager_->SetDescriptorHeap();
-	sceneManager_->DrawShadow();  // ライトカメラ視点で深度のみ描画
 
-	//===========================================
-	// 2. メインパス（シーン描画）
-	//===========================================
-	renderTexture_->ClearRenderTarget();
+	// ライトカメラ視点で深度のみ描画
+	sceneManager_->DrawShadow();  
+
+	//==================================================
+	// 2. Geometry Pass（Gバッファへの描画）
+	//==================================================
+	renderTexture_->ClearRenderTarget(RenderTexture::RenderTargetType::Deferred);
 	srvManager_->SetDescriptorHeap();
-	sceneManager_->DrawObject();  // 通常のオブジェクト描画
-	sceneManager_->DrawSprite();  // スプライト描画
-
+	sceneManager_->DrawObject_Deferred();
 	
 
-	//===========================================
-	// 3. ポストエフェクト
-	//===========================================
+	//==================================================
+	// 3. Ligting Pass（フルスクリーンで合成)
+	//==================================================
+	renderTexture_->ClearRenderTarget(RenderTexture::RenderTargetType::Forward);
+	srvManager_->SetDescriptorHeap();
+	renderTexture_->PreDrawLightingPass(); // GバッファのSRVをライティングシェーダーにバインド
+	renderTexture_->Draw(); // フルスクリーン描画（ライティングシェーダーで合成）
+	renderTexture_->PostDrawLightingPass(); // ライティングシェーダーで使用したSRVの解放
+
+	//==================================================
+	// 4. Forward Pass（通常の描画）
+	//==================================================
+
+	// オブジェクト描画
+	sceneManager_->DrawObject_Forward();
+	sceneManager_->DrawSprite();  // スプライト描画
+
+	//==================================================
+	// 5. ポストエフェクト
+	//==================================================
 	// シャドウマップ + メインカラー + 深度 を使って影を適用
 	postEffectManager_->AllDispatch();
 
-	//===========================================
-	// 4. 最終描画（スワップチェーンへ）
-	//===========================================
+	//==================================================
+	// 6. 最終描画（スワップチェーンへ）
+	//==================================================
 	directXCommon_->PreDraw();
 
 	renderTexture_->PreDraw();
@@ -146,13 +163,14 @@ void MyGame::Draw() {
 	renderTexture_->PostDraw();
 
 #if defined(_DEBUG) || defined(_DEVELOP)
+	// ImGuiの描画
 	imguiManager_->PostDraw();
 #endif
 
 	directXCommon_->PostDraw();
 
 	//===========================================
-	// 5. 次フレーム準備
+	// 7. 次フレーム準備
 	//===========================================
 
 	// モデルのリロード適用

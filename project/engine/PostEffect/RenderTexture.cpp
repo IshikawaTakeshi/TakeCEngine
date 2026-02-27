@@ -4,6 +4,8 @@
 #include "Utility/Logger.h"
 #include "Utility/StringUtility.h"
 #include "PostEffect/PostEffectManager.h"
+#include "base/TakeCFrameWork.h"
+#include "base/TextureManager.h"
 
 using namespace TakeC;
 
@@ -77,26 +79,37 @@ void RenderTexture::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager
 	SetScissorRect(depthWidth, depthHeight);
 
 	//GBufferのフォーマット
-	DXGI_FORMAT formats[kNumGBuffers] = {
-		DXGI_FORMAT_R8G8B8A8_UNORM,       // Albedo
-		DXGI_FORMAT_R16G16B16A16_FLOAT,   // Normal
-		DXGI_FORMAT_R8G8B8A8_UNORM,       // Material
-	};
+	//DXGI_FORMAT formats[kNumGBuffers] = {
+	//	DXGI_FORMAT_R8G8B8A8_UNORM,       // Albedo
+	//	DXGI_FORMAT_R16G16B16A16_FLOAT,   // Normal
+	//	DXGI_FORMAT_R8G8B8A8_UNORM,       // Material
+	//};
 
 	//GBufferの生成
+	auto gBufferType = magic_enum::enum_entries<GBufferTypeEnum>();
 	for (int i = 0; i < kNumGBuffers; i++) {
 		//Gバッファリソースの生成
 		gBufferResources_[i] = dxCommon_->CreateRenderTextureResource(
-			dxCommon_->GetDevice(), depthWidth, depthHeight, formats[i], kRenderTargetClearColor_);
-		gBufferResources_[i]->SetName(StringUtility::ConvertString("gBufferResource_" + std::to_string(i)).c_str());
+			dxCommon_->GetDevice(), depthWidth, depthHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, kRenderTargetClearColor_);
+		auto BufferTypeName = std::string(gBufferType[i].second.data());
+		gBufferResources_[i]->SetName(StringUtility::ConvertString("gBufferResource_" + BufferTypeName).c_str());
 		//GバッファのRTV生成
 		gBufferRtvIndices_[i] = rtvManager_->Allocate();
 		rtvManager_->CreateRTV(gBufferResources_[i].Get(), gBufferRtvIndices_[i]);
 		gBufferRtvHandles_[i] = rtvManager_->GetRtvDescriptorHandleCPU(gBufferRtvIndices_[i]);
 		//GバッファのSRV生成
 		gBufferSrvIndices_[i] = srvManager_->Allocate();
-		srvManager_->CreateSRVforRenderTexture(gBufferResources_[i].Get(), DXGI_FORMAT_R16G16B16A16_FLOAT, gBufferSrvIndices_[i]);
+		srvManager_->CreateSRVforRenderTexture(gBufferResources_[i].Get(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, gBufferSrvIndices_[i]);
 	}
+
+	//LightingPass用のPSO初期化
+	lightingPassPSO_ = std::make_unique<PSO>();
+	lightingPassPSO_->CompileVertexShader(dxCommon_->GetDXC(), L"PostEffect/FullScreen.VS.hlsl");
+	lightingPassPSO_->CompilePixelShader(dxCommon_->GetDXC(), L"Light/LightingPass.PS.hlsl");
+	lightingPassPSO_->CreateRenderTexturePSO(dxCommon_->GetDevice());
+	lightingPassPSO_->SetGraphicPipelineName("LightingPassPSO");
+	//LightingPass用のRootSignatureの取得
+	lightingPassRootSignature_ = lightingPassPSO_->GetGraphicRootSignature();
 }
 
 //=======================================================================
@@ -162,7 +175,7 @@ void RenderTexture::Draw() {
 
 //=======================================================================
 // 描画後処理
-//========================================================================
+//=======================================================================
 
 void RenderTexture::PostDraw() {
 
@@ -173,7 +186,10 @@ void RenderTexture::PostDraw() {
 		renderTextureResource_.Get());
 }
 
-void RenderTexture::TransitionToSRV() {
+//=======================================================================
+// SRVへの遷移
+//=======================================================================
+void RenderTexture::TransitionDepthWriteToSRV() {
 	// DEPTH_WRITE >> NON_PIXEL_SHADER_RESOURCE
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
@@ -181,10 +197,103 @@ void RenderTexture::TransitionToSRV() {
 		depthStencilResource_.Get());
 }
 
-void RenderTexture::TransitionToDepthWrite() {
+//=======================================================================
+// 深度書き込みへの遷移
+//=======================================================================
+void RenderTexture::TransitionSRVToDepthWrite() {
 	//PIXEL_SHADER_RESOURCE >> DEPTH_WRITE
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		depthStencilResource_.Get());
+}
+
+//================================================================
+//GバッファのSRVをライティングシェーダーにバインド
+//================================================================
+void RenderTexture::PreDrawLightingPass() {
+
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+	//PSOの設定
+	commandList->SetPipelineState(lightingPassPSO_->GetGraphicPipelineState());
+	//ルートシグネチャの設定
+	commandList->SetGraphicsRootSignature(lightingPassRootSignature_.Get());
+	// プリミティブトポロジー設定
+	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//Albedo:RENDER_TARGET >> PIXEL_SHADER_RESOURCE
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		gBufferResources_[GBUFFER_Albedo].Get());
+	//Normal:RENDER_TARGET >> PIXEL_SHADER_RESOURCE
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		gBufferResources_[GBUFFER_Normal].Get());
+	//Material:RENDER_TARGET >> PIXEL_SHADER_RESOURCE
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		gBufferResources_[GBUFFER_Material].Get());
+	//depth:DEPTH_WRITE >> PIXEL_SHADER_RESOURCE
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		depthStencilResource_.Get());
+
+	//gGBufferAlbedo
+	srvManager_->SetGraphicsRootDescriptorTable(
+		lightingPassPSO_->GetGraphicBindResourceIndex("gGBufferAlbedo"),
+		gBufferSrvIndices_[GBUFFER_Albedo]);
+	//gGBufferNormal
+	srvManager_->SetGraphicsRootDescriptorTable(
+		lightingPassPSO_->GetGraphicBindResourceIndex("gGBufferNormal"),
+		gBufferSrvIndices_[GBUFFER_Normal]);
+	//gGBufferMaterial
+	srvManager_->SetGraphicsRootDescriptorTable(
+		lightingPassPSO_->GetGraphicBindResourceIndex("gGBufferMaterial"),
+		gBufferSrvIndices_[GBUFFER_Material]);
+	//gSceneDepth
+	srvManager_->SetGraphicsRootDescriptorTable(
+		lightingPassPSO_->GetGraphicBindResourceIndex("gSceneDepth"),
+		depthSrvIndex_);
+
+	//gEnvMapTexture
+	srvManager_->SetGraphicsRootDescriptorTable(
+		lightingPassPSO_->GetGraphicBindResourceIndex("gEnvMapTexture"),
+		TakeC::TextureManager::GetInstance().GetSrvIndex("skyBox_blueSky.dds"));
+
+	//gMainCameraInfo
+	commandList->SetGraphicsRootConstantBufferView(
+		lightingPassPSO_->GetGraphicBindResourceIndex("gMainCameraInfo"), 
+		TakeC::CameraManager::GetInstance().GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
+	//ライトリソースの設定
+	TakeCFrameWork::GetLightManager()->SetLightResources(lightingPassPSO_.get());
+
+	
+}
+
+void RenderTexture::PostDrawLightingPass() {
+	//Albedo:PIXEL_SHADER_RESOURCE >> RENDER_TARGET
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		gBufferResources_[GBUFFER_Albedo].Get());
+	//Normal:PIXEL_SHADER_RESOURCE >> RENDER_TARGET
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		gBufferResources_[GBUFFER_Normal].Get());
+	//Material:PIXEL_SHADER_RESOURCE >> RENDER_TARGET
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		gBufferResources_[GBUFFER_Material].Get());
+	//Depth:PIXEL_SHADER_RESOURCE >> DEPTH_WRITE
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		depthStencilResource_.Get());
 }

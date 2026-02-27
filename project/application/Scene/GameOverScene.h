@@ -41,8 +41,10 @@ public:
 	void Update() override;
 	//ImGuiの更新
 	void UpdateImGui() override;
-	//描画処理
-	void Draw() override;
+	//描画処理(deferred)
+	void DrawObject_GBuffer() override;
+	//描画処理(Forward)
+	void DrawObject_Forward() override;
 	//Sprite描画処理
 	void DrawSprite() override;
 	//シャドウ描画処理

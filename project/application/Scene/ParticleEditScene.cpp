@@ -103,10 +103,7 @@ void ParticleEditScene::UpdateImGui() {
 //=====================================================================
 //			描画処理
 //=====================================================================
-void ParticleEditScene::Draw() {
-
-	//SkyBox描画
-	skyBox_->Draw();
+void ParticleEditScene::DrawObject_GBuffer() {
 
 	//グリッド地面の描画
 	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 50);
@@ -120,6 +117,12 @@ void ParticleEditScene::Draw() {
 	} else if (currentMode_ == EditorMode::Effect) {
 		effectEditor_->Draw();
 	}
+}
+
+void ParticleEditScene::DrawObject_Forward() {
+
+	//SkyBox描画
+	skyBox_->Draw();
 }
 
 void ParticleEditScene::DrawSprite() {

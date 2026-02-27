@@ -15,7 +15,6 @@ namespace StringUtility {
 	std::wstring ConvertString(const std::string& str);
 	//コンバートストリング(string型)
 	std::string ConvertString(const std::wstring& str);
-
 	//enumをstringに変換するテンプレート関数
 	template<ConvertEnum Enum>
 	std::string EnumToString(Enum e);

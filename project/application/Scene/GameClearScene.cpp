@@ -83,15 +83,19 @@ void GameClearScene::UpdateImGui() {
 //====================================================================
 //			描画処理
 //====================================================================
-void GameClearScene::Draw() {
+void GameClearScene::DrawObject_GBuffer() {
 
-	skybox_->Draw(); // 天球の描画
+	
 
 	
 	Object3dCommon::GetInstance().PreDraw();   //Object3dの描画前処理
 
 	//ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理
 	TakeCFrameWork::GetParticleManager()->Draw(); // パーティクルの描画
+}
+
+void GameClearScene::DrawObject_Forward() {
+	skybox_->Draw(); // 天球の描画
 }
 
 void GameClearScene::DrawSprite() {

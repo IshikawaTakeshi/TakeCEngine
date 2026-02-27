@@ -472,7 +472,6 @@ void Enemy::DrawCollider() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	collider_->DrawCollider();
 	bulletSensor_->DrawCollider();
-	//object3d_->GetModel()->GetSkeleton()->Draw(object3d_->GetWorldMatrix());
 #endif // _DEBUG
 }
 

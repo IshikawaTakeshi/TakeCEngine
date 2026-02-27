@@ -58,12 +58,22 @@ public:
 	/// </summary>
 	void PostDraw();
 
-	void TransitionToSRV();
+	/// <summary>
+	/// SRVへの遷移
+	/// </summary>
+	void TransitionDepthWriteToSRV();
 
-	void TransitionToDepthWrite();
+	/// <summary>
+	/// 深度書き込みへの遷移
+	/// </summary>
+	void TransitionSRVToDepthWrite();
 
-	void SetViewport(int32_t width, int32_t height);
-	void SetScissorRect(int32_t width, int32_t height);
+	/// <summary>
+	/// GバッファのSRVをライティングシェーダーにバインド
+	/// </summary>
+	void PreDrawLightingPass();
+
+	void PostDrawLightingPass();
 
 public:
 
@@ -90,6 +100,11 @@ public:
 	uint32_t GetRtvIndex() const { return rtvIndex_; }
 	uint32_t GetDsvIndex() const { return dsvIndex_; }
 
+	//------ setter ----------------
+	void SetViewport(int32_t width, int32_t height);
+	void SetScissorRect(int32_t width, int32_t height);
+
+
 private:
 
 	TakeC::DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
@@ -115,13 +130,19 @@ private:
 
 	ComPtr<ID3D12Resource> depthStencilResource_; //深度ステンシルバッファリソース
 
-	std::array<ComPtr<ID3D12Resource>, kNumGBuffers> gBufferResources_; //Gバッファリソース
-	std::array<uint32_t, kNumGBuffers> gBufferRtvIndices_; //GバッファのRTVインデックス
-	std::array<uint32_t, kNumGBuffers> gBufferSrvIndices_; //GバッファのSRVインデックス
-	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, kNumGBuffers> gBufferRtvHandles_; //GバッファのRTVハンドル
+	std::array<ComPtr<ID3D12Resource>, TakeC::kNumGBuffers> gBufferResources_; //Gバッファリソース
+	std::array<uint32_t, TakeC::kNumGBuffers> gBufferRtvIndices_; //GバッファのRTVインデックス
+	std::array<uint32_t, TakeC::kNumGBuffers> gBufferSrvIndices_; //GバッファのSRVインデックス
+	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, TakeC::kNumGBuffers> gBufferRtvHandles_; //GバッファのRTVハンドル
 
-	std::unique_ptr<PSO> renderTexturePSO_;     //PSO
+	
+	//レンダーテクスチャ描画用PSO
+	std::unique_ptr<PSO> renderTexturePSO_;   
+	//LightingPass用PSO
+	std::unique_ptr<PSO> lightingPassPSO_;
+
 	ComPtr<ID3D12RootSignature> rootSignature_; //ルートシグネチャ
+	ComPtr<ID3D12RootSignature> lightingPassRootSignature_; //ライティングパス用ルートシグネチャ
 	D3D12_VIEWPORT viewport_{};   //ビューポート
 	D3D12_RECT scissorRect_ = {}; //シザー矩形
 

@@ -174,9 +174,13 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 //	描画処理
 //========================================================================
 
-void SceneManager::DrawObject() {
-	currentScene_->Draw();
+void SceneManager::DrawObject_Deferred() {
+	currentScene_->DrawObject_GBuffer();
 	
+}
+
+void SceneManager::DrawObject_Forward() {
+	currentScene_->DrawObject_Forward();
 }
 
 void SceneManager::DrawSprite() {

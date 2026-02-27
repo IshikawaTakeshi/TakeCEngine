@@ -43,19 +43,19 @@ PixelShaderOutput main(VertexShaderOutput input) {
 		
 		//DirectionalLightの計算
 		float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
-		float3 dirLighting = CalcDirectionalLighting(dirLightInfo, material, input.normal, toEye, material.color.rgb * textureColor.rgb);
+		float3 dirLighting = CalcDirectionalLighting(dirLightInfo, material.shininess, input.normal, toEye, material.color.rgb * textureColor.rgb);
 		
 		//pointLightの計算(光の減衰込み)
 		float3 pointLighting = CalcPointLighting(
 			gPointLight,
-			material,
+			material.shininess,
 			gLightCount.pointLightCount,
 			input.normal, input.worldPosition, toEye, gMaterial.color.rgb * textureColor.rgb);
 		
 		//spotLightの計算
 		float3 spotLighting = CalcSpotLighting(
 			gSpotLight, 
-			material,
+			material.shininess,
 			gLightCount.spotLightCount,
 			input.normal, input.worldPosition, toEye, gMaterial.color.rgb * textureColor.rgb);
 

@@ -9,4 +9,5 @@ struct Material {
 	float metallic; //金属度
 	float roughness; //粗さ
 	float ao; //アンビエントオクルージョン
+    uint envMapTextureIndex; //環境マップのテクスチャインデックス
 };

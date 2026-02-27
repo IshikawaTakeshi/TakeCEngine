@@ -9,7 +9,8 @@ SamplerState gSampler : register(s0);
 GBufferPSOutput main(VertexShaderOutput input) {
 	GBufferPSOutput output;
 	output.Albedo = gMaterial.color * gTexture.Sample(gSampler, input.texcoord);
-	output.Normal = float4(input.normal * 0.5f + 0.5f, 1);
+    output.Normal = float4(EncodeNormal(input.normal), 1);
 	output.Material = float4(gMaterial.roughness, gMaterial.metallic, gMaterial.ao, 0);
+    output.EnvMapTextureIndex = gMaterial.envMapTextureIndex;
 	return output;
 }

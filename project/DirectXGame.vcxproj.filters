@@ -90,6 +90,7 @@
     <FxCompile Include="Resources\shaders\Shadow\ShadowPass.PS.hlsl" />
     <FxCompile Include="Resources\shaders\GBuffer.VS.hlsl" />
     <FxCompile Include="Resources\shaders\GBuffer.PS.hlsl" />
+    <FxCompile Include="Resources\shaders\Light\LightingPass.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
