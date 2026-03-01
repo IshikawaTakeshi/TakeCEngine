@@ -122,9 +122,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//sceneManager
 	sceneManager_ = &SceneManager::GetInstance();
 
-	//sceneTransition
-	sceneTransition_ = SceneTransition::GetInstance();
-	sceneTransition_->Initialize();
+
 
 }
 

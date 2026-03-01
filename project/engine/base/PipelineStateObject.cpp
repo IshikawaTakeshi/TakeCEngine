@@ -197,6 +197,7 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 			rootParam.ParameterType             = D3D12_ROOT_PARAMETER_TYPE_CBV;
 			rootParam.ShaderVisibility          = key.visibility;
 			rootParam.Descriptor.ShaderRegister = key.bindPoint;
+			rootParam.Descriptor.RegisterSpace = key.space;
 			rootParameters.push_back(rootParam);
 
 		} else if (key.type == D3D_SIT_TEXTURE) {
@@ -205,6 +206,7 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 			range.NumDescriptors = 1;
 			range.BaseShaderRegister = key.bindPoint;
+			range.RegisterSpace = key.space;
 			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 			descriptorRanges.push_back(range);
 
@@ -234,6 +236,7 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 
 			samplerDesc.MaxLOD = D3D12_FLOAT32_MAX; // ありったけのMipmapを使う
 			samplerDesc.ShaderRegister = key.bindPoint; // レジスタ番号を使用
+			samplerDesc.RegisterSpace = key.space; // スペース番号を使用
 
 			if (resource.second.name.find("Depth") != std::string::npos) {
 				samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT; // 深度テクスチャはポイントフィルタ
@@ -249,6 +252,7 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 			range.NumDescriptors = 1;
 			range.BaseShaderRegister = key.bindPoint;
+			range.RegisterSpace = key.space;
 			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 			descriptorRanges.push_back(range);
 
@@ -265,6 +269,7 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 			range.RangeType                         = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
 			range.NumDescriptors                    = 1;
 			range.BaseShaderRegister                = key.bindPoint;
+			range.RegisterSpace                     = key.space;
 			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 			descriptorRanges.push_back(range);
 
@@ -452,7 +457,7 @@ void PSO::CreateGraphicPSO(
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; //比較関数はLessEqual。近ければ描画される
 #pragma endregion
 	//GraphicPipelineStateDescの設定
-	SetGraphicPipelineStateDesc(topologyType);
+	SetGraphicPipelineStateDesc(topologyType, {DXGI_FORMAT_R8G8B8A8_UNORM_SRGB});
 	//実際に生成
 	graphicPipelineState_ = nullptr;
 	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
@@ -480,7 +485,7 @@ void PSO::CreateComputePSO(ID3D12Device* device) {
 //=============================================================================
 // graphicPSOの生成(RenderTexture用)
 //=============================================================================
-void PSO::CreateRenderTexturePSO(ID3D12Device* device) {
+void PSO::CreateRenderTexturePSO(ID3D12Device* device,const std::vector<DXGI_FORMAT>& rtvFormats) {
 
 	HRESULT result = S_FALSE;
 
@@ -497,7 +502,7 @@ void PSO::CreateRenderTexturePSO(ID3D12Device* device) {
 	depthStencilDesc_.DepthEnable = false;
 
 	//GraphicPipelineStateDescの設定
-	SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
+	SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,rtvFormats);
 	//実際に生成
 	graphicPipelineState_ = nullptr;
 	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc_,
@@ -617,7 +622,8 @@ int32_t PSO::GetComputeBindResourceIndex(const std::string& name) {
 	return -1;
 }
 
-void PSO::SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type) {
+void PSO::SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type,
+	const std::vector<DXGI_FORMAT>& rtvFormats) {
 
 	//DepthStencilの設定
 	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc_;
@@ -650,8 +656,11 @@ void PSO::SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type) {
 	graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc_;
 
 	//書き込むRTVの情報
-	graphicsPipelineStateDesc_.NumRenderTargets = 1;
-	graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	graphicsPipelineStateDesc_.NumRenderTargets =
+		static_cast<UINT>(rtvFormats.size());
+	for (UINT i = 0; i < rtvFormats.size(); i++) {
+		graphicsPipelineStateDesc_.RTVFormats[i] = rtvFormats[i];
+	}
 	//利用するトロポジ(形状)のタイプ。三角形
 	graphicsPipelineStateDesc_.PrimitiveTopologyType = type;
 

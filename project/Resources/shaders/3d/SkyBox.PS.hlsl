@@ -1,11 +1,5 @@
 #include "SkyBox.hlsli"
-
-struct Material {
-	float4 color; //カラー
-	float4x4 uvTransform;
-	int enableLighting; //Lightingを有効にするフラグ
-	float shininess;
-};
+#include "../Material.hlsli"
 
 //マテリアル
 ConstantBuffer<Material> gMaterial : register(b0);
@@ -16,11 +10,13 @@ SamplerState gSampler : register(s0);
 
 struct PixelShaderOutPut {
 	float4 color : SV_TARGET0;
+	float depth : SV_DEPTH;
 };
 
 PixelShaderOutPut main(VertexShaderOutput input){
 	PixelShaderOutPut output;
 	float4 textureColor = gTexture.Sample(gSampler,input.texcoord);
 	output.color = textureColor * gMaterial.color;
+	output.depth = 1.0f;
 	return output;
 }

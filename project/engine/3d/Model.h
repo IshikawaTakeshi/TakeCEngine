@@ -50,6 +50,8 @@ public:
 	/// </summary>
 	void Draw(PSO* pso);
 
+	void Draw_Deferred(PSO* pso);
+
 	void DrawShadow();
 
 	/// <summary>

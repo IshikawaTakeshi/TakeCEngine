@@ -189,6 +189,41 @@ void Model::Draw(PSO* pso) {
 	}
 }
 
+void Model::Draw_Deferred(PSO* pso) {
+	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();
+
+	// VBV/IBV の設定（共通）
+	mesh_->SetVertexBuffers(commandList, 0);
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	commandList->IASetIndexBuffer(&mesh_->GetIndexBufferView());
+
+	// サブメッシュごとに描画
+	for (const SubMesh& sub : modelData_->subMeshes) {
+		const ModelMaterialData& mat = modelData_->materials[sub.materialIndex];
+
+		// マテリアル CBuffer
+		commandList->SetGraphicsRootConstantBufferView(
+			pso->GetGraphicBindResourceIndex("gMaterial"),
+			mesh_->GetMaterials()[sub.materialIndex]->GetMaterialResource()->GetGPUVirtualAddress()
+		);
+
+		// Texture SRV
+		modelCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(
+			pso->GetGraphicBindResourceIndex("gTexture"),
+			TakeC::TextureManager::GetInstance().GetSrvIndex(mat.textureFilePath));
+
+		// DrawObject 呼び出し
+		commandList->DrawIndexedInstanced(
+			sub.indexCount,    // インデックス数
+			1,                 // インスタンス数
+			sub.indexStart,    // StartIndexLocation
+			0,                 // BaseVertexLocation
+			0                  // StartInstanceLocation
+		);
+	}
+}
+
+
 void Model::DrawShadow() {
 
 	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDirectXCommon()->GetCommandList();

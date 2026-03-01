@@ -46,7 +46,7 @@ namespace TakeC {
 		/// <summary>
 		/// RTV生成
 		/// </summary>
-		void CreateRTV(ID3D12Resource* pResource, uint32_t rtvIndex);
+		void CreateRTV(ID3D12Resource* pResource,DXGI_FORMAT format, uint32_t rtvIndex);
 
 		/// <summary>
 		/// レンダーターゲットクリア

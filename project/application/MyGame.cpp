@@ -44,11 +44,14 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	LoadSound();
 	//ParticlePreset読み込み
 	LoadParticlePreset();
-	
 
+	//sceneTransition
+	sceneTransition_ = SceneTransition::GetInstance();
+	sceneTransition_->Initialize();
+	
 	//postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
 	//postEffectManager_->InitializeEffect("GrayScale",   L"PostEffect/GrayScale.CS.hlsl");
-	postEffectManager_->InitializeEffect("Dissolve",    L"PostEffect/Dissolve.CS.hlsl");
+	//postEffectManager_->InitializeEffect("Dissolve",    L"PostEffect/Dissolve.CS.hlsl");
 	postEffectManager_->InitializeEffect("RadialBluer", L"PostEffect/RadialBlur.CS.hlsl");
 	//postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
 	postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");

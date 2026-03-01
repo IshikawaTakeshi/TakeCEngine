@@ -171,7 +171,7 @@ void Object3d::Draw() {
 	commandList->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
 	if(model_ != nullptr) {
-		model_->Draw(object3dCommon_->GetGeometryPassPSO());
+		model_->Draw_Deferred(object3dCommon_->GetGeometryPassPSO());
 	}
 }
 

@@ -55,14 +55,19 @@ uint32_t RtvManager::Allocate() {
 // RTV生成
 //==================================================================================================
 
-void RtvManager::CreateRTV(ID3D12Resource* pResource, uint32_t rtvIndex) {	//RTVの生成
+void RtvManager::CreateRTV(ID3D12Resource* pResource,DXGI_FORMAT format, uint32_t rtvIndex) {	//RTVの生成
 
-	
-	
+	//フォーマットが指定されている場合はrtvDescを上書き、
+	//DXGI_FORMAT_UNKNOWNの場合はデフォルト(初期化時のフォーマット)を使用
+	D3D12_RENDER_TARGET_VIEW_DESC desc = rtvDesc_;
+	if (format != DXGI_FORMAT_UNKNOWN) {
+		desc.Format = format;
+	}
+
 	//ディスクリプタハンドルの取得
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = GetRtvDescriptorHandleCPU(rtvIndex);
 	//RTVの生成
-	dxCommon_->GetDevice()->CreateRenderTargetView(pResource, &rtvDesc_, handleCPU);
+	dxCommon_->GetDevice()->CreateRenderTargetView(pResource, &desc, handleCPU);
 }
 
 void RtvManager::ClearRenderTarget() {

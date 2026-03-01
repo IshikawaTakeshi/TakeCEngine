@@ -12,8 +12,6 @@
 //=================================================================================
 void Material::Initialize(TakeC::DirectXCommon* dxCommon, const std::string& filePath, const std::string& envMapfilePath) {
 
-	//マテリアルリソース初期化
-	InitializeMaterialResource(dxCommon->GetDevice());
 
 	textureFilePath_ = filePath;
 	envMapFilePath_ = envMapfilePath;
@@ -21,7 +19,11 @@ void Material::Initialize(TakeC::DirectXCommon* dxCommon, const std::string& fil
 	TakeC::TextureManager::GetInstance().LoadTexture(filePath,false);
 	if(envMapfilePath != ""){
 		TakeC::TextureManager::GetInstance().LoadTexture(envMapfilePath,false);
+	} else {
+		envMapFilePath_ = "skyBox_blueSky.dds";
 	}
+	//マテリアルリソース初期化
+	InitializeMaterialResource(dxCommon->GetDevice());
 
 	//textureAnimation初期化
 	textureAnimation_ = std::make_unique<TakeC::UVTextureAnimation>();
@@ -60,6 +62,10 @@ void Material::UpdateMaterialImGui() {
 		ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
 		ImGui::DragFloat("Shininess", &materialData_->shininess, 0.1f, 0.1f, 100.0f);
 		ImGui::DragFloat("EnvCoefficient", &materialData_->envCoefficient, 0.001f, 0.0f, 1.0f);
+
+		ImGui::DragFloat("Metallic", &materialData_->metallic, 0.001f, 0.0f, 1.0f);
+		ImGui::DragFloat("Roughness", &materialData_->roughness, 0.1f, 0.1f, 100.0f);
+		ImGui::DragFloat("AO", &materialData_->ao, 0.001f, 0.0f, 1.0f);
 		textureAnimation_->UpdateImGui("Texture Animation");
 
 		bool enableLighting = materialData_->enableLighting;
@@ -95,8 +101,8 @@ void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> d
 	materialData_->shininess = 60.0f;
 	materialData_->envCoefficient = 0.01f;
 
-	materialData_->metallic = 0.0f;
-	materialData_->roughness = 0.5f;
+	materialData_->metallic = 0.01f;
+	materialData_->roughness = 120.0f;
 	materialData_->ao = 1.0f;
 	materialData_->envMapTexutreIndex = TakeC::TextureManager::GetInstance().GetSrvIndex(envMapFilePath_);
 }

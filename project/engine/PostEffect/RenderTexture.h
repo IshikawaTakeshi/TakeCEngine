@@ -1,149 +1,158 @@
 #pragma once
-#include "engine/Base/DirectXCommon.h"
-#include "engine/Base/SrvManager.h"
-#include "engine/Base/PipelineStateObject.h"
-#include "engine/Base/WinApp.h"
-#include "engine/Base/GBufferTypeEnum.h"
 #include "PostEffect/PostEffectManager.h"
+#include "engine/Base/DirectXCommon.h"
+#include "engine/Base/GBufferTypeEnum.h"
+#include "engine/Base/PipelineStateObject.h"
+#include "engine/Base/SrvManager.h"
+#include "engine/Base/WinApp.h"
 #include <array>
+
 
 //============================================================
 //	RenderTexture class
 //============================================================
 class RenderTexture {
 public:
+  enum class RenderTargetType {
+    Forward,
+    Deferred,
+  };
 
-	enum class RenderTargetType {
-		Forward,
-		Deferred,
-	};
+  //=========================================================
+  // functions
+  //=========================================================
 
-	//=========================================================
-	// functions
-	//=========================================================
+  /// <summary>
+  /// コンストラクタ・デストラクタ
+  /// </summary>
+  RenderTexture() = default;
+  ~RenderTexture();
 
-	/// <summary>
-	/// コンストラクタ・デストラクタ
-	/// </summary>
-	RenderTexture() = default;
-	~RenderTexture();
+  /// <summary>
+  /// 初期化
+  /// </summary>
+  /// <param name="dxCommon"></param>
+  /// <param name="srvManager"></param>
+  /// <param name="postEffectManager"></param>
+  void Initialize(TakeC::DirectXCommon *dxCommon, TakeC::SrvManager *srvManager,
+                  int32_t depthWidth = TakeC::WinApp::kScreenWidth,
+                  int32_t depthHeight = TakeC::WinApp::kScreenHeight);
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	/// <param name="dxCommon"></param>
-	/// <param name="srvManager"></param>
-	/// <param name="postEffectManager"></param>
-	void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager,
-		int32_t depthWidth = TakeC::WinApp::kScreenWidth,
-		int32_t depthHeight = TakeC::WinApp::kScreenHeight);
+  /// <summary>
+  /// レンダーターゲットのクリア
+  /// </summary>
+  void ClearRenderTarget(RenderTargetType type = RenderTargetType::Forward);
 
-	/// <summary>
-	/// レンダーターゲットのクリア
-	/// </summary>
-	void ClearRenderTarget(RenderTargetType type = RenderTargetType::Forward);
+  /// <summary>
+  /// 描画前処理
+  /// </summary>
+  void PreDraw();
 
-	/// <summary>
-	/// 描画前処理
-	/// </summary>
-	void PreDraw();
+  /// <summary>
+  /// 描画処理
+  /// </summary>
+  void Draw();
 
-	/// <summary>
-	/// 描画処理
-	/// </summary>
-	void Draw();
+  /// <summary>
+  /// 描画後処理
+  /// </summary>
+  void PostDraw();
 
-	/// <summary>
-	/// 描画後処理
-	/// </summary>
-	void PostDraw();
+  /// <summary>
+  /// SRVへの遷移
+  /// </summary>
+  void TransitionDepthWriteToSRV();
 
-	/// <summary>
-	/// SRVへの遷移
-	/// </summary>
-	void TransitionDepthWriteToSRV();
+  /// <summary>
+  /// 深度書き込みへの遷移
+  /// </summary>
+  void TransitionSRVToDepthWrite();
 
-	/// <summary>
-	/// 深度書き込みへの遷移
-	/// </summary>
-	void TransitionSRVToDepthWrite();
+  /// <summary>
+  /// GバッファのSRVをライティングシェーダーにバインド
+  /// </summary>
+  void PreDrawLightingPass();
 
-	/// <summary>
-	/// GバッファのSRVをライティングシェーダーにバインド
-	/// </summary>
-	void PreDrawLightingPass();
-
-	void PostDrawLightingPass();
+  void PostDrawLightingPass();
 
 public:
+  //========================================================
+  // accessors
+  //========================================================
 
-	//========================================================
-	// accessors
-	//========================================================
+  //------ getter ----------------
 
-	//------ getter ----------------
+  // レンダーテクスチャリソースの取得
+  ComPtr<ID3D12Resource> GetRenderTextureResource() const {
+    return renderTextureResource_;
+  }
+  ComPtr<ID3D12Resource> GetDepthStencilResource() const {
+    return depthStencilResource_;
+  }
+  PSO *GetRenderTexturePSO() const { return renderTexturePSO_.get(); }
 
-	//レンダーテクスチャリソースの取得
-	ComPtr<ID3D12Resource> GetRenderTextureResource() const {
-		return renderTextureResource_;
-	}
-	ComPtr<ID3D12Resource> GetDepthStencilResource() const {
-		return depthStencilResource_;
-	}
-	PSO* GetRenderTexturePSO() const {
-		return renderTexturePSO_.get();
-	}
+  uint32_t GetSrvIndex() const { return srvIndex_; }
+  uint32_t GetDepthSrvIndex() const { return depthSrvIndex_; }
 
-	uint32_t GetSrvIndex() const {return srvIndex_;}
-	uint32_t GetDepthSrvIndex() const { return depthSrvIndex_; }
+  uint32_t GetRtvIndex() const { return rtvIndex_; }
+  uint32_t GetDsvIndex() const { return dsvIndex_; }
 
-	uint32_t GetRtvIndex() const { return rtvIndex_; }
-	uint32_t GetDsvIndex() const { return dsvIndex_; }
+  // LightingPass結果テクスチャのSRVインデックス
+  uint32_t GetLightingPassSrvIndex() const { return lightingPassSrvIndex_; }
 
-	//------ setter ----------------
-	void SetViewport(int32_t width, int32_t height);
-	void SetScissorRect(int32_t width, int32_t height);
-
+  //------ setter ----------------
+  void SetViewport(int32_t width, int32_t height);
+  void SetScissorRect(int32_t width, int32_t height);
 
 private:
+  TakeC::DirectXCommon *dxCommon_ = nullptr; // DirectXCommonのポインタ
+  TakeC::SrvManager *srvManager_ = nullptr;  // SrvManagerのポインタ
+  TakeC::RtvManager *rtvManager_ = nullptr;  // RtvManagerのポインタ
+  // clearValue
+  const Vector4 kRenderTargetClearColor_ = {0.1f, 0.25f, 0.5f, 1.0f};
+  const float clearValue_[4] = {
+      kRenderTargetClearColor_.x, kRenderTargetClearColor_.y,
+      kRenderTargetClearColor_.z, kRenderTargetClearColor_.w};
 
-	TakeC::DirectXCommon* dxCommon_ = nullptr; //DirectXCommonのポインタ
-	TakeC::SrvManager* srvManager_ = nullptr; //SrvManagerのポインタ
-	TakeC::RtvManager* rtvManager_ = nullptr; //RtvManagerのポインタ
-	//clearValue
-	const Vector4 kRenderTargetClearColor_ = { 0.1f, 0.25f, 0.5f, 1.0f };
-	const float clearValue_[4] = { kRenderTargetClearColor_.x, kRenderTargetClearColor_.y, kRenderTargetClearColor_.z, kRenderTargetClearColor_.w };
+  // RTVのハンドル
+  D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_;
+  uint32_t rtvIndex_ = {};
+  // DSVのハンドル
+  D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
+  uint32_t dsvIndex_ = {};
+  // レンダーテクスチャのSRVインデックス
+  uint32_t srvIndex_ = 0;
+  // 深度テクスチャのSRVインデックス
+  uint32_t depthSrvIndex_ = 0;
 
-	//RTVのハンドル
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_;
-	uint32_t rtvIndex_ = {};
-	//DSVのハンドル
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
-	uint32_t dsvIndex_ = {};
-	//レンダーテクスチャのSRVインデックス
-	uint32_t srvIndex_ = 0;
-	//深度テクスチャのSRVインデックス
-	uint32_t depthSrvIndex_ = 0;
+  ComPtr<ID3D12Resource> renderTextureResource_;
+  D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_;
 
-	ComPtr<ID3D12Resource> renderTextureResource_; 
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_;
+  ComPtr<ID3D12Resource> depthStencilResource_; // 深度ステンシルバッファリソース
 
-	ComPtr<ID3D12Resource> depthStencilResource_; //深度ステンシルバッファリソース
+  // LightingPass専用レンダーテクスチャ
+  ComPtr<ID3D12Resource> lightingPassRenderTextureResource_;
+  D3D12_CPU_DESCRIPTOR_HANDLE lightingPassRtvHandle_;
+  uint32_t lightingPassRtvIndex_ = {};
+  uint32_t lightingPassSrvIndex_ = 0;
 
-	std::array<ComPtr<ID3D12Resource>, TakeC::kNumGBuffers> gBufferResources_; //Gバッファリソース
-	std::array<uint32_t, TakeC::kNumGBuffers> gBufferRtvIndices_; //GバッファのRTVインデックス
-	std::array<uint32_t, TakeC::kNumGBuffers> gBufferSrvIndices_; //GバッファのSRVインデックス
-	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, TakeC::kNumGBuffers> gBufferRtvHandles_; //GバッファのRTVハンドル
+  std::array<ComPtr<ID3D12Resource>, TakeC::kNumGBuffers>
+      gBufferResources_; // Gバッファリソース
+  std::array<uint32_t, TakeC::kNumGBuffers>
+      gBufferRtvIndices_; // GバッファのRTVインデックス
+  std::array<uint32_t, TakeC::kNumGBuffers>
+      gBufferSrvIndices_; // GバッファのSRVインデックス
+  std::array<D3D12_CPU_DESCRIPTOR_HANDLE, TakeC::kNumGBuffers>
+      gBufferRtvHandles_; // GバッファのRTVハンドル
 
-	
-	//レンダーテクスチャ描画用PSO
-	std::unique_ptr<PSO> renderTexturePSO_;   
-	//LightingPass用PSO
-	std::unique_ptr<PSO> lightingPassPSO_;
+  // レンダーテクスチャ描画用PSO
+  std::unique_ptr<PSO> renderTexturePSO_;
+  // LightingPass用PSO
+  std::unique_ptr<PSO> lightingPassPSO_;
 
-	ComPtr<ID3D12RootSignature> rootSignature_; //ルートシグネチャ
-	ComPtr<ID3D12RootSignature> lightingPassRootSignature_; //ライティングパス用ルートシグネチャ
-	D3D12_VIEWPORT viewport_{};   //ビューポート
-	D3D12_RECT scissorRect_ = {}; //シザー矩形
-
+  ComPtr<ID3D12RootSignature> rootSignature_; // ルートシグネチャ
+  ComPtr<ID3D12RootSignature>
+      lightingPassRootSignature_; // ライティングパス用ルートシグネチャ
+  D3D12_VIEWPORT viewport_{};   // ビューポート
+  D3D12_RECT scissorRect_ = {}; // シザー矩形
 };

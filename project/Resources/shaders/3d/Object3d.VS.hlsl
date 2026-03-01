@@ -21,5 +21,3 @@ VertexShaderOutput main(VertexShaderInput input) {
 	output.worldPosition = mul(input.position, gTransformationMatrix.World).xyz;
 	return output;
 }
-
-

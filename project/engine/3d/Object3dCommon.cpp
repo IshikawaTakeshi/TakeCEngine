@@ -35,11 +35,19 @@ void Object3dCommon::Initialize(TakeC::DirectXCommon* directXCommon,TakeC::Light
 	pso_->CreateComputePSO(dxCommon_->GetDevice());
 	pso_->SetComputePipelineName("Object3dPSO:Conpute");
 
+	//GBufferのフォーマット
+	std::vector<DXGI_FORMAT> formats = {
+		DXGI_FORMAT_R8G8B8A8_UNORM,       // Albedo
+		DXGI_FORMAT_R16G16B16A16_FLOAT,   // Normal
+		DXGI_FORMAT_R8G8B8A8_UNORM,       // Material
+		DXGI_FORMAT_R16_FLOAT,            // EnvMapIndex
+	};
+
 	//geometryPass用PSO生成
 	geometryPassPso_ = std::make_unique<PSO>();
 	geometryPassPso_->CompileVertexShader(dxCommon_->GetDXC(), L"GBuffer.VS.hlsl");
 	geometryPassPso_->CompilePixelShader(dxCommon_->GetDXC(), L"GBuffer.PS.hlsl");
-	geometryPassPso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL);
+	geometryPassPso_->CreateRenderTexturePSO(dxCommon_->GetDevice(), formats);
 	geometryPassPso_->SetGraphicPipelineName("Object3dPSO:graphic:GBuffer");
 
 	//加算ブレンド用PSO生成

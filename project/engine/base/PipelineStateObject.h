@@ -110,7 +110,8 @@ public:
 	/// <summary>
 	/// RenderTexturePSO生成
 	/// </summary>
-	void CreateRenderTexturePSO(ID3D12Device* device);
+	void CreateRenderTexturePSO(ID3D12Device* device,
+		const std::vector<DXGI_FORMAT>& rtvFormats);
 
 	/// <summary>
 	/// ImGuiの更新
@@ -157,7 +158,8 @@ private:
 	//入力レイアウトの情報を取得
 	void ExtractInputLayout(ID3D12ShaderReflection* shaderReflection);
 	//PipelineStateDescの設定
-	void SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type);
+	void SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type,
+		const std::vector<DXGI_FORMAT>& rtvFormats);
 	void SetComputePipelineStateDesc();
 
 private:

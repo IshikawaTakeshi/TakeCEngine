@@ -328,15 +328,15 @@ void GamePlayScene::DrawObject_GBuffer() {
 
 	// Object3dの描画前処理
 	Object3dCommon::GetInstance().PreDraw_GeometryPass();
+	for (auto& object : levelObjects_) {
+		object.second->Draw();
+	}
 	// プレイヤーの描画
 	player_->Draw();
 	// 敵の描画
 	enemy_->Draw();
 	// 弾の描画
 	bulletManager_->Draw();
-	for (auto& object : levelObjects_) {
-		object.second->Draw();
-	}
 
 #pragma endregion
 

@@ -69,7 +69,7 @@ void MuzzleFlashEffect::Draw() {
 	}
 	//エフェクトオブジェクト描画
 	for (const auto& index : muzzleFlushEffectObjectIndices_) {
-		TakeCFrameWork::GetPrimitiveDrawer()->DrawObject(Object3dCommon::GetInstance().GetPSO(), PRIMITIVE_PLANE, index);
+		TakeCFrameWork::GetPrimitiveDrawer()->DrawObject(Object3dCommon::GetInstance().GetGeometryPassPSO(), PRIMITIVE_PLANE, index);
 	}
 	
 }

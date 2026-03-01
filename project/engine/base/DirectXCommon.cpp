@@ -420,7 +420,7 @@ void DirectXCommon::InitializeRenderTargetView() {
 	for (int i = 0; i < 2; ++i) {
 		// 作る場所をこちらで指定してあげる必要がある
 		swapchainRtvIndex_[i] = rtvManager_->Allocate();
-		rtvManager_->CreateRTV(swapChainResources_[i].Get(), swapchainRtvIndex_[i]);
+		rtvManager_->CreateRTV(swapChainResources_[i].Get(),DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, swapchainRtvIndex_[i]);
 	}
 }
 
