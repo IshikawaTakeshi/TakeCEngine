@@ -145,6 +145,14 @@ void DirectXCommon::PreDraw() {
 
 void DirectXCommon::PostDraw() {
 
+	//現在時間を取得
+	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+	//前回記録からの経過時間を取得する
+	std::chrono::microseconds elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
+
+	//Cpuの処理時間を更新
+	cpuFrameTimeSec_ = elapsed.count() / 1000000.0;
+
 	HRESULT result = S_FALSE;
 
 	//書き込むバックバッファのインデックスを取得
@@ -180,6 +188,9 @@ void DirectXCommon::PostDraw() {
 	assert(SUCCEEDED(result));
 }
 
+//==============================================================================================
+//	GPUの処理がここまで到達したかどうか確認・待機
+//==============================================================================================
 void DirectXCommon::WaitForGPU() {
 	//Fenceの値の更新
 	fenceVal_++;
@@ -195,7 +206,9 @@ void DirectXCommon::WaitForGPU() {
 }
 
 
-
+//==============================================================================================
+//		DXGIデバイス初期化
+//==============================================================================================
 void DirectXCommon::InitializeDXGIDevice() {
 
 	//機能レベルとログ出力用の文字列
@@ -467,6 +480,9 @@ void DirectXCommon::UpdateFixFPS() {
 	//前回記録からの経過時間を取得する
 	std::chrono::microseconds elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
 
+	//経過時間を存
+	currentFrameTimeSec_ = static_cast<float>(elapsed.count()) / 1000000.0f;
+
 	//1/60秒(よりわずかに短い時間) 経っていない場合
 	if (elapsed < kMinCheckTime) {
 
@@ -488,6 +504,9 @@ void DirectXCommon::UpdateFixFPS() {
 	reference_ = std::chrono::steady_clock::now();
 }
 
+//==============================================================================================
+//		ResourceBarrier設定
+//==============================================================================================
 void DirectXCommon::SetBarrier(D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState, ID3D12Resource* resource) {
 	D3D12_RESOURCE_BARRIER barrier{};
 	//今回のバリアはTransition
@@ -525,118 +544,26 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 	return descriptorHeap_;
 }
 
-//===================================================================================
-// RenderTexture生成
-//===================================================================================
 
-ComPtr<ID3D12Resource> DirectXCommon::CreateRenderTextureResource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4& clearColor) {
-	
-	ComPtr<ID3D12Resource> resource = nullptr;
-	HRESULT result = S_FALSE;
 
-	//頂点リソースの設定
-	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Width = width; // リソースのサイズ
-	resourceDesc.Height = height;
-	resourceDesc.MipLevels = 1;
-	resourceDesc.DepthOrArraySize = 1;
-	resourceDesc.Format = format;
-	resourceDesc.SampleDesc.Count = 1;
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET; //renderTargetとして使う
-
-	//ヒーププロパティ
-	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
-
-	D3D12_CLEAR_VALUE clearValue;
-	clearValue.Format = format;
-	clearValue.Color[0] = clearColor.x;
-	clearValue.Color[1] = clearColor.y;
-	clearValue.Color[2] = clearColor.z;
-	clearValue.Color[3] = clearColor.w;
-
-	//実際に頂点リソースを作る
-	result = device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE,
-		&resourceDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,IID_PPV_ARGS(&resource));
-	assert(SUCCEEDED(result));
-
-	return resource;
-}
-
-ComPtr<ID3D12Resource> DirectXCommon::CreateTextureResource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format) {
-	ComPtr<ID3D12Resource> resource = nullptr;
-	HRESULT result = S_FALSE;
-
-	//頂点リソースの設定
-	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Width = width; // リソースのサイズ
-	resourceDesc.Height = height;
-	resourceDesc.MipLevels = 1;
-	resourceDesc.DepthOrArraySize = 1;
-	resourceDesc.Format = format;
-	resourceDesc.SampleDesc.Count = 1;
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE; //renderTargetとして使わない
-
-	//ヒーププロパティ
-	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
-
-	//実際に頂点リソースを作る
-	result = device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE,
-		&resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,IID_PPV_ARGS(&resource));
-	assert(SUCCEEDED(result));
-
-	return resource;
-}
-
-ComPtr<ID3D12Resource> DirectXCommon::CreateTextureResourceUAV(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format) {
-	
-	ComPtr<ID3D12Resource> resource = nullptr;
-	HRESULT result = S_FALSE;
-
-	//頂点リソースの設定
-	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Width = width; // リソースのサイズ
-	resourceDesc.Height = height;
-	resourceDesc.MipLevels = 1;
-	resourceDesc.DepthOrArraySize = 1;
-	resourceDesc.Format = format;
-	resourceDesc.SampleDesc.Count = 1;
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS; //UAVとして使う
-
-	//ヒーププロパティ
-	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
-
-	//実際に頂点リソースを作る
-	result = device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE,
-		&resourceDesc, D3D12_RESOURCE_STATE_COMMON, nullptr,IID_PPV_ARGS(&resource));
-	assert(SUCCEEDED(result));
-
-	D3D12_RESOURCE_BARRIER uavBarrier = {};
-	
-	// TransitionBarrierを張る
-	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	uavBarrier.Transition.pResource = resource.Get();
-	// COMMON >> NON_PIXEL_SHADER_RESOURCE
-	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
-	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
-	commandList_->ResourceBarrier(1, &uavBarrier);
-
-	return resource;
-}
-
-void DirectXCommon::DrawFPS() {
+//==============================================================================================
+//		FPS表示
+//==============================================================================================
+void DirectXCommon::DrawFrameTimeInfo() {
 #if defined(_DEBUG) || defined(_DEVELOP)
+	// FPSを表示
 	float currentFPS = GetCurrentFPS();
 	ImGui::Text("FPS: %.2f", currentFPS);
+	// フレーム時間を表示
+	float currentFrameTimeSec = GetCurrentFrameTimeSec();
+	ImGui::Text("Frame Time: %f sec", currentFrameTimeSec);
+	// CPUの処理時間を秒数表示
+	ImGui::Text("CPU Frame Time: %lf sec", cpuFrameTimeSec_);
+
+	// GPUの処理時間を秒数表示
+	gpuFrameTimeSec_ = currentFrameTimeSec_ - float(cpuFrameTimeSec_);
+	ImGui::Text("GPU Frame Time: %f sec", gpuFrameTimeSec_);
+
 #endif // _DEBUG
 }
 
@@ -728,6 +655,114 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResourceUAV(ID
 		nullptr,
 		IID_PPV_ARGS(&resource));
 	assert(SUCCEEDED(result));
+
+	return resource;
+}
+
+//===================================================================================
+// RenderTexture生成
+//===================================================================================
+
+ComPtr<ID3D12Resource> DirectXCommon::CreateRenderTextureResource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4& clearColor) {
+
+	ComPtr<ID3D12Resource> resource = nullptr;
+	HRESULT result = S_FALSE;
+
+	//頂点リソースの設定
+	D3D12_RESOURCE_DESC resourceDesc{};
+	resourceDesc.Width = width; // リソースのサイズ
+	resourceDesc.Height = height;
+	resourceDesc.MipLevels = 1;
+	resourceDesc.DepthOrArraySize = 1;
+	resourceDesc.Format = format;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET; //renderTargetとして使う
+
+	//ヒーププロパティ
+	D3D12_HEAP_PROPERTIES heapProperties{};
+	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+
+	D3D12_CLEAR_VALUE clearValue;
+	clearValue.Format = format;
+	clearValue.Color[0] = clearColor.x;
+	clearValue.Color[1] = clearColor.y;
+	clearValue.Color[2] = clearColor.z;
+	clearValue.Color[3] = clearColor.w;
+
+	//実際に頂点リソースを作る
+	result = device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE,
+		&resourceDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue, IID_PPV_ARGS(&resource));
+	assert(SUCCEEDED(result));
+
+	return resource;
+}
+
+ComPtr<ID3D12Resource> DirectXCommon::CreateTextureResource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format) {
+	ComPtr<ID3D12Resource> resource = nullptr;
+	HRESULT result = S_FALSE;
+
+	//頂点リソースの設定
+	D3D12_RESOURCE_DESC resourceDesc{};
+	resourceDesc.Width = width; // リソースのサイズ
+	resourceDesc.Height = height;
+	resourceDesc.MipLevels = 1;
+	resourceDesc.DepthOrArraySize = 1;
+	resourceDesc.Format = format;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE; //renderTargetとして使わない
+
+	//ヒーププロパティ
+	D3D12_HEAP_PROPERTIES heapProperties{};
+	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+
+	//実際に頂点リソースを作る
+	result = device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE,
+		&resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&resource));
+	assert(SUCCEEDED(result));
+
+	return resource;
+}
+
+ComPtr<ID3D12Resource> DirectXCommon::CreateTextureResourceUAV(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format) {
+
+	ComPtr<ID3D12Resource> resource = nullptr;
+	HRESULT result = S_FALSE;
+
+	//頂点リソースの設定
+	D3D12_RESOURCE_DESC resourceDesc{};
+	resourceDesc.Width = width; // リソースのサイズ
+	resourceDesc.Height = height;
+	resourceDesc.MipLevels = 1;
+	resourceDesc.DepthOrArraySize = 1;
+	resourceDesc.Format = format;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS; //UAVとして使う
+
+	//ヒーププロパティ
+	D3D12_HEAP_PROPERTIES heapProperties{};
+	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+
+	//実際に頂点リソースを作る
+	result = device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE,
+		&resourceDesc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&resource));
+	assert(SUCCEEDED(result));
+
+	D3D12_RESOURCE_BARRIER uavBarrier = {};
+
+	// TransitionBarrierを張る
+	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	uavBarrier.Transition.pResource = resource.Get();
+	// COMMON >> NON_PIXEL_SHADER_RESOURCE
+	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
+	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+	commandList_->ResourceBarrier(1, &uavBarrier);
 
 	return resource;
 }

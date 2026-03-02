@@ -88,8 +88,7 @@ namespace TakeC {
 
 		ComPtr<ID3D12Resource> CreateTextureResourceUAV(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format);
 
-		void DrawFPS();
-
+		void DrawFrameTimeInfo();
 
 	public:
 		//============================================================================
@@ -122,6 +121,12 @@ namespace TakeC {
 
 		/// 現在のFPSの取得
 		float GetCurrentFPS() const { return currentFPS_; }
+		/// 現在のフレーム時間の取得（秒）
+		float GetCurrentFrameTimeSec() const { return currentFrameTimeSec_; }
+		// CPUとGPUのフレーム時間の取得（秒）
+		double GetCPUFrameTimeSec() const { return cpuFrameTimeSec_; }
+		double GetGPUFrameTimeSec() const { return gpuFrameTimeSec_; }
+
 
 	private:
 		/////////////////////////////////////////////////////////////////////////////////////
@@ -179,7 +184,10 @@ namespace TakeC {
 		std::chrono::steady_clock::time_point reference_;
 		int frameCount_ = 0;
 		float currentFPS_ = 0.0f;
-
+		float currentFrameTimeSec_ = 0;
+		// 経過時間
+		double cpuFrameTimeSec_ = 0.0;    // CPU処理時間（秒）
+		double gpuFrameTimeSec_ = 0.0;    // GPU処理時間（秒）
 
 	private:
 
