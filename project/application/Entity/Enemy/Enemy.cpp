@@ -119,13 +119,15 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	behaviorManager_->SetAnimationComponents(&animatorController_, &animationMapper_);
 
 	// ブーストエフェクトの初期化
-	boostEffects_.resize(3);
+	boostEffects_.resize(kNumPositions);
 	for (int i = 0; i < boostEffects_.size(); i++) {
 		boostEffects_[i] = std::make_unique<BoostEffect>();
 		boostEffects_[i]->Initialize(this,"BoostEffect_Enemy.json");
 	}
 	boostEffects_[LEFT_LEG]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "knees_left.002");
 	boostEffects_[RIGHT_LEG]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "knees_right.002");
+	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "body_joint_right.002");
+	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "body_joint_left.002");
 	boostEffects_[BACKPACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.001");
 }
 
@@ -212,8 +214,7 @@ void Enemy::SaveEnemyData(const std::string& characterJsonPath) {
 void Enemy::Update() {
 
 	// stepBoostのインターバルの更新
-	enemyData_.characterInfo.stepBoostInfo.interval =
-		0.2f; // ステップブーストのインターバル
+	enemyData_.characterInfo.stepBoostInfo.interval = 0.2f;
 	if (enemyData_.characterInfo.stepBoostInfo.intervalTimer > 0.0f) {
 		enemyData_.characterInfo.stepBoostInfo.intervalTimer -= deltaTime_;
 	}
@@ -260,8 +261,7 @@ void Enemy::Update() {
 			GameCharacterBehavior::FLOATING)) {
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
 	} else if (enemyData_.characterInfo.onGround == false &&
-		behaviorManager_->GetCurrentBehaviorType() ==
-		GameCharacterBehavior::RUNNING) {
+		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING) {
 		// 空中にいる場合はFLOATINGに切り替え
 		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
 	}
@@ -288,27 +288,22 @@ void Enemy::Update() {
 
 	// AIの更新
 	float distance = (enemyData_.characterInfo.focusTargetPos -
-		enemyData_.characterInfo.transform.translate)
-		.Length();
+		enemyData_.characterInfo.transform.translate).Length();
 	aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
 	aiBrainSystem_->SetDistanceToTarget(distance);
 	aiBrainSystem_->Update();
 
 	if (enemyData_.characterInfo.onGround &&
-		(behaviorManager_->GetCurrentBehaviorType() ==
-			GameCharacterBehavior::RUNNING ||
-			behaviorManager_->GetCurrentBehaviorType() ==
-			GameCharacterBehavior::STEPBOOST)) {
+		(behaviorManager_->GetCurrentBehaviorType() ==GameCharacterBehavior::RUNNING ||
+			behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
 		backEmitter_->SetIsEmit(true);
 	} else {
 		backEmitter_->SetIsEmit(false);
 	}
 
 	auto jointWorldMatrixOpt =
-		object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix(
-			"body.002", object3d_->GetWorldMatrix());
-	bodyPosition_ = { jointWorldMatrixOpt->m[3][0], jointWorldMatrixOpt->m[3][1],
-					 jointWorldMatrixOpt->m[3][2] };
+		object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix("body.002", object3d_->GetWorldMatrix());
+	bodyPosition_ = { jointWorldMatrixOpt->m[3][0], jointWorldMatrixOpt->m[3][1], jointWorldMatrixOpt->m[3][2] };
 
 	// モデルの回転処理
 	if (enemyData_.characterInfo.isAlive) {
@@ -520,8 +515,7 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 
 				// 貫通している分だけ押し戻す
 				// 過剰な押し戻しを防ぐために、penetrationDepthを2で割ると良い感じになる
-				enemyData_.characterInfo.transform.translate +=
-					-normal * penetrationDepth * 0.5f;
+				enemyData_.characterInfo.transform.translate +=	-normal * penetrationDepth * 0.5f;
 
 				// 接触面方向の速度を打ち消す
 				float velocityAlongNormal =
@@ -635,8 +629,7 @@ void Enemy::WeaponAttack(int weaponIndex) {
 				chargeShootTimer_.Initialize(chargeShootDuration_, 0.0f);
 				// イベントを発行して危険度の高い攻撃を行うことを知らせる
 				TakeCFrameWork::GetEventManager()->PostEvent(
-					"EnemyHighPowerAttack",
-					enemyData_.characterInfo.transform.translate);
+					"EnemyHighPowerAttack",enemyData_.characterInfo.transform.translate);
 			}
 
 		} else {
@@ -734,16 +727,53 @@ void Enemy::UpdateEnergy() {
 
 void Enemy::RequestActiveBoostEffect() {
 
-	// スティックもしくは移動方向を元にアクティブにするエフェクトを変更
+	//ステップブーストの方向とスティックの向きによってアクティブにするエフェクトを変更
 	Vector3 moveDir = enemyData_.characterInfo.moveDirection;
+
 	if (moveDir.Length() <= 0.1f) {
-		// 移動方向がない場合はすべてのエフェクトを非アクティブにして終了
+		//スティックがほぼニュートラルの場合はすべてのエフェクトを非アクティブにして終了
 		for (const auto& boostEffect : boostEffects_) {
 			boostEffect->SetIsActive(false);
 		}
-	} else {
-		for (const auto& boostEffect : boostEffects_) {
-			boostEffect->SetIsActive(true);
-		}
+		return;
+	}
+	else {
+		// 背中のエフェクトは常にアクティブ
+		boostEffects_[BACKPACK]->SetIsActive(true);
+	}
+
+
+	// --- プレイヤーの向きをQuaternionから取得 ---
+	Vector3 localForward = Vector3(0.0f, 0.0f, 1.0f);
+	Vector3 playerForward = QuaternionMath::RotateVector(localForward, enemyData_.characterInfo.transform.rotate);
+	playerForward.y = 0.0f; // 水平方向だけ見る
+	playerForward = Vector3Math::Normalize(playerForward);
+
+	// --- スティック方向との角度差を求める ---
+	float dot = Vector3Math::Dot(playerForward, moveDir);
+	float crossY = playerForward.x * moveDir.z - playerForward.z * moveDir.x;
+	float angle = atan2(crossY, dot) * (180.0f / std::numbers::pi_v<float>); // -180°～180°
+
+	// --- 角度差に応じてエフェクトをアクティブにする ---
+	if (angle <= -45.0f && angle > -135.0f) {
+		// 左
+		boostEffects_[LEFT_LEG]->SetIsActive(true);
+		boostEffects_[RIGHT_LEG]->SetIsActive(true);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+	}
+	else if (angle >= 45.0f && angle < 135.0f) {
+		// 右
+		boostEffects_[LEFT_LEG]->SetIsActive(true);
+		boostEffects_[RIGHT_LEG]->SetIsActive(true);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
+	}
+	else {
+		// 前後
+		boostEffects_[LEFT_LEG]->SetIsActive(true);
+		boostEffects_[RIGHT_LEG]->SetIsActive(true);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
 	}
 }
