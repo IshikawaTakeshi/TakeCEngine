@@ -1157,6 +1157,7 @@
     <ClInclude Include="engine\Animation\AnimationState.h" />
     <ClInclude Include="engine\Animation\AnimatorController.h" />
     <ClInclude Include="application\Entity\Animation\AnimationMapper.h" />
+    <ClInclude Include="application\Entity\Enemy\ActionWeightParam.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

@@ -270,10 +270,7 @@ void GamePlayScene::Update() {
 	// フェーズメッセージUIの更新
 	phaseMessageUI_->Update();
 
-	// UIManagerの更新
-	TakeCFrameWork::GetUIManager()->Update();
-	// SpriteManagerの更新
-	TakeCFrameWork::GetSpriteManager()->Update();
+
 	// particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
 	// LightManager更新
@@ -465,6 +462,11 @@ void GamePlayScene::UpdateGamePlay() {
 			static_cast<int>(player_->GetCurrentWeapon(i)->GetUnitPosition()));
 		bulletCounterUI_[i]->Update();
 	}
+
+	// UIManagerの更新
+	TakeCFrameWork::GetUIManager()->Update();
+	// SpriteManagerの更新
+	TakeCFrameWork::GetSpriteManager()->Update();
 
 	if (player_->GetHealth() <= 0.0f) {
 		// プレイヤーのHPが0以下になったらゲームオーバー

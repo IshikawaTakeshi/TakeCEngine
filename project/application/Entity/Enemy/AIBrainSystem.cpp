@@ -4,6 +4,7 @@
 #include "engine/math/Easing.h"
 #include "engine/Collision/CollisionManager.h"
 #include "engine/MAth/Vector3Math.h"
+#include "engine/base/TakeCFrameWork.h"
 #include <cmath>
 
 //===================================================================================
@@ -51,6 +52,23 @@ void AIBrainSystem::UpdateImGui() {
 		std::string actionName = "Score " + StringUtility::EnumToString<CharacterActionInput>(action);
 		ImGui::SliderFloat(actionName.c_str(), &actionScores_[action], 0.0f, 1.0f);
 	}
+
+	//行動の重みパラメータの表示と調整
+	ImGui::SeparatorText("Action Weight Parameters");
+	ImGui::SliderFloat("Attack Distance Weight", &weightParam_.attack.distanceWeight, 0.0f, 1.0f);
+	ImGui::SliderFloat("Attack Weapon Choose Threshold", &weightParam_.attack.weaponChooseThreshold, 0.0f, 1.0f);
+	ImGui::SliderFloat("StepBoost Danger Factor High", &weightParam_.stepBoost.dangerFactorHigh, 0.0f, 1.0f);
+	ImGui::SliderFloat("StepBoost Danger Factor Low", &weightParam_.stepBoost.dangerFactorLow, 0.0f, 1.0f);
+	ImGui::SliderFloat("StepBoost Urgency Weight", &weightParam_.stepBoost.urgencyWeight, 0.0f, 3.0f);
+	ImGui::SliderFloat("Jump Height Weight", &weightParam_.jump.heightWeight, 0.0f, 1.0f);
+	ImGui::SliderFloat("Jump Energy Weight", &weightParam_.jump.energyWeight, 0.0f, 1.0f);
+	ImGui::SliderFloat("Floating Final Score Weight", &weightParam_.floating.finalScoreWeight, 0.0f, 1.0f);
+	ImGui::SliderFloat("Floating No Obstacle Factor", &weightParam_.floating.noObstacleFactor, 0.0f, 1.0f);
+
+	if (ImGui::Button("Save Weight Parameters")) {
+	
+		TakeCFrameWork::GetJsonLoader()->SaveJsonData<ActionWeightParam>("AIBrainSystemWeightParam.json", weightParam_);
+	}
 }
 
 //===================================================================================
@@ -80,7 +98,7 @@ float AIBrainSystem::CalculateAttackScore(BaseWeapon* weapon) {
 	// OutCubicで自然な減衰カーブを作成
 	float distanceFactor = 1.0f - Easing::EaseOutCubic(distanceRatio);
 
-	float attackScore = distanceFactor * 0.8f;
+	float attackScore = distanceFactor * weightParam_.attack.distanceWeight;
 	return std::clamp(attackScore, 0.0f, 1.0f);
 }
 
@@ -92,7 +110,7 @@ std::vector<int> AIBrainSystem::ChooseWeaponUnit(const std::vector<std::unique_p
 
 	for(int i = 0; i < weapons.size(); ++i) {
 		attackScores_[i] = CalculateAttackScore(weapons[i].get());
-		if(attackScores_[i] > 0.5f) { // スコアが0.5以上の武器を選択
+		if(attackScores_[i] > weightParam_.attack.weaponChooseThreshold) { // スコアが0.5以上の武器を選択
 			chosenWeapons.push_back(i);
 		}
 	}
@@ -146,13 +164,20 @@ float AIBrainSystem::CalculateStepBoostScore() {
 	float energyFactor = Easing::EaseOutQuad(energyRatio);
 
 	// 危険度の計算
-	float dangerFactor = isBulletNearby_ ? 0.7f : 0.05f;
+	float dangerFactor;
+	if(isBulletNearby_){
+		// 弾が近い場合は高スコア
+		dangerFactor = weightParam_.stepBoost.dangerFactorHigh;
+	}else {
+		// 弾が遠い場合は低スコア
+		dangerFactor = weightParam_.stepBoost.dangerFactorLow;
+	}
 
 	// HPが低いほど回避行動を優先
 	float hpRatio = characterInfo_->health / characterInfo_->maxHealth;
 	float hpFactor = 1.0f - hpRatio;
 	// HPが低い時に急激に回避を優先
-	float urgencyFactor = Easing::EaseInQuad(hpFactor) * 1.5f;
+	float urgencyFactor = Easing::EaseInQuad(hpFactor) * weightParam_.stepBoost.urgencyWeight;
 
 	// 最終スコア計算
 	float stepBoostScore = dangerFactor * energyFactor * (1.0f + urgencyFactor);
@@ -178,19 +203,19 @@ float AIBrainSystem::CalculateJumpScore() {
 
 	// 高度差による計算
 	float heightDifference = std::abs(distanceToTarget_ - characterInfo_->transform.translate.y);
-	float heightThreshold = orbitRadius_ * 0.7f;
+	float heightThreshold = orbitRadius_ * weightParam_.jump.heightWeight; // 高度差の閾値を軌道半径の割合で設定
 
 	if (heightDifference > heightThreshold) {
 		float heightRatio = std::clamp(heightDifference / (heightThreshold * 2.0f), 0.0f, 1.0f);
 		// 高度差が大きいほど滑らかにスコア上昇
-		jumpScore += Easing::EaseInOutSine(heightRatio) * 0.3f;
+		jumpScore += Easing::EaseInOutSine(heightRatio) * weightParam_.jump.heightWeight;
 	}
 
 	// エネルギー要因
 	float energyRatio = energyAfterJump / characterInfo_->energyInfo.maxEnergy;
 	float energyFactor = Easing::GentleRise(energyRatio);
 	// エネルギーが多いほどスコア上昇
-	jumpScore += energyFactor * 0.15f;
+	jumpScore += energyFactor * weightParam_.jump.energyWeight;
 
 	return std::clamp(jumpScore, 0.0f, 1.0f);
 }
@@ -217,7 +242,7 @@ float AIBrainSystem::CalculateFloatingScore() {
 	ray.direction = targetDirection;
 	ray.distance = distance;
 	RayCastHit hitInfo;
-	float obstacleFactor = 0.2f;
+	float obstacleFactor = weightParam_.floating.noObstacleFactor; // 障害物がない場合の基本スコア
 
 	// 目標: プレイヤーより少し上（例: +2.0f）
 	float targetOffset = 2.0f;
@@ -257,7 +282,7 @@ float AIBrainSystem::CalculateFloatingScore() {
 	energyFactor = std::clamp(energyFactor, 0.0f, 1.0f);
 
 	// 最終スコア計算（障害物要素を追加）
-	floatingScore = heightFactor * energyFactor * obstacleFactor * 0.9f;
+	floatingScore = heightFactor * energyFactor * obstacleFactor * weightParam_.floating.finalScoreWeight;
 	floatingScore = Easing::Lerp(0.0f, 1.0f, floatingScore);
 
 	return floatingScore;

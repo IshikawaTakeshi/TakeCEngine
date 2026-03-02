@@ -82,7 +82,6 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "body_joint_left.002");
 	boostEffects_[BACKPACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.001");
 
-
 	//BehaviorManagerの初期化
 	behaviorManager_ = std::make_unique<BehaviorManager>();
 	behaviorManager_->Initialize(inputProvider_);
@@ -102,11 +101,8 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	animationMapper_.Register(GameCharacterBehavior::DEAD,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.3f);
 
-	//アニメーションコントローラの初期化
-	animatorController_.Initialize(object3d_->GetModel()->GetSkeleton());
-
 	//BehaviorManagerにアニメーションコンポーネントを設定
-	behaviorManager_->SetAnimationComponents(&animatorController_, &animationMapper_);
+	behaviorManager_->SetAnimationComponents(object3d_->GetAnimatorController(), &animationMapper_);
 }
 
 //===================================================================================
@@ -310,7 +306,7 @@ void Player::Update() {
 	object3d_->SetRotate(eulerRotate);
 	object3d_->SetScale(playerData_.characterInfo.transform.scale);
 	//アニメーションコントローラの更新（object3d_->Update()より前に呼ぶ）
-	animatorController_.Update(deltaTime_);
+	object3d_->GetAnimatorController()->Update(deltaTime_);
 	object3d_->Update();
 	object3d_->GetModel()->UpdateSkinningFromSkeleton();
 	collider_->Update(object3d_.get());

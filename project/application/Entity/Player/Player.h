@@ -15,7 +15,7 @@
 #include "application/Provider/PlayerInputProvider.h"
 #include "application/Entity/Behavior/BehaviorManager.h"
 #include "application/Effect/BoostEffect.h"
-#include "engine/Animation/AnimatorController.h"
+
 
 //==================================================================================
 // Player class
@@ -131,9 +131,6 @@ private:
 	std::unique_ptr<BehaviorManager> behaviorManager_ = nullptr;
 	//プレイヤー入力プロバイダ(借りる)
 	PlayerInputProvider* inputProvider_ = nullptr;
-
-	//アニメーションコントローラ
-	AnimatorController animatorController_;
 	//アニメーションマッパー
 	AnimationMapper animationMapper_;
 
