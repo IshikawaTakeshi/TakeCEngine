@@ -323,6 +323,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\Base\SpriteManager.cpp" />
     <ClCompile Include="engine\Base\UIManager.cpp" />
     <ClCompile Include="application\UI\WarningUI.cpp" />
+    <ClCompile Include="application\Scene\SceneState\BaseSceneState.cpp" />
+    <ClCompile Include="application\Scene\SceneState\SceneStateManager.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlaySceneState.cpp" />
+    <ClCompile Include="application\Scene\SceneState\SceneStateGameStart.cpp" />
+    <ClCompile Include="application\Scene\SceneState\SceneStateGamePlay.cpp" />
+    <ClCompile Include="application\Scene\SceneState\SceneStateEnemyDestroyed.cpp" />
+    <ClCompile Include="application\Scene\SceneState\SceneStateGameOver.cpp" />
+    <ClCompile Include="application\Scene\SceneState\SceneStateGameClear.cpp" />
+    <ClCompile Include="application\Scene\SceneState\SceneStatePause.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Entity\Animation\AnimationMapper.h" />
@@ -542,6 +551,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Base\SpriteManager.h" />
     <ClInclude Include="engine\Base\UIManager.h" />
     <ClInclude Include="application\UI\WarningUI.h" />
+    <ClInclude Include="application\Scene\SceneState\BaseSceneState.h" />
+    <ClInclude Include="application\Scene\SceneState\SceneStateManager.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlaySceneState.h" />
+    <ClInclude Include="application\Scene\SceneState\SceneStateGameStart.h" />
+    <ClInclude Include="application\Scene\SceneState\SceneStateGamePlay.h" />
+    <ClInclude Include="application\Scene\SceneState\SceneStateEnemyDestroyed.h" />
+    <ClInclude Include="application\Scene\SceneState\SceneStateGameOver.h" />
+    <ClInclude Include="application\Scene\SceneState\SceneStateGameClear.h" />
+    <ClInclude Include="application\Scene\SceneState\SceneStatePause.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

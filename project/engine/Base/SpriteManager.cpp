@@ -2,7 +2,6 @@
 #include "engine/2d/SpriteCommon.h"
 #include "engine/base/ImGuiManager.h"
 
-
 using namespace TakeC;
 
 //============================================================================
@@ -81,11 +80,22 @@ Sprite* SpriteManager::Create(const std::string& filePath,
 
 	Sprite* ptr = newSprite.get();
 
-	// 名前があれば登録
+	//登録する予定の名前を取得
 	std::string registeredName = newSprite->GetName();
-	if (!registeredName.empty()) {
-		namedSprites_[registeredName] = ptr;
+
+	//既に同じ名前が登録されている場合、かぶり防止のために名前を変更
+	if (!registeredName.empty() && namedSprites_.find(registeredName) != namedSprites_.end()) {
+		int suffix = 1;
+		std::string newName;
+		do {
+			newName = registeredName + "." + std::format("{:03}", suffix++);
+		} while (namedSprites_.find(newName) != namedSprites_.end());
+		newSprite->SetName(newName);
+		registeredName = newName; // 更新された名前を登録用に使用
 	}
+
+	// 名前がリスト内になければ登録
+	namedSprites_[registeredName] = ptr;
 
 	sprites_.push_back(std::move(newSprite));
 	return ptr;

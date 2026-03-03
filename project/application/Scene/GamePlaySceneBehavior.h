@@ -1,7 +1,7 @@
 #pragma once
 
 //GamePlayシーンの状態
-enum class SceneBehavior {
+enum class SceneState {
 	GAMESTART, // ゲーム開始状態
 	GAMEPLAY, // ゲームプレイ状態
 	ENEMYDESTROYED, // 敵撃破状態

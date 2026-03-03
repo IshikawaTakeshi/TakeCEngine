@@ -31,7 +31,7 @@ class EnemySelectScene : public BaseScene {
 public:
 
 	//シーンの状態
-	enum class SceneBehavior {
+	enum class SceneState {
 		GAMESTART, // ゲーム開始状態
 		GAMEPLAY, // ゲームプレイ状態
 		ENEMYDESTROYED, // 敵撃破状態
@@ -88,9 +88,9 @@ private:
 private:
 
 	//状態遷移リクエスト
-	std::optional<SceneBehavior> behaviorRequest_ = std::nullopt;
+	std::optional<SceneState> behaviorRequest_ = std::nullopt;
 	//シーンの状態
-	SceneBehavior behavior_ = SceneBehavior::GAMEPLAY;
+	SceneState behavior_ = SceneState::GAMEPLAY;
 
 	// カメラ
 	std::shared_ptr<Camera> gameCamera_ = nullptr;
