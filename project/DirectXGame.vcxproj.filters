@@ -367,28 +367,28 @@
     <ClCompile Include="engine\SkyBox\SkyBox.cpp">
       <Filter>engine\3d\SkyBox</Filter>
     </ClCompile>
-    <ClCompile Include="application\Entity\Behavior\BaseBehavior.cpp">
+    <ClCompile Include="application\Entity\Behavior\BaseGameCharacterState.cpp">
       <Filter>application\Entity\Behavior</Filter>
     </ClCompile>
-    <ClCompile Include="application\Entity\Behavior\BehaviorChargeShootStun.cpp">
+    <ClCompile Include="application\Entity\Behavior\StateChargeShootStun.cpp">
       <Filter>application\Entity\Behavior</Filter>
     </ClCompile>
-    <ClCompile Include="application\Entity\Behavior\BehaviorDead.cpp">
+    <ClCompile Include="application\Entity\Behavior\StateDead.cpp">
       <Filter>application\Entity\Behavior</Filter>
     </ClCompile>
-    <ClCompile Include="application\Entity\Behavior\BehaviorFloating.cpp">
+    <ClCompile Include="application\Entity\Behavior\StateFloating.cpp">
       <Filter>application\Entity\Behavior</Filter>
     </ClCompile>
-    <ClCompile Include="application\Entity\Behavior\BehaviorJumping.cpp">
+    <ClCompile Include="application\Entity\Behavior\StateJumping.cpp">
       <Filter>application\Entity\Behavior</Filter>
     </ClCompile>
-    <ClCompile Include="application\Entity\Behavior\BehaviorManager.cpp">
+    <ClCompile Include="application\Entity\Behavior\GameCharacterStateManager.cpp">
       <Filter>application\Entity\Behavior</Filter>
     </ClCompile>
-    <ClCompile Include="application\Entity\Behavior\BehaviorRunning.cpp">
+    <ClCompile Include="application\Entity\Behavior\StateRunning.cpp">
       <Filter>application\Entity\Behavior</Filter>
     </ClCompile>
-    <ClCompile Include="application\Entity\Behavior\BehaviorStepBoost.cpp">
+    <ClCompile Include="application\Entity\Behavior\StateStepBoost.cpp">
       <Filter>application\Entity\Behavior</Filter>
     </ClCompile>
     <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp">
@@ -889,28 +889,28 @@
     <ClInclude Include="application\Weapon\WeaponType.h">
       <Filter>application\weapon</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\Behavior\BaseBehavior.h">
+    <ClInclude Include="application\Entity\Behavior\BaseGameCharacterState.h">
       <Filter>application\Entity\Behavior</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\Behavior\BehaviorChargeShootStun.h">
+    <ClInclude Include="application\Entity\Behavior\StateChargeShootStun.h">
       <Filter>application\Entity\Behavior</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\Behavior\BehaviorDead.h">
+    <ClInclude Include="application\Entity\Behavior\StateDead.h">
       <Filter>application\Entity\Behavior</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\Behavior\BehaviorFloating.h">
+    <ClInclude Include="application\Entity\Behavior\StateFloating.h">
       <Filter>application\Entity\Behavior</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\Behavior\BehaviorJumping.h">
+    <ClInclude Include="application\Entity\Behavior\StateJumping.h">
       <Filter>application\Entity\Behavior</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\Behavior\BehaviorManager.h">
+    <ClInclude Include="application\Entity\Behavior\GameCharacterStateManager.h">
       <Filter>application\Entity\Behavior</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\Behavior\BehaviorRunning.h">
+    <ClInclude Include="application\Entity\Behavior\StateRunning.h">
       <Filter>application\Entity\Behavior</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\Behavior\BehaviorStepBoost.h">
+    <ClInclude Include="application\Entity\Behavior\StateStepBoost.h">
       <Filter>application\Entity\Behavior</Filter>
     </ClInclude>
     <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h">

@@ -11,7 +11,7 @@
 #include "application/Effect/BoostEffect.h"
 #include "application/Effect/DeadEffect.h"
 #include "application/Entity/Animation/AnimationMapper.h"
-#include "application/Entity/Behavior/BehaviorManager.h"
+#include "application/Entity/Behavior/GameCharacterStateManager.h"
 #include "application/Entity/Enemy/AIBrainSystem.h"
 #include "application/Entity/Enemy/BulletSensor.h"
 #include "application/Entity/GameCharacterBehavior.h"
@@ -175,7 +175,7 @@ private:
 	std::unique_ptr<BulletSensor> bulletSensor_ = nullptr;
 
 	// 状態管理マネージャ
-	std::unique_ptr<BehaviorManager> behaviorManager_ = nullptr;
+	std::unique_ptr<GameCharacterStateManager> behaviorManager_ = nullptr;
 	// プレイヤー入力プロバイダ
 	EnemyInputProvider* inputProvider_ = nullptr;
 

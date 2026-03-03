@@ -19,10 +19,6 @@
 #include "application/Weapon/MachineGun/MachineGun.h"
 #include "application/Weapon/ShotGun/ShotGun.h"
 #include "application/Entity/WeaponUnit.h"
-
-#include "application/Entity/Behavior/BehaviorRunning.h"
-#include "application/Entity/Behavior/BehaviorJumping.h"
-#include "application/Entity/Behavior/BehaviorFloating.h"
 #include "application/Effect/BoostEffectPositionEnum.h"
 
 //===================================================================================
@@ -83,22 +79,22 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	boostEffects_[BACKPACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.001");
 
 	//BehaviorManagerの初期化
-	behaviorManager_ = std::make_unique<BehaviorManager>();
+	behaviorManager_ = std::make_unique<GameCharacterStateManager>();
 	behaviorManager_->Initialize(inputProvider_);
 	behaviorManager_->InitializeBehaviors(playerData_.characterInfo);
 
 	//アニメーションマッパーの登録
-	animationMapper_.Register(GameCharacterBehavior::RUNNING,
+	animationMapper_.Register(GameCharacterState::RUNNING,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.2f);
-	animationMapper_.Register(GameCharacterBehavior::FLOATING,
+	animationMapper_.Register(GameCharacterState::FLOATING,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Floating"), 0.2f);
-	animationMapper_.Register(GameCharacterBehavior::JUMP,
+	animationMapper_.Register(GameCharacterState::JUMP,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Jump"), 0.15f);
-	animationMapper_.Register(GameCharacterBehavior::STEPBOOST,
+	animationMapper_.Register(GameCharacterState::STEPBOOST,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.1f);
-	animationMapper_.Register(GameCharacterBehavior::CHARGESHOOT_STUN,
+	animationMapper_.Register(GameCharacterState::CHARGESHOOT_STUN,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.2f);
-	animationMapper_.Register(GameCharacterBehavior::DEAD,
+	animationMapper_.Register(GameCharacterState::DEAD,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.3f);
 
 	//BehaviorManagerにアニメーションコンポーネントを設定
@@ -184,8 +180,8 @@ void Player::Update() {
 
 	if (playerData_.characterInfo.isInCombat) {
 		// StepBoost入力判定を最初に追加
-		if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING ||
-			behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING) {
+		if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::RUNNING ||
+			behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::FLOATING) {
 
 			//オーバーヒート状態のチェック
 			if (playerData_.characterInfo.overHeatInfo.isOverheated == false) {
@@ -193,7 +189,7 @@ void Player::Update() {
 				// LTボタン＋スティック入力で発動
 				if (inputProvider_->RequestStepBoost()) {
 					//RequestActiveBoostEffect();
-					behaviorManager_->RequestBehavior(GameCharacterBehavior::STEPBOOST);
+					behaviorManager_->RequestBehavior(GameCharacterState::STEPBOOST);
 				}
 				//Jump入力判定
 				//RTで発動
@@ -201,7 +197,7 @@ void Player::Update() {
 
 					if (inputProvider_->RequestJumpInput()) {
 						//ジャンプのリクエスト
-						behaviorManager_->RequestBehavior(GameCharacterBehavior::JUMP);
+						behaviorManager_->RequestBehavior(GameCharacterState::JUMP);
 						playerData_.characterInfo.onGround = false; // ジャンプしたので地上ではない
 					}
 				}
@@ -235,13 +231,13 @@ void Player::Update() {
 
 	// 地面に着地したらRUNNINGに戻る
 	if (playerData_.characterInfo.onGround == true &&
-		(behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::JUMP ||
-			behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING)) {
-		behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+		(behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::JUMP ||
+			behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::FLOATING)) {
+		behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
 	} else if (playerData_.characterInfo.onGround == false &&
-		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING) {
+		behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::RUNNING) {
 		//空中にいる場合はFLOATINGに切り替え
-		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
+		behaviorManager_->RequestBehavior(GameCharacterState::FLOATING);
 	}
 
 
@@ -250,12 +246,12 @@ void Player::Update() {
 	if (playerData_.characterInfo.health <= 0.0f) {
 		//死亡状態のリクエスト
 		playerData_.characterInfo.isAlive = false;
-		behaviorManager_->RequestBehavior(GameCharacterBehavior::DEAD);
+		behaviorManager_->RequestBehavior(GameCharacterState::DEAD);
 	}
 
 	//歩行時の煙エミッターのON/OFF制御
-	if (playerData_.characterInfo.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING ||
-		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
+	if (playerData_.characterInfo.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::RUNNING ||
+		behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::STEPBOOST)) {
 		backEmitter_->SetIsEmit(true);
 	} else {
 		backEmitter_->SetIsEmit(false);
@@ -538,7 +534,7 @@ void Player::UpdateAttack() {
 
 					playerData_.characterInfo.isChargeShooting = false; // チャージ撃ち中フラグをリセット
 					chargeShootTimer_.Stop();
-					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
+					behaviorManager_->RequestBehavior(GameCharacterState::CHARGESHOOT_STUN);
 					chargeShootableUnits_[i] = false; // チャージ撃ち可能なユニットのマークをリセット
 				}
 			}
@@ -574,10 +570,10 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 
 				if (weapon->StopShootOnly()) {
 					// 停止撃ち専用の場合はチャージ後に硬直状態へ
-					behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
+					behaviorManager_->RequestBehavior(GameCharacterState::CHARGESHOOT_STUN);
 				} else {
 					// 移動撃ち可能な場合はRUNNINGに戻す
-					behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+					behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
 				}
 			}
 		} else {
@@ -606,10 +602,10 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 			weapon->ChargeAttack();
 			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
-				behaviorManager_->RequestBehavior(GameCharacterBehavior::CHARGESHOOT_STUN);
+				behaviorManager_->RequestBehavior(GameCharacterState::CHARGESHOOT_STUN);
 			} else {
 				// 移動撃ち可能な場合はRUNNINGに戻す
-				behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+				behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
 			}
 		}
 	}
@@ -638,9 +634,9 @@ void Player::UpdateEnergy() {
 		if (playerData_.characterInfo.energyInfo.energy < maxEnergy) {
 
 			//浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
-			if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::FLOATING ||
-				behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::JUMP ||
-				behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST) {
+			if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::FLOATING ||
+				behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::JUMP ||
+				behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::STEPBOOST) {
 				return; // エネルギーの回復を行わない
 			}
 
@@ -694,13 +690,13 @@ void Player::RequestActiveBoostEffect() {
 	float angle = atan2(crossY, dot) * (180.0f / std::numbers::pi_v<float>); // -180°～180°
 
 	// --- 角度差に応じてエフェクトをアクティブにする ---
-	if(angle <= -45.0f && angle > -135.0f) {
+	if(angle <= -55.0f && angle > -125.0f) {
 		// 左
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
 		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
 		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
-	} else if(angle >= 45.0f && angle < 135.0f) {
+	} else if(angle >= 55.0f && angle < 125.0f) {
 		// 右
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);

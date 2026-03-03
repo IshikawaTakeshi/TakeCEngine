@@ -51,7 +51,7 @@ public:
 	//----- setter ---------------------------
 	void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
 	void SetIsActive(bool isActive); 
-	void SetBehavior(GameCharacterBehavior behavior) { behavior_ = behavior; }
+	void SetBehavior(GameCharacterState behavior) { behavior_ = behavior; }
 
 private:
 
@@ -65,7 +65,7 @@ private:
 	// ジョイントのワールド行列
 	Matrix4x4 currentJointMatrix_;
 
-	GameCharacterBehavior behavior_ = GameCharacterBehavior::NONE;
+	GameCharacterState behavior_ = GameCharacterState::NONE;
 
 	// ライト
 	PointLightData pointLightData_;

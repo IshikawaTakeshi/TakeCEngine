@@ -13,7 +13,7 @@
 #include "application/Entity/GameCharacterInfo.h"
 #include "application/Entity/Animation/AnimationMapper.h"
 #include "application/Provider/PlayerInputProvider.h"
-#include "application/Entity/Behavior/BehaviorManager.h"
+#include "application/Entity/Behavior/GameCharacterStateManager.h"
 #include "application/Effect/BoostEffect.h"
 
 
@@ -128,7 +128,7 @@ private:
 	//カメラ
 	Camera* camera_ = nullptr;
 	//状態管理マネージャ
-	std::unique_ptr<BehaviorManager> behaviorManager_ = nullptr;
+	std::unique_ptr<GameCharacterStateManager> behaviorManager_ = nullptr;
 	//プレイヤー入力プロバイダ(借りる)
 	PlayerInputProvider* inputProvider_ = nullptr;
 	//アニメーションマッパー

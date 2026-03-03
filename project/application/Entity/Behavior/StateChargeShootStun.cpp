@@ -1,11 +1,11 @@
-#include "BehaviorChargeShootStun.h"
+#include "StateChargeShootStun.h"
 #include "application/Provider/BaseInputProvider.h"
 #include "engine/base/TakeCFrameWork.h"
 
 //===================================================================================
 //　コンストラクタ
 //===================================================================================
-BehaviorChargeShootStun::BehaviorChargeShootStun(baseInputProvider* provider) {
+StateChargeShootStun::StateChargeShootStun(baseInputProvider* provider) {
 	inputProvider_ = provider;
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
@@ -13,7 +13,7 @@ BehaviorChargeShootStun::BehaviorChargeShootStun(baseInputProvider* provider) {
 //===================================================================================
 //　初期化
 //===================================================================================
-void BehaviorChargeShootStun::Initialize(PlayableCharacterInfo& characterInfo) {
+void StateChargeShootStun::Initialize(PlayableCharacterInfo& characterInfo) {
 	// 硬直タイマーの初期化
 	characterInfo.chargeAttackStunInfo.stunTimer = characterInfo.chargeAttackStunInfo.stunDuration;
 }
@@ -21,7 +21,7 @@ void BehaviorChargeShootStun::Initialize(PlayableCharacterInfo& characterInfo) {
 //===================================================================================
 //　更新
 //===================================================================================
-void BehaviorChargeShootStun::Update(PlayableCharacterInfo& characterInfo) {
+void StateChargeShootStun::Update(PlayableCharacterInfo& characterInfo) {
 	float& stunTimer_ = characterInfo.chargeAttackStunInfo.stunTimer;
 	Vector3& velocity_ = characterInfo.velocity;
 	// 硬直時間の更新
@@ -34,14 +34,14 @@ void BehaviorChargeShootStun::Update(PlayableCharacterInfo& characterInfo) {
 	if (stunTimer_ <= 0.0f) {
 		// 状態遷移のフラグを立てる
 		if (characterInfo.transform.translate.y <= 0.0f) {
-			nextBehavior_ = GameCharacterBehavior::RUNNING;
+			nextState_ = GameCharacterState::RUNNING;
 			isTransition_ = true;
 
 		} else if (characterInfo.transform.translate.y > 0.0f) {
-			nextBehavior_ = GameCharacterBehavior::FLOATING;
+			nextState_ = GameCharacterState::FLOATING;
 			isTransition_ = true;
 		} else {
-			nextBehavior_ = GameCharacterBehavior::RUNNING;
+			nextState_ = GameCharacterState::RUNNING;
 			isTransition_ = true;
 			
 		}

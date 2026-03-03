@@ -11,18 +11,13 @@
 #include "engine/camera/CameraManager.h"
 #include "math/Easing.h"
 
-
 #include "application/Effect/BoostEffectPositionEnum.h"
-#include "application/Entity/Behavior/BehaviorFloating.h"
-#include "application/Entity/Behavior/BehaviorJumping.h"
-#include "application/Entity/Behavior/BehaviorRunning.h"
 #include "application/Entity/WeaponUnit.h"
 #include "application/Weapon/Bazooka/Bazooka.h"
 #include "application/Weapon/Launcher/VerticalMissileLauncher.h"
 #include "application/Weapon/MachineGun/MachineGun.h"
 #include "application/Weapon/Rifle/Rifle.h"
 #include "application/Weapon/ShotGun/ShotGun.h"
-
 
 //========================================================================================================
 // 　初期化
@@ -94,22 +89,22 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	inputProvider_->SetAIBrainSystem(aiBrainSystem_.get());
 
 	// BehaviorManagerの初期化
-	behaviorManager_ = std::make_unique<BehaviorManager>();
+	behaviorManager_ = std::make_unique<GameCharacterStateManager>();
 	behaviorManager_->Initialize(inputProvider_);
 	behaviorManager_->InitializeBehaviors(enemyData_.characterInfo);
 
 	// アニメーションマッパーの登録
-	animationMapper_.Register(GameCharacterBehavior::RUNNING,
+	animationMapper_.Register(GameCharacterState::RUNNING,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.2f);
-	animationMapper_.Register(GameCharacterBehavior::FLOATING,
+	animationMapper_.Register(GameCharacterState::FLOATING,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Floating"), 0.2f);
-	animationMapper_.Register(GameCharacterBehavior::JUMP,
+	animationMapper_.Register(GameCharacterState::JUMP,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Jump"), 0.15f);
-	animationMapper_.Register(GameCharacterBehavior::STEPBOOST,
+	animationMapper_.Register(GameCharacterState::STEPBOOST,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.1f);
-	animationMapper_.Register(GameCharacterBehavior::CHARGESHOOT_STUN,
+	animationMapper_.Register(GameCharacterState::CHARGESHOOT_STUN,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.2f);
-	animationMapper_.Register(GameCharacterBehavior::DEAD,
+	animationMapper_.Register(GameCharacterState::DEAD,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.3f);
 
 	// アニメーションコントローラの初期化
@@ -221,18 +216,18 @@ void Enemy::Update() {
 
 	// RUNNING時のBehavior遷移リクエスト
 	if (enemyData_.characterInfo.isInCombat) {
-		if (behaviorManager_->GetCurrentBehaviorType() == Behavior::RUNNING) {
+		if (behaviorManager_->GetCurrentBehaviorType() == State::RUNNING) {
 
 			// BestActionの取得
 			switch (aiBrainSystem_->GetBestAction()) {
 			case Action::JUMP:
-				behaviorManager_->RequestBehavior(Behavior::JUMP);
+				behaviorManager_->RequestBehavior(State::JUMP);
 				break;
 			case Action::FLOATING: // FLOATINGへの遷移はJUMPで行う
-				behaviorManager_->RequestBehavior(Behavior::JUMP);
+				behaviorManager_->RequestBehavior(State::JUMP);
 				break;
 			case Action::STEPBOOST:
-				behaviorManager_->RequestBehavior(Behavior::STEPBOOST);
+				behaviorManager_->RequestBehavior(State::STEPBOOST);
 				break;
 			}
 		}
@@ -256,14 +251,14 @@ void Enemy::Update() {
 	// 地面に着地したらRUNNINGに戻る
 	if (enemyData_.characterInfo.onGround == true &&
 		(behaviorManager_->GetCurrentBehaviorType() ==
-			GameCharacterBehavior::JUMP ||
+			GameCharacterState::JUMP ||
 			behaviorManager_->GetCurrentBehaviorType() ==
-			GameCharacterBehavior::FLOATING)) {
-		behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+			GameCharacterState::FLOATING)) {
+		behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
 	} else if (enemyData_.characterInfo.onGround == false &&
-		behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::RUNNING) {
+		behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::RUNNING) {
 		// 空中にいる場合はFLOATINGに切り替え
-		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
+		behaviorManager_->RequestBehavior(GameCharacterState::FLOATING);
 	}
 
 	// ダメージエフェクトの更新
@@ -278,7 +273,7 @@ void Enemy::Update() {
 	if (enemyData_.characterInfo.health <= 0.0f) {
 		// 死亡状態のリクエスト
 		enemyData_.characterInfo.isAlive = false;
-		behaviorManager_->RequestBehavior(Behavior::DEAD);
+		behaviorManager_->RequestBehavior(State::DEAD);
 		deadEffect_->Start();
 	}
 
@@ -294,8 +289,8 @@ void Enemy::Update() {
 	aiBrainSystem_->Update();
 
 	if (enemyData_.characterInfo.onGround &&
-		(behaviorManager_->GetCurrentBehaviorType() ==GameCharacterBehavior::RUNNING ||
-			behaviorManager_->GetCurrentBehaviorType() == GameCharacterBehavior::STEPBOOST)) {
+		(behaviorManager_->GetCurrentBehaviorType() ==GameCharacterState::RUNNING ||
+			behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::STEPBOOST)) {
 		backEmitter_->SetIsEmit(true);
 	} else {
 		backEmitter_->SetIsEmit(false);
@@ -585,7 +580,7 @@ void Enemy::UpdateAttack() {
 						false; // チャージ撃ち中フラグをリセット
 					chargeShootTimer_.Stop();
 					behaviorManager_->RequestBehavior(
-						GameCharacterBehavior::CHARGESHOOT_STUN);
+						GameCharacterState::CHARGESHOOT_STUN);
 					chargeShootableUnits_[i] =
 						false; // チャージ撃ち可能なユニットのマークをリセット
 				}
@@ -609,10 +604,10 @@ void Enemy::WeaponAttack(int weaponIndex) {
 			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
 				behaviorManager_->RequestBehavior(
-					GameCharacterBehavior::CHARGESHOOT_STUN);
+					GameCharacterState::CHARGESHOOT_STUN);
 			} else {
 				// 移動撃ち可能な場合はRUNNINGに戻す
-				behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+				behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
 			}
 		}
 	} else {
@@ -646,10 +641,10 @@ void Enemy::WeaponAttack(int weaponIndex) {
 			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
 				behaviorManager_->RequestBehavior(
-					GameCharacterBehavior::CHARGESHOOT_STUN);
+					GameCharacterState::CHARGESHOOT_STUN);
 			} else {
 				// 移動撃ち可能な場合はRUNNINGに戻す
-				behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+				behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
 			}
 		}
 	}
@@ -691,11 +686,11 @@ void Enemy::UpdateEnergy() {
 
 			// 浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
 			if (behaviorManager_->GetCurrentBehaviorType() ==
-				GameCharacterBehavior::FLOATING ||
+				GameCharacterState::FLOATING ||
 				behaviorManager_->GetCurrentBehaviorType() ==
-				GameCharacterBehavior::JUMP ||
+				GameCharacterState::JUMP ||
 				behaviorManager_->GetCurrentBehaviorType() ==
-				GameCharacterBehavior::STEPBOOST) {
+				GameCharacterState::STEPBOOST) {
 				return; // エネルギーの回復を行わない
 			}
 

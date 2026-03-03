@@ -1,15 +1,17 @@
 #pragma once
-#include "application/Entity/Behavior/BaseBehavior.h"
+#include "application/Entity/Behavior/BaseGameCharacterState.h"
 
-class baseInputProvider; // 前方宣言
+// 前方宣言
+class baseInputProvider;
 
 //============================================================================
-// BehaviorStepBoost class
+// StateFloating class
 //============================================================================
-class BehaviorStepBoost : public BaseBehavior {
+class StateFloating : public BaseGameCharacterState {
 public:
-	BehaviorStepBoost(baseInputProvider* provider);
-	~BehaviorStepBoost() override = default;
+
+	StateFloating(baseInputProvider* provider);
+	~StateFloating() override = default;
 
 	// 初期化
 	void Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) override;
@@ -18,5 +20,6 @@ public:
 
 private:
 
-	float gravity_ = 9.8f; // 重力の強さ
+	//重力の強さ
+	float gravity_ = 9.8f;
 };

@@ -1,11 +1,11 @@
-#include "BehaviorManager.h"
+#include "GameCharacterStateManager.h"
 #include "application/Provider/BaseInputProvider.h"
-#include "application/Entity/Behavior/BehaviorRunning.h"
-#include "application/Entity/Behavior/BehaviorJumping.h"
-#include "application/Entity/Behavior/BehaviorFloating.h"
-#include "application/Entity/Behavior/BehaviorStepBoost.h"
-#include "application/Entity/Behavior/BehaviorChargeShootStun.h"
-#include "application/Entity/Behavior/BehaviorDead.h"
+#include "application/Entity/Behavior/StateRunning.h"
+#include "application/Entity/Behavior/StateJumping.h"
+#include "application/Entity/Behavior/StateFloating.h"
+#include "application/Entity/Behavior/StateStepBoost.h"
+#include "application/Entity/Behavior/StateChargeShootStun.h"
+#include "application/Entity/Behavior/StateDead.h"
 #include "application/Entity/Animation/AnimationMapper.h"
 #include "engine/Animation/AnimatorController.h"
 #include "engine/base/TakeCFrameWork.h"
@@ -15,28 +15,28 @@
 // 初期化
 //=====================================================================================
 
-void BehaviorManager::Initialize(baseInputProvider* moveDirectionProvider) {
+void GameCharacterStateManager::Initialize(baseInputProvider* moveDirectionProvider) {
 	inputProvider_ = moveDirectionProvider; //入力プロバイダーの設定
 }
 
-void BehaviorManager::InitializeBehaviors(PlayableCharacterInfo& characterContext) {
+void GameCharacterStateManager::InitializeBehaviors(PlayableCharacterInfo& characterContext) {
 	// ビヘイビアの初期化
 	CreateDefaultBehaviors();
 	// 初期化時にデフォルトのビヘイビアを設定
-	currentBehavior_ = std::move(behaviors_[GameCharacterBehavior::RUNNING]);
+	currentBehavior_ = std::move(behaviors_[GameCharacterState::RUNNING]);
 	currentBehavior_->Initialize(characterContext);
-	currentBehaviorType_ = GameCharacterBehavior::RUNNING;
+	currentBehaviorType_ = GameCharacterState::RUNNING;
 }
 
 //=====================================================================================
 // 更新
 //=====================================================================================
 
-void BehaviorManager::Update(PlayableCharacterInfo& characterContext) {
+void GameCharacterStateManager::Update(PlayableCharacterInfo& characterContext) {
 	// ビヘイビアの遷移チェック
 	if (currentBehavior_) {
 		if (currentBehavior_->GetIsTransition() == true) { // 遷移が必要な場合
-			nextBehavior_ = currentBehavior_->GetNextBehavior();
+			nextState_ = currentBehavior_->GetNextState();
 			isChanged_ = true;
 		}
 	}
@@ -44,11 +44,11 @@ void BehaviorManager::Update(PlayableCharacterInfo& characterContext) {
 	if (isChanged_) {
 		// ビヘイビアの遷移
 		currentBehavior_->SetIsTransition(false); // 遷移フラグをリセット
-		currentBehavior_->SetNextBehavior(GameCharacterBehavior::NONE); // 次のビヘイビアをリセット
+		currentBehavior_->SetNextState(GameCharacterState::NONE); // 次のビヘイビアをリセット
 		// 現在のビヘイビアを保存し、次のビヘイビアに切り替え
 		behaviors_[currentBehaviorType_] = std::move(currentBehavior_);
-		currentBehavior_ = std::move(behaviors_[nextBehavior_]);
-		currentBehaviorType_ = nextBehavior_;
+		currentBehavior_ = std::move(behaviors_[nextState_]);
+		currentBehaviorType_ = nextState_;
 		currentBehavior_->Initialize(characterContext);
 
 		// アニメーション遷移を開始
@@ -70,13 +70,13 @@ void BehaviorManager::Update(PlayableCharacterInfo& characterContext) {
 //=====================================================================================
 // ImGuiの更新
 //=====================================================================================
-void BehaviorManager::UpdateImGui() {
+void GameCharacterStateManager::UpdateImGui() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 
 	//現在の項目
-	std::string currentBehaviorStr = "Current Behavior:" + StringUtility::EnumToString(currentBehaviorType_);
+	std::string currentBehaviorStr = "Current State:" + StringUtility::EnumToString(currentBehaviorType_);
 
-	ImGui::SeparatorText("BehaviorManager");
+	ImGui::SeparatorText("GameCharacterStateManager");
 	ImGui::Text(currentBehaviorStr.c_str());
 #endif // _DEBUG
 }
@@ -84,9 +84,9 @@ void BehaviorManager::UpdateImGui() {
 //=====================================================================================
 // ビヘイビアのリクエスト
 //=====================================================================================
-void BehaviorManager::RequestBehavior(Behavior nextBehavior) {
-	if (nextBehavior != GameCharacterBehavior::NONE && nextBehavior != currentBehaviorType_) {
-		nextBehavior_ = nextBehavior;
+void GameCharacterStateManager::RequestBehavior(State nextBehavior) {
+	if (nextBehavior != GameCharacterState::NONE && nextBehavior != currentBehaviorType_) {
+		nextState_ = nextBehavior;
 		isChanged_ = true;
 	}
 }
@@ -94,19 +94,19 @@ void BehaviorManager::RequestBehavior(Behavior nextBehavior) {
 //=====================================================================================
 // 各ビヘイビアの取得
 //=====================================================================================
-void BehaviorManager::CreateDefaultBehaviors() {
-	behaviors_.emplace(GameCharacterBehavior::RUNNING, std::make_unique<BehaviorRunning>(inputProvider_));
-	behaviors_.emplace(GameCharacterBehavior::JUMP, std::make_unique<BehaviorJumping>(inputProvider_));
-	behaviors_.emplace(GameCharacterBehavior::FLOATING, std::make_unique<BehaviorFloating>(inputProvider_));
-	behaviors_.emplace(GameCharacterBehavior::STEPBOOST, std::make_unique<BehaviorStepBoost>(inputProvider_));
-	behaviors_.emplace(GameCharacterBehavior::CHARGESHOOT_STUN, std::make_unique<BehaviorChargeShootStun>(inputProvider_));
-	behaviors_.emplace(GameCharacterBehavior::DEAD, std::make_unique<BehaviorDead>(inputProvider_));
+void GameCharacterStateManager::CreateDefaultBehaviors() {
+	behaviors_.emplace(GameCharacterState::RUNNING, std::make_unique<StateRunning>(inputProvider_));
+	behaviors_.emplace(GameCharacterState::JUMP, std::make_unique<StateJumping>(inputProvider_));
+	behaviors_.emplace(GameCharacterState::FLOATING, std::make_unique<StateFloating>(inputProvider_));
+	behaviors_.emplace(GameCharacterState::STEPBOOST, std::make_unique<StateStepBoost>(inputProvider_));
+	behaviors_.emplace(GameCharacterState::CHARGESHOOT_STUN, std::make_unique<StateChargeShootStun>(inputProvider_));
+	behaviors_.emplace(GameCharacterState::DEAD, std::make_unique<StateDead>(inputProvider_));
 }
 
 //=====================================================================================
 // アニメーションコンポーネントの設定
 //=====================================================================================
-void BehaviorManager::SetAnimationComponents(AnimatorController* animatorController, AnimationMapper* animationMapper) {
+void GameCharacterStateManager::SetAnimationComponents(AnimatorController* animatorController, AnimationMapper* animationMapper) {
 	animatorController_ = animatorController;
 	animationMapper_ = animationMapper;
 

@@ -1,4 +1,4 @@
-#include "BehaviorJumping.h"
+#include "StateJumping.h"
 #include "engine/base/TakeCFrameWork.h"
 #include "application/Provider/BaseInputProvider.h"
 
@@ -6,7 +6,7 @@
 //=========================================================================
 // コンストラクタ
 //=========================================================================
-BehaviorJumping::BehaviorJumping(baseInputProvider* provider) {
+StateJumping::StateJumping(baseInputProvider* provider) {
 	inputProvider_ = provider; //入力プロバイダーの設定
 	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 	
@@ -16,7 +16,7 @@ BehaviorJumping::BehaviorJumping(baseInputProvider* provider) {
 // 初期化処理
 //=========================================================================
 
-void BehaviorJumping::Initialize(PlayableCharacterInfo& characterInfo) {
+void StateJumping::Initialize(PlayableCharacterInfo& characterInfo) {
 	// ジャンプのエネルギー消費
 	characterInfo.energyInfo.energy -= characterInfo.jumpInfo.useEnergy;
 	//ジャンプの速度を設定
@@ -29,7 +29,7 @@ void BehaviorJumping::Initialize(PlayableCharacterInfo& characterInfo) {
 // 更新処理
 //=========================================================================
 
-void BehaviorJumping::Update(PlayableCharacterInfo& characterInfo) {
+void StateJumping::Update(PlayableCharacterInfo& characterInfo) {
 
 	Vector3& velocity = characterInfo.velocity; // 移動ベクトル
 
@@ -48,7 +48,7 @@ void BehaviorJumping::Update(PlayableCharacterInfo& characterInfo) {
 		characterInfo.jumpInfo.jumpTimer = 0.0f; // ジャンプタイマーをリセット
 		//FLOATINGに切り替え
 		isTransition_ = true;
-		nextBehavior_ = Behavior::FLOATING;
+		nextState_ = State::FLOATING;
 		return;
 	}
 }

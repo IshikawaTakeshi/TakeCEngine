@@ -1,5 +1,5 @@
 #pragma once
-#include "application/Entity/Behavior/BaseBehavior.h"
+#include "application/Entity/Behavior/BaseGameCharacterState.h"
 #include <memory>
 #include <unordered_map>
 
@@ -8,12 +8,12 @@ class AnimatorController;
 class AnimationMapper;
 
 //============================================================================
-// BehaviorManager class
+// GameCharacterStateManager class
 //============================================================================
-class BehaviorManager {
+class GameCharacterStateManager {
 public:
-	BehaviorManager() = default;
-	~BehaviorManager() = default;
+	GameCharacterStateManager() = default;
+	~GameCharacterStateManager() = default;
 
 	// ビヘイビアの初期化
 	void Initialize(baseInputProvider* moveDirectionProvider);
@@ -22,7 +22,7 @@ public:
 	void Update(PlayableCharacterInfo& characterContext);
 	void UpdateImGui();
 	// ビヘイビアの遷移リクエスト
-	void RequestBehavior(Behavior nextBehavior);
+	void RequestBehavior(State nextBehavior);
 
 	/// <summary>
 	/// アニメーションコンポーネントの設定
@@ -34,9 +34,9 @@ public:
 	//----- getter ---------------------------
 
 	// 現在のビヘイビアタイプ取得
-	Behavior GetCurrentBehaviorType() const { return currentBehaviorType_; }
+	State GetCurrentBehaviorType() const { return currentBehaviorType_; }
 	// 次のビヘイビアタイプ取得
-	Behavior GetNextBehaviorType() const { return nextBehavior_; }
+	State GetNextBehaviorType() const { return nextState_; }
 
 private:
 
@@ -45,14 +45,14 @@ private:
 
 private:
 	// 現在のビヘイビア
-	std::unique_ptr<BaseBehavior> currentBehavior_;
+	std::unique_ptr<BaseGameCharacterState> currentBehavior_;
 	// ビヘイビアのマップ
-	std::unordered_map<Behavior, std::unique_ptr<BaseBehavior>> behaviors_;
+	std::unordered_map<State, std::unique_ptr<BaseGameCharacterState>> behaviors_;
 
 	// 現在のビヘイビアタイプ
-	Behavior currentBehaviorType_ = Behavior::NONE;
+	State currentBehaviorType_ = State::NONE;
 	// 次のビヘイビア
-	Behavior nextBehavior_ = Behavior::NONE;
+	State nextState_ = State::NONE;
 	// ビヘイビアが変更されたかどうか
 	bool isChanged_ = false;
 	// 入力プロバイダ

@@ -1,17 +1,17 @@
 #pragma once
-#include "application/Entity/Behavior/BaseBehavior.h"
+#include "application/Entity/Behavior/BaseGameCharacterState.h"
 
-// 前方宣言
+//前方宣言
 class baseInputProvider;
 
 //============================================================================
-// BehaviorChargeShootStun class
+// StateRunning class
 //============================================================================
-class BehaviorChargeShootStun : public BaseBehavior {
+class StateRunning : public BaseGameCharacterState {
 public:
 
-	BehaviorChargeShootStun(baseInputProvider* provider);
-	~BehaviorChargeShootStun() override = default;
+	StateRunning(baseInputProvider* provider);
+	~StateRunning() override = default;
 
 	// 初期化
 	void Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) override;

@@ -13,7 +13,7 @@ struct AnimationEntry {
 
 //============================================================================
 // AnimationMapper class
-// GameCharacterBehavior から AnimationEntry へのマッピングを管理する
+// GameCharacterState から AnimationEntry へのマッピングを管理する
 //============================================================================
 class AnimationMapper {
 public:
@@ -24,15 +24,15 @@ public:
 	/// <param name="behavior">対象のビヘイビア</param>
 	/// <param name="animation">対応するアニメーション（非所有）</param>
 	/// <param name="blendDuration">ブレンドにかかる時間（秒）</param>
-	void Register(GameCharacterBehavior behavior, Animation* animation, float blendDuration = 0.2f);
+	void Register(GameCharacterState behavior, Animation* animation, float blendDuration = 0.2f);
 
 	/// <summary>
 	/// ビヘイビアに対応するエントリを検索
 	/// </summary>
 	/// <param name="behavior">検索するビヘイビア</param>
 	/// <returns>見つかった場合はエントリのポインタ、なければ nullptr</returns>
-	const AnimationEntry* Find(GameCharacterBehavior behavior) const;
+	const AnimationEntry* Find(GameCharacterState behavior) const;
 
 private:
-	std::map<GameCharacterBehavior, AnimationEntry> entries_;
+	std::map<GameCharacterState, AnimationEntry> entries_;
 };

@@ -3,7 +3,7 @@
 //===================================================================================
 //　ビヘイビア → アニメーション の登録
 //===================================================================================
-void AnimationMapper::Register(GameCharacterBehavior behavior, Animation* animation, float blendDuration) {
+void AnimationMapper::Register(GameCharacterState behavior, Animation* animation, float blendDuration) {
 
 	entries_[behavior] = { animation, blendDuration };
 }
@@ -11,7 +11,7 @@ void AnimationMapper::Register(GameCharacterBehavior behavior, Animation* animat
 //===================================================================================
 //　ビヘイビア → アニメーション の検索
 //===================================================================================
-const AnimationEntry* AnimationMapper::Find(GameCharacterBehavior behavior) const {
+const AnimationEntry* AnimationMapper::Find(GameCharacterState behavior) const {
 	auto it = entries_.find(behavior);
 	if (it != entries_.end()) {
 		return &it->second;
