@@ -1,16 +1,20 @@
-#include "GamePlaySceneState.h"
+#include "SceneStateGameOver.h"
+#include "application/Scene/SceneManager.h"
 #include "application/Scene/GamePlayScene.h"
 
+
 //===================================================================================
-// BaseScene* → GamePlayScene* 変換して初期化
+// 初期化
 //===================================================================================
-void GamePlaySceneState::Initialize(BaseScene *scene) {
-  Initialize(static_cast<GamePlayScene *>(scene));
+void SceneStateGameOver::Initialize(GamePlayScene* scene) {
+
+	scene->GetPhaseMessageUI()->SetNextMessage(PhaseMessage::LOSE);
+
+	float fadeTimer = 3.0f;
+	SceneManager::GetInstance().ChangeScene("GAMEOVER", fadeTimer);
 }
 
 //===================================================================================
-// BaseScene* → GamePlayScene* 変換して更新
+// 更新
 //===================================================================================
-void GamePlaySceneState::Update(BaseScene *scene) {
-  Update(static_cast<GamePlayScene *>(scene));
-}
+void SceneStateGameOver::Update([[maybe_unused]] GamePlayScene* scene) {}

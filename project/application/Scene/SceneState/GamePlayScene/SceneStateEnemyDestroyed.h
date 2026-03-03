@@ -1,5 +1,5 @@
 #pragma once
-#include "application/Scene/SceneState/GamePlaySceneState.h"
+#include "application/Scene/SceneState/GamePlayScene/GamePlaySceneState.h"
 #include "engine/Utility/Timer.h"
 
 //============================================================================
@@ -8,15 +8,15 @@
 //============================================================================
 class SceneStateEnemyDestroyed : public GamePlaySceneState {
 public:
-  SceneStateEnemyDestroyed() = default;
-  ~SceneStateEnemyDestroyed() override = default;
+	SceneStateEnemyDestroyed() = default;
+	~SceneStateEnemyDestroyed() override = default;
 
-  // 初期化
-  void Initialize(GamePlayScene *scene) override;
-  // 更新
-  void Update(GamePlayScene *scene) override;
+	// 初期化
+	void Initialize(GamePlayScene* scene) override;
+	// 更新
+	void Update(GamePlayScene* scene) override;
 
 private:
-  // 状態遷移用タイマー
-  Timer changeBehaviorTimer_;
+	// 状態遷移用タイマー
+	Timer changeBehaviorTimer_;
 };

@@ -11,30 +11,38 @@ class BaseScene;
 //============================================================================
 class BaseSceneState {
 public:
-  BaseSceneState() = default;
-  virtual ~BaseSceneState() = default;
 
-  // 初期化
-  virtual void Initialize(BaseScene *scene) = 0;
-  // 更新
-  virtual void Update(BaseScene *scene) = 0;
+	//=======================================================================
+	// functions
+	//=======================================================================
 
-  // 状態遷移リクエスト
-  void RequestTransition(SceneState nextState);
+	// コンストラクタ・デストラクタ
+	BaseSceneState() = default;
+	virtual ~BaseSceneState() = default;
 
-  //----- getter ---------------------------
+	// 初期化
+	virtual void Initialize(BaseScene* scene) = 0;
+	// 更新
+	virtual void Update(BaseScene* scene) = 0;
 
-  // 遷移リクエストがあるか
-  bool HasTransitionRequest() const;
-  // 次の状態を取得
-  SceneState GetNextState() const;
+	// 状態遷移リクエスト
+	void RequestTransition(SceneState nextState);
 
-  //----- その他 ---------------------------
+	// 遷移リクエストをリセット
+	void ResetTransition();
 
-  // 遷移リクエストをリセット
-  void ResetTransition();
+	//=======================================================================
+	// accessors
+	//=======================================================================
+
+	//----- getter ---------------------------
+
+	// 遷移リクエストがあるか
+	bool HasTransitionRequest() const;
+	// 次の状態を取得
+	SceneState GetNextState() const;
 
 protected:
-  // 遷移リクエスト
-  std::optional<SceneState> transitionRequest_ = std::nullopt;
+	// 遷移リクエスト
+	std::optional<SceneState> transitionRequest_ = std::nullopt;
 };

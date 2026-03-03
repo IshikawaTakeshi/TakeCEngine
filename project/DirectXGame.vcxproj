@@ -325,13 +325,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\UI\WarningUI.cpp" />
     <ClCompile Include="application\Scene\SceneState\BaseSceneState.cpp" />
     <ClCompile Include="application\Scene\SceneState\SceneStateManager.cpp" />
-    <ClCompile Include="application\Scene\SceneState\GamePlaySceneState.cpp" />
-    <ClCompile Include="application\Scene\SceneState\SceneStateGameStart.cpp" />
-    <ClCompile Include="application\Scene\SceneState\SceneStateGamePlay.cpp" />
-    <ClCompile Include="application\Scene\SceneState\SceneStateEnemyDestroyed.cpp" />
-    <ClCompile Include="application\Scene\SceneState\SceneStateGameOver.cpp" />
-    <ClCompile Include="application\Scene\SceneState\SceneStateGameClear.cpp" />
-    <ClCompile Include="application\Scene\SceneState\SceneStatePause.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\GamePlaySceneState.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameStart.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGamePlay.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateEnemyDestroyed.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Entity\Animation\AnimationMapper.h" />
@@ -553,13 +553,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\UI\WarningUI.h" />
     <ClInclude Include="application\Scene\SceneState\BaseSceneState.h" />
     <ClInclude Include="application\Scene\SceneState\SceneStateManager.h" />
-    <ClInclude Include="application\Scene\SceneState\GamePlaySceneState.h" />
-    <ClInclude Include="application\Scene\SceneState\SceneStateGameStart.h" />
-    <ClInclude Include="application\Scene\SceneState\SceneStateGamePlay.h" />
-    <ClInclude Include="application\Scene\SceneState\SceneStateEnemyDestroyed.h" />
-    <ClInclude Include="application\Scene\SceneState\SceneStateGameOver.h" />
-    <ClInclude Include="application\Scene\SceneState\SceneStateGameClear.h" />
-    <ClInclude Include="application\Scene\SceneState\SceneStatePause.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\GamePlaySceneState.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameStart.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGamePlay.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateEnemyDestroyed.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

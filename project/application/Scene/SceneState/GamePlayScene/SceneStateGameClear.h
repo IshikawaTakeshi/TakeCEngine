@@ -1,5 +1,5 @@
 #pragma once
-#include "application/Scene/SceneState/GamePlaySceneState.h"
+#include "application/Scene/SceneState/GamePlayScene/GamePlaySceneState.h"
 
 //============================================================================
 // SceneStateGameClear class
@@ -7,11 +7,11 @@
 //============================================================================
 class SceneStateGameClear : public GamePlaySceneState {
 public:
-  SceneStateGameClear() = default;
-  ~SceneStateGameClear() override = default;
+	SceneStateGameClear() = default;
+	~SceneStateGameClear() override = default;
 
-  // 初期化
-  void Initialize(GamePlayScene *scene) override;
-  // 更新
-  void Update(GamePlayScene *scene) override;
+	// 初期化
+	void Initialize(GamePlayScene* scene) override;
+	// 更新
+	void Update(GamePlayScene* scene) override;
 };
