@@ -57,6 +57,11 @@ public:
 		float damage,
 		CharacterType type);
 
+	void SetBreakStunProperties(float power, float decayInterval) {
+		breakStunPower = power;
+		breakStunDecayInterval = decayInterval;
+	}
+
 public:
 
 	//===========================================================================

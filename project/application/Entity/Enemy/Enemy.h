@@ -166,6 +166,8 @@ private:
 	// ブレイクゲージの蓄積・スタン判定処理
 	void AccumulateBreakGauge(float damage);
 
+	void AddBreakGaugeEntry(float amount, float decayDelay);
+
 private:
 	// AIシステム
 	std::unique_ptr<AIBrainSystem> aiBrainSystem_ = nullptr;

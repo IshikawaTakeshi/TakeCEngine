@@ -20,9 +20,9 @@ void StateBreakStun::Initialize([[maybe_unused]]PlayableCharacterInfo& character
 	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 
 	// ブレイクスタンのタイマーをリセットして開始
-	breakStunTimer_.Initialize(characterInfo.breakStunInfo.stunDuration, 0.0f);
+	breakStunTimer_.Initialize(characterInfo.breakGaugeInfo.stunDuration, 0.0f);
 	// ブレイクスタン状態に設定
-	characterInfo.breakStunInfo.isStunned = true; 
+	characterInfo.breakGaugeInfo.isStunned = true; 
 
 
 }
@@ -41,8 +41,8 @@ void StateBreakStun::Update(PlayableCharacterInfo& characterInfo) {
 	breakStunTimer_.Update();
 
 	if (breakStunTimer_.IsFinished()) {
-		characterInfo.breakStunInfo.isStunned = false; // ブレイクスタン終了
-		characterInfo.breakStunInfo.breakGauge = 0.0f; // ブレイクゲージをリセット
+		characterInfo.breakGaugeInfo.isStunned = false; // ブレイクスタン終了
+		characterInfo.breakGaugeInfo.breakGauge = 0.0f; // ブレイクゲージをリセット
 
 		// 地上なら RUNNING、空中なら FLOATING へ
 		if (characterInfo.onGround) {

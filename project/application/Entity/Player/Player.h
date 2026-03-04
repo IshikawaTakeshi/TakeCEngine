@@ -152,6 +152,7 @@ private:
 	
 	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
 	Timer chargeShootTimer_; // 停止撃ちのタイマー
+	Timer breakStunTimer_; // ブレイクスタンのタイマー
 
 	bool isUseWeapon_ = false; //武器を使用しているかどうか
 	float weaponUseTimer_ = 0.0f; //武器を使用している時間

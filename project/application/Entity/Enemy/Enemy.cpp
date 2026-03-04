@@ -18,6 +18,7 @@
 #include "application/Weapon/MachineGun/MachineGun.h"
 #include "application/Weapon/Rifle/Rifle.h"
 #include "application/Weapon/ShotGun/ShotGun.h"
+#include "application/Tool/BreakGaugeUtil.h"
 
 //========================================================================================================
 // 　初期化
@@ -88,7 +89,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	aiBrainSystem_->SetOrbitRadius(orbitRadius_);
 	inputProvider_->SetAIBrainSystem(aiBrainSystem_.get());
 
-	// BehaviorManagerの初期化
+	// StateManagerの初期化
 	stateManager_ = std::make_unique<GameCharacterStateManager>();
 	stateManager_->Initialize(inputProvider_);
 	stateManager_->InitializeStates(enemyData_.characterInfo);
@@ -110,7 +111,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	// アニメーションコントローラの初期化
 	animatorController_.Initialize(object3d_->GetModel()->GetSkeleton());
 
-	// BehaviorManagerにアニメーションコンポーネントを設定
+	// StateManagerにアニメーションコンポーネントを設定
 	stateManager_->SetAnimationComponents(&animatorController_, &animationMapper_);
 
 	// ブーストエフェクトの初期化
@@ -208,19 +209,35 @@ void Enemy::SaveEnemyData(const std::string& characterJsonPath) {
 
 void Enemy::Update() {
 
+	// --- ブレイクゲージ更新（ここを上の方に追加する認識でOK） ---
+	auto& breakGaugeInfo = enemyData_.characterInfo.breakGaugeInfo;
+
+	// スタン中は entries をクリアしたい方針
+	// ※「スタン中の間ずっとクリア」でも良いが、通常はスタン開始時だけクリアが推奨
+	if (breakGaugeInfo.isStunned) {
+		breakGaugeInfo.entries.clear();
+		breakGaugeInfo.breakGauge = 0.0f;
+	} else {
+		BreakGaugeUtil::UpdateBreakGaugeEntries(breakGaugeInfo);
+
+		if (breakGaugeInfo.breakGauge >= breakGaugeInfo.maxBreakGauge) {
+			// スタン開始：entriesをクリア
+			breakGaugeInfo.entries.clear();
+			breakGaugeInfo.breakGauge = 0.0f;
+			breakGaugeInfo.isStunned = true;
+
+			// state遷移をリクエスト
+			stateManager_->RequestState(GameCharacterState::BREAK_STUN);
+		}
+	}
+
 	// stepBoostのインターバルの更新
 	enemyData_.characterInfo.stepBoostInfo.interval = 0.2f;
 	if (enemyData_.characterInfo.stepBoostInfo.intervalTimer > 0.0f) {
 		enemyData_.characterInfo.stepBoostInfo.intervalTimer -= deltaTime_;
 	}
-	//ブレイクゲージの自然減少（スタン中は減少しない）
-	auto& gaugeInfo = enemyData_.characterInfo.breakStunInfo;
-	if (!gaugeInfo.isStunned && gaugeInfo.breakGauge > 0.0f) {
-		gaugeInfo.breakGauge -= gaugeInfo.decayRate * deltaTime_;
-		gaugeInfo.breakGauge = std::max(0.0f, gaugeInfo.breakGauge);
-	}
 
-	// RUNNING時のBehavior遷移リクエスト
+	// RUNNING時のState遷移リクエスト
 	if (enemyData_.characterInfo.isInCombat) {
 		if (stateManager_->GetCurrentStateType() == State::RUNNING) {
 
@@ -251,7 +268,7 @@ void Enemy::Update() {
 	// アクティブブーストエフェクトのリクエスト
 	RequestActiveBoostEffect();
 
-	// Behaviorの更新
+	// Stateの更新
 	stateManager_->Update(enemyData_.characterInfo);
 
 	// 地面に着地したらRUNNINGに戻る
@@ -356,7 +373,7 @@ void Enemy::Update() {
 	// ブーストエフェクトの更新
 	for (const auto& boostEffect : boostEffects_) {
 		boostEffect->Update();
-		boostEffect->SetBehavior(stateManager_->GetCurrentStateType());
+		boostEffect->SetCharacterState(stateManager_->GetCurrentStateType());
 	}
 
 	// パーティクルエミッターの更新
@@ -788,9 +805,9 @@ void Enemy::RequestActiveBoostEffect() {
 void Enemy::AccumulateBreakGauge(float damage) {
 
 	if (!enemyData_.characterInfo.isAlive) return;
-	if (enemyData_.characterInfo.breakStunInfo.isStunned) return; // スタン中は蓄積しない
+	if (enemyData_.characterInfo.breakGaugeInfo.isStunned) return; // スタン中は蓄積しない
 
-	auto& gaugeInfo = enemyData_.characterInfo.breakStunInfo;
+	auto& gaugeInfo = enemyData_.characterInfo.breakGaugeInfo;
 	// ダメージに係数を乗算してゲージに加算（係数は武器ごとに変えてもよい）
 	gaugeInfo.breakGauge += damage * 0.5f;
 
@@ -798,4 +815,9 @@ void Enemy::AccumulateBreakGauge(float damage) {
 		gaugeInfo.breakGauge = gaugeInfo.maxBreakGauge;
 		stateManager_->RequestState(GameCharacterState::BREAK_STUN);
 	}
+}
+
+void Enemy::AddBreakGaugeEntry(float amount, float decayDelay) {
+	auto& bg = enemyData_.characterInfo.breakGaugeInfo;
+	bg.entries.push_back(BreakGaugeUtil::MakeBreakGaugeEntry(amount, decayDelay));
 }

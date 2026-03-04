@@ -39,7 +39,7 @@ void to_json(nlohmann::json& j, const PlayableCharacterInfo& info) {
 	j["energyInfo"] = info.energyInfo;
 	j["overHeatInfo"] = info.overHeatInfo;
 	j["colliderInfo"] = info.colliderInfo;
-	j["breakStunInfo"] = info.breakStunInfo;
+	j["breakGaugeInfo"] = info.breakGaugeInfo;
 }
 
 
@@ -81,5 +81,5 @@ void from_json(const nlohmann::json& j, PlayableCharacterInfo& info) {
 	info.energyInfo = j.value("energyInfo", info.energyInfo);
 	info.overHeatInfo = j.value("overHeatInfo", info.overHeatInfo);
 	info.colliderInfo = j.value("colliderInfo", info.colliderInfo);
-	info.breakStunInfo = j.value("breakStunInfo", info.breakStunInfo);
+	info.breakGaugeInfo = j.value("breakGaugeInfo", info.breakGaugeInfo);
 }

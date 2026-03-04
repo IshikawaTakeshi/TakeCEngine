@@ -49,23 +49,33 @@ struct EnergyInfo {
 // オーバーヒート情報
 struct OverHeatInfo {
 	float overheatTimer = 0.0f;          // オーバーヒートのタイマー
-	float overheatDuration = 3.0f; // オーバーヒートの持続時間
+	float overheatDuration = 3.0f;       // オーバーヒートの持続時間
 	bool isOverheated = false;           // オーバーヒート中かどうか
 };
 
 //コライダーの情報（ボックスコライダー限定）
 struct ColliderInfo {
-	Vector3 offset{}; //コライダーのオフセット位置
+	Vector3 offset{};   //コライダーのオフセット位置
 	Vector3 halfSize{}; //コライダーの半径
 };
 
+//被弾1回分のブレイクゲージ蓄積エントリ
+struct BreakGaugeEntry {
+	float amount     = 0.0f;    // この被弾が与えたブレイク蓄積（残量）
+	float decayDelay = 0.0f;    // 減衰開始までの遅延時間
+	Timer delayTimer;           // 減衰のタイマー
+};
+
 //ブレイクスタンの情報
-struct BreakStunInfo {
-	float breakGauge = 0.0f; // ブレイクゲージ
-	float maxBreakGauge = 100.0f; // 最大ブレイクゲージ
-	float decayRate = 50.0f; // ブレイクゲージの減少率
-	float stunDuration = 2.0f; // ブレイクスタンの持続時間
-	bool isStunned = false; // ブレイクスタン中かどうか
+struct BreakGaugeInfo {
+	float breakGauge    = 0.0f;   // ブレイクゲージ
+	float maxBreakGauge = 500.0f; // 最大ブレイクゲージ
+	float decayRate     = 50.0f;  // ブレイクゲージの減少率
+	float stunDuration  = 2.0f;   // ブレイクスタンの持続時間
+	bool  isStunned     = false;  // ブレイクスタン中かどうか
+
+	//被弾履歴
+	std::vector<BreakGaugeEntry> entries;
 };
 
 // 操作可能なキャラクターの基礎情報
@@ -94,7 +104,7 @@ struct PlayableCharacterInfo {
 	EnergyInfo energyInfo{};         // エネルギー情報
 	OverHeatInfo overHeatInfo{};     // オーバーヒート情報
 	ColliderInfo colliderInfo{};   // コライダー情報
-	BreakStunInfo breakStunInfo{}; // ブレイクスタン情報
+	BreakGaugeInfo breakGaugeInfo{}; // ブレイクスタン情報
 };
 
 // 実際に使用するゲームキャラクターデータ
@@ -119,7 +129,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ChargeAttackStunInfo, stunTimer, stunDuration
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(EnergyInfo, energy, maxEnergy, recoveryRate, energyCooldown, isEnergyDepleted)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(OverHeatInfo, overheatTimer, overheatDuration, isOverheated)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ColliderInfo, offset, halfSize)
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BreakStunInfo, breakGauge, maxBreakGauge, decayRate, stunDuration, isStunned)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BreakGaugeInfo, breakGauge, maxBreakGauge, decayRate, stunDuration, isStunned)
 
 //データ保存先ディレクトリパスの設定
 TAKEC_DEFINE_JSON_DIRECTORY_PATH(PlayableCharacterInfo, "Resources/JsonLoader/GameCharacters/");

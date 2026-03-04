@@ -542,6 +542,7 @@
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.cpp" />
     <ClCompile Include="application\Entity\State\StateBreakStun.cpp" />
+    <ClCompile Include="application\Tool\BreakGaugeUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1127,6 +1128,7 @@
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.h" />
     <ClInclude Include="application\Entity\State\StateBreakStun.h" />
+    <ClInclude Include="application\Tool\BreakGaugeUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

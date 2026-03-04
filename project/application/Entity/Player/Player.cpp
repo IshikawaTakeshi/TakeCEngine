@@ -177,7 +177,7 @@ void Player::Update() {
 	}
 
 	//ブレイクゲージの自然減少（スタン中は減少しない）
-	auto& gaugeInfo = playerData_.characterInfo.breakStunInfo;
+	auto& gaugeInfo = playerData_.characterInfo.breakGaugeInfo;
 	if (!gaugeInfo.isStunned && gaugeInfo.breakGauge > 0.0f) {
 		gaugeInfo.breakGauge -= gaugeInfo.decayRate * deltaTime_;
 		gaugeInfo.breakGauge = std::max(0.0f, gaugeInfo.breakGauge);
@@ -329,7 +329,7 @@ void Player::Update() {
 	//ブーストエフェクトの更新
 	for (const auto& boostEffect : boostEffects_) {
 		boostEffect->Update();
-		boostEffect->SetBehavior(stateManager_->GetCurrentStateType());
+		boostEffect->SetCharacterState(stateManager_->GetCurrentStateType());
 	}
 
 	playerData_.characterInfo.onGround = false; // 毎フレームリセットし、衝突判定で更新されるようにする
@@ -723,9 +723,9 @@ void Player::RequestActiveBoostEffect() {
 
 void Player::AccumulateBreakGauge(float damage) {
 	if (!playerData_.characterInfo.isAlive) return;
-	if (playerData_.characterInfo.breakStunInfo.isStunned) return; // スタン中は蓄積しない
+	if (playerData_.characterInfo.breakGaugeInfo.isStunned) return; // スタン中は蓄積しない
 
-	auto& gaugeInfo = playerData_.characterInfo.breakStunInfo;
+	auto& gaugeInfo = playerData_.characterInfo.breakGaugeInfo;
 	// ダメージに係数を乗算してゲージに加算（係数は武器ごとに変えてもよい）
 	gaugeInfo.breakGauge += damage * 0.5f;
 
