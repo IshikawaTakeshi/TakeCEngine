@@ -128,7 +128,7 @@ private:
 	//カメラ
 	Camera* camera_ = nullptr;
 	//状態管理マネージャ
-	std::unique_ptr<GameCharacterStateManager> behaviorManager_ = nullptr;
+	std::unique_ptr<GameCharacterStateManager> stateManager_ = nullptr;
 	//プレイヤー入力プロバイダ(借りる)
 	PlayerInputProvider* inputProvider_ = nullptr;
 	//アニメーションマッパー
@@ -174,4 +174,6 @@ private:
 
 	//ブーストエフェクトのアクティブ化判定
 	void RequestActiveBoostEffect();
+	//ブレイクゲージを蓄積してスタン判定
+	void AccumulateBreakGauge(float damage);
 };

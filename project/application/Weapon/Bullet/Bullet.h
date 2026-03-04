@@ -60,19 +60,19 @@ public:
 public:
 
 	//===========================================================================
-	// getter
+	// accessors
 	//===========================================================================
+
+	//----- getter ---------------------------
 
 	//transformの取得
 	const EulerTransform& GetTransform() const;
 	//生存フラグの取得
 	bool IsActive();
-
 	//速度の取得
 	const Vector3& GetVelocity() const;
 	//ターゲット座標の取得
 	const Vector3& GetTargetPos() const;
-
 	//攻撃力の取得
 	float GetDamage() const;
 	//弾速の取得
@@ -81,13 +81,13 @@ public:
 	float GetBulletRadius() const;
 	//寿命時間の取得
 	float GetLifeTime() const;
+	//ブレイクスタンの蓄積値の取得
+	float GetBreakStunPower() const { return breakStunPower; }
+	//ブレイクスタンの蓄積値の減少間隔の取得
+	float GetBreakStunDecayInterval() const { return breakStunDecayInterval; }
 
-public:
-
-	//===========================================================================
-	// setter
-	//===========================================================================
-
+	//----- setter ---------------------------
+	
 	//transformの設定
 	void SetTransform(const EulerTransform& transform) { transform_ = transform; }
 	//生存フラグの設定
@@ -104,6 +104,10 @@ public:
 	void SetBulletRadius(float radius);
 	//寿命時間の設定
 	void SetLifeTime(float lifeTime) { lifeTime_ = lifeTime; }
+	//ブレイクスタンの蓄積値の設定
+	void SetBreakStunPower(float power) { breakStunPower = power; }
+	//ブレイクスタンの蓄積値の減少間隔の設定
+	void SetBreakStunDecayInterval(float interval) { breakStunDecayInterval = interval; }
 
 private:
 
@@ -121,6 +125,9 @@ private:
 	float lifeTime_ = 0.0f;
 	//弾の半径
 	float bulletRadius_ = 1.0f;
+
+	float breakStunPower = 1.0f; // 被弾時に与えるブレイクスタンの蓄積値
+	float breakStunDecayInterval = 1.0f; // ブレイクスタンの蓄積値の減少間隔
 
 	PointLightData pointLightData_;
 	uint32_t pointLightIndex_ = 0;

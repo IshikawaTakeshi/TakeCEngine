@@ -79,9 +79,9 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	boostEffects_[BACKPACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.001");
 
 	//BehaviorManagerの初期化
-	behaviorManager_ = std::make_unique<GameCharacterStateManager>();
-	behaviorManager_->Initialize(inputProvider_);
-	behaviorManager_->InitializeBehaviors(playerData_.characterInfo);
+	stateManager_ = std::make_unique<GameCharacterStateManager>();
+	stateManager_->Initialize(inputProvider_);
+	stateManager_->InitializeStates(playerData_.characterInfo);
 
 	//アニメーションマッパーの登録
 	animationMapper_.Register(GameCharacterState::RUNNING,
@@ -98,7 +98,7 @@ void Player::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.3f);
 
 	//BehaviorManagerにアニメーションコンポーネントを設定
-	behaviorManager_->SetAnimationComponents(object3d_->GetAnimatorController(), &animationMapper_);
+	stateManager_->SetAnimationComponents(object3d_->GetAnimatorController(), &animationMapper_);
 }
 
 //===================================================================================
@@ -176,10 +176,17 @@ void Player::Update() {
 		playerData_.characterInfo.stepBoostInfo.intervalTimer -= deltaTime_;
 	}
 
+	//ブレイクゲージの自然減少（スタン中は減少しない）
+	auto& gaugeInfo = playerData_.characterInfo.breakStunInfo;
+	if (!gaugeInfo.isStunned && gaugeInfo.breakGauge > 0.0f) {
+		gaugeInfo.breakGauge -= gaugeInfo.decayRate * deltaTime_;
+		gaugeInfo.breakGauge = std::max(0.0f, gaugeInfo.breakGauge);
+	}
+
 	if (playerData_.characterInfo.isInCombat) {
 		// StepBoost入力判定を最初に追加
-		if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::RUNNING ||
-			behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::FLOATING) {
+		if (stateManager_->GetCurrentStateType() == GameCharacterState::RUNNING ||
+			stateManager_->GetCurrentStateType() == GameCharacterState::FLOATING) {
 
 			//オーバーヒート状態のチェック
 			if (playerData_.characterInfo.overHeatInfo.isOverheated == false) {
@@ -187,7 +194,7 @@ void Player::Update() {
 				// LTボタン＋スティック入力で発動
 				if (inputProvider_->RequestStepBoost()) {
 					//RequestActiveBoostEffect();
-					behaviorManager_->RequestBehavior(GameCharacterState::STEPBOOST);
+					stateManager_->RequestState(GameCharacterState::STEPBOOST);
 				}
 				//Jump入力判定
 				//RTで発動
@@ -195,7 +202,7 @@ void Player::Update() {
 
 					if (inputProvider_->RequestJumpInput()) {
 						//ジャンプのリクエスト
-						behaviorManager_->RequestBehavior(GameCharacterState::JUMP);
+						stateManager_->RequestState(GameCharacterState::JUMP);
 						playerData_.characterInfo.onGround = false; // ジャンプしたので地上ではない
 					}
 				}
@@ -220,7 +227,7 @@ void Player::Update() {
 	}
 
 	//Behaviorの更新
-	behaviorManager_->Update(playerData_.characterInfo);
+	stateManager_->Update(playerData_.characterInfo);
 
 	//エネルギーの更新
 	UpdateEnergy();
@@ -229,13 +236,13 @@ void Player::Update() {
 
 	// 地面に着地したらRUNNINGに戻る
 	if (playerData_.characterInfo.onGround == true &&
-		(behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::JUMP ||
-			behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::FLOATING)) {
-		behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
+		(stateManager_->GetCurrentStateType() == GameCharacterState::JUMP ||
+			stateManager_->GetCurrentStateType() == GameCharacterState::FLOATING)) {
+		stateManager_->RequestState(GameCharacterState::RUNNING);
 	} else if (playerData_.characterInfo.onGround == false &&
-		behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::RUNNING) {
+		stateManager_->GetCurrentStateType() == GameCharacterState::RUNNING) {
 		//空中にいる場合はFLOATINGに切り替え
-		behaviorManager_->RequestBehavior(GameCharacterState::FLOATING);
+		stateManager_->RequestState(GameCharacterState::FLOATING);
 	}
 
 
@@ -244,12 +251,12 @@ void Player::Update() {
 	if (playerData_.characterInfo.health <= 0.0f) {
 		//死亡状態のリクエスト
 		playerData_.characterInfo.isAlive = false;
-		behaviorManager_->RequestBehavior(GameCharacterState::DEAD);
+		stateManager_->RequestState(GameCharacterState::DEAD);
 	}
 
 	//歩行時の煙エミッターのON/OFF制御
-	if (playerData_.characterInfo.onGround && (behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::RUNNING ||
-		behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::STEPBOOST)) {
+	if (playerData_.characterInfo.onGround && (stateManager_->GetCurrentStateType() == GameCharacterState::RUNNING ||
+		stateManager_->GetCurrentStateType() == GameCharacterState::STEPBOOST)) {
 		backEmitter_->SetIsEmit(true);
 	} else {
 		backEmitter_->SetIsEmit(false);
@@ -322,7 +329,7 @@ void Player::Update() {
 	//ブーストエフェクトの更新
 	for (const auto& boostEffect : boostEffects_) {
 		boostEffect->Update();
-		boostEffect->SetBehavior(behaviorManager_->GetCurrentBehaviorType());
+		boostEffect->SetBehavior(stateManager_->GetCurrentStateType());
 	}
 
 	playerData_.characterInfo.onGround = false; // 毎フレームリセットし、衝突判定で更新されるようにする
@@ -362,7 +369,7 @@ void Player::UpdateImGui() {
 	}
 	ImGui::Separator();
 	// 状態管理マネージャのImGui更新
-	behaviorManager_->UpdateImGui();
+	stateManager_->UpdateImGui();
 	// コライダーのImGui更新
 	collider_->SetOffset(playerData_.characterInfo.colliderInfo.offset);
 	collider_->SetHalfSize(playerData_.characterInfo.colliderInfo.halfSize);
@@ -446,6 +453,8 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		//ダメージを受ける
 		Bullet* bullet = dynamic_cast<Bullet*>(other);
 		playerData_.characterInfo.health -= bullet->GetDamage();
+		//ブレイクゲージを蓄積
+		AccumulateBreakGauge(bullet->GetDamage());
 	}
 	if (other->GetCharacterType() == CharacterType::ENEMY_MISSILE) {
 		//敵のミサイルに当たった場合
@@ -453,6 +462,8 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		//ダメージを受ける
 		VerticalMissile* missile = dynamic_cast<VerticalMissile*>(other);
 		playerData_.characterInfo.health -= missile->GetDamage();
+		//ブレイクゲージを蓄積
+		AccumulateBreakGauge(missile->GetDamage());
 	}
 
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
@@ -532,7 +543,7 @@ void Player::UpdateAttack() {
 
 					playerData_.characterInfo.isChargeShooting = false; // チャージ撃ち中フラグをリセット
 					chargeShootTimer_.Stop();
-					behaviorManager_->RequestBehavior(GameCharacterState::CHARGESHOOT_STUN);
+					stateManager_->RequestState(GameCharacterState::CHARGESHOOT_STUN);
 					chargeShootableUnits_[i] = false; // チャージ撃ち可能なユニットのマークをリセット
 				}
 			}
@@ -568,10 +579,10 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 
 				if (weapon->StopShootOnly()) {
 					// 停止撃ち専用の場合はチャージ後に硬直状態へ
-					behaviorManager_->RequestBehavior(GameCharacterState::CHARGESHOOT_STUN);
+					stateManager_->RequestState(GameCharacterState::CHARGESHOOT_STUN);
 				} else {
 					// 移動撃ち可能な場合はRUNNINGに戻す
-					behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
+					stateManager_->RequestState(GameCharacterState::RUNNING);
 				}
 			}
 		} else {
@@ -600,10 +611,10 @@ void Player::WeaponAttack(CharacterActionInput actionInput) {
 			weapon->ChargeAttack();
 			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
-				behaviorManager_->RequestBehavior(GameCharacterState::CHARGESHOOT_STUN);
+				stateManager_->RequestState(GameCharacterState::CHARGESHOOT_STUN);
 			} else {
 				// 移動撃ち可能な場合はRUNNINGに戻す
-				behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
+				stateManager_->RequestState(GameCharacterState::RUNNING);
 			}
 		}
 	}
@@ -632,9 +643,9 @@ void Player::UpdateEnergy() {
 		if (playerData_.characterInfo.energyInfo.energy < maxEnergy) {
 
 			//浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
-			if (behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::FLOATING ||
-				behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::JUMP ||
-				behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::STEPBOOST) {
+			if (stateManager_->GetCurrentStateType() == GameCharacterState::FLOATING ||
+				stateManager_->GetCurrentStateType() == GameCharacterState::JUMP ||
+				stateManager_->GetCurrentStateType() == GameCharacterState::STEPBOOST) {
 				return; // エネルギーの回復を行わない
 			}
 
@@ -707,5 +718,19 @@ void Player::RequestActiveBoostEffect() {
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
 		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
 		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+	}
+}
+
+void Player::AccumulateBreakGauge(float damage) {
+	if (!playerData_.characterInfo.isAlive) return;
+	if (playerData_.characterInfo.breakStunInfo.isStunned) return; // スタン中は蓄積しない
+
+	auto& gaugeInfo = playerData_.characterInfo.breakStunInfo;
+	// ダメージに係数を乗算してゲージに加算（係数は武器ごとに変えてもよい）
+	gaugeInfo.breakGauge += damage * 0.5f;
+
+	if (gaugeInfo.breakGauge >= gaugeInfo.maxBreakGauge) {
+		gaugeInfo.breakGauge = gaugeInfo.maxBreakGauge;
+		stateManager_->RequestState(GameCharacterState::BREAK_STUN);
 	}
 }

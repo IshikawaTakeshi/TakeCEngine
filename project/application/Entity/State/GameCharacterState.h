@@ -14,4 +14,5 @@ enum class GameCharacterState {
 	STEPBOOST,        // ステップブースト
 	FLOATING,         // 浮遊状態
 	DEAD,             // 死亡状態
+	BREAK_STUN,       // ブレイクスタン状態
 };

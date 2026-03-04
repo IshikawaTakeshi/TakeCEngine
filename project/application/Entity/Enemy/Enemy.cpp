@@ -89,9 +89,9 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	inputProvider_->SetAIBrainSystem(aiBrainSystem_.get());
 
 	// BehaviorManagerの初期化
-	behaviorManager_ = std::make_unique<GameCharacterStateManager>();
-	behaviorManager_->Initialize(inputProvider_);
-	behaviorManager_->InitializeBehaviors(enemyData_.characterInfo);
+	stateManager_ = std::make_unique<GameCharacterStateManager>();
+	stateManager_->Initialize(inputProvider_);
+	stateManager_->InitializeStates(enemyData_.characterInfo);
 
 	// アニメーションマッパーの登録
 	animationMapper_.Register(GameCharacterState::RUNNING,
@@ -111,7 +111,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	animatorController_.Initialize(object3d_->GetModel()->GetSkeleton());
 
 	// BehaviorManagerにアニメーションコンポーネントを設定
-	behaviorManager_->SetAnimationComponents(&animatorController_, &animationMapper_);
+	stateManager_->SetAnimationComponents(&animatorController_, &animationMapper_);
 
 	// ブーストエフェクトの初期化
 	boostEffects_.resize(kNumPositions);
@@ -213,21 +213,27 @@ void Enemy::Update() {
 	if (enemyData_.characterInfo.stepBoostInfo.intervalTimer > 0.0f) {
 		enemyData_.characterInfo.stepBoostInfo.intervalTimer -= deltaTime_;
 	}
+	//ブレイクゲージの自然減少（スタン中は減少しない）
+	auto& gaugeInfo = enemyData_.characterInfo.breakStunInfo;
+	if (!gaugeInfo.isStunned && gaugeInfo.breakGauge > 0.0f) {
+		gaugeInfo.breakGauge -= gaugeInfo.decayRate * deltaTime_;
+		gaugeInfo.breakGauge = std::max(0.0f, gaugeInfo.breakGauge);
+	}
 
 	// RUNNING時のBehavior遷移リクエスト
 	if (enemyData_.characterInfo.isInCombat) {
-		if (behaviorManager_->GetCurrentBehaviorType() == State::RUNNING) {
+		if (stateManager_->GetCurrentStateType() == State::RUNNING) {
 
 			// BestActionの取得
 			switch (aiBrainSystem_->GetBestAction()) {
 			case Action::JUMP:
-				behaviorManager_->RequestBehavior(State::JUMP);
+				stateManager_->RequestState(State::JUMP);
 				break;
 			case Action::FLOATING: // FLOATINGへの遷移はJUMPで行う
-				behaviorManager_->RequestBehavior(State::JUMP);
+				stateManager_->RequestState(State::JUMP);
 				break;
 			case Action::STEPBOOST:
-				behaviorManager_->RequestBehavior(State::STEPBOOST);
+				stateManager_->RequestState(State::STEPBOOST);
 				break;
 			}
 		}
@@ -246,19 +252,18 @@ void Enemy::Update() {
 	RequestActiveBoostEffect();
 
 	// Behaviorの更新
-	behaviorManager_->Update(enemyData_.characterInfo);
+	stateManager_->Update(enemyData_.characterInfo);
 
 	// 地面に着地したらRUNNINGに戻る
 	if (enemyData_.characterInfo.onGround == true &&
-		(behaviorManager_->GetCurrentBehaviorType() ==
-			GameCharacterState::JUMP ||
-			behaviorManager_->GetCurrentBehaviorType() ==
-			GameCharacterState::FLOATING)) {
-		behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
+		(stateManager_->GetCurrentStateType() ==GameCharacterState::JUMP ||
+			stateManager_->GetCurrentStateType() ==GameCharacterState::FLOATING)) {
+
+		stateManager_->RequestState(GameCharacterState::RUNNING);
 	} else if (enemyData_.characterInfo.onGround == false &&
-		behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::RUNNING) {
+		stateManager_->GetCurrentStateType() == GameCharacterState::RUNNING) {
 		// 空中にいる場合はFLOATINGに切り替え
-		behaviorManager_->RequestBehavior(GameCharacterState::FLOATING);
+		stateManager_->RequestState(GameCharacterState::FLOATING);
 	}
 
 	// ダメージエフェクトの更新
@@ -273,7 +278,7 @@ void Enemy::Update() {
 	if (enemyData_.characterInfo.health <= 0.0f) {
 		// 死亡状態のリクエスト
 		enemyData_.characterInfo.isAlive = false;
-		behaviorManager_->RequestBehavior(State::DEAD);
+		stateManager_->RequestState(State::DEAD);
 		deadEffect_->Start();
 	}
 
@@ -289,8 +294,8 @@ void Enemy::Update() {
 	aiBrainSystem_->Update();
 
 	if (enemyData_.characterInfo.onGround &&
-		(behaviorManager_->GetCurrentBehaviorType() ==GameCharacterState::RUNNING ||
-			behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::STEPBOOST)) {
+		(stateManager_->GetCurrentStateType() ==GameCharacterState::RUNNING ||
+			stateManager_->GetCurrentStateType() == GameCharacterState::STEPBOOST)) {
 		backEmitter_->SetIsEmit(true);
 	} else {
 		backEmitter_->SetIsEmit(false);
@@ -351,7 +356,7 @@ void Enemy::Update() {
 	// ブーストエフェクトの更新
 	for (const auto& boostEffect : boostEffects_) {
 		boostEffect->Update();
-		boostEffect->SetBehavior(behaviorManager_->GetCurrentBehaviorType());
+		boostEffect->SetBehavior(stateManager_->GetCurrentStateType());
 	}
 
 	// パーティクルエミッターの更新
@@ -419,7 +424,7 @@ void Enemy::UpdateImGui() {
 	}
 	ImGui::Separator();
 	bulletSensor_->UpdateImGui();
-	behaviorManager_->UpdateImGui();
+	stateManager_->UpdateImGui();
 	aiBrainSystem_->UpdateImGui();
 
 	// コライダーの情報をEnemyDataから反映
@@ -485,6 +490,8 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 		damageEffectTime_ = 0.5f;
 		// 体力を減らす
 		enemyData_.characterInfo.health -= bullet->GetDamage();
+		//ブレイクゲージを蓄積
+		AccumulateBreakGauge(bullet->GetDamage());
 	}
 	if (other->GetCharacterType() == CharacterType::PLAYER_MISSILE) {
 		// プレイヤーのミサイルに当たった場合の処理
@@ -495,6 +502,8 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 		// 体力を減らす
 		VerticalMissile* missile = dynamic_cast<VerticalMissile*>(other);
 		enemyData_.characterInfo.health -= missile->GetDamage();
+		//ブレイクゲージを蓄積
+		AccumulateBreakGauge(missile->GetDamage());
 	}
 
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
@@ -579,7 +588,7 @@ void Enemy::UpdateAttack() {
 					enemyData_.characterInfo.isChargeShooting =
 						false; // チャージ撃ち中フラグをリセット
 					chargeShootTimer_.Stop();
-					behaviorManager_->RequestBehavior(
+					stateManager_->RequestState(
 						GameCharacterState::CHARGESHOOT_STUN);
 					chargeShootableUnits_[i] =
 						false; // チャージ撃ち可能なユニットのマークをリセット
@@ -603,11 +612,11 @@ void Enemy::WeaponAttack(int weaponIndex) {
 			weapon->ChargeAttack();
 			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
-				behaviorManager_->RequestBehavior(
+				stateManager_->RequestState(
 					GameCharacterState::CHARGESHOOT_STUN);
 			} else {
 				// 移動撃ち可能な場合はRUNNINGに戻す
-				behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
+				stateManager_->RequestState(GameCharacterState::RUNNING);
 			}
 		}
 	} else {
@@ -640,11 +649,10 @@ void Enemy::WeaponAttack(int weaponIndex) {
 			weapon->ChargeAttack();
 			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
-				behaviorManager_->RequestBehavior(
-					GameCharacterState::CHARGESHOOT_STUN);
+				stateManager_->RequestState(GameCharacterState::CHARGESHOOT_STUN);
 			} else {
 				// 移動撃ち可能な場合はRUNNINGに戻す
-				behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
+				stateManager_->RequestState(GameCharacterState::RUNNING);
 			}
 		}
 	}
@@ -658,6 +666,7 @@ bool Enemy::ShouldReleaseAttack(int weaponIndex) {
 	auto* weapon = weapons_[weaponIndex].get();
 	return weapon->GetChargeTime() >= weapon->GetRequiredChargeTime();
 }
+
 
 //===================================================================================
 // エネルギーの更新処理
@@ -685,11 +694,11 @@ void Enemy::UpdateEnergy() {
 		if (enemyData_.characterInfo.energyInfo.energy < maxEnergy) {
 
 			// 浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
-			if (behaviorManager_->GetCurrentBehaviorType() ==
+			if (stateManager_->GetCurrentStateType() ==
 				GameCharacterState::FLOATING ||
-				behaviorManager_->GetCurrentBehaviorType() ==
+				stateManager_->GetCurrentStateType() ==
 				GameCharacterState::JUMP ||
-				behaviorManager_->GetCurrentBehaviorType() ==
+				stateManager_->GetCurrentStateType() ==
 				GameCharacterState::STEPBOOST) {
 				return; // エネルギーの回復を行わない
 			}
@@ -770,5 +779,23 @@ void Enemy::RequestActiveBoostEffect() {
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
 		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
 		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+	}
+}
+
+//===================================================================================
+// ブレイクゲージの蓄積
+//===================================================================================
+void Enemy::AccumulateBreakGauge(float damage) {
+
+	if (!enemyData_.characterInfo.isAlive) return;
+	if (enemyData_.characterInfo.breakStunInfo.isStunned) return; // スタン中は蓄積しない
+
+	auto& gaugeInfo = enemyData_.characterInfo.breakStunInfo;
+	// ダメージに係数を乗算してゲージに加算（係数は武器ごとに変えてもよい）
+	gaugeInfo.breakGauge += damage * 0.5f;
+
+	if (gaugeInfo.breakGauge >= gaugeInfo.maxBreakGauge) {
+		gaugeInfo.breakGauge = gaugeInfo.maxBreakGauge;
+		stateManager_->RequestState(GameCharacterState::BREAK_STUN);
 	}
 }

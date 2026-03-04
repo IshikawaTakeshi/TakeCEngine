@@ -541,6 +541,7 @@
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.cpp" />
+    <ClCompile Include="application\Entity\State\StateBreakStun.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -997,9 +998,6 @@
     <ClInclude Include="engine\PostEffect\DepthBasedOutline.h">
       <Filter>engine\postEffect</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\GameCharacterBehavior.h">
-      <Filter>application\entity\behavior</Filter>
-    </ClInclude>
     <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h">
       <Filter>application\weapon</Filter>
     </ClInclude>
@@ -1128,6 +1126,7 @@
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.h" />
+    <ClInclude Include="application\Entity\State\StateBreakStun.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

@@ -157,16 +157,14 @@ private:
 	void UpdateAttack();
 	// 各武器の攻撃処理
 	void WeaponAttack(int weaponIndex);
-
 	// エネルギーの更新
 	void UpdateEnergy();
-
 	// ブーストエフェクトのアクティブ化判定
 	void RequestActiveBoostEffect();
-
-private:
 	// チャージ攻撃実行判定
 	bool ShouldReleaseAttack(int weaponIndex);
+	// ブレイクゲージの蓄積・スタン判定処理
+	void AccumulateBreakGauge(float damage);
 
 private:
 	// AIシステム
@@ -175,7 +173,7 @@ private:
 	std::unique_ptr<BulletSensor> bulletSensor_ = nullptr;
 
 	// 状態管理マネージャ
-	std::unique_ptr<GameCharacterStateManager> behaviorManager_ = nullptr;
+	std::unique_ptr<GameCharacterStateManager> stateManager_ = nullptr;
 	// プレイヤー入力プロバイダ
 	EnemyInputProvider* inputProvider_ = nullptr;
 

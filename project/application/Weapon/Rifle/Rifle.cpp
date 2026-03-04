@@ -191,8 +191,17 @@ void Rifle::Attack() {
 		return;
 	}
 
+
+	
+
 	//弾の発射
 	if (ownerObject_->GetCharacterType() == CharacterType::PLAYER){
+		//プレイヤーの弾として発射	
+		//ブレイクスタン値の蓄積処理
+		auto* bullet = bulletManager_->GetAllPlayerBullets().back(); // 最新のプレイヤー弾を取得
+		bullet->SetBreakStunPower(weaponData_.config.breakStunPower); // ブレイクスタン値を設定
+		bullet->SetBreakStunDecayInterval(weaponData_.config.breakStunDecayInterval); // ブレイクスタン減少間隔を設定
+
 		bulletManager_->ShootBullet(
 			object3d_->GetCenterPosition(),
 			targetPos_,
@@ -201,6 +210,12 @@ void Rifle::Attack() {
 			weaponData_.config.power,
 			CharacterType::PLAYER_BULLET);
 	} else if (ownerObject_->GetCharacterType() == CharacterType::ENEMY) {
+		//エネミーの弾として発射
+		//ブレイクスタン値の蓄積処理
+		auto* bullet = bulletManager_->GetAllEnemyBullets().back(); // 最新のエネミー弾を取得
+		bullet->SetBreakStunPower(weaponData_.config.breakStunPower); // ブレイクスタン値を設定
+		bullet->SetBreakStunDecayInterval(weaponData_.config.breakStunDecayInterval); // ブレイクスタン減少間隔を設定
+
 		bulletManager_->ShootBullet(
 			object3d_->GetCenterPosition(),
 			targetPos_,targetVelocity_,
@@ -210,6 +225,7 @@ void Rifle::Attack() {
 	} else {
 		return; // キャラクタータイプが不明な場合は攻撃しない
 	}
+
 
 	weaponState_.bulletCount--;
 	if (weaponState_.bulletCount <= 0) {
