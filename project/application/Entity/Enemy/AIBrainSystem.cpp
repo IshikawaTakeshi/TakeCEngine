@@ -144,6 +144,12 @@ Action AIBrainSystem::ChooseBestAction() {
 
 	return bestAction;
 }
+//===================================================================================
+// 行動の重みパラメータの読み込み
+//===================================================================================
+void AIBrainSystem::LoadWeightParam(const std::string& configName) {
+	weightParam_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ActionWeightParam>(configName);
+}
 
 //===================================================================================
 //　スコア計算(ステップブースト)

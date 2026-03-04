@@ -31,7 +31,7 @@ class AIBrainSystem {
 	//最適な行動の選択
 	Action ChooseBestAction();
 
-	
+	void LoadWeightParam(const std::string& configName);
 
 	//=============================================================================
 	// accessor
