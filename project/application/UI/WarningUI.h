@@ -23,7 +23,7 @@ public:
 	/// コンストラクタ・デストラクタ
 	/// </summary>
 	WarningUI() = default;
-	~WarningUI() = default;
+	~WarningUI() override;
 
 	//========================================================================
 	// functions
@@ -68,5 +68,7 @@ private:
 	// 設定定数
 	const float kFlashDuration_ = 2.0f; // 点滅継続時間（秒）
 	const float kFlashSpeed_ = 60.0f;   // 点滅の速さ
+
+	uint32_t eventObserverID_ = 0; // イベントオブザーバーのID
 };
 

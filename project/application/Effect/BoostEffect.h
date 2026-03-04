@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/3d/Object3d.h"
 #include "engine/3d/Light/PointLight.h"
-#include "application/Entity/GameCharacterBehavior.h"
+#include "application/Entity/State/GameCharacterState.h"
 #include "engine/3d/Particle/EffectGroup.h" 
 #include <string>
 #include <memory>

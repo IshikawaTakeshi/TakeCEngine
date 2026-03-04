@@ -9,11 +9,11 @@
 #include "application/Weapon/BaseWeapon.h"
 #include "application/Weapon/WeaponType.h"
 #include "application/Weapon/Bullet/BulletManager.h"
-#include "application/Entity/GameCharacterBehavior.h"
 #include "application/Entity/GameCharacterInfo.h"
 #include "application/Entity/Animation/AnimationMapper.h"
 #include "application/Provider/PlayerInputProvider.h"
-#include "application/Entity/Behavior/GameCharacterStateManager.h"
+#include "application/Entity/State/GameCharacterState.h"
+#include "application/Entity/State/GameCharacterStateManager.h"
 #include "application/Effect/BoostEffect.h"
 
 

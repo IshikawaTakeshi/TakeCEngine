@@ -1,17 +1,15 @@
 #pragma once
-#include "application/Entity/Behavior/BaseGameCharacterState.h"
+#include "application/Entity/State/BaseGameCharacterState.h"
 
-// 前方宣言
-class baseInputProvider;
+class baseInputProvider; // 前方宣言
 
 //============================================================================
-// StateChargeShootStun class
+// StateStepBoost class
 //============================================================================
-class StateChargeShootStun : public BaseGameCharacterState {
+class StateStepBoost : public BaseGameCharacterState {
 public:
-
-	StateChargeShootStun(baseInputProvider* provider);
-	~StateChargeShootStun() override = default;
+	StateStepBoost(baseInputProvider* provider);
+	~StateStepBoost() override = default;
 
 	// 初期化
 	void Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) override;
@@ -20,4 +18,5 @@ public:
 
 private:
 
+	float gravity_ = 9.8f; // 重力の強さ
 };

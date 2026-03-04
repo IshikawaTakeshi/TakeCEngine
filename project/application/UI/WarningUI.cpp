@@ -9,8 +9,17 @@
 using namespace TakeC;
 
 //======================================================================
+//	デストラクタ
+//======================================================================
+WarningUI::~WarningUI() {
+
+	// イベントオブザーバーの解除
+	TakeCFrameWork::GetEventManager()->RemoveObserver("EnemyHighPowerAttack", eventObserverID_);
+}
+//======================================================================
 //	初期化
 //======================================================================
+
 
 void WarningUI::Initialize(TakeC::SpriteManager* spriteManager, const std::string& configName) {
 
@@ -43,7 +52,10 @@ void WarningUI::Initialize(TakeC::SpriteManager* spriteManager, const std::strin
 
     // イベントオブザーバー登録
     // std::any で Vector3 (敵のワールド座標) が送られてくると想定
-    TakeCFrameWork::GetEventManager()->AddObserver("EnemyHighPowerAttack", [this](const std::any& data) {
+   eventObserverID_ = 
+       TakeCFrameWork::GetEventManager()->AddObserver(
+       "EnemyHighPowerAttack", 
+       [this](const std::any& data) {
 
         // データ型チェック（Vector3か？）
         if (const Vector3* enemyPosPtr = std::any_cast<Vector3>(&data)) {

@@ -1,6 +1,6 @@
 #pragma once
 #include "engine/Entity/GameCharacter.h"
-#include "application/Entity/GameCharacterBehavior.h"
+#include "application/Entity/State/GameCharacterState.h"
 #include "application/Entity/GameCharacterInfo.h"
 #include <optional>
 #include <string>

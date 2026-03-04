@@ -1,6 +1,6 @@
 #pragma once
 #include "engine/Animation/NodeAnimation.h"
-#include "application/Entity/GameCharacterBehavior.h"
+#include "application/Entity/State/GameCharacterState.h"
 #include <map>
 
 //============================================================================

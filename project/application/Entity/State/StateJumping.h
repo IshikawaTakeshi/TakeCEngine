@@ -1,5 +1,5 @@
 #pragma once
-#include "application/Entity/Behavior/BaseGameCharacterState.h"
+#include "application/Entity/State/BaseGameCharacterState.h"
 
 // 前方宣言
 class baseInputProvider;
