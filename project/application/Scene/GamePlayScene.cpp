@@ -8,6 +8,15 @@
 #include <format>
 #include <numbers>
 
+// SceneState includes
+#include "application/Scene/SceneState/GamePlayScene/SceneStateEnemyDestroyed.h"
+#include "application/Scene/SceneState/GamePlayScene/SceneStateGameClear.h"
+#include "application/Scene/SceneState/GamePlayScene/SceneStateGameOver.h"
+#include "application/Scene/SceneState/GamePlayScene/SceneStateGamePlay.h"
+#include "application/Scene/SceneState/GamePlayScene/SceneStateGameStart.h"
+#include "application/Scene/SceneState/GamePlayScene/SceneStatePause.h"
+
+
 //====================================================================
 //			初期化
 //====================================================================
@@ -71,18 +80,24 @@ void GamePlayScene::Initialize() {
 
 	// player
 	player_->SetInputProvider(inputProvider_Player.get());
-	player_->Initialize(&Object3dCommon::GetInstance(),"Player_Model_Ver2.0.gltf");
-	player_->WeaponInitialize(&Object3dCommon::GetInstance(),bulletManager_.get());
-	player_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf","Running"));
+	player_->Initialize(&Object3dCommon::GetInstance(),
+		"Player_Model_Ver2.0.gltf");
+	player_->WeaponInitialize(&Object3dCommon::GetInstance(),
+		bulletManager_.get());
+	player_->GetObject3d()->SetAnimation(
+		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+			"Player_Model_Ver2.0.gltf", "Running"));
 	player_->SetTranslate({ 0.0f, 0.0f, 0.0f });
 	// Enemy
 	enemy_ = std::make_unique<Enemy>();
 	inputProvider_Enemy = std::make_unique<EnemyInputProvider>(enemy_.get());
 	enemy_->SetInputProvider(inputProvider_Enemy.get());
-	enemy_->Initialize(&Object3dCommon::GetInstance(),"Enemy_Model.gltf");
+	enemy_->Initialize(&Object3dCommon::GetInstance(), "Enemy_Model.gltf");
 	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(),
 		bulletManager_.get());
-	enemy_->GetObject3d()->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf","Running"));
+	enemy_->GetObject3d()->SetAnimation(
+		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+			"Player_Model_Ver2.0.gltf", "Running"));
 
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
@@ -129,8 +144,8 @@ void GamePlayScene::Initialize() {
 
 		// アクションボタンアイコンUI
 		TakeCFrameWork::GetUIManager()->CreateUI<ActionButtonICon>(
-			"InstructionIcon" + std::to_string(i) + ".json", inputProvider_Player.get(),
-			static_cast<CharacterActionInput>(i + 3));
+			"InstructionIcon" + std::to_string(i) + ".json",
+			inputProvider_Player.get(), static_cast<CharacterActionInput>(i + 3));
 	}
 	// 警告表示UI
 	TakeCFrameWork::GetUIManager()->CreateUI<WarningUI>("WarningUI");
@@ -143,11 +158,18 @@ void GamePlayScene::Initialize() {
 			"ActionIcon" + std::to_string(i) + ".json");
 	}
 
-	// 最初の状態設定
-	behaviorRequest_ = SceneBehavior::GAMESTART;
+	// シーンステートの初期化
+	sceneStateManager_.RegisterState(SceneState::GAMESTART, std::make_unique<SceneStateGameStart>());
+	sceneStateManager_.RegisterState(SceneState::GAMEPLAY, std::make_unique<SceneStateGamePlay>());
+	sceneStateManager_.RegisterState(SceneState::ENEMYDESTROYED, std::make_unique<SceneStateEnemyDestroyed>());
+	sceneStateManager_.RegisterState(SceneState::GAMEOVER, std::make_unique<SceneStateGameOver>());
+	sceneStateManager_.RegisterState(SceneState::GAMECLEAR, std::make_unique<SceneStateGameClear>());
+	sceneStateManager_.RegisterState(SceneState::PAUSE, std::make_unique<SceneStatePause>());
+	sceneStateManager_.Initialize(SceneState::GAMESTART, this);
 
 	// ShadowMapEffectを有効化
-	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect", true);
+	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect",
+		true);
 }
 
 //====================================================================
@@ -156,13 +178,12 @@ void GamePlayScene::Initialize() {
 
 void GamePlayScene::Finalize() {
 
-	AudioManager::GetInstance().SoundUnload(&BGM_);       // BGMの解放
-	CollisionManager::GetInstance().ClearGameCharacter(); // 当たり判定の解放
-	TakeC::CameraManager::GetInstance().ResetCameras(); // カメラのリセット
+	AudioManager::GetInstance().SoundUnload(&BGM_);         // BGMの解放
+	CollisionManager::GetInstance().ClearGameCharacter();   // 当たり判定の解放
+	TakeC::CameraManager::GetInstance().ResetCameras();     // カメラのリセット
 	TakeCFrameWork::GetParticleManager()->ClearParticles(); // パーティクルの解放
-	TakeCFrameWork::GetParticleManager()->ClearEmitters(); // エミッターの解放
-	TakeCFrameWork::GetLightManager()
-		->ClearAllPointLights();                 // ポイントライトの解放
+	TakeCFrameWork::GetParticleManager()->ClearEmitters();  // エミッターの解放
+	TakeCFrameWork::GetLightManager()->ClearAllPointLights(); // ポイントライトの解放
 	TakeCFrameWork::GetSpriteManager()->Clear(); // スプライトの解放
 	TakeCFrameWork::GetUIManager()->Clear();     // UIの解放
 	bulletManager_->Finalize();                  // 弾マネージャーの解放
@@ -194,68 +215,8 @@ void GamePlayScene::Update() {
 	player_->SetFocusTargetPos(enemy_->GetBodyPosition());
 	player_->SetFocusTargetVelocity(enemy_->GetVelocity());
 
-	if (behaviorRequest_) {
-
-		behavior_ = behaviorRequest_.value();
-
-		switch (behavior_) {
-		case SceneBehavior::GAMESTART:
-
-			InitializeGameStart();
-			break;
-		case SceneBehavior::GAMEPLAY:
-
-			InitializeGamePlay();
-			break;
-		case SceneBehavior::ENEMYDESTROYED:
-			InitializeEnemyDestroyed();
-			break;
-		case SceneBehavior::GAMEOVER:
-
-			InitializeGameOver();
-			break;
-		case SceneBehavior::GAMECLEAR:
-
-			InitializeGameClear();
-			break;
-		case SceneBehavior::PAUSE:
-
-			InitializePause();
-			break;
-		default:
-			break;
-		}
-
-		behaviorRequest_ = std::nullopt;
-	}
-
-	switch (behavior_) {
-	case SceneBehavior::GAMESTART:
-
-		UpdateGameStart();
-		break;
-	case SceneBehavior::GAMEPLAY:
-
-		UpdateGamePlay();
-		break;
-	case SceneBehavior::ENEMYDESTROYED:
-		UpdateEnemyDestroyed();
-		break;
-	case SceneBehavior::GAMEOVER:
-
-		UpdateGameOver();
-		break;
-	case SceneBehavior::GAMECLEAR:
-
-		UpdateGameClear();
-		break;
-	case SceneBehavior::PAUSE:
-
-		UpdatePause();
-		break;
-	default:
-		break;
-	}
+	// シーンステートの更新
+	sceneStateManager_.Update(this);
 
 	enemy_->Update();
 	player_->Update();
@@ -270,10 +231,6 @@ void GamePlayScene::Update() {
 	// フェーズメッセージUIの更新
 	phaseMessageUI_->Update();
 
-	// UIManagerの更新
-	TakeCFrameWork::GetUIManager()->Update();
-	// SpriteManagerの更新
-	TakeCFrameWork::GetSpriteManager()->Update();
 	// particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
 	// LightManager更新
@@ -368,7 +325,7 @@ void GamePlayScene::DrawSprite() {
 	// スプライトの描画前処理
 	SpriteCommon::GetInstance().PreDraw();
 
-	if (behavior_ != SceneBehavior::ENEMYDESTROYED) {
+	if (sceneStateManager_.GetCurrentStateType() != SceneState::ENEMYDESTROYED) {
 		// プレイヤーのレティクルの描画
 		playerReticle_->Draw();
 		// HPバーの描画
@@ -405,142 +362,6 @@ void GamePlayScene::DrawShadow() {
 		object.second->DrawShadow(lightCameraInfo);
 	}
 }
-
-//====================================================================
-// ゲームスタート時の処理
-//====================================================================
-
-void GamePlayScene::InitializeGameStart() {
-
-	// フェーズメッセージUIにREADYメッセージをセット
-	phaseMessageUI_->SetNextMessage(PhaseMessage::READY);
-}
-
-void GamePlayScene::UpdateGameStart() {
-
-	// フェーズメッセージUIが終了したらゲームプレイへ
-	if (phaseMessageUI_->GetCurrentMessage() == PhaseMessage::FIGHT) {
-		behaviorRequest_ = SceneBehavior::GAMEPLAY;
-	}
-}
-
-//====================================================================
-// ゲームプレイ時の処理
-//====================================================================
-void GamePlayScene::InitializeGamePlay() {
-
-	// フェーズメッセージUIにGOメッセージをセット
-	phaseMessageUI_->SetNextMessage(PhaseMessage::FIGHT);
-
-	TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(
-		Camera::GameCameraState::LOCKON);
-
-	player_->SetInCombat(true);
-	enemy_->SetInCombat(true);
-}
-
-void GamePlayScene::UpdateGamePlay() {
-
-	// playerReticleの更新
-	playerReticle_->SetIsFocus(player_->IsFocus());
-	playerReticle_->Update(player_->GetFocusTargetPos(), enemy_->GetBodyPosition());
-
-	// playerのHPバーの更新
-	playerHpBar_->Update(player_->GetHealth(), player_->GetMaxHealth());
-	// enemyのHPバーの更新
-	enemyHpBar_->Update(enemy_->GetHealth(), enemy_->GetMaxHealth());
-
-	// playerのエネルギーUIの更新
-	energyInfoUI_->SetOverHeatState(player_->GetIsOverHeated());
-	energyInfoUI_->Update(player_->GetEnergy(), player_->GetMaxEnergy());
-	// bulletCounterUIの更新
-	for (int i = 0; i < 4; i++) {
-		bulletCounterUI_[i]->SetBulletCount(
-			player_->GetCurrentWeapon(i)->GetBulletCount());
-		bulletCounterUI_[i]->SetRemainingBulletCount(
-			player_->GetCurrentWeapon(i)->GetRemainingBulletCount());
-		bulletCounterUI_[i]->SetReloadingState(
-			player_->GetCurrentWeapon(i)->GetIsReloading());
-		bulletCounterUI_[i]->SetWeaponIconUV(
-			static_cast<int>(player_->GetCurrentWeapon(i)->GetUnitPosition()));
-		bulletCounterUI_[i]->Update();
-	}
-
-	if (player_->GetHealth() <= 0.0f) {
-		// プレイヤーのHPが0以下になったらゲームオーバー
-		behaviorRequest_ = SceneBehavior::GAMEOVER;
-
-	} else if (enemy_->GetHealth() <= 0.0f) {
-		// エネミーのHPが0以下になったらゲームクリア
-		behaviorRequest_ = SceneBehavior::ENEMYDESTROYED;
-	}
-}
-
-//====================================================================
-// 敵撃破時の処理
-//====================================================================
-
-void GamePlayScene::InitializeEnemyDestroyed() {
-
-	// スローモーションにする
-	MyGame::RequestTimeScale(-1.0f, 1.0f, 1.0f);
-	// カメラをズームする
-	TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(
-		Camera::GameCameraState::ENEMY_DESTROYED);
-	// changeBehaviorTimerを初期化
-	changeBehaviorTimer_.Initialize(2.0f, 0.0f);
-}
-
-void GamePlayScene::UpdateEnemyDestroyed() {
-
-	// changeBehaviorTimerの更新
-	changeBehaviorTimer_.Update();
-
-	// changeBehaviorTimerが終了したらゲームクリアへ
-	if (changeBehaviorTimer_.IsFinished()) {
-
-		// ゲームクリアへ
-		behaviorRequest_ = SceneBehavior::GAMECLEAR;
-
-		// ズーム解除
-		TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(
-			Camera::GameCameraState::FOLLOW);
-	}
-}
-
-//====================================================================
-// ゲームオーバー時の処理
-//====================================================================
-void GamePlayScene::InitializeGameOver() {
-
-	phaseMessageUI_->SetNextMessage(PhaseMessage::LOSE);
-
-	fadeTimer_ = 3.0f;
-	SceneManager::GetInstance().ChangeScene("GAMEOVER", fadeTimer_);
-}
-
-void GamePlayScene::UpdateGameOver() {}
-//====================================================================
-// ゲームクリア時の処理
-//====================================================================
-void GamePlayScene::InitializeGameClear() {
-
-	phaseMessageUI_->SetNextMessage(PhaseMessage::WIN);
-
-	// スローモーション解除
-	MyGame::RequestTimeScale(1.0f, 0.6f, 0.0f);
-	fadeTimer_ = 3.0f;
-	SceneManager::GetInstance().ChangeScene("GAMECLEAR", fadeTimer_);
-}
-
-void GamePlayScene::UpdateGameClear() {}
-
-//====================================================================
-// ポーズ時の処理
-//====================================================================
-void GamePlayScene::InitializePause() {}
-
-void GamePlayScene::UpdatePause() {}
 
 //====================================================================
 //			全ての当たり判定のチェック

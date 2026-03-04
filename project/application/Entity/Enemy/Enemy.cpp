@@ -11,18 +11,13 @@
 #include "engine/camera/CameraManager.h"
 #include "math/Easing.h"
 
-
 #include "application/Effect/BoostEffectPositionEnum.h"
-#include "application/Entity/Behavior/BehaviorFloating.h"
-#include "application/Entity/Behavior/BehaviorJumping.h"
-#include "application/Entity/Behavior/BehaviorRunning.h"
 #include "application/Entity/WeaponUnit.h"
 #include "application/Weapon/Bazooka/Bazooka.h"
 #include "application/Weapon/Launcher/VerticalMissileLauncher.h"
 #include "application/Weapon/MachineGun/MachineGun.h"
 #include "application/Weapon/Rifle/Rifle.h"
 #include "application/Weapon/ShotGun/ShotGun.h"
-
 
 //========================================================================================================
 // 　初期化
@@ -94,22 +89,22 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	inputProvider_->SetAIBrainSystem(aiBrainSystem_.get());
 
 	// BehaviorManagerの初期化
-	behaviorManager_ = std::make_unique<BehaviorManager>();
+	behaviorManager_ = std::make_unique<GameCharacterStateManager>();
 	behaviorManager_->Initialize(inputProvider_);
 	behaviorManager_->InitializeBehaviors(enemyData_.characterInfo);
 
 	// アニメーションマッパーの登録
-	animationMapper_.Register(GameCharacterBehavior::RUNNING,
+	animationMapper_.Register(GameCharacterState::RUNNING,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.2f);
-	animationMapper_.Register(GameCharacterBehavior::FLOATING,
+	animationMapper_.Register(GameCharacterState::FLOATING,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Floating"), 0.2f);
-	animationMapper_.Register(GameCharacterBehavior::JUMP,
+	animationMapper_.Register(GameCharacterState::JUMP,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Jump"), 0.15f);
-	animationMapper_.Register(GameCharacterBehavior::STEPBOOST,
+	animationMapper_.Register(GameCharacterState::STEPBOOST,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.1f);
-	animationMapper_.Register(GameCharacterBehavior::CHARGESHOOT_STUN,
+	animationMapper_.Register(GameCharacterState::CHARGESHOOT_STUN,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.2f);
-	animationMapper_.Register(GameCharacterBehavior::DEAD,
+	animationMapper_.Register(GameCharacterState::DEAD,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf", "Running"), 0.3f);
 
 	// アニメーションコントローラの初期化
@@ -119,13 +114,15 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	behaviorManager_->SetAnimationComponents(&animatorController_, &animationMapper_);
 
 	// ブーストエフェクトの初期化
-	boostEffects_.resize(3);
+	boostEffects_.resize(kNumPositions);
 	for (int i = 0; i < boostEffects_.size(); i++) {
 		boostEffects_[i] = std::make_unique<BoostEffect>();
 		boostEffects_[i]->Initialize(this,"BoostEffect_Enemy.json");
 	}
 	boostEffects_[LEFT_LEG]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "knees_left.002");
 	boostEffects_[RIGHT_LEG]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "knees_right.002");
+	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "body_joint_right.002");
+	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "body_joint_left.002");
 	boostEffects_[BACKPACK]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "backpack.001");
 }
 
@@ -212,26 +209,25 @@ void Enemy::SaveEnemyData(const std::string& characterJsonPath) {
 void Enemy::Update() {
 
 	// stepBoostのインターバルの更新
-	enemyData_.characterInfo.stepBoostInfo.interval =
-		0.2f; // ステップブーストのインターバル
+	enemyData_.characterInfo.stepBoostInfo.interval = 0.2f;
 	if (enemyData_.characterInfo.stepBoostInfo.intervalTimer > 0.0f) {
 		enemyData_.characterInfo.stepBoostInfo.intervalTimer -= deltaTime_;
 	}
 
 	// RUNNING時のBehavior遷移リクエスト
 	if (enemyData_.characterInfo.isInCombat) {
-		if (behaviorManager_->GetCurrentBehaviorType() == Behavior::RUNNING) {
+		if (behaviorManager_->GetCurrentBehaviorType() == State::RUNNING) {
 
 			// BestActionの取得
 			switch (aiBrainSystem_->GetBestAction()) {
 			case Action::JUMP:
-				behaviorManager_->RequestBehavior(Behavior::JUMP);
+				behaviorManager_->RequestBehavior(State::JUMP);
 				break;
 			case Action::FLOATING: // FLOATINGへの遷移はJUMPで行う
-				behaviorManager_->RequestBehavior(Behavior::JUMP);
+				behaviorManager_->RequestBehavior(State::JUMP);
 				break;
 			case Action::STEPBOOST:
-				behaviorManager_->RequestBehavior(Behavior::STEPBOOST);
+				behaviorManager_->RequestBehavior(State::STEPBOOST);
 				break;
 			}
 		}
@@ -255,15 +251,14 @@ void Enemy::Update() {
 	// 地面に着地したらRUNNINGに戻る
 	if (enemyData_.characterInfo.onGround == true &&
 		(behaviorManager_->GetCurrentBehaviorType() ==
-			GameCharacterBehavior::JUMP ||
+			GameCharacterState::JUMP ||
 			behaviorManager_->GetCurrentBehaviorType() ==
-			GameCharacterBehavior::FLOATING)) {
-		behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+			GameCharacterState::FLOATING)) {
+		behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
 	} else if (enemyData_.characterInfo.onGround == false &&
-		behaviorManager_->GetCurrentBehaviorType() ==
-		GameCharacterBehavior::RUNNING) {
+		behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::RUNNING) {
 		// 空中にいる場合はFLOATINGに切り替え
-		behaviorManager_->RequestBehavior(GameCharacterBehavior::FLOATING);
+		behaviorManager_->RequestBehavior(GameCharacterState::FLOATING);
 	}
 
 	// ダメージエフェクトの更新
@@ -278,7 +273,7 @@ void Enemy::Update() {
 	if (enemyData_.characterInfo.health <= 0.0f) {
 		// 死亡状態のリクエスト
 		enemyData_.characterInfo.isAlive = false;
-		behaviorManager_->RequestBehavior(Behavior::DEAD);
+		behaviorManager_->RequestBehavior(State::DEAD);
 		deadEffect_->Start();
 	}
 
@@ -288,27 +283,22 @@ void Enemy::Update() {
 
 	// AIの更新
 	float distance = (enemyData_.characterInfo.focusTargetPos -
-		enemyData_.characterInfo.transform.translate)
-		.Length();
+		enemyData_.characterInfo.transform.translate).Length();
 	aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
 	aiBrainSystem_->SetDistanceToTarget(distance);
 	aiBrainSystem_->Update();
 
 	if (enemyData_.characterInfo.onGround &&
-		(behaviorManager_->GetCurrentBehaviorType() ==
-			GameCharacterBehavior::RUNNING ||
-			behaviorManager_->GetCurrentBehaviorType() ==
-			GameCharacterBehavior::STEPBOOST)) {
+		(behaviorManager_->GetCurrentBehaviorType() ==GameCharacterState::RUNNING ||
+			behaviorManager_->GetCurrentBehaviorType() == GameCharacterState::STEPBOOST)) {
 		backEmitter_->SetIsEmit(true);
 	} else {
 		backEmitter_->SetIsEmit(false);
 	}
 
 	auto jointWorldMatrixOpt =
-		object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix(
-			"body.002", object3d_->GetWorldMatrix());
-	bodyPosition_ = { jointWorldMatrixOpt->m[3][0], jointWorldMatrixOpt->m[3][1],
-					 jointWorldMatrixOpt->m[3][2] };
+		object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix("body.002", object3d_->GetWorldMatrix());
+	bodyPosition_ = { jointWorldMatrixOpt->m[3][0], jointWorldMatrixOpt->m[3][1], jointWorldMatrixOpt->m[3][2] };
 
 	// モデルの回転処理
 	if (enemyData_.characterInfo.isAlive) {
@@ -520,8 +510,7 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 
 				// 貫通している分だけ押し戻す
 				// 過剰な押し戻しを防ぐために、penetrationDepthを2で割ると良い感じになる
-				enemyData_.characterInfo.transform.translate +=
-					-normal * penetrationDepth * 0.5f;
+				enemyData_.characterInfo.transform.translate +=	-normal * penetrationDepth * 0.5f;
 
 				// 接触面方向の速度を打ち消す
 				float velocityAlongNormal =
@@ -591,7 +580,7 @@ void Enemy::UpdateAttack() {
 						false; // チャージ撃ち中フラグをリセット
 					chargeShootTimer_.Stop();
 					behaviorManager_->RequestBehavior(
-						GameCharacterBehavior::CHARGESHOOT_STUN);
+						GameCharacterState::CHARGESHOOT_STUN);
 					chargeShootableUnits_[i] =
 						false; // チャージ撃ち可能なユニットのマークをリセット
 				}
@@ -615,10 +604,10 @@ void Enemy::WeaponAttack(int weaponIndex) {
 			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
 				behaviorManager_->RequestBehavior(
-					GameCharacterBehavior::CHARGESHOOT_STUN);
+					GameCharacterState::CHARGESHOOT_STUN);
 			} else {
 				// 移動撃ち可能な場合はRUNNINGに戻す
-				behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+				behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
 			}
 		}
 	} else {
@@ -635,8 +624,7 @@ void Enemy::WeaponAttack(int weaponIndex) {
 				chargeShootTimer_.Initialize(chargeShootDuration_, 0.0f);
 				// イベントを発行して危険度の高い攻撃を行うことを知らせる
 				TakeCFrameWork::GetEventManager()->PostEvent(
-					"EnemyHighPowerAttack",
-					enemyData_.characterInfo.transform.translate);
+					"EnemyHighPowerAttack",enemyData_.characterInfo.transform.translate);
 			}
 
 		} else {
@@ -653,10 +641,10 @@ void Enemy::WeaponAttack(int weaponIndex) {
 			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
 				behaviorManager_->RequestBehavior(
-					GameCharacterBehavior::CHARGESHOOT_STUN);
+					GameCharacterState::CHARGESHOOT_STUN);
 			} else {
 				// 移動撃ち可能な場合はRUNNINGに戻す
-				behaviorManager_->RequestBehavior(GameCharacterBehavior::RUNNING);
+				behaviorManager_->RequestBehavior(GameCharacterState::RUNNING);
 			}
 		}
 	}
@@ -698,11 +686,11 @@ void Enemy::UpdateEnergy() {
 
 			// 浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
 			if (behaviorManager_->GetCurrentBehaviorType() ==
-				GameCharacterBehavior::FLOATING ||
+				GameCharacterState::FLOATING ||
 				behaviorManager_->GetCurrentBehaviorType() ==
-				GameCharacterBehavior::JUMP ||
+				GameCharacterState::JUMP ||
 				behaviorManager_->GetCurrentBehaviorType() ==
-				GameCharacterBehavior::STEPBOOST) {
+				GameCharacterState::STEPBOOST) {
 				return; // エネルギーの回復を行わない
 			}
 
@@ -734,16 +722,53 @@ void Enemy::UpdateEnergy() {
 
 void Enemy::RequestActiveBoostEffect() {
 
-	// スティックもしくは移動方向を元にアクティブにするエフェクトを変更
+	//ステップブーストの方向とスティックの向きによってアクティブにするエフェクトを変更
 	Vector3 moveDir = enemyData_.characterInfo.moveDirection;
+
 	if (moveDir.Length() <= 0.1f) {
-		// 移動方向がない場合はすべてのエフェクトを非アクティブにして終了
+		//スティックがほぼニュートラルの場合はすべてのエフェクトを非アクティブにして終了
 		for (const auto& boostEffect : boostEffects_) {
 			boostEffect->SetIsActive(false);
 		}
-	} else {
-		for (const auto& boostEffect : boostEffects_) {
-			boostEffect->SetIsActive(true);
-		}
+		return;
+	}
+	else {
+		// 背中のエフェクトは常にアクティブ
+		boostEffects_[BACKPACK]->SetIsActive(true);
+	}
+
+
+	// --- プレイヤーの向きをQuaternionから取得 ---
+	Vector3 localForward = Vector3(0.0f, 0.0f, 1.0f);
+	Vector3 playerForward = QuaternionMath::RotateVector(localForward, enemyData_.characterInfo.transform.rotate);
+	playerForward.y = 0.0f; // 水平方向だけ見る
+	playerForward = Vector3Math::Normalize(playerForward);
+
+	// --- スティック方向との角度差を求める ---
+	float dot = Vector3Math::Dot(playerForward, moveDir);
+	float crossY = playerForward.x * moveDir.z - playerForward.z * moveDir.x;
+	float angle = atan2(crossY, dot) * (180.0f / std::numbers::pi_v<float>); // -180°～180°
+
+	// --- 角度差に応じてエフェクトをアクティブにする ---
+	if (angle <= -45.0f && angle > -135.0f) {
+		// 左
+		boostEffects_[LEFT_LEG]->SetIsActive(true);
+		boostEffects_[RIGHT_LEG]->SetIsActive(true);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+	}
+	else if (angle >= 45.0f && angle < 135.0f) {
+		// 右
+		boostEffects_[LEFT_LEG]->SetIsActive(true);
+		boostEffects_[RIGHT_LEG]->SetIsActive(true);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
+	}
+	else {
+		// 前後
+		boostEffects_[LEFT_LEG]->SetIsActive(true);
+		boostEffects_[RIGHT_LEG]->SetIsActive(true);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
 	}
 }

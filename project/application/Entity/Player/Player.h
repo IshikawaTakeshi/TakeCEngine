@@ -9,13 +9,13 @@
 #include "application/Weapon/BaseWeapon.h"
 #include "application/Weapon/WeaponType.h"
 #include "application/Weapon/Bullet/BulletManager.h"
-#include "application/Entity/GameCharacterBehavior.h"
 #include "application/Entity/GameCharacterInfo.h"
 #include "application/Entity/Animation/AnimationMapper.h"
 #include "application/Provider/PlayerInputProvider.h"
-#include "application/Entity/Behavior/BehaviorManager.h"
+#include "application/Entity/State/GameCharacterState.h"
+#include "application/Entity/State/GameCharacterStateManager.h"
 #include "application/Effect/BoostEffect.h"
-#include "engine/Animation/AnimatorController.h"
+
 
 //==================================================================================
 // Player class
@@ -128,12 +128,9 @@ private:
 	//カメラ
 	Camera* camera_ = nullptr;
 	//状態管理マネージャ
-	std::unique_ptr<BehaviorManager> behaviorManager_ = nullptr;
+	std::unique_ptr<GameCharacterStateManager> behaviorManager_ = nullptr;
 	//プレイヤー入力プロバイダ(借りる)
 	PlayerInputProvider* inputProvider_ = nullptr;
-
-	//アニメーションコントローラ
-	AnimatorController animatorController_;
 	//アニメーションマッパー
 	AnimationMapper animationMapper_;
 

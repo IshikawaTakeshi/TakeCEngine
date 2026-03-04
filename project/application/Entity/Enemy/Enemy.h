@@ -11,10 +11,10 @@
 #include "application/Effect/BoostEffect.h"
 #include "application/Effect/DeadEffect.h"
 #include "application/Entity/Animation/AnimationMapper.h"
-#include "application/Entity/Behavior/BehaviorManager.h"
+#include "application/Entity/State/GameCharacterStateManager.h"
 #include "application/Entity/Enemy/AIBrainSystem.h"
 #include "application/Entity/Enemy/BulletSensor.h"
-#include "application/Entity/GameCharacterBehavior.h"
+#include "application/Entity/State/GameCharacterState.h"
 #include "application/Entity/GameCharacterInfo.h"
 #include "application/Provider/EnemyInputProvider.h"
 #include "application/Weapon/BaseWeapon.h"
@@ -175,7 +175,7 @@ private:
 	std::unique_ptr<BulletSensor> bulletSensor_ = nullptr;
 
 	// 状態管理マネージャ
-	std::unique_ptr<BehaviorManager> behaviorManager_ = nullptr;
+	std::unique_ptr<GameCharacterStateManager> behaviorManager_ = nullptr;
 	// プレイヤー入力プロバイダ
 	EnemyInputProvider* inputProvider_ = nullptr;
 
@@ -210,7 +210,7 @@ private:
 
 	// ターゲットの周りを周回するための変数
 	float orbitAngle_ = 0.0f;                 // 周回角度
-	float orbitRadius_ = 60.0f;               // 周回半径（ターゲットとの距離）
+	float orbitRadius_ = 120.0f;               // 周回半径（ターゲットとの距離）
 	float orbitSpeed_ = 1.0f;                 // 角速度（周る速さ）
 	Vector3 toOrbitPos_ = { 0.0f, 0.0f, 0.0f }; // 周回する座標
 

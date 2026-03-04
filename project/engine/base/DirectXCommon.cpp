@@ -160,7 +160,10 @@ void DirectXCommon::PostDraw() {
 
 	//画面に描く処理はすべて終わり、画面に移すので、状態を遷移
 	//RenderTargetからPresentにする
-	SetBarrier(D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_PRESENT,swapChainResources_[bbIndex].Get());
+	SetBarrier(
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PRESENT,
+		swapChainResources_[bbIndex].Get());
 
 	// コマンドリストの内容を確定
 	result = commandList_->Close();

@@ -1,17 +1,17 @@
 #pragma once
-#include "application/Entity/Behavior/BaseBehavior.h"
+#include "application/Entity/State/BaseGameCharacterState.h"
 
 // 前方宣言
 class baseInputProvider;
 
 //============================================================================
-// BehaviorJumping class
+// StateJumping class
 //============================================================================
-class BehaviorJumping : public BaseBehavior {
+class StateJumping : public BaseGameCharacterState {
 public:
 
-	BehaviorJumping(baseInputProvider* provider);
-	~BehaviorJumping() override = default;
+	StateJumping(baseInputProvider* provider);
+	~StateJumping() override = default;
 
 	// 初期化
 	void Initialize([[maybe_unused]] PlayableCharacterInfo& characterInfo) override;

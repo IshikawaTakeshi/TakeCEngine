@@ -1,4 +1,4 @@
-#include "BehaviorFloating.h"
+#include "StateFloating.h"
 #include "engine/Input/Input.h"
 #include "engine/math/Vector3Math.h"
 #include "application/Provider/BaseInputProvider.h"
@@ -7,7 +7,7 @@
 //===================================================================================
 //　コンストラクタ
 //===================================================================================
-BehaviorFloating::BehaviorFloating(baseInputProvider* provider) {
+StateFloating::StateFloating(baseInputProvider* provider) {
 	inputProvider_ = provider; //入力プロバイダーの設定
 	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 	gravity_ = 9.8f; //重力の強さ
@@ -16,14 +16,14 @@ BehaviorFloating::BehaviorFloating(baseInputProvider* provider) {
 //===================================================================================
 //　初期化
 //===================================================================================
-void BehaviorFloating::Initialize([[maybe_unused]] PlayableCharacterInfo& characterInfo) {
+void StateFloating::Initialize([[maybe_unused]] PlayableCharacterInfo& characterInfo) {
 	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 }
 
 //===================================================================================
 //　更新
 //===================================================================================
-void BehaviorFloating::Update(PlayableCharacterInfo& characterInfo) {
+void StateFloating::Update(PlayableCharacterInfo& characterInfo) {
 
 	Vector3& moveDirection_ = characterInfo.moveDirection; // 移動方向
 	Vector3& velocity_ = characterInfo.velocity; // 移動ベクトル
@@ -57,7 +57,7 @@ void BehaviorFloating::Update(PlayableCharacterInfo& characterInfo) {
 	// 地面に着地したらRUNNINGに戻る
 	if (characterInfo.onGround == true) {
 		isTransition_ = true;
-		nextBehavior_ = GameCharacterBehavior::RUNNING;
+		nextState_ = GameCharacterState::RUNNING;
 		return;
 	}
 

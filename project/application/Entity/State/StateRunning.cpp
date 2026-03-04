@@ -1,4 +1,4 @@
-#include "BehaviorRunning.h"
+#include "StateRunning.h"
 #include "application/Provider/BaseInputProvider.h"
 #include "engine/math/Vector3Math.h"
 #include "engine/math/Quaternion.h"
@@ -8,21 +8,21 @@
 //===================================================================================
 //　コンストラクタ
 //===================================================================================
-BehaviorRunning::BehaviorRunning(baseInputProvider* provider) {
+StateRunning::StateRunning(baseInputProvider* provider) {
 	inputProvider_ = provider;
 }
 
 //===================================================================================
 //　初期化
 //===================================================================================
-void BehaviorRunning::Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) {
+void StateRunning::Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) {
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
 //===================================================================================
 //　更新
 //===================================================================================
-void BehaviorRunning::Update(PlayableCharacterInfo& characterInfo) {
+void StateRunning::Update(PlayableCharacterInfo& characterInfo) {
 
 	//移動方向の正規化
 	if (characterInfo.moveDirection.x != 0.0f || characterInfo.moveDirection.z != 0.0f) {

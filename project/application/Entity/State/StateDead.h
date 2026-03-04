@@ -1,16 +1,16 @@
 #pragma once
-#include "application/Entity/Behavior/BaseBehavior.h"
+#include "application/Entity/State/BaseGameCharacterState.h"
 
 // 前方宣言
 class baseInputProvider;
 
 //============================================================================
-// BehaviorDead class
+// StateDead class
 //============================================================================
-class BehaviorDead : public BaseBehavior {
+class StateDead : public BaseGameCharacterState {
 public:
-	BehaviorDead(baseInputProvider* provider);
-	~BehaviorDead() override = default;
+	StateDead(baseInputProvider* provider);
+	~StateDead() override = default;
 
 	// 初期化
 	void Initialize([[maybe_unused]] PlayableCharacterInfo& characterInfo) override;

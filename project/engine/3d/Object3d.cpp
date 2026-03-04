@@ -7,6 +7,7 @@
 #include "ModelManager.h"
 #include "CameraManager.h"
 #include "ImGuiManager.h"
+#include "TakeCFrameWork.h"
 
 #include <fstream>
 #include <sstream>
@@ -62,6 +63,11 @@ void Object3d::Initialize(Object3dCommon* object3dCommon, const std::string& fil
 	animation_ = std::make_unique<Animation>();
 	animation_->duration = 0.0f;
 	animationTime_ = 0.0f;
+
+	if (model_->GetSkeleton()) {
+		animatorController_ = std::make_unique<AnimatorController>();
+		animatorController_->Initialize(model_->GetSkeleton());
+	}
 }
 
 //=============================================================================
@@ -95,7 +101,14 @@ void Object3d::Update() {
 		transformMatrixData_->World = worldMatrix_;
 		transformMatrixData_->WVP = WVPMatrix_;
 		transformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
-		if (!useExternalAnimation_) {
+		//外部からアニメーションを設定する場合はAnimatorControllerの更新
+		//そうでない場合はAnimationUpdateを呼び出す
+		if (useExternalAnimation_) {
+			if (useAnimatorController_) {
+				animatorController_->Update(TakeCFrameWork::GetDeltaTime());
+			}
+		}
+		else {
 			AnimationUpdate();
 		}
 	} 

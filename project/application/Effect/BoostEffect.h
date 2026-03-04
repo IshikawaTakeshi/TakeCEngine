@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/3d/Object3d.h"
 #include "engine/3d/Light/PointLight.h"
-#include "application/Entity/GameCharacterBehavior.h"
+#include "application/Entity/State/GameCharacterState.h"
 #include "engine/3d/Particle/EffectGroup.h" 
 #include <string>
 #include <memory>
@@ -51,7 +51,7 @@ public:
 	//----- setter ---------------------------
 	void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
 	void SetIsActive(bool isActive); 
-	void SetBehavior(GameCharacterBehavior behavior) { behavior_ = behavior; }
+	void SetBehavior(GameCharacterState behavior) { behavior_ = behavior; }
 
 private:
 
@@ -65,7 +65,7 @@ private:
 	// ジョイントのワールド行列
 	Matrix4x4 currentJointMatrix_;
 
-	GameCharacterBehavior behavior_ = GameCharacterBehavior::NONE;
+	GameCharacterState behavior_ = GameCharacterState::NONE;
 
 	// ライト
 	PointLightData pointLightData_;

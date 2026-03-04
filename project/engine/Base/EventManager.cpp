@@ -5,9 +5,11 @@ using namespace TakeC;
 //======================================================================
 //	オブザーバーの追加
 //======================================================================
-void EventManager::AddObserver(const std::string& eventName, EventCallback callback) {
+EventManager::EventId EventManager::AddObserver(const std::string& eventName, EventCallback callback) {
 	// イベント名に対応するコールバック関数のリストに、コールバック関数を追加
-	observers_[eventName].push_back(callback);
+	EventId id = ++nextEventrId_; // 新しいIDを生成
+	observers_[eventName].push_back({ id, callback });
+	return id; // 登録したIDを返す
 }
 
 //======================================================================
@@ -24,7 +26,7 @@ void TakeC::EventManager::PostEvent(const std::string& eventName, const std::any
 		const auto& callbacks = observers_[eventName];
 		// 各コールバック関数を呼び出す
 		for (const auto& callback : callbacks) {
-			callback(eventData);
+			callback.callback(eventData);
 		}
 	}
 }
@@ -34,4 +36,17 @@ void TakeC::EventManager::PostEvent(const std::string& eventName, const std::any
 //======================================================================
 void EventManager::ClearObservers() {
 	observers_.clear();
+}
+
+//======================================================================
+//	オブザーバーの個別削除
+//======================================================================
+void TakeC::EventManager::RemoveObserver(const std::string& eventName, EventId id) {
+	if (observers_.find(eventName) != observers_.end()) {
+		auto& callbacks = observers_[eventName];
+		// IDが一致するものを削除する
+		callbacks.erase(std::remove_if(callbacks.begin(), callbacks.end(),
+			[id](const ObserverInfo& observer) { return observer.id == id; }),
+			callbacks.end());
+	}
 }

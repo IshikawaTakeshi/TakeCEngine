@@ -1,4 +1,4 @@
-#include "BehaviorDead.h"
+#include "StateDead.h"
 #include "engine/Input/Input.h"
 #include "engine/math/Vector3Math.h"
 #include "application/Provider/BaseInputProvider.h"
@@ -7,7 +7,7 @@
 //===================================================================================
 //　コンストラクタ
 //===================================================================================
-BehaviorDead::BehaviorDead(baseInputProvider* provider) {
+StateDead::StateDead(baseInputProvider* provider) {
 	inputProvider_ = provider;
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
@@ -15,14 +15,14 @@ BehaviorDead::BehaviorDead(baseInputProvider* provider) {
 //===================================================================================
 //　初期化
 //===================================================================================
-void BehaviorDead::Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) {
+void StateDead::Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) {
 
 }
 
 //===================================================================================
 //　更新
 //===================================================================================
-void BehaviorDead::Update(PlayableCharacterInfo& characterInfo) {
+void StateDead::Update(PlayableCharacterInfo& characterInfo) {
 	if(characterInfo.onGround == false){
 		//速度の減衰
 		characterInfo.velocity.x /= characterInfo.deceleration;

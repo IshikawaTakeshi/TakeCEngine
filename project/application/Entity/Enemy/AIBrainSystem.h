@@ -3,6 +3,7 @@
 #include "application/Entity/GameCharacterInfo.h"
 #include "application/Weapon/BaseWeapon.h"
 #include "application/Provider/Enum/CharacterActionInputEnum.h"
+#include "application/Entity/Enemy/ActionWeightParam.h"
 
 // CharacterActionInput -> Actionに名前設定
 using Action = CharacterActionInput;
@@ -30,6 +31,8 @@ class AIBrainSystem {
 	//最適な行動の選択
 	Action ChooseBestAction();
 
+	void LoadWeightParam(const std::string& configName);
+
 	//=============================================================================
 	// accessor
 	//=============================================================================
@@ -55,6 +58,8 @@ class AIBrainSystem {
 	void SetOrbitRadius(float radius) { orbitRadius_ = radius; }
 	//敵の弾が近くに飛んできたかどうかの設定
 	void SetIsBulletNearby(bool isNearby) { isBulletNearby_ = isNearby; }
+	//行動の重みパラメータの設定
+	void SetActionWeightParam(const ActionWeightParam& param) { weightParam_ = param; }
 
 private:
 
@@ -64,6 +69,8 @@ private:
 	std::vector<float> attackScores_;
 	//行動スコアマップ
 	std::unordered_map<CharacterActionInput, float> actionScores_;
+	//行動の重みパラメータ
+	ActionWeightParam weightParam_;
 
 	//ターゲットまでの距離
 	float distanceToTarget_;

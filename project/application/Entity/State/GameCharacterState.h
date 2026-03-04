@@ -1,9 +1,9 @@
 #pragma once
 
 //============================================================================
-// GameCharacterBehavior enum
+// GameCharacterState enum
 //============================================================================
-enum class GameCharacterBehavior {
+enum class GameCharacterState {
 	NONE = -1, // 行動なし
 	IDLE,             // 待機状態
 	RUNNING,          // 移動状態
