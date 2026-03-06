@@ -62,7 +62,7 @@ struct ColliderInfo {
 //被弾1回分のブレイクゲージ蓄積エントリ
 struct BreakGaugeEntry {
 	float amount     = 0.0f;    // この被弾が与えたブレイク蓄積（残量）
-	float decayDelay = 0.0f;    // 減衰開始までの遅延時間
+	float decayDelay = 3.0f;    // 減衰開始までの遅延時間
 	Timer delayTimer;           // 減衰のタイマー
 };
 

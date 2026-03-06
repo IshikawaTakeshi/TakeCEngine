@@ -1,6 +1,7 @@
 #pragma once
 #include "engine/math/Transform.h"
 #include "engine/math/Vector2.h"
+#include "engine/math/Vector4.h"
 #include "engine/Utility/JsonDirectoryPathData.h"
 #include <string>
 #include <json.hpp>
@@ -17,6 +18,7 @@ struct SpriteConfig {
 	Vector2 anchorPoint_ = { 0.0f,0.0f }; //アンカーポイント
 	Vector2 textureLeftTop_ = { 0.0f,0.0f  }; //テクスチャの左上座標
 	Vector2 textureSize_ = { 100.0f,100.0f }; //テクスチャの切り出しサイズ
+	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f }; //色
 	float rotation_ = 0.0f;
 
 	void UpdateImGui();

@@ -24,7 +24,14 @@ void StateBreakStun::Initialize([[maybe_unused]]PlayableCharacterInfo& character
 	// ブレイクスタン状態に設定
 	characterInfo.breakGaugeInfo.isStunned = true; 
 
-
+	if (characterInfo.characterName == "Player") {
+		// ブレイクスタン開始のイベントを発行
+		TakeCFrameWork::GetEventManager()->PostEvent("Initialize_BreakStunState_Player", &characterInfo.breakGaugeInfo);
+	}
+	else {
+		// ブレイクスタン開始のイベントを発行
+		TakeCFrameWork::GetEventManager()->PostEvent("Initialize_BreakStunState_Enemy", &characterInfo.breakGaugeInfo);
+	}
 }
 
 //===================================================================================
@@ -44,6 +51,13 @@ void StateBreakStun::Update(PlayableCharacterInfo& characterInfo) {
 		characterInfo.breakGaugeInfo.isStunned = false; // ブレイクスタン終了
 		characterInfo.breakGaugeInfo.breakGauge = 0.0f; // ブレイクゲージをリセット
 
+		//ゲージリセットのイベントを発行
+		if (characterInfo.characterName == "Player") {
+			TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Reset_Player", &characterInfo.breakGaugeInfo);
+		}
+		else {
+			TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Reset_Enemy", &characterInfo.breakGaugeInfo);
+		}
 		// 地上なら RUNNING、空中なら FLOATING へ
 		if (characterInfo.onGround) {
 			nextState_ = GameCharacterState::RUNNING;
@@ -57,12 +71,8 @@ void StateBreakStun::Update(PlayableCharacterInfo& characterInfo) {
 	// 移動速度
 	Vector3& velocity_ = characterInfo.velocity; 
 	// 空中での降下処理(fallSpeedを重力に加算)
-	velocity_.y -= (gravity_ + characterInfo.fallSpeed) * deltaTime_;
-	characterInfo.transform.translate += velocity_ * deltaTime_;
-	// 地面に着地したらRUNNINGに戻る
-	if (characterInfo.onGround == true) {
-		isTransition_ = true;
-		nextState_ = GameCharacterState::RUNNING;
-		return;
+	if (!characterInfo.onGround) {
+		velocity_.y -= (gravity_ + characterInfo.fallSpeed) * deltaTime_;
+		characterInfo.transform.translate += velocity_ * deltaTime_;
 	}
 }

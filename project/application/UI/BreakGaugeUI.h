@@ -5,6 +5,8 @@
 #include <any>
 #include <string>
 
+
+
 //============================================================================
 // BreakGaugeUI Class
 //
@@ -13,8 +15,25 @@
 //============================================================================
 class BreakGaugeUI : public BaseUI {
 public:
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	BreakGaugeUI() = default;
 	~BreakGaugeUI() override;
+
+	enum BreakGaugeType {
+		FLAME, // ゲージの背景（フレームなど）
+		DELAY,  // 遅延減衰待ちの蓄積値
+		ACTUAL, // 実数のブレイクゲージ
+		kSize // ゲージの種類数
+	};
+
+	//==================================================================
+	// functions
+	//==================================================================
+
+
 
 	/// <summary>
 	/// 初期化
@@ -23,6 +42,7 @@ public:
 	/// <param name="eventName">監視対象のイベント名（例:
 	/// "PlayerBreakGaugeUpdate"）</param>
 	void Initialize(TakeC::SpriteManager* spriteManager,
+		const std::string& configName,
 		const std::string& eventName);
 
 	/// <summary>
@@ -53,13 +73,16 @@ private:
 
 private:
 	// イベント監視用ID
-	int eventObserverID_ = -1;
+	std::array<uint32_t, 3> eventObserverID_{};
 	std::string listeningEventName_;
+	//ブレイク状態復帰時のイベント名
+	std::string resetEventName_;
 
-	// UI要素
-	Sprite* frameSprite_ = nullptr;       // 外枠
-	Sprite* delayGaugeSprite_ = nullptr;  // 遅延分を含むゲージ（黄など）
-	Sprite* actualGaugeSprite_ = nullptr; // 実数ゲージ（赤など）
+	// ゲージのデフォルト色（JSONで設定された色を保持しておいて、ブレイクスタン状態から復帰したときに戻すため）
+	Vector4 defaultDelaySpriteColor_;
+	Vector4 defaultActualSpriteColor_;
+	// ブレイクスタン状態の色（赤色っぽいピンク色）
+	Vector4 breakStunSpriteColor_ = { 1.0f, 0.0f, 0.1f, 1.0f };
 
 	// 各ゲージの最大描画サイズ(X軸)
 	float delayGaugeMaxWidth_ = 0.0f;

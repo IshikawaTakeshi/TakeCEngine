@@ -1,6 +1,7 @@
 #include "BreakGaugeUI.h"
 #include "engine/Math/Easing.h"
 #include "engine/base/TakeCFramework.h"
+#include "engine/Utility/StringUtility.h"
 #include <algorithm>
 
 using namespace TakeC;
@@ -9,9 +10,17 @@ using namespace TakeC;
 //	デストラクタ
 //======================================================================
 BreakGaugeUI::~BreakGaugeUI() {
-	if (eventObserverID_ != -1) {
-		TakeCFrameWork::GetEventManager()->RemoveObserver(listeningEventName_,
-			eventObserverID_);
+	if (eventObserverID_[0] != -1) {
+		TakeCFrameWork::GetEventManager()->RemoveObserver("BreakGaugeUpdate_" + listeningEventName_,
+			eventObserverID_[0]);
+	}
+	if (eventObserverID_[1] != -1) {
+		TakeCFrameWork::GetEventManager()->RemoveObserver(resetEventName_,
+			eventObserverID_[1]);
+	}
+	if (eventObserverID_[2] != -1) {
+		TakeCFrameWork::GetEventManager()->RemoveObserver("Initialize_BreakStunState_" + listeningEventName_,
+			eventObserverID_[2]);
 	}
 }
 
@@ -19,6 +28,7 @@ BreakGaugeUI::~BreakGaugeUI() {
 //	初期化
 //======================================================================
 void BreakGaugeUI::Initialize(TakeC::SpriteManager* spriteManager,
+	const std::string& configName,
 	const std::string& eventName) {
 	// 親の初期化
 	BaseUI::Initialize(spriteManager);
@@ -28,45 +38,41 @@ void BreakGaugeUI::Initialize(TakeC::SpriteManager* spriteManager,
 	// スプライトの生成
 	// (※スプライト名/ファイルパスはプロジェクトの設定に合わせる想定) （実際には
 	// JsonConfig
-	// で指定するなどの形でも良いですが、ここでは直接テクスチャを指定します。
-	// 　必要に応じて "UI/BreakGauge_Frame.png"
-	// 等のファイルパスを追加/修正してください）
 
-	// TODO: 実際のテクスチャパスに置き換えるか、ダミーの白テクスチャを利用する
-	frameSprite_ = CreateAndRegisterSprite("white1x1.png");
-	delayGaugeSprite_ = CreateAndRegisterSprite("white1x1.png");
-	actualGaugeSprite_ = CreateAndRegisterSprite("white1x1.png");
-
-	// スプライトの色やサイズを設定
-	if (frameSprite_) {
-		frameSprite_->SetSize({ 300.0f, 20.0f });
-		frameSprite_->SetMaterialColor({ 0.2f, 0.2f, 0.2f, 1.0f }); // ダークグレー枠
-		frameSprite_->SetAnchorPoint({ 0.0f, 0.5f });               // 左端基準
+	for (int i = 0; i < BreakGaugeType::kSize; ++i) {
+		std::string fullPath = configName + "_" + StringUtility::EnumToString(static_cast<BreakGaugeType>(i)) + ".json";
+		CreateAndRegisterSpriteFromJson(fullPath);
 	}
+	// JSONで設定されたサイズを最大幅として使用
+	delayGaugeMaxWidth_ = sprites_[DELAY]->GetSize().x;
+	actualGaugeMaxWidth_ = sprites_[ACTUAL]->GetSize().x;
 
-	if (delayGaugeSprite_) {
-		delayGaugeSprite_->SetSize({ 296.0f, 16.0f });
-		delayGaugeSprite_->SetMaterialColor(
-			{ 1.0f, 1.0f, 0.0f, 1.0f });                   // 黄色ゲージ（遅延分）
-		delayGaugeSprite_->SetAnchorPoint({ 0.0f, 0.5f }); // 左端基準
-		delayGaugeMaxWidth_ = delayGaugeSprite_->GetSize().x;
-	}
-
-	if (actualGaugeSprite_) {
-		actualGaugeSprite_->SetSize({ 296.0f, 16.0f });
-		actualGaugeSprite_->SetMaterialColor(
-			{ 1.0f, 0.0f, 0.0f, 1.0f });                    // 赤色ゲージ（実数）
-		actualGaugeSprite_->SetAnchorPoint({ 0.0f, 0.5f }); // 左端基準
-		actualGaugeMaxWidth_ = actualGaugeSprite_->GetSize().x;
-	}
-
-	// 初期位置のリセット
-	SetPosition(position_);
+	defaultDelaySpriteColor_ = sprites_[DELAY]->GetMaterialColor();
+	defaultActualSpriteColor_ = sprites_[ACTUAL]->GetMaterialColor();
 
 	// イベントリスナーの登録
-	eventObserverID_ = TakeCFrameWork::GetEventManager()->AddObserver(
-		eventName,
-		[this](const std::any& data) { this->OnBreakGaugeUpdated(data); });
+	//player,enemyで登録するイベント名が違う想定なので、イベント名は引数で受け取っている；
+	eventObserverID_[0] = TakeCFrameWork::GetEventManager()->AddObserver(
+		"BreakGaugeUpdate_" + listeningEventName_,
+		[this](const std::any& data) {
+			this->OnBreakGaugeUpdated(data);
+		});
+	// ブレイク状態復帰時のイベントも監視して、ゲージをリセットする
+	resetEventName_ = "BreakGaugeUpdate_Reset_" + listeningEventName_;
+	eventObserverID_[1] = TakeCFrameWork::GetEventManager()->AddObserver(
+		resetEventName_,
+		[this](const std::any& data) {
+			this->OnBreakGaugeUpdated(data);
+			sprites_[DELAY]->SetMaterialColor(defaultDelaySpriteColor_);
+			sprites_[ACTUAL]->SetMaterialColor(defaultActualSpriteColor_);
+		});
+	eventObserverID_[2] = TakeCFrameWork::GetEventManager()->AddObserver(
+		"Initialize_BreakStunState_" + listeningEventName_,
+		[this](const std::any& data) {
+			data;
+			sprites_[DELAY]->SetMaterialColor({ 1.0f, 0.0f, 0.1f, 1.0f }); // 赤色っぽいピンク色
+			sprites_[ACTUAL]->SetMaterialColor({ 1.0f, 0.0f, 0.1f, 1.0f }); // 赤色っぽいピンク色
+		});
 
 	// 初期値は0
 	targetDelayRatio_ = 0.0f;
@@ -94,17 +100,17 @@ void BreakGaugeUI::Update() {
 		Easing::Lerp(currentActualRatio_, targetActualRatio_, 15.0f * deltaTime);
 
 	// スプライトサイズの更新 (左端Anchorを前提にX軸スケールを変更)
-	if (delayGaugeSprite_) {
-		Vector2 size = delayGaugeSprite_->GetSize();
-		size.x = delayGaugeMaxWidth_ * currentDelayRatio_;
-		delayGaugeSprite_->SetSize(size);
+	if (sprites_[DELAY]) {
+		Vector2 size_Delay = sprites_[DELAY]->GetSize();
+		size_Delay.x = delayGaugeMaxWidth_ * currentDelayRatio_;
+		sprites_[DELAY]->SetSize(size_Delay);
+	}
+	if (sprites_[ACTUAL]) {
+		Vector2 size_Actual = sprites_[ACTUAL]->GetSize();
+		size_Actual.x = actualGaugeMaxWidth_ * currentActualRatio_;
+		sprites_[ACTUAL]->SetSize(size_Actual);
 	}
 
-	if (actualGaugeSprite_) {
-		Vector2 size = actualGaugeSprite_->GetSize();
-		size.x = actualGaugeMaxWidth_ * currentActualRatio_;
-		actualGaugeSprite_->SetSize(size);
-	}
 }
 
 //======================================================================
@@ -138,18 +144,9 @@ void BreakGaugeUI::UpdateImGui(const std::string& name) {
 void BreakGaugeUI::SetPosition(const Vector2& position) {
 	BaseUI::SetPosition(position);
 
-	if (frameSprite_) {
-		frameSprite_->SetTranslate(position_);
-	}
-
-	// 枠の分少しオフセット
-	Vector2 innerPos = position_ + Vector2{ 2.0f, 0.0f };
-	if (delayGaugeSprite_) {
-		delayGaugeSprite_->SetTranslate(innerPos);
-	}
-	if (actualGaugeSprite_) {
-		actualGaugeSprite_->SetTranslate(innerPos);
-	}
+	sprites_[FLAME]->SetTranslate(position);
+	sprites_[DELAY]->SetTranslate(position);
+	sprites_[ACTUAL]->SetTranslate(position);
 }
 
 //======================================================================
@@ -157,7 +154,9 @@ void BreakGaugeUI::SetPosition(const Vector2& position) {
 //======================================================================
 void BreakGaugeUI::OnBreakGaugeUpdated(const std::any& data) {
 	// BreakGaugeInfo のポインタとして受け取る想定
-	if (const BreakGaugeInfo* info = std::any_cast<BreakGaugeInfo>(&data)) {
+	if (BreakGaugeInfo* const* ptrInfo = std::any_cast<BreakGaugeInfo*>(&data)) {
+
+		const BreakGaugeInfo* info = *ptrInfo;
 
 		float maxG = info->maxBreakGauge;
 		if (maxG <= 0.0f) {
@@ -176,7 +175,7 @@ void BreakGaugeUI::OnBreakGaugeUpdated(const std::any& data) {
 			delaySum += entry.amount;
 		}
 
-		// 黄色ゲージ＝実際の削れ値 + これから減衰される分
+		// 実際の削れ値 + これから減衰される分
 		float delayValue = actualValue + delaySum;
 		targetDelayRatio_ = std::clamp(delayValue / maxG, 0.0f, 1.0f);
 	}

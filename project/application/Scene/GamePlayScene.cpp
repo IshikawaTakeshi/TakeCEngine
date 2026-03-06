@@ -153,14 +153,12 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetUIManager()->CreateUI<WarningUI>("WarningUI");
 
 	// BreakGaugeUI
-	auto playerBreakGauge =
-		TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>(
-			"PlayerBreakGaugeUpdate");
-	playerBreakGauge->SetPosition({ 300.0f, 510.0f }); // エネルギーUIの少し上
-
-	auto enemyBreakGauge = TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>(
-		"EnemyBreakGaugeUpdate");
-	enemyBreakGauge->SetPosition({ 300.0f, 20.0f }); // EnemyHPバーの少し上
+	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>(
+		"BreakGauge_Player",
+		"Player");
+	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>(
+		"BreakGauge_Enemy",
+		"Enemy");
 
 	// アクションアイコンUI
 	actionIconSprites_.resize(3);

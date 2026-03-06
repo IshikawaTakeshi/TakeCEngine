@@ -250,8 +250,10 @@ void Enemy::Update() {
 	// --- ブレイクゲージ更新（ここを上の方に追加する認識でOK） ---
 	auto& breakGaugeInfo = enemyData_.characterInfo.breakGaugeInfo;
 
-	// スタン中は entries をクリアしたい方針
-	// ※「スタン中の間ずっとクリア」でも良いが、通常はスタン開始時だけクリアが推奨
+
+	// EventManagerへ通知
+	TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Enemy", &breakGaugeInfo);
+
 	if (breakGaugeInfo.isStunned) {
 		breakGaugeInfo.entries.clear();
 		breakGaugeInfo.breakGauge = 0.0f;
@@ -469,11 +471,25 @@ void Enemy::UpdateImGui() {
 	ImGui::Checkbox("OnGround", &enemyData_.characterInfo.onGround);
 
 	// ダメージ処理テスト用ボタン
-	if (ImGui::Button("Damage 1000")) {
+	if (ImGui::Button("Health Damage 1000")) {
 		enemyData_.characterInfo.health -= 1000.0f;
 		enemyData_.characterInfo.isDamaged = true;
 		damageEffectTime_ = 0.5f;
 		particleEmitter_[1]->Emit();
+	}
+	if (ImGui::Button("BreakStun Damage 100")) {
+		BreakGaugeInfo& gaugeInfo = enemyData_.characterInfo.breakGaugeInfo;
+		// ダメージに係数を乗算してゲージに加算（係数は武器ごとに変えてもよい）
+		gaugeInfo.breakGauge += 100.0f;
+
+		// 被弾履歴(遅延減衰待ち用)を追加
+		BreakGaugeEntry entry;
+		entry.amount = 100.0f; // ゲージに加算した値を保存
+		entry.delayTimer.Initialize(entry.decayDelay, 0.0f); //減衰開始タイマーを初期化して開始
+		gaugeInfo.entries.push_back(entry);
+
+		
+
 	}
 	// スピードを0にするボタン
 	if (ImGui::Button("Stop Movement")) {
@@ -853,20 +869,17 @@ void Enemy::AccumulateBreakGauge(float damage) {
 	if (enemyData_.characterInfo.breakGaugeInfo.isStunned)
 		return; // スタン中は蓄積しない
 
-	auto& gaugeInfo = enemyData_.characterInfo.breakGaugeInfo;
+	BreakGaugeInfo& gaugeInfo = enemyData_.characterInfo.breakGaugeInfo;
 	// ダメージに係数を乗算してゲージに加算（係数は武器ごとに変えてもよい）
 	gaugeInfo.breakGauge += damage * 0.5f;
 
 	// 被弾履歴(遅延減衰待ち用)を追加
 	BreakGaugeEntry entry;
 	entry.amount = damage * 0.5f;
-	entry.delayTimer.Initialize(2.0f, 0.0f); // 2秒待機後に減衰開始すると仮定
+	entry.delayTimer.Initialize(entry.decayDelay, 0.0f); //減衰開始タイマーを初期化して開始
 	gaugeInfo.entries.push_back(entry);
 
-	// EventManagerへ通知
-	TakeCFrameWork::GetEventManager()->PostEvent("EnemyBreakGaugeUpdate",
-		&gaugeInfo);
-
+	// ゲージが最大値を超えたらスタン状態に遷移
 	if (gaugeInfo.breakGauge >= gaugeInfo.maxBreakGauge) {
 		gaugeInfo.breakGauge = gaugeInfo.maxBreakGauge;
 		stateManager_->RequestState(GameCharacterState::BREAK_STUN);

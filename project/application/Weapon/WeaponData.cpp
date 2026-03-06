@@ -60,21 +60,23 @@ void to_json(nlohmann::json& jsonData, const WeaponData& weaponData) {
 
 void from_json(const nlohmann::json& jsonData, WeaponConfig& weaponContext) {
 
-	weaponContext.power = jsonData.value("power", weaponContext.power);
-	weaponContext.attackInterval = jsonData.value("attackInterval", weaponContext.attackInterval);
-	weaponContext.bulletSpeed = jsonData.value("bulletSpeed", weaponContext.bulletSpeed);
-	weaponContext.effectiveRange = jsonData.value("effectiveRange", weaponContext.effectiveRange);
-	weaponContext.maxReloadTime = jsonData.value("maxReloadTime", weaponContext.maxReloadTime);
-	weaponContext.requiredChargeTime = jsonData.value("requiredChargeTime", weaponContext.requiredChargeTime);
-	weaponContext.homingRate = jsonData.value("homingRate", weaponContext.homingRate);
-	weaponContext.maxMagazineCount = jsonData.value("maxMagazineCount", weaponContext.maxMagazineCount);
-	weaponContext.maxBulletCount = jsonData.value("maxBulletCount", weaponContext.maxBulletCount);
-	weaponContext.canChargeAttack = jsonData.value("canChargeAttack", weaponContext.canChargeAttack);
-	weaponContext.canMoveShootable = jsonData.value("canMoveShootable", weaponContext.canMoveShootable);
-	weaponContext.isStopShootOnly = jsonData.value("isStopShootOnly", weaponContext.isStopShootOnly);
+	if(jsonData.contains("power")) jsonData.at("power").get_to(weaponContext.power);
+	if (jsonData.contains("kAttackInterval")) jsonData.at("kAttackInterval").get_to(weaponContext.attackInterval);
+	if (jsonData.contains("bulletSpeed")) jsonData.at("bulletSpeed").get_to(weaponContext.bulletSpeed);
+	if (jsonData.contains("effectiveRange")) jsonData.at("effectiveRange").get_to(weaponContext.effectiveRange);
+	if (jsonData.contains("maxReloadTime")) jsonData.at("maxReloadTime").get_to(weaponContext.maxReloadTime);
+	if (jsonData.contains("requiredChargeTime")) jsonData.at("requiredChargeTime").get_to(weaponContext.requiredChargeTime);
+	if (jsonData.contains("homingRate")) jsonData.at("homingRate").get_to(weaponContext.homingRate);
+	if (jsonData.contains("breakStunPower")) jsonData.at("breakStunPower").get_to(weaponContext.breakStunPower);
+	if (jsonData.contains("breakStunDecayInterval")) jsonData.at("breakStunDecayInterval").get_to(weaponContext.breakStunDecayInterval);
+	if (jsonData.contains("magazineCount_")) jsonData.at("magazineCount_").get_to(weaponContext.maxMagazineCount);
+	if (jsonData.contains("maxBulletCount")) jsonData.at("maxBulletCount").get_to(weaponContext.maxBulletCount);
+	if (jsonData.contains("canChargeAttack")) jsonData.at("canChargeAttack").get_to(weaponContext.canChargeAttack);
+	if (jsonData.contains("canMoveShootable")) jsonData.at("canMoveShootable").get_to(weaponContext.canMoveShootable);
+	if (jsonData.contains("isStopShootOnly")) jsonData.at("isStopShootOnly").get_to(weaponContext.isStopShootOnly);
 
-	weaponContext.breakStunPower = jsonData.value("breakStunPower", weaponContext.breakStunPower);
-	weaponContext.breakStunDecayInterval = jsonData.value("breakStunDecayInterval", weaponContext.breakStunDecayInterval);
+
+	
 }
 
 //============================================================================
