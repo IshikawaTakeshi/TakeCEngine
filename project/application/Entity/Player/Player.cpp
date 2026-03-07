@@ -13,7 +13,6 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/camera/CameraManager.h"
 
-
 #include "application/Effect/BoostEffectPositionEnum.h"
 #include "application/Entity/WeaponUnit.h"
 #include "application/Weapon/Bazooka/Bazooka.h"
@@ -21,6 +20,7 @@
 #include "application/Weapon/MachineGun/MachineGun.h"
 #include "application/Weapon/Rifle/Rifle.h"
 #include "application/Weapon/ShotGun/ShotGun.h"
+#include "application/Tool/BreakGaugeUtil.h"
 
 
 //===================================================================================
@@ -213,18 +213,32 @@ std::vector<std::unique_ptr<BaseWeapon>>& Player::GetWeapons() {
 
 void Player::Update() {
 
+	// ブレイクゲージの自然減少（スタン中は減少しない）
+	auto& gaugeInfo = playerData_.characterInfo.breakGaugeInfo;
+
+	// EventManagerへ通知
+	TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Player", &gaugeInfo);
+
+	if (gaugeInfo.isStunned) {
+		gaugeInfo.entries.clear();
+	} else {
+		BreakGaugeUtil::UpdateBreakGaugeEntries(gaugeInfo);
+
+		if (gaugeInfo.breakGauge >= gaugeInfo.maxBreakGauge) {
+			// スタン開始：entriesをクリア
+			gaugeInfo.entries.clear();
+			gaugeInfo.isStunned = true;
+
+			// state遷移をリクエスト
+			stateManager_->RequestState(GameCharacterState::BREAK_STUN);
+		}
+	}
+
 	// stepBoostのインターバルの更新
 	playerData_.characterInfo.stepBoostInfo.interval =
 		0.2f; // ステップブーストのインターバル
 	if (playerData_.characterInfo.stepBoostInfo.intervalTimer > 0.0f) {
 		playerData_.characterInfo.stepBoostInfo.intervalTimer -= deltaTime_;
-	}
-
-	// ブレイクゲージの自然減少（スタン中は減少しない）
-	auto& gaugeInfo = playerData_.characterInfo.breakGaugeInfo;
-	if (!gaugeInfo.isStunned && gaugeInfo.breakGauge > 0.0f) {
-		gaugeInfo.breakGauge -= gaugeInfo.decayRate * deltaTime_;
-		gaugeInfo.breakGauge = std::max(0.0f, gaugeInfo.breakGauge);
 	}
 
 	if (playerData_.characterInfo.isInCombat) {
@@ -266,7 +280,8 @@ void Player::Update() {
 		}
 
 		// 攻撃処理
-		if (playerData_.characterInfo.isAlive == true) {
+		if (playerData_.characterInfo.isAlive == true && 
+			(stateManager_->GetCurrentStateType() == GameCharacterState::BREAK_STUN) == false) {
 			// 生存時のみ攻撃処理を行う
 			UpdateAttack();
 		}
@@ -814,9 +829,6 @@ void Player::AccumulateBreakGauge(float damage) {
 	entry.amount = damage * 0.5f;
 	entry.delayTimer.Initialize(2.0f, 0.0f); // 2秒待機後に減衰開始すると仮定
 	gaugeInfo.entries.push_back(entry);
-
-	// EventManagerへ通知
-	TakeCFrameWork::GetEventManager()->PostEvent("PlayerBreakGaugeUpdate", &gaugeInfo);
 
 	if (gaugeInfo.breakGauge >= gaugeInfo.maxBreakGauge) {
 		gaugeInfo.breakGauge = gaugeInfo.maxBreakGauge;

@@ -256,14 +256,12 @@ void Enemy::Update() {
 
 	if (breakGaugeInfo.isStunned) {
 		breakGaugeInfo.entries.clear();
-		breakGaugeInfo.breakGauge = 0.0f;
 	} else {
 		BreakGaugeUtil::UpdateBreakGaugeEntries(breakGaugeInfo);
 
 		if (breakGaugeInfo.breakGauge >= breakGaugeInfo.maxBreakGauge) {
 			// スタン開始：entriesをクリア
 			breakGaugeInfo.entries.clear();
-			breakGaugeInfo.breakGauge = 0.0f;
 			breakGaugeInfo.isStunned = true;
 
 			// state遷移をリクエスト
@@ -298,7 +296,8 @@ void Enemy::Update() {
 		// 移動方向の取得
 		enemyData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
 		// 攻撃処理
-		if (enemyData_.characterInfo.isAlive == true) {
+		if (enemyData_.characterInfo.isAlive == true && 
+			(stateManager_->GetCurrentStateType() == GameCharacterState::BREAK_STUN) == false) {
 			UpdateAttack();
 		}
 	}
