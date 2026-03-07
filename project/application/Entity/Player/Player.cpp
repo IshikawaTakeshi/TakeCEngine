@@ -66,12 +66,6 @@ void Player::Initialize(Object3dCommon* object3dCommon,
 	}
 	chargeShootableUnits_.resize(4);
 
-	// 背部エミッターの初期化
-	backEmitter_ = std::make_unique<ParticleEmitter>();
-	backEmitter_->Initialize("PlayerBackpack", "WalkSmoke2.json");
-	backEmitter_->SetParticleName("WalkSmoke2");
-	// backEmitter_->SetIsEmit(true);
-
 	// ブーストエフェクトの初期化
 	boostEffects_.resize(kNumPositions);
 	for (int i = 0; i < kNumPositions; i++) {
@@ -216,6 +210,7 @@ void Player::Update() {
 	// ブレイクゲージの自然減少（スタン中は減少しない）
 	auto& gaugeInfo = playerData_.characterInfo.breakGaugeInfo;
 
+
 	// EventManagerへ通知
 	TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Player", &gaugeInfo);
 
@@ -223,6 +218,8 @@ void Player::Update() {
 		gaugeInfo.entries.clear();
 	} else {
 		BreakGaugeUtil::UpdateBreakGaugeEntries(gaugeInfo);
+		// スタン猶予タイマーの更新
+		gaugeInfo.stunGraceTimer.Update();
 
 		if (gaugeInfo.breakGauge >= gaugeInfo.maxBreakGauge) {
 			// スタン開始：entriesをクリア
@@ -314,15 +311,6 @@ void Player::Update() {
 		stateManager_->RequestState(GameCharacterState::DEAD);
 	}
 
-	// 歩行時の煙エミッターのON/OFF制御
-	if (playerData_.characterInfo.onGround &&
-		(stateManager_->GetCurrentStateType() == GameCharacterState::RUNNING ||
-			stateManager_->GetCurrentStateType() == GameCharacterState::STEPBOOST)) {
-		backEmitter_->SetIsEmit(true);
-	} else {
-		backEmitter_->SetIsEmit(false);
-	}
-
 	// モデルの回転処理
 	Quaternion targetRotate;
 	Quaternion& characterRotate = playerData_.characterInfo.transform.rotate;
@@ -377,13 +365,6 @@ void Player::Update() {
 	object3d_->Update();
 	object3d_->GetModel()->UpdateSkinningFromSkeleton();
 	collider_->Update(object3d_.get());
-
-	// 歩行時パーティクルの更新
-	std::optional<Vector3> backpackPosition =
-		object3d_->GetModel()->GetSkeleton()->GetJointPosition(
-			"toes_left", object3d_->GetWorldMatrix());
-	backEmitter_->SetTranslate(backpackPosition.value());
-	backEmitter_->Update();
 
 	// 武器の更新
 	for (const auto& weapon : weapons_) {
@@ -509,8 +490,6 @@ void Player::SavePlayerData(const std::string& characterName) {
 void Player::DrawCollider() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	collider_->DrawCollider();
-	// object3d_->GetModel()->GetSkeleton()->Draw(object3d_->GetWorldMatrix());
-	backEmitter_->DrawWireFrame();
 #endif
 }
 
@@ -814,13 +793,20 @@ void Player::RequestActiveBoostEffect() {
 	}
 }
 
+//===================================================================================
+// ブレイクゲージの蓄積処理
+//===================================================================================
 void Player::AccumulateBreakGauge(float damage) {
-	if (!playerData_.characterInfo.isAlive)
-		return;
-	if (playerData_.characterInfo.breakGaugeInfo.isStunned)
-		return; // スタン中は蓄積しない
 
 	auto& gaugeInfo = playerData_.characterInfo.breakGaugeInfo;
+
+	if (!playerData_.characterInfo.isAlive ||
+		gaugeInfo.isStunned ||
+		gaugeInfo.stunGraceTimer.IsFinished() == false) {
+
+		// 死亡している、すでにスタンしている、またはスタン猶予タイマーが有効な場合はゲージを蓄積しない
+		return; 
+	}
 	// ダメージに係数を乗算してゲージに加算（係数は武器ごとに変えてもよい）
 	gaugeInfo.breakGauge += damage * 0.5f;
 

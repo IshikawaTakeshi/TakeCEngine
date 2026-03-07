@@ -10,6 +10,10 @@ StateBreakStun::StateBreakStun(baseInputProvider* provider) {
 	inputProvider_ = provider; //入力プロバイダーの設定
 	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 	gravity_ = 9.8f; //重力の強さ
+
+	// ブレイクスタンエフェクトの初期化
+	breakStunEffect_ = std::make_unique<TakeC::EffectGroup>();
+	breakStunEffect_->Initialize("BreakStunEffect.json");
 }
 
 //===================================================================================
@@ -32,6 +36,9 @@ void StateBreakStun::Initialize([[maybe_unused]]PlayableCharacterInfo& character
 		// ブレイクスタン開始のイベントを発行
 		TakeCFrameWork::GetEventManager()->PostEvent("Initialize_BreakStunState_Enemy", &characterInfo.breakGaugeInfo);
 	}
+
+	//エフェクトの再生
+	breakStunEffect_->Play(characterInfo.transform.translate);
 }
 
 //===================================================================================
@@ -40,16 +47,33 @@ void StateBreakStun::Initialize([[maybe_unused]]PlayableCharacterInfo& character
 
 void StateBreakStun::Update(PlayableCharacterInfo& characterInfo) {
 
+	// ブレイクスタンのタイマーを更新
+	breakStunTimer_.Update();
+
 	// 速度を急激に落とす
 	characterInfo.velocity.x *= 0.3f;
 	characterInfo.velocity.z *= 0.3f;
 
-	// ブレイクスタンのタイマーを更新
-	breakStunTimer_.Update();
+	// 移動速度
+	Vector3& velocity_ = characterInfo.velocity; 
+	// 空中での降下処理(fallSpeedを重力に加算)
+	if (!characterInfo.onGround) {
+		velocity_.y -= (gravity_ + characterInfo.fallSpeed) * deltaTime_;
+		characterInfo.transform.translate += velocity_ * deltaTime_;
+	}
+
+	//エフェクトの更新
+	breakStunEffect_->Update();
 
 	if (breakStunTimer_.IsFinished()) {
 		characterInfo.breakGaugeInfo.isStunned = false; // ブレイクスタン終了
 		characterInfo.breakGaugeInfo.breakGauge = 0.0f; // ブレイクゲージをリセット
+
+		//復帰後の猶予タイマーを開始
+		characterInfo.breakGaugeInfo.stunGraceTimer.Initialize(3.0f, 0.0f); // 3秒の猶予タイマーを開始
+
+		//エフェクトの停止
+		breakStunEffect_->Stop();
 
 		//ゲージリセットのイベントを発行
 		if (characterInfo.characterName == "Player") {
@@ -66,13 +90,5 @@ void StateBreakStun::Update(PlayableCharacterInfo& characterInfo) {
 			nextState_ = GameCharacterState::FLOATING;
 		}
 		isTransition_ = true;
-	}
-
-	// 移動速度
-	Vector3& velocity_ = characterInfo.velocity; 
-	// 空中での降下処理(fallSpeedを重力に加算)
-	if (!characterInfo.onGround) {
-		velocity_.y -= (gravity_ + characterInfo.fallSpeed) * deltaTime_;
-		characterInfo.transform.translate += velocity_ * deltaTime_;
 	}
 }

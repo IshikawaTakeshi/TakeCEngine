@@ -61,9 +61,6 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	// emitter2
 	particleEmitter_[2] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[2]->Initialize("EnemyEmitter2", "SparkExplosion.json");
-	// 背部エミッターの初期化
-	backEmitter_ = std::make_unique<ParticleEmitter>();
-	backEmitter_->Initialize("EnemyBackpack", "WalkSmoke2.json");
 
 	// 死亡エフェクト初期化
 	deadEffect_ = std::make_unique<DeadEffect>();
@@ -259,6 +256,9 @@ void Enemy::Update() {
 	} else {
 		BreakGaugeUtil::UpdateBreakGaugeEntries(breakGaugeInfo);
 
+		// スタン猶予タイマーの更新
+		breakGaugeInfo.stunGraceTimer.Update();
+
 		if (breakGaugeInfo.breakGauge >= breakGaugeInfo.maxBreakGauge) {
 			// スタン開始：entriesをクリア
 			breakGaugeInfo.entries.clear();
@@ -351,13 +351,6 @@ void Enemy::Update() {
 	aiBrainSystem_->SetDistanceToTarget(distance);
 	aiBrainSystem_->Update();
 
-	if (enemyData_.characterInfo.onGround &&
-		(stateManager_->GetCurrentStateType() == GameCharacterState::RUNNING ||
-			stateManager_->GetCurrentStateType() == GameCharacterState::STEPBOOST)) {
-		backEmitter_->SetIsEmit(true);
-	} else {
-		backEmitter_->SetIsEmit(false);
-	}
 
 	auto jointWorldMatrixOpt =
 		object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix(
@@ -425,13 +418,6 @@ void Enemy::Update() {
 		emitter->Update();
 	}
 
-	// 背部エミッターの更新
-	std::optional<Vector3> backpackPosition =
-		object3d_->GetModel()->GetSkeleton()->GetJointPosition(
-			"backpack.001", object3d_->GetWorldMatrix());
-	backEmitter_->SetTranslate(backpackPosition.value());
-
-	backEmitter_->Update();
 	// 死亡エフェクトの更新
 	deadEffect_->Update(bodyPosition_);
 
@@ -863,12 +849,16 @@ void Enemy::RequestActiveBoostEffect() {
 //===================================================================================
 void Enemy::AccumulateBreakGauge(float damage) {
 
-	if (!enemyData_.characterInfo.isAlive)
-		return;
-	if (enemyData_.characterInfo.breakGaugeInfo.isStunned)
-		return; // スタン中は蓄積しない
+	auto& gaugeInfo = enemyData_.characterInfo.breakGaugeInfo;
 
-	BreakGaugeInfo& gaugeInfo = enemyData_.characterInfo.breakGaugeInfo;
+	if (!enemyData_.characterInfo.isAlive ||
+		gaugeInfo.isStunned ||
+		gaugeInfo.stunGraceTimer.IsFinished() == false) {
+
+		// 死亡している、すでにスタンしている、またはスタン猶予タイマーが有効な場合はゲージを蓄積しない
+		return; 
+	}
+
 	// ダメージに係数を乗算してゲージに加算（係数は武器ごとに変えてもよい）
 	gaugeInfo.breakGauge += damage * 0.5f;
 
@@ -883,9 +873,4 @@ void Enemy::AccumulateBreakGauge(float damage) {
 		gaugeInfo.breakGauge = gaugeInfo.maxBreakGauge;
 		stateManager_->RequestState(GameCharacterState::BREAK_STUN);
 	}
-}
-
-void Enemy::AddBreakGaugeEntry(float amount, float decayDelay) {
-	auto& bg = enemyData_.characterInfo.breakGaugeInfo;
-	bg.entries.push_back(BreakGaugeUtil::MakeBreakGaugeEntry(amount, decayDelay));
 }

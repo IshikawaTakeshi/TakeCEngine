@@ -82,10 +82,8 @@ void GamePlayScene::Initialize() {
 
 	// player
 	player_->SetInputProvider(inputProvider_Player.get());
-	player_->Initialize(&Object3dCommon::GetInstance(),
-		"Player_Model_Ver2.0.gltf");
-	player_->WeaponInitialize(&Object3dCommon::GetInstance(),
-		bulletManager_.get());
+	player_->Initialize(&Object3dCommon::GetInstance(),"Player_Model_Ver2.0.gltf");
+	player_->WeaponInitialize(&Object3dCommon::GetInstance(),bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"));
@@ -95,8 +93,7 @@ void GamePlayScene::Initialize() {
 	inputProvider_Enemy = std::make_unique<EnemyInputProvider>(enemy_.get());
 	enemy_->SetInputProvider(inputProvider_Enemy.get());
 	enemy_->Initialize(&Object3dCommon::GetInstance(), "Enemy_Model.gltf");
-	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(),
-		bulletManager_.get());
+	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(),bulletManager_.get());
 	enemy_->GetObject3d()->SetAnimation(
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"));

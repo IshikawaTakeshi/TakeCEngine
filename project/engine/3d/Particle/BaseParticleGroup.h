@@ -117,7 +117,7 @@ public:
 protected:
 
 	//Particleの総数
-	static const uint32_t kNumMaxInstance_ = 20480; 
+	static const uint32_t kNumMaxInstance_ = 50480; 
 	//1フレームの時間
 	float kDeltaTime_;
 	//描画するインスタンス数

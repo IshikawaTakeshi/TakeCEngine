@@ -74,6 +74,9 @@ struct BreakGaugeInfo {
 	float stunDuration  = 2.0f;   // ブレイクスタンの持続時間
 	bool  isStunned     = false;  // ブレイクスタン中かどうか
 
+	Timer stunGraceTimer; // スタンの猶予タイマー（スタン状態から回復してもすぐにスタンしないようにする）
+	float stunGraceDuration = 3.0f; // スタンの猶予時間
+
 	//被弾履歴
 	std::vector<BreakGaugeEntry> entries;
 };
@@ -129,7 +132,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ChargeAttackStunInfo, stunTimer, stunDuration
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(EnergyInfo, energy, maxEnergy, recoveryRate, energyCooldown, isEnergyDepleted)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(OverHeatInfo, overheatTimer, overheatDuration, isOverheated)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ColliderInfo, offset, halfSize)
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BreakGaugeInfo, breakGauge, maxBreakGauge, decayRate, stunDuration, isStunned)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BreakGaugeInfo, breakGauge, maxBreakGauge, decayRate, stunDuration,stunGraceDuration, isStunned)
 
 //データ保存先ディレクトリパスの設定
 TAKEC_DEFINE_JSON_DIRECTORY_PATH(PlayableCharacterInfo, "Resources/JsonLoader/GameCharacters/");

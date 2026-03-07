@@ -1,6 +1,7 @@
 #pragma once
 #include "application/Entity/State/BaseGameCharacterState.h"
 #include "engine/Utility/Timer.h"
+#include "engine/3d/Particle/EffectGroup.h"
 
 // 前方宣言
 class baseInputProvider;
@@ -30,6 +31,9 @@ private:
 
 	// ブレイクスタンのタイマー
 	Timer breakStunTimer_;
+
+	// ブレイクスタン中のエフェクト
+	std::unique_ptr<TakeC::EffectGroup> breakStunEffect_;
 
 };
 

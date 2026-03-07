@@ -31,7 +31,6 @@ void to_json(nlohmann::json& j, const PlayableCharacterInfo& info) {
 	j["onGround"] = info.onGround;
 	j["isChargeShooting"] = info.isChargeShooting;
 	j["isDamaged"] = info.isDamaged;
-	j["isInCombat"] = info.isInCombat;
 
 	j["stepBoostInfo"] = info.stepBoostInfo;
 	j["jumpInfo"] = info.jumpInfo;
@@ -73,7 +72,6 @@ void from_json(const nlohmann::json& j, PlayableCharacterInfo& info) {
 	info.onGround = j.value("onGround", info.onGround);
 	info.isChargeShooting = j.value("isChargeShooting", info.isChargeShooting);
 	info.isDamaged = j.value("isDamaged", info.isDamaged);
-	info.isInCombat = j.value("isInCombat", info.isInCombat);
 
 	info.stepBoostInfo = j.value("stepBoostInfo", info.stepBoostInfo);
 	info.jumpInfo = j.value("jumpInfo", info.jumpInfo);

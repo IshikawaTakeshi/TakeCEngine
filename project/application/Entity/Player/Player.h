@@ -140,8 +140,6 @@ private:
 	//チャージ撃ちをする武器ユニット
 	std::vector<bool> chargeShootableUnits_;
 
-	//背部のパーティクルエミッター
-	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
 	//ブーストエフェクト
 	std::vector<std::unique_ptr<BoostEffect>> boostEffects_;
 	// プレイヤーの基本情報
