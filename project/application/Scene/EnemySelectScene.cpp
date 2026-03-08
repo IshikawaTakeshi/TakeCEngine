@@ -79,26 +79,26 @@ void EnemySelectScene::Update() {
 		behavior_ = behaviorRequest_.value();
 
 		switch (behavior_) {
-		case SceneBehavior::GAMESTART:
+		case SceneState::GAMESTART:
 
 			InitializeGameStart();
 			break;
-		case SceneBehavior::GAMEPLAY:
+		case SceneState::GAMEPLAY:
 
 			InitializeGamePlay();
 			break;
-		case SceneBehavior::ENEMYDESTROYED:
+		case SceneState::ENEMYDESTROYED:
 			InitializeEnemyDestroyed();
 			break;
-		case SceneBehavior::GAMEOVER:
+		case SceneState::GAMEOVER:
 
 			InitializeGameOver();
 			break;
-		case SceneBehavior::GAMECLEAR:
+		case SceneState::GAMECLEAR:
 
 			InitializeGameClear();
 			break;
-		case SceneBehavior::PAUSE:
+		case SceneState::PAUSE:
 
 			InitializePause();
 			break;
@@ -110,26 +110,26 @@ void EnemySelectScene::Update() {
 	}
 
 	switch (behavior_) {
-	case SceneBehavior::GAMESTART:
+	case SceneState::GAMESTART:
 
 		UpdateGameStart();
 		break;
-	case SceneBehavior::GAMEPLAY:
+	case SceneState::GAMEPLAY:
 
 		UpdateGamePlay();
 		break;
-	case SceneBehavior::ENEMYDESTROYED:
+	case SceneState::ENEMYDESTROYED:
 		UpdateEnemyDestroyed();
 		break;
-	case SceneBehavior::GAMEOVER:
+	case SceneState::GAMEOVER:
 
 		UpdateGameOver();
 		break;
-	case SceneBehavior::GAMECLEAR:
+	case SceneState::GAMECLEAR:
 
 		UpdateGameClear();
 		break;
-	case SceneBehavior::PAUSE:
+	case SceneState::PAUSE:
 
 		UpdatePause();
 		break;
@@ -239,7 +239,7 @@ void EnemySelectScene::UpdateEnemyDestroyed() {
 	if (changeBehaviorTimer_.IsFinished()) {
 
 		//ゲームクリアへ
-		behaviorRequest_ = SceneBehavior::GAMECLEAR;
+		behaviorRequest_ = SceneState::GAMECLEAR;
 
 		//ズーム解除
 		TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(Camera::GameCameraState::FOLLOW);

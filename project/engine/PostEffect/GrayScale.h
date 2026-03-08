@@ -31,6 +31,12 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	void SetIsActive(bool isActive) override {
+		if (grayScaleInfoData_) {
+			grayScaleInfoData_->isActive = isActive;
+		}
+	}
+
 private:
 
 	//グレースケールの種類

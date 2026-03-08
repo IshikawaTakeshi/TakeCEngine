@@ -10,6 +10,8 @@
 #include "engine/math/Transform.h"
 #include "engine/math/TransformMatrix.h"
 #include "engine/base/PSOType.h"
+#include "engine/Animation/AnimatorController.h"
+
 
 //前方宣言
 class Object3dCommon;
@@ -87,6 +89,8 @@ public:
 	const std::string& GetModelFilePath() const { return modelFilePath_; }
 	//外部からアニメーションを設定するかどうかの取得
 	bool GetUseExternalAnimation() const { return useExternalAnimation_; }
+	//アニメーションコントローラーの取得
+	AnimatorController* GetAnimatorController() { return animatorController_.get(); }
 
 	//----- setter ---------------------------
 
@@ -107,6 +111,8 @@ public:
 	void SetModelFilePath(const std::string& filePath) { modelFilePath_ = filePath; }
 	//外部からアニメーションを設定するかどうかの設定
 	void SetUseExternalAnimation(bool useExternal) { useExternalAnimation_ = useExternal; }
+	//アニメーションコントローラーの設定
+	void SetUseAnimatorController(bool use) { useAnimatorController_ = use; }
 
 private:
 
@@ -132,7 +138,9 @@ protected: // privateメンバ変数
 	bool isAnimation_ = true;
 	//外部からアニメーションを設定するかどうか
 	bool useExternalAnimation_ = false;
-
+	//アニメーションコントローラー
+	std::unique_ptr<AnimatorController> animatorController_;
+	bool useAnimatorController_ = false;
 	//TransformationMatrix用の頂点リソース
 	ComPtr<ID3D12Resource> wvpResource_;
 	ComPtr<ID3D12Resource> shadowWvpResource_;

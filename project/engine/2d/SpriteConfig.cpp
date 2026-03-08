@@ -25,16 +25,18 @@ void to_json(nlohmann::json& j, const SpriteConfig& spriteConfig) {
 	j["textureLeftTop"] = spriteConfig.textureLeftTop_;
 	j["textureSize"] = spriteConfig.textureSize_;
 	j["rotation"] = spriteConfig.rotation_;
+	j["color"] = spriteConfig.color_;
 }
 
 void from_json(const nlohmann::json& j, SpriteConfig& spriteConfig) {
 
-	j.at("name").get_to(spriteConfig.name);
-	j.at("textureFilePath").get_to(spriteConfig.textureFilePath_);
-	j.at("position").get_to(spriteConfig.position_);
-	j.at("size").get_to(spriteConfig.size_);
-	j.at("anchorPoint").get_to(spriteConfig.anchorPoint_);
-	j.at("textureLeftTop").get_to(spriteConfig.textureLeftTop_);
-	j.at("textureSize").get_to(spriteConfig.textureSize_);
-	j.at("rotation").get_to(spriteConfig.rotation_);
+	spriteConfig.name = j.value("name", "");
+	spriteConfig.textureFilePath_ = j.value("textureFilePath", "white1x1.png");
+	spriteConfig.position_ = j.value("position", Vector2{ 0.0f,0.0f });
+	spriteConfig.size_ = j.value("size", Vector2{ 400.0f,200.0f });
+	spriteConfig.anchorPoint_ = j.value("anchorPoint", Vector2{ 0.0f,0.0f });
+	spriteConfig.textureLeftTop_ = j.value("textureLeftTop", Vector2{ 0.0f,0.0f });
+	spriteConfig.textureSize_ = j.value("textureSize", Vector2{ 100.0f,100.0f });
+	spriteConfig.rotation_ = j.value("rotation", 0.0f);
+	spriteConfig.color_ = j.value("color", Vector4{ 1.0f,1.0f,1.0f,1.0f });
 }

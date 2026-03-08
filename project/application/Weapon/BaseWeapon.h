@@ -46,49 +46,54 @@ public:
 	//===========================================================================
 
 	//武器タイプの取得
-	virtual const WeaponType& GetWeaponType() const;
-	//攻撃間隔の取得
-	virtual float GetAttackInterval() const;
-
-	virtual const Vector3& GetTranslate() const { return object3d_->GetTranslate(); }
-
-	virtual const Vector3& GetCenterPosition() const { return object3d_->GetCenterPosition(); }
+	const WeaponType& GetWeaponType() const;
+	//所有者の取得
+	const Vector3& GetTranslate() const { return object3d_->GetTranslate(); }
+	//モデルの中心位置の取得
+	const Vector3& GetCenterPosition() const { return object3d_->GetCenterPosition(); }
 	//ターゲットの座標を取得
-	virtual const Vector3& GetTargetPos() const;
-	//武器のユニットポジションを取得
-	virtual uint32_t GetUnitPosition() const;
+	const Vector3& GetTargetPos() const;
+
+	//攻撃間隔の取得
+	float GetAttackInterval() const;
 	//有効射程距離の取得
-	virtual float GetEffectiveRange() const;
-
+	float GetEffectiveRange() const;
 	//弾速の取得
-	virtual float GetBulletSpeed() const;
+	float GetBulletSpeed() const;
 	//攻撃力の取得
-	virtual float GetAttackPower() const;
-	//弾数の取得
-	virtual uint32_t GetBulletCount() const;
-	//最大弾数の取得
-	virtual uint32_t GetMaxBulletCount() const;
-	//一度に撃てる弾容量の取得
-	virtual uint32_t GetMagazineCount() const;
-	//残弾数の取得
-	virtual uint32_t GetRemainingBulletCount() const;
-	// チャージ中かどうか
-	virtual bool IsCharging() const;
+	float GetAttackPower() const;
 	// チャージ時間を取得
-	virtual float GetChargeTime() const;
+	float GetChargeTime() const;
 	// 必要チャージ時間を取得
-	virtual float GetRequiredChargeTime() const;
-	//使用可能かどうか
-	virtual bool GetIsAvailable() const;
-	//リロード中かどうか
-	virtual bool GetIsReloading() const;
+	float GetRequiredChargeTime() const;
+	// ブレイクスタンゲージに与える蓄積値を取得
+	float GetBreakStunPower() const;
+	// ブレイクスタンゲージの減少間隔を取得
+	float GetBreakStunDecayInterval() const;
 
+	//武器のユニットポジションを取得
+	uint32_t GetUnitPosition() const;
+	//弾数の取得
+	uint32_t GetBulletCount() const;
+	//最大弾数の取得
+	uint32_t GetMaxBulletCount() const;
+	//一度に撃てる弾容量の取得
+	uint32_t GetMagazineCount() const;
+	//残弾数の取得
+	uint32_t GetRemainingBulletCount() const;
+
+	// チャージ中かどうか
+	bool IsCharging() const;
+	//使用可能かどうか
+	bool GetIsAvailable() const;
+	//リロード中かどうか
+	bool GetIsReloading() const;
 	//チャージ攻撃可能か
-	virtual bool CanChargeAttack() const;
+	bool CanChargeAttack() const;
 	//移動撃ち可能か
-	virtual bool CanMoveShootable() const;
+	bool CanMoveShootable() const;
 	//停止撃ち専用か
-	virtual bool StopShootOnly() const;
+	bool StopShootOnly() const;
 
 	//=============================================================================
 	// setter

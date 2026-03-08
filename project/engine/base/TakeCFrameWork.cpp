@@ -184,7 +184,7 @@ void TakeCFrameWork::Update() {
 	imguiManager_->Begin();
 
 	ImGui::Begin("FrameWork");
-	directXCommon_->DrawFPS();
+	directXCommon_->DrawFrameTimeInfo();
 	ImGui::Text("DeltaTime: %.4f", kDeltaTime);
 	ImGui::DragFloat("TimeScale", &timeScale_, 0.01f, 0.0f, 5.0f);
 	ImGui::End();

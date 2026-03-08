@@ -40,6 +40,12 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	void SetIsActive(bool isActive) override {
+		if (radialBlurInfo_) {
+			radialBlurInfo_->enable = isActive;
+		}
+	}
+
 private:
 
 	//ブラーの情報

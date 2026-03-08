@@ -158,22 +158,24 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application\Entity\Animation\AnimationMapper.cpp" />
+    <ClCompile Include="application\Tool\BreakGaugeUtil.cpp" />
     <ClCompile Include="application\UI\ActionButtonICon.cpp" />
     <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp" />
     <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
+    <ClCompile Include="application\UI\BreakGaugeUI.cpp" />
     <ClCompile Include="application\UI\RingUI.cpp" />
     <ClCompile Include="application\Weapon\Bazooka\Bazooka.cpp" />
     <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
     <ClCompile Include="application\UI\BulletCounterUI.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BaseBehavior.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorRunning.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorFloating.cpp" />
+    <ClCompile Include="application\Entity\State\BaseGameCharacterState.cpp" />
+    <ClCompile Include="application\Entity\State\StateRunning.cpp" />
+    <ClCompile Include="application\Entity\State\StateFloating.cpp" />
     <ClCompile Include="application\Provider\EnemyInputProvider.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorJumping.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorManager.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorStepBoost.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorDead.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorChargeShootStun.cpp" />
+    <ClCompile Include="application\Entity\State\StateJumping.cpp" />
+    <ClCompile Include="application\Entity\State\GameCharacterStateManager.cpp" />
+    <ClCompile Include="application\Entity\State\StateStepBoost.cpp" />
+    <ClCompile Include="application\Entity\State\StateDead.cpp" />
+    <ClCompile Include="application\Entity\State\StateChargeShootStun.cpp" />
     <ClCompile Include="application\Entity\Enemy\BulletSensor.cpp" />
     <ClCompile Include="application\Effect\BoostEffect.cpp" />
     <ClCompile Include="application\Effect\DeadEffect.cpp" />
@@ -280,7 +282,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Scene\TitleScene.cpp" />
     <ClCompile Include="application\Scene\SceneFactory.cpp" />
     <ClCompile Include="application\Scene\SceneManager.cpp" />
-    <ClCompile Include="engine\3d\Particle\Particle3d.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleCommon.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleEmitter.cpp" />
     <ClCompile Include="engine\Base\Particle\ParticleManager.cpp" />
@@ -324,20 +325,33 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\Base\SpriteManager.cpp" />
     <ClCompile Include="engine\Base\UIManager.cpp" />
     <ClCompile Include="application\UI\WarningUI.cpp" />
+    <ClCompile Include="application\Scene\SceneState\BaseSceneState.cpp" />
+    <ClCompile Include="application\Scene\SceneState\SceneStateManager.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\GamePlaySceneState.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameStart.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGamePlay.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateEnemyDestroyed.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.cpp" />
+    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.cpp" />
+    <ClCompile Include="application\Entity\State\StateBreakStun.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Entity\Animation\AnimationMapper.h" />
+    <ClInclude Include="application\Entity\Enemy\ActionWeightParam.h" />
+    <ClInclude Include="application\Tool\BreakGaugeUtil.h" />
     <ClInclude Include="application\UI\ActionButtonICon.h" />
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
     <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h" />
     <ClInclude Include="application\Entity\GameCharacterInfo.h" />
-    <ClInclude Include="application\Entity\GameCharacterBehavior.h" />
+    <ClInclude Include="application\Entity\State\GameCharacterState.h" />
     <ClInclude Include="application\Entity\Player\PlayerData.h" />
     <ClInclude Include="application\Entity\WeaponUnit.h" />
     <ClInclude Include="application\Provider\Enum\CharacterActionInputEnum.h" />
     <ClInclude Include="application\Scene\EnemySelectScene.h" />
     <ClInclude Include="application\Scene\GamePlaySceneBehavior.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditMenuEnum.h" />
+    <ClInclude Include="application\UI\BreakGaugeUI.h" />
     <ClInclude Include="application\UI\RingUI.h" />
     <ClInclude Include="application\Weapon\Action\WeaponActionData.h" />
     <ClInclude Include="application\Weapon\Bazooka\Bazooka.h" />
@@ -351,15 +365,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\WeaponType.h" />
     <ClInclude Include="application\UI\EnergyInfoUI.h" />
     <ClInclude Include="application\UI\BulletCounterUI.h" />
-    <ClInclude Include="application\Entity\Behavior\BaseBehavior.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorRunning.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorFloating.h" />
+    <ClInclude Include="application\Entity\State\BaseGameCharacterState.h" />
+    <ClInclude Include="application\Entity\State\StateRunning.h" />
+    <ClInclude Include="application\Entity\State\StateFloating.h" />
     <ClInclude Include="application\Provider\EnemyInputProvider.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorJumping.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorManager.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorStepBoost.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorDead.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorChargeShootStun.h" />
+    <ClInclude Include="application\Entity\State\StateJumping.h" />
+    <ClInclude Include="application\Entity\State\GameCharacterStateManager.h" />
+    <ClInclude Include="application\Entity\State\StateStepBoost.h" />
+    <ClInclude Include="application\Entity\State\StateDead.h" />
+    <ClInclude Include="application\Entity\State\StateChargeShootStun.h" />
     <ClInclude Include="application\Entity\Enemy\BulletSensor.h" />
     <ClInclude Include="application\Effect\BoostEffect.h" />
     <ClInclude Include="application\Effect\DeadEffect.h" />
@@ -467,7 +481,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Base\TakeCFrameWork.h" />
     <ClInclude Include="application\Scene\GamePlayScene.h" />
     <ClInclude Include="engine\Base\ImGuiManager.h" />
-    <ClInclude Include="engine\3d\Particle\Particle3d.h" />
     <ClInclude Include="engine\3d\Particle\ParticleCommon.h" />
     <ClInclude Include="engine\3d\Particle\ParticleEmitter.h" />
     <ClInclude Include="engine\Base\Particle\ParticleManager.h" />
@@ -543,6 +556,16 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Base\SpriteManager.h" />
     <ClInclude Include="engine\Base\UIManager.h" />
     <ClInclude Include="application\UI\WarningUI.h" />
+    <ClInclude Include="application\Scene\SceneState\BaseSceneState.h" />
+    <ClInclude Include="application\Scene\SceneState\SceneStateManager.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\GamePlaySceneState.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameStart.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGamePlay.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateEnemyDestroyed.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.h" />
+    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.h" />
+    <ClInclude Include="application\Entity\State\StateBreakStun.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

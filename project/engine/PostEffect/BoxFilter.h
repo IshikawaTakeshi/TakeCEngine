@@ -40,6 +40,12 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	void SetIsActive(bool isActive) override {
+		if (filterInfoData_) {
+			filterInfoData_->isActive = isActive;
+		}
+	}
+
 private:
 
 	// フィルター情報構造体

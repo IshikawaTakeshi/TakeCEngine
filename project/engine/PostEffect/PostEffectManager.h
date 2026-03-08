@@ -78,6 +78,10 @@ namespace TakeC {
 		/// <param name="csFilePath"></param>
 		void InitializeEffect(const std::string& name, const std::wstring& csFilePath);
 
+		PostEffect* FindEffect(const std::string& name) const;
+
+		void SetEffectActive(const std::string& name, bool isActive);
+
 	public:
 
 		//=======================================================================

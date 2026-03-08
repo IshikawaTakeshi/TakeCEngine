@@ -2,6 +2,7 @@
 #include "Vector3Math.h"
 #include <assert.h>
 #include <cmath>
+#include <xmmintrin.h>
 
 //============================================================================
 //行列の加法
@@ -23,13 +24,17 @@ Matrix4x4 MatrixMath::Subtract(const Matrix4x4& m1, const Matrix4x4& m2) {
 //行列の積
 //============================================================================
 Matrix4x4 MatrixMath::Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
-	Matrix4x4 result;
-	for (int row = 0; row < 4; row++) {
-		for (int column = 0; column < 4; column++) {
-			result.m[row][column] = 0;
-			for (int k = 0; k < 4; k++) {
-				result.m[row][column] += m1.m[row][k] * m2.m[k][column];
-			}
+	Matrix4x4 result; for (int row = 0; row < 4; row++) { // m1 の1行を4要素同時ロード
+		__m128 r = _mm_set_ps(m1.m[row][3], m1.m[row][2], m1.m[row][1], m1.m[row][0]);
+		for (int col = 0; col < 4; col++) { 
+			// m2 の1列を4要素同時ロード
+			__m128 c = _mm_set_ps(m2.m[3][col], m2.m[2][col], m2.m[1][col], m2.m[0][col]);
+			// 4要素の積を同時計算し、水平加算
+			__m128 mul = _mm_mul_ps(r, c); 
+			// 水平加算: (a+b) + (c+d)
+			__m128 hadd = _mm_add_ps(mul, _mm_movehl_ps(mul, mul)); 
+			hadd = _mm_add_ss(hadd, _mm_shuffle_ps(hadd, hadd, 1));
+			result.m[row][col] = _mm_cvtss_f32(hadd);
 		}
 	}
 	return result;
@@ -138,11 +143,19 @@ Matrix4x4 MatrixMath::Inverse(const Matrix4x4& m) {
 //============================================================================
 Matrix4x4 MatrixMath::Transpose(const Matrix4x4& m) {
 	Matrix4x4 result;
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			result.m[i][j] = m.m[j][i];
-		}
-	}
+
+	__m128 row0 = _mm_loadu_ps(m.m[0]);
+	__m128 row1 = _mm_loadu_ps(m.m[1]);
+	__m128 row2 = _mm_loadu_ps(m.m[2]);
+	__m128 row3 = _mm_loadu_ps(m.m[3]);
+
+	_MM_TRANSPOSE4_PS(row0, row1, row2, row3);
+
+	_mm_storeu_ps(result.m[0], row0);
+	_mm_storeu_ps(result.m[1], row1);
+	_mm_storeu_ps(result.m[2], row2);
+	_mm_storeu_ps(result.m[3], row3);
+
 	return result;
 }
 

@@ -46,6 +46,12 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	void SetIsActive(bool isActive) override {
+		if (dissolveInfoData_) {
+			dissolveInfoData_->isDissolve = isActive;
+		}
+	}
+
 private:
 
 	// Dissolve情報リソース

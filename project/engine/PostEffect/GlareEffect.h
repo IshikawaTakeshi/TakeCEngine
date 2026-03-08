@@ -25,6 +25,12 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	void SetIsActive(bool isActive) override {
+		if (glareEffectInfoData_) {
+			glareEffectInfoData_->isActive = isActive;
+		}
+	}
+
 private:
 
 	//========================================================================
@@ -36,6 +42,7 @@ private:
 		float threshold = 1.0f; // グレアの閾値
 		int32_t sampleCount = 8; // サンプル数
 		float padding; // パディング
+		bool isActive = true; // グレアエフェクトの有効無効
 	};
 
 	GlareEffectInfo* glareEffectInfoData_ = nullptr; // グレアエフェクト情報データ

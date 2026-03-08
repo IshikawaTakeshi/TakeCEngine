@@ -29,6 +29,12 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	void SetIsActive(bool isActive) override {
+		if (outlineInfoData_) {
+			outlineInfoData_->isActive = isActive;
+		}
+	}
+
 private:
 
 	// 深度ベースのアウトライン情報

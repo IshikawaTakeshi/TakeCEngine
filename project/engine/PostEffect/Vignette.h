@@ -5,7 +5,7 @@
 struct VignetteInfo {
 	float vignetteScale = 0.0f; //中心から外側への減衰の速さ
 	float vignettePower = 0.0f; //Vignetteの強さ
-	bool flag = false; //Vignetteの有効無効
+	bool isActive = false; //Vignetteの有効無効
 };
 
 //============================================================================
@@ -37,6 +37,12 @@ public:
 	/// 更新処理
 	/// </summary>
 	void Dispatch() override;
+
+	void SetIsActive(bool isActive) override {
+		if (vignetteInfoData_) {
+			vignetteInfoData_->isActive = isActive;
+		}
+	}
 
 private:
 

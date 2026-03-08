@@ -41,6 +41,12 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	void SetIsActive(bool isActive) override {
+		if (effectInfoData_) {
+			effectInfoData_->isActive = isActive;
+		}
+	}
+
 private:
 
 	void DispatchBrightPass(); // 輝度抽出ディスパッチ

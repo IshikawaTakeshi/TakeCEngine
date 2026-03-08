@@ -14,12 +14,12 @@ BoostEffect::~BoostEffect() {
 //===================================================================================
 //　初期化
 //===================================================================================
-void BoostEffect::Initialize(GameCharacter* owner) {
+void BoostEffect::Initialize(GameCharacter* owner,const std::string& effectName) {
 	ownerObject_ = owner;
 
 	//EffectGroup の初期化
 	effectGroup_ = std::make_unique<EffectGroup>();
-	effectGroup_->Initialize("BoostEffect_Player.json");
+	effectGroup_->Initialize(effectName);
 
 	// --- PointLight設定 ---
 	pointLightData_.enabled_ = 1;
