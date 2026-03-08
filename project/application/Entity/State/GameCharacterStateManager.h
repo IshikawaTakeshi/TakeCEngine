@@ -15,14 +15,14 @@ public:
 	GameCharacterStateManager() = default;
 	~GameCharacterStateManager() = default;
 
-	// ビヘイビアの初期化
+	// ステートの初期化
 	void Initialize(baseInputProvider* moveDirectionProvider);
-	void InitializeBehaviors(PlayableCharacterInfo& characterContext);
-	// ビヘイビアの更新
+	void InitializeStates(PlayableCharacterInfo& characterContext);
+	// ステートの更新
 	void Update(PlayableCharacterInfo& characterContext);
 	void UpdateImGui();
-	// ビヘイビアの遷移リクエスト
-	void RequestBehavior(State nextBehavior);
+	// ステートの遷移リクエスト
+	void RequestState(State nextBehavior);
 
 	/// <summary>
 	/// アニメーションコンポーネントの設定
@@ -33,27 +33,27 @@ public:
 
 	//----- getter ---------------------------
 
-	// 現在のビヘイビアタイプ取得
-	State GetCurrentBehaviorType() const { return currentBehaviorType_; }
-	// 次のビヘイビアタイプ取得
-	State GetNextBehaviorType() const { return nextState_; }
+	// 現在のステートタイプ取得
+	State GetCurrentStateType() const { return currentStateType_; }
+	// 次のステートタイプ取得
+	State GetNextStateType() const { return nextState_; }
 
 private:
 
-	// 遷移先のビヘイビアを生成する
-	void CreateDefaultBehaviors();
+	// 遷移先のステートを生成する
+	void CreateDefaultStates();
 
 private:
-	// 現在のビヘイビア
-	std::unique_ptr<BaseGameCharacterState> currentBehavior_;
-	// ビヘイビアのマップ
-	std::unordered_map<State, std::unique_ptr<BaseGameCharacterState>> behaviors_;
+	// 現在のステート
+	std::unique_ptr<BaseGameCharacterState> currentState_;
+	// ステートのマップ
+	std::unordered_map<State, std::unique_ptr<BaseGameCharacterState>> states_;
 
-	// 現在のビヘイビアタイプ
-	State currentBehaviorType_ = State::NONE;
-	// 次のビヘイビア
+	// 現在のステートタイプ
+	State currentStateType_ = State::NONE;
+	// 次のステート
 	State nextState_ = State::NONE;
-	// ビヘイビアが変更されたかどうか
+	// ステートが変更されたかどうか
 	bool isChanged_ = false;
 	// 入力プロバイダ
 	baseInputProvider* inputProvider_ = nullptr;

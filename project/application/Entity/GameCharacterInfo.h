@@ -5,6 +5,7 @@
 #include "engine/math/Vector3.h"
 #include "engine/math/Transform.h"
 #include "engine/Utility/JsonDirectoryPathData.h"
+#include "engine/Utility/Timer.h"
 #include "application/Weapon/WeaponData.h"
 
 // ステップブースト情報
@@ -48,14 +49,36 @@ struct EnergyInfo {
 // オーバーヒート情報
 struct OverHeatInfo {
 	float overheatTimer = 0.0f;          // オーバーヒートのタイマー
-	float overheatDuration = 3.0f; // オーバーヒートの持続時間
+	float overheatDuration = 3.0f;       // オーバーヒートの持続時間
 	bool isOverheated = false;           // オーバーヒート中かどうか
 };
 
 //コライダーの情報（ボックスコライダー限定）
 struct ColliderInfo {
-	Vector3 offset{}; //コライダーのオフセット位置
+	Vector3 offset{};   //コライダーのオフセット位置
 	Vector3 halfSize{}; //コライダーの半径
+};
+
+//被弾1回分のブレイクゲージ蓄積エントリ
+struct BreakGaugeEntry {
+	float amount     = 0.0f;    // この被弾が与えたブレイク蓄積（残量）
+	float decayDelay = 3.0f;    // 減衰開始までの遅延時間
+	Timer delayTimer;           // 減衰のタイマー
+};
+
+//ブレイクスタンの情報
+struct BreakGaugeInfo {
+	float breakGauge    = 0.0f;   // ブレイクゲージ
+	float maxBreakGauge = 500.0f; // 最大ブレイクゲージ
+	float decayRate     = 50.0f;  // ブレイクゲージの減少率
+	float stunDuration  = 2.0f;   // ブレイクスタンの持続時間
+	bool  isStunned     = false;  // ブレイクスタン中かどうか
+
+	Timer stunGraceTimer; // スタンの猶予タイマー（スタン状態から回復してもすぐにスタンしないようにする）
+	float stunGraceDuration = 3.0f; // スタンの猶予時間
+
+	//被弾履歴
+	std::vector<BreakGaugeEntry> entries;
 };
 
 // 操作可能なキャラクターの基礎情報
@@ -84,6 +107,7 @@ struct PlayableCharacterInfo {
 	EnergyInfo energyInfo{};         // エネルギー情報
 	OverHeatInfo overHeatInfo{};     // オーバーヒート情報
 	ColliderInfo colliderInfo{};   // コライダー情報
+	BreakGaugeInfo breakGaugeInfo{}; // ブレイクスタン情報
 };
 
 // 実際に使用するゲームキャラクターデータ
@@ -108,6 +132,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ChargeAttackStunInfo, stunTimer, stunDuration
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(EnergyInfo, energy, maxEnergy, recoveryRate, energyCooldown, isEnergyDepleted)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(OverHeatInfo, overheatTimer, overheatDuration, isOverheated)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ColliderInfo, offset, halfSize)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BreakGaugeInfo, breakGauge, maxBreakGauge, decayRate, stunDuration,stunGraceDuration, isStunned)
 
 //データ保存先ディレクトリパスの設定
 TAKEC_DEFINE_JSON_DIRECTORY_PATH(PlayableCharacterInfo, "Resources/JsonLoader/GameCharacters/");

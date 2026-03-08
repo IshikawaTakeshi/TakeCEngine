@@ -71,6 +71,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon) {
 	//メッシュ初期化
 	mesh_ = std::make_unique<Mesh>();
 	mesh_->InitializeMesh(spriteCommon_->GetDirectXCommon(),spriteConfig_.textureFilePath_);
+	mesh_->GetMaterial()->SetMaterialColor(spriteConfig_.color_);
 	//vertexResource初期化
 	mesh_->InitializeVertexResourceSprite(spriteCommon->GetDirectXCommon()->GetDevice(),spriteConfig_.anchorPoint_);
 	//IndexResource初期化
@@ -180,10 +181,11 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 			}
 		}
 		// 保存ポップアップ
+		spriteConfig_.color_ = mesh_->GetMaterial()->GetMaterialData()->color;
 		ImGuiManager::ShowSavePopup<SpriteConfig>(
 			TakeCFrameWork::GetJsonLoader(),
 			"Save_Sprite",
-			"default_sprite.json",
+			std::string(spriteConfig_.name + ".json").c_str(),
 			spriteConfig_,
 			spriteConfig_.name);
 
@@ -279,6 +281,7 @@ void Sprite::LoadConfig(const std::string& jsonFilePath) {
 
 	//jsonファイルから設定読み込み
 	spriteConfig_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<SpriteConfig>(jsonFilePath);
+
 }
 
 

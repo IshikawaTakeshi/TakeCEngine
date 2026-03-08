@@ -7,7 +7,7 @@
 //===================================================================================
 StateStepBoost::StateStepBoost(baseInputProvider* provider) {
 	inputProvider_ = provider;
-	deltaTime_ = TakeCFrameWork::GetDeltaTime(); // デルタタイムの取得
+	
 }
 
 //===================================================================================
@@ -21,6 +21,8 @@ void StateStepBoost::Initialize(PlayableCharacterInfo& characterInfo) {
 
 	// 入力方向の取得
 	Vector3 direction = inputProvider_->GetMoveDirection();
+
+	deltaTime_ = TakeCFrameWork::GetDeltaTime(); // デルタタイムの取得
 
 	// オーバーヒート状態のチェック
 	if (characterInfo.overHeatInfo.isOverheated) {

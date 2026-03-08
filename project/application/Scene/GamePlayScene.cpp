@@ -16,6 +16,8 @@
 #include "application/Scene/SceneState/GamePlayScene/SceneStateGameStart.h"
 #include "application/Scene/SceneState/GamePlayScene/SceneStatePause.h"
 
+// UI
+#include "application/UI/BreakGaugeUI.h"
 
 //====================================================================
 //			初期化
@@ -80,10 +82,8 @@ void GamePlayScene::Initialize() {
 
 	// player
 	player_->SetInputProvider(inputProvider_Player.get());
-	player_->Initialize(&Object3dCommon::GetInstance(),
-		"Player_Model_Ver2.0.gltf");
-	player_->WeaponInitialize(&Object3dCommon::GetInstance(),
-		bulletManager_.get());
+	player_->Initialize(&Object3dCommon::GetInstance(),"Player_Model_Ver2.0.gltf");
+	player_->WeaponInitialize(&Object3dCommon::GetInstance(),bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"));
@@ -93,8 +93,7 @@ void GamePlayScene::Initialize() {
 	inputProvider_Enemy = std::make_unique<EnemyInputProvider>(enemy_.get());
 	enemy_->SetInputProvider(inputProvider_Enemy.get());
 	enemy_->Initialize(&Object3dCommon::GetInstance(), "Enemy_Model.gltf");
-	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(),
-		bulletManager_.get());
+	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(),bulletManager_.get());
 	enemy_->GetObject3d()->SetAnimation(
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"));
@@ -150,6 +149,14 @@ void GamePlayScene::Initialize() {
 	// 警告表示UI
 	TakeCFrameWork::GetUIManager()->CreateUI<WarningUI>("WarningUI");
 
+	// BreakGaugeUI
+	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>(
+		"BreakGauge_Player",
+		"Player");
+	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>(
+		"BreakGauge_Enemy",
+		"Enemy");
+
 	// アクションアイコンUI
 	actionIconSprites_.resize(3);
 
@@ -159,12 +166,18 @@ void GamePlayScene::Initialize() {
 	}
 
 	// シーンステートの初期化
-	sceneStateManager_.RegisterState(SceneState::GAMESTART, std::make_unique<SceneStateGameStart>());
-	sceneStateManager_.RegisterState(SceneState::GAMEPLAY, std::make_unique<SceneStateGamePlay>());
-	sceneStateManager_.RegisterState(SceneState::ENEMYDESTROYED, std::make_unique<SceneStateEnemyDestroyed>());
-	sceneStateManager_.RegisterState(SceneState::GAMEOVER, std::make_unique<SceneStateGameOver>());
-	sceneStateManager_.RegisterState(SceneState::GAMECLEAR, std::make_unique<SceneStateGameClear>());
-	sceneStateManager_.RegisterState(SceneState::PAUSE, std::make_unique<SceneStatePause>());
+	sceneStateManager_.RegisterState(SceneState::GAMESTART,
+		std::make_unique<SceneStateGameStart>());
+	sceneStateManager_.RegisterState(SceneState::GAMEPLAY,
+		std::make_unique<SceneStateGamePlay>());
+	sceneStateManager_.RegisterState(
+		SceneState::ENEMYDESTROYED, std::make_unique<SceneStateEnemyDestroyed>());
+	sceneStateManager_.RegisterState(SceneState::GAMEOVER,
+		std::make_unique<SceneStateGameOver>());
+	sceneStateManager_.RegisterState(SceneState::GAMECLEAR,
+		std::make_unique<SceneStateGameClear>());
+	sceneStateManager_.RegisterState(SceneState::PAUSE,
+		std::make_unique<SceneStatePause>());
 	sceneStateManager_.Initialize(SceneState::GAMESTART, this);
 
 	// ShadowMapEffectを有効化
@@ -183,7 +196,8 @@ void GamePlayScene::Finalize() {
 	TakeC::CameraManager::GetInstance().ResetCameras();     // カメラのリセット
 	TakeCFrameWork::GetParticleManager()->ClearParticles(); // パーティクルの解放
 	TakeCFrameWork::GetParticleManager()->ClearEmitters();  // エミッターの解放
-	TakeCFrameWork::GetLightManager()->ClearAllPointLights(); // ポイントライトの解放
+	TakeCFrameWork::GetLightManager()
+		->ClearAllPointLights();                 // ポイントライトの解放
 	TakeCFrameWork::GetSpriteManager()->Clear(); // スプライトの解放
 	TakeCFrameWork::GetUIManager()->Clear();     // UIの解放
 	bulletManager_->Finalize();                  // 弾マネージャーの解放

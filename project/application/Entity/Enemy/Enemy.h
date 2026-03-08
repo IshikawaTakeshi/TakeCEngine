@@ -157,16 +157,14 @@ private:
 	void UpdateAttack();
 	// 各武器の攻撃処理
 	void WeaponAttack(int weaponIndex);
-
 	// エネルギーの更新
 	void UpdateEnergy();
-
 	// ブーストエフェクトのアクティブ化判定
 	void RequestActiveBoostEffect();
-
-private:
 	// チャージ攻撃実行判定
 	bool ShouldReleaseAttack(int weaponIndex);
+	// ブレイクゲージの蓄積・スタン判定処理
+	void AccumulateBreakGauge(float damage);
 
 private:
 	// AIシステム
@@ -175,7 +173,7 @@ private:
 	std::unique_ptr<BulletSensor> bulletSensor_ = nullptr;
 
 	// 状態管理マネージャ
-	std::unique_ptr<GameCharacterStateManager> behaviorManager_ = nullptr;
+	std::unique_ptr<GameCharacterStateManager> stateManager_ = nullptr;
 	// プレイヤー入力プロバイダ
 	EnemyInputProvider* inputProvider_ = nullptr;
 
@@ -190,8 +188,6 @@ private:
 	// チャージ撃ちをする武器ユニット
 	std::vector<bool> chargeShootableUnits_;
 
-	// 背部のパーティクルエミッター
-	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
 	// ブーストエフェクト
 	std::vector<std::unique_ptr<BoostEffect>> boostEffects_;
@@ -210,7 +206,7 @@ private:
 
 	// ターゲットの周りを周回するための変数
 	float orbitAngle_ = 0.0f;                 // 周回角度
-	float orbitRadius_ = 120.0f;               // 周回半径（ターゲットとの距離）
+	float orbitRadius_ = 240.0f;               // 周回半径（ターゲットとの距離）
 	float orbitSpeed_ = 1.0f;                 // 角速度（周る速さ）
 	Vector3 toOrbitPos_ = { 0.0f, 0.0f, 0.0f }; // 周回する座標
 

@@ -128,7 +128,7 @@ private:
 	//カメラ
 	Camera* camera_ = nullptr;
 	//状態管理マネージャ
-	std::unique_ptr<GameCharacterStateManager> behaviorManager_ = nullptr;
+	std::unique_ptr<GameCharacterStateManager> stateManager_ = nullptr;
 	//プレイヤー入力プロバイダ(借りる)
 	PlayerInputProvider* inputProvider_ = nullptr;
 	//アニメーションマッパー
@@ -140,8 +140,6 @@ private:
 	//チャージ撃ちをする武器ユニット
 	std::vector<bool> chargeShootableUnits_;
 
-	//背部のパーティクルエミッター
-	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
 	//ブーストエフェクト
 	std::vector<std::unique_ptr<BoostEffect>> boostEffects_;
 	// プレイヤーの基本情報
@@ -152,6 +150,7 @@ private:
 	
 	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
 	Timer chargeShootTimer_; // 停止撃ちのタイマー
+	Timer breakStunTimer_; // ブレイクスタンのタイマー
 
 	bool isUseWeapon_ = false; //武器を使用しているかどうか
 	float weaponUseTimer_ = 0.0f; //武器を使用している時間
@@ -174,4 +173,6 @@ private:
 
 	//ブーストエフェクトのアクティブ化判定
 	void RequestActiveBoostEffect();
+	//ブレイクゲージを蓄積してスタン判定
+	void AccumulateBreakGauge(float damage);
 };

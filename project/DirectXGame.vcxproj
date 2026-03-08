@@ -158,9 +158,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application\Entity\Animation\AnimationMapper.cpp" />
+    <ClCompile Include="application\Tool\BreakGaugeUtil.cpp" />
     <ClCompile Include="application\UI\ActionButtonICon.cpp" />
     <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp" />
     <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
+    <ClCompile Include="application\UI\BreakGaugeUI.cpp" />
     <ClCompile Include="application\UI\RingUI.cpp" />
     <ClCompile Include="application\Weapon\Bazooka\Bazooka.cpp" />
     <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
@@ -332,10 +334,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.cpp" />
+    <ClCompile Include="application\Entity\State\StateBreakStun.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Entity\Animation\AnimationMapper.h" />
     <ClInclude Include="application\Entity\Enemy\ActionWeightParam.h" />
+    <ClInclude Include="application\Tool\BreakGaugeUtil.h" />
     <ClInclude Include="application\UI\ActionButtonICon.h" />
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
     <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h" />
@@ -347,6 +351,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Scene\EnemySelectScene.h" />
     <ClInclude Include="application\Scene\GamePlaySceneBehavior.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditMenuEnum.h" />
+    <ClInclude Include="application\UI\BreakGaugeUI.h" />
     <ClInclude Include="application\UI\RingUI.h" />
     <ClInclude Include="application\Weapon\Action\WeaponActionData.h" />
     <ClInclude Include="application\Weapon\Bazooka\Bazooka.h" />
@@ -560,6 +565,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.h" />
+    <ClInclude Include="application\Entity\State\StateBreakStun.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

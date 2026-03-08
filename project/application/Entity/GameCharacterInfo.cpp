@@ -31,7 +31,6 @@ void to_json(nlohmann::json& j, const PlayableCharacterInfo& info) {
 	j["onGround"] = info.onGround;
 	j["isChargeShooting"] = info.isChargeShooting;
 	j["isDamaged"] = info.isDamaged;
-	j["isInCombat"] = info.isInCombat;
 
 	j["stepBoostInfo"] = info.stepBoostInfo;
 	j["jumpInfo"] = info.jumpInfo;
@@ -39,6 +38,7 @@ void to_json(nlohmann::json& j, const PlayableCharacterInfo& info) {
 	j["energyInfo"] = info.energyInfo;
 	j["overHeatInfo"] = info.overHeatInfo;
 	j["colliderInfo"] = info.colliderInfo;
+	j["breakGaugeInfo"] = info.breakGaugeInfo;
 }
 
 
@@ -53,29 +53,31 @@ void from_json(const nlohmann::json& j, CharacterData& info) {
 }
 
 void from_json(const nlohmann::json& j, PlayableCharacterInfo& info) {
-	if (j.contains("characterName"))j.at("characterName").get_to(info.characterName);
-	if (j.contains("modelFilePath"))j.at("modelFilePath").get_to(info.modelFilePath);
-	if (j.contains("transform"))j.at("transform").get_to(info.transform);
-	if (j.contains("velocity"))j.at("velocity").get_to(info.velocity);
-	if (j.contains("moveDirection"))j.at("moveDirection").get_to(info.moveDirection);
-	if (j.contains("focusTargetPos"))j.at("focusTargetPos").get_to(info.focusTargetPos);
-	if (j.contains("deceleration"))j.at("deceleration").get_to(info.deceleration);
-	if (j.contains("moveSpeed"))j.at("moveSpeed").get_to(info.moveSpeed);
-	if (j.contains("kMaxMoveSpeed"))j.at("kMaxMoveSpeed").get_to(info.kMaxMoveSpeed);
-	if (j.contains("fallSpeed"))j.at("fallSpeed").get_to(info.fallSpeed);
-	if (j.contains("health"))j.at("health").get_to(info.health);
-	if (j.contains("maxHealth"))j.at("maxHealth").get_to(info.maxHealth);
+	info.characterName = j.value("characterName", info.characterName);
+	info.modelFilePath = j.value("modelFilePath", info.modelFilePath);
+	info.transform = j.value("transform", info.transform);
 
-	if (j.contains("isAlive"))j.at("isAlive").get_to(info.isAlive);
-	if (j.contains("onGround"))j.at("onGround").get_to(info.onGround);
-	if (j.contains("isChargeShooting"))j.at("isChargeShooting").get_to(info.isChargeShooting);
-	if (j.contains("isDamaged"))j.at("isDamaged").get_to(info.isDamaged);
-	if (j.contains("isInCombat"))j.at("isInCombat").get_to(info.isInCombat);
+	info.velocity = j.value("velocity", info.velocity);
+	info.moveDirection = j.value("moveDirection", info.moveDirection);
+	info.focusTargetPos = j.value("focusTargetPos", info.focusTargetPos);
 
-	if (j.contains("stepBoostInfo"))j.at("stepBoostInfo").get_to(info.stepBoostInfo);
-	if (j.contains("jumpInfo"))j.at("jumpInfo").get_to(info.jumpInfo);
-	if (j.contains("chargeAttackStunInfo"))j.at("chargeAttackStunInfo").get_to(info.chargeAttackStunInfo);
-	if (j.contains("energyInfo"))j.at("energyInfo").get_to(info.energyInfo);
-	if (j.contains("overHeatInfo"))j.at("overHeatInfo").get_to(info.overHeatInfo);
-	if (j.contains("colliderInfo"))j.at("colliderInfo").get_to(info.colliderInfo);
+	info.deceleration = j.value("deceleration", info.deceleration);
+	info.moveSpeed = j.value("moveSpeed", info.moveSpeed);
+	info.kMaxMoveSpeed = j.value("kMaxMoveSpeed", info.kMaxMoveSpeed);
+	info.fallSpeed = j.value("fallSpeed", info.fallSpeed);
+	info.health = j.value("health", info.health);
+	info.maxHealth = j.value("maxHealth", info.maxHealth);
+
+	info.isAlive = j.value("isAlive", info.isAlive);
+	info.onGround = j.value("onGround", info.onGround);
+	info.isChargeShooting = j.value("isChargeShooting", info.isChargeShooting);
+	info.isDamaged = j.value("isDamaged", info.isDamaged);
+
+	info.stepBoostInfo = j.value("stepBoostInfo", info.stepBoostInfo);
+	info.jumpInfo = j.value("jumpInfo", info.jumpInfo);
+	info.chargeAttackStunInfo = j.value("chargeAttackStunInfo", info.chargeAttackStunInfo);
+	info.energyInfo = j.value("energyInfo", info.energyInfo);
+	info.overHeatInfo = j.value("overHeatInfo", info.overHeatInfo);
+	info.colliderInfo = j.value("colliderInfo", info.colliderInfo);
+	info.breakGaugeInfo = j.value("breakGaugeInfo", info.breakGaugeInfo);
 }

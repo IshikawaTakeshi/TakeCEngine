@@ -36,7 +36,6 @@
         "isAlive": true,
         "isChargeShooting": false,
         "isDamaged": false,
-        "isInCombat": true,
         "jumpInfo": {
             "deceleration": 40.0,
             "isJumping": false,

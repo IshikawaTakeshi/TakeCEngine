@@ -28,6 +28,9 @@ struct WeaponConfig {
 	bool canMoveShootable = false; // 移動撃ち可能か
 	bool isStopShootOnly = false; // 停止撃ち専用か
 
+	float breakStunPower = 1.0f; // 被弾時に与えるブレイクスタンの蓄積値
+	float breakStunDecayInterval = 1.0f; // ブレイクスタンの蓄積値の減少間隔
+
 	//configの編集
 	void EditConfigImGui(const std::string& weaponName);
 };

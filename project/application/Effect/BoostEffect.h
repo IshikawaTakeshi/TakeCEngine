@@ -51,7 +51,7 @@ public:
 	//----- setter ---------------------------
 	void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
 	void SetIsActive(bool isActive); 
-	void SetBehavior(GameCharacterState behavior) { behavior_ = behavior; }
+	void SetCharacterState(GameCharacterState behavior) { behavior_ = behavior; }
 
 private:
 

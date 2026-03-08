@@ -6,6 +6,7 @@
 #include "application/Entity/State/StateStepBoost.h"
 #include "application/Entity/State/StateChargeShootStun.h"
 #include "application/Entity/State/StateDead.h"
+#include "application/Entity/State/StateBreakStun.h"
 #include "application/Entity/Animation/AnimationMapper.h"
 #include "engine/Animation/AnimatorController.h"
 #include "engine/base/TakeCFrameWork.h"
@@ -19,13 +20,13 @@ void GameCharacterStateManager::Initialize(baseInputProvider* moveDirectionProvi
 	inputProvider_ = moveDirectionProvider; //入力プロバイダーの設定
 }
 
-void GameCharacterStateManager::InitializeBehaviors(PlayableCharacterInfo& characterContext) {
-	// ビヘイビアの初期化
-	CreateDefaultBehaviors();
-	// 初期化時にデフォルトのビヘイビアを設定
-	currentBehavior_ = std::move(behaviors_[GameCharacterState::RUNNING]);
-	currentBehavior_->Initialize(characterContext);
-	currentBehaviorType_ = GameCharacterState::RUNNING;
+void GameCharacterStateManager::InitializeStates(PlayableCharacterInfo& characterContext) {
+	// ステートの初期化
+	CreateDefaultStates();
+	// 初期化時にデフォルトのステートを設定
+	currentState_ = std::move(states_[GameCharacterState::RUNNING]);
+	currentState_->Initialize(characterContext);
+	currentStateType_ = GameCharacterState::RUNNING;
 }
 
 //=====================================================================================
@@ -33,27 +34,27 @@ void GameCharacterStateManager::InitializeBehaviors(PlayableCharacterInfo& chara
 //=====================================================================================
 
 void GameCharacterStateManager::Update(PlayableCharacterInfo& characterContext) {
-	// ビヘイビアの遷移チェック
-	if (currentBehavior_) {
-		if (currentBehavior_->GetIsTransition() == true) { // 遷移が必要な場合
-			nextState_ = currentBehavior_->GetNextState();
+	// ステートの遷移チェック
+	if (currentState_) {
+		if (currentState_->GetIsTransition() == true) { // 遷移が必要な場合
+			nextState_ = currentState_->GetNextState();
 			isChanged_ = true;
 		}
 	}
 
 	if (isChanged_) {
-		// ビヘイビアの遷移
-		currentBehavior_->SetIsTransition(false); // 遷移フラグをリセット
-		currentBehavior_->SetNextState(GameCharacterState::NONE); // 次のビヘイビアをリセット
-		// 現在のビヘイビアを保存し、次のビヘイビアに切り替え
-		behaviors_[currentBehaviorType_] = std::move(currentBehavior_);
-		currentBehavior_ = std::move(behaviors_[nextState_]);
-		currentBehaviorType_ = nextState_;
-		currentBehavior_->Initialize(characterContext);
+		// ステートの遷移
+		currentState_->SetIsTransition(false); // 遷移フラグをリセット
+		currentState_->SetNextState(GameCharacterState::NONE); // 次のステートをリセット
+		// 現在のステートを保存し、次のステートに切り替え
+		states_[currentStateType_] = std::move(currentState_);
+		currentState_ = std::move(states_[nextState_]);
+		currentStateType_ = nextState_;
+		currentState_->Initialize(characterContext);
 
 		// アニメーション遷移を開始
 		if (animatorController_ && animationMapper_) {
-			const AnimationEntry* entry = animationMapper_->Find(currentBehaviorType_);
+			const AnimationEntry* entry = animationMapper_->Find(currentStateType_);
 			if (entry && entry->animation) {
 				animatorController_->TransitionTo(entry->animation, entry->blendDuration);
 			}
@@ -61,9 +62,9 @@ void GameCharacterStateManager::Update(PlayableCharacterInfo& characterContext) 
 
 		isChanged_ = false;
 	}
-	// 現在のビヘイビアを更新
-	if (currentBehavior_) {
-		currentBehavior_->Update(characterContext);
+	// 現在のステートを更新
+	if (currentState_) {
+		currentState_->Update(characterContext);
 	}
 }
 
@@ -74,7 +75,7 @@ void GameCharacterStateManager::UpdateImGui() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 
 	//現在の項目
-	std::string currentBehaviorStr = "Current State:" + StringUtility::EnumToString(currentBehaviorType_);
+	std::string currentBehaviorStr = "Current State:" + StringUtility::EnumToString(currentStateType_);
 
 	ImGui::SeparatorText("GameCharacterStateManager");
 	ImGui::Text(currentBehaviorStr.c_str());
@@ -82,25 +83,26 @@ void GameCharacterStateManager::UpdateImGui() {
 }
 
 //=====================================================================================
-// ビヘイビアのリクエスト
+// ステートのリクエスト
 //=====================================================================================
-void GameCharacterStateManager::RequestBehavior(State nextBehavior) {
-	if (nextBehavior != GameCharacterState::NONE && nextBehavior != currentBehaviorType_) {
+void GameCharacterStateManager::RequestState(State nextBehavior) {
+	if (nextBehavior != GameCharacterState::NONE && nextBehavior != currentStateType_) {
 		nextState_ = nextBehavior;
 		isChanged_ = true;
 	}
 }
 
 //=====================================================================================
-// 各ビヘイビアの取得
+// 各ステートの取得
 //=====================================================================================
-void GameCharacterStateManager::CreateDefaultBehaviors() {
-	behaviors_.emplace(GameCharacterState::RUNNING, std::make_unique<StateRunning>(inputProvider_));
-	behaviors_.emplace(GameCharacterState::JUMP, std::make_unique<StateJumping>(inputProvider_));
-	behaviors_.emplace(GameCharacterState::FLOATING, std::make_unique<StateFloating>(inputProvider_));
-	behaviors_.emplace(GameCharacterState::STEPBOOST, std::make_unique<StateStepBoost>(inputProvider_));
-	behaviors_.emplace(GameCharacterState::CHARGESHOOT_STUN, std::make_unique<StateChargeShootStun>(inputProvider_));
-	behaviors_.emplace(GameCharacterState::DEAD, std::make_unique<StateDead>(inputProvider_));
+void GameCharacterStateManager::CreateDefaultStates() {
+	states_.emplace(GameCharacterState::RUNNING, std::make_unique<StateRunning>(inputProvider_));
+	states_.emplace(GameCharacterState::JUMP, std::make_unique<StateJumping>(inputProvider_));
+	states_.emplace(GameCharacterState::FLOATING, std::make_unique<StateFloating>(inputProvider_));
+	states_.emplace(GameCharacterState::STEPBOOST, std::make_unique<StateStepBoost>(inputProvider_));
+	states_.emplace(GameCharacterState::CHARGESHOOT_STUN, std::make_unique<StateChargeShootStun>(inputProvider_));
+	states_.emplace(GameCharacterState::DEAD, std::make_unique<StateDead>(inputProvider_));
+	states_.emplace(GameCharacterState::BREAK_STUN, std::make_unique<StateBreakStun>(inputProvider_));
 }
 
 //=====================================================================================
@@ -110,9 +112,9 @@ void GameCharacterStateManager::SetAnimationComponents(AnimatorController* anima
 	animatorController_ = animatorController;
 	animationMapper_ = animationMapper;
 
-	// 現在のビヘイビアに対応するアニメーションで初期遷移を行う
+	// 現在のステートに対応するアニメーションで初期遷移を行う
 	if (animatorController_ && animationMapper_) {
-		const AnimationEntry* entry = animationMapper_->Find(currentBehaviorType_);
+		const AnimationEntry* entry = animationMapper_->Find(currentStateType_);
 		if (entry && entry->animation) {
 			animatorController_->TransitionTo(entry->animation, 0.0f);
 		}
