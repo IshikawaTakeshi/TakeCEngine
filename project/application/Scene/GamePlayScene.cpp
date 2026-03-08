@@ -125,13 +125,21 @@ void GamePlayScene::Initialize() {
 	// bulletCounterUI
 	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
 	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[0]->Initialize(TakeCFrameWork::GetSpriteManager(),{ 760.0f, 470.0f });
+	bulletCounterUI_[0]->Initialize(TakeCFrameWork::GetSpriteManager(),
+		{ 760.0f, 470.0f });
 	bulletCounterUI_[1] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[1]->Initialize(TakeCFrameWork::GetSpriteManager(),{ 900.0f, 470.0f });
+	bulletCounterUI_[1]->Initialize(TakeCFrameWork::GetSpriteManager(),
+		{ 900.0f, 470.0f });
 	bulletCounterUI_[2] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[2]->Initialize(TakeCFrameWork::GetSpriteManager(),{ 760.0f, 540.0f });
+	bulletCounterUI_[2]->Initialize(TakeCFrameWork::GetSpriteManager(),
+		{ 760.0f, 540.0f });
 	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[3]->Initialize(TakeCFrameWork::GetSpriteManager(),{ 900.0f, 540.0f });
+	bulletCounterUI_[3]->Initialize(TakeCFrameWork::GetSpriteManager(),
+		{ 900.0f, 540.0f });
+
+	// bulletCounterGaugeUI
+	bulletCounterGaugeUI_ = std::make_unique<BulletCounterGaugeUI>();
+	bulletCounterGaugeUI_->Initialize(TakeCFrameWork::GetSpriteManager());
 
 	// フェーズメッセージUI
 	phaseMessageUI_ = std::make_unique<PhaseMessageUI>();

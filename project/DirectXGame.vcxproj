@@ -170,6 +170,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\Bazooka\Bazooka.cpp" />
     <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
     <ClCompile Include="application\UI\BulletCounterUI.cpp" />
+    <ClCompile Include="application\UI\BulletCounterGaugeUI.cpp" />
     <ClCompile Include="application\Entity\State\BaseGameCharacterState.cpp" />
     <ClCompile Include="application\Entity\State\StateRunning.cpp" />
     <ClCompile Include="application\Entity\State\StateFloating.cpp" />
@@ -377,6 +378,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\WeaponType.h" />
     <ClInclude Include="application\UI\EnergyInfoUI.h" />
     <ClInclude Include="application\UI\BulletCounterUI.h" />
+    <ClInclude Include="application\UI\BulletCounterGaugeUI.h" />
     <ClInclude Include="application\Entity\State\BaseGameCharacterState.h" />
     <ClInclude Include="application\Entity\State\StateRunning.h" />
     <ClInclude Include="application\Entity\State\StateFloating.h" />

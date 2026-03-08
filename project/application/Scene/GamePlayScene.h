@@ -19,7 +19,6 @@
 #include "engine/camera/Camera.h"
 #include "engine/camera/CameraManager.h"
 
-
 // app
 #include "application/Entity/Enemy/Enemy.h"
 #include "application/Entity/Player/Player.h"
@@ -27,6 +26,7 @@
 #include "application/Scene/GamePlaySceneBehavior.h"
 #include "application/Scene/SceneState/SceneStateManager.h"
 #include "application/UI/ActionButtonICon.h"
+#include "application/UI/BulletCounterGaugeUI.h"
 #include "application/UI/BulletCounterUI.h"
 #include "application/UI/EnergyInfoUI.h"
 #include "application/UI/HPBar.h"
@@ -76,6 +76,9 @@ public:
   BulletCounterUI *GetBulletCounterUI(int index) const {
     return bulletCounterUI_[index].get();
   }
+  BulletCounterGaugeUI *GetBulletCounterGaugeUI() const {
+    return bulletCounterGaugeUI_.get();
+  }
   PhaseMessageUI *GetPhaseMessageUI() const { return phaseMessageUI_.get(); }
   SceneStateManager &GetSceneStateManager() { return sceneStateManager_; }
 
@@ -102,6 +105,7 @@ private:
   std::unique_ptr<PlayerReticle> playerReticle_ = nullptr;
   std::unique_ptr<EnergyInfoUI> energyInfoUI_ = nullptr;
   std::vector<std::unique_ptr<BulletCounterUI>> bulletCounterUI_;
+  std::unique_ptr<BulletCounterGaugeUI> bulletCounterGaugeUI_;
   // enemy
   std::unique_ptr<EnemyInputProvider> inputProvider_Enemy = nullptr;
   std::unique_ptr<Enemy> enemy_ = nullptr;

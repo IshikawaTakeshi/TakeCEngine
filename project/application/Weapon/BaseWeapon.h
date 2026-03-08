@@ -1,16 +1,17 @@
 #pragma once
+#include "3d/Particle/ParticleEmitter.h"
+#include "Entity/GameCharacter.h"
 #include "Object3d.h"
 #include "Object3dCommon.h"
-#include "Entity/GameCharacter.h"
-#include "Weapon/WeaponType.h"
 #include "Weapon/WeaponData.h"
-#include "3d/Particle/ParticleEmitter.h"
+#include "Weapon/WeaponType.h"
 #include "engine/audio/Audio.h"
 #include <cstdint>
-#include <string>
 #include <memory>
+#include <string>
 
-//前方宣言
+
+// 前方宣言
 class BulletManager;
 
 //============================================================================
@@ -18,49 +19,51 @@ class BulletManager;
 //============================================================================
 class BaseWeapon {
 public:
-
 	BaseWeapon() = default;
 	virtual ~BaseWeapon() = default;
 
-	//武器の初期化
-	virtual void Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) = 0;
-	//武器の更新
+	// 武器の初期化
+	virtual void Initialize(Object3dCommon* object3dCommon,
+		BulletManager* bulletManager) = 0;
+	// 武器の更新
 	virtual void Update() = 0;
-	//ImGuiの更新
+	// ImGuiの更新
 	virtual void UpdateImGui() = 0;
-	//武器の描画
+	// 武器の描画
 	virtual void Draw() = 0;
 	void DrawShadow(const LightCameraInfo& lightCamera);
-	//武器の攻撃
+	// 武器の攻撃
 	virtual void Attack() = 0;
-	//武器のチャージ処理
+	// 武器のチャージ処理
 	virtual void Charge([[maybe_unused]] float deltaTime) {};
 	virtual void ChargeAttack() {};
 
-	virtual void AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName);
+	virtual void AttachToSkeletonJoint(Skeleton* skeleton,
+		const std::string& jointName);
 
 public:
-
 	//===========================================================================
 	// getter
 	//===========================================================================
 
-	//武器タイプの取得
+	// 武器タイプの取得
 	const WeaponType& GetWeaponType() const;
-	//所有者の取得
+	// 所有者の取得
 	const Vector3& GetTranslate() const { return object3d_->GetTranslate(); }
-	//モデルの中心位置の取得
-	const Vector3& GetCenterPosition() const { return object3d_->GetCenterPosition(); }
-	//ターゲットの座標を取得
+	// モデルの中心位置の取得
+	const Vector3& GetCenterPosition() const {
+		return object3d_->GetCenterPosition();
+	}
+	// ターゲットの座標を取得
 	const Vector3& GetTargetPos() const;
 
-	//攻撃間隔の取得
+	// 攻撃間隔の取得
 	float GetAttackInterval() const;
-	//有効射程距離の取得
+	// 有効射程距離の取得
 	float GetEffectiveRange() const;
-	//弾速の取得
+	// 弾速の取得
 	float GetBulletSpeed() const;
-	//攻撃力の取得
+	// 攻撃力の取得
 	float GetAttackPower() const;
 	// チャージ時間を取得
 	float GetChargeTime() const;
@@ -70,89 +73,93 @@ public:
 	float GetBreakStunPower() const;
 	// ブレイクスタンゲージの減少間隔を取得
 	float GetBreakStunDecayInterval() const;
+	// 現在のリロード時間の取得
+	float GetCurrentReloadTime() const;
+	// 最大リロード時間の取得
+	float GetMaxReloadTime() const;
 
-	//武器のユニットポジションを取得
+	// 武器のユニットポジションを取得
 	uint32_t GetUnitPosition() const;
-	//弾数の取得
+	// 弾数の取得
 	uint32_t GetBulletCount() const;
-	//最大弾数の取得
+	// 最大弾数の取得
 	uint32_t GetMaxBulletCount() const;
-	//一度に撃てる弾容量の取得
+	// 一度に撃てる弾容量の取得
 	uint32_t GetMagazineCount() const;
-	//残弾数の取得
+	// 残弾数の取得
 	uint32_t GetRemainingBulletCount() const;
 
 	// チャージ中かどうか
 	bool IsCharging() const;
-	//使用可能かどうか
+	// 使用可能かどうか
 	bool GetIsAvailable() const;
-	//リロード中かどうか
+	// リロード中かどうか
 	bool GetIsReloading() const;
-	//チャージ攻撃可能か
+	// チャージ攻撃可能か
 	bool CanChargeAttack() const;
-	//移動撃ち可能か
+	// 移動撃ち可能か
 	bool CanMoveShootable() const;
-	//停止撃ち専用か
+	// 停止撃ち専用か
 	bool StopShootOnly() const;
 
 	//=============================================================================
 	// setter
 	//=============================================================================
 
-	//所有者の設定
+	// 所有者の設定
 	void SetOwnerObject(GameCharacter* owner) { ownerObject_ = owner; }
-	//攻撃対象の座標を設定
+	// 攻撃対象の座標を設定
 	void SetTarget(const Vector3& targetPos) { targetPos_ = targetPos; }
-	//攻撃対象の速度ベクトルを設定
-	void SetTargetVelocity(const Vector3& targetVel) { targetVelocity_ = targetVel; }
+	// 攻撃対象の速度ベクトルを設定
+	void SetTargetVelocity(const Vector3& targetVel) {
+		targetVelocity_ = targetVel;
+	}
 
 	void SetRotate(const Vector3& rotate) { object3d_->SetRotate(rotate); }
-	//武器のユニットポジションを設定
+	// 武器のユニットポジションを設定
 	void SetUnitPosition(uint32_t position);
-	//有効射程距離の設定
+	// 有効射程距離の設定
 	void SetEffectiveRange(float range);
 
-	//弾速の設定
+	// 弾速の設定
 	void SetBulletSpeed(float speed);
-	//攻撃力の設定
+	// 攻撃力の設定
 	void SetAttackPower(float power);
-	//弾数の設定
+	// 弾数の設定
 	void SetBulletCount(int32_t count);
-	//残弾数の設定
+	// 残弾数の設定
 	void SetRemainingBulletCount(int32_t count);
 
-
 protected:
-
 	// 弾管理クラス
 	BulletManager* bulletManager_ = nullptr;
 
-	//武器の3Dオブジェクト
+	// 武器の3Dオブジェクト
 	std::unique_ptr<Object3d> object3d_ = nullptr;
 
 	std::unique_ptr<ParticleEmitter> muzzleFlashEmitter_ = nullptr;
 
-	//武器の親Joint名
+	// 武器の親Joint名
 	std::string parentJointName_;
 	// 親スケルトン
-	Skeleton* parentSkeleton_ = nullptr; 
+	Skeleton* parentSkeleton_ = nullptr;
 
-	//武器の所有者オブジェクト
+	// 武器の所有者オブジェクト
 	GameCharacter* ownerObject_ = nullptr;
-	//攻撃対象の座標
+	// 攻撃対象の座標
 	Vector3 targetPos_;
-	//攻撃対象の速度ベクトル
+	// 攻撃対象の速度ベクトル
 	Vector3 targetVelocity_;
 
-	//武器の種類
+	// 武器の種類
 	WeaponType weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
-	//武器の基本データ
+	// 武器の基本データ
 	WeaponData weaponData_{};
 	WeaponState weaponState_{};
 	// 武器のユニットポジション
-	uint32_t unitPosition_ = 0; 
+	uint32_t unitPosition_ = 0;
 
-	//サウンドデータ
+	// サウンドデータ
 	AudioManager::SoundData shotSE_;
 	float seVolume_ = 0.05f;
 };
