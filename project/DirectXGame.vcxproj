@@ -158,6 +158,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application\Entity\Animation\AnimationMapper.cpp" />
+    <ClCompile Include="application\Entity\Behavior\ActionNode.cpp" />
+    <ClCompile Include="application\Entity\Behavior\ConditionNode.cpp" />
+    <ClCompile Include="application\Entity\Behavior\ScoreConditionNode.cpp" />
     <ClCompile Include="application\Tool\BreakGaugeUtil.cpp" />
     <ClCompile Include="application\UI\ActionButtonICon.cpp" />
     <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp" />
@@ -186,6 +189,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
     <ClCompile Include="application\Weapon\ShotGun\ShotGunInfo.cpp" />
     <ClCompile Include="application\Weapon\WeaponData.cpp" />
+    <ClCompile Include="ComboFactory.cpp" />
     <ClCompile Include="engine\2d\BaseUI.cpp" />
     <ClCompile Include="engine\3d\Particle\EffectEditor.cpp" />
     <ClCompile Include="engine\3d\Particle\EffectGroup.cpp" />
@@ -335,9 +339,17 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.cpp" />
     <ClCompile Include="application\Entity\State\StateBreakStun.cpp" />
+    <ClCompile Include="application\Entity\Behavior\SequenceNode.cpp" />
+    <ClCompile Include="application\Entity\Behavior\SelectorNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Entity\Animation\AnimationMapper.h" />
+    <ClInclude Include="application\Entity\Behavior\ActionNode.h" />
+    <ClInclude Include="application\Entity\Behavior\BehaviorNode.h" />
+    <ClInclude Include="application\Entity\Behavior\BehaviorStatusEnum.h" />
+    <ClInclude Include="application\Entity\Behavior\CompositeNode.h" />
+    <ClInclude Include="application\Entity\Behavior\ConditionNode.h" />
+    <ClInclude Include="application\Entity\Behavior\ScoreConditionNode.h" />
     <ClInclude Include="application\Entity\Enemy\ActionWeightParam.h" />
     <ClInclude Include="application\Tool\BreakGaugeUtil.h" />
     <ClInclude Include="application\UI\ActionButtonICon.h" />
@@ -378,6 +390,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Effect\BoostEffect.h" />
     <ClInclude Include="application\Effect\DeadEffect.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
+    <ClInclude Include="ComboFactory.h" />
     <ClInclude Include="engine\2d\BaseUI.h" />
     <ClInclude Include="engine\3d\Particle\EffectEditor.h" />
     <ClInclude Include="engine\3d\Particle\EffectGroup.h" />
@@ -566,6 +579,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.h" />
     <ClInclude Include="application\Entity\State\StateBreakStun.h" />
+    <ClInclude Include="application\Entity\Behavior\SequenceNode.h" />
+    <ClInclude Include="application\Entity\Behavior\SelectorNode.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

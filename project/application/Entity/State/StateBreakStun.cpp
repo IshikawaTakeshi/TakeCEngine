@@ -63,6 +63,8 @@ void StateBreakStun::Update(PlayableCharacterInfo& characterInfo) {
 	}
 
 	//エフェクトの更新
+	Vector3 effectPosition = characterInfo.transform.translate;
+	breakStunEffect_->SetPosition(effectPosition);
 	breakStunEffect_->Update();
 
 	if (breakStunTimer_.IsFinished()) {

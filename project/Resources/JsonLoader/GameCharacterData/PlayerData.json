@@ -47,11 +47,6 @@
         "kMaxMoveSpeed": 120.0,
         "maxHealth": 9730.0,
         "modelFilePath": "Player_Model_Ver2.0.gltf",
-        "moveDirection": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-        },
         "moveSpeed": 200.0,
         "onGround": true,
         "overHeatInfo": {

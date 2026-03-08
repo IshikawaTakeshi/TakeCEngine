@@ -82,8 +82,10 @@ void GamePlayScene::Initialize() {
 
 	// player
 	player_->SetInputProvider(inputProvider_Player.get());
-	player_->Initialize(&Object3dCommon::GetInstance(),"Player_Model_Ver2.0.gltf");
-	player_->WeaponInitialize(&Object3dCommon::GetInstance(),bulletManager_.get());
+	player_->Initialize(&Object3dCommon::GetInstance(),
+		"Player_Model_Ver2.0.gltf");
+	player_->WeaponInitialize(&Object3dCommon::GetInstance(),
+		bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"));
@@ -93,7 +95,8 @@ void GamePlayScene::Initialize() {
 	inputProvider_Enemy = std::make_unique<EnemyInputProvider>(enemy_.get());
 	enemy_->SetInputProvider(inputProvider_Enemy.get());
 	enemy_->Initialize(&Object3dCommon::GetInstance(), "Enemy_Model.gltf");
-	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(),bulletManager_.get());
+	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(),
+		bulletManager_.get());
 	enemy_->GetObject3d()->SetAnimation(
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"));
@@ -122,17 +125,13 @@ void GamePlayScene::Initialize() {
 	// bulletCounterUI
 	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
 	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[0]->Initialize(&SpriteCommon::GetInstance(),
-		{ 760.0f, 470.0f });
+	bulletCounterUI_[0]->Initialize(TakeCFrameWork::GetSpriteManager(),{ 760.0f, 470.0f });
 	bulletCounterUI_[1] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[1]->Initialize(&SpriteCommon::GetInstance(),
-		{ 900.0f, 470.0f });
+	bulletCounterUI_[1]->Initialize(TakeCFrameWork::GetSpriteManager(),{ 900.0f, 470.0f });
 	bulletCounterUI_[2] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[2]->Initialize(&SpriteCommon::GetInstance(),
-		{ 760.0f, 540.0f });
+	bulletCounterUI_[2]->Initialize(TakeCFrameWork::GetSpriteManager(),{ 760.0f, 540.0f });
 	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[3]->Initialize(&SpriteCommon::GetInstance(),
-		{ 900.0f, 540.0f });
+	bulletCounterUI_[3]->Initialize(TakeCFrameWork::GetSpriteManager(),{ 900.0f, 540.0f });
 
 	// フェーズメッセージUI
 	phaseMessageUI_ = std::make_unique<PhaseMessageUI>();
@@ -150,11 +149,9 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetUIManager()->CreateUI<WarningUI>("WarningUI");
 
 	// BreakGaugeUI
-	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>(
-		"BreakGauge_Player",
+	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Player",
 		"Player");
-	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>(
-		"BreakGauge_Enemy",
+	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Enemy",
 		"Enemy");
 
 	// アクションアイコンUI
@@ -347,11 +344,6 @@ void GamePlayScene::DrawSprite() {
 		enemyHpBar_->Draw();  // 敵のHPバーの描画
 		// エネルギーUIの描画
 		energyInfoUI_->Draw();
-		// 弾カウンターUIの描画
-		for (auto& bulletUI : bulletCounterUI_) {
-			bulletUI->Draw();
-		}
-
 		// フェーズメッセージUIの描画
 		phaseMessageUI_->Draw();
 

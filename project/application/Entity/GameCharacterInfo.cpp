@@ -17,7 +17,6 @@ void to_json(nlohmann::json& j, const PlayableCharacterInfo& info) {
 	j["transform"] = info.transform;
 
 	j["velocity"] = info.velocity;
-	j["moveDirection"] = info.moveDirection;
 	j["focusTargetPos"] = info.focusTargetPos;
 
 	j["deceleration"] = info.deceleration;
@@ -58,7 +57,6 @@ void from_json(const nlohmann::json& j, PlayableCharacterInfo& info) {
 	info.transform = j.value("transform", info.transform);
 
 	info.velocity = j.value("velocity", info.velocity);
-	info.moveDirection = j.value("moveDirection", info.moveDirection);
 	info.focusTargetPos = j.value("focusTargetPos", info.focusTargetPos);
 
 	info.deceleration = j.value("deceleration", info.deceleration);
