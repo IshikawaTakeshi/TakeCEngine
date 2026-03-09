@@ -137,9 +137,9 @@ void GamePlayScene::Initialize() {
 	bulletCounterUI_[3]->Initialize(TakeCFrameWork::GetSpriteManager(),
 		{ 900.0f, 540.0f });
 
-	// bulletCounterGaugeUI
-	bulletCounterGaugeUI_ = std::make_unique<BulletCounterGaugeUI>();
-	bulletCounterGaugeUI_->Initialize(TakeCFrameWork::GetSpriteManager());
+	for (int i = 0; i < bulletCounterUI_.size(); i++) {
+		TakeCFrameWork::GetUIManager()->CreateUI<BulletCounterGaugeUI>(player_->GetCurrentWeapon(i));
+	}
 
 	// フェーズメッセージUI
 	phaseMessageUI_ = std::make_unique<PhaseMessageUI>();
@@ -328,8 +328,8 @@ void GamePlayScene::Draw() {
 #pragma endregion
 
   // 当たり判定の描画前処理
-	enemy_->DrawCollider();
-	player_->DrawCollider();
+	//enemy_->DrawCollider();
+	//player_->DrawCollider();
 	// spotLightの描画
 	TakeCFrameWork::GetLightManager()->DrawSpotLights();
 	// 登録されたワイヤーフレームをすべて描画させる
