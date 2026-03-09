@@ -2,6 +2,8 @@
 #include "engine/2d/BaseUI.h"
 #include "engine/Math/Vector2.h"
 #include "engine/Math/Vector4.h"
+#include "application/Weapon/BaseWeapon.h"
+#include "application/Entity/WeaponUnit.h"
 #include <string>
 
 namespace TakeC {
@@ -27,7 +29,7 @@ public:
 	//================================================================
 
 	// 初期化
-	void Initialize(TakeC::SpriteManager* spriteManager) override;
+	void Initialize(TakeC::SpriteManager* spriteManager, BaseWeapon* currentWeapon);
 
 	// 更新
 	void Update() override;
@@ -46,4 +48,6 @@ private:
 	Sprite* barSprite_ = nullptr;   // ゲージのバー
 	float ratio_ = 1.0f;            // 残弾比率
 	float maxWidth_ = 0.0f;         // ゲージの最大幅
+
+	BaseWeapon* currentWeapon_ = nullptr; // 現在の武器へのポインタ
 };

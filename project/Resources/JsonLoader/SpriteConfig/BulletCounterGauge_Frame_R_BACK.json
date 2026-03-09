@@ -1,20 +1,20 @@
 {
     "anchorPoint": {
-        "x": 0.5,
+        "x": 0.0,
         "y": 0.5
     },
     "color": {
-        "w": 0.5,
-        "x": 0.1,
-        "y": 0.1,
-        "z": 0.1
-    },
-    "name": "BulletCounterGauge_Frame.json",
-    "position": {
+        "w": 0.501960813999176,
         "x": 0.0,
-        "y": 0.0
+        "y": 0.0,
+        "z": 0.0
     },
-    "rotation": 0.0,
+    "name": "BulletCounterGauge_Frame_R_BACK.json",
+    "position": {
+        "x": 390.0,
+        "y": 390.0
+    },
+    "rotation": -1.5700000524520874,
     "size": {
         "x": 64.0,
         "y": 8.0

@@ -548,8 +548,11 @@
     <ClCompile Include="application\Entity\Behavior\SelectorNode.cpp" />
     <ClCompile Include="application\Entity\Behavior\ConditionNode.cpp" />
     <ClCompile Include="application\Entity\Behavior\ActionNode.cpp" />
-    <ClCompile Include="ComboFactory.cpp" />
+    <ClCompile Include="application\Entity\Behavior\ComboFactory.cpp" />
     <ClCompile Include="application\Entity\Behavior\ScoreConditionNode.cpp" />
+    <ClCompile Include="application\UI\BulletCounterGaugeUI.cpp" />
+    <ClCompile Include="application\Entity\Behavior\WeightSelector.cpp" />
+    <ClCompile Include="application\Entity\Behavior\PlannerSelectorNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1144,8 +1147,12 @@
     <ClInclude Include="application\Entity\Behavior\CompositeNode.h" />
     <ClInclude Include="application\Entity\Behavior\ConditionNode.h" />
     <ClInclude Include="application\Entity\Behavior\ActionNode.h" />
-    <ClInclude Include="ComboFactory.h" />
+    <ClInclude Include="application\Entity\Behavior\ComboFactory.h" />
     <ClInclude Include="application\Entity\Behavior\ScoreConditionNode.h" />
+    <ClInclude Include="application\UI\BulletCounterGaugeUI.h" />
+    <ClInclude Include="application\Entity\Behavior\WeightSelector.h" />
+    <ClInclude Include="application\Entity\Behavior\PlannerSelectorNode.h" />
+    <ClInclude Include="application\Entity\Behavior\BehaviorTreeUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
