@@ -193,6 +193,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\ShotGun\ShotGunInfo.cpp" />
     <ClCompile Include="application\Weapon\WeaponData.cpp" />
     <ClCompile Include="application\Entity\Behavior\ComboFactory.cpp" />
+    <ClCompile Include="application\Entity\Behavior\Blackboard.cpp" />
     <ClCompile Include="engine\2d\BaseUI.cpp" />
     <ClCompile Include="engine\3d\Particle\EffectEditor.cpp" />
     <ClCompile Include="engine\3d\Particle\EffectGroup.cpp" />
@@ -398,6 +399,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Effect\DeadEffect.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
     <ClInclude Include="application\Entity\Behavior\ComboFactory.h" />
+    <ClInclude Include="application\Entity\Behavior\Blackboard.h" />
     <ClInclude Include="engine\2d\BaseUI.h" />
     <ClInclude Include="engine\3d\Particle\EffectEditor.h" />
     <ClInclude Include="engine\3d\Particle\EffectGroup.h" />
