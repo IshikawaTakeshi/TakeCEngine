@@ -1,0 +1,189 @@
+{
+    "setName": "AggressiveComboSet",
+    "rootType": "SELECTOR",
+    "combos": [
+        {
+            "comboName": "RushDown",
+            "rootNode": {
+                "name": "RushDownSequence",
+                "nodeType": "SEQUENCE",
+                "targetState": "NONE",
+                "field": "",
+                "op": ">=",
+                "value": 0.0,
+                "children": [
+                    {
+                        "name": "CheckCloseRange",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "distance",
+                        "op": "<=",
+                        "value": 30.0,
+                        "children": []
+                    },
+                    {
+                        "name": "CheckEnergy",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "energy",
+                        "op": ">=",
+                        "value": 50.0,
+                        "children": []
+                    },
+                    {
+                        "name": "StepIn",
+                        "nodeType": "ACTION",
+                        "targetState": "STEPBOOST",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "AttackRun",
+                        "nodeType": "ACTION",
+                        "targetState": "RUNNING",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "StepOut",
+                        "nodeType": "ACTION",
+                        "targetState": "STEPBOOST",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "SecondAttackRun",
+                        "nodeType": "ACTION",
+                        "targetState": "RUNNING",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    }
+                ]
+            }
+        },
+        {
+            "comboName": "AerialRush",
+            "rootNode": {
+                "name": "AerialRushSequence",
+                "nodeType": "SEQUENCE",
+                "targetState": "NONE",
+                "field": "",
+                "op": ">=",
+                "value": 0.0,
+                "children": [
+                    {
+                        "name": "CheckOnGround",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "onGround",
+                        "op": "==",
+                        "value": 1.0,
+                        "children": []
+                    },
+                    {
+                        "name": "CheckHighEnergy",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "energy",
+                        "op": ">=",
+                        "value": 60.0,
+                        "children": []
+                    },
+                    {
+                        "name": "CheckNotOverheated",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "isOverheated",
+                        "op": "==",
+                        "value": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "JumpUp",
+                        "nodeType": "ACTION",
+                        "targetState": "JUMP",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "AerialAttack",
+                        "nodeType": "ACTION",
+                        "targetState": "FLOATING",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "AerialStep",
+                        "nodeType": "ACTION",
+                        "targetState": "STEPBOOST",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    }
+                ]
+            }
+        },
+        {
+            "comboName": "DesperateAssault",
+            "rootNode": {
+                "name": "DesperateSelector",
+                "nodeType": "SEQUENCE",
+                "targetState": "NONE",
+                "field": "",
+                "op": ">=",
+                "value": 0.0,
+                "children": [
+                    {
+                        "name": "CheckLowHP",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "hpRatio",
+                        "op": "<=",
+                        "value": 0.3,
+                        "children": []
+                    },
+                    {
+                        "name": "CheckMinEnergy",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "energy",
+                        "op": ">=",
+                        "value": 20.0,
+                        "children": []
+                    },
+                    {
+                        "name": "DesperateStep",
+                        "nodeType": "ACTION",
+                        "targetState": "STEPBOOST",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "AllOutAttack",
+                        "nodeType": "ACTION",
+                        "targetState": "RUNNING",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -20,6 +20,9 @@
 #include "application/Weapon/BaseWeapon.h"
 #include "application/Weapon/Bullet/BulletManager.h"
 
+#include "application/Entity/Behavior/BehaviorNode.h"
+#include "application/Entity/Behavior/Blackboard.h"
+#include "application/Entity/Behavior/ComboFactory.h"
 
 //============================================================================
 // Enemy class
@@ -166,6 +169,9 @@ private:
 	// ブレイクゲージの蓄積・スタン判定処理
 	void AccumulateBreakGauge(float damage);
 
+	//Blackboardの更新
+	void UpdateBlackboard();
+
 private:
 	// AIシステム
 	std::unique_ptr<AIBrainSystem> aiBrainSystem_ = nullptr;
@@ -176,6 +182,10 @@ private:
 	std::unique_ptr<GameCharacterStateManager> stateManager_ = nullptr;
 	// プレイヤー入力プロバイダ
 	EnemyInputProvider* inputProvider_ = nullptr;
+
+	std::unique_ptr<BehaviorNode> behaviorTree_ = nullptr;  // ビヘイビアツリーのルート
+	std::unique_ptr<Blackboard> blackboard_ = nullptr;      // 共有データストア
+	ComboFactory comboFactory_;                              // ツリー構築用ファクトリ
 
 	// アニメーションコントローラ
 	AnimatorController animatorController_;
