@@ -103,16 +103,10 @@ void GamePlayScene::Initialize() {
 
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
-	playerHpBar_->Initialize(&SpriteCommon::GetInstance(), "PlayerHPName.json",
-		"black.png", "flontHp.png");
-	playerHpBar_->SetSize({ 200.0f, 10.0f });     // HPバーのサイズ
-	playerHpBar_->SetPosition({ 50.0f, 500.0f }); // HPバーの位置
+	playerHpBar_->Initialize(TakeCFrameWork::GetSpriteManager(), "HPBar_Player");
 	// enemyHpBar
 	enemyHpBar_ = std::make_unique<HPBar>();
-	enemyHpBar_->Initialize(&SpriteCommon::GetInstance(), "EnemyHPName.json",
-		"black.png", "flontHp.png");
-	enemyHpBar_->SetSize({ 400.0f, 10.0f });     // HPバーのサイズ
-	enemyHpBar_->SetPosition({ 300.0f, 35.0f }); // HPバーの位置
+	enemyHpBar_->Initialize(TakeCFrameWork::GetSpriteManager(), "HPBar_Enemy");
 	// playerReticle
 	playerReticle_ = std::make_unique<PlayerReticle>();
 	playerReticle_->Initialize();
@@ -138,7 +132,8 @@ void GamePlayScene::Initialize() {
 		{ 900.0f, 540.0f });
 
 	for (int i = 0; i < bulletCounterUI_.size(); i++) {
-		TakeCFrameWork::GetUIManager()->CreateUI<BulletCounterGaugeUI>(player_->GetCurrentWeapon(i));
+		TakeCFrameWork::GetUIManager()->CreateUI<BulletCounterGaugeUI>(
+			player_->GetCurrentWeapon(i));
 		// アクションボタンアイコンUI
 		TakeCFrameWork::GetUIManager()->CreateUI<ActionButtonICon>(
 			"InstructionIcon" + std::to_string(i) + ".json",
@@ -332,9 +327,9 @@ void GamePlayScene::Draw() {
 #pragma endregion
 
   // 当たり判定の描画前処理
-	//enemy_->DrawCollider();
-	//player_->DrawCollider();
-	// spotLightの描画
+  // enemy_->DrawCollider();
+  // player_->DrawCollider();
+  // spotLightの描画
 	TakeCFrameWork::GetLightManager()->DrawSpotLights();
 	// 登録されたワイヤーフレームをすべて描画させる
 	TakeCFrameWork::GetWireFrame()->Draw();
