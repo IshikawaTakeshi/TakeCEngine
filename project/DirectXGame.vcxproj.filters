@@ -544,16 +544,7 @@
     <ClCompile Include="application\Entity\State\StateBreakStun.cpp" />
     <ClCompile Include="application\Tool\BreakGaugeUtil.cpp" />
     <ClCompile Include="application\UI\BreakGaugeUI.cpp" />
-    <ClCompile Include="application\Entity\Behavior\SequenceNode.cpp" />
-    <ClCompile Include="application\Entity\Behavior\SelectorNode.cpp" />
-    <ClCompile Include="application\Entity\Behavior\ConditionNode.cpp" />
-    <ClCompile Include="application\Entity\Behavior\ActionNode.cpp" />
-    <ClCompile Include="application\Entity\Behavior\ComboFactory.cpp" />
-    <ClCompile Include="application\Entity\Behavior\ScoreConditionNode.cpp" />
     <ClCompile Include="application\UI\BulletCounterGaugeUI.cpp" />
-    <ClCompile Include="application\Entity\Behavior\WeightSelector.cpp" />
-    <ClCompile Include="application\Entity\Behavior\PlannerSelectorNode.cpp" />
-    <ClCompile Include="application\Entity\Behavior\Blackboard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1141,20 +1132,7 @@
     <ClInclude Include="application\Entity\State\StateBreakStun.h" />
     <ClInclude Include="application\Tool\BreakGaugeUtil.h" />
     <ClInclude Include="application\UI\BreakGaugeUI.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorStatusEnum.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorNode.h" />
-    <ClInclude Include="application\Entity\Behavior\SequenceNode.h" />
-    <ClInclude Include="application\Entity\Behavior\SelectorNode.h" />
-    <ClInclude Include="application\Entity\Behavior\CompositeNode.h" />
-    <ClInclude Include="application\Entity\Behavior\ConditionNode.h" />
-    <ClInclude Include="application\Entity\Behavior\ActionNode.h" />
-    <ClInclude Include="application\Entity\Behavior\ComboFactory.h" />
-    <ClInclude Include="application\Entity\Behavior\ScoreConditionNode.h" />
     <ClInclude Include="application\UI\BulletCounterGaugeUI.h" />
-    <ClInclude Include="application\Entity\Behavior\WeightSelector.h" />
-    <ClInclude Include="application\Entity\Behavior\PlannerSelectorNode.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorTreeUtil.h" />
-    <ClInclude Include="application\Entity\Behavior\Blackboard.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

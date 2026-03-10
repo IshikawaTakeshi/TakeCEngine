@@ -139,6 +139,10 @@ void GamePlayScene::Initialize() {
 
 	for (int i = 0; i < bulletCounterUI_.size(); i++) {
 		TakeCFrameWork::GetUIManager()->CreateUI<BulletCounterGaugeUI>(player_->GetCurrentWeapon(i));
+		// アクションボタンアイコンUI
+		TakeCFrameWork::GetUIManager()->CreateUI<ActionButtonICon>(
+			"InstructionIcon" + std::to_string(i) + ".json",
+			inputProvider_Player.get(), static_cast<CharacterActionInput>(i + 3));
 	}
 
 	// フェーズメッセージUI
