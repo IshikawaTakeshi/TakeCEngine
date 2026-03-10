@@ -22,6 +22,24 @@ void PhaseMessageUI::Initialize() {
 	TakeC::TextureManager::GetInstance().LoadTexture("UI/GameOverText.png",
 		false);
 
+	
+
+	// 帯スプライトの生成
+	bandSprite_ = std::make_unique<Sprite>();
+	bandSprite_->Initialize(&SpriteCommon::GetInstance(),
+		"UI/PhaseMessageBand.png");
+	bandSprite_->AdjustTextureSize();
+	bandSprite_->SetAnchorPoint({ 0.5f, 0.5f });
+	bandSprite_->SetTranslate(screenCenter_);
+
+	// 帯のサイズ設定（論理座標1280相当を各解像度へ）
+	originalBandSizeMin_ = {
+		bandSprite_->GetSize().x * TakeC::WinApp::widthPercent_, 0.0f };
+	originalBandSizeMax_ = { 
+		1280.0f * TakeC::WinApp::widthPercent_,
+		bandSprite_->GetSize().y *TakeC::WinApp::heightPercent_
+	};
+
 	// フェーズメッセージスプライトの生成
 	phaseMessageText_ = std::make_unique<Sprite>();
 	phaseMessageText_->Initialize(&SpriteCommon::GetInstance(),
@@ -36,21 +54,6 @@ void PhaseMessageUI::Initialize() {
 		phaseMessageText_->GetSize().y * TakeC::WinApp::heightPercent_ };
 	originalTextSizeMin_ = { scaledTextSize.x, 0.0f };
 	originalTextSizeMax_ = scaledTextSize;
-
-	// 帯スプライトの生成
-	bandSprite_ = std::make_unique<Sprite>();
-	bandSprite_->Initialize(&SpriteCommon::GetInstance(),
-		"UI/PhaseMessageBand.png");
-	bandSprite_->AdjustTextureSize();
-	bandSprite_->SetAnchorPoint({ 0.5f, 0.5f });
-	bandSprite_->SetTranslate(screenCenter_);
-
-	// 帯のサイズ設定（論理座標1280相当を各解像度へ）
-	originalBandSizeMin_ = {
-		bandSprite_->GetSize().x * TakeC::WinApp::widthPercent_, 0.0f };
-	originalBandSizeMax_ = { 1280.0f * TakeC::WinApp::widthPercent_,
-							bandSprite_->GetSize().y *
-								TakeC::WinApp::heightPercent_ };
 
 	nextMessage_ = PhaseMessage::READY;
 }
@@ -121,8 +124,8 @@ void PhaseMessageUI::Update() {
 	}
 
 	// スプライト更新
-	phaseMessageText_->Update();
 	bandSprite_->Update();
+	phaseMessageText_->Update();
 }
 
 //====================================================================
@@ -139,8 +142,8 @@ void PhaseMessageUI::UpdateImGui() {
 //====================================================================
 
 void PhaseMessageUI::Draw() {
-	phaseMessageText_->Draw();
 	bandSprite_->Draw();
+	phaseMessageText_->Draw();
 }
 
 //====================================================================
