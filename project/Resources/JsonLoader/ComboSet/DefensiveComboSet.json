@@ -1,0 +1,153 @@
+{
+    "setName": "DefensiveComboSet",
+    "rootType": "SELECTOR",
+    "combos": [
+        {
+            "comboName": "EmergencyEvade",
+            "rootNode": {
+                "name": "EmergencySequence",
+                "nodeType": "SEQUENCE",
+                "targetState": "NONE",
+                "field": "",
+                "op": ">=",
+                "value": 0.0,
+                "children": [
+                    {
+                        "name": "CheckBulletNearby",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "isBulletNearby",
+                        "op": "==",
+                        "value": 1.0,
+                        "children": []
+                    },
+                    {
+                        "name": "CheckEnergyForEvade",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "energy",
+                        "op": ">=",
+                        "value": 15.0,
+                        "children": []
+                    },
+                    {
+                        "name": "EvadeStep",
+                        "nodeType": "ACTION",
+                        "targetState": "STEPBOOST",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "RepositionRun",
+                        "nodeType": "ACTION",
+                        "targetState": "RUNNING",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "SecondEvade",
+                        "nodeType": "ACTION",
+                        "targetState": "STEPBOOST",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    }
+                ]
+            }
+        },
+        {
+            "comboName": "HeightAdvantage",
+            "rootNode": {
+                "name": "HeightAdvantageSequence",
+                "nodeType": "SEQUENCE",
+                "targetState": "NONE",
+                "field": "",
+                "op": ">=",
+                "value": 0.0,
+                "children": [
+                    {
+                        "name": "CheckOnGround",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "onGround",
+                        "op": "==",
+                        "value": 1.0,
+                        "children": []
+                    },
+                    {
+                        "name": "CheckFarDistance",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "distance",
+                        "op": ">=",
+                        "value": 40.0,
+                        "children": []
+                    },
+                    {
+                        "name": "CheckEnergy",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "energy",
+                        "op": ">=",
+                        "value": 40.0,
+                        "children": []
+                    },
+                    {
+                        "name": "GainHeight",
+                        "nodeType": "ACTION",
+                        "targetState": "JUMP",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "AerialKiting",
+                        "nodeType": "ACTION",
+                        "targetState": "FLOATING",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    }
+                ]
+            }
+        },
+        {
+            "comboName": "LowEnergyConserve",
+            "rootNode": {
+                "name": "ConserveSequence",
+                "nodeType": "SEQUENCE",
+                "targetState": "NONE",
+                "field": "",
+                "op": ">=",
+                "value": 0.0,
+                "children": [
+                    {
+                        "name": "CheckLowEnergy",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "energy",
+                        "op": "<",
+                        "value": 20.0,
+                        "children": []
+                    },
+                    {
+                        "name": "ConserveRun",
+                        "nodeType": "ACTION",
+                        "targetState": "RUNNING",
+                        "field": "",
+                        "op": ">=",
+                        "value": 0.0,
+                        "children": []
+                    }
+                ]
+            }
+        }
+    ]
+}

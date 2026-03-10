@@ -1,35 +1,114 @@
 #include "ComboFactory.h"
 #include "engine/base/TakeCFrameWork.h"
+#include "engine/Utility/StringUtility.h"
 
-std::unique_ptr<BehaviorNode> ComboFactory::LoadComboSetData(const std::string& comboSetFilePath) {
-	return std::unique_ptr<BehaviorNode>();
-}
-
-std::unique_ptr<BehaviorNode> ComboFactory::BuildActionNode(
-	const BehaviorNodeData& nodeData, 
+//========================================================================
+// JSONファイルからコンボセットを読み込み、ツリーを構築
+//========================================================================
+std::unique_ptr<BehaviorNode> ComboFactory::LoadComboSetData(
+	const std::string& comboSetFilePath,
 	GameCharacterStateManager* stateManager) {
-	
-	// nodeDataから遷移先ステートを取得
-	GameCharacterState targetState = StringUtility::StringToEnum<GameCharacterState>(nodeData.targetState);
-	// ActionNodeを生成
-	auto actionNode = std::make_unique<ActionNode>(stateManager, targetState);
-	return actionNode;
+	ComboSetData comboSetData = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ComboSetData>(comboSetFilePath);
+	return BuildBehaviorTree(comboSetData, stateManager);
 }
 
+//========================================================================
+// ComboSetData からビヘイビアツリーを構築
+//========================================================================
+std::unique_ptr<BehaviorNode> ComboFactory::BuildBehaviorTree(
+	const ComboSetData& comboSetData,
+	GameCharacterStateManager* stateManager) {
+	// ルートノードの生成
+	std::unique_ptr<CompositeNode> root;
+	if (comboSetData.rootType == "SEQUENCE") {
+		root = std::make_unique<SequenceNode>();
+	} else {
+		root = std::make_unique<SelectorNode>();
+	}
+	root->SetName(comboSetData.setName);
+
+	// 各コンボを子として追加
+	for (const auto& comboData : comboSetData.combos) {
+		auto comboNode = BuildNode(comboData.rootNode, stateManager);
+		if (comboNode) {
+			comboNode->SetName(comboData.comboName);
+			root->AddChild(std::move(comboNode));
+		}
+	}
+
+	// フォールバック
+	root->AddChild(std::make_unique<ActionNode>(
+		GameCharacterState::RUNNING, stateManager, "DefaultRunning"));
+
+	return root;
+}
+
+//========================================================================
+// ノードデータから再帰的にノードを構築
+//========================================================================
+std::unique_ptr<BehaviorNode> ComboFactory::BuildNode(
+	const BehaviorNodeData& nodeData,
+	GameCharacterStateManager* stateManager) {
+	BehaviorNodeType type = StringUtility::StringToEnum<BehaviorNodeType>(nodeData.nodeType);
+
+	switch (type) {
+	case BehaviorNodeType::ACTION:
+		return BuildActionNode(nodeData, stateManager);
+
+	case BehaviorNodeType::CONDITION:
+		return BuildConditionNode(nodeData);  // ★ AIBrainSystem* が消えた
+
+	case BehaviorNodeType::SEQUENCE:
+	{
+		auto composite = std::make_unique<SequenceNode>();
+		composite->SetName(nodeData.name);
+		for (const auto& child : nodeData.children) {
+			auto childNode = BuildNode(child, stateManager);
+			if (childNode) {
+				composite->AddChild(std::move(childNode));
+			}
+		}
+		return composite;
+	}
+
+	case BehaviorNodeType::SELECTOR:
+	{
+		auto composite = std::make_unique<SelectorNode>();
+		composite->SetName(nodeData.name);
+		for (const auto& child : nodeData.children) {
+			auto childNode = BuildNode(child, stateManager);
+			if (childNode) {
+				composite->AddChild(std::move(childNode));
+			}
+		}
+		return composite;
+	}
+
+	default:
+		return nullptr;
+	}
+}
+
+//========================================================================
+// ACTION ノードのビルド（変更なし）
+//========================================================================
+std::unique_ptr<BehaviorNode> ComboFactory::BuildActionNode(
+	const BehaviorNodeData& nodeData,
+	GameCharacterStateManager* stateManager) {
+	GameCharacterState state = StringUtility::StringToEnum<GameCharacterState>(nodeData.targetState);
+	return std::make_unique<ActionNode>(state, stateManager, nodeData.name);
+}
+
+//========================================================================
+// CONDITION ノードのビルド（Blackboard 版）
+//========================================================================
 std::unique_ptr<BehaviorNode> ComboFactory::BuildConditionNode(
-	const BehaviorNodeData& nodeData, AIBrainSystem* brain) {
-	
-	const std::string& field = nodeData.field;
-	const std::string& op = nodeData.op;
-	float threshold = nodeData.conditionThreshold;
-	int scoreIndex = nodeData.scoreIndex;
-
-	//条件に応じたラムダ関数を生成
-	std::function<bool(const PlayableCharacterInfo&)> conditionFunc;
-
-	if(field == "energy")
-
-	return std::make_unique<ConditionNode>(std::move(conditionFunc),nodeData.name);
+	const BehaviorNodeData& nodeData) {
+	// JSONから読んだ field, op, value をそのまま渡すだけ
+	return std::make_unique<ConditionNode>(
+		nodeData.field,
+		nodeData.op,
+		nodeData.conditionThreshold,
+		nodeData.name
+	);
 }
-
-

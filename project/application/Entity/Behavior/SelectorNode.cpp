@@ -3,9 +3,9 @@
 //==================================================================================
 // ノードの実行
 //==================================================================================
-BehaviorStatus SelectorNode::Execute(PlayableCharacterInfo& characterInfo) {
+BehaviorStatus SelectorNode::Execute(Blackboard& blackboard) {
 	while (currentIndex_ < children_.size()) {
-		BehaviorStatus status = children_[currentIndex_]->Execute(characterInfo);
+		BehaviorStatus status = children_[currentIndex_]->Execute(blackboard);
 
 		if (status == BehaviorStatus::Running) {
 			return BehaviorStatus::Running;

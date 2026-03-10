@@ -148,6 +148,15 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 		object3d_->GetModel()->GetSkeleton(), "body_joint_left.002");
 	boostEffects_[BACKPACK]->AttachToSkeletonJoint(
 		object3d_->GetModel()->GetSkeleton(), "backpack.001");
+
+	// Blackboardの生成
+	blackboard_ = std::make_unique<Blackboard>();
+
+	// JSONからビヘイビアツリーを構築
+	behaviorTree_ = comboFactory_.LoadComboSetData(
+		"DefaultComboSet.json",
+		stateManager_.get()
+	);
 }
 
 //========================================================================================================
@@ -277,26 +286,29 @@ void Enemy::Update() {
 
 	// RUNNING時のState遷移リクエスト
 	if (enemyData_.characterInfo.isInCombat) {
-		if (stateManager_->GetCurrentStateType() == State::RUNNING) {
+		// 1. AIスコアを更新（従来通り）
+		float dist = (enemyData_.characterInfo.focusTargetPos -
+			enemyData_.characterInfo.transform.translate).Length();
+		aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
+		aiBrainSystem_->SetDistanceToTarget(dist);
+		aiBrainSystem_->Update();
 
-			// BestActionの取得
-			switch (aiBrainSystem_->GetBestAction()) {
-			case Action::JUMP:
-				stateManager_->RequestState(State::JUMP);
-				break;
-			case Action::FLOATING: // FLOATINGへの遷移はJUMPで行う
-				stateManager_->RequestState(State::JUMP);
-				break;
-			case Action::STEPBOOST:
-				stateManager_->RequestState(State::STEPBOOST);
-				break;
+		// 2. Blackboardにデータを集約
+		UpdateBlackboard();
+
+		// 3. ビヘイビアツリーを実行（ツリーがRequestStateを呼ぶ）
+		if (behaviorTree_) {
+			BehaviorStatus status = behaviorTree_->Execute(*blackboard_);
+			if (status != BehaviorStatus::Running) {
+				behaviorTree_->Reset(); // 完了 or 失敗 → 次フレームで再評価
 			}
 		}
 
-		// 移動方向の取得
+		// 移動方向の取得（変更なし）
 		enemyData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
-		// 攻撃処理
-		if (enemyData_.characterInfo.isAlive == true && 
+
+		// 攻撃処理（変更なし）
+		if (enemyData_.characterInfo.isAlive == true &&
 			(stateManager_->GetCurrentStateType() == GameCharacterState::BREAK_STUN) == false) {
 			UpdateAttack();
 		}
@@ -317,8 +329,7 @@ void Enemy::Update() {
 
 		stateManager_->RequestState(GameCharacterState::RUNNING);
 	} else if (enemyData_.characterInfo.onGround == false &&
-		stateManager_->GetCurrentStateType() ==
-		GameCharacterState::RUNNING) {
+		stateManager_->GetCurrentStateType() ==GameCharacterState::RUNNING) {
 		// 空中にいる場合はFLOATINGに切り替え
 		stateManager_->RequestState(GameCharacterState::FLOATING);
 	}
@@ -342,15 +353,6 @@ void Enemy::Update() {
 	// bulletSensorの更新
 	bulletSensor_->SetTranslate(enemyData_.characterInfo.transform.translate);
 	bulletSensor_->Update();
-
-	// AIの更新
-	float distance = (enemyData_.characterInfo.focusTargetPos -
-		enemyData_.characterInfo.transform.translate)
-		.Length();
-	aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
-	aiBrainSystem_->SetDistanceToTarget(distance);
-	aiBrainSystem_->Update();
-
 
 	auto jointWorldMatrixOpt =
 		object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix(
@@ -429,6 +431,11 @@ void Enemy::UpdateImGui() {
 
 #if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::Begin("Enemy");
+
+	if (blackboard_) {
+		blackboard_->UpdateImGui();
+	}
+
 	ImGui::DragFloat3("Translate",
 		&enemyData_.characterInfo.transform.translate.x, 0.01f);
 	ImGui::DragFloat3("Scale", &enemyData_.characterInfo.transform.scale.x,
@@ -872,5 +879,33 @@ void Enemy::AccumulateBreakGauge(float damage) {
 	if (gaugeInfo.breakGauge >= gaugeInfo.maxBreakGauge) {
 		gaugeInfo.breakGauge = gaugeInfo.maxBreakGauge;
 		stateManager_->RequestState(GameCharacterState::BREAK_STUN);
+	}
+}
+
+void Enemy::UpdateBlackboard() {
+
+	// --- PlayableCharacterInfo からの書き込み ---
+	blackboard_->SetValue("energy",    enemyData_.characterInfo.energyInfo.energy);
+	blackboard_->SetValue("maxEnergy", enemyData_.characterInfo.energyInfo.maxEnergy);
+	blackboard_->SetValue("hp",        enemyData_.characterInfo.health);
+	blackboard_->SetValue("maxHp",     enemyData_.characterInfo.maxHealth);
+	blackboard_->SetValue("hpRatio",   enemyData_.characterInfo.health / enemyData_.characterInfo.maxHealth);
+	blackboard_->SetValue("posY",      enemyData_.characterInfo.transform.translate.y);
+	blackboard_->SetValue("onGround",   enemyData_.characterInfo.onGround);
+	blackboard_->SetValue("isOverheated", enemyData_.characterInfo.overHeatInfo.isOverheated);
+	blackboard_->SetValue("isAlive",    enemyData_.characterInfo.isAlive);
+	blackboard_->SetValue("isInCombat", enemyData_.characterInfo.isInCombat);
+
+	// --- AIBrainSystem からの書き込み ---
+	float distance = (enemyData_.characterInfo.focusTargetPos -
+		enemyData_.characterInfo.transform.translate).Length();
+	blackboard_->SetValue("distance",     distance);
+	blackboard_->SetValue("orbitRadius",  orbitRadius_);
+	blackboard_->SetValue("isBulletNearby", bulletSensor_->IsActive());
+
+	// --- 武器スコアの書き込み ---
+	for (size_t i = 0; i < weapons_.size(); ++i) {
+		std::string key = "attackScore" + std::to_string(i);
+		blackboard_->SetValue(key, aiBrainSystem_->GetAttackScore(static_cast<int>(i)));
 	}
 }

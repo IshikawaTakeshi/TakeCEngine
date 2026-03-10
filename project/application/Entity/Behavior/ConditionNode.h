@@ -10,12 +10,13 @@
 class ConditionNode : public BehaviorNode {
 public:
 
-	using ConditionFunc = std::function<bool(const PlayableCharacterInfo&)>;
-
 	/// <summary>
 	/// コンストラクタとデストラクタ
 	/// </summary>
-	ConditionNode(ConditionFunc condition, const std::string& name = "Condition");
+	ConditionNode(const std::string& field,
+		const std::string& op,
+		float value,
+		const std::string& name = "Condition");
 	~ConditionNode() override = default;
 
 	//====================================================================================
@@ -27,9 +28,11 @@ public:
 	/// </summary>
 	/// <param name="characterInfo"></param>
 	/// <returns></returns>
-	BehaviorStatus Execute(PlayableCharacterInfo& characterInfo) override;
+	BehaviorStatus Execute(Blackboard& blackboard) override;
 
 private:
 
-	ConditionFunc condition_;
+	std::string field_;
+	float value_;
+	std::function<bool(float, float)> compare_;
 };

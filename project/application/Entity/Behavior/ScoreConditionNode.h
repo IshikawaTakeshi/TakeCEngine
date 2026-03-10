@@ -23,7 +23,7 @@ public:
 	// functions
 	//====================================================================================
 
-	BehaviorStatus Execute(PlayableCharacterInfo& characterInfo) override;
+	BehaviorStatus Execute(Blackboard& blackboard) override;
 
 private:
 	ScoreFunc scoreFunc_;

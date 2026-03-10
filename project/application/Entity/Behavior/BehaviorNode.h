@@ -1,6 +1,6 @@
 #pragma once
 #include "application/Entity/Behavior/BehaviorStatusEnum.h"
-#include "application/Entity/GameCharacterInfo.h"
+#include "application/Entity/Behavior/Blackboard.h"
 #include <vector>
 #include <memory>
 #include <string>
@@ -26,7 +26,7 @@ public:
 	/// <summary>
 	// ノードの実行
 	/// </summary>
-	virtual BehaviorStatus Execute(PlayableCharacterInfo& characterInfo) = 0;
+	virtual BehaviorStatus Execute(Blackboard& blackboard) = 0;
 
 	/// <summary>
 	// ノードのリセット（再実行時に状態をクリア）

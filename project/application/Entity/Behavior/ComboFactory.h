@@ -15,32 +15,37 @@ class ComboFactory {
 public:
 
 	/// <summary>
-	/// コンボの組み立て
+	/// JSONファイルからコンボセットを読み込み、ビヘイビアツリーを構築
 	/// </summary>
-	/// <param name="comboData">コンボデータ</param>
-	/// <returns>組み立てられたコンボのルートノード</returns>
-	std::unique_ptr<BehaviorNode> LoadComboSetData(const std::string& comboSetFilePath);
-
-	std::unique_ptr<BehaviorNode> BuildBehaviorTree(const BehaviorNodeData& nodeData, const std::string& rootType);
-
-	std::unique_ptr<BehaviorNode> BuildNode(const BehaviorNodeData& nodeData,
-		GameCharacterStateManager* stateManager,
-		AIBrainSystem* brain);
+	std::unique_ptr<BehaviorNode> LoadComboSetData(
+		const std::string& comboSetFilePath,
+		GameCharacterStateManager* stateManager);
 
 	/// <summary>
-	///　ACTIONノードのビルド
+	/// ComboSetData からビヘイビアツリーを構築
 	/// </summary>
-	/// <param name="nodeData"></param>
-	/// <param name="stateManager"></param>
-	/// <returns></returns>
+	std::unique_ptr<BehaviorNode> BuildBehaviorTree(
+		const ComboSetData& comboSetData,
+		GameCharacterStateManager* stateManager);
+
+	/// <summary>
+	/// ノードデータから再帰的にノードを構築
+	/// </summary>
+	std::unique_ptr<BehaviorNode> BuildNode(
+		const BehaviorNodeData& nodeData,
+		GameCharacterStateManager* stateManager);
+
+	/// <summary>
+	/// ACTION ノードのビルド
+	/// </summary>
 	std::unique_ptr<BehaviorNode> BuildActionNode(
 		const BehaviorNodeData& nodeData,
 		GameCharacterStateManager* stateManager);
 
 	/// <summary>
-	/// CONDITIONノードのビルド
+	/// CONDITION ノードのビルド（Blackboard 版）
 	/// </summary>
 	std::unique_ptr<BehaviorNode> BuildConditionNode(
-		const BehaviorNodeData& nodeData,AIBrainSystem* brain);
+		const BehaviorNodeData& nodeData);
 };
 

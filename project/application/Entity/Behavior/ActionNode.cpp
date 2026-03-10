@@ -16,7 +16,7 @@ ActionNode::ActionNode(
 //==================================================================================
 // ノードの実行
 //==================================================================================
-BehaviorStatus ActionNode::Execute(PlayableCharacterInfo&) {
+BehaviorStatus ActionNode::Execute(Blackboard&) {
 	if (!isStarted_) {
 		//ステート遷移をリクエスト
 		stateManager_->RequestState(targetState_);

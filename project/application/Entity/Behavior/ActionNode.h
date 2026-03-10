@@ -25,7 +25,7 @@ public:
 	/// <summary>
 	/// ノードの実行
 	/// </summary>
-	BehaviorStatus Execute(PlayableCharacterInfo& characterInfo) override;
+	BehaviorStatus Execute(Blackboard& blackboard) override;
 
 	void Reset() override;
 

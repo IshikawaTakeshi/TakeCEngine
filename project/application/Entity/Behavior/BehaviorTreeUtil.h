@@ -25,7 +25,6 @@ struct BehaviorNodeData {
 	std::string field = "";                    // 比較する対象（"energy", "hp", "distance" 等）
 	std::string op = ">=";                     // 比較演算子（">=", "<=", ">", "<", "==", "!="）
 	float conditionThreshold = 0.0f;           // CONDITION用: 閾値
-	int scoreIndex = -1;                       // SCORE_ABOVE用: スコアのインデックス
 	std::vector<BehaviorNodeData> children;    // 子ノード（SEQUENCE/SELECTOR用）
 };
 
@@ -47,7 +46,7 @@ struct ComboSetData {
 };
 
 // JSONシリアライズ用のマクロ
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BehaviorNodeData, name, nodeType, targetState, field, op, conditionThreshold, scoreIndex, children)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BehaviorNodeData, name, nodeType, targetState, field, op, conditionThreshold, children)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ComboData, comboName, rootNode)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ComboSetData, setName, combos, rootType)
 

@@ -1,15 +1,15 @@
 #include "PlannerSelectorNode.h"
 
-BehaviorStatus PlannerSelectorNode::Execute(PlayableCharacterInfo& characterInfo) {
+BehaviorStatus PlannerSelectorNode::Execute(Blackboard& blackboard) {
 	
 	if (children_.empty()) {
 		return BehaviorStatus::Failure; // 子ノードがいない場合は失敗
 	}
-	size_t selectedIndex = SelectNodeIndex(characterInfo);
+	size_t selectedIndex = SelectNodeIndex(blackboard);
 	if (selectedIndex >= children_.size()) {
 		return BehaviorStatus::Failure; // 選択されたインデックスが範囲外の場合は失敗
 	}
-	BehaviorStatus status = children_[selectedIndex]->Execute(characterInfo);
+	BehaviorStatus status = children_[selectedIndex]->Execute(blackboard);
 	if (status == BehaviorStatus::Running) {
 		return BehaviorStatus::Running; // 選択されたノードがまだ実行中
 	}
@@ -19,7 +19,7 @@ BehaviorStatus PlannerSelectorNode::Execute(PlayableCharacterInfo& characterInfo
 	return BehaviorStatus::Success; // 選択されたノードが成功
 }
 
-size_t PlannerSelectorNode::SelectNodeIndex(PlayableCharacterInfo& characterInfo) {
+size_t PlannerSelectorNode::SelectNodeIndex(Blackboard&) {
 	
 	// 子ノードの評価値を計算
 	std::vector<float> weights(children_.size());

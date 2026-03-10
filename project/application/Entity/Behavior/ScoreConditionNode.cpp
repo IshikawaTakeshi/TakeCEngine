@@ -12,7 +12,7 @@ ScoreConditionNode::ScoreConditionNode(ScoreFunc scoreFunc, float threshold, con
 //====================================================================================
 // ノードの実行
 //====================================================================================
-BehaviorStatus ScoreConditionNode::Execute(PlayableCharacterInfo&) {
+BehaviorStatus ScoreConditionNode::Execute(Blackboard&) {
 	float score = scoreFunc_();
 	if (score >= threshold_) {
 		return BehaviorStatus::Success;

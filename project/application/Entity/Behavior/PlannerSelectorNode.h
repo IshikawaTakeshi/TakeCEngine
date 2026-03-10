@@ -23,7 +23,7 @@ public:
 	/// </summary>
 	/// <param name="characterInfo"></param>
 	/// <returns></returns>
-	BehaviorStatus Execute(PlayableCharacterInfo& characterInfo) override;
+	BehaviorStatus Execute(Blackboard& blackboard) override;
 
 private:
 
@@ -32,6 +32,6 @@ private:
 	/// </summary>
 	/// <param name="characterInfo"></param>
 	/// <returns>選択された子ノードのインデックス</returns>
-	size_t SelectNodeIndex(PlayableCharacterInfo& characterInfo);
+	size_t SelectNodeIndex(Blackboard& blackboard);
 
 };

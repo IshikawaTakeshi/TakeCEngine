@@ -24,6 +24,6 @@ public:
 	/// </summary>
 	/// <param name="characterInfo"></param>
 	/// <returns></returns>
-	BehaviorStatus Execute(PlayableCharacterInfo& characterInfo) override;
+	BehaviorStatus Execute(Blackboard& blackboard) override;
 };
 
