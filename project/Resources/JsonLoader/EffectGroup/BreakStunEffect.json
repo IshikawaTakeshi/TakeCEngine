@@ -11,7 +11,7 @@
             "delayTime": 0.016,
             "duration": -1.0,
             "emitCount": 6,
-            "emitterName": "NewEmitter_0",
+            "emitterName": "Emitter_0",
             "positionOffset": {
                 "x": 0.0,
                 "y": 10.0,

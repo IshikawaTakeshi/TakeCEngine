@@ -132,37 +132,32 @@ void Player::Initialize(Object3dCommon* object3dCommon,
 void Player::WeaponInitialize(Object3dCommon* object3dCommon,
 	BulletManager* bulletManager) {
 	// 武器の初期化
-	for (int i = 0; i < weapons_.size() - 1; i++) {
+	for (int i = 0; i < weapons_.size(); i++) {
 		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
+			// ライフルの武器を初期化
 			weapons_[i] = std::make_unique<Rifle>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
+
 		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
 			weapons_[i] = std::make_unique<Bazooka>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
+
 		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
 			// 垂直ミサイルの武器を初期化
 			weapons_[i] = std::make_unique<VerticalMissileLauncher>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
+
 		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_MACHINE_GUN) {
 			// マシンガンの武器を初期化
 			weapons_[i] = std::make_unique<MachineGun>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
+
 		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_SHOTGUN) {
 			// ショットガンの武器を初期化
 			weapons_[i] = std::make_unique<ShotGun>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager);
-			weapons_[i]->SetOwnerObject(this);
+
 		} else {
 			// 武器が設定されていない場合はnullptrのまま
 			weapons_[i] = nullptr;
 		}
-		weapons_[3] = std::make_unique<ShotGun>();
-		weapons_[3]->Initialize(object3dCommon, bulletManager);
-		weapons_[3]->SetOwnerObject(this);
+		weapons_[i]->Initialize(object3dCommon, bulletManager);
+		weapons_[i]->SetOwnerObject(this);
 	}
 
 	weapons_[R_ARMS]->AttachToSkeletonJoint(
@@ -177,12 +172,12 @@ void Player::WeaponInitialize(Object3dCommon* object3dCommon,
 		L_ARMS); // 2つ目の武器のユニットポジションを設定
 	weapons_[R_BACK]->AttachToSkeletonJoint(
 		object3d_->GetModel()->GetSkeleton(),
-		"weaponJointPoint_LT.tip"); // 3つ目の武器を背中に取り付け
+		"weaponJointPoint_RT.tip"); // 3つ目の武器を背中に取り付け
 	weapons_[R_BACK]->SetUnitPosition(
 		R_BACK); // 3つ目の武器のユニットポジションを設定
 	weapons_[L_BACK]->AttachToSkeletonJoint(
 		object3d_->GetModel()->GetSkeleton(),
-		"weaponJointPoint_RT.tip"); // 4つ目の武器を背中に取り付け
+		"weaponJointPoint_LT.tip"); // 4つ目の武器を背中に取り付け
 	weapons_[L_BACK]->SetUnitPosition(
 		L_BACK); // 4つ目の武器のユニットポジションを設定
 }

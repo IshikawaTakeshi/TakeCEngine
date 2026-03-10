@@ -1,79 +1,78 @@
 #pragma once
-#include "engine/math/Vector2.h"
+#include "engine/2d/BaseUI.h"
+#include "engine/Math/Vector2.h"
 #include "engine/Utility/Timer.h"
 #include <memory>
 #include <string>
 
-// 前方宣言
-class SpriteCommon;
-class Sprite;
-
 //============================================================================
 // HPBar class
 //============================================================================
-class HPBar {
+class HPBar : public BaseUI {
 public:
 	HPBar() = default;
-	~HPBar() = default;
+	~HPBar() override = default;
+
+	enum HPBarComponent {
+		BACKGROUND, // 背景
+		DAMAGE,     // ダメージ（黄色または赤色で遅れて動く分）
+		FOREGROUND, // 前景（現在のHP）
+		OWNER,      // 名前などの付加情報
+		kTotalComponents
+	};
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(SpriteCommon* spriteCommon,const std::string& ownerName, const std::string& backgroundFilePath, const std::string& foregroundFilePath);
+	void Initialize(TakeC::SpriteManager* spriteManager,
+		const std::string& configName);
 
 	/// <summary>
-	/// HPの更新
+	/// HP情報の更新
 	/// </summary>
-	void Update(float currentHP, float maxHP);
+	void SetHP(float currentHP, float maxHP);
 
 	/// <summary>
-	/// 描画
+	/// 更新処理
 	/// </summary>
-	void Draw();
+	void Update() override;
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
+	void Draw() override;
 
 	/// <summary>
 	/// ImGui
 	/// </summary>
-	void UpdateImGui([[maybe_unused]]std::string name);
+	void UpdateImGui(const std::string& name) override;
 
 	/// <summary>
 	/// 位置を設定
 	/// </summary>
-	void SetPosition(const Vector2& position);
-
-	/// <summary>
-	/// サイズを設定
-	/// </summary>
-	void SetSize(const Vector2& size);
-
-	/// <summary>
-	/// 位置を取得
-	/// </summary>
-	Vector2 GetTranslate() const;
+	void SetPosition(const Vector2& position) override;
 
 private:
+	// スプライトメンバ
+	// (BaseUIのsprites_で管理されるため、ここではポインタのみ保持)
+	Sprite* backgroundSprite_ = nullptr;
+	Sprite* foregroundSprite_ = nullptr;
+	Sprite* damageBarSprite_ = nullptr;
+	Sprite* ownerNameSprite_ = nullptr;
 
-	std::unique_ptr<Sprite> backgroundSprite_; // 背景スプライト
-	std::unique_ptr<Sprite> foregroundSprite_; // 前景スプライト	
-	std::unique_ptr<Sprite> damageBarSprite_; //hpの消費量を表すバー
-	std::unique_ptr<Sprite> ownerNameSprite_; // 所有者名スプライト
-	std::string ownerNameJsonFile_; // 所有者名
-	Vector2 position_ = { 0.0f, 0.0f };          // HPバーの位置
+	float margin_ =
+		2.0f; // 枠の太さ（JSONから取るように拡張も可能だが、現状維持）
 
-	// アウトライン（枠）の太さ
-	float margin_ = 2.0f;
-	
-	bool isActive_ = true; // アクティブ状態
-	float alpha_ = 1.0f; // アルファ値（透明度）
-	float fadeSpeed_ = 1.0f; // フェード速度
-
-	float currentHP_ = 0.0f; // 現在のHP
+	float currentHP_ = 0.0f;  // 現在のHP
 	float previousHP_ = 0.0f; // 前回のHP
-	float maxHP_ = 0.0f;     // 最大HP
+	float maxHP_ = 0.0f;      // 最大HP
 	float hpRatio_ = 1.0f;    // HPの割合
 
-	Timer damageDelayTimer_; // ダメージバーの遅延タイマー
-	float damageBarRatio_ = 1.0f; // ダメージバーの割合
+	Timer damageDelayTimer_;       // ダメージバーの遅延タイマー
+	float damageBarRatio_ = 1.0f;  // ダメージバーの割合
 	float damageLerpSpeed_ = 2.0f; // ダメージバーの補間速度
 
+	float backgroundMaxWidth_ = 0.0f;
+	float foregroundMaxWidth_ = 0.0f;
+	float damageBarMaxWidth_ = 0.0f;
 };
