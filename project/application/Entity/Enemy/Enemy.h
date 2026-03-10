@@ -206,7 +206,7 @@ private:
 
 	// ターゲットの周りを周回するための変数
 	float orbitAngle_ = 0.0f;                 // 周回角度
-	float orbitRadius_ = 240.0f;               // 周回半径（ターゲットとの距離）
+	float orbitRadius_ = 500.0f;              // 周回半径（ターゲットとの距離）
 	float orbitSpeed_ = 1.0f;                 // 角速度（周る速さ）
 	Vector3 toOrbitPos_ = { 0.0f, 0.0f, 0.0f }; // 周回する座標
 
