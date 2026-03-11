@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <ImNodeFlow-1.2.2/include/ImNodeFlow.h>
 
 //==================================================================================
 // BehaviorNode class
