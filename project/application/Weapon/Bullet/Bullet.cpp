@@ -164,6 +164,13 @@ void Bullet::Update() {
 		std::string trailEffectName = effectConfig_.trailEffectFilePath[i];
 	}
 
+	// 敵の弾の場合は警告イベントを発行 (バズーカ等の特定の種別、または近接など)
+	if (characterType_ == CharacterType::ENEMY_BULLET) {
+		WarningData data;
+		data.position = transform_.translate;
+		data.type = warningType_;
+		TakeCFrameWork::GetEventManager()->PostEvent("EnemyBulletWarning", data);
+	}
 }
 
 //========================================================================================================

@@ -558,6 +558,12 @@
     <ClCompile Include="application\Entity\Behavior\View\ActionNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\SelectorNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\BehaviorTreeEditor.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\ConditionNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\PlannerSelectorNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\ScoreConditionNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\SequenceNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\WeightSelectorNodeView.cpp" />
+    <ClCompile Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1163,6 +1169,15 @@
     <ClInclude Include="application\Entity\Behavior\View\ActionNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\SelectorNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorTreeEditor.h" />
+    <ClInclude Include="application\Entity\Behavior\View\ConditionNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\PlannerSelectorNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\ScoreConditionNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\SequenceNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\WeightSelectorNodeView.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\include\ImNodeFlow.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\context_wrapper.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -1259,6 +1274,9 @@
     <None Include="Resources\shaders\PostEffect\BloomEffectInfo.hlsli" />
     <None Include="Resources\shaders\Shadow\Shadowpass.hlsli" />
     <None Include="Resources\shaders\Sprite\ArcGaugeParam.hlsli" />
+    <None Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.inl" />
+    <None Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.inl" />
+    <None Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.inl" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">

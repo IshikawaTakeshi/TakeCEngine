@@ -1,4 +1,5 @@
 #include "ScoreConditionNodeView.h"
+#include "engine/Base/ImGuiManager.h"
 
 //====================================================================
 // コンストラクタ
@@ -12,8 +13,9 @@ ScoreConditionNodeView::ScoreConditionNodeView(float threshold) {
 
 	//入力ピンの設定
 	//親ノードから実行フロー
-	addIN<BehaviorStatus>("In", BehaviorStatus::Invalid,
+	auto inPin = addIN<BehaviorStatus>("In", BehaviorStatus::Invalid,
 		ImFlow::ConnectionFilter::SameType());
+	AddInputPin(inPin.get());
 
 	//リーフノードなので出力ピンなし
 

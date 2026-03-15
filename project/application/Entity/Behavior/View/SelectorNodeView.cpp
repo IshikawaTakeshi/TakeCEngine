@@ -10,13 +10,15 @@ SelectorNodeView::SelectorNodeView() {
 
 	//入力ピンの設定
 	//親ノードから実行フロー
-	addIN<BehaviorStatus>("In", BehaviorStatus::Invalid,
+	auto inPin = addIN<BehaviorStatus>("In", BehaviorStatus::Invalid,
 		ImFlow::ConnectionFilter::SameType());
+	AddInputPin(inPin.get());
 
 	//出力ピンの設定
 	//子ノードへの実行フロー
 	auto out = addOUT<BehaviorStatus>("Child0");
 	out->behaviour([]() {return BehaviorStatus::Invalid; }); //TODO: 子ノードの状態を返すように実装
+	AddOutputPin(out.get());
 }
 
 //====================================================================
@@ -32,6 +34,7 @@ void SelectorNodeView::draw() {
 		std::string name = "Child" + std::to_string(childCount_);
 		auto out = addOUT<BehaviorStatus>(name);
 		out->behaviour([]() {return BehaviorStatus::Invalid; }); //TODO: 子ノードの状態を返すように実装
+		AddOutputPin(out.get());
 		childCount_++;
 	}
 }

@@ -100,6 +100,10 @@ void GamePlayScene::Initialize() {
 	enemy_->GetObject3d()->SetAnimation(
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"));
+	//BehaviorTreeEditor
+	behaviorTreeEditor_ = std::make_unique<BehaviorTreeEditor>();
+	behaviorTreeEditor_->Initialize();
+	behaviorTreeEditor_->LoadTreeFromEnemy(enemy_->GetBehaviorTree());
 
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
@@ -228,6 +232,7 @@ void GamePlayScene::Update() {
 	// enemy
 	enemy_->SetFocusTargetPos(player_->GetBodyPosition());
 	enemy_->SetFocusTargetVelocity(player_->GetVelocity());
+	behaviorTreeEditor_->Draw();
 
 	// player
 	player_->SetFocusTargetPos(enemy_->GetBodyPosition());

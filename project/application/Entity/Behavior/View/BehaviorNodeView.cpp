@@ -24,3 +24,29 @@ ImVec4 BehaviorNodeView::statusToColor(BehaviorStatus status) {
 		return ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // 白（デフォルト）
 	}
 }
+
+ImFlow::Pin* BehaviorNodeView::GetInputPin(size_t index) const {
+	if (index < inPins_.size()) {
+		return inPins_[index];
+	}
+	return nullptr;
+}
+
+void BehaviorNodeView::AddInputPin(ImFlow::Pin* pin) {
+	if (pin) {
+		inPins_.push_back(pin);
+	}
+}
+
+ImFlow::Pin* BehaviorNodeView::GetOutputPin(size_t index) const {
+	if (index < outPins_.size()) {
+		return outPins_[index];
+	}
+	return nullptr;
+}
+
+void BehaviorNodeView::AddOutputPin(ImFlow::Pin* pin) {
+	if (pin) {
+		outPins_.push_back(pin);
+	}
+}

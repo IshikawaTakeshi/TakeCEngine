@@ -18,6 +18,8 @@
 #include "application/Weapon/Launcher/VerticalMissileLauncher.h"
 #include "application/Weapon/MachineGun/MachineGun.h"
 #include "application/Weapon/Rifle/Rifle.h"
+#include "engine/Math/Quaternion.h"
+#include "engine/Math/Matrix4x4.h"
 #include "application/Weapon/ShotGun/ShotGun.h"
 
 
@@ -703,10 +705,17 @@ void Enemy::WeaponAttack(int weaponIndex) {
 			// チャージ撃ちのタイマーを初期化して開始
 			if (chargeShootTimer_.IsFinished()) {
 				chargeShootTimer_.Initialize(chargeShootDuration_, 0.0f);
+				
+				// 武器種別に応じた警告データの作成
+				WarningData data;
+				data.position = enemyData_.characterInfo.transform.translate;
+				// バズーカならBAZOOKA、それ以外はNORMALとする
+				data.type = (weapon->GetWeaponType() == WeaponType::WEAPON_TYPE_BAZOOKA) ? WarningType::BAZOOKA : WarningType::NORMAL;
+
 				// イベントを発行して危険度の高い攻撃を行うことを知らせる
 				TakeCFrameWork::GetEventManager()->PostEvent(
 					"EnemyHighPowerAttack",
-					enemyData_.characterInfo.transform.translate);
+					data); // 値渡しに変更
 			}
 
 		} else {

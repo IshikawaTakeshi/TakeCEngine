@@ -943,7 +943,7 @@ namespace ImFlow
          * @brief <BR>Set the reference to a link
          * @param link Smart pointer to the link
          */
-        virtual void setLink(std::shared_ptr<Link>& link) {}
+        virtual void setLink([[maybe_unused]] std::shared_ptr<Link>& link) {}
 
         /**
          * @brief <BR>Delete link reference
@@ -1045,9 +1045,9 @@ namespace ImFlow
     class ConnectionFilter
     {
     public:
-        static std::function<bool(Pin*, Pin*)> None() { return [](Pin* out, Pin* in){ return true; }; }
-        static std::function<bool(Pin*, Pin*)> SameType() { return [](Pin* out, Pin* in) { return out->getDataType() == in->getDataType(); }; }
-        static std::function<bool(Pin*, Pin*)> Numbers() { return [](Pin* out, Pin* in){ return out->getDataType() == typeid(double) || out->getDataType() == typeid(float) || out->getDataType() == typeid(int); }; }
+        static std::function<bool(Pin*, Pin*)> None() { return []([[maybe_unused]]Pin* out,[[maybe_unused]] Pin* in){ return true; }; }
+        static std::function<bool(Pin*, Pin*)> SameType() { return []([[maybe_unused]]Pin* out, [[maybe_unused]]Pin* in) { return out->getDataType() == in->getDataType(); }; }
+        static std::function<bool(Pin*, Pin*)> Numbers() { return []([[maybe_unused]]Pin* out, [[maybe_unused]]Pin* in){ return out->getDataType() == typeid(double) || out->getDataType() == typeid(float) || out->getDataType() == typeid(int); }; }
     };
 
     /**

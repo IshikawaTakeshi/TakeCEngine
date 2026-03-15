@@ -125,6 +125,8 @@ public:
 
 	bool IsInCombat() const { return enemyData_.characterInfo.isInCombat; }
 
+	BehaviorNode* GetBehaviorTree() const { return behaviorTree_.get(); }
+
 	// 周回角度の取得
 	float GetOrbitAngle() const { return orbitAngle_; }
 	// 周回半径の取得

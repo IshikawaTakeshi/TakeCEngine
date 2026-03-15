@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <cmath>
 
 inline static void CopyIOEvents(ImGuiContext* src, ImGuiContext* dst, ImVec2 origin, float scale)
 {
@@ -169,13 +170,13 @@ inline void ContainedContext::end()
             m_scale = m_scaleTarget;
         }
     }
-    if (abs(m_scaleTarget - m_scale) >= 0.015f / m_config.zoom_smoothness)
+    if (std::abs(m_scaleTarget - m_scale) >= 0.015f / m_config.zoom_smoothness)
     {
         float cs = (m_scaleTarget - m_scale) / m_config.zoom_smoothness;
         m_scroll += (ImGui::GetMousePos() - m_pos) / (m_scale + cs) - (ImGui::GetMousePos() - m_pos) / m_scale;
         m_scale += (m_scaleTarget - m_scale) / m_config.zoom_smoothness;
 
-        if (abs(m_scaleTarget - m_scale) < 0.015f / m_config.zoom_smoothness)
+        if (std::abs(m_scaleTarget - m_scale) < 0.015f / m_config.zoom_smoothness)
         {
             m_scroll += (ImGui::GetMousePos() - m_pos) / m_scaleTarget - (ImGui::GetMousePos() - m_pos) / m_scale;
             m_scale = m_scaleTarget;

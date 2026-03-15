@@ -219,6 +219,14 @@ void VerticalMissile::Update() {
 		std::string trailEffectName = effectConfig_.trailEffectFilePath[i];
 	}
 
+	// 敵のミサイルの場合は警告イベントを発行
+	if (characterType_ == CharacterType::ENEMY_MISSILE) {
+		WarningData data;
+		data.position = transform_.translate;
+		data.type = WarningType::MISSILE;
+		TakeCFrameWork::GetEventManager()->PostEvent("EnemyBulletWarning", data);
+	}
+
 	//オブジェクト、コライダーの更新
 	object3d_->SetTranslate(transform_.translate);
 	object3d_->SetRotate(QuaternionMath::ToEuler(transform_.rotate));

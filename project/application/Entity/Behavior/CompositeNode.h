@@ -29,6 +29,11 @@ public:
 	}
 
 	/// <summary>
+	/// 子ノードのリストを取得する
+	/// </summary>
+	const std::vector<std::unique_ptr<BehaviorNode>>& GetChildren() const { return children_; }
+
+	/// <summary>
 	/// ノードのリセット
 	/// </summary>
 	void Reset() override {

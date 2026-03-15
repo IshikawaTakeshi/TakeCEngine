@@ -1,8 +1,10 @@
 #pragma once
 #include "engine/2d/BaseUI.h"
 #include "engine/Utility/Timer.h"
+#include "application/UI/WarningType.h"
+#include <array>
 
-//危険表示の方向
+// 危険表示の方向
 enum class WarningDirection {
 	FRONT,
 	RIGHT,
@@ -46,7 +48,7 @@ private:
 	WarningDirection CalculateDirection(const Vector3& targetPos);
 
 	// 指定方向の警告を開始
-	void TriggerWarning(WarningDirection dir);
+	void TriggerWarning(WarningDirection dir, WarningType type = WarningType::NORMAL);
 
 
 private:
@@ -60,6 +62,7 @@ private:
 		Timer timer;        // 点滅タイマー
 		float currentAlpha = 0.0f; // 現在のアルファ値
 		bool isFlashing = false;   // 点滅中かどうか
+		WarningType type = WarningType::NORMAL; // 現在の警告種別
 	};
 
 	// 6方向分の状態
@@ -71,4 +74,3 @@ private:
 
 	uint32_t eventObserverID_ = 0; // イベントオブザーバーのID
 };
-

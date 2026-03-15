@@ -1,10 +1,11 @@
 #include "WarningUI.h"
+#include <any>
 #include "engine/Camera/CameraManager.h"
 #include "engine/Math/MatrixMath.h"
 #include "engine/Math/MathEnv.h"
 #include "engine/Math/Vector3Math.h"
 #include "engine/Base/SpriteManager.h"
-#include "engine/Base/TakeCFramework.h"
+#include "engine/Base/TakeCFrameWork.h"
 
 using namespace TakeC;
 
@@ -15,6 +16,7 @@ WarningUI::~WarningUI() {
 
 	// イベントオブザーバーの解除
 	TakeCFrameWork::GetEventManager()->RemoveObserver("EnemyHighPowerAttack", eventObserverID_);
+	TakeCFrameWork::GetEventManager()->RemoveObserver("EnemyBulletWarning", eventObserverID_);
 }
 //======================================================================
 //	初期化
@@ -51,21 +53,29 @@ void WarningUI::Initialize(TakeC::SpriteManager* spriteManager, const std::strin
 	}
 
 	// イベントオブザーバー登録
-	// std::any で Vector3 (敵のワールド座標) が送られてくると想定
+	// 敵のチャージ攻撃などの強力な攻撃予兆
 	eventObserverID_ = TakeCFrameWork::GetEventManager()->AddObserver(
 		"EnemyHighPowerAttack",
 		[this](const std::any& data) {
+			try {
+				WarningData warningData = std::any_cast<WarningData>(data);
+				WarningDirection dir = this->CalculateDirection(warningData.position);
+				this->TriggerWarning(dir, warningData.type);
+			} catch (const std::bad_any_cast&) {
+				// キャスト失敗時は無視
+			}
+		});
 
-			// データ型チェック（Vector3か？）
-			if (const Vector3* enemyPosPtr = std::any_cast<Vector3>(&data)) {
-				// 値のコピーを取得
-				Vector3 enemyPos = *enemyPosPtr;
-
-				// 方向を計算
-				WarningDirection dir = this->CalculateDirection(enemyPos);
-
-				// 警告開始
-				this->TriggerWarning(dir);
+	// 特定の弾（ミサイル・バズーカ）の位置追跡用
+	TakeCFrameWork::GetEventManager()->AddObserver(
+		"EnemyBulletWarning",
+		[this](const std::any& data) {
+			try {
+				WarningData warningData = std::any_cast<WarningData>(data);
+				WarningDirection dir = this->CalculateDirection(warningData.position);
+				this->TriggerWarning(dir, warningData.type);
+			} catch (const std::bad_any_cast&) {
+				// キャスト失敗時は無視
 			}
 		});
 }
@@ -92,12 +102,16 @@ void WarningUI::Update() {
 		// 時間経過
 		state.timer.Update();
 
-		// 点滅ロジック
-		float alpha = std::abs(std::sin(state.timer.GetProgress() * kFlashSpeed_));
+		// 点滅ロジック (タイマーのリセットに影響されないよう TotalTime を使う)
+		float alpha = std::abs(std::sin(TakeCFrameWork::GetGameTime() * kFlashSpeed_));
 
-		// スプライトにアルファ値を適用
 		if (state.spritePtr) {
-			state.spritePtr->SetAlpha(alpha);
+			// 警告種別に応じた色設定（bazookaは赤）
+			Vector4 color = { 1.0f, 1.0f, 1.0f, alpha };
+			if (state.type == WarningType::BAZOOKA) {
+				color = { 1.0f, 0.0f, 0.0f, alpha };
+			}
+			state.spritePtr->SetMaterialColor(color);
 		}
 
 		// 一定時間経過したら終了
@@ -221,10 +235,22 @@ WarningDirection WarningUI::CalculateDirection(const Vector3& targetPos) {
 //======================================================================
 //	警告開始
 //======================================================================
-void WarningUI::TriggerWarning(WarningDirection dir) {
+void WarningUI::TriggerWarning(WarningDirection dir, WarningType type) {
 
 	int idx = static_cast<int>(dir);
 	auto& state = directionStates_[idx];
+
+	state.type = type;
+
+	// 色の設定
+	if (state.spritePtr) {
+		if (type == WarningType::BAZOOKA) {
+			state.spritePtr->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f }); // 赤
+		}
+		else {
+			state.spritePtr->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f }); // デフォルト（白/黄）
+		}
+	}
 
 	// 既に点滅中なら時間をリセット（延長）するだけにする
 	state.timer.Reset();

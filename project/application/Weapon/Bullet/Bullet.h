@@ -5,6 +5,7 @@
 #include "3d/Particle/ParticleEmitter.h"
 #include "3d/Light/PointLight.h"
 #include "application/Weapon/Bullet/BulletEffectConfig.h"
+#include "application/UI/WarningType.h"
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -90,6 +91,8 @@ public:
 	float GetBreakStunPower() const { return breakStunPower; }
 	//ブレイクスタンの蓄積値の減少間隔の取得
 	float GetBreakStunDecayInterval() const { return breakStunDecayInterval; }
+	// 警告タイプの取得
+	WarningType GetWarningType() const { return warningType_; }
 
 	//----- setter ---------------------------
 	
@@ -113,6 +116,8 @@ public:
 	void SetBreakStunPower(float power) { breakStunPower = power; }
 	//ブレイクスタンの蓄積値の減少間隔の設定
 	void SetBreakStunDecayInterval(float interval) { breakStunDecayInterval = interval; }
+	// 警告タイプの設定
+	void SetWarningType(WarningType type) { warningType_ = type; }
 
 private:
 
@@ -143,5 +148,7 @@ private:
 	//パーティクルエミッター
 	std::vector<std::unique_ptr<ParticleEmitter>> trailEmitter_;
 	std::vector<std::unique_ptr<ParticleEmitter>> explosionEmitter_;
+
+	WarningType warningType_ = WarningType::NORMAL;
 };
 
