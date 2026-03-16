@@ -37,7 +37,7 @@ public:
 	/// <summary>
 	/// ビヘイビアツリーエディタの描画
 	/// </summary>
-	void Draw();
+	void UpdateImGui();
 
 	/// <summary>
 	/// Enemyからビヘイビアツリーを読み込む

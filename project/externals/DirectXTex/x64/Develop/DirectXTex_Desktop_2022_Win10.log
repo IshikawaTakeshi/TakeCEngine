@@ -1,1 +1,4 @@
-﻿C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(473,5): error MSB8020: Visual Studio 2010 (プラットフォーム ツールセット = 'v100') のビルド ツールが見つかりません。v100 ビルド ツールを使用してビルドするには、Visual Studio 2010 ビルド ツールをインストールしてください。または、[プロジェクト] メニューを選択するかソリューションを右クリックし [ソリューションの再ターゲット] を選択して、現在の Visual Studio Tools にアップグレードすることもできます。
+﻿  BCDirectCompute.cpp
+C:\Users\K023G\Kamata\TakeCEngine\project\externals\DirectXTex\BCDirectCompute.cpp(25,18): error C1083: include ファイルを開けません。'BC7Encode_EncodeBlockCS.inc':No such file or directory
+  DirectXTexUtil.cpp
+  コードを生成中...

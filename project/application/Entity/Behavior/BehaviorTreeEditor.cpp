@@ -25,7 +25,7 @@ void BehaviorTreeEditor::Initialize() {
 //===============================================================================
 // 描画
 //===============================================================================
-void BehaviorTreeEditor::Draw() {
+void BehaviorTreeEditor::UpdateImGui() {
 	if (flowEditor_) {
 		ImGui::Begin("Behavior Tree Editor");
 		flowEditor_->update();

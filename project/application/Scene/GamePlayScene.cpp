@@ -100,10 +100,13 @@ void GamePlayScene::Initialize() {
 	enemy_->GetObject3d()->SetAnimation(
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"));
+
+#if defined(_DEBUG) || defined(_DEVELOP)
 	//BehaviorTreeEditor
 	behaviorTreeEditor_ = std::make_unique<BehaviorTreeEditor>();
 	behaviorTreeEditor_->Initialize();
 	behaviorTreeEditor_->LoadTreeFromEnemy(enemy_->GetBehaviorTree());
+#endif // _DEBUG || _DEVELOP
 
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
@@ -232,7 +235,6 @@ void GamePlayScene::Update() {
 	// enemy
 	enemy_->SetFocusTargetPos(player_->GetBodyPosition());
 	enemy_->SetFocusTargetVelocity(player_->GetVelocity());
-	behaviorTreeEditor_->Draw();
 
 	// player
 	player_->SetFocusTargetPos(enemy_->GetBodyPosition());
@@ -271,9 +273,11 @@ void GamePlayScene::UpdateImGui() {
 
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
+	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 
 	player_->UpdateImGui();
 	enemy_->UpdateImGui();
+	behaviorTreeEditor_->UpdateImGui();
 	playerHpBar_->UpdateImGui("player");
 	enemyHpBar_->UpdateImGui("enemy");
 	playerReticle_->UpdateImGui();
@@ -287,8 +291,6 @@ void GamePlayScene::UpdateImGui() {
 	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
 		actionIconSprites_[i]->UpdateImGui(std::format("actionIcon{}", i));
 	}
-
-	TakeCFrameWork::GetSpriteManager()->UpdateImGui("DefaultSprite");
 }
 
 //====================================================================

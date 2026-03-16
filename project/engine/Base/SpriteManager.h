@@ -46,7 +46,7 @@ namespace TakeC {
 		/// ImGuiの更新
 		/// </summary>
 		/// <param name="groupName">ImGuiのグループ名</param>
-		void UpdateImGui(const std::string& groupName);
+		void UpdateImGui();
 
 		//-------------------------------------------------------------------------
 		// 生成・登録メソッド

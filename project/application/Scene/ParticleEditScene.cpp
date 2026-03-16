@@ -90,6 +90,7 @@ void ParticleEditScene::UpdateImGui() {
 	ParticleCommon::GetInstance().UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
+	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 
 	// 現在のモードのEditorを更新
 	if (currentMode_ == EditorMode::Particle) {

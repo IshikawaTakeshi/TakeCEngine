@@ -81,7 +81,7 @@ void GameOverScene::Update() {
 void GameOverScene::UpdateImGui() {
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();	
-	TakeC::ParticleManager().UpdateImGui();
+	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 	gameOverTextSprite_->UpdateImGui("GameOverTextSprite");
 
 }

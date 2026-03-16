@@ -33,28 +33,26 @@ void SpriteManager::Draw() {
 //============================================================================
 // ImGuiの更新
 //============================================================================
-void SpriteManager::UpdateImGui(const std::string& groupName) {
-	groupName;
+void SpriteManager::UpdateImGui() {
 #if defined(_DEBUG) || defined(_DEVELOP)
-	if (ImGui::TreeNode(groupName.c_str())) {
-		int i = 0;
-		for (auto& sprite : sprites_) {
-			// 名前付きの場合は名前を表示、なければ連番
-			std::string spriteLabel = "Sprite_" + std::to_string(i);
+	ImGui::Begin("SpriteManager");
+	int i = 0;
+	for (auto& sprite : sprites_) {
+		// 名前付きの場合は名前を表示、なければ連番
+		std::string spriteLabel = "Sprite_" + std::to_string(i);
 
-			// マップを逆引きして名前を探す（デバッグ用なので簡易的）
-			for (const auto& pair : namedSprites_) {
-				if (pair.second == sprite.get()) {
-					spriteLabel = pair.first;
-					break;
-				}
+		// マップを逆引きして名前を探す（デバッグ用なので簡易的）
+		for (const auto& pair : namedSprites_) {
+			if (pair.second == sprite.get()) {
+				spriteLabel = pair.first;
+				break;
 			}
-			groupName;
-			sprite->UpdateImGui(spriteLabel);
-			i++;
 		}
-		ImGui::TreePop();
+		sprite->UpdateImGui(spriteLabel);
+		i++;
 	}
+	ImGui::End();
+
 #endif
 }
 

@@ -44,19 +44,19 @@ void UIManager::Draw() {
 //============================================================================
 void UIManager::UpdateImGui() {
 #if defined(_DEBUG) || defined(_DEVELOP)
-	if (ImGui::TreeNode("UI Manager")) {
+	ImGui::Begin("UI Manager");
 
-		int i = 0;
-		for (auto& ui : uiList_) {
-			// 各UIのImGuiを表示
-			// UIクラス側で識別名を付けられるようにしておくと便利
-			// ここでは簡易的に連番か、型名がわかればそれを表示したいところ
-			std::string name = "UI_" + std::to_string(i++);
-			ui->UpdateImGui(name);
-		}
-
-		ImGui::TreePop();
+	int i = 0;
+	for (auto& ui : uiList_) {
+		// 各UIのImGuiを表示
+		// UIクラス側で識別名を付けられるようにしておくと便利
+		// ここでは簡易的に連番か、型名がわかればそれを表示したいところ
+		std::string name = "UI_" + std::to_string(i++);
+		ui->UpdateImGui(name);
 	}
+
+	ImGui::TreePop();
+
 #endif
 }
 
