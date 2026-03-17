@@ -29,6 +29,11 @@ void BehaviorTreeEditor::UpdateImGui() {
 	if (flowEditor_) {
 		ImGui::Begin("Behavior Tree Editor");
 
+		// Blackboardの表示
+		if (blackboard_) {
+			blackboard_->UpdateImGui();
+		}
+
 		// [EXT] 実行フローの強調表示（リンクのアニメーション管理）
 		for (auto& link_weak : flowEditor_->getLinks()) {
 			if (auto link = link_weak.lock()) {
@@ -42,10 +47,13 @@ void BehaviorTreeEditor::UpdateImGui() {
 				for (auto& pair : nodeViewMap_) {
 					if (pair.second == childView) {
 						BehaviorNode* node = pair.first;
+
+						//Viewにnodeの状態を渡す（ノードのdraw内で状態に応じた色を表示するため）
+						childView->SetCurrentStatus(node->GetCurrentStatus());
 						
 						// ノードが実行中 (Running) なら、その入力リンクを光らせる
 						if (node->GetCurrentStatus() == BehaviorStatus::Running) {
-							link->setActive(true);
+							link->setActive(true);		
 						}
 
 						// 親ノードが CompositeNode の場合、現在アクティブなインデックスを確認
@@ -78,8 +86,10 @@ void BehaviorTreeEditor::UpdateImGui() {
 //===============================================================================
 // Enemyからツリーを読み込む
 //===============================================================================
-void BehaviorTreeEditor::LoadTreeFromEnemy(BehaviorNode* rootNode) {
+void BehaviorTreeEditor::LoadTreeFromEnemy(BehaviorNode* rootNode, Blackboard* blackboard) {
 	if (!flowEditor_ || !rootNode) return;
+
+	blackboard_ = blackboard;
 
 	// いったんエディタのノードをクリアする
 	nodeViewMap_.clear();
@@ -134,6 +144,9 @@ ImFlow::BaseNode* BehaviorTreeEditor::BuildNodeView(BehaviorNode* node, ImVec2& 
 
 	// 紐づけを保存
 	nodeViewMap_[node] = viewNode;
+
+	// ロジックノードとビューの紐づけ
+	static_cast<BehaviorNodeView*>(viewNode)->SetLogicNode(node);
 
 	// 2. CompositeNodeの場合は子ノードを再帰的に生成してリンクを繋ぐ
 	if (auto* compositeNode = dynamic_cast<CompositeNode*>(node)) {

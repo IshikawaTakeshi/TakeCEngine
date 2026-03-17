@@ -7,6 +7,8 @@ WeightSelectorNodeView::WeightSelectorNodeView() {
 
 	//ノードタイトルの設定
 	setTitle("WeightSelector");
+	//ノードの色の設定
+	setStyle(ImFlow::NodeStyle::purple());
 
 	//入力ピンの設定
 	//親ノードから実行フロー

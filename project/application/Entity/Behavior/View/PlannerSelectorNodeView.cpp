@@ -7,6 +7,8 @@ PlannerSelectorNodeView::PlannerSelectorNodeView() {
 
 	//ノードタイトルの設定
 	setTitle("PlannerSelector");
+	//ノードの色の設定
+	setStyle(ImFlow::NodeStyle::purple());
 
 	//入力ピンの設定
 	//親ノードから実行フロー

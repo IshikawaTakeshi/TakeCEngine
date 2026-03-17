@@ -10,6 +10,8 @@ ScoreConditionNodeView::ScoreConditionNodeView(float threshold) {
 
 	//ノードタイトルの設定
 	setTitle("ScoreCondition");
+	//ノードの色の設定
+	setStyle(ImFlow::NodeStyle::green());
 
 	//入力ピンの設定
 	//親ノードから実行フロー

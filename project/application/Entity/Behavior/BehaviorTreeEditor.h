@@ -1,6 +1,7 @@
 #pragma once
 #include <ImNodeFlow-1.2.2/include/ImNodeFlow.h>
 #include <map>
+#include "application/Entity/Behavior/Blackboard.h"
 #include "application/Entity/Behavior/BehaviorNode.h"
 #include "application/Entity/Behavior/CompositeNode.h"
 #include "application/Entity/Behavior/SelectorNode.h"
@@ -43,7 +44,7 @@ public:
 	/// Enemyからビヘイビアツリーを読み込む
 	/// </summary>
 	/// <param name="rootNode">Enemyが保持しているルートノード</param>
-	void LoadTreeFromEnemy(BehaviorNode* rootNode);
+	void LoadTreeFromEnemy(BehaviorNode* rootNode, Blackboard* blackboard);
 
 private:
 
@@ -54,6 +55,7 @@ private:
 
 private:
 
+	Blackboard* blackboard_ = nullptr; // ビヘイビアツリーのブラックボード
 	std::unique_ptr<ImFlow::ImNodeFlow> flowEditor_; // ImNodeFlowのエディタ
 	std::map<BehaviorNode*, ImFlow::BaseNode*> nodeViewMap_; // 実際のノードとViewの紐づけ
 };

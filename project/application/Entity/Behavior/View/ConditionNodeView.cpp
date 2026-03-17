@@ -14,6 +14,8 @@ ConditionNodeView::ConditionNodeView(
 
 	//ノードタイトルの設定
 	setTitle("Condition");
+	//ノードの色の設定
+	setStyle(ImFlow::NodeStyle::green());
 
 	//入力ピンの設定
 	//親ノードから実行フロー
@@ -33,8 +35,4 @@ void ConditionNodeView::draw() {
 	// 共通部分の描画（状態表示）
 	BehaviorNodeView::draw();
 
-	// ノード固有の描画: 条件パラメータの表示
-	ImGui::Text("Field: %s", field_.c_str());
-	ImGui::Text("Op: %s", op_.c_str());
-	ImGui::Text("Value: %.2f", value_);
 }

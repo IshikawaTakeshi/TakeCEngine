@@ -7,6 +7,8 @@ SelectorNodeView::SelectorNodeView() {
 
 	//ノードタイトルの設定
 	setTitle("Selector");
+	//ノードの色の設定
+	setStyle(ImFlow::NodeStyle::purple());
 
 	//入力ピンの設定
 	//親ノードから実行フロー

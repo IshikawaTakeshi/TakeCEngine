@@ -105,7 +105,7 @@ void GamePlayScene::Initialize() {
 	//BehaviorTreeEditor
 	behaviorTreeEditor_ = std::make_unique<BehaviorTreeEditor>();
 	behaviorTreeEditor_->Initialize();
-	behaviorTreeEditor_->LoadTreeFromEnemy(enemy_->GetBehaviorTree());
+	behaviorTreeEditor_->LoadTreeFromEnemy(enemy_->GetBehaviorTree(),enemy_->GetBlackboard());
 #endif // _DEBUG || _DEVELOP
 
 	// playerHpBar

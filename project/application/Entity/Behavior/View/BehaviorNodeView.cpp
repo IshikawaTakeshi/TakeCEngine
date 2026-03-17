@@ -1,10 +1,20 @@
 #include "BehaviorNodeView.h"
 #include "engine/base/ImGuiManager.h"
 #include "engine/Utility/StringUtility.h"
+#include "application/Entity/Behavior/BehaviorNode.h"
 
+//====================================================================
+// ノードの内容描画
+//====================================================================
 void BehaviorNodeView::draw() {
 	ImVec4 color = statusToColor(currentStatus_);
 	ImGui::TextColored(color, "Status: %s", StringUtility::EnumToString<BehaviorStatus>(currentStatus_).c_str());
+
+	// ロジックノードのインスペクタを表示
+	if (logicNode_) {
+		ImGui::Separator();
+		logicNode_->DrawInspector();
+	}
 }
 
 ImVec4 BehaviorNodeView::statusToColor(BehaviorStatus status) {

@@ -441,9 +441,7 @@ void Enemy::UpdateImGui() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::Begin("Enemy");
 
-	if (blackboard_) {
-		blackboard_->UpdateImGui();
-	}
+	ImGui::Separator();
 
 	ImGui::DragFloat3("Translate",
 		&enemyData_.characterInfo.transform.translate.x, 0.01f);

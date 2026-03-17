@@ -23,7 +23,31 @@ public:
 	// functions
 	//====================================================================================
 
+	/// <summary>
+	/// ノードの実行
+	/// </summary>
+	/// <param name="blackboard"></param>
+	/// <returns></returns>
 	BehaviorStatus Execute(Blackboard& blackboard) override;
+
+	void Reset() override {}
+
+	/// <summary>
+	/// パラメータの編集
+	/// </summary>
+	void DrawInspector() override;
+
+	/// <summary>
+	/// スコア関数の設定
+	/// </summary>
+	/// <param name="threshold"></param>
+	void SetThreshold(float threshold) { threshold_ = threshold; }
+
+	/// <summary>
+	/// スコア関数の設定
+	/// </summary>
+	/// <param name="scoreFunc"></param>
+	void SetScoreFunc(ScoreFunc scoreFunc) { scoreFunc_ = std::move(scoreFunc); }
 
 private:
 	ScoreFunc scoreFunc_;

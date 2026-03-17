@@ -1,8 +1,11 @@
 #pragma once
 #include <ImNodeFlow-1.2.2/include/ImNodeFlow.h>
 #include "application/Entity/Behavior/BehaviorStatusEnum.h"
+
 #include "engine/Math/Vector4.h"
 #include <string>
+
+class BehaviorNode;
 
 //=============================================================
 //BehaviorNodeView class
@@ -58,8 +61,23 @@ public:
 	/// <returns></returns>
 	size_t GetOutputPinCount() const { return outPins_.size(); }
 
+	void SetCurrentStatus(BehaviorStatus status) { currentStatus_ = status; }
+
+	//=========================================================================
+	// logic link
+	//=========================================================================
+
+	/// <summary>
+	/// ロジックノードを紐づける
+	/// </summary>
+	/// <param name="node"></param>
+	void SetLogicNode(BehaviorNode* node) { logicNode_ = node; }
+
 
 protected:
+
+	// 紐づくロジックノード
+	BehaviorNode* logicNode_ = nullptr;
 
 	/// ノードの状態
 	BehaviorStatus currentStatus_ = BehaviorStatus::Invalid;
