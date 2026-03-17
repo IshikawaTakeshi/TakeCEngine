@@ -260,7 +260,13 @@ void Enemy::SaveEnemyData(const std::string& characterJsonPath) {
 
 void Enemy::Update() {
 
-	// --- ブレイクゲージ更新（ここを上の方に追加する認識でOK） ---
+	// --- 1. 状態の判定（AIや攻撃に先立って行う） ---
+	// 死亡判定
+	if (enemyData_.characterInfo.health <= 0.0f && enemyData_.characterInfo.isAlive) {
+		enemyData_.characterInfo.isAlive = false;
+		stateManager_->RequestState(State::DEAD);
+		deadEffect_->Start();
+	}
 	auto& breakGaugeInfo = enemyData_.characterInfo.breakGaugeInfo;
 
 
@@ -286,15 +292,23 @@ void Enemy::Update() {
 		}
 	}
 
+	// --- 2. ガード付きでAI/攻撃を実行 ---
+
+	// AIの制御を受け付けないステートの判定
+	bool isAIControlDisabled = !enemyData_.characterInfo.isAlive || 
+	                           breakGaugeInfo.isStunned ||
+	                           stateManager_->GetCurrentStateType() == GameCharacterState::CHARGESHOOT_STUN ||
+	                           stateManager_->GetCurrentStateType() == GameCharacterState::DEAD;
+
 	// stepBoostのインターバルの更新
 	enemyData_.characterInfo.stepBoostInfo.interval = 0.2f;
 	if (enemyData_.characterInfo.stepBoostInfo.intervalTimer > 0.0f) {
 		enemyData_.characterInfo.stepBoostInfo.intervalTimer -= deltaTime_;
 	}
 
-	// RUNNING時のState遷移リクエスト
-	if (enemyData_.characterInfo.isInCombat) {
-		// 1. AIスコアを更新（従来通り）
+	// AIの更新
+	if (enemyData_.characterInfo.isInCombat && !isAIControlDisabled) {
+		// 1. AIスコアを更新
 		float dist = (enemyData_.characterInfo.focusTargetPos -
 			enemyData_.characterInfo.transform.translate).Length();
 		aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
@@ -305,41 +319,44 @@ void Enemy::Update() {
 		UpdateBlackboard();
 
 		// 3. ビヘイビアツリーを実行（ツリーがRequestStateを呼ぶ）
-		BehaviorStatus status = behaviorTree_->Execute(*blackboard_);
-		if (status != BehaviorStatus::Running) {
-			behaviorTree_->Reset(); // 完了 or 失敗 → 次フレームで再評価
+		if (behaviorTree_) {
+			BehaviorStatus status = behaviorTree_->Execute(*blackboard_);
+			if (status != BehaviorStatus::Running) {
+				behaviorTree_->Reset(); // 完了 or 失敗 → 次フレームで再評価
+			}
 		}
 
-
-		// 移動方向の取得（変更なし）
+		// 移動方向の取得
 		enemyData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
 
-		// 攻撃処理（変更なし）
-		if (enemyData_.characterInfo.isAlive == true &&
-			(stateManager_->GetCurrentStateType() == GameCharacterState::BREAK_STUN) == false) {
-			UpdateAttack();
-		}
+		// 攻撃処理
+		UpdateAttack();
+	} else {
+		// AI停止時は移動入力をゼロにする
+		enemyData_.characterInfo.moveDirection = { 0.0f, 0.0f, 0.0f };
 	}
 
-	// エネルギーの更新
+	// --- 3. 常時必要な更新 ---
 	UpdateEnergy();
 	// アクティブブーストエフェクトのリクエスト
 	RequestActiveBoostEffect();
 
-	// Stateの更新
+	// Stateの更新（ここで実際にステートが切り替わる）
 	stateManager_->Update(enemyData_.characterInfo);
 
-	// 地面に着地したらRUNNINGに戻る
-	if (enemyData_.characterInfo.onGround == true &&
-		(stateManager_->GetCurrentStateType() == GameCharacterState::JUMP ||
-			stateManager_->GetCurrentStateType() == GameCharacterState::FLOATING)) {
+	// 地面判定に基づく自動遷移（スタンや死亡中、チャージ硬直中は行わない）
+	if (!isAIControlDisabled) {
+		if (enemyData_.characterInfo.onGround == true &&
+			(stateManager_->GetCurrentStateType() == GameCharacterState::JUMP ||
+				stateManager_->GetCurrentStateType() == GameCharacterState::FLOATING)) {
 
-		stateManager_->RequestState(GameCharacterState::RUNNING);
-	}
-	else if (enemyData_.characterInfo.onGround == false &&
-		stateManager_->GetCurrentStateType() == GameCharacterState::RUNNING) {
-		// 空中にいる場合はFLOATINGに切り替え
-		stateManager_->RequestState(GameCharacterState::FLOATING);
+			stateManager_->RequestState(GameCharacterState::RUNNING);
+		}
+		else if (enemyData_.characterInfo.onGround == false &&
+			stateManager_->GetCurrentStateType() == GameCharacterState::RUNNING) {
+			// 空中にいる場合はFLOATINGに切り替え
+			stateManager_->RequestState(GameCharacterState::FLOATING);
+		}
 	}
 
 	// ダメージエフェクトの更新
@@ -349,13 +366,6 @@ void Enemy::Update() {
 		if (damageEffectTime_ <= 0.0f) {
 			enemyData_.characterInfo.isDamaged = false;
 		}
-	}
-
-	if (enemyData_.characterInfo.health <= 0.0f) {
-		// 死亡状態のリクエスト
-		enemyData_.characterInfo.isAlive = false;
-		stateManager_->RequestState(State::DEAD);
-		deadEffect_->Start();
 	}
 
 	// bulletSensorの更新
