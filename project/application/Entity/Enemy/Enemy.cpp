@@ -172,23 +172,28 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon,
 			// ライフルの武器を初期化
 			weapons_[i] = std::make_unique<Rifle>();
 
-		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
+		}
+		else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
 			// バズーカの武器を初期化
 			weapons_[i] = std::make_unique<Bazooka>();
 
-		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
+		}
+		else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
 			// 垂直ミサイルの武器を初期化
 			weapons_[i] = std::make_unique<VerticalMissileLauncher>();
 
-		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_MACHINE_GUN) {
+		}
+		else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_MACHINE_GUN) {
 			// マシンガンの武器を初期化
 			weapons_[i] = std::make_unique<MachineGun>();
 
-		} else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_SHOTGUN) {
+		}
+		else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_SHOTGUN) {
 			// ショットガンの武器を初期化
 			weapons_[i] = std::make_unique<ShotGun>();
 
-		} else {
+		}
+		else {
 			// 武器が設定されていない場合はnullptrのまま
 			weapons_[i] = nullptr;
 		}
@@ -264,7 +269,8 @@ void Enemy::Update() {
 
 	if (breakGaugeInfo.isStunned) {
 		breakGaugeInfo.entries.clear();
-	} else {
+	}
+	else {
 		BreakGaugeUtil::UpdateBreakGaugeEntries(breakGaugeInfo);
 
 		// スタン猶予タイマーの更新
@@ -299,12 +305,11 @@ void Enemy::Update() {
 		UpdateBlackboard();
 
 		// 3. ビヘイビアツリーを実行（ツリーがRequestStateを呼ぶ）
-		if (behaviorTree_) {
-			BehaviorStatus status = behaviorTree_->Execute(*blackboard_);
-			if (status != BehaviorStatus::Running) {
-				behaviorTree_->Reset(); // 完了 or 失敗 → 次フレームで再評価
-			}
+		BehaviorStatus status = behaviorTree_->Execute(*blackboard_);
+		if (status != BehaviorStatus::Running) {
+			behaviorTree_->Reset(); // 完了 or 失敗 → 次フレームで再評価
 		}
+
 
 		// 移動方向の取得（変更なし）
 		enemyData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
@@ -330,8 +335,9 @@ void Enemy::Update() {
 			stateManager_->GetCurrentStateType() == GameCharacterState::FLOATING)) {
 
 		stateManager_->RequestState(GameCharacterState::RUNNING);
-	} else if (enemyData_.characterInfo.onGround == false &&
-		stateManager_->GetCurrentStateType() ==GameCharacterState::RUNNING) {
+	}
+	else if (enemyData_.characterInfo.onGround == false &&
+		stateManager_->GetCurrentStateType() == GameCharacterState::RUNNING) {
 		// 空中にいる場合はFLOATINGに切り替え
 		stateManager_->RequestState(GameCharacterState::FLOATING);
 	}
@@ -375,7 +381,8 @@ void Enemy::Update() {
 		enemyData_.characterInfo.transform.rotate =
 			QuaternionMath::Normalize(enemyData_.characterInfo.transform.rotate);
 
-	} else {
+	}
+	else {
 		if (enemyData_.characterInfo.moveDirection.x != 0.0f ||
 			enemyData_.characterInfo.moveDirection.z != 0.0f) {
 			// 移動方向に合わせて回転
@@ -482,7 +489,7 @@ void Enemy::UpdateImGui() {
 		entry.delayTimer.Initialize(entry.decayDelay, 0.0f); //減衰開始タイマーを初期化して開始
 		gaugeInfo.entries.push_back(entry);
 
-		
+
 
 	}
 	// スピードを0にするボタン
@@ -605,7 +612,8 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 
 			collider_->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f }); // コライダーの色を緑に変更
 
-		} else if (collider_->GetSurfaceType() == SurfaceType::WALL) {
+		}
+		else if (collider_->GetSurfaceType() == SurfaceType::WALL) {
 
 			// 側面で接触した場合
 			if (BoxCollider* box = dynamic_cast<BoxCollider*>(collider_.get())) {
@@ -623,7 +631,8 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 
 			collider_->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f }); // コライダーの色を青に変更
 
-		} else if (collider_->GetSurfaceType() == SurfaceType::TOP) {
+		}
+		else if (collider_->GetSurfaceType() == SurfaceType::TOP) {
 			// 天井に接触した場合
 			if (enemyData_.characterInfo.velocity.y > 0.0f) {
 				enemyData_.characterInfo.velocity.y = 0.0f;
@@ -688,12 +697,14 @@ void Enemy::WeaponAttack(int weaponIndex) {
 			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
 				stateManager_->RequestState(GameCharacterState::CHARGESHOOT_STUN);
-			} else {
+			}
+			else {
 				// 移動撃ち可能な場合はRUNNINGに戻す
 				stateManager_->RequestState(GameCharacterState::RUNNING);
 			}
 		}
-	} else {
+	}
+	else {
 		// チャージ攻撃不可:通常攻撃
 		if (weapon->StopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
 			// 停止撃ち専用:硬直処理を行う
@@ -705,7 +716,7 @@ void Enemy::WeaponAttack(int weaponIndex) {
 			// チャージ撃ちのタイマーを初期化して開始
 			if (chargeShootTimer_.IsFinished()) {
 				chargeShootTimer_.Initialize(chargeShootDuration_, 0.0f);
-				
+
 				// 武器種別に応じた警告データの作成
 				WarningData data;
 				data.position = enemyData_.characterInfo.transform.translate;
@@ -718,7 +729,8 @@ void Enemy::WeaponAttack(int weaponIndex) {
 					data); // 値渡しに変更
 			}
 
-		} else {
+		}
+		else {
 			// 移動撃ち可能
 			weapon->Attack();
 		}
@@ -732,7 +744,8 @@ void Enemy::WeaponAttack(int weaponIndex) {
 			if (weapon->StopShootOnly()) {
 				// 停止撃ち専用の場合はチャージ後に硬直状態へ
 				stateManager_->RequestState(GameCharacterState::CHARGESHOOT_STUN);
-			} else {
+			}
+			else {
 				// 移動撃ち可能な場合はRUNNINGに戻す
 				stateManager_->RequestState(GameCharacterState::RUNNING);
 			}
@@ -790,7 +803,8 @@ void Enemy::UpdateEnergy() {
 			}
 		}
 
-	} else {
+	}
+	else {
 
 		// オーバーヒートの処理
 		if (overheatTimer > 0.0f) {
@@ -820,7 +834,8 @@ void Enemy::RequestActiveBoostEffect() {
 			boostEffect->SetIsActive(false);
 		}
 		return;
-	} else {
+	}
+	else {
 		// 背中のエフェクトは常にアクティブ
 		boostEffects_[BACKPACK]->SetIsActive(true);
 	}
@@ -845,13 +860,15 @@ void Enemy::RequestActiveBoostEffect() {
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
 		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
 		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
-	} else if (angle >= 45.0f && angle < 135.0f) {
+	}
+	else if (angle >= 45.0f && angle < 135.0f) {
 		// 右
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
 		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
 		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
-	} else {
+	}
+	else {
 		// 前後
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
@@ -872,7 +889,7 @@ void Enemy::AccumulateBreakGauge(float damage) {
 		gaugeInfo.stunGraceTimer.IsFinished() == false) {
 
 		// 死亡している、すでにスタンしている、またはスタン猶予タイマーが有効な場合はゲージを蓄積しない
-		return; 
+		return;
 	}
 
 	// ダメージに係数を乗算してゲージに加算（係数は武器ごとに変えてもよい）
@@ -894,22 +911,22 @@ void Enemy::AccumulateBreakGauge(float damage) {
 void Enemy::UpdateBlackboard() {
 
 	// --- PlayableCharacterInfo からの書き込み ---
-	blackboard_->SetValue("energy",    enemyData_.characterInfo.energyInfo.energy);
+	blackboard_->SetValue("energy", enemyData_.characterInfo.energyInfo.energy);
 	blackboard_->SetValue("maxEnergy", enemyData_.characterInfo.energyInfo.maxEnergy);
-	blackboard_->SetValue("hp",        enemyData_.characterInfo.health);
-	blackboard_->SetValue("maxHp",     enemyData_.characterInfo.maxHealth);
-	blackboard_->SetValue("hpRatio",   enemyData_.characterInfo.health / enemyData_.characterInfo.maxHealth);
-	blackboard_->SetValue("posY",      enemyData_.characterInfo.transform.translate.y);
-	blackboard_->SetValue("onGround",   enemyData_.characterInfo.onGround);
+	blackboard_->SetValue("hp", enemyData_.characterInfo.health);
+	blackboard_->SetValue("maxHp", enemyData_.characterInfo.maxHealth);
+	blackboard_->SetValue("hpRatio", enemyData_.characterInfo.health / enemyData_.characterInfo.maxHealth);
+	blackboard_->SetValue("posY", enemyData_.characterInfo.transform.translate.y);
+	blackboard_->SetValue("onGround", enemyData_.characterInfo.onGround);
 	blackboard_->SetValue("isOverheated", enemyData_.characterInfo.overHeatInfo.isOverheated);
-	blackboard_->SetValue("isAlive",    enemyData_.characterInfo.isAlive);
+	blackboard_->SetValue("isAlive", enemyData_.characterInfo.isAlive);
 	blackboard_->SetValue("isInCombat", enemyData_.characterInfo.isInCombat);
 
 	// --- AIBrainSystem からの書き込み ---
 	float distance = (enemyData_.characterInfo.focusTargetPos -
 		enemyData_.characterInfo.transform.translate).Length();
-	blackboard_->SetValue("distance",     distance);
-	blackboard_->SetValue("orbitRadius",  orbitRadius_);
+	blackboard_->SetValue("distance", distance);
+	blackboard_->SetValue("orbitRadius", orbitRadius_);
 	blackboard_->SetValue("isBulletNearby", bulletSensor_->IsActive());
 
 	// --- 武器スコアの書き込み ---

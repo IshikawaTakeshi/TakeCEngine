@@ -43,6 +43,11 @@ public:
 		}
 	}
 
+	/// <summary>
+	/// 現在実行中の子インデックスを取得 [EXT]
+	/// </summary>
+	size_t GetCurrentIndex() const { return currentIndex_; }
+
 protected:
 
 	// 子ノードのリスト

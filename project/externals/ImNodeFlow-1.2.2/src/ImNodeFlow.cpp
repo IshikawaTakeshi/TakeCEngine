@@ -27,6 +27,39 @@ namespace ImFlow {
                          thickness + m_left->getStyle()->extra.link_selected_outline_thickness);
         smart_bezier(start, end, m_left->getStyle()->color, thickness);
 
+        // [EXT] Highlighting feature animation
+        if (m_active) {
+            float t = fmodf(float(ImGui::GetTime())* 1.5f, 1.0f);
+            
+            // 3次ベジェ曲線の制御点計算 (ImNodeFlow のロジックに合わせる)
+            float distance = sqrtf(powf((end.x - start.x), 2.f) + powf((end.y - start.y), 2.f));
+            float delta = distance * 0.45f;
+            if (end.x < start.x) delta += 0.2f * (start.x - end.x);
+            float vert = 0.f;
+            ImVec2 p22 = end - ImVec2(delta, vert);
+            if (end.x < start.x - 50.f) delta *= -1.f;
+            ImVec2 p11 = start + ImVec2(delta, vert);
+
+            // ベジェ曲線の座標計算 Bezier(t) = (1-t)^3*P0 + 3t(1-t)^2*P1 + 3t^2(1-t)*P2 + t^3*P3
+            auto bezier = [](float t, const ImVec2& P0, const ImVec2& P1, const ImVec2& P2, const ImVec2& P3) {
+                float mt = 1.0f - t;
+                return mt * mt * mt * P0 + 3.0f * t * mt * mt * P1 + 3.0f * t * t * mt * P2 + t * t * t * P3;
+				};
+
+			// アニメーションの点の色 (例: オレンジ)
+			ImU32 outlineColor = IM_COL32(255, 0, 100, 255);
+
+			// アニメーションの点を描画
+			for (int i = 0; i < 5; ++i) {
+                float offset = (t + i * 0.2f);
+                if (offset > 1.0f) offset -= 1.0f;
+                ImVec2 pos = bezier(offset, start, p11, p22, end);
+                ImGui::GetWindowDrawList()->AddCircleFilled(pos, 10.0f, outlineColor);
+            }
+			// ベジェ曲線のアウトラインを描画
+            smart_bezier(start, end, outlineColor, thickness);
+        }
+
         if (m_selected && ImGui::IsKeyPressed(ImGuiKey_Delete, false))
             m_right->deleteLink();
     }

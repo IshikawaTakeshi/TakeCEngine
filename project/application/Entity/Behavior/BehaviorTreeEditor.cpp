@@ -28,6 +28,48 @@ void BehaviorTreeEditor::Initialize() {
 void BehaviorTreeEditor::UpdateImGui() {
 	if (flowEditor_) {
 		ImGui::Begin("Behavior Tree Editor");
+
+		// [EXT] 実行フローの強調表示（リンクのアニメーション管理）
+		for (auto& link_weak : flowEditor_->getLinks()) {
+			if (auto link = link_weak.lock()) {
+				// いったん非アクティブにリセット
+				link->setActive(false);
+
+				// リンクの右側（入力ピン）に繋がっているノードを取得
+				auto* childView = static_cast<BehaviorNodeView*>(link->right()->getParent());
+				
+				// Viewに対応する BehaviorNode を逆引き
+				for (auto& pair : nodeViewMap_) {
+					if (pair.second == childView) {
+						BehaviorNode* node = pair.first;
+						
+						// ノードが実行中 (Running) なら、その入力リンクを光らせる
+						if (node->GetCurrentStatus() == BehaviorStatus::Running) {
+							link->setActive(true);
+						}
+
+						// 親ノードが CompositeNode の場合、現在アクティブなインデックスを確認
+						auto* parentView = static_cast<BehaviorNodeView*>(link->left()->getParent());
+						for (auto& parentPair : nodeViewMap_) {
+							if (parentPair.second == parentView) {
+								if (auto* composite = dynamic_cast<CompositeNode*>(parentPair.first)) {
+									const auto& children = composite->GetChildren();
+									size_t activeIdx = composite->GetCurrentIndex();
+									if (activeIdx < children.size() && children[activeIdx].get() == node) {
+										if (composite->GetCurrentStatus() == BehaviorStatus::Running) {
+											link->setActive(true);
+										}
+									}
+								}
+								break;
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+
 		flowEditor_->update();
 		ImGui::End();
 	}
@@ -120,11 +162,11 @@ ImFlow::BaseNode* BehaviorTreeEditor::BuildNodeView(BehaviorNode* node, ImVec2& 
 
 				// Linkオブジェクトを作成してaddLinkに渡す
 				if (outPinPtr && inPinPtr) {
-					auto link = std::make_shared<ImFlow::Link>(outPinPtr, inPinPtr, flowEditor_.get());
-					flowEditor_->addLink(link);
+					// ライブラリ標準の接続処理を呼び出す
+					inPinPtr->createLink(outPinPtr);
 				}
 			}
-			childPos.y += 150.0f; // 次の子ノードはY軸を少し下にズラす
+			childPos.y += 100.0f; // 次の子ノードはY軸を少し下にズラす
 		}
 
 		// 親のY座標更新（兄弟ノードと被らないように）

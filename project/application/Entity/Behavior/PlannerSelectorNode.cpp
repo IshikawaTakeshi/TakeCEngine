@@ -3,13 +3,21 @@
 BehaviorStatus PlannerSelectorNode::Execute(Blackboard& blackboard) {
 	
 	if (children_.empty()) {
+		currentStatus_ = BehaviorStatus::Failure;
 		return BehaviorStatus::Failure; // 子ノードがいない場合は失敗
 	}
 	size_t selectedIndex = SelectNodeIndex(blackboard);
 	if (selectedIndex >= children_.size()) {
+		currentStatus_ = BehaviorStatus::Failure;
 		return BehaviorStatus::Failure; // 選択されたインデックスが範囲外の場合は失敗
 	}
+
+	// [EXT] 実行中のインデックスを保存 (CompositeNodeの機能を利用)
+	currentIndex_ = selectedIndex;
+
 	BehaviorStatus status = children_[selectedIndex]->Execute(blackboard);
+	currentStatus_ = status;
+
 	if (status == BehaviorStatus::Running) {
 		return BehaviorStatus::Running; // 選択されたノードがまだ実行中
 	}
@@ -40,4 +48,3 @@ size_t PlannerSelectorNode::SelectNodeIndex(Blackboard&) {
 	}
 	return weights.size() - 1; // 万が一のため、最後のインデックスを返す
 }
-

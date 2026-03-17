@@ -173,6 +173,22 @@ namespace ImFlow
         static std::shared_ptr<NodeStyle> red() { return std::make_shared<NodeStyle>(IM_COL32(191,90,90,255), ImColor(233,241,244,255), 11.f); }
         /// @brief <BR>Default brown style
         static std::shared_ptr<NodeStyle> brown() { return std::make_shared<NodeStyle>(IM_COL32(191,134,90,255), ImColor(233,241,244,255), 6.5f); }
+
+        ///追加：
+		/// @brief <BR>Default blue style
+		static std::shared_ptr<NodeStyle> blue() { return std::make_shared<NodeStyle>(IM_COL32(90, 117, 191, 255), ImColor(233, 241, 244, 255), 6.5f); }
+		/// @brief <BR>Default white style
+		static std::shared_ptr<NodeStyle> white() { return std::make_shared<NodeStyle>(IM_COL32(255, 255, 255, 255), ImColor(23, 16, 16, 255), 6.5f); }
+		/// @brief <BR>Default purple style
+		static std::shared_ptr<NodeStyle> purple() { return std::make_shared<NodeStyle>(IM_COL32(128, 0, 128, 255), ImColor(233, 241, 244, 255), 6.5f); }
+		/// @brief <BR>Default gray style
+		static std::shared_ptr<NodeStyle> gray() { return std::make_shared<NodeStyle>(IM_COL32(128, 128, 128, 255), ImColor(233, 241, 244, 255), 6.5f); }
+		/// @brief <BR>Default yellow style
+		static std::shared_ptr<NodeStyle> yellow() { return std::make_shared<NodeStyle>(IM_COL32(255, 255, 0, 255), ImColor(23, 16, 16, 255), 6.5f); }
+		/// @brief <BR>Default pink style
+		static std::shared_ptr<NodeStyle> pink() { return std::make_shared<NodeStyle>(IM_COL32(255, 192, 203, 255), ImColor(23, 16, 16, 255), 6.5f); }
+		/// @brief <BR>Default crimson style
+		static std::shared_ptr<NodeStyle> crimson() { return std::make_shared<NodeStyle>(IM_COL32(220, 20, 60, 255), ImColor(233, 241, 244, 255), 6.5f); }
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -227,12 +243,26 @@ namespace ImFlow
          * @return [TRUE] If the link is selected in the current frame
          */
         [[nodiscard]] bool isSelected() const { return m_selected; }
+
+        /**
+         * @brief <BR>Set active status (for highlighting) [EXT]
+         * @param active New active state
+         */
+        void setActive(bool active) { m_active = active; }
+
+        /**
+         * @brief <BR>Get active status [EXT]
+         * @return [TRUE] if the link is active
+         */
+        [[nodiscard]] bool isActive() const { return m_active; }
+
     private:
         Pin* m_left;
         Pin* m_right;
         ImNodeFlow* m_inf;
         bool m_hovered = false;
         bool m_selected = false;
+        bool m_active = false; // [EXT] Highlighting feature
     };
 
     // -----------------------------------------------------------------------------------------------------------------

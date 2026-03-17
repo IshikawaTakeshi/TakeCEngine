@@ -9,6 +9,8 @@ ActionNodeView::ActionNodeView(const std::string& stateName) {
 
 	//ノードタイトルの設定
 	setTitle("Action:" + targetStateName_);
+	//ノードの色の設定
+	setStyle(ImFlow::NodeStyle::red());
 
 	//入力ピンの設定
 	//親ノードから実行フロー

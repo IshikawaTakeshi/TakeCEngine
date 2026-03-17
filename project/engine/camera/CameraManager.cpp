@@ -53,6 +53,7 @@ void CameraManager::UpdateImGui() {
 //============================================================================
 void CameraManager::Finalize() {
 	cameras_.clear();
+	activeCamera_ = nullptr;
 }
 
 //============================================================================

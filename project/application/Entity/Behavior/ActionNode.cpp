@@ -24,18 +24,22 @@ BehaviorStatus ActionNode::Execute(Blackboard&) {
 	}
 	//現在のステートがターゲットと一致した場合、まだ実行中
 	if (stateManager_->GetCurrentStateType() == targetState_) {
+		currentStatus_ = BehaviorStatus::Running;
 		return BehaviorStatus::Running;
 	}
 
 	//ステートが変わった場合、アクション完了とみなす
 	if (isStarted_ && stateManager_->GetCurrentStateType() != targetState_) {
 		Reset(); // 次回の実行に備えて状態をリセット
+		currentStatus_ = BehaviorStatus::Success;
 		return BehaviorStatus::Success;
 	}
 
+	currentStatus_ = BehaviorStatus::Running;
 	return BehaviorStatus::Running; // まだ実行中
 }
 
 void ActionNode::Reset() {
+	BehaviorNode::Reset();
 	isStarted_ = false;
 }

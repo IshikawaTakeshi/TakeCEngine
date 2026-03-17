@@ -62,7 +62,7 @@ public:
 protected:
 
 	/// ノードの状態
-	BehaviorStatus lastStatus_ = BehaviorStatus::Invalid;
+	BehaviorStatus currentStatus_ = BehaviorStatus::Invalid;
 
 	/// <summary>
 	/// ノードの状態に応じた色を取得
@@ -70,10 +70,10 @@ protected:
 	/// ノードの状態に応じた色を取得
 	static ImVec4 statusToColor(BehaviorStatus status);
 
-	/// 入力ピンを順序を維持して保持する
+	/// 入力ピン
 	std::vector<ImFlow::Pin*> inPins_;
 
-	/// 出力ピンを順序を維持して保持する
+	/// 出力ピン
 	std::vector<ImFlow::Pin*> outPins_;
 };
 

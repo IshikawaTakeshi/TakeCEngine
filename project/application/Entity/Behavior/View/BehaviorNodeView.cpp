@@ -3,8 +3,8 @@
 #include "engine/Utility/StringUtility.h"
 
 void BehaviorNodeView::draw() {
-	ImVec4 color = statusToColor(lastStatus_);
-	ImGui::TextColored(color, "Status: %s", StringUtility::EnumToString<BehaviorStatus>(lastStatus_).c_str());
+	ImVec4 color = statusToColor(currentStatus_);
+	ImGui::TextColored(color, "Status: %s", StringUtility::EnumToString<BehaviorStatus>(currentStatus_).c_str());
 }
 
 ImVec4 BehaviorNodeView::statusToColor(BehaviorStatus status) {

@@ -32,7 +32,9 @@ public:
 	/// <summary>
 	// ノードのリセット（再実行時に状態をクリア）
 	/// </summary>
-	virtual void Reset() {}
+	virtual void Reset() {
+		currentStatus_ = BehaviorStatus::Invalid;
+	}
 
 	//====================================================================================
 	// accessors
@@ -49,7 +51,15 @@ public:
 	/// <returns></returns>
 	const std::string& GetName() const { return name_; }
 
+	/// <summary>
+	/// 現在の状態を取得 [EXT]
+	/// </summary>
+	BehaviorStatus GetCurrentStatus() const { return currentStatus_; }
+
 protected:
 
 	std::string name_ = "UnnamedNode";
+
+	// 実行状態を保持するメンバ
+	BehaviorStatus currentStatus_ = BehaviorStatus::Invalid;
 };
