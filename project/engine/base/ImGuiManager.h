@@ -63,6 +63,11 @@ namespace TakeC {
 		void DrawDebugScreen();
 
 		/// <summary>
+		/// ImGuiのスタイル適用
+		/// </summary>
+		void ApplyStyle();
+
+		/// <summary>
 		/// 保存ポップアップの表示
 		/// </summary>
 		/// <typeparam name="T"></typeparam>

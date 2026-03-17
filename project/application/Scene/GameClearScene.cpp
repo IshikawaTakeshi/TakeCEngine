@@ -76,6 +76,7 @@ void GameClearScene::Update() {
 void GameClearScene::UpdateImGui() {
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
+	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 	clearTextSprite_->UpdateImGui("ClearText");
 }

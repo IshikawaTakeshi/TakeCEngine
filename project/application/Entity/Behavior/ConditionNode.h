@@ -30,9 +30,34 @@ public:
 	/// <returns></returns>
 	BehaviorStatus Execute(Blackboard& blackboard) override;
 
+	/// <summary>
+	/// パラメータの編集
+	/// </summary>
+	void DrawInspector() override;
+
+	/// <summary>
+	/// 比較演算子の設定
+	/// </summary>
+	/// <param name="op"></param>
+	void SetComparison(const std::string& op);
+
+	/// <summary>
+	/// 比較対象の値の設定
+	/// </summary>
+	/// <param name="value"></param>
+	void SetValue(float value) { value_ = value; }
+
+	/// <summary>
+	/// 比較対象のフィールドの設定
+	/// </summary>
+	/// <param name="field"></param>
+	void SetField(const std::string& field) { field_ = field; }
+
+
 private:
 
 	std::string field_;
+	std::string op_;
 	float value_;
 	std::function<bool(float, float)> compare_;
 };

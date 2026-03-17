@@ -165,7 +165,6 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	//ImGuiの更新
 	std::string windowName = "Sprite" + name;
-	ImGui::Begin("Sprite");
 	if (ImGui::TreeNode(windowName.c_str())) {
 		spriteConfig_.UpdateImGui();
 		ImGui::Checkbox("isFlipX", &isFlipX_);
@@ -191,7 +190,6 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 
 		ImGui::TreePop();
 	}
-	ImGui::End();
 #endif // DEBUG
 }
 

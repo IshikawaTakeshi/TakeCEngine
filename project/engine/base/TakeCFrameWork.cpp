@@ -182,12 +182,6 @@ void TakeCFrameWork::Update() {
 
 #if defined(_DEBUG) || defined(_DEVELOP)
 	imguiManager_->Begin();
-
-	ImGui::Begin("FrameWork");
-	directXCommon_->DrawFrameTimeInfo();
-	ImGui::Text("DeltaTime: %.4f", kDeltaTime);
-	ImGui::DragFloat("TimeScale", &timeScale_, 0.01f, 0.0f, 5.0f);
-	ImGui::End();
 #endif
 	
 	//入力の更新
@@ -197,13 +191,18 @@ void TakeCFrameWork::Update() {
 	sceneManager_->Update();
 
 #if defined(_DEBUG) || defined(_DEVELOP)
-	sceneManager_->UpdateImGui();
-	postEffectManager_->UpdateImGui();
-
 	//ImGuiのRenderTextureのSRVインデックスを設定
 	imguiManager_->SetRenderTextureIndex(postEffectManager_->GetFinalOutputSrvIndex()); 
-
 	imguiManager_->DrawDebugScreen();
+
+	ImGui::Begin("FrameWork");
+	directXCommon_->DrawFrameTimeInfo();
+	ImGui::Text("DeltaTime: %.4f", kDeltaTime);
+	ImGui::DragFloat("TimeScale", &timeScale_, 0.01f, 0.0f, 5.0f);
+	ImGui::End();
+
+	sceneManager_->UpdateImGui();
+	postEffectManager_->UpdateImGui();
 	imguiManager_->End();
 #endif // DEBUG
 }

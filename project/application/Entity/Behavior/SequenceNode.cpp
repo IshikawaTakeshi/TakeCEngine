@@ -9,10 +9,12 @@ BehaviorStatus SequenceNode::Execute(Blackboard& blackboard) {
 		BehaviorStatus status = children_[currentIndex_]->Execute(blackboard);
 
 		if (status == BehaviorStatus::Running) {
+			currentStatus_ = BehaviorStatus::Running;
 			return BehaviorStatus::Running; // まだ実行中、次フレームで継続
 		}
 		if (status == BehaviorStatus::Failure) {
 			Reset(); // 失敗したらシーケンス全体を失敗にする
+			currentStatus_ = BehaviorStatus::Failure;
 			return BehaviorStatus::Failure;
 		}
 		// SUCCESS → 次の子ノードへ
@@ -21,5 +23,6 @@ BehaviorStatus SequenceNode::Execute(Blackboard& blackboard) {
 
 	// 全ての子ノードが成功
 	Reset();
+	currentStatus_ = BehaviorStatus::Success;
 	return BehaviorStatus::Success;
 }

@@ -124,6 +124,11 @@ public:
 	bool GetIsAlive() const { return enemyData_.characterInfo.isAlive; }
 
 	bool IsInCombat() const { return enemyData_.characterInfo.isInCombat; }
+	
+	// ビヘイビアツリーの取得
+	BehaviorNode* GetBehaviorTree() const { return behaviorTree_.get(); }
+	// ブラックボードの取得
+	Blackboard* GetBlackboard() const { return blackboard_.get(); }
 
 	// 周回角度の取得
 	float GetOrbitAngle() const { return orbitAngle_; }

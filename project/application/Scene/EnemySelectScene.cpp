@@ -151,7 +151,7 @@ void EnemySelectScene::UpdateImGui() {
 
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
-
+	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 	ImGui::Begin("Level Objects");
 	characterEditTool_->UpdateImGui();
 	ImGui::End();

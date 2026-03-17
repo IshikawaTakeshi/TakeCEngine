@@ -93,6 +93,7 @@ void TitleScene::UpdateImGui() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	//ImGuiの更新
 	TakeC::CameraManager::GetInstance().UpdateImGui();
+	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 	titleTextSprite_->UpdateImGui("title");
 	pushStartUI_->UpdateImGui();
 	playerModel_->UpdateImGui("playerModel");

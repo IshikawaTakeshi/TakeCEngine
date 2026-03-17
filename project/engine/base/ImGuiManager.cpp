@@ -15,7 +15,7 @@ void TakeC::ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, Sr
 	//コンテキストの生成
 	ImGui::CreateContext();
 	//ImGuiのスタイルの設定
-	ImGui::StyleColorsDark();
+	ApplyStyle();
 	//ImGuiのWin32の初期化
 	ImGui_ImplWin32_Init(winApp->GetHwnd());
 
@@ -74,30 +74,148 @@ void TakeC::ImGuiManager::End() {
 // デバッグ画面の描画
 //====================================================================
 void TakeC::ImGuiManager::DrawDebugScreen() {
-	ImGui::SetNextWindowBgAlpha(1.0f); // 完全透明
-	// 画像サイズを先に決定
-	const ImVec2 imageSize = useReleaseSize_
-		? releaseImageSize_
-		: ImVec2(static_cast<float>(WinApp::kScreenWidth), static_cast<float>(WinApp::kScreenHeight));
+	//==========================================================
+	// 1) DockSpaceHost（全画面固定の親ウィンドウ）
+	//==========================================================
+	const ImGuiViewport* vp = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(vp->WorkPos, ImGuiCond_Always);
+	ImGui::SetNextWindowSize(vp->WorkSize, ImGuiCond_Always);
+	ImGui::SetNextWindowViewport(vp->ID);
 
-	// 画面左上に固定し、ウィンドウサイズも画像サイズに合わせる
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-	ImGui::SetNextWindowSize(imageSize, ImGuiCond_Always);
+	ImGuiWindowFlags hostFlags =
+		ImGuiWindowFlags_NoDocking |
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoBringToFrontOnFocus |
+		ImGuiWindowFlags_NoNavFocus |
+		ImGuiWindowFlags_MenuBar;
 
-	ImGui::Begin("ImGuiManager::DebugScreen", nullptr, windowFlags_);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::Begin("DockSpaceHost", nullptr, hostFlags);
+	ImGui::PopStyleVar(3);
 
-	// 表示サイズの切り替え UI
-	ImGui::Checkbox("Use Release Size", &useReleaseSize_);
+	// DockSpace（ここがドック先の“本体”）
+	ImGuiID dockspaceId = ImGui::GetID("MainDockSpace");
+	ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_None;
 
-	// レンダーターゲットの内容を表示
-	ImGui::Image(
-		ImTextureID(srvManager_->GetSrvDescriptorHandleGPU(renderTextureIndex_).ptr),
-		imageSize,
-		ImVec2(0, 0), // UV座標の左上
-		ImVec2(1, 1), // UV座標の右下
-		ImVec4(1, 1, 1, 1) // 色の設定（白）
-	);
+	// これをONにしていると「中央ノードが特殊扱い」になり、挙動が制限されることがあるので
+	// まずはOFF推奨（必要になったら後で調整）
+	//dockFlags |= ImGuiDockNodeFlags_PassthruCentralNode;
+
+	ImGui::DockSpace(dockspaceId, ImVec2(0, 0), dockFlags);
+
+	// メニューバー（任意）
+	if (ImGui::BeginMenuBar()) {
+		if (ImGui::BeginMenu("Docking")) {
+			ImGui::TextUnformatted("Drag any window tab into the Viewport area.");
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+
+	ImGui::End(); // DockSpaceHost
+
+	//==========================================================
+	// 2) Viewport（ドックされる側の普通のウィンドウ）
+	//==========================================================
+	ImGui::Begin("Viewport");
+	{
+		// Viewport内にレンダー結果を表示
+		const ImVec2 avail = ImGui::GetContentRegionAvail();
+		ImGui::Image(
+			ImTextureID(srvManager_->GetSrvDescriptorHandleGPU(renderTextureIndex_).ptr),
+			avail,
+			ImVec2(0, 0),
+			ImVec2(1, 1),
+			ImVec4(1, 1, 1, 1)
+		);
+	}
 	ImGui::End();
+}
+
+//====================================================================
+// ImGuiのスタイル適用
+//====================================================================
+void TakeC::ImGuiManager::ApplyStyle() {
+
+	auto& colors = ImGui::GetStyle().Colors;
+	colors[ImGuiCol_WindowBg] = ImVec4{ 0.05f, 0.05f, 0.053f, 1.0f };
+	colors[ImGuiCol_MenuBarBg] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+
+	// Border
+	colors[ImGuiCol_Border] = ImVec4{ 0.54f, 0.37f, 0.71f, 0.29f };
+	colors[ImGuiCol_BorderShadow] = ImVec4{ 0.0f, 0.0f, 0.0f, 0.24f };
+
+	// Text
+	colors[ImGuiCol_Text] = ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+	colors[ImGuiCol_TextDisabled] = ImVec4{ 0.5f, 0.5f, 0.5f, 1.0f };
+
+	// Headers
+	colors[ImGuiCol_Header] = ImVec4{ 0.13f, 0.13f, 0.17f, 1.0f };
+	colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.19f, 0.2f, 0.25f, 1.0f };
+	colors[ImGuiCol_HeaderActive] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+
+	// Buttons
+	colors[ImGuiCol_Button] = ImVec4{ 0.13f, 0.13f, 0.17f, 1.0f };
+	colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.19f, 0.2f, 0.25f, 1.0f };
+	colors[ImGuiCol_ButtonActive] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+	colors[ImGuiCol_CheckMark] = ImVec4{ 0.74f, 0.58f, 0.98f, 1.0f };
+
+	// Popups
+	colors[ImGuiCol_PopupBg] = ImVec4{ 0.05f, 0.05f, 0.053f, 0.92f };
+
+	// Slider
+	colors[ImGuiCol_SliderGrab] = ImVec4{ 0.44f, 0.37f, 0.61f, 0.54f };
+	colors[ImGuiCol_SliderGrabActive] = ImVec4{ 0.74f, 0.58f, 0.98f, 0.54f };
+
+	// Frame BG
+	colors[ImGuiCol_FrameBg] = ImVec4{ 0.13f, 0.13f, 0.17f, 1.0f };
+	colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.19f, 0.2f, 0.25f, 1.0f };
+	colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+
+	// Tabs
+	colors[ImGuiCol_Tab] = ImVec4{ 0.1f, 0.1f, 0.2f, 1.0f };
+	colors[ImGuiCol_TabHovered] = ImVec4{ 0.24f, 0.24f, 0.32f, 1.0f };
+	colors[ImGuiCol_TabActive] = ImVec4{ 0.2f, 0.22f, 0.27f, 1.0f };
+	colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+	colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+
+	// Title
+	colors[ImGuiCol_TitleBg] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+	colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+	colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+
+	// Scrollbar
+	colors[ImGuiCol_ScrollbarBg] = ImVec4{ 0.1f, 0.1f, 0.13f, 1.0f };
+	colors[ImGuiCol_ScrollbarGrab] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4{ 0.19f, 0.2f, 0.25f, 1.0f };
+	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4{ 0.24f, 0.24f, 0.32f, 1.0f };
+
+	// Seperator
+	colors[ImGuiCol_Separator] = ImVec4{ 0.54f, 0.17f, 0.71f, 1.0f };
+	colors[ImGuiCol_SeparatorHovered] = ImVec4{ 0.74f, 0.58f, 0.98f, 1.0f };
+	colors[ImGuiCol_SeparatorActive] = ImVec4{ 0.84f, 0.58f, 1.0f, 1.0f };
+
+	// Resize Grip
+	colors[ImGuiCol_ResizeGrip] = ImVec4{ 0.44f, 0.37f, 0.61f, 0.29f };
+	colors[ImGuiCol_ResizeGripHovered] = ImVec4{ 0.74f, 0.58f, 0.98f, 0.29f };
+	colors[ImGuiCol_ResizeGripActive] = ImVec4{ 0.84f, 0.58f, 1.0f, 0.29f };
+
+	// Docking
+	colors[ImGuiCol_DockingPreview] = ImVec4{ 0.44f, 0.37f, 0.61f, 1.0f };
+
+	auto& style = ImGui::GetStyle();
+	style.TabRounding = 4;
+	style.ScrollbarRounding = 9;
+	style.WindowRounding = 7;
+	style.GrabRounding = 3;
+	style.FrameRounding = 3;
+	style.PopupRounding = 4;
+	style.ChildRounding = 4;
 }
 
 //====================================================================

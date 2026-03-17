@@ -83,7 +83,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine;$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\scene;$(ProjectDir)engine\math;$(ProjectDir)engine\camera;$(ProjectDir)application;$(ProjectDir)externals/assimp/include;$(ProjectDir)REsources/shaders</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine;$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\scene;$(ProjectDir)engine\math;$(ProjectDir)engine\camera;$(ProjectDir)application;$(ProjectDir)externals/assimp/include;$(ProjectDir)REsources/shaders;$(ProjectDir)externals</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -111,7 +111,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine;$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\scene;$(ProjectDir)engine\math;$(ProjectDir)engine\camera;$(ProjectDir)application;$(ProjectDir)externals/assimp/include;$(ProjectDir)REsources/shaders</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine;$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\scene;$(ProjectDir)engine\math;$(ProjectDir)engine\camera;$(ProjectDir)application;$(ProjectDir)externals/assimp/include;$(ProjectDir)REsources/shaders;$(ProjectDir)externals</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
@@ -140,7 +140,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine;$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\scene;$(ProjectDir)engine\math;$(ProjectDir)engine\camera;$(ProjectDir)application;$(ProjectDir)externals/assimp/include;$(ProjectDir)REsources/shaders</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine;$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\scene;$(ProjectDir)engine\math;$(ProjectDir)engine\camera;$(ProjectDir)application;$(ProjectDir)externals/assimp/include;$(ProjectDir)REsources/shaders;$(ProjectDir)externals</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
@@ -159,6 +159,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="application\Entity\Animation\AnimationMapper.cpp" />
     <ClCompile Include="application\Entity\Behavior\ActionNode.cpp" />
+    <ClCompile Include="application\Entity\Behavior\BehaviorTreeEditor.cpp" />
     <ClCompile Include="application\Entity\Behavior\Blackboard.cpp" />
     <ClCompile Include="application\Entity\Behavior\ComboFactory.cpp" />
     <ClCompile Include="application\Entity\Behavior\ConditionNode.cpp" />
@@ -166,6 +167,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Entity\Behavior\ScoreConditionNode.cpp" />
     <ClCompile Include="application\Entity\Behavior\SelectorNode.cpp" />
     <ClCompile Include="application\Entity\Behavior\SequenceNode.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\ActionNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\ConditionNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\PlannerSelectorNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\ScoreConditionNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\SelectorNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\SequenceNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\WeightSelectorNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\WeightSelector.cpp" />
     <ClCompile Include="application\Tool\BreakGaugeUtil.cpp" />
     <ClCompile Include="application\UI\ActionButtonICon.cpp" />
@@ -196,6 +204,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
     <ClCompile Include="application\Weapon\ShotGun\ShotGunInfo.cpp" />
     <ClCompile Include="application\Weapon\WeaponData.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\BehaviorNodeView.cpp" />
     <ClCompile Include="engine\2d\BaseUI.cpp" />
     <ClCompile Include="engine\3d\Particle\EffectEditor.cpp" />
     <ClCompile Include="engine\3d\Particle\EffectGroup.cpp" />
@@ -280,6 +289,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Light\LightManager.cpp" />
     <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
     <ClCompile Include="engine\PostEffect\GlareEffect.cpp" />
+    <ClCompile Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
     <ClCompile Include="engine\Math\MatrixMath.cpp" />
@@ -351,6 +361,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Behavior\ActionNode.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorNode.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorStatusEnum.h" />
+    <ClInclude Include="application\Entity\Behavior\BehaviorTreeEditor.h" />
     <ClInclude Include="application\Entity\Behavior\BehaviorTreeUtil.h" />
     <ClInclude Include="application\Entity\Behavior\Blackboard.h" />
     <ClInclude Include="application\Entity\Behavior\ComboFactory.h" />
@@ -360,6 +371,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Behavior\ScoreConditionNode.h" />
     <ClInclude Include="application\Entity\Behavior\SelectorNode.h" />
     <ClInclude Include="application\Entity\Behavior\SequenceNode.h" />
+    <ClInclude Include="application\Entity\Behavior\View\ActionNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\ConditionNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\PlannerSelectorNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\ScoreConditionNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\SelectorNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\SequenceNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\WeightSelectorNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\WeightSelector.h" />
     <ClInclude Include="application\Entity\Enemy\ActionWeightParam.h" />
     <ClInclude Include="application\Tool\BreakGaugeUtil.h" />
@@ -402,6 +420,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Effect\BoostEffect.h" />
     <ClInclude Include="application\Effect\DeadEffect.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
+    <ClInclude Include="application\Entity\Behavior\View\BehaviorNodeView.h" />
     <ClInclude Include="engine\2d\BaseUI.h" />
     <ClInclude Include="engine\3d\Particle\EffectEditor.h" />
     <ClInclude Include="engine\3d\Particle\EffectGroup.h" />
@@ -542,6 +561,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Primitive\Plane.h" />
     <ClInclude Include="application\Effect\MuzzleFlashEffect.h" />
     <ClInclude Include="application\Weapon\Bullet\ObjectPool.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\include\ImNodeFlow.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\context_wrapper.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />
@@ -612,6 +635,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <Image Include="Resources\uvChecker.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.inl" />
+    <None Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.inl" />
+    <None Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.inl" />
     <None Include="Resources\shaders\CameraData.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

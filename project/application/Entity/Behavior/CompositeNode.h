@@ -29,6 +29,11 @@ public:
 	}
 
 	/// <summary>
+	/// 子ノードのリストを取得する
+	/// </summary>
+	const std::vector<std::unique_ptr<BehaviorNode>>& GetChildren() const { return children_; }
+
+	/// <summary>
 	/// ノードのリセット
 	/// </summary>
 	void Reset() override {
@@ -37,6 +42,11 @@ public:
 			child->Reset();
 		}
 	}
+
+	/// <summary>
+	/// 現在実行中の子インデックスを取得 [EXT]
+	/// </summary>
+	size_t GetCurrentIndex() const { return currentIndex_; }
 
 protected:
 

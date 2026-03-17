@@ -1,5 +1,6 @@
 #include "ComboFactory.h"
-#include "engine/base/TakeCFrameWork.h"
+#include "engine/Base/TakeCFrameWork.h"
+#include "engine/Base/ImGuiManager.h"
 #include "engine/Utility/StringUtility.h"
 
 //========================================================================
@@ -56,7 +57,7 @@ std::unique_ptr<BehaviorNode> ComboFactory::BuildNode(
 		return BuildActionNode(nodeData, stateManager);
 
 	case BehaviorNodeType::CONDITION:
-		return BuildConditionNode(nodeData);  // ★ AIBrainSystem* が消えた
+		return BuildConditionNode(nodeData);
 
 	case BehaviorNodeType::SEQUENCE:
 	{
@@ -90,7 +91,7 @@ std::unique_ptr<BehaviorNode> ComboFactory::BuildNode(
 }
 
 //========================================================================
-// ACTION ノードのビルド（変更なし）
+// ACTIONノードのビルド
 //========================================================================
 std::unique_ptr<BehaviorNode> ComboFactory::BuildActionNode(
 	const BehaviorNodeData& nodeData,
@@ -100,7 +101,7 @@ std::unique_ptr<BehaviorNode> ComboFactory::BuildActionNode(
 }
 
 //========================================================================
-// CONDITION ノードのビルド（Blackboard 版）
+// CONDITIONノードのビルド
 //========================================================================
 std::unique_ptr<BehaviorNode> ComboFactory::BuildConditionNode(
 	const BehaviorNodeData& nodeData) {
