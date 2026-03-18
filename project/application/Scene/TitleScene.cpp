@@ -10,11 +10,11 @@
 void TitleScene::Initialize() {
 
 	//Camera0
-	camera0_ = std::make_shared<Camera>();
+	camera0_ = std::make_unique<Camera>();
 	camera0_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"Title_ViewCamera.json");
 	camera0_->SetRotationSpeed(1.0f);
 	camera0_->SetFollowSpeed(1.0f);
-	TakeC::CameraManager::GetInstance().AddCamera("Tcamera0", *camera0_);
+	TakeC::CameraManager::GetInstance().AddCamera("Tcamera0", camera0_.get());
 	cameraRotateSpeed_ = 0.5f;
 
 	//デフォルトカメラの設定

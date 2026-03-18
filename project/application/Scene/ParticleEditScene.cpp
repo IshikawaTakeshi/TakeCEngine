@@ -10,12 +10,12 @@ using namespace TakeC;
 void ParticleEditScene::Initialize() {
 
 	// カメラの初期化
-	previewCamera_ = std::make_shared<Camera>();
+	previewCamera_ = std::make_unique<Camera>();
 	previewCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	previewCamera_->SetIsDebug(true);
 	previewCamera_->SetTranslate({ 5.0f,0.0f,-10.0f });
 	previewCamera_->SetRotate({ 0.0f,-1.4f,0.0f });
-	TakeC::CameraManager::GetInstance().AddCamera("previewCamera", *previewCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("previewCamera",previewCamera_.get());
 
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());

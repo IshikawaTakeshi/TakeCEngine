@@ -30,27 +30,27 @@ void GamePlayScene::Initialize() {
 	bgmVolume_ = 0.2f;
 
 	// Camera0
-	gameCamera_ = std::make_shared<Camera>();
+	gameCamera_ = std::make_unique<Camera>();
 	gameCamera_->Initialize(
 		TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),
 		"CameraConfig_GameScene.json");
 	gameCamera_->RequestCameraState(Camera::GameCameraState::FOLLOW);
-	TakeC::CameraManager::GetInstance().AddCamera("gameCamera", *gameCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("gameCamera", gameCamera_.get());
 
 	// Camera1
-	debugCamera_ = std::make_shared<Camera>();
+	debugCamera_ = std::make_unique<Camera>();
 	debugCamera_->Initialize(
 		TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),
 		"CameraConfig_GameScene.json");
-	TakeC::CameraManager::GetInstance().AddCamera("debugCamera", *debugCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("debugCamera", debugCamera_.get());
 
 	// lightCamera
-	lightCamera_ = std::make_shared<Camera>();
+	lightCamera_ = std::make_unique<Camera>();
 	lightCamera_->Initialize(
 		TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),
 		"CameraConfig_LightCamera.json");
 	lightCamera_->SetProjectionChanged(true);
-	TakeC::CameraManager::GetInstance().AddCamera("lightCamera", *lightCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("lightCamera", lightCamera_.get());
 
 	// デフォルトカメラの設定
 	Object3dCommon::GetInstance().SetDefaultCamera(

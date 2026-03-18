@@ -17,6 +17,7 @@ WarningUI::~WarningUI() {
 	// イベントオブザーバーの解除
 	TakeCFrameWork::GetEventManager()->RemoveObserver("EnemyHighPowerAttack", eventObserverID_);
 	TakeCFrameWork::GetEventManager()->RemoveObserver("EnemyBulletWarning", eventObserverID_);
+	targetCamera_ = nullptr;
 }
 //======================================================================
 //	初期化

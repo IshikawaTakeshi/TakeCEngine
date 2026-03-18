@@ -91,9 +91,9 @@ private:
 	SceneStateManager sceneStateManager_;
 
 	// カメラ
-	std::shared_ptr<Camera> gameCamera_ = nullptr;
-	std::shared_ptr<Camera> debugCamera_ = nullptr;
-	std::shared_ptr<Camera> lightCamera_ = nullptr;
+	std::unique_ptr<Camera> gameCamera_ = nullptr;
+	std::unique_ptr<Camera> debugCamera_ = nullptr;
+	std::unique_ptr<Camera> lightCamera_ = nullptr;
 	// SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 

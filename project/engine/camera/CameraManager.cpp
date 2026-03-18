@@ -59,18 +59,18 @@ void CameraManager::Finalize() {
 //============================================================================
 // カメラの追加
 //============================================================================
-void CameraManager::AddCamera(std::string name, const Camera& camera) {
+void CameraManager::AddCamera(std::string name,Camera* camera) {
 	//生成済みのカメラの検索
 	if (cameras_.contains(name)) {
 		return;
 	}
 
 	// 新しいカメラを追加
-	cameras_.insert(std::make_pair(name, std::make_unique<Camera>(camera)));
+	cameras_.insert(std::make_pair(name, camera));
 
 	// もしこれが最初のカメラなら、それをアクティブに設定
 	if (cameras_.size() == 1) {
-		activeCamera_ = cameras_.find(name)->second.get();
+		activeCamera_ = cameras_.find(name)->second;
 	}
 }
 
@@ -88,7 +88,7 @@ void CameraManager::ResetCameras() {
 Camera* TakeC::CameraManager::FindCameraByName(std::string name) {
 	auto it = cameras_.find(name);
 	if (it != cameras_.end()) {
-		return it->second.get();
+		return it->second;
 	}
 	return nullptr;
 }
@@ -101,7 +101,7 @@ void CameraManager::SetActiveCamera(std::string name) {
 	auto it = cameras_.find(name);
 	// 指定された名前のカメラが見つかった場合は、それをアクティブに設定
 	if (it != cameras_.end()) {
-		activeCamera_ = it->second.get();
+		activeCamera_ = it->second;
 	} else {
 		// 見つからなかった場合は、最初のカメラをアクティブに設定
 		it = cameras_.begin();

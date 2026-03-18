@@ -17,7 +17,7 @@ void GameOverScene::Initialize() {
 	gameOverCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	gameOverCamera_->SetTranslate({ 0.0f, 20.0f, -60.0f });
 	gameOverCamera_->SetRotate({ 0.9f, -0.01f, 0.03f,0.36f });
-	TakeC::CameraManager::GetInstance().AddCamera("GameOverCamera", *gameOverCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("GameOverCamera", gameOverCamera_.get());
 	// デフォルトカメラの設定
 	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());

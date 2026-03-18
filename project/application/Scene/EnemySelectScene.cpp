@@ -17,16 +17,16 @@ void EnemySelectScene::Initialize() {
 	BGM_ = AudioManager::GetInstance().LoadSound("SelectSceneBGM.mp3");
 
 	//Camera0
-	gameCamera_ = std::make_shared<Camera>();
+	gameCamera_ = std::make_unique<Camera>();
 	gameCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	gameCamera_->SetYawRot(2.5f);
-	TakeC::CameraManager::GetInstance().AddCamera("gameCamera", *gameCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("gameCamera", gameCamera_.get());
 
 	//Camera1
-	debugCamera_ = std::make_shared<Camera>();
+	debugCamera_ = std::make_unique<Camera>();
 	debugCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	debugCamera_->SetIsDebug(true);
-	TakeC::CameraManager::GetInstance().AddCamera("debugCamera", *debugCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("debugCamera", debugCamera_.get());
 
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
