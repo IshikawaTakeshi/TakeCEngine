@@ -48,8 +48,8 @@ private:
 	//サウンドデータ
 	//AudioManager::SoundData soundData1;
 	// カメラ
-	std::shared_ptr<Camera> camera0_ = nullptr;
-	std::shared_ptr<Camera> camera1_ = nullptr;
+	std::unique_ptr<Camera> camera0_ = nullptr;
+	std::unique_ptr<Camera> camera1_ = nullptr;
 	//SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 	//スプライト

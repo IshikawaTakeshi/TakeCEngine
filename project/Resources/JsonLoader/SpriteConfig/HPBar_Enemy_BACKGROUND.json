@@ -1,0 +1,31 @@
+{
+    "anchorPoint": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "color": {
+        "w": 1.0,
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+    },
+    "name": "HPBar_Enemy_BACKGROUND.json",
+    "position": {
+        "x": 300.0,
+        "y": 35.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 400.0,
+        "y": 10.0
+    },
+    "textureFilePath": "black.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "textureSize": {
+        "x": 64.0,
+        "y": 64.0
+    }
+}

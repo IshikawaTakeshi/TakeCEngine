@@ -11,7 +11,7 @@
 
 #include "BCDirectCompute.h"
 
-#if defined(_DEBUG) || defined(PROFILE)
+#if defined(_DEBUG) || defined(PROFILE) || defined(_DEVELOP)
 #pragma comment(lib,"dxguid.lib")
 #endif
 

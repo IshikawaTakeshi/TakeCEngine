@@ -39,7 +39,7 @@ public:
 private:
 
 	// カメラ
-	std::shared_ptr<Camera> previewCamera_ = nullptr;
+	std::unique_ptr<Camera> previewCamera_ = nullptr;
 	//SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 

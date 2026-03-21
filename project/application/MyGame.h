@@ -46,6 +46,8 @@ private:
 	void LoadSound();
 	//パーティクルプリセット読み込み
 	void LoadParticlePreset();
+	//PostEffectプリセット読み込み
+	void LoadPostEffectPresets();
 
 private:
 

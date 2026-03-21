@@ -1,8 +1,9 @@
 #include "BreakGaugeUI.h"
 #include "engine/Math/Easing.h"
-#include "engine/base/TakeCFramework.h"
 #include "engine/Utility/StringUtility.h"
+#include "engine/base/TakeCFramework.h"
 #include <algorithm>
+
 
 using namespace TakeC;
 
@@ -11,15 +12,16 @@ using namespace TakeC;
 //======================================================================
 BreakGaugeUI::~BreakGaugeUI() {
 	if (eventObserverID_[0] != -1) {
-		TakeCFrameWork::GetEventManager()->RemoveObserver("BreakGaugeUpdate_" + listeningEventName_,
-			eventObserverID_[0]);
+		TakeCFrameWork::GetEventManager()->RemoveObserver(
+			"BreakGaugeUpdate_" + listeningEventName_, eventObserverID_[0]);
 	}
 	if (eventObserverID_[1] != -1) {
 		TakeCFrameWork::GetEventManager()->RemoveObserver(resetEventName_,
 			eventObserverID_[1]);
 	}
 	if (eventObserverID_[2] != -1) {
-		TakeCFrameWork::GetEventManager()->RemoveObserver("Initialize_BreakStunState_" + listeningEventName_,
+		TakeCFrameWork::GetEventManager()->RemoveObserver(
+			"Initialize_BreakStunState_" + listeningEventName_,
 			eventObserverID_[2]);
 	}
 }
@@ -40,28 +42,29 @@ void BreakGaugeUI::Initialize(TakeC::SpriteManager* spriteManager,
 	// JsonConfig
 
 	for (int i = 0; i < BreakGaugeType::kSize; ++i) {
-		std::string fullPath = configName + "_" + StringUtility::EnumToString(static_cast<BreakGaugeType>(i)) + ".json";
+		std::string fullPath =
+			configName + "_" +
+			StringUtility::EnumToString(static_cast<BreakGaugeType>(i)) + ".json";
 		CreateAndRegisterSpriteFromJson(fullPath);
 	}
-	// JSONで設定されたサイズを最大幅として使用
-	delayGaugeMaxWidth_ = sprites_[DELAY]->GetSize().x;
-	actualGaugeMaxWidth_ = sprites_[ACTUAL]->GetSize().x;
+	// JSONで設定されたサイズを最大幅として使用（解像度に合わせてスケーリング）
+	delayGaugeMaxWidth_ =
+		sprites_[DELAY]->GetSize().x * TakeC::WinApp::widthPercent_;
+	actualGaugeMaxWidth_ =
+		sprites_[ACTUAL]->GetSize().x * TakeC::WinApp::widthPercent_;
 
 	defaultDelaySpriteColor_ = sprites_[DELAY]->GetMaterialColor();
 	defaultActualSpriteColor_ = sprites_[ACTUAL]->GetMaterialColor();
 
 	// イベントリスナーの登録
-	//player,enemyで登録するイベント名が違う想定なので、イベント名は引数で受け取っている；
+	// player,enemyで登録するイベント名が違う想定なので、イベント名は引数で受け取っている；
 	eventObserverID_[0] = TakeCFrameWork::GetEventManager()->AddObserver(
 		"BreakGaugeUpdate_" + listeningEventName_,
-		[this](const std::any& data) {
-			this->OnBreakGaugeUpdated(data);
-		});
+		[this](const std::any& data) { this->OnBreakGaugeUpdated(data); });
 	// ブレイク状態復帰時のイベントも監視して、ゲージをリセットする
 	resetEventName_ = "BreakGaugeUpdate_Reset_" + listeningEventName_;
 	eventObserverID_[1] = TakeCFrameWork::GetEventManager()->AddObserver(
-		resetEventName_,
-		[this](const std::any& data) {
+		resetEventName_, [this](const std::any& data) {
 			this->OnBreakGaugeUpdated(data);
 			sprites_[DELAY]->SetMaterialColor(defaultDelaySpriteColor_);
 			sprites_[ACTUAL]->SetMaterialColor(defaultActualSpriteColor_);
@@ -70,8 +73,10 @@ void BreakGaugeUI::Initialize(TakeC::SpriteManager* spriteManager,
 		"Initialize_BreakStunState_" + listeningEventName_,
 		[this](const std::any& data) {
 			data;
-			sprites_[DELAY]->SetMaterialColor({ 1.0f, 0.0f, 0.1f, 1.0f }); // 赤色っぽいピンク色
-			sprites_[ACTUAL]->SetMaterialColor({ 1.0f, 0.0f, 0.1f, 1.0f }); // 赤色っぽいピンク色
+			sprites_[DELAY]->SetMaterialColor(
+				{ 1.0f, 0.0f, 0.1f, 1.0f }); // 赤色っぽいピンク色
+			sprites_[ACTUAL]->SetMaterialColor(
+				{ 1.0f, 0.0f, 0.1f, 1.0f }); // 赤色っぽいピンク色
 		});
 
 	// 初期値は0
@@ -110,7 +115,6 @@ void BreakGaugeUI::Update() {
 		size_Actual.x = actualGaugeMaxWidth_ * currentActualRatio_;
 		sprites_[ACTUAL]->SetSize(size_Actual);
 	}
-
 }
 
 //======================================================================

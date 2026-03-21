@@ -1,0 +1,10 @@
+{
+    "effectName": "RadialBlur",
+    "presetName": "RadialBlur",
+    "duration": 0.5,
+    "easingType": 2,
+    "startIntensity": 0.08,
+    "peakIntensity": 0.0,
+    "endIntensity": 0.0,
+    "peakTimeRate": 0.5
+}

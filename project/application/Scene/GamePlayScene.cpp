@@ -30,27 +30,27 @@ void GamePlayScene::Initialize() {
 	bgmVolume_ = 0.2f;
 
 	// Camera0
-	gameCamera_ = std::make_shared<Camera>();
+	gameCamera_ = std::make_unique<Camera>();
 	gameCamera_->Initialize(
 		TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),
 		"CameraConfig_GameScene.json");
 	gameCamera_->RequestCameraState(Camera::GameCameraState::FOLLOW);
-	TakeC::CameraManager::GetInstance().AddCamera("gameCamera", *gameCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("gameCamera", gameCamera_.get());
 
 	// Camera1
-	debugCamera_ = std::make_shared<Camera>();
+	debugCamera_ = std::make_unique<Camera>();
 	debugCamera_->Initialize(
 		TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),
 		"CameraConfig_GameScene.json");
-	TakeC::CameraManager::GetInstance().AddCamera("debugCamera", *debugCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("debugCamera", debugCamera_.get());
 
 	// lightCamera
-	lightCamera_ = std::make_shared<Camera>();
+	lightCamera_ = std::make_unique<Camera>();
 	lightCamera_->Initialize(
 		TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),
 		"CameraConfig_LightCamera.json");
 	lightCamera_->SetProjectionChanged(true);
-	TakeC::CameraManager::GetInstance().AddCamera("lightCamera", *lightCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("lightCamera", lightCamera_.get());
 
 	// デフォルトカメラの設定
 	Object3dCommon::GetInstance().SetDefaultCamera(
@@ -82,8 +82,10 @@ void GamePlayScene::Initialize() {
 
 	// player
 	player_->SetInputProvider(inputProvider_Player.get());
-	player_->Initialize(&Object3dCommon::GetInstance(),"Player_Model_Ver2.0.gltf");
-	player_->WeaponInitialize(&Object3dCommon::GetInstance(),bulletManager_.get());
+	player_->Initialize(&Object3dCommon::GetInstance(),
+		"Player_Model_Ver2.0.gltf");
+	player_->WeaponInitialize(&Object3dCommon::GetInstance(),
+		bulletManager_.get());
 	player_->GetObject3d()->SetAnimation(
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"));
@@ -93,23 +95,25 @@ void GamePlayScene::Initialize() {
 	inputProvider_Enemy = std::make_unique<EnemyInputProvider>(enemy_.get());
 	enemy_->SetInputProvider(inputProvider_Enemy.get());
 	enemy_->Initialize(&Object3dCommon::GetInstance(), "Enemy_Model.gltf");
-	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(),bulletManager_.get());
+	enemy_->WeaponInitialize(&Object3dCommon::GetInstance(),
+		bulletManager_.get());
 	enemy_->GetObject3d()->SetAnimation(
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"));
 
+#if defined(_DEBUG) || defined(_DEVELOP)
+	//BehaviorTreeEditor
+	behaviorTreeEditor_ = std::make_unique<BehaviorTreeEditor>();
+	behaviorTreeEditor_->Initialize();
+	behaviorTreeEditor_->LoadTreeFromEnemy(enemy_->GetBehaviorTree(),enemy_->GetBlackboard());
+#endif // _DEBUG || _DEVELOP
+
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
-	playerHpBar_->Initialize(&SpriteCommon::GetInstance(), "PlayerHPName.json",
-		"black.png", "flontHp.png");
-	playerHpBar_->SetSize({ 200.0f, 10.0f });     // HPバーのサイズ
-	playerHpBar_->SetPosition({ 50.0f, 500.0f }); // HPバーの位置
+	playerHpBar_->Initialize(TakeCFrameWork::GetSpriteManager(), "HPBar_Player");
 	// enemyHpBar
 	enemyHpBar_ = std::make_unique<HPBar>();
-	enemyHpBar_->Initialize(&SpriteCommon::GetInstance(), "EnemyHPName.json",
-		"black.png", "flontHp.png");
-	enemyHpBar_->SetSize({ 400.0f, 10.0f });     // HPバーのサイズ
-	enemyHpBar_->SetPosition({ 300.0f, 35.0f }); // HPバーの位置
+	enemyHpBar_->Initialize(TakeCFrameWork::GetSpriteManager(), "HPBar_Enemy");
 	// playerReticle
 	playerReticle_ = std::make_unique<PlayerReticle>();
 	playerReticle_->Initialize();
@@ -122,17 +126,26 @@ void GamePlayScene::Initialize() {
 	// bulletCounterUI
 	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
 	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[0]->Initialize(&SpriteCommon::GetInstance(),
+	bulletCounterUI_[0]->Initialize(TakeCFrameWork::GetSpriteManager(),
 		{ 760.0f, 470.0f });
 	bulletCounterUI_[1] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[1]->Initialize(&SpriteCommon::GetInstance(),
+	bulletCounterUI_[1]->Initialize(TakeCFrameWork::GetSpriteManager(),
 		{ 900.0f, 470.0f });
 	bulletCounterUI_[2] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[2]->Initialize(&SpriteCommon::GetInstance(),
+	bulletCounterUI_[2]->Initialize(TakeCFrameWork::GetSpriteManager(),
 		{ 760.0f, 540.0f });
 	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
-	bulletCounterUI_[3]->Initialize(&SpriteCommon::GetInstance(),
+	bulletCounterUI_[3]->Initialize(TakeCFrameWork::GetSpriteManager(),
 		{ 900.0f, 540.0f });
+
+	for (int i = 0; i < bulletCounterUI_.size(); i++) {
+		TakeCFrameWork::GetUIManager()->CreateUI<BulletCounterGaugeUI>(
+			player_->GetCurrentWeapon(i));
+		// アクションボタンアイコンUI
+		TakeCFrameWork::GetUIManager()->CreateUI<ActionButtonICon>(
+			"InstructionIcon" + std::to_string(i) + ".json",
+			inputProvider_Player.get(), static_cast<CharacterActionInput>(i + 3));
+	}
 
 	// フェーズメッセージUI
 	phaseMessageUI_ = std::make_unique<PhaseMessageUI>();
@@ -150,11 +163,9 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetUIManager()->CreateUI<WarningUI>("WarningUI");
 
 	// BreakGaugeUI
-	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>(
-		"BreakGauge_Player",
+	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Player",
 		"Player");
-	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>(
-		"BreakGauge_Enemy",
+	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Enemy",
 		"Enemy");
 
 	// アクションアイコンUI
@@ -262,9 +273,11 @@ void GamePlayScene::UpdateImGui() {
 
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
+	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 
 	player_->UpdateImGui();
 	enemy_->UpdateImGui();
+	behaviorTreeEditor_->UpdateImGui();
 	playerHpBar_->UpdateImGui("player");
 	enemyHpBar_->UpdateImGui("enemy");
 	playerReticle_->UpdateImGui();
@@ -278,8 +291,6 @@ void GamePlayScene::UpdateImGui() {
 	for (size_t i = 0; i < actionIconSprites_.size(); i++) {
 		actionIconSprites_[i]->UpdateImGui(std::format("actionIcon{}", i));
 	}
-
-	TakeCFrameWork::GetSpriteManager()->UpdateImGui("DefaultSprite");
 }
 
 //====================================================================
@@ -323,9 +334,9 @@ void GamePlayScene::Draw() {
 #pragma endregion
 
   // 当たり判定の描画前処理
-	enemy_->DrawCollider();
-	player_->DrawCollider();
-	// spotLightの描画
+  // enemy_->DrawCollider();
+  // player_->DrawCollider();
+  // spotLightの描画
 	TakeCFrameWork::GetLightManager()->DrawSpotLights();
 	// 登録されたワイヤーフレームをすべて描画させる
 	TakeCFrameWork::GetWireFrame()->Draw();
@@ -347,11 +358,6 @@ void GamePlayScene::DrawSprite() {
 		enemyHpBar_->Draw();  // 敵のHPバーの描画
 		// エネルギーUIの描画
 		energyInfoUI_->Draw();
-		// 弾カウンターUIの描画
-		for (auto& bulletUI : bulletCounterUI_) {
-			bulletUI->Draw();
-		}
-
 		// フェーズメッセージUIの描画
 		phaseMessageUI_->Draw();
 

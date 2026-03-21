@@ -96,10 +96,6 @@ void SceneTransition::Update() {
 	//スプライトの更新
 	fadeSprite_->GetMesh()->GetMaterial()->SetMaterialColor({0.0f, 0.0f, 0.0f, alpha_});
 	fadeSprite_->Update();
-#if defined(_DEBUG) || defined(_DEVELOP)
-
-	fadeSprite_->UpdateImGui("fade");
-#endif // _DEBUG
 
 }
 

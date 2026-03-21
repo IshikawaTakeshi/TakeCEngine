@@ -44,12 +44,14 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	LoadSound();
 	//ParticlePreset読み込み
 	LoadParticlePreset();
+	//PostEffectPreset読み込み
+	LoadPostEffectPresets();
 	
 
 	//postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
 	//postEffectManager_->InitializeEffect("GrayScale",   L"PostEffect/GrayScale.CS.hlsl");
 	postEffectManager_->InitializeEffect("Dissolve",    L"PostEffect/Dissolve.CS.hlsl");
-	postEffectManager_->InitializeEffect("RadialBluer", L"PostEffect/RadialBlur.CS.hlsl");
+	postEffectManager_->InitializeEffect("RadialBlur", L"PostEffect/RadialBlur.CS.hlsl");
 	//postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
 	postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
 	//postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
@@ -103,6 +105,9 @@ void MyGame::Update() {
 
 	//FrameWorkの更新
 	TakeCFrameWork::Update();
+	//PostEffectの更新
+	postEffectManager_->Update();
+
 	TakeCFrameWork::GetWireFrame()->Update();
 }
 
@@ -229,4 +234,11 @@ void MyGame::LoadSound() {
 void MyGame::LoadParticlePreset() {
 
 	TakeCFrameWork::GetParticleManager()->LoadAllPresets();
+}
+
+//====================================================================
+//			PostEffectプリセットの読み込み
+//====================================================================
+void MyGame::LoadPostEffectPresets() {
+	postEffectManager_->LoadPresets();
 }

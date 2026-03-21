@@ -64,7 +64,7 @@ namespace TakeC {
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="camera"></param>
-		void AddCamera(std::string name, const Camera& camera);
+		void AddCamera(std::string name, Camera* camera);
 
 		/// <summary>
 		/// カメラのリセット
@@ -99,7 +99,7 @@ namespace TakeC {
 		//DirectXCommon
 		TakeC::DirectXCommon* dxCommon_ = nullptr;
 		//登録したカメラのマップ
-		std::unordered_map<std::string, std::unique_ptr<Camera>> cameras_;
+		std::unordered_map<std::string, Camera*> cameras_;
 		Camera* activeCamera_;  // 現在アクティブなカメラ
 	};
 }

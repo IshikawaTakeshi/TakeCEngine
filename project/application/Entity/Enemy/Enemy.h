@@ -20,6 +20,9 @@
 #include "application/Weapon/BaseWeapon.h"
 #include "application/Weapon/Bullet/BulletManager.h"
 
+#include "application/Entity/Behavior/BehaviorNode.h"
+#include "application/Entity/Behavior/Blackboard.h"
+#include "application/Entity/Behavior/ComboFactory.h"
 
 //============================================================================
 // Enemy class
@@ -121,6 +124,11 @@ public:
 	bool GetIsAlive() const { return enemyData_.characterInfo.isAlive; }
 
 	bool IsInCombat() const { return enemyData_.characterInfo.isInCombat; }
+	
+	// ビヘイビアツリーの取得
+	BehaviorNode* GetBehaviorTree() const { return behaviorTree_.get(); }
+	// ブラックボードの取得
+	Blackboard* GetBlackboard() const { return blackboard_.get(); }
 
 	// 周回角度の取得
 	float GetOrbitAngle() const { return orbitAngle_; }
@@ -166,6 +174,9 @@ private:
 	// ブレイクゲージの蓄積・スタン判定処理
 	void AccumulateBreakGauge(float damage);
 
+	//Blackboardの更新
+	void UpdateBlackboard();
+
 private:
 	// AIシステム
 	std::unique_ptr<AIBrainSystem> aiBrainSystem_ = nullptr;
@@ -176,6 +187,10 @@ private:
 	std::unique_ptr<GameCharacterStateManager> stateManager_ = nullptr;
 	// プレイヤー入力プロバイダ
 	EnemyInputProvider* inputProvider_ = nullptr;
+
+	std::unique_ptr<BehaviorNode> behaviorTree_ = nullptr;  // ビヘイビアツリーのルート
+	std::unique_ptr<Blackboard> blackboard_ = nullptr;      // 共有データストア
+	ComboFactory comboFactory_;                              // ツリー構築用ファクトリ
 
 	// アニメーションコントローラ
 	AnimatorController animatorController_;
@@ -206,7 +221,7 @@ private:
 
 	// ターゲットの周りを周回するための変数
 	float orbitAngle_ = 0.0f;                 // 周回角度
-	float orbitRadius_ = 240.0f;               // 周回半径（ターゲットとの距離）
+	float orbitRadius_ = 500.0f;              // 周回半径（ターゲットとの距離）
 	float orbitSpeed_ = 1.0f;                 // 角速度（周る速さ）
 	Vector3 toOrbitPos_ = { 0.0f, 0.0f, 0.0f }; // 周回する座標
 

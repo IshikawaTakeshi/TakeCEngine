@@ -9,7 +9,7 @@
         {
             "autoStart": true,
             "delayTime": 0.0,
-            "duration": 1.0,
+            "duration": -1.0,
             "emitCount": 10,
             "emitterName": "NewEmitter_1",
             "positionOffset": {
@@ -27,7 +27,7 @@
         {
             "autoStart": true,
             "delayTime": 0.0,
-            "duration": 1.0,
+            "duration": -1.0,
             "emitCount": 10,
             "emitterName": "NewEmitter_2",
             "positionOffset": {

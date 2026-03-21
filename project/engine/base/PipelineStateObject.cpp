@@ -217,14 +217,21 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 
 			// サンプラーの設定
 			D3D12_STATIC_SAMPLER_DESC samplerDesc = {};
-			if(resource.second.name.find("Shadow") != std::string::npos) {
+			if (resource.second.name.find("Shadow") != std::string::npos) {
 				// シャドウマップ用サンプラー
 				samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER; // 0~1の範囲外はボーダーカラー
 				samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
 				samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
 				samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 				samplerDesc.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE; // ボーダーカラーは白
-			} else {
+			} else if(resource.second.name.find("RadialBlur") != std::string::npos) {
+				// 放射状ブラー用サンプラー
+				samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP; // 0~1の範囲外はクランプ
+				samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+				samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+				samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; // 比較しない
+			}	
+			else {
 				// 通常のテクスチャ用サンプラー
 				samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; // 0~1の範囲外をリピート
 				samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;

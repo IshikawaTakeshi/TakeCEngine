@@ -17,7 +17,7 @@ void GameClearScene::Initialize() {
 	gameClearCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
 	gameClearCamera_->SetTranslate({ 43.0f, 1.5f, -20.0f });
 	gameClearCamera_->SetRotate({ -0.03f, -0.5f, -0.02f,0.85f });
-	TakeC::CameraManager::GetInstance().AddCamera("GameOverCamera", *gameClearCamera_);
+	TakeC::CameraManager::GetInstance().AddCamera("GameOverCamera", gameClearCamera_.get());
 	// デフォルトカメラの設定
 	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
@@ -76,6 +76,7 @@ void GameClearScene::Update() {
 void GameClearScene::UpdateImGui() {
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
+	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 	TakeCFrameWork::GetParticleManager()->UpdateImGui();
 	clearTextSprite_->UpdateImGui("ClearText");
 }

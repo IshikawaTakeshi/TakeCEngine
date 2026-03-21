@@ -165,7 +165,6 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	//ImGuiの更新
 	std::string windowName = "Sprite" + name;
-	ImGui::Begin("Sprite");
 	if (ImGui::TreeNode(windowName.c_str())) {
 		spriteConfig_.UpdateImGui();
 		ImGui::Checkbox("isFlipX", &isFlipX_);
@@ -185,13 +184,12 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 		ImGuiManager::ShowSavePopup<SpriteConfig>(
 			TakeCFrameWork::GetJsonLoader(),
 			"Save_Sprite",
-			std::string(spriteConfig_.name + ".json").c_str(),
+			std::string(spriteConfig_.name).c_str(),
 			spriteConfig_,
 			spriteConfig_.name);
 
 		ImGui::TreePop();
 	}
-	ImGui::End();
 #endif // DEBUG
 }
 

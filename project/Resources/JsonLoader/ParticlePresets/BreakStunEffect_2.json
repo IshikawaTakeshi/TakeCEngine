@@ -27,8 +27,8 @@
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 1.2200000286102295,
-            "min": 0.2199999988079071
+            "max": 0.52,
+            "min": 0.21
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
@@ -40,9 +40,9 @@
             "min": 0.0
         },
         "scale": {
-            "x": 8.210000038146973,
-            "y": 8.960000038146973,
-            "z": 8.479999542236328
+            "x": 16.0,
+            "y": 16.0,
+            "z": 16.0
         },
         "scaleEasingType": 0,
         "scaleRange": {
@@ -58,7 +58,7 @@
         }
     },
     "blendState": 1,
-    "isUseTextureAnimation": false,
+    "isUseTextureAnimation": true,
     "name": "BreakStunEffect_2",
     "primitiveParam": {
         "radius": 1.0,

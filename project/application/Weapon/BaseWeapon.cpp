@@ -12,7 +12,8 @@ void BaseWeapon::DrawShadow(const LightCameraInfo& lightCamera) {
 //=============================================================================
 // 武器をスケルトンのジョイントに取り付ける
 //=============================================================================
-void BaseWeapon::AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName) {
+void BaseWeapon::AttachToSkeletonJoint(Skeleton* skeleton,
+	const std::string& jointName) {
 	parentSkeleton_ = skeleton;
 	parentJointName_ = jointName;
 }
@@ -54,6 +55,14 @@ float BaseWeapon::GetBreakStunDecayInterval() const {
 	// ブレイクスタンの蓄積値の減少間隔を返す
 	return weaponData_.config.breakStunDecayInterval;
 }
+float BaseWeapon::GetCurrentReloadTime() const {
+	// 現在のリロード時間を返す
+	return weaponState_.reloadTime;
+}
+float BaseWeapon::GetMaxReloadTime() const {
+	// 最大リロード時間を返す
+	return weaponData_.config.maxReloadTime;
+}
 float BaseWeapon::GetBreakStunPower() const {
 	// ブレイクスタンゲージに与える蓄積値を返す
 	return weaponData_.config.breakStunPower;
@@ -84,12 +93,8 @@ bool BaseWeapon::IsCharging() const {
 	// チャージ中かどうかを返す
 	return weaponState_.isCharging;
 }
-bool BaseWeapon::GetIsAvailable() const {
-	return weaponState_.isAvailable;
-}
-bool BaseWeapon::GetIsReloading() const {
-	return weaponState_.isReloading;
-}
+bool BaseWeapon::GetIsAvailable() const { return weaponState_.isAvailable; }
+bool BaseWeapon::GetIsReloading() const { return weaponState_.isReloading; }
 bool BaseWeapon::CanChargeAttack() const {
 	return weaponData_.config.canChargeAttack;
 }

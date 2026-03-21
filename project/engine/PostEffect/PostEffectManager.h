@@ -4,8 +4,13 @@
 #include "base/PipelineStateObject.h"
 #include "PostEffect/PostEffect.h"
 #include "PostEffect/PostEffectFactory.h"
+#include "PostEffect/PostEffectPlayConfig.h"
+#include "engine/Utility/Timer.h"
+#include "engine/Utility/JsonLoader.h"
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <optional>
 
 //中間リソースの種類列挙型
 enum IntermediateResourceType {
@@ -17,6 +22,12 @@ enum IntermediateResourceType {
 struct NamedPostEffect {
 	std::string name;
 	std::unique_ptr<PostEffect> postEffect;
+};
+
+// 一時エフェクト再生リクエスト
+struct PlayRequest {
+	PostEffectPlayConfig config;
+	Timer timer;
 };
 
 //=============================================================================
@@ -51,6 +62,11 @@ namespace TakeC {
 		void UpdateImGui();
 
 		/// <summary>
+		/// 更新処理(一時エフェクトのタイマー進行・パラメータ反映)
+		/// </summary>
+		void Update();
+
+		/// <summary>
 		/// 終了・開放処理
 		/// </summary>
 		void Finalize();
@@ -81,6 +97,34 @@ namespace TakeC {
 		PostEffect* FindEffect(const std::string& name) const;
 
 		void SetEffectActive(const std::string& name, bool isActive);
+
+		/// <summary>
+		/// プリセット名からエフェクトを再生
+		/// </summary>
+		/// <param name="presetName"></param>
+		/// <param name="durationOverride">再生時間を上書きする場合に指定</param>
+		void PlayEffect(const std::string& presetName, std::optional<float> durationOverride = std::nullopt);
+
+		/// <summary>
+		/// 設定構造体から直接エフェクトを再生
+		/// </summary>
+		/// <param name="config"></param>
+		void PlayEffect(const PostEffectPlayConfig& config);
+
+		/// <summary>
+		/// プリセットを動的に登録
+		/// </summary>
+		void RegisterPreset(const std::string& name, const PostEffectPlayConfig& config);
+
+		/// <summary>
+		/// プリセットを登録解除
+		/// </summary>
+		void UnregisterPreset(const std::string& name);
+
+		/// <summary>
+		/// JSONからプリセットを一括ロード
+		/// </summary>
+		void LoadPresets();
 
 	public:
 
@@ -127,5 +171,11 @@ namespace TakeC {
 
 		//postEffectのコンテナ
 		std::vector<NamedPostEffect> postEffects_;
+
+		// 一時エフェクトの再生リクエスト
+		std::vector<PlayRequest> activeRequests_;
+		// プリセット名 -> 設定のマップ
+		std::unordered_map<std::string, PostEffectPlayConfig> presetMap_;
+		std::vector<std::string> presetNames_; // プリセットの順序を保持するためのベクター
 	};
 }

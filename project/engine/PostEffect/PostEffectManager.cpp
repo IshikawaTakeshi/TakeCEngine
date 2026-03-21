@@ -6,6 +6,7 @@
 #include "PostEffect/BloomEffect.h"
 #include "PostEffect/DepthBasedOutline.h"
 #include "PostEffect/RenderTexture.h"
+#include "engine/Base/TakeCFrameWork.h"
 
 using namespace TakeC;
 
@@ -39,6 +40,18 @@ void PostEffectManager::UpdateImGui() {
 	for (auto& postEffect : postEffects_) {
 		postEffect.postEffect->UpdateImGui();
 	}
+
+	// 一時エフェクト再生リクエストのImGui
+	if (ImGui::CollapsingHeader("PlayEffect")) {
+		int currentPresetIndex_ = -1;
+		bool isSelected = false;
+		isSelected = ImGuiManager::ComboBoxString("Preset", presetNames_, currentPresetIndex_);
+
+		if (isSelected) {
+			PlayEffect(presetNames_[currentPresetIndex_]);
+		}
+	}
+
 	ImGui::End();
 }
 
@@ -202,4 +215,116 @@ void TakeC::PostEffectManager::SetEffectActive(const std::string& name, bool isA
 //======================================================================
 uint32_t PostEffectManager::GetFinalOutputSrvIndex() const {
 	return postEffects_.back().postEffect->GetOutputTextureSrvIndex();
+}
+
+//======================================================================
+// 更新処理(一時エフェクトのタイマー進行・パラメータ反映)
+//======================================================================
+void PostEffectManager::Update() {
+	// エフェクト名ごとの合計強度を保持するマップ
+	std::unordered_map<std::string, float> totalIntensities;
+
+	// 再生中のリクエストを更新
+	for (auto it = activeRequests_.begin(); it != activeRequests_.end(); ) {
+		// タイマーの更新
+		it->timer.Update();
+
+		// タイマーの進捗(0.0~1.0)
+		float progress = it->timer.GetProgress();
+		float peak = it->config.peakTimeRate;
+		
+		float t = 0.0f;
+		float startVal = 0.0f;
+		float endVal = 0.0f;
+
+		if (progress < peak) {
+			// 前半：start -> peak
+			t = (peak > 0.0f) ? (progress / peak) : 1.0f;
+			startVal = it->config.startIntensity;
+			endVal = it->config.peakIntensity;
+		} else {
+			// 後半：peak -> end
+			t = (peak < 1.0f) ? ((progress - peak) / (1.0f - peak)) : 1.0f;
+			startVal = it->config.peakIntensity;
+			endVal = it->config.endIntensity;
+		}
+
+		// イージング適用
+		float easedT = Easing::Ease[it->config.easingType](t);
+		float intensity = startVal + (endVal - startVal) * easedT;
+
+		// エフェクト名ごとに強度を加算
+		totalIntensities[it->config.effectName] += intensity;
+
+		// 終了判定
+		if (it->timer.IsFinished()) {
+			it = activeRequests_.erase(it);
+		} else {
+			++it;
+		}
+	}
+
+	// 合計強度を各エフェクトに反映
+	for (auto& effect : postEffects_) {
+		if (totalIntensities.count(effect.name)) {
+			effect.postEffect->SetIntensity(totalIntensities[effect.name]);
+			// 0より大きければアクティブにする
+			effect.postEffect->SetIsActive(totalIntensities[effect.name] > 0.0f);
+		} else {
+			// リクエストがない場合は 0 に戻す
+			// ※ ただし「常時オン」にしたいエフェクト（ShadowMap等）を上書きしてしまわないか注意。
+			//   一時エフェクトのみを SetIntensity 経由で管理するように各エフェクトを実装すればOK。
+		}
+	}
+}
+
+//======================================================================
+// プリセット名からエフェクトを再生
+//======================================================================
+void PostEffectManager::PlayEffect(const std::string& presetName, std::optional<float> durationOverride) {
+	if (presetMap_.count(presetName) == 0) {
+		Logger::Log("PostEffectManager::PlayEffect() : Preset not found: " + presetName);
+		return;
+	}
+	
+	PostEffectPlayConfig config = presetMap_[presetName];
+	if (durationOverride.has_value()) {
+		config.duration = durationOverride.value();
+	}
+	PlayEffect(config);
+}
+
+//======================================================================
+// 設定構造体から直接エフェクトを再生
+//======================================================================
+void PostEffectManager::PlayEffect(const PostEffectPlayConfig& config) {
+	PlayRequest request;
+	request.config = config;
+	request.timer.Initialize(config.duration, 0.0f);
+	activeRequests_.push_back(request);
+}
+
+//======================================================================
+// プリセットを動的に登録
+//======================================================================
+void PostEffectManager::RegisterPreset(const std::string& name, const PostEffectPlayConfig& config) {
+	presetMap_[name] = config;
+}
+
+//======================================================================
+// プリセットを登録解除
+//======================================================================
+void PostEffectManager::UnregisterPreset(const std::string& name) {
+	presetMap_.erase(name);
+}
+
+//======================================================================
+// JSONからプリセットを一括ロード
+//======================================================================
+void PostEffectManager::LoadPresets() {
+	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<PostEffectPlayConfig>();
+	for (const auto& name : presetNames_) {
+		presetMap_[name] = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PostEffectPlayConfig>(name + ".json");
+	}
+	Logger::Log("PostEffectManager : Loaded " + std::to_string(presetMap_.size()) + " presets.");
 }

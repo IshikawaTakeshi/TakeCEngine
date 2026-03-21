@@ -1,0 +1,162 @@
+{
+    "setName": "DefaultComboSet",
+    "rootType": "SELECTOR",
+    "combos": [
+        {
+            "comboName": "HitAndRun",
+            "rootNode": {
+                "name": "HitAndRunSequence",
+                "nodeType": "SEQUENCE",
+                "targetState": "NONE",
+                "field": "",
+                "op": ">=",
+                "conditionThreshold": 0.0,
+                "children": [
+                    {
+                        "name": "CheckEnergy",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "energy",
+                        "op": ">=",
+                        "conditionThreshold": 30.0,
+                        "children": []
+                    },
+                    {
+                        "name": "CheckNotOverheated",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "isOverheated",
+                        "op": "==",
+                        "conditionThreshold": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "StepBoostApproach",
+                        "nodeType": "ACTION",
+                        "targetState": "STEPBOOST",
+                        "field": "",
+                        "op": ">=",
+                        "conditionThreshold": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "RunAndShoot",
+                        "nodeType": "ACTION",
+                        "targetState": "RUNNING",
+                        "field": "",
+                        "op": ">=",
+                        "conditionThreshold": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "StepBoostRetreat",
+                        "nodeType": "ACTION",
+                        "targetState": "STEPBOOST",
+                        "field": "",
+                        "op": ">=",
+                        "conditionThreshold": 0.0,
+                        "children": []
+                    }
+                ]
+            }
+        },
+        {
+            "comboName": "AerialCombo",
+            "rootNode": {
+                "name": "AerialSequence",
+                "nodeType": "SEQUENCE",
+                "targetState": "NONE",
+                "field": "",
+                "op": ">=",
+                "conditionThreshold": 0.0,
+                "children": [
+                    {
+                        "name": "CheckOnGround",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "onGround",
+                        "op": "==",
+                        "conditionThreshold": 1.0,
+                        "children": []
+                    },
+                    {
+                        "name": "CheckEnergyForJump",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "energy",
+                        "op": ">=",
+                        "conditionThreshold": 20.0,
+                        "children": []
+                    },
+                    {
+                        "name": "LaunchJump",
+                        "nodeType": "ACTION",
+                        "targetState": "JUMP",
+                        "field": "",
+                        "op": ">=",
+                        "conditionThreshold": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "AerialCombat",
+                        "nodeType": "ACTION",
+                        "targetState": "FLOATING",
+                        "field": "",
+                        "op": ">=",
+                        "conditionThreshold": 0.0,
+                        "children": []
+                    }
+                ]
+            }
+        },
+        {
+            "comboName": "EvadeWhenDangerous",
+            "rootNode": {
+                "name": "EvadeSequence",
+                "nodeType": "SEQUENCE",
+                "targetState": "NONE",
+                "field": "",
+                "op": ">=",
+                "conditionThreshold": 0.0,
+                "children": [
+                    {
+                        "name": "CheckBulletNearby",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "isBulletNearby",
+                        "op": "==",
+                        "conditionThreshold": 1.0,
+                        "children": []
+                    },
+                    {
+                        "name": "CheckEnergyForEvade",
+                        "nodeType": "CONDITION",
+                        "targetState": "NONE",
+                        "field": "energy",
+                        "op": ">=",
+                        "conditionThreshold": 15.0,
+                        "children": []
+                    },
+                    {
+                        "name": "EvadeStep",
+                        "nodeType": "ACTION",
+                        "targetState": "STEPBOOST",
+                        "field": "",
+                        "op": ">=",
+                        "conditionThreshold": 0.0,
+                        "children": []
+                    },
+                    {
+                        "name": "ResumeRunning",
+                        "nodeType": "ACTION",
+                        "targetState": "RUNNING",
+                        "field": "",
+                        "op": ">=",
+                        "conditionThreshold": 0.0,
+                        "children": []
+                    }
+                ]
+            }
+        }
+    ]
+}

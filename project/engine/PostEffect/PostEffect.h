@@ -42,6 +42,12 @@ public:
 
 	virtual void SetIsActive(bool isActive) = 0;
 
+	/**
+	 * @brief 強度を設定する（PlayEffect の onTick で呼ばれる）
+	 * @param intensity 現在の強度（0.0〜1.0 を目安）
+	 */
+	virtual void SetIntensity(float /*intensity*/) {}
+
 public:
 	//=========================================================
 	// accessors

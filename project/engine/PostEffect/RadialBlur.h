@@ -10,9 +10,9 @@ struct RadialBlurInfo {
 };
 
 //============================================================================
-//	RadialBluer class
+//	RadialBlur class
 //============================================================================
-class RadialBluer : public PostEffect {
+class RadialBlur : public PostEffect {
 public:
 
 	//=======================================================================
@@ -22,8 +22,8 @@ public:
 	/// <summary>
 	/// コンストラクタ・デストラクタ
 	/// </summary>
-	RadialBluer() = default;
-	~RadialBluer() = default;
+	RadialBlur() = default;
+	~RadialBlur() = default;
 
 	/// <summary>
 	/// 初期化
@@ -39,6 +39,19 @@ public:
 	/// 更新処理
 	/// </summary>
 	void Dispatch() override;
+
+	/**
+	 * @brief 強度を設定する
+	 * @param intensity 0.0〜1.0 (1.0でプリセットの最大強度)
+	 */
+	void SetIntensity(float intensity) override;
+
+public:
+	//=========================================================
+	// accessors
+	//=========================================================
+
+	void SetBlurWidth(float width) { radialBlurInfo_->blurWidth = width; }
 
 	void SetIsActive(bool isActive) override {
 		if (radialBlurInfo_) {
