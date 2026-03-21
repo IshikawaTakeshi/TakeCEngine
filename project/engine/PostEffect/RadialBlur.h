@@ -10,9 +10,9 @@ struct RadialBlurInfo {
 };
 
 //============================================================================
-//	RadialBluer class
+//	RadialBlur class
 //============================================================================
-class RadialBluer : public PostEffect {
+class RadialBlur : public PostEffect {
 public:
 
 	//=======================================================================
@@ -22,8 +22,8 @@ public:
 	/// <summary>
 	/// コンストラクタ・デストラクタ
 	/// </summary>
-	RadialBluer() = default;
-	~RadialBluer() = default;
+	RadialBlur() = default;
+	~RadialBlur() = default;
 
 	/// <summary>
 	/// 初期化

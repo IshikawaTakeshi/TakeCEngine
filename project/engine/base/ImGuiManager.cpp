@@ -219,6 +219,40 @@ void TakeC::ImGuiManager::ApplyStyle() {
 }
 
 //====================================================================
+// string用コンボボックス
+//====================================================================
+bool TakeC::ImGuiManager::ComboBoxString(const char* label, std::vector<std::string>& items, int& currentIndex) {
+	// 値変更フラグ
+	bool clicked = false;
+
+	if (items.empty()) return false;
+
+	// 未選択状態を許可（-1）
+	if (currentIndex < -1 || currentIndex >= static_cast<int>(items.size())) {
+		currentIndex = -1;
+	}
+
+	// 未選択時の表示名
+	const char* preview = (currentIndex >= 0) ? items[currentIndex].c_str() : "Select...";
+
+	if (ImGui::BeginCombo(label, preview)) {
+		for (int i = 0; i < static_cast<int>(items.size()); ++i) {
+			const bool isSelected = (currentIndex == i);
+			if (ImGui::Selectable(items[i].c_str(), isSelected)) {
+				currentIndex = i;
+				clicked = true; // 同じ要素でも「クリックした事実」で true にするならここで常に true
+			}
+			if (isSelected) {
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	return clicked;
+}
+
+//====================================================================
 // テクスチャセレクターの表示
 //====================================================================
 bool TakeC::ImGuiManager::TextureSelector(const char* label, std::string& currentFilePath) {

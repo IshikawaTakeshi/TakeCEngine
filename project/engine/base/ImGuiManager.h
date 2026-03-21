@@ -12,7 +12,7 @@
 #include "engine/Math/Vector3.h"
 #include "engine/Math/Matrix4x4.h"
 #include <string>
-
+#include <vector>
 
 
 //============================================================================
@@ -82,6 +82,8 @@ namespace TakeC {
 
 		template<InputEnum TEnum>
 		static bool ComboBoxEnum(const char* label, TEnum& currentItem);
+
+		static bool ComboBoxString(const char* label, std::vector<std::string>& items, int& currentIndex);
 
 		/// <summary>
 		/// テクスチャセレクターの表示

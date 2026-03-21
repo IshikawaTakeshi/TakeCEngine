@@ -245,6 +245,7 @@ void Player::Update() {
 				if (inputProvider_->RequestStepBoost()) {
 					// RequestActiveBoostEffect();
 					stateManager_->RequestState(GameCharacterState::STEPBOOST);
+					TakeCFrameWork::GetPostEffectManager()->PlayEffect("RadialBlur");
 				}
 				// Jump入力判定
 				// RTで発動

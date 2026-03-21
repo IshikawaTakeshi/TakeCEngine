@@ -20,6 +20,8 @@ struct PostEffectPlayConfig {
     float startIntensity = 0.0f;
     float peakIntensity  = 1.0f;
     float endIntensity   = 0.0f;
+    // ピークに達する時間の割合（0.0~1.0）
+    float peakTimeRate   = 0.5f;
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PostEffectPlayConfig,
@@ -29,7 +31,8 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PostEffectPlayConfig,
     easingType,
     startIntensity,
     peakIntensity,
-    endIntensity
+    endIntensity,
+    peakTimeRate
 )
 
 // JSONディレクトリ

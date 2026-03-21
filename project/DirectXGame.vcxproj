@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -316,7 +316,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\Base\RtvManager.cpp" />
     <ClCompile Include="engine\PostEffect\Vignette.cpp" />
     <ClCompile Include="engine\PostEffect\RenderTexture.cpp" />
-    <ClCompile Include="engine\PostEffect\RadialBluer.cpp" />
+    <ClCompile Include="engine\PostEffect\RadialBlur.cpp" />
     <ClCompile Include="engine\3d\Particle\PrimitiveParticle.cpp" />
     <ClCompile Include="application\Weapon\BaseWeapon.cpp" />
     <ClCompile Include="application\Weapon\Rifle\Rifle.cpp" />
@@ -536,7 +536,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\PostEffect\PostEffectManager.h" />
     <ClInclude Include="engine\PostEffect\GrayScale.h" />
     <ClInclude Include="engine\PostEffect\RenderTexture.h" />
-    <ClInclude Include="engine\PostEffect\RadialBluer.h" />
+    <ClInclude Include="engine\PostEffect\RadialBlur.h" />
     <ClInclude Include="engine\PostEffect\LuminanceBasedOutline.h" />
     <ClInclude Include="engine\3d\Particle\PrimitiveParticle.h" />
     <ClInclude Include="application\Weapon\Bullet\BulletPool.h" />

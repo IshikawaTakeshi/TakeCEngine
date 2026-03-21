@@ -40,6 +40,18 @@ void PostEffectManager::UpdateImGui() {
 	for (auto& postEffect : postEffects_) {
 		postEffect.postEffect->UpdateImGui();
 	}
+
+	// 一時エフェクト再生リクエストのImGui
+	if (ImGui::CollapsingHeader("PlayEffect")) {
+		int currentPresetIndex_ = -1;
+		bool isSelected = false;
+		isSelected = ImGuiManager::ComboBoxString("Preset", presetNames_, currentPresetIndex_);
+
+		if (isSelected) {
+			PlayEffect(presetNames_[currentPresetIndex_]);
+		}
+	}
+
 	ImGui::End();
 }
 
@@ -219,33 +231,27 @@ void PostEffectManager::Update() {
 
 		// タイマーの進捗(0.0~1.0)
 		float progress = it->timer.GetProgress();
-		// Easing適用後の進捗
-		float easeProgress = it->timer.GetEase(static_cast<Easing::EasingType>(it->config.easingType));
+		float peak = it->config.peakTimeRate;
+		
+		float t = 0.0f;
+		float startVal = 0.0f;
+		float endVal = 0.0f;
 
-		// 強度の計算（山なりに変化するように start -> peak -> end を線形補間）
-		float intensity = 0.0f;
-		if (progress < 0.5f) {
-			// 前半：start -> peak (0.0~0.5 を 0.0~1.0 に換算して補間)
-			intensity = it->config.startIntensity + (it->config.peakIntensity - it->config.startIntensity) * easeProgress;
-			// ※ easingType によっては behavior が変わるため、ここでは簡易的に easeProgress をそのまま使っているが、
-			//   山なりを表現するには timer 側でもう少し工夫が必要かもしれない。
-			//   とりあえず「開始->ピーク->終了」の3点補間ではなく、「山なりイージング」は easingType 自体(OUT_BOUNCE 等)か
-			//   別途計算ロジックが必要。
+		if (progress < peak) {
+			// 前半：start -> peak
+			t = (peak > 0.0f) ? (progress / peak) : 1.0f;
+			startVal = it->config.startIntensity;
+			endVal = it->config.peakIntensity;
 		} else {
 			// 後半：peak -> end
-			intensity = it->config.peakIntensity + (it->config.endIntensity - it->config.peakIntensity) * easeProgress;
+			t = (peak < 1.0f) ? ((progress - peak) / (1.0f - peak)) : 1.0f;
+			startVal = it->config.peakIntensity;
+			endVal = it->config.endIntensity;
 		}
-		
-		// とりあえず今回は「0.0->1.0->0.0」のような挙動ではなく、「イージングに従って startからendへ向かう」挙動とする
-		// （山なりにしたい場合は easingType に山なりのもの(SIN_WAVEなど)を選ぶか、
-		//   ピークが必要なら別途計算式を導入する）
-		// ここではプランに合わせて、単純なイージング進捗で start -> end を補間する（山なりは easing か peak を使う想定）
-		
-		// 1.0をピークとする山なり計算の簡易例:
-		// float sinT = std::sin(progress * 3.14159f); 
-		// intensity = it->config.startIntensity + (it->config.peakIntensity - it->config.startIntensity) * sinT;
-		
-		intensity = it->config.startIntensity + (it->config.peakIntensity - it->config.startIntensity) * easeProgress;
+
+		// イージング適用
+		float easedT = Easing::Ease[it->config.easingType](t);
+		float intensity = startVal + (endVal - startVal) * easedT;
 
 		// エフェクト名ごとに強度を加算
 		totalIntensities[it->config.effectName] += intensity;
@@ -275,12 +281,17 @@ void PostEffectManager::Update() {
 //======================================================================
 // プリセット名からエフェクトを再生
 //======================================================================
-void PostEffectManager::PlayEffect(const std::string& presetName) {
+void PostEffectManager::PlayEffect(const std::string& presetName, std::optional<float> durationOverride) {
 	if (presetMap_.count(presetName) == 0) {
 		Logger::Log("PostEffectManager::PlayEffect() : Preset not found: " + presetName);
 		return;
 	}
-	PlayEffect(presetMap_[presetName]);
+	
+	PostEffectPlayConfig config = presetMap_[presetName];
+	if (durationOverride.has_value()) {
+		config.duration = durationOverride.value();
+	}
+	PlayEffect(config);
 }
 
 //======================================================================
@@ -294,11 +305,25 @@ void PostEffectManager::PlayEffect(const PostEffectPlayConfig& config) {
 }
 
 //======================================================================
+// プリセットを動的に登録
+//======================================================================
+void PostEffectManager::RegisterPreset(const std::string& name, const PostEffectPlayConfig& config) {
+	presetMap_[name] = config;
+}
+
+//======================================================================
+// プリセットを登録解除
+//======================================================================
+void PostEffectManager::UnregisterPreset(const std::string& name) {
+	presetMap_.erase(name);
+}
+
+//======================================================================
 // JSONからプリセットを一括ロード
 //======================================================================
 void PostEffectManager::LoadPresets() {
-	std::vector<std::string> presetNames = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<PostEffectPlayConfig>();
-	for (const auto& name : presetNames) {
+	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<PostEffectPlayConfig>();
+	for (const auto& name : presetNames_) {
 		presetMap_[name] = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PostEffectPlayConfig>(name + ".json");
 	}
 	Logger::Log("PostEffectManager : Loaded " + std::to_string(presetMap_.size()) + " presets.");

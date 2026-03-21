@@ -6,7 +6,7 @@ struct RadialBlurInfo {
 	bool enable;
 };
 
-Texture2D<float4> gInputTexture : register(t0);
+Texture2D<float4> gInputRadialBlurTexture : register(t0);
 RWTexture2D<float4> gOutputTexture : register(u0);
 SamplerState gSampler : register(s0);
 
@@ -15,7 +15,7 @@ ConstantBuffer<RadialBlurInfo> gBlurInfo : register(b0);
 [numthreads(8, 8, 1)]
 void main( uint3 DTid : SV_DispatchThreadID ) {
 	float width, height;
-	gInputTexture.GetDimensions(width, height);
+	gInputRadialBlurTexture.GetDimensions(width, height);
 	float2 uv = DTid.xy / float2(width, height);
 	float3 resultColor = float3(0.0f, 0.0f, 0.0f);
 	
@@ -24,17 +24,21 @@ void main( uint3 DTid : SV_DispatchThreadID ) {
 	const int kNumSamples = 16;
 	
 	if (gBlurInfo.enable == false) {
-		gOutputTexture[DTid.xy] = gInputTexture[DTid.xy];
+		gOutputTexture[DTid.xy] = gInputRadialBlurTexture[DTid.xy];
 		return;
 	};
 	//中心から現在のUVに対しての方向を計算
-	float2 direction = uv - gBlurInfo.center;
+	float2 direction = normalize(uv - gBlurInfo.center);
+	float distance = length(uv - gBlurInfo.center);
 	
 	for (int sampleIndex = 0; sampleIndex < kNumSamples; ++sampleIndex) {
+		
+		float t = sampleIndex / float(kNumSamples - 1); //0から1の範囲でサンプリング位置を計算
+		
 		//サンプリングのUV座標を計算
-		float2 sampleUV = uv + direction * gBlurInfo.kBlurWidth * float(sampleIndex);
+		float2 sampleUV = uv + direction * gBlurInfo.kBlurWidth * t * distance;
 		//色を加算
-		resultColor += gInputTexture.Sample(gSampler, sampleUV).rgb;
+		resultColor += gInputRadialBlurTexture.Sample(gSampler, sampleUV).rgb;
 	}
 	
 	//平均化
