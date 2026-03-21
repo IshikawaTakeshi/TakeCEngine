@@ -38,6 +38,20 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	/**
+	 * @brief 強度を設定する
+	 * @param intensity 0.0〜1.0 (1.0でプリセットの最大強度)
+	 */
+	void SetIntensity(float intensity) override;
+
+public:
+	//=========================================================
+	// accessors
+	//=========================================================
+
+	void SetVignetteScale(float scale) { vignetteInfoData_->vignetteScale = scale; }
+	void SetVignettePower(float power) { vignetteInfoData_->vignettePower = power; }
+
 	void SetIsActive(bool isActive) override {
 		if (vignetteInfoData_) {
 			vignetteInfoData_->isActive = isActive;

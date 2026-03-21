@@ -74,3 +74,11 @@ void RadialBluer::Dispatch() {
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());
 }
+
+//=============================================================================
+// 強度の設定
+//=============================================================================
+void RadialBluer::SetIntensity(float intensity) {
+	// intensity 1.0 のときに 0.05 程度の自然なブラーになるように掛ける
+	radialBlurInfo_->blurWidth = intensity * 0.05f;
+}

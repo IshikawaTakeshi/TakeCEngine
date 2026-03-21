@@ -1,0 +1,9 @@
+{
+    "effectName": "Vignette",
+    "presetName": "DamageFlash",
+    "duration": 0.5,
+    "easingType": 2,
+    "startIntensity": 0.8,
+    "peakIntensity": 0.0,
+    "endIntensity": 0.0
+}

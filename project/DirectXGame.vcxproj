@@ -470,6 +470,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Collision\BoxCollider.h" />
     <ClInclude Include="application\Scene\LevelData.h" />
     <ClInclude Include="application\Scene\SceneTransition.h" />
+    <ClInclude Include="engine\PostEffect\PostEffectPlayConfig.h" />
     <ClInclude Include="engine\Utility\JsonDirectoryPathData.h" />
     <ClInclude Include="engine\Utility\JsonLoader.h" />
     <ClInclude Include="application\Weapon\Bullet\Bullet.h" />

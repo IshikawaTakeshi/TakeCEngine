@@ -1178,6 +1178,7 @@
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\context_wrapper.h" />
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.h" />
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h" />
+    <ClInclude Include="engine\PostEffect\PostEffectPlayConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

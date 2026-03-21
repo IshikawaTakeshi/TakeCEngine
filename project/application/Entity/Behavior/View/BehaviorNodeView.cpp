@@ -12,7 +12,6 @@ void BehaviorNodeView::draw() {
 
 	// ロジックノードのインスペクタを表示
 	if (logicNode_) {
-		ImGui::Separator();
 		logicNode_->DrawInspector();
 	}
 }

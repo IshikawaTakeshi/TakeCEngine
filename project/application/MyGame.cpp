@@ -44,6 +44,8 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	LoadSound();
 	//ParticlePreset読み込み
 	LoadParticlePreset();
+	//PostEffectPreset読み込み
+	LoadPostEffectPresets();
 	
 
 	//postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
@@ -103,6 +105,9 @@ void MyGame::Update() {
 
 	//FrameWorkの更新
 	TakeCFrameWork::Update();
+	//PostEffectの更新
+	postEffectManager_->Update();
+
 	TakeCFrameWork::GetWireFrame()->Update();
 }
 
@@ -229,4 +234,11 @@ void MyGame::LoadSound() {
 void MyGame::LoadParticlePreset() {
 
 	TakeCFrameWork::GetParticleManager()->LoadAllPresets();
+}
+
+//====================================================================
+//			PostEffectプリセットの読み込み
+//====================================================================
+void MyGame::LoadPostEffectPresets() {
+	postEffectManager_->LoadPresets();
 }

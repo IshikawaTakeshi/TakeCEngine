@@ -38,9 +38,11 @@ void ConditionNode::DrawInspector() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::PushID(this);
 
-	// フィールド名
+	// フィールド名（幅固定しないと ImFlow ノード幅に引き伸ばされる）
+	static constexpr float kWidgetWidth = 120.0f;
 	char fieldBuf[128];
 	strncpy_s(fieldBuf, field_.c_str(), sizeof(fieldBuf) - 1);
+	ImGui::SetNextItemWidth(kWidgetWidth);
 	if (ImGui::InputText("Field", fieldBuf, sizeof(fieldBuf))) {
 		field_ = fieldBuf;
 	}
@@ -54,12 +56,14 @@ void ConditionNode::DrawInspector() {
 			break;
 		}
 	}
+	ImGui::SetNextItemWidth(kWidgetWidth);
 	if (ImGui::Combo("Op", &currentOp, ops, 6)) {
 		op_ = ops[currentOp];
 		SetComparison(op_);
 	}
 
 	// 比較値
+	ImGui::SetNextItemWidth(kWidgetWidth);
 	ImGui::DragFloat("Value", &value_, 0.1f);
 
 	ImGui::PopID();

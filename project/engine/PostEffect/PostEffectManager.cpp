@@ -6,6 +6,7 @@
 #include "PostEffect/BloomEffect.h"
 #include "PostEffect/DepthBasedOutline.h"
 #include "PostEffect/RenderTexture.h"
+#include "engine/Base/TakeCFrameWork.h"
 
 using namespace TakeC;
 
@@ -202,4 +203,103 @@ void TakeC::PostEffectManager::SetEffectActive(const std::string& name, bool isA
 //======================================================================
 uint32_t PostEffectManager::GetFinalOutputSrvIndex() const {
 	return postEffects_.back().postEffect->GetOutputTextureSrvIndex();
+}
+
+//======================================================================
+// 更新処理(一時エフェクトのタイマー進行・パラメータ反映)
+//======================================================================
+void PostEffectManager::Update() {
+	// エフェクト名ごとの合計強度を保持するマップ
+	std::unordered_map<std::string, float> totalIntensities;
+
+	// 再生中のリクエストを更新
+	for (auto it = activeRequests_.begin(); it != activeRequests_.end(); ) {
+		// タイマーの更新
+		it->timer.Update();
+
+		// タイマーの進捗(0.0~1.0)
+		float progress = it->timer.GetProgress();
+		// Easing適用後の進捗
+		float easeProgress = it->timer.GetEase(static_cast<Easing::EasingType>(it->config.easingType));
+
+		// 強度の計算（山なりに変化するように start -> peak -> end を線形補間）
+		float intensity = 0.0f;
+		if (progress < 0.5f) {
+			// 前半：start -> peak (0.0~0.5 を 0.0~1.0 に換算して補間)
+			intensity = it->config.startIntensity + (it->config.peakIntensity - it->config.startIntensity) * easeProgress;
+			// ※ easingType によっては behavior が変わるため、ここでは簡易的に easeProgress をそのまま使っているが、
+			//   山なりを表現するには timer 側でもう少し工夫が必要かもしれない。
+			//   とりあえず「開始->ピーク->終了」の3点補間ではなく、「山なりイージング」は easingType 自体(OUT_BOUNCE 等)か
+			//   別途計算ロジックが必要。
+		} else {
+			// 後半：peak -> end
+			intensity = it->config.peakIntensity + (it->config.endIntensity - it->config.peakIntensity) * easeProgress;
+		}
+		
+		// とりあえず今回は「0.0->1.0->0.0」のような挙動ではなく、「イージングに従って startからendへ向かう」挙動とする
+		// （山なりにしたい場合は easingType に山なりのもの(SIN_WAVEなど)を選ぶか、
+		//   ピークが必要なら別途計算式を導入する）
+		// ここではプランに合わせて、単純なイージング進捗で start -> end を補間する（山なりは easing か peak を使う想定）
+		
+		// 1.0をピークとする山なり計算の簡易例:
+		// float sinT = std::sin(progress * 3.14159f); 
+		// intensity = it->config.startIntensity + (it->config.peakIntensity - it->config.startIntensity) * sinT;
+		
+		intensity = it->config.startIntensity + (it->config.peakIntensity - it->config.startIntensity) * easeProgress;
+
+		// エフェクト名ごとに強度を加算
+		totalIntensities[it->config.effectName] += intensity;
+
+		// 終了判定
+		if (it->timer.IsFinished()) {
+			it = activeRequests_.erase(it);
+		} else {
+			++it;
+		}
+	}
+
+	// 合計強度を各エフェクトに反映
+	for (auto& effect : postEffects_) {
+		if (totalIntensities.count(effect.name)) {
+			effect.postEffect->SetIntensity(totalIntensities[effect.name]);
+			// 0より大きければアクティブにする
+			effect.postEffect->SetIsActive(totalIntensities[effect.name] > 0.0f);
+		} else {
+			// リクエストがない場合は 0 に戻す
+			// ※ ただし「常時オン」にしたいエフェクト（ShadowMap等）を上書きしてしまわないか注意。
+			//   一時エフェクトのみを SetIntensity 経由で管理するように各エフェクトを実装すればOK。
+		}
+	}
+}
+
+//======================================================================
+// プリセット名からエフェクトを再生
+//======================================================================
+void PostEffectManager::PlayEffect(const std::string& presetName) {
+	if (presetMap_.count(presetName) == 0) {
+		Logger::Log("PostEffectManager::PlayEffect() : Preset not found: " + presetName);
+		return;
+	}
+	PlayEffect(presetMap_[presetName]);
+}
+
+//======================================================================
+// 設定構造体から直接エフェクトを再生
+//======================================================================
+void PostEffectManager::PlayEffect(const PostEffectPlayConfig& config) {
+	PlayRequest request;
+	request.config = config;
+	request.timer.Initialize(config.duration, 0.0f);
+	activeRequests_.push_back(request);
+}
+
+//======================================================================
+// JSONからプリセットを一括ロード
+//======================================================================
+void PostEffectManager::LoadPresets() {
+	std::vector<std::string> presetNames = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<PostEffectPlayConfig>();
+	for (const auto& name : presetNames) {
+		presetMap_[name] = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PostEffectPlayConfig>(name + ".json");
+	}
+	Logger::Log("PostEffectManager : Loaded " + std::to_string(presetMap_.size()) + " presets.");
 }

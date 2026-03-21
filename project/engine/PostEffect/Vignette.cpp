@@ -74,3 +74,7 @@ void Vignette::Dispatch() {
 		outputResource_.Get());
 
 }
+
+void Vignette::SetIntensity(float intensity) {
+	vignetteInfoData_->vignettePower = std::clamp(intensity, 0.0f, 1.0f);
+}
