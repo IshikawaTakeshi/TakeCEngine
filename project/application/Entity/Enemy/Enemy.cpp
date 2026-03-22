@@ -254,6 +254,10 @@ void Enemy::SaveEnemyData(const std::string& characterJsonPath) {
 		enemyData_);
 }
 
+void Enemy::LoadBehaviorTree(const std::string& filePath) {
+	behaviorTree_ = comboFactory_.LoadComboSetData(filePath, stateManager_.get());
+}
+
 //========================================================================================================
 // 更新処理
 //========================================================================================================

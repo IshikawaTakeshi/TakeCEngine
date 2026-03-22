@@ -27,7 +27,21 @@ public:
 	/// </summary>
 	BehaviorStatus Execute(Blackboard& blackboard) override;
 
+	/// <summary>
+	/// ノードのリセット（再実行時に状態をクリア）
+	/// </summary>
 	void Reset() override;
+
+public:
+
+	//=============================================================================
+	// accessors
+	//=============================================================================
+
+	//---- getter ---------------------------
+
+	/// 遷移先のステートを取得
+	GameCharacterState GetTargetState() const { return targetState_; }
 
 private:
 

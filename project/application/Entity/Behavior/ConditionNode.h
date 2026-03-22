@@ -35,6 +35,21 @@ public:
 	/// </summary>
 	void DrawInspector() override;
 
+	//====================================================================================
+	// accessors
+	//====================================================================================
+
+	//---- getter ---------------------------
+
+	/// 比較対象の値を取得
+	const std::string& GetField() const { return field_; }
+	/// 比較対象の値を取得
+	const std::string& GetOperator() const { return op_; }
+
+	float GetThreshold() const { return threshold_; }
+
+	//---- setter ---------------------------
+
 	/// <summary>
 	/// 比較演算子の設定
 	/// </summary>
@@ -44,8 +59,8 @@ public:
 	/// <summary>
 	/// 比較対象の値の設定
 	/// </summary>
-	/// <param name="value"></param>
-	void SetValue(float value) { value_ = value; }
+	/// <param name="threshold"></param>
+	void SetValue(float threshold) { threshold_ = threshold; }
 
 	/// <summary>
 	/// 比較対象のフィールドの設定
@@ -58,6 +73,6 @@ private:
 
 	std::string field_;
 	std::string op_;
-	float value_;
+	float threshold_;
 	std::function<bool(float, float)> compare_;
 };

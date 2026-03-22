@@ -1,5 +1,10 @@
 #include "BehaviorTreeEditor.h"
 #include "engine/Base/ImGuiManager.h"
+#include "engine/Base/TakeCFrameWork.h"
+#include "engine/Base/ImGuiManager.h"
+#include "engine/Utility/StringUtility.h"
+
+using namespace TakeC;
 
 //==================================================================================
 // 初期化
@@ -30,11 +35,15 @@ void BehaviorTreeEditor::UpdateImGui() {
 		ImGui::Begin("Behavior Tree Editor");
 
 		// Blackboardの表示
-		if (blackboard_) {
+		if (ImGui::TreeNode("Blackboard")) {
 			blackboard_->UpdateImGui();
+			ImGui::TreePop();
 		}
+		ImGui::Separator();
+		// コンボセットの保存ボタン
+		SaveComboSet();
 
-		// [EXT] 実行フローの強調表示（リンクのアニメーション管理）
+		//実行フローの強調表示（リンクのアニメーション管理）
 		for (auto& link_weak : flowEditor_->getLinks()) {
 			if (auto link = link_weak.lock()) {
 				// いったん非アクティブにリセット
@@ -90,11 +99,49 @@ void BehaviorTreeEditor::LoadTreeFromEnemy(BehaviorNode* rootNode, Blackboard* b
 	if (!flowEditor_ || !rootNode) return;
 
 	blackboard_ = blackboard;
-
+	rootNode_ = rootNode;
 	// いったんエディタのノードをクリアする
 	nodeViewMap_.clear();
 	ImVec2 startPos = ImVec2(100.0f, 100.0f);
-	BuildNodeView(rootNode, startPos);
+	BuildNodeView(rootNode_, startPos);
+}
+
+//===============================================================================
+// コンボセットのデータからツリーを構築して読み込む
+//===============================================================================
+void BehaviorTreeEditor::LoadTreeFromJson(const std::string&) {
+
+	
+}
+
+//===============================================================================
+// ツリーををコンボセットとしてファイルに保存する
+//===============================================================================
+void BehaviorTreeEditor::SaveComboSet() {
+	if (!rootNode_) return;
+
+	ComboSetData out;
+	out.rootType = DetectRootType(rootNode_);
+
+	// ルートは Composite 前提（ComboFactoryと同じ構造）
+	auto* rootComposite = dynamic_cast<CompositeNode*>(rootNode_);
+	if (!rootComposite) return;
+
+	for (const auto& child : rootComposite->GetChildren()) {
+		if (!child) continue;
+		ComboData combo;
+		combo.comboName = child->GetName(); // 1子 = 1コンボ名
+		combo.rootNode = BuildNodeDataFromLogicNode(child.get());
+		out.combos.push_back(std::move(combo));
+	}	
+
+	//ImGuiManagerの保存ポップアップを表示する
+	ImGuiManager::ShowSavePopup(
+		TakeCFrameWork::GetJsonLoader(),
+		"Save Combo Set",
+		out.setName.c_str(),
+		out,
+		out.setName);
 }
 
 //===============================================================================
@@ -187,4 +234,76 @@ ImFlow::BaseNode* BehaviorTreeEditor::BuildNodeView(BehaviorNode* node, ImVec2& 
 	}
 
 	return viewNode;
+}
+
+//===============================================================================
+// ロジックノードから保存用のデータ構造を構築する
+//===============================================================================
+BehaviorNodeData BehaviorTreeEditor::BuildNodeDataFromLogicNode(const BehaviorNode* node) const {
+	BehaviorNodeData data;
+	if (!node) return data;
+
+	data.name = node->GetName();
+
+	if (auto* action = dynamic_cast<const ActionNode*>(node)) {
+		data.nodeType = "ACTION";
+		// ActionNodeから遷移先Stateを取得できるAPIが必要
+		// 例: action->GetTargetState()
+		data.targetState = StringUtility::EnumToString(action->GetTargetState());
+	}
+	else if (auto* cond = dynamic_cast<const ConditionNode*>(node)) {
+		data.nodeType = "CONDITION";
+		// ConditionNodeから保存用パラメータを取得できるAPIが必要
+		// 例: cond->GetField(), cond->GetOperator(), cond->GetThreshold()
+		data.field = cond->GetField();
+		data.op = cond->GetOperator();
+		data.conditionThreshold = cond->GetThreshold();
+	}
+	else if (auto* seq = dynamic_cast<const SequenceNode*>(node)) {
+		data.nodeType = "SEQUENCE";
+		for (const auto& c : seq->GetChildren()) {
+			data.children.push_back(BuildNodeDataFromLogicNode(c.get()));
+		}
+	}
+	else if (auto* sel = dynamic_cast<const SelectorNode*>(node)) {
+		data.nodeType = "SELECTOR";
+		for (const auto& c : sel->GetChildren()) {
+			data.children.push_back(BuildNodeDataFromLogicNode(c.get()));
+		}
+	}
+	else {
+		// 未対応ノードは最低限ACTION/NONEで逃がすなど方針を決める
+		data.nodeType = "ACTION";
+		data.targetState = "NONE";
+	}
+
+	return data;
+}
+
+//===============================================================================
+// ノードの種類を文字列で判別する（保存用）
+//===============================================================================
+std::string BehaviorTreeEditor::DetectRootType(const BehaviorNode* node) const {
+	
+	if (dynamic_cast<const ActionNode*>(node)) {
+		return "ACTION";
+	}
+	else if (dynamic_cast<const ConditionNode*>(node)) {
+		return "CONDITION";
+	}
+	else if (dynamic_cast<const ScoreConditionNode*>(node)) {
+		return "SCORE_CONDITION";
+	}
+	else if (dynamic_cast<const SelectorNode*>(node)) {
+		return "SELECTOR";
+	}
+	else if (dynamic_cast<const PlannerSelectorNode*>(node)) {
+		return "PLANNER_SELECTOR";
+	}
+	else if (dynamic_cast<const SequenceNode*>(node)) {
+		return "SEQUENCE";
+	}
+	else {
+		return "UNKNOWN";
+	}
 }

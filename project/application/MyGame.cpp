@@ -48,7 +48,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	LoadPostEffectPresets();
 	
 
-	//postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
+	postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
 	//postEffectManager_->InitializeEffect("GrayScale",   L"PostEffect/GrayScale.CS.hlsl");
 	postEffectManager_->InitializeEffect("Dissolve",    L"PostEffect/Dissolve.CS.hlsl");
 	postEffectManager_->InitializeEffect("RadialBlur", L"PostEffect/RadialBlur.CS.hlsl");
@@ -205,8 +205,6 @@ void MyGame::LoadModel() {
 void MyGame::LoadAnimation() {
 
 	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Player_Model_Ver2.0.gltf");
-	//TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
-	//TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
 }
 
 //====================================================================
