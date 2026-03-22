@@ -41,6 +41,7 @@ void TitleScene::Initialize() {
 	playerModel_->SetRotate( { 0.0f, 180.0f, 0.0f });
 	// ShadowMapEffectを無効化
 	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect", false);
+	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("DepthBasedOutline", false);
 }
 
 //====================================================================

@@ -837,20 +837,21 @@ void Enemy::UpdateEnergy() {
 
 void Enemy::RequestActiveBoostEffect() {
 
+	// 毎フレーム一度全OFF（状態残り対策）
+	for (const auto& boostEffect : boostEffects_) {
+		boostEffect->SetIsActive(false);
+	}
+
 	// ステップブーストの方向とスティックの向きによってアクティブにするエフェクトを変更
 	Vector3 moveDir = enemyData_.characterInfo.moveDirection;
 
 	if (moveDir.Length() <= 0.1f) {
-		// スティックがほぼニュートラルの場合はすべてのエフェクトを非アクティブにして終了
-		for (const auto& boostEffect : boostEffects_) {
-			boostEffect->SetIsActive(false);
-		}
+		// ニュートラルなら全OFFのまま終了
 		return;
 	}
-	else {
-		// 背中のエフェクトは常にアクティブ
-		boostEffects_[BACKPACK]->SetIsActive(true);
-	}
+
+	// 背中のエフェクトは常にアクティブ
+	boostEffects_[BACKPACK]->SetIsActive(true);
 
 	// --- プレイヤーの向きをQuaternionから取得 ---
 	Vector3 localForward = Vector3(0.0f, 0.0f, 1.0f);
@@ -858,6 +859,10 @@ void Enemy::RequestActiveBoostEffect() {
 		localForward, enemyData_.characterInfo.transform.rotate);
 	playerForward.y = 0.0f; // 水平方向だけ見る
 	playerForward = Vector3Math::Normalize(playerForward);
+
+	// moveDir も正規化して角度判定を安定化
+	moveDir.y = 0.0f;
+	moveDir = Vector3Math::Normalize(moveDir);
 
 	// --- スティック方向との角度差を求める ---
 	float dot = Vector3Math::Dot(playerForward, moveDir);
@@ -871,21 +876,17 @@ void Enemy::RequestActiveBoostEffect() {
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
 		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
 	}
 	else if (angle >= 45.0f && angle < 135.0f) {
 		// 右
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
 		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
 	}
 	else {
 		// 前後
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
 	}
 }
 

@@ -156,45 +156,39 @@ void VerticalMissile::Update() {
 		break;
 	case VerticalMissile::VerticalMissilePhase::HOMING:
 	{
-
 		// ターゲット位置を更新
 		targetPos_ = ownerWeapon_->GetTargetPos();
 
-		//ターゲットの方向にモデルを向ける
+		// 経過時間を進める
+		homingElapsedTime_ += deltaTime_;
+
+		// 補間率t
+		float duration = std::max(vmInfo_.homingBlendDuration, 0.0001f);
+		float t = std::clamp(homingElapsedTime_ / duration, 0.0f, 1.0f);
+
+		// 時間経過でホーミング値を変化
+		float currentHomingRate = Easing::Lerp(vmInfo_.homingRateStart, vmInfo_.homingRateEnd, t);
+		currentHomingRate = std::clamp(currentHomingRate, 0.0f, 1.0f);
+
 		Quaternion targetRotate = QuaternionMath::LookRotation(
-			Vector3Math::Normalize(targetPos_ - transform_.translate),{ 0.0f,1.0f,0.0f });
-		
-		transform_.rotate = Easing::Slerp(
-			transform_.rotate,
-			targetRotate,
-			0.3f
-		);
+			Vector3Math::Normalize(targetPos_ - transform_.translate), {0.0f, 1.0f, 0.0f});
+
+		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.3f);
 		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
 
-		// ターゲット方向への単位ベクトルを計算
-		Vector3 desired = targetPos_ - transform_.translate;
-		desired = Vector3Math::Normalize(desired);
+		Vector3 desired = Vector3Math::Normalize(targetPos_ - transform_.translate);
 
-		// 現在の進行方向の単位ベクトルを計算
 		Vector3 currentDir;
-		if (velocity_.Length() > 0) {
-			// 速度がある場合はその方向を使用
+		if (velocity_.Length() > 0.0f) {
 			currentDir = Vector3Math::Normalize(velocity_);
 		} else {
-			currentDir = desired; // 初回など速度が0なら目標方向へ
+			currentDir = desired;
 		}
 
-		// homingRate_の値に基づいて徐々にターゲット方向に向かう
-		float easedT = std::clamp(vmInfo_.homingRate, 0.0f, 1.0f);
-
-		// 進行方向を補間して新しい方向を計算
-		Vector3 mixed = Easing::Lerp(currentDir, desired, easedT);
-		// 新しい方向ベクトルを計算
+		Vector3 mixed = Easing::Lerp(currentDir, desired, currentHomingRate);
 		direction_ = Vector3Math::Normalize(mixed);
 
-		// 速度ベクトルを更新
 		velocity_ = direction_ * speed_;
-		// 位置を更新
 		transform_.translate += velocity_ * deltaTime_;
 	}
 		break;
@@ -307,6 +301,7 @@ void VerticalMissile::Create(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo,
 	isActive_ = true;
 	//ポイントライト有効化
 	pointLightData_.enabled_ = 1;
+	homingElapsedTime_ = 0.0f;
 
 	for (auto& trailEmitter : trailEmitter_) {
 		trailEmitter->SetIsEmit(true);

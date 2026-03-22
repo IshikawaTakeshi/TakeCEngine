@@ -54,6 +54,8 @@ void EffectGroup::CreateEmitterInstances() {
 	emitterInstances_.clear();
 	emitterInstances_.reserve(config_.emitters.size());
 
+	isPlaying_ = false;
+
 	for (const auto& emitterConfig : config_.emitters) {
 		EmitterInstance instance;
 		instance.config = emitterConfig;
@@ -70,7 +72,15 @@ void EffectGroup::CreateEmitterInstances() {
 		}
 		instance.emitter->SetIsEmit(false); // 最初は停止
 
+		if (emitterConfig.autoStart) {
+			isPlaying_ = true;
+		}
+
 		emitterInstances_.push_back(std::move(instance));
+	}
+
+	if (isPlaying_) {
+		isFinished_ = false;
 	}
 }
 
@@ -79,7 +89,9 @@ void EffectGroup::CreateEmitterInstances() {
 //==================================================================================
 void EffectGroup::Update() {
 
-	totalElapsedTime_ += deltaTime_;
+	if (isPlaying_ && !isPaused_) {
+		totalElapsedTime_ += deltaTime_;
+	}
 
 	// -------------------------------------------------------------
 	// 1. 基本となる位置と回転を決定
@@ -122,10 +134,12 @@ void EffectGroup::Update() {
 	// 2. 各エミッターの更新
 	// -------------------------------------------------------------
 	for (auto& instance : emitterInstances_) {
-		instance.elapsedTime += deltaTime_;
+		if (isPlaying_ && !isPaused_) {
+			instance.elapsedTime += deltaTime_;
 
-		if (!instance.hasStarted) {
-			CheckEmitterStart(instance);
+			if (!instance.hasStarted) {
+				CheckEmitterStart(instance);
+			}
 		}
 
 		if (instance.isActive) {

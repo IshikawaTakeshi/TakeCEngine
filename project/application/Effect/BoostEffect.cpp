@@ -24,10 +24,14 @@ void BoostEffect::Initialize(GameCharacter* owner,const std::string& effectName)
 	// --- PointLight設定 ---
 	pointLightData_.enabled_ = 1;
 	pointLightData_.color_ = { 0.1f,0.5f,1.0f,1.0f };
-	pointLightData_.intensity_ = 160.0f; // 最初は消しておく
+	pointLightData_.intensity_ = 0.0f; // 最初は消しておく
 	pointLightData_.radius_ = 2.0f;
 	pointLightData_.decay_ = 1.0f;
 	pointLightIndex_ = TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
+	
+	// 確実に停止処理を実行するため、一度 true にしておく
+	isActive_ = true;
+	SetIsActive(false);
 }
 
 //===================================================================================
@@ -85,10 +89,12 @@ void BoostEffect::SetIsActive(bool isActive) {
 		// 再生開始
 		// Meshの位置や回転がセットされていれば、その位置で再生開始
 		effectGroup_->Play(pointLightData_.position_);
+		pointLightData_.intensity_ = 160.0f;
 
 	} else {
 		// 停止
 		effectGroup_->Stop();
+		pointLightData_.intensity_ = 0.0f;
 	}
 }
 

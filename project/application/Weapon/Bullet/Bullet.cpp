@@ -164,13 +164,7 @@ void Bullet::Update() {
 		std::string trailEffectName = effectConfig_.trailEffectFilePath[i];
 	}
 
-	// 敵の弾の場合は警告イベントを発行 (バズーカ等の特定の種別、または近接など)
-	if (characterType_ == CharacterType::ENEMY_BULLET) {
-		WarningData data;
-		data.position = transform_.translate;
-		data.type = warningType_;
-		TakeCFrameWork::GetEventManager()->PostEvent("EnemyBulletWarning", data);
-	}
+
 }
 
 //========================================================================================================
@@ -259,21 +253,25 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos,const Vec
 	speed_ = speed;
 	targetPos_ = targetPos;
 
-	//ターゲットまでの方向を求める
-	float distance = Vector3Math::Length(targetPos_ - transform_.translate);
-	float travelTime = distance / speed_;
-	//予測位置を計算
-	Vector3 predictedTargetPos = targetPos_ + targetVel * travelTime;
-	direction_ = Vector3Math::Normalize(predictedTargetPos - transform_.translate);
-	//ターゲットの方向にモデルを向ける
+	// 厳密迎撃予測
+	float interceptTime = 0.0f;
+	Vector3 aimPos = targetPos_;
+
+	if (SolveInterceptTime(transform_.translate, targetPos_, targetVel, speed_, interceptTime)) {
+		aimPos = targetPos_ + targetVel * interceptTime;
+	}
+	// 解けない場合は現地点を狙う（または max予測時間でクランプ）
+
+	direction_ = Vector3Math::Normalize(aimPos - transform_.translate);
+
 	Quaternion targetRotate = QuaternionMath::LookRotation(
-		Vector3Math::Normalize(targetPos_ - transform_.translate),{ 0.0f,1.0f,0.0f });
+		direction_, {0.0f, 1.0f, 0.0f});
 	transform_.rotate = QuaternionMath::ToEuler(targetRotate);
-	lifeTime_ = 2.0f; // 弾のライフタイムを設定
+
+	lifeTime_ = 2.0f;
 	pointLightData_.enabled_ = 1;
 	pointLightData_.intensity_ = 120.0f;
 
-	//速度の設定
 	velocity_ = direction_ * speed_;
 	isActive_ = true;
 
@@ -307,6 +305,40 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& direction, float sp
 //========================================================================================================
 // getter
 //========================================================================================================
+
+bool Bullet::SolveInterceptTime(const Vector3& shooterPos, const Vector3& targetPos, const Vector3& targetVel, float bulletSpeed, float& outTime) const {
+	Vector3 r = targetPos - shooterPos;
+	float a = Vector3Math::Dot(targetVel, targetVel) - bulletSpeed * bulletSpeed;
+	float b = 2.0f * Vector3Math::Dot(r, targetVel);
+	float c = Vector3Math::Dot(r, r);
+
+	const float eps = 1e-5f;
+
+	// a == 0 のときは一次方程式
+	if (std::abs(a) < eps) {
+		if (std::abs(b) < eps) return false; // 解なし
+		float t = -c / b;
+		if (t <= 0.0f) return false;
+		outTime = t;
+		return true;
+	}
+
+	float disc = b * b - 4.0f * a * c;
+	if (disc < 0.0f) return false; // 実数解なし（追いつけない）
+
+	float sqrtDisc = std::sqrt(disc);
+	float t1 = (-b - sqrtDisc) / (2.0f * a);
+	float t2 = (-b + sqrtDisc) / (2.0f * a);
+
+	// 正の最小解を採用
+	float t = FLT_MAX;
+	if (t1 > 0.0f) t = t1;
+	if (t2 > 0.0f && t2 < t) t = t2;
+
+	if (t == FLT_MAX) return false;
+	outTime = t;
+	return true;
+}
 
 // Transformの取得
 const EulerTransform& Bullet::GetTransform() const { return transform_; }

@@ -63,6 +63,11 @@ public:
 		breakStunDecayInterval = decayInterval;
 	}
 
+	/// <summary>
+	/// 射手の位置、目標の位置と速度、弾速から、弾が目標に当たるまでの時間を計算する
+	/// </summary>
+	bool SolveInterceptTime(const Vector3& shooterPos, const Vector3& targetPos, const Vector3& targetVel, float bulletSpeed, float& outTime) const;
+
 public:
 
 	//===========================================================================
