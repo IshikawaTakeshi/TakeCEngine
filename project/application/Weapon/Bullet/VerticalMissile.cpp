@@ -145,14 +145,26 @@ void VerticalMissile::Update() {
 
 	switch (phase_) {
 	case VerticalMissile::VerticalMissilePhase::ASCENDING:
+	{
 		// 上昇中の処理
 		velocity_ = { 0.0f, vmInfo_.ascendSpeed, 0.0f };
+		// 上昇方向を直接使う（Normalize不要）
+		const Vector3 upDir = { 0.0f, 1.0f, 0.0f };
+
+		Quaternion targetRotate = QuaternionMath::LookRotation(
+			upDir, { 0.0f, 0.0f, 1.0f } // upと平行でないUpベクトルを渡す
+		);
+		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.3f);
+		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
+
 		transform_.translate.y += velocity_.y * deltaTime_;
 		if (transform_.translate.y >= vmInfo_.maxAltitude) {
 			// 最大高度に達したらホーミングフェーズに移行
 			phase_ = VerticalMissile::VerticalMissilePhase::HOMING;
+			// ホーミング開始時の経過時間をリセット
+			homingElapsedTime_ = 0.0f; 
 		}
-
+	}
 		break;
 	case VerticalMissile::VerticalMissilePhase::HOMING:
 	{
