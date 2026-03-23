@@ -184,7 +184,7 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 		ImGuiManager::ShowSavePopup<SpriteConfig>(
 			TakeCFrameWork::GetJsonLoader(),
 			"Save_Sprite",
-			std::string(spriteConfig_.name).c_str(),
+			std::string(spriteConfig_.name + ".json").c_str(),
 			spriteConfig_,
 			spriteConfig_.name);
 

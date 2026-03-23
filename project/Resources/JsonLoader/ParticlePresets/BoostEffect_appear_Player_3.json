@@ -2,8 +2,8 @@
     "attributes": {
         "alignRotationToEmitter": true,
         "color": {
-            "x": 0.3921568691730499,
-            "y": 0.2862745225429535,
+            "x": 0.9921568632125854,
+            "y": 0.9882352948188782,
             "z": 1.0
         },
         "colorRange": {
@@ -17,7 +17,7 @@
         },
         "editColor": true,
         "emitCount": 10,
-        "enableFollowEmitter": true,
+        "enableFollowEmitter": false,
         "enableLighting": false,
         "frequency": 0.10000000149011612,
         "isBillboard": false,
@@ -27,53 +27,46 @@
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 0.1599999964237213,
-            "min": 0.1599999964237213
+            "max": 0.18000000715255737,
+            "min": 0.05999999865889549
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
-            "max": 1.0,
-            "min": -1.0
+            "max": 0.14000000059604645,
+            "min": -0.3499999940395355
         },
         "rotateRange": {
-            "max": 3.1415927410125732,
-            "min": -3.1415927410125732
+            "max": 2.052000045776367,
+            "min": -1.9420000314712524
         },
         "scale": {
-            "x": 0.5699999928474426,
-            "y": 6.539999961853027,
-            "z": 0.5600000023841858
+            "x": 1.0,
+            "y": 9.899999618530273,
+            "z": 1.0
         },
-        "scaleEasingType": 6,
+        "scaleEasingType": 0,
         "scaleRange": {
-            "max": 3.5399999618530273,
-            "min": 0.10000000149011612
+            "max": 2.9000000953674316,
+            "min": 0.8600000143051147
         },
-        "scaleSetting": 0,
+        "scaleSetting": 2,
         "trailEmitInterval": 0.01600000075995922,
         "velocityEasingType": 0,
         "velocityRange": {
-            "max": 1.0,
-            "min": -1.0
+            "max": 200.0,
+            "min": 30.0
         }
     },
     "blendState": 1,
-    "isUseTextureAnimation": true,
-    "name": "BoostEffect_Player_2",
+    "isUseTextureAnimation": false,
+    "name": "BoostEffect_appear_Player_3",
     "primitiveParam": {
-        "height": 1.0,
-        "radius": 1.0,
+        "height": 2.9600000381469727,
+        "radius": 1.0099999904632568,
         "subDivision": 16
     },
     "primitiveType": "PRIMITIVE_CONE",
-    "textureAnimationParam": {
-        "scrollSpeed": {
-            "x": 3.5199999809265137,
-            "y": 7.650000095367432
-        },
-        "wrapU": true,
-        "wrapV": true
-    },
-    "textureAnimationType": 1,
-    "textureFilePath": "Spark2.png"
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
+    "textureFilePath": "BlueBoostEffect.png"
 }

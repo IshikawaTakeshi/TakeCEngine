@@ -138,7 +138,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	boostEffects_.resize(kNumPositions);
 	for (int i = 0; i < boostEffects_.size(); i++) {
 		boostEffects_[i] = std::make_unique<BoostEffect>();
-		boostEffects_[i]->Initialize(this, "BoostEffect_Enemy.json");
+		boostEffects_[i]->Initialize(this, "BoostEffect_Enemy.json","BoostEffect_Appear_Enemy.json");
 	}
 	boostEffects_[LEFT_LEG]->AttachToSkeletonJoint(
 		object3d_->GetModel()->GetSkeleton(), "knees_left.002");

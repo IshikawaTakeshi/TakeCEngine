@@ -70,7 +70,7 @@ void Player::Initialize(Object3dCommon* object3dCommon,
 	boostEffects_.resize(kNumPositions);
 	for (int i = 0; i < kNumPositions; i++) {
 		boostEffects_[i] = std::make_unique<BoostEffect>();
-		boostEffects_[i]->Initialize(this, "BoostEffect_Player.json");
+		boostEffects_[i]->Initialize(this, "BoostEffect_Player.json", "BoostEffect_Appear_Player.json");
 	}
 	boostEffects_[LEFT_LEG]->AttachToSkeletonJoint(
 		object3d_->GetModel()->GetSkeleton(), "knees_left.002");
@@ -782,6 +782,13 @@ void Player::RequestActiveBoostEffect() {
 		// 前後
 		//boostEffects_[LEFT_LEG]->SetIsActive(true);
 		//boostEffects_[RIGHT_LEG]->SetIsActive(true);
+	}
+}
+
+void Player::RequestAppearBoostEffect() {
+	// 登場エフェクトをリクエスト
+	for (const auto& boostEffect : boostEffects_) {
+		boostEffect->PlayAppearEffect();
 	}
 }
 

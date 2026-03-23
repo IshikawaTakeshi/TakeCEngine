@@ -173,6 +173,7 @@ private:
 
 	//ブーストエフェクトのアクティブ化判定
 	void RequestActiveBoostEffect();
+	void RequestAppearBoostEffect();
 	//ブレイクゲージを蓄積してスタン判定
 	void AccumulateBreakGauge(float damage);
 };
