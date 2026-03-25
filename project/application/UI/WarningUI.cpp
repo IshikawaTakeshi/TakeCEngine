@@ -16,7 +16,7 @@ WarningUI::~WarningUI() {
 
 	// イベントオブザーバーの解除
 	TakeCFrameWork::GetEventManager()->RemoveObserver("EnemyHighPowerAttack", eventObserverID_);
-	TakeCFrameWork::GetEventManager()->RemoveObserver("EnemyBulletWarning", eventObserverID_);
+	TakeCFrameWork::GetEventManager()->RemoveObserver("EnemyBulletWarning", eventObserverID2_);
 	targetCamera_ = nullptr;
 }
 //======================================================================
@@ -68,7 +68,7 @@ void WarningUI::Initialize(TakeC::SpriteManager* spriteManager, const std::strin
 		});
 
 	// 特定の弾（ミサイル・バズーカ）の位置追跡用
-	TakeCFrameWork::GetEventManager()->AddObserver(
+	eventObserverID2_ = TakeCFrameWork::GetEventManager()->AddObserver(
 		"EnemyBulletWarning",
 		[this](const std::any& data) {
 			try {

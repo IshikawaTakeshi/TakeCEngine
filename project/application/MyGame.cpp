@@ -55,6 +55,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
 	postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
 	//postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
+	postEffectManager_->InitializeEffect("ScanlineEffect", L"PostEffect/ScanlineEffect.CS.hlsl");
 	postEffectManager_->InitializeEffect("DepthBasedOutline", L"PostEffect/DepthBasedOutline.CS.hlsl");
 	postEffectManager_->InitializeEffect("ShadowMapEffect",   L"PostEffect/ShadowMapEffect.CS.hlsl");
 

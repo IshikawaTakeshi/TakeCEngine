@@ -6,6 +6,7 @@
 #include "engine/PostEffect/GrayScale.h"
 #include "engine/PostEffect/LuminanceBasedOutline.h"
 #include "engine/PostEffect/RadialBlur.h"
+#include "engine/PostEffect/ScanlineEffect.h"
 #include "engine/PostEffect/ShadowMapEffect.h"
 #include "engine/PostEffect/Vignette.h"
 
@@ -20,6 +21,7 @@ PostEffectFactory::PostEffectFactory() {
     Register("GrayScale", []() { return std::make_unique<GrayScale>(); });
     Register("LuminanceBasedOutline", []() { return std::make_unique<LuminanceBasedOutline>(); });
     Register("RadialBlur", []() { return std::make_unique<RadialBlur>(); });
+	Register("ScanlineEffect", []() { return std::make_unique<ScanlineEffect>(); });
     Register("ShadowMapEffect", []() { return std::make_unique<ShadowMapEffect>(); });
     Register("Vignette", []() { return std::make_unique<Vignette>(); });
 }
