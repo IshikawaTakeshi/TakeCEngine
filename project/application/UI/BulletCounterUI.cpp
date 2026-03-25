@@ -16,12 +16,8 @@ void BulletCounterUI::Initialize(TakeC::SpriteManager *spriteManager,
   BaseUI::Initialize(spriteManager);
 
   bulletCounterPos_ = position; // スプライトの位置
-  counterSpriteSize_ = {
-      15.0f * TakeC::WinApp::widthPercent_,
-      16.0f * TakeC::WinApp::heightPercent_}; // スプライトのサイズ
-  reloadSpriteSize_ = {
-      65.0f * TakeC::WinApp::widthPercent_,
-      20.0f * TakeC::WinApp::heightPercent_}; // リロードスプライトのサイズ
+  counterSpriteSize_ = {15.0f, 16.0f}; // スプライトのサイズ
+  reloadSpriteSize_ = {65.0f, 20.0f}; // リロードスプライトのサイズ
 
   for (int i = 0; i < 3; ++i) {
     // 弾数カウンターのスプライトを3つ作成
@@ -36,11 +32,8 @@ void BulletCounterUI::Initialize(TakeC::SpriteManager *spriteManager,
     Sprite *maxSprite =
         CreateAndRegisterSpriteFromJson("BulletCounter_MaxNumText.json");
     maxSprite->SetTranslate(
-        {bulletCounterPos_.x +
-             i * (counterSpriteSize_.x -
-                  spriteSpace_ * TakeC::WinApp::widthPercent_),
-         bulletCounterPos_.y + counterSpriteSize_.y +
-             5.0f * TakeC::WinApp::heightPercent_});
+        {bulletCounterPos_.x + i * (counterSpriteSize_.x - spriteSpace_),
+         bulletCounterPos_.y + counterSpriteSize_.y + 5.0f});
     maxBulletCounterSprite_.push_back(maxSprite);
   }
 
@@ -51,30 +44,20 @@ void BulletCounterUI::Initialize(TakeC::SpriteManager *spriteManager,
   reloadSprite_ = CreateAndRegisterSpriteFromJson("BulletCounter_Reload.json");
   reloadSprite_->SetTranslate(bulletCounterPos_);
 
-  separatorSpriteSize_ = {
-      110.0f * TakeC::WinApp::widthPercent_,
-      1.0f * TakeC::WinApp::heightPercent_}; // セパレータースプライトのサイズ
+  separatorSpriteSize_ = {110.0f, 1.0f}; // セパレータースプライトのサイズ
   // セパレータースプライトの初期化
   separatorSprite_ =
       CreateAndRegisterSpriteFromJson("BulletCounter_Separator.json");
   separatorSprite_->SetTranslate({
-      bulletCounterPos_.x +
-          1.5f * (counterSpriteSize_.x -
-                  spriteSpace_ * TakeC::WinApp::widthPercent_),
-      bulletCounterPos_.y + counterSpriteSize_.y +
-          5.0f *
-              TakeC::WinApp::
-                  heightPercent_ // セパレーターの位置を弾数カウンターの中央に設定
+      bulletCounterPos_.x + 1.5f * (counterSpriteSize_.x - spriteSpace_),
+      bulletCounterPos_.y + counterSpriteSize_.y + 5.0f // セパレーターの位置を弾数カウンターの中央に設定
   });
 
   // 武器アイコンのスプライトの初期化
   weaponIconSprite_ =
       CreateAndRegisterSpriteFromJson("BulletCounter_WeaponIcon.json");
   weaponIconSprite_->SetTranslate(
-      {bulletCounterPos_.x -
-           40.0f *
-               TakeC::WinApp::
-                   widthPercent_, // アイコンの位置を弾数カウンターの左側に設定
+      {bulletCounterPos_.x - 40.0f, // アイコンの位置を弾数カウンターの左側に設定
        bulletCounterPos_.y});
 }
 
