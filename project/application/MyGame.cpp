@@ -3,6 +3,7 @@
 #include "Utility/Logger.h"
 #include "Utility/StringUtility.h"
 #include "Collision/CollisionManager.h"
+#include "math/MathEnv.h"
 
 float MyGame::requestedTimeScale_ = 1.0f;
 Timer MyGame::timeScaleTimer_;
@@ -13,10 +14,12 @@ Timer MyGame::timeScaleTimer_;
 
 void MyGame::Initialize(const std::wstring& titleName) {
 
-	using Clock = std::chrono::high_resolution_clock;
 
-	// 計測開始
-	auto start = Clock::now();
+	using Clock = std::chrono::high_resolution_clock;
+	using Ms = std::chrono::milliseconds;
+
+	// 計測開始（全体）
+	auto totalStart = Clock::now();
 
 	//FrameWorkの初期化
 	TakeCFrameWork::Initialize(titleName);
@@ -26,7 +29,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//シーンマネージャーのセット
 	SceneManager::GetInstance().SetSceneFactory(sceneFactory_.get());
 
-	//影描画用レンダーテクスチャの生成
+	//影描画用レンダ���テクスチャの生成
 	shadowRenderTexture_ = std::make_unique<RenderTexture>();
 	shadowRenderTexture_->Initialize(directXCommon_.get(), srvManager_.get(),
 		1024 * 4, 1024 * 4
@@ -34,48 +37,72 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	//PostEffectManagerに影描画用レンダーテクスチャをセット
 	postEffectManager_->SetLightCameraRenderTexture(shadowRenderTexture_.get());
 
-	//Texture読み込み
-	TakeC::TextureManager::GetInstance().LoadTextureAll();
-	//Model読み込み
-	LoadModel();
-	//Animation読み込み
-	LoadAnimation();
-	//Sound読み込み
-	LoadSound();
-	//ParticlePreset読み込み
-	LoadParticlePreset();
-	//PostEffectPreset読み込み
-	LoadPostEffectPresets();
-	
+	//----------------------------------------
+	// リソース読み��み時間計測
+	//----------------------------------------
 
-	postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
-	//postEffectManager_->InitializeEffect("GrayScale",   L"PostEffect/GrayScale.CS.hlsl");
-	postEffectManager_->InitializeEffect("Dissolve",    L"PostEffect/Dissolve.CS.hlsl");
-	postEffectManager_->InitializeEffect("RadialBlur", L"PostEffect/RadialBlur.CS.hlsl");
-	//postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
-	postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
-	//postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
-	postEffectManager_->InitializeEffect("ScanlineEffect", L"PostEffect/ScanlineEffect.CS.hlsl");
-	postEffectManager_->InitializeEffect("DepthBasedOutline", L"PostEffect/DepthBasedOutline.CS.hlsl");
-	postEffectManager_->InitializeEffect("ShadowMapEffect",   L"PostEffect/ShadowMapEffect.CS.hlsl");
+	int64_t textureMs = Measure(L"TextureManager::LoadTextureAll", []() {
+		TakeC::TextureManager::GetInstance().LoadTextureAll();
+		});
+
+	int64_t modelMs = Measure(L"MyGame::LoadModel", [this]() {
+		LoadModel();
+		});
+
+	int64_t animationMs = Measure(L"MyGame::LoadAnimation", [this]() {
+		LoadAnimation();
+		});
+
+	int64_t soundMs = Measure(L"MyGame::LoadSound", [this]() {
+		LoadSound();
+		});
+
+	int64_t particlePresetMs = Measure(L"MyGame::LoadParticlePreset", [this]() {
+		LoadParticlePreset();
+		});
+
+	int64_t postEffectPresetMs = Measure(L"MyGame::LoadPostEffectPresets", [this]() {
+		LoadPostEffectPresets();
+		});
+
+	// post effect 初期化も計測したい場合
+	int64_t postEffectInitMs = Measure(L"PostEffect InitializeEffect", [this]() {
+		//postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
+		//postEffectManager_->InitializeEffect("GrayScale",   L"PostEffect/GrayScale.CS.hlsl");
+		postEffectManager_->InitializeEffect("Dissolve", L"PostEffect/Dissolve.CS.hlsl");
+		postEffectManager_->InitializeEffect("RadialBlur", L"PostEffect/RadialBlur.CS.hlsl");
+		//postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
+		postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
+		//postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
+		postEffectManager_->InitializeEffect("DepthBasedOutline", L"PostEffect/DepthBasedOutline.CS.hlsl");
+		postEffectManager_->InitializeEffect("ShadowMapEffect", L"PostEffect/ShadowMapEffect.CS.hlsl");
+		});
 
 	CollisionManager::GetInstance().Initialize(directXCommon_.get());
 
 	//最初のシーンを設定
 #if defined(_DEBUG) || defined(_DEVELOP)
-
-	sceneManager_->ChangeScene("TITLE",0.0f);
+	sceneManager_->ChangeScene("TITLE", 0.0f);
 #else
 	sceneManager_->ChangeScene("TITLE", 0.0f);
 #endif // _DEBUG
 
+	// 計測終了（全体）
+	auto totalEnd = Clock::now();
+	auto totalMs = std::chrono::duration_cast<Ms>(totalEnd - totalStart).count();
 
-	// 計測終了
-	auto end = Clock::now();
-
-	// 経過時間をミリ秒単位で計算
-	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-	Logger::Log(StringUtility::ConvertString(L"Resource Load Time : " + std::to_wstring(duration) + L"ms"));
+	// サマリーログ
+	Logger::Log(StringUtility::ConvertString(
+		L"[LoadTime] Summary(ms) "
+		L"Texture=" + std::to_wstring(textureMs) +
+		L", Model=" + std::to_wstring(modelMs) +
+		L", Animation=" + std::to_wstring(animationMs) +
+		L", Sound=" + std::to_wstring(soundMs) +
+		L", ParticlePreset=" + std::to_wstring(particlePresetMs) +
+		L", PostEffectPreset=" + std::to_wstring(postEffectPresetMs) +
+		L", PostEffectInit=" + std::to_wstring(postEffectInitMs) +
+		L", Total=" + std::to_wstring(totalMs)
+	));
 }
 
 //====================================================================
