@@ -73,4 +73,5 @@ private:
 	const float kFlashSpeed_ = 60.0f;   // 点滅の速さ
 
 	uint32_t eventObserverID_ = 0; // イベントオブザーバーのID
+	uint32_t eventObserverID2_= 0; // イベントオブザーバーのID
 };
