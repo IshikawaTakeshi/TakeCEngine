@@ -101,6 +101,11 @@ namespace TakeC {
 		/// </summary>
 		void LoadTextureAll();
 
+		/// <summary>
+		/// すべての読み込み完了を待機
+		/// </summary>
+		void WaitForAllLoads();
+
 	private:
 
 		std::string NormalizeTextureFilePath(const std::string& filePath);
@@ -201,12 +206,18 @@ namespace TakeC {
 		TakeC::SrvManager* srvManager_ = nullptr;
 
 
-		std::thread workerThread_;
+		std::vector<std::thread> workerThreads_;
 		// リクエスト（読み込み依頼）
 		std::queue<std::string> requestQueue_;
 		// 完了（CPU処理済み）
 		std::queue<TextureCPUData> completedQueue_;
-		std::mutex mutex_;
+		std::mutex mutex_; // queue用
+		mutable std::mutex mapMutex_; // textureDatas_用
 		std::atomic<bool> threadRunning_ = true;
+
+		// 読み込み待ち数
+		std::atomic<int> pendingCount_ = 0;
+		// プレースホルダ用（白テクスチャ）
+		TextureData whiteTextureData_;
 	};
 }

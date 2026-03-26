@@ -28,6 +28,29 @@ void TakeC::TextureManager::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::Sr
 	srvManager_ = srvManager;
 	//SRVの数と同数
 	textureDatas_.reserve(srvManager_->kMaxSRVCount_);
+
+	// --- プレースホルダ（白テクスチャ）の生成 ---
+	DirectX::ScratchImage image;
+	DirectX::TexMetadata metadata;
+	DecodeTexture("", image, metadata); // 空パスで白1x1が読み込まれる
+
+	DirectX::ScratchImage mipImages;
+	BuildMipMaps(image, metadata, mipImages);
+
+	whiteTextureData_.srvIndex = srvManager_->Allocate();
+	whiteTextureData_.srvHandleCPU = srvManager_->GetSrvDescriptorHandleCPU(whiteTextureData_.srvIndex);
+	whiteTextureData_.srvHandleGPU = srvManager_->GetSrvDescriptorHandleGPU(whiteTextureData_.srvIndex);
+
+	UploadTexture(mipImages, metadata, whiteTextureData_);
+
+	srvManager_->CreateSRVforTexture2D(
+		whiteTextureData_.metadata.IsCubemap(),
+		whiteTextureData_.metadata.format,
+		UINT(whiteTextureData_.metadata.mipLevels),
+		whiteTextureData_.resource.Get(),
+		whiteTextureData_.srvIndex
+	);
+
 	//workerスレッド開始
 	threadRunning_ = true;
 	StartWorker();
@@ -40,7 +63,13 @@ void TakeC::TextureManager::Finalize() {
 	srvManager_ = nullptr;
 	dxCommon_ = nullptr;
 	threadRunning_ = false;
-	workerThread_.join();
+	
+	for (auto& thread : workerThreads_) {
+		if (thread.joinable()) {
+			thread.join();
+		}
+	}
+	workerThreads_.clear();
 	textureDatas_.clear();
 }
 
@@ -60,25 +89,31 @@ void TakeC::TextureManager::Update() {
 			completedQueue_.pop();
 		}
 
-		// GPUアップロード（今の処理そのまま使える）
-		TextureData& textureData = textureDatas_[data.filePath];
+		// GPUアップロード
+		{
+			std::lock_guard<std::mutex> mapLock(mapMutex_);
+			TextureData& textureData = textureDatas_[data.filePath];
 
-		UploadTexture(data.mipImages, data.metadata, textureData);
+			UploadTexture(data.mipImages, data.metadata, textureData);
 
-		// SRV処理（既存そのまま）
-		if (textureData.srvIndex == 0) {
-			textureData.srvIndex = srvManager_->Allocate();
-			textureData.srvHandleCPU = srvManager_->GetSrvDescriptorHandleCPU(textureData.srvIndex);
-			textureData.srvHandleGPU = srvManager_->GetSrvDescriptorHandleGPU(textureData.srvIndex);
+			// SRV処理
+			if (textureData.srvIndex == 0) {
+				textureData.srvIndex = srvManager_->Allocate();
+				textureData.srvHandleCPU = srvManager_->GetSrvDescriptorHandleCPU(textureData.srvIndex);
+				textureData.srvHandleGPU = srvManager_->GetSrvDescriptorHandleGPU(textureData.srvIndex);
+			}
+
+			srvManager_->CreateSRVforTexture2D(
+				textureData.metadata.IsCubemap(),
+				textureData.metadata.format,
+				UINT(textureData.metadata.mipLevels),
+				textureData.resource.Get(),
+				textureData.srvIndex
+			);
 		}
 
-		srvManager_->CreateSRVforTexture2D(
-			textureData.metadata.IsCubemap(),
-			textureData.metadata.format,
-			UINT(textureData.metadata.mipLevels),
-			textureData.resource.Get(),
-			textureData.srvIndex
-		);
+		// 読み込み完了
+		pendingCount_--;
 	}
 }
 
@@ -110,11 +145,32 @@ void TakeC::TextureManager::LoadTexture(const std::string& filePath, bool forceR
 
 	std::string normalizedPath = NormalizeTextureFilePath(filePath);
 
-	if (!forceReload && textureDatas_.contains(normalizedPath)) return;
+	{
+		std::lock_guard<std::mutex> lock(mapMutex_);
+		if (!forceReload && textureDatas_.contains(normalizedPath)) return;
+
+		// エントリがなければ仮登録
+		if (!textureDatas_.contains(normalizedPath)) {
+			TextureData& data = textureDatas_[normalizedPath];
+			data.srvIndex = srvManager_->Allocate();
+			data.srvHandleCPU = srvManager_->GetSrvDescriptorHandleCPU(data.srvIndex);
+			data.srvHandleGPU = srvManager_->GetSrvDescriptorHandleGPU(data.srvIndex);
+
+			// とりあえず白テクスチャを割り当て
+			srvManager_->CreateSRVforTexture2D(
+				false,
+				whiteTextureData_.metadata.format,
+				1,
+				whiteTextureData_.resource.Get(),
+				data.srvIndex
+			);
+		}
+	}
 
 	{
-		std::lock_guard lock(mutex_);
+		std::lock_guard<std::mutex> lock(mutex_);
 		requestQueue_.push(normalizedPath);
+		pendingCount_++;
 	}
 }
 
@@ -153,6 +209,16 @@ void TakeC::TextureManager::LoadTextureAll() {
 
 		LoadTexture(normalizedPath, false);
 		fileUpdateTimes_[normalizedPath] = GetFileLastWriteTime(path.string());
+	}
+
+	// すべての読み込みが終わるまで待機
+	WaitForAllLoads();
+}
+
+void TakeC::TextureManager::WaitForAllLoads() {
+	while (pendingCount_ > 0) {
+		Update();
+		std::this_thread::yield();
 	}
 }
 
@@ -252,6 +318,7 @@ ComPtr<ID3D12Resource> TakeC::TextureManager::UploadTextureData(
 //============================================================================================
 
 D3D12_GPU_DESCRIPTOR_HANDLE TakeC::TextureManager::GetSrvHandleGPU(const std::string& filePath) {
+	std::lock_guard<std::mutex> lock(mapMutex_);
 	assert(textureDatas_.contains(filePath));
 	return textureDatas_.at(filePath).srvHandleGPU;
 }
@@ -262,6 +329,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE TakeC::TextureManager::GetSrvHandleGPU(const std::st
 
 uint32_t TakeC::TextureManager::GetSrvIndex(const std::string& filePath) {
 
+	std::lock_guard<std::mutex> lock(mapMutex_);
 	//読み込み済みテクスチャを検索
 	if (textureDatas_.contains(filePath)) {
 		return textureDatas_.at(filePath).srvIndex;
@@ -276,6 +344,7 @@ uint32_t TakeC::TextureManager::GetSrvIndex(const std::string& filePath) {
 //============================================================================================
 
 const DirectX::TexMetadata& TakeC::TextureManager::GetMetadata(const std::string& filePath) {
+	std::lock_guard<std::mutex> lock(mapMutex_);
 	assert(textureDatas_.contains(filePath));
 	return textureDatas_.at(filePath).metadata;
 }
@@ -285,9 +354,13 @@ const DirectX::TexMetadata& TakeC::TextureManager::GetMetadata(const std::string
 //============================================================================================
 
 std::vector<std::string> TakeC::TextureManager::GetLoadedTextureFileNames() const {
+
 	std::vector<std::string> fileNames;
-	for (const auto& pair : textureDatas_) {
-		fileNames.push_back(pair.first);
+	{
+		std::lock_guard<std::mutex> lock(mapMutex_); // Requires mutable mutex
+		for (const auto& pair : textureDatas_) {
+			fileNames.push_back(pair.first);
+		}
 	}
 	return fileNames;
 }
@@ -297,9 +370,12 @@ std::vector<std::string> TakeC::TextureManager::GetLoadedTextureFileNames() cons
 //============================================================================================
 std::vector<std::string> TakeC::TextureManager::GetLoadedNonCubeTextureFileNames() const {
 	std::vector<std::string> fileNames;
-	for (const auto& pair : textureDatas_) {
-		if (!pair.second.metadata.IsCubemap()) {
-			fileNames.push_back(pair.first);
+	{
+		std::lock_guard<std::mutex> lock(mapMutex_); // Requires mutable mutex
+		for (const auto& pair : textureDatas_) {
+			if (!pair.second.metadata.IsCubemap()) {
+				fileNames.push_back(pair.first);
+			}
 		}
 	}
 	return fileNames;
@@ -400,7 +476,14 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TakeC::TextureManager::UploadTexture(
 }
 
 void TakeC::TextureManager::StartWorker() {
-	workerThread_ = std::thread([this]() { WorkerLoop(); });
+	// スレッド数を決定（CPUコア数 - 1、最低1）
+	uint32_t numThreads = std::max(1u, std::thread::hardware_concurrency() - 1);
+	// あまり多すぎてもオーバーヘッドになるため上限を設ける
+	numThreads = std::min(numThreads, 4u);
+
+	for (uint32_t i = 0; i < numThreads; ++i) {
+		workerThreads_.emplace_back([this]() { WorkerLoop(); });
+	}
 }
 
 void TakeC::TextureManager::WorkerLoop() {
