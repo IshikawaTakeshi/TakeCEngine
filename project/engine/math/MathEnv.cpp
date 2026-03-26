@@ -1,4 +1,6 @@
 #include "mathEnv.h"
+#include "engine/Utility/StringUtility.h"
+#include "engine/Utility/Logger.h"
 
 //============================================================================
 // radianDegree変換関数
@@ -39,4 +41,13 @@ int GetRandomInt(int min, int max) {
 
 	std::uniform_int_distribution<int> dist(min, max);
 	return dist(GetRandomEngine());
+}
+
+uint64_t Measure(const wchar_t* label, const std::function<void()>& fn) {
+	auto start = Clock::now();
+	fn();
+	auto end = Clock::now();
+	auto ms = std::chrono::duration_cast<Ms>(end - start).count();
+	Logger::Log(StringUtility::ConvertString(std::wstring(L"[LoadTime] ") + label + L" : " + std::to_wstring(ms) + L"ms"));
+	return ms;
 }

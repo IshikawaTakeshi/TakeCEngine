@@ -20,8 +20,21 @@ namespace StringUtility {
 	template<ConvertEnum Enum>
 	std::string EnumToString(Enum e);
 
+	/// <summary>
+	/// 文字列をenumに変換するテンプレート関数
+	/// </summary>
+	/// <typeparam name="Enum"></typeparam>
+	/// <param name="str"></param>
+	/// <returns></returns>
 	template<ConvertEnum Enum>
 	Enum StringToEnum(const std::string& str);
+
+	/// <summary>
+	/// 文字列を小文字に変換してコピーを返す
+	/// </summary>
+	/// <param name="str"></param>
+	/// <returns></returns>
+	std::string ToLowerCopy(const std::string& str);
 
 }
 

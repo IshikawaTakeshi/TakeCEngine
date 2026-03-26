@@ -186,6 +186,7 @@ void TakeCFrameWork::Update() {
 	
 	//入力の更新
 	input_->Update();
+	TakeC::TextureManager::GetInstance().Update();
 
 	//シーンの更新
 	sceneManager_->Update();

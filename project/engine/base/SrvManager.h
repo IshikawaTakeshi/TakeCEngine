@@ -2,6 +2,7 @@
 #include "engine/base/DirectXCommon.h"
 #include "engine/base/ComPtrAliasTemplates.h"
 #include <cstdint>
+#include <mutex>
 
 //============================================================================
 // SrvManager class
@@ -122,5 +123,7 @@ namespace TakeC {
 		ComPtr<ID3D12DescriptorHeap> descriptorHeap_ = nullptr;
 		//次に使用するSRVインデックス
 		uint32_t useIndex_ = 0;
+		//スレッド安全のためのミューテックス
+		std::mutex mutex_;
 	};
 }
