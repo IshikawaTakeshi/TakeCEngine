@@ -766,23 +766,44 @@ void Player::RequestActiveBoostEffect() {
 		atan2(crossY, dot) * (180.0f / std::numbers::pi_v<float>); // -180°～180°
 
 	// --- 角度差に応じてエフェクトをアクティブにする ---
+	BoostDirection currentDirection = BoostDirection::NONE;
+
 	if (angle <= -45.0f && angle > -135.0f) {
 		// 左
+		currentDirection = BoostDirection::LEFT;
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
 		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
+		if (previousBoostDirection_ != currentDirection) {
+			boostEffects_[LEFT_SHOULDER]->PlayAppearEffect();
+		}
 	}
 	else if (angle >= 45.0f && angle < 135.0f) {
 		// 右
+		currentDirection = BoostDirection::RIGHT;
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
+		if (previousBoostDirection_ != currentDirection) {
+			boostEffects_[RIGHT_SHOULDER]->PlayAppearEffect();
+		}
+	}
+	else if (angle > -45.0f && angle < 45.0f) {
+		// 前
+		currentDirection = BoostDirection::FORWARD;
+		boostEffects_[LEFT_LEG]->SetIsActive(true);
+		boostEffects_[RIGHT_LEG]->SetIsActive(true);
+		if (previousBoostDirection_ != currentDirection) {
+			boostEffects_[BACKPACK]->PlayAppearEffect();
+
+		}
 	}
 	else {
-		// 前後
-		//boostEffects_[LEFT_LEG]->SetIsActive(true);
-		//boostEffects_[RIGHT_LEG]->SetIsActive(true);
+		// 後ろ
+		currentDirection = BoostDirection::BACKWARD;
 	}
+
+	previousBoostDirection_ = currentDirection;
 }
 
 void Player::RequestAppearBoostEffect() {
