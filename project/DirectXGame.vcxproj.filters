@@ -89,6 +89,7 @@
     <FxCompile Include="Resources\shaders\Shadow\ShadowPass.VS.hlsl" />
     <FxCompile Include="Resources\shaders\Shadow\ShadowPass.PS.hlsl" />
     <FxCompile Include="Resources\shaders\PostEffect\ScanlineEffect.CS.hlsl" />
+    <FxCompile Include="Resources\shaders\PostEffect\DistortionEffect.CS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -566,6 +567,7 @@
     <ClCompile Include="application\Entity\Behavior\View\WeightSelectorNodeView.cpp" />
     <ClCompile Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.cpp" />
     <ClCompile Include="engine\PostEffect\ScanlineEffect.cpp" />
+    <ClCompile Include="engine\PostEffect\DistortionEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1182,6 +1184,7 @@
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h" />
     <ClInclude Include="engine\PostEffect\PostEffectPlayConfig.h" />
     <ClInclude Include="engine\PostEffect\ScanlineEffect.h" />
+    <ClInclude Include="engine\PostEffect\DistortionEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

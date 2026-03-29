@@ -53,10 +53,6 @@ void LuminanceBasedOutline::UpdateImGui() {
 //=============================================================================
 void LuminanceBasedOutline::Dispatch() {
 
-	if (!outlineInfoData_->isActive) {
-		return; // アウトラインが無効な場合は処理をスキップ
-	}
-
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,

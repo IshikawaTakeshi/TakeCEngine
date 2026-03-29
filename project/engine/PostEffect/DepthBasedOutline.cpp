@@ -59,10 +59,6 @@ void DepthBasedOutline::UpdateImGui() {
 //=============================================================================
 void DepthBasedOutline::Dispatch() {
 
-	if(!outlineInfoData_->isActive) {
-		return; // アウトラインが無効な場合は処理をスキップ
-	}
-
 	//outputTexture
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance().Transition(

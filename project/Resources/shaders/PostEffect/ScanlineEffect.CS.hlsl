@@ -30,7 +30,7 @@ void main(uint3 dtid : SV_DispatchThreadID) {
 	
 	 // エフェクト無効ならそのまま出力
 	if (!gScanlineParam.isActive) {
-		gOutputTexture[uv.xy] = src;
+		gOutputTexture[dtid.xy] = src;
 		return;
 	}
 
