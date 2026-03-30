@@ -109,7 +109,7 @@ void WarningUI::Update() {
 		if (state.spritePtr) {
 			// 警告種別に応じた色設定（bazookaは赤）
 			Vector4 color = { 1.0f, 1.0f, 1.0f, alpha };
-			if (state.type == WarningType::BAZOOKA) {
+			if (state.type == WarningType::HIGHPOWER_ATTACK) {
 				color = { 1.0f, 0.0f, 0.0f, alpha };
 			}
 			state.spritePtr->SetMaterialColor(color);
@@ -245,7 +245,7 @@ void WarningUI::TriggerWarning(WarningDirection dir, WarningType type) {
 
 	// 色の設定
 	if (state.spritePtr) {
-		if (type == WarningType::BAZOOKA) {
+		if (type == WarningType::HIGHPOWER_ATTACK) {
 			state.spritePtr->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f }); // 赤
 		}
 		else {

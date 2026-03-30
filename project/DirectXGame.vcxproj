@@ -317,6 +317,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\Utility\ResourceBarrier.cpp" />
     <ClCompile Include="engine\Base\RtvManager.cpp" />
     <ClCompile Include="engine\PostEffect\Vignette.cpp" />
+    <ClCompile Include="engine\PostEffect\ChromaticAberration.cpp" />
     <ClCompile Include="engine\PostEffect\RenderTexture.cpp" />
     <ClCompile Include="engine\PostEffect\RadialBlur.cpp" />
     <ClCompile Include="engine\3d\Particle\PrimitiveParticle.cpp" />
@@ -595,6 +596,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\Utility\ResourceBarrier.h" />
     <ClInclude Include="engine\Base\RtvManager.h" />
     <ClInclude Include="engine\PostEffect\Vignette.h" />
+    <ClInclude Include="engine\PostEffect\ChromaticAberration.h" />
     <ClInclude Include="application\Weapon\BaseWeapon.h" />
     <ClInclude Include="application\Weapon\Rifle\Rifle.h" />
     <ClInclude Include="application\Weapon\Launcher\VerticalMissileLauncher.h" />
@@ -976,6 +978,17 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Resources\shaders\PostEffect\Vignette.CS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">4.0</ShaderModel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\ChromaticAberration.CS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>

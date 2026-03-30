@@ -31,6 +31,9 @@
     <FxCompile Include="Resources\shaders\PostEffect\Vignette.CS.hlsl">
       <Filter>Resources\shader\PostEffect</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\shaders\PostEffect\ChromaticAberration.CS.hlsl">
+      <Filter>Resources\shader\PostEffect</Filter>
+    </FxCompile>
     <FxCompile Include="Resources\shaders\GPUParticle.VS.hlsl">
       <Filter>Resources\shader\Particle</Filter>
     </FxCompile>
@@ -361,6 +364,9 @@
       <Filter>engine\3d\Primitive</Filter>
     </ClCompile>
     <ClCompile Include="engine\PostEffect\Vignette.cpp">
+      <Filter>engine\postEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\PostEffect\ChromaticAberration.cpp">
       <Filter>engine\postEffect</Filter>
     </ClCompile>
     <ClCompile Include="engine\Base\WinApp.cpp">
@@ -890,6 +896,9 @@
       <Filter>engine\3d\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="engine\PostEffect\Vignette.h">
+      <Filter>engine\postEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\PostEffect\ChromaticAberration.h">
       <Filter>engine\postEffect</Filter>
     </ClInclude>
     <ClInclude Include="engine\Base\WinApp.h">

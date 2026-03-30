@@ -20,7 +20,7 @@ void BaseWeapon::AttachToSkeletonJoint(Skeleton* skeleton,
 
 const WeaponType& BaseWeapon::GetWeaponType() const {
 	// 武器タイプを返す
-	return weaponType_;
+	return weaponData_.weaponType;
 }
 
 const Vector3& BaseWeapon::GetTargetPos() const {

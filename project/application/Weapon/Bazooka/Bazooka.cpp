@@ -133,12 +133,6 @@ void Bazooka::Attack() {
 		return; // キャラクタータイプが不明な場合は攻撃しない
 	}
 
-	//警告イベントを発行 (バズーカ等の特定の種別、または近接など)
-	WarningData data;
-	data.position = object3d_->GetWorldPosition();
-	data.type = WarningType::BAZOOKA; // バズーカの攻撃であることを示す
-	TakeCFrameWork::GetEventManager()->PostEvent("EnemyBulletWarning", data);
-
 	weaponState_.bulletCount--;
 	if (weaponState_.bulletCount <= 0) {
 		weaponState_.isReloading = true; // 弾がなくなったらリロード中にする

@@ -151,8 +151,6 @@ protected:
 	// 攻撃対象の速度ベクトル
 	Vector3 targetVelocity_;
 
-	// 武器の種類
-	WeaponType weaponType_ = WeaponType::WEAPON_TYPE_RIFLE;
 	// 武器の基本データ
 	WeaponData weaponData_{};
 	WeaponState weaponState_{};

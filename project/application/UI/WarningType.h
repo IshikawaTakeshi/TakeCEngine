@@ -7,7 +7,7 @@
 enum class WarningType {
 	NORMAL,  // 通常
 	MISSILE, // ミサイル
-	BAZOOKA  // バズーカ
+	HIGHPOWER_ATTACK  // バズーカ
 };
 
 /**

@@ -589,7 +589,7 @@ void Player::UpdateAttack() {
 				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();
 					camera_->RequestShake(ShakeCameraMode::VERTICAL, 0.5f,
-						2.0f); // カメラシェイクをリクエスト
+						3.0f); // カメラシェイクをリクエスト
 
 					playerData_.characterInfo.isChargeShooting =
 						false; // チャージ撃ち中フラグをリセット
