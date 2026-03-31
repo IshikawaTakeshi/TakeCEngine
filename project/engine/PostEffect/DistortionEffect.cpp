@@ -47,9 +47,9 @@ void DistortionEffect::UpdateImGui() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 
 	if (ImGui::TreeNode("DistortionEffect")) {
-		ImGui::SliderFloat("Strength", &distortionInfo_->strength, 0.0f, 0.1f, "%.5f");
-		ImGui::SliderFloat2("ScrollSpeed", &distortionInfo_->scrollSpeed.x, -1.0f, 1.0f, "%.3f");
-		ImGui::SliderFloat2("NoiseScale", &distortionInfo_->noiseScale.x, 0.1f, 10.0f, "%.2f");
+		ImGui::SliderFloat("Strength", &distortionInfo_->strength, 0.0f, 0.5f, "%.5f");
+		ImGui::SliderFloat2("ScrollSpeed", &distortionInfo_->scrollSpeed.x, -100.0f, 1.000f, "%.3f");
+		ImGui::SliderFloat2("NoiseScale", &distortionInfo_->noiseScale.x, 0.01f, 1000.0f, "%.2f");
 		ImGui::SliderFloat2("Offset (Center)", &distortionInfo_->offset.x, 0.0f, 1.0f, "%.3f");
 		ImGui::TreePop();
 	}

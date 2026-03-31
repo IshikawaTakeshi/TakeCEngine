@@ -77,64 +77,11 @@ void VerticalMissile::Update() {
 	}
 
 	
-	//========================================================================
-	// CCD (Continuous Collision Detection) - カプセル判定方式
-	//========================================================================
-
 	// 1フレームでの移動量を計算
 	Vector3 displacement = velocity_ * deltaTime_;
 	float moveDistance = Vector3Math::Length(displacement);
 
 	bool isHit = false;
-
-	// 移動量がある場合のみ判定
-	if (moveDistance > 0.0001f) {
-		// カプセルを構築（移動前→移動後）
-		Capsule capsule;
-		capsule.start = transform_.translate;           // 現在位置（移動前）
-		capsule.end = transform_.translate + displacement; // 移動後の位置
-		capsule.radius = bulletRadius_;                 // 弾の半径
-
-		RayCastHit hitInfo;
-
-		// 衝突対象のレイヤーマスクを設定
-		uint32_t targetMask = 0;
-		if (characterType_ == CharacterType::PLAYER_MISSILE) {
-			targetMask = static_cast<uint32_t>(CollisionLayer::Enemy);
-		}
-		else if (characterType_ == CharacterType::ENEMY_MISSILE) {
-			targetMask = static_cast<uint32_t>(CollisionLayer::Player);
-		}
-
-		// CapsuleCast実行
-		if (CollisionManager::GetInstance().CapsuleCast(capsule, hitInfo, targetMask)) {
-			// --- 衝突した場合 ---
-			isHit = true;
-
-			// 1. 弾の位置を衝突地点へ移動させる
-			transform_.translate = hitInfo.position;
-
-			// 2. 衝突相手のGameCharacterを取得して衝突処理を実行
-			if (hitInfo.hitCollider) {
-				GameCharacter* owner = hitInfo.hitCollider->GetOwner();
-				if (owner) {
-					OnCollisionAction(owner);
-					owner->OnCollisionAction(this);
-				}
-			}
-		}
-	}
-
-	// 衝突しなかった場合のみ、通常通り移動
-	if (!isHit) {
-		transform_.translate += displacement;
-	}
-
-	//ライフタイムの減少
-	lifeTime_ -= deltaTime_;
-	//ポイントライトの更新
-	pointLightData_.position_ = transform_.translate;
-	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
 
 	//ライフタイムが0以下になったら無効化
 	if (lifeTime_ <= 0.0f) {
@@ -182,12 +129,9 @@ void VerticalMissile::Update() {
 		float currentHomingRate = Easing::Lerp(vmInfo_.homingRateStart, vmInfo_.homingRateEnd, t);
 		currentHomingRate = std::clamp(currentHomingRate, 0.0f, 1.0f);
 
-		Quaternion targetRotate = QuaternionMath::LookRotation(
-			Vector3Math::Normalize(targetPos_ - transform_.translate), {0.0f, 1.0f, 0.0f});
+		
 
-		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.3f);
-		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
-
+		// 現在の移動方向と目標方向を補間して新しい移動方向を決定
 		Vector3 desired = Vector3Math::Normalize(targetPos_ - transform_.translate);
 
 		Vector3 currentDir;
@@ -197,11 +141,25 @@ void VerticalMissile::Update() {
 			currentDir = desired;
 		}
 
+		// ホーミング率を考慮して現在の方向と目標方向を補間
 		Vector3 mixed = Easing::Lerp(currentDir, desired, currentHomingRate);
 		direction_ = Vector3Math::Normalize(mixed);
 
 		velocity_ = direction_ * speed_;
-		transform_.translate += velocity_ * deltaTime_;
+		displacement = velocity_ * deltaTime_;
+		moveDistance = Vector3Math::Length(displacement);
+
+		// 現在の位置からターゲットへの方向を計算して回転を更新
+		Quaternion targetRotate = QuaternionMath::LookRotation(
+			Vector3Math::Normalize((transform_.translate + displacement) - transform_.translate), {0.0f, 1.0f, 0.0f});
+
+		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.3f);
+		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
+		
+		// 衝突しなかった場合のみ、通常通り移動
+		if (!isHit) {
+			transform_.translate += displacement;
+		}
 	}
 		break;
 	case VerticalMissile::VerticalMissilePhase::EXPLODING:
@@ -210,6 +168,54 @@ void VerticalMissile::Update() {
 		break;
 	}
 
+
+	//========================================================================
+	// CCD (Continuous Collision Detection) - カプセル判定方式
+	//========================================================================
+
+	// 移動量がある場合のみ判定
+	if (moveDistance > 0.0001f) {
+		// カプセルを構築（移動前→移動後）
+		Capsule capsule;
+		capsule.start = transform_.translate;           // 現在位置（移動前）
+		capsule.end = transform_.translate + displacement; // 移動後の位置
+		capsule.radius = bulletRadius_;                 // 弾の半径
+
+		RayCastHit hitInfo;
+
+		// 衝突対象のレイヤーマスクを設定
+		uint32_t targetMask = 0;
+		if (characterType_ == CharacterType::PLAYER_MISSILE) {
+			targetMask = static_cast<uint32_t>(CollisionLayer::Enemy);
+		}
+		else if (characterType_ == CharacterType::ENEMY_MISSILE) {
+			targetMask = static_cast<uint32_t>(CollisionLayer::Player);
+		}
+
+		// CapsuleCast実行
+		if (CollisionManager::GetInstance().CapsuleCast(capsule, hitInfo, targetMask)) {
+			// --- 衝突した場合 ---
+			isHit = true;
+
+			// 1. 弾の位置を衝突地点へ移動させる
+			transform_.translate = hitInfo.position;
+
+			// 2. 衝突相手のGameCharacterを取得して衝突処理を実行
+			if (hitInfo.hitCollider) {
+				GameCharacter* owner = hitInfo.hitCollider->GetOwner();
+				if (owner) {
+					OnCollisionAction(owner);
+					owner->OnCollisionAction(this);
+				}
+			}
+		}
+	}
+
+	//ライフタイムの減少
+	lifeTime_ -= deltaTime_;
+	//ポイントライトの更新
+	pointLightData_.position_ = transform_.translate;
+	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
 
 
 	//パーティクルエミッターの更新
