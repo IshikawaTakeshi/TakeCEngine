@@ -1,6 +1,15 @@
 #pragma once
 #include "engine/PostEffect/PostEffect.h"
 
+// シャドウマップエフェクト情報構造体
+struct ShadowMapEffectInfo {
+	bool isActive = false; // エフェクトの有効無効
+	float bias = 0.005f; // シャドウのバイアス値
+	float pcfRange = 1.0f; // テクセル半径	
+};
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ShadowMapEffectInfo, isActive, bias, pcfRange)
+
 //============================================================================
 // ShadowMapEffect class
 //============================================================================
@@ -28,6 +37,18 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	/// <summary>
+	/// エフェクト固有のパラメータを適用する
+	/// </summary>
+	/// <param name="params"></param>
+	void ApplySpecificParams(const nlohmann::json& params) override;
+
+	/// <summary>
+	/// エフェクト固有のパラメータを取得する
+	/// </summary>
+	/// <returns></returns>
+	nlohmann::json GetSpecificParams() const override;
+
 	void SetIsActive(bool isActive) override {
 		if (shadowMapEffectInfo_) {
 			shadowMapEffectInfo_->isActive = isActive;
@@ -36,16 +57,8 @@ public:
 
 private:
 
-	// シャドウマップエフェクト情報構造体
-	struct ShadowMapEffectInfo {
-		bool isActive = false; // エフェクトの有効無効
-		float bias = 0.005f; // シャドウのバイアス値
-		float pcfRange = 1.0f; // テクセル半径	
-	};
 	ShadowMapEffectInfo* shadowMapEffectInfo_ = nullptr; // シャドウマップエフェクト情報データ
 	ComPtr<ID3D12Resource> shadowMapEffectInfoResource_; // シャドウマップエフェクト情報リソース
-
-
 	ComPtr<ID3D12Resource> lightCameraInfoResource_; // ライトカメラ情報リソース
 
 };

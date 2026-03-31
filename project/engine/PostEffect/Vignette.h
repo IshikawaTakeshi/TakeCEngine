@@ -8,6 +8,8 @@ struct VignetteInfo {
 	bool isActive = false; //Vignetteの有効無効
 };
 
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(VignetteInfo, vignetteScale, vignettePower, isActive)
+
 //============================================================================
 // Vignette class
 //============================================================================
@@ -37,6 +39,19 @@ public:
 	/// 更新処理
 	/// </summary>
 	void Dispatch() override;
+
+
+	/// <summary>
+	/// エフェクト固有のパラメータを適用する
+	/// </summary>
+	/// <param name="params"></param>
+	void ApplySpecificParams(const nlohmann::json& params) override;
+
+	/// <summary>
+	/// エフェクト固有のパラメータを取得する
+	/// </summary>
+	/// <returns></returns>
+	nlohmann::json GetSpecificParams() const override;
 
 	/**
 	 * @brief 強度を設定する

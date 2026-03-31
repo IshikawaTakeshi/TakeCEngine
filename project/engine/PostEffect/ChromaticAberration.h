@@ -1,6 +1,7 @@
 #pragma once
 #include "Posteffect/PostEffect.h"
 #include "engine/math/Vector2.h"
+#include <json.hpp>
 
 // 色収差情報構造体
 struct ChromaticAberrationInfo {
@@ -9,9 +10,19 @@ struct ChromaticAberrationInfo {
 	float redScale = 1.0f;                  // 赤の放射状ズレ倍率
 	float greenScale = 1.0f;                // 緑の放射状ズレ倍率
 	float blueScale = 1.0f;                 // 青の放射状ズレ倍率
-	float padding[3];                       // 16バイトアライメント用
 	int32_t isActive = 0;                   // 有効無効フラグ (hlslでboolとして扱う)
+	float padding;                          // 16バイトアライメント用 (32 bytes total)
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+	ChromaticAberrationInfo,
+	center,
+	intensity,
+	redScale,
+	greenScale,
+	blueScale,
+	isActive)
+
 
 //============================================================================
 // ChromaticAberration class
@@ -45,11 +56,19 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
-	/**
-	 * @brief 強度を設定する
-	 * @param intensity 0.0〜1.0
-	 */
+	
+	// 強度を設定する
 	void SetIntensity(float intensity) override;
+
+	/// <summary>
+	/// エフェクト固有のパラメータを適用する
+	/// </summary>
+	void ApplySpecificParams(const nlohmann::json& params) override;
+
+	/// <summary>
+	/// エフェクト固有のパラメータを取得する
+	/// </summary>
+	nlohmann::json GetSpecificParams() const override;
 
 public:
 	//=========================================================

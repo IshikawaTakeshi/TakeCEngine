@@ -27,11 +27,11 @@ void ChromaticAberration::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvM
 	
 	// Mapping
 	chromaticAberrationInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&chromaticAberrationInfoData_));
-	chromaticAberrationInfoData_->center = { 0.5f, 0.5f }; // 中心
-	chromaticAberrationInfoData_->intensity = 1.0f;        // 強度
+	chromaticAberrationInfoData_->center = { 1.0f, 1.0f };
+	chromaticAberrationInfoData_->intensity = 1.02f;        // 強度
 	chromaticAberrationInfoData_->redScale = 1.01f;        // 赤の拡大率
-	chromaticAberrationInfoData_->greenScale = 1.00f;      // 緑の拡大率
-	chromaticAberrationInfoData_->blueScale = 0.99f;       // 青の拡大率
+	chromaticAberrationInfoData_->greenScale = 1.0f;      // 緑の拡大率
+	chromaticAberrationInfoData_->blueScale = 1.0f;       // 青の拡大率
 	chromaticAberrationInfoData_->isActive = 0;
 }
 
@@ -90,4 +90,27 @@ void ChromaticAberration::Dispatch() {
 
 void ChromaticAberration::SetIntensity(float intensity) {
 	chromaticAberrationInfoData_->intensity = std::max(0.0f, intensity);
+}
+
+void ChromaticAberration::ApplySpecificParams(const nlohmann::json& params) {
+	if (params.is_null() || params.empty()) return;
+	if (chromaticAberrationInfoData_) {
+		if (params.contains("redScale")) chromaticAberrationInfoData_->redScale = params["redScale"];
+		if (params.contains("greenScale")) chromaticAberrationInfoData_->greenScale = params["greenScale"];
+		if (params.contains("blueScale")) chromaticAberrationInfoData_->blueScale = params["blueScale"];
+		if (params.contains("centerX")) chromaticAberrationInfoData_->center.x = params["centerX"];
+		if (params.contains("centerY")) chromaticAberrationInfoData_->center.y = params["centerY"];
+	}
+}
+
+nlohmann::json ChromaticAberration::GetSpecificParams() const {
+	nlohmann::json params = nlohmann::json::object();
+	if (chromaticAberrationInfoData_) {
+		params["redScale"] = chromaticAberrationInfoData_->redScale;
+		params["greenScale"] = chromaticAberrationInfoData_->greenScale;
+		params["blueScale"] = chromaticAberrationInfoData_->blueScale;
+		params["centerX"] = chromaticAberrationInfoData_->center.x;
+		params["centerY"] = chromaticAberrationInfoData_->center.y;
+	}
+	return params;
 }

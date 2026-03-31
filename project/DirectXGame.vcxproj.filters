@@ -510,7 +510,6 @@
     <ClCompile Include="engine\Camera\CameraForGPU.cpp" />
     <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
     <ClCompile Include="engine\2d\SpriteConfig.cpp" />
-    <ClCompile Include="engine\PostEffect\GlareEffect.cpp" />
     <ClCompile Include="application\Provider\PlayerPadInput.cpp" />
     <ClCompile Include="application\Weapon\Bullet\VerticalMissileInfo.cpp" />
     <ClCompile Include="application\Weapon\ShotGun\ShotGun.cpp" />
@@ -1112,7 +1111,6 @@
     <ClInclude Include="engine\3d\VertexData.h" />
     <ClInclude Include="application\Weapon\MachineGun\MachineGun.h" />
     <ClInclude Include="engine\2d\SpriteConfig.h" />
-    <ClInclude Include="engine\PostEffect\GlareEffect.h" />
     <ClInclude Include="application\Provider\PlayerPadInput.h" />
     <ClInclude Include="application\Weapon\Bullet\VerticalMissileInfo.h" />
     <ClInclude Include="application\Weapon\ShotGun\ShotGun.h" />

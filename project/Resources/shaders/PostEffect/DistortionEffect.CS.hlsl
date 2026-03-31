@@ -1,12 +1,12 @@
 #include "../PostEffect/FullScreen.hlsli"
 
 struct DistortionInfo {
-	float strength;      // 0
-	float time;          // 4
-	float2 scrollSpeed;  // 8
-	float2 noiseScale;   // 16
-	float2 offset;       // 24 (手動オフセットでズレを補正)
-	bool enable;         // 32
+	float strength;
+	float time;
+	float2 scrollSpeed;
+	float2 noiseScale;
+	float2 offset;
+	bool enable;
 };
 
 Texture2D<float4> gInputTexture : register(t0);

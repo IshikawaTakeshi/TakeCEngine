@@ -29,7 +29,7 @@ void DistortionEffect::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvMana
 
 	// パラメータ初期値
 	distortionInfo_->strength = 0.01f;
-	distortionInfo_->time = 0.0f;
+	distortionInfo_->timer = 0.0f;
 	distortionInfo_->scrollSpeed = Vector2(0.1f, 0.1f);
 	distortionInfo_->noiseScale = Vector2(1.0f, 1.0f);
 	distortionInfo_->offset = Vector2(0.5f, 0.5f); // デフォルトでは0.5（UNORMテクスチャの中央）を引く
@@ -66,7 +66,7 @@ void DistortionEffect::UpdateImGui() {
 void DistortionEffect::Dispatch() {
 
 	// 経過時間を加算
-	distortionInfo_->time += TakeCFrameWork::GetDeltaTime();
+	distortionInfo_->timer += TakeCFrameWork::GetDeltaTime();
 
 	// NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance().Transition(
@@ -97,6 +97,33 @@ void DistortionEffect::Dispatch() {
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());
+}
+
+void DistortionEffect::ApplySpecificParams(const nlohmann::json& params) {
+
+	// パラメータが存在しない場合は何もしない
+	if (params.is_null() || params.empty()) {
+		return;
+	}
+
+	auto param = params.get<DistortionInfo>();
+	distortionInfo_->strength = param.strength;
+	distortionInfo_->scrollSpeed = param.scrollSpeed;
+	distortionInfo_->noiseScale = param.noiseScale;
+	distortionInfo_->offset = param.offset;
+	distortionInfo_->enable = param.enable;
+}
+
+nlohmann::json DistortionEffect::GetSpecificParams() const {
+	
+	DistortionInfo param{};
+	param.strength = distortionInfo_->strength;
+	param.scrollSpeed = distortionInfo_->scrollSpeed;
+	param.noiseScale = distortionInfo_->noiseScale;
+	param.offset = distortionInfo_->offset;
+	param.enable = distortionInfo_->enable;
+
+	return param;
 }
 
 //=============================================================================

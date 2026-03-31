@@ -75,6 +75,28 @@ void RadialBlur::Dispatch() {
 		outputResource_.Get());
 }
 
+void RadialBlur::ApplySpecificParams(const nlohmann::json& params) {
+
+	if(params.is_null() || params.empty()){
+		return;
+	}
+
+	// ※ blurWidth は強度(SetIntensity)として管理されるため、ここでは上書きしない
+	if (params.contains("center")) {
+		radialBlurInfo_->center = params["center"];
+	}
+}
+
+nlohmann::json RadialBlur::GetSpecificParams() const {
+	
+	RadialBlurInfo param{};
+	param.center = radialBlurInfo_->center;
+	param.blurWidth = radialBlurInfo_->blurWidth;
+	param.enable = radialBlurInfo_->enable;
+
+	return param;
+}
+
 //=============================================================================
 // 強度の設定
 //=============================================================================

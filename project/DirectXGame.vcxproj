@@ -290,7 +290,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\UI\GameClearUI.cpp" />
     <ClCompile Include="engine\3d\Light\LightManager.cpp" />
     <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
-    <ClCompile Include="engine\PostEffect\GlareEffect.cpp" />
     <ClCompile Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
@@ -560,7 +559,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\UI\PushStartUI.h" />
     <ClInclude Include="application\UI\PhaseMessageUI.h" />
     <ClInclude Include="application\Weapon\MachineGun\MachineGun.h" />
-    <ClInclude Include="engine\PostEffect\GlareEffect.h" />
     <ClInclude Include="application\Provider\PlayerPadInput.h" />
     <ClInclude Include="engine\PostEffect\PostEffectFactory.h" />
     <ClInclude Include="engine\3d\Primitive\Plane.h" />

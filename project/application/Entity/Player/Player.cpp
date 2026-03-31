@@ -499,6 +499,8 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		playerData_.characterInfo.health -= bullet->GetDamage();
 		// ブレイクゲージを蓄積
 		AccumulateBreakGauge(bullet->GetDamage());
+		//エフェクトの再生
+		TakeCFrameWork::GetPostEffectManager()->PlayEffect("DamageHit");
 	}
 	if (other->GetCharacterType() == CharacterType::ENEMY_MISSILE) {
 		// 敵のミサイルに当たった場合
@@ -508,6 +510,8 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		playerData_.characterInfo.health -= missile->GetDamage();
 		// ブレイクゲージを蓄積
 		AccumulateBreakGauge(missile->GetDamage());
+		//エフェクトの再生
+		TakeCFrameWork::GetPostEffectManager()->PlayEffect("DamageHit");
 	}
 
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {

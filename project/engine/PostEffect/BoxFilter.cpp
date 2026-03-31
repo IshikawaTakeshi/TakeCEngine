@@ -63,3 +63,23 @@ void BoxFilter::Dispatch() {
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());
 }
+
+void BoxFilter::ApplySpecificParams(const nlohmann::json& params) {
+
+	// パラメータが存在しない場合は何もしない
+	if (params.is_null() || params.empty()) {
+		return;
+	}
+
+	// JSONからBloomEffectInfoを取得して適用
+	auto param = params.get<BoxFilterInfo>();
+	filterInfoData_->isActive = param.isActive;
+}
+
+nlohmann::json BoxFilter::GetSpecificParams() const {
+	
+	BoxFilterInfo param;
+	param.isActive = filterInfoData_->isActive;
+
+	return param;
+}

@@ -123,3 +123,21 @@ void ShadowMapEffect::Dispatch() {
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		depthTextureResource_.Get());
 }
+
+void ShadowMapEffect::ApplySpecificParams(const nlohmann::json& params) {
+
+	if(params.is_null() || params.empty()){
+		return;
+	}
+
+	auto param = params.get<ShadowMapEffectInfo>();
+	shadowMapEffectInfo_->isActive = param.isActive;
+	shadowMapEffectInfo_->pcfRange = param.pcfRange;
+	shadowMapEffectInfo_->bias = std::max(0.0f, shadowMapEffectInfo_->bias);
+}
+
+nlohmann::json ShadowMapEffect::GetSpecificParams() const {
+	
+	ShadowMapEffectInfo info = *shadowMapEffectInfo_;
+	return info;
+}

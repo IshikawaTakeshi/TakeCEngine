@@ -76,6 +76,35 @@ void ScanlineEffect::Dispatch() {
 		outputResource_.Get());
 }
 
+void ScanlineEffect::ApplySpecificParams(const nlohmann::json& params) {
+
+	if(params.is_null() || params.empty()){
+		return;
+	}
+
+	auto param = params.get<ScanlineParam>();
+	param_->intensity = param.intensity;
+	param_->frequency = param.frequency;
+	param_->speed = param.speed;
+	param_->thickness = param.thickness;
+	param_->time = param.time;
+	param_->isActive = param.isActive;
+
+}
+
+nlohmann::json ScanlineEffect::GetSpecificParams() const {
+	
+	ScanlineParam param{};
+	param.intensity = param_->intensity;
+	param.frequency = param_->frequency;
+	param.speed = param_->speed;
+	param.thickness = param_->thickness;
+	param.time = param_->time;
+	param.isActive = param_->isActive;
+
+	return param;
+}
+
 
 //=============================================================================
 // エフェクトパラメータ用のリソースを生成する

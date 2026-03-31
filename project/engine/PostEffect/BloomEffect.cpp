@@ -155,6 +155,39 @@ void BloomEffect::Dispatch() {
 }
 
 //=============================================================================
+// エフェクト固有のパラメータを適用する
+//=============================================================================
+void BloomEffect::ApplySpecificParams(const nlohmann::json& params) {
+
+	// パラメータが存在しない場合は何もしない
+	if (params.is_null() || params.empty()) {
+		return;
+	}
+
+	// JSONからBloomEffectInfoを取得して適用
+	auto param = params.get<BloomEffectInfo>();
+
+	effectInfoData_->isActive = param.isActive;
+	effectInfoData_->threshold = param.threshold;
+	effectInfoData_->strength = param.strength;
+	effectInfoData_->sigma = param.sigma;
+}
+
+//=============================================================================
+// エフェクト固有のパラメータを取得する
+//=============================================================================
+nlohmann::json BloomEffect::GetSpecificParams() const {
+	
+	BloomEffectInfo param;
+	param.isActive = effectInfoData_->isActive;
+	param.threshold = effectInfoData_->threshold;
+	param.strength = effectInfoData_->strength;
+	param.sigma = effectInfoData_->sigma;
+
+	return param;
+}
+
+//=============================================================================
 // 輝度抽出ディスパッチ
 //=============================================================================
 void BloomEffect::DispatchBrightPass() {

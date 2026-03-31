@@ -108,3 +108,34 @@ void DepthBasedOutline::Dispatch() {
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		depthTextureResource_.Get());
 }
+
+void DepthBasedOutline::ApplySpecificParams(const nlohmann::json& params) {
+
+	// パラメータが存在しない場合は何もしない
+	if (params.is_null() || params.empty()) {
+		return;
+	}
+
+	// JSONからBloomEffectInfoを取得して適用
+	auto param = params.get<DepthBasedOutlineInfo>();
+	
+	outlineInfoData_->color = param.color;
+	outlineInfoData_->weight = param.weight;
+	outlineInfoData_->distantSensitivity = param.distantSensitivity;
+	outlineInfoData_->distantStart = param.distantStart;
+	outlineInfoData_->distantEnd = param.distantEnd;
+	outlineInfoData_->isActive = param.isActive;
+}
+
+nlohmann::json DepthBasedOutline::GetSpecificParams() const {
+	
+	DepthBasedOutlineInfo param;
+	param.color = outlineInfoData_->color;
+	param.weight = outlineInfoData_->weight;
+	param.distantSensitivity = outlineInfoData_->distantSensitivity;
+	param.distantStart = outlineInfoData_->distantStart;
+	param.distantEnd = outlineInfoData_->distantEnd;
+	param.isActive = outlineInfoData_->isActive;
+
+	return param;
+}

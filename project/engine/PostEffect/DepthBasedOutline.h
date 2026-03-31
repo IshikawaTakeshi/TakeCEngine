@@ -2,6 +2,18 @@
 #include "engine/PostEffect/PostEffect.h"
 #include "engine/camera/CameraForGPU.h"
 
+// 深度ベースのアウトライン情報
+struct DepthBasedOutlineInfo {
+	Vector4 color = { 0.0f, 0.0f, 0.0f, 1.0f }; // アウトラインの色
+	float weight = 1.0f;                        // 輪郭の強さ
+	float distantSensitivity;                   //遠方オブジェクトの感度調整係数
+	float distantStart;                         //遠方補正を始めるviewZ
+	float distantEnd;                           //補正を最大にするviewZ
+	bool isActive = true;                       // アウトラインの有効無効
+};
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(DepthBasedOutlineInfo, color, weight, distantSensitivity, distantStart, distantEnd, isActive)
+
 //=============================================================================
 //	DepthBasedOutline class
 //=============================================================================
@@ -29,6 +41,22 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	/// <summary>
+	/// エフェクト固有のパラメータを適用する
+	/// </summary>
+	/// <param name="params"></param>
+	void ApplySpecificParams(const nlohmann::json& params) override;
+
+	/// <summary>
+	/// エフェクト固有のパラメータを取得する
+	/// </summary>
+	/// <returns></returns>
+	nlohmann::json GetSpecificParams() const override;
+
+	/// <summary>
+	/// アクティブ状態を設定する
+	/// </summary>
+	/// <param name="isActive"></param>
 	void SetIsActive(bool isActive) override {
 		if (outlineInfoData_) {
 			outlineInfoData_->isActive = isActive;
@@ -36,16 +64,6 @@ public:
 	}
 
 private:
-
-	// 深度ベースのアウトライン情報
-	struct DepthBasedOutlineInfo {
-		Vector4 color = { 0.0f, 0.0f, 0.0f, 1.0f }; // アウトラインの色
-		float weight = 1.0f;                        // 輪郭の強さ
-		float distantSensitivity;                   //遠方オブジェクトの感度調整係数
-		float distantStart;                         //遠方補正を始めるviewZ
-		float distantEnd;                           //補正を最大にするviewZ
-		bool isActive = true;                       // アウトラインの有効無効
-	};
 
 	DepthBasedOutlineInfo* outlineInfoData_ = nullptr; // アウトライン情報データ
 	ComPtr<ID3D12Resource> outlineInfoResource_;       // アウトライン情報リソース
