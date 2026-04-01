@@ -475,9 +475,6 @@ void ParticleEditor::DrawPresetManager() {
 	ImGui::Text("Preset Manager");
 	ImGui::Separator();
 
-	// プリセット名の入力
-	static char presetNameBuffer[64] = "";
-	ImGui::InputText("Preset Name", presetNameBuffer, sizeof(presetNameBuffer));
 
 	if (ImGui::Button("Refresh Preset List")) {
 		// プリセット名のリストを更新
@@ -485,13 +482,13 @@ void ParticleEditor::DrawPresetManager() {
 	}
 
 	// プリセットの保存
-	if (ImGui::Button("Save current as Preset")) {
-
-		// プリセット名が空でない場合のみ保存
-		if (strlen(presetNameBuffer) > 0) {
-			SavePreset(std::string(presetNameBuffer));
-		}
-	}
+	ImGuiManager::ShowSavePopup(
+		TakeCFrameWork::GetJsonLoader(),
+		"Save Preset",
+		std::string(selectedPresetName_ + ".json").c_str(),
+		currentPreset_,
+		currentPreset_.presetName
+	);
 
 	ImGui::Separator();
 

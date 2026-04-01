@@ -160,6 +160,15 @@ private:
 	Vector3 focusTargetVelocity_ = { 0.0f,0.0f,0.0f }; // フォーカス対象の移動ベクトル
 	Vector3 bodyPosition_ = { 0.0f,0.0f,0.0f }; // キャラクターの胴体位置
 
+	enum class BoostDirection {
+		NONE,
+		LEFT,
+		RIGHT,
+		FORWARD,
+		BACKWARD
+	};
+	BoostDirection previousBoostDirection_ = BoostDirection::NONE;
+
 private:
 
 	//武器の攻撃更新
@@ -173,6 +182,7 @@ private:
 
 	//ブーストエフェクトのアクティブ化判定
 	void RequestActiveBoostEffect();
+	void RequestAppearBoostEffect();
 	//ブレイクゲージを蓄積してスタン判定
 	void AccumulateBreakGauge(float damage);
 };

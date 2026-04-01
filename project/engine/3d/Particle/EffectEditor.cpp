@@ -259,6 +259,10 @@ void EffectEditor::DrawEmitterSettingsTab() {
 			}
 			ImGui::EndCombo();
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reload Presets")) {
+			LoadAvailablePresets();
+		}
 
 		ImGui::Separator();
 

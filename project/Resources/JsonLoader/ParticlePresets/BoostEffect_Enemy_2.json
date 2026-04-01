@@ -27,8 +27,8 @@
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 0.5,
-            "min": 0.5
+            "max": 0.1599999964237213,
+            "min": 0.1599999964237213
         },
         "particlesPerInterpolation": 5,
         "positionRange": {

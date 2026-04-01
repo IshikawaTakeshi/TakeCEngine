@@ -1,6 +1,12 @@
 #pragma once
 #include "PostEffect/PostEffect.h"
 
+// フィルター情報構造体
+struct BoxFilterInfo {
+	bool isActive = true; // フィルターの有効無効
+};
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BoxFilterInfo, isActive)
+
 //============================================================================
 // BoxFilter class
 //============================================================================
@@ -40,6 +46,22 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	/// <summary>
+	/// エフェクト固有のパラメータを適用する
+	/// </summary>
+	/// <param name="params"></param>
+	void ApplySpecificParams(const nlohmann::json& params) override;
+
+	/// <summary>
+	/// エフェクト固有のパラメータを取得する
+	/// </summary>
+	/// <returns></returns>
+	nlohmann::json GetSpecificParams() const override;
+
+	/// <summary>
+	/// アクティブ状態を設定する
+	/// </summary>
+	/// <param name="isActive"></param>
 	void SetIsActive(bool isActive) override {
 		if (filterInfoData_) {
 			filterInfoData_->isActive = isActive;
@@ -48,10 +70,8 @@ public:
 
 private:
 
-	// フィルター情報構造体
-	struct BoxFilterInfo {
-		bool isActive = true; // フィルターの有効無効
-	};
+	
+
 	BoxFilterInfo* filterInfoData_ = nullptr; // フィルター情報データ
 
 	ComPtr<ID3D12Resource> filterInfoResource_; // フィルター情報リソース

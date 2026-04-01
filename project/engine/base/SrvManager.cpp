@@ -25,7 +25,7 @@ void TakeC::SrvManager::Initialize(DirectXCommon* directXCommon) {
 //================================================================================================
 
 uint32_t TakeC::SrvManager::Allocate() {
-
+	std::lock_guard<std::mutex> lock(mutex_);
 	//上限に達してないかチェック
 	assert(useIndex_ < kMaxSRVCount_);
 

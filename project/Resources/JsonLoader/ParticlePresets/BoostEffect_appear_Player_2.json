@@ -1,0 +1,72 @@
+{
+    "attributes": {
+        "alignRotationToEmitter": true,
+        "color": {
+            "x": 0.0313725508749485,
+            "y": 0.11372549086809158,
+            "z": 1.0
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 61,
+        "enableFollowEmitter": false,
+        "enableLighting": false,
+        "frequency": 0.10000000149011612,
+        "isBillboard": false,
+        "isDirectional": true,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
+        "lifetimeRange": {
+            "max": 0.15000000596046448,
+            "min": 0.05999999865889549
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 0.8299999833106995,
+            "min": -0.3499999940395355
+        },
+        "rotateRange": {
+            "max": 2.052000045776367,
+            "min": -1.9420000314712524
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 10.0,
+            "z": 1.0
+        },
+        "scaleEasingType": 0,
+        "scaleRange": {
+            "max": 3.9700000286102295,
+            "min": 0.10000000149011612
+        },
+        "scaleSetting": 0,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
+        "velocityRange": {
+            "max": 100.0,
+            "min": 30.0
+        }
+    },
+    "blendState": 1,
+    "isUseTextureAnimation": false,
+    "name": "BoostEffect_appear_Player_2",
+    "primitiveParam": {
+        "height": 1.0,
+        "radius": 1.0,
+        "subDivision": 16
+    },
+    "primitiveType": "PRIMITIVE_CONE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
+    "textureFilePath": "BoostEffect3.png"
+}

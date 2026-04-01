@@ -6,5 +6,13 @@
     "startIntensity": 0.08,
     "peakIntensity": 0.0,
     "endIntensity": 0.0,
-    "peakTimeRate": 0.5
+    "peakTimeRate": 0.5,
+    "specificParams": {
+        "center": {
+            "x": 0.5,
+            "y": 0.5
+        },
+        "blurWidth": 0.01,
+        "enable": true
+    }
 }

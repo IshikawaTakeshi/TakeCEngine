@@ -10,7 +10,7 @@ ConditionNodeView::ConditionNodeView(
 
 	field_ = field;
 	op_ = op;
-	value_ = value;
+	threshold = value;
 
 	//ノードタイトルの設定
 	setTitle("Condition");

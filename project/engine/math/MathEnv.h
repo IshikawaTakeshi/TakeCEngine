@@ -11,6 +11,8 @@
 #include <numbers>
 #include <random>
 #include <variant>
+#include <chrono>
+#include <functional>
 
 /// ----------------------------------------------
 /// 円周率関連
@@ -75,3 +77,12 @@ constexpr float kUnitLength         = 1.0f;
 std::mt19937& GetRandomEngine(); // 乱数エンジン取得
 float GetRandomFloat(float min, float max); // 指定範囲の乱数取得
 int GetRandomInt(int min, int max); // 指定範囲の乱数取得
+
+/// ----------------------------------------------
+/// 時間計測関連
+/// ----------------------------------------------
+using Clock = std::chrono::high_resolution_clock;
+using Ms = std::chrono::milliseconds;
+
+/// ラベル付きで処理時間を計測する関数
+uint64_t Measure(const wchar_t* label, const std::function<void()>& fn);

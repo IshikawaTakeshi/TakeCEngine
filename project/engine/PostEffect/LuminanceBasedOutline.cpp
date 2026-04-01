@@ -53,10 +53,6 @@ void LuminanceBasedOutline::UpdateImGui() {
 //=============================================================================
 void LuminanceBasedOutline::Dispatch() {
 
-	if (!outlineInfoData_->isActive) {
-		return; // アウトラインが無効な場合は処理をスキップ
-	}
-
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
@@ -80,4 +76,27 @@ void LuminanceBasedOutline::Dispatch() {
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());
+}
+
+void LuminanceBasedOutline::ApplySpecificParams(const nlohmann::json& params) {
+
+	// パラメータが存在しない場合は何もしない
+	if (params.is_null() || params.empty()) {
+		return;
+	}
+
+	// JSONからBloomEffectInfoを取得して適用
+	auto param = params.get<LuminanceBasedOutlineInfo>();
+	outlineInfoData_->color = param.color;
+	outlineInfoData_->weight = param.weight;
+	outlineInfoData_->isActive = param.isActive;
+}
+
+nlohmann::json LuminanceBasedOutline::GetSpecificParams() const {
+	
+	LuminanceBasedOutlineInfo param;
+	param.color = outlineInfoData_->color;
+	param.weight = outlineInfoData_->weight;
+	param.isActive = outlineInfoData_->isActive;
+	return param;
 }

@@ -39,11 +39,11 @@ public:
 	const std::string& GetOp() const { return op_; }
 	void SetOp(const std::string& op) { op_ = op; }
 
-	float GetValue() const { return value_; }
-	void SetValue(float value) { value_ = value; }
+	float GetValue() const { return threshold; }
+	void SetValue(float value) { threshold = value; }
 
 private:
 	std::string field_;  // 比較対象（"energy", "hp", "distance" 等）
 	std::string op_;     // 比較演算子（">=", "<=", ">", "<", "==", "!="）
-	float value_;        // 閾値
+	float threshold;        // 閾値
 };

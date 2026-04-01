@@ -28,7 +28,7 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="owner"></param>
-	void Initialize(GameCharacter* owner,const std::string& effectName);
+	void Initialize(GameCharacter* owner,const std::string& effectName,const std::string& appearEffectName);
 
 	/// <summary>
 	/// 更新
@@ -44,6 +44,8 @@ public:
 	/// <param name="jointName"></param>
 	void AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName);
 
+	void PlayAppearEffect();
+
 	//===================================================================================
 	// accessors
 	//===================================================================================
@@ -57,6 +59,8 @@ private:
 
 	//EffectGroup のインスタンス
 	std::unique_ptr<TakeC::EffectGroup> effectGroup_ = nullptr;
+	// ブースト開始時のエフェクト
+	std::unique_ptr<TakeC::EffectGroup> appearEffect_ = nullptr;
 
 	// 親関連
 	std::string parentJointName_;

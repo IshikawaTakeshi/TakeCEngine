@@ -25,7 +25,7 @@ void main( uint3 DTid : SV_DispatchThreadID ){
 	}
 
 	// 元のシーンカラーを取得
-	float4 originalColor = gInputTexture.Load(int3(pixelPos, 0));
+	float4 originalColor = gInputTexture[pixelPos];
 
 	// ブルームエフェクトが無効なら元の色を出力して終了
 	if ( !gBloomEffectInfo.isActive ) {

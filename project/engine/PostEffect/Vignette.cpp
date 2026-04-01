@@ -75,6 +75,28 @@ void Vignette::Dispatch() {
 
 }
 
+void Vignette::ApplySpecificParams(const nlohmann::json& params) {
+
+	if(params.is_null() || params.empty()){
+		return;
+	}
+
+	// ※ vignettePower は強度(SetIntensity)として管理されるため、ここでは上書きしない
+	if (params.contains("vignetteScale")) {
+		vignetteInfoData_->vignetteScale = params["vignetteScale"];
+	}
+}
+
+nlohmann::json Vignette::GetSpecificParams() const {
+	
+	VignetteInfo param;
+	param.isActive = vignetteInfoData_->isActive;
+	param.vignetteScale = vignetteInfoData_->vignetteScale;
+	param.vignettePower = vignetteInfoData_->vignettePower;
+
+	return param;
+}
+
 void Vignette::SetIntensity(float intensity) {
 	vignetteInfoData_->vignettePower = std::clamp(intensity, 0.0f, 1.0f);
 }

@@ -1,8 +1,11 @@
 #pragma once
 #include <ImNodeFlow-1.2.2/include/ImNodeFlow.h>
 #include <map>
+//Engine
 #include "application/Entity/Behavior/Blackboard.h"
 #include "application/Entity/Behavior/BehaviorNode.h"
+#include "application/Entity/Behavior/ComboFactory.h"
+//Node
 #include "application/Entity/Behavior/CompositeNode.h"
 #include "application/Entity/Behavior/SelectorNode.h"
 #include "application/Entity/Behavior/SequenceNode.h"
@@ -10,6 +13,7 @@
 #include "application/Entity/Behavior/ScoreConditionNode.h"
 #include "application/Entity/Behavior/PlannerSelectorNode.h"
 #include "application/Entity/Behavior/ActionNode.h"
+//NodeView
 #include "application/Entity/Behavior/View/ActionNodeView.h"
 #include "application/Entity/Behavior/View/SelectorNodeView.h"
 #include "application/Entity/Behavior/View/ConditionNodeView.h"
@@ -46,6 +50,19 @@ public:
 	/// <param name="rootNode">Enemyが保持しているルートノード</param>
 	void LoadTreeFromEnemy(BehaviorNode* rootNode, Blackboard* blackboard);
 
+	/// <summary>
+	/// コンボセットのデータからビヘイビアツリーを構築して読み込む
+	/// </summary>
+	/// <param name="comboSetData"></param>
+	/// <param name="stateManager"></param>
+	void LoadTreeFromJson(const std::string& filepath);
+
+	/// <summary>
+	/// ビヘイビアツリーをコンボセットとしてファイルに保存する
+	/// </summary>
+	/// <param name="filePath"></param>
+	void SaveComboSet();
+
 private:
 
 	/// <summary>
@@ -53,8 +70,13 @@ private:
 	/// </summary>
 	ImFlow::BaseNode* BuildNodeView(BehaviorNode* node, ImVec2& minPos);
 
+	BehaviorNodeData BuildNodeDataFromLogicNode(const BehaviorNode* node) const;
+
+	std::string DetectRootType(const BehaviorNode* node) const;
+
 private:
 
+	BehaviorNode* rootNode_ = nullptr;
 	Blackboard* blackboard_ = nullptr; // ビヘイビアツリーのブラックボード
 	std::unique_ptr<ImFlow::ImNodeFlow> flowEditor_; // ImNodeFlowのエディタ
 	std::map<BehaviorNode*, ImFlow::BaseNode*> nodeViewMap_; // 実際のノードとViewの紐づけ

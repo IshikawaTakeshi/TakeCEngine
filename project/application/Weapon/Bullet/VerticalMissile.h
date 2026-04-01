@@ -85,6 +85,7 @@ private:
 	bool isActive_ = false; // 生存フラグ
 	float lifeTime_ = 0.0f; // 寿命時間
 	float bulletRadius_ = 1.0f; //弾の半径
+	float homingElapsedTime_ = 0.0f; // HOMING開始後の経過時間
 
 	PointLightData pointLightData_;
 	uint32_t pointLightIndex_ = 0;

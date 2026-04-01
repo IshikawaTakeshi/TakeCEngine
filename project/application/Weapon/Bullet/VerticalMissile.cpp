@@ -77,15 +77,101 @@ void VerticalMissile::Update() {
 	}
 
 	
-	//========================================================================
-	// CCD (Continuous Collision Detection) - カプセル判定方式
-	//========================================================================
-
 	// 1フレームでの移動量を計算
 	Vector3 displacement = velocity_ * deltaTime_;
 	float moveDistance = Vector3Math::Length(displacement);
 
 	bool isHit = false;
+
+	//ライフタイムが0以下になったら無効化
+	if (lifeTime_ <= 0.0f) {
+		pointLightData_.enabled_ = 0;
+		isActive_ = false;
+		return;
+	}
+
+	switch (phase_) {
+	case VerticalMissile::VerticalMissilePhase::ASCENDING:
+	{
+		// 上昇中の処理
+		velocity_ = { 0.0f, vmInfo_.ascendSpeed, 0.0f };
+		// 上昇方向を直接使う（Normalize不要）
+		const Vector3 upDir = { 0.0f, 1.0f, 0.0f };
+
+		Quaternion targetRotate = QuaternionMath::LookRotation(
+			upDir, { 0.0f, 0.0f, 1.0f } // upと平行でないUpベクトルを渡す
+		);
+		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.3f);
+		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
+
+		transform_.translate.y += velocity_.y * deltaTime_;
+		if (transform_.translate.y >= vmInfo_.maxAltitude) {
+			// 最大高度に達したらホーミングフェーズに移行
+			phase_ = VerticalMissile::VerticalMissilePhase::HOMING;
+			// ホーミング開始時の経過時間をリセット
+			homingElapsedTime_ = 0.0f; 
+		}
+	}
+		break;
+	case VerticalMissile::VerticalMissilePhase::HOMING:
+	{
+		// ターゲット位置を更新
+		targetPos_ = ownerWeapon_->GetTargetPos();
+
+		// 経過時間を進める
+		homingElapsedTime_ += deltaTime_;
+
+		// 補間率t
+		float duration = std::max(vmInfo_.homingBlendDuration, 0.0001f);
+		float t = std::clamp(homingElapsedTime_ / duration, 0.0f, 1.0f);
+
+		// 時間経過でホーミング値を変化
+		float currentHomingRate = Easing::Lerp(vmInfo_.homingRateStart, vmInfo_.homingRateEnd, t);
+		currentHomingRate = std::clamp(currentHomingRate, 0.0f, 1.0f);
+
+		
+
+		// 現在の移動方向と目標方向を補間して新しい移動方向を決定
+		Vector3 desired = Vector3Math::Normalize(targetPos_ - transform_.translate);
+
+		Vector3 currentDir;
+		if (velocity_.Length() > 0.0f) {
+			currentDir = Vector3Math::Normalize(velocity_);
+		} else {
+			currentDir = desired;
+		}
+
+		// ホーミング率を考慮して現在の方向と目標方向を補間
+		Vector3 mixed = Easing::Lerp(currentDir, desired, currentHomingRate);
+		direction_ = Vector3Math::Normalize(mixed);
+
+		velocity_ = direction_ * speed_;
+		displacement = velocity_ * deltaTime_;
+		moveDistance = Vector3Math::Length(displacement);
+
+		// 現在の位置からターゲットへの方向を計算して回転を更新
+		Quaternion targetRotate = QuaternionMath::LookRotation(
+			Vector3Math::Normalize((transform_.translate + displacement) - transform_.translate), {0.0f, 1.0f, 0.0f});
+
+		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.3f);
+		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
+		
+		// 衝突しなかった場合のみ、通常通り移動
+		if (!isHit) {
+			transform_.translate += displacement;
+		}
+	}
+		break;
+	case VerticalMissile::VerticalMissilePhase::EXPLODING:
+		break;
+	default:
+		break;
+	}
+
+
+	//========================================================================
+	// CCD (Continuous Collision Detection) - カプセル判定方式
+	//========================================================================
 
 	// 移動量がある場合のみ判定
 	if (moveDistance > 0.0001f) {
@@ -125,85 +211,11 @@ void VerticalMissile::Update() {
 		}
 	}
 
-	// 衝突しなかった場合のみ、通常通り移動
-	if (!isHit) {
-		transform_.translate += displacement;
-	}
-
 	//ライフタイムの減少
 	lifeTime_ -= deltaTime_;
 	//ポイントライトの更新
 	pointLightData_.position_ = transform_.translate;
 	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
-
-	//ライフタイムが0以下になったら無効化
-	if (lifeTime_ <= 0.0f) {
-		pointLightData_.enabled_ = 0;
-		isActive_ = false;
-		return;
-	}
-
-	switch (phase_) {
-	case VerticalMissile::VerticalMissilePhase::ASCENDING:
-		// 上昇中の処理
-		velocity_ = { 0.0f, vmInfo_.ascendSpeed, 0.0f };
-		transform_.translate.y += velocity_.y * deltaTime_;
-		if (transform_.translate.y >= vmInfo_.maxAltitude) {
-			// 最大高度に達したらホーミングフェーズに移行
-			phase_ = VerticalMissile::VerticalMissilePhase::HOMING;
-		}
-
-		break;
-	case VerticalMissile::VerticalMissilePhase::HOMING:
-	{
-
-		// ターゲット位置を更新
-		targetPos_ = ownerWeapon_->GetTargetPos();
-
-		//ターゲットの方向にモデルを向ける
-		Quaternion targetRotate = QuaternionMath::LookRotation(
-			Vector3Math::Normalize(targetPos_ - transform_.translate),{ 0.0f,1.0f,0.0f });
-		
-		transform_.rotate = Easing::Slerp(
-			transform_.rotate,
-			targetRotate,
-			0.3f
-		);
-		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
-
-		// ターゲット方向への単位ベクトルを計算
-		Vector3 desired = targetPos_ - transform_.translate;
-		desired = Vector3Math::Normalize(desired);
-
-		// 現在の進行方向の単位ベクトルを計算
-		Vector3 currentDir;
-		if (velocity_.Length() > 0) {
-			// 速度がある場合はその方向を使用
-			currentDir = Vector3Math::Normalize(velocity_);
-		} else {
-			currentDir = desired; // 初回など速度が0なら目標方向へ
-		}
-
-		// homingRate_の値に基づいて徐々にターゲット方向に向かう
-		float easedT = std::clamp(vmInfo_.homingRate, 0.0f, 1.0f);
-
-		// 進行方向を補間して新しい方向を計算
-		Vector3 mixed = Easing::Lerp(currentDir, desired, easedT);
-		// 新しい方向ベクトルを計算
-		direction_ = Vector3Math::Normalize(mixed);
-
-		// 速度ベクトルを更新
-		velocity_ = direction_ * speed_;
-		// 位置を更新
-		transform_.translate += velocity_ * deltaTime_;
-	}
-		break;
-	case VerticalMissile::VerticalMissilePhase::EXPLODING:
-		break;
-	default:
-		break;
-	}
-
 
 
 	//パーティクルエミッターの更新
@@ -307,6 +319,7 @@ void VerticalMissile::Create(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo,
 	isActive_ = true;
 	//ポイントライト有効化
 	pointLightData_.enabled_ = 1;
+	homingElapsedTime_ = 0.0f;
 
 	for (auto& trailEmitter : trailEmitter_) {
 		trailEmitter->SetIsEmit(true);

@@ -14,7 +14,9 @@ struct VerticalMissileInfo {
 	//ミサイルの爆発半径
 	float explosionRadius = 5.0f;
 	//ホーミングの度合い
-	float homingRate = 0.1f;
+	float homingRateStart = 0.16f;      // 発射直後
+	float homingRateEnd = 0.001f;        // 終盤
+	float homingBlendDuration = 2.0f;   // この秒数でStart->End
 
 	void EditConfigImGui();
 };

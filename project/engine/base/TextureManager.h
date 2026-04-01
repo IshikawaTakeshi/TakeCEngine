@@ -11,6 +11,9 @@
 #include <iostream>
 #include <memory>
 #include <unordered_map>
+#include <queue>
+#include <mutex>
+#include <thread>
 
 #include "engine/base/DirectXCommon.h"
 #include "engine/base/ComPtrAliasTemplates.h"
@@ -37,6 +40,28 @@ namespace TakeC {
 
 	public:
 
+		/////////////////////////////////////////////////////////////////////////////////////
+		///			構造体
+		/////////////////////////////////////////////////////////////////////////////////////
+
+		//テクスチャ1枚分のデータ
+		struct TextureData {
+			DirectX::TexMetadata metadata; //テクスチャのメタデータ
+			ComPtr<ID3D12Resource> resource; //テクスチャリソース
+			ComPtr<ID3D12Resource> intermediateResource; //中間リソース
+			uint32_t srvIndex; //SRVインデックス
+			D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU; //CPUディスクリプタハンドル
+			D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU; //GPUディスクリプタハンドル
+		};
+
+		struct TextureCPUData {
+			std::string filePath; //テクスチャファイルのパス
+			DirectX::ScratchImage mipImages; //ミップマップを含むテクスチャイメージ
+			DirectX::TexMetadata metadata; //テクスチャのメタデータ
+		};
+
+	public:
+
 		//================================================================================
 		// functions
 		//================================================================================
@@ -56,6 +81,8 @@ namespace TakeC {
 		/// </summary>
 		void Finalize();
 
+		void Update();
+
 		/// <summary>
 		/// テクスチャの更新チェックと再読み込み
 		/// </summary>
@@ -73,6 +100,11 @@ namespace TakeC {
 		/// 全テクスチャの読み込み
 		/// </summary>
 		void LoadTextureAll();
+
+		/// <summary>
+		/// すべての読み込み完了を待機
+		/// </summary>
+		void WaitForAllLoads();
 
 	private:
 
@@ -99,6 +131,43 @@ namespace TakeC {
 		/// ファイルの最終更新時刻を取得
 		/// </summary>
 		time_t GetFileLastWriteTime(const std::string& filePath);
+
+		/// <summary>
+		/// テクスチャファイルの拡張子がサポートされているかチェック
+		/// </summary>
+		/// <param name="ext"></param>
+		/// <returns></returns>
+		bool IsSupportedTextureExt(const std::string& ext);
+
+		/// <summary>
+		/// テクスチャファイルのデコード
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <param name="outImage"></param>
+		/// <param name="outMetadata"></param>
+		/// <returns></returns>
+		bool DecodeTexture(const std::string& filePath, DirectX::ScratchImage& outImage, DirectX::TexMetadata& outMetadata);
+
+		/// <summary>
+		/// ミップマップの生成
+		/// </summary>
+		/// <param name="srcImage"></param>
+		/// <param name="metadata"></param>
+		/// <param name="outMipImage"></param>
+		/// <returns></returns>
+		bool BuildMipMaps(const DirectX::ScratchImage& srcImage, const DirectX::TexMetadata& metadata, DirectX::ScratchImage& outMipImage);
+
+		/// <summary>
+		/// テクスチャのGPUアップロード
+		/// </summary>
+		/// <param name="mipImages"></param>
+		/// <param name="metadata"></param>
+		/// <param name="textureData"></param>
+		/// <returns></returns>
+		Microsoft::WRL::ComPtr<ID3D12Resource> UploadTexture(const DirectX::ScratchImage& mipImages, DirectX::TexMetadata& metadata, TextureData& textureData);
+
+		void StartWorker();
+		void WorkerLoop();
 	public:
 
 		//=============================================================================
@@ -121,21 +190,7 @@ namespace TakeC {
 		//CubeMapを除いたテクスチャのファイル名一覧を取得する
 		std::vector<std::string> GetLoadedNonCubeTextureFileNames() const;
 
-	private:
-
-		/////////////////////////////////////////////////////////////////////////////////////
-		///			構造体
-		/////////////////////////////////////////////////////////////////////////////////////
-
-		//テクスチャ1枚分のデータ
-		struct TextureData {
-			DirectX::TexMetadata metadata; //テクスチャのメタデータ
-			ComPtr<ID3D12Resource> resource; //テクスチャリソース
-			ComPtr<ID3D12Resource> intermediateResource; //中間リソース
-			uint32_t srvIndex; //SRVインデックス
-			D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU; //CPUディスクリプタハンドル
-			D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU; //GPUディスクリプタハンドル
-		};
+	
 
 
 	private:
@@ -149,5 +204,20 @@ namespace TakeC {
 		std::unordered_map<std::string, time_t> fileUpdateTimes_;
 
 		TakeC::SrvManager* srvManager_ = nullptr;
+
+
+		std::vector<std::thread> workerThreads_;
+		// リクエスト（読み込み依頼）
+		std::queue<std::string> requestQueue_;
+		// 完了（CPU処理済み）
+		std::queue<TextureCPUData> completedQueue_;
+		std::mutex mutex_; // queue用
+		mutable std::mutex mapMutex_; // textureDatas_用
+		std::atomic<bool> threadRunning_ = true;
+
+		// 読み込み待ち数
+		std::atomic<int> pendingCount_ = 0;
+		// プレースホルダ用（白テクスチャ）
+		TextureData whiteTextureData_;
 	};
 }

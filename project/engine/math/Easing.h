@@ -104,6 +104,7 @@ namespace Easing {
 		UrgentRise,
 		GentleRise
 	};
+
 };
 
 void to_json(nlohmann::json& j, const Easing::EasingType& type);

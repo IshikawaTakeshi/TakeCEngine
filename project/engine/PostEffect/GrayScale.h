@@ -1,6 +1,13 @@
 #pragma once
 #include "PostEffect/PostEffect.h"
 
+struct GrayScaleInfo {
+	int32_t grayScaleType; // グレースケールの種類
+	bool isActive = true; // グレースケールの有効無効
+};
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GrayScaleInfo, grayScaleType, isActive)
+
 //============================================================================
 //	GrayScale class
 //============================================================================
@@ -31,6 +38,22 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	/// <summary>
+	/// エフェクト固有のパラメータを適用する
+	/// </summary>
+	/// <param name="params"></param>
+	void ApplySpecificParams(const nlohmann::json& params) override;
+
+	/// <summary>
+	/// エフェクト固有のパラメータを取得する
+	/// </summary>
+	/// <returns></returns>
+	nlohmann::json GetSpecificParams() const override;
+
+	/// <summary>
+	/// アクティブ状態を設定する
+	/// </summary>
+	/// <param name="isActive"></param>
 	void SetIsActive(bool isActive) override {
 		if (grayScaleInfoData_) {
 			grayScaleInfoData_->isActive = isActive;
@@ -45,10 +68,7 @@ private:
 		SEPIA,
 		NONE,
 	};
-	struct GrayScaleInfo {
-		int32_t grayScaleType; // グレースケールの種類
-		bool isActive = true; // グレースケールの有効無効
-	};
+	
 	GrayScaleInfo* grayScaleInfoData_ = nullptr; // グレースケール情報データ
 	ComPtr<ID3D12Resource> grayScaleTypeResource_;
 

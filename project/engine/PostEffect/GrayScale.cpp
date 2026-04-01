@@ -74,3 +74,27 @@ void GrayScale::Dispatch() {
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());
 }
+
+void GrayScale::ApplySpecificParams(const nlohmann::json& params) {
+
+
+	// パラメータが存在しない場合は何もしない
+	if (params.is_null() || params.empty()) {
+		return;
+	}
+
+	// JSONからBloomEffectInfoを取得して適用
+	auto param = params.get<GrayScaleInfo>();
+	grayScaleInfoData_->grayScaleType = param.grayScaleType;
+	grayScaleInfoData_->isActive = param.isActive;
+
+}
+
+nlohmann::json GrayScale::GetSpecificParams() const {
+	
+	GrayScaleInfo info{};
+	info.grayScaleType = grayScaleInfoData_->grayScaleType;
+	info.isActive = grayScaleInfoData_->isActive;
+
+	return info;
+}

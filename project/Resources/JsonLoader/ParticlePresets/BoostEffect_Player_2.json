@@ -27,8 +27,8 @@
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 0.5,
-            "min": 0.5
+            "max": 0.1599999964237213,
+            "min": 0.1599999964237213
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
@@ -41,12 +41,12 @@
         },
         "scale": {
             "x": 0.5699999928474426,
-            "y": 6.150000095367432,
-            "z": 0.5
+            "y": 6.539999961853027,
+            "z": 0.5600000023841858
         },
-        "scaleEasingType": 0,
+        "scaleEasingType": 6,
         "scaleRange": {
-            "max": 3.0,
+            "max": 3.5399999618530273,
             "min": 0.10000000149011612
         },
         "scaleSetting": 0,
@@ -69,7 +69,7 @@
     "textureAnimationParam": {
         "scrollSpeed": {
             "x": 3.5199999809265137,
-            "y": 10.0
+            "y": 7.650000095367432
         },
         "wrapU": true,
         "wrapV": true

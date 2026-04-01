@@ -14,20 +14,28 @@ BoostEffect::~BoostEffect() {
 //===================================================================================
 //　初期化
 //===================================================================================
-void BoostEffect::Initialize(GameCharacter* owner,const std::string& effectName) {
+void BoostEffect::Initialize(GameCharacter* owner,const std::string& effectName, const std::string& appearEffectName) {
 	ownerObject_ = owner;
 
 	//EffectGroup の初期化
 	effectGroup_ = std::make_unique<EffectGroup>();
 	effectGroup_->Initialize(effectName);
 
+	//AppearEffectの初期化
+	appearEffect_ = std::make_unique<EffectGroup>();
+	appearEffect_->Initialize(appearEffectName);
+
 	// --- PointLight設定 ---
 	pointLightData_.enabled_ = 1;
 	pointLightData_.color_ = { 0.1f,0.5f,1.0f,1.0f };
-	pointLightData_.intensity_ = 160.0f; // 最初は消しておく
+	pointLightData_.intensity_ = 0.0f; // 最初は消しておく
 	pointLightData_.radius_ = 2.0f;
 	pointLightData_.decay_ = 1.0f;
 	pointLightIndex_ = TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
+	
+	// 確実に停止処理を実行するため、一度 true にしておく
+	isActive_ = true;
+	SetIsActive(false);
 }
 
 //===================================================================================
@@ -53,11 +61,13 @@ void BoostEffect::Update() {
 
 	// EffectGroupへの行列登録
 	if (hasParent) {
-		currentJointMatrix_ = jointWorldMatrix; // メンバ変数に保存
-		effectGroup_->SetParentMatrix(&currentJointMatrix_); // アドレスを渡す
+		currentJointMatrix_ = jointWorldMatrix;
+		effectGroup_->SetParentMatrix(&currentJointMatrix_);
+		appearEffect_->SetParentMatrix(&currentJointMatrix_);
 
 	} else {
 		effectGroup_->SetParentMatrix(nullptr);
+		appearEffect_->SetParentMatrix(nullptr);
 	}
 
 	// 4. 更新実行
@@ -66,11 +76,13 @@ void BoostEffect::Update() {
 	};
 	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
 	effectGroup_->Update();
+	appearEffect_->Update();
 }
 
 void BoostEffect::UpdateImGui([[maybe_unused]] const std::string& windowName) {
 
 	effectGroup_->UpdateImGui(windowName);
+	appearEffect_->UpdateImGui(windowName);
 }
 
 //===================================================================================
@@ -85,10 +97,12 @@ void BoostEffect::SetIsActive(bool isActive) {
 		// 再生開始
 		// Meshの位置や回転がセットされていれば、その位置で再生開始
 		effectGroup_->Play(pointLightData_.position_);
+		pointLightData_.intensity_ = 160.0f;
 
 	} else {
 		// 停止
 		effectGroup_->Stop();
+		pointLightData_.intensity_ = 0.0f;
 	}
 }
 
@@ -99,4 +113,8 @@ void BoostEffect::AttachToSkeletonJoint(Skeleton* skeleton, const std::string& j
 	parentSkeleton_ = skeleton;
 	parentJointName_ = jointName;
 
+}
+
+void BoostEffect::PlayAppearEffect() {
+	appearEffect_->Play(pointLightData_.position_);
 }

@@ -68,6 +68,8 @@ public:
 	/// <param name="characterName"></param>
 	void SaveEnemyData(const std::string& characterName);
 
+	void LoadBehaviorTree(const std::string& filePath);
+
 public:
 	//==============================================================================
 	// getter

@@ -192,8 +192,8 @@ void GamePlayScene::Initialize() {
 	sceneStateManager_.Initialize(SceneState::GAMESTART, this);
 
 	// ShadowMapEffectを有効化
-	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect",
-		true);
+	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect",true);
+	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("DepthBasedOutline", true);
 }
 
 //====================================================================

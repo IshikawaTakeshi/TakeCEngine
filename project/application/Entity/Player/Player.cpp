@@ -70,7 +70,7 @@ void Player::Initialize(Object3dCommon* object3dCommon,
 	boostEffects_.resize(kNumPositions);
 	for (int i = 0; i < kNumPositions; i++) {
 		boostEffects_[i] = std::make_unique<BoostEffect>();
-		boostEffects_[i]->Initialize(this, "BoostEffect_Player.json");
+		boostEffects_[i]->Initialize(this, "BoostEffect_Player.json", "BoostEffect_Appear_Player.json");
 	}
 	boostEffects_[LEFT_LEG]->AttachToSkeletonJoint(
 		object3d_->GetModel()->GetSkeleton(), "knees_left.002");
@@ -243,7 +243,6 @@ void Player::Update() {
 				// StepBoost入力判定
 				//  LTボタン＋スティック入力で発動
 				if (inputProvider_->RequestStepBoost()) {
-					// RequestActiveBoostEffect();
 					stateManager_->RequestState(GameCharacterState::STEPBOOST);
 					TakeCFrameWork::GetPostEffectManager()->PlayEffect("RadialBlur");
 				}
@@ -280,13 +279,12 @@ void Player::Update() {
 		}
 	}
 
-	// Behaviorの更新
-	stateManager_->Update(playerData_.characterInfo);
-
 	// エネルギーの更新
 	UpdateEnergy();
 	// アクティブブーストエフェクトのリクエスト
 	RequestActiveBoostEffect();
+	// Behaviorの更新
+	stateManager_->Update(playerData_.characterInfo);
 
 	// 地面に着地したらRUNNINGに戻る
 	if (playerData_.characterInfo.onGround == true &&
@@ -377,8 +375,7 @@ void Player::Update() {
 		boostEffect->SetCharacterState(stateManager_->GetCurrentStateType());
 	}
 
-	playerData_.characterInfo.onGround =
-		false; // 毎フレームリセットし、衝突判定で更新されるようにする
+	playerData_.characterInfo.onGround = false; // 毎フレームリセットし、衝突判定で更新されるようにする
 }
 
 //===================================================================================
@@ -427,11 +424,6 @@ void Player::UpdateImGui() {
 	collider_->SetOffset(playerData_.characterInfo.colliderInfo.offset);
 	collider_->SetHalfSize(playerData_.characterInfo.colliderInfo.halfSize);
 	collider_->UpdateImGui("Player");
-	// ブーストエフェクトのImGui更新
-	for (int i = 0; i < boostEffects_.size(); i++) {
-		boostEffects_[i]->UpdateImGui("boostEffect" + std::to_string(i));
-	}
-
 	// 武器のImGui更新
 	weapons_[0]->UpdateImGui();
 	weapons_[1]->UpdateImGui();
@@ -507,6 +499,8 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		playerData_.characterInfo.health -= bullet->GetDamage();
 		// ブレイクゲージを蓄積
 		AccumulateBreakGauge(bullet->GetDamage());
+		//エフェクトの再生
+		TakeCFrameWork::GetPostEffectManager()->PlayEffect("DamageHit");
 	}
 	if (other->GetCharacterType() == CharacterType::ENEMY_MISSILE) {
 		// 敵のミサイルに当たった場合
@@ -516,6 +510,8 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		playerData_.characterInfo.health -= missile->GetDamage();
 		// ブレイクゲージを蓄積
 		AccumulateBreakGauge(missile->GetDamage());
+		//エフェクトの再生
+		TakeCFrameWork::GetPostEffectManager()->PlayEffect("DamageHit");
 	}
 
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
@@ -597,7 +593,7 @@ void Player::UpdateAttack() {
 				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();
 					camera_->RequestShake(ShakeCameraMode::VERTICAL, 0.5f,
-						2.0f); // カメラシェイクをリクエスト
+						3.0f); // カメラシェイクをリクエスト
 
 					playerData_.characterInfo.isChargeShooting =
 						false; // チャージ撃ち中フラグをリセット
@@ -740,19 +736,21 @@ void Player::UpdateEnergy() {
 
 void Player::RequestActiveBoostEffect() {
 
+		// 毎フレーム一度全OFF（状態残り対策）
+	for (const auto& boostEffect : boostEffects_) {
+		boostEffect->SetIsActive(false);
+	}
+
 	// ステップブーストの方向とスティックの向きによってアクティブにするエフェクトを変更
 	Vector3 moveDir = playerData_.characterInfo.moveDirection;
 
 	if (moveDir.Length() <= 0.1f) {
-		// スティックがほぼニュートラルの場合はすべてのエフェクトを非アクティブにして終了
-		for (const auto& boostEffect : boostEffects_) {
-			boostEffect->SetIsActive(false);
-		}
+		// ニュートラルなら全OFFのまま終了
 		return;
-	} else {
-		// 背中のエフェクトは常にアクティブ
-		boostEffects_[BACKPACK]->SetIsActive(true);
 	}
+
+	// 背中のエフェクトは常にアクティブ
+	boostEffects_[BACKPACK]->SetIsActive(true);
 
 	// --- プレイヤーの向きをQuaternionから取得 ---
 	Vector3 localForward = Vector3(0.0f, 0.0f, 1.0f);
@@ -761,6 +759,10 @@ void Player::RequestActiveBoostEffect() {
 	playerForward.y = 0.0f; // 水平方向だけ見る
 	playerForward = Vector3Math::Normalize(playerForward);
 
+	// moveDir も正規化して角度判定を安定化
+	moveDir.y = 0.0f;
+	moveDir = Vector3Math::Normalize(moveDir);
+
 	// --- スティック方向との角度差を求める ---
 	float dot = Vector3Math::Dot(playerForward, moveDir);
 	float crossY = playerForward.x * moveDir.z - playerForward.z * moveDir.x;
@@ -768,24 +770,50 @@ void Player::RequestActiveBoostEffect() {
 		atan2(crossY, dot) * (180.0f / std::numbers::pi_v<float>); // -180°～180°
 
 	// --- 角度差に応じてエフェクトをアクティブにする ---
-	if (angle <= -55.0f && angle > -125.0f) {
+	BoostDirection currentDirection = BoostDirection::NONE;
+
+	if (angle <= -45.0f && angle > -135.0f) {
 		// 左
+		currentDirection = BoostDirection::LEFT;
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
 		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
-	} else if (angle >= 55.0f && angle < 125.0f) {
+		if (previousBoostDirection_ != currentDirection) {
+			boostEffects_[LEFT_SHOULDER]->PlayAppearEffect();
+		}
+	}
+	else if (angle >= 45.0f && angle < 135.0f) {
 		// 右
+		currentDirection = BoostDirection::RIGHT;
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
 		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
-	} else {
-		// 前後
+		if (previousBoostDirection_ != currentDirection) {
+			boostEffects_[RIGHT_SHOULDER]->PlayAppearEffect();
+		}
+	}
+	else if (angle > -45.0f && angle < 45.0f) {
+		// 前
+		currentDirection = BoostDirection::FORWARD;
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
-		boostEffects_[LEFT_SHOULDER]->SetIsActive(false);
-		boostEffects_[RIGHT_SHOULDER]->SetIsActive(false);
+		if (previousBoostDirection_ != currentDirection) {
+			boostEffects_[BACKPACK]->PlayAppearEffect();
+
+		}
+	}
+	else {
+		// 後ろ
+		currentDirection = BoostDirection::BACKWARD;
+	}
+
+	previousBoostDirection_ = currentDirection;
+}
+
+void Player::RequestAppearBoostEffect() {
+	// 登場エフェクトをリクエスト
+	for (const auto& boostEffect : boostEffects_) {
+		boostEffect->PlayAppearEffect();
 	}
 }
 

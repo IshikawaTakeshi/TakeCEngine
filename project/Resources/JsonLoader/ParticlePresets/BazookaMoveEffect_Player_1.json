@@ -1,0 +1,71 @@
+{
+    "attributes": {
+        "alignRotationToEmitter": true,
+        "color": {
+            "x": 0.29411765933036804,
+            "y": 0.5411764979362488,
+            "z": 1.0
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 10,
+        "enableFollowEmitter": true,
+        "enableLighting": false,
+        "frequency": 0.10000000149011612,
+        "isBillboard": true,
+        "isDirectional": false,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
+        "lifetimeRange": {
+            "max": 0.5699999928474426,
+            "min": 0.029999999329447746
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 0.0,
+            "min": 0.0
+        },
+        "rotateRange": {
+            "max": 0.0,
+            "min": 0.0
+        },
+        "scale": {
+            "x": 6.760000228881836,
+            "y": 5.170000076293945,
+            "z": 1.0
+        },
+        "scaleEasingType": 0,
+        "scaleRange": {
+            "max": 20.610000610351563,
+            "min": 2.7100000381469727
+        },
+        "scaleSetting": 1,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
+        "velocityRange": {
+            "max": 1.0,
+            "min": -1.0
+        }
+    },
+    "blendState": 1,
+    "isUseTextureAnimation": false,
+    "name": "BazookaMoveEffect_Player_1.json",
+    "primitiveParam": {
+        "height": 1.0,
+        "width": 1.0
+    },
+    "primitiveType": "PRIMITIVE_PLANE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
+    "textureFilePath": "texture_Glare.png"
+}

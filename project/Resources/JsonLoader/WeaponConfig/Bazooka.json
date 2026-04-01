@@ -1,6 +1,6 @@
 {
     "config": {
-        "bulletSpeed": 500.0,
+        "bulletSpeed": 600.0,
         "canChargeAttack": false,
         "canMoveShootable": false,
         "effectiveRange": 1200.0,
