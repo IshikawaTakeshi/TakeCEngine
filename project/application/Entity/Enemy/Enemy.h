@@ -16,6 +16,7 @@
 #include "application/Entity/Enemy/BulletSensor.h"
 #include "application/Entity/State/GameCharacterState.h"
 #include "application/Entity/GameCharacterInfo.h"
+#include "application/Entity/BoostDirectionEnum.h"
 #include "application/Provider/EnemyInputProvider.h"
 #include "application/Weapon/BaseWeapon.h"
 #include "application/Weapon/Bullet/BulletManager.h"
@@ -231,4 +232,6 @@ private:
 									0.0f }; // フォーカス対象の移動ベクトル
 
 	Vector3 bodyPosition_ = { 0.0f, 0.0f, 0.0f }; // キャラクターの胴体位置
+
+	BoostDirection previousBoostDirection_ = BoostDirection::NONE;
 };

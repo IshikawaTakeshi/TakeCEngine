@@ -2,9 +2,9 @@
     "attributes": {
         "alignRotationToEmitter": true,
         "color": {
-            "x": 0.13725490868091583,
-            "y": 0.42352941632270813,
-            "z": 0.7764706015586853
+            "x": 0.25882354378700256,
+            "y": 0.32156863808631897,
+            "z": 0.8078431487083435
         },
         "colorRange": {
             "max": 1.0,
@@ -16,50 +16,50 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 29,
-        "enableFollowEmitter": true,
+        "emitCount": 8,
+        "enableFollowEmitter": false,
         "enableLighting": false,
         "frequency": 0.10000000149011612,
         "isBillboard": true,
-        "isDirectional": false,
+        "isDirectional": true,
         "isEmitterTrail": false,
         "isParticleTrail": false,
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 0.5699999928474426,
-            "min": 0.029999999329447746
+            "max": 0.18000000715255737,
+            "min": 0.10000000149011612
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
-            "max": 0.0,
-            "min": 0.0
+            "max": 2.869999885559082,
+            "min": -2.759999990463257
         },
         "rotateRange": {
-            "max": 1.2100000381469727,
-            "min": -0.7200000286102295
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
         },
         "scale": {
-            "x": 4.929999828338623,
-            "y": 3.4800000190734863,
+            "x": 1.0,
+            "y": 1.0,
             "z": 1.0
         },
-        "scaleEasingType": 0,
+        "scaleEasingType": 1,
         "scaleRange": {
-            "max": 7.0,
-            "min": 1.590000033378601
+            "max": 0.6499999761581421,
+            "min": 0.10000000149011612
         },
         "scaleSetting": 2,
         "trailEmitInterval": 0.01600000075995922,
         "velocityEasingType": 0,
         "velocityRange": {
-            "max": 1.0,
-            "min": -1.0
+            "max": 500.0,
+            "min": 400.0
         }
     },
     "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "MissileLight_Player.json",
+    "name": "BoostEffect_appear_Player_5.json",
     "primitiveParam": {
         "height": 1.0,
         "width": 1.0
@@ -67,5 +67,5 @@
     "primitiveType": "PRIMITIVE_PLANE",
     "textureAnimationParam": null,
     "textureAnimationType": 0,
-    "textureFilePath": "texture_StarFlare.png"
+    "textureFilePath": "white1x1.png"
 }

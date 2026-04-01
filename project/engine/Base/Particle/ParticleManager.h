@@ -91,6 +91,13 @@ namespace TakeC {
 		// エミッターIDから回転を取得
 		std::optional<Vector3> GetEmitDirection(uint32_t emitterID) const;
 
+		/// <summary>
+		/// エミッターIDからスケールを取得
+		/// </summary>
+		/// <param name="emitterID">エミッターID</param>
+		/// <returns>エミッターのスケール（存在しない場合はnullopt）</returns>
+		std::optional<Vector3> GetEmitterScale(uint32_t emitterID) const;
+
 		//パーティクルグループの取得
 		BaseParticleGroup* GetParticleGroup(const std::string& name);
 		//groupnameからプリミティブハンドルの取得

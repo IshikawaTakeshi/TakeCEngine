@@ -6,6 +6,7 @@
 #include "engine/3d/Object3d.h"
 #include "engine/3d/Object3dCommon.h"
 #include "engine/3d/Particle/ParticleEmitter.h"
+#include "engine/3d/Particle/EffectGroup.h"
 #include "Bullet.h"
 
 //============================================================================
@@ -93,8 +94,9 @@ private:
 	BulletEffectConfig effectConfig_;
 
 	//パーティクルエミッター
-	std::vector<std::unique_ptr<ParticleEmitter>> trailEmitter_;
-	std::vector<std::unique_ptr<ParticleEmitter>> explosionEmitter_;
+	std::unique_ptr<TakeC::EffectGroup> lightEffect_;
+	std::unique_ptr<TakeC::EffectGroup> explosionEffect_;
+
 
 	//ミサイルのフェーズ
 	VerticalMissilePhase phase_ = VerticalMissilePhase::ASCENDING;

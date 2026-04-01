@@ -1192,6 +1192,7 @@
     <ClInclude Include="engine\PostEffect\PostEffectPlayConfig.h" />
     <ClInclude Include="engine\PostEffect\ScanlineEffect.h" />
     <ClInclude Include="engine\PostEffect\DistortionEffect.h" />
+    <ClInclude Include="application\Entity\BoostDirectionEnum.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

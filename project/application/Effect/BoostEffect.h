@@ -28,7 +28,7 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="owner"></param>
-	void Initialize(GameCharacter* owner,const std::string& effectName,const std::string& appearEffectName);
+	void Initialize(GameCharacter* owner,const std::string& effectName,const std::string& appearEffectName, const std::string& stepBoostEffectName);
 
 	/// <summary>
 	/// 更新
@@ -46,6 +46,8 @@ public:
 
 	void PlayAppearEffect();
 
+	void PlayStepBoostEffect();
+
 	//===================================================================================
 	// accessors
 	//===================================================================================
@@ -57,10 +59,12 @@ public:
 
 private:
 
-	//EffectGroup のインスタンス
-	std::unique_ptr<TakeC::EffectGroup> effectGroup_ = nullptr;
+	//移動時に発生するエフェクト
+	std::unique_ptr<TakeC::EffectGroup> thrusterEffect_ = nullptr;
 	// ブースト開始時のエフェクト
 	std::unique_ptr<TakeC::EffectGroup> appearEffect_ = nullptr;
+	//ステップブースト時に発生するエフェクト
+	std::unique_ptr<TakeC::EffectGroup> stepBoostEffect_ = nullptr;
 
 	// 親関連
 	std::string parentJointName_;

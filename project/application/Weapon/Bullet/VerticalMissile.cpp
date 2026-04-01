@@ -6,6 +6,8 @@
 #include "engine/Collision/CollisionManager.h"
 #include "engine/Collision/SphereCollider.h"
 
+using namespace TakeC;
+
 //====================================================================================
 // 初期化処理
 //====================================================================================
@@ -32,18 +34,12 @@ void VerticalMissile::InitializeEffect(const BulletEffectConfig& effectConfig) {
 	effectConfig_ = effectConfig;
 	//emiiter設定
 	//emitter0
-	explosionEmitter_.resize(effectConfig_.explosionEffectFilePath.size());
-	for (int i = 0; i < effectConfig_.explosionEffectFilePath.size(); i++) {
-		explosionEmitter_[i] = std::make_unique<ParticleEmitter>();
-		explosionEmitter_[i]->Initialize("MissileExplosionEffect" + std::to_string(i), effectConfig_.explosionEffectFilePath[i]);
-	}
+	explosionEffect_ = std::make_unique<EffectGroup>();
+	explosionEffect_->Initialize(effectConfig_.explosionEffectFilePath);
 
 	//emitter1
-	trailEmitter_.resize(effectConfig_.trailEffectFilePath.size());
-	for (int i = 0; i < effectConfig_.trailEffectFilePath.size(); i++) {
-		trailEmitter_[i] = std::make_unique<ParticleEmitter>();
-		trailEmitter_[i]->Initialize("MissileMoveEffect" + std::to_string(i), effectConfig_.trailEffectFilePath[i]);
-	}
+	lightEffect_ = std::make_unique<EffectGroup>();
+	lightEffect_->Initialize(effectConfig_.lightEffectFilePath);
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
@@ -70,9 +66,7 @@ void VerticalMissile::Update() {
 	if (isActive_ == false) {
 		pointLightData_.enabled_ = 0;
 
-		for (auto& trailEmitter : trailEmitter_) {
-			trailEmitter->SetIsEmit(false);
-		}
+		lightEffect_->Stop();
 		return;
 	}
 
@@ -219,17 +213,11 @@ void VerticalMissile::Update() {
 
 
 	//パーティクルエミッターの更新
-	for (int i = 0; i < explosionEmitter_.size(); i++) {
-		explosionEmitter_[i]->SetTranslate(transform_.translate);
-		explosionEmitter_[i]->Update();
-		std::string explosionEffectName = effectConfig_.explosionEffectFilePath[i];
-	}
+	explosionEffect_->SetPosition(transform_.translate);
+	explosionEffect_->Update();
 
-	for (int i = 0; i < trailEmitter_.size(); i++) {
-		trailEmitter_[i]->SetTranslate(transform_.translate);
-		trailEmitter_[i]->Update();
-		std::string trailEffectName = effectConfig_.trailEffectFilePath[i];
-	}
+	lightEffect_->SetPosition(transform_.translate);
+	lightEffect_->Update();
 
 	// 敵のミサイルの場合は警告イベントを発行
 	if (characterType_ == CharacterType::ENEMY_MISSILE) {
@@ -273,9 +261,7 @@ void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 	if(characterType_ == CharacterType::PLAYER_MISSILE && other->GetCharacterType() == CharacterType::ENEMY ||
 	   characterType_ == CharacterType::ENEMY_MISSILE && other->GetCharacterType() == CharacterType::PLAYER) {
 		//パーティクル射出
-		for (int i = 0; i < explosionEmitter_.size(); i++) {
-			explosionEmitter_[i]->Emit();
-		}
+		explosionEffect_->Play(transform_.translate);
 		//弾を無効化
 		isActive_ = false; 
 		//ポイントライト無効化
@@ -286,9 +272,7 @@ void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
 
 		//パーティクル射出
-		for (int i = 0; i < explosionEmitter_.size(); i++) {
-			explosionEmitter_[i]->Emit();
-		}
+		explosionEffect_->Play(transform_.translate);
 		//弾を無効化
 		isActive_ = false; 
 		//ポイントライト無効化
@@ -321,9 +305,9 @@ void VerticalMissile::Create(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo,
 	pointLightData_.enabled_ = 1;
 	homingElapsedTime_ = 0.0f;
 
-	for (auto& trailEmitter : trailEmitter_) {
+	/*for (auto& trailEmitter : trailEmitter_) {
 		trailEmitter->SetIsEmit(true);
-	}
+	}*/
 }
 
 

@@ -148,12 +148,20 @@ void EffectGroup::Update() {
 			// エミッターのローカルオフセットを取り出す
 			Vector3 offset = instance.config.positionOffset;
 
+			// グループのスケールをオフセットに適用
+			offset.x *= transform_.scale.x;
+			offset.y *= transform_.scale.y;
+			offset.z *= transform_.scale.z;
+
 			// 合成した回転(親×自分)でオフセットを回転させる
 			offset = QuaternionMath::RotateVector(offset, currentRot);
 
 			// 最終的なワールド座標
 			Vector3 finalPos = currentPos + offset;
 			instance.emitter->SetTranslate(finalPos);
+
+			// スケールをエミッターに伝搬
+			instance.emitter->SetScale(transform_.scale);
 
 			// エミッターの回転設定
 			//  エミッターオフセット回転も加味する
@@ -174,11 +182,19 @@ void EffectGroup::Update() {
 			// エミッターのローカルオフセットを取り出す
 			Vector3 offset = instance.config.positionOffset;
 
+			// グループのスケールをオフセットに適用
+			offset.x *= transform_.scale.x;
+			offset.y *= transform_.scale.y;
+			offset.z *= transform_.scale.z;
+
 			// 合成した回転(親×自分)でオフセットを回転させる
 			offset = QuaternionMath::RotateVector(offset, currentRot);
 
 			Vector3 finalPos = currentPos + offset;
 			instance.emitter->SetTranslate(finalPos);
+
+			// スケールをエミッターに伝搬
+			instance.emitter->SetScale(transform_.scale);
 		}
 	}
 
@@ -230,6 +246,9 @@ void TakeC::EffectGroup::UpdateEmitterConfig(int index,
 	Vector3 finalPosition = transform_.translate + offsetPos;
 	instance.emitter->SetTranslate(finalPosition);
 
+	// スケールも伝搬
+	instance.emitter->SetScale(transform_.scale);
+
 	// 回転も適用
 	Quaternion offsetRotQ =
 		QuaternionMath::FromEuler(instance.config.rotationOffset);
@@ -280,6 +299,11 @@ void EffectGroup::UpdateEmitterPositions() {
 		// オフセットを適用
 		Vector3 offsetPos = instance.config.positionOffset;
 
+		// グループのスケールをオフセットに適用
+		offsetPos.x *= transform_.scale.x;
+		offsetPos.y *= transform_.scale.y;
+		offsetPos.z *= transform_.scale.z;
+
 		// 回転を適用（quaternion使用）
 		Quaternion rot = transform_.rotate;
 		offsetPos = QuaternionMath::RotateVector(offsetPos, rot);
@@ -287,6 +311,9 @@ void EffectGroup::UpdateEmitterPositions() {
 		// 最終位置を設定
 		Vector3 finalPosition = transform_.translate + offsetPos;
 		instance.emitter->SetTranslate(finalPosition);
+
+		// スケールを伝搬
+		instance.emitter->SetScale(transform_.scale);
 
 		// 回転も適用
 		Quaternion offsetRotQ =

@@ -138,7 +138,10 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	boostEffects_.resize(kNumPositions);
 	for (int i = 0; i < boostEffects_.size(); i++) {
 		boostEffects_[i] = std::make_unique<BoostEffect>();
-		boostEffects_[i]->Initialize(this, "BoostEffect_Enemy.json","BoostEffect_Appear_Enemy.json");
+		boostEffects_[i]->Initialize(this, 
+			"BoostEffect_Enemy.json",
+			"BoostEffect_Appear_Enemy.json", 
+			"StepBoostEffect_Appear_Enemy.json");
 	}
 	boostEffects_[LEFT_LEG]->AttachToSkeletonJoint(
 		object3d_->GetModel()->GetSkeleton(), "knees_left.002");
@@ -842,13 +845,14 @@ void Enemy::UpdateEnergy() {
 
 void Enemy::RequestActiveBoostEffect() {
 
+
 	// 毎フレーム一度全OFF（状態残り対策）
 	for (const auto& boostEffect : boostEffects_) {
 		boostEffect->SetIsActive(false);
 	}
 
 	// ステップブーストの方向とスティックの向きによってアクティブにするエフェクトを変更
-	Vector3 moveDir = enemyData_.characterInfo.moveDirection;
+	Vector3 moveDir =enemyData_.characterInfo.moveDirection;
 
 	if (moveDir.Length() <= 0.1f) {
 		// ニュートラルなら全OFFのまま終了
@@ -876,23 +880,57 @@ void Enemy::RequestActiveBoostEffect() {
 		atan2(crossY, dot) * (180.0f / std::numbers::pi_v<float>); // -180°～180°
 
 	// --- 角度差に応じてエフェクトをアクティブにする ---
+	BoostDirection currentDirection = BoostDirection::NONE;
+
 	if (angle <= -45.0f && angle > -135.0f) {
 		// 左
+		currentDirection = BoostDirection::LEFT;
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
 		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
+		if (previousBoostDirection_ != currentDirection) {
+			boostEffects_[LEFT_SHOULDER]->PlayAppearEffect();
+		}
+
+		if (stateManager_->GetNextStateType() == GameCharacterState::STEPBOOST) {
+			boostEffects_[LEFT_SHOULDER]->PlayStepBoostEffect();
+		}
+
 	}
 	else if (angle >= 45.0f && angle < 135.0f) {
 		// 右
+		currentDirection = BoostDirection::RIGHT;
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
+		if (previousBoostDirection_ != currentDirection) {
+			boostEffects_[RIGHT_SHOULDER]->PlayAppearEffect();
+		}
+
+		if (stateManager_->GetNextStateType() == GameCharacterState::STEPBOOST) {
+			boostEffects_[RIGHT_SHOULDER]->PlayStepBoostEffect();
+		}
 	}
-	else {
-		// 前後
+	else if (angle > -45.0f && angle < 45.0f) {
+		// 前
+		currentDirection = BoostDirection::FORWARD;
 		boostEffects_[LEFT_LEG]->SetIsActive(true);
 		boostEffects_[RIGHT_LEG]->SetIsActive(true);
+		if (previousBoostDirection_ != currentDirection) {
+			boostEffects_[BACKPACK]->PlayAppearEffect();
+
+		}
+
+		if (stateManager_->GetNextStateType() == GameCharacterState::STEPBOOST) {
+			boostEffects_[BACKPACK]->PlayStepBoostEffect();
+		}
 	}
+	else {
+		// 後ろ
+		currentDirection = BoostDirection::BACKWARD;
+	}
+
+	previousBoostDirection_ = currentDirection;
 }
 
 //===================================================================================

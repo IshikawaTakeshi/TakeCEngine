@@ -156,6 +156,14 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 Particle BaseParticleGroup::MakeNewParticleWithEmitter(uint32_t emitterID, std::mt19937& randomEngine, const Vector3& translate, const Vector3& direction) {
 	Particle particle = MakeNewParticle(randomEngine, translate, direction);
 	particle.emitterID_ = emitterID;
+
+	// エミッターのスケールを適用
+	if (auto emitterScale = TakeCFrameWork::GetParticleManager()->GetEmitterScale(emitterID)) {
+		particle.transforms_.scale.x *= emitterScale->x;
+		particle.transforms_.scale.y *= emitterScale->y;
+		particle.transforms_.scale.z *= emitterScale->z;
+	}
+
 	return particle;
 }
 

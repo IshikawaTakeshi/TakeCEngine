@@ -381,6 +381,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Behavior\View\SequenceNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\WeightSelectorNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\WeightSelector.h" />
+    <ClInclude Include="application\Entity\BoostDirectionEnum.h" />
     <ClInclude Include="application\Entity\Enemy\ActionWeightParam.h" />
     <ClInclude Include="application\Tool\BreakGaugeUtil.h" />
     <ClInclude Include="application\UI\ActionButtonICon.h" />

@@ -70,7 +70,10 @@ void Player::Initialize(Object3dCommon* object3dCommon,
 	boostEffects_.resize(kNumPositions);
 	for (int i = 0; i < kNumPositions; i++) {
 		boostEffects_[i] = std::make_unique<BoostEffect>();
-		boostEffects_[i]->Initialize(this, "BoostEffect_Player.json", "BoostEffect_Appear_Player.json");
+		boostEffects_[i]->Initialize(this,
+			"BoostEffect_Player.json", 
+			"BoostEffect_Appear_Player.json",
+			"StepBoostEffect_Appear_Player.json");
 	}
 	boostEffects_[LEFT_LEG]->AttachToSkeletonJoint(
 		object3d_->GetModel()->GetSkeleton(), "knees_left.002");
@@ -736,7 +739,7 @@ void Player::UpdateEnergy() {
 
 void Player::RequestActiveBoostEffect() {
 
-		// 毎フレーム一度全OFF（状態残り対策）
+	// 毎フレーム一度全OFF（状態残り対策）
 	for (const auto& boostEffect : boostEffects_) {
 		boostEffect->SetIsActive(false);
 	}
@@ -781,6 +784,11 @@ void Player::RequestActiveBoostEffect() {
 		if (previousBoostDirection_ != currentDirection) {
 			boostEffects_[LEFT_SHOULDER]->PlayAppearEffect();
 		}
+
+		if(stateManager_->GetNextStateType() == GameCharacterState::STEPBOOST) {
+			boostEffects_[LEFT_SHOULDER]->PlayStepBoostEffect();
+		}
+		
 	}
 	else if (angle >= 45.0f && angle < 135.0f) {
 		// 右
@@ -791,6 +799,10 @@ void Player::RequestActiveBoostEffect() {
 		if (previousBoostDirection_ != currentDirection) {
 			boostEffects_[RIGHT_SHOULDER]->PlayAppearEffect();
 		}
+
+		if(stateManager_->GetNextStateType() == GameCharacterState::STEPBOOST) {
+			boostEffects_[RIGHT_SHOULDER]->PlayStepBoostEffect();
+		}
 	}
 	else if (angle > -45.0f && angle < 45.0f) {
 		// 前
@@ -800,6 +812,10 @@ void Player::RequestActiveBoostEffect() {
 		if (previousBoostDirection_ != currentDirection) {
 			boostEffects_[BACKPACK]->PlayAppearEffect();
 
+		}
+
+		if (stateManager_->GetNextStateType() == GameCharacterState::STEPBOOST) {
+			boostEffects_[BACKPACK]->PlayStepBoostEffect();
 		}
 	}
 	else {

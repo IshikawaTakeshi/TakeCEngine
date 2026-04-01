@@ -159,7 +159,11 @@ void EffectEditor::DrawEffectSettingsTab() {
 	}
 
 	// デフォルトスケール操作
-	ImGui::DragFloat3("Default Scale", &currentConfig_.defaultScale.x, 0.01f, 0.01f, 10.0f);
+	if (ImGui::DragFloat3("Default Scale", &currentConfig_.defaultScale.x, 0.01f, 0.01f, 10.0f)) {
+		previewEffect_->SetScale(currentConfig_.defaultScale);
+		previewScale_ = currentConfig_.defaultScale;
+	}
+
 
 	ImGui::Separator();
 
@@ -360,16 +364,13 @@ void EffectEditor::DrawPreviewControlTab() {
 
 	// プレビュー回転
 	if (ImGui::DragFloat4("Preview Rotation", &previewRotation_.x, 0.01f)) {
-		if (previewEffect_) {
-			previewEffect_->SetRotate(previewRotation_);
-		}
+		previewEffect_->SetRotate(previewRotation_);
 	}
 
 	// プレビュースケール
 	if (ImGui::DragFloat3("Preview Scale", &previewScale_.x, 0.01f, 0.01f, 10.0f)) {
-		if (previewEffect_) {
-			previewEffect_->SetScale(previewScale_);
-		}
+		previewEffect_->SetScale(previewScale_);
+		currentConfig_.defaultScale = previewScale_; // デフォルトスケールも更新
 	}
 
 	ImGui::Separator();

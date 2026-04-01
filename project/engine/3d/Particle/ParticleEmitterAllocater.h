@@ -29,14 +29,16 @@ public:
 	/// <param name="emitterID">解放するエミッターID</param>
 	void Release(uint32_t emitterID);
 
-	/// <summary>
-	/// エミッターIDから現在のエミッター位置を取得
-	/// </summary>
-	/// <param name="emitterID">エミッターID</param>
-	/// <returns>エミッター位置（存在しない場合はnullopt）</returns>
 	std::optional<Vector3> GetEmitterPosition(uint32_t emitterID) const;
 
 	std::optional<Vector3> GetEmitDirection(uint32_t emitterID )const;
+
+	/// <summary>
+	/// エミッターIDから現在のスケールを取得
+	/// </summary>
+	/// <param name="emitterID">エミッターID</param>
+	/// <returns>エミッターのスケール（存在しない場合はnullopt）</returns>
+	std::optional<Vector3> GetEmitterScale(uint32_t emitterID) const;
 
 	/// <summary>
 	/// エミッターIDからエミッターポインタを取得
