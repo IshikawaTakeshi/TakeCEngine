@@ -30,70 +30,67 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(DistortionInfo,
 // DistortionEffect class
 //=============================================================================
 
-/**
- * @brief ノイズテクスチャベースの画面歪みエフェクト
- */
-	class DistortionEffect : public PostEffect {
-	public:
+class DistortionEffect : public PostEffect {
+public:
 
-		//=======================================================================
-		/// functions
-		//=======================================================================
+	//=======================================================================
+	/// functions
+	//=======================================================================
 
-		DistortionEffect() = default;
-		~DistortionEffect() = default;
+	DistortionEffect() = default;
+	~DistortionEffect() = default;
 
-		/// <summary>
-		/// 初期化
-		/// </summary>
-		void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, const std::wstring& CSFilePath,
-			ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) override;
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, const std::wstring& CSFilePath,
+		ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) override;
 
-		/// <summary>
-		/// ImGui更新処理
-		/// </summary>
-		void UpdateImGui() override;
+	/// <summary>
+	/// ImGui更新処理
+	/// </summary>
+	void UpdateImGui() override;
 
-		/// <summary>
-		/// 更新処理
-		/// </summary>
-		void Dispatch() override;
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	void Dispatch() override;
 
-		/// <summary>
-		/// エフェクト固有のパラメータを適用する
-		/// </summary>
-		/// <param name="params"></param>
-		void ApplySpecificParams(const nlohmann::json& params) override;
+	/// <summary>
+	/// エフェクト固有のパラメータを適用する
+	/// </summary>
+	/// <param name="params"></param>
+	void ApplySpecificParams(const nlohmann::json& params) override;
 
-		/// <summary>
-		/// エフェクト固有のパラメータを取得する
-		/// </summary>
-		/// <returns></returns>
-		nlohmann::json GetSpecificParams() const override;
+	/// <summary>
+	/// エフェクト固有のパラメータを取得する
+	/// </summary>
+	/// <returns></returns>
+	nlohmann::json GetSpecificParams() const override;
 
-		/// <summary>
-		/// 強度を設定する（PlayEffect の onTick で呼ばれる）
-		/// </summary>
-		/// <param name="intensity"></param>
-		void SetIntensity(float intensity) override;
+	/// <summary>
+	/// 強度を設定する（PlayEffect の onTick で呼ばれる）
+	/// </summary>
+	/// <param name="intensity"></param>
+	void SetIntensity(float intensity) override;
 
-	public:
-		//=========================================================
-		// accessors
-		//=========================================================
+public:
+	//=========================================================
+	// accessors
+	//=========================================================
 
-		void SetStrength(float strength) { distortionInfo_->strength = strength; }
+	void SetStrength(float strength) { distortionInfo_->strength = strength; }
 
-		void SetIsActive(bool isActive) override {
-				distortionInfo_->enable = isActive;
-		}
+	void SetIsActive(bool isActive) override {
+		distortionInfo_->enable = isActive;
+	}
 
-	private:
+private:
 
-		// 歪み情報データ（Mappedポインタ）
-		DistortionInfo* distortionInfo_ = nullptr;
-		// 歪み情報の定数バッファ
-		ComPtr<ID3D12Resource> distortionInfoResource_ = nullptr;
-		// ノイズテクスチャのファイルパス
-		std::string noiseTextureFilePath_;
+	// 歪み情報データ（Mappedポインタ）
+	DistortionInfo* distortionInfo_ = nullptr;
+	// 歪み情報の定数バッファ
+	ComPtr<ID3D12Resource> distortionInfoResource_ = nullptr;
+	// ノイズテクスチャのファイルパス
+	std::string noiseTextureFilePath_;
 };

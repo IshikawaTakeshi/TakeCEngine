@@ -7,7 +7,7 @@
     "peakTimeRate": 0.3,
     "presetName": "GameOverEffect_2",
     "specificParams": {
-        "enable": false,
+        "enable": true,
         "noiseScale": {
             "x": 0.009999999776482582,
             "y": 176.89999389648438

@@ -7,7 +7,7 @@
     "peakTimeRate": 0.4880000054836273,
     "presetName": "GameOverEffect_3",
     "specificParams": {
-        "enable": false,
+        "enable": true,
         "noiseScale": {
             "x": 0.009999999776482582,
             "y": 176.89999389648438
@@ -20,8 +20,8 @@
             "x": -9.208999633789063,
             "y": -68.27799987792969
         },
-        "strength": 0.0,
+        "strength": 0.5,
         "timer": 0.0
     },
-    "startIntensity": 0.05999999865889549
+    "startIntensity": 0.05
 }

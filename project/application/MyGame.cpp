@@ -68,7 +68,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	// post effect 初期化も計測したい場合
 	int64_t postEffectInitMs = Measure(L"PostEffect InitializeEffect", [this]() {
 		//postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
-		postEffectManager_->InitializeEffect("Dissolve", L"PostEffect/Dissolve.CS.hlsl");
+		//postEffectManager_->InitializeEffect("Dissolve", L"PostEffect/Dissolve.CS.hlsl");
 		postEffectManager_->InitializeEffect("DistortionEffect", L"PostEffect/DistortionEffect.CS.hlsl");
 		postEffectManager_->InitializeEffect("RadialBlur", L"PostEffect/RadialBlur.CS.hlsl");
 		postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
