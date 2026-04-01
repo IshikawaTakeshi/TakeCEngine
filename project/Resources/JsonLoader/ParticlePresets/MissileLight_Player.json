@@ -2,9 +2,9 @@
     "attributes": {
         "alignRotationToEmitter": true,
         "color": {
-            "x": 1.0,
-            "y": 0.23529411852359772,
-            "z": 0.24705882370471954
+            "x": 0.13725490868091583,
+            "y": 0.42352941632270813,
+            "z": 0.7764706015586853
         },
         "colorRange": {
             "max": 1.0,
@@ -36,8 +36,8 @@
             "min": 0.0
         },
         "rotateRange": {
-            "max": 0.0,
-            "min": 0.0
+            "max": 1.2100000381469727,
+            "min": -0.7200000286102295
         },
         "scale": {
             "x": 4.929999828338623,
@@ -46,10 +46,10 @@
         },
         "scaleEasingType": 0,
         "scaleRange": {
-            "max": 20.719999313354492,
-            "min": 1.350000023841858
+            "max": 10.359999656677246,
+            "min": 1.590000033378601
         },
-        "scaleSetting": 1,
+        "scaleSetting": 2,
         "trailEmitInterval": 0.01600000075995922,
         "velocityEasingType": 0,
         "velocityRange": {
@@ -59,7 +59,7 @@
     },
     "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "BazookaMoveEffect_Enemy_1.json",
+    "name": "MissileLight_Player.json",
     "primitiveParam": {
         "height": 1.0,
         "width": 1.0
@@ -67,5 +67,5 @@
     "primitiveType": "PRIMITIVE_PLANE",
     "textureAnimationParam": null,
     "textureAnimationType": 0,
-    "textureFilePath": "texture_Glare.png"
+    "textureFilePath": "texture_StarFlare.png"
 }

@@ -17,14 +17,14 @@
         },
         "editColor": true,
         "emitCount": 10,
-        "enableFollowEmitter": false,
+        "enableFollowEmitter": true,
         "enableLighting": false,
         "frequency": 0.10000000149011612,
         "isBillboard": true,
         "isDirectional": false,
         "isEmitterTrail": false,
         "isParticleTrail": false,
-        "isTraslate": false,
+        "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
             "max": 0.5699999928474426,
@@ -40,14 +40,14 @@
             "min": 0.0
         },
         "scale": {
-            "x": 4.929999828338623,
-            "y": 3.4800000190734863,
+            "x": 6.760000228881836,
+            "y": 5.170000076293945,
             "z": 1.0
         },
         "scaleEasingType": 0,
         "scaleRange": {
-            "max": 16.510000228881836,
-            "min": 0.10000000149011612
+            "max": 20.610000610351563,
+            "min": 2.7100000381469727
         },
         "scaleSetting": 1,
         "trailEmitInterval": 0.01600000075995922,
