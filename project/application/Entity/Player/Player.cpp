@@ -499,6 +499,8 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		playerData_.characterInfo.health -= bullet->GetDamage();
 		// ブレイクゲージを蓄積
 		AccumulateBreakGauge(bullet->GetDamage());
+		//エフェクトの再生
+		TakeCFrameWork::GetPostEffectManager()->PlayEffect("DamageHit");
 	}
 	if (other->GetCharacterType() == CharacterType::ENEMY_MISSILE) {
 		// 敵のミサイルに当たった場合
@@ -508,6 +510,8 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		playerData_.characterInfo.health -= missile->GetDamage();
 		// ブレイクゲージを蓄積
 		AccumulateBreakGauge(missile->GetDamage());
+		//エフェクトの再生
+		TakeCFrameWork::GetPostEffectManager()->PlayEffect("DamageHit");
 	}
 
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
@@ -589,7 +593,7 @@ void Player::UpdateAttack() {
 				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();
 					camera_->RequestShake(ShakeCameraMode::VERTICAL, 0.5f,
-						2.0f); // カメラシェイクをリクエスト
+						3.0f); // カメラシェイクをリクエスト
 
 					playerData_.characterInfo.isChargeShooting =
 						false; // チャージ撃ち中フラグをリセット

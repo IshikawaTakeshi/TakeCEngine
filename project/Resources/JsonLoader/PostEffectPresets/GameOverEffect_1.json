@@ -1,0 +1,18 @@
+{
+    "duration": 3.0,
+    "easingType": 0,
+    "effectName": "ScanlineEffect",
+    "endIntensity": 0.0,
+    "peakIntensity": 0.23000000417232513,
+    "peakTimeRate": 0.8679999709129333,
+    "presetName": "GameOverEffect_1",
+    "specificParams": {
+        "frequency": 801.5919799804688,
+        "intensity": 0.20000000298023224,
+        "isActive": true,
+        "speed": 10.0,
+        "thickness": 1.0,
+        "time": 2787.040283203125
+    },
+    "startIntensity": 0.0
+}

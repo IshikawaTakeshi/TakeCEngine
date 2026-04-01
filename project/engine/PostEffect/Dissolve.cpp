@@ -87,3 +87,26 @@ void Dissolve::Dispatch() {
 		outputResource_.Get());
 
 }
+
+void Dissolve::ApplySpecificParams(const nlohmann::json& params) {
+
+	// パラメータが存在しない場合は何もしない
+	if (params.is_null() || params.empty()) {
+		return;
+	}
+
+	// JSONからBloomEffectInfoを取得して適用
+	auto param = params.get<DissolveInfo>();
+	dissolveInfoData_->threshold = param.threshold;
+	dissolveInfoData_->isDissolve = param.isDissolve;
+
+}
+
+nlohmann::json Dissolve::GetSpecificParams() const {
+	
+	DissolveInfo param{};
+	param.threshold = dissolveInfoData_->threshold;
+	param.isDissolve = dissolveInfoData_->isDissolve;
+
+	return param;
+}

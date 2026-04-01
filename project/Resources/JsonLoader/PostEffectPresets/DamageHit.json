@@ -1,0 +1,17 @@
+{
+    "duration": 0.10000000149011612,
+    "easingType": 0,
+    "effectName": "ChromaticAberration",
+    "endIntensity": 0.0,
+    "peakIntensity": 1.559999942779541,
+    "peakTimeRate": 0.0729999989271164,
+    "presetName": "DamageHit",
+    "startIntensity": 0.0,
+    "specificParams": {
+        "redScale": 1.01,
+        "greenScale": 1.0,
+        "blueScale": 0.99,
+        "centerX": 0.5,
+        "centerY": 0.5
+    }
+}

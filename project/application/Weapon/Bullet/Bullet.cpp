@@ -13,15 +13,13 @@
 void Bullet::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
 	//オブジェクト初期化
-	if (!object3d_) {
-		object3d_ = std::make_unique<Object3d>();
-	}
+	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
+
 	//コライダー初期化
-	if (!collider_) {
-		collider_ = std::make_unique<SphereCollider>();
-		collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
-	}
+	collider_ = std::make_unique<SphereCollider>();
+	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
+	
 	collider_->SetOwner(this); // 持ち主を設定
 	collider_->SetRadius(bulletRadius_); // 半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Bullet)); // 種別IDを設定
@@ -132,8 +130,6 @@ void Bullet::Update() {
 
 	//ライフタイムの減少
 	lifeTime_ -= deltaTime_;
-	//移動処理
-	transform_.translate += velocity_ * deltaTime_;
 	//ポイントライトの更新
 	pointLightData_.position_ = transform_.translate;
 	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
@@ -163,8 +159,6 @@ void Bullet::Update() {
 		trailEmitter_[i]->Update();
 		std::string trailEffectName = effectConfig_.trailEffectFilePath[i];
 	}
-
-
 }
 
 //========================================================================================================

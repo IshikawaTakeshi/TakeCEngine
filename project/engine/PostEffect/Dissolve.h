@@ -8,6 +8,8 @@ struct DissolveInfo {
 	float padding[2];
 };
 
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(DissolveInfo, threshold, isDissolve)
+
 //============================================================================
 //	Dissolve class
 //============================================================================
@@ -45,6 +47,19 @@ public:
 	/// ディスパッチ
 	/// </summary>
 	void Dispatch() override;
+
+
+	/// <summary>
+	/// エフェクト固有のパラメータを適用する
+	/// </summary>
+	/// <param name="params"></param>
+	void ApplySpecificParams(const nlohmann::json& params) override;
+
+	/// <summary>
+	/// エフェクト固有のパラメータを取得する
+	/// </summary>
+	/// <returns></returns>
+	nlohmann::json GetSpecificParams() const override;
 
 	void SetIsActive(bool isActive) override {
 		if (dissolveInfoData_) {

@@ -1,8 +1,10 @@
 #include "PostEffectFactory.h"
 #include "engine/PostEffect/BloomEffect.h"
 #include "engine/PostEffect/BoxFilter.h"
+#include "engine/PostEffect/ChromaticAberration.h"
 #include "engine/PostEffect/Dissolve.h"
 #include "engine/PostEffect/DepthBasedOutline.h"
+#include "engine/PostEffect/DistortionEffect.h"
 #include "engine/PostEffect/GrayScale.h"
 #include "engine/PostEffect/LuminanceBasedOutline.h"
 #include "engine/PostEffect/RadialBlur.h"
@@ -16,8 +18,10 @@ using namespace TakeC;
 PostEffectFactory::PostEffectFactory() {
     Register("BloomEffect", []() { return std::make_unique<BloomEffect>(); });
     Register("BoxFilter", []() { return std::make_unique<BoxFilter>(); });
+    Register("ChromaticAberration", []() { return std::make_unique<ChromaticAberration>(); });
     Register("DepthBasedOutline", []() { return std::make_unique<DepthBasedOutline>(); });
     Register("Dissolve", []() { return std::make_unique<Dissolve>(); });
+    Register("DistortionEffect", []() { return std::make_unique<DistortionEffect>(); });
     Register("GrayScale", []() { return std::make_unique<GrayScale>(); });
     Register("LuminanceBasedOutline", []() { return std::make_unique<LuminanceBasedOutline>(); });
     Register("RadialBlur", []() { return std::make_unique<RadialBlur>(); });

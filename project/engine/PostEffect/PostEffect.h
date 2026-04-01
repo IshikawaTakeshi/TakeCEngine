@@ -40,12 +40,26 @@ public:
 	/// </summary>
 	virtual void Dispatch() = 0;
 
+	/// <summary>
+	/// エフェクト固有のパラメータを適用する
+	/// </summary>
+	/// <param name="params"></param>
+	virtual void ApplySpecificParams(const nlohmann::json& params) {
+		params; // 未使用パラメータの抑制
+	}
+
+	/// <summary>
+	/// エフェクト固有のパラメータを取得する
+	/// </summary>
+	/// <returns></returns>
+	virtual nlohmann::json GetSpecificParams() const { 
+		return nlohmann::json::object();
+	}
+
+	// アクティブ状態を設定する
 	virtual void SetIsActive(bool isActive) = 0;
 
-	/**
-	 * @brief 強度を設定する（PlayEffect の onTick で呼ばれる）
-	 * @param intensity 現在の強度（0.0〜1.0 を目安）
-	 */
+	// 強度を設定する（PlayEffect の onTick で呼ばれる）
 	virtual void SetIntensity(float /*intensity*/) {}
 
 public:

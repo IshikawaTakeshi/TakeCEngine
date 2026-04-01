@@ -1,0 +1,27 @@
+{
+    "duration": 3.0,
+    "easingType": 0,
+    "effectName": "DistortionEffect",
+    "endIntensity": 0.0,
+    "peakIntensity": 0.5,
+    "peakTimeRate": 0.3,
+    "presetName": "GameOverEffect_2",
+    "specificParams": {
+        "enable": true,
+        "noiseScale": {
+            "x": 0.009999999776482582,
+            "y": 176.89999389648438
+        },
+        "offset": {
+            "x": 0.02500000037252903,
+            "y": 0.0689999982714653
+        },
+        "scrollSpeed": {
+            "x": -9.208999633789063,
+            "y": -68.27799987792969
+        },
+        "strength": 0.5,
+        "timer": 0.0
+    },
+    "startIntensity": 0.0
+}

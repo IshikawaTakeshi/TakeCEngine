@@ -117,15 +117,16 @@ float Easing::EaseOutQuad(float x) {
 }
 
 //=============================================================================
-// EasingType to_json
+// EasingType -> JSON
 //=============================================================================
 void to_json(nlohmann::json& j, const Easing::EasingType& type) {
     
-	j = StringUtility::EnumToString(type);
+	j = type;
 }
 
+//=============================================================================
+// JSON -> EasingType
+//=============================================================================
 void from_json(const nlohmann::json& j, Easing::EasingType& type) {
-
-    std::string typeStr = j.get<std::string>();
-	type = StringUtility::StringToEnum<Easing::EasingType>(typeStr);
+    type = j.get<Easing::EasingType>();
 }

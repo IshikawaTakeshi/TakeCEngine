@@ -678,8 +678,8 @@ void Enemy::UpdateAttack() {
 			if (enemyData_.characterInfo.isChargeShooting == true) {
 				// チャージ撃ち中の処理
 				chargeShootTimer_.Update();
-				// イベントを発行して危険度の高い攻撃を行うことを知らせる
 
+				
 				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();
 					enemyData_.characterInfo.isChargeShooting =
@@ -731,9 +731,14 @@ void Enemy::WeaponAttack(int weaponIndex) {
 
 				// 武器種別に応じた警告データの作成
 				WarningData data;
-				data.position = enemyData_.characterInfo.transform.translate;
-				// バズーカならBAZOOKA、それ以外はNORMALとする
-				data.type = (weapon->GetWeaponType() == WeaponType::WEAPON_TYPE_BAZOOKA) ? WarningType::BAZOOKA : WarningType::NORMAL;
+				data.position = object3d_->GetWorldPosition();
+
+				if(weapon->GetWeaponType() == WeaponType::WEAPON_TYPE_BAZOOKA) {
+					data.type = WarningType::HIGHPOWER_ATTACK;
+				}
+				else {
+					data.type = WarningType::NORMAL;
+				}
 
 				// イベントを発行して危険度の高い攻撃を行うことを知らせる
 				TakeCFrameWork::GetEventManager()->PostEvent(

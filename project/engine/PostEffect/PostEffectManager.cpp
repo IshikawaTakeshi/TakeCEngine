@@ -7,6 +7,7 @@
 #include "PostEffect/DepthBasedOutline.h"
 #include "PostEffect/RenderTexture.h"
 #include "engine/Base/TakeCFrameWork.h"
+#include "engine/Math/Easing.h"
 
 using namespace TakeC;
 
@@ -49,6 +50,52 @@ void PostEffectManager::UpdateImGui() {
 
 		if (isSelected) {
 			PlayEffect(presetNames_[currentPresetIndex_]);
+		}
+	}
+
+	// 一時エフェクトの新規作成・編集用ImGui
+	if (ImGui::CollapsingHeader("Create Temporary Effect Preset")) {
+		ImGui::InputText("Preset Name", newPresetName_, sizeof(newPresetName_));
+
+		// 登録済みポストエフェクト一覧からEffectNameを選択
+		std::vector<std::string> effectNameStrs;
+		for (const auto& pe : postEffects_) { effectNameStrs.push_back(pe.name); }
+		int currentEffectIdx = -1;
+		for (size_t i = 0; i < effectNameStrs.size(); ++i) {
+			if (effectNameStrs[i] == editConfig_.effectName) {
+				currentEffectIdx = static_cast<int>(i);
+				break;
+			}
+		}
+		if (ImGuiManager::ComboBoxString("Effect Name", effectNameStrs, currentEffectIdx) && currentEffectIdx >= 0) {
+			editConfig_.effectName = effectNameStrs[currentEffectIdx];
+		}
+
+		// パラメータ調整
+		ImGui::DragFloat("Duration", &editConfig_.duration, 0.01f, 0.0f, 10.0f);	
+		ImGuiManager::ComboBoxEnum("Easing Type", editConfig_.easingType);
+		ImGui::DragFloat("Start Intensity", &editConfig_.startIntensity, 0.01f, 0.0f, 5.0f);
+		ImGui::DragFloat("Peak Intensity",  &editConfig_.peakIntensity,  0.01f, 0.0f, 5.0f);
+		ImGui::DragFloat("End Intensity",   &editConfig_.endIntensity,   0.01f, 0.0f, 5.0f);
+		ImGui::SliderFloat("Peak Time Rate", &editConfig_.peakTimeRate, 0.0f, 1.0f);
+
+		// ボタン類
+		if (ImGui::Button("Test Play")) {
+			PlayEffect(editConfig_); // 作成中のパラメータで再生テスト
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Save Preset")) {
+			editConfig_.presetName = newPresetName_;
+
+			// 現在のエフェクト本体から固有パラメータをJSONとして吸い出す
+			PostEffect* target = FindEffect(editConfig_.effectName);
+			if (target) {
+				editConfig_.specificParams = target->GetSpecificParams();
+			}
+
+			RegisterPreset(std::string(newPresetName_), editConfig_);
+			TakeCFrameWork::GetJsonLoader()->SaveJsonData<PostEffectPlayConfig>(std::string(newPresetName_) + ".json", editConfig_);
+			LoadPresets(); // リストを更新
 		}
 	}
 
@@ -254,7 +301,7 @@ void PostEffectManager::Update() {
 		float intensity = startVal + (endVal - startVal) * easedT;
 
 		// エフェクト名ごとに強度を加算
-		totalIntensities[it->config.effectName] += intensity;
+		totalIntensities[it->config.effectName] = intensity;
 
 		// 終了判定
 		if (it->timer.IsFinished()) {
@@ -274,6 +321,16 @@ void PostEffectManager::Update() {
 			// リクエストがない場合は 0 に戻す
 			// ※ ただし「常時オン」にしたいエフェクト（ShadowMap等）を上書きしてしまわないか注意。
 			//   一時エフェクトのみを SetIntensity 経由で管理するように各エフェクトを実装すればOK。
+		}
+	}
+
+	// 各固有パラメータの適用（同一フレームで複数のplayがある場合、最新のリクエストのものを優先する）
+	for (auto& req : activeRequests_) {
+		if (!req.config.specificParams.empty() && !req.config.specificParams.is_null()) {
+			PostEffect* effect = FindEffect(req.config.effectName);
+			if (effect) {
+				effect->ApplySpecificParams(req.config.specificParams);
+			}
 		}
 	}
 }
@@ -298,6 +355,17 @@ void PostEffectManager::PlayEffect(const std::string& presetName, std::optional<
 // 設定構造体から直接エフェクトを再生
 //======================================================================
 void PostEffectManager::PlayEffect(const PostEffectPlayConfig& config) {
+	// 同じ対象エフェクト(effectName)の再生リクエストが存在するか検索
+	for (auto& req : activeRequests_) {
+		if (req.config.effectName == config.effectName) {
+			// 存在する場合は上書きしてタイマーをリセット（連打による強度無限増加を防ぐ）
+			req.config = config;
+			req.timer.Initialize(config.duration, 0.0f);
+			return;
+		}
+	}
+
+	// なければ新規追加
 	PlayRequest request;
 	request.config = config;
 	request.timer.Initialize(config.duration, 0.0f);

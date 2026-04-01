@@ -204,7 +204,7 @@ void BulletManager::ShootBazookaBullet(const Vector3& weaponPos,
 	}
 	if (bazookaBullet) {
 		bazookaBullet->Create(weaponPos, targetPos, targetVel, speed, power, type);
-		bazookaBullet->SetWarningType(WarningType::BAZOOKA);
+		bazookaBullet->SetWarningType(WarningType::HIGHPOWER_ATTACK);
 	}
 }
 
@@ -222,7 +222,7 @@ void BulletManager::ShootBazookaBullet(const Vector3& weaponPos,
 	}
 	if (bazookaBullet) {
 		bazookaBullet->Create(weaponPos, direction, speed, power, type);
-		bazookaBullet->SetWarningType(WarningType::BAZOOKA);
+		bazookaBullet->SetWarningType(WarningType::HIGHPOWER_ATTACK);
 	}
 }
 

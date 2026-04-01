@@ -2,6 +2,16 @@
 #include "engine/PostEffect/PostEffect.h"
 #include "engine/PostEffect/PostEffectFactory.h"
 
+// エフェクト情報構造体
+struct BloomEffectInfo {
+	bool isActive = false; // エフェクトの有効無効
+	float threshold = 0.8f; // 輝度の閾値
+	float strength = 1.0f; // 輝度の強さ
+	float sigma = 2.0f; // ブラー強度
+};
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BloomEffectInfo, isActive, threshold, strength, sigma)
+
 //============================================================
 //	BloomEffect class
 //============================================================
@@ -41,6 +51,22 @@ public:
 	/// </summary>
 	void Dispatch() override;
 
+	/// <summary>
+	/// エフェクト固有のパラメータを適用する
+	/// </summary>
+	/// <param name="params"></param>
+	void ApplySpecificParams(const nlohmann::json& params) override;
+
+	/// <summary>
+	/// エフェクト固有のパラメータを取得する
+	/// </summary>
+	/// <returns></returns>
+	nlohmann::json GetSpecificParams() const override;
+
+	/// <summary>
+	/// アクティブ状態を設定する
+	/// </summary>
+	/// <param name="isActive"></param>
 	void SetIsActive(bool isActive) override {
 		if (effectInfoData_) {
 			effectInfoData_->isActive = isActive;
@@ -55,14 +81,6 @@ private:
 	void DispatchComposite(); // 合成ディスパッチ
 
 private:
-
-	// エフェクト情報構造体
-	struct BloomEffectInfo {
-		bool isActive = false; // エフェクトの有効無効
-		float threshold = 0.8f; // 輝度の閾値
-		float strength = 1.0f; // 輝度の強さ
-		float sigma = 2.0f; // ブラー強度
-	};
 
 	std::unique_ptr<PSO> brightPassPSO_; //輝度抽出PSO
 	std::unique_ptr<PSO> verticalBlurPSO_; //垂直ブラーPSO

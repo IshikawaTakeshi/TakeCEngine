@@ -177,5 +177,9 @@ namespace TakeC {
 		// プリセット名 -> 設定のマップ
 		std::unordered_map<std::string, PostEffectPlayConfig> presetMap_;
 		std::vector<std::string> presetNames_; // プリセットの順序を保持するためのベクター
+
+		// 新規プリセット動成用の作業変数
+		PostEffectPlayConfig editConfig_;
+		char newPresetName_[64] = "NewPreset";
 	};
 }
