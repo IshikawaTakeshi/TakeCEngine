@@ -1,0 +1,71 @@
+{
+    "attributes": {
+        "alignRotationToEmitter": false,
+        "color": {
+            "x": 0.9058823585510254,
+            "y": 0.18039216101169586,
+            "z": 0.05098039284348488
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 10,
+        "enableFollowEmitter": false,
+        "enableLighting": true,
+        "frequency": 0.10000000149011612,
+        "isBillboard": true,
+        "isDirectional": true,
+        "isEmitterTrail": true,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
+        "lifetimeRange": {
+            "max": 5.510000228881836,
+            "min": 4.409999847412109
+        },
+        "particlesPerInterpolation": 20,
+        "positionRange": {
+            "max": 6.199999809265137,
+            "min": -6.380000114440918
+        },
+        "rotateRange": {
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
+        },
+        "scale": {
+            "x": 5.329999923706055,
+            "y": 0.1599999964237213,
+            "z": 0.1599999964237213
+        },
+        "scaleEasingType": 0,
+        "scaleRange": {
+            "max": 100.0,
+            "min": 14.510000228881836
+        },
+        "scaleSetting": 1,
+        "trailEmitInterval": 0.0010000000474974513,
+        "velocityEasingType": 0,
+        "velocityRange": {
+            "max": 100.0,
+            "min": 50.0
+        }
+    },
+    "blendState": 1,
+    "isUseTextureAnimation": false,
+    "name": "DamageSmoke_2.json",
+    "primitiveParam": {
+        "height": 1.0,
+        "width": 1.0
+    },
+    "primitiveType": "PRIMITIVE_PLANE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
+    "textureFilePath": "SolarGlow.png"
+}

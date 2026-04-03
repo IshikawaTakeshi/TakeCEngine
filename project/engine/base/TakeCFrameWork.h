@@ -103,6 +103,12 @@ public:
 	//経過時間の取得
 	static float GetDeltaTime() { return kDeltaTime; }
 
+	void SetPaused(bool paused) { isPaused_ = paused; }
+
+	void TogglePaused() { isPaused_ = !isPaused_; }
+
+	bool IsPaused() { return isPaused_; }
+
 protected:
 
 	//=========================================================================
@@ -168,4 +174,8 @@ protected:
 	bool isEnd_ = false;
 	//時間倍率
 	float timeScale_ = 1.0f;
+
+	bool isPaused_ = false;
+	uint32_t playSrvIndex_;
+	uint32_t pauseSrvIndex_;
 };

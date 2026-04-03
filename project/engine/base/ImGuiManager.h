@@ -57,6 +57,8 @@ namespace TakeC {
 		/// </summary>
 		void End();
 
+		void CreateDockSpace();
+
 		/// <summary>
 		/// デバッグ画面の描画
 		/// </summary>

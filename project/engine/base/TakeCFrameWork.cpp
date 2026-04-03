@@ -126,6 +126,12 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	sceneTransition_ = SceneTransition::GetInstance();
 	sceneTransition_->Initialize();
 
+	TextureManager::GetInstance().LoadTexture("ic_play.png", false);
+	TextureManager::GetInstance().LoadTexture("ic_pause.png", false);
+
+	playSrvIndex_ = TextureManager::GetInstance().GetSrvIndex("ic_play.png");
+	pauseSrvIndex_ = TextureManager::GetInstance().GetSrvIndex("ic_pause.png");
+
 }
 
 //====================================================================
@@ -182,6 +188,31 @@ void TakeCFrameWork::Update() {
 
 #if defined(_DEBUG) || defined(_DEVELOP)
 	imguiManager_->Begin();
+	imguiManager_->CreateDockSpace();
+
+	ImGui::Begin("Simulation Controls");
+	// 現在状態に応じて表示アイコンを切り替え
+	uint32_t iconSrv = isPaused_ ? playSrvIndex_ : pauseSrvIndex_;
+
+	// SRV GPUハンドル取得（あなたのSrvManager APIに合わせて調整）
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = srvManager_->GetSrvDescriptorHandleGPU(iconSrv);
+
+	// ImTextureIDへ変換（DX12）
+	ImTextureID texId = reinterpret_cast<ImTextureID>(gpuHandle.ptr);
+
+	if (ImGui::ImageButton("PauseResumeButton", texId, ImVec2(16.0f, 16.0f))) {
+		TogglePaused();
+	}
+
+	ImGui::SameLine();
+	ImGui::TextUnformatted(isPaused_ ? "Paused" : "Running");
+	ImGui::End();
+
+	ImGui::Begin("FrameWork");
+	directXCommon_->DrawFrameTimeInfo();
+	ImGui::Text("DeltaTime: %.4f", kDeltaTime);
+	ImGui::DragFloat("TimeScale", &timeScale_, 0.01f, 0.0f, 5.0f);
+	ImGui::End();
 #endif
 	
 	//入力の更新
@@ -189,18 +220,14 @@ void TakeCFrameWork::Update() {
 	TakeC::TextureManager::GetInstance().Update();
 
 	//シーンの更新
-	sceneManager_->Update();
+	if (!isPaused_) {
+		sceneManager_->Update();
+	}
 
 #if defined(_DEBUG) || defined(_DEVELOP)
 	//ImGuiのRenderTextureのSRVインデックスを設定
 	imguiManager_->SetRenderTextureIndex(postEffectManager_->GetFinalOutputSrvIndex()); 
 	imguiManager_->DrawDebugScreen();
-
-	ImGui::Begin("FrameWork");
-	directXCommon_->DrawFrameTimeInfo();
-	ImGui::Text("DeltaTime: %.4f", kDeltaTime);
-	ImGui::DragFloat("TimeScale", &timeScale_, 0.01f, 0.0f, 5.0f);
-	ImGui::End();
 
 	sceneManager_->UpdateImGui();
 	postEffectManager_->UpdateImGui();
