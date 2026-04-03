@@ -109,33 +109,182 @@ void BehaviorTreeEditor::LoadTreeFromEnemy(BehaviorNode* rootNode, Blackboard* b
 //===============================================================================
 // コンボセットのデータからツリーを構築して読み込む
 //===============================================================================
-void BehaviorTreeEditor::LoadTreeFromJson(const std::string&) {
+void BehaviorTreeEditor::LoadTreeFromJson(const std::string& filepath) {
+	if (!flowEditor_) return;
 
-	
+	// ファイルが存在するか確認
+	if (!TakeCFrameWork::GetJsonLoader()->IsJsonDataExists<ComboSetData>(filepath)) {
+		return;
+	}
+
+	// データの読み込み（JsonLoader::LoadJsonData は T を返す）
+	ComboSetData data = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ComboSetData>(filepath);
+
+	// エディタをクリア
+	flowEditor_ = std::make_unique<ImFlow::ImNodeFlow>("BehaviorTreeEditor");
+	// 右クリックメニューを再設定
+	flowEditor_->rightClickPopUpContent([this](ImFlow::BaseNode*) {
+		if (ImGui::MenuItem("Add Action")) { flowEditor_->placeNode<ActionNodeView>("NONE"); }
+		if (ImGui::MenuItem("Add Condition")) { flowEditor_->placeNode<ConditionNodeView>(); }
+		if (ImGui::MenuItem("Add ScoreCondition")) { flowEditor_->placeNode<ScoreConditionNodeView>(); }
+		if (ImGui::MenuItem("Add Selector")) { flowEditor_->placeNode<SelectorNodeView>(); }
+		if (ImGui::MenuItem("Add Sequence")) { flowEditor_->placeNode<SequenceNodeView>(); }
+		if (ImGui::MenuItem("Add PlannerSelector")) { flowEditor_->placeNode<PlannerSelectorNodeView>(); }
+		if (ImGui::MenuItem("Add WeightSelector")) { flowEditor_->placeNode<WeightSelectorNodeView>(); }
+		});
+
+	nodeViewMap_.clear();
+
+	std::map<int, std::shared_ptr<BehaviorNodeView>> idToNode;
+
+	// 1. ノードの生成
+	for (const auto& nodeData : data.editorNodes) {
+		std::shared_ptr<BehaviorNodeView> v = nullptr;
+
+		ImVec2 pos = ImVec2(nodeData.posX, nodeData.posY);
+
+		if (nodeData.nodeType == "ACTION") {
+			v = flowEditor_->addNode<ActionNodeView>(pos);
+		}
+		else if (nodeData.nodeType == "CONDITION") {
+			v = flowEditor_->addNode<ConditionNodeView>(pos);
+		}
+		else if (nodeData.nodeType == "SELECTOR") {
+			v = flowEditor_->addNode<SelectorNodeView>(pos);
+		}
+		else if (nodeData.nodeType == "SEQUENCE") {
+			v = flowEditor_->addNode<SequenceNodeView>(pos);
+		}
+		else if (nodeData.nodeType == "PLANNER_SELECTOR") {
+			v = flowEditor_->addNode<PlannerSelectorNodeView>(pos);
+		}
+		else if (nodeData.nodeType == "WEIGHT_SELECTOR") {
+			v = flowEditor_->addNode<WeightSelectorNodeView>(pos);
+		}
+		else if (nodeData.nodeType == "SCORE_CONDITION") {
+			v = flowEditor_->addNode<ScoreConditionNodeView>(pos);
+		}
+
+		if (v) {
+			v->LoadParameters(nodeData);
+			idToNode[nodeData.nodeUID] = v;
+		}
+	}
+
+	// 2. リンクの構築
+	for (const BehaviorLinkData& linkData : data.editorLinks) {
+		std::map<int, std::shared_ptr<BehaviorNodeView>>::iterator itFrom = idToNode.find(linkData.fromNodeUID);
+		std::map<int, std::shared_ptr<BehaviorNodeView>>::iterator itTo = idToNode.find(linkData.toNodeUID);
+
+		if (itFrom != idToNode.end() && itTo != idToNode.end()) {
+			std::shared_ptr<BehaviorNodeView> fromNode = itFrom->second;
+			std::shared_ptr<BehaviorNodeView> toNode = itTo->second;
+
+			// 出力ピンが足りない場合は追加する（Selector/Sequence用）
+			while (fromNode->GetOutputPinCount() <= (size_t)linkData.fromPinIndex) {
+				std::string name = "Child" + std::to_string(fromNode->GetOutputPinCount());
+				std::shared_ptr<ImFlow::OutPin<BehaviorStatus>> out = fromNode->addOUT<BehaviorStatus>(name);
+				out->behaviour([]() { return BehaviorStatus::Invalid; });
+				fromNode->AddOutputPin(out.get());
+			}
+
+			ImFlow::Pin* outPin = fromNode->GetOutputPin(linkData.fromPinIndex);
+			ImFlow::Pin* inPin = toNode->GetInputPin(linkData.toPinIndex);
+
+			if (outPin && inPin) {
+				inPin->createLink(outPin);
+			}
+		}
+	}
 }
 
 //===============================================================================
 // ツリーををコンボセットとしてファイルに保存する
 //===============================================================================
 void BehaviorTreeEditor::SaveComboSet() {
-	if (!rootNode_) return;
+	if (!flowEditor_) return;
 
 	ComboSetData out;
-	out.rootType = DetectRootType(rootNode_);
+	
+	// --- 1. ゲームロジック用ツリーの保存 ---
+	if (rootNode_) {
+		out.rootType = DetectRootType(rootNode_);
+		// ルートは Composite 前提（ComboFactoryと同じ構造）
+		auto* rootComposite = dynamic_cast<CompositeNode*>(rootNode_);
+		if (rootComposite) {
+			for (const auto& child : rootComposite->GetChildren()) {
+				if (!child) continue;
+				ComboData combo;
+				combo.comboName = child->GetName(); // 1子 = 1コンボ名
+				combo.rootNode = BuildNodeDataFromLogicNode(child.get());
+				out.combos.push_back(std::move(combo));
+			}
+		}
+	}
 
-	// ルートは Composite 前提（ComboFactoryと同じ構造）
-	auto* rootComposite = dynamic_cast<CompositeNode*>(rootNode_);
-	if (!rootComposite) return;
+	// --- 2. エディタレイアウト情報の保存 ---
+	std::map<ImFlow::BaseNode*, int> nodePtrToId;
+	int nextId = 0;
 
-	for (const auto& child : rootComposite->GetChildren()) {
-		if (!child) continue;
-		ComboData combo;
-		combo.comboName = child->GetName(); // 1子 = 1コンボ名
-		combo.rootNode = BuildNodeDataFromLogicNode(child.get());
-		out.combos.push_back(std::move(combo));
-	}	
+	// ノード情報の収集
+	auto& nodes = flowEditor_->getNodes();
+	for (auto& pair : nodes) {
+		auto* viewNode = static_cast<BehaviorNodeView*>(pair.second.get());
+		if (!viewNode) continue;
 
-	//ImGuiManagerの保存ポップアップを表示する
+		nodePtrToId[viewNode] = nextId;
+
+		BehaviorNodeData nodeData;
+		nodeData.name = viewNode->getName();
+		nodeData.posX = viewNode->getPos().x;
+		nodeData.posY = viewNode->getPos().y;
+		nodeData.nodeUID = nextId;
+		
+		// ノード固有のパラメータを保存
+		viewNode->SaveParameters(nodeData);
+
+		out.editorNodes.push_back(nodeData);
+		nextId++;
+	}
+
+	// リンク情報の収集
+	for (auto& link_weak : flowEditor_->getLinks()) {
+		if (auto link = link_weak.lock()) {
+			BehaviorLinkData linkData;
+
+			// 送信側（Output）
+			auto* outPin = link->left();
+			auto* outNode = outPin->getParent();
+			linkData.fromNodeUID = nodePtrToId[outNode];
+
+			// 出力ピンのインデックスを特定
+			const auto& outPins = outNode->getOuts();
+			for (int i = 0; i < (int)outPins.size(); ++i) {
+				if (outPins[i].get() == outPin) {
+					linkData.fromPinIndex = i;
+					break;
+				}
+			}
+
+			// 受信側（Input）
+			auto* inPin = link->right();
+			auto* inNode = inPin->getParent();
+			linkData.toNodeUID = nodePtrToId[inNode];
+
+			// 入力ピンのインデックスを特定
+			const auto& inPins = inNode->getIns();
+			for (int i = 0; i < (int)inPins.size(); ++i) {
+				if (inPins[i].get() == inPin) {
+					linkData.toPinIndex = i;
+					break;
+				}
+			}
+
+			out.editorLinks.push_back(linkData);
+		}
+	}
+
+	// ImGuiManagerの保存ポップアップを表示する
 	ImGuiManager::ShowSavePopup(
 		TakeCFrameWork::GetJsonLoader(),
 		"Save Combo Set",

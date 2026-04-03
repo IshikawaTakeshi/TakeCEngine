@@ -22,6 +22,14 @@ public:
 	/// </summary>
 	void draw() override;
 
+	//=========================================================
+	// serialization [EXT]
+	//=========================================================
+
+	std::string GetNodeType() const override { return "SEQUENCE"; }
+	void SaveParameters(BehaviorNodeData& data) const override { BehaviorNodeView::SaveParameters(data); }
+	void LoadParameters(const BehaviorNodeData& data) override { BehaviorNodeView::LoadParameters(data); }
+
 private:
 
 	/// 子ノードの数

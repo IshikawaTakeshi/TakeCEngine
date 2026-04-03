@@ -19,7 +19,10 @@
                         "field": "distance",
                         "op": "<=",
                         "value": 30.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 2,
+                        "posX": 600.0,
+                        "posY": 0.0
                     },
                     {
                         "name": "CheckEnergy",
@@ -28,7 +31,10 @@
                         "field": "energy",
                         "op": ">=",
                         "value": 50.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 3,
+                        "posX": 600.0,
+                        "posY": 120.0
                     },
                     {
                         "name": "StepIn",
@@ -37,7 +43,10 @@
                         "field": "",
                         "op": ">=",
                         "value": 0.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 4,
+                        "posX": 600.0,
+                        "posY": 240.0
                     },
                     {
                         "name": "AttackRun",
@@ -46,7 +55,10 @@
                         "field": "",
                         "op": ">=",
                         "value": 0.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 5,
+                        "posX": 600.0,
+                        "posY": 360.0
                     },
                     {
                         "name": "StepOut",
@@ -55,7 +67,10 @@
                         "field": "",
                         "op": ">=",
                         "value": 0.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 6,
+                        "posX": 600.0,
+                        "posY": 480.0
                     },
                     {
                         "name": "SecondAttackRun",
@@ -64,9 +79,15 @@
                         "field": "",
                         "op": ">=",
                         "value": 0.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 7,
+                        "posX": 600.0,
+                        "posY": 600.0
                     }
-                ]
+                ],
+                "nodeUID": 1,
+                "posX": 300.0,
+                "posY": 0.0
             }
         },
         {
@@ -86,7 +107,10 @@
                         "field": "onGround",
                         "op": "==",
                         "value": 1.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 9,
+                        "posX": 600.0,
+                        "posY": 840.0
                     },
                     {
                         "name": "CheckHighEnergy",
@@ -95,7 +119,10 @@
                         "field": "energy",
                         "op": ">=",
                         "value": 60.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 10,
+                        "posX": 600.0,
+                        "posY": 960.0
                     },
                     {
                         "name": "CheckNotOverheated",
@@ -104,7 +131,10 @@
                         "field": "isOverheated",
                         "op": "==",
                         "value": 0.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 11,
+                        "posX": 600.0,
+                        "posY": 1080.0
                     },
                     {
                         "name": "JumpUp",
@@ -113,7 +143,10 @@
                         "field": "",
                         "op": ">=",
                         "value": 0.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 12,
+                        "posX": 600.0,
+                        "posY": 1200.0
                     },
                     {
                         "name": "AerialAttack",
@@ -122,7 +155,10 @@
                         "field": "",
                         "op": ">=",
                         "value": 0.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 13,
+                        "posX": 600.0,
+                        "posY": 1320.0
                     },
                     {
                         "name": "AerialStep",
@@ -131,9 +167,15 @@
                         "field": "",
                         "op": ">=",
                         "value": 0.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 14,
+                        "posX": 600.0,
+                        "posY": 1440.0
                     }
-                ]
+                ],
+                "nodeUID": 8,
+                "posX": 300.0,
+                "posY": 840.0
             }
         },
         {
@@ -153,7 +195,10 @@
                         "field": "hpRatio",
                         "op": "<=",
                         "value": 0.3,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 16,
+                        "posX": 600.0,
+                        "posY": 1680.0
                     },
                     {
                         "name": "CheckMinEnergy",
@@ -162,7 +207,10 @@
                         "field": "energy",
                         "op": ">=",
                         "value": 20.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 17,
+                        "posX": 600.0,
+                        "posY": 1800.0
                     },
                     {
                         "name": "DesperateStep",
@@ -171,7 +219,10 @@
                         "field": "",
                         "op": ">=",
                         "value": 0.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 18,
+                        "posX": 600.0,
+                        "posY": 1920.0
                     },
                     {
                         "name": "AllOutAttack",
@@ -180,10 +231,374 @@
                         "field": "",
                         "op": ">=",
                         "value": 0.0,
-                        "children": []
+                        "children": [],
+                        "nodeUID": 19,
+                        "posX": 600.0,
+                        "posY": 2040.0
                     }
-                ]
+                ],
+                "nodeUID": 15,
+                "posX": 300.0,
+                "posY": 1680.0
             }
+        }
+    ],
+    "editorNodes": [
+        {
+            "name": "ROOT_ENTRY",
+            "nodeType": "SELECTOR",
+            "targetState": "NONE",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 0.0,
+            "posY": 0.0,
+            "nodeUID": 0
+        },
+        {
+            "name": "RushDownSequence",
+            "nodeType": "SEQUENCE",
+            "targetState": "NONE",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 300.0,
+            "posY": 0.0,
+            "nodeUID": 1
+        },
+        {
+            "name": "CheckCloseRange",
+            "nodeType": "CONDITION",
+            "targetState": "NONE",
+            "field": "distance",
+            "op": "<=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 0.0,
+            "nodeUID": 2
+        },
+        {
+            "name": "CheckEnergy",
+            "nodeType": "CONDITION",
+            "targetState": "NONE",
+            "field": "energy",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 120.0,
+            "nodeUID": 3
+        },
+        {
+            "name": "StepIn",
+            "nodeType": "ACTION",
+            "targetState": "STEPBOOST",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 240.0,
+            "nodeUID": 4
+        },
+        {
+            "name": "AttackRun",
+            "nodeType": "ACTION",
+            "targetState": "RUNNING",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 360.0,
+            "nodeUID": 5
+        },
+        {
+            "name": "StepOut",
+            "nodeType": "ACTION",
+            "targetState": "STEPBOOST",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 480.0,
+            "nodeUID": 6
+        },
+        {
+            "name": "SecondAttackRun",
+            "nodeType": "ACTION",
+            "targetState": "RUNNING",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 600.0,
+            "nodeUID": 7
+        },
+        {
+            "name": "AerialRushSequence",
+            "nodeType": "SEQUENCE",
+            "targetState": "NONE",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 300.0,
+            "posY": 840.0,
+            "nodeUID": 8
+        },
+        {
+            "name": "CheckOnGround",
+            "nodeType": "CONDITION",
+            "targetState": "NONE",
+            "field": "onGround",
+            "op": "==",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 840.0,
+            "nodeUID": 9
+        },
+        {
+            "name": "CheckHighEnergy",
+            "nodeType": "CONDITION",
+            "targetState": "NONE",
+            "field": "energy",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 960.0,
+            "nodeUID": 10
+        },
+        {
+            "name": "CheckNotOverheated",
+            "nodeType": "CONDITION",
+            "targetState": "NONE",
+            "field": "isOverheated",
+            "op": "==",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 1080.0,
+            "nodeUID": 11
+        },
+        {
+            "name": "JumpUp",
+            "nodeType": "ACTION",
+            "targetState": "JUMP",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 1200.0,
+            "nodeUID": 12
+        },
+        {
+            "name": "AerialAttack",
+            "nodeType": "ACTION",
+            "targetState": "FLOATING",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 1320.0,
+            "nodeUID": 13
+        },
+        {
+            "name": "AerialStep",
+            "nodeType": "ACTION",
+            "targetState": "STEPBOOST",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 1440.0,
+            "nodeUID": 14
+        },
+        {
+            "name": "DesperateSelector",
+            "nodeType": "SEQUENCE",
+            "targetState": "NONE",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 300.0,
+            "posY": 1680.0,
+            "nodeUID": 15
+        },
+        {
+            "name": "CheckLowHP",
+            "nodeType": "CONDITION",
+            "targetState": "NONE",
+            "field": "hpRatio",
+            "op": "<=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 1680.0,
+            "nodeUID": 16
+        },
+        {
+            "name": "CheckMinEnergy",
+            "nodeType": "CONDITION",
+            "targetState": "NONE",
+            "field": "energy",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 1800.0,
+            "nodeUID": 17
+        },
+        {
+            "name": "DesperateStep",
+            "nodeType": "ACTION",
+            "targetState": "STEPBOOST",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 1920.0,
+            "nodeUID": 18
+        },
+        {
+            "name": "AllOutAttack",
+            "nodeType": "ACTION",
+            "targetState": "RUNNING",
+            "field": "",
+            "op": ">=",
+            "conditionThreshold": 0.0,
+            "children": [],
+            "posX": 600.0,
+            "posY": 2040.0,
+            "nodeUID": 19
+        }
+    ],
+    "editorLinks": [
+        {
+            "fromNodeUID": 1,
+            "fromPinIndex": 0,
+            "toNodeUID": 2,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 1,
+            "fromPinIndex": 1,
+            "toNodeUID": 3,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 1,
+            "fromPinIndex": 2,
+            "toNodeUID": 4,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 1,
+            "fromPinIndex": 3,
+            "toNodeUID": 5,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 1,
+            "fromPinIndex": 4,
+            "toNodeUID": 6,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 1,
+            "fromPinIndex": 5,
+            "toNodeUID": 7,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 0,
+            "fromPinIndex": 0,
+            "toNodeUID": 1,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 8,
+            "fromPinIndex": 0,
+            "toNodeUID": 9,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 8,
+            "fromPinIndex": 1,
+            "toNodeUID": 10,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 8,
+            "fromPinIndex": 2,
+            "toNodeUID": 11,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 8,
+            "fromPinIndex": 3,
+            "toNodeUID": 12,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 8,
+            "fromPinIndex": 4,
+            "toNodeUID": 13,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 8,
+            "fromPinIndex": 5,
+            "toNodeUID": 14,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 0,
+            "fromPinIndex": 1,
+            "toNodeUID": 8,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 15,
+            "fromPinIndex": 0,
+            "toNodeUID": 16,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 15,
+            "fromPinIndex": 1,
+            "toNodeUID": 17,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 15,
+            "fromPinIndex": 2,
+            "toNodeUID": 18,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 15,
+            "fromPinIndex": 3,
+            "toNodeUID": 19,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 0,
+            "fromPinIndex": 2,
+            "toNodeUID": 15,
+            "toPinIndex": 0
         }
     ]
 }

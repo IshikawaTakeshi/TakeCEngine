@@ -32,5 +32,24 @@ void ScoreConditionNodeView::draw() {
 	BehaviorNodeView::draw();
 
 	// ノード固有の描画: スコア閾値の表示
-	ImGui::Text("Threshold: %.2f", threshold_);
+	if (logicNode_) {
+		ImGui::Text("Threshold: %.2f", threshold_);
+	}
+	else {
+		// 紐づくロジックノードがない場合はエディタ上で編集可能にする
+		ImGui::DragFloat("Threshold", &threshold_, 0.1f);
+	}
+}
+
+//====================================================================
+// シリアライズ [EXT]
+//====================================================================
+void ScoreConditionNodeView::SaveParameters(BehaviorNodeData& data) const {
+	BehaviorNodeView::SaveParameters(data);
+	data.conditionThreshold = threshold_;
+}
+
+void ScoreConditionNodeView::LoadParameters(const BehaviorNodeData& data) {
+	BehaviorNodeView::LoadParameters(data);
+	threshold_ = data.conditionThreshold;
 }

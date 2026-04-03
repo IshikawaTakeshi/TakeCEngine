@@ -31,5 +31,30 @@ void ActionNodeView::draw() {
 	BehaviorNodeView::draw();
 
 	// ノード固有の描画: ターゲットステート名の表示・編集
-	ImGui::Text("Target State:", targetStateName_.c_str());
+	if (logicNode_) {
+		ImGui::Text("Target State: %s", targetStateName_.c_str());
+	}
+	else {
+		// 紐づくロジックノードがない場合はエディタ上で編集可能にする
+		char buffer[256];
+		strncpy_s(buffer, targetStateName_.c_str(), sizeof(buffer));
+		if (ImGui::InputText("Target State", buffer, sizeof(buffer))) {
+			targetStateName_ = buffer;
+			setTitle("Action:" + targetStateName_);
+		}
+	}
+}
+
+//====================================================================
+// シリアライズ [EXT]
+//====================================================================
+void ActionNodeView::SaveParameters(BehaviorNodeData& data) const {
+	BehaviorNodeView::SaveParameters(data);
+	data.targetState = targetStateName_;
+}
+
+void ActionNodeView::LoadParameters(const BehaviorNodeData& data) {
+	BehaviorNodeView::LoadParameters(data);
+	targetStateName_ = data.targetState;
+	setTitle("Action:" + targetStateName_);
 }
