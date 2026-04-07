@@ -71,7 +71,9 @@ struct ComboSetData {
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BehaviorNodeData, name, nodeType, targetState, field, op, conditionThreshold, children, posX, posY, nodeUID)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BehaviorLinkData, fromNodeUID, fromPinIndex, toNodeUID, toPinIndex)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ComboData, comboName, rootNode)
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ComboSetData, setName, combos, rootType, editorNodes, editorLinks)
+
+void to_json(nlohmann::json& j, const ComboSetData& data);
+void from_json(const nlohmann::json& j, ComboSetData& data);
 
 //JSONディレクトリパスの定義
 TAKEC_DEFINE_JSON_DIRECTORY_PATH(ComboSetData, "Resources/JsonLoader/ComboSet/");

@@ -160,6 +160,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Entity\Animation\AnimationMapper.cpp" />
     <ClCompile Include="application\Entity\Behavior\ActionNode.cpp" />
     <ClCompile Include="application\Entity\Behavior\BehaviorTreeEditor.cpp" />
+    <ClCompile Include="application\Entity\Behavior\BehaviorTreeUtil.cpp" />
     <ClCompile Include="application\Entity\Behavior\Blackboard.cpp" />
     <ClCompile Include="application\Entity\Behavior\ComboFactory.cpp" />
     <ClCompile Include="application\Entity\Behavior\ConditionNode.cpp" />
@@ -174,7 +175,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Entity\Behavior\View\SelectorNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\SequenceNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\WeightSelectorNodeView.cpp" />
-    <ClCompile Include="application\Entity\Behavior\WeightSelector.cpp" />
+    <ClCompile Include="application\Entity\Behavior\WeightSelectorNode.cpp" />
     <ClCompile Include="application\Tool\BreakGaugeUtil.cpp" />
     <ClCompile Include="application\UI\ActionButtonICon.cpp" />
     <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp" />
@@ -380,7 +381,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Behavior\View\SelectorNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\SequenceNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\WeightSelectorNodeView.h" />
-    <ClInclude Include="application\Entity\Behavior\WeightSelector.h" />
+    <ClInclude Include="application\Entity\Behavior\WeightSelectorNode.h" />
     <ClInclude Include="application\Entity\BoostDirectionEnum.h" />
     <ClInclude Include="application\Entity\Enemy\ActionWeightParam.h" />
     <ClInclude Include="application\Tool\BreakGaugeUtil.h" />

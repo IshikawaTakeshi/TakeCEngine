@@ -11,7 +11,7 @@ class BehaviorNode;
 //=============================================================
 //BehaviorNodeView class
 //=============================================================
-class BehaviorNodeView :public ImFlow::BaseNode {
+class BehaviorNodeView : public ImFlow::BaseNode {
 public:
 	
 	/// <summary>
@@ -66,7 +66,17 @@ public:
 
 	//=========================================================================
 	// serialization [EXT]
-	//=========================================================================
+	//=========================================================
+
+	/// <summary>
+	/// ノードの一意識別子を設定
+	/// </summary>
+	void SetNodeUID(int uid) { nodeUID_ = uid; }
+
+	/// <summary>
+	/// ノードの一意識別子を取得
+	/// </summary>
+	int GetNodeUID() const { return nodeUID_; }
 
 	/// <summary>
 	/// ノードタイプ文字列を取得
@@ -98,6 +108,9 @@ protected:
 
 	// 紐づくロジックノード
 	BehaviorNode* logicNode_ = nullptr;
+
+	// データ紐付け用のUID [NEW]
+	int nodeUID_ = -1;
 
 	/// ノードの状態
 	BehaviorStatus currentStatus_ = BehaviorStatus::Invalid;

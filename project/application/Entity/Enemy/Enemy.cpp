@@ -261,11 +261,34 @@ void Enemy::LoadBehaviorTree(const std::string& filePath) {
 	behaviorTree_ = comboFactory_.LoadComboSetData(filePath, stateManager_.get());
 }
 
+void Enemy::ApplyBehaviorTree(const ComboSetData& data) {
+	std::lock_guard<std::mutex> lock(treeMutex_);
+	// データをコピーして予約
+	pendingTreeData_ = std::make_unique<ComboSetData>(data);
+}
+
 //========================================================================================================
 // 更新処理
 //========================================================================================================
 
 void Enemy::Update() {
+
+	//フレームの冒頭で予約があれば反映
+	{
+		std::lock_guard<std::mutex> lock(treeMutex_);
+		if (pendingTreeData_) {
+			// 古いツリーを破棄する前に、現在のステートを強制リセット
+			// これにより、古いアクションノードへの依存を断ち切る
+			stateManager_->RequestState(State::RUNNING); 
+			// 新しいツリーを構築
+			behaviorTree_ = comboFactory_.BuildBehaviorTree(*pendingTreeData_,stateManager_.get());
+
+			// ノードの状態を初期化（念のため）
+			behaviorTree_->Reset();
+
+			pendingTreeData_ = nullptr;
+		}
+	}
 
 	// --- 1. 状態の判定（AIや攻撃に先立って行う） ---
 	// 死亡判定
