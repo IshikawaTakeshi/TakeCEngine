@@ -1,5 +1,6 @@
 {
     "attributes": {
+        "alignRotationToEmitter": false,
         "color": {
             "x": 1.0,
             "y": 0.11764705926179886,
@@ -15,9 +16,10 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 10,
+        "emitCount": 16,
         "enableFollowEmitter": false,
-        "frequency": 0.10000000149011612,
+        "enableLighting": true,
+        "frequency": 0.0,
         "isBillboard": true,
         "isDirectional": false,
         "isEmitterTrail": true,
@@ -25,10 +27,10 @@
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 0.4000000059604645,
-            "min": 0.4000000059604645
+            "max": 0.10000000149011612,
+            "min": 0.10000000149011612
         },
-        "particlesPerInterpolation": 20,
+        "particlesPerInterpolation": 8,
         "positionRange": {
             "max": 0.0,
             "min": 0.0
@@ -57,7 +59,7 @@
     },
     "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "BulletMoveEffect_Enemy",
+    "name": "BulletMoveEffect_Enemy.json",
     "primitiveParam": {
         "height": 1.0,
         "width": 1.0

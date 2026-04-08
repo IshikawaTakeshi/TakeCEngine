@@ -71,12 +71,10 @@ void TakeC::ImGuiManager::End() {
 }
 
 //====================================================================
-// デバッグ画面の描画
+// DockSpaceの作成
 //====================================================================
-void TakeC::ImGuiManager::DrawDebugScreen() {
-	//==========================================================
-	// 1) DockSpaceHost（全画面固定の親ウィンドウ）
-	//==========================================================
+void TakeC::ImGuiManager::CreateDockSpace() {
+
 	const ImGuiViewport* vp = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(vp->WorkPos, ImGuiCond_Always);
 	ImGui::SetNextWindowSize(vp->WorkSize, ImGuiCond_Always);
@@ -116,12 +114,14 @@ void TakeC::ImGuiManager::DrawDebugScreen() {
 		}
 		ImGui::EndMenuBar();
 	}
-
 	ImGui::End(); // DockSpaceHost
+}
 
-	//==========================================================
-	// 2) Viewport（ドックされる側の普通のウィンドウ）
-	//==========================================================
+//====================================================================
+// デバッグ画面の描画
+//====================================================================
+void TakeC::ImGuiManager::DrawDebugScreen() {
+
 	ImGui::Begin("Viewport");
 	{
 		// Viewport内にレンダー結果を表示

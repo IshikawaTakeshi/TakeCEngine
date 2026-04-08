@@ -1,11 +1,12 @@
 #pragma once
-#include "3d/Object3d.h"
-#include "3d/Object3dCommon.h"
-#include "Entity/GameCharacter.h"
-#include "3d/Particle/ParticleEmitter.h"
-#include "3d/Light/PointLight.h"
-#include "application/Weapon/Bullet/BulletEffectConfig.h"
+#include "engine/3d/Object3d.h"
+#include "engine/3d/Object3dCommon.h"
+#include "engine/Entity/GameCharacter.h"
+#include "engine/3d/Particle/ParticleEmitter.h"
+#include "engine/3d/Particle/EffectGroup.h"
+#include "engine/3d/Light/PointLight.h"
 #include "application/UI/WarningType.h"
+#include "application/Weapon/Bullet/BulletEffectConfig.h"
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -151,8 +152,8 @@ private:
 	BulletEffectConfig effectConfig_;
 
 	//パーティクルエミッター
-	std::vector<std::unique_ptr<ParticleEmitter>> trailEmitter_;
-	std::vector<std::unique_ptr<ParticleEmitter>> explosionEmitter_;
+	std::unique_ptr<TakeC::EffectGroup> lightEffect_;
+	std::unique_ptr<TakeC::EffectGroup> explosionEffect_;
 
 	WarningType warningType_ = WarningType::NORMAL;
 };

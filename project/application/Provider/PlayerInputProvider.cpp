@@ -59,7 +59,7 @@ bool PlayerInputProvider::RequestChargeAttack(CharacterActionInput attackButton)
 //　ステップブースト入力の取得
 //=====================================================================================
 bool PlayerInputProvider::RequestStepBoost() const {
-	return mapper_->IsPressed(CharacterActionInput::STEPBOOST);
+	return mapper_->IsTriggered(CharacterActionInput::STEPBOOST);
 }
 
 bool PlayerInputProvider::RequestChangeCameraMode() const {

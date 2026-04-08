@@ -13,6 +13,7 @@
 #include "application/Entity/Animation/AnimationMapper.h"
 #include "application/Provider/PlayerInputProvider.h"
 #include "application/Entity/State/GameCharacterState.h"
+#include "application/Entity/BoostDirectionEnum.h"
 #include "application/Entity/State/GameCharacterStateManager.h"
 #include "application/Effect/BoostEffect.h"
 
@@ -160,13 +161,6 @@ private:
 	Vector3 focusTargetVelocity_ = { 0.0f,0.0f,0.0f }; // フォーカス対象の移動ベクトル
 	Vector3 bodyPosition_ = { 0.0f,0.0f,0.0f }; // キャラクターの胴体位置
 
-	enum class BoostDirection {
-		NONE,
-		LEFT,
-		RIGHT,
-		FORWARD,
-		BACKWARD
-	};
 	BoostDirection previousBoostDirection_ = BoostDirection::NONE;
 
 private:

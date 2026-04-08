@@ -16,6 +16,7 @@
 #include "application/Entity/Enemy/BulletSensor.h"
 #include "application/Entity/State/GameCharacterState.h"
 #include "application/Entity/GameCharacterInfo.h"
+#include "application/Entity/BoostDirectionEnum.h"
 #include "application/Provider/EnemyInputProvider.h"
 #include "application/Weapon/BaseWeapon.h"
 #include "application/Weapon/Bullet/BulletManager.h"
@@ -69,6 +70,7 @@ public:
 	void SaveEnemyData(const std::string& characterName);
 
 	void LoadBehaviorTree(const std::string& filePath);
+	void ApplyBehaviorTree(const ComboSetData& data);
 
 public:
 	//==============================================================================
@@ -227,8 +229,14 @@ private:
 	float orbitSpeed_ = 1.0f;                 // 角速度（周る速さ）
 	Vector3 toOrbitPos_ = { 0.0f, 0.0f, 0.0f }; // 周回する座標
 
-	Vector3 focusTargetVelocity_ = { 0.0f, 0.0f,
-									0.0f }; // フォーカス対象の移動ベクトル
+	Vector3 focusTargetVelocity_ = { 0.0f, 0.0f,0.0f }; // フォーカス対象の移動ベクトル
+	// キャラクターの胴体位置
+	Vector3 bodyPosition_ = { 0.0f, 0.0f, 0.0f }; 
 
-	Vector3 bodyPosition_ = { 0.0f, 0.0f, 0.0f }; // キャラクターの胴体位置
+	BoostDirection previousBoostDirection_ = BoostDirection::NONE;
+
+	// 反映待ちのツリーデータ
+	std::unique_ptr<ComboSetData> pendingTreeData_ = nullptr;
+	// データアクセスのためのミューテックス（ImGuiスレッド対策）
+	std::mutex treeMutex_;
 };

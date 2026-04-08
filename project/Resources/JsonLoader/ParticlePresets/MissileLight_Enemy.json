@@ -16,7 +16,7 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 10,
+        "emitCount": 29,
         "enableFollowEmitter": true,
         "enableLighting": false,
         "frequency": 0.10000000149011612,
@@ -46,7 +46,7 @@
         },
         "scaleEasingType": 0,
         "scaleRange": {
-            "max": 10.359999656677246,
+            "max": 7.0,
             "min": 1.590000033378601
         },
         "scaleSetting": 2,

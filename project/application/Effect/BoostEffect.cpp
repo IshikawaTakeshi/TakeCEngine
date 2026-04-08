@@ -14,16 +14,24 @@ BoostEffect::~BoostEffect() {
 //===================================================================================
 //　初期化
 //===================================================================================
-void BoostEffect::Initialize(GameCharacter* owner,const std::string& effectName, const std::string& appearEffectName) {
+void BoostEffect::Initialize(
+	GameCharacter* owner,
+	const std::string& effectName, 
+	const std::string& appearEffectName, 
+	const std::string& stepBoostEffectName) {
 	ownerObject_ = owner;
 
 	//EffectGroup の初期化
-	effectGroup_ = std::make_unique<EffectGroup>();
-	effectGroup_->Initialize(effectName);
+	thrusterEffect_ = std::make_unique<EffectGroup>();
+	thrusterEffect_->Initialize(effectName);
 
 	//AppearEffectの初期化
 	appearEffect_ = std::make_unique<EffectGroup>();
 	appearEffect_->Initialize(appearEffectName);
+
+	//StepBoostEffectの初期化
+	stepBoostEffect_ = std::make_unique<EffectGroup>();
+	stepBoostEffect_->Initialize(stepBoostEffectName);
 
 	// --- PointLight設定 ---
 	pointLightData_.enabled_ = 1;
@@ -62,12 +70,14 @@ void BoostEffect::Update() {
 	// EffectGroupへの行列登録
 	if (hasParent) {
 		currentJointMatrix_ = jointWorldMatrix;
-		effectGroup_->SetParentMatrix(&currentJointMatrix_);
+		thrusterEffect_->SetParentMatrix(&currentJointMatrix_);
 		appearEffect_->SetParentMatrix(&currentJointMatrix_);
+		stepBoostEffect_->SetParentMatrix(&currentJointMatrix_);
 
 	} else {
-		effectGroup_->SetParentMatrix(nullptr);
+		thrusterEffect_->SetParentMatrix(nullptr);
 		appearEffect_->SetParentMatrix(nullptr);
+		stepBoostEffect_->SetParentMatrix(nullptr);
 	}
 
 	// 4. 更新実行
@@ -75,14 +85,16 @@ void BoostEffect::Update() {
 		currentJointMatrix_.m[3][0], currentJointMatrix_.m[3][1], currentJointMatrix_.m[3][2]
 	};
 	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
-	effectGroup_->Update();
+	thrusterEffect_->Update();
 	appearEffect_->Update();
+	stepBoostEffect_->Update();
 }
 
 void BoostEffect::UpdateImGui([[maybe_unused]] const std::string& windowName) {
 
-	effectGroup_->UpdateImGui(windowName);
+	thrusterEffect_->UpdateImGui(windowName);
 	appearEffect_->UpdateImGui(windowName);
+	stepBoostEffect_->UpdateImGui(windowName);
 }
 
 //===================================================================================
@@ -96,12 +108,12 @@ void BoostEffect::SetIsActive(bool isActive) {
 	if (isActive_) {
 		// 再生開始
 		// Meshの位置や回転がセットされていれば、その位置で再生開始
-		effectGroup_->Play(pointLightData_.position_);
+		thrusterEffect_->Play(pointLightData_.position_);
 		pointLightData_.intensity_ = 160.0f;
 
 	} else {
 		// 停止
-		effectGroup_->Stop();
+		thrusterEffect_->Stop();
 		pointLightData_.intensity_ = 0.0f;
 	}
 }
@@ -117,4 +129,8 @@ void BoostEffect::AttachToSkeletonJoint(Skeleton* skeleton, const std::string& j
 
 void BoostEffect::PlayAppearEffect() {
 	appearEffect_->Play(pointLightData_.position_);
+}
+
+void BoostEffect::PlayStepBoostEffect() {
+	stepBoostEffect_->Play(pointLightData_.position_);
 }

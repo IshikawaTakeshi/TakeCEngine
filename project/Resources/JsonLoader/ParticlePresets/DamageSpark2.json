@@ -1,5 +1,6 @@
 {
     "attributes": {
+        "alignRotationToEmitter": false,
         "color": {
             "x": 1.0,
             "y": 0.29411765933036804,
@@ -15,23 +16,24 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 32,
+        "emitCount": 29,
         "enableFollowEmitter": false,
-        "frequency": 1.0,
+        "enableLighting": false,
+        "frequency": 0.10000000149011612,
         "isBillboard": true,
         "isDirectional": false,
         "isEmitterTrail": false,
-        "isParticleTrail": true,
+        "isParticleTrail": false,
         "isTraslate": true,
         "lifetimeEasingType": 12,
         "lifetimeRange": {
-            "max": 0.15,
+            "max": 0.5,
             "min": 0.01600000075995922
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
-            "max": 0.3799999952316284,
-            "min": -0.25999999046325684
+            "max": 5.150000095367432,
+            "min": -5.190000057220459
         },
         "rotateRange": {
             "max": 0.46000000834465027,
@@ -44,20 +46,20 @@
         },
         "scaleEasingType": 13,
         "scaleRange": {
-            "max": 1.0,
+            "max": 3.009999990463257,
             "min": 0.10000000149011612
         },
         "scaleSetting": 2,
         "trailEmitInterval": 0.014999999664723873,
         "velocityEasingType": 7,
         "velocityRange": {
-            "max": 250.0,
-            "min": -250.0
+            "max": 300.0,
+            "min": -300.0
         }
     },
     "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "DamageSpark2",
+    "name": "DamageSpark2.json",
     "primitiveParam": {
         "height": 1.0,
         "width": 1.0

@@ -1,83 +1,69 @@
 #pragma once
-#include <ImNodeFlow-1.2.2/include/ImNodeFlow.h>
 #include <map>
-//Engine
-#include "application/Entity/Behavior/Blackboard.h"
-#include "application/Entity/Behavior/BehaviorNode.h"
-#include "application/Entity/Behavior/ComboFactory.h"
-//Node
-#include "application/Entity/Behavior/CompositeNode.h"
-#include "application/Entity/Behavior/SelectorNode.h"
-#include "application/Entity/Behavior/SequenceNode.h"
-#include "application/Entity/Behavior/ConditionNode.h"
-#include "application/Entity/Behavior/ScoreConditionNode.h"
-#include "application/Entity/Behavior/PlannerSelectorNode.h"
-#include "application/Entity/Behavior/ActionNode.h"
-//NodeView
-#include "application/Entity/Behavior/View/ActionNodeView.h"
-#include "application/Entity/Behavior/View/SelectorNodeView.h"
-#include "application/Entity/Behavior/View/ConditionNodeView.h"
-#include "application/Entity/Behavior/View/SequenceNodeView.h"
-#include "application/Entity/Behavior/View/ScoreConditionNodeView.h"
-#include "application/Entity/Behavior/View/PlannerSelectorNodeView.h"
-#include "application/Entity/Behavior/View/WeightSelectorNodeView.h"
+#include <functional>
+#include <string>
+#include <memory>
+#include <vector>
+
+// Engine
+#include "application/Entity/Behavior/BehaviorTreeUtil.h"
+
+// ImNodeFlow
+#include <ImNodeFlow-1.2.2/include/ImNodeFlow.h>
+#include "application/Entity/Behavior/View/BehaviorNodeView.h"
+
+// 前方宣言
+class BehaviorNode;
+class Blackboard;
 
 //==================================================================================
 // BehaviorTreeEditor class
 //==================================================================================
 class BehaviorTreeEditor {
 public:
-
-	/// <summary>
-	/// コンストラクタ・デストラクタ
-	/// </summary>
-	BehaviorTreeEditor() = default;
-	~BehaviorTreeEditor() = default;
-	//====================================================================================
-	// functions
-	//====================================================================================
+	BehaviorTreeEditor();
+	~BehaviorTreeEditor();
 
 	void Initialize();
+	void UpdateImGui(BehaviorNode* activeRoot = nullptr);
 
-	/// <summary>
-	/// ビヘイビアツリーエディタの描画
-	/// </summary>
-	void UpdateImGui();
+	// 反映ボタンが押された時のコールバックを登録
+	void SetApplyCallback(std::function<void(const ComboSetData&)> callback) { applyCallback_ = callback; }
 
-	/// <summary>
-	/// Enemyからビヘイビアツリーを読み込む
-	/// </summary>
-	/// <param name="rootNode">Enemyが保持しているルートノード</param>
 	void LoadTreeFromEnemy(BehaviorNode* rootNode, Blackboard* blackboard);
-
-	/// <summary>
-	/// コンボセットのデータからビヘイビアツリーを構築して読み込む
-	/// </summary>
-	/// <param name="comboSetData"></param>
-	/// <param name="stateManager"></param>
 	void LoadTreeFromJson(const std::string& filepath);
-
-	/// <summary>
-	/// ビヘイビアツリーをコンボセットとしてファイルに保存する
-	/// </summary>
-	/// <param name="filePath"></param>
 	void SaveComboSet();
 
-private:
+	ComboSetData BuildComboSetDataFromEditor() const;
 
-	/// <summary>
-	/// 再帰的にノードを構築する
-	/// </summary>
+private:
+	// 指定したViewノードから再帰的に BehaviorNodeData を構築する
+	BehaviorNodeData BuildRecursiveNodeData(BehaviorNodeView* viewNode) const;
+
+	// ロジックからViewを構築する (内部用)
 	ImFlow::BaseNode* BuildNodeView(BehaviorNode* node, ImVec2& minPos);
 
 	BehaviorNodeData BuildNodeDataFromLogicNode(const BehaviorNode* node) const;
-
 	std::string DetectRootType(const BehaviorNode* node) const;
 
-private:
+	// ノードビューを生成する (内部用)
+	std::shared_ptr<BehaviorNodeView> CreateNodeView(const std::string& type, const ImVec2& pos, const std::string& name = "NONE");
+	//ロジックツリーを再帰的に再構築する
+	std::unique_ptr<BehaviorNode> BuildLogicTree(const BehaviorNodeData& data, std::map<int, std::shared_ptr<BehaviorNodeView>>& idToNode);
+	// 実行中のロジックツリーとUIを再紐付けする
+	void SyncWithActiveTree(BehaviorNode* root);
 
+private:
 	BehaviorNode* rootNode_ = nullptr;
-	Blackboard* blackboard_ = nullptr; // ビヘイビアツリーのブラックボード
-	std::unique_ptr<ImFlow::ImNodeFlow> flowEditor_; // ImNodeFlowのエディタ
-	std::map<BehaviorNode*, ImFlow::BaseNode*> nodeViewMap_; // 実際のノードとViewの紐づけ
+	Blackboard* blackboard_ = nullptr;
+	std::unique_ptr<ImFlow::ImNodeFlow> flowEditor_;
+	std::map<BehaviorNode*, ImFlow::BaseNode*> nodeViewMap_;
+	std::vector<std::string> comboSetNames_;
+	ComboSetData currentComboSetData_;
+
+	// 反映実行用のコールバック
+	std::function<void(const ComboSetData&)> applyCallback_;
+
+	// JSONロード時に構築したツリーの管理
+	std::unique_ptr<BehaviorNode> ownedRootNode_;
 };

@@ -69,6 +69,17 @@ std::optional<Vector3> ParticleEmitterAllocator::GetEmitDirection(uint32_t emitt
 	return std::nullopt; // エミッターが見つからない
 }
 
+//=================================================================================
+// エミッターIDから現在のスケールを取得
+//=================================================================================
+std::optional<Vector3> ParticleEmitterAllocator::GetEmitterScale(uint32_t emitterID) const {
+	auto it = activeEmitters_.find(emitterID);
+	if (it != activeEmitters_.end() && it->second != nullptr) {
+		return it->second->GetScale();
+	}
+	return std::nullopt; // エミッターが見つからない
+}
+
 //==================================================================================
 // エミッターIDからエミッターポインタを取得
 //==================================================================================

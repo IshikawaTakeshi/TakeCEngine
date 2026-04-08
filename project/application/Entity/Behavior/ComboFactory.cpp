@@ -69,6 +69,7 @@ std::unique_ptr<BehaviorNode> ComboFactory::BuildNode(
 				composite->AddChild(std::move(childNode));
 			}
 		}
+		composite->SetUID(nodeData.nodeUID);
 		return composite;
 	}
 
@@ -82,6 +83,7 @@ std::unique_ptr<BehaviorNode> ComboFactory::BuildNode(
 				composite->AddChild(std::move(childNode));
 			}
 		}
+		composite->SetUID(nodeData.nodeUID);
 		return composite;
 	}
 
@@ -97,7 +99,9 @@ std::unique_ptr<BehaviorNode> ComboFactory::BuildActionNode(
 	const BehaviorNodeData& nodeData,
 	GameCharacterStateManager* stateManager) {
 	GameCharacterState state = StringUtility::StringToEnum<GameCharacterState>(nodeData.targetState);
-	return std::make_unique<ActionNode>(state, stateManager, nodeData.name);
+	auto node = std::make_unique<ActionNode>(state, stateManager, nodeData.name);
+	node->SetUID(nodeData.nodeUID);
+	return node;
 }
 
 //========================================================================

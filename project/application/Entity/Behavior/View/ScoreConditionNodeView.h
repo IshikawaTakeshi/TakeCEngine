@@ -25,6 +25,14 @@ public:
 	void draw() override;
 
 	//=========================================================
+	// serialization [EXT]
+	//=========================================================
+
+	std::string GetNodeType() const override { return "SCORE_CONDITION"; }
+	void SaveParameters(BehaviorNodeData& data) const override;
+	void LoadParameters(const BehaviorNodeData& data) override;
+
+	//=========================================================
 	// accsesser
 	//=========================================================
 

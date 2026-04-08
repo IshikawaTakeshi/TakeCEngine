@@ -61,9 +61,22 @@ public:
 	/// </summary>
 	BehaviorStatus GetCurrentStatus() const { return currentStatus_; }
 
+	/// <summary>
+	/// UIDの設定 [NEW]
+	/// </summary>
+	void SetUID(int uid) { uid_ = uid; }
+
+	/// <summary>
+	/// UIDの取得 [NEW]
+	/// </summary>
+	int GetUID() const { return uid_; }
+
 protected:
 
 	std::string name_ = "UnnamedNode";
+
+	// 保存データとの紐付け用の一意識別子
+	int uid_ = -1;
 
 	// 実行状態を保持するメンバ
 	BehaviorStatus currentStatus_ = BehaviorStatus::Invalid;

@@ -7,34 +7,24 @@
 void BulletManager::Initialize(Object3dCommon* object3dCommon, size_t size) {
 	object3dCommon_ = object3dCommon;
 
-	playerBulletEffectConfig_.trailEffectFilePath.push_back(
-		"BulletMoveEffect_Player.json");
-	playerBulletEffectConfig_.explosionEffectFilePath.push_back(
-		"DamageSpark2.json");
-	enemyBulletEffectConfig_.trailEffectFilePath.push_back(
-		"BulletMoveEffect_Enemy.json");
-	enemyBulletEffectConfig_.explosionEffectFilePath.push_back(
-		"DamageSpark2.json");
+	//---- Bullet --------
+	playerBulletEffectConfig_.lightEffectFilePath = "BulletEffect_Player.json";
+	playerBulletEffectConfig_.explosionEffectFilePath = "BulletEffect_Player.json";
 
-	playerMissileEffectConfig_.trailEffectFilePath.push_back("MissileSmoke.json");
-	playerMissileEffectConfig_.explosionEffectFilePath.push_back(
-		"MissileExplosion_Player.json");
-	enemyMissileEffectConfig_.trailEffectFilePath.push_back("MissileSmoke.json");
-	enemyMissileEffectConfig_.explosionEffectFilePath.push_back(
-		"MissileExplosion_Enemy.json");
+	enemyBulletEffectConfig_.lightEffectFilePath = "BulletEffect_Enemy.json";
+	enemyBulletEffectConfig_.explosionEffectFilePath = "BulletEffect_Enemy.json";
 
-	playerBazookaBulletEffectConfig_.trailEffectFilePath.push_back(
-		"BazookaBulletTrail_Player.json");
-	playerBazookaBulletEffectConfig_.explosionEffectFilePath.push_back(
-		"BazookaBulletExplosion_Player.json");
-	playerBazookaBulletEffectConfig_.explosionEffectFilePath.push_back(
-		"BazookaBulletExplosion2.json");
-	enemyBazookaBulletEffectConfig_.trailEffectFilePath.push_back(
-		"BazookaBulletTrail_Enemy.json");
-	enemyBazookaBulletEffectConfig_.explosionEffectFilePath.push_back(
-		"BazookaBulletExplosion_Enemy.json");
-	enemyBazookaBulletEffectConfig_.explosionEffectFilePath.push_back(
-		"BazookaBulletExplosion2.json");
+	//---- Missile --------
+	playerMissileEffectConfig_.lightEffectFilePath = "MissileEffect_Player.json";
+	playerMissileEffectConfig_.explosionEffectFilePath = "MissileEffect_Player.json";
+	enemyMissileEffectConfig_.lightEffectFilePath = "MissileEffect_Enemy.json";
+	enemyMissileEffectConfig_.explosionEffectFilePath = "MissileEffect_Enemy.json";
+
+	playerBazookaBulletEffectConfig_.lightEffectFilePath = "BazookaBulletEffect_Player.json";
+	playerBazookaBulletEffectConfig_.explosionEffectFilePath = "BazookaBulletEffect_Explosion_Player.json";
+
+	enemyBazookaBulletEffectConfig_.lightEffectFilePath = "BazookaBulletEffect_Enemy.json";
+	enemyBazookaBulletEffectConfig_.explosionEffectFilePath = "BazookaBulletEffect_Explosion_Enemy.json";
 
 	bulletFilePath_ = "Bullet.gltf";
 	missileFilePath_ = "Missile.gltf";

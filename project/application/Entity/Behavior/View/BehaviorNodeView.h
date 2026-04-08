@@ -1,6 +1,7 @@
 #pragma once
 #include <ImNodeFlow-1.2.2/include/ImNodeFlow.h>
 #include "application/Entity/Behavior/BehaviorStatusEnum.h"
+#include "application/Entity/Behavior/BehaviorTreeUtil.h"
 
 #include "engine/Math/Vector4.h"
 #include <string>
@@ -10,7 +11,7 @@ class BehaviorNode;
 //=============================================================
 //BehaviorNodeView class
 //=============================================================
-class BehaviorNodeView :public ImFlow::BaseNode {
+class BehaviorNodeView : public ImFlow::BaseNode {
 public:
 	
 	/// <summary>
@@ -64,6 +65,35 @@ public:
 	void SetCurrentStatus(BehaviorStatus status) { currentStatus_ = status; }
 
 	//=========================================================================
+	// serialization [EXT]
+	//=========================================================
+
+	/// <summary>
+	/// ノードの一意識別子を設定
+	/// </summary>
+	void SetNodeUID(int uid) { nodeUID_ = uid; }
+
+	/// <summary>
+	/// ノードの一意識別子を取得
+	/// </summary>
+	int GetNodeUID() const { return nodeUID_; }
+
+	/// <summary>
+	/// ノードタイプ文字列を取得
+	/// </summary>
+	virtual std::string GetNodeType() const = 0;
+
+	/// <summary>
+	/// パラメータをデータ構造に移す
+	/// </summary>
+	virtual void SaveParameters(BehaviorNodeData& data) const { data.nodeType = GetNodeType(); }
+
+	/// <summary>
+	/// データ構造からパラメータを読み込む
+	/// </summary>
+	virtual void LoadParameters(const BehaviorNodeData& data) { (void)data; }
+
+	//=========================================================================
 	// logic link
 	//=========================================================================
 
@@ -78,6 +108,9 @@ protected:
 
 	// 紐づくロジックノード
 	BehaviorNode* logicNode_ = nullptr;
+
+	// データ紐付け用のUID [NEW]
+	int nodeUID_ = -1;
 
 	/// ノードの状態
 	BehaviorStatus currentStatus_ = BehaviorStatus::Invalid;
@@ -94,4 +127,5 @@ protected:
 	/// 出力ピン
 	std::vector<ImFlow::Pin*> outPins_;
 };
+
 

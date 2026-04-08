@@ -7,6 +7,8 @@
 #include "Math/Quaternion.h"
 #include "math/Easing.h"
 
+using namespace TakeC;
+
 //========================================================================================================
 // 初期化
 //========================================================================================================
@@ -30,21 +32,12 @@ void Bullet::InitializeEffect(const BulletEffectConfig& effectConfig) {
 
 	effectConfig_ = effectConfig;
 
-	//emiiter設定
-	//emitter0
-	explosionEmitter_.resize(effectConfig_.explosionEffectFilePath.size());
-	for (int i = 0; i < effectConfig_.explosionEffectFilePath.size(); i++) {
-		explosionEmitter_[i] = std::make_unique<ParticleEmitter>();
-		explosionEmitter_[i]->Initialize("BulletExplosionEffect" + std::to_string(i), effectConfig_.explosionEffectFilePath[i]);
-	}
-
-	//emitter1
-	trailEmitter_.resize(effectConfig_.trailEffectFilePath.size());
-	for (int i = 0; i < effectConfig_.trailEffectFilePath.size(); i++) {
-		trailEmitter_[i] = std::make_unique<ParticleEmitter>();
-		trailEmitter_[i]->Initialize("BulletMoveEffect" + std::to_string(i), effectConfig_.trailEffectFilePath[i]);
-	}
-
+	//effectGroupの初期化
+	lightEffect_ = std::make_unique<EffectGroup>();
+	lightEffect_->Initialize(effectConfig_.lightEffectFilePath);
+	explosionEffect_ = std::make_unique<EffectGroup>();
+	explosionEffect_->Initialize(effectConfig_.explosionEffectFilePath);
+	
 	//deltaTime取得
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 	//transform初期化
@@ -69,9 +62,7 @@ void Bullet::Update() {
 	if (isActive_ == false) {
 		pointLightData_.enabled_ = 0;
 
-		for (auto& emitter : trailEmitter_) {
-			emitter->SetIsEmit(false);
-		}
+		lightEffect_->Stop();
 		return;
 	}
 
@@ -147,18 +138,10 @@ void Bullet::Update() {
 	object3d_->Update();
 	collider_->Update(object3d_.get());
 
-	//パーティクルエミッターの更新
-	for (int i = 0; i < explosionEmitter_.size(); i++) {
-		explosionEmitter_[i]->SetTranslate(transform_.translate);
-		explosionEmitter_[i]->Update();
-		std::string explosionEffectName = effectConfig_.explosionEffectFilePath[i];	
-	}
-
-	for (int i = 0; i < trailEmitter_.size(); i++) {
-		trailEmitter_[i]->SetTranslate(transform_.translate);
-		trailEmitter_[i]->Update();
-		std::string trailEffectName = effectConfig_.trailEffectFilePath[i];
-	}
+	//effectGroupの更新
+	lightEffect_->SetPosition(transform_.translate);
+	lightEffect_->Update();
+	explosionEffect_->Update();
 }
 
 //========================================================================================================
@@ -197,11 +180,9 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 		if (other->GetCharacterType() == CharacterType::ENEMY) {
 
 			//パーティクル射出
-			for (int i = 0; i < explosionEmitter_.size(); i++) {
-				explosionEmitter_[i]->Emit();
-			}
+			explosionEffect_->Play(transform_.translate);
 
-			//パーティクル射出
+			//ライトの点灯
 			pointLightData_.enabled_ = 0;
 			pointLightData_.intensity_ = 0.0f;
 			isActive_ = false; //弾を無効化
@@ -211,9 +192,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 		if (other->GetCharacterType() == CharacterType::PLAYER) {
 
 			//パーティクル射出
-			for (int i = 0; i < explosionEmitter_.size(); i++) {
-				explosionEmitter_[i]->Emit();
-			}
+			explosionEffect_->Play(transform_.translate);
 			//プレイヤーに当たった場合の処理
 			pointLightData_.enabled_ = 0;
 			pointLightData_.intensity_ = 0.0f;
@@ -225,10 +204,7 @@ void Bullet::OnCollisionAction(GameCharacter* other) {
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
 
 		//パーティクル射出
-		for (int i = 0; i < explosionEmitter_.size(); i++) {
-			explosionEmitter_[i]->Emit();
-		}
-		
+		explosionEffect_->Play(transform_.translate);
 		pointLightData_.enabled_ = 0;
 		pointLightData_.intensity_ = 0.0f;
 		isActive_ = false; //弾を無効化
@@ -269,9 +245,8 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& targetPos,const Vec
 	velocity_ = direction_ * speed_;
 	isActive_ = true;
 
-	for (auto& emitter : trailEmitter_) {
-		emitter->SetIsEmit(true);
-	}
+	// パーティクルの再生
+	lightEffect_->Play(transform_.translate);
 }
 
 void Bullet::Create(const Vector3& weaponPos, const Vector3& direction, float speed, float damage, CharacterType type) {
@@ -291,9 +266,8 @@ void Bullet::Create(const Vector3& weaponPos, const Vector3& direction, float sp
 	velocity_ = direction_ * speed_;
 	isActive_ = true;
 
-	for (auto& emitter : trailEmitter_) {
-		emitter->SetIsEmit(true);
-	}
+	// パーティクルの再生
+	lightEffect_->Play(transform_.translate);
 }
 
 //========================================================================================================

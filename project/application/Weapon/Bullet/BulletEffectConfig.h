@@ -8,7 +8,7 @@
 
 struct BulletEffectConfig {
 	//トレイルのエフェクトファイルパス
-	std::vector<std::string> trailEffectFilePath;
+	std::string lightEffectFilePath;
 	// 爆発のエフェクトファイルパス
-	std::vector<std::string> explosionEffectFilePath;
+	std::string explosionEffectFilePath;
 };

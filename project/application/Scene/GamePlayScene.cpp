@@ -105,6 +105,9 @@ void GamePlayScene::Initialize() {
 	//BehaviorTreeEditor
 	behaviorTreeEditor_ = std::make_unique<BehaviorTreeEditor>();
 	behaviorTreeEditor_->Initialize();
+	behaviorTreeEditor_->SetApplyCallback([this](const ComboSetData& data) {
+		enemy_->ApplyBehaviorTree(data);
+		});
 	behaviorTreeEditor_->LoadTreeFromEnemy(enemy_->GetBehaviorTree(),enemy_->GetBlackboard());
 #endif // _DEBUG || _DEVELOP
 
@@ -276,9 +279,10 @@ void GamePlayScene::UpdateImGui() {
 	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 
 	player_->UpdateImGui();
-	enemy_->UpdateImGui();
-	behaviorTreeEditor_->UpdateImGui();
-	playerHpBar_->UpdateImGui("player");
+	 enemy_->UpdateImGui();
+	 behaviorTreeEditor_->UpdateImGui(enemy_->GetBehaviorTree());
+
+	 playerHpBar_->UpdateImGui("player");
 	enemyHpBar_->UpdateImGui("enemy");
 	playerReticle_->UpdateImGui();
 	energyInfoUI_->UpdateImGui("player");

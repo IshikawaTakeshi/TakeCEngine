@@ -93,6 +93,9 @@ public:
 
 	const Vector3& GetPosition() const { return transforms_.translate; }
 
+	//スケール取得
+	const Vector3& GetScale() const { return transforms_.scale; }
+
 	//----- setter ---------------
 
 	//発生させるParticleの名前設定
