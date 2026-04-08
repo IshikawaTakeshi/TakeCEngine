@@ -23,7 +23,12 @@ std::unique_ptr<BehaviorNode> ComboFactory::BuildBehaviorTree(
 	std::unique_ptr<CompositeNode> root;
 	if (comboSetData.rootType == "SEQUENCE") {
 		root = std::make_unique<SequenceNode>();
+	} else if (comboSetData.rootType == "PLANNER_SELECTOR") {
+		root = std::make_unique<PlannerSelectorNode>();
+	} else if (comboSetData.rootType == "WEIGHT_SELECTOR") {
+		root = std::make_unique<WeightSelectorNode>();
 	} else {
+		// SELECTOR または不明な場合は SelectorNodeにフォールバック
 		root = std::make_unique<SelectorNode>();
 	}
 	root->SetName(comboSetData.setName);
@@ -37,9 +42,11 @@ std::unique_ptr<BehaviorNode> ComboFactory::BuildBehaviorTree(
 		}
 	}
 
-	// フォールバック
-	root->AddChild(std::make_unique<ActionNode>(
-		GameCharacterState::RUNNING, stateManager, "DefaultRunning"));
+	// フォールバック（空ツリー時のみ）
+	if (root->GetChildren().empty()) {
+		root->AddChild(std::make_unique<ActionNode>(
+			GameCharacterState::RUNNING, stateManager, "DefaultRunning"));
+	}
 
 	return root;
 }
@@ -87,6 +94,34 @@ std::unique_ptr<BehaviorNode> ComboFactory::BuildNode(
 		return composite;
 	}
 
+	case BehaviorNodeType::PLANNER_SELECTOR:
+	{
+		auto composite = std::make_unique<PlannerSelectorNode>();
+		composite->SetName(nodeData.name);
+		for (const auto& child : nodeData.children) {
+			auto childNode = BuildNode(child, stateManager);
+			if (childNode) {
+				composite->AddChild(std::move(childNode));
+			}
+		}
+		composite->SetUID(nodeData.nodeUID);
+		return composite;
+	}
+
+	case BehaviorNodeType::WEIGHT_SELECTOR:
+	{
+		auto composite = std::make_unique<WeightSelectorNode>();
+		composite->SetName(nodeData.name);
+		for (const auto& child : nodeData.children) {
+			auto childNode = BuildNode(child, stateManager);
+			if (childNode) {
+				composite->AddChild(std::move(childNode));
+			}
+		}
+		composite->SetUID(nodeData.nodeUID);
+		return composite;
+	}
+
 	default:
 		return nullptr;
 	}
@@ -110,10 +145,12 @@ std::unique_ptr<BehaviorNode> ComboFactory::BuildActionNode(
 std::unique_ptr<BehaviorNode> ComboFactory::BuildConditionNode(
 	const BehaviorNodeData& nodeData) {
 	// JSONから読んだ field, op, value をそのまま渡すだけ
-	return std::make_unique<ConditionNode>(
+	auto node = std::make_unique<ConditionNode>(
 		nodeData.field,
 		nodeData.op,
 		nodeData.conditionThreshold,
 		nodeData.name
 	);
+	node->SetUID(nodeData.nodeUID);
+	return node;
 }

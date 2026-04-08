@@ -34,7 +34,7 @@
                                 "children": [],
                                 "conditionThreshold": 0.0,
                                 "field": "",
-                                "name": "Action:StepBoostApproach",
+                                "name": "Action:Action:StepBoostApproach",
                                 "nodeType": "ACTION",
                                 "nodeUID": -1,
                                 "op": ">=",
@@ -46,7 +46,7 @@
                                 "children": [],
                                 "conditionThreshold": 0.0,
                                 "field": "",
-                                "name": "Action:RunAndShoot",
+                                "name": "Action:Action:RunAndShoot",
                                 "nodeType": "ACTION",
                                 "nodeUID": -1,
                                 "op": ">=",
@@ -58,7 +58,7 @@
                                 "children": [],
                                 "conditionThreshold": 0.0,
                                 "field": "",
-                                "name": "Action:StepBoostRetreat",
+                                "name": "Action:Action:StepBoostRetreat",
                                 "nodeType": "ACTION",
                                 "nodeUID": -1,
                                 "op": ">=",
@@ -107,7 +107,7 @@
                                 "children": [],
                                 "conditionThreshold": 0.0,
                                 "field": "",
-                                "name": "Action:LaunchJump",
+                                "name": "Action:Action:LaunchJump",
                                 "nodeType": "ACTION",
                                 "nodeUID": -1,
                                 "op": ">=",
@@ -119,7 +119,7 @@
                                 "children": [],
                                 "conditionThreshold": 0.0,
                                 "field": "",
-                                "name": "Action:AerialCombat",
+                                "name": "Action:Action:AerialCombat",
                                 "nodeType": "ACTION",
                                 "nodeUID": -1,
                                 "op": ">=",
@@ -168,7 +168,7 @@
                                 "children": [],
                                 "conditionThreshold": 0.0,
                                 "field": "",
-                                "name": "Action:EvadeStep",
+                                "name": "Action:Action:EvadeStep",
                                 "nodeType": "ACTION",
                                 "nodeUID": -1,
                                 "op": ">=",
@@ -180,7 +180,7 @@
                                 "children": [],
                                 "conditionThreshold": 0.0,
                                 "field": "",
-                                "name": "Action:ResumeRunning",
+                                "name": "Action:Action:ResumeRunning",
                                 "nodeType": "ACTION",
                                 "nodeUID": -1,
                                 "op": ">=",
@@ -214,99 +214,99 @@
     ],
     "editorLinks": [
         {
+            "fromNodeUID": 3,
+            "fromPinIndex": 0,
+            "toNodeUID": 5,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 3,
+            "fromPinIndex": 1,
+            "toNodeUID": 2,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 3,
+            "fromPinIndex": 2,
+            "toNodeUID": 8,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 3,
+            "fromPinIndex": 3,
+            "toNodeUID": 4,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 3,
+            "fromPinIndex": 4,
+            "toNodeUID": 0,
+            "toPinIndex": 0
+        },
+        {
             "fromNodeUID": 1,
             "fromPinIndex": 0,
             "toNodeUID": 3,
             "toPinIndex": 0
         },
         {
-            "fromNodeUID": 1,
-            "fromPinIndex": 1,
+            "fromNodeUID": 7,
+            "fromPinIndex": 0,
             "toNodeUID": 6,
             "toPinIndex": 0
         },
         {
-            "fromNodeUID": 1,
-            "fromPinIndex": 2,
-            "toNodeUID": 2,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 1,
-            "fromPinIndex": 3,
-            "toNodeUID": 5,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 1,
-            "fromPinIndex": 4,
-            "toNodeUID": 4,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 0,
-            "fromPinIndex": 0,
-            "toNodeUID": 1,
-            "toPinIndex": 0
-        },
-        {
             "fromNodeUID": 7,
-            "fromPinIndex": 0,
+            "fromPinIndex": 1,
             "toNodeUID": 9,
             "toPinIndex": 0
         },
         {
             "fromNodeUID": 7,
-            "fromPinIndex": 1,
-            "toNodeUID": 10,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 7,
             "fromPinIndex": 2,
-            "toNodeUID": 8,
+            "toNodeUID": 11,
             "toPinIndex": 0
         },
         {
             "fromNodeUID": 7,
             "fromPinIndex": 3,
-            "toNodeUID": 11,
+            "toNodeUID": 12,
             "toPinIndex": 0
         },
         {
-            "fromNodeUID": 0,
+            "fromNodeUID": 1,
             "fromPinIndex": 1,
             "toNodeUID": 7,
             "toPinIndex": 0
         },
         {
-            "fromNodeUID": 12,
+            "fromNodeUID": 10,
             "fromPinIndex": 0,
             "toNodeUID": 13,
             "toPinIndex": 0
         },
         {
-            "fromNodeUID": 12,
+            "fromNodeUID": 10,
             "fromPinIndex": 1,
             "toNodeUID": 14,
             "toPinIndex": 0
         },
         {
-            "fromNodeUID": 12,
+            "fromNodeUID": 10,
             "fromPinIndex": 2,
             "toNodeUID": 15,
             "toPinIndex": 0
         },
         {
-            "fromNodeUID": 12,
+            "fromNodeUID": 10,
             "fromPinIndex": 3,
             "toNodeUID": 16,
             "toPinIndex": 0
         },
         {
-            "fromNodeUID": 0,
+            "fromNodeUID": 1,
             "fromPinIndex": 2,
-            "toNodeUID": 12,
+            "toNodeUID": 10,
             "toPinIndex": 0
         }
     ],
@@ -315,57 +315,9 @@
             "children": [],
             "conditionThreshold": 0.0,
             "field": "",
-            "name": "Selector",
-            "nodeType": "SELECTOR",
+            "name": "Action:Action:StepBoostRetreat",
+            "nodeType": "ACTION",
             "nodeUID": 0,
-            "op": ">=",
-            "posX": 100.0,
-            "posY": 100.0,
-            "targetState": "NONE"
-        },
-        {
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Sequence",
-            "nodeType": "SEQUENCE",
-            "nodeUID": 1,
-            "op": ">=",
-            "posX": 400.0,
-            "posY": 100.0,
-            "targetState": "NONE"
-        },
-        {
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Action:StepBoostApproach",
-            "nodeType": "ACTION",
-            "nodeUID": 2,
-            "op": ">=",
-            "posX": 700.0,
-            "posY": 300.0,
-            "targetState": "Action:StepBoostApproach"
-        },
-        {
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Condition",
-            "nodeType": "CONDITION",
-            "nodeUID": 3,
-            "op": ">=",
-            "posX": 700.0,
-            "posY": 100.0,
-            "targetState": "NONE"
-        },
-        {
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Action:StepBoostRetreat",
-            "nodeType": "ACTION",
-            "nodeUID": 4,
             "op": ">=",
             "posX": 700.0,
             "posY": 500.0,
@@ -375,9 +327,45 @@
             "children": [],
             "conditionThreshold": 0.0,
             "field": "",
-            "name": "Action:RunAndShoot",
+            "name": "Selector",
+            "nodeType": "SELECTOR",
+            "nodeUID": 1,
+            "op": ">=",
+            "posX": 100.0,
+            "posY": 100.0,
+            "targetState": "NONE"
+        },
+        {
+            "children": [],
+            "conditionThreshold": 0.0,
+            "field": "",
+            "name": "Condition",
+            "nodeType": "CONDITION",
+            "nodeUID": 2,
+            "op": ">=",
+            "posX": 700.0,
+            "posY": 200.0,
+            "targetState": "NONE"
+        },
+        {
+            "children": [],
+            "conditionThreshold": 0.0,
+            "field": "",
+            "name": "Sequence",
+            "nodeType": "SEQUENCE",
+            "nodeUID": 3,
+            "op": ">=",
+            "posX": 400.0,
+            "posY": 100.0,
+            "targetState": "NONE"
+        },
+        {
+            "children": [],
+            "conditionThreshold": 0.0,
+            "field": "",
+            "name": "Action:Action:RunAndShoot",
             "nodeType": "ACTION",
-            "nodeUID": 5,
+            "nodeUID": 4,
             "op": ">=",
             "posX": 700.0,
             "posY": 400.0,
@@ -389,10 +377,22 @@
             "field": "",
             "name": "Condition",
             "nodeType": "CONDITION",
+            "nodeUID": 5,
+            "op": ">=",
+            "posX": 700.0,
+            "posY": 100.0,
+            "targetState": "NONE"
+        },
+        {
+            "children": [],
+            "conditionThreshold": 0.0,
+            "field": "",
+            "name": "Condition",
+            "nodeType": "CONDITION",
             "nodeUID": 6,
             "op": ">=",
             "posX": 700.0,
-            "posY": 200.0,
+            "posY": 700.0,
             "targetState": "NONE"
         },
         {
@@ -411,13 +411,13 @@
             "children": [],
             "conditionThreshold": 0.0,
             "field": "",
-            "name": "Action:LaunchJump",
+            "name": "Action:Action:StepBoostApproach",
             "nodeType": "ACTION",
             "nodeUID": 8,
             "op": ">=",
             "posX": 700.0,
-            "posY": 900.0,
-            "targetState": "Action:LaunchJump"
+            "posY": 300.0,
+            "targetState": "Action:StepBoostApproach"
         },
         {
             "children": [],
@@ -428,18 +428,6 @@
             "nodeUID": 9,
             "op": ">=",
             "posX": 700.0,
-            "posY": 700.0,
-            "targetState": "NONE"
-        },
-        {
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Condition",
-            "nodeType": "CONDITION",
-            "nodeUID": 10,
-            "op": ">=",
-            "posX": 700.0,
             "posY": 800.0,
             "targetState": "NONE"
         },
@@ -447,25 +435,37 @@
             "children": [],
             "conditionThreshold": 0.0,
             "field": "",
-            "name": "Action:AerialCombat",
-            "nodeType": "ACTION",
-            "nodeUID": 11,
+            "name": "Sequence",
+            "nodeType": "SEQUENCE",
+            "nodeUID": 10,
             "op": ">=",
-            "posX": 700.0,
-            "posY": 1000.0,
-            "targetState": "Action:AerialCombat"
+            "posX": 400.0,
+            "posY": 1200.0,
+            "targetState": "NONE"
         },
         {
             "children": [],
             "conditionThreshold": 0.0,
             "field": "",
-            "name": "Sequence",
-            "nodeType": "SEQUENCE",
+            "name": "Action:Action:LaunchJump",
+            "nodeType": "ACTION",
+            "nodeUID": 11,
+            "op": ">=",
+            "posX": 700.0,
+            "posY": 900.0,
+            "targetState": "Action:LaunchJump"
+        },
+        {
+            "children": [],
+            "conditionThreshold": 0.0,
+            "field": "",
+            "name": "Action:Action:AerialCombat",
+            "nodeType": "ACTION",
             "nodeUID": 12,
             "op": ">=",
-            "posX": 400.0,
-            "posY": 1200.0,
-            "targetState": "NONE"
+            "posX": 700.0,
+            "posY": 1000.0,
+            "targetState": "Action:AerialCombat"
         },
         {
             "children": [],
@@ -495,7 +495,7 @@
             "children": [],
             "conditionThreshold": 0.0,
             "field": "",
-            "name": "Action:EvadeStep",
+            "name": "Action:Action:EvadeStep",
             "nodeType": "ACTION",
             "nodeUID": 15,
             "op": ">=",
@@ -507,7 +507,7 @@
             "children": [],
             "conditionThreshold": 0.0,
             "field": "",
-            "name": "Action:ResumeRunning",
+            "name": "Action:Action:ResumeRunning",
             "nodeType": "ACTION",
             "nodeUID": 16,
             "op": ">=",
@@ -517,5 +517,5 @@
         }
     ],
     "rootType": "SELECTOR",
-    "setName": "DefaultComboSet.json"
+    "setName": "TestCombo.json"
 }

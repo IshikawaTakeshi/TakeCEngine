@@ -110,7 +110,6 @@ private:
 	std::unique_ptr<EnemyInputProvider> inputProvider_Enemy = nullptr;
 	std::unique_ptr<Enemy> enemy_ = nullptr;
 	std::unique_ptr<HPBar> enemyHpBar_ = nullptr;
-	std::unique_ptr<BehaviorTreeEditor> behaviorTreeEditor_ = nullptr;
 
 	std::unique_ptr<BulletManager> bulletManager_ = nullptr;
 

@@ -162,6 +162,16 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 		"DefaultComboSet.json",
 		stateManager_.get()
 	);
+
+	// ===== 追加: BehaviorTreeEditor 初期化と接続 =====
+	behaviorTreeEditor_ = std::make_unique<BehaviorTreeEditor>();
+	behaviorTreeEditor_->Initialize();
+	behaviorTreeEditor_->LoadTreeFromEnemy(behaviorTree_.get(), blackboard_.get());
+
+	// Applyボタン -> Enemyへ反映予約
+	behaviorTreeEditor_->SetApplyCallback([this](const ComboSetData& data) {
+		this->ApplyBehaviorTree(data);
+		});
 }
 
 //========================================================================================================
@@ -284,7 +294,14 @@ void Enemy::Update() {
 			behaviorTree_ = comboFactory_.BuildBehaviorTree(*pendingTreeData_,stateManager_.get());
 
 			// ノードの状態を初期化（念のため）
-			behaviorTree_->Reset();
+			if (behaviorTree_) {
+				behaviorTree_->Reset();
+			}
+
+			//Editorに新しいツリーを反映
+			if (behaviorTreeEditor_ && blackboard_) {
+				behaviorTreeEditor_->LoadTreeFromEnemy(behaviorTree_.get(), blackboard_.get());
+			}
 
 			pendingTreeData_ = nullptr;
 		}
@@ -558,6 +575,11 @@ void Enemy::UpdateImGui() {
 	}
 
 	ImGui::End();
+
+	// Enemyウィンドウとは別ウィンドウ("Behavior Tree Editor")で描画される
+	if (behaviorTreeEditor_) {
+		behaviorTreeEditor_->UpdateImGui(behaviorTree_.get());
+	}
 #endif // _DEBUG
 }
 
@@ -688,10 +710,16 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 
 void Enemy::UpdateAttack() {
 
+	// BTが攻撃を許可していないなら何もしない
+	bool allowAttack = blackboard_->GetValue<bool>("AllowAttack");
+	if (!allowAttack) {
+		enemyData_.characterInfo.isChargeShooting = false;
+		std::fill(chargeShootableUnits_.begin(), chargeShootableUnits_.end(), false);
+		return;
+	}
+
 	// AIにどの武器を使うか選ばせる
 	std::vector<int> chosenWeapons = aiBrainSystem_->ChooseWeaponUnit(weapons_);
-
-	// 選ばれた武器すべてに対して攻撃処理を行う
 	for (int weaponIndex : chosenWeapons) {
 		WeaponAttack(weaponIndex);
 	}
@@ -704,7 +732,6 @@ void Enemy::UpdateAttack() {
 			if (enemyData_.characterInfo.isChargeShooting == true) {
 				// チャージ撃ち中の処理
 				chargeShootTimer_.Update();
-
 				
 				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();
@@ -1013,4 +1040,6 @@ void Enemy::UpdateBlackboard() {
 		std::string key = "attackScore" + std::to_string(i);
 		blackboard_->SetValue(key, aiBrainSystem_->GetAttackScore(static_cast<int>(i)));
 	}
+
+	blackboard_->SetValue("AllowAttack", aiBrainSystem_->IsAllowAttack());
 }

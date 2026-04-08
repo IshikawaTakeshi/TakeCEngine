@@ -49,6 +49,8 @@ class AIBrainSystem {
 	bool GetIsBulletNearby() const { return isBulletNearby_; }
 	//最適な行動の取得
 	Action GetBestAction() const { return bestAction_; }
+	//攻撃許可フラグの取得
+	bool IsAllowAttack() const { return allowAttack_; }
 
 	//----- setter -----------------------------------
 
@@ -60,6 +62,8 @@ class AIBrainSystem {
 	void SetIsBulletNearby(bool isNearby) { isBulletNearby_ = isNearby; }
 	//行動の重みパラメータの設定
 	void SetActionWeightParam(const ActionWeightParam& param) { weightParam_ = param; }
+	//攻撃許可フラグの設定
+	void SetAllowAttack(bool allow) { allowAttack_ = allow; }
 
 private:
 
@@ -81,6 +85,9 @@ private:
 	bool isBulletNearby_ = false;
 	//enemyの情報(借りてくる)
 	PlayableCharacterInfo* characterInfo_;
+	// 攻撃許可フラグ
+	bool allowAttack_ = false;
+
 
 private:
 

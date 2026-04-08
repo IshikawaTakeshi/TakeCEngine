@@ -40,16 +40,7 @@ void BehaviorTreeEditor::Initialize() {
 	flowEditor_ = std::make_unique<ImFlow::ImNodeFlow>("BehaviorTreeEditor");
 
 	//右クリックメニューのノードを追加可能にする
-	flowEditor_->rightClickPopUpContent([this](ImFlow::BaseNode*) {
-		if (ImGui::MenuItem("Add Action")) { flowEditor_->placeNode<ActionNodeView>("NONE"); }
-		if (ImGui::MenuItem("Add Condition")) { flowEditor_->placeNode<ConditionNodeView>(); }
-		if (ImGui::MenuItem("Add ScoreCondition")) { flowEditor_->placeNode<ScoreConditionNodeView>(); }
-		if (ImGui::MenuItem("Add Selector")) { flowEditor_->placeNode<SelectorNodeView>(); }
-		if (ImGui::MenuItem("Add Sequence")) { flowEditor_->placeNode<SequenceNodeView>(); }
-		if (ImGui::MenuItem("Add PlannerSelector")) { flowEditor_->placeNode<PlannerSelectorNodeView>(); }
-		if (ImGui::MenuItem("Add WeightSelector")) { flowEditor_->placeNode<WeightSelectorNodeView>(); }
-
-		});
+	SetupContextMenu();
 
 	//コンボセットのリストを取得
 	comboSetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ComboSetData>();
@@ -163,7 +154,9 @@ void BehaviorTreeEditor::UpdateImGui(BehaviorNode* activeRoot) {
 
 		// Blackboardの表示
 		if (ImGui::TreeNode("Blackboard")) {
-			blackboard_->UpdateImGui();
+			if (blackboard_) {
+				blackboard_->UpdateImGui();
+			}
 			ImGui::TreePop();
 		}
 		ImGui::Separator();
@@ -174,14 +167,16 @@ void BehaviorTreeEditor::UpdateImGui(BehaviorNode* activeRoot) {
 
 		if (ImGui::Button("Apply Behavior Tree")) {
 			currentComboSetData_ = BuildComboSetDataFromEditor();
-			applyCallback_(currentComboSetData_);
+			if (applyCallback_) {
+				applyCallback_(currentComboSetData_);
+			}
 		}
 
 		//コンボセットの読み込みボタン
 		if (ImGui::CollapsingHeader("Load ComboSet")) {
 			int currentPresetIndex_ = -1;
 			bool isSelected = false;
-			isSelected = ImGuiManager::ComboBoxString("Preset", comboSetNames_, currentPresetIndex_);
+			isSelected = ImGuiManager::ComboBoxString("ComboSet", comboSetNames_, currentPresetIndex_);
 
 			if (isSelected) {
 				//選択されたプリセットのツリーを読み込む
@@ -249,8 +244,31 @@ void BehaviorTreeEditor::LoadTreeFromEnemy(BehaviorNode* rootNode, Blackboard* b
 	rootNode_ = rootNode;
 	// いったんエディタのノードをクリアする
 	nodeViewMap_.clear();
-	ImVec2 startPos = ImVec2(100.0f, 100.0f);
-	BuildNodeView(rootNode_, startPos);
+	flowEditor_ = std::make_unique<ImFlow::ImNodeFlow>("BehaviorTreeEditor");
+	// 右クリックメニューを再設定
+	SetupContextMenu();
+
+	// ルートのCompositeNodeは「外側のwrapper」として扱い、
+	// その型をrootTypeに記録した上で、子ノード群だけをエディタに展開する。
+	// こうすることでBuildComboSetDataFromEditor()が各子を
+	// 独立したコンボとして正しく収集できる。
+	auto* composite = dynamic_cast<CompositeNode*>(rootNode);
+	if (composite) {
+		currentComboSetData_.rootType = DetectRootType(composite);
+		currentComboSetData_.setName = composite->GetName();
+
+		ImVec2 startPos = ImVec2(100.0f, 100.0f);
+		for (auto& child : composite->GetChildren()) {
+			BuildNodeView(child.get(), startPos);
+			startPos.y += 200.0f; // 兄弟コンボ間のY間隔
+		}
+	} else {
+		// CompositeNodeでない（葉ノード単体）場合はそのまま展開
+		currentComboSetData_.rootType = "SELECTOR";
+		ImVec2 startPos = ImVec2(100.0f, 100.0f);
+		BuildNodeView(rootNode_, startPos);
+	}
+
 	currentComboSetData_ = BuildComboSetDataFromEditor();
 }
 
@@ -275,15 +293,7 @@ void BehaviorTreeEditor::LoadTreeFromJson(const std::string& filepath) {
 	// エディタをクリア
 	flowEditor_ = std::make_unique<ImFlow::ImNodeFlow>("BehaviorTreeEditor");
 	// 右クリックメニューを再設定
-	flowEditor_->rightClickPopUpContent([this](ImFlow::BaseNode*) {
-		if (ImGui::MenuItem("Add Action")) { flowEditor_->placeNode<ActionNodeView>("NONE"); }
-		if (ImGui::MenuItem("Add Condition")) { flowEditor_->placeNode<ConditionNodeView>(); }
-		if (ImGui::MenuItem("Add ScoreCondition")) { flowEditor_->placeNode<ScoreConditionNodeView>(); }
-		if (ImGui::MenuItem("Add Selector")) { flowEditor_->placeNode<SelectorNodeView>(); }
-		if (ImGui::MenuItem("Add Sequence")) { flowEditor_->placeNode<SequenceNodeView>(); }
-		if (ImGui::MenuItem("Add PlannerSelector")) { flowEditor_->placeNode<PlannerSelectorNodeView>(); }
-		if (ImGui::MenuItem("Add WeightSelector")) { flowEditor_->placeNode<WeightSelectorNodeView>(); }
-		});
+	SetupContextMenu();
 
 	std::map<int, std::shared_ptr<BehaviorNodeView>> idToNode;
 
@@ -556,23 +566,36 @@ ComboSetData BehaviorTreeEditor::BuildComboSetDataFromEditor() const {
 	}
 
 	// --- 2. エディタレイアウト情報（フラットなリスト）を保存 ---
-	std::map<ImFlow::BaseNode*, int> nodePtrToId;
-	int nextId = 0;
+	std::map<ImFlow::BaseNode*, int> nodePtrToUid;
+
+	// 既存UIDの最大値を先に拾う
+	int maxUid = -1;
+	for (auto& pair : nodes) {
+		auto* v = static_cast<BehaviorNodeView*>(pair.second.get());
+		if (!v) continue;
+		maxUid = std::max(maxUid, v->GetNodeUID());
+	}
+	int nextId = maxUid + 1;
 
 	for (auto& pair : nodes) {
 		auto* viewNode = static_cast<BehaviorNodeView*>(pair.second.get());
-		nodePtrToId[viewNode] = nextId;
+		if (!viewNode) continue;
+
+		int uid = viewNode->GetNodeUID();
+		if (uid < 0) {
+			uid = nextId++;
+			viewNode->SetNodeUID(uid);
+		}
+		nodePtrToUid[viewNode] = uid;
 
 		BehaviorNodeData nodeData;
 		nodeData.name = viewNode->getName();
 		nodeData.posX = viewNode->getPos().x;
 		nodeData.posY = viewNode->getPos().y;
-		nodeData.nodeUID = nextId;
-		viewNode->SetNodeUID(nextId); // ビューにも書き戻す（SyncWithActiveTree で使う）
+		nodeData.nodeUID = uid;
 		viewNode->SaveParameters(nodeData);
 
 		out.editorNodes.push_back(nodeData);
-		nextId++;
 	}
 
 	// 全リンクの保存
@@ -580,9 +603,10 @@ ComboSetData BehaviorTreeEditor::BuildComboSetDataFromEditor() const {
 		if (auto link = link_weak.lock()) {
 			BehaviorLinkData linkData;
 
+			// リンクの左側（出力側）と右側（入力側）のノードとピンのインデックスを特定
 			auto* outPin = link->left();
 			auto* outNode = outPin->getParent();
-			linkData.fromNodeUID = nodePtrToId[outNode];
+			linkData.fromNodeUID = nodePtrToUid[outNode];
 			const auto& outPins = outNode->getOuts();
 			for (int i = 0; i < (int)outPins.size(); ++i) {
 				if (outPins[i].get() == outPin) { linkData.fromPinIndex = i; break; }
@@ -590,17 +614,123 @@ ComboSetData BehaviorTreeEditor::BuildComboSetDataFromEditor() const {
 
 			auto* inPin = link->right();
 			auto* inNode = inPin->getParent();
-			linkData.toNodeUID = nodePtrToId[inNode];
+			linkData.toNodeUID = nodePtrToUid[inNode];
 			const auto& inPins = inNode->getIns();
 			for (int i = 0; i < (int)inPins.size(); ++i) {
 				if (inPins[i].get() == inPin) { linkData.toPinIndex = i; break; }
 			}
 
+			// リンクデータを保存リストに追加
 			out.editorLinks.push_back(linkData);
 		}
 	}
 
 	return out;
+}
+
+//===============================================================================
+// 右クリックメニューのセットアップ
+//===============================================================================
+void BehaviorTreeEditor::SetupContextMenu() {
+	flowEditor_->rightClickPopUpContent([this](ImFlow::BaseNode* node) {
+		//Add Node メニュー
+		if (ImGui::MenuItem("Add Action")) { flowEditor_->placeNode<ActionNodeView>("NONE"); }
+		if (ImGui::MenuItem("Add Condition")) { flowEditor_->placeNode<ConditionNodeView>(); }
+		if (ImGui::MenuItem("Add ScoreCondition")) { flowEditor_->placeNode<ScoreConditionNodeView>(); }
+		if (ImGui::MenuItem("Add Selector")) { flowEditor_->placeNode<SelectorNodeView>(); }
+		if (ImGui::MenuItem("Add Sequence")) { flowEditor_->placeNode<SequenceNodeView>(); }
+		if (ImGui::MenuItem("Add PlannerSelector")) { flowEditor_->placeNode<PlannerSelectorNodeView>(); }
+		if (ImGui::MenuItem("Add WeightSelector")) { flowEditor_->placeNode<WeightSelectorNodeView>(); }
+
+		// ノード上で右クリックしたときだけ削除を表示
+		auto* target = dynamic_cast<BehaviorNodeView*>(node);
+		if (target) {
+			if (ImGui::MenuItem("Delete Node")) {
+				DeleteNodeOnly(target);
+			}
+			if (ImGui::MenuItem("Delete Subtree")) {
+				DeleteSubtreeNode(target);
+			}
+		}
+		});
+}
+
+//===============================================================================
+// nodeの削除(単体)
+//===============================================================================
+void BehaviorTreeEditor::DeleteNodeOnly(BehaviorNodeView* target) {
+	if (!flowEditor_ || !target) return;
+
+	//targetに繋がる全てのリンクを削除する
+	for (auto& link_weak : flowEditor_->getLinks()) {
+
+		// リンクの左側（出力側）と右側（入力側）のノードを取得
+		auto link = link_weak.lock();
+		if (!link) continue;
+
+		auto* leftNode = static_cast<BehaviorNodeView*>(link->left()->getParent());
+		auto* rightNode = static_cast<BehaviorNodeView*>(link->right()->getParent());
+
+		if (leftNode == target || rightNode == target) {
+			// リンク参照を切る
+			link->right()->deleteLink();
+			link->left()->deleteLink();
+		}
+	}
+
+	// Editor管理マップからも削除する
+	for (auto it = nodeViewMap_.begin(); it != nodeViewMap_.end(); ) {
+		if (it->second == target) {
+			it = nodeViewMap_.erase(it);
+		} else {
+			++it;
+		}
+
+		//ノード削除予約
+		target->destroy();
+	}
+}
+
+//===============================================================================
+// nodeの削除(サブツリーごと)
+//===============================================================================
+void BehaviorTreeEditor::DeleteSubtreeNode(BehaviorNodeView* rootView) {
+	if (!flowEditor_ || !rootView) return;
+
+	//DFSでサブツリー全体を探索してノードを収集する
+	std::vector<BehaviorNodeView*> stack{ rootView };
+	std::vector<BehaviorNodeView*> toDelete;
+
+	while (!stack.empty()) {
+		BehaviorNodeView* current = stack.back();
+		stack.pop_back();
+		toDelete.push_back(current);
+
+		// currentの出力ピンに繋がる子ノードを全てスタックに追加する
+		for (auto& outPinSh : current->getOuts()) {
+			ImFlow::Pin* targetPin = outPinSh.get();
+			for (auto& link_weak : flowEditor_->getLinks()) {
+				auto link = link_weak.lock();
+				if (!link) continue;
+
+				// リンクの左側（出力側）が current の出力ピンと一致する場合、その右側（入力側）に繋がっているノードが子
+				if (link && link->left() == targetPin) {
+					auto* childView = static_cast<BehaviorNodeView*>(link->right()->getParent());
+					stack.push_back(childView);
+				}
+			}
+		}
+	}
+
+	//重複削除
+	std::sort(toDelete.begin(), toDelete.end());
+	toDelete.erase(std::unique(toDelete.begin(), toDelete.end()), toDelete.end());
+
+	// 収集したノードを削除する
+	for (auto* view : toDelete) {
+		DeleteNodeOnly(view);
+	}
+
 }
 
 //===============================================================================

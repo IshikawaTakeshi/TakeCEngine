@@ -101,15 +101,6 @@ void GamePlayScene::Initialize() {
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"));
 
-#if defined(_DEBUG) || defined(_DEVELOP)
-	//BehaviorTreeEditor
-	behaviorTreeEditor_ = std::make_unique<BehaviorTreeEditor>();
-	behaviorTreeEditor_->Initialize();
-	behaviorTreeEditor_->SetApplyCallback([this](const ComboSetData& data) {
-		enemy_->ApplyBehaviorTree(data);
-		});
-	behaviorTreeEditor_->LoadTreeFromEnemy(enemy_->GetBehaviorTree(),enemy_->GetBlackboard());
-#endif // _DEBUG || _DEVELOP
 
 	// playerHpBar
 	playerHpBar_ = std::make_unique<HPBar>();
@@ -279,10 +270,9 @@ void GamePlayScene::UpdateImGui() {
 	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 
 	player_->UpdateImGui();
-	 enemy_->UpdateImGui();
-	 behaviorTreeEditor_->UpdateImGui(enemy_->GetBehaviorTree());
+	enemy_->UpdateImGui();
 
-	 playerHpBar_->UpdateImGui("player");
+	playerHpBar_->UpdateImGui("player");
 	enemyHpBar_->UpdateImGui("enemy");
 	playerReticle_->UpdateImGui();
 	energyInfoUI_->UpdateImGui("player");

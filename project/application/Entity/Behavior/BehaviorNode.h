@@ -57,17 +57,17 @@ public:
 	const std::string& GetName() const { return name_; }
 
 	/// <summary>
-	/// 現在の状態を取得 [EXT]
+	/// 現在の状態を取得
 	/// </summary>
 	BehaviorStatus GetCurrentStatus() const { return currentStatus_; }
 
 	/// <summary>
-	/// UIDの設定 [NEW]
+	/// UIDの設定
 	/// </summary>
 	void SetUID(int uid) { uid_ = uid; }
 
 	/// <summary>
-	/// UIDの取得 [NEW]
+	/// UIDの取得
 	/// </summary>
 	int GetUID() const { return uid_; }
 
