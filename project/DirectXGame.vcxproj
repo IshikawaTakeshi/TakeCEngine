@@ -176,11 +176,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Entity\Behavior\View\SequenceNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\WeightSelectorNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\WeightSelectorNode.cpp" />
+    <ClCompile Include="application\Provider\PauseMenuPadInput.cpp" />
     <ClCompile Include="application\Tool\BreakGaugeUtil.cpp" />
     <ClCompile Include="application\UI\ActionButtonICon.cpp" />
     <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp" />
     <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
     <ClCompile Include="application\UI\BreakGaugeUI.cpp" />
+    <ClCompile Include="application\UI\PauseMenuUI.cpp" />
     <ClCompile Include="application\UI\RingUI.cpp" />
     <ClCompile Include="application\Weapon\Bazooka\Bazooka.cpp" />
     <ClCompile Include="application\UI\EnergyInfoUI.cpp" />
@@ -384,6 +386,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Behavior\WeightSelectorNode.h" />
     <ClInclude Include="application\Entity\BoostDirectionEnum.h" />
     <ClInclude Include="application\Entity\Enemy\ActionWeightParam.h" />
+    <ClInclude Include="application\Provider\Enum\PauseMenuInputEnum.h" />
+    <ClInclude Include="application\Provider\PauseMenuPadInput.h" />
     <ClInclude Include="application\Tool\BreakGaugeUtil.h" />
     <ClInclude Include="application\UI\ActionButtonICon.h" />
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h" />
@@ -397,7 +401,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Scene\GamePlaySceneBehavior.h" />
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditMenuEnum.h" />
     <ClInclude Include="application\UI\BreakGaugeUI.h" />
+    <ClInclude Include="application\UI\PauseMenuUI.h" />
     <ClInclude Include="application\UI\RingUI.h" />
+    <ClInclude Include="application\UI\WarningType.h" />
     <ClInclude Include="application\Weapon\Action\WeaponActionData.h" />
     <ClInclude Include="application\Weapon\Bazooka\Bazooka.h" />
     <ClInclude Include="application\Weapon\Action\BurstShotInfo.h" />

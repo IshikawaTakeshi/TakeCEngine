@@ -16,8 +16,6 @@
 #include "application/Scene/SceneState/GamePlayScene/SceneStateGameStart.h"
 #include "application/Scene/SceneState/GamePlayScene/SceneStatePause.h"
 
-// UI
-#include "application/UI/BreakGaugeUI.h"
 
 //====================================================================
 //			初期化
@@ -135,10 +133,6 @@ void GamePlayScene::Initialize() {
 	for (int i = 0; i < bulletCounterUI_.size(); i++) {
 		TakeCFrameWork::GetUIManager()->CreateUI<BulletCounterGaugeUI>(
 			player_->GetCurrentWeapon(i));
-		// アクションボタンアイコンUI
-		TakeCFrameWork::GetUIManager()->CreateUI<ActionButtonICon>(
-			"InstructionIcon" + std::to_string(i) + ".json",
-			inputProvider_Player.get(), static_cast<CharacterActionInput>(i + 3));
 	}
 
 	// フェーズメッセージUI
@@ -157,10 +151,11 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetUIManager()->CreateUI<WarningUI>("WarningUI");
 
 	// BreakGaugeUI
-	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Player",
-		"Player");
-	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Enemy",
-		"Enemy");
+	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Player","Player");
+	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Enemy","Enemy");
+
+	//ポーズメニューUI
+	//TakeCFrameWork::GetUIManager()->CreateUI<PauseMenuUI>();
 
 	// アクションアイコンUI
 	actionIconSprites_.resize(3);
