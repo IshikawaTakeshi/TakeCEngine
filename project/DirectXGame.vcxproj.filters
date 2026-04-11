@@ -576,6 +576,8 @@
     <ClCompile Include="application\Entity\Behavior\BehaviorTreeUtil.cpp" />
     <ClCompile Include="application\Provider\PauseMenuPadInput.cpp" />
     <ClCompile Include="application\UI\PauseMenuUI.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\SetBlackboardBoolNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\SetBlackboardBoolNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1200,6 +1202,8 @@
     <ClInclude Include="application\Provider\Enum\PauseMenuInputEnum.h" />
     <ClInclude Include="application\UI\WarningType.h" />
     <ClInclude Include="application\UI\PauseMenuUI.h" />
+    <ClInclude Include="application\Entity\Behavior\View\SetBlackboardBoolNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\SetBlackboardBoolNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

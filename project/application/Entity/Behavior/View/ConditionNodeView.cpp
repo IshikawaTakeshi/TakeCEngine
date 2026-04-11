@@ -41,22 +41,6 @@ void ConditionNodeView::draw() {
 		ImGui::Text("Op: %s", op_.c_str());
 		ImGui::Text("Threshold: %.2f", threshold);
 	}
-	else {
-		// 紐づくロジックノードがない場合はエディタ上で編集可能にする
-		char fieldBuf[128];
-		strncpy_s(fieldBuf, field_.c_str(), sizeof(fieldBuf));
-		if (ImGui::InputText("Field", fieldBuf, sizeof(fieldBuf))) {
-			field_ = fieldBuf;
-		}
-
-		char opBuf[10];
-		strncpy_s(opBuf, op_.c_str(), sizeof(opBuf));
-		if (ImGui::InputText("Op", opBuf, sizeof(opBuf))) {
-			op_ = opBuf;
-		}
-
-		ImGui::DragFloat("Threshold", &threshold, 0.1f);
-	}
 }
 
 //====================================================================

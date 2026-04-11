@@ -84,7 +84,7 @@ void SceneStateGamePlay::Update(GamePlayScene* scene) {
 		RequestTransition(SceneState::ENEMYDESTROYED);
 	}
 
-	if(Input::GetInstance().TriggerButton(0,GamepadButtonType::Start)) {
+	/*if(Input::GetInstance().TriggerButton(0,GamepadButtonType::Start)) {
 		RequestTransition(SceneState::PAUSE);
-	}
+	}*/
 }

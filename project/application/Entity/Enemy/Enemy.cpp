@@ -156,6 +156,9 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 
 	// Blackboardの生成
 	blackboard_ = std::make_unique<Blackboard>();
+	
+	// Blackboardに初期値を登録(初回フレームでのGetValueアサートを防止)
+	UpdateBlackboard();
 
 	// JSONからビヘイビアツリーを構築
 	behaviorTree_ = comboFactory_.LoadComboSetData(
@@ -360,7 +363,7 @@ void Enemy::Update() {
 			enemyData_.characterInfo.transform.translate).Length();
 		aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
 		aiBrainSystem_->SetDistanceToTarget(dist);
-		aiBrainSystem_->Update();
+		aiBrainSystem_->Update(weapons_);
 
 		// 2. Blackboardにデータを集約
 		UpdateBlackboard();
@@ -710,14 +713,6 @@ void Enemy::OnCollisionAction(GameCharacter* other) {
 
 void Enemy::UpdateAttack() {
 
-	// BTが攻撃を許可していないなら何もしない
-	bool allowAttack = blackboard_->GetValue<bool>("AllowAttack");
-	if (!allowAttack) {
-		enemyData_.characterInfo.isChargeShooting = false;
-		std::fill(chargeShootableUnits_.begin(), chargeShootableUnits_.end(), false);
-		return;
-	}
-
 	// AIにどの武器を使うか選ばせる
 	std::vector<int> chosenWeapons = aiBrainSystem_->ChooseWeaponUnit(weapons_);
 	for (int weaponIndex : chosenWeapons) {
@@ -1040,6 +1035,4 @@ void Enemy::UpdateBlackboard() {
 		std::string key = "attackScore" + std::to_string(i);
 		blackboard_->SetValue(key, aiBrainSystem_->GetAttackScore(static_cast<int>(i)));
 	}
-
-	blackboard_->SetValue("AllowAttack", aiBrainSystem_->IsAllowAttack());
 }

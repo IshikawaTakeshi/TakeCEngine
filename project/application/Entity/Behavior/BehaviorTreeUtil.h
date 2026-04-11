@@ -34,6 +34,10 @@ struct BehaviorNodeData {
 	float posX = 0.0f;                         // X座標
 	float posY = 0.0f;                         // Y座標
 	int nodeUID = -1;                          // 保存用一意識別子
+
+	// SetBlackboardBoolNode 用拡張
+	std::string bbKey = "";                    // 書き込む対象のキー
+	bool bbValue = false;                      // 書き込むbool値
 };
 
 //============================================================================
@@ -68,9 +72,24 @@ struct ComboSetData {
 };
 
 // JSONシリアライズ用のマクロ
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BehaviorNodeData, name, nodeType, targetState, field, op, conditionThreshold, children, posX, posY, nodeUID)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+	BehaviorNodeData,
+	name, 
+	nodeType, 
+	targetState,
+	field, 
+	op, 
+	conditionThreshold,
+	children,
+	posX, 
+	posY, 
+	nodeUID,
+	bbKey, 
+	bbValue)
+
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BehaviorLinkData, fromNodeUID, fromPinIndex, toNodeUID, toPinIndex)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ComboData, comboName, rootNode)
+
 
 void to_json(nlohmann::json& j, const ComboSetData& data);
 void from_json(const nlohmann::json& j, ComboSetData& data);
