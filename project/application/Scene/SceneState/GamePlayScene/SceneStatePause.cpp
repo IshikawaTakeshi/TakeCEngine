@@ -9,6 +9,11 @@ using namespace TakeC;
 //===================================================================================
 void SceneStatePause::Initialize([[maybe_unused]] GamePlayScene *scene) {
 
+	// ポーズメニューUIを開く
+	TakeCFrameWork::GetUIManager()->GetUI<PauseMenuUI>("PauseMenuUI")->Open();
+	// ポーズフラグを立てる
+	scene->SetPauseMenuActive(true);
+
 }
 
 //===================================================================================
@@ -16,8 +21,16 @@ void SceneStatePause::Initialize([[maybe_unused]] GamePlayScene *scene) {
 //===================================================================================
 void SceneStatePause::Update([[maybe_unused]] GamePlayScene *scene) {
 
+	TakeCFrameWork::GetUIManager()->Update();
+	TakeCFrameWork::GetSpriteManager()->Update();
 
 	if(Input::GetInstance().TriggerButton(0,GamepadButtonType::Start)) {
-		RequestTransition(SceneState::PAUSE);
+
+		// ポーズメニューUIを閉じる
+		TakeCFrameWork::GetUIManager()->GetUI<PauseMenuUI>("PauseMenuUI")->Close();
+		// ポーズフラグを下ろす
+		scene->SetPauseMenuActive(false);
+		// ゲームプレイ状態に遷移
+		RequestTransition(SceneState::GAMEPLAY);
 	}
 }

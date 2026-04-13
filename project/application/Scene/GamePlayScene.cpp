@@ -130,9 +130,9 @@ void GamePlayScene::Initialize() {
 	bulletCounterUI_[3]->Initialize(TakeCFrameWork::GetSpriteManager(),
 		{ 900.0f, 540.0f });
 
-	for (int i = 0; i < bulletCounterUI_.size(); i++) {
+	for (int i = 0; i < (int)bulletCounterUI_.size(); i++) {
 		TakeCFrameWork::GetUIManager()->CreateUI<BulletCounterGaugeUI>(
-			player_->GetCurrentWeapon(i));
+			"BulletCounterGauge" + std::to_string(i), player_->GetCurrentWeapon(i));
 	}
 
 	// フェーズメッセージUI
@@ -144,18 +144,19 @@ void GamePlayScene::Initialize() {
 
 		// アクションボタンアイコンUI
 		TakeCFrameWork::GetUIManager()->CreateUI<ActionButtonICon>(
-			"InstructionIcon" + std::to_string(i) + ".json",
+			"InstructionIcon" + std::to_string(i), "InstructionIcon" + std::to_string(i) + ".json",
 			inputProvider_Player.get(), static_cast<CharacterActionInput>(i + 3));
 	}
 	// 警告表示UI
-	TakeCFrameWork::GetUIManager()->CreateUI<WarningUI>("WarningUI");
+	TakeCFrameWork::GetUIManager()->CreateUI<WarningUI>("WarningUI", "WarningUI");
 
 	// BreakGaugeUI
-	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Player","Player");
-	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Enemy","Enemy");
+	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Player", "BreakGauge_Player", "Player");
+	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Enemy", "BreakGauge_Enemy", "Enemy");
 
 	//ポーズメニューUI
-	//TakeCFrameWork::GetUIManager()->CreateUI<PauseMenuUI>();
+	TakeCFrameWork::GetUIManager()->CreateUI<PauseMenuUI>("PauseMenuUI");
+	TakeCFrameWork::GetUIManager()->SetUIActive("PauseMenuUI", false); // 最初は非表示
 
 	// アクションアイコンUI
 	actionIconSprites_.resize(3);
@@ -215,11 +216,17 @@ void GamePlayScene::Update() {
 		isSoundPlay_ = true;
 	}
 
-	// カメラの更新
-	TakeC::CameraManager::GetInstance().Update();
 	// SkyBoxの更新
 	skyBox_->Update();
+	// シーンステートの更新
+	sceneStateManager_.Update(this);
 
+	if(isPauseMenuActive_){
+		return; // 以降の更新処理をスキップ
+	}
+
+	// カメラの更新
+	TakeC::CameraManager::GetInstance().Update();
 	// enemy
 	enemy_->SetFocusTargetPos(player_->GetBodyPosition());
 	enemy_->SetFocusTargetVelocity(player_->GetVelocity());
@@ -227,9 +234,6 @@ void GamePlayScene::Update() {
 	// player
 	player_->SetFocusTargetPos(enemy_->GetBodyPosition());
 	player_->SetFocusTargetVelocity(enemy_->GetVelocity());
-
-	// シーンステートの更新
-	sceneStateManager_.Update(this);
 
 	enemy_->Update();
 	player_->Update();

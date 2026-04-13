@@ -9,15 +9,16 @@ using namespace TakeC;
 void PauseMenuUI::Initialize(SpriteManager* spriteManager) {
     BaseUI::Initialize(spriteManager);
 
-    // 例: 適宜あなたのアセット名に合わせて変更
-    bg_ = CreateAndRegisterSprite("pause_bg", basePos_);
-    cursor_ = CreateAndRegisterSprite("pause_cursor", { basePos_.x - 140.0f, basePos_.y });
+    // UIConfigの一括読み込み
+    LoadUIConfig("PauseMenu");
+
+    // 各スプライトポインタの取得
+    bg_ = GetSprite("BG");
+    cursor_ = GetSprite("Cursor");
 
     itemSprites_.clear();
     for (int i = 0; i < (int)itemNames_.size(); ++i) {
-        Vector2 p = { basePos_.x, basePos_.y + i * itemIntervalY_ };
-        // 例: "pause_item_resume" のようなテクスチャ名にしてもOK
-        Sprite* item = CreateAndRegisterSprite("pause_item_" + std::to_string(i), p);
+        Sprite* item = GetSprite("Item" + std::to_string(i));
         itemSprites_.push_back(item);
     }
 
@@ -100,41 +101,37 @@ void PauseMenuUI::ExecuteCurrent() {
 //	ビジュアル更新処理
 //============================================================================
 void PauseMenuUI::UpdateVisual() {
-    if (cursor_) {
-        Vector2 cp = { basePos_.x - 140.0f, basePos_.y + currentIndex_ * itemIntervalY_ };
-		cursor_->SetTranslate(cp);
+    if (cursor_ && currentIndex_ < (int)itemSprites_.size() && itemSprites_[currentIndex_]) {
+        Vector2 itemPos = itemSprites_[currentIndex_]->GetTranslate();
+        // カーソルを項目の右側に配置
+        Vector2 cp = { itemPos.x + 140.0f, itemPos.y };
+        cursor_->SetTranslate(cp);
     }
 
-    // 選択中だけ明るくする例
+    // 選択中だけ明るくする
     for (int i = 0; i < (int)itemSprites_.size(); ++i) {
         if (!itemSprites_[i]) continue;
         Vector4 color = (i == currentIndex_)
             ? Vector4{1, 1, 1, 1}
-        : Vector4{0.6f, 0.6f, 0.6f, 1};
+		: PauseColor_;
         itemSprites_[i]->SetMaterialColor(color);
     }
-
-    // BaseUIのalpha反映も併用したい場合は SetAlpha(alpha_) を適宜
 }
 
 //============================================================================
 //	位置設定
 //============================================================================
 void PauseMenuUI::SetPosition(const Vector2& position) {
-    basePos_ = position;
+    BaseUI::SetPosition(position);
 
-	// 背景の位置を更新
+    // 背景の位置を更新
     if (bg_) {
-        bg_->SetTranslate(basePos_);
-    }
-	// アイテムの位置も更新
-    for (int i = 0; i < (int)itemSprites_.size(); ++i) {
-        if (itemSprites_[i]) {
-            itemSprites_[i]->SetTranslate({ basePos_.x, basePos_.y + i * itemIntervalY_ });
-        }
+        bg_->SetTranslate(position);
     }
 
-	// カーソル位置も更新
+    // アイテムやカーソルは、ポーズメニュー全体を動かす仕組みが必要な場合
+    // ここで各JSONの初期座標にオフセットとして加算するなどの処理が必要ですが、
+    // 現状は基準座標(bg)の移動のみ対応します。
     UpdateVisual();
 }
 

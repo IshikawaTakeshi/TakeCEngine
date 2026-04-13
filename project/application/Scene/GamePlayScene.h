@@ -86,6 +86,8 @@ public:
 	PhaseMessageUI* GetPhaseMessageUI() const { return phaseMessageUI_.get(); }
 	SceneStateManager& GetSceneStateManager() { return sceneStateManager_; }
 
+	void SetPauseMenuActive(bool isActive) { isPauseMenuActive_ = isActive; }
+
 private:
 	// 全ての当たり判定のチェック
 	void CheckAllCollisions();
@@ -128,4 +130,6 @@ private:
 
 	// 画面遷移時間
 	float fadeTimer_ = 0.0f;
+	// ポーズメニューがアクティブかどうか
+	bool isPauseMenuActive_ = false; 
 };

@@ -99,8 +99,6 @@ private:
     Sprite* bg_ = nullptr;
     Sprite* cursor_ = nullptr;
     std::vector<Sprite*> itemSprites_;
+	Vector4 PauseColor_ = { 0.3f, 0.3f, 0.3f, 1.0f };
 
-    // layout
-    Vector2 basePos_ = { 640.0f, 360.0f };
-    float itemIntervalY_ = 56.0f;
 };

@@ -11,13 +11,17 @@ using namespace TakeC;
 void SceneStateGamePlay::Initialize(GamePlayScene* scene) {
 
 	// フェーズメッセージUIにFIGHTメッセージをセット
-	scene->GetPhaseMessageUI()->SetNextMessage(PhaseMessage::FIGHT);
+	if (isFirstUpdate_) {
+		scene->GetPhaseMessageUI()->SetNextMessage(PhaseMessage::FIGHT);
+	}
 
 	TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(
 		Camera::GameCameraState::LOCKON);
 
 	scene->GetPlayer()->SetInCombat(true);
 	scene->GetEnemy()->SetInCombat(true);
+
+	isFirstUpdate_ = false;
 }
 
 //===================================================================================
@@ -84,7 +88,7 @@ void SceneStateGamePlay::Update(GamePlayScene* scene) {
 		RequestTransition(SceneState::ENEMYDESTROYED);
 	}
 
-	/*if(Input::GetInstance().TriggerButton(0,GamepadButtonType::Start)) {
+	if(Input::GetInstance().TriggerButton(0,GamepadButtonType::Start)) {
 		RequestTransition(SceneState::PAUSE);
-	}*/
+	}
 }
