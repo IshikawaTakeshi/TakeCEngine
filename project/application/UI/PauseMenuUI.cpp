@@ -1,5 +1,6 @@
 #include "PauseMenuUI.h"
 #include "engine/Base/SpriteManager.h"
+#include "engine/Base/TakeCFrameWork.h"
 
 using namespace TakeC;
 
@@ -65,6 +66,8 @@ void PauseMenuUI::Close() {
    
     //BGの色を変化させる
     bg_->Animation()->PlayFade(1.0f, 0.0f, 0.1f, 0.0f, Easing::EasingType::LINEAR, SpriteAnimator::PlayMode::ONCE);
+	//ポストエフェクトを再生
+    TakeCFrameWork::GetPostEffectManager()->PlayEffect("Outline_FadeIn");
 }
 
 //============================================================================

@@ -89,6 +89,8 @@ void SceneStateGamePlay::Update(GamePlayScene* scene) {
 	}
 
 	if(Input::GetInstance().TriggerButton(0,GamepadButtonType::Start)) {
+		//ポストエフェクトを再生
+		TakeCFrameWork::GetPostEffectManager()->PlayEffect("Outline_FadeOut");
 		RequestTransition(SceneState::PAUSE);
 	}
 }

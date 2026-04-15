@@ -12,8 +12,9 @@ void SceneStateGameClear::Initialize(GamePlayScene* scene) {
 	scene->GetPhaseMessageUI()->SetNextMessage(PhaseMessage::WIN);
 
 	// スローモーション解除
-	MyGame::RequestTimeScale(1.0f, 0.6f, 0.0f);
-	float fadeTimer = 3.0f;
+	MyGame::RequestTimeScale(1.0f, 0.4f, 0.0f);
+	float fadeTimer = 1.0f;
+	TakeCFrameWork::GetPostEffectManager()->PlayEffect("Outline_FadeOut");
 	SceneManager::GetInstance().ChangeScene("GAMECLEAR", fadeTimer);
 }
 

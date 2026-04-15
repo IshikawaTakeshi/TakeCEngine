@@ -1,0 +1,23 @@
+{
+    "duration": 1.0,
+    "easingType": 0,
+    "effectName": "DepthBasedOutline",
+    "endIntensity": 0.1,
+    "peakIntensity": 0.05,
+    "peakTimeRate": 0.5009999871253967,
+    "presetName": "Outline_FadeOut",
+    "specificParams": {
+        "color": {
+            "w": 1.0,
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "distantEnd": 2200.0,
+        "distantSensitivity": 0.0,
+        "distantStart": 200.0,
+        "isActive": true,
+        "weight": 0.1
+    },
+    "startIntensity": 0.0
+}

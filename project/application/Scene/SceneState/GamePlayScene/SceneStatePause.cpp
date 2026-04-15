@@ -41,7 +41,8 @@ void SceneStatePause::Update([[maybe_unused]] GamePlayScene* scene) {
 		// ポーズフラグを下ろす
 		scene->SetPauseMenuActive(false);
 		// ゲーム開始状態に遷移
-		float fadeTimer = 2.0f;
+		float fadeTimer = 1.0f;
+		TakeCFrameWork::GetPostEffectManager()->PlayEffect("Outline_FadeOut");
 		SceneManager::GetInstance().ChangeScene("GAMEPLAY", fadeTimer);
 		break;
 	}
@@ -50,7 +51,8 @@ void SceneStatePause::Update([[maybe_unused]] GamePlayScene* scene) {
 		// ポーズフラグを下ろす
 		scene->SetPauseMenuActive(false);
 		// ゲーム開始状態に遷移
-		float fadeTimer = 2.0f;
+		float fadeTimer = 1.0f;
+		TakeCFrameWork::GetPostEffectManager()->PlayEffect("Outline_FadeOut");
 		SceneManager::GetInstance().ChangeScene("TITLE", fadeTimer);
 		break;
 	}

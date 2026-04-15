@@ -139,3 +139,7 @@ nlohmann::json DepthBasedOutline::GetSpecificParams() const {
 
 	return param;
 }
+
+void DepthBasedOutline::SetIntensity(float intensity) {
+	outlineInfoData_->weight = std::max(0.0f, intensity); // 強度は0以上に制限
+}

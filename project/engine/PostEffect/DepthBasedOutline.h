@@ -63,6 +63,8 @@ public:
 		}
 	}
 
+	void SetIntensity(float intensity) override;
+
 private:
 
 	DepthBasedOutlineInfo* outlineInfoData_ = nullptr; // アウトライン情報データ

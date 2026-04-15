@@ -154,10 +154,6 @@ void GamePlayScene::Initialize() {
 	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Player", "BreakGauge_Player", "Player");
 	TakeCFrameWork::GetUIManager()->CreateUI<BreakGaugeUI>("BreakGauge_Enemy", "BreakGauge_Enemy", "Enemy");
 
-	//ポーズメニューUI
-	TakeCFrameWork::GetUIManager()->CreateUI<PauseMenuUI>("PauseMenuUI");
-	TakeCFrameWork::GetUIManager()->SetUIActive("PauseMenuUI", false); // 最初は非表示
-
 	// アクションアイコンUI
 	actionIconSprites_.resize(3);
 
@@ -165,6 +161,10 @@ void GamePlayScene::Initialize() {
 		actionIconSprites_[i] = TakeCFrameWork::GetSpriteManager()->CreateFromJson(
 			"ActionIcon" + std::to_string(i) + ".json");
 	}
+
+	//ポーズメニューUI
+	TakeCFrameWork::GetUIManager()->CreateUI<PauseMenuUI>("PauseMenuUI");
+	TakeCFrameWork::GetUIManager()->SetUIActive("PauseMenuUI", false); // 最初は非表示
 
 	// シーンステートの初期化
 	sceneStateManager_.RegisterState(SceneState::GAMESTART,
