@@ -7,25 +7,25 @@
         "w": 1.0,
         "x": 1.0,
         "y": 1.0,
-        "z": 1.0
+        "z": 0.26274511218070984
     },
-    "name": "PauseMenu_Item0.json",
+    "name": "PauseMenu_Cursor.json.json",
     "position": {
-        "x": 150.0,
+        "x": 290.0,
         "y": 100.0
     },
     "rotation": 0.0,
     "size": {
-        "x": 250.0,
+        "x": 32.0,
         "y": 32.0
     },
-    "textureFilePath": "UI/PauseMenu.png",
+    "textureFilePath": "ic_play.png",
     "textureLeftTop": {
-        "x": 20.0,
-        "y": 28.0
+        "x": 0.0,
+        "y": 0.0
     },
     "textureSize": {
-        "x": 555.0,
-        "y": 64.0
+        "x": 128.0,
+        "y": 128.0
     }
 }

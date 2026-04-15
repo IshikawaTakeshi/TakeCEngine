@@ -22,7 +22,7 @@ bool PauseMenuPadInput::IsPressed(PauseMenuInput button) const {
 	case PauseMenuInput::Left: return Input::GetInstance().PushButton(0, GamepadButtonType::DPadLEFT);
 	case PauseMenuInput::Right: return Input::GetInstance().PushButton(0, GamepadButtonType::DPadRIGHT);
 	case PauseMenuInput::Select: return Input::GetInstance().PushButton(0, GamepadButtonType::A);
-	case PauseMenuInput::Back: return Input::GetInstance().PushButton(0, GamepadButtonType::B);
+	case PauseMenuInput::Back: return Input::GetInstance().PushButton(0, GamepadButtonType::B) || Input::GetInstance().PushButton(0, GamepadButtonType::Start);
 	default: 
 		return false;
 	}
@@ -35,7 +35,7 @@ bool PauseMenuPadInput::IsTriggered(PauseMenuInput button) const {
 	case PauseMenuInput::Left: return Input::GetInstance().TriggerButton(0, GamepadButtonType::DPadLEFT);
 	case PauseMenuInput::Right: return Input::GetInstance().TriggerButton(0, GamepadButtonType::DPadRIGHT);
 	case PauseMenuInput::Select: return Input::GetInstance().TriggerButton(0, GamepadButtonType::A);
-	case PauseMenuInput::Back: return Input::GetInstance().TriggerButton(0, GamepadButtonType::B);
+	case PauseMenuInput::Back: return Input::GetInstance().TriggerButton(0, GamepadButtonType::B) || Input::GetInstance().TriggerButton(0, GamepadButtonType::Start);
 	default:
 		return false;
 	}
@@ -48,7 +48,7 @@ bool PauseMenuPadInput::IsReleased(PauseMenuInput button) const {
 	case PauseMenuInput::Left: return Input::GetInstance().ReleaseButton(0, GamepadButtonType::DPadLEFT);
 	case PauseMenuInput::Right: return Input::GetInstance().ReleaseButton(0, GamepadButtonType::DPadRIGHT);
 	case PauseMenuInput::Select: return Input::GetInstance().ReleaseButton(0, GamepadButtonType::A);
-	case PauseMenuInput::Back: return Input::GetInstance().ReleaseButton(0, GamepadButtonType::B);
+	case PauseMenuInput::Back: return Input::GetInstance().ReleaseButton(0, GamepadButtonType::B) || Input::GetInstance().ReleaseButton(0, GamepadButtonType::Start);
 	default:
 		return false;
 	}

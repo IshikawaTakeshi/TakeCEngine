@@ -92,6 +92,8 @@ private:
     int currentIndex_ = 0;
 	// メニューが開いているか
     bool isOpen_ = false;
+    // 終了処理中か
+    bool isClosing_ = false;
 	// メニューの選択結果
     PauseMenuResult result_ = PauseMenuResult::None;
 

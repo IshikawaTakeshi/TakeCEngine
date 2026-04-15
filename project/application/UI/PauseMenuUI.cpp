@@ -24,6 +24,7 @@ void PauseMenuUI::Initialize(SpriteManager* spriteManager) {
 
     SetActive(false);
     isOpen_ = false;
+    isClosing_ = false;
     result_ = PauseMenuResult::None;
     currentIndex_ = 0;
     UpdateVisual();
@@ -35,7 +36,10 @@ void PauseMenuUI::Initialize(SpriteManager* spriteManager) {
 void PauseMenuUI::Update() {
     if (!IsActive() || !isOpen_) return;
 
-    UpdateInput();
+    // 終了進行中でない場合のみ入力を受け付ける
+    if (!isClosing_) {
+        UpdateInput();
+    }
     UpdateVisual();
 }
 
@@ -44,15 +48,23 @@ void PauseMenuUI::Update() {
 //============================================================================
 void PauseMenuUI::Open() {
     isOpen_ = true;
+    isClosing_ = false;
     SetActive(true);
     result_ = PauseMenuResult::None;
     currentIndex_ = 0;
+
+    //BGの色を変化させる
+	bg_->Animation()->PlayFade(0.0f, 1.0f, 0.1f, 0.0f, Easing::EasingType::LINEAR, SpriteAnimator::PlayMode::ONCE);
+
     UpdateVisual();
 }
 
 void PauseMenuUI::Close() {
-    isOpen_ = false;
-    SetActive(false);
+    if (isClosing_) return;
+    isClosing_ = true;
+   
+    //BGの色を変化させる
+    bg_->Animation()->PlayFade(1.0f, 0.0f, 0.1f, 0.0f, Easing::EasingType::LINEAR, SpriteAnimator::PlayMode::ONCE);
 }
 
 //============================================================================
@@ -94,6 +106,7 @@ void PauseMenuUI::ExecuteCurrent() {
     case 2: result_ = PauseMenuResult::ToTitle; break;
     default: result_ = PauseMenuResult::None; break;
     }
+    // ポーズメニューUIを閉じる
     Close();
 }
 
@@ -116,6 +129,12 @@ void PauseMenuUI::UpdateVisual() {
 		: PauseColor_;
         itemSprites_[i]->SetMaterialColor(color);
     }
+
+    // isOpen_ の更新は ConsumeResult もしくは Update 継続のためにここでは調整しないか、
+    // アニメーション終了判定を共通化する
+    if (bg_->Animation()->IsFinished() && !isClosing_) {
+        // 通常のオープンアニメーション終了時などはここを通る可能性がある
+    }
 }
 
 //============================================================================
@@ -128,10 +147,6 @@ void PauseMenuUI::SetPosition(const Vector2& position) {
     if (bg_) {
         bg_->SetTranslate(position);
     }
-
-    // アイテムやカーソルは、ポーズメニュー全体を動かす仕組みが必要な場合
-    // ここで各JSONの初期座標にオフセットとして加算するなどの処理が必要ですが、
-    // 現状は基準座標(bg)の移動のみ対応します。
     UpdateVisual();
 }
 
@@ -139,6 +154,20 @@ void PauseMenuUI::SetPosition(const Vector2& position) {
 //	結果の消費
 //============================================================================
 PauseMenuResult PauseMenuUI::ConsumeResult() {
+    // 終了処理中で、かつアニメーションが完了している場合のみ結果を返す
+    if (isClosing_) {
+        if (bg_->Animation()->IsFinished()) {
+            PauseMenuResult r = result_;
+            result_ = PauseMenuResult::None;
+            isClosing_ = false;
+            isOpen_ = false;
+            SetActive(false);
+            return r;
+        }
+        return PauseMenuResult::None;
+    }
+
+    // 終了処理中でない場合は即座に返すが、基本的にClose()を経由するので通常はNoneが返る
     PauseMenuResult r = result_;
     result_ = PauseMenuResult::None;
     return r;
