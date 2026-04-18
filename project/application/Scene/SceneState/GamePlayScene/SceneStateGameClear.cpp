@@ -7,10 +7,7 @@
 //===================================================================================
 // 初期化
 //===================================================================================
-void SceneStateGameClear::Initialize(GamePlayScene* scene) {
-
-	scene->GetPhaseMessageUI()->SetNextMessage(PhaseMessage::WIN);
-
+void SceneStateGameClear::Initialize([[maybe_unused]] GamePlayScene* scene) {
 	// スローモーション解除
 	MyGame::RequestTimeScale(1.0f, 0.4f, 0.0f);
 	float fadeTimer = 1.0f;
@@ -21,4 +18,6 @@ void SceneStateGameClear::Initialize(GamePlayScene* scene) {
 //===================================================================================
 // 更新
 //===================================================================================
-void SceneStateGameClear::Update([[maybe_unused]] GamePlayScene* scene) {}
+void SceneStateGameClear::Update([[maybe_unused]] GamePlayScene* scene) {
+
+}

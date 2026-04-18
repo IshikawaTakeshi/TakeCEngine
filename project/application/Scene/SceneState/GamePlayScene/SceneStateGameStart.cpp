@@ -6,17 +6,11 @@
 //===================================================================================
 void SceneStateGameStart::Initialize([[maybe_unused]] GamePlayScene* scene) {
 
-	// フェーズメッセージUIにREADYメッセージをセット
-	scene->GetPhaseMessageUI()->SetNextMessage(PhaseMessage::READY);
 }
 
 //===================================================================================
 // 更新
 //===================================================================================
-void SceneStateGameStart::Update(GamePlayScene* scene) {
+void SceneStateGameStart::Update([[maybe_unused]] GamePlayScene* scene) {
 
-	// フェーズメッセージUIが終了したらゲームプレイへ
-	if (scene->GetPhaseMessageUI()->GetCurrentMessage() == PhaseMessage::FIGHT) {
-		RequestTransition(SceneState::GAMEPLAY);
-	}
 }

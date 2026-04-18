@@ -203,25 +203,7 @@ void MyGame::RequestTimeScale(float timeScale, float duration,float current) {
 
 void MyGame::LoadModel() {
 	//gltf
-	TakeC::ModelManager::GetInstance().LoadModel("Bazooka.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("BazookaBullet.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("boostEffectCone.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Bullet.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("cube.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Floor.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Ground.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Missile.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("plane.gltf","skyBox_blueSky.dds");
 	TakeC::ModelManager::GetInstance().LoadModel("Player_Model_Ver2.0.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Enemy_Model.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("ICOBall.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Rifle.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("Rail.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("VerticalMissileLauncher.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("ShotGun.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("MachineGun.gltf");
-	TakeC::ModelManager::GetInstance().LoadModel("TestBox.gltf");
-	//TakeC::ModelManager::GetInstance().LoadModelAll();
 	//obj
 
 }
@@ -241,10 +223,6 @@ void MyGame::LoadAnimation() {
 void MyGame::LoadTexture() {
 
 	TakeC::TextureManager::GetInstance().LoadTexture("UI/TitleText.png",false);
-	TakeC::TextureManager::GetInstance().LoadTexture("UI/GameClearText.png",false);
-	TakeC::TextureManager::GetInstance().LoadTexture("UI/GameOverText.png", false);
-	TakeC::TextureManager::GetInstance().LoadTexture("UI/reticle_focusTarget.png", false);
-	TakeC::TextureManager::GetInstance().LoadTexture("UI/numText.png", false);
 }
 
 //====================================================================

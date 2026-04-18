@@ -54,11 +54,7 @@ private:
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 	//スプライト
 	std::unique_ptr<Sprite> titleTextSprite_ = nullptr;
-	// 「PRESS START」スプライトUI
-	std::unique_ptr<PushStartUI> pushStartUI_ = nullptr;
 	//
 	std::unique_ptr<Object3d> playerModel_ = nullptr;
-	float cameraRotateSpeed_ = 0.5f;
-	float cameraYaw_ = 0.0f;
 
 };

@@ -6,9 +6,7 @@
 //===================================================================================
 // 初期化
 //===================================================================================
-void SceneStateGameOver::Initialize(GamePlayScene* scene) {
-
-	scene->GetPhaseMessageUI()->SetNextMessage(PhaseMessage::LOSE);
+void SceneStateGameOver::Initialize([[maybe_unused]] GamePlayScene* scene) {
 
 	float fadeTimer = 1.0f;
 	SceneManager::GetInstance().ChangeScene("GAMEOVER", fadeTimer);
@@ -19,4 +17,6 @@ void SceneStateGameOver::Initialize(GamePlayScene* scene) {
 //===================================================================================
 // 更新
 //===================================================================================
-void SceneStateGameOver::Update([[maybe_unused]] GamePlayScene* scene) {}
+void SceneStateGameOver::Update([[maybe_unused]] GamePlayScene* scene) {
+
+}

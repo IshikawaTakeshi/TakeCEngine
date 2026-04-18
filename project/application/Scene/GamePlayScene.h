@@ -71,19 +71,6 @@ public:
 	// getter（ステートクラスからのアクセス用）
 	//=========================================================================
 
-	Player* GetPlayer() const { return player_.get(); }
-	Enemy* GetEnemy() const { return enemy_.get(); }
-	HPBar* GetPlayerHpBar() const { return playerHpBar_.get(); }
-	HPBar* GetEnemyHpBar() const { return enemyHpBar_.get(); }
-	PlayerReticle* GetPlayerReticle() const { return playerReticle_.get(); }
-	EnergyInfoUI* GetEnergyInfoUI() const { return energyInfoUI_.get(); }
-	BulletCounterUI* GetBulletCounterUI(int index) const {
-		return bulletCounterUI_[index].get();
-	}
-	BulletCounterGaugeUI* GetBulletCounterGaugeUI() const {
-		return bulletCounterGaugeUI_.get();
-	}
-	PhaseMessageUI* GetPhaseMessageUI() const { return phaseMessageUI_.get(); }
 	SceneStateManager& GetSceneStateManager() { return sceneStateManager_; }
 
 	void SetPauseMenuActive(bool isActive) { isPauseMenuActive_ = isActive; }
@@ -102,31 +89,6 @@ private:
 	std::unique_ptr<Camera> lightCamera_ = nullptr;
 	// SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
-
-	// player
-	std::unique_ptr<Player> player_ = nullptr;
-	// プレイヤー入力プロバイダ
-	std::unique_ptr<PlayerInputProvider> inputProvider_Player = nullptr;
-	std::unique_ptr<HPBar> playerHpBar_ = nullptr;
-	std::unique_ptr<PlayerReticle> playerReticle_ = nullptr;
-	std::unique_ptr<EnergyInfoUI> energyInfoUI_ = nullptr;
-	std::vector<std::unique_ptr<BulletCounterUI>> bulletCounterUI_;
-	std::unique_ptr<BulletCounterGaugeUI> bulletCounterGaugeUI_;
-	// enemy
-	std::unique_ptr<EnemyInputProvider> inputProvider_Enemy = nullptr;
-	std::unique_ptr<Enemy> enemy_ = nullptr;
-	std::unique_ptr<HPBar> enemyHpBar_ = nullptr;
-
-	std::unique_ptr<BulletManager> bulletManager_ = nullptr;
-
-	std::map<std::string, std::unique_ptr<LevelObject>> levelObjects_;
-
-	//	操作説明スプライト
-	std::vector<std::unique_ptr<Sprite>> instructionSprites_;
-	// 　アクションアイコン
-	std::vector<Sprite*> actionIconSprites_;
-	// フェーズメッセージUI
-	std::unique_ptr<PhaseMessageUI> phaseMessageUI_ = nullptr;
 
 	// 画面遷移時間
 	float fadeTimer_ = 0.0f;

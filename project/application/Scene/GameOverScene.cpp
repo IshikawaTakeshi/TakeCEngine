@@ -27,12 +27,6 @@ void GameOverScene::Initialize() {
 	skybox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(), "skyBox_blueSky.dds");
 	skybox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
-	//Spriteの初期化
-	gameOverTextSprite_ = std::make_unique<Sprite>();
-	gameOverTextSprite_->Initialize(&SpriteCommon::GetInstance(), "UI/GameOverText.png");
-	gameOverTextSprite_->SetTranslate({ 50.0f, 50.0f });
-	gameOverTextSprite_->AdjustTextureSize();
-
 }
 
 //====================================================================
@@ -60,9 +54,6 @@ void GameOverScene::Update() {
 	// 天球の更新
 	skybox_->Update();
 
-	// スプライトの更新
-	gameOverTextSprite_->Update();
-
 	//particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
 	
@@ -82,7 +73,6 @@ void GameOverScene::UpdateImGui() {
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();	
 	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
-	gameOverTextSprite_->UpdateImGui("GameOverTextSprite");
 
 }
 
@@ -101,7 +91,6 @@ void GameOverScene::Draw() {
 
 void GameOverScene::DrawSprite() {
 	SpriteCommon::GetInstance().PreDraw(); // Spriteの描画前処理
-	gameOverTextSprite_->Draw(); // スプライトの描画
 
 }
 
