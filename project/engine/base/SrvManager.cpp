@@ -1,16 +1,16 @@
 #include "SrvManager.h"
 #include "DirectXCommon.h"
 #include <cassert>
+#include "DsvManager.h"
 
-
-
-const uint32_t SrvManager::kMaxSRVCount_ = 512;
+// 最大SRV数
+const uint32_t TakeC::SrvManager::kMaxSRVCount_ = 512;
 
 //================================================================================================
 // 初期化
 //================================================================================================
 
-void SrvManager::Initialize(DirectXCommon* directXCommon) {
+void TakeC::SrvManager::Initialize(DirectXCommon* directXCommon) {
 
 	dxCommon_ = directXCommon;
 
@@ -24,8 +24,8 @@ void SrvManager::Initialize(DirectXCommon* directXCommon) {
 // SRVインデックスの取得
 //================================================================================================
 
-uint32_t SrvManager::Allocate() {
-
+uint32_t TakeC::SrvManager::Allocate() {
+	std::lock_guard<std::mutex> lock(mutex_);
 	//上限に達してないかチェック
 	assert(useIndex_ < kMaxSRVCount_);
 
@@ -41,7 +41,7 @@ uint32_t SrvManager::Allocate() {
 // CPUディスクリプタハンドルの取得
 //================================================================================================
 
-D3D12_CPU_DESCRIPTOR_HANDLE SrvManager::GetSrvDescriptorHandleCPU(uint32_t index) {
+D3D12_CPU_DESCRIPTOR_HANDLE TakeC::SrvManager::GetSrvDescriptorHandleCPU(uint32_t index) {
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 	handleCPU.ptr += (descriptorSize_ * index);
 	return handleCPU;
@@ -51,7 +51,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE SrvManager::GetSrvDescriptorHandleCPU(uint32_t index
 // GPUディスクリプタハンドルの取得
 //================================================================================================
 
-D3D12_GPU_DESCRIPTOR_HANDLE SrvManager::GetSrvDescriptorHandleGPU(uint32_t index) {
+D3D12_GPU_DESCRIPTOR_HANDLE TakeC::SrvManager::GetSrvDescriptorHandleGPU(uint32_t index) {
 	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap_->GetGPUDescriptorHandleForHeapStart();
 	handleGPU.ptr += (descriptorSize_ * index);
 	return handleGPU;
@@ -61,7 +61,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE SrvManager::GetSrvDescriptorHandleGPU(uint32_t index
 // SRV生成（テクスチャ用）
 //================================================================================================
 
-void SrvManager::CreateSRVforTexture2D(bool isCubeMap, DXGI_FORMAT Format, UINT MipLevels,ID3D12Resource* pResource, uint32_t srvIndex) {
+void TakeC::SrvManager::CreateSRVforTexture2D(bool isCubeMap, DXGI_FORMAT Format, UINT MipLevels,ID3D12Resource* pResource, uint32_t srvIndex) {
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = Format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -84,7 +84,7 @@ void SrvManager::CreateSRVforTexture2D(bool isCubeMap, DXGI_FORMAT Format, UINT 
 // SRV生成（RenderTexture用)
 //================================================================================================
 
-void SrvManager::CreateSRVforRenderTexture(ID3D12Resource* pResource,DXGI_FORMAT Format, uint32_t srvIndex) {
+void TakeC::SrvManager::CreateSRVforRenderTexture(ID3D12Resource* pResource,DXGI_FORMAT Format, uint32_t srvIndex) {
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = Format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -98,7 +98,7 @@ void SrvManager::CreateSRVforRenderTexture(ID3D12Resource* pResource,DXGI_FORMAT
 // SRV生成（Structured Buffer用）
 //================================================================================================
 
-void SrvManager::CreateSRVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource,uint32_t srvIndex) {
+void TakeC::SrvManager::CreateSRVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource,uint32_t srvIndex) {
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
@@ -116,7 +116,7 @@ void SrvManager::CreateSRVforStructuredBuffer(UINT numElements, UINT stride, ID3
 //================================================================================================
 // SRV生成（Depth Texture用）
 //================================================================================================
-void SrvManager::CreateSRVforDepthTexture(ID3D12Resource* pResource, uint32_t srvIndex) {
+void TakeC::SrvManager::CreateSRVforDepthTexture(ID3D12Resource* pResource, uint32_t srvIndex) {
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC depthTextureSrvDesc{};
 
@@ -131,7 +131,7 @@ void SrvManager::CreateSRVforDepthTexture(ID3D12Resource* pResource, uint32_t sr
 // UAV生成（RWStructured Buffer用）
 //================================================================================================
 
-void SrvManager::CreateUAVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource, uint32_t uavIndex) {
+void TakeC::SrvManager::CreateUAVforStructuredBuffer(UINT numElements, UINT stride, ID3D12Resource* pResource, uint32_t uavIndex) {
 
 	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc{};
 	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
@@ -149,7 +149,7 @@ void SrvManager::CreateUAVforStructuredBuffer(UINT numElements, UINT stride, ID3
 // UAV生成（RenderTexture用）
 //===================================================================================
 
-void SrvManager::CreateUAVforRenderTexture(ID3D12Resource* pResource,DXGI_FORMAT Format, uint32_t uavIndex) {
+void TakeC::SrvManager::CreateUAVforRenderTexture(ID3D12Resource* pResource,DXGI_FORMAT Format, uint32_t uavIndex) {
 	
 	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc{};
 	uavDesc.Format = Format;
@@ -162,11 +162,11 @@ void SrvManager::CreateUAVforRenderTexture(ID3D12Resource* pResource,DXGI_FORMAT
 // SRVの設定
 //================================================================================================
 
-void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex) {
+void TakeC::SrvManager::SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex) {
 	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(RootParameterIndex, GetSrvDescriptorHandleGPU(srvIndex));
 }
 
-void SrvManager::SetComputeRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex) {
+void TakeC::SrvManager::SetComputeRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex) {
 	dxCommon_->GetCommandList()->SetComputeRootDescriptorTable(RootParameterIndex, GetSrvDescriptorHandleGPU(srvIndex));
 }
 
@@ -174,7 +174,7 @@ void SrvManager::SetComputeRootDescriptorTable(UINT RootParameterIndex, uint32_t
 // テクスチャ確保可能チェック
 //================================================================================================
 
-bool SrvManager::CheckTextureAllocate() {
+bool TakeC::SrvManager::CheckTextureAllocate() {
 	
 	if (useIndex_ < kMaxSRVCount_) {
 		return true;
@@ -188,11 +188,9 @@ bool SrvManager::CheckTextureAllocate() {
 // 描画前処理
 //================================================================================================
 
-void SrvManager::SetDescriptorHeap() {
+void TakeC::SrvManager::SetDescriptorHeap() {
 
 	//SRV用ディスクリプタヒープの設定
 	ID3D12DescriptorHeap* drawHeaps_[] = { descriptorHeap_.Get() };
 	dxCommon_->GetCommandList()->SetDescriptorHeaps(1, drawHeaps_);
 }
-
-

@@ -5,26 +5,22 @@
 #include "Collision/BoxCollider.h"
 #include "Collision/SphereCollider.h"
 
-CollisionManager* CollisionManager::instance_ = nullptr;
-
-CollisionManager* CollisionManager::GetInstance() {
-	if (instance_ == nullptr) {
-		instance_ = new CollisionManager();
-	}
-	return instance_;
+CollisionManager& CollisionManager::GetInstance() {
+	static CollisionManager instance;
+	return instance;
 }
 
 //=============================================================================
 // 初期化
 //=============================================================================
 
-void CollisionManager::Initialize(DirectXCommon* dxCommon) {
+void CollisionManager::Initialize(TakeC::DirectXCommon* dxCommon) {
 
 	dxCommon_ = dxCommon;
 
 	pso_ = std::make_unique<PSO>();
-	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"SkyBox.VS.hlsl");
-	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"SkyBox.PS.hlsl");
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"3d/SkyBox.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"3d/SkyBox.PS.hlsl");
 	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_WIREFRAME, D3D12_DEPTH_WRITE_MASK_ZERO);
 	pso_->SetGraphicPipelineName("CollisionPSO");
 	rootSignature_ = pso_->GetGraphicRootSignature();
@@ -50,42 +46,27 @@ void CollisionManager::PreDraw() {
 void CollisionManager::Finalize() {
 	pso_.reset();
 	rootSignature_.Reset();
-	delete instance_;
-	instance_ = nullptr;
 }
 
 //=============================================================================
-// コライダー2つ衝突判定と応答処理
+// ゲームキャラクターの登録・解放・衝突判定
 //=============================================================================
-
-void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
-
-	//コライダーAとBの座標
-	Vector3 posA, posB;
-
-	//コライダーAとBの座標の取得
-	posA = colliderA->GetWorldPos();
-	posB = colliderB->GetWorldPos();
-
-	//コライダーAとBの衝突判定
-	if (Vector3Math::Length(posA - posB) <= colliderA->GetRadius() + colliderB->GetRadius()) {
-		//コライダーAの衝突処理
-		//colliderA->OnCollisionAction(colliderB);
-		//コライダーBの衝突処理
-		//colliderB->OnCollisionAction(colliderA);
-	}
-}
-
 void CollisionManager::RegisterGameCharacter(GameCharacter* gameCharacter) {
 	colliders_.push_back(gameCharacter->GetCollider());
 	gameCharacters_.push_back(gameCharacter);
 }
 
+//=============================================================================
+// ゲームキャラクターの全解放
+//=============================================================================
 void CollisionManager::ClearGameCharacter() {
 	colliders_.clear();
 	gameCharacters_.clear();
 }
 
+//=============================================================================
+// ゲームキャラクター同士の全衝突判定
+//=============================================================================
 void CollisionManager::CheckAllCollisionsForGameCharacter() {
 
 	//リスト内のペアを総当たり
@@ -105,6 +86,9 @@ void CollisionManager::CheckAllCollisionsForGameCharacter() {
 	}
 }
 
+//=============================================================================
+// ゲームキャラクター同士の衝突判定
+//=============================================================================
 void CollisionManager::CheckCollisionPairForGameCharacter(GameCharacter* gameCharacterA, GameCharacter* gameCharacterB) {
 
 	//コライダーAとB
@@ -114,8 +98,14 @@ void CollisionManager::CheckCollisionPairForGameCharacter(GameCharacter* gameCha
 	//コライダーがnullptrだったらreturn
 	if (!colliderA || !colliderB) return;
 
+	if( gameCharacterA->GetCharacterType() == gameCharacterB->GetCharacterType()) {
+		//同じキャラクタータイプ同士の衝突は無視
+		return;
+	}
+
 	//コライダーAとBの衝突判定
 	if (colliderA->CheckCollision(colliderB)) {
+		
 		//コライダーAの衝突処理
 		gameCharacterA->OnCollisionAction(gameCharacterB);
 		//コライダーBの衝突処理
@@ -123,6 +113,9 @@ void CollisionManager::CheckCollisionPairForGameCharacter(GameCharacter* gameCha
 	}
 }
 
+//=============================================================================
+// レイキャスト処理
+//=============================================================================
 bool CollisionManager::RayCast(const Ray& ray, RayCastHit& outHit,uint32_t layerMask) {
 
 	bool result = false;
@@ -130,9 +123,63 @@ bool CollisionManager::RayCast(const Ray& ray, RayCastHit& outHit,uint32_t layer
 	RayCastHit tempHit;
 	for (auto* collider : colliders_) {
 		// レイヤーマスクによる絞り込み
+		// もしコライダーのレイヤーIDがlayerMaskに含まれていなければスキップ
 		if (!(static_cast<uint32_t>(collider->GetCollisionLayerID()) & layerMask)) continue;
 
+		// レイとコライダーの交差判定
 		if (collider->Intersects(ray, tempHit)) {
+			// 最も近いヒットを記録
+			if (tempHit.distance < closestDistance) {
+				closestDistance = tempHit.distance;
+				outHit = tempHit;
+				result = true;
+			}
+		}
+	}
+	return result;
+}
+
+//=============================================================================
+// 球キャスト処理
+//=============================================================================
+bool CollisionManager::SphereCast(const Ray& ray, float radius, RayCastHit& outHit, uint32_t layerMask) {
+	bool result = false;
+	float closestDistance = ray.distance;
+	RayCastHit tempHit;
+
+	for (auto* collider : colliders_) {
+		// レイヤーマスクによる絞り込み
+		if (!(static_cast<uint32_t>(collider->GetCollisionLayerID()) & layerMask)) continue;
+
+		// スフィアキャスト判定
+		// IntersectsSphere を呼び出す
+		if (collider->IntersectsSphere(ray, radius, tempHit)) {
+			// 最も近いヒットを記録
+			if (tempHit.distance < closestDistance) {
+				closestDistance = tempHit.distance;
+				outHit = tempHit;
+				result = true;
+			}
+		}
+	}
+	return result;
+}
+
+//=============================================================================
+// カプセルキャスト処理
+//=============================================================================
+bool CollisionManager::CapsuleCast(const Capsule& capsule, RayCastHit& outHit, uint32_t layerMask){
+	bool result = false;
+	float closestDistance = Vector3Math::Length(capsule.end - capsule.start);
+	RayCastHit tempHit;
+
+	for (auto* collider : colliders_) {
+		// レイヤーマスクによる絞り込み
+		if (!(static_cast<uint32_t>(collider->GetCollisionLayerID()) & layerMask)) continue;
+
+		// カプセル判定
+		if (collider->IntersectsCapsule(capsule, tempHit)) {
+			// 最も近いヒットを記録
 			if (tempHit.distance < closestDistance) {
 				closestDistance = tempHit.distance;
 				outHit = tempHit;

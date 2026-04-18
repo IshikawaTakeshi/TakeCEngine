@@ -1,4 +1,4 @@
-#include "Particle.hlsli"
+#include "GPUParticle.hlsli"
 
 struct Material {
 	float4 color; //カラー

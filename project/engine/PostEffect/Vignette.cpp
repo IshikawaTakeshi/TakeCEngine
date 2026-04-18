@@ -3,9 +3,15 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
-void Vignette::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
+using namespace TakeC;
+
+//=============================================================================
+// 初期化
+//=============================================================================
+void Vignette::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
+	// 親クラスの初期化処理
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx,outputResource);
 	//PSOの名前付け
 	computePSO_->SetComputePipelineName("VignettePSO");
@@ -22,8 +28,11 @@ void Vignette::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const
 	vignetteInfoData_->vignetteScale = 1.5f; //Vignetteのスケール
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void Vignette::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	if (ImGui::TreeNode("Vignette")) {
 		ImGui::SliderFloat("VignetteScale", &vignetteInfoData_->vignetteScale, 0.0f, 3.0f, "%.5f");
 		ImGui::SliderFloat("VignettePower", &vignetteInfoData_->vignettePower, 0.1f, 1.0f);
@@ -31,14 +40,17 @@ void Vignette::UpdateImGui() {
 	}
 
 	ImGui::SameLine();
-	ImGui::Checkbox("##Vinette::isActive", &vignetteInfoData_->flag);
+	ImGui::Checkbox("##Vinette::isActive", &vignetteInfoData_->isActive);
 #endif // _DEBUG
 }
 
-void Vignette::DisPatch() {
+//=============================================================================
+// Dispatch
+//=============================================================================
+void Vignette::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		outputResource_.Get());
@@ -56,9 +68,35 @@ void Vignette::DisPatch() {
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 8, WinApp::kScreenHeight / 8, 1);
 
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());
 
+}
+
+void Vignette::ApplySpecificParams(const nlohmann::json& params) {
+
+	if(params.is_null() || params.empty()){
+		return;
+	}
+
+	// ※ vignettePower は強度(SetIntensity)として管理されるため、ここでは上書きしない
+	if (params.contains("vignetteScale")) {
+		vignetteInfoData_->vignetteScale = params["vignetteScale"];
+	}
+}
+
+nlohmann::json Vignette::GetSpecificParams() const {
+	
+	VignetteInfo param;
+	param.isActive = vignetteInfoData_->isActive;
+	param.vignetteScale = vignetteInfoData_->vignetteScale;
+	param.vignettePower = vignetteInfoData_->vignettePower;
+
+	return param;
+}
+
+void Vignette::SetIntensity(float intensity) {
+	vignetteInfoData_->vignettePower = std::clamp(intensity, 0.0f, 1.0f);
 }

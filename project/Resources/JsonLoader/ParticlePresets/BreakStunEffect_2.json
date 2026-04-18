@@ -1,0 +1,77 @@
+{
+    "attributes": {
+        "alignRotationToEmitter": false,
+        "color": {
+            "x": 1.0,
+            "y": 0.01568627543747425,
+            "z": 0.10588235408067703
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 10,
+        "enableFollowEmitter": true,
+        "enableLighting": false,
+        "frequency": 0.10000000149011612,
+        "isBillboard": false,
+        "isDirectional": false,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
+        "lifetimeRange": {
+            "max": 0.52,
+            "min": 0.21
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 0.8600000143051147,
+            "min": -0.6800000071525574
+        },
+        "rotateRange": {
+            "max": 0.0,
+            "min": 0.0
+        },
+        "scale": {
+            "x": 16.0,
+            "y": 16.0,
+            "z": 16.0
+        },
+        "scaleEasingType": 0,
+        "scaleRange": {
+            "max": 4.599999904632568,
+            "min": 0.10000000149011612
+        },
+        "scaleSetting": 0,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
+        "velocityRange": {
+            "max": 1.0,
+            "min": -1.0
+        }
+    },
+    "blendState": 1,
+    "isUseTextureAnimation": true,
+    "name": "BreakStunEffect_2",
+    "primitiveParam": {
+        "radius": 1.0,
+        "subDivision": 16
+    },
+    "primitiveType": "PRIMITIVE_SPHERE",
+    "textureAnimationParam": {
+        "columns": 3,
+        "frameDuration": 0.05000000074505806,
+        "loop": true,
+        "rows": 10,
+        "totalFrames": 64
+    },
+    "textureAnimationType": 2,
+    "textureFilePath": "UI/OperationInstructions.png"
+}

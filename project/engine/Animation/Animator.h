@@ -4,39 +4,70 @@
 #include <string>
 #include <unordered_map>
 
-class Animator {
-public:
+//============================================================================
+// AnimationManager class
+//============================================================================
+namespace TakeC {
+	class AnimationManager {
+	public:
 
-	Animator() = default;
-	~Animator() = default;
+		//========================================================================
+		// functions
+		//========================================================================
 
-	void Finalize();
+		/// <summary>
+		/// コンストラクタ・デストラクタ
+		/// </summary>
+		AnimationManager() = default;
+		~AnimationManager() = default;
 
-	void LoadAnimation(const std::string& directoryPath,const std::string& filePath);
+		/// <summary>
+		/// 終了処理
+		/// </summary>
+		void Finalize();
 
-	Animation* FindAnimation(const std::string& filePath,const std::string& animName);
+		/// <summary>
+		/// アニメーション読み込み
+		/// </summary>
+		/// <param name="directoryPath"></param>
+		/// <param name="filePath"></param>
+		void LoadAnimation(const std::string& filePath);
 
-	static std::map<std::string, Animation*> LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
-	
-	/// <summary>
-	/// ベクトルの補間値を計算
-	/// </summary>
-	static Vector3 CalculateValue(const std::vector<KeyflameVector3>& keyframes, float time);
+		/// <summary>
+		/// アニメーション検索
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <param name="animName"></param>
+		/// <returns></returns>
+		Animation* FindAnimation(const std::string& filePath, const std::string& animName);
 
-	/// <summary>
-	/// クォータニオンの補間値を計算
-	/// </summary>
-	/// <param name="keyframes"></param>
-	/// <param name="time"></param>
-	/// <returns></returns>
-	static Quaternion CalculateValue(const std::vector<KeyflameQuaternion>& keyframes, float time);
+		/// <summary>
+		/// アニメーションファイル読み込み
+		/// </summary>
+		/// <param name="directoryPath"></param>
+		/// <param name="filename"></param>
+		/// <returns></returns>
+		static std::map<std::string, Animation*> LoadAnimationFile(const std::string& filename);
 
-private:
+		/// <summary>
+		/// ベクトルの補間値を計算
+		/// </summary>
+		static Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
 
-	/// <summary>
-	/// アニメーションのコンテナ
-	/// (ファイル名, (アニメーション名,アニメーション))
-	/// </summary>
-	std::map<std::string,std::map<std::string, Animation*>> animations_;
-};
+		/// <summary>
+		/// クォータニオンの補間値を計算
+		/// </summary>
+		/// <param name="keyframes"></param>
+		/// <param name="time"></param>
+		/// <returns></returns>
+		static Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
 
+	private:
+
+		/// <summary>
+		/// アニメーションのコンテナ
+		/// (ファイル名, (アニメーション名,アニメーション))
+		/// </summary>
+		std::map<std::string, std::map<std::string, Animation*>> animations_;
+	};
+}

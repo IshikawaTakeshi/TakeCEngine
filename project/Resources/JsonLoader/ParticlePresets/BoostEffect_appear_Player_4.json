@@ -1,0 +1,79 @@
+{
+    "attributes": {
+        "alignRotationToEmitter": true,
+        "color": {
+            "x": 0.125490203499794,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 47,
+        "enableFollowEmitter": true,
+        "enableLighting": false,
+        "frequency": 0.10000000149011612,
+        "isBillboard": false,
+        "isDirectional": true,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
+        "lifetimeRange": {
+            "max": 0.10000000149011612,
+            "min": 0.10000000149011612
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 0.0,
+            "min": 0.0
+        },
+        "rotateRange": {
+            "max": 0.8519999980926514,
+            "min": -1.9819999933242798
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "scaleEasingType": 0,
+        "scaleRange": {
+            "max": 3.0,
+            "min": 0.10000000149011612
+        },
+        "scaleSetting": 0,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
+        "velocityRange": {
+            "max": 50.0,
+            "min": 0.0
+        }
+    },
+    "blendState": 1,
+    "isUseTextureAnimation": true,
+    "name": "BoostEffect_appear_Player_4.json",
+    "primitiveParam": {
+        "height": 0.4099999964237213,
+        "radius": 1.0,
+        "subDivision": 32
+    },
+    "primitiveType": "PRIMITIVE_CYLINDER",
+    "textureAnimationParam": {
+        "scrollSpeed": {
+            "x": 9.640000343322754,
+            "y": 10.0
+        },
+        "wrapU": true,
+        "wrapV": true
+    },
+    "textureAnimationType": 1,
+    "textureFilePath": "SparkNoise.png"
+}

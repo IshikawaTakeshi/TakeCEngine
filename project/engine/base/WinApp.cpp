@@ -1,33 +1,25 @@
 #include "WinApp.h"
-
+#include "engine/Input/Input.h"
 #include <cassert>
+
 #pragma region imgui
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 #include "../externals/imgui/imgui.h"
 #include "../externals/imgui/imgui_impl_dx12.h"
 #include "../externals/imgui/imgui_impl_win32.h"
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 	HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif // DEBUG
-#pragma endregion
 
-float WinApp::widthPercent_ = float(WinApp::kScreenWidth) / WinApp::kDebugScreenWidth_;
-float WinApp::heightPercent_ = float(WinApp::kScreenHeight) / WinApp::kDebugScreenHeight_;
-
-WinApp::WinApp() {}
-
-WinApp::~WinApp() {
-#ifdef _DEBUG
-	debugController_.Reset();
-#endif // _DEBUG
-
-}
+//静的メンバ変数の初期化
+float TakeC::WinApp::widthPercent_ = float(WinApp::kScreenWidth) / WinApp::kDebugScreenWidth_;
+float TakeC::WinApp::heightPercent_ = float(WinApp::kScreenHeight) / WinApp::kDebugScreenHeight_;
 
 //=====================================================================
 //			初期化
 //=====================================================================
 
-void WinApp::Initialize(const wchar_t title[]) {
+void TakeC::WinApp::Initialize(const wchar_t title[]) {
 
 	HRESULT hr;
 	hr = CoInitializeEx(0, COINIT_MULTITHREADED);
@@ -43,12 +35,12 @@ void WinApp::Initialize(const wchar_t title[]) {
 
 	//ウィンドウクラスを登録する
 	RegisterClass(&wc_);
-
+	//ゲームウィンドウの作成
 	CreateGameWindow(title);
 
 	assert(SUCCEEDED(hr));
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	//debugController
 	debugController_ = nullptr;
@@ -66,7 +58,7 @@ void WinApp::Initialize(const wchar_t title[]) {
 //			終了・開放処理
 //=====================================================================
 
-void WinApp::Finalize() {
+void TakeC::WinApp::Finalize() {
 
 	CloseWindow(hwnd_);
 	CoUninitialize();
@@ -76,7 +68,7 @@ void WinApp::Finalize() {
 //			メッセージの処理
 //=======================================================================
 
-bool WinApp::ProcessMessage() {
+bool TakeC::WinApp::ProcessMessage() {
 
 	MSG msg{};//メッセージ
 
@@ -95,40 +87,11 @@ bool WinApp::ProcessMessage() {
 }
 
 //=======================================================================
-//			ビューポートの取得
-//=======================================================================
-
-D3D12_VIEWPORT WinApp::GetViewport() const {
-	D3D12_VIEWPORT viewport = {};
-	viewport.TopLeftX = offsetX_;
-	viewport.TopLeftY = offsetY_;
-	viewport.Width = static_cast<float>(kScreenWidth);
-	viewport.Height = static_cast<float>(kScreenHeight);
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	return viewport;
-}
-
-//=======================================================================
-//			ウィンドウのクライアント領域のサイズを取得
-//=======================================================================
-
-D3D12_RECT WinApp::GetScissorRect() const {
-	
-	D3D12_RECT scissorRect = {};
-	scissorRect.left = static_cast<LONG>(offsetX_);
-	scissorRect.top = static_cast<LONG>(offsetY_);
-	scissorRect.right = static_cast<LONG>(kScreenWidth + offsetX_);
-	scissorRect.bottom = static_cast<LONG>(kScreenHeight + offsetY_);
-	return scissorRect;
-}
-
-//=======================================================================
 //ウィンドウプロシージャ
 //=======================================================================
 
-LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-#ifdef _DEBUG
+LRESULT CALLBACK TakeC::WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+#if defined(_DEBUG) || defined(_DEVELOP)
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam)) {
 		return true;
 	}
@@ -142,6 +105,19 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
 		//OSに対して、アプリの終了を伝える
 		PostQuitMessage(0);
 		return 0;
+
+		// F11 でフルスクリーン切替
+	case WM_KEYDOWN:
+		if (TakeC::Input::GetInstance().PushKey(DIK_F11)) {
+			// hwnd を使ってインスタンスのフラグを取得するため、ウィンドウユーザーデータにポインタを設定しておく必要があります。
+			// ここでは SetWindowLongPtr / GetWindowLongPtr を使って保存されているポインタを取得する想定です。
+			LONG_PTR ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);
+			if (ptr) {
+				WinApp* app = reinterpret_cast<WinApp*>(ptr);
+				app->ToggleFullscreen();
+			}
+		}
+		break;
 	}
 
 	//標準のメッセージ処理を行う
@@ -152,7 +128,7 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
 //			ゲームウィンドウの作成
 //=======================================================================
 
-void WinApp::CreateGameWindow(const wchar_t title[]) {
+void TakeC::WinApp::CreateGameWindow(const wchar_t title[]) {
 
 	//ウィンドウサイズを表す構造体にクライアント領域を入れる
 	wrc_ = { 0,0,kWindowWidth,kWindowHeight };
@@ -174,6 +150,71 @@ void WinApp::CreateGameWindow(const wchar_t title[]) {
 		nullptr                 //オプション
 	);
 
+	// ウィンドウインスタンスを WindowLongPtr に保存（WindowProc で参照するため）
+	SetWindowLongPtr(hwnd_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+
+#if defined(_DEBUG) || defined(_DEVELOP)
+
+#else
+
+	SetFullscreen(true); // 起動時はフルスクリーンにする
+
+#endif // DEBUG
+
+
 	//ウィンドウを表示する
 	ShowWindow(hwnd_, SW_SHOW);
+}
+
+//=======================================================================
+//            フルスクリーン切替の実装
+//=======================================================================
+
+void TakeC::WinApp::SetFullscreen(bool enable) {
+	if (enable == isFullscreen_) {
+		return; // 既にその状態
+	}
+
+	if (enable) {
+		// ウィンドウモード -> フルスクリーン（ボーダレス）
+		// 現在のウィンドウスタイル/位置を保存
+		prevStyle_ = GetWindowLongPtr(hwnd_, GWL_STYLE);
+		prevExStyle_ = GetWindowLongPtr(hwnd_, GWL_EXSTYLE);
+		GetWindowRect();
+
+		// モニタのワークエリアを取得（モニタ全体を使いたければ rcMonitor を使う）
+		HMONITOR hMon = MonitorFromWindow(hwnd_, MONITOR_DEFAULTTONEAREST);
+		MONITORINFO mi = { sizeof(mi) };
+		GetMonitorInfo(hMon, &mi);
+		RECT rc = mi.rcMonitor; // 全画面
+		//RECT rc = mi.rcWork; // タスクバーを除いたワークエリア
+
+		// スタイルを取り除く
+		SetWindowLongPtr(hwnd_, GWL_STYLE, WS_VISIBLE | WS_POPUP);
+		SetWindowLongPtr(hwnd_, GWL_EXSTYLE, prevExStyle_ & ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
+
+		// 大きさと位置をモニタ全面に
+		SetWindowPos(hwnd_, HWND_TOP,
+			rc.left, rc.top,
+			rc.right - rc.left, rc.bottom - rc.top,
+			SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+
+		isFullscreen_ = true;
+	}
+	else {
+		// フルスクリーン -> ウィンドウモードに戻す
+		SetWindowLongPtr(hwnd_, GWL_STYLE, prevStyle_);
+		SetWindowLongPtr(hwnd_, GWL_EXSTYLE, prevExStyle_);
+		SetWindowPos(hwnd_, HWND_TOP,
+			wrc_.left, wrc_.top,
+			wrc_.right,
+			wrc_.bottom,
+			SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+
+		isFullscreen_ = false;
+	}
+}
+
+void TakeC::WinApp::ToggleFullscreen() {
+	SetFullscreen(!isFullscreen_);
 }

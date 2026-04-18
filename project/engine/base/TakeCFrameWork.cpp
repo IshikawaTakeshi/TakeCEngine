@@ -1,17 +1,24 @@
 #include "TakeCFrameWork.h"
 #include <cassert>
 
+using namespace TakeC;
+
 //Clockの宣言
 using Clock = std::chrono::high_resolution_clock;
 
-std::unique_ptr<Animator> TakeCFrameWork::animator_ = nullptr;
-std::unique_ptr<JsonLoader> TakeCFrameWork::jsonLoader_ = nullptr;
-std::unique_ptr<ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
-std::unique_ptr<PrimitiveDrawer> TakeCFrameWork::primitiveDrawer_ = nullptr;
-std::unique_ptr<PostEffectManager> TakeCFrameWork::postEffectManager_= nullptr;
-std::unique_ptr<WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
+std::unique_ptr<TakeC::AnimationManager> TakeCFrameWork::animationManager_ = nullptr;
+std::unique_ptr<TakeC::JsonLoader> TakeCFrameWork::jsonLoader_ = nullptr;
+std::unique_ptr<TakeC::LightManager> TakeCFrameWork::lightManager_ = nullptr;
+std::unique_ptr<TakeC::ParticleManager> TakeCFrameWork::particleManager_ = nullptr;
+std::unique_ptr<TakeC::PrimitiveDrawer> TakeCFrameWork::primitiveDrawer_ = nullptr;
+std::unique_ptr<TakeC::PostEffectManager> TakeCFrameWork::postEffectManager_= nullptr;
+std::unique_ptr<TakeC::WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
+std::unique_ptr<TakeC::SpriteManager> TakeCFrameWork::spriteManager_ = nullptr;
+std::unique_ptr<TakeC::UIManager> TakeCFrameWork::uiManager_ = nullptr;
+std::unique_ptr<TakeC::EventManager> TakeCFrameWork::eventManager_ = nullptr;
+
 std::chrono::steady_clock::time_point TakeCFrameWork::gameTime_ = Clock::now();
-const float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
+float TakeCFrameWork::deltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
 
 //====================================================================
 //			初期化
@@ -20,87 +27,110 @@ const float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデ�
 void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//タイトルバーの名前の入力
-	winApp_ = std::make_unique<WinApp>();
+	winApp_ = std::make_unique<TakeC::WinApp>();
 	winApp_->Initialize(titleName.c_str());
 
 	////DirectX初期化
-	directXCommon_ = std::make_unique<DirectXCommon>();
+	directXCommon_ = std::make_unique<TakeC::DirectXCommon>();
 	directXCommon_->Initialize(winApp_.get());
 	//SrvManager
-	srvManager_ = std::make_unique<SrvManager>();
+	srvManager_ = std::make_unique<TakeC::SrvManager>();
 	srvManager_->Initialize(directXCommon_.get());
 
 	//ResourceBarrier
-	ResourceBarrier::GetInstance()->Initialize(directXCommon_.get());
+	ResourceBarrier::GetInstance().Initialize(directXCommon_.get());
 
 	
 	//入力初期化
-	input_ = Input::GetInstance();
+	input_ = &Input::GetInstance();
 	input_->Initialize(winApp_.get());
 
 	//Audio
-	audio_ = AudioManager::GetInstance();
+	audio_ = &AudioManager::GetInstance();
 	audio_->Initialize();
 
 	//JsonLoader
 	jsonLoader_ = std::make_unique<JsonLoader>();
 
+	//lightManager
+	lightManager_ = std::make_unique<TakeC::LightManager>();
+	lightManager_->Initialize(directXCommon_.get(), srvManager_.get());
+
 	//SpriteCommon
-	spriteCommon_ = SpriteCommon::GetInstance();
+	spriteCommon_ = &SpriteCommon::GetInstance();
 	spriteCommon_->Initialize(directXCommon_.get());
 
 	//Object3dCommon
-	object3dCommon_ = Object3dCommon::GetInstance();
-	object3dCommon_->Initialize(directXCommon_.get());
+	object3dCommon_ = &Object3dCommon::GetInstance();
+	object3dCommon_->Initialize(directXCommon_.get(),lightManager_.get());
 
 	//ParticleCommon
-	particleCommon_ = ParticleCommon::GetInstance();
-	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get());
+	particleCommon_ = &ParticleCommon::GetInstance();
+	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get(),lightManager_.get());
 
-	//Animator
-	animator_ = std::make_unique<Animator>();
+	//AnimationManager
+	animationManager_ = std::make_unique<AnimationManager>();
 
 	//CameraManager
-	CameraManager::GetInstance()->Initialize(directXCommon_.get());
+	TakeC::CameraManager::GetInstance().Initialize(directXCommon_.get());
 
 	//ModelManager
-	ModelManager::GetInstance()->Initialize(directXCommon_.get(), srvManager_.get());
+	TakeC::ModelManager::GetInstance().Initialize(directXCommon_.get(), srvManager_.get());
 
 	//TextureManager
-	TextureManager::GetInstance()->Initialize(directXCommon_.get(), srvManager_.get());
+	TakeC::TextureManager::GetInstance().Initialize(directXCommon_.get(), srvManager_.get());
 
-	//ParticleManager
-	particleManager_ = std::make_unique<ParticleManager>();
+	//SpriteManager
+	spriteManager_ = std::make_unique<SpriteManager>();
+	spriteManager_->Initialize(spriteCommon_);
 
-	
+	//UIManager
+	uiManager_ = std::make_unique<UIManager>();
+	uiManager_->Initialize(spriteManager_.get());	
+
+	//EventManager
+	eventManager_ = std::make_unique<EventManager>();
+
 	//PrimitiveDrawer
 	primitiveDrawer_ = std::make_unique<PrimitiveDrawer>();
 	primitiveDrawer_->Initialize(directXCommon_.get(), srvManager_.get());
 
-	//PostEffectManager
-	postEffectManager_ = std::make_unique<PostEffectManager>();
-	postEffectManager_->Initialize(directXCommon_.get(), srvManager_.get());
+	//ParticleManager
+	particleManager_ = std::make_unique<ParticleManager>();
+	particleManager_->Initialize(particleCommon_,primitiveDrawer_.get());
 
 	//RenderTexture
 	renderTexture_ = std::make_unique<RenderTexture>();
-	renderTexture_->Initialize(directXCommon_.get(), srvManager_.get(),postEffectManager_.get());
+	renderTexture_->Initialize(directXCommon_.get(), srvManager_.get());
+	//PostEffectFactory
+	postEffectFactory_ = std::make_unique<PostEffectFactory>();
+	//PostEffectManager
+	postEffectManager_ = std::make_unique<PostEffectManager>();
+	postEffectManager_->Initialize(directXCommon_.get(), srvManager_.get(),renderTexture_.get());
+	postEffectManager_->SetPostEffectFactory(postEffectFactory_.get());
 
 	//WireFrame
 	wireFrame_ = std::make_unique<WireFrame>();
 	wireFrame_->Initialize(directXCommon_.get());
 
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	imguiManager_ = new ImGuiManager();
 	imguiManager_->Initialize(winApp_.get(), directXCommon_.get(), srvManager_.get());
 #endif
 
 	//sceneManager
-	sceneManager_ = SceneManager::GetInstance();
+	sceneManager_ = &SceneManager::GetInstance();
 
 	//sceneTransition
 	sceneTransition_ = SceneTransition::GetInstance();
 	sceneTransition_->Initialize();
+
+	TextureManager::GetInstance().LoadTexture("ic_play.png", false);
+	TextureManager::GetInstance().LoadTexture("ic_pause.png", false);
+
+	playSrvIndex_ = TextureManager::GetInstance().GetSrvIndex("ic_play.png");
+	pauseSrvIndex_ = TextureManager::GetInstance().GetSrvIndex("ic_pause.png");
 
 }
 
@@ -109,22 +139,22 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 //====================================================================
 
 void TakeCFrameWork::Finalize() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	imguiManager_->Finalize();
 #endif
 
 	wireFrame_->Finalize();
-	animator_->Finalize();
-	TextureManager::GetInstance()->Finalize();
-	ModelManager::GetInstance()->Finalize();
-	CameraManager::GetInstance()->Finalize();
-	ResourceBarrier::GetInstance()->Finalize();
+	animationManager_->Finalize();
+	TakeC::TextureManager::GetInstance().Finalize();
+	TakeC::ModelManager::GetInstance().Finalize();
+	CameraManager::GetInstance().Finalize();
 	postEffectManager_->Finalize();
 	renderTexture_.reset();
 	particleManager_->Finalize();
 	primitiveDrawer_->Finalize();
 	particleCommon_->Finalize();
 	object3dCommon_->Finalize();
+	lightManager_->Finalize();
 	spriteCommon_->Finalize();
 	sceneFactory_.reset();
 	//Audioの開放
@@ -154,23 +184,53 @@ void TakeCFrameWork::Update() {
 		isEnd_ = true;
 	}
 
-#ifdef _DEBUG
-	imguiManager_->Begin();
-#endif
+	deltaTime = 0.016f * timeScale_;
 
+#if defined(_DEBUG) || defined(_DEVELOP)
+	imguiManager_->Begin();
+	imguiManager_->CreateDockSpace();
+
+	ImGui::Begin("Simulation Controls");
+	// 現在状態に応じて表示アイコンを切り替え
+	uint32_t iconSrv = isPaused_ ? playSrvIndex_ : pauseSrvIndex_;
+
+	// SRV GPUハンドル取得（あなたのSrvManager APIに合わせて調整）
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = srvManager_->GetSrvDescriptorHandleGPU(iconSrv);
+
+	// ImTextureIDへ変換（DX12）
+	ImTextureID texId = reinterpret_cast<ImTextureID>(gpuHandle.ptr);
+
+	if (ImGui::ImageButton("PauseResumeButton", texId, ImVec2(16.0f, 16.0f))) {
+		TogglePaused();
+	}
+
+	ImGui::SameLine();
+	ImGui::TextUnformatted(isPaused_ ? "Paused" : "Running");
+	ImGui::End();
+
+	ImGui::Begin("FrameWork");
+	directXCommon_->DrawFrameTimeInfo();
+	ImGui::Text("DeltaTime: %.4f", deltaTime);
+	ImGui::DragFloat("TimeScale", &timeScale_, 0.01f, 0.0f, 5.0f);
+	ImGui::End();
+#endif
+	
 	//入力の更新
 	input_->Update();
+	TakeC::TextureManager::GetInstance().Update();
 
 	//シーンの更新
-	sceneManager_->Update();
-#ifdef _DEBUG
-	sceneManager_->UpdateImGui();
-	postEffectManager_->UpdateImGui();
+	if (!isPaused_) {
+		sceneManager_->Update();
+	}
 
+#if defined(_DEBUG) || defined(_DEVELOP)
 	//ImGuiのRenderTextureのSRVインデックスを設定
 	imguiManager_->SetRenderTextureIndex(postEffectManager_->GetFinalOutputSrvIndex()); 
-
 	imguiManager_->DrawDebugScreen();
+
+	sceneManager_->UpdateImGui();
+	postEffectManager_->UpdateImGui();
 	imguiManager_->End();
 #endif // DEBUG
 }
@@ -190,50 +250,18 @@ void TakeCFrameWork::Run(const std::wstring& titleName) {
 		}
 		Update(); //更新処理
 		Draw();   //描画処理
+
+		if(Input::GetInstance().TriggerKey(DIK_ESCAPE)) {
+			break;
+		}
 	}
 
 	Finalize();   //終了処理
 }
 
 //====================================================================
-//			パーティクルマネージャの取得
+//			ゲーム起動時間の取得
 //====================================================================
-
-ParticleManager* TakeCFrameWork::GetParticleManager() {
-	assert(particleManager_ != nullptr);
-	return particleManager_.get();
-}
-
-//====================================================================
-//			アニメーターの取得
-//====================================================================
-
-Animator* TakeCFrameWork::GetAnimator() {
-	assert(animator_ != nullptr);
-	return animator_.get();
-}
-//====================================================================
-//			JSONローダーの取得
-//====================================================================
-JsonLoader* TakeCFrameWork::GetJsonLoader() {
-	assert(jsonLoader_ != nullptr);
-	return jsonLoader_.get();
-}
-
-PrimitiveDrawer* TakeCFrameWork::GetPrimitiveDrawer() {
-	assert(primitiveDrawer_ != nullptr);
-	return primitiveDrawer_.get();
-}
-
-//====================================================================
-//			ワイヤーフレーム管理クラスの取得
-//====================================================================
-
-WireFrame* TakeCFrameWork::GetWireFrame() {
-	assert(wireFrame_ != nullptr);
-	return wireFrame_.get();
-}
-
 float TakeCFrameWork::GetGameTime() {
 	
 	//現在の時間を取得
@@ -244,4 +272,91 @@ float TakeCFrameWork::GetGameTime() {
 
 	//秒に変換
 	return duration / 1000.0f;
+}
+
+//====================================================================
+//			ParticleManagerの取得
+//====================================================================
+
+TakeC::ParticleManager* TakeCFrameWork::GetParticleManager() {
+	assert(particleManager_ && "ParticleManagerが生成されていません");
+	return particleManager_.get();
+}
+
+//====================================================================
+//			AnimationManagerの取得
+//====================================================================
+
+TakeC::AnimationManager* TakeCFrameWork::GetAnimationManager() {
+	assert(animationManager_ && "AnimationManagerが生成されていません");
+	return animationManager_.get();
+}
+
+//====================================================================
+//			JsonLoaderの取得
+//====================================================================
+
+TakeC::JsonLoader* TakeCFrameWork::GetJsonLoader() {
+	assert(jsonLoader_ && "JsonLoaderが生成されていません");
+	return jsonLoader_.get();
+}
+
+//====================================================================
+//			PrimitiveDrawerの取得
+//====================================================================
+
+TakeC::PrimitiveDrawer* TakeCFrameWork::GetPrimitiveDrawer() {
+	assert(primitiveDrawer_ && "PrimitiveDrawerが生成されていません");
+	return primitiveDrawer_.get();
+}
+
+//====================================================================
+//			PostEffectManagerの取得
+//====================================================================
+
+TakeC::PostEffectManager* TakeCFrameWork::GetPostEffectManager() {
+	assert(postEffectManager_ && "PostEffectManagerが生成されていません");
+	return postEffectManager_.get();
+}
+
+//====================================================================
+//			WireFrameの取得
+//====================================================================
+
+TakeC::WireFrame* TakeCFrameWork::GetWireFrame() {
+	assert(wireFrame_ && "WireFrameが生成されていません");
+	return wireFrame_.get();
+}
+
+//====================================================================
+//			LightManagerの取得
+//====================================================================
+
+TakeC::LightManager* TakeCFrameWork::GetLightManager() {
+	assert(lightManager_ && "LightManagerが生成されていません");
+	return lightManager_.get();
+}
+
+//====================================================================
+//			SpriteManagerの取得
+//====================================================================
+TakeC::SpriteManager* TakeCFrameWork::GetSpriteManager() {
+	assert(spriteManager_ && "SpriteManagerが生成されていません");
+	return spriteManager_.get();
+}
+
+//====================================================================
+//			UIManagerの取得
+//====================================================================
+TakeC::UIManager* TakeCFrameWork::GetUIManager() {
+	assert(uiManager_ && "UIManagerが生成されていません");
+	return uiManager_.get();
+}
+
+//====================================================================
+//			EventManagerの取得
+//====================================================================
+TakeC::EventManager* TakeCFrameWork::GetEventManager() {
+	assert(eventManager_ && "EventManagerが生成されていません");
+	return eventManager_.get();
 }

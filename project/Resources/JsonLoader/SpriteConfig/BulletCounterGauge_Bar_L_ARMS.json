@@ -1,0 +1,31 @@
+{
+    "anchorPoint": {
+        "x": 0.0,
+        "y": 0.5
+    },
+    "color": {
+        "w": 1.0,
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+    },
+    "name": "BulletCounterGauge_Bar_L_ARMS.json",
+    "position": {
+        "x": 390.0,
+        "y": 390.0
+    },
+    "rotation": -1.5700000524520874,
+    "size": {
+        "x": 64.0,
+        "y": 4.0
+    },
+    "textureFilePath": "white1x1.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "textureSize": {
+        "x": 1.0,
+        "y": 1.0
+    }
+}

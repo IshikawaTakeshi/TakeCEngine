@@ -1,0 +1,64 @@
+#pragma once
+//base class
+#include "application/Scene/BaseScene.h"
+
+//engine
+#include "engine/audio/Audio.h"
+#include "engine/camera/Camera.h"
+#include "engine/camera/CameraManager.h"
+#include "engine/Input/Input.h"
+#include "engine/base/ModelManager.h"
+#include "engine/2d/Sprite.h"
+#include "engine/2d/SpriteCommon.h"
+#include "engine/3d/Object3d.h"
+#include "engine/3d/Object3dCommon.h"
+#include "engine/SkyBox/SkyBox.h"
+
+//application
+#include "application/UI/PushStartUI.h"
+
+
+//============================================================================
+// TitleScene class
+//============================================================================
+class TitleScene : public BaseScene {
+public:
+
+	//初期化
+	void Initialize() override;
+
+	//終了処理
+	void Finalize() override;
+
+	//更新処理
+	void Update() override;
+
+	//ImGuiの更新処理
+	void UpdateImGui() override;
+
+	//描画処理
+	void Draw() override;
+	//スプライト描画処理
+	void DrawSprite() override;
+	//シャドウ描画処理
+	void DrawShadow() override;
+
+private:
+
+	//サウンドデータ
+	//AudioManager::SoundData soundData1;
+	// カメラ
+	std::unique_ptr<Camera> camera0_ = nullptr;
+	std::unique_ptr<Camera> camera1_ = nullptr;
+	//SkyBox
+	std::unique_ptr<SkyBox> skyBox_ = nullptr;
+	//スプライト
+	std::unique_ptr<Sprite> titleTextSprite_ = nullptr;
+	// 「PRESS START」スプライトUI
+	std::unique_ptr<PushStartUI> pushStartUI_ = nullptr;
+	//
+	std::unique_ptr<Object3d> playerModel_ = nullptr;
+	float cameraRotateSpeed_ = 0.5f;
+	float cameraYaw_ = 0.0f;
+
+};

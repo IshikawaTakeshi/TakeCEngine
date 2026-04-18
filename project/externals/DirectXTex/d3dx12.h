@@ -2729,7 +2729,7 @@ struct CD3DX12_RT_FORMAT_ARRAY : public D3D12_RT_FORMAT_ARRAY
 };
 
 //------------------------------------------------------------------------------------------------
-// Pipeline State Stream Helpers
+// Pipeline AnimationPhase Stream Helpers
 //------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------
@@ -3952,7 +3952,7 @@ inline bool operator==( const D3D12_RENDER_PASS_DEPTH_STENCIL_DESC &a, const D3D
 #ifndef D3DX12_NO_STATE_OBJECT_HELPERS
 
 //================================================================================================
-// D3DX12 State Object Creation Helpers
+// D3DX12 AnimationPhase Object Creation Helpers
 //
 // Helper classes for creating new style state objects out of an arbitrary set of subobjects.
 // Uses STL

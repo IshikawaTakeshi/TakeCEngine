@@ -3,67 +3,97 @@
 #include "engine/base/PipelineStateObject.h"
 #include "engine/Entity/GameCharacter.h"
 #include "engine/math/physics/Ray.h"
+#include "engine/Collision/Capsule.h"
 #include <list>
 #include <memory>
+
+//前方宣言
 class DirectXCommon;
 class Collider;
+
+//============================================================================
+//	CollisionManager class
+//============================================================================
 class CollisionManager {
-
-
-public:
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	///		publicメンバ関数
-	////////////////////////////////////////////////////////////////////////////////////////
-
-
-	/// <summary>
-	/// シングルトンインスタンスの取得関数
-	/// </summary>
-	/// <returns></returns>
-	static CollisionManager* GetInstance();
-
-	void Initialize(DirectXCommon* dxCommon);
-
-	void PreDraw();
-
-	/// <summary>
-	/// シングルトンインスタンスの解放処理
-	/// </summary>
-	void Finalize();
-
-	/// <summary>
-	/// 全てのコライダーの衝突判定を行う関数
-	/// </summary>
-	void CheckAllCollisions();
-
-	/// <summary>
-	/// コライダー2つ衝突判定と応答処理
-	/// </summary>
-	/// <param name="colliderB">コライダーA</param>
-	/// <param name="colliderB">コライダーB</param>
-	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
-
-
-	void RegisterGameCharacter(GameCharacter* gameCharacter);
-
-	void ClearGameCharacter();
-
-	void CheckAllCollisionsForGameCharacter();
-
-	void CheckCollisionPairForGameCharacter(GameCharacter* gameCharacterA, GameCharacter* gameCharacterB);
-
-	bool RayCast(const Ray& ray, RayCastHit& outHit,uint32_t layerMask);
-
 private:
 
-	//シングルトンインスタンス
-	static CollisionManager* instance_;
-
+	//コピーコンストラクタ・代入演算子禁止
 	CollisionManager() = default;
 	~CollisionManager() = default;
 	CollisionManager(CollisionManager&) = delete;
 	CollisionManager& operator=(CollisionManager&) = delete;
+
+public:
+
+	///=======================================================================
+	// functions
+	///=======================================================================
+
+	/// <summary>
+	/// シングルトンインスタンスの取得
+	/// </summary>
+	/// <returns></returns>
+	static CollisionManager& GetInstance();
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="dxCommon"></param>
+	void Initialize(TakeC::DirectXCommon* dxCommon);
+
+	/// <summary>
+	/// 描画前処理
+	/// </summary>
+	void PreDraw();
+
+	/// <summary>
+	/// 解放処理
+	/// </summary>
+	void Finalize();
+
+	/// <summary>
+	/// ゲームキャラクターの登録
+	/// </summary>
+	/// <param name="gameCharacter"></param>
+	void RegisterGameCharacter(GameCharacter* gameCharacter);
+
+	/// <summary>
+	/// ゲームキャラクターの解放
+	/// </summary>
+	void ClearGameCharacter();
+
+	/// <summary>
+	/// 全てのゲームキャラクターの衝突判定を行う関数
+	/// </summary>
+	void CheckAllCollisionsForGameCharacter();
+
+	/// <summary>
+	/// ゲームキャラクター同士の衝突判定を行う関数
+	/// </summary>
+	/// <param name="gameCharacterA"></param>
+	/// <param name="gameCharacterB"></param>
+	void CheckCollisionPairForGameCharacter(GameCharacter* gameCharacterA, GameCharacter* gameCharacterB);
+
+	/// <summary>
+	/// レイキャスト処理
+	/// </summary>
+	/// <param name="ray"></param>
+	/// <param name="outHit"></param>
+	/// <param name="layerMask"></param>
+	/// <returns></returns>
+	bool RayCast(const Ray& ray, RayCastHit& outHit,uint32_t layerMask);
+
+	/// <summary>
+	/// 球キャスト処理
+	/// </summary>
+	/// <param name="ray"></param>
+	/// <param name="radius"></param>
+	/// <param name="outHit"></param>
+	/// <param name="layerMask"></param>
+	/// <returns></returns>
+	bool SphereCast(const Ray& ray, float radius, RayCastHit& outHit, uint32_t layerMask);
+
+	bool CapsuleCast(const Capsule& capsule, RayCastHit& outHit, uint32_t layerMask);
 
 private:
 
@@ -71,15 +101,16 @@ private:
 	///		privateメンバ関数
 	////////////////////////////////////////////////////////////////////////////////////////
 
-	DirectXCommon* dxCommon_ = nullptr;
+	//dxCommon
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 
 	//コライダーリスト
 	std::vector<Collider*> colliders_;
-
+	//ゲームキャラクターリスト
 	std::list<GameCharacter*> gameCharacters_;
-
+	//パイプラインステートオブジェクト
 	std::unique_ptr<PSO> pso_ = nullptr;
-
+	//ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 };
 

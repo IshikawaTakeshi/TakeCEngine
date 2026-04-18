@@ -1,22 +1,27 @@
 #include "ModelCommon.h"
 #include "DirectXCommon.h"
 #include "SrvManager.h"
-ModelCommon* ModelCommon::instance_ = nullptr;
 
-ModelCommon* ModelCommon::GetInstance() {
-	if(instance_ == nullptr) {
-		instance_ = new ModelCommon();
-	}
+
+//============================================================================
+// インスタンスの取得
+//============================================================================
+ModelCommon& ModelCommon::GetInstance() {
+	static ModelCommon instance_;
 	return instance_;
 }
 
-void ModelCommon::Initialize(DirectXCommon* dxCommon,SrvManager* srvManager) {
+//============================================================================
+// 初期化
+//============================================================================
+void ModelCommon::Initialize(TakeC::DirectXCommon* dxCommon,TakeC::SrvManager* srvManager) {
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
 }
 
+//============================================================================
+// 終了処理
+//============================================================================
 void ModelCommon::Finalize() {
 	dxCommon_ = nullptr;
-	delete instance_;
-	instance_ = nullptr;
 }

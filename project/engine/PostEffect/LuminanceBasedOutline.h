@@ -1,34 +1,72 @@
 #pragma once
 #include "PostEffect/PostEffect.h"
+#include "engine/math/Vector4.h"
 
+// 輝度ベースのアウトライン情報
+struct LuminanceBasedOutlineInfo {
+	Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; // アウトラインの色
+	float weight = 6.0f; // 輪郭の強さ
+	bool isActive = true; // アウトラインの有効無効
+};
 
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LuminanceBasedOutlineInfo, color, weight, isActive)
+
+//============================================================================
+// LuminanceBasedOutline class
+//============================================================================
 class LuminanceBasedOutline : public PostEffect {
 public:
 
+	//=======================================================================
+	// functions
+	//=======================================================================
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	LuminanceBasedOutline() = default;
 	~LuminanceBasedOutline() = default;
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
+	void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, const std::wstring& CSFilePath,
 		ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) override;
+
+	/// <summary>
+	/// ImGui更新処理
+	/// </summary>
 	void UpdateImGui() override;
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void DisPatch() override;
+	void Dispatch() override;
+
+	/// <summary>
+	/// エフェクト固有のパラメータを適用する
+	/// </summary>
+	/// <param name="params"></param>
+	void ApplySpecificParams(const nlohmann::json& params) override;
+
+	/// <summary>
+	/// エフェクト固有のパラメータを取得する
+	/// </summary>
+	/// <returns></returns>
+	nlohmann::json GetSpecificParams() const override;
+
+	/// <summary>
+	/// アクティブ状態を設定する
+	/// </summary>
+	/// <param name="isActive"></param>
+	void SetIsActive(bool isActive) override {
+		if (outlineInfoData_) {
+			outlineInfoData_->isActive = isActive;
+		}
+	}
 
 private:
-
-	struct LuminanceBasedOutlineInfo {
-		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; // アウトラインの色
-		float weight = 6.0f; // 輪郭の強さ
-		bool isActive = true; // アウトラインの有効無効
-	};
 
 	LuminanceBasedOutlineInfo* outlineInfoData_ = nullptr; // アウトライン情報データ
 	ComPtr<ID3D12Resource> outlineInfoResource_; // アウトライン情報リソース
 
 };
-

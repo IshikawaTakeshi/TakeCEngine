@@ -14,9 +14,27 @@ struct ParticleForCS {
 	float currentTime;
 };
 
+struct ParticleAttributes {
+	float3 scale;
+	float3 color;
+	float2 scaleRange;
+	float2 rotateRange;
+	float2 positionRange;
+	float2 velocityRange;
+	float2 colorRange;
+	float2 lifetimeRange;
+	float frequency;
+	uint emitCount;
+	uint scaleSetting;
+	bool isBillboad;
+	bool editColor;
+	bool isTraslate;
+	bool enableFollowEmitter;
+};
+
 struct PerView {
 	float4x4 viewProjection;
 	float4x4 billboardMatrix;
 };
 
-static const uint kMaxParticles = 1024;
+static const uint kMaxParticles = 1024000;

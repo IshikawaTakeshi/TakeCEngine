@@ -1,5 +1,5 @@
-#include "PostEffect/Fullscreen.hlsli"
-#include "PostEffect/Outline.hlsli"
+#include "../PostEffect/Fullscreen.hlsli"
+#include "../PostEffect/Outline.hlsli"
 
 struct LuminanceBasedOutlineInfo {
 	float4 Color;

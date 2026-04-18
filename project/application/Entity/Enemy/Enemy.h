@@ -1,180 +1,244 @@
 #pragma once
+#include "engine/3d/Particle/ParticleEmitter.h"
 #include "engine/Entity/GameCharacter.h"
 #include "engine/camera/Camera.h"
-#include "engine/3d/Particle/ParticleEmitter.h"
-#include <optional>
+#include "engine/Animation/AnimatorController.h"
 #include <chrono>
+#include <optional>
 #include <random>
 
-#include "application/Weapon/Bullet/BulletManager.h"
+#include "application/Effect/BoostEffect.h"
+#include "application/Effect/DeadEffect.h"
+#include "application/Entity/Animation/AnimationMapper.h"
+#include "application/Entity/State/GameCharacterStateManager.h"
+#include "application/Entity/Enemy/AIBrainSystem.h"
+#include "application/Entity/Enemy/BulletSensor.h"
+#include "application/Entity/State/GameCharacterState.h"
+#include "application/Entity/GameCharacterInfo.h"
+#include "application/Entity/BoostDirectionEnum.h"
+#include "application/Provider/EnemyInputProvider.h"
 #include "application/Weapon/BaseWeapon.h"
-#include "application/Entity/GameCharacterBehavior.h"
+#include "application/Weapon/Bullet/BulletManager.h"
 
+#include "application/Entity/Behavior/BehaviorNode.h"
+#include "application/Entity/Behavior/Blackboard.h"
+#include "application/Entity/Behavior/ComboFactory.h"
+#include "application/Entity/Behavior/BehaviorTreeEditor.h"
+
+//============================================================================
+// Enemy class
+//============================================================================
 class Enemy : public GameCharacter {
 
 public:
 	Enemy() = default;
-	~Enemy() override;
-	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
+	~Enemy() override = default;
+
+	//================================================================================
+	// functions
+	//================================================================================
+
+	// 初期化
+	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath);
+	// 更新
 	void Update() override;
+	// ImGuiの更新
 	void UpdateImGui();
+	// 描画
 	void Draw() override;
+
+	void DrawShadow(const LightCameraInfo& lightCamera);
+	// コライダーの描画
 	void DrawCollider() override;
+	// 衝突時の処理
 	void OnCollisionAction(GameCharacter* other) override;
 
-	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager);
+	// 武器の初期化
+	void WeaponInitialize(Object3dCommon* object3dCommon,
+		BulletManager* bulletManager);
+
+	/// <summary>
+	/// EnemyのGameCharacterContextの読み込み
+	/// </summary>
+	/// <param name="characterName"></param>
+	void LoadEnemyData(const std::string& characterName);
+
+	/// <summary>
+	/// EnemyのGameCharacterContextの保存
+	/// </summary>
+	/// <param name="characterName"></param>
+	void SaveEnemyData(const std::string& characterName);
+
+	void LoadBehaviorTree(const std::string& filePath);
+	void ApplyBehaviorTree(const ComboSetData& data);
 
 public:
+	//==============================================================================
+	// getter
+	//==============================================================================
 
-	//setter
-	void SetFocusTargetPos(const Vector3& targetPos) { focusTargetPos_ = targetPos; }
-	//getter
-	const QuaternionTransform& GetTransform() const { return transform_; }
-	const Vector3& GetVelocity() const { return velocity_; }
-	const Vector3& GetMoveDirection() const { return moveDirection_; }
-	const Vector3& GetToOrbitPos() const { return toOrbitPos_; }
-	const float& GetHealth() const { return health_; }
-	const float& GetMaxHealth() const { return maxHealth_; }
-	const bool& IsDamaged() const { return isDamaged_; }
-	const bool& IsAlive() const { return isAlive_; }
+	// BulletSensorの取得
+	BulletSensor* GetBulletSensor() const { return bulletSensor_.get(); }
+	// 武器の取得
+	BaseWeapon* GetCurrentWeapon(int index) const;
+	// 全武器の取得
+	std::vector<std::unique_ptr<BaseWeapon>>& GetWeapons();
+
+	// 移動方向ベクトルの取得
+	const Vector3& GetMoveDirection() const {
+		return enemyData_.characterInfo.moveDirection;
+	}
+	// 移動ベクトルの取得
+	const Vector3& GetVelocity() const {
+		return enemyData_.characterInfo.velocity;
+	}
+	// transformの取得
+	const QuaternionTransform& GetTransform() const {
+		return enemyData_.characterInfo.transform;
+	}
+
+	// 体力の取得
+	float GetHealth() const { return enemyData_.characterInfo.health; }
+	// 最大体力の取得
+	const float GetMaxHealth() const {
+		return enemyData_.characterInfo.maxHealth;
+	}
+	// フォーカス対象の座標を取得
+	const Vector3& GetFocusTargetPos() const {
+		return enemyData_.characterInfo.focusTargetPos;
+	}
+	// 胴体位置の取得
+	const Vector3& GetBodyPosition() const { return bodyPosition_; }
+
+	// エネルギーの取得
+	float GetEnergy() const { return enemyData_.characterInfo.energyInfo.energy; }
+	// 最大エネルギーの取得
+	float GetMaxEnergy() const {
+		return enemyData_.characterInfo.energyInfo.maxEnergy;
+	}
+	// エネルギーの回復速度の取得
+	float GetEnergyRegenRate() const {
+		return enemyData_.characterInfo.energyInfo.recoveryRate;
+	}
+	// エネルギー枯渇中かどうか
+	bool GetIsOverHeated() const {
+		return enemyData_.characterInfo.overHeatInfo.isOverheated;
+	}
+	// 生存しているかどうか
+	bool GetIsAlive() const { return enemyData_.characterInfo.isAlive; }
+
+	bool IsInCombat() const { return enemyData_.characterInfo.isInCombat; }
+	
+	// ビヘイビアツリーの取得
+	BehaviorNode* GetBehaviorTree() const { return behaviorTree_.get(); }
+	// ブラックボードの取得
+	Blackboard* GetBlackboard() const { return blackboard_.get(); }
+
+	// 周回角度の取得
+	float GetOrbitAngle() const { return orbitAngle_; }
+	// 周回半径の取得
+	float GetOrbitRadius() const { return orbitRadius_; }
+	// 周回速度の取得
+	float GetOrbitSpeed() const { return orbitSpeed_; }
+
+	//================================================================================
+	// setter
+	//================================================================================
+
+	// フォーカス対象の座標を設定
+	void SetFocusTargetPos(const Vector3& targetPos) {
+		enemyData_.characterInfo.focusTargetPos = targetPos;
+	}
+	// 移動ベクトルの設定
+	void SetOrbitAngle(float angle) { orbitAngle_ = angle; }
+
+	void SetFocusTargetVelocity(const Vector3& targetVel) {
+		focusTargetVelocity_ = targetVel;
+	}
+
+	void SetInCombat(bool isInCombat) {
+		enemyData_.characterInfo.isInCombat = isInCombat;
+	}
+
+	void SetInputProvider(EnemyInputProvider* inputProvider) {
+		inputProvider_ = inputProvider;
+	}
 
 private:
-
-	//状態遷移の列挙型
-	enum class Behavior {
-		IDLE,             // 待機状態
-		RUNNING,          // 移動状態
-		JUMP,             // ジャンプ状態
-		DASH,             // ダッシュ状態
-		CHARGESHOOT,      //チャージ攻撃中
-		CHARGESHOOT_STUN, // チャージショット後の硬直状態
-		HEAVYDAMAGE,      // 大ダメージによる硬直状態
-		STEPBOOST,        // ステップブースト
-		FLOATING,         // 浮遊状態
-		DEAD,             // 死亡状態
-	};
-
-	void InitRunning();
-	void InitJump();
-	void InitDash();
-	void InitChargeShoot();
-	void InitChargeShootStun();
-	void InitStepBoost();
-	void InitFloating();
-	void InitDead();
-
-	void UpdateRunning();
+	// 攻撃処理の更新
 	void UpdateAttack();
-	void UpdateDamage();
-	void UpdateJump();
-	void UpdateDash();
-	void UpdateChargeShoot();
-	void UpdateChargeShootStun();
-	void UpdateStepBoost();
-	void UpdateFloating(std::mt19937 randomEngine);
-	void UpdateDead();
-
-	// ステップブーストのBehavior切り替え処理
-	void TriggerStepBoost();
-
-	//エネルギーの更新
+	// 各武器の攻撃処理
+	void WeaponAttack(int weaponIndex);
+	// エネルギーの更新
 	void UpdateEnergy();
-
-private:
-	// 攻撃開始判定
-	bool ShouldStartAttack(int weaponIndex);
+	// ブーストエフェクトのアクティブ化判定
+	void RequestActiveBoostEffect();
 	// チャージ攻撃実行判定
 	bool ShouldReleaseAttack(int weaponIndex);
+	// ブレイクゲージの蓄積・スタン判定処理
+	void AccumulateBreakGauge(float damage);
+
+	//Blackboardの更新
+	void UpdateBlackboard();
 
 private:
+	// AIシステム
+	std::unique_ptr<AIBrainSystem> aiBrainSystem_ = nullptr;
+	// 接近してくる弾に反応するためのコライダー
+	std::unique_ptr<BulletSensor> bulletSensor_ = nullptr;
 
-	//状態遷移リクエスト
-	std::optional<Behavior> behaviorRequest_ = std::nullopt;
-	//エネミーの状態
-	Behavior behavior_ = Behavior::IDLE;
-	Behavior prevBehavior_ = Behavior::IDLE;
-	//エネミーの武器
+	// 状態管理マネージャ
+	std::unique_ptr<GameCharacterStateManager> stateManager_ = nullptr;
+	// プレイヤー入力プロバイダ
+	EnemyInputProvider* inputProvider_ = nullptr;
+
+	std::unique_ptr<BehaviorNode> behaviorTree_ = nullptr;  // ビヘイビアツリーのルート
+	std::unique_ptr<Blackboard> blackboard_ = nullptr;      // 共有データストア
+	ComboFactory comboFactory_;                              // ツリー構築用ファクトリ
+	
+	// アニメーションコントローラ
+	AnimatorController animatorController_;
+	// アニメーションマッパー
+	AnimationMapper animationMapper_;
+
+	// プレイヤーの武器
 	std::vector<std::unique_ptr<BaseWeapon>> weapons_;
 	std::vector<WeaponType> weaponTypes_;
-	//particleEmitter
+	// チャージ撃ちをする武器ユニット
+	std::vector<bool> chargeShootableUnits_;
+
 	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
+	// ブーストエフェクト
+	std::vector<std::unique_ptr<BoostEffect>> boostEffects_;
+	// 死亡エフェクト
+	std::unique_ptr<DeadEffect> deadEffect_ = nullptr;
 
-	//移動ベクトル
-	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
-	//減速率
-	float deceleration_ = 1.1f;
-	//移動方向
-	Vector3 moveDirection_ = { 0.0f,0.0f,1.0f };
-
-	//補足対象の座標
-	Vector3 focusTargetPos_ = { 0.0f,0.0f,0.0f };
-	//補足スピード
-	float followSpeed_ = 0.3f;
-	//拡縮・回転・平行移動を含む変形情報
-	QuaternionTransform transform_ = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,0.0f} };
-
-	//ゲーム内の1フレームの経過時間
+	// プレイヤーの情報
+	CharacterData enemyData_;
+	// デルタタイム
 	float deltaTime_ = 0.0f;
-	//体力
-	float health_ = 0.0f; // 初期体力
-	const float maxHealth_ = 10000.0f; // 最大体力
+	float gravity_ = 9.8f; // 重力の強さ
 
-	const float moveSpeed_ = 200.0f;    // 移動速度
-	const float kMaxMoveSpeed_ = 50.0f; // 最大移動速度
+	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
+	Timer chargeShootTimer_;           // 停止撃ちのタイマー
+	float damageEffectTime_ = 0.0f;    // ダメージエフェクトの時間
 
-	//ターゲットの周りを周回するための変数
-	float orbitAngle_ = 0.0f;              // 周回角度
-	float orbitRadius_ = 60.0f;             // 周回半径（ターゲットとの距離）
-	float orbitSpeed_ = 1.0f;              // 角速度（周る速さ）
-	Vector3 toOrbitPos_ = { 0.0f,0.0f,0.0f }; // 周回する座標
+	// ターゲットの周りを周回するための変数
+	float orbitAngle_ = 0.0f;                 // 周回角度
+	float orbitRadius_ = 500.0f;              // 周回半径（ターゲットとの距離）
+	float orbitSpeed_ = 1.0f;                 // 角速度（周る速さ）
+	Vector3 toOrbitPos_ = { 0.0f, 0.0f, 0.0f }; // 周回する座標
 
-	//QBInfo
-	Vector3 stepBoostDirection_ = { 0.0f,0.0f,0.0f }; // ステップブーストの方向
-	const float stepBoostSpeed_ = 230.0f;             // ステップブーストの速度
-	const float stepBoostDuration_ = 0.2f;            // ステップブーストの持続時間
-	float stepBoostTimer_ = 0.0f;                     // ステップブーストのタイマー
-	float useEnergyStepBoost_ = 100.0f;               // ステップブーストに必要なエネルギー
-	//インターバル用
-	const float stepBoostInterval_ = 0.2f; // ステップブーストのインターバル
-	float stepBoostIntervalTimer_ = 0.0f;  // ステップブーストのインターバルタイマー
+	Vector3 focusTargetVelocity_ = { 0.0f, 0.0f,0.0f }; // フォーカス対象の移動ベクトル
+	// キャラクターの胴体位置
+	Vector3 bodyPosition_ = { 0.0f, 0.0f, 0.0f }; 
 
-	//JumInfo
-	const float jumpSpeed_ = 50.0f;        // ジャンプの速度
-	float jumpTimer_ = 0.0f;               // ジャンプのタイマー
-	const float maxJumpTime_ = 0.5f;       // ジャンプの最大時間
-	const float jumpDeceleration_ = 40.0f; // ジャンプ中の減速率
-	const float gravity_ = 9.8f;           // 重力の強さ
-	float useEnergyJump_ = 100.0f;         // ジャンプに必要なエネルギー
-	//落下速度
-	float fallSpeed_ = 40.0f; // 落下速度
+	BoostDirection previousBoostDirection_ = BoostDirection::NONE;
 
-	// チャージ攻撃後硬直用の変数
-	float chargeAttackStunTimer_ = 0.0f;          //チャージ攻撃後の硬直時間
-	const float chargeAttackStunDuration_ = 0.5f; // チャージ攻撃後の硬直時間
-
-	//エネルギー(スタミナ)情報
-	float energy_ = 0.0f;                 // 現在のエネルギー
-	float maxEnergy_ = 1000.0f;           // 最大エネルギー
-	float energyRegenRate_ = 200.0f; // エネルギーの回復速度
-	//エネルギー使用のクールダウン
-	const float energyCooldown_ = 1.0f; // エネルギー使用後のクールダウン時間
-
-	//オーバーヒート情報
-	bool isOverheated_ = false;        // オーバーヒート中かどうか
-	float overheatTimer_ = 0.0f;          // オーバーヒートのタイマー
-	const float overheatDuration_ = 3.0f; // オーバーヒートの持続時間
-
-	//ダメージを受けた時のエフェクト適用時間
-	float damageEffectTime_ = 0.0f;
-
-	//敵が攻撃する確率
-	const float attackProbability_ = 10.0f; // 10%の確率で攻撃
-	//ジャンプする確率
-	const float jumpProbability_ = 1.0f;
-
-	//状態遷移タイマー
-	float stateTransitionTimer_ = 0.0f; // 状態遷移のタイマー
-
-	bool isDamaged_ = false; //ダメージを受けたかどうか
-	bool isAlive_ = true; //敵が生きているかどうか
+	// 反映待ちのツリーデータ
+	std::unique_ptr<ComboSetData> pendingTreeData_ = nullptr;
+	// データアクセスのためのミューテックス（ImGuiスレッド対策）
+	std::mutex treeMutex_;
+	// ビヘイビアツリーエディタ
+	std::unique_ptr<BehaviorTreeEditor> behaviorTreeEditor_ = nullptr;
 };

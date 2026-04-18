@@ -1,0 +1,81 @@
+{
+    "attributes": {
+        "alignRotationToEmitter": true,
+        "color": {
+            "x": 0.9254902005195618,
+            "y": 0.0470588244497776,
+            "z": 0.019607843831181526
+        },
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": true,
+        "emitCount": 23,
+        "enableFollowEmitter": false,
+        "enableLighting": false,
+        "frequency": 0.10000000149011612,
+        "isBillboard": false,
+        "isDirectional": true,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
+        "lifetimeRange": {
+            "max": 0.3100000023841858,
+            "min": 0.20000000298023224
+        },
+        "particlesPerInterpolation": 1,
+        "positionRange": {
+            "max": 0.46000000834465027,
+            "min": -0.4099999964237213
+        },
+        "rotateRange": {
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
+        },
+        "scale": {
+            "x": 0.05000000074505806,
+            "y": 0.1599999964237213,
+            "z": 0.1599999964237213
+        },
+        "scaleEasingType": 0,
+        "scaleRange": {
+            "max": 0.5600000023841858,
+            "min": 0.14000000059604645
+        },
+        "scaleSetting": 1,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
+        "velocityRange": {
+            "max": 51.31999969482422,
+            "min": 0.46000000834465027
+        }
+    },
+    "blendState": 1,
+    "isUseTextureAnimation": false,
+    "name": "BoostEffect_Enemy_3",
+    "primitiveParam": {
+        "size": {
+            "max": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "min": {
+                "x": -1.0700000524520874,
+                "y": -0.9100000262260437,
+                "z": -1.0
+            }
+        }
+    },
+    "primitiveType": "PRIMITIVE_CUBE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
+    "textureFilePath": "BoostEffect4.png"
+}

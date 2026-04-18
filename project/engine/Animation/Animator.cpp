@@ -8,15 +8,19 @@
 #include <cassert>
 #include "Animator.h"
 
+using namespace TakeC;
+
+//=============================================================================
+//	終了・開放処理
+//=============================================================================
+void AnimationManager::Finalize() {
+	animations_.clear();
+}
 //=============================================================================
 //	アニメーションの読み込み/登録
 //=============================================================================
 
-void Animator::Finalize() {
-	animations_.clear();
-}
-
-void Animator::LoadAnimation(const std::string& directoryPath,const std::string& filePath) {
+void AnimationManager::LoadAnimation(const std::string& filePath) {
 
 	//読み込み済みアニメーションを検索
 	if (animations_.contains(filePath)) {
@@ -25,7 +29,7 @@ void Animator::LoadAnimation(const std::string& directoryPath,const std::string&
 	}
 
 	//アニメーションの生成とファイル読み込み、初期化
-	std::map<std::string, Animation*> animation = LoadAnimationFile(directoryPath, filePath);
+	std::map<std::string, Animation*> animation = LoadAnimationFile(filePath);
 	//アニメーションをコンテナに追加
 	animations_.insert(std::make_pair(filePath, animation));
 }
@@ -34,7 +38,7 @@ void Animator::LoadAnimation(const std::string& directoryPath,const std::string&
 //	アニメーションの検索
 //=============================================================================
 
-Animation* Animator::FindAnimation(const std::string& filePath, const std::string& animName) {
+Animation* AnimationManager::FindAnimation(const std::string& filePath, const std::string& animName) {
 	//読み込み済みアニメーションを検索
 	if (animations_.contains(filePath)) {
 		if (animations_.at(filePath).contains(animName)) {
@@ -52,11 +56,36 @@ Animation* Animator::FindAnimation(const std::string& filePath, const std::strin
 //=============================================================================
 //	アニメーションファイルの読み込み
 //=============================================================================
-std::map<std::string, Animation*> Animator::LoadAnimationFile(const std::string& directoryPath, const std::string& filename) {
+std::map<std::string, Animation*> AnimationManager::LoadAnimationFile(const std::string& filename) {
+
+	namespace fs = std::filesystem;
+
+	// 拡張子から検索ルートを決める
+	fs::path fileNamePath(filename);
+	std::string ext = fileNamePath.extension().string();
+
+	// ベースディレクトリ
+	fs::path baseDir = "./Resources/Models/";
+
+	// 最終的なフルパス
+	fs::path fullPath = baseDir / filename;
+
+	// ファイルが存在しない場合は、従来のフォルダ構成（fbx/, obj/, gltf/）を探索
+	if (!fs::exists(fullPath)) {
+		fs::path modelDir;
+		if (ext == ".fbx") {
+			modelDir = baseDir / "fbx/";
+		} else if (ext == ".obj") {
+			modelDir = baseDir / "obj/";
+		} else if (ext == ".gltf" || ext == ".glb") {
+			modelDir = baseDir / "gltf/";
+		}
+		fullPath = modelDir / filename;
+	}
+
 	std::map<std::string, Animation*> animations = {};
     Assimp::Importer importer;
-    std::string filePath ="./Resources/" + directoryPath + "/" + filename;
-    const aiScene* scene = importer.ReadFile(filePath.c_str(), 0);
+    const aiScene* scene = importer.ReadFile(fullPath.string().c_str(), 0);
     //アニメーションがない場合
 	if(scene->mNumAnimations == 0) {
 		return animations = {};
@@ -75,51 +104,49 @@ std::map<std::string, Animation*> Animator::LoadAnimationFile(const std::string&
 			aiNodeAnim* NodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
 			NodeAnimation& nodeAnimation = animation->nodeAnimations[NodeAnimationAssimp->mNodeName.C_Str()];
 
-			//position, rotation, scaleのkeyflameを取得
+			//position, rotation, scale keyframeを取得
 			//position
 			for (uint32_t keyIndex = 0; keyIndex < NodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
 				aiVectorKey& keyAssimp = NodeAnimationAssimp->mPositionKeys[keyIndex];
-				KeyflameVector3 keyflame;
-				keyflame.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
-				keyflame.value = { -keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z }; //右手->左手に変換するので手動で対処する
-				nodeAnimation.translate.keyflames.push_back(keyflame);
+				KeyframeVector3 keyframe;
+				keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
+				keyframe.value = { -keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z }; //右手->左手に変換するので手動で対処する
+				nodeAnimation.translate.keyframes.push_back(keyframe);
 			}
 			//rotation
 			for (uint32_t keyIndex = 0; keyIndex < NodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
 				aiQuatKey& keyAssimp = NodeAnimationAssimp->mRotationKeys[keyIndex];
-				KeyflameQuaternion keyflame;
-				keyflame.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
-				keyflame.value = { keyAssimp.mValue.x, -keyAssimp.mValue.y, -keyAssimp.mValue.z, keyAssimp.mValue.w };
-				nodeAnimation.rotate.keyflames.push_back(keyflame);
+				KeyframeQuaternion keyframe;
+				keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
+				keyframe.value = { keyAssimp.mValue.x, -keyAssimp.mValue.y, -keyAssimp.mValue.z, keyAssimp.mValue.w };
+				nodeAnimation.rotate.keyframes.push_back(keyframe);
 			}
 			//scale
 			for (uint32_t keyIndex = 0; keyIndex < NodeAnimationAssimp->mNumScalingKeys; ++keyIndex) {
 				aiVectorKey& keyAssimp = NodeAnimationAssimp->mScalingKeys[keyIndex];
-				KeyflameVector3 keyflame;
-				keyflame.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
-				keyflame.value = { keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z };
-				nodeAnimation.scale.keyflames.push_back(keyflame);
+				KeyframeVector3 keyframe;
+				keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); //時間の単位を秒に変換
+				keyframe.value = { keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z };
+				nodeAnimation.scale.keyframes.push_back(keyframe);
 			}
-
-			//animation->nodeAnimations. = nodeAnimation;
 		}
 
 		//アニメーション名を取得
 		std::string animationName = animationAssimp->mName.C_Str();
 		animation->name = animationName;
-		
+		//アニメーションをmapに追加
 		animations.insert(std::make_pair(animationName, animation));
 	}
 
-
+	//読み込んだアニメーションを返す
 	return animations;
 }
 
 //=============================================================================
-//	補間値の計算
+//	補間値の計算(Vector3用)
 //=============================================================================
 
-Vector3 Animator::CalculateValue(const std::vector<KeyflameVector3>& keyframes, float time) {
+Vector3 AnimationManager::CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time) {
 	assert(!keyframes.empty()); //keyframesが空の場合はエラー
 	if(keyframes.size() == 1 || time <= keyframes[0].time) {
 		return keyframes[0].value;
@@ -138,7 +165,10 @@ Vector3 Animator::CalculateValue(const std::vector<KeyflameVector3>& keyframes, 
 	return (*keyframes.rbegin()).value;
 }
 
-Quaternion Animator::CalculateValue(const std::vector<KeyflameQuaternion>& keyframes, float time) {
+//=============================================================================
+//	補間値の計算(Quaternion用)
+//=============================================================================
+Quaternion AnimationManager::CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time) {
 	assert(!keyframes.empty()); //keyframesが空の場合はエラー
 	if(keyframes.size() == 1 || time <= keyframes[0].time) {
 		return keyframes[0].value;

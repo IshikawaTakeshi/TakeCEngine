@@ -1,4 +1,4 @@
-#include "WireFrame/WireFrame.hlsli"
+#include "../WireFrame/WireFrame.hlsli"
 
 struct TransformationMatrix {
 	float4x4 WVP;

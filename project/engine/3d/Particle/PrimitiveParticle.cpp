@@ -11,22 +11,29 @@
 #include "3d/Particle/ParticleCommon.h"
 #include <numbers>
 
+using namespace TakeC;
+
+//=============================================================================
+// コンストラクタ・デストラクタ
+//=============================================================================
 PrimitiveParticle::PrimitiveParticle(PrimitiveType type) {
 	particlePreset_.primitiveType = type;
 }
 
-PrimitiveParticle::~PrimitiveParticle() {}
 
+//=============================================================================
+// 初期化
+//=============================================================================
 void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::string& filePath) {
 
 	particleCommon_ = particleCommon;
 
 	//ParticleResource生成
 	particleResource_ =
-		DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
+		TakeC::DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
 	particleResource_->SetName(L"PrimitiveParticle::particleResource_");
 	//perViewResource生成
-	perViewResource_ = DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
+	perViewResource_ = TakeC::DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
 	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));
 	perViewResource_->SetName(L"PrimitiveParticle::perViewResource_");
 	//SRVの生成
@@ -37,32 +44,25 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 		particleResource_.Get(),
 		particleSrvIndex_
 	);
-	//perviewInit
+	//perViewData初期化
 	perViewData_->viewProjection = MatrixMath::MakeIdentity4x4();
 	perViewData_->billboardMatrix = MatrixMath::MakeIdentity4x4();
 
 	//Mapping
 	particleResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleData_));
 
-	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
-		//プリミティブの初期化
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(1.0f, 0.5f, filePath);
-	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(1.0f, 1.0f, filePath);
-	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(1.0f, filePath);
-	} else {
-		assert(0 && "未対応の PrimitiveType が指定されました");
-	}
+	
 
+	//テクスチャファイルパスの設定
 	particlePreset_.textureFilePath = filePath;
+	//1フレームの時間取得
+	kDeltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
+//=============================================================================
+// 更新処理
+//=============================================================================
 void PrimitiveParticle::Update() {
-
-	// ランダムエンジンの初期化  
-	std::random_device seedGenerator;
-	std::mt19937 randomEngine(seedGenerator());
 
 	numInstance_ = 0;
 	for (std::list<Particle>::iterator particleIterator = particles_.begin();
@@ -72,41 +72,45 @@ void PrimitiveParticle::Update() {
 		if (numInstance_ < kNumMaxInstance_) {
 
 			// 寿命が来たら削除  
-			if ((*particleIterator).lifeTime_ <= (*particleIterator).currentTime_) {
+			if ((*particleIterator).lifeTimer_.IsFinished()) {
 				particleIterator = particles_.erase(particleIterator);
 				continue;
 			}
 
 			// particle1つの位置更新  
 			UpdateMovement(particleIterator);
-			//alphaの計算
-			float alpha = 1.0f - ((*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
-
-			particleData_[numInstance_].color = {
-				(*particleIterator).color_.x,
-				(*particleIterator).color_.y,
-				(*particleIterator).color_.z,
-				alpha
-			};
+			
 			particleData_[numInstance_].scale = (*particleIterator).transforms_.scale;
 			particleData_[numInstance_].rotate = (*particleIterator).transforms_.rotate;
 			particleData_[numInstance_].translate = (*particleIterator).transforms_.translate;
 			particleData_[numInstance_].velocity = (*particleIterator).velocity_;
-			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTime_;
-			particleData_[numInstance_].currentTime = (*particleIterator).currentTime_;
-
-			// データをGPUに転送  
-			perViewData_->viewProjection = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
-			perViewData_->billboardMatrix = CameraManager::GetInstance()->GetActiveCamera()->GetRotationMatrix();
-
+			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTimer_.GetDuration();
+			particleData_[numInstance_].currentTime = (*particleIterator).lifeTimer_.GetProgress() * (*particleIterator).lifeTimer_.GetDuration();
+			
 			++numInstance_; // 次のインスタンスに進める  
 		}
 		++particleIterator; // 次のイテレータに進める  
 	}
+
+	if (!pendingParticles_.empty()) {
+		// 末尾にまとめて追加
+		particles_.insert(particles_.end(), pendingParticles_.begin(), pendingParticles_.end());
+		pendingParticles_.clear();
+	}
+
+	// データをGPUに転送  
+	perViewData_->isBillboard = particlePreset_.attribute.isBillboard;
+	perViewData_->viewProjection = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
+	perViewData_->billboardMatrix = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetRotationMatrix();
+	auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+	primitiveMaterial->SetEnableLighting(particlePreset_.attribute.enableLighting);
 }
 
+//=============================================================================
+// ImGui更新処理
+//=============================================================================
 void PrimitiveParticle::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ParticleAttributes& attributes = particlePreset_.attribute;
 
 	ImGui::Begin("Particle");
@@ -121,94 +125,342 @@ void PrimitiveParticle::UpdateImGui() {
 #endif // _DEBUG
 }
 
+//=============================================================================
+// 描画処理
+//=============================================================================
 void PrimitiveParticle::Draw() {
 
-
+	//BaseParticleGroupの描画処理
 	BaseParticleGroup::Draw();
 	//プリミティブの描画
 	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(
-		particleCommon_->GetGraphicPSO(), numInstance_, particlePreset_.primitiveType, primitiveHandle_);
+		particleCommon_->GetGraphicPSO(BlendState::NORMAL), numInstance_, particlePreset_.primitiveType, primitiveHandle_);
 }
 
-Particle PrimitiveParticle::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
+//=============================================================================
+// パーティクルの生成
+//=============================================================================
+Particle PrimitiveParticle::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate,const Vector3& direction) {
 
-	return BaseParticleGroup::MakeNewParticle(randomEngine, translate);
+	return BaseParticleGroup::MakeNewParticle(randomEngine, translate,direction);
 }
 
-std::list<Particle> PrimitiveParticle::Emit(const Vector3& emitterPos, uint32_t particleCount) {
+//=============================================================================
+// パーティクルの発生
+//=============================================================================
+std::list<Particle> PrimitiveParticle::Emit(const Vector3& emitterPos,const Vector3& direction, uint32_t particleCount) {
 
-	return BaseParticleGroup::Emit(emitterPos, particleCount);
+	return BaseParticleGroup::Emit(emitterPos,direction, particleCount);
 }
 
+//=============================================================================
+// パーティクルの配列の結合
+//=============================================================================
 void PrimitiveParticle::SpliceParticles(std::list<Particle> particles) {
 
 	BaseParticleGroup::SpliceParticles(particles);
 }
 
+//=============================================================================
+// パーティクルのプリセット設定
+//=============================================================================
 void PrimitiveParticle::SetPreset(const ParticlePreset& preset) {
 	particlePreset_ = preset;
+}
+
+void PrimitiveParticle::SetTextureFilePath(const std::string& filePath) {
+	particlePreset_.textureFilePath = filePath;
 	//テクスチャファイルパスの設定
+
 	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetRingData(primitiveHandle_)->material_;
-		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
-	}else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetPlaneData(primitiveHandle_)->material_;
-		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetData<Ring>(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(filePath);
+	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetData<Plane>(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(filePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetSphereData(primitiveHandle_)->material_;
-		primitiveMaterial->SetTextureFilePath(preset.textureFilePath);
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(filePath);
+	} else if (particlePreset_.primitiveType == PRIMITIVE_CONE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(filePath);
+	}
+	else if (particlePreset_.primitiveType == PRIMITIVE_CUBE) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(filePath);
+	}else if (particlePreset_.primitiveType == PRIMITIVE_CYLINDER) {
+		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+		primitiveMaterial->SetTextureFilePath(filePath);
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");
 	}
 }
 
+void PrimitiveParticle::EraseParticle() {
+
+	// 全パーティクルの削除
+	particles_.clear();
+}
+
+void PrimitiveParticle::GeneratePrimitive() {
+	PrimitiveParameter primitiveParam = particlePreset_.primitiveParam;
+
+	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
+
+		//RingParamとして取得
+		const RingParam& ringParam = std::get<RingParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
+			ringParam.innerRadius,
+			ringParam.outerRadius,
+			ringParam.subDivision,
+			particlePreset_.textureFilePath);
+	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
+
+		//PlaneParamとして取得
+		const PlaneParam& planeParam = std::get<PlaneParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
+			planeParam.width,
+			planeParam.height,
+			particlePreset_.textureFilePath);
+	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
+
+		//SphereParamとして取得
+		const SphereParam& sphereParam = std::get<SphereParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
+			sphereParam.radius,
+			sphereParam.subDivision,
+			particlePreset_.textureFilePath);
+	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
+
+		//ConeParamとして取得
+		const ConeParam& coneParam = std::get<ConeParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
+			coneParam.radius,
+			coneParam.height,
+			coneParam.subDivision,
+			particlePreset_.textureFilePath);
+	} else if (particlePreset_.primitiveType == PRIMITIVE_CUBE) {
+
+		//CubeParamとして取得
+		const CubeParam& cubeParam = std::get<CubeParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
+			cubeParam.size,
+			particlePreset_.textureFilePath);
+	}else if (particlePreset_.primitiveType == PRIMITIVE_CYLINDER) {
+		//CylinderParamとして取得
+		const CylinderParam& cylinderParam = std::get<CylinderParam>(primitiveParam);
+		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCylinder(
+			cylinderParam.radius,
+			cylinderParam.height,
+			cylinderParam.subDivision,
+			particlePreset_.textureFilePath);
+	} else {
+		assert(0 && "未対応の PrimitiveType が指定されました");
+	}
+	//テクスチャファイルパスの設定
+	SetTextureFilePath(particlePreset_.textureFilePath);
+	//ライティングの設定
+	auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+	primitiveMaterial->SetEnableLighting(particlePreset_.attribute.enableLighting);
+
+	//テクスチャアニメーションの設定
+	if (particlePreset_.isUseTextureAnimation == true) {
+		if (particlePreset_.textureAnimationType == TakeC::TextureAnimationType::UVScroll) {
+			//UVスクロールアニメーション適用
+			const UVScrollSettings& uvScrollSettings =
+				std::get<UVScrollSettings>(particlePreset_.textureAnimationParam);
+			TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material->Animation()->SetUVScrollAnimation(uvScrollSettings);
+		}
+		else if (particlePreset_.textureAnimationType == TakeC::TextureAnimationType::SpriteSheet) {
+			//スプライトシートアニメーション適用
+			const SpriteSheetSettings& spriteSheetSettings =
+				std::get<SpriteSheetSettings>(particlePreset_.textureAnimationParam);
+			TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material->Animation()->SetSpriteSheetAnimation(spriteSheetSettings);
+		}
+	}
+}
+
+//=============================================================================
+// パーティクル1つの位置更新
+//=============================================================================
 void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIterator) {
 
 	//particle1つの位置更新
 	ParticleAttributes& attributes = particlePreset_.attribute;
 
-	if (attributes.isTraslate_) {
-		if (attributes.enableFollowEmitter_) {
-			//エミッターに追従する場合
-			(*particleIterator).transforms_.translate = emitterPos_;
-		} else {
-			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * kDeltaTime_;
+	// 前フレームの位置を保存
+	Vector3 oldPosition = (*particleIterator).transforms_.translate;
+	float lifeTimeProgress = (*particleIterator).lifeTimer_.GetEase(attributes.lifeTimeEasingType);
+	float velocityProgress = (*particleIterator).lifeTimer_.GetEase(attributes.velocityEasingType);
+	float scaleProgress = (*particleIterator).lifeTimer_.GetEase(attributes.scaleEasingType);
+	float oldTime = (*particleIterator).lifeTimer_.GetProgress() * (*particleIterator).lifeTimer_.GetDuration();
 
+	if (attributes.isTranslate) {
+		if (attributes.enableFollowEmitter) {
+			// エミッターIDから現在のエミッター位置を取得
+			std::optional<Vector3> emitterPos =
+				TakeCFrameWork::GetParticleManager()->GetEmitterPosition((*particleIterator).emitterID_);
+
+			if (emitterPos.has_value()) {
+				(*particleIterator).transforms_.translate = emitterPos.value();
+			}
+
+			if (attributes.alignRotationToEmitter) {
+				auto emitDir = TakeCFrameWork::GetParticleManager()->GetEmitDirection((*particleIterator).emitterID_);
+				if (emitDir.has_value()) {
+
+					Vector3 dir = emitDir.value();
+					if (Vector3Math::LengthSq(dir) > 1e-6f) {
+
+						Vector3 to = Vector3Math::Normalize(dir);
+
+						// パーティクルの基準前方向（ローカル +Z を前と仮定）
+						Vector3 from = { 0.0f, 0.0f, 1.0f };
+						// PrimitiveTypeごとのデフォルトの向きに合わせて基準ベクトルを変更
+						switch (particlePreset_.primitiveType) {
+						case PRIMITIVE_CONE:
+						case PRIMITIVE_CYLINDER:
+							from = { 0.0f, 1.0f, 0.0f }; // 円錐・円柱はY軸が高さ方向
+							break;
+						case PRIMITIVE_PLANE:
+							from = { 0.0f, 0.0f, -1.0f }; // Planeは法線が-Zを向いている
+							break;
+						default:
+							from = { 0.0f, 0.0f, 1.0f }; // その他（Ring, Sphere, Cube）はZ軸基準
+							break;
+						}
+
+						float d = Vector3Math::Dot(from, to);
+						d = std::clamp(d, -1.0f, 1.0f);
+
+						Quaternion targetRotate;
+
+						if (d > 1.0f - 1e-5f) {
+							targetRotate = QuaternionMath::IdentityQuaternion();
+						}
+						else if (d < -1.0f + 1e-5f) {
+							// 真逆(180度)は軸が不定なので、fromと直交する軸を適当に選ぶ
+							Vector3 ortho = (std::fabs(from.y) < 0.999f) ? Vector3{ 0,1,0 } : Vector3{ 1,0,0 };
+							Vector3 axis = Vector3Math::Normalize(Vector3Math::Cross(from, ortho));
+							targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion(axis, std::numbers::pi_v<float>);
+						}
+						else {
+							Vector3 axis = Vector3Math::Cross(from, to);
+							axis = Vector3Math::Normalize(axis);
+							float angle = std::acos(d);
+							targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion(axis, angle);
+						}
+
+						Quaternion& current = (*particleIterator).transforms_.rotate;
+
+						// shortest-arc
+						if (QuaternionMath::Dot(current, targetRotate) < 0.0f) {
+							targetRotate = -targetRotate;
+						}
+
+						current = Easing::Slerp(current, targetRotate, 1.0f); // 例: 0.05f〜0.3f
+						current = QuaternionMath::Normalize(current);
+					}
+				}
+			}
+		
+		} else {
+			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * velocityProgress * kDeltaTime_;
+
+		}
+
+		if(attributes.isDirectional){
+			//方向に沿って移動
+			(*particleIterator).velocity_ += attributes.direction * kDeltaTime_;
+			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * velocityProgress * kDeltaTime_;
+			
 		}
 	}
 
-	if (attributes.scaleSetting_ == static_cast<uint32_t>(ScaleSetting::ScaleUp)) {
+	if (attributes.scaleSetting == static_cast<uint32_t>(ScaleSetting::ScaleUp)) {
 		//スケールの更新(拡大)
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
 			attributes.scaleRange.min,
 			attributes.scaleRange.max,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			scaleProgress);
 
 		(*particleIterator).transforms_.scale.y = Easing::Lerp(
 			attributes.scaleRange.min,
 			attributes.scaleRange.max,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			scaleProgress);
 		(*particleIterator).transforms_.scale.z = Easing::Lerp(
 			attributes.scaleRange.min,
 			attributes.scaleRange.max,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			scaleProgress);
 
-	} else if (attributes.scaleSetting_ == static_cast<uint32_t>(ScaleSetting::ScaleDown)) {
+	} else if (attributes.scaleSetting == static_cast<uint32_t>(ScaleSetting::ScaleDown)) {
 		//スケールの更新(縮小)
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
 			attributes.scaleRange.max,
 			attributes.scaleRange.min,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			scaleProgress);
 		(*particleIterator).transforms_.scale.y = Easing::Lerp(
 			attributes.scaleRange.max,
 			attributes.scaleRange.min,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			scaleProgress);
 		(*particleIterator).transforms_.scale.z = Easing::Lerp(
 			attributes.scaleRange.max,
 			attributes.scaleRange.min,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			scaleProgress);
 	}
 
-	(*particleIterator).currentTime_ += kDeltaTime_; //経過時間の更新
+	//alphaの計算
+	float alpha = 1.0f - lifeTimeProgress;
+	//色の設定
+	particleData_[numInstance_].color = {
+		(*particleIterator).color_.x,
+		(*particleIterator).color_.y,
+		(*particleIterator).color_.z,
+		alpha
+	};
 
+	//経過時間の更新
+	(*particleIterator).lifeTimer_.Update(); 
+
+	float newTime = (*particleIterator).lifeTimer_.GetProgress() * (*particleIterator).lifeTimer_.GetDuration();
+
+	// --- トレイル（補間）処理 ---
+	if (attributes.isParticleTrail && (*particleIterator).isTrailParent_) {
+
+		// タイマーを更新（残りを保持するために減算方式）
+		(*particleIterator).trailSpawnTimer_ += kDeltaTime_;
+
+		// もし interval を複数回超えていたら、複数回分生成できるようにループする
+		while ((*particleIterator).trailSpawnTimer_ >= attributes.trailEmitInterval) {
+			// 残り時間を減らす（0 にリセットするより正確）
+			(*particleIterator).trailSpawnTimer_ -= attributes.trailEmitInterval;
+
+			// 指定回数分、位置を補間して子パーティクルを生成
+			size_t n = attributes.particlesPerInterpolation;
+			for (size_t i = 0; i < n; ++i) {
+				float t = static_cast<float>(i + 1) / static_cast<float>(n + 1);
+
+				Particle trailParticle = *particleIterator; // 親をコピー
+				// 補間位置
+				trailParticle.transforms_.translate =
+					Easing::Lerp(oldPosition, (*particleIterator).transforms_.translate, t);
+				// 補間経過時間（親の oldTime -> newTime）
+				float lerpedTime = Easing::Lerp(oldTime, newTime, t);
+				trailParticle.lifeTimer_.Initialize((*particleIterator).lifeTimer_.GetDuration(), lerpedTime);
+
+				//移動させる必要がないため、速度を0に設定
+				trailParticle.velocity_ = Vector3(0.0f, 0.0f, 0.0f);
+
+				// トレイルは親化しない（更なるトレイルを作らない）
+				trailParticle.isTrailParent_ = false;
+				// トレイル固有のタイマーはリセット
+				trailParticle.trailSpawnTimer_ = 0.0f;
+
+				// 直接 particles_ に挿入せず pending に積む（次フレーム扱いにする）
+				pendingParticles_.push_back(std::move(trailParticle));
+			}
+		}
+	}
+
+	
 }

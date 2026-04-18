@@ -11,7 +11,7 @@
 
 #include "BCDirectCompute.h"
 
-#if defined(_DEBUG) || defined(PROFILE)
+#if defined(_DEBUG) || defined(PROFILE) || defined(_DEVELOP)
 #pragma comment(lib,"dxguid.lib")
 #endif
 
@@ -137,7 +137,7 @@ HRESULT GPUCompressBC::Initialize(ID3D11Device* pDevice)
         }
     }
 
-    // Save a device reference and obtain immediate context
+    // Save a device reference and obtain immediate playableCharacterInfo
     m_device = pDevice;
 
     pDevice->GetImmediateContext(m_context.ReleaseAndGetAddressOf());

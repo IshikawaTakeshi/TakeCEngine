@@ -1,90 +1,283 @@
 #include "Enemy.h"
-#include "engine/Collision/BoxCollider.h"
-#include "engine/Collision/SphereCollider.h"
+#include "Vector3Math.h"
+#include "engine/3d/Model.h"
 #include "engine/3d/Object3d.h"
 #include "engine/3d/Object3dCommon.h"
-#include "engine/3d/Model.h"
-#include "engine/io/Input.h"
-#include "engine/camera/CameraManager.h"
+#include "engine/Collision/BoxCollider.h"
+#include "engine/Collision/SphereCollider.h"
+#include "engine/Input/Input.h"
+#include "engine/Utility/JsonLoader.h"
 #include "engine/base/TakeCFrameWork.h"
-#include "Vector3Math.h"
+#include "engine/camera/CameraManager.h"
 #include "math/Easing.h"
 
-#include "application/Weapon/Rifle.h"
-#include "application/Weapon/Bazooka.h"
+#include "application/Effect/BoostEffectPositionEnum.h"
 #include "application/Entity/WeaponUnit.h"
+#include "application/Tool/BreakGaugeUtil.h"
+#include "application/Weapon/Bazooka/Bazooka.h"
+#include "application/Weapon/Launcher/VerticalMissileLauncher.h"
+#include "application/Weapon/MachineGun/MachineGun.h"
+#include "application/Weapon/Rifle/Rifle.h"
+#include "engine/Math/Quaternion.h"
+#include "engine/Math/Matrix4x4.h"
+#include "application/Weapon/ShotGun/ShotGun.h"
 
-Enemy::~Enemy() {
-	object3d_.reset();
-	collider_.reset();
-}
 
 //========================================================================================================
-//　初期化
+// 　初期化
 //========================================================================================================
+void Enemy::Initialize(Object3dCommon* object3dCommon,
+	const std::string& filePath) {
 
-
-void Enemy::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
-
-
-	//キャラクタータイプ設定
+	// キャラクタータイプ設定
 	characterType_ = CharacterType::ENEMY;
 
-	behaviorRequest_ = Behavior::RUNNING;
-	//オブジェクト初期化
+	// EnemyDataの読み込み
+	enemyData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>(
+		"EnemyData.json");
+
+	// オブジェクト初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
-	//コライダー初期化
+	object3d_->SetScale(enemyData_.characterInfo.transform.scale);
+	object3d_->SetUseExternalAnimation(
+		true); // 外部からアニメーションを設定するようにする
+	// コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
-	collider_->SetHalfSize({ 2.0f, 2.5f, 2.0f }); // コライダーの半径を設定
+	collider_->SetOwner(this);
+	collider_->SetOffset(enemyData_.characterInfo.colliderInfo
+		.offset); // コライダーのオフセットを設定
+	collider_->SetHalfSize(
+		enemyData_.characterInfo.colliderInfo.halfSize); // コライダーの半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Enemy));
 
-	transform_ = { {1.5f,1.5f,1.5f}, { 0.0f,0.0f,0.0f,1.0f }, {0.0f,0.0f,30.0f} };
-	object3d_->SetScale(transform_.scale);
-
-	//emiiter設定
-	//emitter0
+	// emitter設定
+	// emitter0
 	particleEmitter_.resize(3);
 	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0",{ {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 5, 1.0f);
-	particleEmitter_[0]->SetParticleName("DamageSpark");
-	//emitter1
+	particleEmitter_[0]->Initialize("EnemyEmitter0", "DamageSpark.json");
+	// emitter1
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 10, 1.0f);
-	particleEmitter_[1]->SetParticleName("CrossEffect");
-	//emitter2
+	particleEmitter_[1]->Initialize("EnemyEmitter1", "DamageSpark2.json");
+	// emitter2
 	particleEmitter_[2] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[2]->Initialize("EnemyEmitter2", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 10, 1.0f);
-	particleEmitter_[2]->SetParticleName("SparkExplosion");
+	particleEmitter_[2]->Initialize("EnemyEmitter2", "SparkExplosion.json");
 
-	weapons_.resize(2); // 武器の数を2つに設定
-	weaponTypes_.resize(2);
-	weaponTypes_[R_ARMS] = WeaponType::WEAPON_TYPE_RIFLE; // 1つ目の武器はライフル
-	weaponTypes_[L_ARMS] = WeaponType::WEAPON_TYPE_BAZOOKA; // 2つ目の武器はバズーカ
+	// 死亡エフェクト初期化
+	deadEffect_ = std::make_unique<DeadEffect>();
+	deadEffect_->Initialize();
 
+	// 武器の初期化
+	weapons_.resize(WeaponUnit::Size);
+	weaponTypes_.resize(WeaponUnit::Size);
+	for (size_t i = 0; i < weaponTypes_.size(); i++) {
+		weaponTypes_[i] = enemyData_.weaponData[i].weaponType;
+	}
+	chargeShootableUnits_.resize(weapons_.size());
+
+	// デルタタイムの取得
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
-	//体力の初期化
-	health_ = maxHealth_;
+	// bulletSensor_の初期化
+	bulletSensor_ = std::make_unique<BulletSensor>();
+	bulletSensor_->Initialize(object3dCommon, "ICOBall.gltf");
+	bulletSensor_->SetSensorRadius(collider_->GetHalfSize().x * 20.0f);
+
+	// AIBrainSystemの初期化
+	aiBrainSystem_ = std::make_unique<AIBrainSystem>();
+	aiBrainSystem_->Initialize(&enemyData_.characterInfo, weapons_.size());
+	aiBrainSystem_->SetOrbitRadius(orbitRadius_);
+	inputProvider_->SetAIBrainSystem(aiBrainSystem_.get());
+
+	// StateManagerの初期化
+	stateManager_ = std::make_unique<GameCharacterStateManager>();
+	stateManager_->Initialize(inputProvider_);
+	stateManager_->InitializeStates(enemyData_.characterInfo);
+
+	// アニメーションマッパーの登録
+	animationMapper_.Register(
+		GameCharacterState::RUNNING,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+			"Player_Model_Ver2.0.gltf", "Running"),
+		0.2f);
+	animationMapper_.Register(
+		GameCharacterState::FLOATING,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+			"Player_Model_Ver2.0.gltf", "Floating"),
+		0.2f);
+	animationMapper_.Register(
+		GameCharacterState::JUMP,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+			"Player_Model_Ver2.0.gltf", "Jump"),
+		0.15f);
+	animationMapper_.Register(
+		GameCharacterState::STEPBOOST,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+			"Player_Model_Ver2.0.gltf", "Running"),
+		0.1f);
+	animationMapper_.Register(
+		GameCharacterState::CHARGESHOOT_STUN,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+			"Player_Model_Ver2.0.gltf", "Running"),
+		0.2f);
+	animationMapper_.Register(
+		GameCharacterState::DEAD,
+		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+			"Player_Model_Ver2.0.gltf", "Running"),
+		0.3f);
+
+	// アニメーションコントローラの初期化
+	animatorController_.Initialize(object3d_->GetModel()->GetSkeleton());
+
+	// StateManagerにアニメーションコンポーネントを設定
+	stateManager_->SetAnimationComponents(&animatorController_,
+		&animationMapper_);
+
+	// ブーストエフェクトの初期化
+	boostEffects_.resize(kNumPositions);
+	for (int i = 0; i < boostEffects_.size(); i++) {
+		boostEffects_[i] = std::make_unique<BoostEffect>();
+		boostEffects_[i]->Initialize(this, 
+			"BoostEffect_Enemy.json",
+			"BoostEffect_Appear_Enemy.json", 
+			"StepBoostEffect_Appear_Enemy.json");
+	}
+	boostEffects_[LEFT_LEG]->AttachToSkeletonJoint(
+		object3d_->GetModel()->GetSkeleton(), "knees_left.002");
+	boostEffects_[RIGHT_LEG]->AttachToSkeletonJoint(
+		object3d_->GetModel()->GetSkeleton(), "knees_right.002");
+	boostEffects_[RIGHT_SHOULDER]->AttachToSkeletonJoint(
+		object3d_->GetModel()->GetSkeleton(), "body_joint_right.002");
+	boostEffects_[LEFT_SHOULDER]->AttachToSkeletonJoint(
+		object3d_->GetModel()->GetSkeleton(), "body_joint_left.002");
+	boostEffects_[BACKPACK]->AttachToSkeletonJoint(
+		object3d_->GetModel()->GetSkeleton(), "backpack.001");
+
+	// Blackboardの生成
+	blackboard_ = std::make_unique<Blackboard>();
+	
+	// Blackboardに初期値を登録(初回フレームでのGetValueアサートを防止)
+	UpdateBlackboard();
+
+	// JSONからビヘイビアツリーを構築
+	behaviorTree_ = comboFactory_.LoadComboSetData(
+		"DefaultComboSet.json",
+		stateManager_.get()
+	);
+
+	// ===== 追加: BehaviorTreeEditor 初期化と接続 =====
+	behaviorTreeEditor_ = std::make_unique<BehaviorTreeEditor>();
+	behaviorTreeEditor_->Initialize();
+	behaviorTreeEditor_->LoadTreeFromEnemy(behaviorTree_.get(), blackboard_.get());
+
+	// Applyボタン -> Enemyへ反映予約
+	behaviorTreeEditor_->SetApplyCallback([this](const ComboSetData& data) {
+		this->ApplyBehaviorTree(data);
+		});
 }
 
-void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) {
-	//武器の初期化
+//========================================================================================================
+// 武器の初期化
+//========================================================================================================
+void Enemy::WeaponInitialize(Object3dCommon* object3dCommon,
+	BulletManager* bulletManager) {
+	// 武器の初期化
 	for (int i = 0; i < weapons_.size(); i++) {
 		if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_RIFLE) {
+			// ライフルの武器を初期化
 			weapons_[i] = std::make_unique<Rifle>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager, "Rifle.gltf");
-			weapons_[i]->SetOwnerObject(this);
-		}else if(weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
-			weapons_[i] = std::make_unique<Bazooka>();
-			weapons_[i]->Initialize(object3dCommon, bulletManager, "Bazooka.gltf");
-			weapons_[i]->SetOwnerObject(this);
+
 		}
+		else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_BAZOOKA) {
+			// バズーカの武器を初期化
+			weapons_[i] = std::make_unique<Bazooka>();
+
+		}
+		else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_VERTICAL_MISSILE) {
+			// 垂直ミサイルの武器を初期化
+			weapons_[i] = std::make_unique<VerticalMissileLauncher>();
+
+		}
+		else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_MACHINE_GUN) {
+			// マシンガンの武器を初期化
+			weapons_[i] = std::make_unique<MachineGun>();
+
+		}
+		else if (weaponTypes_[i] == WeaponType::WEAPON_TYPE_SHOTGUN) {
+			// ショットガンの武器を初期化
+			weapons_[i] = std::make_unique<ShotGun>();
+
+		}
+		else {
+			// 武器が設定されていない場合はnullptrのまま
+			weapons_[i] = nullptr;
+		}
+
+		weapons_[i]->Initialize(object3dCommon, bulletManager);
+		weapons_[i]->SetOwnerObject(this);
 	}
 
-	weapons_[R_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "RightHand"); // 1つ目の武器を右手に取り付け
-	weapons_[L_ARMS]->AttachToSkeletonJoint(object3d_->GetModel()->GetSkeleton(), "LeftHand"); // 2つ目の武器を左手に取り付け
+	weapons_[R_ARMS]->AttachToSkeletonJoint(
+		object3d_->GetModel()->GetSkeleton(),
+		"weaponJointPoint_RB.tip"); // 1つ目の武器を右手に取り付け
+	weapons_[R_ARMS]->SetUnitPosition(
+		R_ARMS); // 1つ目の武器のユニットポジションを設定
+	weapons_[L_ARMS]->AttachToSkeletonJoint(
+		object3d_->GetModel()->GetSkeleton(),
+		"weaponJointPoint_LB.tip"); // 2つ目の武器を左手に取り付け
+	weapons_[L_ARMS]->SetUnitPosition(
+		L_ARMS); // 2つ目の武器のユニットポジションを設定
+	weapons_[R_BACK]->AttachToSkeletonJoint(
+		object3d_->GetModel()->GetSkeleton(),
+		"weaponJointPoint_LT.tip"); // 3つ目の武器を背中に取り付け
+	weapons_[R_BACK]->SetUnitPosition(
+		R_BACK); // 3つ目の武器のユニットポジションを設定
+	weapons_[L_BACK]->AttachToSkeletonJoint(
+		object3d_->GetModel()->GetSkeleton(),
+		"weaponJointPoint_RT.tip"); // 4つ目の武器を背中に取り付け
+	weapons_[L_BACK]->SetUnitPosition(
+		L_BACK); // 4つ目の武器のユニットポジションを設定
+}
+
+//========================================================================================================
+// 武器の取得
+//========================================================================================================
+BaseWeapon* Enemy::GetCurrentWeapon(int index) const {
+	return weapons_[index].get();
+}
+
+std::vector<std::unique_ptr<BaseWeapon>>& Enemy::GetWeapons() {
+	return weapons_;
+}
+
+//========================================================================================================
+// EnemyのGameCharacterContextの読み込み・保存
+//========================================================================================================
+void Enemy::LoadEnemyData(const std::string& characterJsonPath) {
+
+	// JsonLoaderを使ってEnemyのGameCharacterContextを読み込み
+	enemyData_.characterInfo =
+		TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(
+			characterJsonPath);
+}
+
+void Enemy::SaveEnemyData(const std::string& characterJsonPath) {
+
+	// JsonLoaderを使ってEnemyのGameCharacterContextを保存
+	enemyData_.characterInfo.characterName = characterJsonPath;
+	TakeCFrameWork::GetJsonLoader()->SaveJsonData<CharacterData>("EnemyData.json",
+		enemyData_);
+}
+
+void Enemy::LoadBehaviorTree(const std::string& filePath) {
+	behaviorTree_ = comboFactory_.LoadComboSetData(filePath, stateManager_.get());
+}
+
+void Enemy::ApplyBehaviorTree(const ComboSetData& data) {
+	std::lock_guard<std::mutex> lock(treeMutex_);
+	// データをコピーして予約
+	pendingTreeData_ = std::make_unique<ComboSetData>(data);
 }
 
 //========================================================================================================
@@ -93,161 +286,303 @@ void Enemy::WeaponInitialize(Object3dCommon* object3dCommon, BulletManager* bull
 
 void Enemy::Update() {
 
-	// ランダムエンジンの初期化  
-	std::random_device seedGenerator;
-	std::mt19937 randomEngine(seedGenerator());
+	//フレームの冒頭で予約があれば反映
+	{
+		std::lock_guard<std::mutex> lock(treeMutex_);
+		if (pendingTreeData_) {
+			// 古いツリーを破棄する前に、現在のステートを強制リセット
+			// これにより、古いアクションノードへの依存を断ち切る
+			stateManager_->RequestState(State::RUNNING); 
+			// 新しいツリーを構築
+			behaviorTree_ = comboFactory_.BuildBehaviorTree(*pendingTreeData_,stateManager_.get());
 
-	//stepBoostのインターバルの更新
-	if(stepBoostIntervalTimer_ > 0.0f) {
-		stepBoostIntervalTimer_ -= deltaTime_;
-	}
-
-	// StepBoost入力判定を最初に追加
-	if (behavior_ == Behavior::RUNNING) {
-
-	
-			//1秒に1度確率で判定
-			if( randomEngine() % 100 < jumpProbability_) { // 1%の確率
-				if(randomEngine() % 2 == 0) {
-					//Jump遷移
-					behaviorRequest_ = Behavior::JUMP;
-				} else {
-					//StepBoost遷移
-					behaviorRequest_ = Behavior::STEPBOOST;
-				}
+			// ノードの状態を初期化（念のため）
+			if (behaviorTree_) {
+				behaviorTree_->Reset();
 			}
+
+			//Editorに新しいツリーを反映
+			if (behaviorTreeEditor_ && blackboard_) {
+				behaviorTreeEditor_->LoadTreeFromEnemy(behaviorTree_.get(), blackboard_.get());
+			}
+
+			pendingTreeData_ = nullptr;
+		}
 	}
 
-	//エネルギーの更新
-	UpdateEnergy();
+	// --- 1. 状態の判定（AIや攻撃に先立って行う） ---
+	// 死亡判定
+	if (enemyData_.characterInfo.health <= 0.0f && enemyData_.characterInfo.isAlive) {
+		enemyData_.characterInfo.isAlive = false;
+		stateManager_->RequestState(State::DEAD);
+		deadEffect_->Start();
+	}
+	auto& breakGaugeInfo = enemyData_.characterInfo.breakGaugeInfo;
 
-	if (behaviorRequest_) {
 
-		behavior_ = behaviorRequest_.value();
-		prevBehavior_ = behavior_;
+	// EventManagerへ通知
+	TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Enemy", &breakGaugeInfo);
 
-		switch (behavior_) {
-		case Behavior::IDLE:
-			break;
-		case Behavior::RUNNING:
-			InitRunning();
-			break;
-		case Behavior::JUMP:
-			InitJump();
-			break;
-		case Behavior::DASH:
-			InitDash();
-			break;
-		case Behavior::STEPBOOST:
-			InitStepBoost();
-			break;
-		case Behavior::FLOATING:
-			InitFloating();
-			break;
-		case Behavior::CHARGESHOOT:
-			InitChargeShoot();
-			break;
-		case Behavior::CHARGESHOOT_STUN:
-			InitChargeShootStun();
-			break;
-		case Behavior::DEAD:
-			InitDead();
-			break;
+	if (breakGaugeInfo.isStunned) {
+		breakGaugeInfo.entries.clear();
+	}
+	else {
+		BreakGaugeUtil::UpdateBreakGaugeEntries(breakGaugeInfo);
+
+		// スタン猶予タイマーの更新
+		breakGaugeInfo.stunGraceTimer.Update();
+
+		if (breakGaugeInfo.breakGauge >= breakGaugeInfo.maxBreakGauge) {
+			// スタン開始：entriesをクリア
+			breakGaugeInfo.entries.clear();
+			breakGaugeInfo.isStunned = true;
+
+			// state遷移をリクエスト
+			stateManager_->RequestState(GameCharacterState::BREAK_STUN);
+		}
+	}
+
+	// --- 2. ガード付きでAI/攻撃を実行 ---
+
+	// AIの制御を受け付けないステートの判定
+	bool isAIControlDisabled = !enemyData_.characterInfo.isAlive || 
+	                           breakGaugeInfo.isStunned ||
+	                           stateManager_->GetCurrentStateType() == GameCharacterState::CHARGESHOOT_STUN ||
+	                           stateManager_->GetCurrentStateType() == GameCharacterState::DEAD;
+
+	// stepBoostのインターバルの更新
+	enemyData_.characterInfo.stepBoostInfo.interval = 0.2f;
+	if (enemyData_.characterInfo.stepBoostInfo.intervalTimer > 0.0f) {
+		enemyData_.characterInfo.stepBoostInfo.intervalTimer -= deltaTime_;
+	}
+
+	// AIの更新
+	if (enemyData_.characterInfo.isInCombat && !isAIControlDisabled) {
+		// 1. AIスコアを更新
+		float dist = (enemyData_.characterInfo.focusTargetPos -
+			enemyData_.characterInfo.transform.translate).Length();
+		aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
+		aiBrainSystem_->SetDistanceToTarget(dist);
+		aiBrainSystem_->Update(weapons_);
+
+		// 2. Blackboardにデータを集約
+		UpdateBlackboard();
+
+		// 3. ビヘイビアツリーを実行（ツリーがRequestStateを呼ぶ）
+		if (behaviorTree_) {
+			BehaviorStatus status = behaviorTree_->Execute(*blackboard_);
+			if (status != BehaviorStatus::Running) {
+				behaviorTree_->Reset(); // 完了 or 失敗 → 次フレームで再評価
+			}
 		}
 
-		behaviorRequest_ = std::nullopt;
-	}
+		// 移動方向の取得
+		enemyData_.characterInfo.moveDirection = inputProvider_->GetMoveDirection();
 
-	switch (behavior_) {
-	case Enemy::Behavior::IDLE:
-		break;
-	case Enemy::Behavior::RUNNING:
-		UpdateRunning();
-		break;
-	case Enemy::Behavior::JUMP:
-		UpdateJump();
-		break;
-	case Enemy::Behavior::DASH:
-		UpdateDash();
-		break;
-	case Enemy::Behavior::STEPBOOST:
-		UpdateStepBoost();
-		break;
-	case Enemy::Behavior::FLOATING:
-		UpdateFloating(randomEngine);
-		break;
-	case Enemy::Behavior::CHARGESHOOT:
-		UpdateChargeShoot();
-		break;
-	case Enemy::Behavior::CHARGESHOOT_STUN:
-		UpdateChargeShootStun();
-		break;
-
-	case Enemy::Behavior::DEAD:
-		UpdateDead();
-		break;
-
-	default:
-		break;
-	}
-
-	//攻撃処理
-	if (isAlive_ == true) {
+		// 攻撃処理
 		UpdateAttack();
+	} else {
+		// AI停止時は移動入力をゼロにする
+		enemyData_.characterInfo.moveDirection = { 0.0f, 0.0f, 0.0f };
 	}
 
-	//ダメージエフェクトの更新
-	if (isDamaged_) {
+	// --- 3. 常時必要な更新 ---
+	UpdateEnergy();
+	// アクティブブーストエフェクトのリクエスト
+	RequestActiveBoostEffect();
+
+	// Stateの更新（ここで実際にステートが切り替わる）
+	stateManager_->Update(enemyData_.characterInfo);
+
+	// 地面判定に基づく自動遷移（スタンや死亡中、チャージ硬直中は行わない）
+	if (!isAIControlDisabled) {
+		if (enemyData_.characterInfo.onGround == true &&
+			(stateManager_->GetCurrentStateType() == GameCharacterState::JUMP ||
+				stateManager_->GetCurrentStateType() == GameCharacterState::FLOATING)) {
+
+			stateManager_->RequestState(GameCharacterState::RUNNING);
+		}
+		else if (enemyData_.characterInfo.onGround == false &&
+			stateManager_->GetCurrentStateType() == GameCharacterState::RUNNING) {
+			// 空中にいる場合はFLOATINGに切り替え
+			stateManager_->RequestState(GameCharacterState::FLOATING);
+		}
+	}
+
+	// ダメージエフェクトの更新
+	if (enemyData_.characterInfo.isDamaged) {
 		damageEffectTime_ -= deltaTime_;
 		particleEmitter_[0]->Emit();
 		if (damageEffectTime_ <= 0.0f) {
-			isDamaged_ = false;
+			enemyData_.characterInfo.isDamaged = false;
 		}
 	}
 
-	if(health_ <= 0.0f) {
-		//死亡状態のリクエスト
-		isAlive_ = false;
-		behaviorRequest_ = Behavior::DEAD;
+	// bulletSensorの更新
+	bulletSensor_->SetTranslate(enemyData_.characterInfo.transform.translate);
+	bulletSensor_->Update();
+
+	auto jointWorldMatrixOpt =
+		object3d_->GetModel()->GetSkeleton()->GetJointWorldMatrix(
+			"body.002", object3d_->GetWorldMatrix());
+	bodyPosition_ = { jointWorldMatrixOpt->m[3][0], jointWorldMatrixOpt->m[3][1],
+					 jointWorldMatrixOpt->m[3][2] };
+
+	// モデルの回転処理
+	if (enemyData_.characterInfo.isAlive) {
+		// 生存中はフォーカス対象に向く
+		Quaternion targetRotate = QuaternionMath::LookRotation(
+			Vector3Math::Normalize(enemyData_.characterInfo.focusTargetPos -
+				enemyData_.characterInfo.transform.translate),
+			{ 0.0f, 1.0f, 0.0f });
+
+		enemyData_.characterInfo.transform.rotate = Easing::Slerp(
+			enemyData_.characterInfo.transform.rotate, targetRotate, 0.1f);
+		enemyData_.characterInfo.transform.rotate =
+			QuaternionMath::Normalize(enemyData_.characterInfo.transform.rotate);
+
+	}
+	else {
+		if (enemyData_.characterInfo.moveDirection.x != 0.0f ||
+			enemyData_.characterInfo.moveDirection.z != 0.0f) {
+			// 移動方向に合わせて回転
+			float targetAngle = atan2(enemyData_.characterInfo.moveDirection.x,
+				enemyData_.characterInfo.moveDirection.z);
+			Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion(
+				{ 0.0f, 1.0f, 0.0f }, targetAngle);
+			enemyData_.characterInfo.transform.rotate = Easing::Slerp(
+				enemyData_.characterInfo.transform.rotate, targetRotate, 0.5f);
+			enemyData_.characterInfo.transform.rotate =
+				QuaternionMath::Normalize(enemyData_.characterInfo.transform.rotate);
+		}
 	}
 
-	//Quaternionからオイラー角に変換
-	Vector3 eulerRotate = QuaternionMath::toEuler(transform_.rotate);
-	object3d_->SetTranslate(transform_.translate);
+	// Quaternionからオイラー角に変換
+	Vector3 eulerRotate =
+		QuaternionMath::ToEuler(enemyData_.characterInfo.transform.rotate);
+	object3d_->SetTranslate(enemyData_.characterInfo.transform.translate);
 	object3d_->SetRotate(eulerRotate);
+	// アニメーションコントローラの更新（object3d_->Update()より前に呼ぶ）
+	animatorController_.Update(deltaTime_);
 	object3d_->Update();
+	object3d_->GetModel()->UpdateSkinningFromSkeleton();
 	collider_->Update(object3d_.get());
 
-	weapons_[0]->SetTarget(focusTargetPos_);
-	weapons_[0]->Update();
-	weapons_[1]->SetTarget(focusTargetPos_);
-	weapons_[1]->Update(); 
+	// 武器の更新
+	for (auto& weapon : weapons_) {
+		if (weapon) {
+			weapon->SetTarget(enemyData_.characterInfo.focusTargetPos);
+			weapon->SetTargetVelocity(focusTargetVelocity_);
+			weapon->Update();
+		}
+	}
 
-	//パーティクルエミッターの更新
+	// ブーストエフェクトの更新
+	for (const auto& boostEffect : boostEffects_) {
+		boostEffect->Update();
+		boostEffect->SetCharacterState(stateManager_->GetCurrentStateType());
+	}
+
+	// パーティクルエミッターの更新
 	for (auto& emitter : particleEmitter_) {
-		emitter->SetTranslate(transform_.translate);
+		emitter->SetTranslate(enemyData_.characterInfo.transform.translate);
 		emitter->Update();
 	}
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("DamageSpark")->SetEmitterPosition(transform_.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(transform_.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(transform_.translate);
+
+	// 死亡エフェクトの更新
+	deadEffect_->Update(bodyPosition_);
+
+	// 着地判定の毎フレームリセット
+	enemyData_.characterInfo.onGround = false;
 }
 
 void Enemy::UpdateImGui() {
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::Begin("Enemy");
-	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
-	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
-	ImGui::DragFloat4("Rotate", &transform_.rotate.x, 0.01f);
+
 	ImGui::Separator();
-	ImGui::DragFloat("Health", &health_, 1.0f, 0.0f, maxHealth_);
-	ImGui::DragFloat("Energy", &energy_, 1.0f, 0.0f, maxEnergy_);
-	ImGui::DragFloat3("Velocity", &velocity_.x, 0.01f);
-	ImGui::DragFloat3("MoveDirection", &moveDirection_.x, 0.01f);
-	ImGui::Text("Behavior: %d", static_cast<int>(behavior_));
-	object3d_->UpdateImGui("Enemy");
+
+	ImGui::DragFloat3("Translate",
+		&enemyData_.characterInfo.transform.translate.x, 0.01f);
+	ImGui::DragFloat3("Scale", &enemyData_.characterInfo.transform.scale.x,
+		0.01f);
+	ImGui::DragFloat4("Rotate", &enemyData_.characterInfo.transform.rotate.x,
+		0.01f);
+	ImGui::Separator();
+	//health
+	ImGui::DragFloat("Health", &enemyData_.characterInfo.health, 1.0f, 0.0f,
+		enemyData_.characterInfo.maxHealth);
+	//energy
+	ImGui::DragFloat("Energy", &enemyData_.characterInfo.energyInfo.energy, 1.0f,
+		0.0f, enemyData_.characterInfo.energyInfo.maxEnergy);
+	//breakGauge
+	ImGui::DragFloat("BreakGauge", &enemyData_.characterInfo.breakGaugeInfo.breakGauge,
+		1.0f, 0.0f, enemyData_.characterInfo.breakGaugeInfo.maxBreakGauge);
+	ImGui::DragFloat3("Velocity", &enemyData_.characterInfo.velocity.x, 0.01f);
+	ImGui::DragFloat3("MoveDirection", &enemyData_.characterInfo.moveDirection.x,
+		0.01f);
+	ImGui::SeparatorText("Collider Info");
+	ImGui::DragFloat3("offset", &enemyData_.characterInfo.colliderInfo.offset.x,
+		0.01f);
+	ImGui::DragFloat3("halfSize",
+		&enemyData_.characterInfo.colliderInfo.halfSize.x, 0.01f);
+	ImGui::Checkbox("OnGround", &enemyData_.characterInfo.onGround);
+
+	// ダメージ処理テスト用ボタン
+	if (ImGui::Button("Health Damage 1000")) {
+		enemyData_.characterInfo.health -= 1000.0f;
+		enemyData_.characterInfo.isDamaged = true;
+		damageEffectTime_ = 0.5f;
+		particleEmitter_[1]->Emit();
+	}
+	if (ImGui::Button("BreakStun Damage 100")) {
+		BreakGaugeInfo& gaugeInfo = enemyData_.characterInfo.breakGaugeInfo;
+		// ダメージに係数を乗算してゲージに加算（係数は武器ごとに変えてもよい）
+		gaugeInfo.breakGauge += 100.0f;
+
+		// 被弾履歴(遅延減衰待ち用)を追加
+		BreakGaugeEntry entry;
+		entry.amount = 100.0f; // ゲージに加算した値を保存
+		entry.delayTimer.Initialize(entry.decayDelay, 0.0f); //減衰開始タイマーを初期化して開始
+		gaugeInfo.entries.push_back(entry);
+
+
+
+	}
+	// スピードを0にするボタン
+	if (ImGui::Button("Stop Movement")) {
+		enemyData_.characterInfo.velocity = { 0.0f, 0.0f, 0.0f };
+		enemyData_.characterInfo.jumpInfo.speed = 0.0f;
+		enemyData_.characterInfo.moveSpeed = 0.0f;
+		enemyData_.characterInfo.stepBoostInfo.speed = 0.0f;
+	}
+
+	// データ保存ボタン
+	if (ImGui::Button("Save Enemy Data")) {
+		SaveEnemyData(enemyData_.characterInfo.characterName);
+	}
+	ImGui::Separator();
+	bulletSensor_->UpdateImGui();
+	stateManager_->UpdateImGui();
+	aiBrainSystem_->UpdateImGui();
+
+	// コライダーの情報をEnemyDataから反映
+	collider_->SetOffset(enemyData_.characterInfo.colliderInfo.offset);
+	collider_->SetHalfSize(enemyData_.characterInfo.colliderInfo.halfSize);
+	collider_->UpdateImGui("Enemy");
+	for (auto& weapon : weapons_) {
+		if (weapon) {
+			weapon->UpdateImGui();
+		}
+	}
+
 	ImGui::End();
+
+	// Enemyウィンドウとは別ウィンドウ("Behavior Tree Editor")で描画される
+	if (behaviorTreeEditor_) {
+		behaviorTreeEditor_->UpdateImGui(behaviorTree_.get());
+	}
 #endif // _DEBUG
 }
 
@@ -255,23 +590,30 @@ void Enemy::UpdateImGui() {
 // 描画処理
 //========================================================================================================
 
-
 void Enemy::Draw() {
 
 	object3d_->Draw();
-	for(const auto& weapon : weapons_) {
-		weapon->Draw();
+	for (const auto& weapon : weapons_) {
+		if (weapon) {
+			weapon->Draw();
+		}
 	}
+}
 
+void Enemy::DrawShadow(const LightCameraInfo& lightCamera) {
+	object3d_->DrawShadow(lightCamera);
+	for (const auto& weapon : weapons_) {
+		weapon->DrawShadow(lightCamera);
+	}
 }
 
 void Enemy::DrawCollider() {
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	collider_->DrawCollider();
-
+	bulletSensor_->DrawCollider();
+	// object3d_->GetModel()->GetSkeleton()->Draw(object3d_->GetWorldMatrix());
 #endif // _DEBUG
-
 }
 
 //========================================================================================================
@@ -281,492 +623,204 @@ void Enemy::DrawCollider() {
 void Enemy::OnCollisionAction(GameCharacter* other) {
 
 	if (other->GetCharacterType() == CharacterType::PLAYER) {
-
 	}
 
-	if (other->GetCharacterType()  == CharacterType::PLAYER_BULLET) {
+	if (other->GetCharacterType() == CharacterType::PLAYER_BULLET) {
 
 		Bullet* bullet = dynamic_cast<Bullet*>(other);
-		//プレイヤーの弾に当たった場合の処理
+		// プレイヤーの弾に当たった場合の処理
 		particleEmitter_[1]->Emit();
-		isDamaged_ = true;
-		//ダメージを受けた時のエフェクト時間を設定
+		enemyData_.characterInfo.isDamaged = true;
+		// ダメージを受けた時のエフェクト時間を設定
 		damageEffectTime_ = 0.5f;
-		//体力を減らす
-		health_ -= bullet->GetDamage();
+		// 体力を減らす
+		enemyData_.characterInfo.health -= bullet->GetDamage();
+		// ブレイクゲージを蓄積
+		AccumulateBreakGauge(bullet->GetDamage());
 	}
-	if(other->GetCharacterType() == CharacterType::PLAYER_MISSILE) {
-		//プレイヤーのミサイルに当たった場合の処理
-		//particleEmitter_[2]->Emit();
-		isDamaged_ = true;
-		//ダメージを受けた時のエフェクト時間を設定
+	if (other->GetCharacterType() == CharacterType::PLAYER_MISSILE) {
+		// プレイヤーのミサイルに当たった場合の処理
+		particleEmitter_[1]->Emit();
+		enemyData_.characterInfo.isDamaged = true;
+		// ダメージを受けた時のエフェクト時間を設定
 		damageEffectTime_ = 0.5f;
-		//体力を減らす
+		// 体力を減らす
 		VerticalMissile* missile = dynamic_cast<VerticalMissile*>(other);
-		health_ -= missile->GetDamage();
-	}
-}
-
-//===================================================================================
-//　走行処理
-//===================================================================================
-
-void Enemy::InitRunning() {
-
-}
-
-
-void Enemy::UpdateRunning() {
-
-	// ターゲット方向を正規化
-	Vector3 toTarget = Vector3Math::Normalize(focusTargetPos_ - transform_.translate);
-
-	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
-	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
-
-	// 回転補間
-	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
-
-	// 移動方向の計算
-	// ターゲットの周囲を回るための目標座標を計算
-	orbitAngle_ += orbitSpeed_ * deltaTime_;  // 時間で角度加算
-	if (orbitAngle_ > 2 * std::numbers::pi_v<float>) orbitAngle_ -= 2 * std::numbers::pi_v<float>;
-	// ターゲットの周囲を回る座標を計算（XZ平面で円運動）
-	Vector3 orbitPos;
-	orbitPos.x = focusTargetPos_.x + orbitRadius_ * cos(orbitAngle_);
-	orbitPos.y = focusTargetPos_.y; // 高さはターゲットに合わせる（必要に応じて調整）
-	orbitPos.z = focusTargetPos_.z + orbitRadius_ * sin(orbitAngle_);
-	// 目的座標までの方向ベクトルを計算
-	toOrbitPos_ = orbitPos - transform_.translate;
-
-
-	if (moveDirection_.x != 0.0f || moveDirection_.z != 0.0f) {
-		//移動方向の正規化
-		moveDirection_ = Vector3Math::Normalize(toOrbitPos_);
-		//移動時の加速度の計算
-		velocity_.x += moveDirection_.x * moveSpeed_ * deltaTime_;
-		velocity_.z += moveDirection_.z * moveSpeed_ * deltaTime_;
-
-		float targetAngle = atan2(moveDirection_.x, moveDirection_.z);
-		Quaternion targetRotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f,1.0f,0.0f }, targetAngle);
-
-		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.1f);
-		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
-
-	} else {
-		//速度の減速処理
-		velocity_.x /= deceleration_;
-		velocity_.z /= deceleration_;
+		enemyData_.characterInfo.health -= missile->GetDamage();
+		// ブレイクゲージを蓄積
+		AccumulateBreakGauge(missile->GetDamage());
 	}
 
-	//最大移動速度の制限
-	float speed = sqrt(velocity_.x * velocity_.x + velocity_.z * velocity_.z);
-	if (speed > kMaxMoveSpeed_) {
-		float scale = kMaxMoveSpeed_ / speed;
-		velocity_.x *= scale;
-		velocity_.z *= scale;
+	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
+
+		// playerのColliderが接触している面で判断する
+		if (collider_->GetSurfaceType() == SurfaceType::BOTTOM) {
+
+			// playerが下面で接触している場合は地面にいると判定
+			enemyData_.characterInfo.onGround = true;
+			if (BoxCollider* box = dynamic_cast<BoxCollider*>(collider_.get())) {
+				Vector3 normal = box->GetMinAxis();
+				float penetrationDepth = box->GetMinPenetration();
+
+				// 貫通している分だけ押し戻す
+				// 過剰な押し戻しを防ぐために、penetrationDepthを2で割ると良い感じになる
+				enemyData_.characterInfo.transform.translate +=
+					-normal * penetrationDepth * 0.5f;
+
+				// 接触面方向の速度を打ち消す
+				float velocityAlongNormal =
+					Vector3Math::Dot(enemyData_.characterInfo.velocity, normal);
+				enemyData_.characterInfo.velocity -= normal * velocityAlongNormal;
+			}
+
+			collider_->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f }); // コライダーの色を緑に変更
+
+		}
+		else if (collider_->GetSurfaceType() == SurfaceType::WALL) {
+
+			// 側面で接触した場合
+			if (BoxCollider* box = dynamic_cast<BoxCollider*>(collider_.get())) {
+				Vector3 normal = box->GetMinAxis();
+				float penetrationDepth = box->GetMinPenetration();
+
+				// 貫通している分だけ押し戻す
+				enemyData_.characterInfo.transform.translate +=
+					-normal * penetrationDepth;
+
+				// 接触面方向の速度を打ち消す
+				float dot = Vector3Math::Dot(enemyData_.characterInfo.velocity, normal);
+				enemyData_.characterInfo.velocity -= normal * dot;
+			}
+
+			collider_->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f }); // コライダーの色を青に変更
+
+		}
+		else if (collider_->GetSurfaceType() == SurfaceType::TOP) {
+			// 天井に接触した場合
+			if (enemyData_.characterInfo.velocity.y > 0.0f) {
+				enemyData_.characterInfo.velocity.y = 0.0f;
+			}
+
+			collider_->SetColor(
+				{ 1.0f, 1.0f, 0.0f, 1.0f }); // コライダーの色を黄色に変更
+		}
 	}
-
-	//移動処理
-	// 位置の更新（deltaTimeをここで適用）
-	transform_.translate.x += velocity_.x * deltaTime_;
-	transform_.translate.z += velocity_.z * deltaTime_;
-}
-
-//===================================================================================
-//　ジャンプ処理
-//===================================================================================
-
-void Enemy::InitJump() {
-
-	//オーバーヒート状態のチェック
-	if (isOverheated_) {
-		// オーバーヒート中はジャンプできない
-		behaviorRequest_ = Behavior::RUNNING;
-		return;
-	}
-
-	// ジャンプのエネルギー消費
-	energy_ -= useEnergyJump_;
-
-	//ジャンプの初期化
-	//ジャンプの速度を設定
-	velocity_.y = jumpSpeed_;
-
-	//ジャンプ中の移動方向を設定
-	// ターゲット方向を正規化
-	Vector3 toTarget = Vector3Math::Normalize(focusTargetPos_ - transform_.translate);
-
-	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
-	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
-
-	// 回転補間
-	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
-
-	// ターゲットの周囲を回るための目標座標を計算
-	orbitAngle_ += orbitSpeed_ * deltaTime_;
-	if (orbitAngle_ > 2 * std::numbers::pi_v<float>) orbitAngle_ -= 2 * std::numbers::pi_v<float>;
-
-	Vector3 orbitPos;
-	orbitPos.x = focusTargetPos_.x + orbitRadius_ * cos(orbitAngle_);
-	orbitPos.y = focusTargetPos_.y; // 高さはターゲットに合わせる（必要なら補正可）
-	orbitPos.z = focusTargetPos_.z + orbitRadius_ * sin(orbitAngle_);
-
-	// 目的座標までの方向ベクトル
-	toOrbitPos_ = orbitPos - transform_.translate;
-
-	// 移動方向の決定（XZのみでfloat時はほぼ水平移動を想定）
-	moveDirection_ = Vector3Math::Normalize(Vector3(toOrbitPos_.x, 0.0f, toOrbitPos_.z));
-	
-	transform_.translate.y += 0.1f; // 少し上に移動してジャンプ感を出す
-}
-
-void Enemy::UpdateJump() {
-	// ジャンプ中の移動
-	transform_.translate.x += velocity_.x * deltaTime_;
-	transform_.translate.z += velocity_.z * deltaTime_;
-	// 重力の適用
-	velocity_.y -= (gravity_ + jumpDeceleration_) * deltaTime_;
-	transform_.translate.y += velocity_.y * deltaTime_;
-
-	jumpTimer_ += deltaTime_;
-	if (jumpTimer_ > maxJumpTime_) {
-		behaviorRequest_ = Behavior::FLOATING;
-		return;
-	}
-
-	// 地面に着地したらRUNNINGに戻る
-	if (transform_.translate.y <= 0.0f) {
-		transform_.translate.y = 0.0f; // 地面に合わせる
-		behaviorRequest_ = Behavior::RUNNING;
-		velocity_ = { 0.0f, 0.0f, 0.0f }; // ジャンプ中の速度をリセット
-	}
-}
-
-//===================================================================================
-//　ダッシュ処理
-//===================================================================================
-
-void Enemy::InitDash() {}
-
-void Enemy::UpdateDash() {
-
 }
 
 //===================================================================================
 // 攻撃処理
 //===================================================================================
 
-
 void Enemy::UpdateAttack() {
 
-	for (int i = 0; i < 1; ++i) {
-		auto* weapon = weapons_[i].get();
+	// AIにどの武器を使うか選ばせる
+	std::vector<int> chosenWeapons = aiBrainSystem_->ChooseWeaponUnit(weapons_);
+	for (int weaponIndex : chosenWeapons) {
+		WeaponAttack(weaponIndex);
+	}
 
-		// AI判定で攻撃開始（チャージor通常）
-		if (ShouldStartAttack(i)) {
-			if (weapon->IsChargeAttack()) {
-				// チャージ開始
-				weapon->Charge(deltaTime_);
-				if (ShouldReleaseAttack(i)) {
-					// チャージ攻撃実行
-					weapon->ChargeAttack();
-					if (weapon->IsStopShootOnly()) {
-						behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
-					} else {
-						behaviorRequest_ = Behavior::RUNNING;
-					}
-				}
-			} else {
-				// 通常攻撃
-				weapon->Attack();
-				if (weapon->IsStopShootOnly()) {
-					behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
-				}
-				// 移動撃ちならRUNNING継続
-			}
-		} else if (ShouldReleaseAttack(i)) {
-			// 「離す」判定（チャージ終わり）
-			if (weapon->IsCharging()) {
-				weapon->ChargeAttack();
-				if (weapon->IsStopShootOnly()) {
-					behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
-				} else {
-					behaviorRequest_ = Behavior::RUNNING;
+	// チャージ攻撃可能なユニットの処理
+	for (int i = 0; i < chargeShootableUnits_.size(); i++) {
+		if (chargeShootableUnits_[i] == true) {
+			// チャージ撃ち可能なユニットの処理
+			auto* weapon = weapons_[i].get();
+			if (enemyData_.characterInfo.isChargeShooting == true) {
+				// チャージ撃ち中の処理
+				chargeShootTimer_.Update();
+				
+				if (chargeShootTimer_.IsFinished()) {
+					weapon->Attack();
+					enemyData_.characterInfo.isChargeShooting =
+						false; // チャージ撃ち中フラグをリセット
+					chargeShootTimer_.Stop();
+					stateManager_->RequestState(GameCharacterState::CHARGESHOOT_STUN);
+					chargeShootableUnits_[i] =
+						false; // チャージ撃ち可能なユニットのマークをリセット
 				}
 			}
 		}
 	}
 }
 
+void Enemy::WeaponAttack(int weaponIndex) {
 
-//===================================================================================
-//　チャージ攻撃処理
-//===================================================================================
-void Enemy::InitChargeShoot() {
+	auto* weapon = weapons_[weaponIndex].get();
 
-}
-void Enemy::UpdateChargeShoot() {
+	// チャージ攻撃可能な場合
+	if (weapon->CanChargeAttack()) {
 
-	// 速度を大きく落としていき、停止させた後攻撃処理を入れる
-	velocity_.x *= 0.5f;
-	velocity_.z *= 0.5f;
-	if (std::abs(velocity_.x) < 0.01f && std::abs(velocity_.z) < 0.01f) {
-		// チャージ攻撃の実行
-		for (auto& weapon : weapons_) {
-			if (weapon->IsChargeAttack()) {
-				weapon->ChargeAttack();
-
-			}else {
-				// チャージ攻撃不可の場合は通常攻撃
-				weapon->Attack();
+		// 武器のチャージ処理
+		weapon->Charge(deltaTime_);
+		if (ShouldReleaseAttack(weaponIndex)) {
+			// チャージ攻撃実行
+			weapon->ChargeAttack();
+			if (weapon->StopShootOnly()) {
+				// 停止撃ち専用の場合はチャージ後に硬直状態へ
+				stateManager_->RequestState(GameCharacterState::CHARGESHOOT_STUN);
 			}
+			else {
+				// 移動撃ち可能な場合はRUNNINGに戻す
+				stateManager_->RequestState(GameCharacterState::RUNNING);
+			}
+		}
+	}
+	else {
+		// チャージ攻撃不可:通常攻撃
+		if (weapon->StopShootOnly() && weapon->GetAttackInterval() <= 0.0f) {
+			// 停止撃ち専用:硬直処理を行う
+			enemyData_.characterInfo.isChargeShooting =
+				true; // チャージ撃ち中フラグを立てる
+			chargeShootableUnits_[weaponIndex] =
+				true; // チャージ撃ち可能なユニットとしてマーク
 
-			if (weapon->IsMoveShootable()) {
-				// ステップ終了時前回の状態に戻す
-				if (transform_.translate.y <= 0.0f) {
-					behaviorRequest_ = Behavior::RUNNING;
-				} else if (transform_.translate.y > 0.0f) {
-					behaviorRequest_ = Behavior::FLOATING;
-				} else {
-					// ステップブーストが終了したらRUNNINGに戻す
-					behaviorRequest_ = Behavior::RUNNING;
+			// チャージ撃ちのタイマーを初期化して開始
+			if (chargeShootTimer_.IsFinished()) {
+				chargeShootTimer_.Initialize(chargeShootDuration_, 0.0f);
+
+				// 武器種別に応じた警告データの作成
+				WarningData data;
+				data.position = object3d_->GetWorldPosition();
+
+				if(weapon->GetWeaponType() == WeaponType::WEAPON_TYPE_BAZOOKA) {
+					data.type = WarningType::HIGHPOWER_ATTACK;
 				}
-			} else {
-				// 停止撃ち専用の場合はCHARGESHOOT_STUNに切り替え
-				behaviorRequest_ = Behavior::CHARGESHOOT_STUN;
+				else {
+					data.type = WarningType::NORMAL;
+				}
+
+				// イベントを発行して危険度の高い攻撃を行うことを知らせる
+				TakeCFrameWork::GetEventManager()->PostEvent(
+					"EnemyHighPowerAttack",
+					data); // 値渡しに変更
+			}
+
+		}
+		else {
+			// 移動撃ち可能
+			weapon->Attack();
+		}
+	}
+	if (ShouldReleaseAttack(weaponIndex)) {
+		// LBボタンが離された場合
+
+		if (weapon->IsCharging()) {
+			// チャージ中の場合はチャージ攻撃を終了
+			weapon->ChargeAttack();
+			if (weapon->StopShootOnly()) {
+				// 停止撃ち専用の場合はチャージ後に硬直状態へ
+				stateManager_->RequestState(GameCharacterState::CHARGESHOOT_STUN);
+			}
+			else {
+				// 移動撃ち可能な場合はRUNNINGに戻す
+				stateManager_->RequestState(GameCharacterState::RUNNING);
 			}
 		}
 	}
-
-	// 位置の更新（deltaTimeをここで適用）
-	transform_.translate.x += velocity_.x * deltaTime_;
-	transform_.translate.z += velocity_.z * deltaTime_;
-}
-
-//===================================================================================
-//　チャージ攻撃後の硬直処理
-//===================================================================================
-
-void Enemy::InitChargeShootStun() {
-	chargeAttackStunTimer_ = chargeAttackStunDuration_;
-}
-
-void Enemy::UpdateChargeShootStun() {
-
-	chargeAttackStunTimer_ -= deltaTime_;
-	if (chargeAttackStunTimer_ <= 0.0f) {
-		// ステップ終了時前回の状態に戻す
-		if (transform_.translate.y <= 0.0f) {
-			behaviorRequest_ = Behavior::RUNNING;
-		} else if (transform_.translate.y > 0.0f) {
-			behaviorRequest_ = Behavior::FLOATING;
-		} else {
-			// ステップブーストが終了したらRUNNINGに戻す
-			behaviorRequest_ = Behavior::RUNNING;
-		}
-	}
-}
-
-//===================================================================================
-//　ステップブースト処理
-//===================================================================================
-
-
-void Enemy::InitStepBoost() {
-
-	// オーバーヒート状態のチェック
-	if (isOverheated_) {
-		// オーバーヒート中はステップブーストできない
-		behaviorRequest_ = Behavior::RUNNING;
-		return;
-	}
-
-	// ステップブーストのエネルギーを消費
-	energy_ -= useEnergyStepBoost_;
-
-	//上昇速度を急激に遅くする
-	velocity_.y = 0.0f;
-
-	//ジャンプ中の移動方向を設定
-	// ターゲット方向を正規化
-	Vector3 toTarget = Vector3Math::Normalize(focusTargetPos_ - transform_.translate);
-
-	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
-	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
-
-	// 回転補間
-	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
-
-	// ターゲットの周囲を回るための目標座標を計算
-	orbitAngle_ += orbitSpeed_ * deltaTime_;
-	if (orbitAngle_ > 2 * std::numbers::pi_v<float>) orbitAngle_ -= 2 * std::numbers::pi_v<float>;
-
-	Vector3 orbitPos;
-	orbitPos.x = focusTargetPos_.x + orbitRadius_ * cos(orbitAngle_);
-	orbitPos.y = focusTargetPos_.y; // 高さはターゲットに合わせる（必要なら補正可）
-	orbitPos.z = focusTargetPos_.z + orbitRadius_ * sin(orbitAngle_);
-
-	// 目的座標までの方向ベクトル
-	toOrbitPos_ = orbitPos - transform_.translate;
-
-	// 移動方向の決定（XZのみでfloat時はほぼ水平移動を想定）
-	stepBoostDirection_ = Vector3Math::Normalize(Vector3(toOrbitPos_.x, 0.0f, toOrbitPos_.z));
-
-	stepBoostTimer_ = stepBoostDuration_;
-	velocity_.x = stepBoostDirection_.x * stepBoostSpeed_;
-	velocity_.z = stepBoostDirection_.z * stepBoostSpeed_;
-}
-
-void Enemy::UpdateStepBoost() {
-	// ステップ中の移動
-	transform_.translate.x += velocity_.x * deltaTime_;
-	transform_.translate.z += velocity_.z * deltaTime_;
-
-	stepBoostTimer_ -= deltaTime_;
-	if (stepBoostTimer_ <= 0.0f) {
-		// ステップ終了時前回の状態に戻す
-		if (transform_.translate.y <= 0.0f) {
-			behaviorRequest_ = Behavior::RUNNING;
-		} else if (transform_.translate.y > 0.0f) {
-			behaviorRequest_ = Behavior::FLOATING;
-		} else {
-			// ステップブーストが終了したらRUNNINGに戻す
-			behaviorRequest_ = Behavior::RUNNING;
-		}
-
-		// ステップブーストのインターバルをリセット
-		stepBoostIntervalTimer_ = stepBoostInterval_;
-	}
-}
-
-void Enemy::TriggerStepBoost() {
-	if (stepBoostIntervalTimer_ <= 0.0f) {
-		StickState leftStick = Input::GetInstance()->GetLeftStickState(0);
-		if (fabs(leftStick.x) > 0.2f || fabs(leftStick.y) > 0.2f) {
-			//方向ベクトル計算（カメラ考慮）
-
-			stepBoostDirection_ = Vector3Math::Normalize(toOrbitPos_);
-			behaviorRequest_ = Behavior::STEPBOOST;
-		}
-	}
-}
-
-
-
-//===================================================================================
-// 浮遊時の処理
-//===================================================================================
-
-void Enemy::InitFloating() {
-
-}
-
-void Enemy::UpdateFloating(std::mt19937 randomEngine) {
-
-
-	// --------------------------------
-	// TODO: Enemyの浮遊時の挙動を実装する
-	// --------------------------------
-	
-	// 浮遊中、LTボタンが押された場合STEPBOOSTに切り替え
-	if (randomEngine() % 100 < 1.0f) {
-		behaviorRequest_ = Behavior::STEPBOOST;
-	}
-	
-	// ターゲット方向を正規化
-	Vector3 toTarget = Vector3Math::Normalize(focusTargetPos_ - transform_.translate);
-
-	// 方向からクォータニオンを計算（Z+を toTarget に合わせる）
-	Quaternion targetRotation = QuaternionMath::LookRotation(toTarget, Vector3(0, 1, 0));
-
-	// 回転補間
-	transform_.rotate = Easing::Slerp(transform_.rotate, targetRotation, followSpeed_);
-
-	// 移動方向の計算
-	// ターゲットの周囲を回るための目標座標を計算
-	orbitAngle_ += orbitSpeed_ * deltaTime_;  // 時間で角度加算
-	if (orbitAngle_ > 2 * std::numbers::pi_v<float>) orbitAngle_ -= 2 * std::numbers::pi_v<float>;
-	// ターゲットの周囲を回る座標を計算（XZ平面で円運動）
-	Vector3 orbitPos;
-	orbitPos.x = focusTargetPos_.x + orbitRadius_ * cos(orbitAngle_);
-	orbitPos.y = focusTargetPos_.y; // 高さはターゲットに合わせる（必要に応じて調整）
-	orbitPos.z = focusTargetPos_.z + orbitRadius_ * sin(orbitAngle_);
-	// 目的座標までの方向ベクトルを計算
-	toOrbitPos_ = orbitPos - transform_.translate;
-
-	if (moveDirection_.x != 0.0f || moveDirection_.z != 0.0f) {
-		moveDirection_ = Vector3Math::Normalize(toOrbitPos_);
-		//移動時の加速度の計算
-		velocity_.x += moveDirection_.x * moveSpeed_ * deltaTime_;
-		velocity_.z += moveDirection_.z * moveSpeed_ * deltaTime_;
-	} else {
-		velocity_.x /= deceleration_;
-		velocity_.z /= deceleration_;
-	}
-
-	//最大移動速度の制限
-	float speed = sqrt(velocity_.x * velocity_.x + velocity_.z * velocity_.z);
-	if (speed > kMaxMoveSpeed_) {
-		float scale = kMaxMoveSpeed_ / speed;
-		velocity_.x *= scale;
-		velocity_.z *= scale;
-	}
-
-	// 空中での降下処理(fallSpeedを重力に加算)
-	velocity_.y -= (gravity_ + fallSpeed_) * deltaTime_;
-	transform_.translate.x += velocity_.x * deltaTime_;
-	transform_.translate.z += velocity_.z * deltaTime_;
-	transform_.translate.y += velocity_.y * deltaTime_;
-
-	// 着地判定
-	if (transform_.translate.y <= 0.0f) {
-		transform_.translate.y = 0.0f;
-		behaviorRequest_ = Behavior::RUNNING;
-	}
-}
-
-//===================================================================================
-// 死亡時の処理
-//===================================================================================
-
-void Enemy::InitDead() {
-	isAlive_ = false; // 死亡フラグを立てる
-}
-
-void Enemy::UpdateDead() {
-
-	//空中にいる場合は落下処理
-	if (transform_.translate.y > 0.0f) {
-		// 空中での降下処理(fallSpeedを重力に加算)
-		velocity_.y -= (gravity_ + fallSpeed_) * deltaTime_;
-	} else {
-		// 地面に着地したら速度を0にする
-		velocity_.y = 0.0f;
-	}
-
-	//速度の減速処理
-	velocity_.x /= deceleration_;
-	velocity_.z /= deceleration_;
-
-	//位置の更新（deltaTimeをここで適用）
-	transform_.translate += velocity_ * deltaTime_;
-
 }
 
 //===================================================================================
 // 攻撃開始判定
 //===================================================================================
-
-bool Enemy::ShouldStartAttack(int weaponIndex) {
-	// 例: ターゲットとの距離が射程範囲でクールタイムが終わってたら攻撃
-	auto* weapon = weapons_[weaponIndex].get();
-	float distance = (focusTargetPos_ - transform_.translate).Length();
-	float range = orbitRadius_ * 3.5f;
-	bool cooldownReady = weapon->GetIsAvailable();
-	// 例: 一定確率で攻撃開始
-	return (distance <= range) && cooldownReady && (rand() % 100 < attackProbability_); // 10%の確率
-}
 
 bool Enemy::ShouldReleaseAttack(int weaponIndex) {
 	auto* weapon = weapons_[weaponIndex].get();
@@ -779,43 +833,206 @@ bool Enemy::ShouldReleaseAttack(int weaponIndex) {
 
 void Enemy::UpdateEnergy() {
 
-	//オーバーヒートしているかどうか
-	if(!isOverheated_) {
+	float& overheatTimer = enemyData_.characterInfo.overHeatInfo
+		.overheatTimer; // オーバーヒートタイマー
+	float maxEnergy =
+		enemyData_.characterInfo.energyInfo.maxEnergy; // 最大エネルギー
+
+	// オーバーヒートしているかどうか
+	if (!enemyData_.characterInfo.overHeatInfo.isOverheated) {
+
+		if (enemyData_.characterInfo.energyInfo.energy <= 0.0f) {
+			// エネルギーが0以下になったらオーバーヒート状態にする
+			enemyData_.characterInfo.overHeatInfo.isOverheated = true;
+			overheatTimer = enemyData_.characterInfo.overHeatInfo
+				.overheatDuration; // オーバーヒートのタイマーを設定
+			enemyData_.characterInfo.energyInfo.energy = 0.0f; // エネルギーを0にする
+		}
 
 		// エネルギーの回復
-		if (energy_ < maxEnergy_) {
+		if (enemyData_.characterInfo.energyInfo.energy < maxEnergy) {
 
-			//浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
-			if (behavior_ == Behavior::FLOATING || behavior_ == Behavior::JUMP ||
-				behavior_ == Behavior::STEPBOOST) {
-				return;
+			// 浮遊状態,ジャンプ時、ステップブースト時はエネルギーを回復しない
+			if (stateManager_->GetCurrentStateType() ==
+				GameCharacterState::FLOATING ||
+				stateManager_->GetCurrentStateType() == GameCharacterState::JUMP ||
+				stateManager_->GetCurrentStateType() ==
+				GameCharacterState::STEPBOOST) {
+				return; // エネルギーの回復を行わない
 			}
 
-			energy_ += energyRegenRate_ * deltaTime_;
-			if (energy_ > maxEnergy_) {
-				energy_ = maxEnergy_;
+			enemyData_.characterInfo.energyInfo.energy +=
+				enemyData_.characterInfo.energyInfo.recoveryRate * deltaTime_;
+			if (enemyData_.characterInfo.energyInfo.energy > maxEnergy) {
+				enemyData_.characterInfo.energyInfo.energy = maxEnergy;
 			}
 		}
 
-		if(energy_ <= 0.0f) {
-			// エネルギーが0以下になったらオーバーヒート状態にする
-			isOverheated_ = true;
-			overheatTimer_ = overheatDuration_; // オーバーヒートのタイマーを設定
-			energy_ = 0.0f; // エネルギーを0にする
-		}
-
-	} else {
+	}
+	else {
 
 		// オーバーヒートの処理
-		if (overheatTimer_ > 0.0f) {
-			overheatTimer_ -= deltaTime_;
-			if (overheatTimer_ <= 0.0f) {
+		if (overheatTimer > 0.0f) {
+			overheatTimer -= deltaTime_;
+			if (overheatTimer <= 0.0f) {
 				// オーバーヒートが終了したらエネルギーを半分回復
-				energy_ = maxEnergy_ / 2.0f;
+				enemyData_.characterInfo.energyInfo.energy = maxEnergy / 2.0f;
 				// オーバーヒート状態を解除
-				isOverheated_ = false;
+				enemyData_.characterInfo.overHeatInfo.isOverheated = false;
 			}
 		}
+	}
+}
 
+//===================================================================================
+// ブーストエフェクトのアクティブ化判定
+//===================================================================================
+
+void Enemy::RequestActiveBoostEffect() {
+
+
+	// 毎フレーム一度全OFF（状態残り対策）
+	for (const auto& boostEffect : boostEffects_) {
+		boostEffect->SetIsActive(false);
+	}
+
+	// ステップブーストの方向とスティックの向きによってアクティブにするエフェクトを変更
+	Vector3 moveDir =enemyData_.characterInfo.moveDirection;
+
+	if (moveDir.Length() <= 0.1f) {
+		// ニュートラルなら全OFFのまま終了
+		return;
+	}
+
+	// 背中のエフェクトは常にアクティブ
+	boostEffects_[BACKPACK]->SetIsActive(true);
+
+	// --- プレイヤーの向きをQuaternionから取得 ---
+	Vector3 localForward = Vector3(0.0f, 0.0f, 1.0f);
+	Vector3 playerForward = QuaternionMath::RotateVector(
+		localForward, enemyData_.characterInfo.transform.rotate);
+	playerForward.y = 0.0f; // 水平方向だけ見る
+	playerForward = Vector3Math::Normalize(playerForward);
+
+	// moveDir も正規化して角度判定を安定化
+	moveDir.y = 0.0f;
+	moveDir = Vector3Math::Normalize(moveDir);
+
+	// --- スティック方向との角度差を求める ---
+	float dot = Vector3Math::Dot(playerForward, moveDir);
+	float crossY = playerForward.x * moveDir.z - playerForward.z * moveDir.x;
+	float angle =
+		atan2(crossY, dot) * (180.0f / std::numbers::pi_v<float>); // -180°～180°
+
+	// --- 角度差に応じてエフェクトをアクティブにする ---
+	BoostDirection currentDirection = BoostDirection::NONE;
+
+	if (angle <= -45.0f && angle > -135.0f) {
+		// 左
+		currentDirection = BoostDirection::LEFT;
+		boostEffects_[LEFT_LEG]->SetIsActive(true);
+		boostEffects_[RIGHT_LEG]->SetIsActive(true);
+		boostEffects_[LEFT_SHOULDER]->SetIsActive(true);
+		if (previousBoostDirection_ != currentDirection) {
+			boostEffects_[LEFT_SHOULDER]->PlayAppearEffect();
+		}
+
+		if (stateManager_->GetNextStateType() == GameCharacterState::STEPBOOST) {
+			boostEffects_[LEFT_SHOULDER]->PlayStepBoostEffect();
+		}
+
+	}
+	else if (angle >= 45.0f && angle < 135.0f) {
+		// 右
+		currentDirection = BoostDirection::RIGHT;
+		boostEffects_[LEFT_LEG]->SetIsActive(true);
+		boostEffects_[RIGHT_LEG]->SetIsActive(true);
+		boostEffects_[RIGHT_SHOULDER]->SetIsActive(true);
+		if (previousBoostDirection_ != currentDirection) {
+			boostEffects_[RIGHT_SHOULDER]->PlayAppearEffect();
+		}
+
+		if (stateManager_->GetNextStateType() == GameCharacterState::STEPBOOST) {
+			boostEffects_[RIGHT_SHOULDER]->PlayStepBoostEffect();
+		}
+	}
+	else if (angle > -45.0f && angle < 45.0f) {
+		// 前
+		currentDirection = BoostDirection::FORWARD;
+		boostEffects_[LEFT_LEG]->SetIsActive(true);
+		boostEffects_[RIGHT_LEG]->SetIsActive(true);
+		if (previousBoostDirection_ != currentDirection) {
+			boostEffects_[BACKPACK]->PlayAppearEffect();
+
+		}
+
+		if (stateManager_->GetNextStateType() == GameCharacterState::STEPBOOST) {
+			boostEffects_[BACKPACK]->PlayStepBoostEffect();
+		}
+	}
+	else {
+		// 後ろ
+		currentDirection = BoostDirection::BACKWARD;
+	}
+
+	previousBoostDirection_ = currentDirection;
+}
+
+//===================================================================================
+// ブレイクゲージの蓄積
+//===================================================================================
+void Enemy::AccumulateBreakGauge(float damage) {
+
+	auto& gaugeInfo = enemyData_.characterInfo.breakGaugeInfo;
+
+	if (!enemyData_.characterInfo.isAlive ||
+		gaugeInfo.isStunned ||
+		gaugeInfo.stunGraceTimer.IsFinished() == false) {
+
+		// 死亡している、すでにスタンしている、またはスタン猶予タイマーが有効な場合はゲージを蓄積しない
+		return;
+	}
+
+	// ダメージに係数を乗算してゲージに加算（係数は武器ごとに変えてもよい）
+	gaugeInfo.breakGauge += damage * 0.5f;
+
+	// 被弾履歴(遅延減衰待ち用)を追加
+	BreakGaugeEntry entry;
+	entry.amount = damage * 0.5f;
+	entry.delayTimer.Initialize(entry.decayDelay, 0.0f); //減衰開始タイマーを初期化して開始
+	gaugeInfo.entries.push_back(entry);
+
+	// ゲージが最大値を超えたらスタン状態に遷移
+	if (gaugeInfo.breakGauge >= gaugeInfo.maxBreakGauge) {
+		gaugeInfo.breakGauge = gaugeInfo.maxBreakGauge;
+		stateManager_->RequestState(GameCharacterState::BREAK_STUN);
+	}
+}
+
+void Enemy::UpdateBlackboard() {
+
+	// --- PlayableCharacterInfo からの書き込み ---
+	blackboard_->SetValue("energy", enemyData_.characterInfo.energyInfo.energy);
+	blackboard_->SetValue("maxEnergy", enemyData_.characterInfo.energyInfo.maxEnergy);
+	blackboard_->SetValue("hp", enemyData_.characterInfo.health);
+	blackboard_->SetValue("maxHp", enemyData_.characterInfo.maxHealth);
+	blackboard_->SetValue("hpRatio", enemyData_.characterInfo.health / enemyData_.characterInfo.maxHealth);
+	blackboard_->SetValue("posY", enemyData_.characterInfo.transform.translate.y);
+	blackboard_->SetValue("onGround", enemyData_.characterInfo.onGround);
+	blackboard_->SetValue("isOverheated", enemyData_.characterInfo.overHeatInfo.isOverheated);
+	blackboard_->SetValue("isAlive", enemyData_.characterInfo.isAlive);
+	blackboard_->SetValue("isInCombat", enemyData_.characterInfo.isInCombat);
+
+	// --- AIBrainSystem からの書き込み ---
+	float distance = (enemyData_.characterInfo.focusTargetPos -
+		enemyData_.characterInfo.transform.translate).Length();
+	blackboard_->SetValue("distance", distance);
+	blackboard_->SetValue("orbitRadius", orbitRadius_);
+	blackboard_->SetValue("isBulletNearby", bulletSensor_->IsActive());
+
+	// --- 武器スコアの書き込み ---
+	for (size_t i = 0; i < weapons_.size(); ++i) {
+		std::string key = "attackScore" + std::to_string(i);
+		blackboard_->SetValue(key, aiBrainSystem_->GetAttackScore(static_cast<int>(i)));
 	}
 }

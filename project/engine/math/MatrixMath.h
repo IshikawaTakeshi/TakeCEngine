@@ -1,12 +1,11 @@
-#include "Vector3.h"
-#include "Matrix4x4.h"
-#include "Quaternion.h"
+#include "engine/math/Vector3.h"
+#include "engine/math/Matrix4x4.h"
+#include "engine/math/Quaternion.h"
+#include "engine/math/Transform.h"
 
-
-///////////////////////////////////////////////////////////////////////////////
-//	4x4行列
-///////////////////////////////////////////////////////////////////////////////
-
+//============================================================================
+// MatrixMath namespace
+//============================================================================
 namespace MatrixMath {
 
 	//行列の加法
@@ -51,10 +50,12 @@ namespace MatrixMath {
 	Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion);
 
 
-	//3次元アフィン変換行列
+	//3次元アフィン変換行列(オイラー角)
 	Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
-
+	Matrix4x4 MakeAffineMatrix(const EulerTransform& transform);
+	//3次元アフィン変換行列(クォータニオン)
 	Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate);
+	Matrix4x4 MakeAffineMatrix(const QuaternionTransform& transform);
 
 	//透視投影行列
 	Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
@@ -76,4 +77,6 @@ namespace MatrixMath {
 
 	//ある方向からある方向へ向ける回転行列
 	Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
+
+	Matrix4x4 LookAt(const Vector3& eye, const Vector3& target, const Vector3& up);
 };

@@ -9,16 +9,26 @@
             "max": 1.0,
             "min": 0.0
         },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
         "editColor": true,
         "emitCount": 0,
-        "enableFollowEmitter_": false,
+        "enableFollowEmitter": false,
         "frequency": 0.0,
         "isBillboard": true,
-        "isTraslate_": true,
+        "isDirectional": false,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
         "lifetimeRange": {
             "max": 6.699999809265137,
             "min": 1.0
         },
+        "particlesPerInterpolation": 5,
         "positionRange": {
             "max": 1.0,
             "min": -1.0
@@ -32,22 +42,28 @@
             "y": 1.0,
             "z": 1.0
         },
+        "scaleEasingType": 0,
         "scaleRange": {
             "max": 7.0,
             "min": 2.390000104904175
         },
-        "scaleSetting_": 0,
+        "scaleSetting": 0,
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
         "velocityRange": {
             "max": 10.0,
             "min": -0.019999999552965164
         }
     },
+    "blendState": 1,
+    "isUseTextureAnimation": false,
     "name": "WalkSmoke1",
-    "primitiveParameters": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+    "primitiveParam": {
+        "height": 1.0,
+        "width": 1.0
     },
     "primitiveType": "PRIMITIVE_PLANE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
     "textureFilePath": "Spark2.png"
 }

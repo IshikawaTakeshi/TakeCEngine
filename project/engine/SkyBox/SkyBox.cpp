@@ -1,38 +1,39 @@
 #include "SkyBox.h"
-#include "Camera.h"
-#include "CameraManager.h"
-#include "PipelineStateObject.h"
-#include "Model.h"
-#include "ModelManager.h"
+#include "camera/Camera.h"
+#include "camera/CameraManager.h"
 #include "math/MatrixMath.h"
-#include "TakeCFrameWork.h"
+#include "3d/Model.h"
+#include "base/TakeCFrameWork.h"
+#include "base/ModelManager.h"
+#include "base/PipelineStateObject.h"
 
-SkyBox::~SkyBox() {
-	pso_.reset();
-	rootSignature_.Reset();
-	wvpResource_.Reset();
-	model_ = nullptr;
-	dxCommon_ = nullptr;
-}
-
-void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename) {
+//=============================================================================
+// 初期化
+//=============================================================================
+void SkyBox::Initialize(TakeC::DirectXCommon* directXCommon,const std::string& texturefilePath) {
 
 	dxCommon_ = directXCommon;
 
 	//PSOの生成
 	pso_ = std::make_unique<PSO>();
-	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"SkyBox.VS.hlsl");
-	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"SkyBox.PS.hlsl");
+	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"3d/SkyBox.VS.hlsl");
+	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"3d/SkyBox.PS.hlsl");
 	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL);
 	pso_->SetGraphicPipelineName("SkyBoxPSO");
 	//RootSignatureの生成
 	rootSignature_ = pso_->GetGraphicRootSignature();
 
 	//モデルの生成
-	model_ = ModelManager::GetInstance()->FindModel(filename);
-
+	primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
+		{ {-50.0f,-50.0f,-50.0f},{50.0f,50.0f,50.0f} }, texturefilePath
+	);
+	TakeCFrameWork::GetPrimitiveDrawer()->SetMaterialColor(
+		primitiveHandle_,
+		{ 0.5f,0.5f,0.5f,1.0f }
+	);
+	
 	//TransformationMatrix用のResource生成
-	wvpResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
+	wvpResource_ = TakeC::DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformMatrix));
 	wvpResource_->SetName(L"SkyBox::wvpResource_");
 	//TransformationMatrix用
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&TransformMatrixData_));
@@ -40,7 +41,7 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename
 	TransformMatrixData_->WVP = MatrixMath::MakeIdentity4x4();
 
 	//CPUで動かす用のTransform
-	transform_ = { {50.0f,50.0f,50.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform_ = { {100.0f,100.0f,100.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	//アフィン行列
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(
@@ -50,9 +51,12 @@ void SkyBox::Initialize(DirectXCommon* directXCommon,const std::string& filename
 	);
 
 	//カメラのセット
-	camera_ = CameraManager::GetInstance()->GetActiveCamera();
+	camera_ = TakeC::CameraManager::GetInstance().GetActiveCamera();
 }
 
+//=============================================================================
+// 更新処理
+//=============================================================================
 void SkyBox::Update() {
 
 	//アフィン行列の更新
@@ -61,18 +65,31 @@ void SkyBox::Update() {
 	//wvpの更新
 	if (camera_) {
 		const Matrix4x4& viewProjectionMatrix =
-			CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
+			TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
 		WVPMatrix_ = MatrixMath::Multiply(worldMatrix_, viewProjectionMatrix);
 	} else {
 		WVPMatrix_ = worldMatrix_;
 	}
 
+	//ワールド行列の逆行列の転置行列を計算
 	WorldInverseTransposeMatrix_ = MatrixMath::InverseTranspose(worldMatrix_);
+
+	//GPUに使うデータを転送
 	TransformMatrixData_->World = worldMatrix_;
-	TransformMatrixData_->WVP = model_->GetModelData()->rootNode.localMatrix * WVPMatrix_;
+	TransformMatrixData_->WVP = WVPMatrix_;
 	TransformMatrixData_->WorldInverseTranspose = WorldInverseTransposeMatrix_;
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
+void SkyBox::UpdateImGui() {
+
+}
+
+//=============================================================================
+// 描画処理
+//=============================================================================
 void SkyBox::Draw() {
 
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
@@ -88,7 +105,18 @@ void SkyBox::Draw() {
 	//TransformationMatrix
 	commandList->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
-	if (model_ != nullptr) {
-		model_->DrawSkyBox();
-	}
+	//プリミティブ描画
+	TakeCFrameWork::GetPrimitiveDrawer()->DrawObject(
+		pso_.get(),
+		PRIMITIVE_CUBE,
+		primitiveHandle_
+	);
+}
+
+void SkyBox::SetMaterialColor(const Vector4& color) {
+
+	TakeCFrameWork::GetPrimitiveDrawer()->SetMaterialColor(
+		primitiveHandle_,
+		{ color.x,color.y,color.z,1.0f }
+	);
 }

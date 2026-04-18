@@ -1,54 +1,15 @@
 #include "MissilePool.h"
+#include "engine/Base/TakeCFrameWork.h"
 
+//=============================================================================================
+// 型ごとの初期化処理
+//=============================================================================================
 
-void MissilePool::Initialize(size_t size) {
-	for (size_t i = 0; i < size; i++) {
-		pool_.emplace_back(std::make_unique<VerticalMissile>());
-	}
-}
+void MissilePool::OnInitializeObject(VerticalMissile& object,const std::string& modelFilePath,const BulletEffectConfig& effectConfig) {
 
-void MissilePool::Finalize() {
-	pool_.clear();
-}
+	effectConfig_ = effectConfig;
 
-VerticalMissile* MissilePool::GetMissile() {
-	for (const auto& missile : pool_) {
-		if (!missile->GetIsActive()) {
-			missile->SetIsActive(true);
-			return missile.get();
-		}
-	}
-	return nullptr;
-}
-
-void MissilePool::UpdateAllMissiles() {
-	for (const auto& missile : pool_) {
-		if (missile->GetIsActive()) {
-			missile->Update();
-		}
-	}
-}
-
-void MissilePool::DrawAllMissiles() {
-	for (const auto& missile : pool_) {
-		if (missile->GetIsActive()) {
-			missile->Draw();
-		}
-	}
-}
-
-void MissilePool::DrawAllCollider() {
-	for (const auto& missile : pool_) {
-		if (missile->GetIsActive()) {
-			missile->DrawCollider();
-		}
-	}
-}
-
-std::vector<VerticalMissile*> MissilePool::GetPool() {
-	std::vector<VerticalMissile*> missiles;
-	for (const auto& missile : pool_) {
-		missiles.push_back(missile.get());
-	}
-	return missiles;
+	//初期化処理
+	object.Initialize(objectCommon_, modelFilePath);
+	object.InitializeEffect(effectConfig_);
 }

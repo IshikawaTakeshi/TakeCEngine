@@ -1,7 +1,11 @@
 #include "Skeleton.h"
 #include "engine/math/MatrixMath.h"
+#include "engine/math/Easing.h"
 #include "engine/base/TakeCFrameWork.h"
 
+//====================================================================
+// スケルトン生成
+//====================================================================
 void Skeleton::Create(const Node& rootNode) {
 
 	root = CreateJoint(rootNode, {});
@@ -27,6 +31,9 @@ void Skeleton::Create(const Node& rootNode) {
 	}
 }
 
+//====================================================================
+// スケルトン更新
+//====================================================================
 void Skeleton::Update() {
 	//全てのJointを更新
 	for (Joint& joint : joints) {
@@ -45,8 +52,11 @@ void Skeleton::Update() {
 	}
 }
 
+//====================================================================
+// ImGui更新
+//====================================================================
 void Skeleton::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	for (Joint& joint : joints) {
 		ImGui::SeparatorText(joint.name.c_str());
 		ImGui::DragFloat3("Scale", &joint.transform.scale.x, 0.01f);
@@ -56,6 +66,9 @@ void Skeleton::UpdateImGui() {
 #endif
 }
 
+//====================================================================
+// スケルトン描画
+//====================================================================
 void Skeleton::Draw(const Matrix4x4& worldMatrix) {
 
 	//jointの描画
@@ -80,6 +93,7 @@ void Skeleton::Draw(const Matrix4x4& worldMatrix) {
 				TakeCFrameWork::GetWireFrame()->DrawLine(jointWorldPos, parentWorldPos, { 1.0f,1.0f,1.0f,1.0f }); // 仮想関数
 			}
 
+			//Jointを球で描画
 			TakeCFrameWork::GetWireFrame()->DrawSphere(
 				jointWorldPos,
 				0.1f, { 1.0f,0.1f,0.1f,1.0f });
@@ -87,18 +101,72 @@ void Skeleton::Draw(const Matrix4x4& worldMatrix) {
 	}
 }
 
+
+//====================================================================
+// アニメーションの適用
+//====================================================================
 void Skeleton::ApplyAnimation(Animation* animation, float animationTime) {
 	for (Joint& joint : joints) {
 		//対象のJointのAnimationがあれば、値の適用を行う。
 		if (auto it = animation->nodeAnimations.find(joint.name); it != animation->nodeAnimations.end()) {
 			const NodeAnimation& rootNodeAnimation = (*it).second;
-			joint.transform.scale = Animator::CalculateValue(rootNodeAnimation.scale.keyflames, animationTime);
-			joint.transform.rotate = Animator::CalculateValue(rootNodeAnimation.rotate.keyflames, animationTime);
-			joint.transform.translate = Animator::CalculateValue(rootNodeAnimation.translate.keyflames, animationTime);
+			joint.transform.scale = TakeC::AnimationManager::CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+			joint.transform.rotate = TakeC::AnimationManager::CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
+			joint.transform.translate = TakeC::AnimationManager::CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
 		}
 	}
 }
 
+//====================================================================
+// ブレンドアニメーションの適用（クロスフェード）
+//====================================================================
+void Skeleton::ApplyBlendedAnimation(Animation* from, float tFrom, Animation* to, float tTo, float blend) {
+	for (Joint& joint : joints) {
+		QuaternionTransform fromTransform = joint.transform;
+
+		// 遷移元アニメーションのサンプリング
+		if (from && from->duration > 0.0f) {
+			auto it = from->nodeAnimations.find(joint.name);
+			if (it != from->nodeAnimations.end()) {
+				const NodeAnimation& nodeAnim = it->second;
+				fromTransform.scale = TakeC::AnimationManager::CalculateValue(nodeAnim.scale.keyframes, tFrom);
+				fromTransform.rotate = TakeC::AnimationManager::CalculateValue(nodeAnim.rotate.keyframes, tFrom);
+				fromTransform.translate = TakeC::AnimationManager::CalculateValue(nodeAnim.translate.keyframes, tFrom);
+			}
+		}
+
+		// ブレンド比率が0ならfromのみ適用
+		if (!to || to->duration <= 0.0f || blend <= 0.0f) {
+			joint.transform = fromTransform;
+			continue;
+		}
+
+		// 遷移先アニメーションのサンプリング
+		QuaternionTransform toTransform = fromTransform;
+		auto it = to->nodeAnimations.find(joint.name);
+		if (it != to->nodeAnimations.end()) {
+			const NodeAnimation& nodeAnim = it->second;
+			toTransform.scale = TakeC::AnimationManager::CalculateValue(nodeAnim.scale.keyframes, tTo);
+			toTransform.rotate = TakeC::AnimationManager::CalculateValue(nodeAnim.rotate.keyframes, tTo);
+			toTransform.translate = TakeC::AnimationManager::CalculateValue(nodeAnim.translate.keyframes, tTo);
+		}
+
+		// ブレンド比率が1ならtoのみ適用
+		if (blend >= 1.0f) {
+			joint.transform = toTransform;
+			continue;
+		}
+
+		// Lerp/Slerpによるブレンド
+		joint.transform.scale = Easing::Lerp(fromTransform.scale, toTransform.scale, blend);
+		joint.transform.rotate = Easing::Slerp(fromTransform.rotate, toTransform.rotate, blend);
+		joint.transform.translate = Easing::Lerp(fromTransform.translate, toTransform.translate, blend);
+	}
+}
+
+//====================================================================
+// ジョイント名から値を取得
+//====================================================================
 std::optional<Joint> Skeleton::GetJointByName(const std::string& name) const {
 	auto it = jointMap.find(name);
 	if (it != jointMap.end()) {
@@ -107,6 +175,9 @@ std::optional<Joint> Skeleton::GetJointByName(const std::string& name) const {
 	return std::nullopt; //見つからなかった場合はstd::nulloptを返す
 }
 
+//====================================================================
+// ジョイント名からワールド行列を取得
+//====================================================================
 std::optional<Matrix4x4> Skeleton::GetJointWorldMatrix(const std::string& jointName, const Matrix4x4& characterWorldMatrix) const {
 	auto it = jointMap.find(jointName);
 	if (it != jointMap.end()) {
@@ -115,6 +186,9 @@ std::optional<Matrix4x4> Skeleton::GetJointWorldMatrix(const std::string& jointN
 	return std::nullopt; //見つからなかった場合はstd::nulloptを返す
 }
 
+//====================================================================
+// ジョイント名からワールド位置を取得
+//====================================================================
 std::optional<Vector3> Skeleton::GetJointPosition(const std::string& jointName, const Matrix4x4& modelWorldMatrix) const {
 	auto it = jointMap.find(jointName);
 	if (it != jointMap.end()) {
@@ -127,7 +201,9 @@ std::optional<Vector3> Skeleton::GetJointPosition(const std::string& jointName, 
 	return std::nullopt;
 }
 
-
+//====================================================================
+// NodeからJointを作成
+//====================================================================
 int32_t Skeleton::CreateJoint(const Node& node, const std::optional<int32_t>& parent) {
 	Joint joint;
 	joint.name = node.name;

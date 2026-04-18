@@ -1,47 +1,90 @@
 #pragma once
-#include "3d/Object3d.h"
-#include "3d/Object3dCommon.h"
-#include "Entity/GameCharacter.h"
-#include "3d/Particle/ParticleEmitter.h"
+#include "engine/3d/Object3d.h"
+#include "engine/3d/Object3dCommon.h"
+#include "engine/Entity/GameCharacter.h"
+#include "engine/3d/Particle/ParticleEmitter.h"
+#include "engine/3d/Particle/EffectGroup.h"
+#include "engine/3d/Light/PointLight.h"
+#include "application/UI/WarningType.h"
+#include "application/Weapon/Bullet/BulletEffectConfig.h"
 #include <cstdint>
 #include <string>
 #include <memory>
 
+// 弾の種類
 enum class BulletType {
 	NONE,
 	BULLET,
 	EXPLOSION,
 };
 
+//============================================================================
+// Bullet class
+//============================================================================
 class Bullet : public GameCharacter {
 public:
 	Bullet() = default;
 	~Bullet() = default;
+
+	//========================================================================
+	// function
+	//========================================================================
+
+	//初期化
 	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath)override;
+	void InitializeEffect(const BulletEffectConfig& effectConfig);
+	//更新
 	void Update() override;
+	//ImGuiの更新
 	void UpdateImGui();
+	//描画
 	void Draw() override;
+	//コライダー描画
 	void DrawCollider() override;
+	//衝突時の処理
 	void OnCollisionAction(GameCharacter* other) override;
 
-	void Create(const Vector3& weaponPos,const Vector3& targetPos,float speed,float damage,CharacterType type);
+	//弾の生成
+	void Create(
+		const Vector3& weaponPos,
+		const Vector3& targetPos,
+		const Vector3& targetVel,
+		float speed,float damage,
+		CharacterType type);
+
+	void Create(
+		const Vector3& weaponPos,
+		const Vector3& direction,
+		float speed,
+		float damage,
+		CharacterType type);
+
+	void SetBreakStunProperties(float power, float decayInterval) {
+		breakStunPower = power;
+		breakStunDecayInterval = decayInterval;
+	}
+
+	/// <summary>
+	/// 射手の位置、目標の位置と速度、弾速から、弾が目標に当たるまでの時間を計算する
+	/// </summary>
+	bool SolveInterceptTime(const Vector3& shooterPos, const Vector3& targetPos, const Vector3& targetVel, float bulletSpeed, float& outTime) const;
 
 public:
 
 	//===========================================================================
-	// getter
+	// accessors
 	//===========================================================================
+
+	//----- getter ---------------------------
 
 	//transformの取得
 	const EulerTransform& GetTransform() const;
 	//生存フラグの取得
-	bool GetIsActive();
-
+	bool IsActive();
 	//速度の取得
 	const Vector3& GetVelocity() const;
 	//ターゲット座標の取得
 	const Vector3& GetTargetPos() const;
-
 	//攻撃力の取得
 	float GetDamage() const;
 	//弾速の取得
@@ -50,10 +93,16 @@ public:
 	float GetBulletRadius() const;
 	//寿命時間の取得
 	float GetLifeTime() const;
+	//ブレイクスタンの蓄積値の取得
+	float GetBreakStunPower() const { return breakStunPower; }
+	//ブレイクスタンの蓄積値の減少間隔の取得
+	float GetBreakStunDecayInterval() const { return breakStunDecayInterval; }
+	// 警告タイプの取得
+	WarningType GetWarningType() const { return warningType_; }
 
-public:
-
-	//trasformの設定
+	//----- setter ---------------------------
+	
+	//transformの設定
 	void SetTransform(const EulerTransform& transform) { transform_ = transform; }
 	//生存フラグの設定
 	void SetIsActive(bool isActive);
@@ -69,6 +118,12 @@ public:
 	void SetBulletRadius(float radius);
 	//寿命時間の設定
 	void SetLifeTime(float lifeTime) { lifeTime_ = lifeTime; }
+	//ブレイクスタンの蓄積値の設定
+	void SetBreakStunPower(float power) { breakStunPower = power; }
+	//ブレイクスタンの蓄積値の減少間隔の設定
+	void SetBreakStunDecayInterval(float interval) { breakStunDecayInterval = interval; }
+	// 警告タイプの設定
+	void SetWarningType(WarningType type) { warningType_ = type; }
 
 private:
 
@@ -85,8 +140,21 @@ private:
 	//寿命時間
 	float lifeTime_ = 0.0f;
 	//弾の半径
-	float bulletradius_ = 1.0f;
+	float bulletRadius_ = 1.0f;
 
-	std::vector<std::unique_ptr<ParticleEmitter>> particleEmitter_;
+	float breakStunPower = 1.0f; // 被弾時に与えるブレイクスタンの蓄積値
+	float breakStunDecayInterval = 1.0f; // ブレイクスタンの蓄積値の減少間隔
+
+	PointLightData pointLightData_;
+	uint32_t pointLightIndex_ = 0;
+
+	//エフェクト設定
+	BulletEffectConfig effectConfig_;
+
+	//パーティクルエミッター
+	std::unique_ptr<TakeC::EffectGroup> lightEffect_;
+	std::unique_ptr<TakeC::EffectGroup> explosionEffect_;
+
+	WarningType warningType_ = WarningType::NORMAL;
 };
 

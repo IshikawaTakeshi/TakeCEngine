@@ -1,105 +1,182 @@
-#define NOMINMAX
 #include "HPBar.h"
-#include "engine/2d/SpriteCommon.h"
 #include "engine/2d/Sprite.h"
+#include "engine/Math/Easing.h"
+#include "engine/Utility/StringUtility.h"
 #include "engine/base/ImGuiManager.h"
 #include "engine/base/TakeCFrameWork.h"
 
-HPBar::~HPBar() {
-	// unique_ptr により自動解放されるため明示的に削除は不要
+using namespace TakeC;
+
+//===================================================================================
+// 初期化
+//===================================================================================
+void HPBar::Initialize(TakeC::SpriteManager* spriteManager,
+	const std::string& configName) {
+	// BaseUIの初期化
+	BaseUI::Initialize(spriteManager);
+
+	// 各コンポーネントのJSONを読み込み
+	// BACKGROUND, DAMAGE, FOREGROUND, OWNER の各サフィックスを想定
+	for (int i = 0; i < kTotalComponents; ++i) {
+		std::string componentSuffix = "";
+		switch (i) {
+		case BACKGROUND:
+			componentSuffix = "_BACKGROUND";
+			break;
+		case DAMAGE:
+			componentSuffix = "_DAMAGE";
+			break;
+		case FOREGROUND:
+			componentSuffix = "_FOREGROUND";
+			break;
+		case OWNER:
+			componentSuffix = "_OWNER";
+			break;
+		}
+
+		std::string fullPath = configName + componentSuffix + ".json";
+		Sprite* s = CreateAndRegisterSpriteFromJson(fullPath);
+
+		// 個別のポインタを保持
+		switch (i) {
+		case BACKGROUND:
+			backgroundSprite_ = s;
+			break;
+		case DAMAGE:
+			damageBarSprite_ = s;
+			break;
+		case FOREGROUND:
+			foregroundSprite_ = s;
+			break;
+		case OWNER:
+			ownerNameSprite_ = s;
+			break;
+		}
+	}
+
+	// 初期サイズの保存（各解像度に合わせてスケーリングして保持する）
+	if (backgroundSprite_)
+		backgroundMaxWidth_ =
+		backgroundSprite_->GetSize().x * TakeC::WinApp::widthPercent_;
+	if (foregroundSprite_)
+		foregroundMaxWidth_ =
+		foregroundSprite_->GetSize().x * TakeC::WinApp::widthPercent_;
+	if (damageBarSprite_)
+		damageBarMaxWidth_ =
+		damageBarSprite_->GetSize().x * TakeC::WinApp::widthPercent_;
+
+	margin_ = 2.0f * TakeC::WinApp::widthPercent_; // 枠の太さもスケーリング
+
+	damageDelayTimer_.Initialize(1.5f,
+		0.0f); // ダメージバーの遅延タイマーを初期化
 }
 
-void HPBar::Initialize(SpriteCommon* spriteCommon, const std::string& backgroundFilePath, const std::string& foregroundFilePath) {
-	// 背景スプライトの初期化
-	backgroundSprite_ = std::make_unique<Sprite>();
-	backgroundSprite_->Initialize(spriteCommon, backgroundFilePath);
-
-	// フォアグラウンドスプライトの初期化
-	foregroundSprite_ = std::make_unique<Sprite>();
-	foregroundSprite_->Initialize(spriteCommon, foregroundFilePath);
-
-	margin_ = 2.0f; // 枠の太さを設定
-
-	isActive_ = true; // 初期状態はアクティブ
-	alpha_ = 1.0f; // 初期のアルファ値（透明度）
-	fadeSpeed_ = 1.0f; // フェード速度を設定
-}
-
-void HPBar::Update(float currentHP, float maxHP) {
-	// HPの割合を計算
+//===================================================================================
+// HP情報の更新
+//===================================================================================
+void HPBar::SetHP(float currentHP, float maxHP) {
 	currentHP = std::max(0.0f, std::min(currentHP, maxHP));
-	float hpRatio = currentHP / maxHP;
+	maxHP_ = maxHP;
 
-	// 背景サイズ取得
-	Vector2 bgSize = backgroundSprite_->GetSize();
-	Vector2 bgPos = backgroundSprite_->GetTranslate();
+	if (currentHP < currentHP_) {
+		// ダメージを受けた場合、遅延タイマーをリセット
+		damageDelayTimer_.Initialize(1.5f, 0.0f);
+	}
 
-	// フォアグラウンドスプライトの幅・高さを枠の内側に収める
-	Vector2 fgSize;
-	fgSize.x = (bgSize.x - 2 * margin_) * hpRatio; // 横幅はHP割合
-	fgSize.y = bgSize.y - 2 * margin_; // 縦幅は枠内
+	currentHP_ = currentHP;
+	hpRatio_ = (maxHP_ > 0.0f) ? (currentHP_ / maxHP_) : 0.0f;
+}
 
-	foregroundSprite_->SetSize(fgSize);
-
-	// 前景スプライトの左上を枠の内側に配置
-	Vector2 fgPos = bgPos + Vector2{ margin_, margin_ };
-	foregroundSprite_->SetPosition(fgPos);
-
-	//isActiveがfalseになった時
-	if( !isActive_) {
-		// アルファ値を徐々に減少させる
-		alpha_ -= fadeSpeed_ * TakeCFrameWork::GetDeltaTime();
+//===================================================================================
+// 更新
+//===================================================================================
+void HPBar::Update() {
+	if (!isActive_) {
+		alpha_ -= 1.0f * TakeCFrameWork::GetDeltaTime();
 		if (alpha_ <= 0.0f) {
-			alpha_ = 0.0f; // 最小値を0に制限
-			return; // アクティブでない場合は更新しない
+			alpha_ = 0.0f;
+			return;
 		}
 	} else {
-		alpha_ = 1.0f; // アクティブな場合はアルファ値を1に設定
+		alpha_ = 1.0f;
 	}
 
-	backgroundSprite_->Update();
-	foregroundSprite_->Update();
-}
+	// アルファ値の反映 (BaseUIの機能を利用)
+	SetAlpha(alpha_);
 
-void HPBar::Draw() {
-	if (!isActive_) return; // アクティブでない場合は描画しない
+	// ダメージバーの遅延タイマーを更新
+	damageDelayTimer_.Update();
 
-	// 背景スプライトを描画
-	backgroundSprite_->Draw();
-
-	// フォアグラウンドスプライトを描画
-	foregroundSprite_->Draw();
-}
-
-void HPBar::UpdateImGui([[maybe_unused]]std::string name) {
-
-#ifdef _DEBUG
-	backgroundSprite_->UpdateImGui(name + "_Background");
-	foregroundSprite_->UpdateImGui(name + "_Foreground");
-#endif // DEBUG
-}
-
-
-
-void HPBar::SetPosition(const Vector2& position) {
-	position_ = position;
-
-	// 背景スプライトの位置を設定
-	backgroundSprite_->SetPosition(position);
-
-	// フォアグラウンドスプライトの位置も背景に揃える
-	foregroundSprite_->SetPosition(position);
-}
-
-void HPBar::SetSize(const Vector2& size) {
-	if (backgroundSprite_) {
-		backgroundSprite_->SetSize(size);
+	// ダメージバーの補間処理
+	if (damageDelayTimer_.IsFinished()) {
+		damageBarRatio_ =
+			Easing::Lerp(damageBarRatio_, hpRatio_,
+				damageLerpSpeed_ * TakeCFrameWork::GetDeltaTime());
 	}
+
+	// ゲージの長さを更新
 	if (foregroundSprite_) {
-		Vector2 foregroundSize = size;
-		foregroundSize.x *= foregroundSprite_->GetSize().x / backgroundSprite_->GetSize().x; // 比率を保持
-		foregroundSprite_->SetSize(foregroundSize);
+		Vector2 size = foregroundSprite_->GetSize();
+		size.x = foregroundMaxWidth_ * hpRatio_;
+		foregroundSprite_->SetSize(size);
 	}
+
+	if (damageBarSprite_) {
+		Vector2 size = damageBarSprite_->GetSize();
+		size.x = damageBarMaxWidth_ * damageBarRatio_;
+		damageBarSprite_->SetSize(size);
+	}
+
+	// スプライトの更新はSpriteManagerが行うためここでは不要だが、
+	// BaseUIを通じた基本的な更新が必要な場合は呼ぶ
+	BaseUI::Update();
 }
 
-Vector2 HPBar::GetTranslate() const { return position_; }
+//===================================================================================
+// 描画
+//===================================================================================
+void HPBar::Draw() {
+	if (!isActive_ || alpha_ <= 0.0f)
+		return;
+	// 描画は登録順で行われるが、明示的な順序が必要な場合はここでDrawを呼ぶ
+	// 現状はSpriteManagerが一括で描画する設計を尊重
+}
+
+//===================================================================================
+// ImGuiの更新
+//===================================================================================
+void HPBar::UpdateImGui(const std::string& name) {
+	BaseUI::UpdateImGui(name);
+
+#if defined(_DEBUG) || defined(_DEVELOP)
+	if (ImGui::TreeNode((name + " HPBar").c_str())) {
+		ImGui::ProgressBar(hpRatio_, ImVec2(0.0f, 0.0f), "Current HP");
+		ImGui::ProgressBar(damageBarRatio_, ImVec2(0.0f, 0.0f), "Damage Bar");
+		ImGui::TreePop();
+	}
+#endif
+}
+
+//===================================================================================
+// 位置を設定
+//===================================================================================
+void HPBar::SetPosition(const Vector2& position) {
+	BaseUI::SetPosition(position);
+
+	if (backgroundSprite_)
+		backgroundSprite_->SetTranslate(position);
+	if (foregroundSprite_)
+		foregroundSprite_->SetTranslate(position + Vector2{ margin_, margin_ });
+	if (damageBarSprite_)
+		damageBarSprite_->SetTranslate(position + Vector2{ margin_, margin_ });
+
+	// OwnerNameはJSONでの初期位置をベースにするか、positionからの相対にする
+	// 現状はSetPositionで一律固定の位置にくるように調整が必要。
+	// ここでは背景からの相対オフセットを固定で持たせる例
+	if (ownerNameSprite_) {
+		// オフセットも解像度に合わせてスケーリング
+		Vector2 ownerOffset = { 1.0f * TakeC::WinApp::widthPercent_,
+							   -30.0f * TakeC::WinApp::heightPercent_ };
+		ownerNameSprite_->SetTranslate(position + ownerOffset);
+	}
+}

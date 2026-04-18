@@ -4,6 +4,13 @@
 #include <cmath>
 #include <numbers>
 
+////////////////////////////////////////////////////////////////////////////////
+// クォータニオンに関する数学関数群
+////////////////////////////////////////////////////////////////////////////////
+
+//=============================================================================
+// 掛け算(クォータニオン同士）
+//=============================================================================
 Quaternion QuaternionMath::Multiply(const Quaternion& q1, const Quaternion& q2) {
 	Quaternion result;
 	result.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y;
@@ -13,6 +20,9 @@ Quaternion QuaternionMath::Multiply(const Quaternion& q1, const Quaternion& q2) 
 	return result;
 }
 
+//=============================================================================
+// スカラー倍
+//=============================================================================
 Quaternion QuaternionMath::Multiply(const Quaternion& q, float s) {
 	Quaternion result;
 	result.x = q.x * s;
@@ -22,11 +32,17 @@ Quaternion QuaternionMath::Multiply(const Quaternion& q, float s) {
 	return result;
 }
 
+//=============================================================================
+// 内積
+//=============================================================================
 float QuaternionMath::Dot(const Quaternion& lhs, const Quaternion& rhs) {
 	float result = lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z + lhs.w * rhs.w;
 	return result;
 }
 
+//=============================================================================
+// 単位クォータニオン
+//=============================================================================
 Quaternion QuaternionMath::IdentityQuaternion() {
 	Quaternion result;
 	result.x = 0.0f;
@@ -36,6 +52,9 @@ Quaternion QuaternionMath::IdentityQuaternion() {
 	return result;
 }
 
+//=============================================================================
+// 共役
+//=============================================================================
 Quaternion QuaternionMath::Conjugate(const Quaternion& q) {
 	Quaternion result;
 	result.x = -q.x;
@@ -45,11 +64,17 @@ Quaternion QuaternionMath::Conjugate(const Quaternion& q) {
 	return result;
 }
 
+//=============================================================================
+// ノルム（大きさ）
+//=============================================================================
 float QuaternionMath::Norm(const Quaternion& q) {
 	float result = sqrtf(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
 	return result;
 }
 
+//=============================================================================
+// 正規化
+//=============================================================================
 Quaternion QuaternionMath::Normalize(const Quaternion& q) {
 	Quaternion result;
 	float norm = Norm(q);
@@ -60,6 +85,9 @@ Quaternion QuaternionMath::Normalize(const Quaternion& q) {
 	return result;
 }
 
+//=============================================================================
+// 逆クォータニオン
+//=============================================================================
 Quaternion QuaternionMath::Inverse(const Quaternion& q) {
 	Quaternion result;
 	float norm = Norm(q);
@@ -71,6 +99,9 @@ Quaternion QuaternionMath::Inverse(const Quaternion& q) {
 	return result;
 }
 
+//=============================================================================
+// 回転軸・回転角からクォータニオンを作成
+//=============================================================================
 Quaternion QuaternionMath::MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle) {
 	Quaternion result;
 	float halfAngle = angle / 2.0f;
@@ -82,23 +113,53 @@ Quaternion QuaternionMath::MakeRotateAxisAngleQuaternion(const Vector3& axis, fl
 	return result;
 }
 
+//=============================================================================
+// 指定した方向を向くクォータニオンを作成
+//=============================================================================
 Quaternion QuaternionMath::LookRotation(const Vector3& forward, const Vector3& up) {
 	Vector3 zAxis = Vector3Math::Normalize(forward);
 	Vector3 xAxis = Vector3Math::Normalize(Vector3Math::Cross(up, zAxis));
 	Vector3 yAxis = Vector3Math::Cross(zAxis, xAxis);
 
 	// 回転行列を作成
-	Matrix4x4 rotationMatrix = {
-		xAxis.x, yAxis.x, zAxis.x, 0.0f,
-		xAxis.y, yAxis.y, zAxis.y, 0.0f,
-		xAxis.z, yAxis.z, zAxis.z, 0.0f,
-		0.0f,    0.0f,    0.0f,    1.0f
-	};
+	Matrix4x4 rotationMatrix = {};
+	rotationMatrix.m[0][0] = xAxis.x;
+	rotationMatrix.m[0][1] = yAxis.x;
+	rotationMatrix.m[0][2] = zAxis.x;
+	rotationMatrix.m[1][0] = xAxis.y;
+	rotationMatrix.m[1][1] = yAxis.y;
+	rotationMatrix.m[1][2] = zAxis.y;
+	rotationMatrix.m[2][0] = xAxis.z;
+	rotationMatrix.m[2][1] = yAxis.z;
+	rotationMatrix.m[2][2] = zAxis.z;
+	rotationMatrix.m[3][3] = 1.0f;
 
 	// 回転行列からクォータニオンを作成
 	return QuaternionMath::FromMatrix(rotationMatrix);
 }
 
+Quaternion QuaternionMath::LookRotation_RowMajor(const Vector3& forwardIn) {
+	Vector3 forward = forwardIn;
+	if (Vector3Math::LengthSq(forward) < 1e-6f) {
+		return Quaternion{ 0,0,0,1 };
+	}
+	forward = forward.Normalize();
+
+	Vector3 up = Vector3(0.0f, 1.0f, 0.0f);
+	float d = Vector3Math::Dot(forward, up);
+	if (std::fabs(d) > 0.999f) {
+		up = Vector3(1.0f, 0.0f, 0.0f);
+	}
+
+	Vector3 right = Vector3Math::Cross(up, forward).Normalize();
+	Vector3 newUp = Vector3Math::Cross(forward, right);
+
+	return FromBasis_RowMajor(right, newUp, forward);
+}
+
+//=============================================================================
+// 回転行列からクォータニオンを作成
+//=============================================================================
 Quaternion QuaternionMath::FromMatrix(const Matrix4x4& m) {
 	Quaternion q;
 	float trace = m.m[0][0] + m.m[1][1] + m.m[2][2];
@@ -109,20 +170,23 @@ Quaternion QuaternionMath::FromMatrix(const Matrix4x4& m) {
 		q.x = (m.m[2][1] - m.m[1][2]) / s;
 		q.y = (m.m[0][2] - m.m[2][0]) / s;
 		q.z = (m.m[1][0] - m.m[0][1]) / s;
-	} else {
+	}
+	else {
 		if (m.m[0][0] > m.m[1][1] && m.m[0][0] > m.m[2][2]) {
 			float s = sqrtf(1.0f + m.m[0][0] - m.m[1][1] - m.m[2][2]) * 2.0f;
 			q.w = (m.m[2][1] - m.m[1][2]) / s;
 			q.x = 0.25f * s;
 			q.y = (m.m[0][1] + m.m[1][0]) / s;
 			q.z = (m.m[0][2] + m.m[2][0]) / s;
-		} else if (m.m[1][1] > m.m[2][2]) {
+		}
+		else if (m.m[1][1] > m.m[2][2]) {
 			float s = sqrtf(1.0f + m.m[1][1] - m.m[0][0] - m.m[2][2]) * 2.0f;
 			q.w = (m.m[0][2] - m.m[2][0]) / s;
 			q.x = (m.m[0][1] + m.m[1][0]) / s;
 			q.y = 0.25f * s;
 			q.z = (m.m[1][2] + m.m[2][1]) / s;
-		} else {
+		}
+		else {
 			float s = sqrtf(1.0f + m.m[2][2] - m.m[0][0] - m.m[1][1]) * 2.0f;
 			q.w = (m.m[1][0] - m.m[0][1]) / s;
 			q.x = (m.m[0][2] + m.m[2][0]) / s;
@@ -134,6 +198,106 @@ Quaternion QuaternionMath::FromMatrix(const Matrix4x4& m) {
 	return q;
 }
 
+//=============================================================================
+// オイラー角からクォータニオンに変換
+//=============================================================================
+Quaternion QuaternionMath::FromEuler(const Vector3& euler) {
+
+	// オイラー角をラジアンに変換
+	float cy = cosf(euler.z * 0.5f);
+	float sy = sinf(euler.z * 0.5f);
+	float cp = cosf(euler.y * 0.5f);
+	float sp = sinf(euler.y * 0.5f);
+	float cr = cosf(euler.x * 0.5f);
+	float sr = sinf(euler.x * 0.5f);
+	Quaternion q;
+	q.w = cr * cp * cy + sr * sp * sy;
+	q.x = sr * cp * cy - cr * sp * sy;
+	q.y = cr * sp * cy + sr * cp * sy;
+	q.z = cr * cp * sy - sr * sp * cy;
+	return q;
+}
+
+//=============================================================================
+// 直交基底からクォータニオンに変換
+//=============================================================================
+Quaternion QuaternionMath::FromBasis(const Vector3& right, const Vector3& up, const Vector3& forward) {
+
+	// 回転行列を作成
+	Matrix4x4 rotationMatrix = {};
+	rotationMatrix.m[0][0] = right.x;
+	rotationMatrix.m[0][1] = right.y;
+	rotationMatrix.m[0][2] = right.z;
+	rotationMatrix.m[1][0] = up.x;
+	rotationMatrix.m[1][1] = up.y;
+	rotationMatrix.m[1][2] = up.z;
+	rotationMatrix.m[2][0] = forward.x;
+	rotationMatrix.m[2][1] = forward.y;
+	rotationMatrix.m[2][2] = forward.z;
+	rotationMatrix.m[3][3] = 1.0f;
+	// 回転行列からクォータニオンを作成
+	return QuaternionMath::FromMatrix(rotationMatrix);
+}
+
+Quaternion QuaternionMath::FromBasis_RowMajor(const Vector3& right, const Vector3& up, const Vector3& forward) {
+	// row-major 3x3:
+	// [ right.x   right.y   right.z ]
+	// [ up.x      up.y      up.z    ]
+	// [ forward.x forward.y forward.z ]
+
+	// ※この「row-majorの基底の置き方」を HLSL 側の変換と揃える意図
+
+	float m00 = right.x, m01 = right.y, m02 = right.z;
+	float m10 = up.x, m11 = up.y, m12 = up.z;
+	float m20 = forward.x, m21 = forward.y, m22 = forward.z;
+
+	Quaternion q{};
+
+	float trace = m00 + m11 + m22;
+	if (trace > 0.0f) {
+		float s = std::sqrt(trace + 1.0f) * 2.0f; // s = 4*w
+		q.w = 0.25f * s;
+		q.x = (m12 - m21) / s;
+		q.y = (m20 - m02) / s;
+		q.z = (m01 - m10) / s;
+	}
+	else if (m00 > m11 && m00 > m22) {
+		float s = std::sqrt(1.0f + m00 - m11 - m22) * 2.0f; // s = 4*x
+		q.w = (m12 - m21) / s;
+		q.x = 0.25f * s;
+		q.y = (m01 + m10) / s;
+		q.z = (m02 + m20) / s;
+	}
+	else if (m11 > m22) {
+		float s = std::sqrt(1.0f + m11 - m00 - m22) * 2.0f; // s = 4*y
+		q.w = (m20 - m02) / s;
+		q.x = (m01 + m10) / s;
+		q.y = 0.25f * s;
+		q.z = (m12 + m21) / s;
+	}
+	else {
+		float s = std::sqrt(1.0f + m22 - m00 - m11) * 2.0f; // s = 4*z
+		q.w = (m01 - m10) / s;
+		q.x = (m02 + m20) / s;
+		q.y = (m12 + m21) / s;
+		q.z = 0.25f * s;
+	}
+
+	// 正規化（誤差対策）
+	float len = std::sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
+	if (len > 1e-6f) {
+		float inv = 1.0f / len;
+		q.x *= inv; q.y *= inv; q.z *= inv; q.w *= inv;
+	}
+	else {
+		q = { 0,0,0,1 };
+	}
+	return q;
+}
+
+//=============================================================================
+// ベクトルの回転
+//=============================================================================
 Vector3 QuaternionMath::RotateVector(const Vector3& vector, const Quaternion& quaternion) {
 	Vector3 result;
 	Quaternion q = quaternion;
@@ -147,7 +311,10 @@ Vector3 QuaternionMath::RotateVector(const Vector3& vector, const Quaternion& qu
 	return result;
 }
 
-Vector3 QuaternionMath::toEuler(const Quaternion& q) {
+//=============================================================================
+// クォータニオンからオイラー角に変換
+//=============================================================================
+Vector3 QuaternionMath::ToEuler(const Quaternion& q) {
 	Vector3 angles;
 	// X軸（ピッチ）
 	float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
@@ -169,6 +336,9 @@ Vector3 QuaternionMath::toEuler(const Quaternion& q) {
 	return angles;
 }
 
+//============================================================================
+// 演算子オーバーロード
+//============================================================================
 Quaternion operator*(const Quaternion& q, float s) {
 	return QuaternionMath::Multiply(q, s);
 }
@@ -195,4 +365,28 @@ Quaternion operator-(const Quaternion& lhs, const Quaternion& rhs) {
 
 Quaternion operator-(const Quaternion& lhs) {
 	return { -lhs.x, -lhs.y, -lhs.z, -lhs.w };
+}
+
+//============================================================================
+// JSON形式に変換
+//============================================================================
+void to_json(nlohmann::json& j, const Quaternion& q) {
+
+	j = nlohmann::json{
+		{"x",q.x},
+		{"y",q.y},
+		{"z",q.z},
+		{"w",q.w}
+	};
+}
+
+//============================================================================
+// JSON形式からQuaternionに変換
+//===========================================================================
+void from_json(const nlohmann::json& j, Quaternion& q) {
+
+	j.at("x").get_to(q.x);
+	j.at("y").get_to(q.y);
+	j.at("z").get_to(q.z);
+	j.at("w").get_to(q.w);
 }

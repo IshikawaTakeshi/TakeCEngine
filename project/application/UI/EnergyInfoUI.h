@@ -3,9 +3,13 @@
 #include <memory>
 #include <string>
 
+// 前方宣言
 class SpriteCommon;
 class Sprite;
 
+//============================================================================
+// EnergyInfoUI class
+//============================================================================
 class EnergyInfoUI {
 public:
 

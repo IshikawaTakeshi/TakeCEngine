@@ -1,0 +1,25 @@
+{
+    "uiName": "PauseMenuUI",
+    "sprites": [
+        {
+            "key": "BG",
+            "spriteConfigPath": "PauseMenu_BG.json"
+        },
+        {
+            "key": "Cursor",
+            "spriteConfigPath": "PauseMenu_Cursor.json"
+        },
+        {
+            "key": "Item0",
+            "spriteConfigPath": "PauseMenu_Item0.json"
+        },
+        {
+            "key": "Item1",
+            "spriteConfigPath": "PauseMenu_Item1.json"
+        },
+        {
+            "key": "Item2",
+            "spriteConfigPath": "PauseMenu_Item2.json"
+        }
+    ]
+}

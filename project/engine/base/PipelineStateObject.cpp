@@ -8,6 +8,9 @@
 #include <cassert>
 #include <list>
 
+//=============================================================================
+// デストラクタ
+//=============================================================================
 PSO::~PSO() {
 
 	graphicRootSignature_.Reset();
@@ -18,6 +21,9 @@ PSO::~PSO() {
 	graphicPipelineState_.Reset();
 }
 
+//=============================================================================
+// シェーダーコンパイル関数(VS,PS,CS)
+//=============================================================================
 void PSO::CompileVertexShader(DXC* dxc_, const std::wstring& filePath) {
 
 	//頂点シェーダーのコンパイル
@@ -32,8 +38,6 @@ void PSO::CompilePixelShader(DXC* dxc_, const std::wstring& filePath) {
 	graphicShaderData_.pixelBlob = dxc_->CompileShader(
 		filePath, L"ps_6_6", dxc_->GetDxcUtils().Get(), dxc_->GetDxcCompiler().Get(), dxc_->GetIncludeHandler().Get()
 	);
-
-	//
 }
 
 void PSO::CompileComputeShader(DXC* dxc_, const std::wstring& filePath) {
@@ -60,8 +64,11 @@ void PSO::ExtractInputLayout(ID3D12ShaderReflection* shaderReflection) {
 		return;
 	}
 
+	// 入力レイアウト情報を取得
 	inputElementDescs_.resize(shaderDesc.InputParameters);
 	semanticName_.resize(shaderDesc.InputParameters);
+
+	// 各入力パラメータを処理
 	for (UINT i = 0; i < shaderDesc.InputParameters; ++i) {
 		D3D12_SIGNATURE_PARAMETER_DESC inputParamDesc;
 		shaderReflection->GetInputParameterDesc(i, &inputParamDesc);
@@ -72,6 +79,7 @@ void PSO::ExtractInputLayout(ID3D12ShaderReflection* shaderReflection) {
 		inputElementDescs_[i].SemanticIndex = inputParamDesc.SemanticIndex;
 		inputElementDescs_[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
+		//マスクのビット数からフォーマットを決定
 		if (inputParamDesc.Mask == 1) {
 			inputElementDescs_[i].Format = DXGI_FORMAT_R32_FLOAT;
 		} else if (inputParamDesc.Mask <= 3) {
@@ -82,7 +90,10 @@ void PSO::ExtractInputLayout(ID3D12ShaderReflection* shaderReflection) {
 			inputElementDescs_[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		}
 	}
+
+	// 入力レイアウト記述子を設定
 	inputLayoutDesc_.pInputElementDescs = inputElementDescs_.data();
+	// 要素数を設定
 	inputLayoutDesc_.NumElements = static_cast<UINT>(inputElementDescs_.size());
 }
 
@@ -152,6 +163,7 @@ ShaderResourceMap PSO::LoadShaderResourceInfo(
 					}
 					continue;
 				}
+				// 新しいリソースの場合、マップに追加
 				bindResources[key] = { key, bindDesc.Name };
 			}
 		}
@@ -160,7 +172,7 @@ ShaderResourceMap PSO::LoadShaderResourceInfo(
 			ExtractInputLayout(shaderReflection.Get());
 		}
 	}
-	return { bindResources };
+	return { bindResources }; // 収集したリソースを返す
 }
 
 //=============================================================================
@@ -205,10 +217,28 @@ ComPtr<ID3D12RootSignature> PSO::CreateRootSignature(ID3D12Device* device, Shade
 
 			// サンプラーの設定
 			D3D12_STATIC_SAMPLER_DESC samplerDesc = {};
-			samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; // 0~1の範囲外をリピート
-			samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-			samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-			samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; // 比較しない
+			if (resource.second.name.find("Shadow") != std::string::npos) {
+				// シャドウマップ用サンプラー
+				samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER; // 0~1の範囲外はボーダーカラー
+				samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+				samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+				samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+				samplerDesc.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE; // ボーダーカラーは白
+			} else if(resource.second.name.find("RadialBlur") != std::string::npos) {
+				// 放射状ブラー用サンプラー
+				samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP; // 0~1の範囲外はクランプ
+				samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+				samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+				samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; // 比較しない
+			}	
+			else {
+				// 通常のテクスチャ用サンプラー
+				samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; // 0~1の範囲外をリピート
+				samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+				samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+				samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; // 比較しない
+			}
+
 			samplerDesc.MaxLOD = D3D12_FLOAT32_MAX; // ありったけのMipmapを使う
 			samplerDesc.ShaderRegister = key.bindPoint; // レジスタ番号を使用
 
@@ -297,15 +327,58 @@ void PSO::CreateBlendStateForObject3d() {
 	blendDesc_.RenderTarget[0].DestBlendAlpha        = D3D12_BLEND_ZERO;
 }
 
-void PSO::CreateBlendStateForParticle() {
+void PSO::CreateBlendStateForParticle(BlendState state) {
+
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 	blendDesc_.RenderTarget[0].BlendEnable           = true;
-	blendDesc_.RenderTarget[0].SrcBlend              = D3D12_BLEND_SRC_ALPHA;
-	blendDesc_.RenderTarget[0].BlendOp               = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlend             = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].SrcBlendAlpha         = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].BlendOpAlpha          = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlendAlpha        = D3D12_BLEND_INV_SRC_ALPHA;
+	
+	switch (state) {
+	case BlendState::ADD:
+
+		blendDesc_.RenderTarget[0].SrcBlend       = D3D12_BLEND_SRC_ALPHA;
+		blendDesc_.RenderTarget[0].BlendOp        = D3D12_BLEND_OP_ADD;
+		blendDesc_.RenderTarget[0].DestBlend      = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].SrcBlendAlpha  = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].BlendOpAlpha   = D3D12_BLEND_OP_ADD;
+		blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+		break;
+	case BlendState::SUBTRACT:
+
+		blendDesc_.RenderTarget[0].SrcBlend       = D3D12_BLEND_SRC_ALPHA;
+		blendDesc_.RenderTarget[0].DestBlend      = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].BlendOp        = D3D12_BLEND_OP_REV_SUBTRACT;
+		blendDesc_.RenderTarget[0].SrcBlendAlpha  = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc_.RenderTarget[0].BlendOpAlpha   = D3D12_BLEND_OP_ADD;
+		break;
+	case BlendState::MULTIPLY:
+		blendDesc_.RenderTarget[0].SrcBlend       = D3D12_BLEND_DEST_COLOR;
+		blendDesc_.RenderTarget[0].DestBlend      = D3D12_BLEND_ZERO;
+		blendDesc_.RenderTarget[0].BlendOp        = D3D12_BLEND_OP_ADD;
+		blendDesc_.RenderTarget[0].SrcBlendAlpha  = D3D12_BLEND_ZERO;
+		blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc_.RenderTarget[0].BlendOpAlpha   = D3D12_BLEND_OP_ADD;
+		break;
+	case BlendState::SCREEN:
+		blendDesc_.RenderTarget[0].SrcBlend       = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].DestBlend      = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc_.RenderTarget[0].BlendOp        = D3D12_BLEND_OP_ADD;
+		blendDesc_.RenderTarget[0].SrcBlendAlpha  = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc_.RenderTarget[0].BlendOpAlpha   = D3D12_BLEND_OP_ADD;
+		break;
+	case BlendState::PREMULTIPLIED_ALPHA:
+		blendDesc_.RenderTarget[0].SrcBlend       = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].DestBlend      = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc_.RenderTarget[0].BlendOp        = D3D12_BLEND_OP_ADD;
+		blendDesc_.RenderTarget[0].SrcBlendAlpha  = D3D12_BLEND_ONE;
+		blendDesc_.RenderTarget[0].BlendOpAlpha   = D3D12_BLEND_OP_ADD;
+		blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		break;
+	default:
+		break;
+	}
+	
 }
 
 void PSO::CreateBlendStateForSprite() {
@@ -314,32 +387,37 @@ void PSO::CreateBlendStateForSprite() {
 	blendDesc_.RenderTarget[0].SrcBlend              = D3D12_BLEND_SRC_ALPHA;
 	blendDesc_.RenderTarget[0].DestBlend             = D3D12_BLEND_INV_SRC_ALPHA;
 	blendDesc_.RenderTarget[0].BlendOp               = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].SrcBlendAlpha         = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].DestBlendAlpha        = D3D12_BLEND_ZERO;
-	blendDesc_.RenderTarget[0].BlendOpAlpha          = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_MAX;
 }
+
+//=============================================================================
+// ブレンドステート初期化
+//=============================================================================
 
 void PSO::InitializeBlendState(BlendState blendState) {
 	switch (blendState) {
-	case PSO::BlendState::NORMAL:
+	case BlendState::NORMAL:
 		CreateBlendStateForObject3d();
 		break;
-	case PSO::BlendState::ADD:
-		CreateBlendStateForParticle();
+	case BlendState::ADD:
+		CreateBlendStateForParticle(BlendState::ADD);
 		break;
-	case PSO::BlendState::SUBTRACT:
-		CreateBlendStateForParticle();
+	case BlendState::SUBTRACT:
+		CreateBlendStateForParticle(BlendState::SUBTRACT);
 		break;
-	case PSO::BlendState::MULTIPLY:
-		CreateBlendStateForParticle();
+	case BlendState::MULTIPLY:
+		CreateBlendStateForParticle(BlendState::MULTIPLY);
 		break;
-	case PSO::BlendState::SCREEN:
-		CreateBlendStateForParticle();
+	case BlendState::SCREEN:
+		CreateBlendStateForParticle(BlendState::SCREEN);
 		break;
-	case PSO::BlendState::SPRITE:
+	case BlendState::SPRITE:
 		CreateBlendStateForSprite();
 		break;
-	default:
+	case BlendState::PREMULTIPLIED_ALPHA:
+		CreateBlendStateForParticle(BlendState::PREMULTIPLIED_ALPHA);
 		break;
 	}
 }
@@ -550,7 +628,13 @@ void PSO::SetGraphicPipelineStateDesc(D3D12_PRIMITIVE_TOPOLOGY_TYPE type) {
 
 	//DepthStencilの設定
 	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc_;
-	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	if (depthStencilDesc_.DepthEnable) {
+
+		graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	} else {
+		graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_UNKNOWN;
+	}
 
 	// RootSignature
 	graphicsPipelineStateDesc_.pRootSignature = graphicRootSignature_.Get();

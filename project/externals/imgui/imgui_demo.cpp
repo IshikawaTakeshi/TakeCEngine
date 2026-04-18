@@ -392,8 +392,8 @@ struct ImGuiDemoWindowData
 void ImGui::ShowDemoWindow(bool* p_open)
 {
     // Exceptionally add an extra assert here for people confused about initial Dear ImGui setup
-    // Most functions would normally just assert/crash if the context is missing.
-    IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing Dear ImGui context. Refer to examples app!");
+    // Most functions would normally just assert/crash if the playableCharacterInfo is missing.
+    IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing Dear ImGui playableCharacterInfo. Refer to examples app!");
 
     // Verify ABI compatibility between caller code and compiled version of Dear ImGui. This helps detects some build issues.
     IMGUI_CHECKVERSION();
@@ -2408,7 +2408,7 @@ static void ShowDemoWindowWidgets(ImGuiDemoWindowData* demo_data)
         const float   f32_zero = 0.f, f32_one = 1.f, f32_lo_a = -10000000000.0f, f32_hi_a = +10000000000.0f;
         const double  f64_zero = 0.,  f64_one = 1.,  f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
-        // State
+        // AnimationPhase
         static char   s8_v  = 127;
         static ImU8   u8_v  = 255;
         static short  s16_v = 32767;
@@ -2934,7 +2934,7 @@ static void ShowDemoWindowWidgets(ImGuiDemoWindowData* demo_data)
             ImGui::EndChild();
 
         // Calling IsItemHovered() after begin returns the hovered status of the title bar.
-        // This is useful in particular if you want to create a context menu associated to the title bar of a window.
+        // This is useful in particular if you want to create a playableCharacterInfo menu associated to the title bar of a window.
         // This will also work when docked into a Tab (the Tab replace the Title Bar and guarantee the same properties).
         static bool test_window = false;
         ImGui::Checkbox("Hovered/Active tests after Begin() for title bar testing", &test_window);
@@ -3127,7 +3127,7 @@ struct ExampleDualListBox
             float child_height_0 = 0.0f;
             for (int side = 0; side < 2; side++)
             {
-                // FIXME-MULTISELECT: Dual List Box: Add context menus
+                // FIXME-MULTISELECT: Dual List Box: Add playableCharacterInfo menus
                 // FIXME-NAV: Using ImGuiWindowFlags_NavFlattened exhibit many issues.
                 ImVector<ImGuiID>& items = Items[side];
                 ImGuiSelectionBasicStorage& selection = Selections[side];
@@ -3226,13 +3226,13 @@ struct ExampleDualListBox
 
 static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
 {
-    IMGUI_DEMO_MARKER("Widgets/Selection State & Multi-Select");
-    if (ImGui::TreeNode("Selection State & Multi-Select"))
+    IMGUI_DEMO_MARKER("Widgets/Selection AnimationPhase & Multi-Select");
+    if (ImGui::TreeNode("Selection AnimationPhase & Multi-Select"))
     {
         HelpMarker("Selections can be built using Selectable(), TreeNode() or other widgets. Selection state is owned by application code/data.");
 
         // Without any fancy API: manage single-selection yourself.
-        IMGUI_DEMO_MARKER("Widgets/Selection State/Single-Select");
+        IMGUI_DEMO_MARKER("Widgets/Selection AnimationPhase/Single-Select");
         if (ImGui::TreeNode("Single-Select"))
         {
             static int selected = -1;
@@ -3248,7 +3248,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
 
         // Demonstrate implementation a most-basic form of multi-selection manually
         // This doesn't support the SHIFT modifier which requires BeginMultiSelect()!
-        IMGUI_DEMO_MARKER("Widgets/Selection State/Multi-Select (manual/simplified, without BeginMultiSelect)");
+        IMGUI_DEMO_MARKER("Widgets/Selection AnimationPhase/Multi-Select (manual/simplified, without BeginMultiSelect)");
         if (ImGui::TreeNode("Multi-Select (manual/simplified, without BeginMultiSelect)"))
         {
             HelpMarker("Hold CTRL and click to select multiple items.");
@@ -3270,7 +3270,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
         // Demonstrate handling proper multi-selection using the BeginMultiSelect/EndMultiSelect API.
         // SHIFT+Click w/ CTRL and other standard features are supported.
         // We use the ImGuiSelectionBasicStorage helper which you may freely reimplement.
-        IMGUI_DEMO_MARKER("Widgets/Selection State/Multi-Select");
+        IMGUI_DEMO_MARKER("Widgets/Selection AnimationPhase/Multi-Select");
         if (ImGui::TreeNode("Multi-Select"))
         {
             ImGui::Text("Supported features:");
@@ -3311,7 +3311,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
         }
 
         // Demonstrate using the clipper with BeginMultiSelect()/EndMultiSelect()
-        IMGUI_DEMO_MARKER("Widgets/Selection State/Multi-Select (with clipper)");
+        IMGUI_DEMO_MARKER("Widgets/Selection AnimationPhase/Multi-Select (with clipper)");
         if (ImGui::TreeNode("Multi-Select (with clipper)"))
         {
             // Use default selection.Adapter: Pass index to SetNextItemSelectionUserData(), store index in Selection
@@ -3358,7 +3358,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
         // - (3) BeginXXXX process
         // - (4) Focus process
         // - (5) EndXXXX process
-        IMGUI_DEMO_MARKER("Widgets/Selection State/Multi-Select (with deletion)");
+        IMGUI_DEMO_MARKER("Widgets/Selection AnimationPhase/Multi-Select (with deletion)");
         if (ImGui::TreeNode("Multi-Select (with deletion)"))
         {
             // Storing items data separately from selection data.
@@ -3419,7 +3419,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
         }
 
         // Implement a Dual List Box (#6648)
-        IMGUI_DEMO_MARKER("Widgets/Selection State/Multi-Select (dual list box)");
+        IMGUI_DEMO_MARKER("Widgets/Selection AnimationPhase/Multi-Select (dual list box)");
         if (ImGui::TreeNode("Multi-Select (dual list box)"))
         {
             // Init default state
@@ -3435,7 +3435,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
         }
 
         // Demonstrate using the clipper with BeginMultiSelect()/EndMultiSelect()
-        IMGUI_DEMO_MARKER("Widgets/Selection State/Multi-Select (in a table)");
+        IMGUI_DEMO_MARKER("Widgets/Selection AnimationPhase/Multi-Select (in a table)");
         if (ImGui::TreeNode("Multi-Select (in a table)"))
         {
             static ImGuiSelectionBasicStorage selection;
@@ -3480,7 +3480,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
             ImGui::TreePop();
         }
 
-        IMGUI_DEMO_MARKER("Widgets/Selection State/Multi-Select (checkboxes)");
+        IMGUI_DEMO_MARKER("Widgets/Selection AnimationPhase/Multi-Select (checkboxes)");
         if (ImGui::TreeNode("Multi-Select (checkboxes)"))
         {
             ImGui::Text("In a list of checkboxes (not selectable):");
@@ -3518,7 +3518,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
         }
 
         // Demonstrate individual selection scopes in same window
-        IMGUI_DEMO_MARKER("Widgets/Selection State/Multi-Select (multiple scopes)");
+        IMGUI_DEMO_MARKER("Widgets/Selection AnimationPhase/Multi-Select (multiple scopes)");
         if (ImGui::TreeNode("Multi-Select (multiple scopes)"))
         {
             // Use default select: Pass index to SetNextItemSelectionUserData(), store index in Selection
@@ -3580,7 +3580,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
         //   are more likely to build an array mapping sequential indices to visible tree nodes, since your
         //   filtering/search + clipping process will benefit from it. Having this will make this interpolation much easier.
         // - Consider this a prototype: we are working toward simplifying some of it.
-        IMGUI_DEMO_MARKER("Widgets/Selection State/Multi-Select (trees)");
+        IMGUI_DEMO_MARKER("Widgets/Selection AnimationPhase/Multi-Select (trees)");
         if (ImGui::TreeNode("Multi-Select (trees)"))
         {
             HelpMarker(
@@ -3732,7 +3732,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
         // - Showcase basic drag and drop.
         // - Showcase TreeNode variant (note that tree node don't expand in the demo: supporting expanding tree nodes + clipping a separate thing).
         // - Showcase using inside a table.
-        IMGUI_DEMO_MARKER("Widgets/Selection State/Multi-Select (advanced)");
+        IMGUI_DEMO_MARKER("Widgets/Selection AnimationPhase/Multi-Select (advanced)");
         //ImGui::SetNextItemOpen(true, ImGuiCond_Once);
         if (ImGui::TreeNode("Multi-Select (advanced)"))
         {
@@ -3787,7 +3787,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
             static int items_next_id = 0;
             if (items_next_id == 0) { for (int n = 0; n < 1000; n++) { items.push_back(items_next_id++); } }
             static ExampleSelectionWithDeletion selection;
-            static bool request_deletion_from_menu = false; // Queue deletion triggered from context menu
+            static bool request_deletion_from_menu = false; // Queue deletion triggered from playableCharacterInfo menu
 
             ImGui::Text("Selection size: %d/%d", selection.Size, items.Size);
 
@@ -3908,7 +3908,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
                         if (widget_type == WidgetType_TreeNode && item_is_open)
                             ImGui::TreePop();
 
-                        // Right-click: context menu
+                        // Right-click: playableCharacterInfo menu
                         if (ImGui::BeginPopupContextItem())
                         {
                             ImGui::BeginDisabled(!use_deletion || selection.Size == 0);
@@ -4614,7 +4614,7 @@ static void ShowDemoWindowLayout()
         ImGui::Text("%.0f/%.0f", scroll_x, scroll_max_x);
         if (scroll_x_delta != 0.0f)
         {
-            // Demonstrate a trick: you can use Begin to set yourself in the context of another window
+            // Demonstrate a trick: you can use Begin to set yourself in the playableCharacterInfo of another window
             // (here we are already out of your child window)
             ImGui::BeginChild("scrolling");
             ImGui::SetScrollX(ImGui::GetScrollX() + scroll_x_delta);
@@ -5258,7 +5258,7 @@ static void EditTableSizingFlags(ImGuiTableFlags* p_flags)
 
 static void EditTableColumnsFlags(ImGuiTableColumnFlags* p_flags)
 {
-    ImGui::CheckboxFlags("_Disabled", p_flags, ImGuiTableColumnFlags_Disabled); ImGui::SameLine(); HelpMarker("Master disable flag (also hide from context menu)");
+    ImGui::CheckboxFlags("_Disabled", p_flags, ImGuiTableColumnFlags_Disabled); ImGui::SameLine(); HelpMarker("Master disable flag (also hide from playableCharacterInfo menu)");
     ImGui::CheckboxFlags("_DefaultHide", p_flags, ImGuiTableColumnFlags_DefaultHide);
     ImGui::CheckboxFlags("_DefaultSort", p_flags, ImGuiTableColumnFlags_DefaultSort);
     if (ImGui::CheckboxFlags("_WidthStretch", p_flags, ImGuiTableColumnFlags_WidthStretch))
@@ -5591,7 +5591,7 @@ static void ShowDemoWindowTables()
     {
         HelpMarker(
             "Click and drag column headers to reorder columns.\n\n"
-            "Right-click on a header to open a context menu.");
+            "Right-click on a header to open a playableCharacterInfo menu.");
         static ImGuiTableFlags flags = ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV;
         PushStyleCompact();
         ImGui::CheckboxFlags("ImGuiTableFlags_Resizable", &flags, ImGuiTableFlags_Resizable);
@@ -6601,7 +6601,7 @@ static void ShowDemoWindowTables()
             ImGui::TableSetupScrollFreeze(frozen_cols, frozen_rows);
 
             ImGui::TableAngledHeadersRow(); // Draw angled headers for all columns with the ImGuiTableColumnFlags_AngledHeader flag.
-            ImGui::TableHeadersRow();       // Draw remaining headers and allow access to context-menu and other functions.
+            ImGui::TableHeadersRow();       // Draw remaining headers and allow access to playableCharacterInfo-menu and other functions.
             for (int row = 0; row < rows_count; row++)
             {
                 ImGui::PushID(row);
@@ -6623,15 +6623,15 @@ static void ShowDemoWindowTables()
         ImGui::TreePop();
     }
 
-    // Demonstrate creating custom context menus inside columns,
-    // while playing it nice with context menus provided by TableHeadersRow()/TableHeader()
+    // Demonstrate creating custom playableCharacterInfo menus inside columns,
+    // while playing it nice with playableCharacterInfo menus provided by TableHeadersRow()/TableHeader()
     if (open_action != -1)
         ImGui::SetNextItemOpen(open_action != 0);
     IMGUI_DEMO_MARKER("Tables/Context menus");
     if (ImGui::TreeNode("Context menus"))
     {
         HelpMarker(
-            "By default, right-clicking over a TableHeadersRow()/TableHeader() line will open the default context-menu.\n"
+            "By default, right-clicking over a TableHeadersRow()/TableHeader() line will open the default playableCharacterInfo-menu.\n"
             "Using ImGuiTableFlags_ContextMenuInBody we also allow right-clicking over columns body.");
         static ImGuiTableFlags flags1 = ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_Borders | ImGuiTableFlags_ContextMenuInBody;
 
@@ -6640,8 +6640,8 @@ static void ShowDemoWindowTables()
         PopStyleCompact();
 
         // Context Menus: first example
-        // [1.1] Right-click on the TableHeadersRow() line to open the default table context menu.
-        // [1.2] Right-click in columns also open the default table context menu (if ImGuiTableFlags_ContextMenuInBody is set)
+        // [1.1] Right-click on the TableHeadersRow() line to open the default table playableCharacterInfo menu.
+        // [1.2] Right-click in columns also open the default table playableCharacterInfo menu (if ImGuiTableFlags_ContextMenuInBody is set)
         const int COLUMNS_COUNT = 3;
         if (ImGui::BeginTable("table_context_menu", COLUMNS_COUNT, flags1))
         {
@@ -6649,7 +6649,7 @@ static void ShowDemoWindowTables()
             ImGui::TableSetupColumn("Two");
             ImGui::TableSetupColumn("Three");
 
-            // [1.1]] Right-click on the TableHeadersRow() line to open the default table context menu.
+            // [1.1]] Right-click on the TableHeadersRow() line to open the default table playableCharacterInfo menu.
             ImGui::TableHeadersRow();
 
             // Submit dummy contents
@@ -6666,12 +6666,12 @@ static void ShowDemoWindowTables()
         }
 
         // Context Menus: second example
-        // [2.1] Right-click on the TableHeadersRow() line to open the default table context menu.
+        // [2.1] Right-click on the TableHeadersRow() line to open the default table playableCharacterInfo menu.
         // [2.2] Right-click on the ".." to open a custom popup
         // [2.3] Right-click in columns to open another custom popup
         HelpMarker(
-            "Demonstrate mixing table context menu (over header), item context button (over button) "
-            "and custom per-colunm context menu (over column body).");
+            "Demonstrate mixing table playableCharacterInfo menu (over header), item playableCharacterInfo button (over button) "
+            "and custom per-colunm playableCharacterInfo menu (over column body).");
         ImGuiTableFlags flags2 = ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_Borders;
         if (ImGui::BeginTable("table_context_menu_2", COLUMNS_COUNT, flags2))
         {
@@ -6679,7 +6679,7 @@ static void ShowDemoWindowTables()
             ImGui::TableSetupColumn("Two");
             ImGui::TableSetupColumn("Three");
 
-            // [2.1] Right-click on the TableHeadersRow() line to open the default table context menu.
+            // [2.1] Right-click on the TableHeadersRow() line to open the default table playableCharacterInfo menu.
             ImGui::TableHeadersRow();
             for (int row = 0; row < 4; row++)
             {
@@ -8457,7 +8457,7 @@ struct ExampleAppConsole
 
         // As a specific feature guaranteed by the library, after calling Begin() the last Item represent the title bar.
         // So e.g. IsItemHovered() will return true when hovering the title bar.
-        // Here we create a context menu only available from the title bar.
+        // Here we create a playableCharacterInfo menu only available from the title bar.
         if (ImGui::BeginPopupContextItem())
         {
             if (ImGui::MenuItem("Close Console"))
@@ -9311,7 +9311,7 @@ static void ShowExampleAppConstrainedResize(bool* p_open)
 //-----------------------------------------------------------------------------
 
 // Demonstrate creating a simple static window with no decoration
-// + a context-menu to choose which corner of the screen to use.
+// + a playableCharacterInfo-menu to choose which corner of the screen to use.
 static void ShowExampleAppSimpleOverlay(bool* p_open)
 {
     static int location = 0;
@@ -9600,8 +9600,8 @@ static void ShowExampleAppCustomRendering(bool* p_open)
             static bool adding_line = false;
 
             ImGui::Checkbox("Enable grid", &opt_enable_grid);
-            ImGui::Checkbox("Enable context menu", &opt_enable_context_menu);
-            ImGui::Text("Mouse Left: drag to add lines,\nMouse Right: drag to scroll, click for context menu.");
+            ImGui::Checkbox("Enable playableCharacterInfo menu", &opt_enable_context_menu);
+            ImGui::Text("Mouse Left: drag to add lines,\nMouse Right: drag to scroll, click for playableCharacterInfo menu.");
 
             // Typically you would use a BeginChild()/EndChild() pair to benefit from a clipping region + own scrolling.
             // Here we demonstrate that this can be replaced by simple offsetting + custom drawing + PushClipRect/PopClipRect() calls.
@@ -9648,7 +9648,7 @@ static void ShowExampleAppCustomRendering(bool* p_open)
                     adding_line = false;
             }
 
-            // Pan (we use a zero mouse threshold when there's no context menu)
+            // Pan (we use a zero mouse threshold when there's no playableCharacterInfo menu)
             // You may decide to make that threshold dynamic based on whether the mouse is hovering something etc.
             const float mouse_threshold_for_pan = opt_enable_context_menu ? -1.0f : 0.0f;
             if (is_active && ImGui::IsMouseDragging(ImGuiMouseButton_Right, mouse_threshold_for_pan))
@@ -9660,8 +9660,8 @@ static void ShowExampleAppCustomRendering(bool* p_open)
             // Context menu (under default mouse threshold)
             ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
             if (opt_enable_context_menu && drag_delta.x == 0.0f && drag_delta.y == 0.0f)
-                ImGui::OpenPopupOnItemClick("context", ImGuiPopupFlags_MouseButtonRight);
-            if (ImGui::BeginPopup("context"))
+                ImGui::OpenPopupOnItemClick("playableCharacterInfo", ImGuiPopupFlags_MouseButtonRight);
+            if (ImGui::BeginPopup("playableCharacterInfo"))
             {
                 if (adding_line)
                     points.resize(points.size() - 2);
@@ -9961,7 +9961,7 @@ struct ExampleAppDocuments
         ImGui::PopID();
     }
 
-    // Display context menu for the Document
+    // Display playableCharacterInfo menu for the Document
     void DisplayDocContextMenu(MyDocument* doc)
     {
         if (!ImGui::BeginPopupContextItem())
@@ -10320,7 +10320,7 @@ struct ExampleAssetsBrowser
     int             IconHitSpacing = 4;         // Increase hit-spacing if you want to make it possible to clear or box-select from gaps. Some spacing is required to able to amend with Shift+box-select. Value is small in Explorer.
     bool            StretchSpacing = true;
 
-    // State
+    // AnimationPhase
     ImVector<ExampleAsset> Items;               // Our items
     ExampleSelectionWithDeletion Selection;     // Our selection (ImGuiSelectionBasicStorage + helper funcs to handle deletion)
     ImGuiID         NextItemId = 0;             // Unique identifier when creating new items

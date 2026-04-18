@@ -1,38 +1,73 @@
 #pragma once
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
-#include "ResourceDataStructure.h"
 #include "TransformMatrix.h"
 #include "Transform.h"
 #include "Mesh/Mesh.h"
+#include "engine/3d/Primitive/PrimitiveBase.h"
+#include "engine/Base/SrvManager.h"
 
 #include <memory>
+#include <unordered_map>
+#include <string>
 
-class Ring {
-public:
-	Ring() = default;
-	~Ring() = default;
-	void Initialize(DirectXCommon* dxCommon);
-	void Update();
-	void Draw();
-	//void CreateRing(const uint32_t divide, const float outerRadius, const float innerRadius, const Vector3& center, const Vector4& color);
 
-private:
+namespace TakeC {
 
-	DirectXCommon* dxCommon_ = nullptr;
-	std::unique_ptr<PSO> pso_;
-	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
-	EulerTransform transform_;
+	//============================================================
+	// リングデータ構造体
+	//============================================================
 
-	//頂点リソース
-	std::unique_ptr<Mesh> mesh_ = nullptr;
-	//wvpResource
-	ComPtr<ID3D12Resource> wvpResource_ = nullptr;
-	TransformMatrix* TransformMatrixData_ = nullptr;
+	// Ring全体のデータ
+	struct RingData : public PrimitiveBaseData {
+		float outerRadius = 1.0f; // 外側の半径
+		float innerRadius = 0.01f; // 内側の半径
+		uint32_t subDivision = 32; // 分割数
+	};
 
-	//TransformMatrix
-	Matrix4x4 worldMatrix_;
-	Matrix4x4 WVPMatrix_;
-	Matrix4x4 WorldInverseTransposeMatrix_;
-};
+	//============================================================
+	//	Ring class
+	//============================================================
 
+	class Ring : public PrimitiveBase<RingData> {
+	public:
+
+		//データ型エイリアス
+		using DataType = RingData;
+
+		//========================================================
+		// functions
+		//========================================================
+
+		/// <summary>
+		/// コンストラクタ・デストラクタ
+		/// </summary>
+		Ring() = default;
+		~Ring() = default;
+
+		/// <summary>
+		/// リングデータの生成
+		/// </summary>
+		/// <returns>生成したハンドル</returns>
+		uint32_t Generate(float outerRadius, float innerRadius,uint32_t subDivision, const std::string& textureFilePath);
+
+
+	public:
+		/// 頂点データ作成
+		void CreateVertexData(RingData* ringData);
+
+	protected:
+
+		//========================================================================
+		// private functions
+		//========================================================================
+
+		
+		void EditPrimitiveData(RingData* data);
+
+	private:
+
+		// 定数
+		static constexpr uint32_t kVerticesPerSegment = 6;  // 1セグメントあたりの頂点数
+	};
+}

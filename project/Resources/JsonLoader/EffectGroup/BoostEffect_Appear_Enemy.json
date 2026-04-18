@@ -1,0 +1,66 @@
+{
+    "defaultScale": {
+        "x": 1.1699999570846558,
+        "y": 1.090000033378601,
+        "z": 1.1200000047683716
+    },
+    "effectName": "BoostEffect_Appear_Enemy",
+    "emitters": [
+        {
+            "autoStart": true,
+            "delayTime": 0.0,
+            "duration": 0.10000000149011612,
+            "emitCount": 10,
+            "emitterName": "NewEmitter_0",
+            "positionOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "presetFilePath": "BoostEffect_Appear_Enemy_1.json",
+            "rotationOffset": {
+                "x": -1.5,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "autoStart": true,
+            "delayTime": 0.0,
+            "duration": 0.10000000149011612,
+            "emitCount": 10,
+            "emitterName": "NewEmitter_1",
+            "positionOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "presetFilePath": "BoostEffect_Appear_Enemy_2.json",
+            "rotationOffset": {
+                "x": -1.5,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "autoStart": true,
+            "delayTime": 0.0,
+            "duration": 0.10000000149011612,
+            "emitCount": 10,
+            "emitterName": "NewEmitter_2",
+            "positionOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "presetFilePath": "BoostEffect_Appear_Enemy_3.json",
+            "rotationOffset": {
+                "x": -1.5,
+                "y": 0.0,
+                "z": 0.0
+            }
+        }
+    ],
+    "isLooping": false,
+    "totalDuration": 0.10000000149011612
+}

@@ -4,6 +4,9 @@
 #include "engine/base/imGuiManager.h"
 #include "engine/base/TakeCFrameWork.h"
 
+//====================================================================
+//			初期化
+//====================================================================
 void LevelObject::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
 	object3dCommon_ = object3dCommon;
@@ -16,8 +19,12 @@ void LevelObject::Initialize(Object3dCommon* object3dCommon, const std::string& 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 }
 
+//====================================================================
+//			コライダーの初期化(BoxCollider)
+//====================================================================
 void LevelObject::CollisionInitialize(const LevelData::BoxCollider& boxInfo) {
 	collider_ = std::make_unique<BoxCollider>();
+	collider_->SetOwner(this);
 	collider_->SetHalfSize(boxInfo.size);
 	collider_->Initialize(object3dCommon_->GetDirectXCommon(), object3d_.get());
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Level_Object)); // レベルオブジェクトの衝突レイヤーを設定
@@ -25,14 +32,21 @@ void LevelObject::CollisionInitialize(const LevelData::BoxCollider& boxInfo) {
 	collider_->SetColor({ 0.0f, 1.0f, 1.0f, 1.0f }); // 水色
 }
 
+//====================================================================
+//			コライダーの初期化(SphereCollider)
+//====================================================================
 void LevelObject::CollisionInitialize(const LevelData::SphereCollider& sphereInfo) {
 	collider_ = std::make_unique<SphereCollider>();
+	collider_->SetOwner(this);
 	collider_->SetRadius(sphereInfo.radius);
 	collider_->Initialize(object3dCommon_->GetDirectXCommon(), object3d_.get());
 	//水色に設定
 	collider_->SetColor({ 0.0f, 1.0f, 1.0f, 1.0f }); // 水色
 }
 
+//====================================================================
+//			更新処理
+//====================================================================
 void LevelObject::Update() {
 
 	if(isBlinking_) {
@@ -54,13 +68,14 @@ void LevelObject::Update() {
 
 	// Object3dの更新
 	object3d_->Update();
-	// アニメーションの更新
-	object3d_->AnimationUpdate();
 	// コライダーの更新
 	collider_->Update(object3d_.get());
 	
 }
 
+//====================================================================
+//			ImGuiの更新
+//====================================================================
 void LevelObject::UpdateImGui() {
 	// ImGuiの更新
 	std::string windowName = "LevelObject" + name_;
@@ -78,21 +93,35 @@ void LevelObject::UpdateImGui() {
 	}
 }
 
+//====================================================================
+//			描画処理
+//====================================================================
 void LevelObject::Draw() {
 
 	// Object3dの描画
 	object3d_->Draw();
 }
 
+void LevelObject::DrawShadow(const LightCameraInfo& lightCamera) {
+	// Object3dの影描画
+	object3d_->DrawShadow(lightCamera);
+}
+
+//====================================================================
+//			コライダーの描画
+//====================================================================
 void LevelObject::DrawCollider() {
-#ifdef _DEBUG
-	collider_->DrawCollider();
+#if defined(_DEBUG) || defined(_DEVELOP)
+	//collider_->DrawCollider();
 #endif
 }
 
+//====================================================================
+//			衝突時の処理
+//====================================================================
 void LevelObject::OnCollisionAction(GameCharacter* other) {
 
-
+	// 弾との衝突時に点滅を開始
 	if(other->GetCharacterType() == CharacterType::PLAYER_BULLET ||
 	   other->GetCharacterType() == CharacterType::ENEMY_BULLET) {
 		isBlinking_ = true; // 点滅開始
@@ -100,6 +129,19 @@ void LevelObject::OnCollisionAction(GameCharacter* other) {
 
 	if(other->GetCharacterType() == CharacterType::PLAYER) {
 		// ここにレベルオブジェクトとプレイヤーまたは敵の衝突時の処理を追加
-		collider_->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f });
+		
+		//衝突面に応じて処理を分ける
+		if(other->GetCollider()->GetSurfaceType() == SurfaceType::TOP) {
+			//地面に接触した場合
+			collider_->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f }); // 緑色に変更
+		} else if(other->GetCollider()->GetSurfaceType() == SurfaceType::WALL) {
+			//壁に接触した場合]
+			collider_->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f }); // 赤色に変更
+		} else if(other->GetCollider()->GetSurfaceType() == SurfaceType::BOTTOM) {
+			//天井に接触した場合
+			collider_->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f }); // 青色に変更
+		} else {
+			collider_->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f }); // 黄色に変更
+		}
 	} 
 }

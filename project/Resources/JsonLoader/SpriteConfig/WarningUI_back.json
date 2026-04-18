@@ -1,0 +1,25 @@
+{
+    "anchorPoint": {
+        "x": 0.5,
+        "y": 0.5
+    },
+    "name": "WarningUI_back.json",
+    "position": {
+        "x": 512.0,
+        "y": 460.0
+    },
+    "rotation": 3.140000104904175,
+    "size": {
+        "x": 300.0,
+        "y": 40.0
+    },
+    "textureFilePath": "UI/WarningUI.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 100.0
+    },
+    "textureSize": {
+        "x": 300.0,
+        "y": 40.0
+    }
+}

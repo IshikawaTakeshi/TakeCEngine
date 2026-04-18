@@ -135,9 +135,9 @@ struct ImGui_ImplWin32_Data
 };
 
 // Backend data stored in io.BackendPlatformUserData to allow support for multiple Dear ImGui contexts
-// It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear ImGui context + multiple windows) instead of multiple Dear ImGui contexts.
-// FIXME: multi-context support is not well tested and probably dysfunctional in this backend.
-// FIXME: some shared resources (mouse cursor shape, gamepad) are mishandled when using multi-context.
+// It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear ImGui playableCharacterInfo + multiple windows) instead of multiple Dear ImGui contexts.
+// FIXME: multi-playableCharacterInfo support is not well tested and probably dysfunctional in this backend.
+// FIXME: some shared resources (mouse cursor shape, gamepad) are mishandled when using multi-playableCharacterInfo.
 static ImGui_ImplWin32_Data* ImGui_ImplWin32_GetBackendData()
 {
     return ImGui::GetCurrentContext() ? (ImGui_ImplWin32_Data*)ImGui::GetIO().BackendPlatformUserData : nullptr;
@@ -662,7 +662,7 @@ static ImGuiMouseSource GetMouseSourceFromMessageExtraInfo()
 IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     // Most backends don't have silent checks like this one, but we need it because WndProc are called early in CreateWindow().
-    // We silently allow both context or just only backend data to be nullptr.
+    // We silently allow both playableCharacterInfo or just only backend data to be nullptr.
     ImGui_ImplWin32_Data* bd = ImGui_ImplWin32_GetBackendData();
     if (bd == nullptr)
         return 0;
@@ -1070,7 +1070,7 @@ static void ImGui_ImplWin32_CreateWindow(ImGuiViewport* viewport)
     viewport->PlatformRequestResize = false;
     viewport->PlatformHandle = viewport->PlatformHandleRaw = vd->Hwnd;
 
-    // Secondary viewports store their imgui context
+    // Secondary viewports store their imgui playableCharacterInfo
     ::SetPropA(vd->Hwnd, "IMGUI_CONTEXT", ImGui::GetCurrentContext());
 }
 
@@ -1285,7 +1285,7 @@ static void ImGui_ImplWin32_OnChangedViewport(ImGuiViewport* viewport)
 
 static LRESULT CALLBACK ImGui_ImplWin32_WndProcHandler_PlatformWindow(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    // Allow secondary viewport WndProc to be called regardless of current context
+    // Allow secondary viewport WndProc to be called regardless of current playableCharacterInfo
     ImGuiContext* hwnd_ctx = (ImGuiContext*)::GetPropA(hWnd, "IMGUI_CONTEXT");
     ImGuiContext* prev_ctx = ImGui::GetCurrentContext();
     if (hwnd_ctx != prev_ctx && hwnd_ctx != NULL)

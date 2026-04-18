@@ -3,7 +3,12 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
-void GrayScale::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
+using namespace TakeC;
+
+//=============================================================================
+// 初期化
+//=============================================================================
+void GrayScale::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx,ComPtr<ID3D12Resource> outputResource) {
 
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx,outputResource);
@@ -21,8 +26,13 @@ void GrayScale::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, cons
 	grayScaleInfoData_->isActive = false;
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void GrayScale::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
+
+	//GrayScaleの設定
 	if(ImGui::TreeNode("GrayScale")){
 		ImGui::Text("GrayScaleType");
 		ImGui::SliderInt("GrayScaleType", &grayScaleInfoData_->grayScaleType, 0, 2);
@@ -34,10 +44,13 @@ void GrayScale::UpdateImGui() {
 #endif
 }
 
-void GrayScale::DisPatch() {
+//=============================================================================
+// Dispatch
+//=============================================================================
+void GrayScale::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		outputResource_.Get());
@@ -56,8 +69,32 @@ void GrayScale::DisPatch() {
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 8, WinApp::kScreenHeight / 8, 1);
 
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());
+}
+
+void GrayScale::ApplySpecificParams(const nlohmann::json& params) {
+
+
+	// パラメータが存在しない場合は何もしない
+	if (params.is_null() || params.empty()) {
+		return;
+	}
+
+	// JSONからBloomEffectInfoを取得して適用
+	auto param = params.get<GrayScaleInfo>();
+	grayScaleInfoData_->grayScaleType = param.grayScaleType;
+	grayScaleInfoData_->isActive = param.isActive;
+
+}
+
+nlohmann::json GrayScale::GetSpecificParams() const {
+	
+	GrayScaleInfo info{};
+	info.grayScaleType = grayScaleInfoData_->grayScaleType;
+	info.isActive = grayScaleInfoData_->isActive;
+
+	return info;
 }

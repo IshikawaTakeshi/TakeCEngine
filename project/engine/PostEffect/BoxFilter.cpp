@@ -3,7 +3,12 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
-void BoxFilter::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
+using namespace TakeC;
+
+//=============================================================================
+// 初期化
+//=============================================================================
+void BoxFilter::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx,outputResource);
@@ -13,23 +18,30 @@ void BoxFilter::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, cons
 	inputResource_->SetName(L"BoxFilter::inputResource_");
 	outputResource_->SetName(L"BoxFilter::outputResource_");
 
+	//SRVの生成
 	filterInfoResource_ = dxCommon->CreateBufferResource(dxCommon->GetDevice(), sizeof(BoxFilterInfo));
 	filterInfoResource_->SetName(L"BoxFilter::filterInfoResource_");
 	filterInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&filterInfoData_));
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void BoxFilter::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::Text("BoxFilter");
 	ImGui::SameLine();
 	ImGui::Checkbox("##BoxFilter::isActive", &filterInfoData_->isActive);
 #endif // _DEBUG
 }
 
-void BoxFilter::DisPatch() {
+//=============================================================================
+// Dispatch
+//=============================================================================
+void BoxFilter::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		outputResource_.Get());
@@ -46,8 +58,28 @@ void BoxFilter::DisPatch() {
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 8, WinApp::kScreenHeight / 8, 1);
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());
+}
+
+void BoxFilter::ApplySpecificParams(const nlohmann::json& params) {
+
+	// パラメータが存在しない場合は何もしない
+	if (params.is_null() || params.empty()) {
+		return;
+	}
+
+	// JSONからBloomEffectInfoを取得して適用
+	auto param = params.get<BoxFilterInfo>();
+	filterInfoData_->isActive = param.isActive;
+}
+
+nlohmann::json BoxFilter::GetSpecificParams() const {
+	
+	BoxFilterInfo param;
+	param.isActive = filterInfoData_->isActive;
+
+	return param;
 }

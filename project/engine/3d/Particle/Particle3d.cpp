@@ -10,15 +10,8 @@
 #include "3d/Model.h"
 #include "camera/CameraManager.h"
 #include "ParticleCommon.h"
-#include "Input.h"
+#include "Input/Input.h"
 #include <numbers>
-
-
-Particle3d::~Particle3d() {
-	model_ = nullptr;
-	particleResource_.Reset();
-	perViewResource_.Reset();
-}
 
 //=============================================================================
 // 初期化
@@ -30,11 +23,11 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 
 	//instancing用のResource生成
 	particleResource_ =
-		DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
+		TakeC::DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance_);
 	particleResource_->SetName(L"Particle3d::particleResource_");
 
 	//perViewResource生成
-	perViewResource_ = DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
+	perViewResource_ = TakeC::DirectXCommon::CreateBufferResource(particleCommon_->GetDirectXCommon()->GetDevice(), sizeof(PerView));
 	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));
 	perViewResource_->SetName(L"Particle3d::perViewResource_");
 
@@ -70,8 +63,6 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 	particlePreset_.textureFilePath = filePath;
 	//モデルの読み込み
 	SetModel(filePath);
-	//TakeCFrameWork::GetPrimitiveDrawer()->CreateRingVertexData();
-
 }
 
 //=============================================================================
@@ -91,7 +82,7 @@ void Particle3d::Update() {
 		if (numInstance_ < kNumMaxInstance_) {
 
 			// 寿命が来たら削除  
-			if ((*particleIterator).lifeTime_ <= (*particleIterator).currentTime_) {
+			if ((*particleIterator).lifeTimer_.IsFinished()) {
 				particleIterator = particles_.erase(particleIterator);
 				continue;
 			}
@@ -99,7 +90,7 @@ void Particle3d::Update() {
 			// particle1つの位置更新  
 			UpdateMovement(particleIterator);
 			//alphaの計算
-			float alpha = 1.0f - ((*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			float alpha = 1.0f - ((*particleIterator).lifeTimer_.GetProgress());
 
 			particleData_[numInstance_].color = {
 				(*particleIterator).color_.x,
@@ -111,12 +102,12 @@ void Particle3d::Update() {
 			particleData_[numInstance_].rotate = (*particleIterator).transforms_.rotate;
 			particleData_[numInstance_].translate = (*particleIterator).transforms_.translate;
 			particleData_[numInstance_].velocity = (*particleIterator).velocity_;
-			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTime_;
-			particleData_[numInstance_].currentTime = (*particleIterator).currentTime_;
+			particleData_[numInstance_].lifeTime = (*particleIterator).lifeTimer_.GetDuration();
+			particleData_[numInstance_].currentTime = (*particleIterator).lifeTimer_.GetProgress() * (*particleIterator).lifeTimer_.GetDuration();
 
 			// データをGPUに転送  
-			perViewData_->viewProjection = CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix();
-			perViewData_->billboardMatrix = CameraManager::GetInstance()->GetActiveCamera()->GetRotationMatrix();
+			perViewData_->viewProjection = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
+			perViewData_->billboardMatrix = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetRotationMatrix();
 
 			++numInstance_; // 次のインスタンスに進める  
 		}
@@ -129,13 +120,12 @@ void Particle3d::Update() {
 //=============================================================================
 
 void Particle3d::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	ParticleAttributes& attributes = particlePreset_.attribute;
 
 	ImGui::Text("Particle3d");
 	ImGui::Text("ParticleCount:%d", numInstance_);
-	particleCommon_->GetGraphicPSO()->UpdateImGui();
 	ImGui::Separator();
 	ImGui::DragFloat3("Scale", &attributes.scale.x, 0.01f);
 	ImGui::DragFloat2("PositionRange", &attributes.positionRange.min, 0.01f);
@@ -167,18 +157,18 @@ void Particle3d::Draw() {
 // パーティクルの生成
 //=============================================================================
 
-Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
+Particle Particle3d::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate,const Vector3& direction) {
 
-	return BaseParticleGroup::MakeNewParticle(randomEngine, translate);
+	return BaseParticleGroup::MakeNewParticle(randomEngine,direction, translate);
 }
 
 //=============================================================================
 // パーティクルの発生
 //=============================================================================
 
-std::list<Particle> Particle3d::Emit(const Vector3& emitterPos, uint32_t particleCount) {
+std::list<Particle> Particle3d::Emit(const Vector3& emitterPos,const Vector3& direction, uint32_t particleCount) {
 
-	return BaseParticleGroup::Emit(emitterPos, particleCount);
+	return BaseParticleGroup::Emit(emitterPos,direction, particleCount);
 }
 
 //=============================================================================
@@ -194,15 +184,15 @@ void Particle3d::SpliceParticles(std::list<Particle> particles) {
 //=============================================================================
 
 void Particle3d::SetModel(const std::string& filePath) {
-	model_ = ModelManager::GetInstance()->FindModel(filePath);
+	model_ = TakeC::ModelManager::GetInstance().FindModel(filePath);
 }
 
 void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) {
 	//particle1つの位置更新
 	ParticleAttributes& attributes = particlePreset_.attribute;
 
-	if (attributes.isTraslate_) {
-		if (attributes.enableFollowEmitter_) {
+	if (attributes.isTranslate) {
+		if (attributes.enableFollowEmitter) {
 			//エミッターに追従する場合
 			(*particleIterator).transforms_.translate = emitterPos_;
 		} else {
@@ -211,16 +201,16 @@ void Particle3d::UpdateMovement(std::list<Particle>::iterator particleIterator) 
 		}
 	}
 
-	if (attributes.scaleSetting_) {
+	if (attributes.scaleSetting) {
 		//スケールの更新
 		(*particleIterator).transforms_.scale.x = Easing::Lerp(
 			attributes.scaleRange.min,
 			attributes.scaleRange.max,
-			(*particleIterator).currentTime_ / (*particleIterator).lifeTime_);
+			(*particleIterator).lifeTimer_.GetProgress());
 
 		(*particleIterator).transforms_.scale.y = (*particleIterator).transforms_.scale.x;
 		(*particleIterator).transforms_.scale.z = (*particleIterator).transforms_.scale.x;
 	}
-
-	(*particleIterator).currentTime_ += kDeltaTime_; //経過時間の更新
+	//経過時間の更新
+	(*particleIterator).lifeTimer_.Update();
 }

@@ -1,24 +1,33 @@
 #pragma once
-#include "DirectXCommon.h"
-#include "ResourceDataStructure.h"
-#include "TransformMatrix.h"
-#include "Model.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/ComPtrAliasTemplates.h"
+#include "engine/math/TransformMatrix.h"
+#include "engine/3d/Model.h"
 
+//前方宣言
 class Camera;
 class PSO;
+
+//===========================================================================
+// SkyBox class
+//===========================================================================
 class SkyBox {
 public:
 
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+	//=======================================================================
+	// functions
+	//=======================================================================
 
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	SkyBox() = default;
-	~SkyBox();
+	~SkyBox() = default;
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* directXCommon,const std::string& filename);
+	void Initialize(TakeC::DirectXCommon* directXCommon,const std::string& texturefilePath);
 
 	/// <summary>
 	/// 更新処理
@@ -26,28 +35,34 @@ public:
 	void Update();
 
 	/// <summary>
+	/// ImGui更新処理
+	/// </summary>
+	void UpdateImGui();
+
+	/// <summary>
 	/// 描画処理
 	/// </summary>
 	void Draw();
 
-	void SetMaterialColor(const Vector4& color) { model_->GetMesh()->GetMaterial()->SetMaterialColor(color); }
+	void SetMaterialColor(const Vector4& color);
 
 private: // privateメンバ変数
 
 	//DirectXCommon
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
 	//PSO
 	std::unique_ptr<PSO> pso_ = nullptr;
 	//RootSignature
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 
-	//モデル
-	Model* model_ = nullptr;
 
 	//TransformationMatrix用の頂点リソース
 	ComPtr<ID3D12Resource> wvpResource_;
 	//TransformationMatrix用の頂点データ
 	TransformMatrix* TransformMatrixData_ = nullptr;
+
+	//プリミティブのハンドル
+	uint32_t primitiveHandle_ = 0;
 
 	//Transform
 	EulerTransform transform_{};
@@ -58,4 +73,3 @@ private: // privateメンバ変数
 	//Camera
 	Camera* camera_ = nullptr;
 };
-

@@ -1,4 +1,4 @@
-#include "WireFrame/WireFrame.hlsli"
+#include "../WireFrame/WireFrame.hlsli"
 
 struct PixelShaderOutPut {
 	float4 color : SV_TARGET0;

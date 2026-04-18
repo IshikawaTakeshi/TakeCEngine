@@ -3,7 +3,12 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
-void LuminanceBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, const std::wstring& CSFilePath,
+using namespace TakeC;
+
+//=============================================================================
+// 初期化
+//=============================================================================
+void LuminanceBasedOutline::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager, const std::wstring& CSFilePath,
 	ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx, outputResource);
@@ -23,9 +28,14 @@ void LuminanceBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvM
 	outlineInfoData_->color = { 1.0f, 1.0f, 1.0f, 1.0f }; // アウトラインの色
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void LuminanceBasedOutline::UpdateImGui() {
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
+
+	// Info表示
 	if (ImGui::TreeNode("LuminanceBasedOutline")) {
 		ImGui::SliderFloat("weight", &outlineInfoData_->weight, 0.0f, 10.0f);
 		ImGui::ColorEdit4("Color", &outlineInfoData_->color.x);
@@ -38,14 +48,13 @@ void LuminanceBasedOutline::UpdateImGui() {
 #endif // _DEBUG
 }
 
-void LuminanceBasedOutline::DisPatch() {
-
-	if (!outlineInfoData_->isActive) {
-		return; // アウトラインが無効な場合は処理をスキップ
-	}
+//=============================================================================
+// Dispatch
+//=============================================================================
+void LuminanceBasedOutline::Dispatch() {
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		outputResource_.Get());
@@ -63,8 +72,31 @@ void LuminanceBasedOutline::DisPatch() {
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 8, WinApp::kScreenHeight / 8, 1);
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());
+}
+
+void LuminanceBasedOutline::ApplySpecificParams(const nlohmann::json& params) {
+
+	// パラメータが存在しない場合は何もしない
+	if (params.is_null() || params.empty()) {
+		return;
+	}
+
+	// JSONからBloomEffectInfoを取得して適用
+	auto param = params.get<LuminanceBasedOutlineInfo>();
+	outlineInfoData_->color = param.color;
+	outlineInfoData_->weight = param.weight;
+	outlineInfoData_->isActive = param.isActive;
+}
+
+nlohmann::json LuminanceBasedOutline::GetSpecificParams() const {
+	
+	LuminanceBasedOutlineInfo param;
+	param.color = outlineInfoData_->color;
+	param.weight = outlineInfoData_->weight;
+	param.isActive = outlineInfoData_->isActive;
+	return param;
 }

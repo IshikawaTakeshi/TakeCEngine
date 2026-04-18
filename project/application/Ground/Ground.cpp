@@ -1,6 +1,5 @@
-#define NOMINMAX
 #include "Ground.h"
-#include "Input.h"
+#include "Input/Input.h"
 #include "MatrixMath.h"
 #include "Object3dCommon.h"
 #include "Vector3Math.h"
@@ -15,15 +14,13 @@
 #include <iostream>
 #include <memory>
 #include <numbers>
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 #include "ImGuiManager.h"
 #endif // DEBUG
 
-Ground::~Ground() {
-	object3dCommon_ = nullptr;
-	model_ = nullptr;
-}
-
+//===================================================================================
+//　初期化
+//===================================================================================
 void Ground::Initialize(Object3dCommon* object3dCommon, const std::string& filePath) {
 
 
@@ -35,26 +32,36 @@ void Ground::Initialize(Object3dCommon* object3dCommon, const std::string& fileP
 	model_->GetMesh()->GetMaterial()->SetEnvCoefficient(0.0f);
 }
 
+//===================================================================================
+//　更新
+//===================================================================================
 void Ground::Update() {
 
-	//
 	Object3d::Update();
-
 	ImGuiDebug();
 }
 
+//===================================================================================
+//　描画
+//===================================================================================
 void Ground::Draw() {
 
 	// モデル描画
 	Object3d::Draw();
 }
 
+//===================================================================================
+//　グリッド地面描画
+//===================================================================================
 void Ground::DrawGridGround() {
 	TakeCFrameWork::GetWireFrame()->DrawGridGround(transform_.translate, { gridGroundSize_, 0.0f, gridGroundSize_ }, 100);
 }
 
+//===================================================================================
+//　ImGuiデバッグ
+//===================================================================================
 void Ground::ImGuiDebug() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	ImGui::Begin("Ground");
 

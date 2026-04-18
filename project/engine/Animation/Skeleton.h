@@ -1,14 +1,15 @@
 #pragma once
-#include "ResourceDataStructure.h"
-#include "Transform.h"
-#include "Matrix4x4.h"
-#include "Animation/Animator.h"
+#include "engine/math/Transform.h"
+#include "engine/math/Matrix4x4.h"
+#include "engine/3d/ModelData.h"
+#include "engine/Animation/Animator.h"
 #include <string>
 #include <vector>
 #include <cstdint>
 #include <optional>
 #include <map>
 
+//jointの構造体
 struct Joint {
 	QuaternionTransform transform; 
 	Matrix4x4 localMatrix;
@@ -19,18 +20,35 @@ struct Joint {
 	std::optional<uint32_t> parent;   //親Jointのインデックス
 };
 
+//==============================================================
+// Skeletonクラス
+//==============================================================
 class Skeleton {
 public:
+
+	//==========================================================
+	// functions
+	//==========================================================
 
 	/// <summary>
 	/// Skeletonの作成
 	/// </summary>
 	void Create(const Node& node);
 
+	/// <summary>
+	/// スケルトンの更新
+	/// </summary>
 	void Update();
 
+	/// <summary>
+	/// ImGui更新
+	/// </summary>
 	void UpdateImGui();
 
+	/// <summary>
+	/// スケルトンの描画
+	/// </summary>
+	/// <param name="worldMatrix"></param>
 	void Draw(const Matrix4x4& worldMatrix);
 
 	/// <summary>
@@ -38,20 +56,35 @@ public:
 	/// </summary>
 	void ApplyAnimation(Animation* animation,float animationTime);
 
+	/// <summary>
+	/// ブレンドアニメーションの適用（クロスフェード）
+	/// </summary>
+	/// <param name="from">遷移元アニメーション</param>
+	/// <param name="tFrom">遷移元の再生時間</param>
+	/// <param name="to">遷移先アニメーション（nullptr可）</param>
+	/// <param name="tTo">遷移先の再生時間</param>
+	/// <param name="blend">ブレンド比率（0=from のみ、1=to のみ）</param>
+	void ApplyBlendedAnimation(Animation* from, float tFrom, Animation* to, float tTo, float blend);
 
-public: //getter
-	
+
+	//=====================================================
+	// accessors
+	//=====================================================
+
+	//----- getter ---------------
+
+	//スケルトンのRootJointのインデックスを取得
 	const int32_t GetRoot() const { return root; }
-
+	//ジョイントのリストを取得
 	const std::vector<Joint>& GetJoints() { return joints; }
-
+	//ジョイント名からインデックスのマップを取得
 	const std::map<std::string, int32_t>& GetJointMap() { return jointMap; }
 
 	// ジョイント名から値を取得
 	std::optional<Joint> GetJointByName(const std::string& name) const;
-
+	// ジョイント名からワールド行列を取得
 	std::optional<Matrix4x4> GetJointWorldMatrix(const std::string& jointName, const Matrix4x4& characterWorldMatrix) const;
-
+	// ジョイント名からワールド位置を取得
 	std::optional<Vector3> GetJointPosition(const std::string& jointName, const Matrix4x4& modelWorldMatrix) const;
 
 private:

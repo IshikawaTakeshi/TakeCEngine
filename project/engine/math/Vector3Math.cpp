@@ -1,4 +1,6 @@
 #include "Vector3Math.h"
+#include "engine/Math/MathEnv.h"
+#include "engine/Math/Quaternion.h"
 #include <cmath>
 
 /////////////////////////////////////////////////////////////////
@@ -73,6 +75,13 @@ float Vector3Math::Length(const Vector3& v) {
 	return result;
 }
 
+//長さの二乗
+float Vector3Math::LengthSq(const Vector3& v) {
+	float result;
+	result = (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
+	return result;
+}
+
 //正規化
 Vector3 Vector3Math::Normalize(const Vector3& v) {
 	Vector3 result;
@@ -81,4 +90,70 @@ Vector3 Vector3Math::Normalize(const Vector3& v) {
 	result.y = v.y / length;
 	result.z = v.z / length;
 	return result;
+}
+
+Vector3 Vector3Math::ApplyYawPitch(const Vector3& baseDir, float yawDeg, float pitchDeg) {
+	// 必要なら degreeToRadian を使う
+	float yaw   = degreeToRadian(yawDeg);
+	float pitch = degreeToRadian(pitchDeg);
+
+	// ヨー回転: Y軸まわり
+	float cosYaw = std::cos(yaw);
+	float sinYaw = std::sin(yaw);
+	Vector3 dirYaw = {
+		baseDir.x * cosYaw - baseDir.z * sinYaw,
+		baseDir.y,
+		baseDir.x * sinYaw + baseDir.z * cosYaw
+	};
+
+	// ピッチ回転: X軸まわり
+	float cosPitch = std::cos(pitch);
+	float sinPitch = std::sin(pitch);
+	Vector3 dirYawPitch = {
+		dirYaw.x,
+		dirYaw.y * cosPitch - dirYaw.z * sinPitch,
+		dirYaw.y * sinPitch + dirYaw.z * cosPitch
+	};
+
+	return dirYawPitch;
+}
+
+//ベクトルから回転を求める
+Vector3 Vector3Math::RotationFromDirection(const Vector3& direction) {
+	
+	// ベクトルを正規化
+	Vector3 dirNorm = Normalize(direction);
+	// ピッチ（X軸回りの回転）を計算
+	float pitch = std::atan2(-dirNorm.y, std::sqrt(dirNorm.x * dirNorm.x + dirNorm.z * dirNorm.z));
+	// ヨー（Y軸回りの回転）を計算
+	float yaw = std::atan2(dirNorm.x, dirNorm.z);
+	// ロールは0とする
+	float roll = 0.0f;
+	// ラジアンから度に変換して返す
+	return Vector3{
+		pitch,
+		yaw,
+		roll
+	};
+}
+
+Quaternion Vector3Math::ToQuaternion(const Vector3& eulerAngles) {
+	
+	// オイラー角をラジアンに変換
+	float yaw   = degreeToRadian(eulerAngles.y);
+	float pitch = degreeToRadian(eulerAngles.x);
+	float roll  = degreeToRadian(eulerAngles.z);
+	// 各軸の半角のサインとコサインを計算
+	float cy = cosf(yaw * 0.5f);
+	float sy = sinf(yaw * 0.5f);
+	float cp = cosf(pitch * 0.5f);
+	float sp = sinf(pitch * 0.5f);
+	float cr = cosf(roll * 0.5f);
+	float sr = sinf(roll * 0.5f);
+	Quaternion q;
+	q.w = cr * cp * cy + sr * sp * sy;
+	q.x = sr * cp * cy - cr * sp * sy;
+	q.y = cr * sp * cy + sr * cp * sy;
+	q.z = cr * cp * sy - sr * sp * cy;
+	return q;
 }

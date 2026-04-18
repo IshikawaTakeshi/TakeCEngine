@@ -1,32 +1,25 @@
 #pragma once
 #include "Weapon/Bullet/Bullet.h"
+#include "Weapon/Bullet/ObjectPool.h"
 #include <cstdint>
 #include <vector>
 #include <memory>
 
-class BulletPool {
+//============================================================================
+// BulletPool class
+//============================================================================
+class BulletPool : public ObjectPool<Bullet> {
 public:
 
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	BulletPool() = default;
 	~BulletPool() = default;
 
-	void Initialize(size_t size);
+protected:
 
-	void Finalize();
+	//型ごとの初期化処理
+	void OnInitializeObject(Bullet& object,const std::string& modelFilePath,const BulletEffectConfig& effectConfig) override;
 
-	Bullet* GetBullet();
-
-	//void ReleaseInstance(Bullet* instance);
-
-	void UpdateAllBullet();
-
-	void DrawAllBullet();
-
-	void DrawAllCollider();
-
-	std::vector<Bullet*> GetPool();
-
-private:
-
-	std::vector<std::unique_ptr<Bullet>> pool_;
 };

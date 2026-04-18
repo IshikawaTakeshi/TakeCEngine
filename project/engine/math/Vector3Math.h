@@ -1,6 +1,10 @@
 #pragma once
 #include "Vector3.h"
 
+struct Quaternion;
+//============================================================================
+// Vector3Math namespace
+//============================================================================
 namespace Vector3Math {
 
 	//加算
@@ -27,6 +31,15 @@ namespace Vector3Math {
 	//長さ(ノルム)
 	float Length(const Vector3& v);
 
+	//長さの二乗
+	float LengthSq(const Vector3& v);
+
 	//正規化
 	Vector3 Normalize(const Vector3& v);
+
+	Vector3 ApplyYawPitch(const Vector3& baseDir, float yawDeg, float pitchDeg);
+	//ベクトルから回転を求める
+	Vector3 RotationFromDirection(const Vector3& direction);
+
+	Quaternion ToQuaternion(const Vector3& eulerAngles);
 };

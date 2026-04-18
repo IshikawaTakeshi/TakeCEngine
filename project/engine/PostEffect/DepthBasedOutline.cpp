@@ -4,7 +4,12 @@
 #include "engine/camera/CameraManager.h"
 #include <cassert>
 
-void DepthBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,
+using namespace TakeC;
+
+//=============================================================================
+// 初期化
+//=============================================================================
+void DepthBasedOutline::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager,
 	const std::wstring& CSFilePath, ComPtr<ID3D12Resource> inputResource, uint32_t inputSrvIdx, ComPtr<ID3D12Resource> outputResource) {
 
 	PostEffect::Initialize(dxCommon, srvManager, CSFilePath, inputResource, inputSrvIdx, outputResource);
@@ -16,26 +21,31 @@ void DepthBasedOutline::Initialize(DirectXCommon* dxCommon, SrvManager* srvManag
 	inputResource_->SetName(L"DepthBasedOutline::InputResource");
 	outputResource_->SetName(L"DepthBasedOutline::_OutputResource");
 
-	//depthテクスチャリソースを取得
-	depthTextureSrvIndex_ = srvManager_->Allocate();
-	srvManager_->CreateSRVforDepthTexture(dxCommon_->GetDepthStencilResource().Get(), depthTextureSrvIndex_);
-
 	//アウトライン情報のリソースを作成
 	outlineInfoResource_ = dxCommon->CreateBufferResource(dxCommon->GetDevice(), sizeof(DepthBasedOutlineInfo));
 	outlineInfoResource_->SetName(L"DepthBasedOutline::InfoResource");
 	outlineInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&outlineInfoData_));
 
-	outlineInfoData_->weight = 0.0f; // 初期値の設定
+	outlineInfoData_->weight = 0.1f;                           // 初期値の設定
 	outlineInfoData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f); // 初期色の設定
-	outlineInfoData_->isActive = true; // アウトラインを有効にする
+	outlineInfoData_->isActive = true;                         // アウトラインを有効にする
+	outlineInfoData_->distantSensitivity = 0.0f;               //遠方オブジェクトの感度調整係数
+	outlineInfoData_->distantStart = 200.0f;                   //遠方補正を始めるviewZ
+	outlineInfoData_->distantEnd = 2200.0f;                    //補正を最大にするviewZ
 }
 
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
 void DepthBasedOutline::UpdateImGui() {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_DEVELOP)
 
 	if (ImGui::TreeNode("DepthBasedOutline")) {
 		ImGui::SliderFloat("weight", &outlineInfoData_->weight, 0.0f, 10.0f);
 		ImGui::ColorEdit4("Color", &outlineInfoData_->color.x);
+		ImGui::SliderFloat("distantSensitivity", &outlineInfoData_->distantSensitivity, 0.0f, 1.0f);
+		ImGui::SliderFloat("distantStart", &outlineInfoData_->distantStart, 0.0f, 500.0f);
+		ImGui::SliderFloat("distantEnd", &outlineInfoData_->distantEnd, 0.0f, 5000.0f);
 		ImGui::TreePop();
 	}
 	ImGui::SameLine();
@@ -44,17 +54,24 @@ void DepthBasedOutline::UpdateImGui() {
 
 }
 
-void DepthBasedOutline::DisPatch() {
+//=============================================================================
+// Dispatch
+//=============================================================================
+void DepthBasedOutline::Dispatch() {
 
-	if(!outlineInfoData_->isActive) {
-		return; // アウトラインが無効な場合は処理をスキップ
-	}
-
+	//outputTexture
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		outputResource_.Get());
+	//depthTexture
+	//DEPTH_WRITE >> NON_PIXEL_SHADER_RESOURCE
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+		depthTextureResource_.Get());
+
 
 	//Computeパイプラインのセット
 	dxCommon_->GetCommandList()->SetComputeRootSignature(rootSignature_.Get());
@@ -72,14 +89,57 @@ void DepthBasedOutline::DisPatch() {
 	//cameraInfo
 	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(
 		computePSO_->GetComputeBindResourceIndex("gCameraInfo"),
-		CameraManager::GetInstance()->GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
+		CameraManager::GetInstance().GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
 
 	//Dispatch
 	dxCommon_->GetCommandList()->Dispatch(WinApp::kScreenWidth / 8, WinApp::kScreenHeight / 8, 1);
 
+
+	//outputTexure
 	//UNORDERED_ACCESS >> NON_PIXEL_SHADER_RESOURCE
-	ResourceBarrier::GetInstance()->Transition(
+	ResourceBarrier::GetInstance().Transition(
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
 		outputResource_.Get());
+	//depthTexture
+	// NON_PIXEL_SHADER_RESOURCE >> DEPTH_WRITE
+	ResourceBarrier::GetInstance().Transition(
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		depthTextureResource_.Get());
+}
+
+void DepthBasedOutline::ApplySpecificParams(const nlohmann::json& params) {
+
+	// パラメータが存在しない場合は何もしない
+	if (params.is_null() || params.empty()) {
+		return;
+	}
+
+	// JSONからBloomEffectInfoを取得して適用
+	auto param = params.get<DepthBasedOutlineInfo>();
+	
+	outlineInfoData_->color = param.color;
+	outlineInfoData_->weight = param.weight;
+	outlineInfoData_->distantSensitivity = param.distantSensitivity;
+	outlineInfoData_->distantStart = param.distantStart;
+	outlineInfoData_->distantEnd = param.distantEnd;
+	outlineInfoData_->isActive = param.isActive;
+}
+
+nlohmann::json DepthBasedOutline::GetSpecificParams() const {
+	
+	DepthBasedOutlineInfo param;
+	param.color = outlineInfoData_->color;
+	param.weight = outlineInfoData_->weight;
+	param.distantSensitivity = outlineInfoData_->distantSensitivity;
+	param.distantStart = outlineInfoData_->distantStart;
+	param.distantEnd = outlineInfoData_->distantEnd;
+	param.isActive = outlineInfoData_->isActive;
+
+	return param;
+}
+
+void DepthBasedOutline::SetIntensity(float intensity) {
+	outlineInfoData_->weight = std::max(0.0f, intensity); // 強度は0以上に制限
 }

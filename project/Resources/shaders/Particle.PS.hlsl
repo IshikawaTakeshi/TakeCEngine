@@ -1,17 +1,5 @@
 #include "Particle.hlsli"
-
-struct Material {
-	float4 color; //カラー
-	float4x4 uvTransform;
-	int enableLighting; //Lightingを有効にするフラグ
-	float shininess;
-};
-
-//struct DirectionalLight {
-//	float4 color; //ライトのカラー	
-//	float3 direction; //ライトの向き
-//	float intensity; //輝度
-//};
+#include "Light/DirectionalLight.hlsli"
 
 //マテリアル
 ConstantBuffer<Material> gMaterial : register(b0);
@@ -29,11 +17,38 @@ PixelShaderOutPut main(VertexShaderOutput input) {
 
 	float4 transformedUV = mul(float4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
 	float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
-	output.color = gMaterial.color * textureColor * input.color;
+	float4 baseColor = gMaterial.color * textureColor * input.color;
 
-	if (output.color.a == 0.0f) {
+	// アルファ値が0なら描画しない
+	if (baseColor.a == 0.0f) {
 		discard;
 	}
 	
+	// 擬似的な法線をカメラ正面に固定（煙など想定）
+	float3 n = normalize(float3(0, 0, 1));
+	
+	// basisベクトル（同一でOK）
+	float3 b0 = float3(1, 0, 0);
+	float3 b1 = float3(0, 1, 0);
+	float3 b2 = float3(0, 0, 1);
+
+	float3 w = saturate(float3(
+        dot(n, b0),
+        dot(n, b1),
+        dot(n, b2)
+    ));
+
+	float3 diffuse = input.basisColor1 * w.x + input.basisColor2 * w.y + input.basisColor3 * w.z;
+	
+	float3 finalColor;
+	if(gMaterial.enableLighting == 1) {
+		finalColor = baseColor.rgb * diffuse;
+	}else {
+		finalColor = baseColor.rgb;
+	}
+	
+	output.color = float4(finalColor, baseColor.a);
+
+	output.color.rgb *= baseColor.a;
 	return output;
 }

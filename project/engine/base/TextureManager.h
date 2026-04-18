@@ -11,134 +11,213 @@
 #include <iostream>
 #include <memory>
 #include <unordered_map>
+#include <queue>
+#include <mutex>
+#include <thread>
 
-#include "DirectXCommon.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/ComPtrAliasTemplates.h"
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
 
-class SrvManager;
-class TextureManager {
-public:
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			エイリアステンプレート
-	/////////////////////////////////////////////////////////////////////////////////////
 
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+//===================================================================================
+// TextureManager class
+//===================================================================================
+namespace TakeC {
 
-public:
+	//前方宣言
+	class SrvManager;
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			publicメンバ関数
-	/////////////////////////////////////////////////////////////////////////////////////
+	class TextureManager {
+	private:
 
-	/// <summary>
-	/// インスタンス取得
-	/// </summary>
-	static TextureManager* GetInstance();
+		//コンストラクタ・デストラクタ・コピー禁止
+		TextureManager() = default;
+		~TextureManager() = default;
+		TextureManager(TextureManager&) = delete;
+		TextureManager& operator=(TextureManager&) = delete;
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
+	public:
 
-	/// <summary>
-	/// 終了処理
-	/// </summary>
-	void Finalize();
+		/////////////////////////////////////////////////////////////////////////////////////
+		///			構造体
+		/////////////////////////////////////////////////////////////////////////////////////
 
-	/// <summary>
-	/// テクスチャの更新チェックと再読み込み
-	/// </summary>
-	void CheckAndReloadTextures();
+		//テクスチャ1枚分のデータ
+		struct TextureData {
+			DirectX::TexMetadata metadata; //テクスチャのメタデータ
+			ComPtr<ID3D12Resource> resource; //テクスチャリソース
+			ComPtr<ID3D12Resource> intermediateResource; //中間リソース
+			uint32_t srvIndex; //SRVインデックス
+			D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU; //CPUディスクリプタハンドル
+			D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU; //GPUディスクリプタハンドル
+		};
 
-	/// <summary>
-	/// テクスチャファイルの読み込み
-	/// </summary>
-	/// <param name="filePath">テクスチャファイルのパス</param>
-	/// <returns>画像イメージデータ</returns>
-	void LoadTexture(const std::string& filePath,bool forceReload);
+		struct TextureCPUData {
+			std::string filePath; //テクスチャファイルのパス
+			DirectX::ScratchImage mipImages; //ミップマップを含むテクスチャイメージ
+			DirectX::TexMetadata metadata; //テクスチャのメタデータ
+		};
 
-private:
+	public:
 
-	/// <summary>
-	/// テクスチャリソースの作成
-	/// </summary>
-	/// <param name="metadata"></param>
-	/// <returns></returns>
-	[[nodiscard]]
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
+		//================================================================================
+		// functions
+		//================================================================================
 
-	/// <summary>
-	/// テクスチャデータのアップロード
-	/// </summary>
-	/// <param name="texture"></param>
-	/// <param name="mipImages"></param>
-	/// <returns></returns>
-	[[nodiscard]]
-	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
+		/// <summary>
+		/// インスタンス取得
+		/// </summary>
+		static TextureManager& GetInstance();
 
-	/// <summary>
-	/// ファイルの最終更新時刻を取得
-	/// </summary>
-	time_t GetFileLastWriteTime(const std::string& filePath);
-public:
+		/// <summary>
+		/// 初期化
+		/// </summary>
+		void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManager* srvManager);
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			getter
-	/////////////////////////////////////////////////////////////////////////////////////
+		/// <summary>
+		/// 終了処理
+		/// </summary>
+		void Finalize();
 
-	/// GPUハンドル取得
-	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGPU(const std::string& filePath);
-	/// SRVインデックス取得
-	uint32_t GetSrvIndex(const std::string& filePath);
-	/// メタデータ取得
-	const DirectX::TexMetadata& GetMetadata(const std::string& filePath);
+		void Update();
 
-	SrvManager* GetSrvManager() { return srvManager_; }
+		/// <summary>
+		/// テクスチャの更新チェックと再読み込み
+		/// </summary>
+		void CheckAndReloadTextures();
 
-	//現在読み込み済みのファイル名一覧を取得する
-	std::vector<std::string> GetLoadedTextureFileNames() const;
+		/// <summary>
+		/// テクスチャファイルの読み込み
+		/// </summary>
+		/// <param name="filePath">テクスチャファイルのパス</param>
+		/// <param name="forceReload">強制再読み込みフラグ</param>
+		/// <returns>画像イメージデータ</returns>
+		void LoadTexture(const std::string& filePath, bool forceReload);
 
-private:
+		/// <summary>
+		/// 全テクスチャの読み込み
+		/// </summary>
+		void LoadTextureAll();
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			構造体
-	/////////////////////////////////////////////////////////////////////////////////////
+		/// <summary>
+		/// すべての読み込み完了を待機
+		/// </summary>
+		void WaitForAllLoads();
+
+	private:
+
+		std::string NormalizeTextureFilePath(const std::string& filePath);
+
+		/// <summary>
+		/// テクスチャリソースの作成
+		/// </summary>
+		/// <param name="metadata"></param>
+		/// <returns></returns>
+		[[nodiscard]]
+		Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
+
+		/// <summary>
+		/// テクスチャデータのアップロード
+		/// </summary>
+		/// <param name="texture"></param>
+		/// <param name="mipImages"></param>
+		/// <returns></returns>
+		[[nodiscard]]
+		Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
+
+		/// <summary>
+		/// ファイルの最終更新時刻を取得
+		/// </summary>
+		time_t GetFileLastWriteTime(const std::string& filePath);
+
+		/// <summary>
+		/// テクスチャファイルの拡張子がサポートされているかチェック
+		/// </summary>
+		/// <param name="ext"></param>
+		/// <returns></returns>
+		bool IsSupportedTextureExt(const std::string& ext);
+
+		/// <summary>
+		/// テクスチャファイルのデコード
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <param name="outImage"></param>
+		/// <param name="outMetadata"></param>
+		/// <returns></returns>
+		bool DecodeTexture(const std::string& filePath, DirectX::ScratchImage& outImage, DirectX::TexMetadata& outMetadata);
+
+		/// <summary>
+		/// ミップマップの生成
+		/// </summary>
+		/// <param name="srcImage"></param>
+		/// <param name="metadata"></param>
+		/// <param name="outMipImage"></param>
+		/// <returns></returns>
+		bool BuildMipMaps(const DirectX::ScratchImage& srcImage, const DirectX::TexMetadata& metadata, DirectX::ScratchImage& outMipImage);
+
+		/// <summary>
+		/// テクスチャのGPUアップロード
+		/// </summary>
+		/// <param name="mipImages"></param>
+		/// <param name="metadata"></param>
+		/// <param name="textureData"></param>
+		/// <returns></returns>
+		Microsoft::WRL::ComPtr<ID3D12Resource> UploadTexture(const DirectX::ScratchImage& mipImages, DirectX::TexMetadata& metadata, TextureData& textureData);
+
+		void StartWorker();
+		void WorkerLoop();
+	public:
+
+		//=============================================================================
+		// accessor
+		//=============================================================================
+
+		//----- getter ---------------
+
+		/// GPUハンドル取得
+		D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGPU(const std::string& filePath);
+		/// SRVインデックス取得
+		uint32_t GetSrvIndex(const std::string& filePath);
+		/// メタデータ取得
+		const DirectX::TexMetadata& GetMetadata(const std::string& filePath);
+		/// SrvManager取得
+		SrvManager* GetSrvManager() { return srvManager_; }
+
+		//現在読み込み済みのファイル名一覧を取得する
+		std::vector<std::string> GetLoadedTextureFileNames() const;
+		//CubeMapを除いたテクスチャのファイル名一覧を取得する
+		std::vector<std::string> GetLoadedNonCubeTextureFileNames() const;
+
 	
-	//テクスチャ1枚分のデータ
-	struct TextureData {
-		DirectX::TexMetadata metadata; //テクスチャのメタデータ
-		ComPtr<ID3D12Resource> resource; //テクスチャリソース
-		ComPtr<ID3D12Resource> intermediateResource; //中間リソース
-		uint32_t srvIndex; //SRVインデックス
-		D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU; //CPUディスクリプタハンドル
-		D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU; //GPUディスクリプタハンドル
+
+
+	private:
+
+		//directXCommonのインスタンス
+		TakeC::DirectXCommon* dxCommon_ = nullptr;
+
+		//テクスチャデータのリスト
+		std::unordered_map<std::string, TextureData> textureDatas_;
+		//テクスチャファイルの更新時刻を管理するマップ
+		std::unordered_map<std::string, time_t> fileUpdateTimes_;
+
+		TakeC::SrvManager* srvManager_ = nullptr;
+
+
+		std::vector<std::thread> workerThreads_;
+		// リクエスト（読み込み依頼）
+		std::queue<std::string> requestQueue_;
+		// 完了（CPU処理済み）
+		std::queue<TextureCPUData> completedQueue_;
+		std::mutex mutex_; // queue用
+		mutable std::mutex mapMutex_; // textureDatas_用
+		std::atomic<bool> threadRunning_ = true;
+
+		// 読み込み待ち数
+		std::atomic<int> pendingCount_ = 0;
+		// プレースホルダ用（白テクスチャ）
+		TextureData whiteTextureData_;
 	};
-
-private:
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			privateメンバ変数
-	/////////////////////////////////////////////////////////////////////////////////////
-
-	//シングルトンインスタンス
-	static TextureManager* instance_;
-
-	TextureManager() = default;
-	~TextureManager() = default;
-	TextureManager(TextureManager&) = delete;
-	TextureManager& operator=(TextureManager&) = delete;
-
-private:
-
-	//directXCommonのインスタンス
-	DirectXCommon* dxCommon_ = nullptr;
-
-	//テクスチャデータのリスト
-	std::unordered_map<std::string, TextureData> textureDatas_;
-	//テクスチャファイルの更新時刻を管理するマップ
-	std::unordered_map<std::string, time_t> fileUpdateTimes_;
-
-	SrvManager* srvManager_ = nullptr;
-};
+}

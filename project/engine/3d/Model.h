@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ResourceDataStructure.h"
-#include "Transform.h"
-#include "TransformMatrix.h"
+#include "engine/math/Transform.h"
+#include "engine/math/TransformMatrix.h"
 #include "Animation/Animator.h"
 #include "Animation/Skeleton.h"
 #include "Animation/SkinCluster.h"
-#include "Mesh/Mesh.h"
+#include "3d/Mesh/Mesh.h"
+#include "3d/ModelData.h"
 #include "base/PipelineStateObject.h"
 #include "base/SrvManager.h"
 #include "base/DirectXCommon.h"
@@ -16,11 +16,18 @@
 #include <wrl.h>
 #include <memory>
 
+//============================================================================
+// Model class
+//============================================================================
 class Model {
 public:
 
-	Model();
-	~Model();
+	Model() = default;
+	~Model() = default;
+
+	//========================================================================
+	// functions
+	//========================================================================
 
 	/// <summary>
 	/// 初期化
@@ -31,65 +38,74 @@ public:
 	/// 更新処理
 	/// </summary>
 	void Update(Animation* animation, float animationTime);
+	void UpdateSkinningFromSkeleton();
 
-	//void UpdateSkeleton();
+	/// <summary>
+	/// ImGui更新
+	/// </summary>
+	void UpdateImGui();
 
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void Draw();
+	void Draw(PSO* pso);
 
-	void DrawSkyBox();
-
-	void DisPatch(PSO* skinningPso);
-
-	//void DisPatchForASkinningModel();
-
+	void DrawShadow();
 
 	/// <summary>
-	/// パーティクル描画
+	/// スキニング計算
+	/// </summary>
+	/// <param name="skinningPso"></param>
+	void Dispatch(PSO* skinningPso);
+
+	/// <summary>
+	/// パーティクル用描画処理
 	/// </summary>
 	/// <param name="instanceCount_"></param>
 	void DrawForParticle(UINT instanceCount_);
 
+	/// <summary>
+	/// GPUパーティクル用描画処理
+	/// </summary>
 	void DrawForGPUParticle(UINT instanceCount);
 
 	/// <summary>
-	/// アニメーションの適用
+	/// モデルデータの再読み込み
 	/// </summary>
-	//void ApplyAnimation();
+	/// <param name="newModelData"></param>
+	void Reload(ModelData* newModelData);
 
+public:
 
-public: //ゲッター
-
+	//========================================================================
+	// accessors
+	//========================================================================
+	
+	//----- getter ---------------------------
+	
 	//メッシュの取得
 	Mesh* GetMesh() { return mesh_.get(); }
-
 	//スケルトンの取得
 	Skeleton* GetSkeleton() { return skeleton_.get(); }
-
 	//ModelDataの取得
 	ModelData* GetModelData() { return modelData_; }
-
 	//ModelCommonの取得
 	ModelCommon* GetModelCommon() { return modelCommon_; }
-
 	//テクスチャファイルパスの取得
 	const std::string& GetTextureFilePath() const { return modelData_->material.textureFilePath; }
-
 	//ローカル行列の取得
 	const Matrix4x4& GetLocalMatrix() const { return localMatrix_; }
 
-public: //セッター
-
+	//----- setter ---------------------------
+	
 	//メッシュの設定
 	void SetMesh(Mesh* mesh) { mesh_.reset(mesh); }
-
 	//ModelCommonの設定
 	void SetModelCommon(ModelCommon* modelCommon) { modelCommon_ = modelCommon; }
 
 private:
 
+	//モデルの共通情報
 	ModelCommon* modelCommon_ = nullptr;
 
 	//メッシュ
@@ -101,16 +117,17 @@ private:
 
 	//構築するModelData
 	ModelData* modelData_;
-	//Animation* animation_;
 
+	//移動・回転・拡縮情報
 	Vector3 translate_;
 	Quaternion rotate_;
 	Vector3 scale_;
 	Matrix4x4 localMatrix_;
 
+	//UAVのインデックス
 	uint32_t uavIndex_ = 0;
-
+	//スケルトンを持っているかどうか
 	bool haveSkeleton_ = true;
-
+	//inputVertexのインデックス
 	uint32_t inputIndex_ = 0;
 };

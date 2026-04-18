@@ -1,4 +1,4 @@
-#include "PostEffect/FullScreen.hlsli"
+#include "../PostEffect/FullScreen.hlsli"
 
 static const uint kNumVertex = 3;
 

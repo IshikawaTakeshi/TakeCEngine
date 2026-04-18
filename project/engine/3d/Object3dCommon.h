@@ -1,27 +1,56 @@
 #pragma once
-#include "ResourceDataStructure.h"
-#include "PipelineStateObject.h"
+#include "engine/base/PipelineStateObject.h"
+#include "engine/base/ComPtrAliasTemplates.h"
+#include "engine/3d/Light/DirectionalLight.h"
+#include "engine/3d/Light/PointLight.h"
+#include "engine/3d/Light/SpotLight.h"
+#include "engine/3d/Light/LightCounter.h"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
 #include <memory>
 
+//前方宣言
 class Camera;
-class DirectXCommon;
+namespace TakeC {
+	class DirectXCommon;
+	class LightManager;
+}
+
+
+//============================================================================
+// Object3dCommon class
+//============================================================================
 class Object3dCommon {
+private:
+
+	//コンストラクタ・デストラクタ・コピー禁止
+	Object3dCommon() = default;
+	~Object3dCommon() = default;
+	Object3dCommon(const Object3dCommon&) = delete;
+	Object3dCommon& operator=(const Object3dCommon&) = delete;
+
 
 public:
 
-	//エイリアステンプレート
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+	//========================================================================
+	// functions
+	//========================================================================
 
-	static Object3dCommon* GetInstance();
+	/// <summary>
+	/// インスタンスの取得
+	/// </summary>
+	/// <returns></returns>
+	static Object3dCommon& GetInstance();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* directXCommon);
+	void Initialize(TakeC::DirectXCommon* directXCommon,TakeC::LightManager* lightManager);
 
+	/// <summary>
+	/// ImGuiの更新
+	/// </summary>
 	void UpdateImGui();
 
 	/// <summary>
@@ -34,73 +63,82 @@ public:
 	/// </summary>
 	void PreDraw();
 
-	void DisPatch();
+	/// <summary>
+	/// 影描画前処理
+	/// </summary>
+	void PreDrawShadowPass();
 
-//================================================================================================
-// 	   getter
-//================================================================================================
+	/// <summary>
+	/// 加算ブレンド描画前処理
+	/// </summary>
+	void PreDrawAddBlend();
 
-	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
+	/// <summary>
+	/// スキニング計算
+	/// </summary>
+	void Dispatch();
 
+public:
+	//================================================================================================
+	// accessors
+	//================================================================================================
+
+	//----- getter ---------------------------
+
+	/// DirectXCommonの取得
+	TakeC::DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
+	/// 平行光源データの取得
 	Camera* GetDefaultCamera() const { return defaultCamera_; }
-
+	/// PSOの取得
 	PSO* GetPSO() const { return pso_.get(); }
+	/// 加算ブレンド用PSOの取得
+	PSO* GetAddBlendPSO() const { return addBlendPso_.get(); }
+	/// 影描画用PSOの取得
+	PSO* GetShadowPassPSO() const { return shadowPassPso_.get(); }
+	/// 平行光源リソースの取得
+	ID3D12Resource* GetDirectionalLightResource() const;
 
-//================================================================================================
-// 	   setter
-//================================================================================================
+	///----- setter ---------------------------
 
+	/// デフォルトカメラの設定
 	void SetDefaultCamera(Camera* camera) { defaultCamera_ = camera; }
-
+	/// 平行光源の方向の設定
 	void SetDirectionalLightIntensity(const float intensity) { directionalLightData_->intensity_ = intensity; }
 
-	void SetPointLightIntensity(const float intensity) { pointLightData_->intensity_ = intensity; }
-
-	void SetPointLightPosition(const Vector3& position) { pointLightData_->position_ = position; }
-
-	void SetPointLightColor(const Vector4& color) { pointLightData_->color_ = color; }
-
-	void SetPointLightRadius(float radius) { pointLightData_->radius_ = radius; }
-
-	void SetSLightIntensity(float intensity) { spotLightData_->intensity_ = intensity; }
-
-	void SetGraphicCBufferViewLghiting(PSO* pso);
+private:
 
 	void SetCBufferViewCamera(PSO* pso);
 
-private:
-
-	Object3dCommon() = default;
-	~Object3dCommon() = default;
-	Object3dCommon(const Object3dCommon&) = delete;
-	Object3dCommon& operator=(const Object3dCommon&) = delete;
+	void SetCBufferViewLightCamera(PSO* pso);
 
 private:
-
-	//インスタンス
-	static Object3dCommon* instance_;
 
 	//DirectXCommon
-	DirectXCommon* dxCommon_ = nullptr;
+	TakeC::DirectXCommon* dxCommon_ = nullptr;
+	//LightManager
+	TakeC::LightManager* lightManager_ = nullptr;
 
-	//平行光源用のリソース
-	ComPtr<ID3D12Resource> directionalLightResource_;
-	DirectionalLightData* directionalLightData_ = nullptr;
-	//ポイントライトのリソース
-	ComPtr<ID3D12Resource> pointLightResource_;
-	PointLightData* pointLightData_ = nullptr;
-	//スポットライトのリソース
-	ComPtr<ID3D12Resource> spotLightResource_;
-	SpotLightData* spotLightData_ = nullptr;
+
+	std::unique_ptr<DirectionalLightData> directionalLightData_ = nullptr;
+	uint32_t pointLightIndex_ = 0;
+	uint32_t spotLightIndex_ = 0;
 
 	//defaultCamera
 	Camera* defaultCamera_ = nullptr;
 
 	//PSO
 	std::unique_ptr<PSO> pso_ = nullptr;
+	//加算ブレンド用PSO
+	std::unique_ptr<PSO> addBlendPso_ = nullptr;
+
+	//影描画用PSO
+	std::unique_ptr<PSO> shadowPassPso_ = nullptr;
 	
 	//RootSignature
 	ComPtr<ID3D12RootSignature> graphicRootSignature_ = nullptr;
 	ComPtr<ID3D12RootSignature> computeRootSignature_ = nullptr;
+	ComPtr<ID3D12RootSignature> addBlendRootSignature_ = nullptr;
+	//影描画用RootSignature
+	ComPtr<ID3D12RootSignature> shadowPassRootSignature_ = nullptr;
 };
 

@@ -1,81 +1,37 @@
 #include "ParticleEmitter.h"
-#include "base/TakeCFrameWork.h"
-#include "base/ImGuiManager.h"
-#include "base/SrvManager.h"
-#include "math/Easing.h"
+#include "engine/base/TakeCFrameWork.h"
+#include "engine/base/ImGuiManager.h"
+#include "engine/base/SrvManager.h"
+#include "engine/math/Easing.h"
+#include "engine/math/Vector3Math.h"
+#include "engine/math/MatrixMath.h"
+#include "engine/Utility/JsonLoader.h"
 #include "3d/Particle/GPUParticle.h"
 #include "2d/WireFrame.h"
 
-ParticleEmitter::~ParticleEmitter() {
-	emitterSphereResource_.Reset();
-	perFrameResource_.Reset();
-	emitParticleRootSignature_.Reset();
-	emitParticlePso_.reset();
-}
 
 //================================================================================================
 // 初期化
 //================================================================================================
 
-void ParticleEmitter::Initialize(const std::string& emitterName, EulerTransform transforms, uint32_t count, float frequency) {
-
-	
+void ParticleEmitter::Initialize(const std::string& emitterName, const std::string& presetInfo) {
 	//Emitter初期化
 	emitterName_ = emitterName;
-	transforms_.translate = transforms.translate;
-	transforms_.rotate = transforms.rotate;
-	transforms_.scale = transforms.scale;
-	particleCount_ = count;
-	frequency_ = frequency;
-	frequencyTime_ = 0.0f;
+
+
+	//prest情報の取得
+	preset_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetInfo);
+
+	// ParticleManagerのアロケーターからエミッターIDを取得して登録
+	emitterID_ = TakeCFrameWork::GetParticleManager()->EmitterAllocate(this);
+
+	particleName_ = preset_.presetName;
+	emitDirection_ = { 0.0f,0.0f,1.0f };
+	particleCount_ = preset_.attribute.emitCount; // 発生させるパーティクルの数
+	frequency_ = preset_.attribute.frequency; // 発生頻度
+	maxInterpolationCount_ = preset_.attribute.particlesPerInterpolation; // 最大補間回数
+	frequencyTime_ = frequency_; // 最初から発生するように設定
 	isEmit_ = false;
-}
-
-void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManager* srvManager) {
-
-	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
-
-	//PSO生成
-	emitParticlePso_ = std::make_unique<PSO>();
-	emitParticlePso_->CompileComputeShader(dxCommon_->GetDXC(), L"EmitParticle.CS.hlsl");
-	emitParticlePso_->CreateComputePSO(dxCommon_->GetDevice());
-	emitParticlePso_->SetComputePipelineName("EmitParticlePSO");
-	//RootSignature生成
-	emitParticleRootSignature_ = emitParticlePso_->GetComputeRootSignature();
-
-	//EmitterSphereResource生成
-	emitterSphereResource_ = 
-		DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(EmitterSphereInfo));
-	emitterSphereResource_->SetName(L"EmitterSphereInfo::emitterSphereResource_");
-	//PerFrameResource生成
-	perFrameResource_ = 
-		DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(PerFrame));
-	perFrameResource_->SetName(L"EmitterSphereInfo::perFrameResource_");
-
-	//Mapping
-	emitterSphereResource_->Map(0, nullptr, reinterpret_cast<void**>(&emitterSphereInfo_));
-	perFrameResource_->Map(0, nullptr, reinterpret_cast<void**>(&perFrameData_));
-
-	//SRV生成
-	emitterSphereSrvIndex_ = srvManager_->Allocate();
-	srvManager_->CreateSRVforStructuredBuffer(
-		1,
-		sizeof(EmitterSphereInfo),
-		emitterSphereResource_.Get(),
-		emitterSphereSrvIndex_
-	);
-
-	//EmitterSphereInfo初期化
-	emitterSphereInfo_->particleCount = 10;
-	emitterSphereInfo_->frequency = 0.1f;
-	emitterSphereInfo_->translate = Vector3(0.0f, 0.0f, 0.0f);
-	emitterSphereInfo_->radius = 1.0f;
-	emitterSphereInfo_->isEmit = 1;
-
-	//PerFrameData初期化
-	perFrameData_->gameTime = TakeCFrameWork::GetGameTime();
-	perFrameData_->deltaTime = TakeCFrameWork::GetDeltaTime();
 }
 
 //==================================================================================
@@ -84,27 +40,54 @@ void ParticleEmitter::InitializeEmitterSphere(DirectXCommon* dxCommon, SrvManage
 
 void ParticleEmitter::Update() {
 
+	//transform.rotateによってDirectionを更新
+	Matrix4x4 rotateMatrix = MatrixMath::MakeRotateMatrix(transforms_.rotate);
+	emitDirection_ = MatrixMath::Transform({ 0.0f,0.0f,1.0f }, rotateMatrix);
+
 	//エミッターの更新
 	if (!isEmit_) return;
 	frequencyTime_ += TakeCFrameWork::GetDeltaTime();
 	if (frequency_ <= frequencyTime_) {
-		Emit();
+
+		if (TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.isEmitterTrail == true) {
+			// 移動ベクトルと距離
+			Vector3 moveVector = transforms_.translate - prevTranslate_;
+			float moveDistance = Vector3Math::Length(moveVector);
+
+			// 移動距離に応じた補間回数を計算
+			// 例: 1. 0単位ごとに1回補間
+			const float interpolationUnit = 1.0f; // 調整可能
+			int interpolationCount = static_cast<int>(moveDistance / interpolationUnit);
+
+			// 最大補間回数の制限（パフォーマンス対策）
+			interpolationCount = std::min(interpolationCount, maxInterpolationCount_);
+
+			if (interpolationCount > 0) {
+				// 等間隔で補間位置から発生
+				for (int i = 0; i < interpolationCount; ++i) {
+					float t = static_cast<float>(i + 1) / (interpolationCount + 1);
+					Vector3 interpolatedPos = prevTranslate_ + moveVector * t;
+					// エミッターIDを含めてパーティクルを発生
+					TakeCFrameWork::GetParticleManager()->EmitWithEmitter(
+						emitterID_,
+						particleName_,
+						interpolatedPos,
+						emitDirection_,
+						particleCount_
+					);
+				}
+			}
+		}
+		// エミッターIDを含めてパーティクルを発生
+		TakeCFrameWork::GetParticleManager()->EmitWithEmitter(
+			emitterID_,
+			particleName_,
+			transforms_.translate,
+			emitDirection_,
+			particleCount_
+		);
 		frequencyTime_ -= frequency_; //余計に過ぎた時間も加味して頻度計算する
-	}
-}
-
-void ParticleEmitter::UpdateForGPU() {
-
-	//時間の取得及び更新
-	perFrameData_->gameTime = TakeCFrameWork::GetGameTime();
-
-	emitterSphereInfo_->frequencyTime += perFrameData_->deltaTime;
-	if(emitterSphereInfo_->frequency <= emitterSphereInfo_->frequencyTime){
-		emitterSphereInfo_->isEmit = 1;
-		emitterSphereInfo_->frequencyTime -= emitterSphereInfo_->frequency;
-	}
-	else {
-		emitterSphereInfo_->isEmit = 0;
+		prevTranslate_ = transforms_. translate;
 	}
 }
 
@@ -137,6 +120,8 @@ void ParticleEmitter::UpdateImGui() {
 void ParticleEmitter::DrawWireFrame() {
 
 	TakeCFrameWork::GetWireFrame()->DrawSphere(transforms_.translate, 0.3f, { 1.0f, 0.0f, 1.0f, 1.0f });
+	//発射方向の描画
+	TakeCFrameWork::GetWireFrame()->DrawLine(transforms_.translate, emitDirection_, { 1.0f,1.0f,0.0f,1.0f });
 }
 
 //==================================================================================
@@ -144,50 +129,11 @@ void ParticleEmitter::DrawWireFrame() {
 //==================================================================================
 
 void ParticleEmitter::Emit() {
-	TakeCFrameWork::GetParticleManager()->Emit(particleName_, transforms_.translate, particleCount_);
+	TakeCFrameWork::GetParticleManager()->Emit(particleName_, transforms_.translate,emitDirection_, particleCount_);
 }
 
-void ParticleEmitter::EmitParticle(GPUParticle* gpuParticle) {
-
-	//PSOの設定
-	dxCommon_->GetCommandList()->SetPipelineState(emitParticlePso_->GetComputePipelineState());
-	dxCommon_->GetCommandList()->SetComputeRootSignature(emitParticleRootSignature_.Get());
-
-	//DescriptorHeapの設定
-	srvManager_->SetDescriptorHeap();
-
-	//TransitionBarrierを張る
-	D3D12_RESOURCE_BARRIER uavBarrier = {};
-
-	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	uavBarrier.Transition.pResource = gpuParticle->GetParticleUavResource();
-	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-	dxCommon_->GetCommandList()->ResourceBarrier(1, &uavBarrier);
-
-
-	//Resourceの設定
-	//0.PerFrame
-	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(0, perFrameResource_->GetGPUVirtualAddress());
-	//1.EmitterSphereInfo
-	srvManager_->SetComputeRootDescriptorTable(1, emitterSphereSrvIndex_);
-	//2.Particle
-	srvManager_->SetComputeRootDescriptorTable(2, gpuParticle->GetParticleUavIndex());
-	//3.FreeListIndex
-	srvManager_->SetComputeRootDescriptorTable(3, gpuParticle->GetFreeListIndexUavIndex());
-	//4.FreeList
-	srvManager_->SetComputeRootDescriptorTable(4, gpuParticle->GetFreeListUavIndex());
-	//Dispatch
-	dxCommon_->GetCommandList()->Dispatch(1, 1, 1);
-
-	//TransitionBarrierを張る
-	uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	uavBarrier.Transition.pResource = gpuParticle->GetParticleUavResource();
-	uavBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-	uavBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-	dxCommon_->GetCommandList()->ResourceBarrier(1, &uavBarrier);
+void ParticleEmitter::Emit(const Vector3& position) {
+	TakeCFrameWork::GetParticleManager()->Emit(particleName_, position,emitDirection_, particleCount_);
 }
 
 //==================================================================================
@@ -196,4 +142,14 @@ void ParticleEmitter::EmitParticle(GPUParticle* gpuParticle) {
 
 void ParticleEmitter::SetParticleName(const std::string& particleName) {
 	particleName_ = particleName;
+	frequency_ = TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.frequency;
+	particleCount_ = TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.emitCount;
+}
+
+//==================================================================================
+// リセット
+//==================================================================================
+void ParticleEmitter::Reset() {
+	frequencyTime_ = frequency_; // 最初から発生するようにリセット
+	prevTranslate_ = transforms_.translate; // 位置もリセットしてトレイルが変な場所に伸びないようにする
 }

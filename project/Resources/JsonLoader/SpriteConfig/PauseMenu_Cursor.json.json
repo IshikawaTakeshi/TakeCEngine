@@ -1,0 +1,31 @@
+{
+    "anchorPoint": {
+        "x": 0.5,
+        "y": 0.5
+    },
+    "color": {
+        "w": 1.0,
+        "x": 1.0,
+        "y": 1.0,
+        "z": 0.26274511218070984
+    },
+    "name": "PauseMenu_Cursor.json.json",
+    "position": {
+        "x": 290.0,
+        "y": 100.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 32.0,
+        "y": 32.0
+    },
+    "textureFilePath": "ic_play.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "textureSize": {
+        "x": 128.0,
+        "y": 128.0
+    }
+}

@@ -1,9 +1,27 @@
 #include "Easing.h"
+#include "engine/Utility/StringUtility.h"
 
+//=============================================================================
+// 線形補間(float)
+//=============================================================================
 float Easing::Lerp(float startPos, float endPos, float easedT) {
 	return (1.0f - easedT) * startPos + easedT * endPos;
 }
 
+//=============================================================================
+// 線形補間(Vector2)
+//=============================================================================
+Vector2 Easing::Lerp(Vector2 startPos, Vector2 endPos, float easedT) {
+    
+    return {
+        (1.0f - easedT) * startPos.x + easedT * endPos.x,
+        (1.0f - easedT) * startPos.y + easedT * endPos.y
+	};
+}
+
+//=============================================================================
+// 線形補間(Vector3)
+//=============================================================================
 Vector3 Easing::Lerp(Vector3 startPos, Vector3 endPos, float easedT) {
 	return {
 		(1.0f - easedT) * startPos.x + easedT * endPos.x,
@@ -12,6 +30,9 @@ Vector3 Easing::Lerp(Vector3 startPos, Vector3 endPos, float easedT) {
 	};
 }
 
+//=============================================================================
+// 球面線形補間(Quaternion)
+//=============================================================================
 Quaternion Easing::Slerp(Quaternion q0, Quaternion q1, float t) {
     float dot = QuaternionMath::Dot(q0, q1);
 
@@ -30,24 +51,82 @@ Quaternion Easing::Slerp(Quaternion q0, Quaternion q1, float t) {
     }
 
     // 通常の SLERP の計算
-    float theta = std::acos(dot);       // なす角
-    float sinTheta = std::sin(theta);   // sin(θ)
+    float theta = std::acosf(dot);       // なす角
+    float sinTheta = std::sinf(theta);   // sin(θ)
 
-    float scale0 = std::sin((1.0f - t) * theta) / sinTheta;
-    float scale1 = std::sin(t * theta) / sinTheta;
+    float scale0 = std::sinf((1.0f - t) * theta) / sinTheta;
+    float scale1 = std::sinf(t * theta) / sinTheta;
 
     return scale0 * q0 + scale1 * q1;
 }
 
-float Easing::EaseOut(float x) {
+//=============================================================================
+// イージング関数
+//=============================================================================
+float Easing::EaseOutSine(float x) {
 	return sinf((x * std::numbers::pi_v<float>) / 2.0f);
 }
 
 
-float Easing::EaseIn(float x) {
+float Easing::EaseInSine(float x) {
 	return 1.0f - cosf((x * std::numbers::pi_v<float>) / 2.0f);
 }
 
-float Easing::EaseInOut(float x) {
-	return -(cosf(std::numbers::pi_v<float> *x) - 1.0f) / 2.0f;
+float Easing::EaseInOutSine(float x) {
+	return 0.5f * (1.0f - cosf(std::numbers::pi_v<float> * x));
+}
+
+float Easing::EaseInCubic(float x) {
+	return x * x * x;
+}
+
+float Easing::EaseOutCubic(float x) {
+	return 1.0f - powf(1.0f - x, 3.0f);
+}
+
+float Easing::EaseInExpo(float x) {
+	return x == 0.0f ? 0.0f : powf(2.0f, 10.0f * (x - 1.0f));
+}
+
+float Easing::EaseOutExpo(float x) {
+	return x == 1.0f ? 1.0f : 1.0f - powf(2.0f, -10.0f * x);
+}
+
+float Easing::EaseInBack(float x) {
+	return x * x * x - x * std::sin(x * std::numbers::pi_v<float>);
+}
+
+float Easing::EaseOutBack(float x) {
+	return 1.0f - EaseInBack(1.0f - x);
+}
+
+float Easing::UrgentRise(float x) {
+	return  std::pow(x, 4.0f);
+}
+
+float Easing::GentleRise(float x) {
+	return std::sqrt(x);
+}
+
+float Easing::EaseInQuad(float x) {
+	return x * x;
+}
+
+float Easing::EaseOutQuad(float x) {
+	return x * (2.0f - x);
+}
+
+//=============================================================================
+// EasingType -> JSON
+//=============================================================================
+void to_json(nlohmann::json& j, const Easing::EasingType& type) {
+    
+	j = type;
+}
+
+//=============================================================================
+// JSON -> EasingType
+//=============================================================================
+void from_json(const nlohmann::json& j, Easing::EasingType& type) {
+    type = j.get<Easing::EasingType>();
 }

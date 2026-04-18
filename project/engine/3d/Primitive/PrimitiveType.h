@@ -1,10 +1,18 @@
 #pragma once
 #include <json.hpp>
 
+//============================================================================
+// PrimitiveType enum
+//============================================================================
+
+//プリミティブタイプ列挙型
 enum PrimitiveType {
 	PRIMITIVE_RING,
 	PRIMITIVE_PLANE,
 	PRIMITIVE_SPHERE,
+	PRIMITIVE_CUBE,
+	PRIMITIVE_CONE,
+	PRIMITIVE_CYLINDER,
 	PRIMITIVE_COUNT
 };
 

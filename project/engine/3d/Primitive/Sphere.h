@@ -1,69 +1,61 @@
 #pragma once
-#include "Vector3.h"
-#include "Matrix4x4.h"
-#include "TransformMatrix.h"
-#include "Transform.h"
-#include "ResourceDataStructure.h"
-#include "Mesh/Mesh.h"
-#include <stdint.h>
-#include <string>
-#include <d3d12.h>
-#include <wrl.h>
+#include "engine/3d/Primitive/PrimitiveBase.h"
 
-class DirectXCommon;
-class Sphere {
-public:
-	Sphere() = default;
-	~Sphere();
+namespace TakeC {
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, Matrix4x4 cameraView, const std::string& textureFilePath);
+	//========================================================
+	// sphere情報の構造体
+	//========================================================
 
-	/// <summary>
-	/// 更新処理
-	/// </summary>
-	void Update();
+	struct SphereData : public PrimitiveBaseData {
+		float radius = 1.0f; // 半径
+		uint32_t subDivision = 16; // 分割数
+	};
 
-	/// <summary>
-	/// 描画処理
-	/// </summary>
-	void Draw(DirectXCommon* dxCommon);
+	//============================================================
+	//	Sphere class
+	//============================================================
 
-public: //ゲッター
+	class Sphere : public PrimitiveBase<SphereData> {
+	public:
 
-public: //セッター
+		//データ型エイリアス
+		using DataType = SphereData;
+
+		//========================================================
+		// functions
+		//========================================================
+
+		/// <summary>
+		/// コンストラクタ・デストラクタ
+		/// </summary>
+		Sphere() = default;
+		~Sphere() = default;
+
+		/// <summary>
+		/// リングデータの生成
+		/// </summary>
+		/// <returns>生成したハンドル</returns>
+		uint32_t Generate(float radius,uint32_t subDivision, const std::string& textureFilePath);
+
+		/// <summary>
+		/// 頂点データ作成
+		/// </summary>
+		/// <param name="sphereData"></param>
+		void CreateVertexData(SphereData* sphereData);
+	protected:
+
+		/// <summary>
+		/// プリミティブデータ編集
+		/// </summary>
+		/// <param name="data"></param>
+		void EditPrimitiveData(SphereData* data);
 
 
-private:
+	private:
 
-	//メッシュ
-	std::unique_ptr<Mesh> mesh_;
+		// 定数
+		static constexpr uint32_t kVerticesPerSegment = 6;  // 1セグメントあたりの頂点数
 
-	//filePath
-	std::string filePath_;
-
-
-	//TransformationMatrix用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
-	//TransformationMatrix用の頂点データ
-	TransformMatrix* TransformMatrixData_ = nullptr;
-
-	//平行光源用のリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-	DirectionalLightData* directionalLightData_ = nullptr;;
-
-	//CPU用のTransform
-	EulerTransform transform_{};
-	//行列
-	Matrix4x4 worldMatrix_;
-	Matrix4x4 viewMatrix_;
-	Matrix4x4 projectionMatrix_;
-	Matrix4x4 worldViewProjectionMatrix_;
-
-	//Texture
-	bool useMonsterBall = true;
-
-};
-
+	};
+}

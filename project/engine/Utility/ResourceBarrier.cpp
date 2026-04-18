@@ -2,25 +2,25 @@
 #include <cassert>
 #include <format>
 
-ResourceBarrier* ResourceBarrier::instance_ = nullptr;
 
-ResourceBarrier* ResourceBarrier::GetInstance() {
- 
-	if(instance_ == nullptr) {
-		instance_ = new ResourceBarrier();
-	}
+//=============================================================================
+// インスタンス取得
+//=============================================================================
+ResourceBarrier& ResourceBarrier::GetInstance() {
+	static ResourceBarrier instance_;
 	return instance_;
 }
 
-void ResourceBarrier::Initialize(DirectXCommon* dxCommon) {
+//=============================================================================
+// 初期化
+//=============================================================================
+void ResourceBarrier::Initialize(TakeC::DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 }
 
-void ResourceBarrier::Finalize() {
-	delete instance_;
-	instance_ = nullptr;
-}
-
+//=============================================================================
+// リソースバリアの設定(状態遷移)
+//=============================================================================
 void ResourceBarrier::Transition(D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState, ID3D12Resource* resource) {
 
 	// 現在の状態が一致しているか確認

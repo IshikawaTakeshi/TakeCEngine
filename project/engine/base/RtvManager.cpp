@@ -1,13 +1,16 @@
 #include "rtvManager.h"
 #include "DirectXCommon.h"
 #include <cassert>
+
+using namespace TakeC;
+
 const uint32_t RtvManager::kMaxRTVCount_ = 16;
 
 //===================================================================================================
 // 初期化
 //===================================================================================================
 
-void RtvManager::Initialize(DirectXCommon* directXCommon) {
+void RtvManager::Initialize(TakeC::DirectXCommon* directXCommon) {
 	//dxCommon_の取得
 	dxCommon_ = directXCommon;
 	//ディスクリプタヒープの生成
@@ -19,6 +22,9 @@ void RtvManager::Initialize(DirectXCommon* directXCommon) {
 	rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 }
 
+//===================================================================================================
+// 終了処理
+//===================================================================================================
 void RtvManager::Finalize() {
 	//ディスクリプタヒープの開放
 	descriptorHeap_.Reset();
@@ -59,7 +65,7 @@ void RtvManager::CreateRTV(ID3D12Resource* pResource, uint32_t rtvIndex) {	//RTV
 	dxCommon_->GetDevice()->CreateRenderTargetView(pResource, &rtvDesc_, handleCPU);
 }
 
-void RtvManager::CrearRenderTarget() {
+void RtvManager::ClearRenderTarget() {
 
 }
 

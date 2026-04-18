@@ -3,6 +3,10 @@
 #include "Utility/Logger.h"
 #include "Utility/StringUtility.h"
 #include "Collision/CollisionManager.h"
+#include "math/MathEnv.h"
+
+float MyGame::requestedTimeScale_ = 1.0f;
+Timer MyGame::timeScaleTimer_;
 
 //====================================================================
 //			初期化
@@ -10,10 +14,12 @@
 
 void MyGame::Initialize(const std::wstring& titleName) {
 
-	using Clock = std::chrono::high_resolution_clock;
 
-	// 計測開始
-	auto start = Clock::now();
+	using Clock = std::chrono::high_resolution_clock;
+	using Ms = std::chrono::milliseconds;
+
+	// 計測開始（全体）
+	auto totalStart = Clock::now();
 
 	//FrameWorkの初期化
 	TakeCFrameWork::Initialize(titleName);
@@ -21,32 +27,82 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	sceneFactory_ = std::make_unique<SceneFactory>();
 
 	//シーンマネージャーのセット
-	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
+	SceneManager::GetInstance().SetSceneFactory(sceneFactory_.get());
 
-	//Model読み込み
-	LoadModel();
+	//影描画用レンダ���テクスチャの生成
+	shadowRenderTexture_ = std::make_unique<RenderTexture>();
+	shadowRenderTexture_->Initialize(directXCommon_.get(), srvManager_.get(),
+		1024 * 4, 1024 * 4
+	);
+	//PostEffectManagerに影描画用レンダーテクスチャをセット
+	postEffectManager_->SetLightCameraRenderTexture(shadowRenderTexture_.get());
 
-	//Animation読み込み
-	LoadAnimation();
-	postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
-	postEffectManager_->InitializeEffect("GrayScale",   L"PostEffect/GrayScale.CS.hlsl");
-	postEffectManager_->InitializeEffect("Dissolve",    L"PostEffect/Dissolve.CS.hlsl");
-	postEffectManager_->InitializeEffect("RadialBluer", L"PostEffect/RadialBlur.CS.hlsl");
-	postEffectManager_->InitializeEffect("BoxFilter",   L"PostEffect/BoxFilter.CS.hlsl");
-	//postEffectManager_->InitializeEffect("LuminanceBasedOutline", L"PostEffect/LuminanceBasedOutline.CS.hlsl");
-	postEffectManager_->InitializeEffect("DepthBasedOutline",     L"PostEffect/DepthBasedOutline.CS.hlsl");
+	//----------------------------------------
+	// リソース読み��み時間計測
+	//----------------------------------------
 
-	CollisionManager::GetInstance()->Initialize(directXCommon_.get());
+	int64_t textureMs = Measure(L"TextureManager::LoadTextureAll", []() {
+		TakeC::TextureManager::GetInstance().LoadTextureAll();
+		});
+
+	int64_t modelMs = Measure(L"MyGame::LoadModel", [this]() {
+		LoadModel();
+		});
+
+	int64_t animationMs = Measure(L"MyGame::LoadAnimation", [this]() {
+		LoadAnimation();
+		});
+
+	int64_t soundMs = Measure(L"MyGame::LoadSound", [this]() {
+		LoadSound();
+		});
+
+	int64_t particlePresetMs = Measure(L"MyGame::LoadParticlePreset", [this]() {
+		LoadParticlePreset();
+		});
+
+	int64_t postEffectPresetMs = Measure(L"MyGame::LoadPostEffectPresets", [this]() {
+		LoadPostEffectPresets();
+		});
+
+	// post effect 初期化も計測したい場合
+	int64_t postEffectInitMs = Measure(L"PostEffect InitializeEffect", [this]() {
+		//postEffectManager_->InitializeEffect("Vignette",    L"PostEffect/Vignette.CS.hlsl");
+		//postEffectManager_->InitializeEffect("Dissolve", L"PostEffect/Dissolve.CS.hlsl");
+		postEffectManager_->InitializeEffect("DistortionEffect", L"PostEffect/DistortionEffect.CS.hlsl");
+		postEffectManager_->InitializeEffect("RadialBlur", L"PostEffect/RadialBlur.CS.hlsl");
+		postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
+		postEffectManager_->InitializeEffect("DepthBasedOutline", L"PostEffect/DepthBasedOutline.CS.hlsl");
+		postEffectManager_->InitializeEffect("ShadowMapEffect", L"PostEffect/ShadowMapEffect.CS.hlsl");
+		postEffectManager_->InitializeEffect("ScanlineEffect", L"PostEffect/ScanlineEffect.CS.hlsl");
+		postEffectManager_->InitializeEffect("ChromaticAberration", L"PostEffect/ChromaticAberration.CS.hlsl");
+		});
+
+	CollisionManager::GetInstance().Initialize(directXCommon_.get());
 
 	//最初のシーンを設定
-	SceneManager::GetInstance()->ChangeScene("GAMEPLAY",0.0f);
+#if defined(_DEBUG) || defined(_DEVELOP)
+	sceneManager_->ChangeScene("TITLE", 0.0f);
+#else
+	sceneManager_->ChangeScene("TITLE", 0.0f);
+#endif // _DEBUG
 
-	// 計測終了
-	auto end = Clock::now();
+	// 計測終了（全体）
+	auto totalEnd = Clock::now();
+	auto totalMs = std::chrono::duration_cast<Ms>(totalEnd - totalStart).count();
 
-	// 経過時間をミリ秒単位で計算
-	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-	Logger::Log(StringUtility::ConvertString(L"Resource Load Time : " + std::to_wstring(duration) + L"ms"));
+	// サマリーログ
+	Logger::Log(StringUtility::ConvertString(
+		L"[LoadTime] Summary(ms) "
+		L"Texture=" + std::to_wstring(textureMs) +
+		L", Model=" + std::to_wstring(modelMs) +
+		L", Animation=" + std::to_wstring(animationMs) +
+		L", Sound=" + std::to_wstring(soundMs) +
+		L", ParticlePreset=" + std::to_wstring(particlePresetMs) +
+		L", PostEffectPreset=" + std::to_wstring(postEffectPresetMs) +
+		L", PostEffectInit=" + std::to_wstring(postEffectInitMs) +
+		L", Total=" + std::to_wstring(totalMs)
+	));
 }
 
 //====================================================================
@@ -54,7 +110,8 @@ void MyGame::Initialize(const std::wstring& titleName) {
 //====================================================================
 
 void MyGame::Finalize() {
-	CollisionManager::GetInstance()->Finalize();
+	TakeCFrameWork::GetParticleManager()->Finalize(); //パーティクルマネージャーの解放
+	CollisionManager::GetInstance().Finalize();
 	sceneTransition_->Finalize(); //シーン遷移の開放
 	sceneManager_->Finalize();  //シーンの開放
 	TakeCFrameWork::Finalize(); //FrameWorkの終了処理
@@ -66,11 +123,20 @@ void MyGame::Finalize() {
 
 void MyGame::Update() {
 
+	timeScaleTimer_.Update(requestedTimeScale_);
+
+	if (timeScaleTimer_.IsFinished() == false) {
+
+		timeScale_ = std::clamp(timeScaleTimer_.GetEase(Easing::EasingType::OUT_QUAD), 0.2f, 1.0f);
+	}
+
+
 	//FrameWorkの更新
 	TakeCFrameWork::Update();
-	TakeCFrameWork::GetPrimitiveDrawer()->Update();
-	TakeCFrameWork::GetWireFrame()->Update();
+	//PostEffectの更新
+	postEffectManager_->Update();
 
+	TakeCFrameWork::GetWireFrame()->Update();
 }
 
 //====================================================================
@@ -78,27 +144,57 @@ void MyGame::Update() {
 //====================================================================
 
 void MyGame::Draw() {
+	
+	//===========================================
+	// 1. シャドウパス
+	//===========================================
+	shadowRenderTexture_->ClearRenderTarget();
+	srvManager_->SetDescriptorHeap();
+	sceneManager_->DrawShadow();  // ライトカメラ視点で深度のみ描画
 
-	//renderTextureの描画前処理
-	renderTexture_->PreDraw();
-	//SRV描画前処理
-	srvManager_->SetDescriptorHeap(); 
-	//シーン描画
-	sceneManager_->Draw();
-	 //描画前処理
+	//===========================================
+	// 2. メインパス（シーン描画）
+	//===========================================
+	renderTexture_->ClearRenderTarget();
+	srvManager_->SetDescriptorHeap();
+	sceneManager_->DrawObject();  // 通常のオブジェクト描画
+	sceneManager_->DrawSprite();  // スプライト描画
+
+	
+
+	//===========================================
+	// 3. ポストエフェクト
+	//===========================================
+	// シャドウマップ + メインカラー + 深度 を使って影を適用
+	postEffectManager_->AllDispatch();
+
+	//===========================================
+	// 4. 最終描画（スワップチェーンへ）
+	//===========================================
 	directXCommon_->PreDraw();
 
-	//postEffect計算処理
-	postEffectManager_->AllDispatch();
-	//RenderTexture描画
+	renderTexture_->PreDraw();
+	postEffectManager_->Draw(renderTexture_->GetRenderTexturePSO());
 	renderTexture_->Draw();
-	//renderTexture描画後処理
 	renderTexture_->PostDraw();
-#ifdef _DEBUG
+
+#if defined(_DEBUG) || defined(_DEVELOP)
 	imguiManager_->PostDraw();
 #endif
-	//描画後処理
+
 	directXCommon_->PostDraw();
+
+	//===========================================
+	// 5. 次フレーム準備
+	//===========================================
+
+	// モデルのリロード適用
+	TakeC::ModelManager::GetInstance().ApplyModelReloads();
+}
+
+void MyGame::RequestTimeScale(float timeScale, float duration,float current) {
+	requestedTimeScale_ = timeScale;
+	timeScaleTimer_.Initialize(duration, current);
 }
 
 //====================================================================
@@ -107,22 +203,27 @@ void MyGame::Draw() {
 
 void MyGame::LoadModel() {
 	//gltf
-	ModelManager::GetInstance()->LoadModel("gltf", "walk.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "plane.gltf","skyBox_blueSky.dds");
-	ModelManager::GetInstance()->LoadModel("gltf", "player_singleMesh.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "cube.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "ICOBall.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "Rifle.gltf");
-	ModelManager::GetInstance()->LoadModel("gltf", "Bazooka.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Bazooka.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("BazookaBullet.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("boostEffectCone.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Bullet.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("cube.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Floor.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Ground.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Missile.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("plane.gltf","skyBox_blueSky.dds");
+	TakeC::ModelManager::GetInstance().LoadModel("Player_Model_Ver2.0.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Enemy_Model.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("ICOBall.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Rifle.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("Rail.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("VerticalMissileLauncher.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("ShotGun.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("MachineGun.gltf");
+	TakeC::ModelManager::GetInstance().LoadModel("TestBox.gltf");
+	//TakeC::ModelManager::GetInstance().LoadModelAll();
 	//obj
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "plane.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "sphere.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_airport.obj","rostock_laage_airport_4k.dds");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_blueSky.obj","skyBox_blueSky.dds");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "skyBox_pool.obj","pool_4k.dds");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "ground.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "axis.obj");
-	ModelManager::GetInstance()->LoadModel("obj_mtl_blend", "cube.obj","pool_4k.dds");
+
 }
 
 //====================================================================
@@ -131,16 +232,39 @@ void MyGame::LoadModel() {
 
 void MyGame::LoadAnimation() {
 
-	//TakeCFrameWork::GetAnimator()->LoadAnimation("Idle.gltf");
-	//TakeCFrameWork::GetAnimator()->LoadAnimation("running.gltf");
-	//TakeCFrameWork::GetAnimator()->LoadAnimation("throwAttack.gltf");
+	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Player_Model_Ver2.0.gltf");
 }
 
+//====================================================================
+//			テクスチャの読み込み
+//====================================================================
 void MyGame::LoadTexture() {
 
-	TextureManager::GetInstance()->LoadTexture("UI/TitleText.png",false);
-	TextureManager::GetInstance()->LoadTexture("UI/GameClearText.png",false);
-	TextureManager::GetInstance()->LoadTexture("UI/GameOverText.png", false);
-	TextureManager::GetInstance()->LoadTexture("UI/reticle_focusTarget.png", false);
-	TextureManager::GetInstance()->LoadTexture("UI/numText.png", false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/TitleText.png",false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/GameClearText.png",false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/GameOverText.png", false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/reticle_focusTarget.png", false);
+	TakeC::TextureManager::GetInstance().LoadTexture("UI/numText.png", false);
+}
+
+//====================================================================
+//			サウンドの読み込み
+//====================================================================
+void MyGame::LoadSound() {
+
+}
+
+//====================================================================
+//			パーティクルプリセットの読み込み
+//====================================================================
+void MyGame::LoadParticlePreset() {
+
+	TakeCFrameWork::GetParticleManager()->LoadAllPresets();
+}
+
+//====================================================================
+//			PostEffectプリセットの読み込み
+//====================================================================
+void MyGame::LoadPostEffectPresets() {
+	postEffectManager_->LoadPresets();
 }

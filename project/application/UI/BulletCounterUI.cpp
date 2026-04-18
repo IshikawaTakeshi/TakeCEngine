@@ -1,86 +1,130 @@
 #include "BulletCounterUI.h"
-#include "engine/2d/SpriteCommon.h"
-#include "engine/2d/Sprite.h"
-#include "engine/base/ImGuiManager.h"
-#include "engine/math/Easing.h"
-#include "engine/base/TakeCFrameWork.h"
 #include "application/Weapon/BaseWeapon.h"
+#include "engine/2d/Sprite.h"
+#include "engine/2d/SpriteCommon.h"
+#include "engine/Base/ImGuiManager.h"
+#include "engine/Base/SpriteManager.h"
+#include "engine/Base/TakeCFrameWork.h"
+#include "engine/Math/Easing.h"
 
-void BulletCounterUI::Initialize(SpriteCommon* spriteCommon) {
+//===================================================================================
+// 　初期化
+//===================================================================================
+void BulletCounterUI::Initialize(TakeC::SpriteManager* spriteManager,const Vector2& position) {
+	// BaseUIの初期化
+	BaseUI::Initialize(spriteManager);
 
-	bulletCounterPos_ = { 750.0f, 500.0f }; // スプライトの位置を設定
+	bulletCounterPos_ = position; // スプライトの位置
+	counterSpriteSize_ = { 15.0f, 16.0f }; // スプライトのサイズ
+	reloadSpriteSize_ = { 65.0f, 20.0f }; // リロードスプライトのサイズ
+
 	for (int i = 0; i < 3; ++i) {
-		std::unique_ptr<Sprite> sprite;
-		sprite = std::make_unique<Sprite>();
-		sprite->Initialize(spriteCommon, "UI/numText.png");
-		sprite->AdjustTextureSize();
-		sprite->SetTextureSize({ 72.0f,72.0f });
-		sprite->SetSize({ 32.0f, 32.0f }); // スプライトのサイズを設定
+		// 弾数カウンターのスプライトを3つ作成
+		Sprite* sprite =
+			CreateAndRegisterSpriteFromJson("BulletCounter_NumText.json");
+		sprite->SetTranslate(
+			{ bulletCounterPos_.x + i * (counterSpriteSize_.x - spriteSpace_),
+			 bulletCounterPos_.y });
+		bulletCounterSprite_.push_back(sprite);
 
-		sprite->SetPosition({
-			bulletCounterPos_.x + i * (sprite->GetSize().x - spriteSpace_),
-			bulletCounterPos_.y  // 弾数カウンターの位置を設定
-			}
-		);
-
-		bulletCounterSprite_.push_back(std::move(sprite));
+		// 最大弾数カウンターのスプライトを3つ作成
+		Sprite* maxSprite =
+			CreateAndRegisterSpriteFromJson("BulletCounter_MaxNumText.json");
+		maxSprite->SetTranslate(
+			{ bulletCounterPos_.x + i * (counterSpriteSize_.x - spriteSpace_),
+			 bulletCounterPos_.y + counterSpriteSize_.y + 5.0f });
+		maxBulletCounterSprite_.push_back(maxSprite);
 	}
 
-	digits_.resize(3, 0); // 初期化時に3桁の数字を保持するための配列
+	digits_.resize(3, 0);          // 初期化時に3桁の数字を保持するための配列
+	maxBulletDigits_.resize(3, 0); // 最大弾数の桁数を保持するための配列
 
-	reloadSprite_ = std::make_unique<Sprite>();
-	reloadSprite_->Initialize(spriteCommon, "UI/ReloadText.png");
-	reloadSprite_->AdjustTextureSize();
+	// リロード中のスプライトの初期化
+	reloadSprite_ = CreateAndRegisterSpriteFromJson("BulletCounter_Reload.json");
+	reloadSprite_->SetTranslate(bulletCounterPos_);
 
-	// リロード中のスプライトの更新
-	reloadSprite_->SetPosition({ 50.0f, 150.0f });
-	reloadSprite_->SetSize({ 200.0f, 50.0f });
+	separatorSpriteSize_ = { 110.0f, 1.0f }; // セパレータースプライトのサイズ
+	// セパレータースプライトの初期化
+	separatorSprite_ =
+		CreateAndRegisterSpriteFromJson("BulletCounter_Separator.json");
+	separatorSprite_->SetTranslate({
+		bulletCounterPos_.x + 1.5f * (counterSpriteSize_.x - spriteSpace_),
+		bulletCounterPos_.y + counterSpriteSize_.y + 5.0f // セパレーターの位置を弾数カウンターの中央に設定
+		});
+
+	// 武器アイコンのスプライトの初期化
+	weaponIconSprite_ =
+		CreateAndRegisterSpriteFromJson("BulletCounter_WeaponIcon.json");
+	weaponIconSprite_->SetTranslate(
+		{ bulletCounterPos_.x - 40.0f, // アイコンの位置を弾数カウンターの左側に設定
+		 bulletCounterPos_.y });
 }
 
+//===================================================================================
+// 　更新
+//===================================================================================
 void BulletCounterUI::Update() {
+	BaseUI::Update();
+	if (!isActive_)
+		return;
 
+	// 現在の弾数と最大弾数のカウンターを更新
 	digits_[0] = (bulletCount_ / 100) % 10; // 百の位
 	digits_[1] = (bulletCount_ / 10) % 10;  // 十の位
 	digits_[2] = bulletCount_ % 10;         // 一の位
 
-	for(int i = 0; i < 3; ++i) {
-		// スプライトの位置を更新
-		bulletCounterSprite_[i]->SetPosition({
-			bulletCounterPos_.x + i * (bulletCounterSprite_[i]->GetSize().x - spriteSpace_),
-			bulletCounterPos_.y
-		});
+	maxBulletDigits_[0] = (remainingBulletCount_ / 100) % 10; // 百の位
+	maxBulletDigits_[1] = (remainingBulletCount_ / 10) % 10;  // 十の位
+	maxBulletDigits_[2] = remainingBulletCount_ % 10;         // 一の位
 
-		SetDigitUV(bulletCounterSprite_[i].get(), digits_[i]);
-
-		// スプライトのテクスチャを更新
-		bulletCounterSprite_[i]->Update();
-	}
-
-}
-
-void BulletCounterUI::Draw() {
 	for (int i = 0; i < 3; ++i) {
-		bulletCounterSprite_[i]->Draw();
+		// 数字がカウントされてるように見えるよう処理
+		SetDigitUV(bulletCounterSprite_[i], digits_[i]);
+		// 最大弾数のスプライトも同様に更新
+		SetDigitUV(maxBulletCounterSprite_[i], maxBulletDigits_[i]);
+
+		// リロード状態に応じてアルファ値を切り替え
+		if (isReloading_) {
+			bulletCounterSprite_[i]->SetAlpha(0.0f);
+		}
+		else {
+			bulletCounterSprite_[i]->SetAlpha(1.0f);
+		}
 	}
-	reloadSprite_->Draw();
+
+	if (isReloading_) {
+		reloadSprite_->SetAlpha(1.0f);
+	}
+	else {
+		reloadSprite_->SetAlpha(0.0f);
+	}
 }
 
-void BulletCounterUI::UpdateImGui([[maybe_unused]] const std::string& name) {
+//===================================================================================
+// 　描画
+//===================================================================================
+void BulletCounterUI::Draw() {
+	BaseUI::Draw();
+	// BaseUI由来のスプライト描画は、上位のSpriteManager一括描画で行なうためここでは何もしない
+}
 
-	for(int i = 0; i < 3; ++i) {
-		bulletCounterSprite_[i]->UpdateImGui(name + std::to_string(i));
+//===================================================================================
+// 　ImGuiの更新
+//===================================================================================
+void BulletCounterUI::UpdateImGui([[maybe_unused]] const std::string& name) {
+	BaseUI::UpdateImGui(name);
+#if defined(_DEBUG) || defined(_DEVELOP)
+	for (int i = 0; i < 3; ++i) {
+		// bulletCounterSprite_[i]->UpdateImGui(name + std::to_string(i));
 	}
+	// reloadSprite_->UpdateImGui(name + "_Reload");
+	// weaponIconSprite_->UpdateImGui(name + "_WeaponIcon");
 	ImGui::Begin("BulletCounterUI");
 	ImGui::Text("Bullet Count: %d", bulletCount_);
-	ImGui::Text("Max Bullet Count: %d", maxBulletCount_);
 	ImGui::Checkbox("Is Reloading", &isReloading_);
-	if (isReloading_) {
-		ImGui::Text("Reload Timer: %.2f", reloadTimer_);
-	} else {
-		ImGui::Text("Not Reloading");
-	}
 	ImGui::DragFloat("spriteSpace", &spriteSpace_, 0.1f, 0.0f, 20.0f);
 	ImGui::End();
+#endif
 }
 
 uint32_t BulletCounterUI::GetBulletCount() const {
@@ -88,9 +132,9 @@ uint32_t BulletCounterUI::GetBulletCount() const {
 	return bulletCount_;
 }
 
-uint32_t BulletCounterUI::GetMaxBulletCount() const {
-	// 最大弾数を返す
-	return maxBulletCount_;
+uint32_t BulletCounterUI::GetRemainingBulletCount() const {
+	// 残弾数の取得
+	return remainingBulletCount_;
 }
 
 const Vector2& BulletCounterUI::GetBulletCounterPosition() const {
@@ -98,36 +142,50 @@ const Vector2& BulletCounterUI::GetBulletCounterPosition() const {
 	return bulletCounterPos_;
 }
 
-void BulletCounterUI::SetBulletCount(uint32_t count) {
-	bulletCount_ = count;
-}
+void BulletCounterUI::SetBulletCount(uint32_t count) { bulletCount_ = count; }
 
-void BulletCounterUI::SetMaxBulletCount(uint32_t count) {
-	maxBulletCount_ = count;
+void BulletCounterUI::SetRemainingBulletCount(uint32_t count) {
+	// 残りの弾数を設定
+	remainingBulletCount_ = count;
 }
 
 void BulletCounterUI::SetReloadingState(bool isReloading) {
 	isReloading_ = isReloading;
 }
 
-void BulletCounterUI::SetReloadTimer(float timer) {
-	reloadTimer_ = timer;
-}
-
+//===================================================================================
+// 　弾数カウンターの位置設定
+//===================================================================================
 void BulletCounterUI::SetBulletCounterPosition(const Vector2& position) {
 
 	bulletCounterPos_ = position;
 	for (int i = 0; i < 3; ++i) {
-		bulletCounterSprite_[i]->SetPosition({
-			bulletCounterPos_.x + i * (bulletCounterSprite_[i]->GetSize().x - spriteSpace_),
-			bulletCounterPos_.y
-		});
+		bulletCounterSprite_[i]->SetTranslate(
+			{ bulletCounterPos_.x +
+				 i * (bulletCounterSprite_[i]->GetSize().x - spriteSpace_),
+			 bulletCounterPos_.y });
 	}
 }
 
+//===================================================================================
+// 　武器アイコンのUV設定
+//===================================================================================
+void BulletCounterUI::SetWeaponIconUV(int weaponIndex) {
+
+	float uvWidth = weaponIconSprite_->GetTextureSize().x;
+	float uvLeft = weaponIndex * uvWidth;
+	float uvTop = 0.0f;
+
+	// スプライトにUV座標を設定
+	weaponIconSprite_->SetTextureLeftTop({ uvLeft, uvTop });
+}
+
+//===================================================================================
+// 　数字のUV設定
+//===================================================================================
 void BulletCounterUI::SetDigitUV(Sprite* sprite, int digit) {
 	// 0-9の10個の数字が横に並んでいる場合
-	float uvWidth =sprite->GetTextureSize().x;
+	float uvWidth = sprite->GetTextureSize().x;
 	float uvLeft = digit * uvWidth;
 	float uvTop = 0.0f;
 

@@ -1,0 +1,109 @@
+#include "GameOverScene.h"
+#include "SceneManager.h"
+#include "TakeCFrameWork.h"
+#include <cmath>
+#include <algorithm>
+
+//====================================================================
+//			初期化
+//====================================================================
+void GameOverScene::Initialize() {
+
+	// サウンドデータ
+	//gameOverBGM = AudioManager::GetInstance()->SoundLoadWave("Resources/audioSources/gameOverBGM.wav");
+	isSoundPlay = false;
+	// GameCamera
+	gameOverCamera_ = std::make_unique<Camera>();
+	gameOverCamera_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"CameraConfig_SelectScene.json");
+	gameOverCamera_->SetTranslate({ 0.0f, 20.0f, -60.0f });
+	gameOverCamera_->SetRotate({ 0.9f, -0.01f, 0.03f,0.36f });
+	TakeC::CameraManager::GetInstance().AddCamera("GameOverCamera", gameOverCamera_.get());
+	// デフォルトカメラの設定
+	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
+	ParticleCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
+
+	//SkyBox
+	skybox_ = std::make_unique<SkyBox>();
+	skybox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(), "skyBox_blueSky.dds");
+	skybox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
+
+	//Spriteの初期化
+	gameOverTextSprite_ = std::make_unique<Sprite>();
+	gameOverTextSprite_->Initialize(&SpriteCommon::GetInstance(), "UI/GameOverText.png");
+	gameOverTextSprite_->SetTranslate({ 50.0f, 50.0f });
+	gameOverTextSprite_->AdjustTextureSize();
+
+}
+
+//====================================================================
+//			終了処理
+//====================================================================
+void GameOverScene::Finalize() {
+	// サウンドデータの解放
+	AudioManager::GetInstance().SoundUnload(&gameOverBGM);
+	// カメラの解放
+	TakeC::CameraManager::GetInstance().ResetCameras();
+}
+
+//====================================================================
+//			更新処理
+//====================================================================
+void GameOverScene::Update() {
+
+	if (!isSoundPlay) {
+		//AudioManager::GetInstance()->SoundPlayWave(AudioManager::GetInstance()->GetXAudio2(), gameOverBGM);
+		isSoundPlay = true;
+	}
+	
+	// カメラの更新
+	TakeC::CameraManager::GetInstance().Update();
+	// 天球の更新
+	skybox_->Update();
+
+	// スプライトの更新
+	gameOverTextSprite_->Update();
+
+	//particleManager更新
+	TakeCFrameWork::GetParticleManager()->Update();
+	
+		// シーン遷移
+	if (TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::A)) {
+
+		// シーン切り替え依頼
+		AudioManager::GetInstance().SoundUnload(&gameOverBGM);
+		SceneManager::GetInstance().ChangeScene("TITLE",0.3f);
+	}
+}
+
+//====================================================================
+//			ImGui更新処理
+//====================================================================
+void GameOverScene::UpdateImGui() {
+	TakeC::CameraManager::GetInstance().UpdateImGui();
+	Object3dCommon::GetInstance().UpdateImGui();	
+	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
+	gameOverTextSprite_->UpdateImGui("GameOverTextSprite");
+
+}
+
+//====================================================================
+//			描画処理
+//====================================================================
+void GameOverScene::Draw() {
+	skybox_->Draw();
+
+	
+	Object3dCommon::GetInstance().PreDraw(); // Object3dの描画前処理
+	
+	//ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理
+	TakeCFrameWork::GetParticleManager()->Draw(); // パーティクルの描画
+}
+
+void GameOverScene::DrawSprite() {
+	SpriteCommon::GetInstance().PreDraw(); // Spriteの描画前処理
+	gameOverTextSprite_->Draw(); // スプライトの描画
+
+}
+
+void GameOverScene::DrawShadow() {
+}

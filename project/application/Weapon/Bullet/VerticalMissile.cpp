@@ -2,7 +2,11 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/math/Vector3Math.h"
 #include "engine/math/MatrixMath.h"
+#include "engine/math/Easing.h"
+#include "engine/Collision/CollisionManager.h"
 #include "engine/Collision/SphereCollider.h"
+
+using namespace TakeC;
 
 //====================================================================================
 // 初期化処理
@@ -20,26 +24,36 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 		collider_ = std::make_unique<SphereCollider>();
 		collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
 	}
-	collider_->SetRadius(bulletradius_); // 半径を設定
+	collider_->SetOwner(this); // 持ち主を設定
+	collider_->SetRadius(bulletRadius_); // 半径を設定
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Missile)); // 種別IDを設定
+	
+}
+
+void VerticalMissile::InitializeEffect(const BulletEffectConfig& effectConfig) {
+	effectConfig_ = effectConfig;
 	//emiiter設定
 	//emitter0
-	particleEmitter_.resize(2);
-	particleEmitter_[0] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[0]->Initialize("EnemyEmitter0", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 5, 0.001f);
-	particleEmitter_[0]->SetParticleName("SparkExplosion");
+	explosionEffect_ = std::make_unique<EffectGroup>();
+	explosionEffect_->Initialize(effectConfig_.explosionEffectFilePath);
+
 	//emitter1
-	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
-	particleEmitter_[1]->Initialize("EnemyEmitter1", { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, transform_.translate }, 8, 0.001f);
-	particleEmitter_[1]->SetParticleName("SmokeEffect");
+	lightEffect_ = std::make_unique<EffectGroup>();
+	lightEffect_->Initialize(effectConfig_.lightEffectFilePath);
 
 	deltaTime_ = TakeCFrameWork::GetDeltaTime();
-	phase_ = VerticalMissilePhase::ASCENDING;
 
-	speed_ = 140.0f; // 初期速度を設定
-	lifeTime_ = 5.0f; // ライフタイムを設定
-	bulletradius_ = 1.5f; // 弾の半径を設定
-	homingRate_ = 0.4f;
+
+	//transform初期化
+	transform_.translate = { 0.0f, 200.0f, 0.0f };
+	bulletRadius_ = 1.5f; // 弾の半径を設定
+
+	pointLightData_.color_ = { 1.0f,0.1f,0.2f,1.0f };
+	pointLightData_.intensity_ = 120.0f;
+	pointLightData_.radius_ = 20.0f;
+	pointLightData_.decay_ = 6.0f;
+	//ポイントライトの追加
+	pointLightIndex_ = TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
 }
 
 //====================================================================================
@@ -48,31 +62,99 @@ void VerticalMissile::Initialize(Object3dCommon* object3dCommon, const std::stri
 
 void VerticalMissile::Update() {
 
-	//ライフタイムの減少
-	lifeTime_ -= deltaTime_;
-	if (lifeTime_ <= 0.0f || transform_.translate.y < 0.0f) {
+	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	if (isActive_ == false) {
+		pointLightData_.enabled_ = 0;
+
+		lightEffect_->Stop();
+		return;
+	}
+
+	
+	// 1フレームでの移動量を計算
+	Vector3 displacement = velocity_ * deltaTime_;
+	float moveDistance = Vector3Math::Length(displacement);
+
+	bool isHit = false;
+
+	//ライフタイムが0以下になったら無効化
+	if (lifeTime_ <= 0.0f) {
+		pointLightData_.enabled_ = 0;
 		isActive_ = false;
+		return;
 	}
 
 	switch (phase_) {
 	case VerticalMissile::VerticalMissilePhase::ASCENDING:
+	{
 		// 上昇中の処理
-		transform_.translate.y += kAscendSpeed_ * TakeCFrameWork::GetDeltaTime();
-		if (transform_.translate.y >= altitude_) {
+		velocity_ = { 0.0f, vmInfo_.ascendSpeed, 0.0f };
+		// 上昇方向を直接使う（Normalize不要）
+		const Vector3 upDir = { 0.0f, 1.0f, 0.0f };
+
+		Quaternion targetRotate = QuaternionMath::LookRotation(
+			upDir, { 0.0f, 0.0f, 1.0f } // upと平行でないUpベクトルを渡す
+		);
+		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.3f);
+		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
+
+		transform_.translate.y += velocity_.y * deltaTime_;
+		if (transform_.translate.y >= vmInfo_.maxAltitude) {
 			// 最大高度に達したらホーミングフェーズに移行
-			transform_.translate.y = altitude_; // 高度を制限
-
 			phase_ = VerticalMissile::VerticalMissilePhase::HOMING;
+			// ホーミング開始時の経過時間をリセット
+			homingElapsedTime_ = 0.0f; 
 		}
-
+	}
 		break;
 	case VerticalMissile::VerticalMissilePhase::HOMING:
+	{
+		// ターゲット位置を更新
+		targetPos_ = ownerWeapon_->GetTargetPos();
 
-		targetPos_ = ownerWeapon_->GetTragetPos(); // ターゲット位置を更新
-		direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
-		velocity_ = direction_ * (1.0f - homingRate_) * speed_;
-		transform_.translate += velocity_ * TakeCFrameWork::GetDeltaTime();
+		// 経過時間を進める
+		homingElapsedTime_ += deltaTime_;
 
+		// 補間率t
+		float duration = std::max(vmInfo_.homingBlendDuration, 0.0001f);
+		float t = std::clamp(homingElapsedTime_ / duration, 0.0f, 1.0f);
+
+		// 時間経過でホーミング値を変化
+		float currentHomingRate = Easing::Lerp(vmInfo_.homingRateStart, vmInfo_.homingRateEnd, t);
+		currentHomingRate = std::clamp(currentHomingRate, 0.0f, 1.0f);
+
+		
+
+		// 現在の移動方向と目標方向を補間して新しい移動方向を決定
+		Vector3 desired = Vector3Math::Normalize(targetPos_ - transform_.translate);
+
+		Vector3 currentDir;
+		if (velocity_.Length() > 0.0f) {
+			currentDir = Vector3Math::Normalize(velocity_);
+		} else {
+			currentDir = desired;
+		}
+
+		// ホーミング率を考慮して現在の方向と目標方向を補間
+		Vector3 mixed = Easing::Lerp(currentDir, desired, currentHomingRate);
+		direction_ = Vector3Math::Normalize(mixed);
+
+		velocity_ = direction_ * speed_;
+		displacement = velocity_ * deltaTime_;
+		moveDistance = Vector3Math::Length(displacement);
+
+		// 現在の位置からターゲットへの方向を計算して回転を更新
+		Quaternion targetRotate = QuaternionMath::LookRotation(
+			Vector3Math::Normalize((transform_.translate + displacement) - transform_.translate), {0.0f, 1.0f, 0.0f});
+
+		transform_.rotate = Easing::Slerp(transform_.rotate, targetRotate, 0.3f);
+		transform_.rotate = QuaternionMath::Normalize(transform_.rotate);
+		
+		// 衝突しなかった場合のみ、通常通り移動
+		if (!isHit) {
+			transform_.translate += displacement;
+		}
+	}
 		break;
 	case VerticalMissile::VerticalMissilePhase::EXPLODING:
 		break;
@@ -80,20 +162,76 @@ void VerticalMissile::Update() {
 		break;
 	}
 
-	object3d_->SetTranslate(transform_.translate);
-	object3d_->Update();
-	collider_->Update(object3d_.get());
+
+	//========================================================================
+	// CCD (Continuous Collision Detection) - カプセル判定方式
+	//========================================================================
+
+	// 移動量がある場合のみ判定
+	if (moveDistance > 0.0001f) {
+		// カプセルを構築（移動前→移動後）
+		Capsule capsule;
+		capsule.start = transform_.translate;           // 現在位置（移動前）
+		capsule.end = transform_.translate + displacement; // 移動後の位置
+		capsule.radius = bulletRadius_;                 // 弾の半径
+
+		RayCastHit hitInfo;
+
+		// 衝突対象のレイヤーマスクを設定
+		uint32_t targetMask = 0;
+		if (characterType_ == CharacterType::PLAYER_MISSILE) {
+			targetMask = static_cast<uint32_t>(CollisionLayer::Enemy);
+		}
+		else if (characterType_ == CharacterType::ENEMY_MISSILE) {
+			targetMask = static_cast<uint32_t>(CollisionLayer::Player);
+		}
+
+		// CapsuleCast実行
+		if (CollisionManager::GetInstance().CapsuleCast(capsule, hitInfo, targetMask)) {
+			// --- 衝突した場合 ---
+			isHit = true;
+
+			// 1. 弾の位置を衝突地点へ移動させる
+			transform_.translate = hitInfo.position;
+
+			// 2. 衝突相手のGameCharacterを取得して衝突処理を実行
+			if (hitInfo.hitCollider) {
+				GameCharacter* owner = hitInfo.hitCollider->GetOwner();
+				if (owner) {
+					OnCollisionAction(owner);
+					owner->OnCollisionAction(this);
+				}
+			}
+		}
+	}
+
+	//ライフタイムの減少
+	lifeTime_ -= deltaTime_;
+	//ポイントライトの更新
+	pointLightData_.position_ = transform_.translate;
+	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
+
 
 	//パーティクルエミッターの更新
-	particleEmitter_[0]->SetTranslate(transform_.translate);
-	particleEmitter_[0]->Update();
+	explosionEffect_->SetPosition(transform_.translate);
+	explosionEffect_->Update();
 
-	particleEmitter_[1]->SetTranslate(transform_.translate);
-	particleEmitter_[1]->Update();
-	//MEMO: パーティクルの毎フレーム発生
-	particleEmitter_[1]->Emit();
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SmokeEffect")->SetEmitterPosition(transform_.translate);
-	TakeCFrameWork::GetParticleManager()->GetParticleGroup("SparkExplosion")->SetEmitterPosition(transform_.translate);
+	lightEffect_->SetPosition(transform_.translate);
+	lightEffect_->Update();
+
+	// 敵のミサイルの場合は警告イベントを発行
+	if (characterType_ == CharacterType::ENEMY_MISSILE) {
+		WarningData data;
+		data.position = transform_.translate;
+		data.type = WarningType::MISSILE;
+		TakeCFrameWork::GetEventManager()->PostEvent("EnemyBulletWarning", data);
+	}
+
+	//オブジェクト、コライダーの更新
+	object3d_->SetTranslate(transform_.translate);
+	object3d_->SetRotate(QuaternionMath::ToEuler(transform_.rotate));
+	object3d_->Update();
+	collider_->Update(object3d_.get());
 
 }
 
@@ -120,19 +258,25 @@ void VerticalMissile::DrawCollider() {
 void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 
 	//他のキャラクターと衝突した場合の処理
-	if (other->GetCharacterType() == CharacterType::PLAYER ||
-		other->GetCharacterType() == CharacterType::ENEMY) {
-
-		isActive_ = false; //弾を無効化
+	if(characterType_ == CharacterType::PLAYER_MISSILE && other->GetCharacterType() == CharacterType::ENEMY ||
+	   characterType_ == CharacterType::ENEMY_MISSILE && other->GetCharacterType() == CharacterType::PLAYER) {
+		//パーティクル射出
+		explosionEffect_->Play(transform_.translate);
+		//弾を無効化
+		isActive_ = false; 
+		//ポイントライト無効化
+		pointLightData_.enabled_ = 0;
 	}
 
 	//レベルオブジェクトに当たった場合の処理
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {
 
 		//パーティクル射出
-		//particleEmitter_[0]->Emit();
-
-		isActive_ = false; //弾を無効化
+		explosionEffect_->Play(transform_.translate);
+		//弾を無効化
+		isActive_ = false; 
+		//ポイントライト無効化
+		pointLightData_.enabled_ = 0;
 	}
 
 }
@@ -141,18 +285,29 @@ void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 // ミサイルの生成
 //====================================================================================
 
-void VerticalMissile::Create(BaseWeapon* ownerWeapon, const float& speed, float damage, CharacterType type) {
+void VerticalMissile::Create(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo, float speed, float damage, CharacterType type) {
 
 	ownerWeapon_ = ownerWeapon; // 所有者の武器を設定
 	transform_.translate = ownerWeapon_->GetCenterPosition();
 	characterType_ = type;
 	speed_ = speed;
+	vmInfo_ = vmInfo;
 	damage_ = damage;
-	targetPos_ = ownerWeapon_->GetTragetPos();
+	targetPos_ = ownerWeapon_->GetTargetPos();
+	//phaseの初期化	
+	phase_ = VerticalMissilePhase::ASCENDING;
 	//ターゲットまでの方向を求める
 	direction_ = Vector3Math::Normalize(targetPos_ - transform_.translate);
-	altitude_ = transform_.translate.y + kMaxAltitude_; // 初期の上昇高度を設定
+	
+	lifeTime_ = 5.0f; // ライフタイムを設定
 	isActive_ = true;
+	//ポイントライト有効化
+	pointLightData_.enabled_ = 1;
+	homingElapsedTime_ = 0.0f;
+
+	/*for (auto& trailEmitter : trailEmitter_) {
+		trailEmitter->SetIsEmit(true);
+	}*/
 }
 
 
@@ -161,9 +316,9 @@ void VerticalMissile::Create(BaseWeapon* ownerWeapon, const float& speed, float 
 //====================================================================================
 
 //transformの取得
-const EulerTransform& VerticalMissile::GetTransform() const { return transform_; }
+const QuaternionTransform& VerticalMissile::GetTransform() const { return transform_; }
 //弾が有効かどうか
-bool VerticalMissile::GetIsActive() const { return isActive_; }
+bool VerticalMissile::IsActive() const { return isActive_; }
 //弾の速度の取得
 const Vector3& VerticalMissile::GetVelocity() const { return velocity_; }
 //ターゲットの座標の取得
@@ -173,7 +328,7 @@ float VerticalMissile::GetDamage() const { return damage_; }
 //弾速の取得
 float VerticalMissile::GetSpeed() const { return speed_; }
 //弾の半径の取得
-float VerticalMissile::GetBulletRadius() const { return bulletradius_; }
+float VerticalMissile::GetBulletRadius() const { return bulletRadius_; }
 //寿命時間の取得
 float VerticalMissile::GetLifeTime() const { return lifeTime_; }
 //ミサイルのフェーズの取得

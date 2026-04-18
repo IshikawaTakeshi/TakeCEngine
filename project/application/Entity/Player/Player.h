@@ -1,27 +1,68 @@
 #pragma once
 #include "engine/Entity/GameCharacter.h"
-#include "engine/io/Gamepad.h"
+#include "engine/Input/Gamepad.h"
 #include "engine/camera/Camera.h"
 #include "engine/3d/Particle/ParticleEmitter.h"
 #include <optional>
+#include <memory>
 
 #include "application/Weapon/BaseWeapon.h"
 #include "application/Weapon/WeaponType.h"
 #include "application/Weapon/Bullet/BulletManager.h"
-#include "application/Entity/GameCharacterBehavior.h"
+#include "application/Entity/GameCharacterInfo.h"
+#include "application/Entity/Animation/AnimationMapper.h"
+#include "application/Provider/PlayerInputProvider.h"
+#include "application/Entity/State/GameCharacterState.h"
+#include "application/Entity/BoostDirectionEnum.h"
+#include "application/Entity/State/GameCharacterStateManager.h"
+#include "application/Effect/BoostEffect.h"
 
+
+//==================================================================================
+// Player class
+//==================================================================================
 class Player : public GameCharacter {
 public:
+	
+
+	//==============================================================================
+	// functions
+	//==============================================================================
+
+	/// <summary>
+	/// コンストラクタ・デストラクタ
+	/// </summary>
 	Player() = default;
-	~Player() override;
-	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
+	~Player() override = default;
+
+	//初期化
+	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath);
+	//更新
 	void Update() override;
+	//ImGuiの更新
 	void UpdateImGui();
+	//描画
 	void Draw() override;
+	void DrawShadow(const LightCameraInfo& lightCamera);
+	//コライダーの描画
 	void DrawCollider() override;
+	//衝突時の処理
 	void OnCollisionAction(GameCharacter* other) override;
 
+	//武器の初期化
 	void WeaponInitialize(Object3dCommon* object3dCommon,BulletManager* bulletManager);
+
+	/// <summary>
+	/// PlayerのGameCharacterContextの読み込み
+	/// </summary>
+	/// <param name="characterName"></param>
+	void LoadPlayerData(const std::string& characterName);
+
+	/// <summary>
+	/// PlayerのGameCharacterContextの保存
+	/// </summary>
+	/// <param name="characterName"></param>
+	void SavePlayerData(const std::string& characterName);
 
 public:
 
@@ -29,148 +70,113 @@ public:
 	// getter
 	//==============================================================================
 
-	BaseWeapon* GetWeapon(int index) const;
+	//武器の取得
+	BaseWeapon* GetCurrentWeapon(int index) const;
+	//全武器の取得
+	std::vector<std::unique_ptr<BaseWeapon>>& GetWeapons();
+
+	//カメラの取得
+	Camera* GetCamera() const { return camera_; }
 
 	//移動方向ベクトルの取得
-	const Vector3& GetMoveDirection() const { return moveDirection_; }
+	const Vector3& GetMoveDirection() const { return playerData_.characterInfo.moveDirection; }
 	//移動ベクトルの取得
-	const Vector3& GetVelocity() const { return velocity_; }
+	const Vector3& GetVelocity() const { return playerData_.characterInfo.velocity; }
+	//胴体位置の取得
+	const Vector3& GetBodyPosition() const { return bodyPosition_; }
 	//transformの取得
-	const QuaternionTransform& GetTransform() const { return transform_; }
+	const QuaternionTransform& GetTransform() const { return playerData_.characterInfo.transform; }
 
 	//体力の取得
-	float GetHealth() const { return health_; }
+	float GetHealth() const { return playerData_.characterInfo.health; }
 	//最大体力の取得
-	const float GetMaxHealth() const { return maxHealth_; }
+	const float GetMaxHealth() const { return playerData_.characterInfo.maxHealth; }
 	//フォーカス対象の座標を取得
-	const Vector3& GetFocusTargetPos() const { return focusTargetPos_; }
+	const Vector3& GetFocusTargetPos() const { return playerData_.characterInfo.focusTargetPos; }
 
 	//エネルギーの取得
-	float GetEnergy() const { return energy_; }
+	float GetEnergy() const { return playerData_.characterInfo.energyInfo.energy; }
 	//最大エネルギーの取得
-	float GetMaxEnergy() const { return maxEnergy_; }
+	float GetMaxEnergy() const { return playerData_.characterInfo.energyInfo.maxEnergy; }
 	//エネルギーの回復速度の取得
-	float GetEnergyRegenRate() const { return energyRegenRate_; }
+	float GetEnergyRegenRate() const { return playerData_.characterInfo.energyInfo.recoveryRate; }
+	//エネルギー枯渇フラグの取得
+	bool GetIsOverHeated() const { return playerData_.characterInfo.overHeatInfo.isOverheated; }
+	//生存フラグの取得
+	bool GetIsAlive() const { return playerData_.characterInfo.isAlive; }
+	//フォーカス中かどうか
+	bool IsFocus() const { return isFocus_; }
 
-	bool GetIsOverHeated() const { return isOverheated_; }
-
-	bool GetIsAlive() const { return isAlive_; }
+	bool IsInCombat() const { return playerData_.characterInfo.isInCombat; }
 
 	//================================================================================
 	// setter
 	//================================================================================
 
 	//プレイヤーの体力を設定
-	void SetHealth(float health) { health_ = health; }
+	void SetHealth(float health) { playerData_.characterInfo.health = health; }
 	//フォーカス対象の座標を設定
-	void SetFocusTargetPos(const Vector3& targetPos) { focusTargetPos_ = targetPos; }
+	void SetFocusTargetPos(const Vector3& targetPos) { playerData_.characterInfo.focusTargetPos = targetPos; }
 
-private:
+	void SetFocusTargetVelocity(const Vector3& targetVel) { focusTargetVelocity_ = targetVel; }
 
+	void SetInCombat(bool inCombat) { playerData_.characterInfo.isInCombat = inCombat; }
 
-
-	void InitRunning();
-	void InitJump();
-	void InitDash();
-	void InitChargeShoot();
-	void InitChargeShootStun();
-	void InitStepBoost();
-	void InitFloating();
-	void InitDead();
-
-	void UpdateRunning();
-	void UpdateAttack();
-	void UpdateDamage();
-	void UpdateJump();
-	void UpdateDash();
-	void UpdateChargeShoot();
-	void UpdateChargeShootStun();
-	void UpdateStepBoost();
-	void UpdateFloating();
-	void UpdateDead();
-
-	// ステップブーストのBehavior切り替え処理
-	void TriggerStepBoost();
-	//武器一つ当たりの攻撃処理
-	void WeaponAttack(int weaponIndex, GamepadButtonType buttonType);
-
-	//エネルギーの更新
-	void UpdateEnergy();
+	void SetInputProvider(PlayerInputProvider* inputProvider) { inputProvider_ = inputProvider; }
 
 private:
 
 	//カメラ
 	Camera* camera_ = nullptr;
-	//状態遷移リクエスト
-	std::optional<Behavior> behaviorRequest_ = std::nullopt;
-	//プレイヤーの状態
-	Behavior behavior_ = Behavior::IDLE;
-	Behavior prevBehavior_ = Behavior::IDLE;
+	//状態管理マネージャ
+	std::unique_ptr<GameCharacterStateManager> stateManager_ = nullptr;
+	//プレイヤー入力プロバイダ(借りる)
+	PlayerInputProvider* inputProvider_ = nullptr;
+	//アニメーションマッパー
+	AnimationMapper animationMapper_;
+
 	//プレイヤーの武器
 	std::vector<std::unique_ptr<BaseWeapon>> weapons_;
 	std::vector<WeaponType> weaponTypes_;
+	//チャージ撃ちをする武器ユニット
+	std::vector<bool> chargeShootableUnits_;
 
-	//背部のパーティクルエミッター
-	std::unique_ptr<ParticleEmitter> backEmitter_ = nullptr;
+	//ブーストエフェクト
+	std::vector<std::unique_ptr<BoostEffect>> boostEffects_;
+	// プレイヤーの基本情報
+	CharacterData playerData_;
 
-	//補足対象の座標
-	Vector3 focusTargetPos_ = { 0.0f,100.0f,0.0f };
-
-	//移動ベクトル
-	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
-	//減速率
-	float deceleration_ = 1.1f;
-	//移動方向
-	Vector3 moveDirection_ = { 0.0f,0.0f,1.0f };
-	//transform
-	QuaternionTransform transform_;
-	// 重力の強さ
-	const float gravity_ = 9.8f;
 	// フレーム時間
 	float deltaTime_ = 0.0f; 
-	//移動速度
-	const float moveSpeed_ = 200.0f;
-	//移動速度の最大値
-	const float kMaxMoveSpeed_ = 120.0f;
+	
+	float chargeShootDuration_ = 1.0f; // 停止撃ちの持続時間
+	Timer chargeShootTimer_; // 停止撃ちのタイマー
+	Timer breakStunTimer_; // ブレイクスタンのタイマー
 
-	//QBInfo
-	Vector3 stepBoostDirection_ = { 0.0f,0.0f,0.0f }; // ステップブーストの方向
-	const float stepBoostSpeed_     = 230.0f;         // ステップブーストの速度
-	const float stepBoostDuration_  = 0.2f;           // ステップブーストの持続時間
-	float stepBoostTimer_           = 0.0f;           // ステップブーストのタイマー
-	float useEnergyStepBoost_ = 100.0f;               // ステップブーストに必要なエネルギー
-	//インターバル用
-	const float stepBoostInterval_ = 0.2f; // ステップブーストのインターバル
-	float stepBoostIntervalTimer_  = 0.0f; // ステップブーストのインターバルタイマー
+	bool isUseWeapon_ = false; //武器を使用しているかどうか
+	float weaponUseTimer_ = 0.0f; //武器を使用している時間
+	float weaponUseDuration_ = 1.0f; //武器を使用してからのクールダウン時間
 
-	//JumInfo
-	const float jumpSpeed_ = 50.0f;        // ジャンプの速度
-	float jumpTimer_ = 0.0f;               // ジャンプのタイマー
-	const float maxJumpTime_ = 0.5f;       // ジャンプの最大時間
-	const float jumpDeceleration_ = 40.0f; // ジャンプ中の減速率
-	float useEnergyJump_ = 100.0f;   // ジャンプに必要なエネルギー
-	//落下速度
-	float fallSpeed_ = 40.0f;
+	bool isFocus_ = true; //フォーカス中かどうか
+	Vector3 focusTargetVelocity_ = { 0.0f,0.0f,0.0f }; // フォーカス対象の移動ベクトル
+	Vector3 bodyPosition_ = { 0.0f,0.0f,0.0f }; // キャラクターの胴体位置
 
-	// チャージ攻撃後硬直用の変数
-	float chargeAttackStunTimer_ = 0.0f;          //チャージ攻撃後の硬直時間
-	float chargeAttackStunDuration_ = 0.5f; // チャージ攻撃後の硬直時間
+	BoostDirection previousBoostDirection_ = BoostDirection::NONE;
 
-	//playerの体力
-	float health_ = 0.0f;              // 現在の体力
-	const float maxHealth_ = 10000.0f; // 最大体力
+private:
 
-	//エネルギー(スタミナ)情報
-	float energy_ = 0.0f;                 // 現在のエネルギー
-	float maxEnergy_ = 1000.0f;           // 最大エネルギー
-	float energyRegenRate_ = 200.0f; // エネルギーの回復速度
-	//エネルギー使用のクールダウン
-	const float energyCooldown_ = 1.0f; // エネルギー使用後のクールダウン時間
+	//武器の攻撃更新
+	void UpdateAttack();
 
-	//オーバーヒート情報
-	bool isOverheated_ = false;        // オーバーヒート中かどうか
-	float overheatTimer_ = 0.0f;          // オーバーヒートのタイマー
-	const float overheatDuration_ = 3.0f; // オーバーヒートの持続時間
+	//武器一つ当たりの攻撃処理
+	void WeaponAttack(CharacterActionInput actionInput);
 
-	bool isAlive_ = true; // プレイヤーが生存しているかどうか
+	//エネルギーの更新
+	void UpdateEnergy();
+
+	//ブーストエフェクトのアクティブ化判定
+	void RequestActiveBoostEffect();
+	void RequestAppearBoostEffect();
+	//ブレイクゲージを蓄積してスタン判定
+	void AccumulateBreakGauge(float damage);
 };
