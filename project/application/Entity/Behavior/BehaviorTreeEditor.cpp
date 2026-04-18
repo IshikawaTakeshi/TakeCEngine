@@ -11,6 +11,7 @@
 #include "application/Entity/Behavior/PlannerSelectorNode.h"
 #include "application/Entity/Behavior/ActionNode.h"
 #include "application/Entity/Behavior/WeightSelectorNode.h"
+#include "application/Entity/Behavior/SetBlackboardBoolNode.h"
 
 // Views
 #include "application/Entity/Behavior/View/ActionNodeView.h"
@@ -20,7 +21,7 @@
 #include "application/Entity/Behavior/View/ScoreConditionNodeView.h"
 #include "application/Entity/Behavior/View/PlannerSelectorNodeView.h"
 #include "application/Entity/Behavior/View/WeightSelectorNodeView.h"
-#include "application/Entity/Behavior/View/BehaviorNodeView.h"
+#include "application/Entity/Behavior/View/SetBlackboardBoolNodeView.h"
 
 #include "engine/Base/ImGuiManager.h"
 #include "engine/Base/TakeCFrameWork.h"
@@ -57,6 +58,8 @@ std::unique_ptr<BehaviorNode> BehaviorTreeEditor::BuildLogicTree(const BehaviorN
 	if (data.nodeType == "ACTION") {
 		GameCharacterState state = StringUtility::StringToEnum<GameCharacterState>(data.targetState);
 		node = std::make_unique<ActionNode>(state, nullptr, data.name);
+	} else if (data.nodeType == "SET_BB_BOOL") {
+		node = std::make_unique<SetBlackboardBoolNode>(data.bbKey, data.bbValue, data.name);
 	} else if (data.nodeType == "CONDITION") {
 		node = std::make_unique<ConditionNode>(data.field, data.op, data.conditionThreshold, data.name);
 	} else if (data.nodeType == "SCORE_CONDITION") {
@@ -455,6 +458,7 @@ ImFlow::BaseNode* BehaviorTreeEditor::BuildNodeView(BehaviorNode* node, ImVec2& 
 //===============================================================================
 std::shared_ptr<BehaviorNodeView> BehaviorTreeEditor::CreateNodeView(const std::string& type, const ImVec2& pos, const std::string& name) {
 	if (type == "ACTION") return flowEditor_->addNode<ActionNodeView>(pos, name);
+	if (type == "SET_BB_BOOL") return flowEditor_->addNode<SetBlackboardBoolNodeView>(pos);
 	if (type == "CONDITION") return flowEditor_->addNode<ConditionNodeView>(pos);
 	if (type == "SCORE_CONDITION") return flowEditor_->addNode<ScoreConditionNodeView>(pos);
 	if (type == "SELECTOR") return flowEditor_->addNode<SelectorNodeView>(pos);
@@ -512,6 +516,8 @@ std::string BehaviorTreeEditor::DetectRootType(const BehaviorNode* node) const {
 
 	if (dynamic_cast<const ActionNode*>(node)) {
 		return "ACTION";
+	} else if (dynamic_cast<const SetBlackboardBoolNode*>(node)) {
+		return "SET_BB_BOOL";
 	} else if (dynamic_cast<const ConditionNode*>(node)) {
 		return "CONDITION";
 	} else if (dynamic_cast<const ScoreConditionNode*>(node)) {
@@ -564,6 +570,11 @@ ComboSetData BehaviorTreeEditor::BuildComboSetDataFromEditor() const {
 			out.combos.push_back(combo);
 		}
 	}
+
+	// 抽出したRootサブツリーの順番もY座標でソートしておく
+	std::sort(out.combos.begin(), out.combos.end(), [](const ComboData& a, const ComboData& b) {
+		return a.rootNode.posY < b.rootNode.posY;
+		});
 
 	// --- 2. エディタレイアウト情報（フラットなリスト）を保存 ---
 	std::map<ImFlow::BaseNode*, int> nodePtrToUid;
@@ -635,6 +646,7 @@ void BehaviorTreeEditor::SetupContextMenu() {
 	flowEditor_->rightClickPopUpContent([this](ImFlow::BaseNode* node) {
 		//Add Node メニュー
 		if (ImGui::MenuItem("Add Action")) { flowEditor_->placeNode<ActionNodeView>("NONE"); }
+		if (ImGui::MenuItem("Add SetBlackboardBool")) { flowEditor_->placeNode<SetBlackboardBoolNodeView>(); }
 		if (ImGui::MenuItem("Add Condition")) { flowEditor_->placeNode<ConditionNodeView>(); }
 		if (ImGui::MenuItem("Add ScoreCondition")) { flowEditor_->placeNode<ScoreConditionNodeView>(); }
 		if (ImGui::MenuItem("Add Selector")) { flowEditor_->placeNode<SelectorNodeView>(); }
@@ -748,6 +760,10 @@ BehaviorNodeData BehaviorTreeEditor::BuildRecursiveNodeData(BehaviorNodeView* vi
 	// 全リンクを取得。Pin::getLinks()がないため、エディタ全体からこのノードの出力ピンに繋がるものを探す
 	const auto& allLinks = flowEditor_->getLinks();
 
+	//すぐに再帰呼び出しせず、子ノードのViewを一時的にベクターに収集する
+	std::vector<BehaviorNodeView*> childViews;
+
+
 	// 出力ピンに繋がっている子ノードを再帰的に収集
 	// 出力ピンの順番(Child0, Child1...)を維持するため、outPinsのインデックス順に回す
 	for (auto& outPinSh : viewNode->getOuts()) {
@@ -759,11 +775,20 @@ BehaviorNodeData BehaviorTreeEditor::BuildRecursiveNodeData(BehaviorNodeView* vi
 				// リンクの右側（入力側）に繋がっているノードが子
 				ImFlow::BaseNode* pBaseNode = link->right()->getParent();
 				if (pBaseNode) {
-					BehaviorNodeView* vChildViewNode = static_cast<BehaviorNodeView*>(pBaseNode);
-					data.children.push_back(BuildRecursiveNodeData(vChildViewNode));
+					childViews.push_back(static_cast<BehaviorNodeView*>(pBaseNode));
 				}
 			}
 		}
+	}
+
+	//収集した子ノードをY座標が小さい順にソートする（エディタ上の見た目順）
+	std::sort(childViews.begin(), childViews.end(), [](BehaviorNodeView* a, BehaviorNodeView* b) {
+		return a->getPos().y < b->getPos().y;
+		});
+
+	// ソートされた順番で再帰的に子ノードのデータを構築し、childrenに追加する
+	for (BehaviorNodeView* childView : childViews) {
+		data.children.push_back(BuildRecursiveNodeData(childView));
 	}
 
 	return data;

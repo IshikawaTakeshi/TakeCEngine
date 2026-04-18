@@ -6,6 +6,8 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <map>
+#include "engine/2d/UIConfig.h"
 
 //============================================================================
 // BaseUI Class
@@ -56,6 +58,12 @@ public:
 	// JSONからスプライトを生成・登録するヘルパー関数
 	Sprite* CreateAndRegisterSpriteFromJson(const std::string& jsonFilePath);
 
+	/// <summary>
+	/// UI全体の構成をJSONから読み込む (UIConfig)
+	/// </summary>
+	/// <param name="configName">UIConfigの名前</param>
+	void LoadUIConfig(const std::string& configName);
+
 
 	//=====================================================
 	// accessors
@@ -65,7 +73,7 @@ public:
 	Sprite* GetSprite(const std::string& name);
 
 	// 表示・非表示
-	void SetActive(bool isActive) { isActive_ = isActive; }
+	void SetActive(bool isActive);
 	bool IsActive() const { return isActive_; }
 
 	// 基準座標の設定
@@ -86,6 +94,9 @@ protected:
 	TakeC::SpriteManager* spriteManager_ = nullptr;
 
 	std::vector<Sprite*> sprites_;
+	
+	// UI内部での管理用マップ (キー名 -> スプライトポインタ)
+	std::map<std::string, Sprite*> spriteMap_;
 
 	Vector2 position_ = { 0.0f, 0.0f };
 	bool isActive_ = true;

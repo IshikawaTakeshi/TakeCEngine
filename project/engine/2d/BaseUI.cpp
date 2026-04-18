@@ -1,5 +1,6 @@
 #include "BaseUI.h"
 #include "engine/base/ImGuiManager.h"
+#include "engine/base/TakeCFrameWork.h"
 
 using namespace TakeC;
 
@@ -54,17 +55,49 @@ Sprite* BaseUI::CreateAndRegisterSpriteFromJson(const std::string& jsonFilePath)
 	return s;
 }
 
+void BaseUI::LoadUIConfig(const std::string& configName) {
+	if (!spriteManager_) return;
+
+	// UIConfigを読み込む
+	UIConfig config = TakeCFrameWork::GetJsonLoader()->LoadJsonData<UIConfig>(configName + ".json");
+
+	for (const auto& spriteConf : config.sprites) {
+		// 個別のスプライトを生成
+		Sprite* s = spriteManager_->CreateFromJson(spriteConf.spriteConfigPath);
+		if (s) {
+			sprites_.push_back(s);
+			spriteMap_[spriteConf.key] = s;
+		}
+	}
+}
+
 Sprite* BaseUI::GetSprite(const std::string& name) {
+	// 自身のマップから優先的に検索
+	auto it = spriteMap_.find(name);
+	if (it != spriteMap_.end()) {
+		return it->second;
+	}
+
+	// 見つからなければマネージャーから検索
 	if (!spriteManager_) return nullptr;
 	Sprite* s = spriteManager_->GetSprite(name);
 	return s;
+}
+
+void BaseUI::SetActive(bool isActive) {
+
+	isActive_ = isActive;
+	// スプライトの表示・非表示を切り替える
+	for (Sprite* sprite : sprites_) {
+		sprite->SetIsActive(isActive_);
+	}
 }
 
 void BaseUI::SetAlpha(float alpha) {
 	if (!spriteManager_) return;
 
 	alpha_ = alpha;
-	
+
 	// 管理している全スプライトに適用
 	for (Sprite* sprite : sprites_) {
 		if (sprite->GetMesh() && sprite->GetMesh()->GetMaterial()) {

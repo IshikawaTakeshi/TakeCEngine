@@ -18,7 +18,7 @@ std::unique_ptr<TakeC::UIManager> TakeCFrameWork::uiManager_ = nullptr;
 std::unique_ptr<TakeC::EventManager> TakeCFrameWork::eventManager_ = nullptr;
 
 std::chrono::steady_clock::time_point TakeCFrameWork::gameTime_ = Clock::now();
-float TakeCFrameWork::kDeltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
+float TakeCFrameWork::deltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
 
 //====================================================================
 //			初期化
@@ -184,7 +184,7 @@ void TakeCFrameWork::Update() {
 		isEnd_ = true;
 	}
 
-	kDeltaTime = 0.016f * timeScale_;
+	deltaTime = 0.016f * timeScale_;
 
 #if defined(_DEBUG) || defined(_DEVELOP)
 	imguiManager_->Begin();
@@ -210,7 +210,7 @@ void TakeCFrameWork::Update() {
 
 	ImGui::Begin("FrameWork");
 	directXCommon_->DrawFrameTimeInfo();
-	ImGui::Text("DeltaTime: %.4f", kDeltaTime);
+	ImGui::Text("DeltaTime: %.4f", deltaTime);
 	ImGui::DragFloat("TimeScale", &timeScale_, 0.01f, 0.0f, 5.0f);
 	ImGui::End();
 #endif

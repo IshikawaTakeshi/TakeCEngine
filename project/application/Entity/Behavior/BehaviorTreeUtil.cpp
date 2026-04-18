@@ -1,5 +1,7 @@
 #include "BehaviorTreeUtil.h"
 
+
+
 void from_json(const nlohmann::json& j, ComboSetData& data) {
 
     // 必須項目 (存在しない場合は例外)
@@ -25,11 +27,29 @@ void from_json(const nlohmann::json& j, ComboSetData& data) {
 }
 
 void to_json(nlohmann::json& j, const ComboSetData& data) {
-    j = nlohmann::json{
-        {"setName", data.setName},
-        {"combos", data.combos},
-        {"rootType", data.rootType},
-        {"editorNodes", data.editorNodes},
-        {"editorLinks", data.editorLinks}
-    };
+    j = nlohmann::json::object();
+    j["setName"] = data.setName;
+    
+    j["combos"] = nlohmann::json::array();
+    for (const auto& combo : data.combos) {
+        nlohmann::json combo_json;
+        to_json(combo_json, combo); // 明示的に変換関数を呼ぶ
+        j["combos"].push_back(combo_json);
+    }
+    
+    j["rootType"] = data.rootType;
+    
+    j["editorNodes"] = nlohmann::json::array();
+    for (const auto& node : data.editorNodes) {
+        nlohmann::json node_json;
+        to_json(node_json, node); // 明示的に変換関数を呼ぶ
+        j["editorNodes"].push_back(node_json);
+    }
+    
+    j["editorLinks"] = nlohmann::json::array();
+    for (const auto& link : data.editorLinks) {
+        nlohmann::json link_json;
+        to_json(link_json, link); // 明示的に変換関数を呼ぶ
+        j["editorLinks"].push_back(link_json);
+    }
 }

@@ -3,82 +3,94 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/camera/CameraManager.h"
 
+using namespace TakeC;
+
 //===================================================================================
 // 初期化
 //===================================================================================
-void SceneStateGamePlay::Initialize(GamePlayScene *scene) {
+void SceneStateGamePlay::Initialize(GamePlayScene* scene) {
 
-  // フェーズメッセージUIにFIGHTメッセージをセット
-  scene->GetPhaseMessageUI()->SetNextMessage(PhaseMessage::FIGHT);
+	// フェーズメッセージUIにFIGHTメッセージをセット
+	if (isFirstUpdate_) {
+		scene->GetPhaseMessageUI()->SetNextMessage(PhaseMessage::FIGHT);
+	}
 
-  TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(
-      Camera::GameCameraState::LOCKON);
+	TakeC::CameraManager::GetInstance().GetActiveCamera()->RequestCameraState(
+		Camera::GameCameraState::LOCKON);
 
-  scene->GetPlayer()->SetInCombat(true);
-  scene->GetEnemy()->SetInCombat(true);
+	scene->GetPlayer()->SetInCombat(true);
+	scene->GetEnemy()->SetInCombat(true);
+
+	isFirstUpdate_ = false;
 }
 
 //===================================================================================
 // 更新
 //===================================================================================
-void SceneStateGamePlay::Update(GamePlayScene *scene) {
-  auto *player = scene->GetPlayer();
-  auto *enemy = scene->GetEnemy();
+void SceneStateGamePlay::Update(GamePlayScene* scene) {
+	auto* player = scene->GetPlayer();
+	auto* enemy = scene->GetEnemy();
 
-  auto *playerReticle = scene->GetPlayerReticle();
-  auto *playerHpBar = scene->GetPlayerHpBar();
-  auto *enemyHpBar = scene->GetEnemyHpBar();
-  auto *energyUI = scene->GetEnergyInfoUI();
+	auto* playerReticle = scene->GetPlayerReticle();
+	auto* playerHpBar = scene->GetPlayerHpBar();
+	auto* enemyHpBar = scene->GetEnemyHpBar();
+	auto* energyUI = scene->GetEnergyInfoUI();
 
-  // ================================
-  // Player UI
-  // ================================
+	// ================================
+	// Player UI
+	// ================================
 
-  playerReticle->SetIsFocus(player->IsFocus());
-  playerReticle->Update(player->GetFocusTargetPos(), enemy->GetBodyPosition());
+	playerReticle->SetIsFocus(player->IsFocus());
+	playerReticle->Update(player->GetFocusTargetPos(), enemy->GetBodyPosition());
 
-  playerHpBar->SetHP(player->GetHealth(), player->GetMaxHealth());
-  playerHpBar->Update();
+	playerHpBar->SetHP(player->GetHealth(), player->GetMaxHealth());
+	playerHpBar->Update();
 
-  energyUI->SetOverHeatState(player->GetIsOverHeated());
-  energyUI->Update(player->GetEnergy(), player->GetMaxEnergy());
+	energyUI->SetOverHeatState(player->GetIsOverHeated());
+	energyUI->Update(player->GetEnergy(), player->GetMaxEnergy());
 
-  // ================================
-  // Enemy UI
-  // ================================
+	// ================================
+	// Enemy UI
+	// ================================
 
-  enemyHpBar->SetHP(enemy->GetHealth(), enemy->GetMaxHealth());
-  enemyHpBar->Update();
+	enemyHpBar->SetHP(enemy->GetHealth(), enemy->GetMaxHealth());
+	enemyHpBar->Update();
 
-  // ================================
-  // Weapon UI
-  // ================================
+	// ================================
+	// Weapon UI
+	// ================================
 
-  for (int i = 0; i < 4; ++i) {
-    auto *weapon = player->GetCurrentWeapon(i);
-    auto *bulletUI = scene->GetBulletCounterUI(i);
+	for (int i = 0; i < 4; ++i) {
+		auto* weapon = player->GetCurrentWeapon(i);
+		auto* bulletUI = scene->GetBulletCounterUI(i);
 
-    bulletUI->SetBulletCount(weapon->GetBulletCount());
-    bulletUI->SetRemainingBulletCount(weapon->GetRemainingBulletCount());
-    bulletUI->SetReloadingState(weapon->GetIsReloading());
-    bulletUI->SetWeaponIconUV(static_cast<int>(weapon->GetUnitPosition()));
-    bulletUI->Update();
-  }
+		bulletUI->SetBulletCount(weapon->GetBulletCount());
+		bulletUI->SetRemainingBulletCount(weapon->GetRemainingBulletCount());
+		bulletUI->SetReloadingState(weapon->GetIsReloading());
+		bulletUI->SetWeaponIconUV(static_cast<int>(weapon->GetUnitPosition()));
+		bulletUI->Update();
+	}
 
-  // ================================
-  // Manager Update
-  // ================================
+	// ================================
+	// Manager Update
+	// ================================
 
-  TakeCFrameWork::GetUIManager()->Update();
-  TakeCFrameWork::GetSpriteManager()->Update();
+	TakeCFrameWork::GetUIManager()->Update();
+	TakeCFrameWork::GetSpriteManager()->Update();
 
-  // ================================
-  // Scene Transition
-  // ================================
+	// ================================
+	// Scene Transition
+	// ================================
 
-  if (player->GetHealth() <= 0.0f) {
-    RequestTransition(SceneState::GAMEOVER);
-  } else if (enemy->GetHealth() <= 0.0f) {
-    RequestTransition(SceneState::ENEMYDESTROYED);
-  }
+	if (player->GetHealth() <= 0.0f) {
+		RequestTransition(SceneState::GAMEOVER);
+	} else if (enemy->GetHealth() <= 0.0f) {
+		RequestTransition(SceneState::ENEMYDESTROYED);
+	}
+
+	if(Input::GetInstance().TriggerButton(0,GamepadButtonType::Start)) {
+		//ポストエフェクトを再生
+		TakeCFrameWork::GetPostEffectManager()->PlayEffect("Outline_FadeOut");
+		RequestTransition(SceneState::PAUSE);
+	}
 }

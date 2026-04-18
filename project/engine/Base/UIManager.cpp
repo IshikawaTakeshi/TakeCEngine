@@ -18,9 +18,9 @@ void UIManager::Initialize(SpriteManager* spriteManager) {
 //============================================================================
 void UIManager::Update() {
 	// 登録されている全UIを更新
-	for (auto& ui : uiList_) {
-		if (ui->IsActive()) {
-			ui->Update();
+	for (auto& pair : uiMap_) {
+		if (pair.second->IsActive()) {
+			pair.second->Update();
 		}
 	}
 }
@@ -30,11 +30,9 @@ void UIManager::Update() {
 //============================================================================
 void UIManager::Draw() {
 	// 登録されている全UIを描画
-	// (BaseUI::Draw() は内部でSpriteManagerを呼ばない仕様にした場合、
-	//  ここでの呼び出しは実質何もしないか、個別の特殊描画用となる)
-	for (auto& ui : uiList_) {
-		if (ui->IsActive()) {
-			ui->Draw();
+	for (auto& pair : uiMap_) {
+		if (pair.second->IsActive()) {
+			pair.second->Draw();
 		}
 	}
 }
@@ -46,26 +44,21 @@ void UIManager::UpdateImGui() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::Begin("UI Manager");
 
-	int i = 0;
-	for (auto& ui : uiList_) {
-		// 各UIのImGuiを表示
-		// UIクラス側で識別名を付けられるようにしておくと便利
-		// ここでは簡易的に連番か、型名がわかればそれを表示したいところ
-		std::string name = "UI_" + std::to_string(i++);
-		ui->UpdateImGui(name);
+	for (auto& pair : uiMap_) {
+		// 各UIのImGuiを表示 (登録名を識別用に使用)
+		pair.second->UpdateImGui(pair.first);
 	}
 
-	ImGui::TreePop();
-
+	ImGui::End();
 #endif
 }
 
 //============================================================================
 // 既存のUIインスタンスを登録する（所有権移動）
 //============================================================================
-void UIManager::RegisterUI(std::unique_ptr<BaseUI> ui) {
+void UIManager::RegisterUI(const std::string& name, std::unique_ptr<BaseUI> ui) {
 	if (ui) {
-		uiList_.push_back(std::move(ui));
+		uiMap_[name] = std::move(ui);
 	}
 }
 
@@ -73,5 +66,15 @@ void UIManager::RegisterUI(std::unique_ptr<BaseUI> ui) {
 // 全UIのクリア
 //============================================================================
 void UIManager::Clear() {
-	uiList_.clear();
+	uiMap_.clear();
+}
+
+//============================================================================
+// 特定のUIのアクティブ状態を設定する
+//============================================================================
+void TakeC::UIManager::SetUIActive(const std::string& name, bool isActive) {
+	auto it = uiMap_.find(name);
+	if (it != uiMap_.end()) {
+		it->second->SetActive(isActive);
+	}
 }

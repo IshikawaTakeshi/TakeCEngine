@@ -28,4 +28,7 @@ protected:
 	// 派生クラスが実装する関数（GamePlayScene*を受け取る）
 	virtual void Initialize(GamePlayScene* scene) = 0;
 	virtual void Update(GamePlayScene* scene) = 0;
+
+	// 最初のUpdateかどうかを判定するフラグ
+	bool isFirstUpdate_ = true; 
 };

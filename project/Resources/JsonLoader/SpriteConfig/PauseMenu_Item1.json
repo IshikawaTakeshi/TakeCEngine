@@ -1,0 +1,31 @@
+{
+    "anchorPoint": {
+        "x": 0.5,
+        "y": 0.5
+    },
+    "color": {
+        "w": 1.0,
+        "x": 0.30000001192092896,
+        "y": 0.30000001192092896,
+        "z": 0.30000001192092896
+    },
+    "name": "PauseMenu_Item1.json",
+    "position": {
+        "x": 150.0,
+        "y": 180.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 250.0,
+        "y": 32.0
+    },
+    "textureFilePath": "UI/PauseMenu.png",
+    "textureLeftTop": {
+        "x": 20.0,
+        "y": 121.0
+    },
+    "textureSize": {
+        "x": 592.0,
+        "y": 64.0
+    }
+}
