@@ -21,7 +21,7 @@
 #include "engine/Utility/Timer.h"
 
 //app
-#include "application/Tool/CharacterEdit/CharacterEditTool.h"
+
 
 //=============================================================================
 // EnemySelectScene class
@@ -102,7 +102,4 @@ private:
 	float fadeTimer_ = 0.0f;
 	//状態遷移用タイマー
 	Timer changeBehaviorTimer_;
-
-	//キャラクター編集ツール
-	std::unique_ptr<CharacterEditTool> characterEditTool_ = nullptr;
 };

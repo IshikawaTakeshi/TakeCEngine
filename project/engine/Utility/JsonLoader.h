@@ -1,6 +1,6 @@
 #pragma once
 #include "engine/3d/Particle/ParticleAttribute.h"
-#include "application/Entity/GameCharacterInfo.h"
+
 #include "engine/Utility/JsonDirectoryPathData.h"
 #include "scene/LevelData.h"
 #include <iostream>

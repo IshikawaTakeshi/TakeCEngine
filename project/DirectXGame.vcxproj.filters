@@ -105,26 +105,11 @@
     <ClCompile Include="engine\3d\Particle\BaseParticleGroup.cpp">
       <Filter>engine\3d\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="application\Weapon\BaseWeapon.cpp">
-      <Filter>application\weapon</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Weapon\Bazooka\Bazooka.cpp">
-      <Filter>application\weapon</Filter>
-    </ClCompile>
     <ClCompile Include="engine\Collision\BoxCollider.cpp">
       <Filter>engine\collision</Filter>
     </ClCompile>
     <ClCompile Include="engine\PostEffect\BoxFilter.cpp">
       <Filter>engine\postEffect</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Weapon\Bullet\Bullet.cpp">
-      <Filter>application\weapon\Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Weapon\Bullet\BulletManager.cpp">
-      <Filter>application\weapon\Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Weapon\Bullet\BulletPool.cpp">
-      <Filter>application\weapon\Bullet</Filter>
     </ClCompile>
     <ClCompile Include="engine\Camera\Camera.cpp">
       <Filter>engine\camera</Filter>
@@ -152,9 +137,6 @@
     </ClCompile>
     <ClCompile Include="engine\Math\Easing.cpp">
       <Filter>engine\math</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Entity\Enemy\Enemy.cpp">
-      <Filter>application\entity\enemy</Filter>
     </ClCompile>
     <ClCompile Include="application\Scene\GameClearScene.cpp">
       <Filter>engine\scene</Filter>
@@ -197,12 +179,6 @@
     </ClCompile>
     <ClCompile Include="engine\3d\Particle\GPUParticle.cpp">
       <Filter>engine\3d\Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Ground\Ground.cpp">
-      <Filter>engine\3d\Ground</Filter>
-    </ClCompile>
-    <ClCompile Include="application\UI\HPBar.cpp">
-      <Filter>application\hpBar</Filter>
     </ClCompile>
     <ClCompile Include="engine\Utility\JsonLoader.cpp">
       <Filter>engine\utility</Filter>
@@ -285,9 +261,6 @@
     <ClCompile Include="engine\3d\Particle\PrimitiveParticle.cpp">
       <Filter>engine\3d\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="application\Entity\Player\Player.cpp">
-      <Filter>application\entity\player</Filter>
-    </ClCompile>
     <ClCompile Include="application\MyGame.cpp">
       <Filter>application</Filter>
     </ClCompile>
@@ -305,9 +278,6 @@
     </ClCompile>
     <ClCompile Include="application\Scene\SceneManager.cpp">
       <Filter>engine\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Weapon\Rifle\Rifle.cpp">
-      <Filter>application\weapon</Filter>
     </ClCompile>
     <ClCompile Include="engine\Math\Quaternion.cpp">
       <Filter>engine\math</Filter>
@@ -375,62 +345,17 @@
     <ClCompile Include="engine\SkyBox\SkyBox.cpp">
       <Filter>engine\3d\SkyBox</Filter>
     </ClCompile>
-    <ClCompile Include="application\Entity\State\BaseGameCharacterState.cpp">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Entity\State\StateChargeShootStun.cpp">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Entity\State\StateDead.cpp">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Entity\State\StateFloating.cpp">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Entity\State\StateJumping.cpp">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Entity\State\GameCharacterStateManager.cpp">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Entity\State\StateRunning.cpp">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Entity\State\StateStepBoost.cpp">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp">
-      <Filter>application\Entity\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="application\UI\BulletCounterUI.cpp">
-      <Filter>application\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="application\UI\EnergyInfoUI.cpp">
-      <Filter>application\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="application\UI\GameClearUI.cpp">
-      <Filter>application\UI</Filter>
-    </ClCompile>
     <ClCompile Include="application\Provider\EnemyInputProvider.cpp">
       <Filter>application\Provider</Filter>
     </ClCompile>
     <ClCompile Include="application\Provider\PlayerInputProvider.cpp">
       <Filter>application\Provider</Filter>
     </ClCompile>
-    <ClCompile Include="application\Entity\Enemy\BulletSensor.cpp">
-      <Filter>application\Entity\Enemy</Filter>
-    </ClCompile>
     <ClCompile Include="engine\PostEffect\DepthBasedOutline.cpp">
       <Filter>engine\postEffect</Filter>
     </ClCompile>
-    <ClCompile Include="application\Weapon\Bullet\MissilePool.cpp">
-      <Filter>application\Weapon\Bullet</Filter>
-    </ClCompile>
     <ClCompile Include="application\Provider\PlayerKeyInput.cpp">
       <Filter>application\Provider</Filter>
-    </ClCompile>
-    <ClCompile Include="application\UI\PlayerReticle.cpp">
-      <Filter>application\UI</Filter>
     </ClCompile>
     <ClCompile Include="application\Scene\SceneTransition.cpp">
       <Filter>engine\scene</Filter>
@@ -438,20 +363,8 @@
     <ClCompile Include="engine\Math\Vector2.cpp">
       <Filter>engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="application\Weapon\Bullet\VerticalMissile.cpp">
-      <Filter>application\Weapon\Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Weapon\Launcher\VerticalMissileLauncher.cpp">
-      <Filter>application\Weapon</Filter>
-    </ClCompile>
     <ClCompile Include="engine\PostEffect\BloomEffect.cpp">
       <Filter>engine\postEffect</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Effect\BoostEffect.cpp">
-      <Filter>application\effect</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Ground\WaterGround.cpp">
-      <Filter>application\effect</Filter>
     </ClCompile>
     <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp">
       <Filter>application\entity\enemy</Filter>
@@ -493,27 +406,15 @@
       <Filter>application\provider</Filter>
     </ClCompile>
     <ClCompile Include="engine\Utility\Timer.cpp" />
-    <ClCompile Include="application\Effect\DeadEffect.cpp" />
     <ClCompile Include="engine\3d\Light\LightCounter.cpp" />
     <ClCompile Include="engine\3d\Light\LightManager.cpp" />
-    <ClCompile Include="application\Entity\GameCharacterInfo.cpp" />
     <ClCompile Include="engine\Math\Transform.cpp" />
     <ClCompile Include="application\Scene\EnemySelectScene.cpp" />
-    <ClCompile Include="application\Tool\CharacterEdit\CharacterEditTool.cpp" />
-    <ClCompile Include="application\Weapon\WeaponData.cpp" />
-    <ClCompile Include="application\UI\PushStartUI.cpp" />
-    <ClCompile Include="application\UI\PhaseMessageUI.cpp" />
     <ClCompile Include="engine\Animation\SpriteAnimation.cpp" />
-    <ClCompile Include="application\Weapon\Action\BurstShotInfo.cpp" />
-    <ClCompile Include="application\Weapon\Rifle\RifleInfo.cpp" />
     <ClCompile Include="engine\Math\MathEnv.cpp" />
     <ClCompile Include="engine\Camera\CameraForGPU.cpp" />
-    <ClCompile Include="application\Weapon\MachineGun\MachineGun.cpp" />
     <ClCompile Include="engine\2d\SpriteConfig.cpp" />
     <ClCompile Include="application\Provider\PlayerPadInput.cpp" />
-    <ClCompile Include="application\Weapon\Bullet\VerticalMissileInfo.cpp" />
-    <ClCompile Include="application\Weapon\ShotGun\ShotGun.cpp" />
-    <ClCompile Include="application\Weapon\ShotGun\ShotGunInfo.cpp" />
     <ClCompile Include="engine\PostEffect\ShadowMapEffect.cpp" />
     <ClCompile Include="engine\PostEffect\PostEffectFactory.cpp" />
     <ClCompile Include="engine\Base\DsvManager.cpp" />
@@ -522,12 +423,9 @@
     <ClCompile Include="engine\3d\Primitive\Cube.cpp" />
     <ClCompile Include="engine\Animation\TextureAnimation.cpp" />
     <ClCompile Include="engine\Animation\SpriteSheetSettings.cpp" />
-    <ClCompile Include="application\Effect\MuzzleFlashEffect.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cone.cpp" />
     <ClCompile Include="engine\3d\Primitive\Cylinder.cpp" />
     <ClCompile Include="engine\Animation\TextureAnimationTypeEnum.cpp" />
-    <ClCompile Include="application\UI\RingUI.cpp" />
-    <ClCompile Include="application\Weapon\Bullet\ObjectPool.cpp" />
     <ClCompile Include="engine\3d\Particle\EffectGroup.cpp" />
     <ClCompile Include="engine\3d\Particle\EffectEditor.cpp" />
     <ClCompile Include="application\UI\ActionButtonICon.cpp" />
@@ -536,7 +434,6 @@
     <ClCompile Include="engine\Entity\GameCharacter.cpp" />
     <ClCompile Include="engine\Base\UIManager.cpp" />
     <ClCompile Include="engine\Base\EventManager.cpp" />
-    <ClCompile Include="application\UI\WarningUI.cpp" />
     <ClCompile Include="application\Entity\Animation\AnimationMapper.cpp" />
     <ClCompile Include="engine\Animation\AnimatorController.cpp" />
     <ClCompile Include="application\Scene\SceneState\BaseSceneState.cpp" />
@@ -548,36 +445,11 @@
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.cpp" />
-    <ClCompile Include="application\Entity\State\StateBreakStun.cpp" />
-    <ClCompile Include="application\Tool\BreakGaugeUtil.cpp" />
-    <ClCompile Include="application\UI\BreakGaugeUI.cpp" />
-    <ClCompile Include="application\UI\BulletCounterGaugeUI.cpp" />
-    <ClCompile Include="application\Entity\Behavior\ActionNode.cpp" />
-    <ClCompile Include="application\Entity\Behavior\Blackboard.cpp" />
-    <ClCompile Include="application\Entity\Behavior\ComboFactory.cpp" />
-    <ClCompile Include="application\Entity\Behavior\ConditionNode.cpp" />
-    <ClCompile Include="application\Entity\Behavior\PlannerSelectorNode.cpp" />
-    <ClCompile Include="application\Entity\Behavior\ScoreConditionNode.cpp" />
-    <ClCompile Include="application\Entity\Behavior\SelectorNode.cpp" />
-    <ClCompile Include="application\Entity\Behavior\SequenceNode.cpp" />
-    <ClCompile Include="application\Entity\Behavior\WeightSelectorNode.cpp" />
-    <ClCompile Include="application\Entity\Behavior\View\BehaviorNodeView.cpp" />
-    <ClCompile Include="application\Entity\Behavior\View\ActionNodeView.cpp" />
-    <ClCompile Include="application\Entity\Behavior\View\SelectorNodeView.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorTreeEditor.cpp" />
-    <ClCompile Include="application\Entity\Behavior\View\ConditionNodeView.cpp" />
-    <ClCompile Include="application\Entity\Behavior\View\PlannerSelectorNodeView.cpp" />
-    <ClCompile Include="application\Entity\Behavior\View\ScoreConditionNodeView.cpp" />
-    <ClCompile Include="application\Entity\Behavior\View\SequenceNodeView.cpp" />
-    <ClCompile Include="application\Entity\Behavior\View\WeightSelectorNodeView.cpp" />
     <ClCompile Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.cpp" />
     <ClCompile Include="engine\PostEffect\ScanlineEffect.cpp" />
     <ClCompile Include="engine\PostEffect\DistortionEffect.cpp" />
-    <ClCompile Include="application\Entity\Behavior\BehaviorTreeUtil.cpp" />
     <ClCompile Include="application\Provider\PauseMenuPadInput.cpp" />
     <ClCompile Include="application\UI\PauseMenuUI.cpp" />
-    <ClCompile Include="application\Entity\Behavior\View\SetBlackboardBoolNodeView.cpp" />
-    <ClCompile Include="application\Entity\Behavior\SetBlackboardBoolNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -605,26 +477,11 @@
     <ClInclude Include="application\Scene\BaseScene.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="application\Weapon\BaseWeapon.h">
-      <Filter>application\weapon</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Weapon\Bazooka\Bazooka.h">
-      <Filter>application\weapon</Filter>
-    </ClInclude>
     <ClInclude Include="engine\Collision\BoxCollider.h">
       <Filter>engine\collision</Filter>
     </ClInclude>
     <ClInclude Include="engine\PostEffect\BoxFilter.h">
       <Filter>engine\postEffect</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Weapon\Bullet\Bullet.h">
-      <Filter>application\weapon\Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Weapon\Bullet\BulletManager.h">
-      <Filter>application\weapon\Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Weapon\Bullet\BulletPool.h">
-      <Filter>application\weapon\Bullet</Filter>
     </ClInclude>
     <ClInclude Include="engine\Camera\Camera.h">
       <Filter>engine\camera</Filter>
@@ -652,9 +509,6 @@
     </ClInclude>
     <ClInclude Include="engine\Math\Easing.h">
       <Filter>engine\math</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\Enemy\Enemy.h">
-      <Filter>application\entity\enemy</Filter>
     </ClInclude>
     <ClInclude Include="engine\Entity\GameCharacter.h">
       <Filter>application\entity</Filter>
@@ -703,12 +557,6 @@
     </ClInclude>
     <ClInclude Include="engine\3d\Particle\GPUParticle.h">
       <Filter>engine\3d\Particle</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Ground\Ground.h">
-      <Filter>engine\3d\Ground</Filter>
-    </ClInclude>
-    <ClInclude Include="application\UI\HPBar.h">
-      <Filter>application\hpBar</Filter>
     </ClInclude>
     <ClInclude Include="engine\Utility\JsonLoader.h">
       <Filter>engine\utility</Filter>
@@ -809,9 +657,6 @@
     <ClInclude Include="engine\3d\Particle\PrimitiveParticle.h">
       <Filter>engine\3d\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\Player\Player.h">
-      <Filter>application\entity\player</Filter>
-    </ClInclude>
     <ClInclude Include="application\MyGame.h">
       <Filter>application</Filter>
     </ClInclude>
@@ -829,9 +674,6 @@
     </ClInclude>
     <ClInclude Include="application\Scene\SceneFactory.h">
       <Filter>engine\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Weapon\Rifle\Rifle.h">
-      <Filter>application\weapon</Filter>
     </ClInclude>
     <ClInclude Include="engine\Math\Quaternion.h">
       <Filter>engine\math</Filter>
@@ -911,45 +753,6 @@
     <ClInclude Include="engine\SkyBox\SkyBox.h">
       <Filter>engine\3d\SkyBox</Filter>
     </ClInclude>
-    <ClInclude Include="application\Weapon\WeaponType.h">
-      <Filter>application\weapon</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\State\BaseGameCharacterState.h">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\State\StateChargeShootStun.h">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\State\StateDead.h">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\State\StateFloating.h">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\State\StateJumping.h">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\State\GameCharacterStateManager.h">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\State\StateRunning.h">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\State\StateStepBoost.h">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\Enemy\AIBrainSystem.h">
-      <Filter>application\Entity\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="application\UI\BulletCounterUI.h">
-      <Filter>application\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="application\UI\EnergyInfoUI.h">
-      <Filter>application\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="application\UI\GameClearUI.h">
-      <Filter>application\UI</Filter>
-    </ClInclude>
     <ClInclude Include="application\Provider\EnemyInputProvider.h">
       <Filter>application\Provider</Filter>
     </ClInclude>
@@ -961,9 +764,6 @@
     </ClInclude>
     <ClInclude Include="application\Provider\Enum\CharacterActionInputEnum.h">
       <Filter>application\Provider\Enum</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\Enemy\BulletSensor.h">
-      <Filter>application\Entity\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="engine\Camera\CameraForGPU.h">
       <Filter>engine\camera</Filter>
@@ -977,53 +777,23 @@
     <ClInclude Include="engine\Input\InputMapper.h">
       <Filter>engine\io</Filter>
     </ClInclude>
-    <ClInclude Include="application\Weapon\Bullet\MissilePool.h">
-      <Filter>application\Weapon\Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\State\GameCharacterState.h">
-      <Filter>application\Entity\Behavior</Filter>
-    </ClInclude>
     <ClInclude Include="engine\Camera\PerView.h">
       <Filter>engine\camera</Filter>
     </ClInclude>
     <ClInclude Include="application\Provider\PlayerKeyInput.h">
       <Filter>application\Provider</Filter>
     </ClInclude>
-    <ClInclude Include="application\UI\PlayerReticle.h">
-      <Filter>application\UI</Filter>
-    </ClInclude>
     <ClInclude Include="engine\Math\physics\Ray.h">
       <Filter>engine\math\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\GameCharacterInfo.h">
-      <Filter>application\Entity</Filter>
     </ClInclude>
     <ClInclude Include="application\Scene\SceneTransition.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h">
-      <Filter>application\Weapon\Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Weapon\Launcher\VerticalMissileLauncher.h">
-      <Filter>application\Weapon</Filter>
-    </ClInclude>
     <ClInclude Include="engine\Collision\SurfaceType.h">
       <Filter>engine\camera</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\WeaponUnit.h">
-      <Filter>application\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="engine\PostEffect\BloomEffect.h">
       <Filter>engine\postEffect</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Effect\BoostEffect.h">
-      <Filter>application\effect</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Effect\BoostEffectPositionEnum.h">
-      <Filter>application\effect\Enum</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Ground\WaterGround.h">
-      <Filter>application\effect</Filter>
     </ClInclude>
     <ClInclude Include="application\Provider\BaseInputProvider.h">
       <Filter>application\entity\behavior</Filter>
@@ -1087,7 +857,6 @@
     </ClInclude>
     <ClInclude Include="engine\Utility\Timer.h" />
     <ClInclude Include="engine\Base\BlendModeStateEnum.h" />
-    <ClInclude Include="application\Effect\DeadEffect.h" />
     <ClInclude Include="engine\3d\Light\DirectionalLight.h" />
     <ClInclude Include="engine\3d\Light\PointLight.h" />
     <ClInclude Include="engine\3d\Light\SpotLight.h" />
@@ -1095,31 +864,17 @@
     <ClInclude Include="engine\3d\Light\LightManager.h" />
     <ClInclude Include="engine\Base\ComPtrAliasTemplates.h" />
     <ClInclude Include="application\Scene\EnemySelectScene.h" />
-    <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
-    <ClInclude Include="application\Weapon\WeaponData.h" />
     <ClInclude Include="engine\Utility\JsonDirectoryPathData.h" />
-    <ClInclude Include="application\UI\PushStartUI.h" />
-    <ClInclude Include="application\UI\PhaseMessageUI.h" />
     <ClInclude Include="application\Scene\GamePlaySceneBehavior.h" />
     <ClInclude Include="engine\Animation\SpriteAnimation.h" />
-    <ClInclude Include="application\Weapon\Action\BurstShotInfo.h" />
-    <ClInclude Include="application\Weapon\Action\WeaponActionData.h" />
-    <ClInclude Include="application\Weapon\Rifle\RifleInfo.h" />
-    <ClInclude Include="application\Weapon\Launcher\VerticalMissileLauncherInfo.h" />
-    <ClInclude Include="application\Tool\CharacterEdit\CharacterEditMenuEnum.h" />
-    <ClInclude Include="application\Entity\Player\PlayerData.h" />
     <ClInclude Include="engine\Math\MathEnv.h" />
     <ClInclude Include="engine\3d\Mesh\SubMesh.h" />
     <ClInclude Include="engine\3d\ModelData.h" />
     <ClInclude Include="engine\Base\PerFrame.h" />
     <ClInclude Include="engine\3d\Particle\ParticleForGPU.h" />
     <ClInclude Include="engine\3d\VertexData.h" />
-    <ClInclude Include="application\Weapon\MachineGun\MachineGun.h" />
     <ClInclude Include="engine\2d\SpriteConfig.h" />
     <ClInclude Include="application\Provider\PlayerPadInput.h" />
-    <ClInclude Include="application\Weapon\Bullet\VerticalMissileInfo.h" />
-    <ClInclude Include="application\Weapon\ShotGun\ShotGun.h" />
-    <ClInclude Include="application\Weapon\ShotGun\ShotGunInfo.h" />
     <ClInclude Include="engine\PostEffect\ShadowMapEffect.h" />
     <ClInclude Include="engine\PostEffect\PostEffectFactory.h" />
     <ClInclude Include="engine\Base\DsvManager.h" />
@@ -1130,17 +885,13 @@
     <ClInclude Include="engine\3d\Primitive\Cube.h" />
     <ClInclude Include="engine\Animation\TextureAnimation.h" />
     <ClInclude Include="engine\Animation\SpriteSheetSttings.h" />
-    <ClInclude Include="application\Effect\MuzzleFlashEffect.h" />
     <ClInclude Include="engine\3d\Primitive\Cone.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveParameter.h" />
     <ClInclude Include="engine\3d\Primitive\Cylinder.h" />
     <ClInclude Include="engine\Animation\UVScrollSettings.h" />
     <ClInclude Include="engine\Animation\TextureAnimationVariant.h" />
     <ClInclude Include="engine\Animation\TextureAnimationTypeEnum.h" />
-    <ClInclude Include="application\UI\RingUI.h" />
     <ClInclude Include="engine\2d\ArcGaugeParam.h" />
-    <ClInclude Include="application\Weapon\Bullet\ObjectPool.h" />
-    <ClInclude Include="application\Weapon\Bullet\BulletEffectConfig.h" />
     <ClInclude Include="engine\Collision\Capsule.h" />
     <ClInclude Include="engine\3d\Particle\EffectGroup.h" />
     <ClInclude Include="engine\3d\Particle\EffectGroupConfig.h" />
@@ -1150,11 +901,9 @@
     <ClInclude Include="engine\2d\BaseUI.h" />
     <ClInclude Include="engine\Base\UIManager.h" />
     <ClInclude Include="engine\Base\EventManager.h" />
-    <ClInclude Include="application\UI\WarningUI.h" />
     <ClInclude Include="engine\Animation\AnimationState.h" />
     <ClInclude Include="engine\Animation\AnimatorController.h" />
     <ClInclude Include="application\Entity\Animation\AnimationMapper.h" />
-    <ClInclude Include="application\Entity\Enemy\ActionWeightParam.h" />
     <ClInclude Include="application\Scene\SceneState\BaseSceneState.h" />
     <ClInclude Include="application\Scene\SceneState\SceneStateManager.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\GamePlaySceneState.h" />
@@ -1164,32 +913,6 @@
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.h" />
-    <ClInclude Include="application\Entity\State\StateBreakStun.h" />
-    <ClInclude Include="application\Tool\BreakGaugeUtil.h" />
-    <ClInclude Include="application\UI\BreakGaugeUI.h" />
-    <ClInclude Include="application\UI\BulletCounterGaugeUI.h" />
-    <ClInclude Include="application\Entity\Behavior\ActionNode.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorNode.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorTreeUtil.h" />
-    <ClInclude Include="application\Entity\Behavior\Blackboard.h" />
-    <ClInclude Include="application\Entity\Behavior\ComboFactory.h" />
-    <ClInclude Include="application\Entity\Behavior\ConditionNode.h" />
-    <ClInclude Include="application\Entity\Behavior\PlannerSelectorNode.h" />
-    <ClInclude Include="application\Entity\Behavior\ScoreConditionNode.h" />
-    <ClInclude Include="application\Entity\Behavior\SelectorNode.h" />
-    <ClInclude Include="application\Entity\Behavior\SequenceNode.h" />
-    <ClInclude Include="application\Entity\Behavior\WeightSelectorNode.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorStatusEnum.h" />
-    <ClInclude Include="application\Entity\Behavior\CompositeNode.h" />
-    <ClInclude Include="application\Entity\Behavior\View\BehaviorNodeView.h" />
-    <ClInclude Include="application\Entity\Behavior\View\ActionNodeView.h" />
-    <ClInclude Include="application\Entity\Behavior\View\SelectorNodeView.h" />
-    <ClInclude Include="application\Entity\Behavior\BehaviorTreeEditor.h" />
-    <ClInclude Include="application\Entity\Behavior\View\ConditionNodeView.h" />
-    <ClInclude Include="application\Entity\Behavior\View\PlannerSelectorNodeView.h" />
-    <ClInclude Include="application\Entity\Behavior\View\ScoreConditionNodeView.h" />
-    <ClInclude Include="application\Entity\Behavior\View\SequenceNodeView.h" />
-    <ClInclude Include="application\Entity\Behavior\View\WeightSelectorNodeView.h" />
     <ClInclude Include="externals\ImNodeFlow-1.2.2\include\ImNodeFlow.h" />
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\context_wrapper.h" />
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.h" />
@@ -1197,13 +920,9 @@
     <ClInclude Include="engine\PostEffect\PostEffectPlayConfig.h" />
     <ClInclude Include="engine\PostEffect\ScanlineEffect.h" />
     <ClInclude Include="engine\PostEffect\DistortionEffect.h" />
-    <ClInclude Include="application\Entity\BoostDirectionEnum.h" />
     <ClInclude Include="application\Provider\PauseMenuPadInput.h" />
     <ClInclude Include="application\Provider\Enum\PauseMenuInputEnum.h" />
-    <ClInclude Include="application\UI\WarningType.h" />
     <ClInclude Include="application\UI\PauseMenuUI.h" />
-    <ClInclude Include="application\Entity\Behavior\View\SetBlackboardBoolNodeView.h" />
-    <ClInclude Include="application\Entity\Behavior\SetBlackboardBoolNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

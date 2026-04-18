@@ -46,6 +46,5 @@ public:
 private:
 	//--------- variables ----------------------------------------------------
 
-	Player* player_; // Playerオブジェクトへのポインタ
 	std::unique_ptr<InputMapper<CharacterActionInput>> mapper_; // 入力マッパー
 };

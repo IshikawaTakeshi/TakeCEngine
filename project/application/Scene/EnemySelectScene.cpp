@@ -36,10 +36,6 @@ void EnemySelectScene::Initialize() {
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(), "skyBox_blueSky.dds");
 	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
-
-	//キャラクター編集ツール
-	characterEditTool_ = std::make_unique<CharacterEditTool>();
-	characterEditTool_->Initialize();
 }
 
 //====================================================================
@@ -68,9 +64,6 @@ void EnemySelectScene::Update() {
 	TakeC::CameraManager::GetInstance().Update();
 	//SkyBoxの更新
 	skyBox_->Update();
-	//キャラクター編集ツールの更新
-	characterEditTool_->Update();
-
 	//particleManager更新
 	TakeCFrameWork::GetParticleManager()->Update();
 
@@ -136,15 +129,6 @@ void EnemySelectScene::Update() {
 	default:
 		break;
 	}
-
-	//メニュー移動リクエスト
-	if (characterEditTool_->IsNextMenuRequested() == true) {
-		
-		//ゲームプレイシーンへ移動
-		SceneManager::GetInstance().ChangeScene("GAMEPLAY", 1.0f);
-		//リクエストフラグを下ろす
-		characterEditTool_->SetNextMenuRequested(false);
-	}
 }
 
 void EnemySelectScene::UpdateImGui() {
@@ -152,11 +136,6 @@ void EnemySelectScene::UpdateImGui() {
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
 	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
-	ImGui::Begin("Level Objects");
-	characterEditTool_->UpdateImGui();
-	ImGui::End();
-
-	//particleEmitter_->UpdateImGui();
 }
 
 //====================================================================
@@ -171,10 +150,8 @@ void EnemySelectScene::Draw() {
 
 	//Object3dの描画前処理
 	Object3dCommon::GetInstance().Dispatch();
-	characterEditTool_->DispatchObject();
 	
 	Object3dCommon::GetInstance().PreDraw();
-	characterEditTool_->DrawObject();
 	
 	Object3dCommon::GetInstance().PreDrawAddBlend();
 	
@@ -192,8 +169,6 @@ void EnemySelectScene::DrawSprite() {
 
 	//スプライトの描画前処理
 	SpriteCommon::GetInstance().PreDraw();
-
-	characterEditTool_->DrawUI();
 }
 
 void EnemySelectScene::DrawShadow() {

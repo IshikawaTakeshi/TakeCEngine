@@ -20,24 +20,11 @@
 #include "engine/camera/CameraManager.h"
 
 // app
-#include "application/Entity/Enemy/Enemy.h"
-#include "application/Entity/Player/Player.h"
-#include "application/Entity/Behavior/BehaviorTreeEditor.h"
-#include "application/Ground/Ground.h"
 #include "application/Scene/GamePlaySceneBehavior.h"
 #include "application/Scene/SceneState/SceneStateManager.h"
 // UI
-#include "application/UI/BreakGaugeUI.h"
 #include "application/UI/ActionButtonICon.h"
-#include "application/UI/BulletCounterGaugeUI.h"
-#include "application/UI/BulletCounterUI.h"
-#include "application/UI/EnergyInfoUI.h"
-#include "application/UI/HPBar.h"
 #include "application/UI/PauseMenuUI.h"
-#include "application/UI/PhaseMessageUI.h"
-#include "application/UI/PlayerReticle.h"
-#include "application/UI/WarningUI.h"
-
 
 //=============================================================================
 // GamePlayScene class

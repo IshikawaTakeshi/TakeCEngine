@@ -14,20 +14,12 @@
 #include "base/Particle/ParticleManager.h"
 #include "3d/Particle/ParticleEmitter.h"
 #include "SkyBox/SkyBox.h"
-#include "Ground/Ground.h"
 
 //============================================================================
 // GameOverScene class
 //============================================================================
 class GameOverScene : public BaseScene {
 public:
-
-	//シーンのフェーズ
-	enum Phase {
-		FIRST,
-		SECOND,
-		FINAL,
-	};
 
 	//========================================================================
 	// functions
