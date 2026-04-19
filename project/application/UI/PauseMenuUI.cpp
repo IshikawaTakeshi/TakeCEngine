@@ -16,6 +16,7 @@ void PauseMenuUI::Initialize(SpriteManager* spriteManager) {
     // 各スプライトポインタの取得
     bg_ = GetSprite("BG");
     cursor_ = GetSprite("Cursor");
+	cursor_->SetIsFlipX(true); // カーソルを右向きにする(ゴリ押し)
 
     itemSprites_.clear();
     for (int i = 0; i < (int)itemNames_.size(); ++i) {
@@ -120,7 +121,7 @@ void PauseMenuUI::UpdateVisual() {
     if (cursor_ && currentIndex_ < (int)itemSprites_.size() && itemSprites_[currentIndex_]) {
         Vector2 itemPos = itemSprites_[currentIndex_]->GetTranslate();
         // カーソルを項目の右側に配置
-        Vector2 cp = { itemPos.x + 140.0f, itemPos.y };
+        Vector2 cp = { cursor_->GetTranslate().x, itemPos.y };
         cursor_->SetTranslate(cp);
     }
 

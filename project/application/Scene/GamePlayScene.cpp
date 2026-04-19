@@ -183,7 +183,7 @@ void GamePlayScene::Initialize() {
 
 	// ShadowMapEffectを有効化
 	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect",true);
-	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("DepthBasedOutline", true);
+	TakeCFrameWork::GetPostEffectManager()->PlayEffect("Outline_FadeIn");
 }
 
 //====================================================================
