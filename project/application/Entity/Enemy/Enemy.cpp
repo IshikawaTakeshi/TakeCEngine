@@ -485,7 +485,7 @@ void Enemy::Update() {
 
 	// パーティクルエミッターの更新
 	for (auto& emitter : particleEmitter_) {
-		emitter->SetTranslate(enemyData_.characterInfo.transform.translate);
+		emitter->SetTranslate(bodyPosition_);
 		emitter->Update();
 	}
 
