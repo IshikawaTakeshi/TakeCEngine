@@ -1,0 +1,1 @@
+[![ReleaseBuild](https://github.com/IshikawaTakeshi/TakeCEngine/actions/workflows/ReleaseBuild.yml/badge.svg?branch=master)](https://github.com/IshikawaTakeshi/TakeCEngine/actions/workflows/ReleaseBuild.yml)
