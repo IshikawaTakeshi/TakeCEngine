@@ -196,8 +196,20 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	//Follow Emitter
 	ImGui::Checkbox("Enable Follow Emitter", &attributes.enableFollowEmitter);
 	ImGui::Checkbox("TranslateUpdate", &attributes.isTranslate);
-	//isDirectional
 	ImGui::Checkbox("Is Directional", &attributes.isDirectional);
+	
+	const char* shapeItems[] = { "Box", "Sphere" };
+	int currentShape = attributes.emitterShape;
+	if (ImGui::Combo("Emitter Shape", &currentShape, shapeItems, IM_ARRAYSIZE(shapeItems))) {
+		attributes.emitterShape = currentShape;
+	}
+	const char* velocityTargetItems[] = { "Default", "Radial", "Converge" };
+	int currentVelocityTarget = attributes.velocityTarget;
+	if (ImGui::Combo("Velocity Target", &currentVelocityTarget, velocityTargetItems, IM_ARRAYSIZE(velocityTargetItems))) {
+		attributes.velocityTarget = currentVelocityTarget;
+	}
+	ImGui::Checkbox("Is Decelerate", &attributes.isDecelerate);
+
 	//isParticleTrail
 	ImGui::Checkbox("Is ParticleTrail", &attributes.isParticleTrail);
 	ImGui::Checkbox("Is EmitterTrail", &attributes.isEmitterTrail);

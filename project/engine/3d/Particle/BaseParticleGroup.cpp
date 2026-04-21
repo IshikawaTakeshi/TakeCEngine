@@ -51,18 +51,54 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 	particle.transforms_.scale = { attributes.scale.x,attributes.scale.y,attributes.scale.z };
 
 	// 回転の設定を条件分岐で明確に分ける
-	if (!attributes.isDirectional) {
-		// ランダムな回転を設定
+	if (!attributes.isDirectional && attributes.velocityTarget == static_cast<uint32_t>(VelocityTarget::Default)) {
+		// ランダムな回転を設定（Directional/Radial/Convergeでない場合）
 		particle.transforms_.rotate = { 0.0f, 0.0f, distRotate(randomEngine) };
 	}
 
-	Vector3 randomTranslate = { distPosition(randomEngine),distPosition(randomEngine),distPosition(randomEngine) };
+	Vector3 randomTranslate = { 0.0f, 0.0f, 0.0f };
+	if (attributes.emitterShape == static_cast<uint32_t>(EmitterShape::Sphere)) {
+		// 球面上のランダムな点を計算
+		float phi = std::uniform_real_distribution<float>(0.0f, 2.0f * std::numbers::pi_v<float>)(randomEngine);
+		float costheta = std::uniform_real_distribution<float>(-1.0f, 1.0f)(randomEngine);
+		float theta = std::acos(costheta);
+		float r = distPosition(randomEngine); // positionRange を半径として使用
+
+		randomTranslate.x = r * std::sin(theta) * std::cos(phi);
+		randomTranslate.y = r * std::sin(theta) * std::sin(phi);
+		randomTranslate.z = r * std::cos(theta);
+	} else {
+		// Box内のランダムな点
+		randomTranslate = { distPosition(randomEngine), distPosition(randomEngine), distPosition(randomEngine) };
+	}
 	particle.transforms_.translate = translate + randomTranslate;
 
 	if (attributes.isDirectional) {
 		//方向に沿って移動
 		attributes.direction = directoin;
 		particle.velocity_ = attributes.direction * distVelocity(randomEngine);
+	}
+	else if (attributes.velocityTarget == static_cast<uint32_t>(VelocityTarget::Radial)) {
+		// 中心から外側に向かうベクトル
+		Vector3 radialDir = randomTranslate;
+		if (Vector3Math::LengthSq(radialDir) > 1e-6f) {
+			radialDir = Vector3Math::Normalize(radialDir);
+		} else {
+			radialDir = { 0.0f, 1.0f, 0.0f }; // フォールバック
+		}
+		particle.velocity_ = radialDir * distVelocity(randomEngine);
+		attributes.direction = radialDir;
+	}
+	else if (attributes.velocityTarget == static_cast<uint32_t>(VelocityTarget::Converge)) {
+		// 外側から中心に向かうベクトル
+		Vector3 convergeDir = -randomTranslate;
+		if (Vector3Math::LengthSq(convergeDir) > 1e-6f) {
+			convergeDir = Vector3Math::Normalize(convergeDir);
+		} else {
+			convergeDir = { 0.0f, -1.0f, 0.0f }; // フォールバック
+		}
+		particle.velocity_ = convergeDir * distVelocity(randomEngine);
+		attributes.direction = convergeDir;
 	}
 	else {
 		//ランダムな方向に飛ばす

@@ -29,6 +29,19 @@ struct AttributeRange {
 	float max;
 };
 
+// パーティクルの発生形状を表す列挙型
+enum class EmitterShape {
+	Box = 0,
+	Sphere = 1
+};
+
+// パーティクルの速度の計算方向を表す列挙型
+enum class VelocityTarget {
+	Default = 0,  // ランダムな方向
+	Radial = 1,   // エミッターから外側に向かう（スパークなど）
+	Converge = 2  // エミッターの中心に向かって進む
+};
+
 // スケール設定の種類を表す列挙型
 enum class ScaleSetting {
 	None = 0, //スケールの更新なし
@@ -63,6 +76,10 @@ struct ParticleAttributes {
 	uint32_t scaleSetting = 0;           //スケールの更新処理方法
 	uint32_t particlesPerInterpolation = 5; //一度の補間で生成するパーティクル数
 	uint32_t emitCount = 1;                 //1回あたりのパーティクル発生数
+	
+	uint32_t emitterShape = 0;              // エミッターの形状（Box/Sphere）
+	uint32_t velocityTarget = 0;            // 速度の方向（Default/Radial/Converge）
+	bool isDecelerate = false;              // スパーク用：徐々に減速するかどうか
 
 	float trailEmitInterval = 0.016f; //トレイルエフェクトの生成間隔
 

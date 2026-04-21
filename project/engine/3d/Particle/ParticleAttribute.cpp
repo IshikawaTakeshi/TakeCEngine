@@ -35,6 +35,10 @@ void to_json(nlohmann::json& j, const ParticleAttributes& attributes) {
 	j["particlesPerInterpolation"] = attributes.particlesPerInterpolation;
 	j["trailEmitInterval"] = attributes.trailEmitInterval;
 	j["isEmitterTrail"] = attributes.isEmitterTrail;
+
+	j["emitterShape"] = attributes.emitterShape;
+	j["velocityTarget"] = attributes.velocityTarget;
+	j["isDecelerate"] = attributes.isDecelerate;
 }
 
 //============================================================================
@@ -112,6 +116,10 @@ void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
 	attributes.isEmitterTrail = j.value("isEmitterTrail", attributes.isEmitterTrail);
 	attributes.enableLighting = j.value("enableLighting", attributes.enableLighting);
 	attributes.alignRotationToEmitter = j.value("alignRotationToEmitter", attributes.alignRotationToEmitter);
+	
+	attributes.emitterShape = j.value("emitterShape", attributes.emitterShape);
+	attributes.velocityTarget = j.value("velocityTarget", attributes.velocityTarget);
+	attributes.isDecelerate = j.value("isDecelerate", attributes.isDecelerate);
 }
 
 //============================================================================
