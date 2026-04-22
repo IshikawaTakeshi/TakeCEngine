@@ -429,8 +429,7 @@ void ParticleEditor::DrawEmitterControls() {
 
 	//エミッターの発生ボタン
 	if (ImGui::Button("Manual Emit")) {
-		emitterDirection_ = previewEmitter_->GetEmitDirection();
-		TakeCFrameWork::GetParticleManager()->Emit(currentGroupName_, emitterTransform_.translate, emitterDirection_, emitCount_);
+		previewEmitter_->Emit();
 	}
 
 	ImGui::Separator();

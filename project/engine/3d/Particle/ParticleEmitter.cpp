@@ -129,11 +129,11 @@ void ParticleEmitter::DrawWireFrame() {
 //==================================================================================
 
 void ParticleEmitter::Emit() {
-	TakeCFrameWork::GetParticleManager()->Emit(particleName_, transforms_.translate,emitDirection_, particleCount_);
+	TakeCFrameWork::GetParticleManager()->EmitWithEmitter(emitterID_, particleName_, transforms_.translate, emitDirection_, particleCount_);
 }
 
 void ParticleEmitter::Emit(const Vector3& position) {
-	TakeCFrameWork::GetParticleManager()->Emit(particleName_, position,emitDirection_, particleCount_);
+	TakeCFrameWork::GetParticleManager()->EmitWithEmitter(emitterID_, particleName_, position, emitDirection_, particleCount_);
 }
 
 //==================================================================================

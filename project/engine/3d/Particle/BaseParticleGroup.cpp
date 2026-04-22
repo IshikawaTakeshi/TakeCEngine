@@ -49,11 +49,14 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 
 	Particle particle;
 	particle.transforms_.scale = { attributes.scale.x,attributes.scale.y,attributes.scale.z };
+	// 回転を単位クォータニオンで初期化
+	particle.transforms_.rotate = QuaternionMath::IdentityQuaternion();
 
 	// 回転の設定を条件分岐で明確に分ける
 	if (!attributes.isDirectional && attributes.velocityTarget == static_cast<uint32_t>(VelocityTarget::Default)) {
-		// ランダムな回転を設定（Directional/Radial/Convergeでない場合）
-		particle.transforms_.rotate = { 0.0f, 0.0f, distRotate(randomEngine) };
+		// ランダムなZ軸回転をクォータニオンとして設定
+		float angle = distRotate(randomEngine);
+		particle.transforms_.rotate = QuaternionMath::MakeRotateAxisAngleQuaternion({ 0.0f, 0.0f, 1.0f }, angle);
 	}
 
 	Vector3 randomTranslate = { 0.0f, 0.0f, 0.0f };
