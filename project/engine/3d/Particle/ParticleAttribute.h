@@ -66,6 +66,10 @@ struct ParticleAttributes {
 	float frequency = 0.1f;              //パーティクルの発生頻度
 	bool isBillboard = false;            //Billboardかどうか
 	bool editColor = false;              //色を編集するかどうか
+	bool editColorGradient = false;      //色を遷移させるかどうか
+	Vector3 startColor = { 1.0f,1.0f,1.0f }; //色遷移の開始色
+	Vector3 endColor   = { 0.0f,0.0f,0.0f }; //色遷移の終了色
+	Easing::EasingType colorEasingType = Easing::EasingType::LINEAR; //色遷移のイージングタイプ
 	bool isTranslate = false;            //位置を更新するかどうか
 	bool isDirectional = false;          //方向に沿って移動するかどうか
 	bool enableLighting = true;          //ライティングを有効にするかどうか

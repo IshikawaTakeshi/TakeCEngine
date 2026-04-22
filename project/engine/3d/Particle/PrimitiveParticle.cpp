@@ -444,12 +444,23 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 	//alphaの計算
 	float alpha = 1.0f - lifeTimeProgress;
 	//色の設定
-	particleData_[numInstance_].color = {
-		(*particleIterator).color_.x,
-		(*particleIterator).color_.y,
-		(*particleIterator).color_.z,
-		alpha
-	};
+	if (attributes.editColorGradient) {
+		// 色遷移：startColor → endColor をイージングで補間
+		float colorT = (*particleIterator).lifeTimer_.GetEase(attributes.colorEasingType);
+		Vector3 rgb = {
+			Easing::Lerp(attributes.startColor.x, attributes.endColor.x, colorT),
+			Easing::Lerp(attributes.startColor.y, attributes.endColor.y, colorT),
+			Easing::Lerp(attributes.startColor.z, attributes.endColor.z, colorT)
+		};
+		particleData_[numInstance_].color = { rgb.x, rgb.y, rgb.z, alpha };
+	} else {
+		particleData_[numInstance_].color = {
+			(*particleIterator).color_.x,
+			(*particleIterator).color_.y,
+			(*particleIterator).color_.z,
+			alpha
+		};
+	}
 
 	//経過時間の更新
 	(*particleIterator).lifeTimer_.Update(); 

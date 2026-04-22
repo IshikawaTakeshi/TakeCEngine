@@ -6,6 +6,7 @@
             "y": 1.0,
             "z": 1.0
         },
+        "colorEasingType": 1,
         "colorRange": {
             "max": 1.0,
             "min": 0.0
@@ -15,25 +16,33 @@
             "y": 0.0,
             "z": 0.0
         },
-        "editColor": true,
+        "editColor": false,
+        "editColorGradient": true,
         "emitCount": 10,
+        "emitterShape": 0,
         "enableFollowEmitter": false,
         "enableLighting": true,
+        "endColor": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
         "frequency": 0.10000000149011612,
         "isBillboard": true,
+        "isDecelerate": false,
         "isDirectional": true,
         "isEmitterTrail": true,
         "isParticleTrail": false,
         "isTraslate": true,
-        "lifetimeEasingType": 1,
+        "lifetimeEasingType": 4,
         "lifetimeRange": {
-            "max": 4.75,
-            "min": 4.0
+            "max": 7.0,
+            "min": 5.539999961853027
         },
         "particlesPerInterpolation": 20,
         "positionRange": {
-            "max": 14.510000228881836,
-            "min": -15.75
+            "max": 16.549999237060547,
+            "min": -16.200000762939453
         },
         "rotateRange": {
             "max": 3.1415927410125732,
@@ -44,18 +53,24 @@
             "y": 0.1599999964237213,
             "z": 0.1599999964237213
         },
-        "scaleEasingType": 6,
+        "scaleEasingType": 1,
         "scaleRange": {
             "max": 49.470001220703125,
-            "min": 10.0
+            "min": 0.6200000047683716
         },
         "scaleSetting": 1,
+        "startColor": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
         "trailEmitInterval": 0.0010000000474974513,
-        "velocityEasingType": 7,
+        "velocityEasingType": 5,
         "velocityRange": {
-            "max": 50.0,
-            "min": 40.0
-        }
+            "max": 45.959999084472656,
+            "min": 28.299999237060547
+        },
+        "velocityTarget": 0
     },
     "blendState": 2,
     "isUseTextureAnimation": false,

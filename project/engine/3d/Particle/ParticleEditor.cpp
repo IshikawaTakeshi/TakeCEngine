@@ -177,10 +177,21 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	}
 
 	//Color
-	ImGui::Checkbox("Edit Color", &attributes.editColor);
+	if (ImGui::Checkbox("Edit Color", &attributes.editColor)) {
+		if (attributes.editColor) { attributes.editColorGradient = false; }
+	}
 	if (attributes.editColor) {
 		ImGui::ColorEdit3("Color", &attributes.color.x);
 		ImGui::DragFloat2("Color Range", &attributes.colorRange.min, 0.01f, 0.0f, 1.0f);
+	}
+	// Color Gradient（Edit Color と排他）
+	if (ImGui::Checkbox("Edit Color Gradient", &attributes.editColorGradient)) {
+		if (attributes.editColorGradient) { attributes.editColor = false; }
+	}
+	if (attributes.editColorGradient) {
+		ImGui::ColorEdit3("Start Color", &attributes.startColor.x);
+		ImGui::ColorEdit3("End Color", &attributes.endColor.x);
+		ImGuiManager::ComboBoxEnum("Color Easing Type", attributes.colorEasingType);
 	}
 	//lifetime
 	ImGui::DragFloat2("Lifetime Range", &attributes.lifetimeRange.min, 0.01f, 0.0f, 10.0f);

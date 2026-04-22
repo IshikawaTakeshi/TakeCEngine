@@ -1,10 +1,12 @@
 {
     "attributes": {
+        "alignRotationToEmitter": false,
         "color": {
             "x": 0.09019608050584793,
             "y": 0.0941176488995552,
             "z": 0.0941176488995552
         },
+        "colorEasingType": 1,
         "colorRange": {
             "max": 1.0,
             "min": 0.0
@@ -14,24 +16,33 @@
             "y": 0.0,
             "z": 0.0
         },
-        "editColor": true,
-        "emitCount": 20,
+        "editColor": false,
+        "editColorGradient": true,
+        "emitCount": 19,
+        "emitterShape": 0,
         "enableFollowEmitter": false,
-        "frequency": 0.016,
+        "enableLighting": true,
+        "endColor": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "frequency": 0.10000000149011612,
         "isBillboard": true,
+        "isDecelerate": false,
         "isDirectional": true,
         "isEmitterTrail": false,
         "isParticleTrail": false,
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 5.300000190734863,
-            "min": 3.5
+            "max": 6.019999980926514,
+            "min": 4.5
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
-            "max": 2.0899999141693115,
-            "min": -2.490000009536743
+            "max": 3.680000066757202,
+            "min": -3.3499999046325684
         },
         "rotateRange": {
             "max": 3.1415927410125732,
@@ -42,22 +53,28 @@
             "y": 1.0,
             "z": 1.0
         },
-        "scaleEasingType": 0,
+        "scaleEasingType": 1,
         "scaleRange": {
             "max": 4.28000020980835,
             "min": 0.0
         },
         "scaleSetting": 1,
+        "startColor": {
+            "x": 1.0,
+            "y": 0.6235294342041016,
+            "z": 0.22745098173618317
+        },
         "trailEmitInterval": 0.01600000075995922,
         "velocityEasingType": 0,
         "velocityRange": {
             "max": 10.0,
             "min": 3.2899999618530273
-        }
+        },
+        "velocityTarget": 0
     },
-    "blendState": 6,
+    "blendState": 5,
     "isUseTextureAnimation": false,
-    "name": "DeadSmokeEffect",
+    "name": "DeadSmokeEffect.json",
     "primitiveParam": {
         "height": 1.0,
         "width": 1.0
