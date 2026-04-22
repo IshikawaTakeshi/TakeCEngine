@@ -101,7 +101,7 @@ public:
 	//ゲーム起動時間の取得
 	static float GetGameTime();
 	//経過時間の取得
-	static float GetDeltaTime() { return kDeltaTime; }
+	static float GetDeltaTime() { return deltaTime; }
 
 	void SetPaused(bool paused) { isPaused_ = paused; }
 
@@ -169,7 +169,7 @@ protected:
 	// ゲームの起動時間
 	static std::chrono::steady_clock::time_point gameTime_;
 	// ゲームの経過時間
-	static float kDeltaTime;
+	static float deltaTime;
 	//終了フラグ
 	bool isEnd_ = false;
 	//時間倍率

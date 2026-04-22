@@ -40,7 +40,7 @@ void ActionNodeView::draw() {
 		strncpy_s(buffer, targetStateName_.c_str(), sizeof(buffer));
 		if (ImGui::InputText("Target State", buffer, sizeof(buffer))) {
 			targetStateName_ = buffer;
-			setTitle("Action:" + targetStateName_);
+			setTitle(targetStateName_);
 		}
 	}
 }
@@ -56,5 +56,5 @@ void ActionNodeView::SaveParameters(BehaviorNodeData& data) const {
 void ActionNodeView::LoadParameters(const BehaviorNodeData& data) {
 	BehaviorNodeView::LoadParameters(data);
 	targetStateName_ = data.targetState;
-	setTitle("Action:" + targetStateName_);
+	setTitle(targetStateName_);
 }

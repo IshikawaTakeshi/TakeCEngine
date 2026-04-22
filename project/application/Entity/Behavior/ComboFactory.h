@@ -1,6 +1,8 @@
 #pragma once
 #include "application/Entity/Behavior/SequenceNode.h"
 #include "application/Entity/Behavior/SelectorNode.h"
+#include "application/Entity/Behavior/PlannerSelectorNode.h"
+#include "application/Entity/Behavior/WeightSelectorNode.h"
 #include "application/Entity/Behavior/ConditionNode.h"
 #include "application/Entity/Behavior/ActionNode.h"
 #include "application/Entity/Behavior/BehaviorTreeUtil.h"

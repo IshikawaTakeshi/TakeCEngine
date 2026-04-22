@@ -7,7 +7,6 @@
 #include <optional>
 #include <random>
 
-
 #include "application/Effect/BoostEffect.h"
 #include "application/Effect/DeadEffect.h"
 #include "application/Entity/Animation/AnimationMapper.h"
@@ -24,6 +23,7 @@
 #include "application/Entity/Behavior/BehaviorNode.h"
 #include "application/Entity/Behavior/Blackboard.h"
 #include "application/Entity/Behavior/ComboFactory.h"
+#include "application/Entity/Behavior/BehaviorTreeEditor.h"
 
 //============================================================================
 // Enemy class
@@ -195,7 +195,7 @@ private:
 	std::unique_ptr<BehaviorNode> behaviorTree_ = nullptr;  // ビヘイビアツリーのルート
 	std::unique_ptr<Blackboard> blackboard_ = nullptr;      // 共有データストア
 	ComboFactory comboFactory_;                              // ツリー構築用ファクトリ
-
+	
 	// アニメーションコントローラ
 	AnimatorController animatorController_;
 	// アニメーションマッパー
@@ -239,4 +239,6 @@ private:
 	std::unique_ptr<ComboSetData> pendingTreeData_ = nullptr;
 	// データアクセスのためのミューテックス（ImGuiスレッド対策）
 	std::mutex treeMutex_;
+	// ビヘイビアツリーエディタ
+	std::unique_ptr<BehaviorTreeEditor> behaviorTreeEditor_ = nullptr;
 };

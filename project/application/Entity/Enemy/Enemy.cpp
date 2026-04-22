@@ -156,12 +156,25 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 
 	// Blackboardの生成
 	blackboard_ = std::make_unique<Blackboard>();
+	
+	// Blackboardに初期値を登録(初回フレームでのGetValueアサートを防止)
+	UpdateBlackboard();
 
 	// JSONからビヘイビアツリーを構築
 	behaviorTree_ = comboFactory_.LoadComboSetData(
 		"DefaultComboSet.json",
 		stateManager_.get()
 	);
+
+	// ===== 追加: BehaviorTreeEditor 初期化と接続 =====
+	behaviorTreeEditor_ = std::make_unique<BehaviorTreeEditor>();
+	behaviorTreeEditor_->Initialize();
+	behaviorTreeEditor_->LoadTreeFromEnemy(behaviorTree_.get(), blackboard_.get());
+
+	// Applyボタン -> Enemyへ反映予約
+	behaviorTreeEditor_->SetApplyCallback([this](const ComboSetData& data) {
+		this->ApplyBehaviorTree(data);
+		});
 }
 
 //========================================================================================================
@@ -284,7 +297,14 @@ void Enemy::Update() {
 			behaviorTree_ = comboFactory_.BuildBehaviorTree(*pendingTreeData_,stateManager_.get());
 
 			// ノードの状態を初期化（念のため）
-			behaviorTree_->Reset();
+			if (behaviorTree_) {
+				behaviorTree_->Reset();
+			}
+
+			//Editorに新しいツリーを反映
+			if (behaviorTreeEditor_ && blackboard_) {
+				behaviorTreeEditor_->LoadTreeFromEnemy(behaviorTree_.get(), blackboard_.get());
+			}
 
 			pendingTreeData_ = nullptr;
 		}
@@ -343,7 +363,7 @@ void Enemy::Update() {
 			enemyData_.characterInfo.transform.translate).Length();
 		aiBrainSystem_->SetIsBulletNearby(bulletSensor_->IsActive());
 		aiBrainSystem_->SetDistanceToTarget(dist);
-		aiBrainSystem_->Update();
+		aiBrainSystem_->Update(weapons_);
 
 		// 2. Blackboardにデータを集約
 		UpdateBlackboard();
@@ -465,7 +485,7 @@ void Enemy::Update() {
 
 	// パーティクルエミッターの更新
 	for (auto& emitter : particleEmitter_) {
-		emitter->SetTranslate(enemyData_.characterInfo.transform.translate);
+		emitter->SetTranslate(bodyPosition_);
 		emitter->Update();
 	}
 
@@ -558,6 +578,11 @@ void Enemy::UpdateImGui() {
 	}
 
 	ImGui::End();
+
+	// Enemyウィンドウとは別ウィンドウ("Behavior Tree Editor")で描画される
+	if (behaviorTreeEditor_) {
+		behaviorTreeEditor_->UpdateImGui(behaviorTree_.get());
+	}
 #endif // _DEBUG
 }
 
@@ -690,8 +715,6 @@ void Enemy::UpdateAttack() {
 
 	// AIにどの武器を使うか選ばせる
 	std::vector<int> chosenWeapons = aiBrainSystem_->ChooseWeaponUnit(weapons_);
-
-	// 選ばれた武器すべてに対して攻撃処理を行う
 	for (int weaponIndex : chosenWeapons) {
 		WeaponAttack(weaponIndex);
 	}
@@ -704,7 +727,6 @@ void Enemy::UpdateAttack() {
 			if (enemyData_.characterInfo.isChargeShooting == true) {
 				// チャージ撃ち中の処理
 				chargeShootTimer_.Update();
-
 				
 				if (chargeShootTimer_.IsFinished()) {
 					weapon->Attack();

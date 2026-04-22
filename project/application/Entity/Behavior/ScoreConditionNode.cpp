@@ -20,13 +20,4 @@ BehaviorStatus ScoreConditionNode::Execute(Blackboard&) {
 	return BehaviorStatus::Failure;
 }
 
-//====================================================================================
-// パラメータの編集
-//====================================================================================
-void ScoreConditionNode::DrawInspector() {
-#if defined(_DEBUG) || defined(_DEVELOP)
-	ImGui::PushID(this);
-	ImGui::DragFloat("Threshold", &threshold_, 0.01f, 0.0f, 1.0f);
-	ImGui::PopID();
-#endif
-}
+

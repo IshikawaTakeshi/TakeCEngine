@@ -121,6 +121,19 @@ void PrimitiveParticle::UpdateImGui() {
 	ImGui::DragFloat2("VelocityRange", &attributes.velocityRange.min, 0.01f);
 	ImGui::DragFloat2("ColorRange", &attributes.colorRange.min, 0.01f);
 	ImGui::Checkbox("isBillboard", &attributes.isBillboard);
+
+	const char* shapeItems[] = { "Box", "Sphere" };
+	int currentShape = attributes.emitterShape;
+	if (ImGui::Combo("EmitterShape", &currentShape, shapeItems, IM_ARRAYSIZE(shapeItems))) {
+		attributes.emitterShape = currentShape;
+	}
+	const char* velocityTargetItems[] = { "Default", "Radial", "Converge" };
+	int currentVelocityTarget = attributes.velocityTarget;
+	if (ImGui::Combo("VelocityTarget", &currentVelocityTarget, velocityTargetItems, IM_ARRAYSIZE(velocityTargetItems))) {
+		attributes.velocityTarget = currentVelocityTarget;
+	}
+	ImGui::Checkbox("isDecelerate", &attributes.isDecelerate);
+
 	ImGui::End();
 #endif // _DEBUG
 }
@@ -306,10 +319,23 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 			}
 
 			if (attributes.alignRotationToEmitter) {
-				auto emitDir = TakeCFrameWork::GetParticleManager()->GetEmitDirection((*particleIterator).emitterID_);
-				if (emitDir.has_value()) {
+				Vector3 dir = { 0, 0, 1 };
+				bool hasDir = false;
 
-					Vector3 dir = emitDir.value();
+				if (attributes.velocityTarget == static_cast<uint32_t>(VelocityTarget::Radial) ||
+					attributes.velocityTarget == static_cast<uint32_t>(VelocityTarget::Converge)) {
+					// RadialやConvergeの場合、自身の速度（進行方向）の向きを使用する
+					dir = (*particleIterator).velocity_;
+					hasDir = true;
+				} else {
+					auto emitDir = TakeCFrameWork::GetParticleManager()->GetEmitDirection((*particleIterator).emitterID_);
+					if (emitDir.has_value()) {
+						dir = emitDir.value();
+						hasDir = true;
+					}
+				}
+
+				if (hasDir) {
 					if (Vector3Math::LengthSq(dir) > 1e-6f) {
 
 						Vector3 to = Vector3Math::Normalize(dir);
@@ -365,15 +391,21 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 			}
 		
 		} else {
-			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * velocityProgress * kDeltaTime_;
-
+			if (attributes.isDecelerate) {
+				(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * (1.0f - velocityProgress) * kDeltaTime_;
+			} else {
+				(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * velocityProgress * kDeltaTime_;
+			}
 		}
 
 		if(attributes.isDirectional){
 			//方向に沿って移動
 			(*particleIterator).velocity_ += attributes.direction * kDeltaTime_;
-			(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * velocityProgress * kDeltaTime_;
-			
+			if (attributes.isDecelerate) {
+				(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * (1.0f - velocityProgress) * kDeltaTime_;
+			} else {
+				(*particleIterator).transforms_.translate += (*particleIterator).velocity_ * velocityProgress * kDeltaTime_;
+			}
 		}
 	}
 

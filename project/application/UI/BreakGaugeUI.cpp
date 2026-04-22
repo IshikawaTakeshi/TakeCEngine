@@ -48,12 +48,10 @@ void BreakGaugeUI::Initialize(TakeC::SpriteManager* spriteManager,
 		CreateAndRegisterSpriteFromJson(fullPath);
 	}
 	// JSONで設定されたサイズを最大幅として使用（解像度に合わせてスケーリング）
-	delayGaugeMaxWidth_ =
-		sprites_[DELAY]->GetSize().x * TakeC::WinApp::widthPercent_;
-	actualGaugeMaxWidth_ =
-		sprites_[ACTUAL]->GetSize().x * TakeC::WinApp::widthPercent_;
+	delayGaugeMaxWidth_  = sprites_[DELAY]->GetSize().x * TakeC::WinApp::widthPercent_;
+	actualGaugeMaxWidth_ = sprites_[ACTUAL]->GetSize().x * TakeC::WinApp::widthPercent_;
 
-	defaultDelaySpriteColor_ = sprites_[DELAY]->GetMaterialColor();
+	defaultDelaySpriteColor_  = sprites_[DELAY]->GetMaterialColor();
 	defaultActualSpriteColor_ = sprites_[ACTUAL]->GetMaterialColor();
 
 	// イベントリスナーの登録

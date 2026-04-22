@@ -18,7 +18,15 @@ void AIBrainSystem::Initialize(PlayableCharacterInfo* characterInfo,size_t weapo
 //===================================================================================
 //　更新
 //===================================================================================
-void AIBrainSystem::Update() {
+void AIBrainSystem::Update(const std::vector<std::unique_ptr<BaseWeapon>>& weapons) {
+	// まず攻撃スコアを全武器分計算（攻撃許可フラグが立っている時のみ）
+	for (int i = 0; i < weapons.size(); ++i) {
+		if (weapons[i]) {
+			attackScores_[i] = CalculateAttackScore(weapons[i].get());
+		} else {
+			attackScores_[i] = 0.0f;
+		}
+	}
 	//各スコアの計算
 	actionScores_[Action::USE_REAIR] = CalculateHpScore();
 	actionScores_[Action::STEPBOOST] = CalculateStepBoostScore();
@@ -109,8 +117,8 @@ std::vector<int> AIBrainSystem::ChooseWeaponUnit(const std::vector<std::unique_p
 	std::vector<int> chosenWeapons;
 
 	for(int i = 0; i < weapons.size(); ++i) {
-		attackScores_[i] = CalculateAttackScore(weapons[i].get());
-		if(attackScores_[i] > weightParam_.attack.weaponChooseThreshold) { // スコアが0.5以上の武器を選択
+		// Updateで計算済みのスコアを利用する
+		if(attackScores_[i] > weightParam_.attack.weaponChooseThreshold) { // スコアが閾値以上の武器を選択
 			chosenWeapons.push_back(i);
 		}
 	}

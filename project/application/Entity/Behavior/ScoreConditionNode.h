@@ -33,11 +33,6 @@ public:
 	void Reset() override {}
 
 	/// <summary>
-	/// パラメータの編集
-	/// </summary>
-	void DrawInspector() override;
-
-	/// <summary>
 	/// スコア関数の設定
 	/// </summary>
 	/// <param name="threshold"></param>

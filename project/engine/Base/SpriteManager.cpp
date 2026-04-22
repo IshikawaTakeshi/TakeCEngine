@@ -26,7 +26,8 @@ void SpriteManager::Update() {
 //============================================================================
 void SpriteManager::Draw() {
 	for (auto& sprite : sprites_) {
-		sprite->Draw();
+		// スプライトがアクティブな場合のみ描画
+		if (sprite->IsActive()) sprite->Draw();
 	}
 }
 

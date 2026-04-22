@@ -10,9 +10,9 @@ void SceneStateGameOver::Initialize(GamePlayScene* scene) {
 
 	scene->GetPhaseMessageUI()->SetNextMessage(PhaseMessage::LOSE);
 
-	float fadeTimer = 3.0f;
+	float fadeTimer = 1.0f;
 	SceneManager::GetInstance().ChangeScene("GAMEOVER", fadeTimer);
-	//TakeCFrameWork::GetPostEffectManager()->PlayEffect("GameOverEffect_1");
+	TakeCFrameWork::GetPostEffectManager()->PlayEffect("Outline_FadeOut");
 	TakeCFrameWork::GetPostEffectManager()->PlayEffect("GameOverEffect_3");
 }
 

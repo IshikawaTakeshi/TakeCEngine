@@ -26,14 +26,18 @@
 #include "application/Ground/Ground.h"
 #include "application/Scene/GamePlaySceneBehavior.h"
 #include "application/Scene/SceneState/SceneStateManager.h"
+// UI
+#include "application/UI/BreakGaugeUI.h"
 #include "application/UI/ActionButtonICon.h"
 #include "application/UI/BulletCounterGaugeUI.h"
 #include "application/UI/BulletCounterUI.h"
 #include "application/UI/EnergyInfoUI.h"
 #include "application/UI/HPBar.h"
+#include "application/UI/PauseMenuUI.h"
 #include "application/UI/PhaseMessageUI.h"
 #include "application/UI/PlayerReticle.h"
 #include "application/UI/WarningUI.h"
+
 
 //=============================================================================
 // GamePlayScene class
@@ -82,6 +86,8 @@ public:
 	PhaseMessageUI* GetPhaseMessageUI() const { return phaseMessageUI_.get(); }
 	SceneStateManager& GetSceneStateManager() { return sceneStateManager_; }
 
+	void SetPauseMenuActive(bool isActive) { isPauseMenuActive_ = isActive; }
+
 private:
 	// 全ての当たり判定のチェック
 	void CheckAllCollisions();
@@ -110,7 +116,6 @@ private:
 	std::unique_ptr<EnemyInputProvider> inputProvider_Enemy = nullptr;
 	std::unique_ptr<Enemy> enemy_ = nullptr;
 	std::unique_ptr<HPBar> enemyHpBar_ = nullptr;
-	std::unique_ptr<BehaviorTreeEditor> behaviorTreeEditor_ = nullptr;
 
 	std::unique_ptr<BulletManager> bulletManager_ = nullptr;
 
@@ -125,4 +130,6 @@ private:
 
 	// 画面遷移時間
 	float fadeTimer_ = 0.0f;
+	// ポーズメニューがアクティブかどうか
+	bool isPauseMenuActive_ = false; 
 };

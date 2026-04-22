@@ -20,4 +20,6 @@ public:
 	void Initialize(GamePlayScene* scene) override;
 	// 更新
 	void Update(GamePlayScene* scene) override;
+
+
 };

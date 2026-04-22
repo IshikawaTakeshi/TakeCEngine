@@ -95,6 +95,8 @@ public:
 	const bool GetIsFlipX() const { return isFlipX_; }
 	// 上下フリップ取得
 	const bool GetIsFlipY() const { return isFlipY_; }
+	// 表示・非表示取得
+	bool IsActive() const { return isActive_; }
 	// テクスチャの左上座標取得
 	const Vector2& GetTextureLeftTop() const {
 		return spriteConfig_.textureLeftTop_;
@@ -128,6 +130,8 @@ public:
 	void SetIsFlipX(const bool isFlipX) { isFlipX_ = isFlipX; }
 	// 上下フリップ設定
 	void SetIsFlipY(const bool isFlipY) { isFlipY_ = isFlipY; }
+	// 表示・非表示設定
+	void SetIsActive(bool isActive) { isActive_ = isActive; }
 	// テクスチャの左上座標設定
 	void SetTextureLeftTop(const Vector2& textureLeftTop) {
 		spriteConfig_.textureLeftTop_ = textureLeftTop;
@@ -176,6 +180,7 @@ private:
 	bool isFlipY_ = false;      // 上下フリップ
 	bool adjustSwitch_ = false; // テクスチャサイズ調整スイッチ
 	bool firstUpdate_ = true;   // 初回更新フラグ
+	bool isActive_ = true;      // 表示・非表示フラグ
 
 	// Sprite設定データ
 	SpriteConfig spriteConfig_{};

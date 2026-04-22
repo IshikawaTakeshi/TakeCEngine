@@ -71,6 +71,15 @@ void TakeC::TextureManager::Finalize() {
 	}
 	workerThreads_.clear();
 	textureDatas_.clear();
+
+	// 白テクスチャのリソース解放
+	if (whiteTextureData_.resource) {
+		whiteTextureData_.resource.Reset();
+	}
+	// 中間リソースの解放
+	if (whiteTextureData_.intermediateResource) {
+		whiteTextureData_.intermediateResource.Reset();
+	}
 }
 
 //================================================================

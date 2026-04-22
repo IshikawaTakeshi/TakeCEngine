@@ -23,7 +23,7 @@ class AIBrainSystem {
 	//初期化
 	void Initialize(PlayableCharacterInfo* characterInfo,size_t weaponUnitSize);
 	//更新
-	void Update();
+	void Update(const std::vector<std::unique_ptr<BaseWeapon>>& weapons);
 	//ImGuiの更新
 	void UpdateImGui();
 	//武器ユニットの選択
