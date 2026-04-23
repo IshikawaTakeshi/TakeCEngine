@@ -44,6 +44,8 @@ void to_json(nlohmann::json& j, const ParticleAttributes& attributes) {
 	j["startColor"] = attributes.startColor;
 	j["endColor"] = attributes.endColor;
 	j["colorEasingType"] = attributes.colorEasingType;
+	j["gravity"] = attributes.gravity;
+	j["enableGravity"] = attributes.enableGravity;
 }
 
 //============================================================================
@@ -130,6 +132,8 @@ void from_json(const nlohmann::json& j, ParticleAttributes& attributes) {
 	attributes.startColor = j.value("startColor", attributes.startColor);
 	attributes.endColor = j.value("endColor", attributes.endColor);
 	attributes.colorEasingType = j.value("colorEasingType", attributes.colorEasingType);
+	attributes.gravity = j.value("gravity", attributes.gravity);
+	attributes.enableGravity = j.value("enableGravity", attributes.enableGravity);
 }
 
 //============================================================================

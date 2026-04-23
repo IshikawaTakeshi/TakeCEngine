@@ -87,6 +87,8 @@ struct ParticleAttributes {
 
 	float trailEmitInterval = 0.016f; //トレイルエフェクトの生成間隔
 
+	Vector3 gravity = { 0.0f,0.0f,0.0f }; //重力
+	bool enableGravity = false; //重力を有効にするかどうか
 };
 
 // パーティクルプリセットを保持する構造体

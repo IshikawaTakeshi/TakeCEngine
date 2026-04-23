@@ -133,6 +133,10 @@ void PrimitiveParticle::UpdateImGui() {
 		attributes.velocityTarget = currentVelocityTarget;
 	}
 	ImGui::Checkbox("isDecelerate", &attributes.isDecelerate);
+	ImGui::Checkbox("enableGravity", &attributes.enableGravity);
+	if (attributes.enableGravity) {
+		ImGui::DragFloat3("gravity", &attributes.gravity.x, 0.01f);
+	}
 
 	ImGui::End();
 #endif // _DEBUG
@@ -307,6 +311,10 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 	float velocityProgress = (*particleIterator).lifeTimer_.GetEase(attributes.velocityEasingType);
 	float scaleProgress = (*particleIterator).lifeTimer_.GetEase(attributes.scaleEasingType);
 	float oldTime = (*particleIterator).lifeTimer_.GetProgress() * (*particleIterator).lifeTimer_.GetDuration();
+
+	if (attributes.enableGravity) {
+		(*particleIterator).velocity_ += attributes.gravity * kDeltaTime_;
+	}
 
 	if (attributes.isTranslate) {
 		if (attributes.enableFollowEmitter) {
