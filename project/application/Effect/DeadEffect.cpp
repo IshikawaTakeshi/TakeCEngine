@@ -14,7 +14,6 @@ void DeadEffect::Initialize() {
 	particleEmitter_[1] = std::make_unique<ParticleEmitter>();
 	particleEmitter_[1]->Initialize("smoke", "DeadSmokeEffect.json");
 	particleEmitter_[1]->SetRotate({ -1.4f,0.0f,0.0f });
-	particleEmitter_[1]->SetParticleName("DeadSmokeEffect");
 	particleEmitter_[2] = std::make_unique<ParticleEmitter>(); 
 	particleEmitter_[2]->Initialize("DamageSpark2", "DamageSpark2.json");
 

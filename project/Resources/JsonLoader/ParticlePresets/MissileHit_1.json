@@ -2,11 +2,11 @@
     "attributes": {
         "alignRotationToEmitter": false,
         "color": {
-            "x": 0.886274516582489,
-            "y": 0.1764705926179886,
-            "z": 0.239215686917305
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
         },
-        "colorEasingType": 0,
+        "colorEasingType": 4,
         "colorRange": {
             "max": 1.0,
             "min": 0.0
@@ -16,77 +16,87 @@
             "y": 0.0,
             "z": 0.0
         },
-        "editColor": true,
-        "editColorGradient": false,
-        "emitCount": 100,
+        "editColor": false,
+        "editColorGradient": true,
+        "emitCount": 43,
         "emitterShape": 0,
-        "enableFollowEmitter": true,
-        "enableGravity": false,
-        "enableLighting": true,
+        "enableFollowEmitter": false,
+        "enableGravity": true,
+        "enableLighting": false,
         "endColor": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
+            "x": 0.9725490212440491,
+            "y": 1.0,
+            "z": 0.9725490212440491
         },
-        "frequency": 0.11999999731779099,
+        "frequency": 0.10000000149011612,
         "gravity": {
             "x": 0.0,
-            "y": 0.0,
+            "y": -49.119998931884766,
             "z": 0.0
         },
-        "isBillboard": true,
-        "isDecelerate": false,
+        "isBillboard": false,
+        "isDecelerate": true,
         "isDirectional": false,
         "isEmitterTrail": false,
         "isParticleTrail": false,
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 0.8399999737739563,
-            "min": 0.029999999329447746
+            "max": 0.9200000166893005,
+            "min": 0.12999999523162842
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
-            "max": 7.5,
-            "min": -24.690000534057617
+            "max": 1.2899999618530273,
+            "min": -1.100000023841858
         },
         "rotateRange": {
             "max": 3.1415927410125732,
             "min": -3.1415927410125732
         },
         "scale": {
-            "x": 10.0,
-            "y": 10.0,
-            "z": 8.880000114440918
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
         },
         "scaleEasingType": 0,
         "scaleRange": {
-            "max": 15.739999771118164,
+            "max": 3.0,
             "min": 0.10000000149011612
         },
         "scaleSetting": 1,
         "startColor": {
             "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "y": 0.12156862765550613,
+            "z": 0.0
         },
         "trailEmitInterval": 0.01600000075995922,
         "velocityEasingType": 0,
         "velocityRange": {
-            "max": 10.0,
-            "min": -1.0
+            "max": 60.0,
+            "min": 30.0
         },
         "velocityTarget": 0
     },
     "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "MissileExplosion_Enemy.json",
+    "name": "MissileHit_1.json",
     "primitiveParam": {
-        "height": 1.0,
-        "width": 1.0
+        "size": {
+            "max": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "min": {
+                "x": -0.5,
+                "y": -0.5,
+                "z": -0.5
+            }
+        }
     },
-    "primitiveType": "PRIMITIVE_PLANE",
+    "primitiveType": "PRIMITIVE_CUBE",
     "textureAnimationParam": null,
     "textureAnimationType": 0,
-    "textureFilePath": "star.png"
+    "textureFilePath": "white1x1.png"
 }

@@ -16,9 +16,9 @@ void BulletManager::Initialize(Object3dCommon* object3dCommon, size_t size) {
 
 	//---- Missile --------
 	playerMissileEffectConfig_.lightEffectFilePath = "MissileEffect_Player.json";
-	playerMissileEffectConfig_.explosionEffectFilePath = "MissileEffect_Player.json";
+	playerMissileEffectConfig_.explosionEffectFilePath = "MissileHit_Player.json";
 	enemyMissileEffectConfig_.lightEffectFilePath = "MissileEffect_Enemy.json";
-	enemyMissileEffectConfig_.explosionEffectFilePath = "MissileEffect_Enemy.json";
+	enemyMissileEffectConfig_.explosionEffectFilePath = "MissileHit_Enemy.json";
 
 	playerBazookaBulletEffectConfig_.lightEffectFilePath = "BazookaBulletEffect_Player.json";
 	playerBazookaBulletEffectConfig_.explosionEffectFilePath = "BazookaBulletEffect_Explosion_Player.json";

@@ -258,8 +258,8 @@ void VerticalMissile::DrawCollider() {
 void VerticalMissile::OnCollisionAction(GameCharacter* other) {
 
 	//他のキャラクターと衝突した場合の処理
-	if(characterType_ == CharacterType::PLAYER_MISSILE && other->GetCharacterType() == CharacterType::ENEMY ||
-	   characterType_ == CharacterType::ENEMY_MISSILE && other->GetCharacterType() == CharacterType::PLAYER) {
+	if((characterType_ == CharacterType::PLAYER_MISSILE && other->GetCharacterType() == CharacterType::ENEMY) ||
+	   (characterType_ == CharacterType::ENEMY_MISSILE && other->GetCharacterType() == CharacterType::PLAYER)) {
 		//パーティクル射出
 		explosionEffect_->Play(transform_.translate);
 		//弾を無効化
