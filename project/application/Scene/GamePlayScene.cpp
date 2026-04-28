@@ -198,6 +198,7 @@ void GamePlayScene::Finalize() {
 	TakeCFrameWork::GetParticleManager()->ClearParticles(); // パーティクルの解放
 	TakeCFrameWork::GetParticleManager()->ClearEmitters();  // エミッターの解放
 	TakeCFrameWork::GetLightManager()->ClearAllPointLights();  // ポイントライトの解放
+	TakeCFrameWork::GetPostEffectManager()->StopAllEffects();    // ポストエフェクトの停止
 	TakeCFrameWork::GetSpriteManager()->Clear(); // スプライトの解放
 	TakeCFrameWork::GetUIManager()->Clear();     // UIの解放
 	bulletManager_->Finalize();                  // 弾マネージャーの解放
