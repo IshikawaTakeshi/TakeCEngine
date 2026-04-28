@@ -1,10 +1,12 @@
 {
     "attributes": {
+        "alignRotationToEmitter": false,
         "color": {
             "x": 0.886274516582489,
             "y": 0.1764705926179886,
             "z": 0.239215686917305
         },
+        "colorEasingType": 0,
         "colorRange": {
             "max": 1.0,
             "min": 0.0
@@ -15,23 +17,38 @@
             "z": 0.0
         },
         "editColor": true,
-        "emitCount": 70,
+        "editColorGradient": false,
+        "emitCount": 100,
+        "emitterShape": 0,
         "enableFollowEmitter": true,
-        "frequency": 0.10000000149011612,
+        "enableGravity": false,
+        "enableLighting": true,
+        "endColor": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "frequency": 0.11999999731779099,
+        "gravity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
         "isBillboard": true,
+        "isDecelerate": false,
         "isDirectional": false,
         "isEmitterTrail": false,
         "isParticleTrail": false,
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 2.619999885559082,
+            "max": 0.8399999737739563,
             "min": 0.029999999329447746
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
-            "max": 1.4600000381469727,
-            "min": -1.7400000095367432
+            "max": 7.5,
+            "min": -24.690000534057617
         },
         "rotateRange": {
             "max": 3.1415927410125732,
@@ -44,20 +61,26 @@
         },
         "scaleEasingType": 0,
         "scaleRange": {
-            "max": 30.0,
+            "max": 15.739999771118164,
             "min": 0.10000000149011612
         },
         "scaleSetting": 1,
+        "startColor": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
         "trailEmitInterval": 0.01600000075995922,
         "velocityEasingType": 0,
         "velocityRange": {
             "max": 10.0,
             "min": -1.0
-        }
+        },
+        "velocityTarget": 0
     },
     "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "MissileExplosion_Enemy",
+    "name": "MissileExplosion_Enemy.json",
     "primitiveParam": {
         "height": 1.0,
         "width": 1.0
@@ -65,5 +88,5 @@
     "primitiveType": "PRIMITIVE_PLANE",
     "textureAnimationParam": null,
     "textureAnimationType": 0,
-    "textureFilePath": "MazzleEffect1.png"
+    "textureFilePath": "star.png"
 }

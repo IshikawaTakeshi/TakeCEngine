@@ -2,11 +2,11 @@
     "attributes": {
         "alignRotationToEmitter": false,
         "color": {
-            "x": 0.09019608050584793,
-            "y": 0.0941176488995552,
-            "z": 0.0941176488995552
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
         },
-        "colorEasingType": 1,
+        "colorEasingType": 4,
         "colorRange": {
             "max": 1.0,
             "min": 0.0
@@ -18,31 +18,37 @@
         },
         "editColor": false,
         "editColorGradient": true,
-        "emitCount": 19,
+        "emitCount": 10,
         "emitterShape": 0,
         "enableFollowEmitter": false,
-        "enableLighting": true,
+        "enableGravity": true,
+        "enableLighting": false,
         "endColor": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
+            "x": 0.9725490212440491,
+            "y": 1.0,
+            "z": 0.9725490212440491
         },
         "frequency": 0.10000000149011612,
-        "isBillboard": true,
-        "isDecelerate": false,
-        "isDirectional": true,
+        "gravity": {
+            "x": 0.0,
+            "y": -63.15999984741211,
+            "z": 0.0
+        },
+        "isBillboard": false,
+        "isDecelerate": true,
+        "isDirectional": false,
         "isEmitterTrail": false,
         "isParticleTrail": false,
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 6.019999980926514,
-            "min": 4.5
+            "max": 0.9200000166893005,
+            "min": 0.12999999523162842
         },
         "particlesPerInterpolation": 5,
         "positionRange": {
-            "max": 3.680000066757202,
-            "min": -3.3499999046325684
+            "max": 1.2899999618530273,
+            "min": -0.47999998927116394
         },
         "rotateRange": {
             "max": 3.1415927410125732,
@@ -53,34 +59,44 @@
             "y": 1.0,
             "z": 1.0
         },
-        "scaleEasingType": 1,
+        "scaleEasingType": 0,
         "scaleRange": {
-            "max": 4.28000020980835,
-            "min": 0.0
+            "max": 3.0,
+            "min": 0.10000000149011612
         },
-        "scaleSetting": 1,
+        "scaleSetting": 0,
         "startColor": {
             "x": 1.0,
-            "y": 0.6235294342041016,
-            "z": 0.22745098173618317
+            "y": 0.12156862765550613,
+            "z": 0.0
         },
         "trailEmitInterval": 0.01600000075995922,
         "velocityEasingType": 0,
         "velocityRange": {
-            "max": 10.0,
-            "min": 3.2899999618530273
+            "max": 50.0,
+            "min": 30.0
         },
         "velocityTarget": 0
     },
-    "blendState": 5,
+    "blendState": 1,
     "isUseTextureAnimation": false,
-    "name": "DeadSmokeEffect.json",
+    "name": "DamageSpark_1.json",
     "primitiveParam": {
-        "height": 1.0,
-        "width": 1.0
+        "size": {
+            "max": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "min": {
+                "x": -0.5,
+                "y": -0.5,
+                "z": -0.5
+            }
+        }
     },
-    "primitiveType": "PRIMITIVE_PLANE",
+    "primitiveType": "PRIMITIVE_CUBE",
     "textureAnimationParam": null,
     "textureAnimationType": 0,
-    "textureFilePath": "SparkNoise.png"
+    "textureFilePath": "white1x1.png"
 }

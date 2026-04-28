@@ -6,6 +6,7 @@
             "y": 0.18039216101169586,
             "z": 0.05098039284348488
         },
+        "colorEasingType": 0,
         "colorRange": {
             "max": 1.0,
             "min": 0.0
@@ -16,19 +17,27 @@
             "z": 0.0
         },
         "editColor": true,
+        "editColorGradient": false,
         "emitCount": 10,
+        "emitterShape": 0,
         "enableFollowEmitter": false,
         "enableLighting": true,
+        "endColor": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
         "frequency": 0.10000000149011612,
         "isBillboard": true,
+        "isDecelerate": false,
         "isDirectional": true,
         "isEmitterTrail": true,
         "isParticleTrail": false,
         "isTraslate": true,
         "lifetimeEasingType": 0,
         "lifetimeRange": {
-            "max": 5.510000228881836,
-            "min": 4.409999847412109
+            "max": 3.930000066757202,
+            "min": 3.0999999046325684
         },
         "particlesPerInterpolation": 20,
         "positionRange": {
@@ -50,12 +59,18 @@
             "min": 14.510000228881836
         },
         "scaleSetting": 1,
+        "startColor": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
         "trailEmitInterval": 0.0010000000474974513,
         "velocityEasingType": 0,
         "velocityRange": {
             "max": 100.0,
             "min": 50.0
-        }
+        },
+        "velocityTarget": 0
     },
     "blendState": 1,
     "isUseTextureAnimation": false,

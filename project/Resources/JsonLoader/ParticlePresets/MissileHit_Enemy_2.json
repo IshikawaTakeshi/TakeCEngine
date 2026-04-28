@@ -1,0 +1,102 @@
+{
+    "attributes": {
+        "alignRotationToEmitter": false,
+        "color": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "colorEasingType": 4,
+        "colorRange": {
+            "max": 1.0,
+            "min": 0.0
+        },
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "editColor": false,
+        "editColorGradient": true,
+        "emitCount": 10,
+        "emitterShape": 1,
+        "enableFollowEmitter": false,
+        "enableGravity": true,
+        "enableLighting": false,
+        "endColor": {
+            "x": 0.8039215803146362,
+            "y": 0.7607843279838562,
+            "z": 0.7215686440467834
+        },
+        "frequency": 0.10000000149011612,
+        "gravity": {
+            "x": 2.940000057220459,
+            "y": -100.30999755859375,
+            "z": 0.0
+        },
+        "isBillboard": false,
+        "isDecelerate": true,
+        "isDirectional": false,
+        "isEmitterTrail": false,
+        "isParticleTrail": false,
+        "isTraslate": true,
+        "lifetimeEasingType": 0,
+        "lifetimeRange": {
+            "max": 0.9200000166893005,
+            "min": 0.12999999523162842
+        },
+        "particlesPerInterpolation": 5,
+        "positionRange": {
+            "max": 7.03000020980835,
+            "min": -7.239999771118164
+        },
+        "rotateRange": {
+            "max": 3.1415927410125732,
+            "min": -3.1415927410125732
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "scaleEasingType": 0,
+        "scaleRange": {
+            "max": 3.990000009536743,
+            "min": 0.10000000149011612
+        },
+        "scaleSetting": 2,
+        "startColor": {
+            "x": 0.95686274766922,
+            "y": 0.14509804546833038,
+            "z": 0.0
+        },
+        "trailEmitInterval": 0.01600000075995922,
+        "velocityEasingType": 0,
+        "velocityRange": {
+            "max": 200.0,
+            "min": 30.0
+        },
+        "velocityTarget": 1
+    },
+    "blendState": 6,
+    "isUseTextureAnimation": false,
+    "name": "MissileHit_Enemy_2.json",
+    "primitiveParam": {
+        "size": {
+            "max": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "min": {
+                "x": -0.5,
+                "y": -0.5,
+                "z": -0.5
+            }
+        }
+    },
+    "primitiveType": "PRIMITIVE_CUBE",
+    "textureAnimationParam": null,
+    "textureAnimationType": 0,
+    "textureFilePath": "flontHp.png"
+}

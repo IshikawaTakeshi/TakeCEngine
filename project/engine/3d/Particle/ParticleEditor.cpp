@@ -177,10 +177,21 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	}
 
 	//Color
-	ImGui::Checkbox("Edit Color", &attributes.editColor);
+	if (ImGui::Checkbox("Edit Color", &attributes.editColor)) {
+		if (attributes.editColor) { attributes.editColorGradient = false; }
+	}
 	if (attributes.editColor) {
 		ImGui::ColorEdit3("Color", &attributes.color.x);
 		ImGui::DragFloat2("Color Range", &attributes.colorRange.min, 0.01f, 0.0f, 1.0f);
+	}
+	// Color Gradient（Edit Color と排他）
+	if (ImGui::Checkbox("Edit Color Gradient", &attributes.editColorGradient)) {
+		if (attributes.editColorGradient) { attributes.editColor = false; }
+	}
+	if (attributes.editColorGradient) {
+		ImGui::ColorEdit3("Start Color", &attributes.startColor.x);
+		ImGui::ColorEdit3("End Color", &attributes.endColor.x);
+		ImGuiManager::ComboBoxEnum("Color Easing Type", attributes.colorEasingType);
 	}
 	//lifetime
 	ImGui::DragFloat2("Lifetime Range", &attributes.lifetimeRange.min, 0.01f, 0.0f, 10.0f);
@@ -215,6 +226,10 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	ImGui::Checkbox("Is EmitterTrail", &attributes.isEmitterTrail);
 	ImGui::Checkbox("Enable Lighting", &attributes.enableLighting);
 	ImGui::Checkbox("Align Rotation To Emitter", &attributes.alignRotationToEmitter);
+	ImGui::Checkbox("Enable Gravity", &attributes.enableGravity);
+	if (attributes.enableGravity) {
+		ImGui::DragFloat3("Gravity", &attributes.gravity.x, 0.01f, -100.0f, 100.0f);
+	}
 	ImGui::SliderInt("Particles Per Interpolation", reinterpret_cast<int*>(&attributes.particlesPerInterpolation), 1, 20);
 	ImGui::DragFloat("Trail Emit Interval", &attributes.trailEmitInterval, 0.001f, 0.001f, 1.0f);
 
