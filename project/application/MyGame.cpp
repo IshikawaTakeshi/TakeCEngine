@@ -72,8 +72,8 @@ void MyGame::Initialize(const std::wstring& titleName) {
 		postEffectManager_->InitializeEffect("DistortionEffect", L"PostEffect/DistortionEffect.CS.hlsl");
 		postEffectManager_->InitializeEffect("RadialBlur", L"PostEffect/RadialBlur.CS.hlsl");
 		postEffectManager_->InitializeEffect("BloomEffect", L"PostEffect/BloomEffect.CS.hlsl");
-		postEffectManager_->InitializeEffect("DepthBasedOutline", L"PostEffect/DepthBasedOutline.CS.hlsl");
 		postEffectManager_->InitializeEffect("ShadowMapEffect", L"PostEffect/ShadowMapEffect.CS.hlsl");
+		postEffectManager_->InitializeEffect("DepthBasedOutline", L"PostEffect/DepthBasedOutline.CS.hlsl");
 		postEffectManager_->InitializeEffect("ScanlineEffect", L"PostEffect/ScanlineEffect.CS.hlsl");
 		postEffectManager_->InitializeEffect("ChromaticAberration", L"PostEffect/ChromaticAberration.CS.hlsl");
 		});
