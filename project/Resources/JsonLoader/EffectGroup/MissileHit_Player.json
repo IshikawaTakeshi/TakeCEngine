@@ -17,7 +17,7 @@
                 "y": 0.0,
                 "z": 0.0
             },
-            "presetFilePath": "MissileHit_2.json",
+            "presetFilePath": "MissileHit_Player_3.json",
             "rotationOffset": {
                 "x": 0.0,
                 "y": 0.0,
@@ -35,7 +35,7 @@
                 "y": 3.0999999046325684,
                 "z": 0.0
             },
-            "presetFilePath": "MissileHit_3.json",
+            "presetFilePath": "MissileHit_Player_2.json",
             "rotationOffset": {
                 "x": 0.0,
                 "y": 0.0,
