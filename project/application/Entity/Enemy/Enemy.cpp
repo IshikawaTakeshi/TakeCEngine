@@ -521,10 +521,10 @@ void Enemy::UpdateImGui() {
 		0.01f);
 	ImGui::Separator();
 	//health
-	ImGui::DragFloat("Health", &enemyData_.characterInfo.health, 1.0f, 0.0f,
+	ImGui::DragFloat("体力ゲージ", &enemyData_.characterInfo.health, 1.0f, 0.0f,
 		enemyData_.characterInfo.maxHealth);
 	//energy
-	ImGui::DragFloat("Energy", &enemyData_.characterInfo.energyInfo.energy, 1.0f,
+	ImGui::DragFloat("エネルギー", &enemyData_.characterInfo.energyInfo.energy, 1.0f,
 		0.0f, enemyData_.characterInfo.energyInfo.maxEnergy);
 	//breakGauge
 	ImGui::DragFloat("BreakGauge", &enemyData_.characterInfo.breakGaugeInfo.breakGauge,
