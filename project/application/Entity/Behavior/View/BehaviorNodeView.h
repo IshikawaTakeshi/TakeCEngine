@@ -2,11 +2,10 @@
 #include <ImNodeFlow-1.2.2/include/ImNodeFlow.h>
 #include "application/Entity/Behavior/BehaviorStatusEnum.h"
 #include "application/Entity/Behavior/BehaviorTreeUtil.h"
+#include "application/Entity/Behavior/BehaviorNode.h"
 
 #include "engine/Math/Vector4.h"
 #include <string>
-
-class BehaviorNode;
 
 //=============================================================
 //BehaviorNodeView class

@@ -1,4 +1,5 @@
 #include "ConditionNodeView.h"
+#include "application/Entity/Behavior/ConditionNode.h"
 
 //====================================================================
 // コンストラクタ
@@ -74,6 +75,15 @@ void ConditionNodeView::draw() {
 // シリアライズ [EXT]
 //====================================================================
 void ConditionNodeView::SaveParameters(BehaviorNodeData& data) const {
+	// 保存前にLogicノードから最新のパラメータを同期
+	if (logicNode_) {
+		auto* cond = static_cast<ConditionNode*>(logicNode_);
+		// View側のメンバ変数も更新しておく（一貫性のため）
+		const_cast<ConditionNodeView*>(this)->field_ = cond->GetField();
+		const_cast<ConditionNodeView*>(this)->op_ = cond->GetOperator();
+		const_cast<ConditionNodeView*>(this)->threshold = cond->GetThreshold();
+	}
+
 	BehaviorNodeView::SaveParameters(data);
 	data.field = field_;
 	data.op = op_;

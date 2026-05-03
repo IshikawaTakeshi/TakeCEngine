@@ -32,6 +32,11 @@ public:
 	/// </summary>
 	void Reset() override;
 
+	/// <summary>
+	/// ImGuiを用いたデバッグ用情報の描画
+	/// </summary>
+	void DrawInspector() override;
+
 public:
 
 	//=============================================================================
@@ -42,6 +47,8 @@ public:
 
 	/// 遷移先のステートを取得
 	GameCharacterState GetTargetState() const { return targetState_; }
+	/// 遷移先のステートを設定
+	void SetTargetState(GameCharacterState state) { targetState_ = state; }
 
 private:
 
