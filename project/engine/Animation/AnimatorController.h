@@ -23,7 +23,8 @@ public:
 	/// </summary>
 	/// <param name="animation">遷移先アニメーション</param>
 	/// <param name="blendDuration">ブレンドにかかる時間（秒）</param>
-	void TransitionTo(Animation* animation, float blendDuration);
+	/// <param name="isLoop">ループするかどうか</param>
+	void TransitionTo(Animation* animation, float blendDuration, bool isLoop = true);
 
 	/// <summary>
 	/// 更新（スケルトンにブレンド済みアニメーションを適用）

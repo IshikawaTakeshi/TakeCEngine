@@ -124,8 +124,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	animationMapper_.Register(
 		GameCharacterState::DEAD,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
-			"Player_Model_Ver2.0.gltf", "Running"),
-		0.3f);
+			"Player_Model_Ver2.0.gltf", "Dead"),
+		2.0f, false);
 
 	// アニメーションコントローラの初期化
 	animatorController_.Initialize(object3d_->GetModel()->GetSkeleton());

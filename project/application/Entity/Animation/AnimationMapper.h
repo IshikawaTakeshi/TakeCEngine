@@ -9,6 +9,7 @@
 struct AnimationEntry {
 	Animation* animation = nullptr; //アニメーションへの非所有ポインタ
 	float blendDuration = 0.2f;    //ブレンドにかかる時間（秒）
+	bool isLoop = true;            //ループするかどうか
 };
 
 //============================================================================
@@ -24,7 +25,8 @@ public:
 	/// <param name="behavior">対象のビヘイビア</param>
 	/// <param name="animation">対応するアニメーション（非所有）</param>
 	/// <param name="blendDuration">ブレンドにかかる時間（秒）</param>
-	void Register(GameCharacterState behavior, Animation* animation, float blendDuration = 0.2f);
+	/// <param name="isLoop">ループするかどうか</param>
+	void Register(GameCharacterState behavior, Animation* animation, float blendDuration = 0.2f, bool isLoop = true);
 
 	/// <summary>
 	/// ビヘイビアに対応するエントリを検索

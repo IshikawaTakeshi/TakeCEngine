@@ -16,17 +16,19 @@ void AnimatorController::Initialize(Skeleton* skeleton) {
 //====================================================================
 // アニメーション遷移の開始
 //====================================================================
-void AnimatorController::TransitionTo(Animation* animation, float blendDuration) {
+void AnimatorController::TransitionTo(Animation* animation, float blendDuration, bool isLoop) {
 	if (!animation) { return; }
 
 	if (!currentState_.IsValid()) {
 		// 現在アニメーションがない場合は即座に切り替え
 		currentState_.animation = animation;
+		currentState_.isLoop = isLoop;
 		currentState_.Reset();
 		isBlending_ = false;
 	} else {
 		// ブレンド遷移を開始
 		nextState_.animation = animation;
+		nextState_.isLoop = isLoop;
 		nextState_.Reset();
 		blendDuration_ = std::max(blendDuration, 0.0001f);
 		blendTimer_ = 0.0f;

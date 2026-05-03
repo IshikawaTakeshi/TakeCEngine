@@ -121,7 +121,7 @@ void Player::Initialize(Object3dCommon* object3dCommon,
 		GameCharacterState::DEAD,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"),
-		0.3f);
+		0.3f, false);
 
 	// BehaviorManagerにアニメーションコンポーネントを設定
 	stateManager_->SetAnimationComponents(object3d_->GetAnimatorController(),

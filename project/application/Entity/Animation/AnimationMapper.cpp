@@ -3,9 +3,9 @@
 //===================================================================================
 //　ビヘイビア → アニメーション の登録
 //===================================================================================
-void AnimationMapper::Register(GameCharacterState behavior, Animation* animation, float blendDuration) {
+void AnimationMapper::Register(GameCharacterState behavior, Animation* animation, float blendDuration, bool isLoop) {
 
-	entries_[behavior] = { animation, blendDuration };
+	entries_[behavior] = { animation, blendDuration, isLoop };
 }
 
 //===================================================================================
