@@ -12,6 +12,7 @@
 #include "application/Entity/Behavior/ActionNode.h"
 #include "application/Entity/Behavior/WeightSelectorNode.h"
 #include "application/Entity/Behavior/SetBlackboardBoolNode.h"
+#include "application/Entity/Behavior/SetBlackboardStringNode.h"
 
 // Views
 #include "application/Entity/Behavior/View/ActionNodeView.h"
@@ -22,6 +23,7 @@
 #include "application/Entity/Behavior/View/PlannerSelectorNodeView.h"
 #include "application/Entity/Behavior/View/WeightSelectorNodeView.h"
 #include "application/Entity/Behavior/View/SetBlackboardBoolNodeView.h"
+#include "application/Entity/Behavior/View/SetBlackboardStringNodeView.h"
 
 #include "engine/Base/ImGuiManager.h"
 #include "engine/Base/TakeCFrameWork.h"
@@ -60,6 +62,8 @@ std::unique_ptr<BehaviorNode> BehaviorTreeEditor::BuildLogicTree(const BehaviorN
 		node = std::make_unique<ActionNode>(state, nullptr, data.name);
 	} else if (data.nodeType == "SET_BB_BOOL") {
 		node = std::make_unique<SetBlackboardBoolNode>(data.bbKey, data.bbValue, data.name);
+	} else if (data.nodeType == "SET_BB_STRING") {
+		node = std::make_unique<SetBlackboardStringNode>(data.bbKey, data.bbStringValue, data.name);
 	} else if (data.nodeType == "CONDITION") {
 		node = std::make_unique<ConditionNode>(data.field, data.op, data.conditionThreshold, data.name);
 	} else if (data.nodeType == "SCORE_CONDITION") {
@@ -459,6 +463,7 @@ ImFlow::BaseNode* BehaviorTreeEditor::BuildNodeView(BehaviorNode* node, ImVec2& 
 std::shared_ptr<BehaviorNodeView> BehaviorTreeEditor::CreateNodeView(const std::string& type, const ImVec2& pos, const std::string& name) {
 	if (type == "ACTION") return flowEditor_->addNode<ActionNodeView>(pos, name);
 	if (type == "SET_BB_BOOL") return flowEditor_->addNode<SetBlackboardBoolNodeView>(pos);
+	if (type == "SET_BB_STRING") return flowEditor_->addNode<SetBlackboardStringNodeView>(pos);
 	if (type == "CONDITION") return flowEditor_->addNode<ConditionNodeView>(pos);
 	if (type == "SCORE_CONDITION") return flowEditor_->addNode<ScoreConditionNodeView>(pos);
 	if (type == "SELECTOR") return flowEditor_->addNode<SelectorNodeView>(pos);
@@ -518,6 +523,8 @@ std::string BehaviorTreeEditor::DetectRootType(const BehaviorNode* node) const {
 		return "ACTION";
 	} else if (dynamic_cast<const SetBlackboardBoolNode*>(node)) {
 		return "SET_BB_BOOL";
+	} else if (dynamic_cast<const SetBlackboardStringNode*>(node)) {
+		return "SET_BB_STRING";
 	} else if (dynamic_cast<const ConditionNode*>(node)) {
 		return "CONDITION";
 	} else if (dynamic_cast<const ScoreConditionNode*>(node)) {
@@ -647,6 +654,7 @@ void BehaviorTreeEditor::SetupContextMenu() {
 		//Add Node メニュー
 		if (ImGui::MenuItem("Add Action")) { flowEditor_->placeNode<ActionNodeView>("NONE"); }
 		if (ImGui::MenuItem("Add SetBlackboardBool")) { flowEditor_->placeNode<SetBlackboardBoolNodeView>(); }
+		if (ImGui::MenuItem("Add SetBlackboardString")) { flowEditor_->placeNode<SetBlackboardStringNodeView>(); }
 		if (ImGui::MenuItem("Add Condition")) { flowEditor_->placeNode<ConditionNodeView>(); }
 		if (ImGui::MenuItem("Add ScoreCondition")) { flowEditor_->placeNode<ScoreConditionNodeView>(); }
 		if (ImGui::MenuItem("Add Selector")) { flowEditor_->placeNode<SelectorNodeView>(); }

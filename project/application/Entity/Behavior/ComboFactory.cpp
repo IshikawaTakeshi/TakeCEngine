@@ -2,6 +2,8 @@
 #include "engine/Base/TakeCFrameWork.h"
 #include "engine/Base/ImGuiManager.h"
 #include "engine/Utility/StringUtility.h"
+#include "application/Entity/Behavior/SetBlackboardBoolNode.h"
+#include "application/Entity/Behavior/SetBlackboardStringNode.h"
 
 //========================================================================
 // JSONファイルからコンボセットを読み込み、ツリーを構築
@@ -65,6 +67,20 @@ std::unique_ptr<BehaviorNode> ComboFactory::BuildNode(
 
 	case BehaviorNodeType::CONDITION:
 		return BuildConditionNode(nodeData);
+
+	case BehaviorNodeType::SET_BB_BOOL:
+	{
+		auto node = std::make_unique<SetBlackboardBoolNode>(nodeData.bbKey, nodeData.bbValue, nodeData.name);
+		node->SetUID(nodeData.nodeUID);
+		return node;
+	}
+
+	case BehaviorNodeType::SET_BB_STRING:
+	{
+		auto node = std::make_unique<SetBlackboardStringNode>(nodeData.bbKey, nodeData.bbStringValue, nodeData.name);
+		node->SetUID(nodeData.nodeUID);
+		return node;
+	}
 
 	case BehaviorNodeType::SEQUENCE:
 	{

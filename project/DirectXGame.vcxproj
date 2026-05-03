@@ -169,6 +169,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Entity\Behavior\SelectorNode.cpp" />
     <ClCompile Include="application\Entity\Behavior\SequenceNode.cpp" />
     <ClCompile Include="application\Entity\Behavior\SetBlackboardBoolNode.cpp" />
+    <ClCompile Include="application\Entity\Behavior\SetBlackboardStringNode.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\ActionNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\ConditionNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\PlannerSelectorNodeView.cpp" />
@@ -176,6 +177,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Entity\Behavior\View\SelectorNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\SequenceNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\SetBlackboardBoolNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\SetBlackboardStringNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\WeightSelectorNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\WeightSelectorNode.cpp" />
     <ClCompile Include="application\Provider\PauseMenuPadInput.cpp" />
@@ -379,6 +381,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Behavior\SelectorNode.h" />
     <ClInclude Include="application\Entity\Behavior\SequenceNode.h" />
     <ClInclude Include="application\Entity\Behavior\SetBlackboardBoolNode.h" />
+    <ClInclude Include="application\Entity\Behavior\SetBlackboardStringNode.h" />
     <ClInclude Include="application\Entity\Behavior\View\ActionNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\ConditionNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\PlannerSelectorNodeView.h" />
@@ -386,6 +389,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Behavior\View\SelectorNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\SequenceNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\SetBlackboardBoolNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\SetBlackboardStringNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\WeightSelectorNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\WeightSelectorNode.h" />
     <ClInclude Include="application\Entity\BoostDirectionEnum.h" />

@@ -10,29 +10,12 @@
                                                                                   "children":  [
 
                                                                                                ],
-                                                                                  "conditionThreshold":  100.0,
-                                                                                  "field":  "distance",
+                                                                                  "conditionThreshold":  0.0,
+                                                                                  "field":  "",
                                                                                   "name":  "Condition",
                                                                                   "nodeType":  "CONDITION",
                                                                                   "nodeUID":  -1,
-                                                                                  "op":  "==",
-                                                                                  "posX":  0.0,
-                                                                                  "posY":  0.0,
-                                                                                  "targetState":  "NONE",
-                                                                                  "bbKey":  "",
-                                                                                  "bbValue":  false,
-                                                                                  "bbStringValue":  ""
-                                                                              },
-                                                                              {
-                                                                                  "children":  [
-
-                                                                                               ],
-                                                                                  "conditionThreshold":  500.0,
-                                                                                  "field":  "energy",
-                                                                                  "name":  "Condition",
-                                                                                  "nodeType":  "CONDITION",
-                                                                                  "nodeUID":  -1,
-                                                                                  "op":  "==",
+                                                                                  "op":  "\u003e=",
                                                                                   "posX":  0.0,
                                                                                   "posY":  0.0,
                                                                                   "targetState":  "NONE",
@@ -46,13 +29,13 @@
                                                                                                ],
                                                                                   "conditionThreshold":  0.0,
                                                                                   "field":  "",
-                                                                                  "name":  "Action:StepBoost",
-                                                                                  "nodeType":  "ACTION",
+                                                                                  "name":  "Condition",
+                                                                                  "nodeType":  "CONDITION",
                                                                                   "nodeUID":  -1,
                                                                                   "op":  "\u003e=",
                                                                                   "posX":  0.0,
                                                                                   "posY":  0.0,
-                                                                                  "targetState":  "STEPBOOST",
+                                                                                  "targetState":  "NONE",
                                                                                   "bbKey":  "",
                                                                                   "bbValue":  false,
                                                                                   "bbStringValue":  ""
@@ -63,13 +46,13 @@
                                                                                                ],
                                                                                   "conditionThreshold":  0.0,
                                                                                   "field":  "",
-                                                                                  "name":  "Action:jump",
+                                                                                  "name":  "Action:StepBoostApproach",
                                                                                   "nodeType":  "ACTION",
                                                                                   "nodeUID":  -1,
                                                                                   "op":  "\u003e=",
                                                                                   "posX":  0.0,
                                                                                   "posY":  0.0,
-                                                                                  "targetState":  "JUMP",
+                                                                                  "targetState":  "Action:StepBoostApproach",
                                                                                   "bbKey":  "",
                                                                                   "bbValue":  false,
                                                                                   "bbStringValue":  ""
@@ -80,13 +63,30 @@
                                                                                                ],
                                                                                   "conditionThreshold":  0.0,
                                                                                   "field":  "",
-                                                                                  "name":  "Action:StepBoost",
+                                                                                  "name":  "Action:RunAndShoot",
                                                                                   "nodeType":  "ACTION",
                                                                                   "nodeUID":  -1,
                                                                                   "op":  "\u003e=",
                                                                                   "posX":  0.0,
                                                                                   "posY":  0.0,
-                                                                                  "targetState":  "JUMP",
+                                                                                  "targetState":  "Action:RunAndShoot",
+                                                                                  "bbKey":  "",
+                                                                                  "bbValue":  false,
+                                                                                  "bbStringValue":  ""
+                                                                              },
+                                                                              {
+                                                                                  "children":  [
+
+                                                                                               ],
+                                                                                  "conditionThreshold":  0.0,
+                                                                                  "field":  "",
+                                                                                  "name":  "Action:StepBoostRetreat",
+                                                                                  "nodeType":  "ACTION",
+                                                                                  "nodeUID":  -1,
+                                                                                  "op":  "\u003e=",
+                                                                                  "posX":  0.0,
+                                                                                  "posY":  0.0,
+                                                                                  "targetState":  "Action:StepBoostRetreat",
                                                                                   "bbKey":  "",
                                                                                   "bbValue":  false,
                                                                                   "bbStringValue":  ""
@@ -679,5 +679,5 @@
                         }
                     ],
     "rootType":  "SELECTOR",
-    "setName":  "DefaultComboSet.json"
+    "setName":  "StepBoostComboSet.json"
 }

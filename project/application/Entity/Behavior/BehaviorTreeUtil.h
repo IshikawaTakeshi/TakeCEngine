@@ -8,13 +8,15 @@
 // ノードの種類
 //============================================================================
 enum class BehaviorNodeType {
-	ACTION,       // 行動ノード（ステート遷移）
-	CONDITION,    // 条件ノード
-	SEQUENCE,     // シーケンスノード
-	SELECTOR,     // セレクターノード
+	ACTION,           // 行動ノード（ステート遷移）
+	CONDITION,        // 条件ノード
+	SEQUENCE,         // シーケンスノード
+	SELECTOR,         // セレクターノード
 	PLANNER_SELECTOR, // プランナーセレクター
 	WEIGHT_SELECTOR,  // ウェイトセレクター
 	SCORE_CONDITION,  // スコア条件
+	SET_BB_BOOL,      // Blackboard に bool をセット
+	SET_BB_STRING,    // Blackboard に string をセット
 };
 
 //============================================================================
@@ -38,6 +40,9 @@ struct BehaviorNodeData {
 	// SetBlackboardBoolNode 用拡張
 	std::string bbKey = "";                    // 書き込む対象のキー
 	bool bbValue = false;                      // 書き込むbool値
+	std::string bbStringValue = "";            // 書き込むstring値（SetBlackboardStringNode 用）
+
+	
 };
 
 //============================================================================
@@ -71,28 +76,16 @@ struct ComboSetData {
 	std::vector<BehaviorLinkData> editorLinks; // 全接続情報のリスト
 };
 
-// JSONシリアライズ用のマクロ
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-	BehaviorNodeData,
-	name, 
-	nodeType, 
-	targetState,
-	field, 
-	op, 
-	conditionThreshold,
-	children,
-	posX, 
-	posY, 
-	nodeUID,
-	bbKey, 
-	bbValue)
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BehaviorLinkData, fromNodeUID, fromPinIndex, toNodeUID, toPinIndex)
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ComboData, comboName, rootNode)
 
 
 void to_json(nlohmann::json& j, const ComboSetData& data);
 void from_json(const nlohmann::json& j, ComboSetData& data);
 
+void to_json(nlohmann::json& j, const BehaviorNodeData& data);
+void from_json(const nlohmann::json& j, BehaviorNodeData& data);
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BehaviorLinkData, fromNodeUID, fromPinIndex, toNodeUID, toPinIndex)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ComboData, comboName, rootNode)
 //JSONディレクトリパスの定義
 TAKEC_DEFINE_JSON_DIRECTORY_PATH(ComboSetData, "Resources/JsonLoader/ComboSet/");

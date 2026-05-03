@@ -157,6 +157,9 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	// Blackboardの生成
 	blackboard_ = std::make_unique<Blackboard>();
 	
+	// BrainWeightJson の初期値を登録しておく（GetValue のアサートを防止）
+	blackboard_->SetValue<std::string>("BrainWeightJson", "");
+	
 	// Blackboardに初期値を登録(初回フレームでのGetValueアサートを防止)
 	UpdateBlackboard();
 
@@ -374,6 +377,13 @@ void Enemy::Update() {
 			if (status != BehaviorStatus::Running) {
 				behaviorTree_->Reset(); // 完了 or 失敗 → 次フレームで再評価
 			}
+		}
+
+		// 4. BrainWeightJson の変化を監視して AIBrainSystem を更新
+		const std::string& requestedWeight = blackboard_->GetValue<std::string>("BrainWeightJson");
+		if (!requestedWeight.empty() && requestedWeight != currentWeightName_) {
+			aiBrainSystem_->LoadWeightParam(requestedWeight);
+			currentWeightName_ = requestedWeight;
 		}
 
 		// 移動方向の取得

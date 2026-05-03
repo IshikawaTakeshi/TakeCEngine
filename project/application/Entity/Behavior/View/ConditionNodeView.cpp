@@ -37,9 +37,36 @@ void ConditionNodeView::draw() {
 
 	// ノード固有の描画: 条件の表示・編集
 	if (logicNode_) {
+		// ロジックノードがある場合はそのインスペクタに任せるが、ノード上にも情報を出す
 		ImGui::Text("Field: %s", field_.c_str());
 		ImGui::Text("Op: %s", op_.c_str());
 		ImGui::Text("Threshold: %.2f", threshold);
+	}
+	else {
+		// 紐づくロジックノードがない場合（または初期状態）はエディタ上で直接編集可能にする
+		ImGui::PushItemWidth(100.0f);
+		
+		char fieldBuf[128];
+		strncpy_s(fieldBuf, field_.c_str(), sizeof(fieldBuf));
+		if (ImGui::InputText("Field", fieldBuf, sizeof(fieldBuf))) {
+			field_ = fieldBuf;
+		}
+
+		const char* ops[] = { ">=", "<=", ">", "<", "==", "!=" };
+		int currentOp = 0;
+		for (int i = 0; i < 6; ++i) {
+			if (op_ == ops[i]) {
+				currentOp = i;
+				break;
+			}
+		}
+		if (ImGui::Combo("Op", &currentOp, ops, 6)) {
+			op_ = ops[currentOp];
+		}
+
+		ImGui::DragFloat("Value", &threshold, 0.1f);
+
+		ImGui::PopItemWidth();
 	}
 }
 

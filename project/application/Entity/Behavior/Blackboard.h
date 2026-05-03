@@ -96,8 +96,6 @@ inline T Blackboard::GetValue(const std::string& key) const {
 		assert(false && "Key not found");
 		return T(); // キーが見つからない場合はデフォルト値を返す
 	}
-
-	return T(); // ここには到達しないはず
 }
 
 //-----------------------------------------------------------------------------

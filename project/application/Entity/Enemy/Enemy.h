@@ -241,4 +241,7 @@ private:
 	std::mutex treeMutex_;
 	// ビヘイビアツリーエディタ
 	std::unique_ptr<BehaviorTreeEditor> behaviorTreeEditor_ = nullptr;
+
+	// 現在 AIBrainSystem に適用中のウェイトパラメータ名（空文字 = 未設定）
+	std::string currentWeightName_;
 };
