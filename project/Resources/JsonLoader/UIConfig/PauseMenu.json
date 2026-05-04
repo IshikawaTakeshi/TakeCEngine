@@ -20,6 +20,14 @@
         {
             "key": "Item2",
             "spriteConfigPath": "PauseMenu_Item2.json"
+        },
+        {
+            "key": "Item3",
+            "spriteConfigPath": "PauseMenu_Item3.json"
+        },
+        {
+            "key": "OperatorInstructions",
+            "spriteConfigPath":"Operation_Instructions.json"
         }
     ]
 }

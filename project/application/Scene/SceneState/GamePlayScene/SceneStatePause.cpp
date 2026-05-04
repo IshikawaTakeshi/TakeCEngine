@@ -28,7 +28,7 @@ void SceneStatePause::Update([[maybe_unused]] GamePlayScene* scene) {
 
 	//pauseMenuUIの結果を受け取る
 	switch (pauseMenuUI->ConsumeResult()) {
-	case PauseMenuResult::Resume:
+	case PauseMenuUI::PauseMenuResult::Resume:
 	{
 		// ポーズフラグを下ろす
 		scene->SetPauseMenuActive(false);
@@ -36,7 +36,7 @@ void SceneStatePause::Update([[maybe_unused]] GamePlayScene* scene) {
 		RequestTransition(SceneState::GAMEPLAY);
 		break;
 	}
-	case PauseMenuResult::Retry:
+	case PauseMenuUI::PauseMenuResult::Retry:
 	{
 		// ポーズフラグを下ろす
 		scene->SetPauseMenuActive(false);
@@ -46,7 +46,7 @@ void SceneStatePause::Update([[maybe_unused]] GamePlayScene* scene) {
 		SceneManager::GetInstance().ChangeScene("GAMEPLAY", fadeTimer);
 		break;
 	}
-	case PauseMenuResult::ToTitle:
+	case PauseMenuUI::PauseMenuResult::ToTitle:
 	{
 		// ポーズフラグを下ろす
 		scene->SetPauseMenuActive(false);
