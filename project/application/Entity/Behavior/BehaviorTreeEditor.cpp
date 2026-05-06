@@ -156,6 +156,9 @@ void BehaviorTreeEditor::UpdateImGui(BehaviorNode* activeRoot) {
 		SyncWithActiveTree(activeRoot);
 	}
 
+	// Blackboard のキーリストを更新して全 ConditionNodeView に注入
+	UpdateBlackboardKeys();
+
 	if (flowEditor_) {
 		ImGui::Begin("Behavior Tree Editor");
 
@@ -644,6 +647,33 @@ ComboSetData BehaviorTreeEditor::BuildComboSetDataFromEditor() const {
 	}
 
 	return out;
+}
+
+//===============================================================================
+// Blackboard のキー名リストを再収集して全 ConditionNodeView に注入する
+//===============================================================================
+void BehaviorTreeEditor::UpdateBlackboardKeys() {
+	if (!flowEditor_) return;
+
+	// Blackboard がなければリストをクリアして終了（フォールバック側に任せる）
+	if (!blackboard_) {
+		blackboardKeys_.clear();
+	} else {
+		// キー名を収集（実行のたびに作り直す。量が少ないので許容範囲）
+		blackboardKeys_.clear();
+		for (const auto& pair : blackboard_->GetAllData()) {
+			blackboardKeys_.push_back(pair.first);
+		}
+		// 毎回順番が変わらないようにソートしておく
+		std::sort(blackboardKeys_.begin(), blackboardKeys_.end());
+	}
+
+	// 全ノードを走査して ConditionNodeView にキーリストを渡す
+	for (auto& pair : flowEditor_->getNodes()) {
+		if (auto* condView = dynamic_cast<ConditionNodeView*>(pair.second.get())) {
+			condView->SetBlackboardKeys(blackboardKeys_);
+		}
+	}
 }
 
 //===============================================================================

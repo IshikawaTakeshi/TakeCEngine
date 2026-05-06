@@ -81,6 +81,11 @@ private:
 	void DeleteNodeOnly(BehaviorNodeView* target);
 	void DeleteSubtreeNode(BehaviorNodeView* rootView);
 
+	/**
+	 * @brief Blackboardのキー名リストを再収集し、全 ConditionNodeView に注入する
+	 */
+	void UpdateBlackboardKeys();
+
 	/// <summary>
 	// 指定したViewノードから再帰的に BehaviorNodeData を構築する
 	/// </summary>
@@ -134,4 +139,7 @@ private:
 
 	// JSONロード時に構築したツリーの管理
 	std::unique_ptr<BehaviorNode> ownedRootNode_;
+
+	// Blackboard から毎フレーム収集したキー名リスト（ConditionNodeView の Field Combo 用）
+	std::vector<std::string> blackboardKeys_;
 };

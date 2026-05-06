@@ -46,11 +46,32 @@ void ConditionNodeView::draw() {
 	else {
 		// 紐づくロジックノードがない場合（または初期状態）はエディタ上で直接編集可能にする
 		ImGui::PushItemWidth(100.0f);
-		
-		char fieldBuf[128];
-		strncpy_s(fieldBuf, field_.c_str(), sizeof(fieldBuf));
-		if (ImGui::InputText("Field", fieldBuf, sizeof(fieldBuf))) {
-			field_ = fieldBuf;
+
+		// Field: Blackboardのキーリストがあればコンボ、なければ直接入力
+		if (blackboardKeys_.empty()) {
+			char fieldBuf[128];
+			strncpy_s(fieldBuf, field_.c_str(), sizeof(fieldBuf));
+			if (ImGui::InputText("Field", fieldBuf, sizeof(fieldBuf))) {
+				field_ = fieldBuf;
+			}
+		} else {
+			// 現在の field_ がリスト内の何番目か探す
+			int currentField = 0;
+			for (int i = 0; i < (int)blackboardKeys_.size(); ++i) {
+				if (field_ == blackboardKeys_[i]) {
+					currentField = i;
+					break;
+				}
+			}
+			// c_str() のポインタ配列を一時構築してコンボに渡す
+			std::vector<const char*> keyPtrs;
+			keyPtrs.reserve(blackboardKeys_.size());
+			for (const auto& k : blackboardKeys_) {
+				keyPtrs.push_back(k.c_str());
+			}
+			if (ImGui::Combo("Field", &currentField, keyPtrs.data(), (int)keyPtrs.size())) {
+				field_ = blackboardKeys_[currentField];
+			}
 		}
 
 		const char* ops[] = { ">=", "<=", ">", "<", "==", "!=" };
