@@ -63,8 +63,8 @@ public:
 
 	// マテリアルリソースの取得
 	ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
-	// materialDataの取得
-	MaterialData* GetMaterialData() const { return materialData_; }
+	// materialDataの取得（読み取り専用）
+	const MaterialData* GetMaterialData() const { return materialData_; }
 	// テクスチャファイルパスの取得
 	const std::string& GetTextureFilePath() const { return textureFilePath_; }
 	// 環境マップ用テクスチャファイルパスの取得

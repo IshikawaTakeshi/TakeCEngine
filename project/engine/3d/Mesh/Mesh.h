@@ -111,7 +111,8 @@ public:
 	/// マテリアルの取得
 	Material* GetMaterial() { return material_[0].get(); }
 
-	std::vector<std::unique_ptr<Material>>& GetMaterials() { return material_; }
+	/// マテリアルリストの取得（読み取り専用）
+	const std::vector<std::unique_ptr<Material>>& GetMaterials() const { return material_; }
 
 public:
 

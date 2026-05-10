@@ -250,7 +250,7 @@ BaseWeapon* Enemy::GetCurrentWeapon(int index) const {
 	return weapons_[index].get();
 }
 
-std::vector<std::unique_ptr<BaseWeapon>>& Enemy::GetWeapons() {
+const std::vector<std::unique_ptr<BaseWeapon>>& Enemy::GetWeapons() const {
 	return weapons_;
 }
 
@@ -1032,6 +1032,9 @@ void Enemy::UpdateBlackboard() {
 	blackboard_->SetValue("isOverheated", enemyData_.characterInfo.overHeatInfo.isOverheated);
 	blackboard_->SetValue("isAlive", enemyData_.characterInfo.isAlive);
 	blackboard_->SetValue("isInCombat", enemyData_.characterInfo.isInCombat);
+	blackboard_->SetValue("isChargeShooting", enemyData_.characterInfo.isChargeShooting);
+	blackboard_->SetValue("breakGauge", enemyData_.characterInfo.breakGaugeInfo.breakGauge);
+	blackboard_->SetValue("isStunned", enemyData_.characterInfo.breakGaugeInfo.isStunned);
 
 	// --- AIBrainSystem からの書き込み ---
 	float distance = (enemyData_.characterInfo.focusTargetPos -

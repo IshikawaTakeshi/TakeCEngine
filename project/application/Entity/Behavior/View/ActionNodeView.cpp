@@ -41,18 +41,24 @@ void ActionNodeView::draw() {
 
 	// ノード固有の描画: ターゲットステート名の表示・編集
 	if (logicNode_) {
+		// ロジックノードがある場合はそのインスペクタ（ActionNode::DrawInspector）が
+		// インタラクティブなUIを出すため、ここではステート名を表示するだけにする
 		auto* action = static_cast<ActionNode*>(logicNode_);
 		targetStateName_ = std::string(magic_enum::enum_name(action->GetTargetState()));
-		ImGui::Text("Target State: %s", targetStateName_.c_str());
+		ImGui::Text("State: %s", targetStateName_.c_str());
 	}
 	else {
 		// 紐づくロジックノードがない場合はエディタ上で編集可能にする
+		ImGui::PushItemWidth(120.0f);
+
 		char buffer[256];
 		strncpy_s(buffer, targetStateName_.c_str(), sizeof(buffer));
 		if (ImGui::InputText("Target State", buffer, sizeof(buffer))) {
 			targetStateName_ = buffer;
 			setTitle(targetStateName_);
 		}
+
+		ImGui::PopItemWidth();
 	}
 }
 

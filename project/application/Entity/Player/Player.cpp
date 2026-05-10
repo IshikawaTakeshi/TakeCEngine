@@ -195,7 +195,7 @@ BaseWeapon* Player::GetCurrentWeapon(int index) const {
 //===================================================================================
 // 全武器の取得
 //===================================================================================
-std::vector<std::unique_ptr<BaseWeapon>>& Player::GetWeapons() {
+const std::vector<std::unique_ptr<BaseWeapon>>& Player::GetWeapons() const {
 	return weapons_;
 }
 

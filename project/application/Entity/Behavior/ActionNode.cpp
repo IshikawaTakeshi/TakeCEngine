@@ -48,9 +48,13 @@ void ActionNode::DrawInspector() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	ImGui::PushID(this);
 	
+	// ウィジェットの幅を固定（エディタの拡縮による影響を抑える）
+	static constexpr float kWidgetWidth = 120.0f;
+
 	// 名前
 	char nameBuf[128];
 	strncpy_s(nameBuf, name_.c_str(), sizeof(nameBuf) - 1);
+	ImGui::SetNextItemWidth(kWidgetWidth);
 	if (ImGui::InputText("Node Name", nameBuf, sizeof(nameBuf))) {
 		name_ = nameBuf;
 	}
@@ -71,6 +75,7 @@ void ActionNode::DrawInspector() {
 		comboItems.push_back(name.c_str());
 	}
 
+	ImGui::SetNextItemWidth(kWidgetWidth);
 	if (ImGui::Combo("Target State", &currentIdx, comboItems.data(), static_cast<int>(comboItems.size()))) {
 		targetState_ = values[currentIdx];
 	}
