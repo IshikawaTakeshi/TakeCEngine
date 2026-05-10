@@ -1,12 +1,26 @@
 #pragma once
 #include "engine/Animation/AnimationState.h"
 #include "engine/Animation/Skeleton.h"
+#include <vector>
+#include <string>
 
 //============================================================================
 // AnimatorController class
 //============================================================================
 class AnimatorController {
 public:
+
+	// レイヤー情報構造体
+	struct Layer {
+		std::string name;
+		AnimationState currentState; // 現在のアニメーション
+		AnimationState nextState;    // 遷移先のアニメーション
+		float blendTimer = 0.0f;
+		float blendDuration = 0.0f;
+		bool isBlending = false;
+		float weight = 1.0f;         // このレイヤーの影響度
+		AnimationBlendMode blendMode = AnimationBlendMode::Override; // 合成モード
+	};
 
 	//========================================================================
 	// functions
@@ -19,15 +33,27 @@ public:
 	void Initialize(Skeleton* skeleton);
 
 	/// <summary>
-	/// アニメーション遷移の開始
+	/// レイヤーの追加
 	/// </summary>
-	/// <param name="animation">遷移先アニメーション</param>
-	/// <param name="blendDuration">ブレンドにかかる時間（秒）</param>
-	/// <param name="isLoop">ループするかどうか</param>
+	void AddLayer(const std::string& name, AnimationBlendMode mode, float weight = 1.0f);
+
+	/// <summary>
+	/// レイヤーのウェイト設定
+	/// </summary>
+	void SetLayerWeight(const std::string& name, float weight);
+
+	/// <summary>
+	/// アニメーション遷移の開始（デフォルトで "Base" レイヤーを対象）
+	/// </summary>
 	void TransitionTo(Animation* animation, float blendDuration, bool isLoop = true);
 
 	/// <summary>
-	/// 更新（スケルトンにブレンド済みアニメーションを適用）
+	/// 指定レイヤーのアニメーション遷移
+	/// </summary>
+	void TransitionTo(const std::string& layerName, Animation* animation, float blendDuration, bool isLoop = true);
+
+	/// <summary>
+	/// 更新（スケルトンに全レイヤーを順次適用）
 	/// </summary>
 	/// <param name="dt">デルタタイム</param>
 	void Update(float dt);
@@ -35,10 +61,6 @@ public:
 private:
 
 	Skeleton* skeleton_ = nullptr;     //スケルトンへの非所有ポインタ
-	AnimationState currentState_;      //現在のアニメーション状態
-	AnimationState nextState_;         //遷移先のアニメーション状態
-	float blendTimer_ = 0.0f;         //ブレンド経過時間
-	float blendDuration_ = 0.0f;      //ブレンド時間
-	bool isBlending_ = false;         //ブレンド中かどうか
+	std::vector<Layer> layers_;        //アニメーションレイヤーのリスト
 
 };

@@ -178,6 +178,21 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	behaviorTreeEditor_->SetApplyCallback([this](const ComboSetData& data) {
 		this->ApplyBehaviorTree(data);
 		});
+
+	// 傾き用レイヤーの追加（加算合成）
+	const std::string modelName = "Player_Model_Ver2.0.gltf";
+	auto* animManager = TakeCFrameWork::GetAnimationManager();
+
+	animatorController_.AddLayer("LeanF", AnimationBlendMode::Additive, 0.0f);
+	animatorController_.AddLayer("LeanB", AnimationBlendMode::Additive, 0.0f);
+	animatorController_.AddLayer("LeanL", AnimationBlendMode::Additive, 0.0f);
+	animatorController_.AddLayer("LeanR", AnimationBlendMode::Additive, 0.0f);
+
+	// 傾きポーズの割り当て（1フレームのアニメーションを想定）
+	animatorController_.TransitionTo("LeanF", animManager->FindAnimation(modelName, "LeanForward"), 0.0f);
+	animatorController_.TransitionTo("LeanB", animManager->FindAnimation(modelName, "LeanBackward"), 0.0f);
+	animatorController_.TransitionTo("LeanL", animManager->FindAnimation(modelName, "LeanLeft"), 0.0f);
+	animatorController_.TransitionTo("LeanR", animManager->FindAnimation(modelName, "LeanRight"), 0.0f);
 }
 
 //========================================================================================================
@@ -472,6 +487,8 @@ void Enemy::Update() {
 		QuaternionMath::ToEuler(enemyData_.characterInfo.transform.rotate);
 	object3d_->SetTranslate(enemyData_.characterInfo.transform.translate);
 	object3d_->SetRotate(eulerRotate);
+	// 傾きアニメーションの更新
+	UpdateLean();
 	// アニメーションコントローラの更新（object3d_->Update()より前に呼ぶ）
 	animatorController_.Update(deltaTime_);
 	object3d_->Update();
@@ -1048,4 +1065,31 @@ void Enemy::UpdateBlackboard() {
 		std::string key = "attackScore" + std::to_string(i);
 		blackboard_->SetValue(key, aiBrainSystem_->GetAttackScore(static_cast<int>(i)));
 	}
+}
+
+void Enemy::UpdateLean() {
+	// 移動方向を取得
+	Vector3 moveDir = enemyData_.characterInfo.moveDirection;
+	
+	// キャラクターの現在の前方ベクトルを取得
+	Vector3 forward = QuaternionMath::RotateVector({ 0.0f, 0.0f, 1.0f }, enemyData_.characterInfo.transform.rotate);
+	Vector3 right = QuaternionMath::RotateVector({ 1.0f, 0.0f, 0.0f }, enemyData_.characterInfo.transform.rotate);
+
+	// ローカル座標系での入力強度を計算
+	float leanF = Vector3Math::Dot(moveDir, forward);
+	float leanR = Vector3Math::Dot(moveDir, right);
+
+	// 目標の傾き値を設定（入力強度に合わせて最大1.0）
+	Vector2 targetLean = { leanR, leanF };
+
+	// 滑らかに補間
+	float kLeanSpeed = 10.0f;
+	currentLean_.x = Easing::Lerp(currentLean_.x, targetLean.x, kLeanSpeed * deltaTime_);
+	currentLean_.y = Easing::Lerp(currentLean_.y, targetLean.y, kLeanSpeed * deltaTime_);
+
+	// AnimatorController にウェイトを適用
+	animatorController_.SetLayerWeight("LeanF", std::clamp(currentLean_.y, 0.0f, 1.0f));
+	animatorController_.SetLayerWeight("LeanB", std::clamp(-currentLean_.y, 0.0f, 1.0f));
+	animatorController_.SetLayerWeight("LeanL", std::clamp(-currentLean_.x, 0.0f, 1.0f));
+	animatorController_.SetLayerWeight("LeanR", std::clamp(currentLean_.x, 0.0f, 1.0f));
 }

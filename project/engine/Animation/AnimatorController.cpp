@@ -6,33 +6,64 @@
 //====================================================================
 void AnimatorController::Initialize(Skeleton* skeleton) {
 	skeleton_ = skeleton;
-	currentState_ = {};
-	nextState_ = {};
-	blendTimer_ = 0.0f;
-	blendDuration_ = 0.0f;
-	isBlending_ = false;
+	layers_.clear();
+	// デフォルトレイヤーを追加
+	AddLayer("Base", AnimationBlendMode::Override, 1.0f);
 }
 
 //====================================================================
-// アニメーション遷移の開始
+// レイヤーの追加
+//====================================================================
+void AnimatorController::AddLayer(const std::string& name, AnimationBlendMode mode, float weight) {
+	Layer layer;
+	layer.name = name;
+	layer.blendMode = mode;
+	layer.weight = weight;
+	layers_.push_back(layer);
+}
+
+//====================================================================
+// レイヤーのウェイト設定
+//====================================================================
+void AnimatorController::SetLayerWeight(const std::string& name, float weight) {
+	for (auto& layer : layers_) {
+		if (layer.name == name) {
+			layer.weight = weight;
+			return;
+		}
+	}
+}
+
+//====================================================================
+// アニメーション遷移の開始（デフォルト）
 //====================================================================
 void AnimatorController::TransitionTo(Animation* animation, float blendDuration, bool isLoop) {
-	if (!animation) { return; }
+	TransitionTo("Base", animation, blendDuration, isLoop);
+}
 
-	if (!currentState_.IsValid()) {
-		// 現在アニメーションがない場合は即座に切り替え
-		currentState_.animation = animation;
-		currentState_.isLoop = isLoop;
-		currentState_.Reset();
-		isBlending_ = false;
-	} else {
-		// ブレンド遷移を開始
-		nextState_.animation = animation;
-		nextState_.isLoop = isLoop;
-		nextState_.Reset();
-		blendDuration_ = std::max(blendDuration, 0.0001f);
-		blendTimer_ = 0.0f;
-		isBlending_ = true;
+//====================================================================
+// 指定レイヤーのアニメーション遷移
+//====================================================================
+void AnimatorController::TransitionTo(const std::string& layerName, Animation* animation, float blendDuration, bool isLoop) {
+	if (!animation) return;
+
+	for (auto& layer : layers_) {
+		if (layer.name == layerName) {
+			if (!layer.currentState.IsValid()) {
+				layer.currentState.animation = animation;
+				layer.currentState.isLoop = isLoop;
+				layer.currentState.Reset();
+				layer.isBlending = false;
+			} else {
+				layer.nextState.animation = animation;
+				layer.nextState.isLoop = isLoop;
+				layer.nextState.Reset();
+				layer.blendDuration = std::max(blendDuration, 0.0001f);
+				layer.blendTimer = 0.0f;
+				layer.isBlending = true;
+			}
+			return;
+		}
 	}
 }
 
@@ -40,34 +71,39 @@ void AnimatorController::TransitionTo(Animation* animation, float blendDuration,
 // 更新
 //====================================================================
 void AnimatorController::Update(float dt) {
-	if (!skeleton_) { return; }
-	if (!currentState_.IsValid()) { return; }
+	if (!skeleton_) return;
 
-	currentState_.Advance(dt);
+	// スケルトンの状態をリセット
+	skeleton_->ClearTransform();
 
-	if (isBlending_) {
-		nextState_.Advance(dt);
-		blendTimer_ += dt;
-		float blend = std::clamp(blendTimer_ / blendDuration_, 0.0f, 1.0f);
+	// 全レイヤーを順番に適用
+	for (auto& layer : layers_) {
+		if (!layer.currentState.IsValid()) continue;
 
-		skeleton_->ApplyBlendedAnimation(
-			currentState_.animation, currentState_.time,
-			nextState_.animation, nextState_.time,
-			blend);
+		layer.currentState.Advance(dt);
 
-		if (blend >= 1.0f) {
-			// ブレンド完了：次の状態を現在の状態に昇格
-			currentState_ = nextState_;
-			nextState_ = {};
-			isBlending_ = false;
+		if (layer.isBlending) {
+			layer.nextState.Advance(dt);
+			layer.blendTimer += dt;
+			float t = std::clamp(layer.blendTimer / layer.blendDuration, 0.0f, 1.0f);
+
+			// レイヤー内部でのクロスフェード
+			// 現在の状態を反映（weightを考慮）
+			skeleton_->ApplyLayeredAnimation(layer.currentState.animation, layer.currentState.time, layer.weight * (1.0f - t), layer.blendMode);
+			// 次の状態を反映
+			skeleton_->ApplyLayeredAnimation(layer.nextState.animation, layer.nextState.time, layer.weight * t, layer.blendMode);
+
+			if (t >= 1.0f) {
+				layer.currentState = layer.nextState;
+				layer.nextState = {};
+				layer.isBlending = false;
+			}
+		} else {
+			// 単一アニメーションの適用
+			skeleton_->ApplyLayeredAnimation(layer.currentState.animation, layer.currentState.time, layer.weight, layer.blendMode);
 		}
-	} else {
-		// ブレンドなし：現在のアニメーションをそのまま適用
-		skeleton_->ApplyBlendedAnimation(
-			currentState_.animation, currentState_.time,
-			nullptr, 0.0f,
-			0.0f);
 	}
 
+	// スケルトンの行列計算を更新
 	skeleton_->Update();
 }
