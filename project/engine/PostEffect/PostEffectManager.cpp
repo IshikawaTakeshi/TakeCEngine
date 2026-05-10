@@ -372,6 +372,14 @@ void PostEffectManager::PlayEffect(const PostEffectPlayConfig& config) {
 	activeRequests_.push_back(request);
 }
 
+void TakeC::PostEffectManager::StopAllEffects() {
+	activeRequests_.clear();
+	for (auto& effect : postEffects_) {
+		effect.postEffect->SetIntensity(0.0f);
+		effect.postEffect->SetIsActive(false);
+	}
+}
+
 //======================================================================
 // プリセットを動的に登録
 //======================================================================

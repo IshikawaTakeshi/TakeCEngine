@@ -136,6 +136,8 @@ namespace TakeC {
 		uint32_t renderTextureIndex_ = 0; // ImGuiのレンダリングターゲットのSRVインデックス
 		ImVec2 releaseImageSize_{ 1920.0f,1080.0f }; // リリース時のイメージサイズ
 		ImGuiWindowFlags windowFlags_ = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollWithMouse;
+		// フォントの文字コード範囲
+		ImVector<ImWchar> fontRanges;
 	};
 
 

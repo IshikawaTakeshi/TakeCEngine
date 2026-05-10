@@ -578,6 +578,8 @@
     <ClCompile Include="application\UI\PauseMenuUI.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\SetBlackboardBoolNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\SetBlackboardBoolNode.cpp" />
+    <ClCompile Include="application\Entity\Behavior\SetBlackboardStringNode.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\SetBlackboardStringNodeView.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1204,6 +1206,8 @@
     <ClInclude Include="application\UI\PauseMenuUI.h" />
     <ClInclude Include="application\Entity\Behavior\View\SetBlackboardBoolNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\SetBlackboardBoolNode.h" />
+    <ClInclude Include="application\Entity\Behavior\SetBlackboardStringNode.h" />
+    <ClInclude Include="application\Entity\Behavior\View\SetBlackboardStringNodeView.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

@@ -112,6 +112,11 @@ namespace TakeC {
 		void PlayEffect(const PostEffectPlayConfig& config);
 
 		/// <summary>
+		/// エフェクトの停止
+		/// </summary>
+		void StopAllEffects();
+
+		/// <summary>
 		/// プリセットを動的に登録
 		/// </summary>
 		void RegisterPreset(const std::string& name, const PostEffectPlayConfig& config);

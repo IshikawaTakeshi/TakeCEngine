@@ -1,4 +1,6 @@
 #include "ActionNodeView.h"
+#include "application/Entity/Behavior/ActionNode.h"
+#include "engine/Utility/StringUtility.h"
 
 //====================================================================
 // コンストラクタ
@@ -7,8 +9,14 @@ ActionNodeView::ActionNodeView(const std::string& stateName) {
 
 	targetStateName_ = stateName;
 
+	// すでに "Action:" が付いている場合は重ねない
+	std::string title = targetStateName_;
+	if (title.find("Action:") == std::string::npos) {
+		title = "Action:" + title;
+	}
+
 	//ノードタイトルの設定
-	setTitle("Action:" + targetStateName_);
+	setTitle(title);
 	//ノードの色の設定
 	setStyle(ImFlow::NodeStyle::blue());
 
@@ -25,6 +33,7 @@ ActionNodeView::ActionNodeView(const std::string& stateName) {
 //====================================================================
 // ノードの内容描画
 //====================================================================
+
 void ActionNodeView::draw() {
 
 	// 共通部分の描画（状態表示）
@@ -32,16 +41,24 @@ void ActionNodeView::draw() {
 
 	// ノード固有の描画: ターゲットステート名の表示・編集
 	if (logicNode_) {
-		ImGui::Text("Target State: %s", targetStateName_.c_str());
+		// ロジックノードがある場合はそのインスペクタ（ActionNode::DrawInspector）が
+		// インタラクティブなUIを出すため、ここではステート名を表示するだけにする
+		auto* action = static_cast<ActionNode*>(logicNode_);
+		targetStateName_ = std::string(magic_enum::enum_name(action->GetTargetState()));
+		ImGui::Text("State: %s", targetStateName_.c_str());
 	}
 	else {
 		// 紐づくロジックノードがない場合はエディタ上で編集可能にする
+		ImGui::PushItemWidth(120.0f);
+
 		char buffer[256];
 		strncpy_s(buffer, targetStateName_.c_str(), sizeof(buffer));
 		if (ImGui::InputText("Target State", buffer, sizeof(buffer))) {
 			targetStateName_ = buffer;
 			setTitle(targetStateName_);
 		}
+
+		ImGui::PopItemWidth();
 	}
 }
 
@@ -49,6 +66,12 @@ void ActionNodeView::draw() {
 // シリアライズ [EXT]
 //====================================================================
 void ActionNodeView::SaveParameters(BehaviorNodeData& data) const {
+	// 保存前にLogicノードから最新の状態を同期
+	if (logicNode_) {
+		auto* action = static_cast<ActionNode*>(logicNode_);
+		data.name = action->GetName();
+		const_cast<ActionNodeView*>(this)->targetStateName_ = std::string(magic_enum::enum_name(action->GetTargetState()));
+	}
 	BehaviorNodeView::SaveParameters(data);
 	data.targetState = targetStateName_;
 }

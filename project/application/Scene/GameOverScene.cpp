@@ -32,7 +32,6 @@ void GameOverScene::Initialize() {
 	gameOverTextSprite_->Initialize(&SpriteCommon::GetInstance(), "UI/GameOverText.png");
 	gameOverTextSprite_->SetTranslate({ 50.0f, 50.0f });
 	gameOverTextSprite_->AdjustTextureSize();
-
 }
 
 //====================================================================

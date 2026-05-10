@@ -164,7 +164,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 
 	//Scale
 	ImGui::SliderInt("Scale Setting", reinterpret_cast<int*>(&attributes.scaleSetting), 0, 2, "None: %d, Scale Up: %d, Scale Down: %d");
-	ImGui::DragFloat3("Scale", &attributes.scale.x, 0.01f, 0.0f, 10.0f);
+	ImGui::DragFloat3("Scale", &attributes.scale.x, 0.01f, 0.0f, 100.0f);
 	ImGui::DragFloat2("Scale Range", &attributes.scaleRange.min, 0.01f, 0.0f, 100.0f);
 
 	//Rotate

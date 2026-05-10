@@ -124,8 +124,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	animationMapper_.Register(
 		GameCharacterState::DEAD,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
-			"Player_Model_Ver2.0.gltf", "Running"),
-		0.3f);
+			"Player_Model_Ver2.0.gltf", "Dead"),
+		2.5f, false);
 
 	// アニメーションコントローラの初期化
 	animatorController_.Initialize(object3d_->GetModel()->GetSkeleton());
@@ -156,6 +156,9 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 
 	// Blackboardの生成
 	blackboard_ = std::make_unique<Blackboard>();
+	
+	// BrainWeightJson の初期値を登録しておく（GetValue のアサートを防止）
+	blackboard_->SetValue<std::string>("BrainWeightJson", "");
 	
 	// Blackboardに初期値を登録(初回フレームでのGetValueアサートを防止)
 	UpdateBlackboard();
@@ -247,7 +250,7 @@ BaseWeapon* Enemy::GetCurrentWeapon(int index) const {
 	return weapons_[index].get();
 }
 
-std::vector<std::unique_ptr<BaseWeapon>>& Enemy::GetWeapons() {
+const std::vector<std::unique_ptr<BaseWeapon>>& Enemy::GetWeapons() const {
 	return weapons_;
 }
 
@@ -374,6 +377,13 @@ void Enemy::Update() {
 			if (status != BehaviorStatus::Running) {
 				behaviorTree_->Reset(); // 完了 or 失敗 → 次フレームで再評価
 			}
+		}
+
+		// 4. BrainWeightJson の変化を監視して AIBrainSystem を更新
+		const std::string& requestedWeight = blackboard_->GetValue<std::string>("BrainWeightJson");
+		if (!requestedWeight.empty() && requestedWeight != currentWeightName_) {
+			aiBrainSystem_->LoadWeightParam(requestedWeight);
+			currentWeightName_ = requestedWeight;
 		}
 
 		// 移動方向の取得
@@ -511,10 +521,10 @@ void Enemy::UpdateImGui() {
 		0.01f);
 	ImGui::Separator();
 	//health
-	ImGui::DragFloat("Health", &enemyData_.characterInfo.health, 1.0f, 0.0f,
+	ImGui::DragFloat("体力ゲージ", &enemyData_.characterInfo.health, 1.0f, 0.0f,
 		enemyData_.characterInfo.maxHealth);
 	//energy
-	ImGui::DragFloat("Energy", &enemyData_.characterInfo.energyInfo.energy, 1.0f,
+	ImGui::DragFloat("エネルギー", &enemyData_.characterInfo.energyInfo.energy, 1.0f,
 		0.0f, enemyData_.characterInfo.energyInfo.maxEnergy);
 	//breakGauge
 	ImGui::DragFloat("BreakGauge", &enemyData_.characterInfo.breakGaugeInfo.breakGauge,
@@ -1022,6 +1032,9 @@ void Enemy::UpdateBlackboard() {
 	blackboard_->SetValue("isOverheated", enemyData_.characterInfo.overHeatInfo.isOverheated);
 	blackboard_->SetValue("isAlive", enemyData_.characterInfo.isAlive);
 	blackboard_->SetValue("isInCombat", enemyData_.characterInfo.isInCombat);
+	blackboard_->SetValue("isChargeShooting", enemyData_.characterInfo.isChargeShooting);
+	blackboard_->SetValue("breakGauge", enemyData_.characterInfo.breakGaugeInfo.breakGauge);
+	blackboard_->SetValue("isStunned", enemyData_.characterInfo.breakGaugeInfo.isStunned);
 
 	// --- AIBrainSystem からの書き込み ---
 	float distance = (enemyData_.characterInfo.focusTargetPos -

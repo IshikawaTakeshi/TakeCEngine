@@ -72,8 +72,8 @@ public:
 
 	//武器の取得
 	BaseWeapon* GetCurrentWeapon(int index) const;
-	//全武器の取得
-	std::vector<std::unique_ptr<BaseWeapon>>& GetWeapons();
+	//全武器の取得（読み取り専用）
+	const std::vector<std::unique_ptr<BaseWeapon>>& GetWeapons() const;
 
 	//カメラの取得
 	Camera* GetCamera() const { return camera_; }

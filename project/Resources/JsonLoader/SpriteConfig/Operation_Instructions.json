@@ -1,0 +1,31 @@
+{
+    "anchorPoint": {
+        "x": 0.5,
+        "y": 0.5
+    },
+    "color": {
+        "w": 1.0,
+        "x": 0.30000001192092896,
+        "y": 0.30000001192092896,
+        "z": 0.30000001192092896
+    },
+    "name": "Operation_Instructions.json",
+    "position": {
+        "x": 713.0,
+        "y": 264.0
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 582.0,
+        "y": 357.0
+    },
+    "textureFilePath": "UI/Operation_Instructions.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "textureSize": {
+        "x": 1400.0,
+        "y": 811.0
+    }
+}

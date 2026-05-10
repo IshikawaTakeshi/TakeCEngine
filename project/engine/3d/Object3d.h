@@ -78,6 +78,7 @@ public:
 	const Vector3& GetCenterPosition() const;
 	//モデルの取得
 	Model* GetModel() { return model_.get(); }
+	const Model* GetModel() const { return model_.get(); }
 
 	//Animationの取得
 	Animation* GetAnimation() { return animation_.get(); }

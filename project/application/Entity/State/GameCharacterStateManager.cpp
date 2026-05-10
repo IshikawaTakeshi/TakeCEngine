@@ -56,7 +56,7 @@ void GameCharacterStateManager::Update(PlayableCharacterInfo& characterContext) 
 		if (animatorController_ && animationMapper_) {
 			const AnimationEntry* entry = animationMapper_->Find(currentStateType_);
 			if (entry && entry->animation) {
-				animatorController_->TransitionTo(entry->animation, entry->blendDuration);
+				animatorController_->TransitionTo(entry->animation, entry->blendDuration, entry->isLoop);
 			}
 		}
 
@@ -116,7 +116,7 @@ void GameCharacterStateManager::SetAnimationComponents(AnimatorController* anima
 	if (animatorController_ && animationMapper_) {
 		const AnimationEntry* entry = animationMapper_->Find(currentStateType_);
 		if (entry && entry->animation) {
-			animatorController_->TransitionTo(entry->animation, 0.0f);
+			animatorController_->TransitionTo(entry->animation, 0.0f, entry->isLoop);
 		}
 	}
 }

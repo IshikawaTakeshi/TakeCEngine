@@ -36,8 +36,34 @@ void TakeC::ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, Sr
 
 	// Dockingを有効にする
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; 
-	// デフォルトのフォントを設定
-	io.Fonts->AddFontDefault();
+	
+	// フォント読み込み
+	const char* baseFontPath = "Resources/Fonts/FiraMono-Regular_0.ttf";
+	const char* jpFontPath = "Resources/Fonts/meiryo.ttc";
+
+	ImFontConfig config;
+	config.OversampleH = 2;
+	config.OversampleV = 1;
+	config.PixelSnapH = true;
+
+	// 2) 日本語フォントを合成
+	ImFontConfig mergeConfig;
+	mergeConfig.MergeMode = true;
+	mergeConfig.PixelSnapH = true;
+
+	// グリフ範囲を追加
+	ImFontGlyphRangesBuilder builder;
+	builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
+	builder.AddRanges(io.Fonts->GetGlyphRangesJapanese());
+	builder.BuildRanges(&fontRanges);
+
+	// 英字フォントと日本語フォントを同時に読み込む
+	//1. 英字フォント
+	io.Fonts->AddFontFromFileTTF(baseFontPath, 18.0f, &config, fontRanges.Data);
+	//2. 日本語フォント
+	io.Fonts->AddFontFromFileTTF(jpFontPath, 18.0f, &mergeConfig, fontRanges.Data);
+
+
 	//ウィンドウ全体に描画できるようにする
 	io.DisplaySize = ImVec2(static_cast<float>(WinApp::kWindowWidth), static_cast<float>(WinApp::kWindowHeight));
 }

@@ -81,8 +81,8 @@ public:
 	BulletSensor* GetBulletSensor() const { return bulletSensor_.get(); }
 	// 武器の取得
 	BaseWeapon* GetCurrentWeapon(int index) const;
-	// 全武器の取得
-	std::vector<std::unique_ptr<BaseWeapon>>& GetWeapons();
+	// 全武器の取得（読み取り専用）
+	const std::vector<std::unique_ptr<BaseWeapon>>& GetWeapons() const;
 
 	// 移動方向ベクトルの取得
 	const Vector3& GetMoveDirection() const {
@@ -241,4 +241,7 @@ private:
 	std::mutex treeMutex_;
 	// ビヘイビアツリーエディタ
 	std::unique_ptr<BehaviorTreeEditor> behaviorTreeEditor_ = nullptr;
+
+	// 現在 AIBrainSystem に適用中のウェイトパラメータ名（空文字 = 未設定）
+	std::string currentWeightName_;
 };

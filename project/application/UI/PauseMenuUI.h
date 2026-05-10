@@ -4,21 +4,24 @@
 #include <vector>
 #include <string>
 
-//============================================================================
-// ポーズメニューの選択結果
-//============================================================================
-enum class PauseMenuResult {
-    None,
-    Resume,
-    Retry,
-    ToTitle
-};
+
 
 //============================================================================
 // PauseMenuUI class
 //============================================================================
 class PauseMenuUI : public BaseUI {
 public:
+
+    //============================================================================
+    // ポーズメニューの選択結果
+    //============================================================================
+    enum class PauseMenuResult {
+        None,
+        Resume,
+        Retry,
+        ToTitle,
+		OperatorInstructions
+    };
 
 	//=============================================================================
 	// functions
@@ -87,7 +90,7 @@ private:
 	// 入力デバイス
     PauseMenuPadInput input_;
 	// メニュー項目
-    std::vector<std::string> itemNames_ = { "Resume", "Retry", "Title" };
+    std::vector<std::string> itemNames_;
 	// 現在の選択インデックス
     int currentIndex_ = 0;
 	// メニューが開いているか
@@ -100,6 +103,7 @@ private:
     // sprites
     Sprite* bg_ = nullptr;
     Sprite* cursor_ = nullptr;
+	Sprite* operatorInstructions_ = nullptr;
     std::vector<Sprite*> itemSprites_;
 	Vector4 PauseColor_ = { 0.3f, 0.3f, 0.3f, 1.0f };
 

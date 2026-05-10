@@ -121,7 +121,7 @@ void Player::Initialize(Object3dCommon* object3dCommon,
 		GameCharacterState::DEAD,
 		TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"),
-		0.3f);
+		0.3f, false);
 
 	// BehaviorManagerにアニメーションコンポーネントを設定
 	stateManager_->SetAnimationComponents(object3d_->GetAnimatorController(),
@@ -195,7 +195,7 @@ BaseWeapon* Player::GetCurrentWeapon(int index) const {
 //===================================================================================
 // 全武器の取得
 //===================================================================================
-std::vector<std::unique_ptr<BaseWeapon>>& Player::GetWeapons() {
+const std::vector<std::unique_ptr<BaseWeapon>>& Player::GetWeapons() const {
 	return weapons_;
 }
 

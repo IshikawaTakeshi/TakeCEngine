@@ -12,6 +12,7 @@
 #include "application/Entity/Behavior/ActionNode.h"
 #include "application/Entity/Behavior/WeightSelectorNode.h"
 #include "application/Entity/Behavior/SetBlackboardBoolNode.h"
+#include "application/Entity/Behavior/SetBlackboardStringNode.h"
 
 // Views
 #include "application/Entity/Behavior/View/ActionNodeView.h"
@@ -22,6 +23,7 @@
 #include "application/Entity/Behavior/View/PlannerSelectorNodeView.h"
 #include "application/Entity/Behavior/View/WeightSelectorNodeView.h"
 #include "application/Entity/Behavior/View/SetBlackboardBoolNodeView.h"
+#include "application/Entity/Behavior/View/SetBlackboardStringNodeView.h"
 
 #include "engine/Base/ImGuiManager.h"
 #include "engine/Base/TakeCFrameWork.h"
@@ -60,6 +62,8 @@ std::unique_ptr<BehaviorNode> BehaviorTreeEditor::BuildLogicTree(const BehaviorN
 		node = std::make_unique<ActionNode>(state, nullptr, data.name);
 	} else if (data.nodeType == "SET_BB_BOOL") {
 		node = std::make_unique<SetBlackboardBoolNode>(data.bbKey, data.bbValue, data.name);
+	} else if (data.nodeType == "SET_BB_STRING") {
+		node = std::make_unique<SetBlackboardStringNode>(data.bbKey, data.bbStringValue, data.name);
 	} else if (data.nodeType == "CONDITION") {
 		node = std::make_unique<ConditionNode>(data.field, data.op, data.conditionThreshold, data.name);
 	} else if (data.nodeType == "SCORE_CONDITION") {
@@ -151,6 +155,9 @@ void BehaviorTreeEditor::UpdateImGui(BehaviorNode* activeRoot) {
 	if (activeRoot && activeRoot != rootNode_) {
 		SyncWithActiveTree(activeRoot);
 	}
+
+	// Blackboard のキーリストを更新して全 ConditionNodeView に注入
+	UpdateBlackboardKeys();
 
 	if (flowEditor_) {
 		ImGui::Begin("Behavior Tree Editor");
@@ -459,6 +466,7 @@ ImFlow::BaseNode* BehaviorTreeEditor::BuildNodeView(BehaviorNode* node, ImVec2& 
 std::shared_ptr<BehaviorNodeView> BehaviorTreeEditor::CreateNodeView(const std::string& type, const ImVec2& pos, const std::string& name) {
 	if (type == "ACTION") return flowEditor_->addNode<ActionNodeView>(pos, name);
 	if (type == "SET_BB_BOOL") return flowEditor_->addNode<SetBlackboardBoolNodeView>(pos);
+	if (type == "SET_BB_STRING") return flowEditor_->addNode<SetBlackboardStringNodeView>(pos);
 	if (type == "CONDITION") return flowEditor_->addNode<ConditionNodeView>(pos);
 	if (type == "SCORE_CONDITION") return flowEditor_->addNode<ScoreConditionNodeView>(pos);
 	if (type == "SELECTOR") return flowEditor_->addNode<SelectorNodeView>(pos);
@@ -518,6 +526,8 @@ std::string BehaviorTreeEditor::DetectRootType(const BehaviorNode* node) const {
 		return "ACTION";
 	} else if (dynamic_cast<const SetBlackboardBoolNode*>(node)) {
 		return "SET_BB_BOOL";
+	} else if (dynamic_cast<const SetBlackboardStringNode*>(node)) {
+		return "SET_BB_STRING";
 	} else if (dynamic_cast<const ConditionNode*>(node)) {
 		return "CONDITION";
 	} else if (dynamic_cast<const ScoreConditionNode*>(node)) {
@@ -640,6 +650,33 @@ ComboSetData BehaviorTreeEditor::BuildComboSetDataFromEditor() const {
 }
 
 //===============================================================================
+// Blackboard のキー名リストを再収集して全 ConditionNodeView に注入する
+//===============================================================================
+void BehaviorTreeEditor::UpdateBlackboardKeys() {
+	if (!flowEditor_) return;
+
+	// Blackboard がなければリストをクリアして終了（フォールバック側に任せる）
+	if (!blackboard_) {
+		blackboardKeys_.clear();
+	} else {
+		// キー名を収集（実行のたびに作り直す。量が少ないので許容範囲）
+		blackboardKeys_.clear();
+		for (const auto& pair : blackboard_->GetAllData()) {
+			blackboardKeys_.push_back(pair.first);
+		}
+		// 毎回順番が変わらないようにソートしておく
+		std::sort(blackboardKeys_.begin(), blackboardKeys_.end());
+	}
+
+	// 全ノードを走査して ConditionNodeView にキーリストを渡す
+	for (auto& pair : flowEditor_->getNodes()) {
+		if (auto* condView = dynamic_cast<ConditionNodeView*>(pair.second.get())) {
+			condView->SetBlackboardKeys(blackboardKeys_);
+		}
+	}
+}
+
+//===============================================================================
 // 右クリックメニューのセットアップ
 //===============================================================================
 void BehaviorTreeEditor::SetupContextMenu() {
@@ -647,6 +684,7 @@ void BehaviorTreeEditor::SetupContextMenu() {
 		//Add Node メニュー
 		if (ImGui::MenuItem("Add Action")) { flowEditor_->placeNode<ActionNodeView>("NONE"); }
 		if (ImGui::MenuItem("Add SetBlackboardBool")) { flowEditor_->placeNode<SetBlackboardBoolNodeView>(); }
+		if (ImGui::MenuItem("Add SetBlackboardString")) { flowEditor_->placeNode<SetBlackboardStringNodeView>(); }
 		if (ImGui::MenuItem("Add Condition")) { flowEditor_->placeNode<ConditionNodeView>(); }
 		if (ImGui::MenuItem("Add ScoreCondition")) { flowEditor_->placeNode<ScoreConditionNodeView>(); }
 		if (ImGui::MenuItem("Add Selector")) { flowEditor_->placeNode<SelectorNodeView>(); }

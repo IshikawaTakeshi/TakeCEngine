@@ -67,6 +67,7 @@ void VerticalMissile::Update() {
 		pointLightData_.enabled_ = 0;
 
 		lightEffect_->Stop();
+		explosionEffect_->Stop();
 		return;
 	}
 
@@ -304,7 +305,7 @@ void VerticalMissile::Create(BaseWeapon* ownerWeapon,VerticalMissileInfo vmInfo,
 	//ポイントライト有効化
 	pointLightData_.enabled_ = 1;
 	homingElapsedTime_ = 0.0f;
-
+	explosionEffect_->Stop();
 	/*for (auto& trailEmitter : trailEmitter_) {
 		trailEmitter->SetIsEmit(true);
 	}*/
