@@ -61,8 +61,6 @@ public:
 
 	void LoadConfig(const std::string& jsonFilePath);
 
-	// サイズを相対座標にセット
-	void SetSizeRelative();
 private:
 	// 頂点データ更新
 	void UpdateVertexData();
@@ -179,7 +177,6 @@ private:
 	bool isFlipX_ = false;      // 左右フリップ
 	bool isFlipY_ = false;      // 上下フリップ
 	bool adjustSwitch_ = false; // テクスチャサイズ調整スイッチ
-	bool firstUpdate_ = true;   // 初回更新フラグ
 	bool isActive_ = true;      // 表示・非表示フラグ
 
 	// Sprite設定データ

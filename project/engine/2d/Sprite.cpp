@@ -118,14 +118,6 @@ void Sprite::Initialize(SpriteCommon* spriteCommon) {
 //=============================================================================================
 void Sprite::Update() {
 
-	if(firstUpdate_) {
-		//初回更新時にサイズを相対サイズにする
-		SetSizeRelative();
-		spriteConfig_.position_.x *= TakeC::WinApp::widthPercent_;
-		spriteConfig_.position_.y *= TakeC::WinApp::heightPercent_;
-		firstUpdate_ = false;
-	}
-
 	//SpriteAnimatorの更新
 	spriteAnimator_->Update();
 
@@ -234,13 +226,6 @@ void Sprite::UpdateVertexData() {
 	vertexData[3].texcoord = { tex_right,tex_top };
 }
 
-//=============================================================================================
-// サイズを画面サイズに対する相対サイズにする
-//=============================================================================================
-void Sprite::SetSizeRelative() {
-	spriteConfig_.size_.x *= TakeC::WinApp::widthPercent_;
-	spriteConfig_.size_.y *= TakeC::WinApp::heightPercent_;
-}
 
 void Sprite::DrawTextureSelector() {
 

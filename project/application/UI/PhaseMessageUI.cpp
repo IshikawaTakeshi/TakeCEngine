@@ -34,10 +34,10 @@ void PhaseMessageUI::Initialize() {
 
 	// 帯のサイズ設定（論理座標1280相当を各解像度へ）
 	originalBandSizeMin_ = {
-		bandSprite_->GetSize().x * TakeC::WinApp::widthPercent_, 0.0f };
+		bandSprite_->GetSize().x, 0.0f };
 	originalBandSizeMax_ = { 
-		1280.0f * TakeC::WinApp::widthPercent_,
-		bandSprite_->GetSize().y *TakeC::WinApp::heightPercent_
+		1280.0f,
+		bandSprite_->GetSize().y
 	};
 
 	// フェーズメッセージスプライトの生成
@@ -50,8 +50,8 @@ void PhaseMessageUI::Initialize() {
 
 	// 元のサイズを取得し、描画解像度に合わせてスケーリング
 	Vector2 scaledTextSize = {
-		phaseMessageText_->GetSize().x * TakeC::WinApp::widthPercent_,
-		phaseMessageText_->GetSize().y * TakeC::WinApp::heightPercent_ };
+		phaseMessageText_->GetSize().x,
+		phaseMessageText_->GetSize().y };
 	originalTextSizeMin_ = { scaledTextSize.x, 0.0f };
 	originalTextSizeMax_ = scaledTextSize;
 
@@ -171,8 +171,8 @@ void PhaseMessageUI::SetNextMessage(PhaseMessage message) {
 	// テクスチャサイズを調整し、スケーリングを再適用
 	phaseMessageText_->AdjustTextureSize();
 	Vector2 scaledTextSize = {
-		phaseMessageText_->GetSize().x * TakeC::WinApp::widthPercent_,
-		phaseMessageText_->GetSize().y * TakeC::WinApp::heightPercent_ };
+		phaseMessageText_->GetSize().x,
+		phaseMessageText_->GetSize().y };
 	originalTextSizeMin_ = { scaledTextSize.x, 0.0f };
 	originalTextSizeMax_ = scaledTextSize;
 }

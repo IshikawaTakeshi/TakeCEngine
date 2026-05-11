@@ -11,13 +11,13 @@
     },
     "name": "PauseMenu_Item3.json",
     "position": {
-        "x": 215.0,
-        "y": 320.0
+        "x": 268.75,
+        "y": 400.0
     },
     "rotation": 0.0,
     "size": {
-        "x": 394.0,
-        "y": 39.0
+        "x": 492.5,
+        "y": 48.75
     },
     "textureFilePath": "UI/PauseMenu.png",
     "textureLeftTop": {

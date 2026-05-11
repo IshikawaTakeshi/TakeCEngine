@@ -5,13 +5,13 @@
     },
     "name": "GameOverText.json",
     "position": {
-        "x": 50.0,
-        "y": 50.0
+        "x": 62.5,
+        "y": 62.5
     },
     "rotation": 0.0,
     "size": {
-        "x": 600.0,
-        "y": 75.0
+        "x": 750.0,
+        "y": 93.75
     },
     "textureFilePath": "UI/GameOverText.png",
     "textureLeftTop": {

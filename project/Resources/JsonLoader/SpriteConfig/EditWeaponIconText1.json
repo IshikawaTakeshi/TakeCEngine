@@ -5,13 +5,13 @@
     },
     "name": "EditWeaponIconText1.json",
     "position": {
-        "x": 35.0,
-        "y": 90.0
+        "x": 43.75,
+        "y": 112.5
     },
     "rotation": 0.0,
     "size": {
-        "x": 200.0,
-        "y": 15.0
+        "x": 250.0,
+        "y": 18.75
     },
     "textureFilePath": "UI/EditWeaponIcon.png",
     "textureLeftTop": {

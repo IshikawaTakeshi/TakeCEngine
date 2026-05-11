@@ -11,26 +11,21 @@ namespace TakeC {
 	class WinApp {
 	public:
 
-		// ゲームスクリーンのサイズ
+		// スプライト座標系として使うデザイン解像度（Debug/Release 共通・変更不可）
+		static const int32_t kScreenWidth  = 1280;
+		static const int32_t kScreenHeight = 720;
+
+		// ウィンドウ（クライアント領域）のサイズ
 	#if defined(_DEBUG) || defined(_DEVELOP)
-		static const int32_t kScreenWidth = 1024;
-		static const int32_t kScreenHeight = 576;
-		// クライアント領域のサイズ（デバッグ用）
-		static const int32_t kWindowWidth = 1920;
+		static const int32_t kWindowWidth  = 1920;
 		static const int32_t kWindowHeight = 1000;
 	#else
-		static const int32_t kScreenWidth = 1920;
-		static const int32_t kScreenHeight = 1080;
-		// クライアント領域のサイズ（リリース用）
-		static const int32_t kWindowWidth = 1920;
+		static const int32_t kWindowWidth  = 1920;
 		static const int32_t kWindowHeight = 1080;
 	#endif
-		static const uint32_t kDebugScreenWidth_ = 1024; // デバッグ用スクリーン幅
-		static const uint32_t kDebugScreenHeight_ = 576; // デバッグ用スクリーン高さ
-
-		//デバッグ時のスクリーンサイズと実際に使うスクリーンサイズの比率
-		static float widthPercent_;
-		static float heightPercent_;
+		// kDebugScreenWidth_/Height_ は後方互換のため残す（値は kScreenWidth と同じ）
+		static const uint32_t kDebugScreenWidth_  = 1280;
+		static const uint32_t kDebugScreenHeight_ = 720;
 
 		//============================================================================
 		// functions

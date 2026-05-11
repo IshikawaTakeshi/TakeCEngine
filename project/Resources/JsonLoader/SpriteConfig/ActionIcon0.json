@@ -5,13 +5,13 @@
     },
     "name": "actionIcon0.json",
     "position": {
-        "x": 862.0,
-        "y": 208.0
+        "x": 1077.5,
+        "y": 260.0
     },
     "rotation": 0.0,
     "size": {
-        "x": 101.0,
-        "y": 51.0
+        "x": 126.25,
+        "y": 63.75
     },
     "textureFilePath": "UI/ActionIcon.png",
     "textureLeftTop": {

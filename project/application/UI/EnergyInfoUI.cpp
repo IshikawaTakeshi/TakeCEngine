@@ -26,9 +26,7 @@ void EnergyInfoUI::Initialize(SpriteCommon *spriteCommon,
   blinkSprite_->Initialize(spriteCommon, foregroundFilePath);
   blinkSprite_->SetMaterialColor({1.0f, 0.0f, 0.0f, 0.0f}); // 赤色に設定
 
-  margin_ = 2.0f *
-            TakeC::WinApp::
-                widthPercent_; // 枠の太さを設定（解像度に合わせてスケーリング）
+  margin_ = 2.0f; // 枠の太さを設定（解像度に合わせてスケーリング）
   blinkTimer_ = 0.0f;          // 点滅タイマー初期化
   blinkSpeed_ = 12.0f;         // 点滅スピードを設定
 }

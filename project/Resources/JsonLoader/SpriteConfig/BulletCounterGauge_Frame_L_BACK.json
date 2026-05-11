@@ -11,13 +11,13 @@
     },
     "name": "BulletCounterGauge_Frame_L_BACK.json",
     "position": {
-        "x": 380.0,
-        "y": 390.0
+        "x": 475.0,
+        "y": 487.5
     },
     "rotation": -1.5700000524520874,
     "size": {
-        "x": 64.0,
-        "y": 8.0
+        "x": 80.0,
+        "y": 10.0
     },
     "textureFilePath": "white1x1.png",
     "textureLeftTop": {

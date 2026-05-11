@@ -11,13 +11,13 @@
     },
     "name": "HPBar_Enemy_BACKGROUND.json",
     "position": {
-        "x": 300.0,
-        "y": 35.0
+        "x": 375.0,
+        "y": 43.75
     },
     "rotation": 0.0,
     "size": {
-        "x": 400.0,
-        "y": 10.0
+        "x": 500.0,
+        "y": 12.5
     },
     "textureFilePath": "black.png",
     "textureLeftTop": {

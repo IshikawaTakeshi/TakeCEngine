@@ -11,13 +11,13 @@
     },
     "name": "BulletCounterGauge_Bar_L_ARMS.json",
     "position": {
-        "x": 390.0,
-        "y": 390.0
+        "x": 487.5,
+        "y": 487.5
     },
     "rotation": -1.5700000524520874,
     "size": {
-        "x": 64.0,
-        "y": 4.0
+        "x": 80.0,
+        "y": 5.0
     },
     "textureFilePath": "white1x1.png",
     "textureLeftTop": {

@@ -11,13 +11,13 @@
     },
     "name": "Operation_Instructions.json",
     "position": {
-        "x": 713.0,
-        "y": 264.0
+        "x": 891.25,
+        "y": 330.0
     },
     "rotation": 0.0,
     "size": {
-        "x": 582.0,
-        "y": 357.0
+        "x": 727.5,
+        "y": 446.25
     },
     "textureFilePath": "UI/Operation_Instructions.png",
     "textureLeftTop": {

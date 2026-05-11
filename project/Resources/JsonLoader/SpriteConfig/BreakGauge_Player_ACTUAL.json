@@ -11,13 +11,13 @@
     },
     "name": "BreakGauge_Player_ACTUAL.json",
     "position": {
-        "x": 500.0,
-        "y": 510.0
+        "x": 625.0,
+        "y": 637.5
     },
     "rotation": 0.0,
     "size": {
-        "x": 310.0,
-        "y": 8.0
+        "x": 387.5,
+        "y": 10.0
     },
     "textureFilePath": "white1x1.png",
     "textureLeftTop": {
