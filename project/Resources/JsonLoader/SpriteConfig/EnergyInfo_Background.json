@@ -1,7 +1,7 @@
 {
     "anchorPoint": {
-        "x": 0.5,
-        "y": 0.5
+        "x": 0.0,
+        "y": 0.0
     },
     "color": {
         "w": 1.0,
@@ -9,23 +9,23 @@
         "y": 1.0,
         "z": 1.0
     },
-    "name": "TitleText.json",
+    "name": "EnergyInfo_Background.json",
     "position": {
-        "x": 640.0,
-        "y": 355.0
+        "x": 375.0,
+        "y": 656.25
     },
     "rotation": 0.0,
     "size": {
-        "x": 800.0,
-        "y": 210.0
+        "x": 500.0,
+        "y": 12.5
     },
-    "textureFilePath": "UI/TitleText.png",
+    "textureFilePath": "black.png",
     "textureLeftTop": {
         "x": 0.0,
         "y": 0.0
     },
     "textureSize": {
-        "x": 640.0,
-        "y": 168.0
+        "x": 100.0,
+        "y": 100.0
     }
 }

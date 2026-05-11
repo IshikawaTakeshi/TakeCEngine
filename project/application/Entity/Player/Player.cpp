@@ -362,7 +362,10 @@ void Player::Update() {
 	object3d_->SetRotate(eulerRotate);
 	object3d_->SetScale(playerData_.characterInfo.transform.scale);
 	// 傾きアニメーションの更新
-	UpdateLean();
+	if (stateManager_->GetCurrentStateType() != GameCharacterState::DEAD ||
+		stateManager_->GetCurrentStateType() != GameCharacterState::BREAK_STUN) {
+		UpdateLean();
+	}
 	// アニメーションコントローラの更新（object3d_->Update()より前に呼ぶ）
 	object3d_->GetAnimatorController()->Update(deltaTime_);
 	object3d_->Update();
@@ -884,14 +887,14 @@ void Player::UpdateLean() {
 	Vector2 targetLean = { leanR, leanF };
 
 	// 滑らかに補間
-	float kLeanSpeed = 10.0f;
+	float kLeanSpeed = 5.0f;
 	currentLean_.x = Easing::Lerp(currentLean_.x, targetLean.x, kLeanSpeed * deltaTime_);
 	currentLean_.y = Easing::Lerp(currentLean_.y, targetLean.y, kLeanSpeed * deltaTime_);
 
 	// AnimatorController にウェイトを適用
 	auto* animator = object3d_->GetAnimatorController();
-	animator->SetLayerWeight("LeanF", std::clamp(currentLean_.y, 0.0f, 1.0f));
-	animator->SetLayerWeight("LeanB", std::clamp(-currentLean_.y, 0.0f, 1.0f));
-	animator->SetLayerWeight("LeanL", std::clamp(-currentLean_.x, 0.0f, 1.0f));
-	animator->SetLayerWeight("LeanR", std::clamp(currentLean_.x, 0.0f, 1.0f));
+	animator->SetLayerWeight("LeanF", std::clamp(currentLean_.y, 0.0f, 0.4f));
+	animator->SetLayerWeight("LeanB", std::clamp(-currentLean_.y, 0.0f, 0.4f));
+	animator->SetLayerWeight("LeanL", std::clamp(-currentLean_.x, 0.0f, 0.4f));
+	animator->SetLayerWeight("LeanR", std::clamp(currentLean_.x, 0.0f, 0.4f));
 }

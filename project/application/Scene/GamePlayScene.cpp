@@ -111,10 +111,8 @@ void GamePlayScene::Initialize() {
 	playerReticle_->Initialize();
 	// energyInfoUI
 	energyInfoUI_ = std::make_unique<EnergyInfoUI>();
-	energyInfoUI_->Initialize(&SpriteCommon::GetInstance(), "black.png",
-		"flontHp.png");
-	energyInfoUI_->SetSize({ 400.0f, 10.0f });      // エネルギーUIのサイズ
-	energyInfoUI_->SetPosition({ 300.0f, 525.0f }); // エネルギーUIの位置
+	energyInfoUI_->Initialize(TakeCFrameWork::GetSpriteManager());
+
 	// bulletCounterUI
 	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
 	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
