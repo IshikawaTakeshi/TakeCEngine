@@ -117,16 +117,16 @@ void GamePlayScene::Initialize() {
 	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
 	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[0]->Initialize(TakeCFrameWork::GetSpriteManager(),
-		{ 760.0f, 470.0f });
+		{ 950.0f, 591.608f });
 	bulletCounterUI_[1] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[1]->Initialize(TakeCFrameWork::GetSpriteManager(),
-		{ 900.0f, 470.0f });
+		{ 1125.0f, 591.608f });
 	bulletCounterUI_[2] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[2]->Initialize(TakeCFrameWork::GetSpriteManager(),
-		{ 760.0f, 540.0f });
+		{ 950.0f, 679.72f });
 	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[3]->Initialize(TakeCFrameWork::GetSpriteManager(),
-		{ 900.0f, 540.0f });
+		{ 1125.0f, 679.72f });
 
 	for (int i = 0; i < (int)bulletCounterUI_.size(); i++) {
 		TakeCFrameWork::GetUIManager()->CreateUI<BulletCounterGaugeUI>(

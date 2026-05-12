@@ -82,7 +82,6 @@ void EnergyInfoUI::Draw() {
 // 　ImGuiの更新
 //===================================================================================
 void EnergyInfoUI::UpdateImGui(const std::string& name) {
-#if defined(_DEBUG) || defined(_DEVELOP)
 	if (ImGui::TreeNode(name.c_str())) {
 		BaseUI::UpdateImGui(name);
 		ImGui::SeparatorText("Energy Info UI Settings");
@@ -91,7 +90,6 @@ void EnergyInfoUI::UpdateImGui(const std::string& name) {
 		}
 		ImGui::TreePop();
 	}
-#endif
 }
 
 // sizeの取得

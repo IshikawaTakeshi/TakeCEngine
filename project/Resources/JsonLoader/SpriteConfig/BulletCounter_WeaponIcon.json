@@ -16,8 +16,8 @@
     },
     "rotation": 0.0,
     "size": {
-        "x": 40.0,
-        "y": 20.0
+        "x": 50.0,
+        "y": 25.17482
     },
     "textureFilePath": "UI/WeaponIcon.png",
     "textureLeftTop": {
