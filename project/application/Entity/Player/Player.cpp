@@ -887,14 +887,14 @@ void Player::UpdateLean() {
 	Vector2 targetLean = { leanR, leanF };
 
 	// 滑らかに補間
-	float kLeanSpeed = 5.0f;
+	float kLeanSpeed = 3.0f;
 	currentLean_.x = Easing::Lerp(currentLean_.x, targetLean.x, kLeanSpeed * deltaTime_);
 	currentLean_.y = Easing::Lerp(currentLean_.y, targetLean.y, kLeanSpeed * deltaTime_);
 
 	// AnimatorController にウェイトを適用
 	auto* animator = object3d_->GetAnimatorController();
-	animator->SetLayerWeight("LeanF", std::clamp(currentLean_.y, 0.0f, 0.4f));
-	animator->SetLayerWeight("LeanB", std::clamp(-currentLean_.y, 0.0f, 0.4f));
-	animator->SetLayerWeight("LeanL", std::clamp(-currentLean_.x, 0.0f, 0.4f));
-	animator->SetLayerWeight("LeanR", std::clamp(currentLean_.x, 0.0f, 0.4f));
+	animator->SetLayerWeight("LeanF", std::clamp(currentLean_.y, 0.0f, 0.5f));
+	animator->SetLayerWeight("LeanB", std::clamp(-currentLean_.y, 0.0f, 0.5f));
+	animator->SetLayerWeight("LeanL", std::clamp(-currentLean_.x, 0.0f, 0.5f));
+	animator->SetLayerWeight("LeanR", std::clamp(currentLean_.x, 0.0f, 0.5f));
 }

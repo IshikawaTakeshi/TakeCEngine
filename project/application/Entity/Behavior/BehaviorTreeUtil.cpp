@@ -87,6 +87,7 @@ void from_json(const nlohmann::json& j, BehaviorNodeData& data) {
 	data.bbKey = j.value("bbKey", "");
 	data.bbValue = j.value("bbValue", false);
 	data.bbStringValue = j.value("bbStringValue", "");
+	data.waitTime = j.value("waitTime", 1.0f);
 }
 
 void to_json(nlohmann::json& j, const BehaviorNodeData& data) {
@@ -112,4 +113,5 @@ void to_json(nlohmann::json& j, const BehaviorNodeData& data) {
 	j["bbKey"] = data.bbKey;
 	j["bbValue"] = data.bbValue;
 	j["bbStringValue"] = data.bbStringValue;
+	j["waitTime"] = data.waitTime;
 }

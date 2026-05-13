@@ -17,6 +17,8 @@ enum class BehaviorNodeType {
 	SCORE_CONDITION,  // スコア条件
 	SET_BB_BOOL,      // Blackboard に bool をセット
 	SET_BB_STRING,    // Blackboard に string をセット
+	WAIT,             // 固定秒数の待機
+	WAIT_BB_TIME,     // Blackboard の float 値で待機秒数を決める
 };
 
 //============================================================================
@@ -42,7 +44,9 @@ struct BehaviorNodeData {
 	bool bbValue = false;                      // 書き込むbool値
 	std::string bbStringValue = "";            // 書き込むstring値（SetBlackboardStringNode 用）
 
-	
+	// WaitNode 用拡張
+	float waitTime = 1.0f;                     // 待機時間 [s]（WaitNode 用）
+
 };
 
 //============================================================================
