@@ -21,10 +21,7 @@ void TitleScene::Initialize() {
 	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 
 	// Sprite
-	titleTextSprite_ = std::make_unique<Sprite>();
-	titleTextSprite_->Initialize(&SpriteCommon::GetInstance(), "UI/TitleText.png");
-	titleTextSprite_->AdjustTextureSize();
-	titleTextSprite_->SetTranslate({ 200.0f, 256.0f});
+	titleTextSprite_ = TakeCFrameWork::GetSpriteManager()->CreateFromJson("TitleText.json");
 
 	// 「PRESS START」スプライトUI
 	pushStartUI_ = std::make_unique<PushStartUI>();
@@ -48,13 +45,12 @@ void TitleScene::Initialize() {
 //			終了処理
 //====================================================================
 void TitleScene::Finalize() {
-	titleTextSprite_.reset();
 	pushStartUI_.reset();
 	skyBox_.reset();
 	camera0_.reset();
 	camera1_.reset();
 	TakeC::CameraManager::GetInstance().ResetCameras();
-
+	TakeCFrameWork::GetSpriteManager()->Clear();
 }
 
 //====================================================================
@@ -95,8 +91,6 @@ void TitleScene::UpdateImGui() {
 	//ImGuiの更新
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
-	titleTextSprite_->UpdateImGui("title");
-	pushStartUI_->UpdateImGui();
 	playerModel_->UpdateImGui("playerModel");
 
 	ImGui::Begin("cameraYaw");

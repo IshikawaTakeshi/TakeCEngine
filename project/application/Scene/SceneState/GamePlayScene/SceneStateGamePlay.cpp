@@ -67,7 +67,6 @@ void SceneStateGamePlay::Update(GamePlayScene* scene) {
 		bulletUI->SetBulletCount(weapon->GetBulletCount());
 		bulletUI->SetRemainingBulletCount(weapon->GetRemainingBulletCount());
 		bulletUI->SetReloadingState(weapon->GetIsReloading());
-		bulletUI->SetWeaponIconUV(static_cast<int>(weapon->GetUnitPosition()));
 		bulletUI->Update();
 	}
 

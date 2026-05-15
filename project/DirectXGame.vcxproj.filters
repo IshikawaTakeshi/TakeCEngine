@@ -580,6 +580,10 @@
     <ClCompile Include="application\Entity\Behavior\SetBlackboardBoolNode.cpp" />
     <ClCompile Include="application\Entity\Behavior\SetBlackboardStringNode.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\SetBlackboardStringNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\WaitBlackboardTimeNode.cpp" />
+    <ClCompile Include="application\Entity\Behavior\WaitNode.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\WaitBlackboardTimeNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\WaitNodeView.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1208,6 +1212,10 @@
     <ClInclude Include="application\Entity\Behavior\SetBlackboardBoolNode.h" />
     <ClInclude Include="application\Entity\Behavior\SetBlackboardStringNode.h" />
     <ClInclude Include="application\Entity\Behavior\View\SetBlackboardStringNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\WaitBlackboardTimeNode.h" />
+    <ClInclude Include="application\Entity\Behavior\WaitNode.h" />
+    <ClInclude Include="application\Entity\Behavior\View\WaitBlackboardTimeNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\WaitNodeView.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

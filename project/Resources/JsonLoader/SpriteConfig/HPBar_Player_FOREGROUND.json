@@ -11,13 +11,13 @@
     },
     "name": "HPBar_Player_FOREGROUND.json",
     "position": {
-        "x": 50.0,
-        "y": 500.0
+        "x": 62.5,
+        "y": 625.0
     },
     "rotation": 0.0,
     "size": {
-        "x": 200.0,
-        "y": 10.0
+        "x": 250.0,
+        "y": 12.5
     },
     "textureFilePath": "flontHp.png",
     "textureLeftTop": {

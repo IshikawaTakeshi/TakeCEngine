@@ -26,7 +26,7 @@ void BulletCounterGaugeUI::Initialize(TakeC::SpriteManager *spriteManager,
 
   // 最大幅の保存（解像度に合わせてスケーリング）
   if (barSprite_) {
-    maxWidth_ = barSprite_->GetSize().x * TakeC::WinApp::widthPercent_;
+    maxWidth_ = barSprite_->GetSize().x;
   }
 }
 

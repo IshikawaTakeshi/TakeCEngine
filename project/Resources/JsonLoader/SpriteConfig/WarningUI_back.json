@@ -5,13 +5,13 @@
     },
     "name": "WarningUI_back.json",
     "position": {
-        "x": 512.0,
-        "y": 460.0
+        "x": 640.0,
+        "y": 575.0
     },
     "rotation": 3.140000104904175,
     "size": {
-        "x": 300.0,
-        "y": 40.0
+        "x": 375.0,
+        "y": 50.0
     },
     "textureFilePath": "UI/WarningUI.png",
     "textureLeftTop": {

@@ -180,6 +180,8 @@ private:
 
 	//Blackboardの更新
 	void UpdateBlackboard();
+	// 傾きアニメーションの更新
+	void UpdateLean();
 
 private:
 	// AIシステム
@@ -234,6 +236,8 @@ private:
 	Vector3 bodyPosition_ = { 0.0f, 0.0f, 0.0f }; 
 
 	BoostDirection previousBoostDirection_ = BoostDirection::NONE;
+
+	Vector2 currentLean_ = { 0.0f, 0.0f }; // 現在の傾き値（x: 左右, y: 前後）
 
 	// 反映待ちのツリーデータ
 	std::unique_ptr<ComboSetData> pendingTreeData_ = nullptr;

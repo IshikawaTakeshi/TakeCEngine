@@ -11,13 +11,13 @@
     },
     "name": "PauseMenu_Cursor.json.json",
     "position": {
-        "x": 290.0,
-        "y": 100.0
+        "x": 362.5,
+        "y": 125.0
     },
     "rotation": 0.0,
     "size": {
-        "x": 32.0,
-        "y": 32.0
+        "x": 40.0,
+        "y": 40.0
     },
     "textureFilePath": "ic_play.png",
     "textureLeftTop": {

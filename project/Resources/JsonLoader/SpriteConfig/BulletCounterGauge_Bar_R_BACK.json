@@ -11,13 +11,13 @@
     },
     "name": "BulletCounterGauge_Bar_R_BACK.json",
     "position": {
-        "x": 660.0,
-        "y": 390.0
+        "x": 800.0,
+        "y": 410.0
     },
     "rotation": -1.5700000524520874,
     "size": {
-        "x": 64.0,
-        "y": 4.0
+        "x": 100.0,
+        "y": 6.293704986572266
     },
     "textureFilePath": "white1x1.png",
     "textureLeftTop": {

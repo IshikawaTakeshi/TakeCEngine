@@ -11,13 +11,13 @@
     },
     "name": "BulletCounterGauge_Frame_R_ARMS.json",
     "position": {
-        "x": 650.0,
-        "y": 390.0
+        "x": 780.0,
+        "y": 410.0
     },
     "rotation": -1.5700000524520874,
     "size": {
-        "x": 64.0,
-        "y": 8.0
+        "x": 100.0,
+        "y": 12.587409973144531
     },
     "textureFilePath": "white1x1.png",
     "textureLeftTop": {

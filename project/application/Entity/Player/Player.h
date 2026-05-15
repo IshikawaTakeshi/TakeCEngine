@@ -163,6 +163,8 @@ private:
 
 	BoostDirection previousBoostDirection_ = BoostDirection::NONE;
 
+	Vector2 currentLean_ = { 0.0f, 0.0f }; // 現在の傾き値（x: 左右, y: 前後）
+
 private:
 
 	//武器の攻撃更新
@@ -179,4 +181,6 @@ private:
 	void RequestAppearBoostEffect();
 	//ブレイクゲージを蓄積してスタン判定
 	void AccumulateBreakGauge(float damage);
+	// 傾きアニメーションの更新
+	void UpdateLean();
 };

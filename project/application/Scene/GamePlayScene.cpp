@@ -111,24 +111,22 @@ void GamePlayScene::Initialize() {
 	playerReticle_->Initialize();
 	// energyInfoUI
 	energyInfoUI_ = std::make_unique<EnergyInfoUI>();
-	energyInfoUI_->Initialize(&SpriteCommon::GetInstance(), "black.png",
-		"flontHp.png");
-	energyInfoUI_->SetSize({ 400.0f, 10.0f });      // エネルギーUIのサイズ
-	energyInfoUI_->SetPosition({ 300.0f, 525.0f }); // エネルギーUIの位置
+	energyInfoUI_->Initialize(TakeCFrameWork::GetSpriteManager());
+
 	// bulletCounterUI
 	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
 	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[0]->Initialize(TakeCFrameWork::GetSpriteManager(),
-		{ 760.0f, 470.0f });
+		{ 950.0f, 591.608f });
 	bulletCounterUI_[1] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[1]->Initialize(TakeCFrameWork::GetSpriteManager(),
-		{ 900.0f, 470.0f });
+		{ 1125.0f, 591.608f });
 	bulletCounterUI_[2] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[2]->Initialize(TakeCFrameWork::GetSpriteManager(),
-		{ 760.0f, 540.0f });
+		{ 950.0f, 679.72f });
 	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[3]->Initialize(TakeCFrameWork::GetSpriteManager(),
-		{ 900.0f, 540.0f });
+		{ 1125.0f, 679.72f });
 
 	for (int i = 0; i < (int)bulletCounterUI_.size(); i++) {
 		TakeCFrameWork::GetUIManager()->CreateUI<BulletCounterGaugeUI>(

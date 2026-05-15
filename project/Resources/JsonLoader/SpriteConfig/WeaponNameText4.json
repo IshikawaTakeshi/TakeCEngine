@@ -5,13 +5,13 @@
     },
     "name": "WeaponNameText4.json",
     "position": {
-        "x": 45.0,
-        "y": 245.0
+        "x": 56.25,
+        "y": 306.25
     },
     "rotation": 0.0,
     "size": {
-        "x": 300.0,
-        "y": 30.0
+        "x": 375.0,
+        "y": 37.5
     },
     "textureFilePath": "UI/EditWeaponNameText.png",
     "textureLeftTop": {

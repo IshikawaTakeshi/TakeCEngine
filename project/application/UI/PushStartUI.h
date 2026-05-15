@@ -46,9 +46,9 @@ private:
 	//========================================================================
 	
 	// 「PRESS START」テキストスプライト
-	std::unique_ptr<Sprite> pressStartText_ = nullptr;
+	Sprite* pressStartText_ = nullptr;
 	// 点滅スプライト
-	std::unique_ptr<Sprite> blinkSprite_ = nullptr;
+	Sprite* blinkSprite_ = nullptr;
 
 	// 点滅タイマー
 	Timer blinkTimer_;

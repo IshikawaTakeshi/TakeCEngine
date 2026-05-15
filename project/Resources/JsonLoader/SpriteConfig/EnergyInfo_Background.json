@@ -1,0 +1,31 @@
+{
+    "anchorPoint": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "color": {
+        "w": 1.0,
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+    },
+    "name": "EnergyInfo_Background.json",
+    "position": {
+        "x": 375.0,
+        "y": 656.25
+    },
+    "rotation": 0.0,
+    "size": {
+        "x": 500.0,
+        "y": 12.5
+    },
+    "textureFilePath": "black.png",
+    "textureLeftTop": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "textureSize": {
+        "x": 100.0,
+        "y": 100.0
+    }
+}
