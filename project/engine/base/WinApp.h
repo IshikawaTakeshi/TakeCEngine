@@ -23,9 +23,6 @@ namespace TakeC {
 		static const int32_t kWindowWidth  = 1920;
 		static const int32_t kWindowHeight = 1080;
 	#endif
-		// kDebugScreenWidth_/Height_ は後方互換のため残す（値は kScreenWidth と同じ）
-		static const uint32_t kDebugScreenWidth_  = 1280;
-		static const uint32_t kDebugScreenHeight_ = 720;
 
 		//============================================================================
 		// functions

@@ -10,8 +10,8 @@
 
 void PhaseMessageUI::Initialize() {
 	// 画面中央（論理座標）
-	screenCenter_ = { TakeC::WinApp::kDebugScreenWidth_ / 2.0f,
-					 TakeC::WinApp::kDebugScreenHeight_ / 2.0f };
+	screenCenter_ = { TakeC::WinApp::kScreenWidth / 2.0f,
+					 TakeC::WinApp::kScreenHeight / 2.0f };
 
 	TakeC::TextureManager::GetInstance().LoadTexture(
 		"UI/PhaseMessage_ReadyText.png", false);
