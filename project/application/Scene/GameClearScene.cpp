@@ -28,9 +28,7 @@ void GameClearScene::Initialize() {
 	skybox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//whiteOutSprite
-	clearTextSprite_ = std::make_unique<Sprite>();
-	clearTextSprite_->Initialize(&SpriteCommon::GetInstance(), "UI/GameClearText.png");
-	clearTextSprite_->LoadConfig("GameClearText.json");
+	clearTextSprite_ = TakeCFrameWork::GetSpriteManager()->CreateFromJson("GameClearText.json");
 
 }
 
@@ -42,6 +40,8 @@ void GameClearScene::Finalize() {
 	AudioManager::GetInstance().SoundUnload(&gameClearBGM);
 	// カメラの解放
 	TakeC::CameraManager::GetInstance().ResetCameras();
+	// Spriteのクリア
+	TakeCFrameWork::GetSpriteManager()->Clear(); 
 }
 
 //====================================================================
@@ -58,8 +58,8 @@ void GameClearScene::Update() {
 	TakeC::CameraManager::GetInstance().Update();
 	// 天球の更新
 	skybox_->Update();
-
-	clearTextSprite_->Update();
+	// Spriteの更新
+	TakeCFrameWork::GetSpriteManager()->Update();
 	// パーティクルの更新
 	TakeCFrameWork::GetParticleManager()->Update();
 
@@ -77,8 +77,6 @@ void GameClearScene::UpdateImGui() {
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
 	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
-	clearTextSprite_->UpdateImGui("ClearText");
 }
 
 //====================================================================
