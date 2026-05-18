@@ -55,7 +55,10 @@ void ActionNodeView::draw() {
 		strncpy_s(buffer, targetStateName_.c_str(), sizeof(buffer));
 		if (ImGui::InputText("Target State", buffer, sizeof(buffer))) {
 			targetStateName_ = buffer;
-			setTitle(targetStateName_);
+			if (nodeCustomName_ == "Action:NONE" || nodeCustomName_ == "UnnamedNode" || nodeCustomName_.empty()) {
+				nodeCustomName_ = "Action:" + targetStateName_;
+				setTitle(nodeCustomName_);
+			}
 		}
 
 		ImGui::PopItemWidth();
@@ -79,5 +82,8 @@ void ActionNodeView::SaveParameters(BehaviorNodeData& data) const {
 void ActionNodeView::LoadParameters(const BehaviorNodeData& data) {
 	BehaviorNodeView::LoadParameters(data);
 	targetStateName_ = data.targetState;
-	setTitle(targetStateName_);
+	if (nodeCustomName_ == "UnnamedNode" || nodeCustomName_.empty() || nodeCustomName_ == "Action:NONE" || nodeCustomName_ == "ACTION") {
+		nodeCustomName_ = "Action:" + targetStateName_;
+	}
+	setTitle(nodeCustomName_);
 }

@@ -4,6 +4,9 @@
 #include "engine/Utility/StringUtility.h"
 #include "application/Entity/Behavior/SetBlackboardBoolNode.h"
 #include "application/Entity/Behavior/SetBlackboardStringNode.h"
+#include "application/Entity/Behavior/WaitNode.h"
+#include "application/Entity/Behavior/WaitBlackboardTimeNode.h"
+#include "application/Entity/Behavior/ScoreConditionNode.h"
 
 //========================================================================
 // JSONファイルからコンボセットを読み込み、ツリーを構築
@@ -136,6 +139,27 @@ std::unique_ptr<BehaviorNode> ComboFactory::BuildNode(
 		}
 		composite->SetUID(nodeData.nodeUID);
 		return composite;
+	}
+
+	case BehaviorNodeType::WAIT:
+	{
+		auto node = std::make_unique<WaitNode>(nodeData.waitTime, nodeData.name);
+		node->SetUID(nodeData.nodeUID);
+		return node;
+	}
+
+	case BehaviorNodeType::WAIT_BB_TIME:
+	{
+		auto node = std::make_unique<WaitBlackboardTimeNode>(nodeData.bbKey, nodeData.name);
+		node->SetUID(nodeData.nodeUID);
+		return node;
+	}
+
+	case BehaviorNodeType::SCORE_CONDITION:
+	{
+		auto node = std::make_unique<ScoreConditionNode>([]() { return 0.0f; }, nodeData.conditionThreshold, nodeData.name);
+		node->SetUID(nodeData.nodeUID);
+		return node;
 	}
 
 	default:

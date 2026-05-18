@@ -472,18 +472,23 @@ ImFlow::BaseNode* BehaviorTreeEditor::BuildNodeView(BehaviorNode* node, ImVec2& 
 // ノードビューを生成する (内部用)
 //===============================================================================
 std::shared_ptr<BehaviorNodeView> BehaviorTreeEditor::CreateNodeView(const std::string& type, const ImVec2& pos, const std::string& name) {
-	if (type == "ACTION") return flowEditor_->addNode<ActionNodeView>(pos, name);
-	if (type == "SET_BB_BOOL") return flowEditor_->addNode<SetBlackboardBoolNodeView>(pos);
-	if (type == "SET_BB_STRING") return flowEditor_->addNode<SetBlackboardStringNodeView>(pos);
-	if (type == "WAIT") return flowEditor_->addNode<WaitNodeView>(pos);
-	if (type == "WAIT_BB_TIME") return flowEditor_->addNode<WaitBlackboardTimeNodeView>(pos);
-	if (type == "CONDITION") return flowEditor_->addNode<ConditionNodeView>(pos);
-	if (type == "SCORE_CONDITION") return flowEditor_->addNode<ScoreConditionNodeView>(pos);
-	if (type == "SELECTOR") return flowEditor_->addNode<SelectorNodeView>(pos);
-	if (type == "SEQUENCE") return flowEditor_->addNode<SequenceNodeView>(pos);
-	if (type == "PLANNER_SELECTOR") return flowEditor_->addNode<PlannerSelectorNodeView>(pos);
-	if (type == "WEIGHT_SELECTOR") return flowEditor_->addNode<WeightSelectorNodeView>(pos);
-	return nullptr;
+	std::shared_ptr<BehaviorNodeView> v = nullptr;
+	if (type == "ACTION") v = flowEditor_->addNode<ActionNodeView>(pos, name);
+	else if (type == "SET_BB_BOOL") v = flowEditor_->addNode<SetBlackboardBoolNodeView>(pos);
+	else if (type == "SET_BB_STRING") v = flowEditor_->addNode<SetBlackboardStringNodeView>(pos);
+	else if (type == "WAIT") v = flowEditor_->addNode<WaitNodeView>(pos);
+	else if (type == "WAIT_BB_TIME") v = flowEditor_->addNode<WaitBlackboardTimeNodeView>(pos);
+	else if (type == "CONDITION") v = flowEditor_->addNode<ConditionNodeView>(pos);
+	else if (type == "SCORE_CONDITION") v = flowEditor_->addNode<ScoreConditionNodeView>(pos);
+	else if (type == "SELECTOR") v = flowEditor_->addNode<SelectorNodeView>(pos);
+	else if (type == "SEQUENCE") v = flowEditor_->addNode<SequenceNodeView>(pos);
+	else if (type == "PLANNER_SELECTOR") v = flowEditor_->addNode<PlannerSelectorNodeView>(pos);
+	else if (type == "WEIGHT_SELECTOR") v = flowEditor_->addNode<WeightSelectorNodeView>(pos);
+
+	if (v && !name.empty()) {
+		v->SetCustomName(name);
+	}
+	return v;
 }
 
 

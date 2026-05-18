@@ -17,15 +17,16 @@
                                 "bbStringValue": "",
                                 "bbValue": false,
                                 "children": [],
-                                "conditionThreshold": 1000.0,
-                                "field": "direction",
+                                "conditionThreshold": 0.0,
+                                "field": "isBulletNearby",
                                 "name": "Condition",
                                 "nodeType": "CONDITION",
-                                "nodeUID": 1,
+                                "nodeUID": 3,
                                 "op": "",
                                 "posX": 0.0,
                                 "posY": 0.0,
-                                "targetState": "NONE"
+                                "targetState": "NONE",
+                                "waitTime": 1.0
                             },
                             {
                                 "bbKey": "",
@@ -34,54 +35,26 @@
                                 "children": [],
                                 "conditionThreshold": 0.0,
                                 "field": "",
-                                "name": "Action:StepBoost",
+                                "name": "Action:NONE",
                                 "nodeType": "ACTION",
-                                "nodeUID": 3,
+                                "nodeUID": 2,
                                 "op": ">=",
                                 "posX": 0.0,
                                 "posY": 0.0,
-                                "targetState": "STEPBOOST"
-                            },
-                            {
-                                "bbKey": "",
-                                "bbStringValue": "",
-                                "bbValue": false,
-                                "children": [],
-                                "conditionThreshold": 0.0,
-                                "field": "",
-                                "name": "Action:jump",
-                                "nodeType": "ACTION",
-                                "nodeUID": 5,
-                                "op": ">=",
-                                "posX": 0.0,
-                                "posY": 0.0,
-                                "targetState": "JUMP"
-                            },
-                            {
-                                "bbKey": "",
-                                "bbStringValue": "",
-                                "bbValue": false,
-                                "children": [],
-                                "conditionThreshold": 0.0,
-                                "field": "",
-                                "name": "Action:StepBoost",
-                                "nodeType": "ACTION",
-                                "nodeUID": 7,
-                                "op": ">=",
-                                "posX": 0.0,
-                                "posY": 0.0,
-                                "targetState": "STEPBOOST"
+                                "targetState": "NONE",
+                                "waitTime": 1.0
                             }
                         ],
                         "conditionThreshold": 0.0,
                         "field": "",
                         "name": "Sequence",
                         "nodeType": "SEQUENCE",
-                        "nodeUID": 2,
+                        "nodeUID": 1,
                         "op": ">=",
                         "posX": 0.0,
                         "posY": 0.0,
-                        "targetState": "NONE"
+                        "targetState": "NONE",
+                        "waitTime": 1.0
                     },
                     {
                         "bbKey": "",
@@ -97,11 +70,12 @@
                                 "field": "direction",
                                 "name": "Condition",
                                 "nodeType": "CONDITION",
-                                "nodeUID": 4,
+                                "nodeUID": 7,
                                 "op": "",
                                 "posX": 0.0,
                                 "posY": 0.0,
-                                "targetState": "NONE"
+                                "targetState": "NONE",
+                                "waitTime": 1.0
                             },
                             {
                                 "bbKey": "",
@@ -112,11 +86,12 @@
                                 "field": "",
                                 "name": "Condition",
                                 "nodeType": "CONDITION",
-                                "nodeUID": 8,
+                                "nodeUID": 6,
                                 "op": "",
                                 "posX": 0.0,
                                 "posY": 0.0,
-                                "targetState": "NONE"
+                                "targetState": "NONE",
+                                "waitTime": 1.0
                             },
                             {
                                 "bbKey": "",
@@ -127,11 +102,12 @@
                                 "field": "",
                                 "name": ":Action:LaunchJump",
                                 "nodeType": "ACTION",
-                                "nodeUID": 9,
+                                "nodeUID": 5,
                                 "op": ">=",
                                 "posX": 0.0,
                                 "posY": 0.0,
-                                "targetState": "STEPBOOST"
+                                "targetState": "STEPBOOST",
+                                "waitTime": 1.0
                             },
                             {
                                 "bbKey": "",
@@ -142,98 +118,24 @@
                                 "field": "",
                                 "name": "Action:AerialCombat",
                                 "nodeType": "ACTION",
-                                "nodeUID": 10,
+                                "nodeUID": 8,
                                 "op": ">=",
                                 "posX": 0.0,
                                 "posY": 0.0,
-                                "targetState": "RUNNING"
+                                "targetState": "RUNNING",
+                                "waitTime": 1.0
                             }
                         ],
                         "conditionThreshold": 0.0,
                         "field": "",
                         "name": "Sequence",
                         "nodeType": "SEQUENCE",
-                        "nodeUID": 6,
+                        "nodeUID": 4,
                         "op": ">=",
                         "posX": 0.0,
                         "posY": 0.0,
-                        "targetState": "NONE"
-                    },
-                    {
-                        "bbKey": "",
-                        "bbStringValue": "",
-                        "bbValue": false,
-                        "children": [
-                            {
-                                "bbKey": "",
-                                "bbStringValue": "",
-                                "bbValue": false,
-                                "children": [],
-                                "conditionThreshold": 0.0,
-                                "field": "",
-                                "name": "Condition",
-                                "nodeType": "CONDITION",
-                                "nodeUID": 12,
-                                "op": "",
-                                "posX": 0.0,
-                                "posY": 0.0,
-                                "targetState": "NONE"
-                            },
-                            {
-                                "bbKey": "",
-                                "bbStringValue": "",
-                                "bbValue": false,
-                                "children": [],
-                                "conditionThreshold": 0.0,
-                                "field": "",
-                                "name": "Condition",
-                                "nodeType": "CONDITION",
-                                "nodeUID": 13,
-                                "op": "",
-                                "posX": 0.0,
-                                "posY": 0.0,
-                                "targetState": "NONE"
-                            },
-                            {
-                                "bbKey": "",
-                                "bbStringValue": "",
-                                "bbValue": false,
-                                "children": [],
-                                "conditionThreshold": 0.0,
-                                "field": "",
-                                "name": "Action:EvadeStep",
-                                "nodeType": "ACTION",
-                                "nodeUID": 14,
-                                "op": ">=",
-                                "posX": 0.0,
-                                "posY": 0.0,
-                                "targetState": "RUNNING"
-                            },
-                            {
-                                "bbKey": "",
-                                "bbStringValue": "",
-                                "bbValue": false,
-                                "children": [],
-                                "conditionThreshold": 0.0,
-                                "field": "",
-                                "name": "Action:ResumeRunning",
-                                "nodeType": "ACTION",
-                                "nodeUID": 15,
-                                "op": ">=",
-                                "posX": 0.0,
-                                "posY": 0.0,
-                                "targetState": "RUNNING"
-                            }
-                        ],
-                        "conditionThreshold": 0.0,
-                        "field": "",
-                        "name": "Sequence",
-                        "nodeType": "SEQUENCE",
-                        "nodeUID": 11,
-                        "op": ">=",
-                        "posX": 0.0,
-                        "posY": 0.0,
-                        "targetState": "NONE"
+                        "targetState": "NONE",
+                        "waitTime": 1.0
                     }
                 ],
                 "conditionThreshold": 0.0,
@@ -244,99 +146,77 @@
                 "op": ">=",
                 "posX": 0.0,
                 "posY": 0.0,
-                "targetState": "NONE"
+                "targetState": "NONE",
+                "waitTime": 1.0
+            }
+        },
+        {
+            "comboName": "Condition",
+            "rootNode": {
+                "bbKey": "",
+                "bbStringValue": "",
+                "bbValue": false,
+                "children": [],
+                "conditionThreshold": 0.0,
+                "field": "attackScore0",
+                "name": "Condition",
+                "nodeType": "CONDITION",
+                "nodeUID": -1,
+                "op": ">=",
+                "posX": 0.0,
+                "posY": 0.0,
+                "targetState": "NONE",
+                "waitTime": 1.0
             }
         }
     ],
     "editorLinks": [
         {
-            "fromNodeUID": 2,
+            "fromNodeUID": 1,
+            "fromPinIndex": 0,
+            "toNodeUID": 3,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 1,
+            "fromPinIndex": 1,
+            "toNodeUID": 2,
+            "toPinIndex": 0
+        },
+        {
+            "fromNodeUID": 0,
             "fromPinIndex": 0,
             "toNodeUID": 1,
             "toPinIndex": 0
         },
         {
-            "fromNodeUID": 2,
-            "fromPinIndex": 1,
-            "toNodeUID": 3,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 2,
-            "fromPinIndex": 2,
-            "toNodeUID": 5,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 2,
-            "fromPinIndex": 3,
+            "fromNodeUID": 4,
+            "fromPinIndex": 0,
             "toNodeUID": 7,
             "toPinIndex": 0
         },
         {
-            "fromNodeUID": 0,
-            "fromPinIndex": 0,
-            "toNodeUID": 2,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 6,
-            "fromPinIndex": 0,
-            "toNodeUID": 4,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 6,
-            "fromPinIndex": 1,
-            "toNodeUID": 8,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 6,
-            "fromPinIndex": 2,
-            "toNodeUID": 9,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 6,
-            "fromPinIndex": 3,
-            "toNodeUID": 10,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 0,
+            "fromNodeUID": 4,
             "fromPinIndex": 1,
             "toNodeUID": 6,
             "toPinIndex": 0
         },
         {
-            "fromNodeUID": 11,
-            "fromPinIndex": 0,
-            "toNodeUID": 12,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 11,
-            "fromPinIndex": 1,
-            "toNodeUID": 13,
-            "toPinIndex": 0
-        },
-        {
-            "fromNodeUID": 11,
+            "fromNodeUID": 4,
             "fromPinIndex": 2,
-            "toNodeUID": 14,
+            "toNodeUID": 5,
             "toPinIndex": 0
         },
         {
-            "fromNodeUID": 11,
+            "fromNodeUID": 4,
             "fromPinIndex": 3,
-            "toNodeUID": 15,
+            "toNodeUID": 8,
             "toPinIndex": 0
         },
         {
             "fromNodeUID": 0,
-            "fromPinIndex": 2,
-            "toNodeUID": 11,
+            "fromPinIndex": 1,
+            "toNodeUID": 4,
             "toPinIndex": 0
         }
     ],
@@ -354,97 +234,24 @@
             "op": ">=",
             "posX": 100.0,
             "posY": 100.0,
-            "targetState": "NONE"
+            "targetState": "NONE",
+            "waitTime": 1.0
         },
         {
             "bbKey": "",
             "bbStringValue": "",
             "bbValue": false,
             "children": [],
-            "conditionThreshold": 1000.0,
-            "field": "direction",
-            "name": "Condition",
-            "nodeType": "CONDITION",
+            "conditionThreshold": 0.0,
+            "field": "",
+            "name": "Sequence",
+            "nodeType": "SEQUENCE",
             "nodeUID": 1,
-            "op": "",
-            "posX": 800.0,
-            "posY": -120.0,
-            "targetState": "NONE"
-        },
-        {
-            "bbKey": "",
-            "bbStringValue": "",
-            "bbValue": false,
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Sequence",
-            "nodeType": "SEQUENCE",
-            "nodeUID": 2,
-            "op": ">=",
-            "posX": 450.0,
-            "posY": -120.0,
-            "targetState": "NONE"
-        },
-        {
-            "bbKey": "",
-            "bbStringValue": "",
-            "bbValue": false,
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Action:StepBoost",
-            "nodeType": "ACTION",
-            "nodeUID": 3,
-            "op": ">=",
-            "posX": 800.0,
-            "posY": 100.0,
-            "targetState": "STEPBOOST"
-        },
-        {
-            "bbKey": "",
-            "bbStringValue": "",
-            "bbValue": false,
-            "children": [],
-            "conditionThreshold": 500.0,
-            "field": "direction",
-            "name": "Condition",
-            "nodeType": "CONDITION",
-            "nodeUID": 4,
-            "op": "",
-            "posX": 810.0,
-            "posY": 600.0,
-            "targetState": "NONE"
-        },
-        {
-            "bbKey": "",
-            "bbStringValue": "",
-            "bbValue": false,
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Action:jump",
-            "nodeType": "ACTION",
-            "nodeUID": 5,
-            "op": ">=",
-            "posX": 800.0,
-            "posY": 250.0,
-            "targetState": "JUMP"
-        },
-        {
-            "bbKey": "",
-            "bbStringValue": "",
-            "bbValue": false,
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Sequence",
-            "nodeType": "SEQUENCE",
-            "nodeUID": 6,
             "op": ">=",
             "posX": 400.0,
-            "posY": 600.0,
-            "targetState": "NONE"
+            "posY": 100.0,
+            "targetState": "NONE",
+            "waitTime": 1.0
         },
         {
             "bbKey": "",
@@ -453,13 +260,14 @@
             "children": [],
             "conditionThreshold": 0.0,
             "field": "",
-            "name": "Action:StepBoost",
+            "name": "Action:NONE",
             "nodeType": "ACTION",
-            "nodeUID": 7,
+            "nodeUID": 2,
             "op": ">=",
-            "posX": 800.0,
-            "posY": 400.0,
-            "targetState": "STEPBOOST"
+            "posX": 700.0,
+            "posY": 200.0,
+            "targetState": "NONE",
+            "waitTime": 1.0
         },
         {
             "bbKey": "",
@@ -467,14 +275,31 @@
             "bbValue": false,
             "children": [],
             "conditionThreshold": 0.0,
-            "field": "",
+            "field": "isBulletNearby",
             "name": "Condition",
             "nodeType": "CONDITION",
-            "nodeUID": 8,
+            "nodeUID": 3,
             "op": "",
-            "posX": 1070.0,
-            "posY": 600.0,
-            "targetState": "NONE"
+            "posX": 680.0,
+            "posY": -30.0,
+            "targetState": "NONE",
+            "waitTime": 1.0
+        },
+        {
+            "bbKey": "",
+            "bbStringValue": "",
+            "bbValue": false,
+            "children": [],
+            "conditionThreshold": 0.0,
+            "field": "",
+            "name": "Sequence",
+            "nodeType": "SEQUENCE",
+            "nodeUID": 4,
+            "op": ">=",
+            "posX": 400.0,
+            "posY": 400.0,
+            "targetState": "NONE",
+            "waitTime": 1.0
         },
         {
             "bbKey": "",
@@ -485,11 +310,44 @@
             "field": "",
             "name": ":Action:LaunchJump",
             "nodeType": "ACTION",
-            "nodeUID": 9,
+            "nodeUID": 5,
             "op": ">=",
-            "posX": 810.0,
-            "posY": 820.0,
-            "targetState": "STEPBOOST"
+            "posX": 700.0,
+            "posY": 600.0,
+            "targetState": "STEPBOOST",
+            "waitTime": 1.0
+        },
+        {
+            "bbKey": "",
+            "bbStringValue": "",
+            "bbValue": false,
+            "children": [],
+            "conditionThreshold": 0.0,
+            "field": "",
+            "name": "Condition",
+            "nodeType": "CONDITION",
+            "nodeUID": 6,
+            "op": "",
+            "posX": 700.0,
+            "posY": 500.0,
+            "targetState": "NONE",
+            "waitTime": 1.0
+        },
+        {
+            "bbKey": "",
+            "bbStringValue": "",
+            "bbValue": false,
+            "children": [],
+            "conditionThreshold": 500.0,
+            "field": "direction",
+            "name": "Condition",
+            "nodeType": "CONDITION",
+            "nodeUID": 7,
+            "op": "",
+            "posX": 700.0,
+            "posY": 400.0,
+            "targetState": "NONE",
+            "waitTime": 1.0
         },
         {
             "bbKey": "",
@@ -500,11 +358,12 @@
             "field": "",
             "name": "Action:AerialCombat",
             "nodeType": "ACTION",
-            "nodeUID": 10,
+            "nodeUID": 8,
             "op": ">=",
-            "posX": 810.0,
-            "posY": 970.0,
-            "targetState": "RUNNING"
+            "posX": 700.0,
+            "posY": 700.0,
+            "targetState": "RUNNING",
+            "waitTime": 1.0
         },
         {
             "bbKey": "",
@@ -512,74 +371,15 @@
             "bbValue": false,
             "children": [],
             "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Sequence",
-            "nodeType": "SEQUENCE",
-            "nodeUID": 11,
-            "op": ">=",
-            "posX": 400.0,
-            "posY": 1200.0,
-            "targetState": "NONE"
-        },
-        {
-            "bbKey": "",
-            "bbStringValue": "",
-            "bbValue": false,
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
+            "field": "attackScore0",
             "name": "Condition",
             "nodeType": "CONDITION",
-            "nodeUID": 12,
-            "op": "",
-            "posX": 820.0,
-            "posY": 1200.0,
-            "targetState": "NONE"
-        },
-        {
-            "bbKey": "",
-            "bbStringValue": "",
-            "bbValue": false,
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Condition",
-            "nodeType": "CONDITION",
-            "nodeUID": 13,
-            "op": "",
-            "posX": 1070.0,
-            "posY": 1200.0,
-            "targetState": "NONE"
-        },
-        {
-            "bbKey": "",
-            "bbStringValue": "",
-            "bbValue": false,
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Action:EvadeStep",
-            "nodeType": "ACTION",
-            "nodeUID": 14,
+            "nodeUID": 9,
             "op": ">=",
-            "posX": 820.0,
-            "posY": 1420.0,
-            "targetState": "RUNNING"
-        },
-        {
-            "bbKey": "",
-            "bbStringValue": "",
-            "bbValue": false,
-            "children": [],
-            "conditionThreshold": 0.0,
-            "field": "",
-            "name": "Action:ResumeRunning",
-            "nodeType": "ACTION",
-            "nodeUID": 15,
-            "op": ">=",
-            "posX": 820.0,
-            "posY": 1570.0,
-            "targetState": "RUNNING"
+            "posX": 470.0,
+            "posY": -140.0,
+            "targetState": "NONE",
+            "waitTime": 1.0
         }
     ],
     "rootType": "SELECTOR",

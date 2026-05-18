@@ -85,12 +85,35 @@ public:
 	/// <summary>
 	/// パラメータをデータ構造に移す
 	/// </summary>
-	virtual void SaveParameters(BehaviorNodeData& data) const { data.nodeType = GetNodeType(); }
+	virtual void SaveParameters(BehaviorNodeData& data) const {
+		data.nodeType = GetNodeType();
+		if (logicNode_) {
+			data.name = logicNode_->GetName();
+		} else {
+			data.name = nodeCustomName_;
+		}
+	}
 
 	/// <summary>
 	/// データ構造からパラメータを読み込む
 	/// </summary>
-	virtual void LoadParameters(const BehaviorNodeData& data) { (void)data; }
+	virtual void LoadParameters(const BehaviorNodeData& data) {
+		nodeCustomName_ = data.name;
+		setTitle(nodeCustomName_);
+		if (logicNode_) {
+			logicNode_->SetName(nodeCustomName_);
+		}
+	}
+
+	//=========================================================
+	// custom name accessors
+	//=========================================================
+
+	const std::string& GetCustomName() const { return nodeCustomName_; }
+	void SetCustomName(const std::string& name) {
+		nodeCustomName_ = name;
+		setTitle(name);
+	}
 
 	//=========================================================================
 	// logic link
@@ -107,6 +130,9 @@ protected:
 
 	// 紐づくロジックノード
 	BehaviorNode* logicNode_ = nullptr;
+
+	// ノードのカスタム名
+	std::string nodeCustomName_ = "UnnamedNode";
 
 	// データ紐付け用のUID [NEW]
 	int nodeUID_ = -1;
