@@ -31,7 +31,7 @@ class ParticleEmitter {
 public:
 
 	ParticleEmitter() = default;
-	~ParticleEmitter() = default;
+	~ParticleEmitter();
 
 	/// <summary>
 	/// 初期化
@@ -45,7 +45,7 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void Update();
+	bool Update();
 
 	/// <summary>
 	/// ImGuiの更新
@@ -120,8 +120,6 @@ public:
 	void SetEmitDirection(const Vector3& direction) { emitDirection_ = direction; }
 
 private:
-	//Particleの総数
-	static const uint32_t kNumMaxInstance_ = 1024;
 
 	//DirectXCommon
 	TakeC::DirectXCommon* dxCommon_;

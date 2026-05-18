@@ -117,7 +117,7 @@ public:
 protected:
 
 	//Particleの総数
-	static const uint32_t kNumMaxInstance_ = 50480; 
+	static const uint32_t kNumMaxInstance_ = 32768;
 	//1フレームの時間
 	float kDeltaTime_;
 	//描画するインスタンス数
@@ -147,4 +147,7 @@ protected:
 	ComPtr<ID3D12Resource> particleResource_;
 	//ビュー行列用リソース
 	ComPtr<ID3D12Resource> perViewResource_;
+
+	//ランダムエンジン
+	std::mt19937 randomEngine_{ std::random_device{}() };
 };

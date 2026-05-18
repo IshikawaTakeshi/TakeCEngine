@@ -70,10 +70,6 @@ void Particle3d::Initialize(ParticleCommon* particleCommon, const std::string& f
 //=============================================================================
 
 void Particle3d::Update() {
-	// ランダムエンジンの初期化  
-	std::random_device seedGenerator;
-	std::mt19937 randomEngine(seedGenerator());
-
 	numInstance_ = 0;
 	for (std::list<Particle>::iterator particleIterator = particles_.begin();
 		particleIterator != particles_.end(); ) {
