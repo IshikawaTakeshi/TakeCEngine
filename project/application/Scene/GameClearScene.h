@@ -61,7 +61,7 @@ private:
 	std::unique_ptr<SkyBox> skybox_ = nullptr;
 
 	//スプライト
-	std::unique_ptr<Sprite> clearTextSprite_ = nullptr;
+	Sprite* clearTextSprite_ = nullptr;
 	//パーティクル
 	float lerpTime_ = 0.0f;
 	//フェーズ管理

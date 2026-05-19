@@ -20,6 +20,12 @@ struct Joint {
 	std::optional<uint32_t> parent;   //親Jointのインデックス
 };
 
+// ブレンドモード
+enum class AnimationBlendMode {
+	Override, // 上書き（線形補間）
+	Additive  // 加算
+};
+
 //==============================================================
 // Skeletonクラス
 //==============================================================
@@ -66,6 +72,16 @@ public:
 	/// <param name="blend">ブレンド比率（0=from のみ、1=to のみ）</param>
 	void ApplyBlendedAnimation(Animation* from, float tFrom, Animation* to, float tTo, float blend);
 
+	/// <summary>
+	/// レイヤーベースのアニメーション適用
+	/// </summary>
+	void ApplyLayeredAnimation(Animation* animation, float time, float weight, AnimationBlendMode blendMode);
+
+	/// <summary>
+	/// トランスフォームのリセット（バインドポーズに戻す）
+	/// </summary>
+	void ClearTransform();
+
 
 	//=====================================================
 	// accessors
@@ -102,4 +118,5 @@ private:
 	int32_t root; //RootJointのインデックス
 	std::map<std::string, int32_t> jointMap; //Joint名からindexとのマップ
 	std::vector<Joint> joints; //Jointのリスト
+	std::vector<QuaternionTransform> bindPose; //リセット用のバインドポーズ
 };

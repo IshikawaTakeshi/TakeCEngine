@@ -15,6 +15,12 @@ void Skeleton::Create(const Node& rootNode) {
 		jointMap.emplace(joint.name, joint.index);
 	}
 
+	//バインドポーズを保存
+	bindPose.clear();
+	for (const Joint& joint : joints) {
+		bindPose.push_back(joint.transform);
+	}
+
 	for (Joint& joint : joints) {
 
 		//ローカル行列を更新
@@ -161,6 +167,60 @@ void Skeleton::ApplyBlendedAnimation(Animation* from, float tFrom, Animation* to
 		joint.transform.scale = Easing::Lerp(fromTransform.scale, toTransform.scale, blend);
 		joint.transform.rotate = Easing::Slerp(fromTransform.rotate, toTransform.rotate, blend);
 		joint.transform.translate = Easing::Lerp(fromTransform.translate, toTransform.translate, blend);
+	}
+}
+
+//====================================================================
+// レイヤーベースのアニメーション適用
+//====================================================================
+void Skeleton::ApplyLayeredAnimation(Animation* animation, float time, float weight, AnimationBlendMode blendMode) {
+	if (!animation || weight <= 0.0f) return;
+
+	for (Joint& joint : joints) {
+		auto it = animation->nodeAnimations.find(joint.name);
+		if (it == animation->nodeAnimations.end()) continue;
+
+		const NodeAnimation& nodeAnim = it->second;
+
+		// アニメーションから現在の値をサンプリング
+		QuaternionTransform sampled;
+		sampled.scale = TakeC::AnimationManager::CalculateValue(nodeAnim.scale.keyframes, time);
+		sampled.rotate = TakeC::AnimationManager::CalculateValue(nodeAnim.rotate.keyframes, time);
+		sampled.translate = TakeC::AnimationManager::CalculateValue(nodeAnim.translate.keyframes, time);
+
+		if (blendMode == AnimationBlendMode::Override) {
+			// 上書き（現在の値と線形補間）
+			joint.transform.scale = Easing::Lerp(joint.transform.scale, sampled.scale, weight);
+			joint.transform.rotate = Easing::Slerp(joint.transform.rotate, sampled.rotate, weight);
+			joint.transform.translate = Easing::Lerp(joint.transform.translate, sampled.translate, weight);
+		} else if (blendMode == AnimationBlendMode::Additive) {
+			// 加算（バインドポーズを基準とする）
+			const QuaternionTransform& ref = bindPose[joint.index];
+
+			// 差分を計算してウェイトを掛けて加算
+			// Scale: 1.0からの差分を加算
+			joint.transform.scale.x += (sampled.scale.x - ref.scale.x) * weight;
+			joint.transform.scale.y += (sampled.scale.y - ref.scale.y) * weight;
+			joint.transform.scale.z += (sampled.scale.z - ref.scale.z) * weight;
+
+			// Translate: 差分を加算
+			joint.transform.translate += (sampled.translate - ref.translate) * weight;
+
+			// Rotate: 差分クォータニオンを計算して適用
+			Quaternion q_diff = sampled.rotate * QuaternionMath::Inverse(ref.rotate);
+			// 差分をウェイト分だけ適用（Identityとの補間）
+			Quaternion q_weighted = Easing::Slerp(QuaternionMath::IdentityQuaternion(), q_diff, weight);
+			joint.transform.rotate = q_weighted * joint.transform.rotate;
+		}
+	}
+}
+
+//====================================================================
+// トランスフォームのリセット
+//====================================================================
+void Skeleton::ClearTransform() {
+	for (size_t i = 0; i < joints.size(); ++i) {
+		joints[i].transform = bindPose[i];
 	}
 }
 

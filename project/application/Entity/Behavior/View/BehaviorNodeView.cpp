@@ -7,8 +7,25 @@
 // ノードの内容描画
 //====================================================================
 void BehaviorNodeView::draw() {
+	if (nodeCustomName_ == "UnnamedNode" || nodeCustomName_.empty()) {
+		nodeCustomName_ = getName();
+	}
+
 	ImVec4 color = statusToColor(currentStatus_);
 	ImGui::TextColored(color, "Status: %s", StringUtility::EnumToString<BehaviorStatus>(currentStatus_).c_str());
+
+	// ノード名の編集
+	char nameBuf[128];
+	strncpy_s(nameBuf, nodeCustomName_.c_str(), sizeof(nameBuf) - 1);
+	nameBuf[sizeof(nameBuf) - 1] = '\0';
+	ImGui::SetNextItemWidth(120.0f);
+	if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) {
+		nodeCustomName_ = nameBuf;
+		setTitle(nodeCustomName_);
+		if (logicNode_) {
+			logicNode_->SetName(nodeCustomName_);
+		}
+	}
 
 	// ロジックノードのインスペクタを表示
 	if (logicNode_) {

@@ -588,7 +588,7 @@ void CharacterEditTool::SelectEditItem() {
 	// カーソルスプライトの位置更新
 	cursorSprite_->SetTranslate({
 		menuBarLeftTop_.x,
-		(menuBarLeftTop_.y * TakeC::WinApp::heightPercent_) + (GetMenuItemOffsetY() * TakeC::WinApp::heightPercent_) * editingItemIndex_
+		menuBarLeftTop_.y + GetMenuItemOffsetY() * editingItemIndex_
 		});
 }
 
@@ -656,7 +656,7 @@ void CharacterEditTool::UpdateCharacterEdit() {
 	// カーソルスプライトの位置更新
 	cursorSprite_->SetTranslate({
 		menuBarLeftTop_.x,
-		(menuBarLeftTop_.y * TakeC::WinApp::heightPercent_) + (GetMenuItemOffsetY() *TakeC::WinApp::heightPercent_) * editingCharacterIndex_
+		menuBarLeftTop_.y + GetMenuItemOffsetY() * editingCharacterIndex_
 		});
 }
 
@@ -731,7 +731,7 @@ void CharacterEditTool::UpdateWeaponEdit() {
 	// カーソルスプライトの位置更新
 	cursorSprite_->SetTranslate({
 		menuBarLeftTop_.x,
-		(menuBarLeftTop_.y * TakeC::WinApp::heightPercent_) + (GetMenuItemOffsetY() * TakeC::WinApp::heightPercent_) * editingWeaponUnitIndex_
+		menuBarLeftTop_.y + GetMenuItemOffsetY() * editingCharacterIndex_
 		});
 }
 

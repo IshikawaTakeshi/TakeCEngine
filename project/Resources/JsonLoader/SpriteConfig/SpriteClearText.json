@@ -5,13 +5,13 @@
     },
     "name": "SpriteClearText.json",
     "position": {
-        "x": 400.0,
-        "y": 360.0
+        "x": 500.0,
+        "y": 450.0
     },
     "rotation": 0.0,
     "size": {
-        "x": 600.0,
-        "y": 64.0
+        "x": 750.0,
+        "y": 80.0
     },
     "textureFilePath": "UI/GameClearText.png",
     "textureLeftTop": {

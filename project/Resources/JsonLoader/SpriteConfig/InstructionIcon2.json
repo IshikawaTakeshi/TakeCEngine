@@ -5,13 +5,13 @@
     },
     "name": "InstructionIcon2.json",
     "position": {
-        "x": 735.0,
-        "y": 481.0
+        "x": 918.75,
+        "y": 601.25
     },
     "rotation": 0.0,
     "size": {
-        "x": 54.0,
-        "y": 48.0
+        "x": 67.5,
+        "y": 60.0
     },
     "textureFilePath": "UI/GamePad_KeyIcon.png",
     "textureLeftTop": {

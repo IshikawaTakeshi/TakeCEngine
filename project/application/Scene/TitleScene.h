@@ -53,7 +53,7 @@ private:
 	//SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 	//スプライト
-	std::unique_ptr<Sprite> titleTextSprite_ = nullptr;
+	Sprite* titleTextSprite_ = nullptr;
 	// 「PRESS START」スプライトUI
 	std::unique_ptr<PushStartUI> pushStartUI_ = nullptr;
 	//

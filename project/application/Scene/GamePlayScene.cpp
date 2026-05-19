@@ -111,24 +111,22 @@ void GamePlayScene::Initialize() {
 	playerReticle_->Initialize();
 	// energyInfoUI
 	energyInfoUI_ = std::make_unique<EnergyInfoUI>();
-	energyInfoUI_->Initialize(&SpriteCommon::GetInstance(), "black.png",
-		"flontHp.png");
-	energyInfoUI_->SetSize({ 400.0f, 10.0f });      // エネルギーUIのサイズ
-	energyInfoUI_->SetPosition({ 300.0f, 525.0f }); // エネルギーUIの位置
+	energyInfoUI_->Initialize(TakeCFrameWork::GetSpriteManager());
+
 	// bulletCounterUI
 	bulletCounterUI_.resize(4); // 4つの弾数カウンターを用意
 	bulletCounterUI_[0] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[0]->Initialize(TakeCFrameWork::GetSpriteManager(),
-		{ 760.0f, 470.0f });
+		{ 950.0f, 591.608f });
 	bulletCounterUI_[1] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[1]->Initialize(TakeCFrameWork::GetSpriteManager(),
-		{ 900.0f, 470.0f });
+		{ 1125.0f, 591.608f });
 	bulletCounterUI_[2] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[2]->Initialize(TakeCFrameWork::GetSpriteManager(),
-		{ 760.0f, 540.0f });
+		{ 950.0f, 679.72f });
 	bulletCounterUI_[3] = std::make_unique<BulletCounterUI>();
 	bulletCounterUI_[3]->Initialize(TakeCFrameWork::GetSpriteManager(),
-		{ 900.0f, 540.0f });
+		{ 1125.0f, 679.72f });
 
 	for (int i = 0; i < (int)bulletCounterUI_.size(); i++) {
 		TakeCFrameWork::GetUIManager()->CreateUI<BulletCounterGaugeUI>(
@@ -294,12 +292,6 @@ void GamePlayScene::Draw() {
 
 	skyBox_->Draw(); // 天球の描画
 
-#pragma region 背景スプライト描画
-	// スプライトの描画前処理
-	SpriteCommon::GetInstance().PreDraw();
-
-#pragma endregion
-
 #pragma region Object3d描画
 
 	// Object3dの描画前Dispatch処理
@@ -307,9 +299,6 @@ void GamePlayScene::Draw() {
 	player_->GetObject3d()->Dispatch();
 	enemy_->GetObject3d()->Dispatch();
 
-	// for (auto& object : levelObjects_) {
-	//	object->DisPatch();
-	// }
 
 	// Object3dの描画前処理
 	Object3dCommon::GetInstance().PreDraw();
@@ -322,13 +311,8 @@ void GamePlayScene::Draw() {
 	for (auto& object : levelObjects_) {
 		object.second->Draw();
 	}
-	// Object3dCommon::GetInstance().PreDrawAddBlend();
-
 #pragma endregion
 
-  // 当たり判定の描画前処理
-  // enemy_->DrawCollider();
-  // player_->DrawCollider();
   // spotLightの描画
 	TakeCFrameWork::GetLightManager()->DrawSpotLights();
 	// 登録されたワイヤーフレームをすべて描画させる

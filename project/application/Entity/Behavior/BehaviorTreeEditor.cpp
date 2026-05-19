@@ -13,6 +13,8 @@
 #include "application/Entity/Behavior/WeightSelectorNode.h"
 #include "application/Entity/Behavior/SetBlackboardBoolNode.h"
 #include "application/Entity/Behavior/SetBlackboardStringNode.h"
+#include "application/Entity/Behavior/WaitNode.h"
+#include "application/Entity/Behavior/WaitBlackboardTimeNode.h"
 
 // Views
 #include "application/Entity/Behavior/View/ActionNodeView.h"
@@ -24,6 +26,8 @@
 #include "application/Entity/Behavior/View/WeightSelectorNodeView.h"
 #include "application/Entity/Behavior/View/SetBlackboardBoolNodeView.h"
 #include "application/Entity/Behavior/View/SetBlackboardStringNodeView.h"
+#include "application/Entity/Behavior/View/WaitNodeView.h"
+#include "application/Entity/Behavior/View/WaitBlackboardTimeNodeView.h"
 
 #include "engine/Base/ImGuiManager.h"
 #include "engine/Base/TakeCFrameWork.h"
@@ -64,6 +68,10 @@ std::unique_ptr<BehaviorNode> BehaviorTreeEditor::BuildLogicTree(const BehaviorN
 		node = std::make_unique<SetBlackboardBoolNode>(data.bbKey, data.bbValue, data.name);
 	} else if (data.nodeType == "SET_BB_STRING") {
 		node = std::make_unique<SetBlackboardStringNode>(data.bbKey, data.bbStringValue, data.name);
+	} else if (data.nodeType == "WAIT") {
+		node = std::make_unique<WaitNode>(data.waitTime, data.name);
+	} else if (data.nodeType == "WAIT_BB_TIME") {
+		node = std::make_unique<WaitBlackboardTimeNode>(data.bbKey, data.name);
 	} else if (data.nodeType == "CONDITION") {
 		node = std::make_unique<ConditionNode>(data.field, data.op, data.conditionThreshold, data.name);
 	} else if (data.nodeType == "SCORE_CONDITION") {
@@ -464,16 +472,23 @@ ImFlow::BaseNode* BehaviorTreeEditor::BuildNodeView(BehaviorNode* node, ImVec2& 
 // ノードビューを生成する (内部用)
 //===============================================================================
 std::shared_ptr<BehaviorNodeView> BehaviorTreeEditor::CreateNodeView(const std::string& type, const ImVec2& pos, const std::string& name) {
-	if (type == "ACTION") return flowEditor_->addNode<ActionNodeView>(pos, name);
-	if (type == "SET_BB_BOOL") return flowEditor_->addNode<SetBlackboardBoolNodeView>(pos);
-	if (type == "SET_BB_STRING") return flowEditor_->addNode<SetBlackboardStringNodeView>(pos);
-	if (type == "CONDITION") return flowEditor_->addNode<ConditionNodeView>(pos);
-	if (type == "SCORE_CONDITION") return flowEditor_->addNode<ScoreConditionNodeView>(pos);
-	if (type == "SELECTOR") return flowEditor_->addNode<SelectorNodeView>(pos);
-	if (type == "SEQUENCE") return flowEditor_->addNode<SequenceNodeView>(pos);
-	if (type == "PLANNER_SELECTOR") return flowEditor_->addNode<PlannerSelectorNodeView>(pos);
-	if (type == "WEIGHT_SELECTOR") return flowEditor_->addNode<WeightSelectorNodeView>(pos);
-	return nullptr;
+	std::shared_ptr<BehaviorNodeView> v = nullptr;
+	if (type == "ACTION") v = flowEditor_->addNode<ActionNodeView>(pos, name);
+	else if (type == "SET_BB_BOOL") v = flowEditor_->addNode<SetBlackboardBoolNodeView>(pos);
+	else if (type == "SET_BB_STRING") v = flowEditor_->addNode<SetBlackboardStringNodeView>(pos);
+	else if (type == "WAIT") v = flowEditor_->addNode<WaitNodeView>(pos);
+	else if (type == "WAIT_BB_TIME") v = flowEditor_->addNode<WaitBlackboardTimeNodeView>(pos);
+	else if (type == "CONDITION") v = flowEditor_->addNode<ConditionNodeView>(pos);
+	else if (type == "SCORE_CONDITION") v = flowEditor_->addNode<ScoreConditionNodeView>(pos);
+	else if (type == "SELECTOR") v = flowEditor_->addNode<SelectorNodeView>(pos);
+	else if (type == "SEQUENCE") v = flowEditor_->addNode<SequenceNodeView>(pos);
+	else if (type == "PLANNER_SELECTOR") v = flowEditor_->addNode<PlannerSelectorNodeView>(pos);
+	else if (type == "WEIGHT_SELECTOR") v = flowEditor_->addNode<WeightSelectorNodeView>(pos);
+
+	if (v && !name.empty()) {
+		v->SetCustomName(name);
+	}
+	return v;
 }
 
 
@@ -528,6 +543,10 @@ std::string BehaviorTreeEditor::DetectRootType(const BehaviorNode* node) const {
 		return "SET_BB_BOOL";
 	} else if (dynamic_cast<const SetBlackboardStringNode*>(node)) {
 		return "SET_BB_STRING";
+	} else if (dynamic_cast<const WaitBlackboardTimeNode*>(node)) {
+		return "WAIT_BB_TIME";
+	} else if (dynamic_cast<const WaitNode*>(node)) {
+		return "WAIT";
 	} else if (dynamic_cast<const ConditionNode*>(node)) {
 		return "CONDITION";
 	} else if (dynamic_cast<const ScoreConditionNode*>(node)) {
@@ -668,10 +687,13 @@ void BehaviorTreeEditor::UpdateBlackboardKeys() {
 		std::sort(blackboardKeys_.begin(), blackboardKeys_.end());
 	}
 
-	// 全ノードを走査して ConditionNodeView にキーリストを渡す
+	// 全ノードを走査して ConditionNodeView / WaitBlackboardTimeNodeView にキーリストを渡す
 	for (auto& pair : flowEditor_->getNodes()) {
 		if (auto* condView = dynamic_cast<ConditionNodeView*>(pair.second.get())) {
 			condView->SetBlackboardKeys(blackboardKeys_);
+		}
+		if (auto* waitBBView = dynamic_cast<WaitBlackboardTimeNodeView*>(pair.second.get())) {
+			waitBBView->SetBlackboardKeys(blackboardKeys_);
 		}
 	}
 }
@@ -685,6 +707,8 @@ void BehaviorTreeEditor::SetupContextMenu() {
 		if (ImGui::MenuItem("Add Action")) { flowEditor_->placeNode<ActionNodeView>("NONE"); }
 		if (ImGui::MenuItem("Add SetBlackboardBool")) { flowEditor_->placeNode<SetBlackboardBoolNodeView>(); }
 		if (ImGui::MenuItem("Add SetBlackboardString")) { flowEditor_->placeNode<SetBlackboardStringNodeView>(); }
+		if (ImGui::MenuItem("Add Wait")) { flowEditor_->placeNode<WaitNodeView>(); }
+		if (ImGui::MenuItem("Add WaitBlackboardTime")) { flowEditor_->placeNode<WaitBlackboardTimeNodeView>(); }
 		if (ImGui::MenuItem("Add Condition")) { flowEditor_->placeNode<ConditionNodeView>(); }
 		if (ImGui::MenuItem("Add ScoreCondition")) { flowEditor_->placeNode<ScoreConditionNodeView>(); }
 		if (ImGui::MenuItem("Add Selector")) { flowEditor_->placeNode<SelectorNodeView>(); }

@@ -1,0 +1,17 @@
+{
+    "uiName": "EnergyInfoUI",
+    "sprites": [
+        {
+            "key": "Background",
+            "spriteConfigPath": "EnergyInfo_Background.json"
+        },
+        {
+            "key": "Foreground",
+            "spriteConfigPath": "EnergyInfo_Foreground.json"
+        },
+        {
+            "key": "Blink",
+            "spriteConfigPath": "EnergyInfo_Blink.json"
+        }
+    ]
+}

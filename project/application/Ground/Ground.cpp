@@ -64,11 +64,7 @@ void Ground::ImGuiDebug() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 
 	ImGui::Begin("Ground");
-
 	ImGui::DragFloat3("translate", &transform_.translate.x, 0.01f);
-
-	ImGui::ColorEdit4("color", &model_->GetMesh()->GetMaterial()->GetMaterialData()->color.x);
-
 	ImGui::End();
 
 #endif // DEBUG

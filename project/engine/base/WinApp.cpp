@@ -12,8 +12,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 #endif // DEBUG
 
 //静的メンバ変数の初期化
-float TakeC::WinApp::widthPercent_ = float(WinApp::kScreenWidth) / WinApp::kDebugScreenWidth_;
-float TakeC::WinApp::heightPercent_ = float(WinApp::kScreenHeight) / WinApp::kDebugScreenHeight_;
+
 
 //=====================================================================
 //			初期化

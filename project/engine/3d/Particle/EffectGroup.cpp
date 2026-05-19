@@ -88,6 +88,8 @@ void EffectGroup::CreateEmitterInstances() {
 // 更新処理
 //==================================================================================
 void EffectGroup::Update() {
+	// デルタタイムを毎フレーム取得して更新
+	deltaTime_ = TakeCFrameWork::GetDeltaTime();
 
 	if (isPlaying_ && !isPaused_) {
 		totalElapsedTime_ += deltaTime_;

@@ -91,41 +91,45 @@ void Player::Initialize(Object3dCommon* object3dCommon,
 	stateManager_->Initialize(inputProvider_);
 	stateManager_->InitializeStates(playerData_.characterInfo);
 
+	// アニメーションの初期化
+	auto* animator = object3d_->GetAnimatorController();
+	auto* animManager = TakeCFrameWork::GetAnimationManager();
+	const std::string modelName = "Player_Model_Ver2.0.gltf";
+
 	// アニメーションマッパーの登録
 	animationMapper_.Register(
 		GameCharacterState::RUNNING,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation(
-			"Player_Model_Ver2.0.gltf", "Running"),
-		0.2f);
+		animManager->FindAnimation(modelName, "Running"),  0.2f);
 	animationMapper_.Register(
 		GameCharacterState::FLOATING,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation(
-			"Player_Model_Ver2.0.gltf", "Floating"),
-		0.2f);
+		animManager->FindAnimation(modelName, "Floating"), 0.2f);
 	animationMapper_.Register(
 		GameCharacterState::JUMP,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation(
-			"Player_Model_Ver2.0.gltf", "Jump"),
-		0.15f);
+		animManager->FindAnimation(modelName, "Jump"),     0.15f);
 	animationMapper_.Register(
 		GameCharacterState::STEPBOOST,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation(
-			"Player_Model_Ver2.0.gltf", "Running"),
-		0.1f);
+		animManager->FindAnimation(modelName, "Running"),  0.1f);
 	animationMapper_.Register(
 		GameCharacterState::CHARGESHOOT_STUN,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation(
-			"Player_Model_Ver2.0.gltf", "Running"),
-		0.2f);
+		animManager->FindAnimation(modelName, "Running"),  0.2f);
 	animationMapper_.Register(
 		GameCharacterState::DEAD,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation(
-			"Player_Model_Ver2.0.gltf", "Running"),
-		0.3f, false);
+		animManager->FindAnimation(modelName, "Running"),  0.3f, false);
 
 	// BehaviorManagerにアニメーションコンポーネントを設定
-	stateManager_->SetAnimationComponents(object3d_->GetAnimatorController(),
-		&animationMapper_);
+	stateManager_->SetAnimationComponents(animator, &animationMapper_);
+
+	// 傾き用レイヤーの追加（加算合成）
+	animator->AddLayer("LeanF", AnimationBlendMode::Additive, 0.0f);
+	animator->AddLayer("LeanB", AnimationBlendMode::Additive, 0.0f);
+	animator->AddLayer("LeanL", AnimationBlendMode::Additive, 0.0f);
+	animator->AddLayer("LeanR", AnimationBlendMode::Additive, 0.0f);
+
+	// 傾きポーズの割り当て（1フレームのアニメーションを想定）
+	animator->TransitionTo("LeanF", animManager->FindAnimation(modelName, "LeanForward"), 0.0f);
+	animator->TransitionTo("LeanB", animManager->FindAnimation(modelName, "LeanBackward"), 0.0f);
+	animator->TransitionTo("LeanL", animManager->FindAnimation(modelName, "LeanLeft"), 0.0f);
+	animator->TransitionTo("LeanR", animManager->FindAnimation(modelName, "LeanRight"), 0.0f);
 }
 
 //===================================================================================
@@ -357,6 +361,11 @@ void Player::Update() {
 	object3d_->SetTranslate(playerData_.characterInfo.transform.translate);
 	object3d_->SetRotate(eulerRotate);
 	object3d_->SetScale(playerData_.characterInfo.transform.scale);
+	// 傾きアニメーションの更新
+	if (stateManager_->GetCurrentStateType() != GameCharacterState::DEAD ||
+		stateManager_->GetCurrentStateType() != GameCharacterState::BREAK_STUN) {
+		UpdateLean();
+	}
 	// アニメーションコントローラの更新（object3d_->Update()より前に呼ぶ）
 	object3d_->GetAnimatorController()->Update(deltaTime_);
 	object3d_->Update();
@@ -860,4 +869,32 @@ void Player::AccumulateBreakGauge(float damage) {
 		gaugeInfo.breakGauge = gaugeInfo.maxBreakGauge;
 		stateManager_->RequestState(GameCharacterState::BREAK_STUN);
 	}
+}
+
+void Player::UpdateLean() {
+	// スティック入力または移動方向を取得
+	Vector3 moveDir = playerData_.characterInfo.moveDirection;
+	
+	// キャラクターの現在の前方ベクトルを取得
+	Vector3 forward = QuaternionMath::RotateVector({ 0.0f, 0.0f, 1.0f }, playerData_.characterInfo.transform.rotate);
+	Vector3 right = QuaternionMath::RotateVector({ 1.0f, 0.0f, 0.0f }, playerData_.characterInfo.transform.rotate);
+
+	// ローカル座標系での入力強度を計算
+	float leanF = Vector3Math::Dot(moveDir, forward);
+	float leanR = Vector3Math::Dot(moveDir, right);
+
+	// 目標の傾き値を設定（入力強度に合わせて最大1.0）
+	Vector2 targetLean = { leanR, leanF };
+
+	// 滑らかに補間
+	float kLeanSpeed = 3.0f;
+	currentLean_.x = Easing::Lerp(currentLean_.x, targetLean.x, kLeanSpeed * deltaTime_);
+	currentLean_.y = Easing::Lerp(currentLean_.y, targetLean.y, kLeanSpeed * deltaTime_);
+
+	// AnimatorController にウェイトを適用
+	auto* animator = object3d_->GetAnimatorController();
+	animator->SetLayerWeight("LeanF", std::clamp(currentLean_.y, 0.0f, 0.5f));
+	animator->SetLayerWeight("LeanB", std::clamp(-currentLean_.y, 0.0f, 0.5f));
+	animator->SetLayerWeight("LeanL", std::clamp(-currentLean_.x, 0.0f, 0.5f));
+	animator->SetLayerWeight("LeanR", std::clamp(currentLean_.x, 0.0f, 0.5f));
 }

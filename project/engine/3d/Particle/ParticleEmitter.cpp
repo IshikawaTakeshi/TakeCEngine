@@ -11,6 +11,15 @@
 
 
 //================================================================================================
+// デストラクタ
+//================================================================================================
+ParticleEmitter::~ParticleEmitter() {
+	if (TakeCFrameWork::GetParticleManager()) {
+		TakeCFrameWork::GetParticleManager()->EmitterRelease(emitterID_);
+	}
+}
+
+//================================================================================================
 // 初期化
 //================================================================================================
 
@@ -34,18 +43,17 @@ void ParticleEmitter::Initialize(const std::string& emitterName, const std::stri
 	isEmit_ = false;
 }
 
-//==================================================================================
+//=======================================================================================
 // 更新処理
-//==================================================================================
-
-void ParticleEmitter::Update() {
+//=======================================================================================
+bool ParticleEmitter::Update() {
 
 	//transform.rotateによってDirectionを更新
 	Matrix4x4 rotateMatrix = MatrixMath::MakeRotateMatrix(transforms_.rotate);
 	emitDirection_ = MatrixMath::Transform({ 0.0f,0.0f,1.0f }, rotateMatrix);
 
 	//エミッターの更新
-	if (!isEmit_) return;
+	if (!isEmit_) return false;
 	frequencyTime_ += TakeCFrameWork::GetDeltaTime();
 	if (frequency_ <= frequencyTime_) {
 
@@ -87,8 +95,10 @@ void ParticleEmitter::Update() {
 			particleCount_
 		);
 		frequencyTime_ -= frequency_; //余計に過ぎた時間も加味して頻度計算する
-		prevTranslate_ = transforms_. translate;
+		prevTranslate_ = transforms_.translate;
+		return true;
 	}
+	return false;
 }
 
 //==================================================================================

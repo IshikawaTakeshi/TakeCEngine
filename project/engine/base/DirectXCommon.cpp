@@ -38,23 +38,11 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	scissorRect_.top = 0;
 	
 
-#if defined(_DEBUG) || defined(_DEVELOP)
-
-	viewport_.Width = 0.0f;
-	viewport_.Height = 0.0f;
-
-	scissorRect_.right = 0;
-	scissorRect_.bottom = 0;
-
-#else 
-
-	viewport_.Width = static_cast<float>(WinApp::kWindowWidth);
+	// Viewport / Scissor はビルドタイプ問わず kWindowWidth/kWindowHeight で設定
+	viewport_.Width  = static_cast<float>(WinApp::kWindowWidth);
 	viewport_.Height = static_cast<float>(WinApp::kWindowHeight);
-
-	scissorRect_.right = WinApp::kWindowWidth;
+	scissorRect_.right  = WinApp::kWindowWidth;
 	scissorRect_.bottom = WinApp::kWindowHeight;
-
-#endif // _DEBUG
 
 
 	//DXGIデバイス初期化

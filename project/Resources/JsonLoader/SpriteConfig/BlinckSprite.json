@@ -5,13 +5,13 @@
     },
     "name": "BlinckSprite.json",
     "position": {
-        "x": 512.0,
-        "y": 500.0
+        "x": 640.0,
+        "y": 625.0
     },
     "rotation": 0.0,
     "size": {
-        "x": 400.0,
-        "y": 60.0
+        "x": 500.0,
+        "y": 75.0
     },
     "textureFilePath": "UI/TitleSelect.png",
     "textureLeftTop": {

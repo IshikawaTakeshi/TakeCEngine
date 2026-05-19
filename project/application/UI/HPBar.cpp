@@ -57,15 +57,15 @@ void HPBar::Initialize(TakeC::SpriteManager* spriteManager,
 	// 初期サイズの保存（各解像度に合わせてスケーリングして保持する）
 	if (backgroundSprite_)
 		backgroundMaxWidth_ =
-		backgroundSprite_->GetSize().x * TakeC::WinApp::widthPercent_;
+		backgroundSprite_->GetSize().x;
 	if (foregroundSprite_)
 		foregroundMaxWidth_ =
-		foregroundSprite_->GetSize().x * TakeC::WinApp::widthPercent_;
+		foregroundSprite_->GetSize().x;
 	if (damageBarSprite_)
 		damageBarMaxWidth_ =
-		damageBarSprite_->GetSize().x * TakeC::WinApp::widthPercent_;
+		damageBarSprite_->GetSize().x;
 
-	margin_ = 2.0f * TakeC::WinApp::widthPercent_; // 枠の太さもスケーリング
+	margin_ = 2.0f; // 枠の太さもスケーリング
 
 	damageDelayTimer_.Initialize(1.5f,
 		0.0f); // ダメージバーの遅延タイマーを初期化
@@ -175,8 +175,7 @@ void HPBar::SetPosition(const Vector2& position) {
 	// ここでは背景からの相対オフセットを固定で持たせる例
 	if (ownerNameSprite_) {
 		// オフセットも解像度に合わせてスケーリング
-		Vector2 ownerOffset = { 1.0f * TakeC::WinApp::widthPercent_,
-							   -30.0f * TakeC::WinApp::heightPercent_ };
+		Vector2 ownerOffset = { 1.0f, -30.0f };
 		ownerNameSprite_->SetTranslate(position + ownerOffset);
 	}
 }

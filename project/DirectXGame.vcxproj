@@ -178,7 +178,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Entity\Behavior\View\SequenceNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\SetBlackboardBoolNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\SetBlackboardStringNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\WaitBlackboardTimeNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\View\WaitNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\WeightSelectorNodeView.cpp" />
+    <ClCompile Include="application\Entity\Behavior\WaitBlackboardTimeNode.cpp" />
+    <ClCompile Include="application\Entity\Behavior\WaitNode.cpp" />
     <ClCompile Include="application\Entity\Behavior\WeightSelectorNode.cpp" />
     <ClCompile Include="application\Provider\PauseMenuPadInput.cpp" />
     <ClCompile Include="application\Tool\BreakGaugeUtil.cpp" />
@@ -390,7 +394,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Entity\Behavior\View\SequenceNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\SetBlackboardBoolNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\SetBlackboardStringNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\WaitBlackboardTimeNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\View\WaitNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\WeightSelectorNodeView.h" />
+    <ClInclude Include="application\Entity\Behavior\WaitBlackboardTimeNode.h" />
+    <ClInclude Include="application\Entity\Behavior\WaitNode.h" />
     <ClInclude Include="application\Entity\Behavior\WeightSelectorNode.h" />
     <ClInclude Include="application\Entity\BoostDirectionEnum.h" />
     <ClInclude Include="application\Entity\Enemy\ActionWeightParam.h" />

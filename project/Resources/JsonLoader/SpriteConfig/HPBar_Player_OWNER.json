@@ -11,13 +11,13 @@
     },
     "name": "HPBar_Player_OWNER.json",
     "position": {
-        "x": 51.0,
-        "y": 470.0
+        "x": 63.75,
+        "y": 587.5
     },
     "rotation": 0.0,
     "size": {
-        "x": 86.0,
-        "y": 27.0
+        "x": 107.5,
+        "y": 33.75
     },
     "textureFilePath": "UI/hpBarOwnerName.png",
     "textureLeftTop": {

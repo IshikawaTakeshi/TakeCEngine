@@ -46,8 +46,6 @@ public:
 	void SetReloadingState(bool isReloading);
 	// 弾数カウンターの位置設定
 	void SetBulletCounterPosition(const Vector2& position);
-	// 武器アイコンのUV設定
-	void SetWeaponIconUV(int weaponIndex);
 
 private:
 	// 桁ごとのUV設定
@@ -59,7 +57,6 @@ private:
 		maxBulletCounterSprite_;         // 最大弾数カウンターのスプライト
 	Sprite* reloadSprite_ = nullptr;     // リロード中のスプライト
 	Sprite* separatorSprite_ = nullptr;  // スプライトの間のセパレーター
-	Sprite* weaponIconSprite_ = nullptr; // 武器アイコンのスプライト
 	uint32_t bulletCount_ = 0;           // 現在の弾数
 	uint32_t remainingBulletCount_ = 0;  // 残りの弾数
 
