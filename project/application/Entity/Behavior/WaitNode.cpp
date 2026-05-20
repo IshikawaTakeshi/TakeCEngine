@@ -43,14 +43,6 @@ void WaitNode::DrawInspector() {
 
 	static constexpr float kWidgetWidth = 120.0f;
 
-	// 名前
-	char nameBuf[128];
-	strncpy_s(nameBuf, name_.c_str(), sizeof(nameBuf) - 1);
-	ImGui::SetNextItemWidth(kWidgetWidth);
-	if (ImGui::InputText("Node Name", nameBuf, sizeof(nameBuf))) {
-		name_ = nameBuf;
-	}
-
 	// 待機時間
 	ImGui::SetNextItemWidth(kWidgetWidth);
 	ImGui::DragFloat("Wait Time [s]", &waitTime_, 0.1f, 0.0f, 600.0f, "%.2f");

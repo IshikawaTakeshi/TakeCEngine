@@ -38,6 +38,8 @@ struct BehaviorNodeData {
 	float posX = 0.0f;                         // X座標
 	float posY = 0.0f;                         // Y座標
 	int nodeUID = -1;                          // 保存用一意識別子
+	float sizeW = 0.0f;                        // ノード幅（0 = 自動）
+	float sizeH = 0.0f;                        // ノード高さ（0 = 自動）
 
 	// SetBlackboardBoolNode 用拡張
 	std::string bbKey = "";                    // 書き込む対象のキー

@@ -106,6 +106,20 @@ public:
 	}
 
 	//=========================================================
+	// resize [EXT]
+	//=========================================================
+
+	/// <summary>
+	/// ユーザー指定の最小サイズを設定（0 = 自動）
+	/// </summary>
+	void SetUserSize(const ImVec2& size) { userSize_ = size; }
+
+	/// <summary>
+	/// ユーザー指定の最小サイズを取得
+	/// </summary>
+	const ImVec2& GetUserSize() const { return userSize_; }
+
+	//=========================================================
 	// custom name accessors
 	//=========================================================
 
@@ -136,6 +150,11 @@ protected:
 
 	// データ紐付け用のUID [NEW]
 	int nodeUID_ = -1;
+
+	// リサイズ用 [EXT]
+	ImVec2 userSize_ = {0.f, 0.f};   // ユーザー指定の最小サイズ（0 = 自動）
+	bool resizing_ = false;           // リサイズ中フラグ
+	float contentStartY_ = 0.f;      // draw() 開始時のカーソルY座標（縦サイズ計算用）
 
 	/// ノードの状態
 	BehaviorStatus currentStatus_ = BehaviorStatus::Invalid;

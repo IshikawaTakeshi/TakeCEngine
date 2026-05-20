@@ -39,7 +39,7 @@ void ConditionNode::DrawInspector() {
 	ImGui::PushID(this);
 
 	// フィールド名（幅固定しないと ImFlow ノード幅に引き伸ばされる）
-	static constexpr float kWidgetWidth = 120.0f;
+	static constexpr float kWidgetWidth = 150.0f;
 	char fieldBuf[128];
 	strncpy_s(fieldBuf, field_.c_str(), sizeof(fieldBuf) - 1);
 	ImGui::SetNextItemWidth(kWidgetWidth);

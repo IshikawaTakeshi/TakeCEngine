@@ -84,6 +84,8 @@ void from_json(const nlohmann::json& j, BehaviorNodeData& data) {
 	data.posY = j.value("posY", 0.0f);
 
 	data.nodeUID = j.value("nodeUID", -1);
+	data.sizeW = j.value("sizeW", 0.0f);
+	data.sizeH = j.value("sizeH", 0.0f);
 	data.bbKey = j.value("bbKey", "");
 	data.bbValue = j.value("bbValue", false);
 	data.bbStringValue = j.value("bbStringValue", "");
@@ -110,6 +112,8 @@ void to_json(nlohmann::json& j, const BehaviorNodeData& data) {
 	j["posY"] = data.posY;
 
 	j["nodeUID"] = data.nodeUID;
+	j["sizeW"] = data.sizeW;
+	j["sizeH"] = data.sizeH;
 	j["bbKey"] = data.bbKey;
 	j["bbValue"] = data.bbValue;
 	j["bbStringValue"] = data.bbStringValue;

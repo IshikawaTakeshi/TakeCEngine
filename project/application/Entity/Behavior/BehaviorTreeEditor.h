@@ -70,6 +70,11 @@ public:
 	/// <returns></returns>
 	ComboSetData BuildComboSetDataFromEditor() const;
 
+	/// <summary>
+	// 実行中のロジックツリーとUIを再紐付けする
+	/// </summary>
+	void SyncWithActiveTree(BehaviorNode* root, Blackboard* blackboard = nullptr);
+
 private:
 
 	/// <summary>
@@ -119,11 +124,6 @@ private:
 	//ロジックツリーを再帰的に再構築する
 	/// </summary>
 	std::unique_ptr<BehaviorNode> BuildLogicTree(const BehaviorNodeData& data, std::map<int, std::shared_ptr<BehaviorNodeView>>& idToNode);
-
-	/// <summary>
-	// 実行中のロジックツリーとUIを再紐付けする
-	/// </summary>
-	void SyncWithActiveTree(BehaviorNode* root);
 
 private:
 

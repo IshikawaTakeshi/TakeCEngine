@@ -172,7 +172,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	// ===== 追加: BehaviorTreeEditor 初期化と接続 =====
 	behaviorTreeEditor_ = std::make_unique<BehaviorTreeEditor>();
 	behaviorTreeEditor_->Initialize();
-	behaviorTreeEditor_->LoadTreeFromEnemy(behaviorTree_.get(), blackboard_.get());
+	behaviorTreeEditor_->LoadTreeFromJson("DefaultComboSet.json");
+	behaviorTreeEditor_->SyncWithActiveTree(behaviorTree_.get(), blackboard_.get());
 
 	// Applyボタン -> Enemyへ反映予約
 	behaviorTreeEditor_->SetApplyCallback([this](const ComboSetData& data) {
@@ -321,7 +322,7 @@ void Enemy::Update() {
 
 			//Editorに新しいツリーを反映
 			if (behaviorTreeEditor_ && blackboard_) {
-				behaviorTreeEditor_->LoadTreeFromEnemy(behaviorTree_.get(), blackboard_.get());
+				behaviorTreeEditor_->SyncWithActiveTree(behaviorTree_.get(), blackboard_.get());
 			}
 
 			pendingTreeData_ = nullptr;
