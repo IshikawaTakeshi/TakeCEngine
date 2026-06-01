@@ -1,8 +1,12 @@
 #include "TitleScene.h"
-#include "SceneManager.h"
+#include <algorithm>
+
+#include "application/Scene/SceneManager.h"
+
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/Math/Quaternion.h"
-#include <algorithm>
+
+using namespace TakeC;
 
 //====================================================================
 //			初期化

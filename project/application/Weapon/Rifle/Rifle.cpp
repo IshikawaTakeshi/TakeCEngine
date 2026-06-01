@@ -5,6 +5,7 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/math/MatrixMath.h"
 
+using namespace TakeC;
 
 //===================================================================================
 // 　初期化処理
@@ -38,11 +39,6 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,
 	muzzleFlashEmitter_ = std::make_unique<ParticleEmitter>();
 	muzzleFlashEmitter_->Initialize("RifleMuzzleFlashEmitter",
 		"RifleMuzzleFlash.json");
-
-	// マズルフラッシュエフェクトの初期化
-	muzzleFlashEffect_ = std::make_unique<MuzzleFlashEffect>();
-	muzzleFlashEffect_->Initialize();
-	muzzleFlashEffect_->SetOwnerWeapon(this);
 }
 
 //===================================================================================
@@ -157,9 +153,6 @@ void Rifle::Update() {
 	// マズルフラッシュエミッター更新
 	muzzleFlashEmitter_->SetTranslate(object3d_->GetWorldPosition());
 	muzzleFlashEmitter_->Update();
-
-	// マズルフラッシュエフェクト更新
-	muzzleFlashEffect_->Update();
 }
 
 //===================================================================================
@@ -194,7 +187,6 @@ void Rifle::Draw() {
 		return; // 弾がなくなったら描画しない
 	}
 	object3d_->Draw();
-	muzzleFlashEffect_->Draw();
 }
 
 //=====================================================================================
@@ -249,10 +241,6 @@ void Rifle::Attack() {
 			weaponData_.config.maxReloadTime; // リロード時間をリセット
 	}
 
-	// マズルフラッシュパーティクルの発生
-	// muzzleFlashEmitter_->Emit();
-	//  マズルフラッシュエフェクトの発生
-	muzzleFlashEffect_->Emit();
 	// 射撃音の再生
 	AudioManager::GetInstance().SoundPlayWave(shotSE_, seVolume_);
 	// 攻撃間隔のリセット

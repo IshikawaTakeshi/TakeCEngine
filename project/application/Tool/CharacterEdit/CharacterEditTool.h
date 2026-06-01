@@ -11,7 +11,7 @@
 #include "application/Tool/CharacterEdit/CharacterEditMenuEnum.h"
 #include "engine/math/Vector2.h"
 #include "engine/2d/Sprite.h"
-
+#include "engine/3d/Object3d.h"
 //編集モード
 enum class EditMode {
 	EDIT_MENU,
@@ -19,9 +19,6 @@ enum class EditMode {
 	WEAPON_EDIT,
 	NEXT_MENU
 };
-
-//前方宣言
-class Object3d;
 
 //============================================================================
 //		CharacterEditTool class
@@ -84,13 +81,13 @@ public:
 	/// キャラクターデータ保存処理
 	/// </summary>
 	/// <param name="characterName"></param>
-	void SavePlayableCharacterInfo(std::string characterName);
+	void SavePlayableCharacterInfo(const std::string& characterName);
 
 	/// <summary>
 	/// 武器データ保存処理
 	/// </summary>
 	/// <param name="WeaponName"></param>
-	void SaveWeaponData(std::string WeaponName,WeaponUnit unit);
+	void SaveWeaponData(const std::string& WeaponName,WeaponUnit unit);
 
 	void SaveCharacterData();
 
@@ -104,7 +101,7 @@ public:
 	/// 武器データ読み込み処理
 	/// </summary>
 	/// <param name="WeaponName"></param>
-	void LoadWeaponData(std::string WeaponName,WeaponUnit unit);
+	void LoadWeaponData(const std::string& WeaponName,WeaponUnit unit);
 
 	/// <summary>
 	/// 全キャラクターデータ・武器データ読み込み処理
@@ -146,9 +143,9 @@ public:
 private:
 
 	//プレビュー用キャラクターモデル
-	std::unique_ptr<Object3d> previewCharacterModel_;
+	std::unique_ptr<TakeC::Object3d> previewCharacterModel_;
 	//プレビュー用武器モデル群
-	std::vector<std::unique_ptr<Object3d>> previewWeaponModels_;
+	std::vector<std::unique_ptr<TakeC::Object3d>> previewWeaponModels_;
 	//メニューバースプライト群
 	std::array<std::unique_ptr<Sprite>, CharacterEditMenuEnum::MENU_SIZE> menuBarSprites_;
 	//カーソルスプライト

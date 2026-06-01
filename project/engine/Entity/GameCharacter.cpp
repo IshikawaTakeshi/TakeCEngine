@@ -1,3 +1,3 @@
 #include "GameCharacter.h"
 
-void GameCharacter::Initialize(Object3dCommon*, const std::string& ) {}
+void GameCharacter::Initialize(TakeC::Object3dCommon*, const std::string& ) {}

@@ -7,7 +7,7 @@
 //============================================================================
 // Ground class
 //============================================================================
-class Ground : public Object3d {
+class Ground : public TakeC::Object3d {
 public:
 
 	Ground() = default;
@@ -16,7 +16,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath);
+	void Initialize(TakeC::Object3dCommon* object3dCommon, const std::string& filePath);
 
 	/// <summary>
 	/// 更新処理

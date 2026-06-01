@@ -9,6 +9,8 @@
 #include "engine/math/Vector3Math.h"
 #include <algorithm>
 
+using namespace TakeC;
+
 //=============================================================================
 // 初期化
 //=============================================================================
@@ -18,7 +20,7 @@ void SphereCollider::Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collis
 	dxCommon_ = dxCommon;
 
 	transform_.translate = collisionObject->GetCenterPosition();
-	if (radius_ == 0.0f) {
+	if (radius_ <= 0.0f) {
 
 		radius_ = 1.0f;
 	}

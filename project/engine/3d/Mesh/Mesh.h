@@ -7,17 +7,14 @@
 #include <memory>
 #include <vector>
 
-// 前方宣言
 namespace TakeC {
 	class DirectXCommon;
 
-}
-
-//============================================================================
-// Meshクラス
-//============================================================================
-class Mesh {
-public:
+	//============================================================================
+	// Meshクラス
+	//============================================================================
+	class Mesh {
+	public:
 
 	Mesh() = default;
 	~Mesh() = default;
@@ -109,10 +106,10 @@ public:
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() { return indexBufferView_; }
 
 	/// マテリアルの取得
-	Material* GetMaterial() { return material_[0].get(); }
+	TakeC::Material* GetMaterial() { return material_[0].get(); }
 
 	/// マテリアルリストの取得（読み取り専用）
-	const std::vector<std::unique_ptr<Material>>& GetMaterials() const { return material_; }
+	const std::vector<std::unique_ptr<TakeC::Material>>& GetMaterials() const { return material_; }
 
 public:
 
@@ -122,7 +119,7 @@ public:
 protected:
 
 	//マテリアル
-	std::vector<std::unique_ptr<Material>> material_;
+	std::vector<std::unique_ptr<TakeC::Material>> material_;
 
 	//頂点バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> inputVertexResource_;
@@ -138,3 +135,4 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexBuffer_;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 };
+} // namespace TakeC

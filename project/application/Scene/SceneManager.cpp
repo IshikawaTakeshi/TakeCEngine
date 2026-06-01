@@ -6,6 +6,8 @@
 #include "scene/SceneTransition.h"
 #include <cassert>
 
+using namespace TakeC;
+
 //========================================================================
 //	インスタンス取得
 //========================================================================
@@ -139,10 +141,10 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 	levelData_ = TakeCFrameWork::GetJsonLoader()->LoadLevelFile(sceneName);
 
 	for (auto& objectData : levelData_->objects) {
-		Model* model = nullptr;
+		TakeC::Model* model = nullptr;
 		model = TakeC::ModelManager::GetInstance().FindModel(objectData.file_name);
 		std::pair<std::string, std::unique_ptr<LevelObject>> newObject = { objectData.name, std::make_unique<LevelObject>() };
-		newObject.second->Initialize(&Object3dCommon::GetInstance(), objectData.file_name);
+		newObject.second->Initialize(&TakeC::Object3dCommon::GetInstance(), objectData.file_name);
 		newObject.second->SetName(objectData.name);
 		if (objectData.collider.isValid) {
 

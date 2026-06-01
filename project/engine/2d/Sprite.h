@@ -77,7 +77,7 @@ public:
 	// トランスフォーム取得
 	EulerTransform GetTransform() { return transform_; }
 	// メッシュ取得
-	const std::unique_ptr<Mesh>& GetMesh() const { return mesh_; }
+	const std::unique_ptr<TakeC::Mesh>& GetMesh() const { return mesh_; }
 
 	// SpriteAnimator取得
 	SpriteAnimator* Animation() const { return spriteAnimator_.get(); }
@@ -157,7 +157,7 @@ private:
 	SpriteCommon* spriteCommon_ = nullptr;
 
 	// メッシュ
-	std::unique_ptr<Mesh> mesh_ = nullptr;
+	std::unique_ptr<TakeC::Mesh> mesh_ = nullptr;
 
 	// SpriteAnimator
 	std::unique_ptr<SpriteAnimator> spriteAnimator_{};

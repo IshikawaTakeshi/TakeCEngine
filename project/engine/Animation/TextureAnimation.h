@@ -8,9 +8,10 @@
 #include <cstdint>
 #include <vector>
 
-class Material;
 
 namespace TakeC {
+
+	class Material;
 
 	//============================================================================
 	// UVTextureAnimation class
@@ -30,7 +31,7 @@ namespace TakeC {
 		/// <summary>
 		/// 初期化
 		/// </summary>
-		void Initialize(Material* material);
+		void Initialize(TakeC::Material* material);
 
 		/// <summary>
 		/// 更新処理
@@ -88,7 +89,7 @@ namespace TakeC {
 		//========================================================================
 
 		// アニメーションタイプの取得
-		TextureAnimationType GetAnimationType() const { return animationType_; }
+		TakeC::TextureAnimationType GetAnimationType() const { return animationType_; }
 
 		// 再生中かどうか
 		bool IsPlaying() const;
@@ -133,10 +134,10 @@ namespace TakeC {
 		//========================================================================
 
 		// 対象のマテリアル
-		Material* material_ = nullptr;
+		TakeC::Material* material_ = nullptr;
 
 		// アニメーションタイプ
-		TextureAnimationType animationType_ = TextureAnimationType:: None;
+		TakeC::TextureAnimationType animationType_ = TakeC::TextureAnimationType:: None;
 
 		// フレーム管理用タイマー
 		Timer frameTimer_;

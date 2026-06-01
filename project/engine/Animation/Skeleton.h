@@ -39,7 +39,7 @@ public:
 	/// <summary>
 	/// Skeletonの作成
 	/// </summary>
-	void Create(const Node& node);
+	void Create(const TakeC::Node& node);
 
 	/// <summary>
 	/// スケルトンの更新
@@ -112,7 +112,7 @@ private:
 	/// <param name="parent"></param>
 	/// <param name="joints"></param>
 	/// <returns></returns>
-	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent);
+	int32_t CreateJoint(const TakeC::Node& node, const std::optional<int32_t>& parent);
 
 
 	int32_t root; //RootJointのインデックス

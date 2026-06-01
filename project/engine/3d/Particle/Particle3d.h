@@ -70,7 +70,7 @@ private:
 
 private:
 	//モデル
-	Model* model_ = nullptr;
+	TakeC::Model* model_ = nullptr;
 
 private:
 

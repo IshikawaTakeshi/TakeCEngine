@@ -5,6 +5,8 @@
 #include "engine/3d/Object3dCommon.h"
 #include "engine/Input/Input.h"
 
+using namespace TakeC;
+
 //========================================================================
 // 初期化
 //========================================================================
@@ -94,14 +96,14 @@ void CharacterEditTool::Initialize() {
 	currentCharacterData_.weaponData[static_cast<size_t>(WeaponUnit::R_BACK)] = *AttachWeapon("VMLauncher");
 
 	//プレビュー用キャラクターモデル初期化
-	previewCharacterModel_ = std::make_unique<Object3d>();
-	previewCharacterModel_->Initialize(&Object3dCommon::GetInstance(),currentCharacterData_.characterInfo.modelFilePath);
+	previewCharacterModel_ = std::make_unique<TakeC::Object3d>();
+	previewCharacterModel_->Initialize(&TakeC::Object3dCommon::GetInstance(),currentCharacterData_.characterInfo.modelFilePath);
 
 	//プレビュー用武器モデル群初期化
 	previewWeaponModels_.resize(WeaponUnit::Size);
 	for(size_t i =0;i<previewWeaponModels_.size();++i){
-		previewWeaponModels_[i] = std::make_unique<Object3d>();
-		previewWeaponModels_[i]->Initialize(&Object3dCommon::GetInstance(),currentCharacterData_.weaponData[i].modelFilePath);
+		previewWeaponModels_[i] = std::make_unique<TakeC::Object3d>();
+		previewWeaponModels_[i]->Initialize(&TakeC::Object3dCommon::GetInstance(),currentCharacterData_.weaponData[i].modelFilePath);
 	}
 
 	//編集モード初期化
@@ -387,15 +389,15 @@ void CharacterEditTool::Update() {
 
 	//武器オブジェクトをキャラクターモデルに装備させる
 	Matrix4x4 characterWorldMatrix = previewCharacterModel_->GetWorldMatrix();
-	auto RightHandWorldMat = previewCharacterModel_->GetModel()->GetSkeleton()->GetJointWorldMatrix("RightHand", characterWorldMatrix);
-	auto LeftHandWorldMat = previewCharacterModel_->GetModel()->GetSkeleton()->GetJointWorldMatrix("LeftHand", characterWorldMatrix);
-	auto backLeftWorldMat = previewCharacterModel_->GetModel()->GetSkeleton()->GetJointWorldMatrix("backpack.Left.Tip", characterWorldMatrix);
-	auto backRightWorldMat = previewCharacterModel_->GetModel()->GetSkeleton()->GetJointWorldMatrix("backpack.Right.Tip", characterWorldMatrix);
+	std::optional<Matrix4x4> RightHandWorldMat = previewCharacterModel_->GetModel()->GetSkeleton()->GetJointWorldMatrix("RightHand", characterWorldMatrix);
+	std::optional<Matrix4x4> LeftHandWorldMat = previewCharacterModel_->GetModel()->GetSkeleton()->GetJointWorldMatrix("LeftHand", characterWorldMatrix);
+	std::optional<Matrix4x4> backLeftWorldMat = previewCharacterModel_->GetModel()->GetSkeleton()->GetJointWorldMatrix("backpack.Left.Tip", characterWorldMatrix);
+	std::optional<Matrix4x4> backRightWorldMat = previewCharacterModel_->GetModel()->GetSkeleton()->GetJointWorldMatrix("backpack.Right.Tip", characterWorldMatrix);
 
-	previewWeaponModels_[static_cast<size_t>(WeaponUnit::R_ARMS)]->SetParent(*RightHandWorldMat);
-	previewWeaponModels_[static_cast<size_t>(WeaponUnit::L_ARMS)]->SetParent(*LeftHandWorldMat);
-	previewWeaponModels_[static_cast<size_t>(WeaponUnit::L_BACK)]->SetParent(*backLeftWorldMat);
-	previewWeaponModels_[static_cast<size_t>(WeaponUnit::R_BACK)]->SetParent(*backRightWorldMat);
+	previewWeaponModels_[static_cast<size_t>(WeaponUnit::R_ARMS)]->SetParent(RightHandWorldMat.value());
+	previewWeaponModels_[static_cast<size_t>(WeaponUnit::L_ARMS)]->SetParent(LeftHandWorldMat.value());
+	previewWeaponModels_[static_cast<size_t>(WeaponUnit::L_BACK)]->SetParent(backLeftWorldMat.value());
+	previewWeaponModels_[static_cast<size_t>(WeaponUnit::R_BACK)]->SetParent(backRightWorldMat.value());
 
 	// プレビュー用武器モデル群の更新
 	for(auto& weaponModel:previewWeaponModels_){
@@ -775,7 +777,7 @@ std::optional<WeaponData> CharacterEditTool::AttachWeapon(const std::string& wea
 //========================================================================
 // キャラクターデータ保存処理
 //========================================================================
-void CharacterEditTool::SavePlayableCharacterInfo(std::string characterName) {
+void CharacterEditTool::SavePlayableCharacterInfo(const std::string& characterName) {
 
 	// キャラクターデータ保存処理
 	// プリセット名が空でないか、既に存在しないか確認
@@ -802,7 +804,7 @@ void CharacterEditTool::SavePlayableCharacterInfo(std::string characterName) {
 //========================================================================
 // 武器データ保存処理
 //========================================================================
-void CharacterEditTool::SaveWeaponData(std::string WeaponName, WeaponUnit unit) {
+void CharacterEditTool::SaveWeaponData(const std::string& WeaponName, WeaponUnit unit) {
 
 	// プリセット名が空でないか、既に存在しないか確認
 	if (WeaponName.empty() || weaponDataMap_.find(WeaponName) != weaponDataMap_.end()) {
@@ -857,7 +859,7 @@ void CharacterEditTool::LoadPlayableCharacterInfo(std::string characterName) {
 //========================================================================
 // 武器データ読み込み処理
 //========================================================================
-void CharacterEditTool::LoadWeaponData(std::string WeaponName, WeaponUnit unit) {
+void CharacterEditTool::LoadWeaponData(const std::string& WeaponName, WeaponUnit unit) {
 
 	if (WeaponName.empty() || weaponDataMap_.find(WeaponName) == weaponDataMap_.end()) {
 		ImGui::Text("Preset not found: %s", WeaponName.c_str());

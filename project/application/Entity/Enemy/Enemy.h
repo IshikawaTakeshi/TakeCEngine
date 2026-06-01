@@ -39,7 +39,7 @@ public:
 	//================================================================================
 
 	// 初期化
-	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath);
+	void Initialize(TakeC::Object3dCommon* object3dCommon, const std::string& filePath);
 	// 更新
 	void Update() override;
 	// ImGuiの更新
@@ -54,7 +54,7 @@ public:
 	void OnCollisionAction(GameCharacter* other) override;
 
 	// 武器の初期化
-	void WeaponInitialize(Object3dCommon* object3dCommon,
+	void WeaponInitialize(TakeC::Object3dCommon* object3dCommon,
 		BulletManager* bulletManager);
 
 	/// <summary>

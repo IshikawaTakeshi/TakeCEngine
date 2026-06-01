@@ -1,12 +1,12 @@
 #include "GamePlayScene.h"
-#include "Collision/CollisionManager.h"
-#include "ImGuiManager.h"
-#include "MyGame.h"
-#include "SceneManager.h"
-#include "TitleScene.h"
-#include "Vector3Math.h"
 #include <format>
 #include <numbers>
+#include "application/MyGame.h"
+#include "application/Scene/SceneManager.h"
+#include "application/Scene/TitleScene.h"
+#include "engine/base/ImGuiManager.h"
+#include "engine/Collision/CollisionManager.h"
+#include "engine/Math/Vector3Math.h"
 
 // SceneState includes
 #include "application/Scene/SceneState/GamePlayScene/SceneStateEnemyDestroyed.h"
@@ -16,6 +16,7 @@
 #include "application/Scene/SceneState/GamePlayScene/SceneStateGameStart.h"
 #include "application/Scene/SceneState/GamePlayScene/SceneStatePause.h"
 
+using namespace TakeC;
 
 //====================================================================
 //			初期化

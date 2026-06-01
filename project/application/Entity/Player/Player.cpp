@@ -22,6 +22,7 @@
 #include "application/Weapon/ShotGun/ShotGun.h"
 #include "application/Tool/BreakGaugeUtil.h"
 
+using namespace TakeC;
 
 //===================================================================================
 // 初期化処理
@@ -136,7 +137,7 @@ void Player::Initialize(Object3dCommon* object3dCommon,
 // 武器の初期化処理
 //===================================================================================
 
-void Player::WeaponInitialize(Object3dCommon* object3dCommon,
+void Player::WeaponInitialize(TakeC::Object3dCommon* object3dCommon,
 	BulletManager* bulletManager) {
 	// 武器の初期化
 	for (int i = 0; i < weapons_.size(); i++) {

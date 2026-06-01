@@ -3,6 +3,8 @@
 #include "engine/3d/Object3dCommon.h"
 #include "application/Weapon/BaseWeapon.h"
 
+using namespace TakeC;
+
 void MuzzleFlashEffect::Initialize() {
 	//エフェクトオブジェクト初期化
 	muzzleFlushEffectObjectIndices_.clear();

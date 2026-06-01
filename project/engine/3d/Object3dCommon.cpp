@@ -8,6 +8,8 @@
 #include "engine/math/Vector3Math.h"
 #include "engine/3d/Light/LightManager.h"
 
+namespace TakeC {
+
 //================================================================================================
 // インスタンスの取得
 //================================================================================================
@@ -166,3 +168,5 @@ void Object3dCommon::SetCBufferViewCamera(PSO* pso) {
 		pso->GetGraphicBindResourceIndex("gCamera"), TakeC::CameraManager::GetInstance().GetActiveCamera()->GetCameraResource()->GetGPUVirtualAddress());
 
 }
+
+} // namespace TakeC

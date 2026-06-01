@@ -13,6 +13,8 @@
 #include <sstream>
 #include <cassert>
 
+using namespace TakeC;
+
 Object3d::~Object3d() {
 	wvpResource_.Reset();
 	shadowWvpResource_.Reset();

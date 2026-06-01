@@ -20,13 +20,13 @@ public:
 	/// </summary>
 	/// <param name="dxCommon"></param>
 	/// <param name="collisionObject"></param>
-	void Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collisionObject) override;
+	void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::Object3d* collisionObject) override;
 
 	/// <summary>
 	/// 更新処理
 	/// </summary>
 	/// <param name="collisionObject"></param>
-	void Update(Object3d* collisionObject) override;
+	void Update(TakeC::Object3d* collisionObject) override;
 
 	/// <summary>
 	/// ImGui更新処理

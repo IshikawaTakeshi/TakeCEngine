@@ -53,13 +53,13 @@ public:
 	/// </summary>
 	/// <param name="dxCommon"></param>
 	/// <param name="collisionObject"></param>
-	virtual void Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collisionObject) = 0;
+	virtual void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::Object3d* collisionObject) = 0;
 
 	/// <summary>
 	/// 更新処理
 	/// </summary>
 	/// <param name="collisionObject"></param>
-	virtual void Update(Object3d* collisionObject) = 0;
+	virtual void Update(TakeC::Object3d* collisionObject) = 0;
 
 	/// <summary>
 	/// ImGui更新処理

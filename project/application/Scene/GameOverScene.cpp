@@ -1,8 +1,10 @@
 #include "GameOverScene.h"
-#include "SceneManager.h"
-#include "TakeCFrameWork.h"
 #include <cmath>
 #include <algorithm>
+#include "application/Scene/SceneManager.h"
+#include "engine/base/TakeCFrameWork.h"
+
+using namespace TakeC;
 
 //====================================================================
 //			初期化

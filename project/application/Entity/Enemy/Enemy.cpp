@@ -22,6 +22,7 @@
 #include "engine/Math/Matrix4x4.h"
 #include "application/Weapon/ShotGun/ShotGun.h"
 
+using namespace TakeC;
 
 //========================================================================================================
 // 　初期化

@@ -4,6 +4,8 @@
 #include "engine/base/imGuiManager.h"
 #include "engine/base/TakeCFrameWork.h"
 
+using namespace TakeC;
+
 //====================================================================
 //			初期化
 //====================================================================

@@ -22,7 +22,7 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="size"></param>
-	void Initialize(Object3dCommon* objectCommon, size_t size,
+	void Initialize(TakeC::Object3dCommon* objectCommon, size_t size,
 		const std::string& modelFilePath,
 		const BulletEffectConfig& effectConfig);
 
@@ -64,7 +64,7 @@ protected:
 	virtual void OnInitializeObject(T& object,const std::string& modelFilePath, const BulletEffectConfig& effectConfig) = 0;
 
 	// Object3dCommonのポインタ
-	Object3dCommon* objectCommon_ = nullptr;
+	TakeC::Object3dCommon* objectCommon_ = nullptr;
 
 	BulletEffectConfig effectConfig_{};
 	// オブジェクトプール
@@ -75,7 +75,7 @@ protected:
 /// 初期化
 ///-------------------------------------------------------------------------------
 template<class T>
-inline void ObjectPool<T>::Initialize(Object3dCommon* objectCommon, size_t size,
+inline void ObjectPool<T>::Initialize(TakeC::Object3dCommon* objectCommon, size_t size,
 	const std::string& modelFilePath,const BulletEffectConfig& effectConfig) {
 	//objectCommonの保存
 	objectCommon_ = objectCommon;

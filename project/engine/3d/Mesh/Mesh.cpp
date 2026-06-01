@@ -4,6 +4,8 @@
 #include "engine/3d/ModelData.h"
 #include <numbers>
 
+namespace TakeC {
+
 //=============================================================================
 // メッシュ初期化
 //=============================================================================
@@ -175,3 +177,5 @@ void Mesh::MapInputVertexResource(ModelData* modelData) {
 	inputVertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	std::memcpy(vertexData, modelData->vertices.data(), sizeof(VertexData) * modelData->vertices.size());
 }
+
+} // namespace TakeC
