@@ -7,6 +7,8 @@
 #include "base/ModelManager.h"
 #include "base/PipelineStateObject.h"
 
+using namespace TakeC;
+
 //=============================================================================
 // 初期化
 //=============================================================================
@@ -15,7 +17,7 @@ void SkyBox::Initialize(TakeC::DirectXCommon* directXCommon,const std::string& t
 	dxCommon_ = directXCommon;
 
 	//PSOの生成
-	pso_ = std::make_unique<PSO>();
+	pso_ = std::make_unique<TakeC::PSO>();
 	pso_->CompileVertexShader(dxCommon_->GetDXC(), L"3d/SkyBox.VS.hlsl");
 	pso_->CompilePixelShader(dxCommon_->GetDXC(), L"3d/SkyBox.PS.hlsl");
 	pso_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ALL);

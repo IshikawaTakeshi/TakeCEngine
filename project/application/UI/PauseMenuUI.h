@@ -101,10 +101,10 @@ private:
     PauseMenuResult result_ = PauseMenuResult::None;
 
     // sprites
-    Sprite* bg_ = nullptr;
-    Sprite* cursor_ = nullptr;
-	Sprite* operatorInstructions_ = nullptr;
-    std::vector<Sprite*> itemSprites_;
+    TakeC::Sprite* bg_ = nullptr;
+    TakeC::Sprite* cursor_ = nullptr;
+	TakeC::Sprite* operatorInstructions_ = nullptr;
+    std::vector<TakeC::Sprite*> itemSprites_;
 	Vector4 PauseColor_ = { 0.3f, 0.3f, 0.3f, 1.0f };
 
 };

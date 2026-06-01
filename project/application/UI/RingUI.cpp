@@ -1,8 +1,10 @@
 #include "RingUI.h"
 #include "engine/2d/SpriteCommon.h"
 
+using namespace TakeC;
+
 void RingUI::Initialize() {
-	SpriteCommon* spriteCommon = &SpriteCommon::GetInstance();
+SpriteCommon* spriteCommon = &SpriteCommon::GetInstance();
 	// 画像はテクスチャの右上の象限にある（または全体を占める）「1/4リング」であると仮定し、
 	// テクスチャの左下隅がリングの中心と一致するようにします。
 	std::string texturePath = "Resources/ui/ring_quarter.png";

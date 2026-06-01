@@ -6,6 +6,7 @@
 #include "engine/3d/Object3dCommon.h"
 #include "engine/3d/Light/LightManager.h"
 
+using namespace TakeC;
 
 //==================================================================================
 // インスタンス取得
@@ -27,7 +28,7 @@ void ParticleCommon::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManage
 
 	//各ブレンドステート用PSO生成
 	for (int i = 0; i < int(BlendState::COUNT); i++) {
-		auto pso = std::make_unique<PSO>();
+		auto pso = std::make_unique<TakeC::PSO>();
 		pso->CompileVertexShader(dxCommon_->GetDXC(), L"Particle.VS.hlsl");
 		pso->CompilePixelShader(dxCommon_->GetDXC(), L"Particle.PS.hlsl");
 		pso->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO, static_cast<BlendState>(i));
@@ -41,7 +42,7 @@ void ParticleCommon::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManage
 	graphicRootSignature_ = graphicPso_[BlendState::NORMAL]->GetGraphicRootSignature();
 
 	//GPUパーティクル用PSO生成
-	graphicPsoForGPUParticle_ = std::make_unique<PSO>();
+	graphicPsoForGPUParticle_ = std::make_unique<TakeC::PSO>();
 	graphicPsoForGPUParticle_->CompileVertexShader(dxCommon_->GetDXC(), L"GPUParticle.VS.hlsl");
 	graphicPsoForGPUParticle_->CompilePixelShader(dxCommon_->GetDXC(), L"GPUParticle.PS.hlsl");
 	graphicPsoForGPUParticle_->CreateGraphicPSO(dxCommon_->GetDevice(), D3D12_FILL_MODE_SOLID, D3D12_DEPTH_WRITE_MASK_ZERO,BlendState::ADD);
@@ -49,14 +50,14 @@ void ParticleCommon::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::SrvManage
 	graphicRootSignatureForGPUParticle_ = graphicPsoForGPUParticle_->GetGraphicRootSignature();
 
 	//particle初期化用PSO
-	computePsoForGPUParticle_ = std::make_unique<PSO>();
+	computePsoForGPUParticle_ = std::make_unique<TakeC::PSO>();
 	computePsoForGPUParticle_->CompileComputeShader(dxCommon_->GetDXC(), L"InitializeParticle.CS.hlsl");
 	computePsoForGPUParticle_->CreateComputePSO(dxCommon_->GetDevice());
 	computePsoForGPUParticle_->SetComputePipelineName("InitializeParticlePSO");
 	computeRootSignatureForGPUParticle_ = computePsoForGPUParticle_->GetComputeRootSignature();
 
 	//update用PSO
-	psoUpdateParticle_ = std::make_unique<PSO>();
+	psoUpdateParticle_ = std::make_unique<TakeC::PSO>();
 	psoUpdateParticle_->CompileComputeShader(dxCommon_->GetDXC(), L"UpdateParticle.CS.hlsl");
 	psoUpdateParticle_->CreateComputePSO(dxCommon_->GetDevice());
 	psoUpdateParticle_->SetComputePipelineName("UpdateParticlePSO");

@@ -33,9 +33,9 @@ public:
 
 private:
   // レティクルのスプライト
-  std::unique_ptr<Sprite> reticleSprite_ = nullptr;
+  std::unique_ptr<TakeC::Sprite> reticleSprite_ = nullptr;
   // 予測着弾点のレティクルスプライト
-  std::unique_ptr<Sprite> predictedImpactReticle_ = nullptr;
+  std::unique_ptr<TakeC::Sprite> predictedImpactReticle_ = nullptr;
   Vector2 screenPosition_{0.0f, 0.0f};       // スクリーン上のレティクルの位置
   Vector3 targetPosition_{0.0f, 0.0f, 0.0f}; // レティクルが狙う位置
   Vector3 predictedImpactPosition_{0.0f, 0.0f, 0.0f}; // 予測着弾点の位置

@@ -67,9 +67,9 @@ private:
 	//========================================================================
 	
 	// フェーズメッセージスプライト
-	std::unique_ptr<Sprite> phaseMessageText_ = nullptr;
+	std::unique_ptr<TakeC::Sprite> phaseMessageText_ = nullptr;
 	//帯スプライト
-	std::unique_ptr<Sprite> bandSprite_ = nullptr;
+	std::unique_ptr<TakeC::Sprite> bandSprite_ = nullptr;
 
 	// アルファ値
 	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };

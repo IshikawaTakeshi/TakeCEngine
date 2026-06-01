@@ -6,13 +6,12 @@
 #include "engine/2d/Sprite.h"
 #include "engine/math/Vector2.h"
 
-// 前方宣言
-class SpriteCommon;
-
 //============================================================================
 // SpriteManager class
 //============================================================================
 namespace TakeC {
+	class SpriteCommon;
+
 	class SpriteManager {
 	public:
 

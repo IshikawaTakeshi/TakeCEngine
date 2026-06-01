@@ -5,79 +5,77 @@
 #include <memory>
 #include "engine/base/ComPtrAliasTemplates.h"
 
-// 前方宣言
-class PSO;
-
 namespace TakeC {
 	class DirectXCommon;
-}
+	class PSO;
 
-//============================================================================
-// SpriteCommon class
-//============================================================================
-class SpriteCommon {
-private:
+	//============================================================================
+	// SpriteCommon class
+	//============================================================================
+	class SpriteCommon {
+	private:
 
-	//コンストラクタ・デストラクタ・コピー禁止
-	SpriteCommon() = default;
-	~SpriteCommon() = default;
-	SpriteCommon(const SpriteCommon&) = delete;
-	SpriteCommon& operator=(const SpriteCommon&) = delete;
+		//コンストラクタ・デストラクタ・コピー禁止
+		SpriteCommon() = default;
+		~SpriteCommon() = default;
+		SpriteCommon(const SpriteCommon&) = delete;
+		SpriteCommon& operator=(const SpriteCommon&) = delete;
 
-public:
+	public:
 
-	//========================================================================
-	// functions
-	//========================================================================
-	static SpriteCommon& GetInstance();
+		//========================================================================
+		// functions
+		//========================================================================
+		static SpriteCommon& GetInstance();
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize(TakeC::DirectXCommon* directXCommon);
+		/// <summary>
+		/// 初期化
+		/// </summary>
+		void Initialize(TakeC::DirectXCommon* directXCommon);
 
-	/// <summary>
-	/// 終了処理
-	/// </summary>
-	void Finalize();
+		/// <summary>
+		/// 終了処理
+		/// </summary>
+		void Finalize();
 
-	/// <summary>
-	/// 共通描画設定
-	/// </summary>
-	void PreDraw();
-	
-public:
+		/// <summary>
+		/// 共通描画設定
+		/// </summary>
+		void PreDraw();
 
-	//=========================================================================
-	// accessors
-	//=========================================================================
+	public:
 
-	//----- getter ---------------------------
+		//=========================================================================
+		// accessors
+		//=========================================================================
 
-	//DirectXCommonの取得
-	TakeC::DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
+		//----- getter ---------------------------
 
-
-	//----- setter ---------------------------
-
-	//DirectXCommonの設定
-	void SetDirectXCommon(TakeC::DirectXCommon* dxCommon) { dxCommon_ = dxCommon; }
+		//DirectXCommonの取得
+		TakeC::DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
 
 
+		//----- setter ---------------------------
 
-private:
+		//DirectXCommonの設定
+		void SetDirectXCommon(TakeC::DirectXCommon* dxCommon) { dxCommon_ = dxCommon; }
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	///			privateメンバ変数
-	/////////////////////////////////////////////////////////////////////////////////////
 
-	//DirectXCommon
-	TakeC::DirectXCommon* dxCommon_ = nullptr;
 
-	//RootSignature
-	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+	private:
 
-	//PipelineStateObject
-	std::unique_ptr<PSO> pso_ = nullptr;
+		/////////////////////////////////////////////////////////////////////////////////////
+		///			privateメンバ変数
+		/////////////////////////////////////////////////////////////////////////////////////
 
-};
+		//DirectXCommon
+		TakeC::DirectXCommon* dxCommon_ = nullptr;
+
+		//RootSignature
+		ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+
+		//PipelineStateObject
+		std::unique_ptr<TakeC::PSO> pso_ = nullptr;
+
+	};
+} // namespace TakeC

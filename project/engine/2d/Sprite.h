@@ -22,7 +22,7 @@
 #include "engine/Animation/SpriteAnimation.h"
 
 
-// 前方宣言
+namespace TakeC {
 class DirectXCommon;
 
 //============================================================================
@@ -187,3 +187,4 @@ private:
 	char searchBuffer_[64] = "";                // 検索用バッファ
 	bool showTextureSelector_ = false;          // セレクターの開閉状態
 };
+} // namespace TakeC

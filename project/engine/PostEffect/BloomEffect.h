@@ -82,9 +82,9 @@ private:
 
 private:
 
-	std::unique_ptr<PSO> brightPassPSO_; //輝度抽出PSO
-	std::unique_ptr<PSO> verticalBlurPSO_; //垂直ブラーPSO
-	std::unique_ptr<PSO> horizontalBlurPSO_; //水平ブラーPSO
+	std::unique_ptr<TakeC::PSO> brightPassPSO_; //輝度抽出PSO
+	std::unique_ptr<TakeC::PSO> verticalBlurPSO_; //垂直ブラーPSO
+	std::unique_ptr<TakeC::PSO> horizontalBlurPSO_; //水平ブラーPSO
 
 	ComPtr<ID3D12Resource> brightPassResource_; // 輝度抽出リソース
 	ComPtr<ID3D12Resource> verticalBlurResource_; // 垂直ブラーリソース

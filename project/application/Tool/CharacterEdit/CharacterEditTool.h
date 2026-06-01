@@ -147,17 +147,17 @@ private:
 	//プレビュー用武器モデル群
 	std::vector<std::unique_ptr<TakeC::Object3d>> previewWeaponModels_;
 	//メニューバースプライト群
-	std::array<std::unique_ptr<Sprite>, CharacterEditMenuEnum::MENU_SIZE> menuBarSprites_;
+	std::array<std::unique_ptr<TakeC::Sprite>, CharacterEditMenuEnum::MENU_SIZE> menuBarSprites_;
 	//カーソルスプライト
-	std::unique_ptr<Sprite> cursorSprite_;
+	std::unique_ptr<TakeC::Sprite> cursorSprite_;
 	//ゲーム開始テキストスプライト
-	std::unique_ptr<Sprite> startGameTextSprite_;
+	std::unique_ptr<TakeC::Sprite> startGameTextSprite_;
 	Vector2 startGameTextSpritePos_{ 400.0f,300.0f }; //ゲーム開始テキストスプライト座標
 
-	std::vector<std::unique_ptr<Sprite>> weaponItemSprites_; //武器項目スプライトリスト
-	std::vector<std::unique_ptr<Sprite>> weaponIconTexts_; //武器項目テキストスプライトリスト
-	std::vector<std::unique_ptr<Sprite>> weaponNameTexts_; //武器名テキストスプライトリスト
-	std::vector<std::unique_ptr<Sprite>> characterItemSprites_; //キャラクター項目スプライトリスト
+	std::vector<std::unique_ptr<TakeC::Sprite>> weaponItemSprites_; //武器項目スプライトリスト
+	std::vector<std::unique_ptr<TakeC::Sprite>> weaponIconTexts_; //武器項目テキストスプライトリスト
+	std::vector<std::unique_ptr<TakeC::Sprite>> weaponNameTexts_; //武器名テキストスプライトリスト
+	std::vector<std::unique_ptr<TakeC::Sprite>> characterItemSprites_; //キャラクター項目スプライトリスト
 
 	//メニューバースプライトサイズ
 	Vector2 menuBarSpriteSize_{ 330.0f,50.0f }; 

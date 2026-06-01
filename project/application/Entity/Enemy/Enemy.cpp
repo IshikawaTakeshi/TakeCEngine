@@ -41,8 +41,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
 	object3d_->SetScale(enemyData_.characterInfo.transform.scale);
-	object3d_->SetUseExternalAnimation(
-		true); // 外部からアニメーションを設定するようにする
+	object3d_->SetUseExternalAnimation(true); // 外部からアニメーションを設定するようにする
 	// コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());

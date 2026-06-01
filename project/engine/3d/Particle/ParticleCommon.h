@@ -88,11 +88,11 @@ public:
 	//SrvManagerの取得
 	TakeC::SrvManager* GetSrvManager() const { return srvManager_; }
 	//RootSignatureの取得
-	PSO* GetGraphicPSO(BlendState state) const { return graphicPso_.at(state).get(); }
+	TakeC::PSO* GetGraphicPSO(BlendState state) const { return graphicPso_.at(state).get(); }
 	//GPUパーティクル用PSOの取得
-	PSO* GetGraphicPSOForGPUParticle() const { return graphicPsoForGPUParticle_.get(); }
+	TakeC::PSO* GetGraphicPSOForGPUParticle() const { return graphicPsoForGPUParticle_.get(); }
 	//GPUパーティクル初期化用PSOの取得
-	PSO* GetComputePSOForGPUParticle() const { return computePsoForGPUParticle_.get(); }
+	TakeC::PSO* GetComputePSOForGPUParticle() const { return computePsoForGPUParticle_.get(); }
 	//カメラ情報の取得
 	Camera* GetDefaultCamera() const { return defaultCamera_; }
 
@@ -110,10 +110,10 @@ private:
 	TakeC::LightManager* lightManager_ = nullptr;
 
 	//PSO
-	std::unordered_map<BlendState, std::unique_ptr<PSO>> graphicPso_;
-	std::unique_ptr<PSO> graphicPsoForGPUParticle_ = nullptr;
-	std::unique_ptr<PSO> computePsoForGPUParticle_ = nullptr;
-	std::unique_ptr<PSO> psoUpdateParticle_ = nullptr;
+	std::unordered_map<BlendState, std::unique_ptr<TakeC::PSO>> graphicPso_;
+	std::unique_ptr<TakeC::PSO> graphicPsoForGPUParticle_ = nullptr;
+	std::unique_ptr<TakeC::PSO> computePsoForGPUParticle_ = nullptr;
+	std::unique_ptr<TakeC::PSO> psoUpdateParticle_ = nullptr;
 
 	//SrvManager
 	TakeC::SrvManager* srvManager_ = nullptr;

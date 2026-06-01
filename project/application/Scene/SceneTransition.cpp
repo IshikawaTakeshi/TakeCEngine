@@ -4,6 +4,8 @@
 #include "base/TakeCFrameWork.h"
 #include <algorithm>
 
+using namespace TakeC;
+
 //シングルトンインスタンスの初期化
 SceneTransition* SceneTransition::instance_ = nullptr;
 

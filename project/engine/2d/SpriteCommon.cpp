@@ -2,6 +2,7 @@
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
 
+using namespace TakeC;
 
 //====================================================================
 // インスタンスの取得

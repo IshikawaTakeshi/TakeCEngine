@@ -59,5 +59,5 @@ private:
 	// 天球
 	std::unique_ptr<SkyBox> skybox_ = nullptr;
 	// スプライト
-	Sprite* gameOverTextSprite_ = nullptr;
+	TakeC::Sprite* gameOverTextSprite_ = nullptr;
 };

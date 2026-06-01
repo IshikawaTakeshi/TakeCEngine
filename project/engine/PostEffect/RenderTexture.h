@@ -73,7 +73,7 @@ public:
 	ComPtr<ID3D12Resource> GetDepthStencilResource() const {
 		return depthStencilResource_;
 	}
-	PSO* GetRenderTexturePSO() const {
+	TakeC::PSO* GetRenderTexturePSO() const {
 		return renderTexturePSO_.get();
 	}
 
@@ -109,7 +109,7 @@ private:
 
 	ComPtr<ID3D12Resource> depthStencilResource_; //深度ステンシルバッファリソース
 
-	std::unique_ptr<PSO> renderTexturePSO_; //PSO
+	std::unique_ptr<TakeC::PSO> renderTexturePSO_; //PSO
 	ComPtr<ID3D12RootSignature> rootSignature_; //ルートシグネチャ
 	D3D12_VIEWPORT viewport_{};
 	D3D12_RECT scissorRect_ = {};

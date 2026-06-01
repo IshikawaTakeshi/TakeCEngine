@@ -4,7 +4,7 @@
 #include "engine/base/TakeCFrameWork.h"
 #include <utility>
 
-void SpriteAnimator::Initialize(Sprite* target) {
+void SpriteAnimator::Initialize(TakeC::Sprite* target) {
 	target_ = target;
 }
 

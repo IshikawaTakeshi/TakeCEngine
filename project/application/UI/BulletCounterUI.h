@@ -49,14 +49,14 @@ public:
 
 private:
 	// 桁ごとのUV設定
-	void SetDigitUV(Sprite* sprite, int digit);
+	void SetDigitUV(TakeC::Sprite* sprite, int digit);
 
 private:
-	std::vector<Sprite*> bulletCounterSprite_; // 弾数カウンターのスプライト
-	std::vector<Sprite*>
+	std::vector<TakeC::Sprite*> bulletCounterSprite_; // 弾数カウンターのスプライト
+	std::vector<TakeC::Sprite*>
 		maxBulletCounterSprite_;         // 最大弾数カウンターのスプライト
-	Sprite* reloadSprite_ = nullptr;     // リロード中のスプライト
-	Sprite* separatorSprite_ = nullptr;  // スプライトの間のセパレーター
+	TakeC::Sprite* reloadSprite_ = nullptr;     // リロード中のスプライト
+	TakeC::Sprite* separatorSprite_ = nullptr;  // スプライトの間のセパレーター
 	uint32_t bulletCount_ = 0;           // 現在の弾数
 	uint32_t remainingBulletCount_ = 0;  // 残りの弾数
 

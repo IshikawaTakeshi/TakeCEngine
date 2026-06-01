@@ -6,7 +6,6 @@
 
 //前方宣言
 class Camera;
-class PSO;
 
 //===========================================================================
 // SkyBox class
@@ -51,7 +50,7 @@ private: // privateメンバ変数
 	//DirectXCommon
 	TakeC::DirectXCommon* dxCommon_ = nullptr;
 	//PSO
-	std::unique_ptr<PSO> pso_ = nullptr;
+	std::unique_ptr<TakeC::PSO> pso_ = nullptr;
 	//RootSignature
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 
