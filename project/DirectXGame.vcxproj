@@ -447,6 +447,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
     <ClInclude Include="application\Entity\Behavior\View\BehaviorNodeView.h" />
     <ClInclude Include="engine\2d\BaseUI.h" />
+    <ClInclude Include="engine\2d\UIConfig.h" />
     <ClInclude Include="engine\3d\Particle\EffectEditor.h" />
     <ClInclude Include="engine\3d\Particle\EffectGroup.h" />
     <ClInclude Include="engine\2d\ArcGaugeParam.h" />

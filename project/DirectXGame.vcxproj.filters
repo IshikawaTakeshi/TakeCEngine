@@ -1210,6 +1210,7 @@
     <ClInclude Include="application\Entity\Behavior\WaitNode.h" />
     <ClInclude Include="application\Entity\Behavior\View\WaitBlackboardTimeNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\WaitNodeView.h" />
+    <ClInclude Include="engine\2d\UIConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
