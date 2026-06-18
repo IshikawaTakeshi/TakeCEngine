@@ -23,7 +23,7 @@ void CharacterEditTool::Initialize() {
 	weaponNameTexts_.resize(maxWeaponMenuItems_);
 	for(size_t i =0;i<weaponItemSprites_.size();++i){
 		weaponItemSprites_[i] = std::make_unique<Sprite>();
-		weaponItemSprites_[i]->Initialize(&SpriteCommon::GetInstance(), "white1x1.png");
+		weaponItemSprites_[i]->Initialize(&TakeC::SpriteCommon::GetInstance(), "white1x1.png");
 		weaponItemSprites_[i]->SetSize(menuBarSpriteSize_);
 		weaponItemSprites_[i]->SetTranslate({
 			menuBarLeftTop_.x,
@@ -33,7 +33,7 @@ void CharacterEditTool::Initialize() {
 
 		if (i < 4) {
 			weaponIconTexts_[i] = std::make_unique<Sprite>();
-			weaponIconTexts_[i]->Initialize(&SpriteCommon::GetInstance(), "UI/EditWeaponIcon.png");
+			weaponIconTexts_[i]->Initialize(&TakeC::SpriteCommon::GetInstance(), "UI/EditWeaponIcon.png");
 			weaponIconTexts_[i]->LoadConfig("EditWeaponIconText" + std::to_string(i) + ".json");
 			weaponIconTexts_[i]->SetTranslate({
 				menuBarLeftTop_.x,
@@ -41,7 +41,7 @@ void CharacterEditTool::Initialize() {
 				});
 		}
 		weaponNameTexts_[i] = std::make_unique<Sprite>();
-		weaponNameTexts_[i]->Initialize(&SpriteCommon::GetInstance(), "UI/EditWeaponNameText.png");
+		weaponNameTexts_[i]->Initialize(&TakeC::SpriteCommon::GetInstance(), "UI/EditWeaponNameText.png");
 		weaponNameTexts_[i]->LoadConfig("WeaponNameText" + std::to_string(i) + ".json");
 		weaponNameTexts_[i]->SetTranslate({
 			menuBarLeftTop_.x,
@@ -53,7 +53,7 @@ void CharacterEditTool::Initialize() {
 	characterItemSprites_.resize(maxCharacterMenuItems_);
 	for(size_t i =0;i<characterItemSprites_.size();++i){
 		characterItemSprites_[i] = std::make_unique<Sprite>();
-		characterItemSprites_[i]->Initialize(&SpriteCommon::GetInstance(), "white1x1.png");
+		characterItemSprites_[i]->Initialize(&TakeC::SpriteCommon::GetInstance(), "white1x1.png");
 		characterItemSprites_[i]->SetSize(menuBarSpriteSize_);
 		characterItemSprites_[i]->SetTranslate({
 			menuBarLeftTop_.x,
@@ -64,14 +64,14 @@ void CharacterEditTool::Initialize() {
 
 	//カーソルスプライト初期化
 	cursorSprite_ = std::make_unique<Sprite>();
-	cursorSprite_->Initialize(&SpriteCommon::GetInstance(), "white1x1.png");
+	cursorSprite_->Initialize(&TakeC::SpriteCommon::GetInstance(), "white1x1.png");
 	cursorSprite_->SetSize(menuBarSpriteSize_);
 	cursorSprite_->SetTranslate(menuBarLeftTop_);
 
 	//メニューバー用スプライト群初期化
 	for (size_t i = 0; i < CharacterEditMenuEnum::MENU_SIZE; ++i) {
 		menuBarSprites_[i] = std::make_unique<Sprite>();
-		menuBarSprites_[i]->Initialize(&SpriteCommon::GetInstance(), "white1x1.png");
+		menuBarSprites_[i]->Initialize(&TakeC::SpriteCommon::GetInstance(), "white1x1.png");
 		menuBarSprites_[i]->SetSize(menuBarSpriteSize_);
 		menuBarSprites_[i]->SetTranslate({
 			menuBarLeftTop_.x,
@@ -82,7 +82,7 @@ void CharacterEditTool::Initialize() {
 
 	//ゲーム開始テキストスプライト初期化
 	startGameTextSprite_ = std::make_unique<Sprite>();
-	startGameTextSprite_->Initialize(&SpriteCommon::GetInstance(), "UI/GameStartText.png");
+	startGameTextSprite_->Initialize(&TakeC::SpriteCommon::GetInstance(), "UI/GameStartText.png");
 	startGameTextSprite_->LoadConfig("GameStartText.json");
 	startGameTextSpritePos_ = menuBarSprites_[6]->GetTranslate();
 	startGameTextSprite_->SetTranslate(startGameTextSpritePos_);

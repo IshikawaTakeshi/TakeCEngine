@@ -81,9 +81,10 @@ void Sprite::Initialize(SpriteCommon* spriteCommon) {
 
 	//スプライト用のTransformationMatrix用のVertexResource生成
 	wvpResource_ = TakeC::DirectXCommon::CreateBufferResource(spriteCommon->GetDirectXCommon()->GetDevice(), sizeof(TransformMatrix));
-
 	//TransformationMatrix用
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
+	//名前を設定設定
+	wvpResource_->SetName(L"Sprite::wvpResource_");
 
 	//単位行列を書き込んでおく
 	wvpData_->WVP = MatrixMath::MakeIdentity4x4();
@@ -141,6 +142,17 @@ void Sprite::Update() {
 		transform_.translate
 	);
 
+	//親子付けの処理
+	if (parentMatrix_) {
+		if (spriteConfig_.inheritParentScale_) {
+			worldMatrix_ = MatrixMath::Multiply(worldMatrix_, *parentMatrix_);
+		} else {
+			// 親のスケールを除去して移動・回転のみ継承
+			Matrix4x4 parentNoScale = MatrixMath::RemoveScale(*parentMatrix_);
+			worldMatrix_ = MatrixMath::Multiply(worldMatrix_, parentNoScale);
+		}
+	}
+
 	//ViewProjectionの処理
 	worldViewProjectionMatrix_ = MatrixMath::Multiply(
 		worldMatrix_, MatrixMath::Multiply(viewMatrix_, projectionMatrix_));
@@ -166,19 +178,40 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 
 		// テクスチャセレクター
 		if (ImGuiManager::TextureSelector("Texture Select", spriteConfig_.textureFilePath_)) {
-			SetFilePath(spriteConfig_.textureFilePath_);
+			SetTextureFilePath(spriteConfig_.textureFilePath_);
 			if (adjustSwitch_) {
 				AdjustTextureSize();
 			}
 		}
 		// 保存ポップアップ
 		spriteConfig_.color_ = mesh_->GetMaterial()->GetMaterialData()->color;
-		ImGuiManager::ShowSavePopup<SpriteConfig>(
+		if (ImGuiManager::ShowSavePopup<SpriteConfig>(
 			TakeCFrameWork::GetJsonLoader(),
 			"Save_Sprite",
 			std::string(spriteConfig_.name + ".json").c_str(),
 			spriteConfig_,
-			spriteConfig_.name);
+			spriteConfig_.name)) {
+			// セーブした際、config.name にセーブしたファイル名（拡張子なし）が設定されているので、次回からデフォルトでそれが使われる
+		}
+
+		ImGui::SameLine();
+
+		// 読み込みポップアップ
+		std::string loadFilePath = "";
+		if (ImGuiManager::ShowLoadPopup<SpriteConfig>(
+			TakeCFrameWork::GetJsonLoader(),
+			"Load_Sprite",
+			loadFilePath)) {
+			// 読み込み処理
+			LoadConfig(loadFilePath + ".json");
+			// 読み込み後のテクスチャ再割り当てとサイズ調整
+			SetTextureFilePath(spriteConfig_.textureFilePath_);
+			if (adjustSwitch_) {
+				AdjustTextureSize();
+			}
+			// マテリアルの色にも反映
+			mesh_->GetMaterial()->SetMaterialColor(spriteConfig_.color_);
+		}
 
 		ImGui::TreePop();
 	}
@@ -227,11 +260,7 @@ void Sprite::UpdateVertexData() {
 }
 
 
-void Sprite::DrawTextureSelector() {
-
-}
-
-void Sprite::SetFilePath(const std::string& filePath) {
+void Sprite::SetTextureFilePath(const std::string& filePath) {
 	spriteConfig_.textureFilePath_ = filePath;
 	mesh_->GetMaterial()->SetTextureFilePath(filePath);
 
@@ -269,9 +298,17 @@ void Sprite::LoadConfig(const std::string& jsonFilePath) {
 
 
 //=============================================================================================
-// 描画処理
+// 描画処理 (遅延描画キューへの登録)
 //=============================================================================================
 void Sprite::Draw() {
+	// 描画リクエストの登録
+	spriteCommon_->RegisterDrawRequest(this);
+}
+
+//=============================================================================================
+// 即時描画処理 (遅延描画システムから一括実行される)
+//=============================================================================================
+void Sprite::RenderImmediate() {
 	//spriteの描画
 	mesh_->SetVertexBuffers(spriteCommon_->GetDirectXCommon()->GetCommandList(), 0);
 	//TransformationMatrixCBufferの場所の設定

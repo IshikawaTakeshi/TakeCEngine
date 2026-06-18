@@ -577,3 +577,24 @@ Matrix4x4 MatrixMath::LookAt(const Vector3& eye, const Vector3& target, const Ve
 	result.m[3][3] = 1.0f;
 	return result;
 }
+
+//============================================================================
+// スケール成分を除去した行列を返す
+//============================================================================
+Matrix4x4 MatrixMath::RemoveScale(const Matrix4x4& m) {
+	Matrix4x4 result = m;
+	// 各行 0〜2 が軸ベクトル。ノルムがスケール量なので正規化して除去する
+	for (int row = 0; row < 3; ++row) {
+		float len = std::sqrt(
+			m.m[row][0] * m.m[row][0] +
+			m.m[row][1] * m.m[row][1] +
+			m.m[row][2] * m.m[row][2]);
+		if (len > 1e-6f) {
+			result.m[row][0] /= len;
+			result.m[row][1] /= len;
+			result.m[row][2] /= len;
+		}
+	}
+	// 平行移動成分（m[3]行）は維持
+	return result;
+}

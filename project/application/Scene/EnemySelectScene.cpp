@@ -196,7 +196,7 @@ void EnemySelectScene::Draw() {
 void EnemySelectScene::DrawSprite() {
 
 	//スプライトの描画前処理
-	SpriteCommon::GetInstance().PreDraw();
+	TakeC::SpriteCommon::GetInstance().PreDraw();
 
 	characterEditTool_->DrawUI();
 }

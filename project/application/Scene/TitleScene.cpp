@@ -123,7 +123,7 @@ void TitleScene::Draw() {
 
 void TitleScene::DrawSprite() {
 	//タイトルテキスト描画
-	SpriteCommon::GetInstance().PreDraw();
+	TakeC::SpriteCommon::GetInstance().PreDraw();
 	titleTextSprite_->Draw();
 	pushStartUI_->Draw();
 }

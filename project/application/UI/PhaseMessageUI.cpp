@@ -157,16 +157,16 @@ void PhaseMessageUI::SetNextMessage(PhaseMessage message) {
 	// phaseMessageTextにphaseごとのテクスチャを設定
 	switch (message) {
 	case PhaseMessage::READY:
-		phaseMessageText_->SetFilePath("UI/PhaseMessage_ReadyText.png");
+		phaseMessageText_->SetTextureFilePath("UI/PhaseMessage_ReadyText.png");
 		break;
 	case PhaseMessage::FIGHT:
-		phaseMessageText_->SetFilePath("UI/PhaseMessage_FightText.png");
+		phaseMessageText_->SetTextureFilePath("UI/PhaseMessage_FightText.png");
 		break;
 	case PhaseMessage::WIN:
-		phaseMessageText_->SetFilePath("UI/GameClearText.png");
+		phaseMessageText_->SetTextureFilePath("UI/GameClearText.png");
 		break;
 	case PhaseMessage::LOSE:
-		phaseMessageText_->SetFilePath("UI/GameOverText.png");
+		phaseMessageText_->SetTextureFilePath("UI/GameOverText.png");
 		break;
 	}
 

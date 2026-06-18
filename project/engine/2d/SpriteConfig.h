@@ -6,6 +6,11 @@
 #include <string>
 #include <json.hpp>
 
+enum class SpriteDrawLayer {
+	Background,
+	Foreground,
+};
+
 //=============================================================================
 // SpriteConfig struct
 //=============================================================================
@@ -20,6 +25,10 @@ struct SpriteConfig {
 	Vector2 textureSize_ = { 100.0f,100.0f }; //テクスチャの切り出しサイズ
 	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f }; //色
 	float rotation_ = 0.0f;
+	// false にすると親のスケールを無視して移動・回転のみ継承する
+	bool inheritParentScale_ = false;
+	int layer_ = 0; // レイヤー優先度 (値が大きいほど手前に描画される)
+	SpriteDrawLayer drawLayer_ = SpriteDrawLayer::Foreground; // 描画レイヤー
 
 	void UpdateImGui();
 };

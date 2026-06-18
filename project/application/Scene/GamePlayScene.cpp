@@ -326,7 +326,7 @@ void GamePlayScene::Draw() {
 void GamePlayScene::DrawSprite() {
 
 	// スプライトの描画前処理
-	SpriteCommon::GetInstance().PreDraw();
+	TakeC::SpriteCommon::GetInstance().PreDraw();
 
 	if (sceneStateManager_.GetCurrentStateType() != SceneState::ENEMYDESTROYED) {
 		// プレイヤーのレティクルの描画

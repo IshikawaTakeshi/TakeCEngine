@@ -99,7 +99,7 @@ void GameOverScene::Draw() {
 }
 
 void GameOverScene::DrawSprite() {
-	SpriteCommon::GetInstance().PreDraw(); // Spriteの描画前処理
+	TakeC::SpriteCommon::GetInstance().PreDraw(); // Spriteの描画前処理
 	TakeCFrameWork::GetSpriteManager()->Draw(); // Spriteの描画
 
 }

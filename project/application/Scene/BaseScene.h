@@ -41,7 +41,11 @@ public:
 	/// </summary>
 	virtual void Draw() = 0;
 
+	virtual void DrawBackgroundSprite() {}
+
 	virtual void DrawSprite() = 0;
+
+	virtual void DrawForegroundSprite() { DrawSprite(); }
 
 	virtual void DrawShadow() = 0;
 

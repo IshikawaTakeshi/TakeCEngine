@@ -27,5 +27,7 @@
     "textureSize": {
         "x": 128.0,
         "y": 128.0
-    }
+    },
+    "layer": 0,
+    "drawLayer": 1
 }

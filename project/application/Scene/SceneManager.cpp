@@ -4,6 +4,7 @@
 #include "base/TakeCFrameWork.h"
 #include "3d/Object3dCommon.h"
 #include "scene/SceneTransition.h"
+#include "engine/2d/SpriteCommon.h"
 #include <cassert>
 
 using namespace TakeC;
@@ -182,9 +183,25 @@ void SceneManager::DrawObject() {
 	
 }
 
+void SceneManager::DrawBackgroundSprite() {
+	TakeC::SpriteCommon::GetInstance().BeginFrame();
+	TakeC::SpriteCommon::GetInstance().PreDraw();
+	currentScene_->DrawBackgroundSprite();
+	TakeC::SpriteCommon::GetInstance().ExecuteDraws();
+}
+
 void SceneManager::DrawSprite() {
+	TakeC::SpriteCommon::GetInstance().BeginFrame();
 	currentScene_->DrawSprite();
 	SceneTransition::GetInstance()->Draw();
+	TakeC::SpriteCommon::GetInstance().ExecuteDraws();
+}
+
+void SceneManager::DrawForegroundSprite() {
+	TakeC::SpriteCommon::GetInstance().PreDraw();
+	currentScene_->DrawForegroundSprite();
+	SceneTransition::GetInstance()->Draw();
+	TakeC::SpriteCommon::GetInstance().ExecuteDraws();
 }
 
 void SceneManager::DrawShadow() {

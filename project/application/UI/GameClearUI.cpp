@@ -9,7 +9,7 @@ using namespace TakeC;
 //===================================================================================
 //　初期化
 //===================================================================================
-void GameClearUI::Initialize(SpriteCommon* spriteCommon) {
+void GameClearUI::Initialize(TakeC::SpriteCommon* spriteCommon) {
 
 	spriteCommon_ = spriteCommon;
 

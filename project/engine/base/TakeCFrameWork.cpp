@@ -49,25 +49,6 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	audio_ = &AudioManager::GetInstance();
 	audio_->Initialize();
 
-	//JsonLoader
-	jsonLoader_ = std::make_unique<JsonLoader>();
-
-	//lightManager
-	lightManager_ = std::make_unique<TakeC::LightManager>();
-	lightManager_->Initialize(directXCommon_.get(), srvManager_.get());
-
-	//SpriteCommon
-	spriteCommon_ = &SpriteCommon::GetInstance();
-	spriteCommon_->Initialize(directXCommon_.get());
-
-	//Object3dCommon
-	object3dCommon_ = &Object3dCommon::GetInstance();
-	object3dCommon_->Initialize(directXCommon_.get(),lightManager_.get());
-
-	//ParticleCommon
-	particleCommon_ = &ParticleCommon::GetInstance();
-	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get(),lightManager_.get());
-
 	//AnimationManager
 	animationManager_ = std::make_unique<AnimationManager>();
 
@@ -80,9 +61,28 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//TextureManager
 	TakeC::TextureManager::GetInstance().Initialize(directXCommon_.get(), srvManager_.get());
 
+	//JsonLoader
+	jsonLoader_ = std::make_unique<JsonLoader>();
+
+	//lightManager
+	lightManager_ = std::make_unique<TakeC::LightManager>();
+	lightManager_->Initialize(directXCommon_.get(), srvManager_.get());
+
+	//SpriteCommon
+	spriteCommon_ = &TakeC::SpriteCommon::GetInstance();
+	spriteCommon_->Initialize(directXCommon_.get(), srvManager_.get());
+
 	//SpriteManager
 	spriteManager_ = std::make_unique<SpriteManager>();
 	spriteManager_->Initialize(spriteCommon_);
+
+	//Object3dCommon
+	object3dCommon_ = &Object3dCommon::GetInstance();
+	object3dCommon_->Initialize(directXCommon_.get(), lightManager_.get());
+
+	//ParticleCommon
+	particleCommon_ = &ParticleCommon::GetInstance();
+	particleCommon_->Initialize(directXCommon_.get(), srvManager_.get(), lightManager_.get());
 
 	//UIManager
 	uiManager_ = std::make_unique<UIManager>();

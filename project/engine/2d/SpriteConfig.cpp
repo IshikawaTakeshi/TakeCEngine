@@ -12,7 +12,12 @@ void SpriteConfig::UpdateImGui() {
 	ImGui::DragFloat2("Anchor Point", &anchorPoint_.x);
 	ImGui::DragFloat2("Texture Left Top", &textureLeftTop_.x);
 	ImGui::DragFloat2("Texture Size", &textureSize_.x);
-	ImGui::DragFloat("Rotation", &rotation_);
+	ImGui::DragFloat("Rotation", &rotation_, 0.01f);
+	ImGui::Checkbox("Inherit Parent Scale", &inheritParentScale_);
+	ImGui::DragInt("Layer", &layer_, 1);
+	int drawLayer = static_cast<int>(drawLayer_);
+	ImGui::DragInt("Draw Layer", &drawLayer, 1, 0, 1);
+	drawLayer_ = static_cast<SpriteDrawLayer>(drawLayer);
 }
 
 void to_json(nlohmann::json& j, const SpriteConfig& spriteConfig) {
@@ -26,6 +31,9 @@ void to_json(nlohmann::json& j, const SpriteConfig& spriteConfig) {
 	j["textureSize"] = spriteConfig.textureSize_;
 	j["rotation"] = spriteConfig.rotation_;
 	j["color"] = spriteConfig.color_;
+	j["inheritParentScale"] = spriteConfig.inheritParentScale_;
+	j["layer"] = spriteConfig.layer_;
+	j["drawLayer"] = static_cast<int>(spriteConfig.drawLayer_);
 }
 
 void from_json(const nlohmann::json& j, SpriteConfig& spriteConfig) {
@@ -39,4 +47,7 @@ void from_json(const nlohmann::json& j, SpriteConfig& spriteConfig) {
 	spriteConfig.textureSize_ = j.value("textureSize", Vector2{ 100.0f,100.0f });
 	spriteConfig.rotation_ = j.value("rotation", 0.0f);
 	spriteConfig.color_ = j.value("color", Vector4{ 1.0f,1.0f,1.0f,1.0f });
+	spriteConfig.inheritParentScale_ = j.value("inheritParentScale", true);
+	spriteConfig.layer_ = j.value("layer", 0);
+	spriteConfig.drawLayer_ = static_cast<SpriteDrawLayer>(j.value("drawLayer", 1));
 }

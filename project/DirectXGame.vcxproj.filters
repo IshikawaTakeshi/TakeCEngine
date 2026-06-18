@@ -76,6 +76,12 @@
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">
       <Filter>Resources\shader\Sprite</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\shaders\Sprite\SpriteInstanced.VS.hlsl">
+      <Filter>Resources\shader\Sprite</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Sprite\SpriteInstanced.PS.hlsl">
+      <Filter>Resources\shader\Sprite</Filter>
+    </FxCompile>
     <FxCompile Include="Resources\shaders\3d\SkyBox.PS.hlsl">
       <Filter>Resources\shader\Object</Filter>
     </FxCompile>
