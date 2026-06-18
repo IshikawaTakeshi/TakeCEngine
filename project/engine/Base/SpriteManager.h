@@ -41,6 +41,7 @@ namespace TakeC {
 		/// 描画処理 (全スプライト)
 		/// </summary>
 		void Draw();
+		void Draw(SpriteDrawLayer drawLayer);
 
 		/// <summary>
 		/// ImGuiの更新
@@ -60,6 +61,11 @@ namespace TakeC {
 		/// <param name="name">登録名（省略可）。指定するとGetSpriteで取得可能になる</param>
 		/// <returns>生成されたスプライトへのポインタ</returns>
 		Sprite* Create(const std::string& filePath, const Vector2& position = { 0.0f, 0.0f }, const std::string& name = "");
+
+		/// <summary>
+		/// スプライトをManager側で生成する関数
+		/// </summary>
+		void Create();
 
 		/// <summary>
 		/// JSONファイルからスプライトを生成して登録
@@ -84,6 +90,11 @@ namespace TakeC {
 		/// 全スプライトのクリア
 		/// </summary>
 		void Clear();
+
+		/// <summary>
+		/// 指定されたスプライトのクリア
+		/// </summary>
+		void DeleteSprite(Sprite* sprite);
 
 		/// <summary>
 		/// 管理しているスプライトのリストを取得

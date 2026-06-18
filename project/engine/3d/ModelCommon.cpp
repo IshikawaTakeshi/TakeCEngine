@@ -3,6 +3,8 @@
 #include "SrvManager.h"
 
 
+namespace TakeC {
+
 //============================================================================
 // インスタンスの取得
 //============================================================================
@@ -25,3 +27,5 @@ void ModelCommon::Initialize(TakeC::DirectXCommon* dxCommon,TakeC::SrvManager* s
 void ModelCommon::Finalize() {
 	dxCommon_ = nullptr;
 }
+
+} // namespace TakeC

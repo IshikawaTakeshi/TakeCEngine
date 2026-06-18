@@ -10,7 +10,9 @@ namespace TakeC {
 	class SpriteManager;
 }
 
+namespace TakeC {
 class Sprite;
+}
 
 //============================================================================
 // BulletCounterGaugeUI class
@@ -44,8 +46,8 @@ public:
 	void SetPosition(const Vector2& position) override;
 
 private:
-	Sprite* frameSprite_ = nullptr; // ゲージの外枠
-	Sprite* barSprite_ = nullptr;   // ゲージのバー
+	TakeC::Sprite* frameSprite_ = nullptr; // ゲージの外枠
+	TakeC::Sprite* barSprite_ = nullptr;   // ゲージのバー
 	float ratio_ = 1.0f;            // 残弾比率
 	float maxWidth_ = 0.0f;         // ゲージの最大幅
 

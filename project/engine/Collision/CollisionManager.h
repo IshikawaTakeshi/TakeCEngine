@@ -109,7 +109,7 @@ private:
 	//ゲームキャラクターリスト
 	std::list<GameCharacter*> gameCharacters_;
 	//パイプラインステートオブジェクト
-	std::unique_ptr<PSO> pso_ = nullptr;
+	std::unique_ptr<TakeC::PSO> pso_ = nullptr;
 	//ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 };

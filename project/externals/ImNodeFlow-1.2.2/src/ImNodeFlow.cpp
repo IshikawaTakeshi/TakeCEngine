@@ -96,6 +96,8 @@ namespace ImFlow {
         ImGui::TextColored(m_style->header_title_color, "%s", m_title.c_str());
         ImGui::Spacing();
         ImGui::EndGroup();
+
+		// アイテムのサイズを取得して、ヘッダーの高さとタイトルの幅を計算
         float headerH = ImGui::GetItemRectSize().y;
         float titleW = ImGui::GetItemRectSize().x;
 

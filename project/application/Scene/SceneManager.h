@@ -52,7 +52,9 @@ public:
 	/// <summary>
 	/// スプライト描画処理
 	/// </summary>
+	void DrawBackgroundSprite();
 	void DrawSprite();
+	void DrawForegroundSprite();
 
 	void DrawShadow();
 

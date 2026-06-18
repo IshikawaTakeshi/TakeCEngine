@@ -20,11 +20,11 @@ struct LightCountData {
 //============================================================================
 
 class Camera;
-class PSO;
 namespace TakeC {
 
-class DirectXCommon;
-class SrvManager;
+	class PSO;
+	class DirectXCommon;
+	class SrvManager;
 
 	class LightManager {
 	public:
@@ -93,7 +93,7 @@ class SrvManager;
 		/// <param name="light"></param>
 		void UpdateSpotLight(uint32_t index, const SpotLightData& light);
 
-		void UpdateShadowMatrix(Camera* camera,const Vector3& target = {0.0f,0.0f,0.0f});
+		void UpdateShadowMatrix(Camera* camera, const Vector3& target = { 0.0f,0.0f,0.0f });
 
 		/// <summary>
 		/// ポイントライト描画
@@ -143,7 +143,7 @@ class SrvManager;
 		//----- setter ---------------------------
 
 		/// ライト用リソースの設定
-		void SetLightResources(PSO* pso);
+		void SetLightResources(TakeC::PSO* pso);
 	private:
 
 		//========================================================================

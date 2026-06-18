@@ -343,7 +343,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\UI\PlayerReticle.cpp" />
     <ClCompile Include="application\Provider\PlayerInputProvider.cpp" />
     <ClCompile Include="application\Provider\PlayerKeyInput.cpp" />
-    <ClCompile Include="application\Ground\WaterGround.cpp" />
     <ClCompile Include="engine\Utility\Timer.cpp" />
     <ClCompile Include="application\UI\PushStartUI.cpp" />
     <ClCompile Include="application\UI\PhaseMessageUI.cpp" />
@@ -448,6 +447,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Tool\CharacterEdit\CharacterEditTool.h" />
     <ClInclude Include="application\Entity\Behavior\View\BehaviorNodeView.h" />
     <ClInclude Include="engine\2d\BaseUI.h" />
+    <ClInclude Include="engine\2d\UIConfig.h" />
     <ClInclude Include="engine\3d\Particle\EffectEditor.h" />
     <ClInclude Include="engine\3d\Particle\EffectGroup.h" />
     <ClInclude Include="engine\2d\ArcGaugeParam.h" />
@@ -623,7 +623,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Weapon\Rifle\Rifle.h" />
     <ClInclude Include="application\Weapon\Launcher\VerticalMissileLauncher.h" />
     <ClInclude Include="application\Weapon\Bullet\VerticalMissile.h" />
-    <ClInclude Include="application\Ground\WaterGround.h" />
     <ClInclude Include="engine\Utility\Timer.h" />
     <ClInclude Include="application\Weapon\ShotGun\ShotGun.h" />
     <ClInclude Include="engine\PostEffect\ShadowMapEffect.h" />
@@ -763,7 +762,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="Resources\shaders\Sprite\ArcGaugeParam.hlsli" />
+    <None Include="Resources\shaders\Sprite\ArcGaugeParam.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="Resources\shaders\Sprite\Sprite.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -1069,7 +1070,17 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="Resources\shaders\Sprite\SpriteInstanced.PS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.VS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Sprite\SpriteInstanced.VS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">true</ExcludedFromBuild>

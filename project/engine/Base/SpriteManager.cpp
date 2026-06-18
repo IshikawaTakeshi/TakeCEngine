@@ -1,6 +1,9 @@
 #include "SpriteManager.h"
 #include "engine/2d/SpriteCommon.h"
 #include "engine/base/ImGuiManager.h"
+#include "engine/base/WinApp.h"
+#include <algorithm>
+#include <format>
 
 using namespace TakeC;
 
@@ -31,6 +34,14 @@ void SpriteManager::Draw() {
 	}
 }
 
+void SpriteManager::Draw(SpriteDrawLayer drawLayer) {
+	for (auto& sprite : sprites_) {
+		if (sprite->IsActive() && sprite->GetDrawLayer() == drawLayer) {
+			sprite->Draw();
+		}
+	}
+}
+
 //============================================================================
 // ImGuiの更新
 //============================================================================
@@ -52,6 +63,12 @@ void SpriteManager::UpdateImGui() {
 		sprite->UpdateImGui(spriteLabel);
 		i++;
 	}
+
+	//スプライトの生成
+	if (ImGui::Button("Create Sprite")) {
+		Create();
+	}
+
 	ImGui::End();
 
 #endif
@@ -101,6 +118,46 @@ Sprite* SpriteManager::Create(const std::string& filePath,
 }
 
 //============================================================================
+// スプライトをManager側で生成する関数
+//============================================================================
+void TakeC::SpriteManager::Create() {
+	auto newSprite = std::make_unique<Sprite>();
+	newSprite->Initialize(spriteCommon_, "white1x1.png");
+
+	// 初期位置は画面中央
+	newSprite->SetTranslate({
+		WinApp::kScreenWidth / 2.0f,
+		WinApp::kScreenHeight / 2.0f
+		});
+	// デフォルトサイズは128x128にしておく
+	newSprite->SetSize({ 128.0f, 128.0f });
+
+	// 名前を設定
+	newSprite->SetName("newSprite");
+	
+	Sprite* ptr = newSprite.get();
+
+	//登録する予定の名前を取得
+	std::string registeredName = newSprite->GetName();
+
+	//既に同じ名前が登録されている場合、かぶり防止のために名前を変更
+	if (!registeredName.empty() && namedSprites_.find(registeredName) != namedSprites_.end()) {
+		int suffix = 1;
+		std::string newName;
+		do {
+			newName = registeredName + "." + std::format("{:03}", suffix++);
+		} while (namedSprites_.find(newName) != namedSprites_.end());
+		newSprite->SetName(newName);
+		registeredName = newName; // 更新された名前を登録用に使用
+	}
+
+	// 名前がリスト内になければ登録
+	namedSprites_[registeredName] = ptr;
+
+	sprites_.push_back(std::move(newSprite));
+}
+
+//============================================================================
 // JSONファイルからスプライトを生成して登録
 //============================================================================
 Sprite* SpriteManager::CreateFromJson(const std::string& jsonFilePath) {
@@ -145,4 +202,15 @@ Sprite* SpriteManager::GetSprite(const std::string& name) {
 void SpriteManager::Clear() {
 	sprites_.clear();
 	namedSprites_.clear();
+}
+
+void SpriteManager::DeleteSprite(Sprite* sprite) {
+	auto it = std::remove_if(
+		sprites_.begin(),
+		sprites_.end(),
+		[sprite](const std::unique_ptr<Sprite>& ptr) {
+			return ptr.get() == sprite;
+		});
+
+	sprites_.erase(it, sprites_.end());
 }

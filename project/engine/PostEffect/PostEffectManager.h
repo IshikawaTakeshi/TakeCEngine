@@ -74,7 +74,7 @@ namespace TakeC {
 		/// <summary>
 		///	描画処理
 		/// </summary>
-		void Draw(PSO* pso);
+		void Draw(TakeC::PSO* pso);
 
 		/// <summary>
 		/// 全PostEffectのCSによる処理

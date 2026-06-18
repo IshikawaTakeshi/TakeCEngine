@@ -17,7 +17,7 @@ public:
 	//===================================================================
 
 	//初期化処理
-	void Initialize(Object3dCommon* object3dCommon,BulletManager* bulletManager) override;
+	void Initialize(TakeC::Object3dCommon* object3dCommon,BulletManager* bulletManager) override;
 	//更新処理
 	void Update() override;
 	//ImGuiの更新
@@ -36,7 +36,4 @@ private:
 	//連射情報
 	RifleInfo rifleInfo_{};
 	BurstShotState burstShotState_{};
-
-	//マズルフラッシュエフェクト
-	std::unique_ptr<MuzzleFlashEffect> muzzleFlashEffect_ = nullptr;
 };

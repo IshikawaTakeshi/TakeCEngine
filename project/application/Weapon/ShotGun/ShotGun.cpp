@@ -6,6 +6,8 @@
 #include "engine/Math/MathEnv.h"
 #include "application/Weapon/Bullet/BulletManager.h"
 
+using namespace TakeC;
+
 //====================================================================
 // 初期化
 //====================================================================

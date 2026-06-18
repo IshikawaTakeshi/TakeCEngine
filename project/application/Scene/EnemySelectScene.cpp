@@ -1,12 +1,17 @@
 #include "EnemySelectScene.h"
-#include "TitleScene.h"
-#include "SceneManager.h"
-#include "Vector3Math.h"
-#include "ImGuiManager.h"
-#include "Collision/CollisionManager.h"
-#include "MyGame.h"
 #include <format>
 #include <numbers>
+
+#include "application/Scene/TitleScene.h"
+#include "application/Scene/SceneManager.h"
+#include "application/MyGame.h"
+
+#include "engine/base/ImGuiManager.h"
+#include "engine/Math/Vector3Math.h"
+#include "engine/Collision/CollisionManager.h"
+
+using namespace TakeC;
+
 //====================================================================
 //			初期化
 //====================================================================
@@ -191,7 +196,7 @@ void EnemySelectScene::Draw() {
 void EnemySelectScene::DrawSprite() {
 
 	//スプライトの描画前処理
-	SpriteCommon::GetInstance().PreDraw();
+	TakeC::SpriteCommon::GetInstance().PreDraw();
 
 	characterEditTool_->DrawUI();
 }

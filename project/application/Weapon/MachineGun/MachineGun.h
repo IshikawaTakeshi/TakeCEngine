@@ -23,7 +23,7 @@ public:
 	/// <param name="object3dCommon"></param>
 	/// <param name="bulletManager"></param>
 	/// <param name="filePath"></param>
-	void Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) override;
+	void Initialize(TakeC::Object3dCommon* object3dCommon, BulletManager* bulletManager) override;
 
 	/// <summary>
 	/// 更新処理

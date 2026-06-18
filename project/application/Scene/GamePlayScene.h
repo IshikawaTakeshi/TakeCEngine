@@ -122,9 +122,9 @@ private:
 	std::map<std::string, std::unique_ptr<LevelObject>> levelObjects_;
 
 	//	操作説明スプライト
-	std::vector<std::unique_ptr<Sprite>> instructionSprites_;
+	std::vector<std::unique_ptr<TakeC::Sprite>> instructionSprites_;
 	// 　アクションアイコン
-	std::vector<Sprite*> actionIconSprites_;
+	std::vector<TakeC::Sprite*> actionIconSprites_;
 	// フェーズメッセージUI
 	std::unique_ptr<PhaseMessageUI> phaseMessageUI_ = nullptr;
 

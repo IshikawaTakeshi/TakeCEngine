@@ -5,6 +5,7 @@
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/math/Easing.h"
 
+using namespace TakeC;
 
 //===================================================================================
 // 　初期化

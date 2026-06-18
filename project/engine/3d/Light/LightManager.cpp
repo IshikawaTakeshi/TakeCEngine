@@ -10,6 +10,8 @@
 #include "engine/Math/MatrixMath.h"
 #include "engine/Camera/Camera.h"
 
+using namespace TakeC;
+
 //=============================================================================
 // 初期化
 //=============================================================================
@@ -338,7 +340,7 @@ SpotLightData* TakeC::LightManager::GetSpotLightData(uint32_t index) const {
 // ライト用リソースの設定
 //=============================================================================
 
-void TakeC::LightManager::SetLightResources(PSO* pso) {
+void TakeC::LightManager::SetLightResources(TakeC::PSO* pso) {
 
 	//コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();

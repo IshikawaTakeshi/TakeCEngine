@@ -53,10 +53,10 @@ public:
 
 	
 	// スプライトを追加するヘルパー関数
-	Sprite* CreateAndRegisterSprite(const std::string& textureName, const Vector2& position = {0.0f, 0.0f});
+	TakeC::Sprite* CreateAndRegisterSprite(const std::string& textureName, const Vector2& position = {0.0f, 0.0f});
 
 	// JSONからスプライトを生成・登録するヘルパー関数
-	Sprite* CreateAndRegisterSpriteFromJson(const std::string& jsonFilePath);
+	TakeC::Sprite* CreateAndRegisterSpriteFromJson(const std::string& jsonFilePath);
 
 	/// <summary>
 	/// UI全体の構成をJSONから読み込む (UIConfig)
@@ -70,7 +70,7 @@ public:
 	//=====================================================
 
 	// 名前でスプライトを取得
-	Sprite* GetSprite(const std::string& name);
+	TakeC::Sprite* GetSprite(const std::string& name);
 
 	// 表示・非表示
 	void SetActive(bool isActive);
@@ -93,10 +93,10 @@ protected:
 	// 外部のスプライト管理マネージャー（所有権は持たない）
 	TakeC::SpriteManager* spriteManager_ = nullptr;
 
-	std::vector<Sprite*> sprites_;
+	std::vector<TakeC::Sprite*> sprites_;
 	
 	// UI内部での管理用マップ (キー名 -> スプライトポインタ)
-	std::map<std::string, Sprite*> spriteMap_;
+	std::map<std::string, TakeC::Sprite*> spriteMap_;
 
 	Vector2 position_ = { 0.0f, 0.0f };
 	bool isActive_ = true;

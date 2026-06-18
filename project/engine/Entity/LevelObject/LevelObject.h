@@ -25,7 +25,7 @@ public:
 	/// </summary>
 	/// <param name="object3dCommon"></param>
 	/// <param name="filePath"></param>
-	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
+	void Initialize(TakeC::Object3dCommon* object3dCommon, const std::string& filePath) override;
 
 	/// <summary>
 	/// コリジョン初期化(BoxCollider)
@@ -89,7 +89,7 @@ public:
 
 private:
 
-	Object3dCommon* object3dCommon_ = nullptr; // Object3dCommonの参照
+	TakeC::Object3dCommon* object3dCommon_ = nullptr; // Object3dCommonの参照
 
 	std::string name_; // オブジェクトの名前
 

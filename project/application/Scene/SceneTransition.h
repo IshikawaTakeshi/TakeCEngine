@@ -72,7 +72,7 @@ private:
 	//シーン遷移状態
 	TransitionState state_ = TransitionState::NONE;
 	//フェード処理用スプライト
-	std::unique_ptr<Sprite> fadeSprite_ = nullptr;
+	std::unique_ptr<TakeC::Sprite> fadeSprite_ = nullptr;
 
 	//遷移時間
 	float duration_;

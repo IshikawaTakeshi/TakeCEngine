@@ -1,11 +1,13 @@
 #include "ModelManager.h"
-#include "Model.h"
-#include "ModelCommon.h"
-#include "DirectXCommon.h"
-#include "SrvManager.h"
-#include "MatrixMath.h"
+#include "engine/3d/Model.h"
+#include "engine/3d/ModelCommon.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/SrvManager.h"
+#include "engine/math/MatrixMath.h"
 
 #include <cassert>
+
+using namespace TakeC;
 
 //=============================================================================
 // シングルトンインスタンスの取得

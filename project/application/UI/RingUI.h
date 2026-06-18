@@ -44,7 +44,7 @@ public:
 
 private:
     static const int kPartCount = 4;
-    std::array<std::unique_ptr<Sprite>, kPartCount> parts_;
+    std::array<std::unique_ptr<TakeC::Sprite>, kPartCount> parts_;
     Vector2 centerPos_ = { 640.0f, 360.0f }; // デフォルトの中心位置
     bool isActive_ = true;
 };

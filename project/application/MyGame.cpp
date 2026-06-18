@@ -157,8 +157,9 @@ void MyGame::Draw() {
 	//===========================================
 	renderTexture_->ClearRenderTarget();
 	srvManager_->SetDescriptorHeap();
+	sceneManager_->DrawBackgroundSprite(); // 背景スプライト描画
 	sceneManager_->DrawObject();  // 通常のオブジェクト描画
-	sceneManager_->DrawSprite();  // スプライト描画
+	sceneManager_->DrawForegroundSprite(); // 前景スプライト描画
 
 	
 

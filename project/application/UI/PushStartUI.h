@@ -46,9 +46,9 @@ private:
 	//========================================================================
 	
 	// 「PRESS START」テキストスプライト
-	Sprite* pressStartText_ = nullptr;
+	TakeC::Sprite* pressStartText_ = nullptr;
 	// 点滅スプライト
-	Sprite* blinkSprite_ = nullptr;
+	TakeC::Sprite* blinkSprite_ = nullptr;
 
 	// 点滅タイマー
 	Timer blinkTimer_;

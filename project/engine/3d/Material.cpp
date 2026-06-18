@@ -7,6 +7,8 @@
 
 #include <algorithm>
 
+namespace TakeC {
+
 //=================================================================================
 //	初期化
 //=================================================================================
@@ -95,3 +97,5 @@ void Material::InitializeMaterialResource(Microsoft::WRL::ComPtr<ID3D12Device> d
 	materialData_->shininess = 60.0f;
 	materialData_->envCoefficient = 0.01f;
 }
+
+} // namespace TakeC

@@ -82,6 +82,17 @@ namespace TakeC {
 		static bool ShowSavePopup(JsonLoader* jsonLoader, const char* popupId, const char* defaultFilename,
 			const T& data, std::string& outFilePath);
 
+		/// <summary>
+		/// 読み込みポップアップの表示
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="jsonLoader"></param>
+		/// <param name="popupId"></param>
+		/// <param name="outFilePath"></param>
+		/// <returns></returns>
+		template<typename T>
+		static bool ShowLoadPopup(JsonLoader* jsonLoader, const char* popupId, std::string& outFilePath);
+
 		template<InputEnum TEnum>
 		static bool ComboBoxEnum(const char* label, TEnum& currentItem);
 
@@ -189,6 +200,70 @@ namespace TakeC {
 			ImGui::EndPopup();
 		}
 		return saved;
+	}
+
+	///--------------------------------------------------------------------
+	/// 読み込みポップアップの表示
+	///---------------------------------------------------------------------
+	template<typename T>
+	inline bool ImGuiManager::ShowLoadPopup(
+		JsonLoader* jsonLoader,
+		const char* popupId, std::string& outFilePath) {
+
+		// 読み込み完了フラグ
+		bool loaded = false;
+
+		// 読み込みボタン
+		if (ImGui::Button("LoadConfig")) {
+			ImGui::OpenPopup(popupId);
+		}
+
+		// 読み込みポップアップの表示
+		if (ImGui::BeginPopupModal(popupId, NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+			static std::vector<std::string> fileList;
+			static int selectedIndex = -1;
+			static bool initialized = false;
+
+			if (!initialized) {
+				fileList = jsonLoader->GetJsonDataList<T>();
+				selectedIndex = -1;
+				initialized = true;
+			}
+
+			// ファイルリストの表示
+			ImGui::Text("Select config file to load:");
+			if (fileList.empty()) {
+				ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "No config files found.");
+			}
+			else {
+				// コンボボックスで表示するためのC文字列リスト作成
+				std::vector<const char*> items;
+				for (const auto& file : fileList) {
+					items.push_back(file.c_str());
+				}
+				ImGui::Combo("Files", &selectedIndex, items.data(), static_cast<int>(items.size()));
+			}
+
+			ImGui::Separator();
+
+			// OKボタン
+			bool canLoad = (selectedIndex >= 0 && selectedIndex < static_cast<int>(fileList.size()));
+			if (ImGui::Button("OK", ImVec2(120, 0)) && canLoad) {
+				outFilePath = fileList[selectedIndex];
+				loaded = true;
+				initialized = false;  // リセット
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SameLine();
+
+			// キャンセルボタン
+			if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+				initialized = false;
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
+		return loaded;
 	}
 
 	///--------------------------------------------------------------------

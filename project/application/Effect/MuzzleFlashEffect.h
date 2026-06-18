@@ -38,10 +38,6 @@ public:
 
 	//----- setter ---------------
 
-	//スケルトンのジョイントにアタッチ
-	void AttachToSkeletonJoint(Skeleton* skeleton, const std::string& jointName);
-	//エフェクトの所有武器設定
-	void SetOwnerWeapon(BaseWeapon* owner) { ownerWeapon_ = owner; }
 
 private:
 

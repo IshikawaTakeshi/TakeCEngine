@@ -76,6 +76,12 @@
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">
       <Filter>Resources\shader\Sprite</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\shaders\Sprite\SpriteInstanced.VS.hlsl">
+      <Filter>Resources\shader\Sprite</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Sprite\SpriteInstanced.PS.hlsl">
+      <Filter>Resources\shader\Sprite</Filter>
+    </FxCompile>
     <FxCompile Include="Resources\shaders\3d\SkyBox.PS.hlsl">
       <Filter>Resources\shader\Object</Filter>
     </FxCompile>
@@ -448,9 +454,6 @@
       <Filter>engine\postEffect</Filter>
     </ClCompile>
     <ClCompile Include="application\Effect\BoostEffect.cpp">
-      <Filter>application\effect</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Ground\WaterGround.cpp">
       <Filter>application\effect</Filter>
     </ClCompile>
     <ClCompile Include="application\Entity\Enemy\AIBrainSystem.cpp">
@@ -1028,9 +1031,6 @@
     <ClInclude Include="application\Effect\BoostEffectPositionEnum.h">
       <Filter>application\effect\Enum</Filter>
     </ClInclude>
-    <ClInclude Include="application\Ground\WaterGround.h">
-      <Filter>application\effect</Filter>
-    </ClInclude>
     <ClInclude Include="application\Provider\BaseInputProvider.h">
       <Filter>application\entity\behavior</Filter>
     </ClInclude>
@@ -1216,6 +1216,7 @@
     <ClInclude Include="application\Entity\Behavior\WaitNode.h" />
     <ClInclude Include="application\Entity\Behavior\View\WaitBlackboardTimeNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\WaitNodeView.h" />
+    <ClInclude Include="engine\2d\UIConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />

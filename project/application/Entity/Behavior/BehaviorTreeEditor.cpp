@@ -116,7 +116,10 @@ std::unique_ptr<BehaviorNode> BehaviorTreeEditor::BuildLogicTree(const BehaviorN
 //================================================================================
 // 実行中のロジックツリーとUIを再紐付けする
 //================================================================================
-void BehaviorTreeEditor::SyncWithActiveTree(BehaviorNode* root) {
+void BehaviorTreeEditor::SyncWithActiveTree(BehaviorNode* root, Blackboard* blackboard) {
+	if (blackboard) {
+		blackboard_ = blackboard;
+	}
 	if (!flowEditor_ || !root) return;
 
 	// 1. 全ての UI ノード (BehaviorNodeView) を UID をキーにして収集
@@ -323,6 +326,7 @@ void BehaviorTreeEditor::LoadTreeFromJson(const std::string& filepath) {
 		if (v) {
 			v->LoadParameters(nodeData);
 			v->SetNodeUID(nodeData.nodeUID); // 同期に使う JSON UID をセット
+			v->SetUserSize(ImVec2(nodeData.sizeW, nodeData.sizeH)); // サイズ情報を復元
 			idToNode[nodeData.nodeUID] = v;
 		}
 	}
@@ -387,6 +391,14 @@ void BehaviorTreeEditor::LoadTreeFromJson(const std::string& filepath) {
 //===============================================================================
 void BehaviorTreeEditor::SaveComboSet() {
 	if (!flowEditor_) return;
+
+	// 最新のエディタ状態から保存用データを構築し、setNameとrootTypeを引き継ぐ
+	std::string prevSetName = currentComboSetData_.setName;
+	std::string prevRootType = currentComboSetData_.rootType;
+
+	currentComboSetData_ = BuildComboSetDataFromEditor();
+	currentComboSetData_.setName = prevSetName;
+	currentComboSetData_.rootType = prevRootType;
 
 	// ImGuiManagerの保存ポップアップを表示する
 	ImGuiManager::ShowSavePopup(
@@ -633,6 +645,8 @@ ComboSetData BehaviorTreeEditor::BuildComboSetDataFromEditor() const {
 		nodeData.posX = viewNode->getPos().x;
 		nodeData.posY = viewNode->getPos().y;
 		nodeData.nodeUID = uid;
+		nodeData.sizeW = viewNode->GetUserSize().x;
+		nodeData.sizeH = viewNode->GetUserSize().y;
 		viewNode->SaveParameters(nodeData);
 
 		out.editorNodes.push_back(nodeData);

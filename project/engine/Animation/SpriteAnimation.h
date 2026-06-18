@@ -8,7 +8,9 @@
 
 
 //前方宣言
+namespace TakeC {
 class Sprite;
+}
 
 //============================================================================
 // SpriteAnimator class
@@ -48,7 +50,7 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="target"></param>
-	void Initialize(Sprite* target);
+	void Initialize(TakeC::Sprite* target);
 
 	/// <summary>
 	/// 更新処理
@@ -128,7 +130,7 @@ private:
 	};
 
 	//アニメーションさせるスプライト
-	Sprite* target_ = nullptr;
+	TakeC::Sprite* target_ = nullptr;
 	
 	// 現在実行するアニメーション関数（ラムダで格納）
 	std::vector<AnimationJob> animationJobs_;

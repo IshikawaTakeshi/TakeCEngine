@@ -57,7 +57,7 @@ private:
 
 	// 各方向ごとの状態管理用構造体
 	struct DirectionState {
-		Sprite* spritePtr = nullptr; 
+		TakeC::Sprite* spritePtr = nullptr; 
 
 		Timer timer;        // 点滅タイマー
 		float currentAlpha = 0.0f; // 現在のアルファ値

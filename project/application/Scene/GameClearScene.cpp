@@ -1,8 +1,11 @@
 #include "GameClearScene.h"
-#include "SceneManager.h"
-#include "TakeCFrameWork.h"
 #include <cmath>
 #include <algorithm>
+
+#include "application/Scene/SceneManager.h"
+#include "engine/base/TakeCFrameWork.h"
+
+using namespace TakeC;
 
 //====================================================================
 //			初期化
@@ -95,7 +98,7 @@ void GameClearScene::Draw() {
 
 void GameClearScene::DrawSprite() {
 
-	SpriteCommon::GetInstance().PreDraw(); // Spriteの描画前処理
+	TakeC::SpriteCommon::GetInstance().PreDraw(); // Spriteの描画前処理
 	clearTextSprite_->Draw();
 }
 

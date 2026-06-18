@@ -1,8 +1,12 @@
 #include "TitleScene.h"
-#include "SceneManager.h"
+#include <algorithm>
+
+#include "application/Scene/SceneManager.h"
+
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/Math/Quaternion.h"
-#include <algorithm>
+
+using namespace TakeC;
 
 //====================================================================
 //			初期化
@@ -119,7 +123,7 @@ void TitleScene::Draw() {
 
 void TitleScene::DrawSprite() {
 	//タイトルテキスト描画
-	SpriteCommon::GetInstance().PreDraw();
+	TakeC::SpriteCommon::GetInstance().PreDraw();
 	titleTextSprite_->Draw();
 	pushStartUI_->Draw();
 }

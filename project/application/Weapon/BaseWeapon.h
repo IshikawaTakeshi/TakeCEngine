@@ -23,7 +23,7 @@ public:
 	virtual ~BaseWeapon() = default;
 
 	// 武器の初期化
-	virtual void Initialize(Object3dCommon* object3dCommon,
+	virtual void Initialize(TakeC::Object3dCommon* object3dCommon,
 		BulletManager* bulletManager) = 0;
 	// 武器の更新
 	virtual void Update() = 0;
@@ -135,7 +135,7 @@ protected:
 	BulletManager* bulletManager_ = nullptr;
 
 	// 武器の3Dオブジェクト
-	std::unique_ptr<Object3d> object3d_ = nullptr;
+	std::unique_ptr<TakeC::Object3d> object3d_ = nullptr;
 
 	std::unique_ptr<ParticleEmitter> muzzleFlashEmitter_ = nullptr;
 

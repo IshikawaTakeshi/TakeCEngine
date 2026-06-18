@@ -22,12 +22,11 @@
 #include "engine/Animation/SpriteAnimation.h"
 
 
-// 前方宣言
-class DirectXCommon;
-
 //============================================================================
 // Sprite class
 //============================================================================
+namespace TakeC {
+
 class Sprite {
 public:
 	Sprite() = default;
@@ -52,20 +51,23 @@ public:
 	void UpdateImGui([[maybe_unused]] const std::string& name);
 
 	/// <summary>
-	/// 描画処理
+	/// 描画処理 (遅延描画キューへの登録)
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 即時描画処理 (遅延描画システムから呼び出される)
+	/// </summary>
+	void RenderImmediate();
+
 	// テクスチャサイズをイメージに合わせる
 	void AdjustTextureSize();
-
+	// 
 	void LoadConfig(const std::string& jsonFilePath);
 
 private:
 	// 頂点データ更新
 	void UpdateVertexData();
-	//テクスチャセレクター描画関数
-	void DrawTextureSelector();
 
 public:
 	//========================================================================
@@ -78,6 +80,9 @@ public:
 	EulerTransform GetTransform() { return transform_; }
 	// メッシュ取得
 	const std::unique_ptr<Mesh>& GetMesh() const { return mesh_; }
+
+	const Matrix4x4& GetWorldMatrix() const { return worldMatrix_; }
+	const Matrix4x4& GetWVPMatrix() const { return worldViewProjectionMatrix_; }
 
 	// SpriteAnimator取得
 	SpriteAnimator* Animation() const { return spriteAnimator_.get(); }
@@ -110,6 +115,10 @@ public:
 	// Configへの参照取得（必要なら）
 	const SpriteConfig& GetConfig() const { return spriteConfig_; }
 
+	// レイヤー（Zオーダー）取得
+	int GetLayer() const { return spriteConfig_.layer_; }
+	SpriteDrawLayer GetDrawLayer() const { return spriteConfig_.drawLayer_; }
+
 	//----- setter ---------------------------
 
 	// アンカーポイント設定
@@ -119,17 +128,23 @@ public:
 	// 座標設定
 	void SetTranslate(const Vector2& position) {
 		spriteConfig_.position_ = position;
+		firstUpdate_ = true;
 	}
 	// 回転設定
 	void SetRotate(const float rotation) { spriteConfig_.rotation_ = rotation; }
 	// サイズ設定
-	void SetSize(const Vector2& size) { spriteConfig_.size_ = size; }
+	void SetSize(const Vector2& size) {
+		spriteConfig_.size_ = size;
+		firstUpdate_ = true;
+	}
 	// 左右フリップ設定
 	void SetIsFlipX(const bool isFlipX) { isFlipX_ = isFlipX; }
 	// 上下フリップ設定
 	void SetIsFlipY(const bool isFlipY) { isFlipY_ = isFlipY; }
 	// 表示・非表示設定
 	void SetIsActive(bool isActive) { isActive_ = isActive; }
+
+	void SetInheritParentScale(bool inherit) { spriteConfig_.inheritParentScale_ = inherit; }
 	// テクスチャの左上座標設定
 	void SetTextureLeftTop(const Vector2& textureLeftTop) {
 		spriteConfig_.textureLeftTop_ = textureLeftTop;
@@ -147,10 +162,16 @@ public:
 		color.w = alpha;
 		mesh_->GetMaterial()->SetMaterialColor(color);
 	}
-	// ファイルパス設定
-	void SetFilePath(const std::string& filePath);
+	// テクスチャファイルパス設定
+	void SetTextureFilePath(const std::string& filePath);
 	// コンフィグデータの名前を設定
 	void SetName(const std::string& name) { spriteConfig_.name = name; }
+
+	void SetParent(const Matrix4x4* parentMatrix) { parentMatrix_ = parentMatrix; }
+
+	// レイヤー（Zオーダー）設定
+	void SetLayer(int layer) { spriteConfig_.layer_ = layer; }
+	void SetDrawLayer(SpriteDrawLayer drawLayer) { spriteConfig_.drawLayer_ = drawLayer; }
 
 private:
 	// SpriteCommon
@@ -174,9 +195,12 @@ private:
 	Matrix4x4 projectionMatrix_;
 	Matrix4x4 worldViewProjectionMatrix_;
 
+	const Matrix4x4* parentMatrix_ = nullptr; // ペアレントのワールド行列
+
 	bool isFlipX_ = false;      // 左右フリップ
 	bool isFlipY_ = false;      // 上下フリップ
 	bool adjustSwitch_ = false; // テクスチャサイズ調整スイッチ
+	bool firstUpdate_ = true;   // 初回更新フラグ
 	bool isActive_ = true;      // 表示・非表示フラグ
 
 	// Sprite設定データ
@@ -187,3 +211,5 @@ private:
 	char searchBuffer_[64] = "";                // 検索用バッファ
 	bool showTextureSelector_ = false;          // セレクターの開閉状態
 };
+
+} // namespace TakeC

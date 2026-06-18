@@ -11,16 +11,13 @@
 #include <string>
 #include <memory>
 
-//前方宣言
-class Model;
-class ModelCommon;
-
-
 //============================================================================
 // ModelManager class
 //============================================================================
 namespace TakeC {
 
+	class Model;
+	class ModelCommon;
 	class SrvManager;
 	class DirectXCommon;
 

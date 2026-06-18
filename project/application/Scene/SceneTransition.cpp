@@ -4,6 +4,8 @@
 #include "base/TakeCFrameWork.h"
 #include <algorithm>
 
+using namespace TakeC;
+
 //シングルトンインスタンスの初期化
 SceneTransition* SceneTransition::instance_ = nullptr;
 
@@ -27,7 +29,7 @@ void SceneTransition::Initialize() {
 	state_ = TransitionState::NONE;
 
 	fadeSprite_ = std::make_unique<Sprite>();
-	fadeSprite_->Initialize(&SpriteCommon::GetInstance(), "black.png");
+	fadeSprite_->Initialize(&TakeC::SpriteCommon::GetInstance(), "black.png");
 	fadeSprite_->SetTextureSize({ TakeC::WinApp::kScreenWidth,TakeC::WinApp::kScreenHeight });
 	fadeSprite_->SetSize({ TakeC::WinApp::kScreenWidth,TakeC::WinApp::kScreenHeight });
 	duration_ = 0.0f;
@@ -111,7 +113,7 @@ void SceneTransition::Draw() {
 	}
 
 	//描画前処理
-	SpriteCommon::GetInstance().PreDraw();
+	TakeC::SpriteCommon::GetInstance().PreDraw();
 	//スプライト描画
 	fadeSprite_->Draw();
 }

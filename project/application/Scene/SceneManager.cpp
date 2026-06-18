@@ -4,7 +4,10 @@
 #include "base/TakeCFrameWork.h"
 #include "3d/Object3dCommon.h"
 #include "scene/SceneTransition.h"
+#include "engine/2d/SpriteCommon.h"
 #include <cassert>
+
+using namespace TakeC;
 
 //========================================================================
 //	インスタンス取得
@@ -139,10 +142,10 @@ void SceneManager::LoadLevelData(const std::string& sceneName) {
 	levelData_ = TakeCFrameWork::GetJsonLoader()->LoadLevelFile(sceneName);
 
 	for (auto& objectData : levelData_->objects) {
-		Model* model = nullptr;
+		TakeC::Model* model = nullptr;
 		model = TakeC::ModelManager::GetInstance().FindModel(objectData.file_name);
 		std::pair<std::string, std::unique_ptr<LevelObject>> newObject = { objectData.name, std::make_unique<LevelObject>() };
-		newObject.second->Initialize(&Object3dCommon::GetInstance(), objectData.file_name);
+		newObject.second->Initialize(&TakeC::Object3dCommon::GetInstance(), objectData.file_name);
 		newObject.second->SetName(objectData.name);
 		if (objectData.collider.isValid) {
 
@@ -180,9 +183,25 @@ void SceneManager::DrawObject() {
 	
 }
 
+void SceneManager::DrawBackgroundSprite() {
+	TakeC::SpriteCommon::GetInstance().BeginFrame();
+	TakeC::SpriteCommon::GetInstance().PreDraw();
+	currentScene_->DrawBackgroundSprite();
+	TakeC::SpriteCommon::GetInstance().ExecuteDraws();
+}
+
 void SceneManager::DrawSprite() {
+	TakeC::SpriteCommon::GetInstance().BeginFrame();
 	currentScene_->DrawSprite();
 	SceneTransition::GetInstance()->Draw();
+	TakeC::SpriteCommon::GetInstance().ExecuteDraws();
+}
+
+void SceneManager::DrawForegroundSprite() {
+	TakeC::SpriteCommon::GetInstance().PreDraw();
+	currentScene_->DrawForegroundSprite();
+	SceneTransition::GetInstance()->Draw();
+	TakeC::SpriteCommon::GetInstance().ExecuteDraws();
 }
 
 void SceneManager::DrawShadow() {

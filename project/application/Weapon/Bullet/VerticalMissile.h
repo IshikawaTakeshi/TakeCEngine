@@ -30,7 +30,7 @@ public:
 	//========================================================================
 
 	// 初期化
-	void Initialize(Object3dCommon* object3dCommon, const std::string& filePath) override;
+	void Initialize(TakeC::Object3dCommon* object3dCommon, const std::string& filePath) override;
 	void InitializeEffect(const BulletEffectConfig& effectConfig);
 	// 更新処理
 	void Update() override;

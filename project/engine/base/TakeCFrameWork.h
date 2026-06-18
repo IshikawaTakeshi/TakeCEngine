@@ -128,9 +128,9 @@ protected:
 	//オーディオ管理クラス
 	AudioManager* audio_ = nullptr;
 	//スプライト共通クラス
-	SpriteCommon* spriteCommon_ = nullptr;
+	TakeC::SpriteCommon* spriteCommon_ = nullptr;
 	//3Dオブジェクト共通クラス
-	Object3dCommon* object3dCommon_ = nullptr;
+	TakeC::Object3dCommon* object3dCommon_ = nullptr;
 	//パーティクル共通クラス
 	ParticleCommon* particleCommon_ = nullptr;
 	//シーンマネージャー

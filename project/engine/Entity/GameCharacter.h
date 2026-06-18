@@ -36,7 +36,7 @@ public:
 	/// </summary>
 	/// <param name="object3dCommon"></param>
 	/// <param name="filePath"></param>
-	virtual void Initialize(Object3dCommon* object3dCommon, const std::string& filePath);
+	virtual void Initialize(TakeC::Object3dCommon* object3dCommon, const std::string& filePath);
 
 	/// <summary>
 	/// 更新処理
@@ -72,7 +72,7 @@ public:
 	/// キャラクタータイプの取得
 	virtual CharacterType GetCharacterType() { return characterType_; }
 	/// Object3dの取得
-	Object3d* GetObject3d() { return object3d_.get(); }
+	TakeC::Object3d* GetObject3d() { return object3d_.get(); }
 
 	//----- setter ---------------
 
@@ -90,7 +90,7 @@ public:
 protected:
 
 	// 3Dオブジェクト
-	std::unique_ptr<Object3d> object3d_;
+	std::unique_ptr<TakeC::Object3d> object3d_;
 	// コライダー
 	std::unique_ptr<Collider> collider_;
 	// キャラクタータイプ

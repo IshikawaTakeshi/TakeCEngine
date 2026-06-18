@@ -3,8 +3,10 @@
 #include <string>
 
 // 前方宣言
+namespace TakeC {
 class SpriteCommon;
 class Sprite;
+}
 
 //============================================================================
 // GameClearUI class
@@ -21,7 +23,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(SpriteCommon* spriteCommon);
+	void Initialize(TakeC::SpriteCommon* spriteCommon);
 	/// <summary>
 	/// 更新処理
 	/// </summary>
@@ -40,9 +42,9 @@ public:
 
 private:
 
-	SpriteCommon* spriteCommon_ = nullptr; // スプライト共通クラス
+	TakeC::SpriteCommon* spriteCommon_ = nullptr; // スプライト共通クラス
 
-	std::unique_ptr<Sprite> textSprite_; // テキストスプライト
+	std::unique_ptr<TakeC::Sprite> textSprite_; // テキストスプライト
 
 	bool isActive_ = false; // UIの表示状態
 	float timer_ = 0.0f; // タイマー

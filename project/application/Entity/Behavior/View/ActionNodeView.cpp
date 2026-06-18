@@ -45,6 +45,13 @@ void ActionNodeView::draw() {
 		// インタラクティブなUIを出すため、ここではステート名を表示するだけにする
 		auto* action = static_cast<ActionNode*>(logicNode_);
 		targetStateName_ = std::string(magic_enum::enum_name(action->GetTargetState()));
+
+		// タイトルの同期
+		if (nodeCustomName_ == "UnnamedNode" || nodeCustomName_.empty() || nodeCustomName_ == "Action:NONE" || nodeCustomName_ == "ACTION" || nodeCustomName_.starts_with("Action:")) {
+			nodeCustomName_ = "Action:" + targetStateName_;
+			setTitle(nodeCustomName_);
+		}
+
 		ImGui::Text("State: %s", targetStateName_.c_str());
 	}
 	else {
@@ -55,7 +62,7 @@ void ActionNodeView::draw() {
 		strncpy_s(buffer, targetStateName_.c_str(), sizeof(buffer));
 		if (ImGui::InputText("Target State", buffer, sizeof(buffer))) {
 			targetStateName_ = buffer;
-			if (nodeCustomName_ == "Action:NONE" || nodeCustomName_ == "UnnamedNode" || nodeCustomName_.empty()) {
+			if (nodeCustomName_ == "Action:NONE" || nodeCustomName_ == "UnnamedNode" || nodeCustomName_.empty() || nodeCustomName_.starts_with("Action:")) {
 				nodeCustomName_ = "Action:" + targetStateName_;
 				setTitle(nodeCustomName_);
 			}
@@ -82,7 +89,7 @@ void ActionNodeView::SaveParameters(BehaviorNodeData& data) const {
 void ActionNodeView::LoadParameters(const BehaviorNodeData& data) {
 	BehaviorNodeView::LoadParameters(data);
 	targetStateName_ = data.targetState;
-	if (nodeCustomName_ == "UnnamedNode" || nodeCustomName_.empty() || nodeCustomName_ == "Action:NONE" || nodeCustomName_ == "ACTION") {
+	if (nodeCustomName_ == "UnnamedNode" || nodeCustomName_.empty() || nodeCustomName_ == "Action:NONE" || nodeCustomName_ == "ACTION" || nodeCustomName_.starts_with("Action:")) {
 		nodeCustomName_ = "Action:" + targetStateName_;
 	}
 	setTitle(nodeCustomName_);

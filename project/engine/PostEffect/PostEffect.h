@@ -105,7 +105,7 @@ protected:
 	uint32_t outputTexSrvIndex_ = 0;
 
 	//computeパイプライン
-	std::unique_ptr<PSO> computePSO_ = nullptr;
+	std::unique_ptr<TakeC::PSO> computePSO_ = nullptr;
 	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 
 	//CSファイルパス

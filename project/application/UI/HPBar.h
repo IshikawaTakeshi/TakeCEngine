@@ -55,10 +55,10 @@ public:
 private:
 	// スプライトメンバ
 	// (BaseUIのsprites_で管理されるため、ここではポインタのみ保持)
-	Sprite* backgroundSprite_ = nullptr;
-	Sprite* foregroundSprite_ = nullptr;
-	Sprite* damageBarSprite_ = nullptr;
-	Sprite* ownerNameSprite_ = nullptr;
+	TakeC::Sprite* backgroundSprite_ = nullptr;
+	TakeC::Sprite* foregroundSprite_ = nullptr;
+	TakeC::Sprite* damageBarSprite_ = nullptr;
+	TakeC::Sprite* ownerNameSprite_ = nullptr;
 
 	float margin_ =
 		2.0f; // 枠の太さ（JSONから取るように拡張も可能だが、現状維持）

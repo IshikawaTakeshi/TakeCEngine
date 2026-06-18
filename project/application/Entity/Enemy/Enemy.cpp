@@ -22,6 +22,7 @@
 #include "engine/Math/Matrix4x4.h"
 #include "application/Weapon/ShotGun/ShotGun.h"
 
+using namespace TakeC;
 
 //========================================================================================================
 // 　初期化
@@ -40,8 +41,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, filePath);
 	object3d_->SetScale(enemyData_.characterInfo.transform.scale);
-	object3d_->SetUseExternalAnimation(
-		true); // 外部からアニメーションを設定するようにする
+	object3d_->SetUseExternalAnimation(true); // 外部からアニメーションを設定するようにする
 	// コライダー初期化
 	collider_ = std::make_unique<BoxCollider>();
 	collider_->Initialize(object3dCommon->GetDirectXCommon(), object3d_.get());
@@ -172,7 +172,8 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	// ===== 追加: BehaviorTreeEditor 初期化と接続 =====
 	behaviorTreeEditor_ = std::make_unique<BehaviorTreeEditor>();
 	behaviorTreeEditor_->Initialize();
-	behaviorTreeEditor_->LoadTreeFromEnemy(behaviorTree_.get(), blackboard_.get());
+	behaviorTreeEditor_->LoadTreeFromJson("DefaultComboSet.json");
+	behaviorTreeEditor_->SyncWithActiveTree(behaviorTree_.get(), blackboard_.get());
 
 	// Applyボタン -> Enemyへ反映予約
 	behaviorTreeEditor_->SetApplyCallback([this](const ComboSetData& data) {
@@ -321,7 +322,7 @@ void Enemy::Update() {
 
 			//Editorに新しいツリーを反映
 			if (behaviorTreeEditor_ && blackboard_) {
-				behaviorTreeEditor_->LoadTreeFromEnemy(behaviorTree_.get(), blackboard_.get());
+				behaviorTreeEditor_->SyncWithActiveTree(behaviorTree_.get(), blackboard_.get());
 			}
 
 			pendingTreeData_ = nullptr;

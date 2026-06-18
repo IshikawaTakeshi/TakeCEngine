@@ -54,6 +54,8 @@ struct GraphicShaderData {
 // 前方宣言
 class DXC;
 
+namespace TakeC {
+
 //============================================================================
 // PipelineStateObject class
 //============================================================================
@@ -205,3 +207,4 @@ private:
 	//device
 	ID3D12Device* device_ = nullptr;
 };
+} // namespace TakeC

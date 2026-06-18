@@ -19,7 +19,7 @@ public:
 	~ShotGun() override = default;
 
 	
-	void Initialize(Object3dCommon* object3dCommon, BulletManager* bulletManager) override;
+	void Initialize(TakeC::Object3dCommon* object3dCommon, BulletManager* bulletManager) override;
 	void Update() override;
 	void UpdateImGui() override;
 	void Draw() override;

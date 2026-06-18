@@ -14,6 +14,8 @@
 #include "engine/math/MatrixMath.h"
 #include "engine/Utility/ResourceBarrier.h"
 
+namespace TakeC {
+
 //=============================================================================
 // 初期化
 //=============================================================================
@@ -379,3 +381,5 @@ void Model::Reload(ModelData* newModelData) {
 		localMatrix_ = modelData_->rootNode.localMatrix;
 	}
 }
+
+} // namespace TakeC
