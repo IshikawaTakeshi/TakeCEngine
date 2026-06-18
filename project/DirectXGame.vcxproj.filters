@@ -1316,6 +1316,7 @@
     <None Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.inl" />
     <None Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.inl" />
     <None Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.inl" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">
