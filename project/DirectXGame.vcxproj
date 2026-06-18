@@ -67,7 +67,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\generated\obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)/externals/DirectXTex;$(SolutionDir)/externals/imgui;$(SolutionDir)/externals/nlohmann;$(SolutionDir)/externals/magic_enum</IncludePath>
+    <IncludePath>$(SolutionDir)/externals/DirectXTex;$(SolutionDir)/externals/imgui;$(SolutionDir)/externals/nlohmann;$(SolutionDir)/externals/magic_enum;$(SolutionDir)/externals/DirectML/Microsoft.AI.DirectML.1.15.4;$(SolutionDir)/externals/DirectML/Microsoft.ML.OnnxRuntime.DirectML.1.24.4</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">
     <OutDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</OutDir>
@@ -369,6 +369,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.cpp" />
     <ClCompile Include="application\Entity\State\StateBreakStun.cpp" />
+    <ClCompile Include="engine\AI\OnnxRuntimeSystem.cpp" />
+    <ClCompile Include="engine\AI\OnnxModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Entity\Animation\AnimationMapper.h" />
@@ -594,6 +596,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\context_wrapper.h" />
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.h" />
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h" />
+    <ClInclude Include="engine\AI\OnnxRuntimeSystem.h" />
+    <ClInclude Include="engine\AI\OnnxModel.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

@@ -587,6 +587,8 @@
     <ClCompile Include="application\Entity\Behavior\WaitNode.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\WaitBlackboardTimeNodeView.cpp" />
     <ClCompile Include="application\Entity\Behavior\View\WaitNodeView.cpp" />
+    <ClCompile Include="engine\AI\OnnxRuntimeSystem.cpp" />
+    <ClCompile Include="engine\AI\OnnxModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1217,6 +1219,8 @@
     <ClInclude Include="application\Entity\Behavior\View\WaitBlackboardTimeNodeView.h" />
     <ClInclude Include="application\Entity\Behavior\View\WaitNodeView.h" />
     <ClInclude Include="engine\2d\UIConfig.h" />
+    <ClInclude Include="engine\AI\OnnxRuntimeSystem.h" />
+    <ClInclude Include="engine\AI\OnnxModel.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectXGame.rc" />
@@ -1317,6 +1321,8 @@
     <None Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.inl" />
     <None Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.inl" />
     <None Include="packages.config" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime.dll" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime_providers_shared.dll" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="application">
