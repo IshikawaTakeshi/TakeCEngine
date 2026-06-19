@@ -113,7 +113,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine;$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\scene;$(ProjectDir)engine\math;$(ProjectDir)engine\camera;$(ProjectDir)application;$(ProjectDir)externals/assimp/include;$(ProjectDir)REsources/shaders;$(ProjectDir)externals</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine;$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\scene;$(ProjectDir)engine\math;$(ProjectDir)engine\camera;$(ProjectDir)application;$(ProjectDir)externals/assimp/include;$(ProjectDir)Resources/shaders;$(ProjectDir)externals;$(ProjectDir)packages</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
