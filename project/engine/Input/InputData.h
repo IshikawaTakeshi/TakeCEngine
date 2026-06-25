@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <map>
 #include <cmath>
+#include <Windows.h>
 #include <dinput.h>
 #include <Xinput.h>
-#include <Windows.h>
 #include <wrl.h>
 
 #pragma comment(lib, "dinput8.lib")

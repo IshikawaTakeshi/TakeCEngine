@@ -14,6 +14,7 @@
 #include "Base/SpriteManager.h"
 #include "Base/UIManager.h"
 #include "Base/EventManager.h"
+//#include "AI/OnnxRuntimeSystem.h"
 #include "3d/Object3dCommon.h"
 #include "3d/Primitive/PrimitiveDrawer.h"
 #include "3d/Particle/ParticleCommon.h"
@@ -165,6 +166,8 @@ protected:
 	static std::unique_ptr<TakeC::UIManager> uiManager_;
 	//EventManager
 	static std::unique_ptr<TakeC::EventManager> eventManager_;
+	//onnxRuntimeSystem
+	//static std::unique_ptr<TakeC::OnnxRuntimeSystem> onnxRuntimeSystem_;
 	
 	// ゲームの起動時間
 	static std::chrono::steady_clock::time_point gameTime_;

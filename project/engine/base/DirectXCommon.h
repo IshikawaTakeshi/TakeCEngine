@@ -102,6 +102,8 @@ namespace TakeC {
 
 		/// 描画コマンドリストの取得
 		ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
+		// コマンドキューの取得
+		ID3D12CommandQueue* GetCommandQueue() const { return commandQueue_.Get(); }
 
 		/// Dxcの取得
 		DXC* GetDXC() { return dxc_.get(); }

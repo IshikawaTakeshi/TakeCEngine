@@ -109,6 +109,10 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	postEffectManager_->Initialize(directXCommon_.get(), srvManager_.get(),renderTexture_.get());
 	postEffectManager_->SetPostEffectFactory(postEffectFactory_.get());
 
+	//OnnxRuntimeSystem
+	//onnxRuntimeSystem_ = std::make_unique<OnnxRuntimeSystem>();
+	//onnxRuntimeSystem_->Initialize(directXCommon_.get());
+
 	//WireFrame
 	wireFrame_ = std::make_unique<WireFrame>();
 	wireFrame_->Initialize(directXCommon_.get());
@@ -145,6 +149,7 @@ void TakeCFrameWork::Finalize() {
 
 	wireFrame_->Finalize();
 	animationManager_->Finalize();
+	//onnxRuntimeSystem_->Finalize();
 	TakeC::TextureManager::GetInstance().Finalize();
 	TakeC::ModelManager::GetInstance().Finalize();
 	CameraManager::GetInstance().Finalize();
