@@ -12,7 +12,7 @@ void SceneStatePause::Initialize([[maybe_unused]] GamePlayScene* scene) {
 	// ポーズメニューUIを開く
 	TakeCFrameWork::GetUIManager()->GetUI<PauseMenuUI>("PauseMenuUI")->Open();
 	// ポーズフラグを立てる
-	scene->SetPauseMenuActive(true);
+	//scene->SetPauseMenuActive(true);
 
 }
 
@@ -31,7 +31,7 @@ void SceneStatePause::Update([[maybe_unused]] GamePlayScene* scene) {
 	case PauseMenuUI::PauseMenuResult::Resume:
 	{
 		// ポーズフラグを下ろす
-		scene->SetPauseMenuActive(false);
+		//scene->SetPauseMenuActive(false);
 		// ゲームプレイ状態に遷移
 		RequestTransition(SceneState::GAMEPLAY);
 		break;
@@ -39,7 +39,7 @@ void SceneStatePause::Update([[maybe_unused]] GamePlayScene* scene) {
 	case PauseMenuUI::PauseMenuResult::Retry:
 	{
 		// ポーズフラグを下ろす
-		scene->SetPauseMenuActive(false);
+		////scene->SetPauseMenuActive(false);
 		// ゲーム開始状態に遷移
 		float fadeTimer = 1.0f;
 		TakeCFrameWork::GetPostEffectManager()->PlayEffect("Outline_FadeOut");
@@ -49,7 +49,7 @@ void SceneStatePause::Update([[maybe_unused]] GamePlayScene* scene) {
 	case PauseMenuUI::PauseMenuResult::ToTitle:
 	{
 		// ポーズフラグを下ろす
-		scene->SetPauseMenuActive(false);
+		//scene->SetPauseMenuActive(false);
 		// ゲーム開始状態に遷移
 		float fadeTimer = 1.0f;
 		TakeCFrameWork::GetPostEffectManager()->PlayEffect("Outline_FadeOut");

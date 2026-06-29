@@ -9,8 +9,7 @@
 //===================================================================================
 void SceneStateGameClear::Initialize(GamePlayScene* scene) {
 
-	scene->GetPhaseMessageUI()->SetNextMessage(PhaseMessage::WIN);
-
+	
 	// スローモーション解除
 	MyGame::RequestTimeScale(1.0f, 0.4f, 0.0f);
 	float fadeTimer = 1.0f;

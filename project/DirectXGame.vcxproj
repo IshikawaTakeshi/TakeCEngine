@@ -364,7 +364,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\GamePlaySceneState.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameStart.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGamePlay.cpp" />
-    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateEnemyDestroyed.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.cpp" />
@@ -641,7 +640,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\GamePlaySceneState.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameStart.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGamePlay.h" />
-    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateEnemyDestroyed.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.h" />
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.h" />

@@ -808,9 +808,6 @@
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGamePlay.cpp">
       <Filter>application\Scene\SceneState\GamePlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateEnemyDestroyed.cpp">
-      <Filter>application\Scene\SceneState\GamePlayScene</Filter>
-    </ClCompile>
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.cpp">
       <Filter>application\Scene\SceneState\GamePlayScene</Filter>
     </ClCompile>
@@ -1633,9 +1630,6 @@
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGamePlay.h">
       <Filter>application\Scene\SceneState\GamePlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateEnemyDestroyed.h">
-      <Filter>application\Scene\SceneState\GamePlayScene</Filter>
-    </ClInclude>
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStateGameOver.h">
       <Filter>application\Scene\SceneState\GamePlayScene</Filter>
     </ClInclude>
@@ -1778,6 +1772,8 @@
     <None Include="Resources\shaders\WireFrame\WireFrame.hlsli">
       <Filter>Resources\shaders\WireFrame</Filter>
     </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime.dll" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime_providers_shared.dll" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\EmitParticle.CS.hlsl">

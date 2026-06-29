@@ -8,7 +8,6 @@
 //===================================================================================
 void SceneStateGameOver::Initialize(GamePlayScene* scene) {
 
-	scene->GetPhaseMessageUI()->SetNextMessage(PhaseMessage::LOSE);
 
 	float fadeTimer = 1.0f;
 	SceneManager::GetInstance().ChangeScene("GAMEOVER", fadeTimer);
