@@ -93,11 +93,19 @@ bool BaseWeapon::IsCharging() const {
 	// チャージ中かどうかを返す
 	return weaponState_.isCharging;
 }
+
+// 使用可能かどうかを返す
 bool BaseWeapon::GetIsAvailable() const { return weaponState_.isAvailable; }
+
+// リロード中かどうかを返す
 bool BaseWeapon::GetIsReloading() const { return weaponState_.isReloading; }
+
+// チャージ攻撃可能かどうかを返す
 bool BaseWeapon::CanChargeAttack() const {
 	return weaponData_.config.canChargeAttack;
 }
+
+// 移動撃ち可能かどうかを返す
 bool BaseWeapon::CanMoveShootable() const {
 	return weaponData_.config.canMoveShootable;
 }
@@ -105,6 +113,7 @@ bool BaseWeapon::StopShootOnly() const {
 	return weaponData_.config.isStopShootOnly;
 }
 
+// 武器のユニットポジションを設定
 void BaseWeapon::SetUnitPosition(uint32_t position) {
 	unitPosition_ = position;
 }

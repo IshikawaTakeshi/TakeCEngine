@@ -264,6 +264,7 @@ float AIBrainSystem::CalculateFloatingScore() {
 		targetOffset = 10.0f; // 相手のカメラアングルを狂わせる高さまで飛ぶ
 	}
 
+	// 理想の高さと現在の高さの差を計算
 	float idealHeight = characterInfo_->focusTargetPos.y + targetOffset;
 	float currentHeight = characterInfo_->transform.translate.y;
 	float heightDiff = idealHeight - currentHeight;

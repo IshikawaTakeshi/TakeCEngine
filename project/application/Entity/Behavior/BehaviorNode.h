@@ -72,7 +72,8 @@ public:
 	int GetUID() const { return uid_; }
 
 protected:
-
+	
+	// デバッグ用の名前
 	std::string name_ = "UnnamedNode";
 
 	// 保存データとの紐付け用の一意識別子
