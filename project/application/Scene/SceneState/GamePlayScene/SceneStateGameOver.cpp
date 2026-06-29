@@ -6,7 +6,7 @@
 //===================================================================================
 // 初期化
 //===================================================================================
-void SceneStateGameOver::Initialize(GamePlayScene* scene) {
+void SceneStateGameOver::Initialize([[maybe_unused]] GamePlayScene* scene) {
 
 
 	float fadeTimer = 1.0f;

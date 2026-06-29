@@ -50,6 +50,8 @@ namespace TakeC {
 		// 入力・出力の名前を取得
 		const std::vector<std::string>& GetInputNames() const { return inputNames_; }
 		const std::vector<std::string>& GetOutputNames() const { return outputNames_; }
+		const std::vector<std::vector<int64_t>>& GetInputShapes() const { return inputShapes_; }
+		const std::vector<std::vector<int64_t>>& GetOutputShapes() const { return outputShapes_; }
 
 	private:
 
@@ -58,6 +60,8 @@ namespace TakeC {
 
 		std::vector<std::string> inputNames_;
 		std::vector<std::string> outputNames_;
+		std::vector<std::vector<int64_t>> inputShapes_;
+		std::vector<std::vector<int64_t>> outputShapes_;
 		std::vector<const char*> inputNamesPtrs_;
 		std::vector<const char*> outputNamesPtrs_;
 

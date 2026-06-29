@@ -48,6 +48,6 @@ uint64_t Measure(const wchar_t* label, const std::function<void()>& fn) {
 	fn();
 	auto end = Clock::now();
 	auto ms = std::chrono::duration_cast<Ms>(end - start).count();
-	Logger::Log(StringUtility::ConvertString(std::wstring(L"[LoadTime] ") + label + L" : " + std::to_wstring(ms) + L"ms"));
+	Logger::Log(StringUtility::ConvertString(std::wstring(L"[LoadTime] ") + label + L" : " + std::to_wstring(ms) + L"ms\n"));
 	return ms;
 }

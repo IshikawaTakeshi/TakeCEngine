@@ -7,7 +7,7 @@
 //===================================================================================
 // 初期化
 //===================================================================================
-void SceneStateGameClear::Initialize(GamePlayScene* scene) {
+void SceneStateGameClear::Initialize([[maybe_unused]] GamePlayScene* scene) {
 
 	
 	// スローモーション解除

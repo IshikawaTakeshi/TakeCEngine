@@ -1,5 +1,8 @@
 #pragma once
+#ifndef DIRECTINPUT_VERSION
 #define DIRECTINPUT_VERSION 0x0800 //DirectInputのバージョン指定
+#endif
+#include <Windows.h>
 #include <dinput.h>
 #include <Xinput.h>
 #include <wrl.h>

@@ -3,6 +3,7 @@
 //C4023の警告を見なかったことにする
 #pragma warning(disable:4023)
 //Include
+#include "Input/Input.h"
 #include "Base/DirectXCommon.h"
 #include "Base/D3DResourceLeakChecker.h"
 #include "Base/TextureManager.h"
@@ -14,7 +15,7 @@
 #include "Base/SpriteManager.h"
 #include "Base/UIManager.h"
 #include "Base/EventManager.h"
-//#include "AI/OnnxRuntimeSystem.h"
+#include "AI/OnnxRuntimeSystem.h"
 #include "3d/Object3dCommon.h"
 #include "3d/Primitive/PrimitiveDrawer.h"
 #include "3d/Particle/ParticleCommon.h"
@@ -24,7 +25,6 @@
 #include "2d/WireFrame.h"
 #include "Animation/Animator.h"
 #include "audio/Audio.h"
-#include "Input/Input.h"
 #include "camera/CameraManager.h"
 #include "primitive/Sphere.h"
 #include "PostEffect/PostEffectManager.h"
@@ -98,6 +98,8 @@ public:
 	static TakeC::UIManager* GetUIManager();
 	//EventManagerの取得
 	static TakeC::EventManager* GetEventManager();
+	//OnnxRuntimeSystemの取得
+	static TakeC::OnnxRuntimeSystem* GetOnnxRuntimeSystem();
 
 	//ゲーム起動時間の取得
 	static float GetGameTime();
@@ -167,7 +169,7 @@ protected:
 	//EventManager
 	static std::unique_ptr<TakeC::EventManager> eventManager_;
 	//onnxRuntimeSystem
-	//static std::unique_ptr<TakeC::OnnxRuntimeSystem> onnxRuntimeSystem_;
+	static std::unique_ptr<TakeC::OnnxRuntimeSystem> onnxRuntimeSystem_;
 	
 	// ゲームの起動時間
 	static std::chrono::steady_clock::time_point gameTime_;

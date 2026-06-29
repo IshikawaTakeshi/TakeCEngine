@@ -1,12 +1,53 @@
 #include "TitleScene.h"
 #include <algorithm>
+#include <string>
+#include <vector>
 
 #include "application/Scene/SceneManager.h"
 
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/Math/Quaternion.h"
+#include "engine/Utility/StringUtility.h"
+#include "externals/imgui/imgui.h"
 
 using namespace TakeC;
+
+namespace {
+	std::string ShapeToString(const std::vector<int64_t>& shape) {
+		if (shape.empty()) {
+			return "[]";
+		}
+
+		std::string result = "[";
+		for (size_t i = 0; i < shape.size(); ++i) {
+			if (i != 0) {
+				result += ", ";
+			}
+			result += shape[i] < 0 ? "dynamic" : std::to_string(shape[i]);
+		}
+		result += "]";
+		return result;
+	}
+
+	void DrawOnnxTensorInfo(
+		const char* label,
+		const std::vector<std::string>& names,
+		const std::vector<std::vector<int64_t>>& shapes) {
+
+		if (!ImGui::TreeNode(label)) {
+			return;
+		}
+
+		for (size_t i = 0; i < names.size(); ++i) {
+			const std::string shape = i < shapes.size() ? ShapeToString(shapes[i]) : "[]";
+			ImGui::Text("Name : %s", names[i].c_str());
+			ImGui::Text("Shape: %s", shape.c_str());
+			ImGui::Separator();
+		}
+
+		ImGui::TreePop();
+	}
+}
 
 //====================================================================
 //			初期化
@@ -19,37 +60,30 @@ void TitleScene::Initialize() {
 	camera0_->SetRotationSpeed(1.0f);
 	camera0_->SetFollowSpeed(1.0f);
 	TakeC::CameraManager::GetInstance().AddCamera("Tcamera0", camera0_.get());
-	cameraRotateSpeed_ = 0.5f;
 
 	//デフォルトカメラの設定
 	Object3dCommon::GetInstance().SetDefaultCamera(TakeC::CameraManager::GetInstance().GetActiveCamera());
 
-	// Sprite
-	titleTextSprite_ = TakeCFrameWork::GetSpriteManager()->CreateFromJson("TitleText.json");
-
-	// 「PRESS START」スプライトUI
-	pushStartUI_ = std::make_unique<PushStartUI>();
-	pushStartUI_->Initialize();
-
-	//SkyBox
+	// SkyBox
 	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(), "skyBox_blueSky.dds");
-	skyBox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
+	skyBox_->Initialize(Object3dCommon::GetInstance().GetDirectXCommon(),
+		"skyBox_blueSky.dds");
+	skyBox_->SetMaterialColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 
-	playerModel_ = std::make_unique<Object3d>();
-	playerModel_->Initialize(&Object3dCommon::GetInstance(), "Player_Model_Ver2.0.gltf");
-	playerModel_->SetAnimation(TakeCFrameWork::GetAnimationManager()->FindAnimation("Player_Model_Ver2.0.gltf","Floating"));
-	playerModel_->SetRotate( { 0.0f, 180.0f, 0.0f });
 	// ShadowMapEffectを無効化
 	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect", false);
 	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("DepthBasedOutline", false);
+
+	debugOnnxModel_ = TakeCFrameWork::GetOnnxRuntimeSystem()->LoadModel(
+		"TitleSceneDebugModel",
+		StringUtility::ConvertString(debugOnnxModelPath_.data()));
+	debugOnnxLoadFailed_ = debugOnnxModel_ == nullptr;
 }
 
 //====================================================================
 //			終了処理
 //====================================================================
 void TitleScene::Finalize() {
-	pushStartUI_.reset();
 	skyBox_.reset();
 	camera0_.reset();
 	camera1_.reset();
@@ -62,22 +96,11 @@ void TitleScene::Finalize() {
 //====================================================================
 void TitleScene::Update() {
 
-	//カメラの回転(Yaw回転)
-	cameraYaw_ += cameraRotateSpeed_ * TakeCFrameWork::GetDeltaTime();
-	cameraYaw_ = std::fmod(cameraYaw_, 360.0f); // 360度を超えないようにする
-	TakeC::CameraManager::GetInstance().GetActiveCamera()->SetYawRot(cameraYaw_);
 	//カメラの更新
 	TakeC::CameraManager::GetInstance().Update();
 
 	//SkyBoxの更新
 	skyBox_->Update();
-
-	//タイトルテキストの更新
-	titleTextSprite_->Update();
-	pushStartUI_->Update();
-
-	//プレイヤーモデルの更新
-	playerModel_->Update();
 
 	//シーン遷移
 	if (TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::A)) {
@@ -95,12 +118,27 @@ void TitleScene::UpdateImGui() {
 	//ImGuiの更新
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
-	playerModel_->UpdateImGui("playerModel");
-
-	ImGui::Begin("cameraYaw");
-	ImGui::SliderFloat("cameraYaw", &cameraYaw_, 0.0f, 360.0f);
-	ImGui::End();
 	Object3dCommon::GetInstance().UpdateImGui();
+
+	ImGui::Begin("ONNX Model Debug");
+	ImGui::InputText("Model Path", debugOnnxModelPath_.data(), debugOnnxModelPath_.size());
+	if (ImGui::Button("Load ONNX Model")) {
+		debugOnnxModel_ = TakeCFrameWork::GetOnnxRuntimeSystem()->LoadModel(
+			"TitleSceneDebugModel",
+			StringUtility::ConvertString(debugOnnxModelPath_.data()));
+		debugOnnxLoadFailed_ = debugOnnxModel_ == nullptr;
+	}
+
+	if (debugOnnxModel_) {
+		ImGui::TextColored(ImVec4(0.3f, 1.0f, 0.4f, 1.0f), "Loaded");
+		DrawOnnxTensorInfo("Inputs", debugOnnxModel_->GetInputNames(), debugOnnxModel_->GetInputShapes());
+		DrawOnnxTensorInfo("Outputs", debugOnnxModel_->GetOutputNames(), debugOnnxModel_->GetOutputShapes());
+	} else if (debugOnnxLoadFailed_) {
+		ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.3f, 1.0f), "Load failed. Check model path and Output window log.");
+	} else {
+		ImGui::TextUnformatted("No model loaded.");
+	}
+	ImGui::End();
 
 #endif
 }
@@ -114,18 +152,13 @@ void TitleScene::Draw() {
 	skyBox_->Draw();
 
 	Object3dCommon::GetInstance().Dispatch();
-	playerModel_->Dispatch();
 
 	Object3dCommon::GetInstance().PreDraw();
-	playerModel_->Draw();
-
 }
 
 void TitleScene::DrawSprite() {
 	//タイトルテキスト描画
 	TakeC::SpriteCommon::GetInstance().PreDraw();
-	titleTextSprite_->Draw();
-	pushStartUI_->Draw();
 }
 
 void TitleScene::DrawShadow() {

@@ -4,13 +4,11 @@
 //===================================================================================
 // 初期化
 //===================================================================================
-void SceneStateGameStart::Initialize([[maybe_unused]] GamePlayScene* scene) {
-
-}
+void SceneStateGameStart::Initialize([[maybe_unused]] GamePlayScene* scene) {}
 
 //===================================================================================
 // 更新
 //===================================================================================
-void SceneStateGameStart::Update(GamePlayScene* scene) {
+void SceneStateGameStart::Update([[maybe_unused]] GamePlayScene* scene) {}
 
 

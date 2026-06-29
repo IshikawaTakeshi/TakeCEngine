@@ -8,7 +8,7 @@ using namespace TakeC;
 //===================================================================================
 // 初期化
 //===================================================================================
-void SceneStateGamePlay::Initialize(GamePlayScene* scene) {
+void SceneStateGamePlay::Initialize([[maybe_unused]] GamePlayScene* scene) {
 
 	// フェーズメッセージUIにFIGHTメッセージをセット
 	isFirstUpdate_ = false;
@@ -17,7 +17,7 @@ void SceneStateGamePlay::Initialize(GamePlayScene* scene) {
 //===================================================================================
 // 更新
 //===================================================================================
-void SceneStateGamePlay::Update(GamePlayScene* scene) {
+void SceneStateGamePlay::Update([[maybe_unused]] GamePlayScene* scene) {
 
 	// ================================
 	// Manager Update

@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 //base class
 #include "application/Scene/BaseScene.h"
 
@@ -17,6 +18,9 @@
 //application
 #include "application/UI/PushStartUI.h"
 
+namespace TakeC {
+	class OnnxModel;
+}
 
 //============================================================================
 // TitleScene class
@@ -54,11 +58,8 @@ private:
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 	//スプライト
 	TakeC::Sprite* titleTextSprite_ = nullptr;
-	// 「PRESS START」スプライトUI
-	std::unique_ptr<PushStartUI> pushStartUI_ = nullptr;
-	//
-	std::unique_ptr<TakeC::Object3d> playerModel_ = nullptr;
-	float cameraRotateSpeed_ = 0.5f;
-	float cameraYaw_ = 0.0f;
-
+	//ONNX debug
+	TakeC::OnnxModel* debugOnnxModel_ = nullptr;
+	std::array<char, 260> debugOnnxModelPath_ = { "Resources/OnnxModels/sample.onnx" };
+	bool debugOnnxLoadFailed_ = false;
 };

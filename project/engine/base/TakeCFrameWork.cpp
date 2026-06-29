@@ -16,6 +16,7 @@ std::unique_ptr<TakeC::WireFrame> TakeCFrameWork::wireFrame_ = nullptr;
 std::unique_ptr<TakeC::SpriteManager> TakeCFrameWork::spriteManager_ = nullptr;
 std::unique_ptr<TakeC::UIManager> TakeCFrameWork::uiManager_ = nullptr;
 std::unique_ptr<TakeC::EventManager> TakeCFrameWork::eventManager_ = nullptr;
+std::unique_ptr<TakeC::OnnxRuntimeSystem> TakeCFrameWork::onnxRuntimeSystem_ = nullptr;
 
 std::chrono::steady_clock::time_point TakeCFrameWork::gameTime_ = Clock::now();
 float TakeCFrameWork::deltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
@@ -110,8 +111,8 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	postEffectManager_->SetPostEffectFactory(postEffectFactory_.get());
 
 	//OnnxRuntimeSystem
-	//onnxRuntimeSystem_ = std::make_unique<OnnxRuntimeSystem>();
-	//onnxRuntimeSystem_->Initialize(directXCommon_.get());
+	onnxRuntimeSystem_ = std::make_unique<OnnxRuntimeSystem>();
+	onnxRuntimeSystem_->Initialize(directXCommon_.get());
 
 	//WireFrame
 	wireFrame_ = std::make_unique<WireFrame>();
@@ -364,4 +365,12 @@ TakeC::UIManager* TakeCFrameWork::GetUIManager() {
 TakeC::EventManager* TakeCFrameWork::GetEventManager() {
 	assert(eventManager_ && "EventManagerが生成されていません");
 	return eventManager_.get();
+}
+
+//====================================================================
+//			OnnxRuntimeSystemの取得
+//====================================================================
+TakeC::OnnxRuntimeSystem* TakeCFrameWork::GetOnnxRuntimeSystem() {
+	assert(onnxRuntimeSystem_ && "OnnxRuntimeSystemが生成されていません");
+	return onnxRuntimeSystem_.get();
 }
