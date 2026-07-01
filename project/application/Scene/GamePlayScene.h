@@ -87,4 +87,5 @@ private:
 	std::unique_ptr<Camera> lightCamera_ = nullptr;
 	// SkyBox
 	std::unique_ptr<SkyBox> skyBox_ = nullptr;
+
 };

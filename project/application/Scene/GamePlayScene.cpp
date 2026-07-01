@@ -80,6 +80,7 @@ void GamePlayScene::Initialize() {
 void GamePlayScene::Finalize() {
 
 	AudioManager::GetInstance().SoundUnload(&BGM_);         // BGMの解放
+	TakeCFrameWork::GetCameraCapture()->Finalize();             // カメラキャプチャの解放
 	CollisionManager::GetInstance().ClearGameCharacter();   // 当たり判定の解放
 	TakeC::CameraManager::GetInstance().ResetCameras();     // カメラのリセット
 	TakeCFrameWork::GetParticleManager()->ClearParticles(); // パーティクルの解放
@@ -101,6 +102,9 @@ void GamePlayScene::Update() {
 		AudioManager::GetInstance().SoundPlayWave(BGM_, bgmVolume_, true);
 		isSoundPlay_ = true;
 	}
+
+	//CameraCaptureの更新
+	TakeCFrameWork::GetCameraCapture()->Update();
 
 	// SkyBoxの更新
 	skyBox_->Update();

@@ -151,6 +151,9 @@
     <Filter Include="engine\AI">
       <UniqueIdentifier>{63775ED2-C686-5BF1-A9F3-DFBA68F70240}</UniqueIdentifier>
     </Filter>
+    <Filter Include="engine\CameraCapture">
+      <UniqueIdentifier>{9B90F42F-47ED-5C3A-A1FD-49664D673C28}</UniqueIdentifier>
+    </Filter>
     <Filter Include="application\Provider\Enum">
       <UniqueIdentifier>{EDB4D15D-A50E-5E30-85B5-8384F69F08D6}</UniqueIdentifier>
     </Filter>
@@ -825,6 +828,9 @@
     </ClCompile>
     <ClCompile Include="engine\AI\OnnxModel.cpp">
       <Filter>engine\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\CameraCapture\CameraCapture.cpp">
+      <Filter>engine\CameraCapture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1502,6 +1508,9 @@
     </ClInclude>
     <ClInclude Include="engine\AI\OnnxModel.h">
       <Filter>engine\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\CameraCapture\CameraCapture.h">
+      <Filter>engine\CameraCapture</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h">

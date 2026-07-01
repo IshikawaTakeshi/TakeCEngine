@@ -17,6 +17,7 @@ std::unique_ptr<TakeC::SpriteManager> TakeCFrameWork::spriteManager_ = nullptr;
 std::unique_ptr<TakeC::UIManager> TakeCFrameWork::uiManager_ = nullptr;
 std::unique_ptr<TakeC::EventManager> TakeCFrameWork::eventManager_ = nullptr;
 std::unique_ptr<TakeC::OnnxRuntimeSystem> TakeCFrameWork::onnxRuntimeSystem_ = nullptr;
+std::unique_ptr<TakeC::CameraCapture> TakeCFrameWork::cameraCapture_ = nullptr;
 
 std::chrono::steady_clock::time_point TakeCFrameWork::gameTime_ = Clock::now();
 float TakeCFrameWork::deltaTime = 0.016f; // 60FPSを基準にしたデルタタイム
@@ -130,6 +131,10 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	//sceneTransition
 	sceneTransition_ = SceneTransition::GetInstance();
 	sceneTransition_->Initialize();
+
+	cameraCapture_ = std::make_unique<CameraCapture>();
+	cameraCapture_->Initialize();
+	cameraCapture_->InitializeImGuiResources(directXCommon_.get(), srvManager_.get());
 
 	TextureManager::GetInstance().LoadTexture("ic_play.png", false);
 	TextureManager::GetInstance().LoadTexture("ic_pause.png", false);
@@ -373,4 +378,12 @@ TakeC::EventManager* TakeCFrameWork::GetEventManager() {
 TakeC::OnnxRuntimeSystem* TakeCFrameWork::GetOnnxRuntimeSystem() {
 	assert(onnxRuntimeSystem_ && "OnnxRuntimeSystemが生成されていません");
 	return onnxRuntimeSystem_.get();
+}
+
+//====================================================================
+//			CameraCaptureの取得
+//====================================================================
+TakeC::CameraCapture* TakeCFrameWork::GetCameraCapture() {
+	assert(cameraCapture_ && "CameraCaptureが生成されていません");
+	return cameraCapture_.get();
 }

@@ -96,6 +96,9 @@ void TitleScene::Finalize() {
 //====================================================================
 void TitleScene::Update() {
 
+	//CameraCaptureの更新
+	TakeCFrameWork::GetCameraCapture()->Update();
+
 	//カメラの更新
 	TakeC::CameraManager::GetInstance().Update();
 
@@ -119,6 +122,7 @@ void TitleScene::UpdateImGui() {
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
+	TakeCFrameWork::GetCameraCapture()->UpdateImGui();
 
 	ImGui::Begin("ONNX Model Debug");
 	ImGui::InputText("Model Path", debugOnnxModelPath_.data(), debugOnnxModelPath_.size());

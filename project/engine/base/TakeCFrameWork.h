@@ -26,6 +26,7 @@
 #include "Animation/Animator.h"
 #include "audio/Audio.h"
 #include "camera/CameraManager.h"
+#include "CameraCapture/CameraCapture.h"
 #include "primitive/Sphere.h"
 #include "PostEffect/PostEffectManager.h"
 #include "PostEffect/PostEffectFactory.h"
@@ -100,6 +101,8 @@ public:
 	static TakeC::EventManager* GetEventManager();
 	//OnnxRuntimeSystemの取得
 	static TakeC::OnnxRuntimeSystem* GetOnnxRuntimeSystem();
+	//CameraCaptureの取得
+	static TakeC::CameraCapture* GetCameraCapture();
 
 	//ゲーム起動時間の取得
 	static float GetGameTime();
@@ -170,6 +173,8 @@ protected:
 	static std::unique_ptr<TakeC::EventManager> eventManager_;
 	//onnxRuntimeSystem
 	static std::unique_ptr<TakeC::OnnxRuntimeSystem> onnxRuntimeSystem_;
+	// カメラキャプチャ
+	static std::unique_ptr<TakeC::CameraCapture> cameraCapture_;
 	
 	// ゲームの起動時間
 	static std::chrono::steady_clock::time_point gameTime_;
