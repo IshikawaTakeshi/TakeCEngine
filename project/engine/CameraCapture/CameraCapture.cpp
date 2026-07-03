@@ -205,6 +205,7 @@ bool CameraCapture::OpenDevice(uint32_t deviceIndex, uint32_t preferredWidth, ui
 		return false;
 	}
 
+	// 選択したデバイスのソースリーダーを作成
 	const bool created = CreateSourceReader(activates[deviceIndex]);
 	ReleaseActivateArray(activates, count);
 	if (!created) {
@@ -490,6 +491,7 @@ bool CameraCapture::UpdateCurrentFormat() {
 	assert(sourceReader_);
 
 	ComPtr<IMFMediaType> currentType;
+	// 現在のメディアタイプを取得
 	HRESULT hr = sourceReader_->GetCurrentMediaType(
 		static_cast<DWORD>(MF_SOURCE_READER_FIRST_VIDEO_STREAM),
 		&currentType);
@@ -500,6 +502,7 @@ bool CameraCapture::UpdateCurrentFormat() {
 
 	UINT32 width = 0;
 	UINT32 height = 0;
+	// フレームサイズを取得
 	hr = MFGetAttributeSize(currentType.Get(), MF_MT_FRAME_SIZE, &width, &height);
 	if (FAILED(hr) || width == 0 || height == 0) {
 		SetLastErrorMessage(L"Get camera frame size failed.", hr);
@@ -508,8 +511,10 @@ bool CameraCapture::UpdateCurrentFormat() {
 
 	UINT32 strideValue = 0;
 	LONG stride = 0;
+	// フレームの1行のバイト数を取得
 	hr = currentType->GetUINT32(MF_MT_DEFAULT_STRIDE, &strideValue);
 	if (SUCCEEDED(hr)) {
+		// strideValueが取得できた場合はそれを使用
 		stride = static_cast<LONG>(strideValue);
 	} else {
 		stride = static_cast<LONG>(width * 4);
@@ -518,6 +523,7 @@ bool CameraCapture::UpdateCurrentFormat() {
 	width_ = width;
 	height_ = height;
 	sourceStride_ = stride;
+	// RGBA形式のフレームデータ用のバッファを確保
 	frameRGBA_.resize(static_cast<size_t>(width_) * static_cast<size_t>(height_) * 4u);
 	return true;
 }
@@ -614,8 +620,9 @@ bool CameraCapture::UploadFrameToTexture() {
 	if (!EnsureDisplayResources()) {
 		return false;
 	}
-
+	// RGBA形式のフレームデータをアップロードバッファへコピー
 	const uint64_t srcRowPitch = static_cast<uint64_t>(width_) * 4u;
+	// アップロードバッファの1行のバイト数がフレームの1行のバイト数より大きい場合は、余分な部分をスキップしてコピー
 	for (uint32_t y = 0; y < height_; ++y) {
 		const uint8_t* src = frameRGBA_.data() + static_cast<size_t>(y) * static_cast<size_t>(srcRowPitch);
 		uint8_t* dst = mappedUploadData_ + static_cast<size_t>(y) * static_cast<size_t>(uploadBufferRowPitch_);
@@ -689,6 +696,7 @@ bool CameraCapture::CopySampleToFrame(IMFSample* sample) {
 	assert(sample);
 
 	ComPtr<IMFMediaBuffer> buffer;
+	// サンプルを連続したバッファに変換
 	HRESULT hr = sample->ConvertToContiguousBuffer(&buffer);
 	if (FAILED(hr)) {
 		SetLastErrorMessage(L"ConvertToContiguousBuffer failed.", hr);
@@ -698,6 +706,7 @@ bool CameraCapture::CopySampleToFrame(IMFSample* sample) {
 	BYTE* srcData = nullptr;
 	DWORD maxLength = 0;
 	DWORD currentLength = 0;
+	// バッファをロックして、フレームデータへのポインタを取得
 	hr = buffer->Lock(&srcData, &maxLength, &currentLength);
 	if (FAILED(hr)) {
 		SetLastErrorMessage(L"Media buffer lock failed.", hr);
@@ -706,12 +715,14 @@ bool CameraCapture::CopySampleToFrame(IMFSample* sample) {
 	static_cast<void>(maxLength);
 	static_cast<void>(currentLength);
 
+	// フレームフォーマットが有効かどうかをチェック
 	if (width_ == 0 || height_ == 0 || sourceStride_ == 0) {
 		buffer->Unlock();
 		SetLastErrorMessage(L"Camera frame format is invalid.");
 		return false;
 	}
 
+	// sourceStride_の絶対値を計算
 	const LONG absStride = sourceStride_ < 0 ? -sourceStride_ : sourceStride_;
 	if (absStride < static_cast<LONG>(width_ * 4)) {
 		buffer->Unlock();
@@ -724,6 +735,7 @@ bool CameraCapture::CopySampleToFrame(IMFSample* sample) {
 		firstRow = srcData + static_cast<size_t>(absStride) * static_cast<size_t>(height_ - 1);
 	}
 
+	// RGB32形式のフレームデータをRGBA形式に変換してコピー
 	for (uint32_t y = 0; y < height_; ++y) {
 		const BYTE* srcRow = firstRow + static_cast<ptrdiff_t>(sourceStride_) * static_cast<ptrdiff_t>(y);
 		uint8_t* dstRow = frameRGBA_.data() + static_cast<size_t>(y) * static_cast<size_t>(width_) * 4u;

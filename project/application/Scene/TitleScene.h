@@ -62,4 +62,7 @@ private:
 	TakeC::OnnxModel* debugOnnxModel_ = nullptr;
 	std::array<char, 260> debugOnnxModelPath_ = { "Resources/OnnxModels/sample.onnx" };
 	bool debugOnnxLoadFailed_ = false;
+
+	std::vector<float> outputData;
+	std::vector<int64_t> outputShape;
 };

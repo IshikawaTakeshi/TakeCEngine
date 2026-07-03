@@ -40,8 +40,33 @@ namespace TakeC {
 		/// 実行処理
 		/// </summary>
 		/// <param name="inputData"></param>
-		/// <param name="inputShapes"></param>
-		//void Run(const std::vector<float>& inputData, std::vector<int64_t>& inputShapes);
+		/// <param name="inputShape"></param>
+		/// <param name="outputData"></param>
+		/// <param name="outputShape"></param>
+		/// <param name="inputIndex"></param>
+		/// <param name="outputIndex"></param>
+		/// <returns></returns>
+		bool Run(
+			const std::vector<float>& inputData,
+			const std::vector<int64_t>& inputShape,
+			std::vector<float>& outputData,
+			std::vector<int64_t>& outputShape,
+			size_t inputIndex = 0,
+			size_t outputIndex = 0);
+
+		/// <summary>
+		/// 複数入力・複数出力の実行処理
+		/// </summary>
+		/// <param name="inputDataList"></param>
+		/// <param name="inputShapeList"></param>
+		/// <param name="outputDataList"></param>
+		/// <param name="outputShapeList"></param>
+		/// <returns></returns>
+		bool Run(
+			const std::vector<std::vector<float>>& inputDataList,
+			const std::vector<std::vector<int64_t>>& inputShapeList,
+			std::vector<std::vector<float>>& outputDataList,
+			std::vector<std::vector<int64_t>>& outputShapeList);
 
 		//================================================================
 		// getters
@@ -67,6 +92,8 @@ namespace TakeC {
 
 		// DirectML EPでは同一Sessionの並列Runを避ける
 		std::mutex runMutex_;
+
+		static size_t CalculateElementCount(const std::vector<int64_t>& shape);
 
 	};
 
