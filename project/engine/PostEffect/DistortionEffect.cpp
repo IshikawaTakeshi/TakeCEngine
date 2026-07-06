@@ -66,7 +66,7 @@ void DistortionEffect::UpdateImGui() {
 void DistortionEffect::Dispatch() {
 
 	// 経過時間を加算
-	distortionInfo_->timer += TakeCFrameWork::GetDeltaTime();
+	distortionInfo_->timer += TakeC::TakeCFrameWork::GetDeltaTime();
 
 	// NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance().Transition(

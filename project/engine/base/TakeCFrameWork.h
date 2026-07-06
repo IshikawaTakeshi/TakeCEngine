@@ -52,6 +52,8 @@
 // TakeCFrameWork class
 //============================================================================
 
+namespace TakeC {
+
 class TakeCFrameWork {
 public:
 
@@ -189,3 +191,5 @@ protected:
 	uint32_t playSrvIndex_;
 	uint32_t pauseSrvIndex_;
 };
+
+} // namespace TakeC

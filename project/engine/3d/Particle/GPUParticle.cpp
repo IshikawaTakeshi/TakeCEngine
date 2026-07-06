@@ -77,8 +77,8 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 	perViewData_->viewProjection = MatrixMath::MakeIdentity4x4();
 	perViewData_->billboardMatrix = MatrixMath::MakeIdentity4x4();
 	//PerFrameData初期化
-	perFrameData_->gameTime = TakeCFrameWork::GetGameTime();
-	perFrameData_->deltaTime = TakeCFrameWork::GetDeltaTime();
+	perFrameData_->gameTime = TakeC::TakeCFrameWork::GetGameTime();
+	perFrameData_->deltaTime = TakeC::TakeCFrameWork::GetDeltaTime();
 
 	camera_ = particleCommon_->GetDefaultCamera();
 
@@ -101,23 +101,23 @@ void GPUParticle::Initialize(ParticleCommon* particleCommon, const std::string& 
 
 	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
 		//プリミティブの初期化
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
+		primitiveHandle_ = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
 			std::get<RingParam>(particlePreset_.primitiveParam).outerRadius,
 			std::get<RingParam>(particlePreset_.primitiveParam).innerRadius,
 			std::get<RingParam>(particlePreset_.primitiveParam).subDivision,
 			particlePreset_.textureFilePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
+		primitiveHandle_ = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
 			std::get<PlaneParam>(particlePreset_.primitiveParam).width,
 			std::get<PlaneParam>(particlePreset_.primitiveParam).height,
 			particlePreset_.textureFilePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
+		primitiveHandle_ = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
 			std::get<SphereParam>(particlePreset_.primitiveParam).radius,
 			std::get<SphereParam>(particlePreset_.primitiveParam).subDivision,
 			particlePreset_.textureFilePath);
 	} else if(particlePreset_.primitiveType == PRIMITIVE_CONE) {
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
+		primitiveHandle_ = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
 			std::get<ConeParam>(particlePreset_.primitiveParam).radius,
 			std::get<ConeParam>(particlePreset_.primitiveParam).height,
 			std::get<ConeParam>(particlePreset_.primitiveParam).subDivision,
@@ -142,7 +142,7 @@ void GPUParticle::Update() {
 	//CSによる更新処理
 	DisPatchUpdateParticle();
 
-	perFrameData_->gameTime = TakeCFrameWork::GetGameTime();
+	perFrameData_->gameTime = TakeC::TakeCFrameWork::GetGameTime();
 
 	perViewData_->viewProjection = camera_->GetViewProjectionMatrix();
 	perViewData_->billboardMatrix = camera_->GetRotationMatrix();
@@ -162,7 +162,7 @@ void GPUParticle::Draw() {
 	particleCommon_->GetSrvManager()->SetGraphicsRootDescriptorTable(3, particleUavIndex_);
 
 	//描画
-	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(particleCommon_->GetGraphicPSOForGPUParticle(),
+	TakeC::TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(particleCommon_->GetGraphicPSOForGPUParticle(),
 		kNumMaxInstance_, particlePreset_.primitiveType, primitiveHandle_);
 }
 

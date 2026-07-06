@@ -8,7 +8,7 @@
 //===================================================================================
 StateBreakStun::StateBreakStun(baseInputProvider* provider) {
 	inputProvider_ = provider; //入力プロバイダーの設定
-	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 	gravity_ = 9.8f; //重力の強さ
 
 	// ブレイクスタンエフェクトの初期化
@@ -21,7 +21,7 @@ StateBreakStun::StateBreakStun(baseInputProvider* provider) {
 //===================================================================================
 
 void StateBreakStun::Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) {
-	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 
 	// ブレイクスタンのタイマーをリセットして開始
 	breakStunTimer_.Initialize(characterInfo.breakGaugeInfo.stunDuration, 0.0f);
@@ -30,11 +30,11 @@ void StateBreakStun::Initialize([[maybe_unused]]PlayableCharacterInfo& character
 
 	if (characterInfo.characterName == "Player") {
 		// ブレイクスタン開始のイベントを発行
-		TakeCFrameWork::GetEventManager()->PostEvent("Initialize_BreakStunState_Player", &characterInfo.breakGaugeInfo);
+		TakeC::TakeCFrameWork::GetEventManager()->PostEvent("Initialize_BreakStunState_Player", &characterInfo.breakGaugeInfo);
 	}
 	else {
 		// ブレイクスタン開始のイベントを発行
-		TakeCFrameWork::GetEventManager()->PostEvent("Initialize_BreakStunState_Enemy", &characterInfo.breakGaugeInfo);
+		TakeC::TakeCFrameWork::GetEventManager()->PostEvent("Initialize_BreakStunState_Enemy", &characterInfo.breakGaugeInfo);
 	}
 
 	//エフェクトの再生
@@ -79,10 +79,10 @@ void StateBreakStun::Update(PlayableCharacterInfo& characterInfo) {
 
 		//ゲージリセットのイベントを発行
 		if (characterInfo.characterName == "Player") {
-			TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Reset_Player", &characterInfo.breakGaugeInfo);
+			TakeC::TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Reset_Player", &characterInfo.breakGaugeInfo);
 		}
 		else {
-			TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Reset_Enemy", &characterInfo.breakGaugeInfo);
+			TakeC::TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Reset_Enemy", &characterInfo.breakGaugeInfo);
 		}
 		// 地上なら RUNNING、空中なら FLOATING へ
 		if (characterInfo.onGround) {

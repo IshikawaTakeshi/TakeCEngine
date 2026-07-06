@@ -104,5 +104,5 @@ void Timer::Restart() {
 //=============================================================================
 void Timer::Update(float timeScale) {
 	prevTime_ = currentTime_;
-	currentTime_ = std::clamp(currentTime_ + TakeCFrameWork::GetDeltaTime() * timeScale * !isStop_, 0.0f, duration_);
+	currentTime_ = std::clamp(currentTime_ + TakeC::TakeCFrameWork::GetDeltaTime() * timeScale * !isStop_, 0.0f, duration_);
 }

@@ -77,7 +77,7 @@ void EnemySelectScene::Update() {
 	characterEditTool_->Update();
 
 	//particleManager更新
-	TakeCFrameWork::GetParticleManager()->Update();
+	TakeC::TakeCFrameWork::GetParticleManager()->Update();
 
 	if (behaviorRequest_) {
 
@@ -156,7 +156,7 @@ void EnemySelectScene::UpdateImGui() {
 
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
-	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
+	TakeC::TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 	ImGui::Begin("Level Objects");
 	characterEditTool_->UpdateImGui();
 	ImGui::End();
@@ -187,10 +187,10 @@ void EnemySelectScene::Draw() {
 #pragma endregion
 
 	//ワイヤーフレームの描画
-	TakeCFrameWork::GetWireFrame()->Draw();
+	TakeC::TakeCFrameWork::GetWireFrame()->Draw();
 
 	//パーティクルの描画
-	TakeCFrameWork::GetParticleManager()->Draw();
+	TakeC::TakeCFrameWork::GetParticleManager()->Draw();
 }
 
 void EnemySelectScene::DrawSprite() {

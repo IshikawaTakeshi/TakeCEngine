@@ -18,7 +18,7 @@
 void Camera::Initialize(ID3D12Device* device,const std::string& configData) {
 	
 	//カメラの各種パラメータ初期化
-	cameraConfig_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CameraConfig>(configData);
+	cameraConfig_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<CameraConfig>(configData);
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(cameraConfig_.transform_);
 	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
@@ -210,7 +210,7 @@ void Camera::UpdateImGui() {
 		{
 			//Jsonファイルの名前を入力して保存
 			cameraConfig_.filePath = std::string(filenameBuf);
-			TakeCFrameWork::GetJsonLoader()->SaveJsonData<CameraConfig>(cameraConfig_.filePath, cameraConfig_);
+			TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData<CameraConfig>(cameraConfig_.filePath, cameraConfig_);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

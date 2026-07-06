@@ -14,7 +14,7 @@ void MachineGun::Initialize(Object3dCommon* object3dCommon, BulletManager* bulle
 	bulletManager_ = bulletManager;
 
 	//武器の初期化
-	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("MachineGun.json");
+	weaponData_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("MachineGun.json");
 	//3dオブジェクトの初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, weaponData_.modelFilePath);
@@ -36,7 +36,7 @@ void MachineGun::Update() {
 	//リロード中かどうか
 	if(weaponState_.isReloading) {
 
-		weaponState_.reloadTime -= TakeCFrameWork::GetDeltaTime();
+		weaponState_.reloadTime -= TakeC::TakeCFrameWork::GetDeltaTime();
 
 		if( weaponState_.reloadTime <= 0.0f) {
 			weaponState_.reloadTime = 0.0f; // リロード時間をリセット
@@ -49,7 +49,7 @@ void MachineGun::Update() {
 	}
 
 	//攻撃間隔の減少
-	weaponState_.attackInterval -= TakeCFrameWork::GetDeltaTime();
+	weaponState_.attackInterval -= TakeC::TakeCFrameWork::GetDeltaTime();
 
 	//親スケルトンのジョイントに追従させる
 	if (parentSkeleton_ && !parentJointName_.empty()) {
@@ -74,7 +74,7 @@ void MachineGun::UpdateImGui() {
 	weaponData_.config.EditConfigImGui(weaponData_.weaponName);
 	if(ImGui::Button("Save MachineGun Config")) {
 		// 設定をJSONに保存
-		TakeCFrameWork::GetJsonLoader()->SaveJsonData("MachineGun.json", weaponData_);
+		TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData("MachineGun.json", weaponData_);
 	}
 }
 

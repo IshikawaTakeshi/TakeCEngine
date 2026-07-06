@@ -50,7 +50,7 @@ void BehaviorTreeEditor::Initialize() {
 	SetupContextMenu();
 
 	//コンボセットのリストを取得
-	comboSetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ComboSetData>();
+	comboSetNames_ = TakeC::TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ComboSetData>();
 	
 }
 
@@ -300,12 +300,12 @@ void BehaviorTreeEditor::LoadTreeFromJson(const std::string& filepath) {
 	if (!flowEditor_) return;
 
 	// ファイルが存在するか確認
-	if (!TakeCFrameWork::GetJsonLoader()->IsJsonDataExists<ComboSetData>(filepath)) {
+	if (!TakeC::TakeCFrameWork::GetJsonLoader()->IsJsonDataExists<ComboSetData>(filepath)) {
 		return;
 	}
 
 	// データの読み込み（JsonLoader::LoadJsonData は T を返す）
-	currentComboSetData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ComboSetData>(filepath);
+	currentComboSetData_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<ComboSetData>(filepath);
 
 	// FIX: flowEditor_を再作成する前にマップをクリア
 	nodeViewMap_.clear();
@@ -402,7 +402,7 @@ void BehaviorTreeEditor::SaveComboSet() {
 
 	// ImGuiManagerの保存ポップアップを表示する
 	ImGuiManager::ShowSavePopup(
-		TakeCFrameWork::GetJsonLoader(),
+		TakeC::TakeCFrameWork::GetJsonLoader(),
 		"Save Combo Set",
 		std::string(currentComboSetData_.setName + ".json").c_str(),
 		currentComboSetData_,

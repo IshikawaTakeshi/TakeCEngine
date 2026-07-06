@@ -15,8 +15,8 @@ using namespace TakeC;
 WarningUI::~WarningUI() {
 
 	// イベントオブザーバーの解除
-	TakeCFrameWork::GetEventManager()->RemoveObserver("EnemyHighPowerAttack", eventObserverID_);
-	TakeCFrameWork::GetEventManager()->RemoveObserver("EnemyBulletWarning", eventObserverID2_);
+	TakeC::TakeCFrameWork::GetEventManager()->RemoveObserver("EnemyHighPowerAttack", eventObserverID_);
+	TakeC::TakeCFrameWork::GetEventManager()->RemoveObserver("EnemyBulletWarning", eventObserverID2_);
 	targetCamera_ = nullptr;
 }
 //======================================================================
@@ -55,7 +55,7 @@ void WarningUI::Initialize(TakeC::SpriteManager* spriteManager, const std::strin
 
 	// イベントオブザーバー登録
 	// 敵のチャージ攻撃などの強力な攻撃予兆
-	eventObserverID_ = TakeCFrameWork::GetEventManager()->AddObserver(
+	eventObserverID_ = TakeC::TakeCFrameWork::GetEventManager()->AddObserver(
 		"EnemyHighPowerAttack",
 		[this](const std::any& data) {
 			try {
@@ -68,7 +68,7 @@ void WarningUI::Initialize(TakeC::SpriteManager* spriteManager, const std::strin
 		});
 
 	// 特定の弾（ミサイル・バズーカ）の位置追跡用
-	eventObserverID2_ = TakeCFrameWork::GetEventManager()->AddObserver(
+	eventObserverID2_ = TakeC::TakeCFrameWork::GetEventManager()->AddObserver(
 		"EnemyBulletWarning",
 		[this](const std::any& data) {
 			try {
@@ -104,7 +104,7 @@ void WarningUI::Update() {
 		state.timer.Update();
 
 		// 点滅ロジック (タイマーのリセットに影響されないよう TotalTime を使う)
-		float alpha = std::abs(std::sin(TakeCFrameWork::GetGameTime() * kFlashSpeed_));
+		float alpha = std::abs(std::sin(TakeC::TakeCFrameWork::GetGameTime() * kFlashSpeed_));
 
 		if (state.spritePtr) {
 			// 警告種別に応じた色設定（bazookaは赤）

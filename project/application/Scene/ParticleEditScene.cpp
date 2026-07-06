@@ -88,9 +88,9 @@ void ParticleEditScene::UpdateImGui() {
 	// 各種マネージャーのImGui更新
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	ParticleCommon::GetInstance().UpdateImGui();
-	TakeCFrameWork::GetParticleManager()->UpdateImGui();
+	TakeC::TakeCFrameWork::GetParticleManager()->UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
-	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
+	TakeC::TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 
 	// 現在のモードのEditorを更新
 	if (currentMode_ == EditorMode::Particle) {
@@ -110,10 +110,10 @@ void ParticleEditScene::Draw() {
 	skyBox_->Draw();
 
 	//グリッド地面の描画
-	TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 50);
-	TakeCFrameWork::GetWireFrame()->DrawGridBox({
+	TakeC::TakeCFrameWork::GetWireFrame()->DrawGridGround({ 0.0f,0.0f,0.0f }, { 1000.0f, 1000.0f, 1000.0f }, 50);
+	TakeC::TakeCFrameWork::GetWireFrame()->DrawGridBox({
 		{-500.0f,-500.0f,-500.0f},{500.0f,500.0f,500.0f } }, 2);
-	TakeCFrameWork::GetWireFrame()->Draw();
+	TakeC::TakeCFrameWork::GetWireFrame()->Draw();
 
 	// 現在のモードのEditorを描画
 	if (currentMode_ == EditorMode::Particle) {

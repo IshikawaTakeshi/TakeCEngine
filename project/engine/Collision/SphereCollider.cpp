@@ -90,7 +90,7 @@ bool SphereCollider::CheckCollision(Collider* other) {
 void SphereCollider::DrawCollider() {
 
 	// ワイヤーフレームの描画
-	TakeCFrameWork::GetWireFrame()->DrawSphere(transform_.translate, radius_, color_);
+	TakeC::TakeCFrameWork::GetWireFrame()->DrawSphere(transform_.translate, radius_, color_);
 }
 
 //=============================================================================

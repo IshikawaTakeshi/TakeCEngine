@@ -45,7 +45,7 @@ void ScanlineEffect::UpdateImGui() {
 //=============================================================================
 void ScanlineEffect::Dispatch() {
 
-	param_->time += TakeCFrameWork::GetDeltaTime();
+	param_->time += TakeC::TakeCFrameWork::GetDeltaTime();
 
 	//NON_PIXEL_SHADER_RESOURCE >> UNORDERED_ACCESS
 	ResourceBarrier::GetInstance().Transition(

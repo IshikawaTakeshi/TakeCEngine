@@ -204,7 +204,7 @@ void UVTextureAnimation::SetSpriteSheetAnimation(const SpriteSheetSettings& sett
 //=================================================================================
 void UVTextureAnimation::UpdateUVScroll() {
 
-	float deltaTime = TakeCFrameWork::GetDeltaTime();
+	float deltaTime = TakeC::TakeCFrameWork::GetDeltaTime();
 
 	// UVオフセットを更新
 	currentUVOffset_.x += uvScrollSettings_.scrollSpeed.x * deltaTime;

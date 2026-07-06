@@ -59,7 +59,7 @@ void BaseUI::LoadUIConfig(const std::string& configName) {
 	if (!spriteManager_) return;
 
 	// UIConfigを読み込む
-	UIConfig config = TakeCFrameWork::GetJsonLoader()->LoadJsonData<UIConfig>(configName + ".json");
+	UIConfig config = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<UIConfig>(configName + ".json");
 
 	for (const auto& spriteConf : config.sprites) {
 		// 個別のスプライトを生成

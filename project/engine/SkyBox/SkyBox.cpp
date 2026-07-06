@@ -26,10 +26,10 @@ void SkyBox::Initialize(TakeC::DirectXCommon* directXCommon,const std::string& t
 	rootSignature_ = pso_->GetGraphicRootSignature();
 
 	//モデルの生成
-	primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
+	primitiveHandle_ = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
 		{ {-50.0f,-50.0f,-50.0f},{50.0f,50.0f,50.0f} }, texturefilePath
 	);
-	TakeCFrameWork::GetPrimitiveDrawer()->SetMaterialColor(
+	TakeC::TakeCFrameWork::GetPrimitiveDrawer()->SetMaterialColor(
 		primitiveHandle_,
 		{ 0.5f,0.5f,0.5f,1.0f }
 	);
@@ -108,7 +108,7 @@ void SkyBox::Draw() {
 	commandList->SetGraphicsRootConstantBufferView(0, wvpResource_->GetGPUVirtualAddress());
 
 	//プリミティブ描画
-	TakeCFrameWork::GetPrimitiveDrawer()->DrawObject(
+	TakeC::TakeCFrameWork::GetPrimitiveDrawer()->DrawObject(
 		pso_.get(),
 		PRIMITIVE_CUBE,
 		primitiveHandle_
@@ -117,7 +117,7 @@ void SkyBox::Draw() {
 
 void SkyBox::SetMaterialColor(const Vector4& color) {
 
-	TakeCFrameWork::GetPrimitiveDrawer()->SetMaterialColor(
+	TakeC::TakeCFrameWork::GetPrimitiveDrawer()->SetMaterialColor(
 		primitiveHandle_,
 		{ color.x,color.y,color.z,1.0f }
 	);

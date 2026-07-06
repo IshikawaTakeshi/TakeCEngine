@@ -92,7 +92,7 @@ void HPBar::SetHP(float currentHP, float maxHP) {
 //===================================================================================
 void HPBar::Update() {
 	if (!isActive_) {
-		alpha_ -= 1.0f * TakeCFrameWork::GetDeltaTime();
+		alpha_ -= 1.0f * TakeC::TakeCFrameWork::GetDeltaTime();
 		if (alpha_ <= 0.0f) {
 			alpha_ = 0.0f;
 			return;
@@ -111,7 +111,7 @@ void HPBar::Update() {
 	if (damageDelayTimer_.IsFinished()) {
 		damageBarRatio_ =
 			Easing::Lerp(damageBarRatio_, hpRatio_,
-				damageLerpSpeed_ * TakeCFrameWork::GetDeltaTime());
+				damageLerpSpeed_ * TakeC::TakeCFrameWork::GetDeltaTime());
 	}
 
 	// ゲージの長さを更新

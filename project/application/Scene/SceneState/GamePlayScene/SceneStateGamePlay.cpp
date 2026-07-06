@@ -23,8 +23,8 @@ void SceneStateGamePlay::Update([[maybe_unused]] GamePlayScene* scene) {
 	// Manager Update
 	// ================================
 
-	TakeCFrameWork::GetUIManager()->Update();
-	TakeCFrameWork::GetSpriteManager()->Update();
+	TakeC::TakeCFrameWork::GetUIManager()->Update();
+	TakeC::TakeCFrameWork::GetSpriteManager()->Update();
 
 	// ================================
 	// Scene Transition

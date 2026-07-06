@@ -6,7 +6,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//leakCheckerの生成
 	D3DResourceLeakChecker leakCheck;
 	//ゲームクラスの生成
-	std::unique_ptr<TakeCFrameWork> game = std::make_unique<MyGame>();
+	std::unique_ptr<TakeC::TakeCFrameWork> game = std::make_unique<MyGame>();
 	//ゲームの実行
 	game->Run(L"A_CORE");
 	

@@ -56,7 +56,7 @@ void PrimitiveParticle::Initialize(ParticleCommon* particleCommon, const std::st
 	//テクスチャファイルパスの設定
 	particlePreset_.textureFilePath = filePath;
 	//1フレームの時間取得
-	kDeltaTime_ = TakeCFrameWork::GetDeltaTime();
+	kDeltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 }
 
 //=============================================================================
@@ -102,7 +102,7 @@ void PrimitiveParticle::Update() {
 	perViewData_->isBillboard = particlePreset_.attribute.isBillboard;
 	perViewData_->viewProjection = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetViewProjectionMatrix();
 	perViewData_->billboardMatrix = TakeC::CameraManager::GetInstance().GetActiveCamera()->GetRotationMatrix();
-	auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+	auto& primitiveMaterial = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 	primitiveMaterial->SetEnableLighting(particlePreset_.attribute.enableLighting);
 }
 
@@ -150,7 +150,7 @@ void PrimitiveParticle::Draw() {
 	//BaseParticleGroupの描画処理
 	BaseParticleGroup::Draw();
 	//プリミティブの描画
-	TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(
+	TakeC::TakeCFrameWork::GetPrimitiveDrawer()->DrawParticle(
 		particleCommon_->GetGraphicPSO(BlendState::NORMAL), numInstance_, particlePreset_.primitiveType, primitiveHandle_);
 }
 
@@ -190,23 +190,23 @@ void PrimitiveParticle::SetTextureFilePath(const std::string& filePath) {
 	//テクスチャファイルパスの設定
 
 	if (particlePreset_.primitiveType == PRIMITIVE_RING) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetData<Ring>(primitiveHandle_)->material;
+		auto& primitiveMaterial = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GetData<Ring>(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(filePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_PLANE) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetData<Plane>(primitiveHandle_)->material;
+		auto& primitiveMaterial = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GetData<Plane>(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(filePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_SPHERE) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+		auto& primitiveMaterial = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(filePath);
 	} else if (particlePreset_.primitiveType == PRIMITIVE_CONE) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+		auto& primitiveMaterial = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(filePath);
 	}
 	else if (particlePreset_.primitiveType == PRIMITIVE_CUBE) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+		auto& primitiveMaterial = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(filePath);
 	}else if (particlePreset_.primitiveType == PRIMITIVE_CYLINDER) {
-		auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+		auto& primitiveMaterial = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 		primitiveMaterial->SetTextureFilePath(filePath);
 	} else {
 		assert(0 && "未対応の PrimitiveType が指定されました");
@@ -226,7 +226,7 @@ void PrimitiveParticle::GeneratePrimitive() {
 
 		//RingParamとして取得
 		const RingParam& ringParam = std::get<RingParam>(primitiveParam);
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
+		primitiveHandle_ = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GenerateRing(
 			ringParam.innerRadius,
 			ringParam.outerRadius,
 			ringParam.subDivision,
@@ -235,7 +235,7 @@ void PrimitiveParticle::GeneratePrimitive() {
 
 		//PlaneParamとして取得
 		const PlaneParam& planeParam = std::get<PlaneParam>(primitiveParam);
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
+		primitiveHandle_ = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(
 			planeParam.width,
 			planeParam.height,
 			particlePreset_.textureFilePath);
@@ -243,7 +243,7 @@ void PrimitiveParticle::GeneratePrimitive() {
 
 		//SphereParamとして取得
 		const SphereParam& sphereParam = std::get<SphereParam>(primitiveParam);
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
+		primitiveHandle_ = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GenerateSphere(
 			sphereParam.radius,
 			sphereParam.subDivision,
 			particlePreset_.textureFilePath);
@@ -251,7 +251,7 @@ void PrimitiveParticle::GeneratePrimitive() {
 
 		//ConeParamとして取得
 		const ConeParam& coneParam = std::get<ConeParam>(primitiveParam);
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
+		primitiveHandle_ = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GenerateCone(
 			coneParam.radius,
 			coneParam.height,
 			coneParam.subDivision,
@@ -260,13 +260,13 @@ void PrimitiveParticle::GeneratePrimitive() {
 
 		//CubeParamとして取得
 		const CubeParam& cubeParam = std::get<CubeParam>(primitiveParam);
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
+		primitiveHandle_ = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GenerateCube(
 			cubeParam.size,
 			particlePreset_.textureFilePath);
 	}else if (particlePreset_.primitiveType == PRIMITIVE_CYLINDER) {
 		//CylinderParamとして取得
 		const CylinderParam& cylinderParam = std::get<CylinderParam>(primitiveParam);
-		primitiveHandle_ = TakeCFrameWork::GetPrimitiveDrawer()->GenerateCylinder(
+		primitiveHandle_ = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GenerateCylinder(
 			cylinderParam.radius,
 			cylinderParam.height,
 			cylinderParam.subDivision,
@@ -277,7 +277,7 @@ void PrimitiveParticle::GeneratePrimitive() {
 	//テクスチャファイルパスの設定
 	SetTextureFilePath(particlePreset_.textureFilePath);
 	//ライティングの設定
-	auto& primitiveMaterial = TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
+	auto& primitiveMaterial = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material;
 	primitiveMaterial->SetEnableLighting(particlePreset_.attribute.enableLighting);
 
 	//テクスチャアニメーションの設定
@@ -286,13 +286,13 @@ void PrimitiveParticle::GeneratePrimitive() {
 			//UVスクロールアニメーション適用
 			const UVScrollSettings& uvScrollSettings =
 				std::get<UVScrollSettings>(particlePreset_.textureAnimationParam);
-			TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material->Animation()->SetUVScrollAnimation(uvScrollSettings);
+			TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material->Animation()->SetUVScrollAnimation(uvScrollSettings);
 		}
 		else if (particlePreset_.textureAnimationType == TakeC::TextureAnimationType::SpriteSheet) {
 			//スプライトシートアニメーション適用
 			const SpriteSheetSettings& spriteSheetSettings =
 				std::get<SpriteSheetSettings>(particlePreset_.textureAnimationParam);
-			TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material->Animation()->SetSpriteSheetAnimation(spriteSheetSettings);
+			TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GetBaseData(primitiveHandle_)->material->Animation()->SetSpriteSheetAnimation(spriteSheetSettings);
 		}
 	}
 }
@@ -320,7 +320,7 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 		if (attributes.enableFollowEmitter) {
 			// エミッターIDから現在のエミッター位置を取得
 			std::optional<Vector3> emitterPos =
-				TakeCFrameWork::GetParticleManager()->GetEmitterPosition((*particleIterator).emitterID_);
+				TakeC::TakeCFrameWork::GetParticleManager()->GetEmitterPosition((*particleIterator).emitterID_);
 
 			if (emitterPos.has_value()) {
 				(*particleIterator).transforms_.translate = emitterPos.value();
@@ -336,7 +336,7 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 					dir = (*particleIterator).velocity_;
 					hasDir = true;
 				} else {
-					auto emitDir = TakeCFrameWork::GetParticleManager()->GetEmitDirection((*particleIterator).emitterID_);
+					auto emitDir = TakeC::TakeCFrameWork::GetParticleManager()->GetEmitDirection((*particleIterator).emitterID_);
 					if (emitDir.has_value()) {
 						dir = emitDir.value();
 						hasDir = true;

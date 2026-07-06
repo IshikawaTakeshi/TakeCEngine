@@ -36,7 +36,7 @@ void SceneTransition::Initialize() {
 
 	transitionTime_ = 0.0f;
 
-	transitionSpeed_ = TakeCFrameWork::GetDeltaTime();
+	transitionSpeed_ = TakeC::TakeCFrameWork::GetDeltaTime();
 
 	alpha_ = 0.0f;
 }

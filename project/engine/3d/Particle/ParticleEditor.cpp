@@ -21,7 +21,7 @@ void ParticleEditor::Initialize(ParticleCommon* particleCommon) {
 	currentPreset_.presetName = currentGroupName_;
 	currentPreset_.primitiveType = PRIMITIVE_PLANE;
 	currentPreset_.primitiveParam = TakeC::PrimitiveParameter{ PlaneParam{} };
-	TakeCFrameWork::GetParticleManager()->CreateParticleGroup(currentGroupName_, "white1x1.png", currentPreset_.primitiveType);
+	TakeC::TakeCFrameWork::GetParticleManager()->CreateParticleGroup(currentGroupName_, "white1x1.png", currentPreset_.primitiveType);
 
 	// エディター専用エミッターの初期化
 	previewEmitter_ = std::make_unique<ParticleEmitter>();
@@ -50,10 +50,10 @@ void ParticleEditor::Update() {
 
 	if (autoApply_) {
 		//属性を自動的に適用する場合、現在の属性をグループに適用
-		TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
+		TakeC::TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
 	}
 
-	TakeCFrameWork::GetParticleManager()->Update();
+	TakeC::TakeCFrameWork::GetParticleManager()->Update();
 
 	// プレビューエミッターの更新
 	previewEmitter_->SetTranslate(emitterTransform_.translate);
@@ -143,7 +143,7 @@ void ParticleEditor::Finalize() {
 //======================================================================
 
 void ParticleEditor::Draw() {
-	TakeCFrameWork::GetParticleManager()->Draw();
+	TakeC::TakeCFrameWork::GetParticleManager()->Draw();
 	previewEmitter_->DrawWireFrame();
 }
 
@@ -236,7 +236,7 @@ void ParticleEditor::DrawParticleAttributesEditor() {
 	//設定の適用
 	if (ImGui::Button("Apply Attributes")) {
 		// 現在のグループに属性を適用
-		TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
+		TakeC::TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
 	}
 #pragma endregion
 
@@ -509,7 +509,7 @@ void ParticleEditor::DrawPresetManager() {
 
 	// プリセットの保存
 	ImGuiManager::ShowSavePopup(
-		TakeCFrameWork::GetJsonLoader(),
+		TakeC::TakeCFrameWork::GetJsonLoader(),
 		"Save Preset",
 		std::string(selectedPresetName_ + ".json").c_str(),
 		currentPreset_,
@@ -557,8 +557,8 @@ void ParticleEditor::DrawOverwriteConfirmDialog() {
 			if (ImGui::Button("Yes", ImVec2(120, 0))) {
 				// 上書き保存を実行
 				currentPreset_.presetName = pendingPresetName_;
-				TakeCFrameWork::GetJsonLoader()->SaveJsonData<ParticlePreset>(pendingPresetName_ + ".json", currentPreset_);
-				presetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ParticlePreset>();
+				TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData<ParticlePreset>(pendingPresetName_ + ".json", currentPreset_);
+				presetNames_ = TakeC::TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ParticlePreset>();
 
 				showOverwriteConfirm_ = false;
 				//保存後、リスト内の情報を更新する
@@ -600,9 +600,9 @@ void ParticleEditor::SavePreset(const std::string& presetName) {
 
 	// 現在の属性をプリセットとして保存
 	currentPreset_.presetName = presetName;
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<ParticlePreset>(presetName + ".json", currentPreset_);
+	TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData<ParticlePreset>(presetName + ".json", currentPreset_);
 	// プリセット名を更新
-	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ParticlePreset>();
+	presetNames_ = TakeC::TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ParticlePreset>();
 
 }
 
@@ -618,10 +618,10 @@ void ParticleEditor::LoadPreset(const std::string& presetName) {
 	}
 
 	//JSONからプリセットを読み込む
-	currentPreset_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetName + ".json");
+	currentPreset_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetName + ".json");
 
 	// 現在のグループに属性を適用
-	TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
+	TakeC::TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
 
 	UpdatePrimitiveFromParameters(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParam);
 	UpdateTextureAnimationFromParameters(currentPreset_.textureAnimationType, currentPreset_.textureAnimationParam);
@@ -639,7 +639,7 @@ void ParticleEditor::DeletePreset(const std::string& presetName) {
 	}
 
 	// プリセットを削除
-	TakeCFrameWork::GetJsonLoader()->DeleteJsonData<ParticlePreset>(presetName + ".json");
+	TakeC::TakeCFrameWork::GetJsonLoader()->DeleteJsonData<ParticlePreset>(presetName + ".json");
 
 	//プリセット名更新
 	RefreshPresetList();
@@ -651,9 +651,9 @@ void ParticleEditor::DeletePreset(const std::string& presetName) {
 
 void ParticleEditor::LoadDefaultPreset() {
 	// デフォルトプリセットの読み込み
-	currentPreset_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>("DefaultPreset.json");
+	currentPreset_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>("DefaultPreset.json");
 	// 現在のグループに属性を適用
-	TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
+	TakeC::TakeCFrameWork::GetParticleManager()->SetPreset(currentGroupName_, currentPreset_);
 
 	UpdatePrimitiveFromParameters(currentGroupName_, currentPreset_.primitiveType, currentPreset_.primitiveParam);
 	UpdateTextureAnimationFromParameters(currentPreset_.textureAnimationType, currentPreset_.textureAnimationParam);
@@ -671,7 +671,7 @@ void ParticleEditor::LoadAllPresets() {
 	// 各プリセットを読み込み
 	for (const std::string& presetName : presetNames_) {
 		// プリセットを読み込む
-		presets_[presetName] = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetName + ".json");
+		presets_[presetName] = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetName + ".json");
 	}
 }
 
@@ -681,7 +681,7 @@ void ParticleEditor::LoadAllPresets() {
 
 void ParticleEditor::RefreshPresetList() {
 	// プリセット名のリストを更新
-	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ParticlePreset>();
+	presetNames_ = TakeC::TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ParticlePreset>();
 }
 
 //=======================================================================
@@ -823,26 +823,26 @@ void ParticleEditor::UpdatePrimitiveFromParameters(
 		using T = std::decay_t<decltype(arg)>;
 
 		if constexpr (std::is_same_v<T, RingParam>) {
-			TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Ring>(
+			TakeC::TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Ring>(
 				groupName,
 				arg.outerRadius,
 				arg.innerRadius,
 				arg.subDivision,
 				currentPreset_.textureFilePath);
 		} else if constexpr (std::is_same_v<T, PlaneParam>) {
-			TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Plane>(
+			TakeC::TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Plane>(
 				groupName,
 				arg.width,
 				arg.height,
 				currentPreset_.textureFilePath);
 		} else if constexpr (std::is_same_v<T, SphereParam>) {
-			TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Sphere>(
+			TakeC::TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Sphere>(
 				groupName,
 				arg.radius,
 				arg.subDivision,
 				currentPreset_.textureFilePath);
 		} else if constexpr (std::is_same_v<T, ConeParam>) {
-			TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Cone>(
+			TakeC::TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Cone>(
 				groupName,
 				arg.radius,
 				arg.height,
@@ -852,12 +852,12 @@ void ParticleEditor::UpdatePrimitiveFromParameters(
 			AABB aabb;
 			aabb.min = arg.size.min;
 			aabb.max = arg.size.max;
-			TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Cube>(
+			TakeC::TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Cube>(
 				groupName,
 				aabb,
 				currentPreset_.textureFilePath);
 		} else if constexpr (std::is_same_v<T, CylinderParam>) {
-			TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Cylinder>(
+			TakeC::TakeCFrameWork::GetParticleManager()->UpdatePrimitiveType<Cylinder>(
 				groupName,
 				arg.radius,
 				arg.height,
@@ -893,13 +893,13 @@ void ParticleEditor::UpdateTextureAnimationFromParameters(TakeC::TextureAnimatio
 	std::visit([&type, this](auto&& arg) {
 		using T = std::decay_t<decltype(arg)>;
 		if constexpr (std::is_same_v<T, UVScrollSettings>) {
-			TakeCFrameWork::GetParticleManager()->UpdateTextureAnimationType<UVScrollSettings>(
+			TakeC::TakeCFrameWork::GetParticleManager()->UpdateTextureAnimationType<UVScrollSettings>(
 				currentGroupName_,
 				arg.scrollSpeed,
 				arg.wrapU,
 				arg.wrapV);
 		} else if constexpr (std::is_same_v<T, SpriteSheetSettings>) {
-			TakeCFrameWork::GetParticleManager()->UpdateTextureAnimationType<SpriteSheetSettings>(
+			TakeC::TakeCFrameWork::GetParticleManager()->UpdateTextureAnimationType<SpriteSheetSettings>(
 				currentGroupName_,
 				arg.columns,
 				arg.rows,

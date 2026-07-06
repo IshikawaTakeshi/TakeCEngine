@@ -23,7 +23,7 @@ void DeadEffect::Initialize() {
 	pointLightData_.intensity_ = 0.0f;
 	pointLightData_.radius_ = 20.0f;
 	pointLightData_.decay_ = 1.0f;
-	pointLightIndex_ = TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
+	pointLightIndex_ = TakeC::TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
 }
 
 //===================================================================================
@@ -47,7 +47,7 @@ void DeadEffect::Update(const Vector3& translate) {
 	//ポイントライトの更新
 	pointLightData_.position_ = translate + Vector3{ 0.0f,20.0f,0.0f };
 	pointLightData_.intensity_ = 120.0f * (1.0f - timer_.GetEase(Easing::EasingType::OUT_QUAD));
-	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
+	TakeC::TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
 }
 
 //===================================================================================

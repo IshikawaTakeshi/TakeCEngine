@@ -8,7 +8,7 @@
 //=========================================================================
 StateJumping::StateJumping(baseInputProvider* provider) {
 	inputProvider_ = provider; //入力プロバイダーの設定
-	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 	
 }
 

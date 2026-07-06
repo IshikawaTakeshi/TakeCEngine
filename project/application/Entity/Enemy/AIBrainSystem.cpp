@@ -75,7 +75,7 @@ void AIBrainSystem::UpdateImGui() {
 
 	if (ImGui::Button("Save Weight Parameters")) {
 	
-		TakeCFrameWork::GetJsonLoader()->SaveJsonData<ActionWeightParam>("AIBrainSystemWeightParam.json", weightParam_);
+		TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData<ActionWeightParam>("AIBrainSystemWeightParam.json", weightParam_);
 	}
 }
 
@@ -156,7 +156,7 @@ Action AIBrainSystem::ChooseBestAction() {
 // 行動の重みパラメータの読み込み
 //===================================================================================
 void AIBrainSystem::LoadWeightParam(const std::string& configName) {
-	weightParam_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ActionWeightParam>(configName);
+	weightParam_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<ActionWeightParam>(configName);
 }
 
 //===================================================================================

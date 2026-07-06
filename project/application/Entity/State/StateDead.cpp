@@ -9,7 +9,7 @@
 //===================================================================================
 StateDead::StateDead(baseInputProvider* provider) {
 	inputProvider_ = provider;
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 }
 
 //===================================================================================

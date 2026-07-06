@@ -327,7 +327,7 @@ bool BoxCollider::IntersectsCapsule(const Capsule& capsule, RayCastHit& outHit){
 
 void BoxCollider::DrawCollider() {
 
-	TakeCFrameWork::GetWireFrame()->DrawOBB(obb_, color_);
+	TakeC::TakeCFrameWork::GetWireFrame()->DrawOBB(obb_, color_);
 }
 
 //=============================================================================

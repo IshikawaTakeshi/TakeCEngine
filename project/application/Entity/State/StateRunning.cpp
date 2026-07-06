@@ -16,7 +16,7 @@ StateRunning::StateRunning(baseInputProvider* provider) {
 //　初期化
 //===================================================================================
 void StateRunning::Initialize([[maybe_unused]]PlayableCharacterInfo& characterInfo) {
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 }
 
 //===================================================================================

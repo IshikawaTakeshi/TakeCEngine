@@ -795,9 +795,9 @@ void CharacterEditTool::SavePlayableCharacterInfo(const std::string& characterNa
 
 	// 現在のキャラクター名をcharacterDataとして保存
 	currentCharacterData_.characterInfo.characterName = characterName;
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<PlayableCharacterInfo>(characterName + ".json", currentCharacterData_.characterInfo);
+	TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData<PlayableCharacterInfo>(characterName + ".json", currentCharacterData_.characterInfo);
 	// キャラクター名リストを更新
-	characterNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<PlayableCharacterInfo>();
+	characterNames_ = TakeC::TakeCFrameWork::GetJsonLoader()->GetJsonDataList<PlayableCharacterInfo>();
 
 }
 
@@ -821,16 +821,16 @@ void CharacterEditTool::SaveWeaponData(const std::string& WeaponName, WeaponUnit
 
 	// 現在のキャラクター名をcharacterDataとして保存
 	currentCharacterData_.weaponData[unit].weaponName = WeaponName;
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<WeaponData>(WeaponName + ".json", currentCharacterData_.weaponData[unit]);
+	TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData<WeaponData>(WeaponName + ".json", currentCharacterData_.weaponData[unit]);
 
 
 	// 武器名リストを更新
-	weaponNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<WeaponConfig>();
+	weaponNames_ = TakeC::TakeCFrameWork::GetJsonLoader()->GetJsonDataList<WeaponConfig>();
 }
 
 void CharacterEditTool::SaveCharacterData() {
 
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<CharacterData>("PlayerData.json", currentCharacterData_);
+	TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData<CharacterData>("PlayerData.json", currentCharacterData_);
 }
 
 //========================================================================
@@ -844,7 +844,7 @@ void CharacterEditTool::LoadPlayableCharacterInfo(std::string characterName) {
 	}
 
 	//JSONからプリセットを読み込む
-	PlayableCharacterInfo playableInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(characterName + ".json");
+	PlayableCharacterInfo playableInfo = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(characterName + ".json");
 
 	// コンテナに存在しなければ追加
 	if (!playableCharacterInfoMap_.contains(characterName)) {
@@ -866,7 +866,7 @@ void CharacterEditTool::LoadWeaponData(const std::string& WeaponName, WeaponUnit
 		return;
 	}
 	//JSONからプリセットを読み込む
-	WeaponData loadedWeaponData = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>(WeaponName + ".json");
+	WeaponData loadedWeaponData = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>(WeaponName + ".json");
 
 	switch (loadedWeaponData.weaponType) {
 	case WeaponType::NONE:
@@ -875,7 +875,7 @@ void CharacterEditTool::LoadWeaponData(const std::string& WeaponName, WeaponUnit
 	case WeaponType::WEAPON_TYPE_RIFLE:
 	{
 		// ライフルの場合の処理
-		RifleInfo rifleInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<RifleInfo>(WeaponName + "_extraInfo.json");
+		RifleInfo rifleInfo = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<RifleInfo>(WeaponName + "_extraInfo.json");
 		loadedWeaponData.actionData = rifleInfo;
 		break;
 	}
@@ -887,7 +887,7 @@ void CharacterEditTool::LoadWeaponData(const std::string& WeaponName, WeaponUnit
 	{
 
 		// 垂直ミサイルの場合の処理
-		VerticalMissileLauncherInfo vmLauncherInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<VerticalMissileLauncherInfo>(WeaponName + "_extraInfo.json");
+		VerticalMissileLauncherInfo vmLauncherInfo = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<VerticalMissileLauncherInfo>(WeaponName + "_extraInfo.json");
 		loadedWeaponData.actionData = vmLauncherInfo;
 		break;
 	}
@@ -911,9 +911,9 @@ void CharacterEditTool::LoadWeaponData(const std::string& WeaponName, WeaponUnit
 void CharacterEditTool::LoadAllCharacterData() {
 
 	// 全キャラクターデータの読み込み
-	characterNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<PlayableCharacterInfo>();
+	characterNames_ = TakeC::TakeCFrameWork::GetJsonLoader()->GetJsonDataList<PlayableCharacterInfo>();
 	for (const auto& characterName : characterNames_) {
-		PlayableCharacterInfo playableInfo = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(characterName + ".json");
+		PlayableCharacterInfo playableInfo = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(characterName + ".json");
 		playableCharacterInfoMap_[characterName] = playableInfo;
 	}
 }
@@ -924,9 +924,9 @@ void CharacterEditTool::LoadAllCharacterData() {
 void CharacterEditTool::LoadAllWeaponData() {
 
 	// 全武器データの読み込み
-	weaponNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<WeaponData>();
+	weaponNames_ = TakeC::TakeCFrameWork::GetJsonLoader()->GetJsonDataList<WeaponData>();
 	for (const auto& weaponName : weaponNames_) {
-		WeaponData weaponData = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>(weaponName + ".json");
+		WeaponData weaponData = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>(weaponName + ".json");
 		weaponDataMap_[weaponName] = weaponData;
 	}
 }

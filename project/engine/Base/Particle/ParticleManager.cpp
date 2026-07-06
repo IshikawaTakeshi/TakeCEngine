@@ -102,7 +102,7 @@ void TakeC::ParticleManager::CreateParticleGroup(const std::string& name,const s
 }
 
 void TakeC::ParticleManager::CreateParticleGroup(const std::string& presetJson) {
-	ParticlePreset preset = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetJson);
+	ParticlePreset preset = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetJson);
 	if(particleGroups_.contains(preset.presetName)) {
 		//既に同名のparticleGroupが存在する場合は生成しない
 		return;
@@ -246,7 +246,7 @@ void TakeC::ParticleManager::SetPreset(const std::string& name, const ParticlePr
 // 全プリセットの読み込み
 //================================================================================================
 void TakeC::ParticleManager::LoadAllPresets() {
-	auto jsonLoader = TakeCFrameWork::GetJsonLoader();
+	auto jsonLoader = TakeC::TakeCFrameWork::GetJsonLoader();
 	auto presetFiles = jsonLoader->GetJsonDataList<ParticlePreset>();
 	for (const auto& presetFile : presetFiles) {
 		CreateParticleGroup(presetFile + ".json");

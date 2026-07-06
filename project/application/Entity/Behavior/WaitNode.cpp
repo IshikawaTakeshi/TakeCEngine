@@ -14,7 +14,7 @@ WaitNode::WaitNode(float waitTime, const std::string& name)
 // ノードの実行
 //==================================================================================
 BehaviorStatus WaitNode::Execute(Blackboard&) {
-	elapsedTime_ += TakeCFrameWork::GetDeltaTime();
+	elapsedTime_ += TakeC::TakeCFrameWork::GetDeltaTime();
 
 	if (elapsedTime_ >= waitTime_) {
 		Reset();

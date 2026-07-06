@@ -56,7 +56,7 @@ void Ground::Draw() {
 //　グリッド地面描画
 //===================================================================================
 void Ground::DrawGridGround() {
-	TakeCFrameWork::GetWireFrame()->DrawGridGround(transform_.translate, { gridGroundSize_, 0.0f, gridGroundSize_ }, 100);
+	TakeC::TakeCFrameWork::GetWireFrame()->DrawGridGround(transform_.translate, { gridGroundSize_, 0.0f, gridGroundSize_ }, 100);
 }
 
 //===================================================================================

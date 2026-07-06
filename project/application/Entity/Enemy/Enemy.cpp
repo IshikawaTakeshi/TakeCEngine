@@ -34,7 +34,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	characterType_ = CharacterType::ENEMY;
 
 	// EnemyDataの読み込み
-	enemyData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>(
+	enemyData_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>(
 		"EnemyData.json");
 
 	// オブジェクト初期化
@@ -77,7 +77,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	chargeShootableUnits_.resize(weapons_.size());
 
 	// デルタタイムの取得
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 
 	// bulletSensor_の初期化
 	bulletSensor_ = std::make_unique<BulletSensor>();
@@ -98,32 +98,32 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 	// アニメーションマッパーの登録
 	animationMapper_.Register(
 		GameCharacterState::RUNNING,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+		TakeC::TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"),
 		0.2f);
 	animationMapper_.Register(
 		GameCharacterState::FLOATING,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+		TakeC::TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Floating"),
 		0.2f);
 	animationMapper_.Register(
 		GameCharacterState::JUMP,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+		TakeC::TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Jump"),
 		0.15f);
 	animationMapper_.Register(
 		GameCharacterState::STEPBOOST,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+		TakeC::TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"),
 		0.1f);
 	animationMapper_.Register(
 		GameCharacterState::CHARGESHOOT_STUN,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+		TakeC::TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Running"),
 		0.2f);
 	animationMapper_.Register(
 		GameCharacterState::DEAD,
-		TakeCFrameWork::GetAnimationManager()->FindAnimation(
+		TakeC::TakeCFrameWork::GetAnimationManager()->FindAnimation(
 			"Player_Model_Ver2.0.gltf", "Dead"),
 		2.5f, false);
 
@@ -182,7 +182,7 @@ void Enemy::Initialize(Object3dCommon* object3dCommon,
 
 	// 傾き用レイヤーの追加（加算合成）
 	const std::string modelName = "Player_Model_Ver2.0.gltf";
-	auto* animManager = TakeCFrameWork::GetAnimationManager();
+	auto* animManager = TakeC::TakeCFrameWork::GetAnimationManager();
 
 	animatorController_.AddLayer("LeanF", AnimationBlendMode::Additive, 0.0f);
 	animatorController_.AddLayer("LeanB", AnimationBlendMode::Additive, 0.0f);
@@ -277,7 +277,7 @@ void Enemy::LoadEnemyData(const std::string& characterJsonPath) {
 
 	// JsonLoaderを使ってEnemyのGameCharacterContextを読み込み
 	enemyData_.characterInfo =
-		TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(
+		TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<PlayableCharacterInfo>(
 			characterJsonPath);
 }
 
@@ -285,7 +285,7 @@ void Enemy::SaveEnemyData(const std::string& characterJsonPath) {
 
 	// JsonLoaderを使ってEnemyのGameCharacterContextを保存
 	enemyData_.characterInfo.characterName = characterJsonPath;
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<CharacterData>("EnemyData.json",
+	TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData<CharacterData>("EnemyData.json",
 		enemyData_);
 }
 
@@ -340,7 +340,7 @@ void Enemy::Update() {
 
 
 	// EventManagerへ通知
-	TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Enemy", &breakGaugeInfo);
+	TakeC::TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Enemy", &breakGaugeInfo);
 
 	if (breakGaugeInfo.isStunned) {
 		breakGaugeInfo.entries.clear();
@@ -817,7 +817,7 @@ void Enemy::WeaponAttack(int weaponIndex) {
 				}
 
 				// イベントを発行して危険度の高い攻撃を行うことを知らせる
-				TakeCFrameWork::GetEventManager()->PostEvent(
+				TakeC::TakeCFrameWork::GetEventManager()->PostEvent(
 					"EnemyHighPowerAttack",
 					data); // 値渡しに変更
 			}

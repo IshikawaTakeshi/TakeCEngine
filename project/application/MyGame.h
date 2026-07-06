@@ -6,7 +6,7 @@
 //============================================================================
 // MyGame class
 //============================================================================
-class MyGame : public TakeCFrameWork {
+class MyGame : public TakeC::TakeCFrameWork {
 public:
 
 	MyGame() = default;

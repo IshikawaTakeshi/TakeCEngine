@@ -17,7 +17,7 @@ void Bazooka::Initialize(Object3dCommon* object3dCommon, BulletManager* bulletMa
 	//弾薬マネージャの設定
 	bulletManager_ = bulletManager;
 	//武器の初期化
-	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Bazooka.json");
+	weaponData_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Bazooka.json");
 	//3Dオブジェクトの初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, weaponData_.modelFilePath);
@@ -49,7 +49,7 @@ void Bazooka::Update() {
 	//リロード中かどうか
 	if(weaponState_.isReloading == true) {
 
-		weaponState_.reloadTime -= TakeCFrameWork::GetDeltaTime();
+		weaponState_.reloadTime -= TakeC::TakeCFrameWork::GetDeltaTime();
 
 		if( weaponState_.reloadTime <= 0.0f) {
 			weaponState_.reloadTime = 0.0f; // リロード時間をリセット
@@ -62,7 +62,7 @@ void Bazooka::Update() {
 	}
 
 	//攻撃間隔の減少
-	weaponState_.attackInterval -= TakeCFrameWork::GetDeltaTime();
+	weaponState_.attackInterval -= TakeC::TakeCFrameWork::GetDeltaTime();
 
 	//親スケルトンのジョイントに追従させる
 	if (parentSkeleton_ && !parentJointName_.empty()) {
@@ -88,7 +88,7 @@ void Bazooka::UpdateImGui() {
 	if(ImGui::Button("Save Bazooka Config")) {
 		// 設定をJSONに保存
 
-		TakeCFrameWork::GetJsonLoader()->SaveJsonData("Bazooka.json", weaponData_);
+		TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData("Bazooka.json", weaponData_);
 	}
 }
 

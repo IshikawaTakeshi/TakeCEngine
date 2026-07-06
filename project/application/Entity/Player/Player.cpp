@@ -35,7 +35,7 @@ void Player::Initialize(Object3dCommon* object3dCommon,
 	characterType_ = CharacterType::PLAYER;
 
 	// PlayerDataの読み込み
-	playerData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>(
+	playerData_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>(
 		"PlayerData.json");
 	playerData_.characterInfo.transform = {
 		{1.5f, 1.5f, 1.5f}, {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, -30.0f} };
@@ -58,7 +58,7 @@ void Player::Initialize(Object3dCommon* object3dCommon,
 	collider_->SetCollisionLayerID(static_cast<uint32_t>(CollisionLayer::Player));
 
 	camera_ = object3dCommon->GetDefaultCamera();
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 
 	weapons_.resize(WeaponUnit::Size);
 	weaponTypes_.resize(WeaponUnit::Size);
@@ -94,7 +94,7 @@ void Player::Initialize(Object3dCommon* object3dCommon,
 
 	// アニメーションの初期化
 	auto* animator = object3d_->GetAnimatorController();
-	auto* animManager = TakeCFrameWork::GetAnimationManager();
+	auto* animManager = TakeC::TakeCFrameWork::GetAnimationManager();
 	const std::string modelName = "Player_Model_Ver2.0.gltf";
 
 	// アニメーションマッパーの登録
@@ -215,7 +215,7 @@ void Player::Update() {
 
 
 	// EventManagerへ通知
-	TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Player", &gaugeInfo);
+	TakeC::TakeCFrameWork::GetEventManager()->PostEvent("BreakGaugeUpdate_Player", &gaugeInfo);
 
 	if (gaugeInfo.isStunned) {
 		gaugeInfo.entries.clear();
@@ -252,7 +252,7 @@ void Player::Update() {
 				//  LTボタン＋スティック入力で発動
 				if (inputProvider_->RequestStepBoost()) {
 					stateManager_->RequestState(GameCharacterState::STEPBOOST);
-					TakeCFrameWork::GetPostEffectManager()->PlayEffect("RadialBlur");
+					TakeC::TakeCFrameWork::GetPostEffectManager()->PlayEffect("RadialBlur");
 				}
 				// Jump入力判定
 				// RTで発動
@@ -475,7 +475,7 @@ void Player::DrawShadow(const LightCameraInfo& lightCamera) {
 void Player::LoadPlayerData(const std::string& characterName) {
 
 	// Jsonからデータを読み込み
-	playerData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>(
+	playerData_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<CharacterData>(
 		characterName);
 }
 
@@ -484,7 +484,7 @@ void Player::SavePlayerData(const std::string& characterName) {
 	// Jsonにデータを保存
 	playerData_.characterInfo.characterName = characterName;
 	playerData_.characterInfo.modelFilePath = object3d_->GetModelFilePath();
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData<CharacterData>(
+	TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData<CharacterData>(
 		"PlayerData.json", playerData_);
 }
 
@@ -513,7 +513,7 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		// ブレイクゲージを蓄積
 		AccumulateBreakGauge(bullet->GetDamage());
 		//エフェクトの再生
-		TakeCFrameWork::GetPostEffectManager()->PlayEffect("DamageHit");
+		TakeC::TakeCFrameWork::GetPostEffectManager()->PlayEffect("DamageHit");
 	}
 	if (other->GetCharacterType() == CharacterType::ENEMY_MISSILE) {
 		// 敵のミサイルに当たった場合
@@ -524,7 +524,7 @@ void Player::OnCollisionAction(GameCharacter* other) {
 		// ブレイクゲージを蓄積
 		AccumulateBreakGauge(missile->GetDamage());
 		//エフェクトの再生
-		TakeCFrameWork::GetPostEffectManager()->PlayEffect("DamageHit");
+		TakeC::TakeCFrameWork::GetPostEffectManager()->PlayEffect("DamageHit");
 	}
 
 	if (other->GetCharacterType() == CharacterType::LEVEL_OBJECT) {

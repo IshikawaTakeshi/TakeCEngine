@@ -24,12 +24,12 @@ void GameClearUI::Initialize(TakeC::SpriteCommon* spriteCommon) {
 void GameClearUI::Update() {
 	if (!isActive_) return;
 	// タイマー更新
-	timer_ += TakeCFrameWork::GetDeltaTime();
+	timer_ += TakeC::TakeCFrameWork::GetDeltaTime();
 	// アルファ値の更新
 	if (timer_ < displayTime_) {
-		alpha_ += fadeSpeed_ * TakeCFrameWork::GetDeltaTime();
+		alpha_ += fadeSpeed_ * TakeC::TakeCFrameWork::GetDeltaTime();
 	} else {
-		alpha_ -= fadeSpeed_ * TakeCFrameWork::GetDeltaTime();
+		alpha_ -= fadeSpeed_ * TakeC::TakeCFrameWork::GetDeltaTime();
 	}
 	// アルファ値の制限
 	alpha_ = std::clamp(alpha_, 0.0f, 1.0f);

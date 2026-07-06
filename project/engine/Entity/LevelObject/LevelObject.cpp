@@ -18,7 +18,7 @@ void LevelObject::Initialize(Object3dCommon* object3dCommon, const std::string& 
 	// キャラクタータイプの設定
 	characterType_ = CharacterType::LEVEL_OBJECT;
 
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 }
 
 //====================================================================

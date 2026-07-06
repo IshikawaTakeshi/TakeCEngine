@@ -12,15 +12,15 @@ using namespace TakeC;
 //======================================================================
 BreakGaugeUI::~BreakGaugeUI() {
 	if (eventObserverID_[0] != -1) {
-		TakeCFrameWork::GetEventManager()->RemoveObserver(
+		TakeC::TakeCFrameWork::GetEventManager()->RemoveObserver(
 			"BreakGaugeUpdate_" + listeningEventName_, eventObserverID_[0]);
 	}
 	if (eventObserverID_[1] != -1) {
-		TakeCFrameWork::GetEventManager()->RemoveObserver(resetEventName_,
+		TakeC::TakeCFrameWork::GetEventManager()->RemoveObserver(resetEventName_,
 			eventObserverID_[1]);
 	}
 	if (eventObserverID_[2] != -1) {
-		TakeCFrameWork::GetEventManager()->RemoveObserver(
+		TakeC::TakeCFrameWork::GetEventManager()->RemoveObserver(
 			"Initialize_BreakStunState_" + listeningEventName_,
 			eventObserverID_[2]);
 	}
@@ -56,18 +56,18 @@ void BreakGaugeUI::Initialize(TakeC::SpriteManager* spriteManager,
 
 	// イベントリスナーの登録
 	// player,enemyで登録するイベント名が違う想定なので、イベント名は引数で受け取っている；
-	eventObserverID_[0] = TakeCFrameWork::GetEventManager()->AddObserver(
+	eventObserverID_[0] = TakeC::TakeCFrameWork::GetEventManager()->AddObserver(
 		"BreakGaugeUpdate_" + listeningEventName_,
 		[this](const std::any& data) { this->OnBreakGaugeUpdated(data); });
 	// ブレイク状態復帰時のイベントも監視して、ゲージをリセットする
 	resetEventName_ = "BreakGaugeUpdate_Reset_" + listeningEventName_;
-	eventObserverID_[1] = TakeCFrameWork::GetEventManager()->AddObserver(
+	eventObserverID_[1] = TakeC::TakeCFrameWork::GetEventManager()->AddObserver(
 		resetEventName_, [this](const std::any& data) {
 			this->OnBreakGaugeUpdated(data);
 			sprites_[DELAY]->SetMaterialColor(defaultDelaySpriteColor_);
 			sprites_[ACTUAL]->SetMaterialColor(defaultActualSpriteColor_);
 		});
-	eventObserverID_[2] = TakeCFrameWork::GetEventManager()->AddObserver(
+	eventObserverID_[2] = TakeC::TakeCFrameWork::GetEventManager()->AddObserver(
 		"Initialize_BreakStunState_" + listeningEventName_,
 		[this](const std::any& data) {
 			data;
@@ -93,7 +93,7 @@ void BreakGaugeUI::Update() {
 		return;
 
 	// ゲージの見た目（補間）更新
-	float deltaTime = TakeCFrameWork::GetDeltaTime();
+	float deltaTime = TakeC::TakeCFrameWork::GetDeltaTime();
 
 	// 黄ゲージ（遅延）は少しゆっくり赤に追いつくか、実数に合わせて減衰
 	// 赤ゲージ（実数）は即座に反映するか、少しだけ補間

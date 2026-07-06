@@ -139,7 +139,7 @@ void SceneManager::ChangeToNextScene() {
 //========================================================================
 void SceneManager::LoadLevelData(const std::string& sceneName) {
 
-	levelData_ = TakeCFrameWork::GetJsonLoader()->LoadLevelFile(sceneName);
+	levelData_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadLevelFile(sceneName);
 
 	for (auto& objectData : levelData_->objects) {
 		TakeC::Model* model = nullptr;

@@ -9,7 +9,7 @@ void MuzzleFlashEffect::Initialize() {
 	//エフェクトオブジェクト初期化
 	muzzleFlushEffectObjectIndices_.clear();
 	for (int i = 0; i < 3; ++i) {
-		uint32_t index = TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(3.0f, 3.0f, "MazzleEffect1.png");
+		uint32_t index = TakeC::TakeCFrameWork::GetPrimitiveDrawer()->GeneratePlane(3.0f, 3.0f, "MazzleEffect1.png");
 		muzzleFlushEffectObjectIndices_.push_back(index);
 	}
 
@@ -27,7 +27,7 @@ void MuzzleFlashEffect::Initialize() {
 	pointLightData_.radius_ = 2.0f;
 	pointLightData_.decay_ = 1.0f;
 	//ポイントライトの追加
-	pointLightIndex_ = TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
+	pointLightIndex_ = TakeC::TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
 
 }
 
@@ -54,10 +54,10 @@ void MuzzleFlashEffect::Update() {
 	particleEmitter_->SetIsEmit(isActive_);
 	particleEmitter_->SetTranslate(ownerWeapon_->GetCenterPosition());
 	//particleEmitter_->Update();
-	//TakeCFrameWork::GetParticleManager()->GetParticleGroup("RifleMuzzleFlash")->SetEmitterPosition(ownerWeapon_->GetCenterPosition());
+	//TakeC::TakeCFrameWork::GetParticleManager()->GetParticleGroup("RifleMuzzleFlash")->SetEmitterPosition(ownerWeapon_->GetCenterPosition());
 	//ポイントライト更新
 	pointLightData_.position_ = ownerWeapon_->GetCenterPosition();
-	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
+	TakeC::TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
 }
 
 void MuzzleFlashEffect::Emit() {
@@ -71,7 +71,7 @@ void MuzzleFlashEffect::Draw() {
 	}
 	//エフェクトオブジェクト描画
 	for (const auto& index : muzzleFlushEffectObjectIndices_) {
-		TakeCFrameWork::GetPrimitiveDrawer()->DrawObject(Object3dCommon::GetInstance().GetPSO(), PRIMITIVE_PLANE, index);
+		TakeC::TakeCFrameWork::GetPrimitiveDrawer()->DrawObject(Object3dCommon::GetInstance().GetPSO(), PRIMITIVE_PLANE, index);
 	}
 	
 }

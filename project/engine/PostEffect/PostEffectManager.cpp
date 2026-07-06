@@ -94,7 +94,7 @@ void PostEffectManager::UpdateImGui() {
 			}
 
 			RegisterPreset(std::string(newPresetName_), editConfig_);
-			TakeCFrameWork::GetJsonLoader()->SaveJsonData<PostEffectPlayConfig>(std::string(newPresetName_) + ".json", editConfig_);
+			TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData<PostEffectPlayConfig>(std::string(newPresetName_) + ".json", editConfig_);
 			LoadPresets(); // リストを更新
 		}
 	}
@@ -398,9 +398,9 @@ void PostEffectManager::UnregisterPreset(const std::string& name) {
 // JSONからプリセットを一括ロード
 //======================================================================
 void PostEffectManager::LoadPresets() {
-	presetNames_ = TakeCFrameWork::GetJsonLoader()->GetJsonDataList<PostEffectPlayConfig>();
+	presetNames_ = TakeC::TakeCFrameWork::GetJsonLoader()->GetJsonDataList<PostEffectPlayConfig>();
 	for (const auto& name : presetNames_) {
-		presetMap_[name] = TakeCFrameWork::GetJsonLoader()->LoadJsonData<PostEffectPlayConfig>(name + ".json");
+		presetMap_[name] = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<PostEffectPlayConfig>(name + ".json");
 	}
 	Logger::Log("PostEffectManager : Loaded " + std::to_string(presetMap_.size()) + " presets.");
 }

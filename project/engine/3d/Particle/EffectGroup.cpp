@@ -13,7 +13,7 @@ using namespace TakeC;
 //==================================================================================
 void EffectGroup::Initialize(const std::string& configFilePath) {
 	// JSONから設定を読み込み
-	config_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<EffectGroupConfig>(
+	config_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<EffectGroupConfig>(
 		configFilePath);
 
 	// 共通初期化
@@ -37,7 +37,7 @@ void TakeC::EffectGroup::SetParentMatrix(const Matrix4x4* parentMatrix) {
 //==================================================================================
 void EffectGroup::InitializeCommon() {
 	// デルタタイム取得
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 
 	// デフォルトスケール適用
 	transform_.scale = config_.defaultScale;
@@ -89,7 +89,7 @@ void EffectGroup::CreateEmitterInstances() {
 //==================================================================================
 void EffectGroup::Update() {
 	// デルタタイムを毎フレーム取得して更新
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 
 	if (isPlaying_ && !isPaused_) {
 		totalElapsedTime_ += deltaTime_;
@@ -528,7 +528,7 @@ void EffectGroup::UpdateImGui([[maybe_unused]] const std::string& windowName) {
 	}
 	// 設定保存
 	if (ImGui::Button("Save Config")) {
-		TakeCFrameWork::GetJsonLoader()->SaveJsonData<EffectGroupConfig>(
+		TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData<EffectGroupConfig>(
 			config_.effectName, config_);
 	}
 #endif

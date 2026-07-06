@@ -17,7 +17,7 @@ void VerticalMissileLauncher::Initialize(Object3dCommon* object3dCommon, BulletM
 	bulletManager_ = bulletManager;
 
 	//武器の初期化
-	weaponData_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("VMLauncher.json");
+	weaponData_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("VMLauncher.json");
 	//3dオブジェクトの初期化
 	object3d_ = std::make_unique<Object3d>();
 	object3d_->Initialize(object3dCommon, weaponData_.modelFilePath);
@@ -44,7 +44,7 @@ void VerticalMissileLauncher::Update() {
 	//リロード中かどうか
 	if(weaponState_.isReloading == true) {
 
-		weaponState_.reloadTime -= TakeCFrameWork::GetDeltaTime();
+		weaponState_.reloadTime -= TakeC::TakeCFrameWork::GetDeltaTime();
 
 		if( weaponState_.reloadTime <= 0.0f) {
 			weaponState_.reloadTime = 0.0f; // リロード時間をリセット
@@ -55,10 +55,10 @@ void VerticalMissileLauncher::Update() {
 		}
 	}
 	//攻撃間隔の減少
-	weaponState_.attackInterval -= TakeCFrameWork::GetDeltaTime();
+	weaponState_.attackInterval -= TakeC::TakeCFrameWork::GetDeltaTime();
 
 	if (burstShotState_.isActive) {
-		burstShotState_.intervalTimer -= TakeCFrameWork::GetDeltaTime();
+		burstShotState_.intervalTimer -= TakeC::TakeCFrameWork::GetDeltaTime();
 		// 三連射の間隔タイマーが0以下で、まだ弾を撃つ回数が残っている場合
 		if (burstShotState_.intervalTimer <= 0.0f && burstShotState_.count > 0) {
 			// 弾発射
@@ -130,7 +130,7 @@ void VerticalMissileLauncher::UpdateImGui() {
 	if (ImGui::Button("Save VerticalMissileLauncher config")) {
 		// 設定をJSONに保存
 		weaponData_.actionData = vmLauncherInfo_;
-		TakeCFrameWork::GetJsonLoader()->SaveJsonData("VMLauncher.json", weaponData_);
+		TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData("VMLauncher.json", weaponData_);
 	}
 }
 

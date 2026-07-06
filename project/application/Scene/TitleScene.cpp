@@ -71,10 +71,10 @@ void TitleScene::Initialize() {
 	skyBox_->SetMaterialColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 
 	// ShadowMapEffectを無効化
-	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect", false);
-	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("DepthBasedOutline", false);
+	TakeC::TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect", false);
+	TakeC::TakeCFrameWork::GetPostEffectManager()->SetEffectActive("DepthBasedOutline", false);
 
-	debugOnnxModel_ = TakeCFrameWork::GetOnnxRuntimeSystem()->LoadModel(
+	debugOnnxModel_ = TakeC::TakeCFrameWork::GetOnnxRuntimeSystem()->LoadModel(
 		"TitleSceneDebugModel",
 		StringUtility::ConvertString(debugOnnxModelPath_.data()));
 	debugOnnxLoadFailed_ = debugOnnxModel_ == nullptr;
@@ -88,7 +88,7 @@ void TitleScene::Finalize() {
 	camera0_.reset();
 	camera1_.reset();
 	TakeC::CameraManager::GetInstance().ResetCameras();
-	TakeCFrameWork::GetSpriteManager()->Clear();
+	TakeC::TakeCFrameWork::GetSpriteManager()->Clear();
 }
 
 //====================================================================
@@ -97,7 +97,7 @@ void TitleScene::Finalize() {
 void TitleScene::Update() {
 
 	//CameraCaptureの更新
-	TakeCFrameWork::GetCameraCapture()->Update();
+	TakeC::TakeCFrameWork::GetCameraCapture()->Update();
 
 	//カメラの更新
 	TakeC::CameraManager::GetInstance().Update();
@@ -120,14 +120,14 @@ void TitleScene::UpdateImGui() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	//ImGuiの更新
 	TakeC::CameraManager::GetInstance().UpdateImGui();
-	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
+	TakeC::TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
-	TakeCFrameWork::GetCameraCapture()->UpdateImGui();
+	TakeC::TakeCFrameWork::GetCameraCapture()->UpdateImGui();
 
 	ImGui::Begin("ONNX Model Debug");
 	ImGui::InputText("Model Path", debugOnnxModelPath_.data(), debugOnnxModelPath_.size());
 	if (ImGui::Button("Load ONNX Model")) {
-		debugOnnxModel_ = TakeCFrameWork::GetOnnxRuntimeSystem()->LoadModel(
+		debugOnnxModel_ = TakeC::TakeCFrameWork::GetOnnxRuntimeSystem()->LoadModel(
 			"TitleSceneDebugModel",
 			StringUtility::ConvertString(debugOnnxModelPath_.data()));
 		debugOnnxLoadFailed_ = debugOnnxModel_ == nullptr;

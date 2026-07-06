@@ -186,7 +186,7 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 		// 保存ポップアップ
 		spriteConfig_.color_ = mesh_->GetMaterial()->GetMaterialData()->color;
 		if (ImGuiManager::ShowSavePopup<SpriteConfig>(
-			TakeCFrameWork::GetJsonLoader(),
+			TakeC::TakeCFrameWork::GetJsonLoader(),
 			"Save_Sprite",
 			std::string(spriteConfig_.name + ".json").c_str(),
 			spriteConfig_,
@@ -199,7 +199,7 @@ void Sprite::UpdateImGui([[maybe_unused]]const std::string& name) {
 		// 読み込みポップアップ
 		std::string loadFilePath = "";
 		if (ImGuiManager::ShowLoadPopup<SpriteConfig>(
-			TakeCFrameWork::GetJsonLoader(),
+			TakeC::TakeCFrameWork::GetJsonLoader(),
 			"Load_Sprite",
 			loadFilePath)) {
 			// 読み込み処理
@@ -292,7 +292,7 @@ void Sprite::LoadConfig(const std::string& jsonFilePath) {
 	}
 
 	//jsonファイルから設定読み込み
-	spriteConfig_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<SpriteConfig>(jsonFilePath);
+	spriteConfig_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<SpriteConfig>(jsonFilePath);
 
 }
 

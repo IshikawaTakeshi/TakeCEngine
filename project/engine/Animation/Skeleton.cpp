@@ -91,18 +91,18 @@ void Skeleton::Draw(const Matrix4x4& worldMatrix) {
 			Vector3(0, 0, 0), jointWorldMatrix);
 		//親がいない場合はルートJointなので球で描画
 		if (!joint.parent) {
-			TakeCFrameWork::GetWireFrame()->DrawSphere(
+			TakeC::TakeCFrameWork::GetWireFrame()->DrawSphere(
 				jointWorldPos,
 				0.1f, { 1.0f,1.0f,0.1f,1.0f });
 		} else {
 			//親がいる場合は親との線を描画
 			if (joint.parent.has_value()) {
 				Vector3 parentWorldPos = MatrixMath::Transform(Vector3(0, 0, 0), joints[joint.parent.value()].skeletonSpaceMatrix * worldMatrix);
-				TakeCFrameWork::GetWireFrame()->DrawLine(jointWorldPos, parentWorldPos, { 1.0f,1.0f,1.0f,1.0f }); // 仮想関数
+				TakeC::TakeCFrameWork::GetWireFrame()->DrawLine(jointWorldPos, parentWorldPos, { 1.0f,1.0f,1.0f,1.0f }); // 仮想関数
 			}
 
 			//Jointを球で描画
-			TakeCFrameWork::GetWireFrame()->DrawSphere(
+			TakeC::TakeCFrameWork::GetWireFrame()->DrawSphere(
 				jointWorldPos,
 				0.1f, { 1.0f,0.1f,0.1f,1.0f });
 		}

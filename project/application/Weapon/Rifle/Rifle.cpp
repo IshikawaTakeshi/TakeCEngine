@@ -21,7 +21,7 @@ void Rifle::Initialize(Object3dCommon* object3dCommon,
 
 	// 武器の初期化
 	weaponData_ =
-		TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Rifle.json");
+		TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<WeaponData>("Rifle.json");
 
 	// 3dオブジェクトの初期化
 	object3d_ = std::make_unique<Object3d>();
@@ -54,7 +54,7 @@ void Rifle::Update() {
 	// リロード中かどうか
 	if (weaponState_.isReloading) {
 
-		weaponState_.reloadTime -= TakeCFrameWork::GetDeltaTime();
+		weaponState_.reloadTime -= TakeC::TakeCFrameWork::GetDeltaTime();
 
 		if (weaponState_.reloadTime <= 0.0f) {
 			weaponState_.reloadTime = 0.0f; // リロード時間をリセット
@@ -69,13 +69,13 @@ void Rifle::Update() {
 	}
 
 	// 攻撃間隔の減少
-	weaponState_.attackInterval -= TakeCFrameWork::GetDeltaTime();
+	weaponState_.attackInterval -= TakeC::TakeCFrameWork::GetDeltaTime();
 
 	//------------------------------------------------------------
 	// 三連射処理
 	//------------------------------------------------------------
 	if (burstShotState_.isActive) {
-		burstShotState_.intervalTimer -= TakeCFrameWork::GetDeltaTime();
+		burstShotState_.intervalTimer -= TakeC::TakeCFrameWork::GetDeltaTime();
 		if (burstShotState_.intervalTimer <= 0.0f && burstShotState_.count > 0) {
 
 			// 発射方向の計算
@@ -174,7 +174,7 @@ void Rifle::UpdateImGui() {
 	if (ImGui::Button("Save Rifle Config")) {
 		// 設定をJSONに保存
 		weaponData_.actionData = rifleInfo_;
-		TakeCFrameWork::GetJsonLoader()->SaveJsonData("Rifle.json", weaponData_);
+		TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData("Rifle.json", weaponData_);
 	}
 }
 

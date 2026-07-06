@@ -39,7 +39,7 @@ void Bullet::InitializeEffect(const BulletEffectConfig& effectConfig) {
 	explosionEffect_->Initialize(effectConfig_.explosionEffectFilePath);
 	
 	//deltaTime取得
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 	//transform初期化
 	transform_.translate = { 0.0f, 100.0f, 0.0f };
 	//ポイントライト初期化
@@ -48,7 +48,7 @@ void Bullet::InitializeEffect(const BulletEffectConfig& effectConfig) {
 	pointLightData_.radius_ = 20.0f;
 	pointLightData_.decay_ = 6.0f;
 	//ポイントライトの追加
-	pointLightIndex_ = TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
+	pointLightIndex_ = TakeC::TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
 }
 
 //========================================================================================================
@@ -57,7 +57,7 @@ void Bullet::InitializeEffect(const BulletEffectConfig& effectConfig) {
 
 void Bullet::Update() {
 
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 
 	if (isActive_ == false) {
 		pointLightData_.enabled_ = 0;
@@ -123,7 +123,7 @@ void Bullet::Update() {
 	lifeTime_ -= deltaTime_;
 	//ポイントライトの更新
 	pointLightData_.position_ = transform_.translate;
-	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
+	TakeC::TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
 
 	//ライフタイムが0以下になったら弾を無効化
 	if (lifeTime_ <= 0.0f) {

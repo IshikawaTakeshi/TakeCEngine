@@ -197,7 +197,7 @@ Particle BaseParticleGroup::MakeNewParticleWithEmitter(uint32_t emitterID, std::
 	particle.emitterID_ = emitterID;
 
 	// エミッターのスケールを適用
-	if (auto emitterScale = TakeCFrameWork::GetParticleManager()->GetEmitterScale(emitterID)) {
+	if (auto emitterScale = TakeC::TakeCFrameWork::GetParticleManager()->GetEmitterScale(emitterID)) {
 		particle.transforms_.scale.x *= emitterScale->x;
 		particle.transforms_.scale.y *= emitterScale->y;
 		particle.transforms_.scale.z *= emitterScale->z;

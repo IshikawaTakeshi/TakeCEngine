@@ -107,7 +107,7 @@ void Object3d::Update() {
 		//そうでない場合はAnimationUpdateを呼び出す
 		if (useExternalAnimation_) {
 			if (useAnimatorController_) {
-				animatorController_->Update(TakeCFrameWork::GetDeltaTime());
+				animatorController_->Update(TakeC::TakeCFrameWork::GetDeltaTime());
 			}
 		}
 		else {

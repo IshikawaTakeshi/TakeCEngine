@@ -32,7 +32,7 @@ void BulletSensor::Update() {
 
 	// センサーが有効な場合、タイマーを進める
 	if(isActive_) {
-		activeTimer_ += TakeCFrameWork::GetDeltaTime();
+		activeTimer_ += TakeC::TakeCFrameWork::GetDeltaTime();
 		if (activeTimer_ >= activeDuration_) {
 			isActive_ = false;
 			activeTimer_ = 0.0f; // タイマーリセット

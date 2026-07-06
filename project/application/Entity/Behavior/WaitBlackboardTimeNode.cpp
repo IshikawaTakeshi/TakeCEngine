@@ -23,7 +23,7 @@ BehaviorStatus WaitBlackboardTimeNode::Execute(Blackboard& blackboard) {
 		isCached_ = true;
 	}
 
-	elapsedTime_ += TakeCFrameWork::GetDeltaTime();
+	elapsedTime_ += TakeC::TakeCFrameWork::GetDeltaTime();
 
 	if (elapsedTime_ >= cachedWaitTime_) {
 		Reset();

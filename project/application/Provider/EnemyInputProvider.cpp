@@ -16,7 +16,7 @@ Vector3 EnemyInputProvider::GetMoveDirection() const {
 
 	// 移動方向の計算
 	// ターゲットの周囲を回るための目標座標を計算
-	enemy_->SetOrbitAngle(enemy_->GetOrbitAngle() + enemy_->GetOrbitSpeed() * TakeCFrameWork::GetDeltaTime());
+	enemy_->SetOrbitAngle(enemy_->GetOrbitAngle() + enemy_->GetOrbitSpeed() * TakeC::TakeCFrameWork::GetDeltaTime());
 
 	if (enemy_->GetOrbitAngle() > 2 * std::numbers::pi_v<float>) {
 		enemy_->SetOrbitAngle(enemy_->GetOrbitAngle() - (2 * std::numbers::pi_v<float>));

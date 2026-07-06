@@ -14,7 +14,7 @@
 std::unique_ptr<BehaviorNode> ComboFactory::LoadComboSetData(
 	const std::string& comboSetFilePath,
 	GameCharacterStateManager* stateManager) {
-	ComboSetData comboSetData = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ComboSetData>(comboSetFilePath);
+	ComboSetData comboSetData = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<ComboSetData>(comboSetFilePath);
 	return BuildBehaviorTree(comboSetData, stateManager);
 }
 

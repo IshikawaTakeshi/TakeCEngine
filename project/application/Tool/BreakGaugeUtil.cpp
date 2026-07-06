@@ -26,7 +26,7 @@ void BreakGaugeUtil::UpdateBreakGaugeEntries(BreakGaugeInfo& bg) {
         }
 
         // 減衰開始（delay終了後）
-        e.amount -= bg.decayRate * TakeCFrameWork::GetDeltaTime();
+        e.amount -= bg.decayRate * TakeC::TakeCFrameWork::GetDeltaTime();
         if (e.amount < 0.0f) e.amount = 0.0f;
     }
 

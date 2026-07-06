@@ -95,7 +95,7 @@ void ShadowMapEffect::Dispatch() {
 	//lightCameraInfo
 	dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(
 		computePSO_->GetComputeBindResourceIndex("gLightCameraInfo"),
-		TakeCFrameWork::GetLightManager()->GetLightCameraInfoResource()->GetGPUVirtualAddress()
+		TakeC::TakeCFrameWork::GetLightManager()->GetLightCameraInfoResource()->GetGPUVirtualAddress()
 	);
 
 	//gMainCameraInfo

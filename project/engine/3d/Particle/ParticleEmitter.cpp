@@ -14,8 +14,8 @@
 // デストラクタ
 //================================================================================================
 ParticleEmitter::~ParticleEmitter() {
-	if (TakeCFrameWork::GetParticleManager()) {
-		TakeCFrameWork::GetParticleManager()->EmitterRelease(emitterID_);
+	if (TakeC::TakeCFrameWork::GetParticleManager()) {
+		TakeC::TakeCFrameWork::GetParticleManager()->EmitterRelease(emitterID_);
 	}
 }
 
@@ -29,10 +29,10 @@ void ParticleEmitter::Initialize(const std::string& emitterName, const std::stri
 
 
 	//prest情報の取得
-	preset_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetInfo);
+	preset_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<ParticlePreset>(presetInfo);
 
 	// ParticleManagerのアロケーターからエミッターIDを取得して登録
-	emitterID_ = TakeCFrameWork::GetParticleManager()->EmitterAllocate(this);
+	emitterID_ = TakeC::TakeCFrameWork::GetParticleManager()->EmitterAllocate(this);
 
 	particleName_ = preset_.presetName;
 	emitDirection_ = { 0.0f,0.0f,1.0f };
@@ -54,10 +54,10 @@ bool ParticleEmitter::Update() {
 
 	//エミッターの更新
 	if (!isEmit_) return false;
-	frequencyTime_ += TakeCFrameWork::GetDeltaTime();
+	frequencyTime_ += TakeC::TakeCFrameWork::GetDeltaTime();
 	if (frequency_ <= frequencyTime_) {
 
-		if (TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.isEmitterTrail == true) {
+		if (TakeC::TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.isEmitterTrail == true) {
 			// 移動ベクトルと距離
 			Vector3 moveVector = transforms_.translate - prevTranslate_;
 			float moveDistance = Vector3Math::Length(moveVector);
@@ -76,7 +76,7 @@ bool ParticleEmitter::Update() {
 					float t = static_cast<float>(i + 1) / (interpolationCount + 1);
 					Vector3 interpolatedPos = prevTranslate_ + moveVector * t;
 					// エミッターIDを含めてパーティクルを発生
-					TakeCFrameWork::GetParticleManager()->EmitWithEmitter(
+					TakeC::TakeCFrameWork::GetParticleManager()->EmitWithEmitter(
 						emitterID_,
 						particleName_,
 						interpolatedPos,
@@ -87,7 +87,7 @@ bool ParticleEmitter::Update() {
 			}
 		}
 		// エミッターIDを含めてパーティクルを発生
-		TakeCFrameWork::GetParticleManager()->EmitWithEmitter(
+		TakeC::TakeCFrameWork::GetParticleManager()->EmitWithEmitter(
 			emitterID_,
 			particleName_,
 			transforms_.translate,
@@ -129,9 +129,9 @@ void ParticleEmitter::UpdateImGui() {
 
 void ParticleEmitter::DrawWireFrame() {
 
-	TakeCFrameWork::GetWireFrame()->DrawSphere(transforms_.translate, 0.3f, { 1.0f, 0.0f, 1.0f, 1.0f });
+	TakeC::TakeCFrameWork::GetWireFrame()->DrawSphere(transforms_.translate, 0.3f, { 1.0f, 0.0f, 1.0f, 1.0f });
 	//発射方向の描画
-	TakeCFrameWork::GetWireFrame()->DrawLine(transforms_.translate, emitDirection_, { 1.0f,1.0f,0.0f,1.0f });
+	TakeC::TakeCFrameWork::GetWireFrame()->DrawLine(transforms_.translate, emitDirection_, { 1.0f,1.0f,0.0f,1.0f });
 }
 
 //==================================================================================
@@ -139,11 +139,11 @@ void ParticleEmitter::DrawWireFrame() {
 //==================================================================================
 
 void ParticleEmitter::Emit() {
-	TakeCFrameWork::GetParticleManager()->EmitWithEmitter(emitterID_, particleName_, transforms_.translate, emitDirection_, particleCount_);
+	TakeC::TakeCFrameWork::GetParticleManager()->EmitWithEmitter(emitterID_, particleName_, transforms_.translate, emitDirection_, particleCount_);
 }
 
 void ParticleEmitter::Emit(const Vector3& position) {
-	TakeCFrameWork::GetParticleManager()->EmitWithEmitter(emitterID_, particleName_, position, emitDirection_, particleCount_);
+	TakeC::TakeCFrameWork::GetParticleManager()->EmitWithEmitter(emitterID_, particleName_, position, emitDirection_, particleCount_);
 }
 
 //==================================================================================
@@ -152,8 +152,8 @@ void ParticleEmitter::Emit(const Vector3& position) {
 
 void ParticleEmitter::SetParticleName(const std::string& particleName) {
 	particleName_ = particleName;
-	frequency_ = TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.frequency;
-	particleCount_ = TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.emitCount;
+	frequency_ = TakeC::TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.frequency;
+	particleCount_ = TakeC::TakeCFrameWork::GetParticleManager()->GetParticleGroup(particleName_)->GetPreset().attribute.emitCount;
 }
 
 //==================================================================================

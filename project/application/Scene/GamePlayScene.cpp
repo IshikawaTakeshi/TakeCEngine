@@ -69,8 +69,8 @@ void GamePlayScene::Initialize() {
 	sceneStateManager_.Initialize(SceneState::GAMEPLAY, this);
 
 	// ShadowMapEffectを有効化
-	TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect",true);
-	TakeCFrameWork::GetPostEffectManager()->PlayEffect("Outline_FadeIn");
+	TakeC::TakeCFrameWork::GetPostEffectManager()->SetEffectActive("ShadowMapEffect",true);
+	TakeC::TakeCFrameWork::GetPostEffectManager()->PlayEffect("Outline_FadeIn");
 }
 
 //====================================================================
@@ -80,15 +80,15 @@ void GamePlayScene::Initialize() {
 void GamePlayScene::Finalize() {
 
 	AudioManager::GetInstance().SoundUnload(&BGM_);         // BGMの解放
-	TakeCFrameWork::GetCameraCapture()->Finalize();             // カメラキャプチャの解放
+	TakeC::TakeCFrameWork::GetCameraCapture()->Finalize();             // カメラキャプチャの解放
 	CollisionManager::GetInstance().ClearGameCharacter();   // 当たり判定の解放
 	TakeC::CameraManager::GetInstance().ResetCameras();     // カメラのリセット
-	TakeCFrameWork::GetParticleManager()->ClearParticles(); // パーティクルの解放
-	TakeCFrameWork::GetParticleManager()->ClearEmitters();  // エミッターの解放
-	TakeCFrameWork::GetLightManager()->ClearAllPointLights();  // ポイントライトの解放
-	TakeCFrameWork::GetPostEffectManager()->StopAllEffects();    // ポストエフェクトの停止
-	TakeCFrameWork::GetSpriteManager()->Clear(); // スプライトの解放
-	TakeCFrameWork::GetUIManager()->Clear();     // UIの解放
+	TakeC::TakeCFrameWork::GetParticleManager()->ClearParticles(); // パーティクルの解放
+	TakeC::TakeCFrameWork::GetParticleManager()->ClearEmitters();  // エミッターの解放
+	TakeC::TakeCFrameWork::GetLightManager()->ClearAllPointLights();  // ポイントライトの解放
+	TakeC::TakeCFrameWork::GetPostEffectManager()->StopAllEffects();    // ポストエフェクトの停止
+	TakeC::TakeCFrameWork::GetSpriteManager()->Clear(); // スプライトの解放
+	TakeC::TakeCFrameWork::GetUIManager()->Clear();     // UIの解放
 	skyBox_.reset();
 }
 
@@ -104,7 +104,7 @@ void GamePlayScene::Update() {
 	}
 
 	//CameraCaptureの更新
-	TakeCFrameWork::GetCameraCapture()->Update();
+	TakeC::TakeCFrameWork::GetCameraCapture()->Update();
 
 	// SkyBoxの更新
 	skyBox_->Update();
@@ -115,12 +115,12 @@ void GamePlayScene::Update() {
 	TakeC::CameraManager::GetInstance().Update();
 
 	// particleManager更新
-	TakeCFrameWork::GetParticleManager()->Update();
+	TakeC::TakeCFrameWork::GetParticleManager()->Update();
 	// LightManager更新
 	/*Camera* lightCam =
 		TakeC::CameraManager::GetInstance().FindCameraByName("lightCamera");
 	lightCam->Update();
-	TakeCFrameWork::GetLightManager()->UpdateShadowMatrix(
+	TakeC::TakeCFrameWork::GetLightManager()->UpdateShadowMatrix(
 		lightCam, player_->GetObject3d()->GetWorldPosition());*/
 
 	// 当たり判定の更新
@@ -131,7 +131,7 @@ void GamePlayScene::UpdateImGui() {
 
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
-	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
+	TakeC::TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 
 	
 }
@@ -155,12 +155,12 @@ void GamePlayScene::Draw() {
 #pragma endregion
 
   // spotLightの描画
-	TakeCFrameWork::GetLightManager()->DrawSpotLights();
+	TakeC::TakeCFrameWork::GetLightManager()->DrawSpotLights();
 	// 登録されたワイヤーフレームをすべて描画させる
-	TakeCFrameWork::GetWireFrame()->Draw();
+	TakeC::TakeCFrameWork::GetWireFrame()->Draw();
 
 	// パーティクルの描画
-	TakeCFrameWork::GetParticleManager()->Draw();
+	TakeC::TakeCFrameWork::GetParticleManager()->Draw();
 }
 
 void GamePlayScene::DrawSprite() {
@@ -170,7 +170,7 @@ void GamePlayScene::DrawSprite() {
 
 	if (sceneStateManager_.GetCurrentStateType() != SceneState::ENEMYDESTROYED) {
 
-		TakeCFrameWork::GetSpriteManager()->Draw();
+		TakeC::TakeCFrameWork::GetSpriteManager()->Draw();
 	}
 }
 
@@ -181,7 +181,7 @@ void GamePlayScene::DrawShadow() {
 
 	// ライトカメラのセット
 	/*const LightCameraInfo& lightCameraInfo =
-		TakeCFrameWork::GetLightManager()->GetLightCameraInfo();*/
+		TakeC::TakeCFrameWork::GetLightManager()->GetLightCameraInfo();*/
 	// Object3dの影描画前処理
 	//Object3dCommon::GetInstance().PreDrawShadowPass();
 }

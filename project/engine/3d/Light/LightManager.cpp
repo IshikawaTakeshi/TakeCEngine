@@ -263,7 +263,7 @@ void TakeC::LightManager::DrawPointLights() {
 	// 全てのポイントライト一覧を表示
 	for (uint32_t i = 0; i < activePointLightCount_; ++i) {
 
-		TakeCFrameWork::GetWireFrame()->DrawPointLight(
+		TakeC::TakeCFrameWork::GetWireFrame()->DrawPointLight(
 			pointLightData_[i].position_,
 			Vector3{0.0f,0.0f,-1.0f},
 			pointLightData_[i].radius_,
@@ -283,7 +283,7 @@ void TakeC::LightManager::DrawSpotLights() {
 	}
 	// 全てのスポットライト一覧を表示
 	for (uint32_t i = 0; i < activeSpotLightCount_; ++i) {
-		TakeCFrameWork::GetWireFrame()->DrawCone(
+		TakeC::TakeCFrameWork::GetWireFrame()->DrawCone(
 			spotLightData_[i].position_,
 			spotLightData_[i].direction_,
 			std::acos(spotLightData_[i].cosAngle_),
@@ -378,7 +378,7 @@ void TakeC::LightManager::UpdateImGui() {
 		
 		// 保存ポップアップの表示
 		ImGuiManager::ShowSavePopup<DirectionalLightData>(
-				TakeCFrameWork::GetJsonLoader(),
+				TakeC::TakeCFrameWork::GetJsonLoader(),
 				"SaveDirectionalLight",
 				"DirectionalLight.json",
 				*dirLightData_,

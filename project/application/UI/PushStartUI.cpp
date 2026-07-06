@@ -6,9 +6,9 @@
 //====================================================================
 void PushStartUI::Initialize() {
 	// 「PRESS START」テキストスプライトの生成
-	pressStartText_ = TakeCFrameWork::GetSpriteManager()->CreateFromJson("PressStartText.json");
+	pressStartText_ = TakeC::TakeCFrameWork::GetSpriteManager()->CreateFromJson("PressStartText.json");
 	// 点滅スプライトの生成
-	blinkSprite_ = TakeCFrameWork::GetSpriteManager()->CreateFromJson("BlinkSprite.json");
+	blinkSprite_ = TakeC::TakeCFrameWork::GetSpriteManager()->CreateFromJson("BlinkSprite.json");
 	// 点滅タイマーの初期化
 	blinkTimer_.Initialize(1.0f, 0.0f);
 }

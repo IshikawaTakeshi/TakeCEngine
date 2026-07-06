@@ -8,7 +8,7 @@
 using namespace TakeC; // 名前空間省略
 
 BoostEffect::~BoostEffect() {
-	TakeCFrameWork::GetLightManager()->RemovePointLight(pointLightIndex_);
+	TakeC::TakeCFrameWork::GetLightManager()->RemovePointLight(pointLightIndex_);
 }
 
 //===================================================================================
@@ -39,7 +39,7 @@ void BoostEffect::Initialize(
 	pointLightData_.intensity_ = 0.0f; // 最初は消しておく
 	pointLightData_.radius_ = 2.0f;
 	pointLightData_.decay_ = 1.0f;
-	pointLightIndex_ = TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
+	pointLightIndex_ = TakeC::TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
 	
 	// 確実に停止処理を実行するため、一度 true にしておく
 	isActive_ = true;
@@ -84,7 +84,7 @@ void BoostEffect::Update() {
 	pointLightData_.position_ = {
 		currentJointMatrix_.m[3][0], currentJointMatrix_.m[3][1], currentJointMatrix_.m[3][2]
 	};
-	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
+	TakeC::TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
 	thrusterEffect_->Update();
 	appearEffect_->Update();
 	stepBoostEffect_->Update();

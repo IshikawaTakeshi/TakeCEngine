@@ -8,7 +8,7 @@
 //===================================================================================
 StateFloating::StateFloating(baseInputProvider* provider) {
 	inputProvider_ = provider; //入力プロバイダーの設定
-	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 	gravity_ = 9.8f; //重力の強さ
 }
 
@@ -16,7 +16,7 @@ StateFloating::StateFloating(baseInputProvider* provider) {
 //　初期化
 //===================================================================================
 void StateFloating::Initialize([[maybe_unused]] PlayableCharacterInfo& characterInfo) {
-	deltaTime_ = TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime(); //デルタタイムの取得
 }
 
 //===================================================================================

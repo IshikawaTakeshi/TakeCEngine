@@ -18,7 +18,7 @@ void SpriteSheetSettings::EditConfigImGui(const std::string& label) {
 
 	// 保存用ポップアップ
 	ImGuiManager::ShowSavePopup<SpriteSheetSettings>(
-		TakeCFrameWork::GetJsonLoader(),
+		TakeC::TakeCFrameWork::GetJsonLoader(),
 		"Save SpriteSheet Settings",
 		"SpriteSheetSettings.json",
 		*this,

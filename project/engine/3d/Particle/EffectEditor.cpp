@@ -12,7 +12,7 @@ using namespace TakeC;
 //==================================================================================
 void EffectEditor::Initialize(ParticleCommon* particleCommon) {
 	particleCommon_ = particleCommon;
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 
 	// デフォルトのエフェクト設定を作成
 	currentConfig_.effectName = "NewEffect";
@@ -45,7 +45,7 @@ void EffectEditor::Finalize() {
 void EffectEditor::Update() {
 
 	// パーティクルマネージャーの更新
-	TakeCFrameWork::GetParticleManager()->Update();
+	TakeC::TakeCFrameWork::GetParticleManager()->Update();
 
 	// プレビューエフェクトの更新
 	if (previewEffect_ && editorState_ == EditorState::Playing) {
@@ -64,7 +64,7 @@ void EffectEditor::UpdateImGui() {
 // 描画処理
 //==================================================================================
 void EffectEditor::Draw() {
-	TakeCFrameWork::GetParticleManager()->Draw();
+	TakeC::TakeCFrameWork::GetParticleManager()->Draw();
 }
 
 //==================================================================================
@@ -480,7 +480,7 @@ void TakeC::EffectEditor::LoadSavedEffects() {
 		for (const auto& entry : std::filesystem::directory_iterator(effectsDir)) {
 			if (entry.path().extension() == ".json") {
 				EffectGroupConfig effectConfig;
-				effectConfig = TakeCFrameWork::GetJsonLoader()->LoadJsonData<EffectGroupConfig>(entry.path().filename().string());
+				effectConfig = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<EffectGroupConfig>(entry.path().filename().string());
 				savedEffects_.push_back(effectConfig);
 			}
 		}
@@ -651,8 +651,8 @@ void EffectEditor::LoadAvailablePresets() {
 // JSONに保存
 //==================================================================================
 void EffectEditor::SaveEffectToJson(const std::string& filePath) {
-	// JSON保存処理（TakeCFrameWork::GetJsonLoader()を使用）
-	TakeCFrameWork::GetJsonLoader()->SaveJsonData(filePath, currentConfig_);
+	// JSON保存処理（TakeC::TakeCFrameWork::GetJsonLoader()を使用）
+	TakeC::TakeCFrameWork::GetJsonLoader()->SaveJsonData(filePath, currentConfig_);
 }
 
 //==================================================================================
@@ -660,7 +660,7 @@ void EffectEditor::SaveEffectToJson(const std::string& filePath) {
 //==================================================================================
 void EffectEditor::LoadEffectFromJson(const std::string& filePath) {
 	// JSON読み込み処理
-	currentConfig_ = TakeCFrameWork::GetJsonLoader()->LoadJsonData<EffectGroupConfig>(filePath);
+	currentConfig_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<EffectGroupConfig>(filePath);
 	RebuildEffectGroup();
 }
 
@@ -669,7 +669,7 @@ void EffectEditor::LoadEffectFromJson(const std::string& filePath) {
 //==================================================================================
 void EffectEditor::DrawPreviewGizmo() {
 	// ワイヤーフレームで位置を表示
-	TakeCFrameWork::GetWireFrame()->DrawSphere(previewPosition_, 0.5f, {1.0f, 0.0f, 0.0f, 1.0f});
+	TakeC::TakeCFrameWork::GetWireFrame()->DrawSphere(previewPosition_, 0.5f, {1.0f, 0.0f, 0.0f, 1.0f});
 }
 
 //==================================================================================
@@ -679,7 +679,7 @@ void EffectEditor::DrawEmitterGizmo() {
 	if (selectedEmitterIndex_ >= 0 && selectedEmitterIndex_ < currentConfig_.emitters.size()) {
 		auto& emitter = currentConfig_.emitters[selectedEmitterIndex_];
 		Vector3 emitterPos = previewPosition_ + emitter.positionOffset;
-		TakeCFrameWork::GetWireFrame()->DrawSphere(emitterPos, 0.3f, {0.0f, 1.0f, 0.0f, 1.0f});
+		TakeC::TakeCFrameWork::GetWireFrame()->DrawSphere(emitterPos, 0.3f, {0.0f, 1.0f, 0.0f, 1.0f});
 	}
 }
 

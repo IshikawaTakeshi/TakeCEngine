@@ -41,7 +41,7 @@ void VerticalMissile::InitializeEffect(const BulletEffectConfig& effectConfig) {
 	lightEffect_ = std::make_unique<EffectGroup>();
 	lightEffect_->Initialize(effectConfig_.lightEffectFilePath);
 
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 
 
 	//transform初期化
@@ -53,7 +53,7 @@ void VerticalMissile::InitializeEffect(const BulletEffectConfig& effectConfig) {
 	pointLightData_.radius_ = 20.0f;
 	pointLightData_.decay_ = 6.0f;
 	//ポイントライトの追加
-	pointLightIndex_ = TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
+	pointLightIndex_ = TakeC::TakeCFrameWork::GetLightManager()->AddPointLight(pointLightData_);
 }
 
 //====================================================================================
@@ -62,7 +62,7 @@ void VerticalMissile::InitializeEffect(const BulletEffectConfig& effectConfig) {
 
 void VerticalMissile::Update() {
 
-	deltaTime_ = TakeCFrameWork::GetDeltaTime();
+	deltaTime_ = TakeC::TakeCFrameWork::GetDeltaTime();
 	if (isActive_ == false) {
 		pointLightData_.enabled_ = 0;
 
@@ -210,7 +210,7 @@ void VerticalMissile::Update() {
 	lifeTime_ -= deltaTime_;
 	//ポイントライトの更新
 	pointLightData_.position_ = transform_.translate;
-	TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
+	TakeC::TakeCFrameWork::GetLightManager()->UpdatePointLight(pointLightIndex_, pointLightData_);
 
 
 	//パーティクルエミッターの更新
@@ -225,7 +225,7 @@ void VerticalMissile::Update() {
 		WarningData data;
 		data.position = transform_.translate;
 		data.type = WarningType::MISSILE;
-		TakeCFrameWork::GetEventManager()->PostEvent("EnemyBulletWarning", data);
+		TakeC::TakeCFrameWork::GetEventManager()->PostEvent("EnemyBulletWarning", data);
 	}
 
 	//オブジェクト、コライダーの更新

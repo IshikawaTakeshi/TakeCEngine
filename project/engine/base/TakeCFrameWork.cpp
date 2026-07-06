@@ -1,10 +1,10 @@
 #include "TakeCFrameWork.h"
 #include <cassert>
 
-using namespace TakeC;
-
 //Clockの宣言
 using Clock = std::chrono::high_resolution_clock;
+
+using namespace TakeC;
 
 std::unique_ptr<TakeC::AnimationManager> TakeCFrameWork::animationManager_ = nullptr;
 std::unique_ptr<TakeC::JsonLoader> TakeCFrameWork::jsonLoader_ = nullptr;

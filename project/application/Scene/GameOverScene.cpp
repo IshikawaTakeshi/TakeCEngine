@@ -30,7 +30,7 @@ void GameOverScene::Initialize() {
 	skybox_->SetMaterialColor({ 0.2f,0.2f,0.2f,1.0f });
 
 	//Spriteの初期化
-	gameOverTextSprite_ = TakeCFrameWork::GetSpriteManager()->CreateFromJson("GameOverText.json");
+	gameOverTextSprite_ = TakeC::TakeCFrameWork::GetSpriteManager()->CreateFromJson("GameOverText.json");
 }
 
 //====================================================================
@@ -42,7 +42,7 @@ void GameOverScene::Finalize() {
 	// カメラの解放
 	TakeC::CameraManager::GetInstance().ResetCameras();
 	// Spriteのクリア
-	TakeCFrameWork::GetSpriteManager()->Clear(); 
+	TakeC::TakeCFrameWork::GetSpriteManager()->Clear(); 
 }
 
 //====================================================================
@@ -61,10 +61,10 @@ void GameOverScene::Update() {
 	skybox_->Update();
 
 	// Spriteの更新
-	TakeCFrameWork::GetSpriteManager()->Update();
+	TakeC::TakeCFrameWork::GetSpriteManager()->Update();
 
 	//particleManager更新
-	TakeCFrameWork::GetParticleManager()->Update();
+	TakeC::TakeCFrameWork::GetParticleManager()->Update();
 	
 		// シーン遷移
 	if (TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::A)) {
@@ -81,7 +81,7 @@ void GameOverScene::Update() {
 void GameOverScene::UpdateImGui() {
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();	
-	TakeCFrameWork::GetSpriteManager()->UpdateImGui();
+	TakeC::TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 
 }
 
@@ -95,12 +95,12 @@ void GameOverScene::Draw() {
 	Object3dCommon::GetInstance().PreDraw(); // Object3dの描画前処理
 	
 	//ParticleCommon::GetInstance()->PreDraw(); // パーティクルの描画前処理
-	TakeCFrameWork::GetParticleManager()->Draw(); // パーティクルの描画
+	TakeC::TakeCFrameWork::GetParticleManager()->Draw(); // パーティクルの描画
 }
 
 void GameOverScene::DrawSprite() {
 	TakeC::SpriteCommon::GetInstance().PreDraw(); // Spriteの描画前処理
-	TakeCFrameWork::GetSpriteManager()->Draw(); // Spriteの描画
+	TakeC::TakeCFrameWork::GetSpriteManager()->Draw(); // Spriteの描画
 
 }
 

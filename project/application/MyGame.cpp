@@ -22,7 +22,7 @@ void MyGame::Initialize(const std::wstring& titleName) {
 	auto totalStart = Clock::now();
 
 	//FrameWorkの初期化
-	TakeCFrameWork::Initialize(titleName);
+	TakeC::TakeCFrameWork::Initialize(titleName);
 
 	sceneFactory_ = std::make_unique<SceneFactory>();
 
@@ -110,11 +110,11 @@ void MyGame::Initialize(const std::wstring& titleName) {
 //====================================================================
 
 void MyGame::Finalize() {
-	TakeCFrameWork::GetParticleManager()->Finalize(); //パーティクルマネージャーの解放
+	TakeC::TakeCFrameWork::GetParticleManager()->Finalize(); //パーティクルマネージャーの解放
 	CollisionManager::GetInstance().Finalize();
 	sceneTransition_->Finalize(); //シーン遷移の開放
 	sceneManager_->Finalize();  //シーンの開放
-	TakeCFrameWork::Finalize(); //FrameWorkの終了処理
+	TakeC::TakeCFrameWork::Finalize(); //FrameWorkの終了処理
 }
 
 //====================================================================
@@ -132,11 +132,11 @@ void MyGame::Update() {
 
 
 	//FrameWorkの更新
-	TakeCFrameWork::Update();
+	TakeC::TakeCFrameWork::Update();
 	//PostEffectの更新
 	postEffectManager_->Update();
 
-	TakeCFrameWork::GetWireFrame()->Update();
+	TakeC::TakeCFrameWork::GetWireFrame()->Update();
 }
 
 //====================================================================
@@ -233,7 +233,7 @@ void MyGame::LoadModel() {
 
 void MyGame::LoadAnimation() {
 
-	TakeCFrameWork::GetAnimationManager()->LoadAnimation("Player_Model_Ver2.0.gltf");
+	TakeC::TakeCFrameWork::GetAnimationManager()->LoadAnimation("Player_Model_Ver2.0.gltf");
 }
 
 //====================================================================
@@ -260,7 +260,7 @@ void MyGame::LoadSound() {
 //====================================================================
 void MyGame::LoadParticlePreset() {
 
-	TakeCFrameWork::GetParticleManager()->LoadAllPresets();
+	TakeC::TakeCFrameWork::GetParticleManager()->LoadAllPresets();
 }
 
 //====================================================================
