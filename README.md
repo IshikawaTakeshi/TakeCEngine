@@ -20,4 +20,4 @@
 ---
 
 ### 現在のバージョン
-- Ver2.0/Develop（監修盤）
+- Ver3.0/Develop
