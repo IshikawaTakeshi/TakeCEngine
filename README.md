@@ -1,7 +1,7 @@
 [![DebugBuild](https://github.com/IshikawaTakeshi/TakeCEngine/actions/workflows/DebugBuild.yml/badge.svg)](https://github.com/IshikawaTakeshi/TakeCEngine/actions/workflows/DebugBuild.yml)
 [![ReleaseBuild](https://github.com/IshikawaTakeshi/TakeCEngine/actions/workflows/ReleaseBuild.yml/badge.svg)](https://github.com/IshikawaTakeshi/TakeCEngine/actions/workflows/ReleaseBuild.yml)
 
-2025 08/21 書き込み
+2026 07/06 書き込み
 # GitHubブランチ命名規則
 
 （元デベロップバージョン名）_(作業種別)_(作業名)
@@ -20,4 +20,4 @@
 ---
 
 ### 現在のバージョン
-- Ver2.0/Develop（監修盤）
+- Ver1.0/顔バトル(仮)
