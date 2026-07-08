@@ -1,6 +1,7 @@
 #include "OnnxModel.h"
-
 #include <algorithm>
+
+#include "engine/Utility/Logger.h"
 
 //====================================================================
 // 初期化処理
@@ -30,6 +31,10 @@ bool TakeC::OnnxModel::Initialize(Ort::Env& env, const std::wstring& modelPath, 
 	outputNames_.clear();
 	inputShapes_.clear();
 	outputShapes_.clear();
+	runtimeInputShapes_.clear();
+	runtimeOutputShapes_.clear();
+	inputDataList_.clear();
+	outputDataList_.clear();
 	inputNamesPtrs_.clear();
 	outputNamesPtrs_.clear();
 
@@ -72,6 +77,13 @@ bool TakeC::OnnxModel::Initialize(Ort::Env& env, const std::wstring& modelPath, 
 	for (const std::string& name : outputNames_) {
 		outputNamesPtrs_.push_back(name.c_str());
 	}
+
+	// モデル情報として取得したinputShapes_とは別に、実際の推論で使うshapeを保持する。
+	// dynamic shape(-1)を含むモデルでは、Run前にResizeInputBufferで具体値に置き換える。
+	runtimeInputShapes_ = inputShapes_;
+	runtimeOutputShapes_.resize(outputShapes_.size());
+	inputDataList_.resize(inputShapes_.size());
+	outputDataList_.resize(outputShapes_.size());
 
 	return true;
 }
@@ -198,6 +210,109 @@ bool TakeC::OnnxModel::Run(
 		outputDataList.emplace_back(outputRawData, outputRawData + outputElementCount);
 	}
 
+	return true;
+}
+
+bool TakeC::OnnxModel::Run() {
+	if (!session_) {
+		return false;
+	}
+
+	if (inputDataList_.empty() || inputDataList_.size() != runtimeInputShapes_.size()) {
+		Logger::Log("Input data list and input shapes list must have the same size and cannot be empty.");
+		return false;
+	}
+
+	if (inputDataList_.size() > inputNamesPtrs_.size()) {
+		Logger::Log("Input data list size exceeds the number of input names.");
+		return false;
+	}
+
+	std::vector<Ort::Value> inputTensors;
+	inputTensors.reserve(inputDataList_.size());
+
+	Ort::MemoryInfo memoryInfo = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
+	for (size_t i = 0; i < inputDataList_.size(); ++i) {
+		const size_t inputElementCount = CalculateElementCount(runtimeInputShapes_[i]);
+		if (inputElementCount == 0 || inputElementCount != inputDataList_[i].size()) {
+			Logger::Log("Input data size does not match the expected shape.");
+			return false;
+		}
+
+		inputTensors.emplace_back(Ort::Value::CreateTensor<float>(
+			memoryInfo,
+			const_cast<float*>(inputDataList_[i].data()),
+			inputDataList_[i].size(),
+			runtimeInputShapes_[i].data(),
+			runtimeInputShapes_[i].size()));
+	}
+
+
+
+	std::lock_guard<std::mutex> lock(runMutex_);
+	std::vector<Ort::Value> outputTensors = session_->Run(
+		Ort::RunOptions{ nullptr },
+		inputNamesPtrs_.data(),
+		inputTensors.data(),
+		inputTensors.size(),
+		outputNamesPtrs_.data(),
+		outputNamesPtrs_.size());
+
+	outputDataList_.clear();
+	runtimeOutputShapes_.clear();
+	outputDataList_.reserve(outputTensors.size());
+	runtimeOutputShapes_.reserve(outputTensors.size());
+	for (Ort::Value& outputTensor : outputTensors) {
+		if (!outputTensor.IsTensor()) {
+			Logger::Log("Output is not a tensor.");
+			return false;
+		}
+		Ort::TensorTypeAndShapeInfo outputInfo = outputTensor.GetTensorTypeAndShapeInfo();
+		std::vector<int64_t> outputShape = outputInfo.GetShape();
+		const size_t outputElementCount = outputInfo.GetElementCount();
+		const float* outputRawData = outputTensor.GetTensorData<float>();
+		runtimeOutputShapes_.push_back(std::move(outputShape));
+		outputDataList_.emplace_back(outputRawData, outputRawData + outputElementCount);
+	}
+	return true;
+}
+
+std::vector<float>* TakeC::OnnxModel::GetInputData(size_t inputIndex) {
+	if (inputIndex >= inputDataList_.size()) {
+		return nullptr;
+	}
+
+	return &inputDataList_[inputIndex];
+}
+
+const std::vector<int64_t>* TakeC::OnnxModel::GetRuntimeInputShape(size_t inputIndex) const {
+	if (inputIndex >= runtimeInputShapes_.size()) {
+		return nullptr;
+	}
+
+	return &runtimeInputShapes_[inputIndex];
+}
+
+bool TakeC::OnnxModel::ResizeInputBuffer(size_t inputIndex, const std::vector<int64_t>& inputShape) {
+	if (inputIndex >= inputNamesPtrs_.size()) {
+		return false;
+	}
+
+	const size_t inputElementCount = CalculateElementCount(inputShape);
+	if (inputElementCount == 0) {
+		return false;
+	}
+
+	if (runtimeInputShapes_.size() < inputNamesPtrs_.size()) {
+		runtimeInputShapes_.resize(inputNamesPtrs_.size());
+	}
+	if (inputDataList_.size() < inputNamesPtrs_.size()) {
+		inputDataList_.resize(inputNamesPtrs_.size());
+	}
+
+	// モデル定義のinputShapes_は変更せず、実際の推論に使うshapeだけを更新する。
+	runtimeInputShapes_[inputIndex] = inputShape;
+	inputDataList_[inputIndex].resize(inputElementCount);
 	return true;
 }
 

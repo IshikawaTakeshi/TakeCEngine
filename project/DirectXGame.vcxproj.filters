@@ -823,6 +823,9 @@
     <ClCompile Include="application\Entity\State\StateBreakStun.cpp">
       <Filter>application\Entity\State</Filter>
     </ClCompile>
+    <ClCompile Include="engine\AI\FaceInputBuilder.cpp">
+      <Filter>engine\AI</Filter>
+    </ClCompile>
     <ClCompile Include="engine\AI\OnnxRuntimeSystem.cpp">
       <Filter>engine\AI</Filter>
     </ClCompile>
@@ -1502,6 +1505,9 @@
     </ClInclude>
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h">
       <Filter>externals\ImNodeFlow-1.2.2\src</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AI\FaceInputBuilder.h">
+      <Filter>engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="engine\AI\OnnxRuntimeSystem.h">
       <Filter>engine\AI</Filter>

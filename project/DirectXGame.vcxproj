@@ -371,6 +371,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.cpp" />
     <ClCompile Include="application\Entity\State\StateBreakStun.cpp" />
+    <ClCompile Include="engine\AI\FaceInputBuilder.cpp" />
     <ClCompile Include="engine\AI\OnnxRuntimeSystem.cpp" />
     <ClCompile Include="engine\AI\OnnxModel.cpp" />
     <ClCompile Include="engine\CameraCapture\CameraCapture.cpp" />
@@ -599,6 +600,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\context_wrapper.h" />
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.h" />
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h" />
+    <ClInclude Include="engine\AI\FaceInputBuilder.h" />
     <ClInclude Include="engine\AI\OnnxRuntimeSystem.h" />
     <ClInclude Include="engine\AI\OnnxModel.h" />
     <ClInclude Include="engine\CameraCapture\CameraCapture.h" />

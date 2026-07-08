@@ -5,7 +5,9 @@
 
 #include "application/Scene/SceneManager.h"
 
+#include "engine/AI/FaceInputBuilder.h"
 #include "engine/base/TakeCFrameWork.h"
+#include "engine/CameraCapture/CameraCapture.h"
 #include "engine/Math/Quaternion.h"
 #include "engine/Utility/StringUtility.h"
 #include "externals/imgui/imgui.h"
@@ -47,6 +49,52 @@ namespace {
 
 		ImGui::TreePop();
 	}
+
+	bool ResolveRuntimeImageInputShape(const std::vector<int64_t>& modelShape, std::vector<int64_t>& runtimeShape) {
+		constexpr int64_t kDefaultInputWidth = 640;
+		constexpr int64_t kDefaultInputHeight = 640;
+
+		if (modelShape.size() != 4) {
+			return false;
+		}
+
+		// modelShapeはONNXモデルに定義されている情報。dynamic(-1)の場合は推論実行用に具体値を入れる。
+		runtimeShape = modelShape;
+		if (runtimeShape[0] <= 0) {
+			runtimeShape[0] = 1;
+		}
+
+		const bool mayBeNchw = runtimeShape[1] == 3 || runtimeShape[1] == 4 || runtimeShape[1] <= 0;
+		const bool mayBeNhwc = runtimeShape[3] == 3 || runtimeShape[3] == 4 || runtimeShape[3] <= 0;
+
+		if (mayBeNchw) {
+			if (runtimeShape[1] <= 0) {
+				runtimeShape[1] = 3;
+			}
+			if (runtimeShape[2] <= 0) {
+				runtimeShape[2] = kDefaultInputHeight;
+			}
+			if (runtimeShape[3] <= 0) {
+				runtimeShape[3] = kDefaultInputWidth;
+			}
+		}
+		else if (mayBeNhwc) {
+			if (runtimeShape[1] <= 0) {
+				runtimeShape[1] = kDefaultInputHeight;
+			}
+			if (runtimeShape[2] <= 0) {
+				runtimeShape[2] = kDefaultInputWidth;
+			}
+			if (runtimeShape[3] <= 0) {
+				runtimeShape[3] = 3;
+			}
+		}
+		else {
+			return false;
+		}
+
+		return runtimeShape[0] == 1;
+	}
 }
 
 //====================================================================
@@ -56,7 +104,7 @@ void TitleScene::Initialize() {
 
 	//Camera0
 	camera0_ = std::make_unique<Camera>();
-	camera0_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(),"Title_ViewCamera.json");
+	camera0_->Initialize(TakeC::CameraManager::GetInstance().GetDirectXCommon()->GetDevice(), "Title_ViewCamera.json");
 	camera0_->SetRotationSpeed(1.0f);
 	camera0_->SetFollowSpeed(1.0f);
 	TakeC::CameraManager::GetInstance().AddCamera("Tcamera0", camera0_.get());
@@ -97,7 +145,36 @@ void TitleScene::Finalize() {
 void TitleScene::Update() {
 
 	//CameraCaptureの更新
-	TakeC::TakeCFrameWork::GetCameraCapture()->Update();
+	TakeC::CameraCapture* cameraCapture = TakeC::TakeCFrameWork::GetCameraCapture();
+	if (cameraCapture) {
+		cameraCapture->Update();
+	}
+
+	// ONNXモデルの更新。
+	// GetInputShapes()はモデル定義の情報、runtimeInputShapeは実際の推論に使う具体shape。
+	if (debugOnnxInferenceTimer_ > 0.0f) {
+		debugOnnxInferenceTimer_ -= TakeC::TakeCFrameWork::GetDeltaTime();
+	}
+	if (debugOnnxInferenceEnabled_ && debugOnnxInferenceTimer_ <= 0.0f &&
+		debugOnnxModel_ && cameraCapture && cameraCapture->GetFrameRGBA()) {
+
+		debugOnnxRunSuccess_ = false;
+		const auto& modelInputShapes = debugOnnxModel_->GetInputShapes();
+		if (!modelInputShapes.empty()) {
+			std::vector<int64_t> runtimeInputShape;
+			if (ResolveRuntimeImageInputShape(modelInputShapes[0], runtimeInputShape) &&
+				debugOnnxModel_->ResizeInputBuffer(0, runtimeInputShape)) {
+
+				std::vector<float>* input = debugOnnxModel_->GetInputData(0);
+				if (input && TakeC::BuildFaceInputFromCamera(*cameraCapture, *input, runtimeInputShape)) {
+					debugOnnxRunSuccess_ = debugOnnxModel_->Run();
+				}
+			}
+		}
+
+		debugOnnxInferenceTimer_ = std::max(debugOnnxInferenceInterval_, 0.0f);
+	}
+
 
 	//カメラの更新
 	TakeC::CameraManager::GetInstance().Update();
@@ -106,10 +183,10 @@ void TitleScene::Update() {
 	skyBox_->Update();
 
 	//シーン遷移
-	if (TakeC::Input::GetInstance().TriggerButton(0,GamepadButtonType::A)) {
+	if (TakeC::Input::GetInstance().TriggerButton(0, GamepadButtonType::A)) {
 		//シーン切り替え依頼
 		//EnemySelectSceneへ
-		SceneManager::GetInstance().ChangeScene("GAMEPLAY",1.0f);
+		SceneManager::GetInstance().ChangeScene("GAMEPLAY", 1.0f);
 	}
 }
 
@@ -135,11 +212,25 @@ void TitleScene::UpdateImGui() {
 
 	if (debugOnnxModel_) {
 		ImGui::TextColored(ImVec4(0.3f, 1.0f, 0.4f, 1.0f), "Loaded");
-		DrawOnnxTensorInfo("Inputs", debugOnnxModel_->GetInputNames(), debugOnnxModel_->GetInputShapes());
-		DrawOnnxTensorInfo("Outputs", debugOnnxModel_->GetOutputNames(), debugOnnxModel_->GetOutputShapes());
-	} else if (debugOnnxLoadFailed_) {
+		ImGui::Checkbox("Enable Inference", &debugOnnxInferenceEnabled_);
+		ImGui::SliderFloat("Inference Interval", &debugOnnxInferenceInterval_, 0.0f, 1.0f, "%.3f sec");
+
+		if (debugOnnxRunSuccess_) {
+			ImGui::TextColored(ImVec4(0.3f, 1.0f, 0.4f, 1.0f), "Run successful.");
+		}
+		else {
+			ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.3f, 1.0f), "Run failed.");
+		}
+
+		DrawOnnxTensorInfo("Model Inputs", debugOnnxModel_->GetInputNames(), debugOnnxModel_->GetInputShapes());
+		DrawOnnxTensorInfo("Model Outputs", debugOnnxModel_->GetOutputNames(), debugOnnxModel_->GetOutputShapes());
+		DrawOnnxTensorInfo("Runtime Inputs", debugOnnxModel_->GetInputNames(), debugOnnxModel_->GetRuntimeInputShapes());
+		DrawOnnxTensorInfo("Runtime Outputs", debugOnnxModel_->GetOutputNames(), debugOnnxModel_->GetRuntimeOutputShapes());
+	}
+	else if (debugOnnxLoadFailed_) {
 		ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.3f, 1.0f), "Load failed. Check model path and Output window log.");
-	} else {
+	}
+	else {
 		ImGui::TextUnformatted("No model loaded.");
 	}
 	ImGui::End();

@@ -68,6 +68,8 @@ namespace TakeC {
 			std::vector<std::vector<float>>& outputDataList,
 			std::vector<std::vector<int64_t>>& outputShapeList);
 
+		bool Run();
+
 		//================================================================
 		// getters
 		//================================================================
@@ -75,8 +77,19 @@ namespace TakeC {
 		// 入力・出力の名前を取得
 		const std::vector<std::string>& GetInputNames() const { return inputNames_; }
 		const std::vector<std::string>& GetOutputNames() const { return outputNames_; }
+		// モデルファイルに定義されているshape。dynamic(-1)を含む可能性があり、モデル情報表示用として扱う。
 		const std::vector<std::vector<int64_t>>& GetInputShapes() const { return inputShapes_; }
 		const std::vector<std::vector<int64_t>>& GetOutputShapes() const { return outputShapes_; }
+		// 実際の推論で使用する入力データと、推論後に得られた出力データ。
+		const std::vector<std::vector<float>>& GetInputDataList() const { return inputDataList_; }
+		const std::vector<std::vector<float>>& GetOutputDataList() const { return outputDataList_; }
+		// 実際の推論に使う具体化済みshape。dynamic(-1)はRun前に具体値へ置き換える。
+		const std::vector<std::vector<int64_t>>& GetRuntimeInputShapes() const { return runtimeInputShapes_; }
+		// 実際の推論結果としてONNX Runtimeから返されたshape。
+		const std::vector<std::vector<int64_t>>& GetRuntimeOutputShapes() const { return runtimeOutputShapes_; }
+		std::vector<float>* GetInputData(size_t inputIndex = 0);
+		const std::vector<int64_t>* GetRuntimeInputShape(size_t inputIndex = 0) const;
+		bool ResizeInputBuffer(size_t inputIndex, const std::vector<int64_t>& inputShape);
 
 	private:
 
@@ -85,8 +98,14 @@ namespace TakeC {
 
 		std::vector<std::string> inputNames_;
 		std::vector<std::string> outputNames_;
+		// モデルファイルから読み取ったshape。メタ情報なのでRunで上書きしない。
 		std::vector<std::vector<int64_t>> inputShapes_;
 		std::vector<std::vector<int64_t>> outputShapes_;
+		// 実際の推論で使う/得られるshape。dynamic shapeモデルではこちらが具体値を持つ。
+		std::vector<std::vector<int64_t>> runtimeInputShapes_;
+		std::vector<std::vector<int64_t>> runtimeOutputShapes_;
+		std::vector<std::vector<float>> inputDataList_;
+		std::vector<std::vector<float>> outputDataList_;
 		std::vector<const char*> inputNamesPtrs_;
 		std::vector<const char*> outputNamesPtrs_;
 

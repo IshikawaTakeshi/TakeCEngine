@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <vector>
 //base class
 #include "application/Scene/BaseScene.h"
 
@@ -60,8 +61,12 @@ private:
 	TakeC::Sprite* titleTextSprite_ = nullptr;
 	//ONNX debug
 	TakeC::OnnxModel* debugOnnxModel_ = nullptr;
-	std::array<char, 260> debugOnnxModelPath_ = { "Resources/OnnxModels/sample.onnx" };
+	std::array<char, 260> debugOnnxModelPath_ = { "Resources/OnnxModels/scrfd_10g_bnkps.onnx" };
 	bool debugOnnxLoadFailed_ = false;
+	bool debugOnnxRunSuccess_ = false;
+	bool debugOnnxInferenceEnabled_ = true;
+	float debugOnnxInferenceInterval_ = 0.5f;
+	float debugOnnxInferenceTimer_ = 0.0f;
 
 	std::vector<float> outputData;
 	std::vector<int64_t> outputShape;

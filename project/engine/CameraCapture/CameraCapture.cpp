@@ -331,7 +331,7 @@ void CameraCapture::UpdateImGui(const char* windowName) {
 			CloseDevice();
 		}
 
-		if (Update() && HasNewFrame()) {
+		if (HasNewFrame()) {
 			UploadFrameToTexture();
 		}
 
