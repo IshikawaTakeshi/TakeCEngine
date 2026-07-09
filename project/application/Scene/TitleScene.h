@@ -5,6 +5,7 @@
 #include "application/Scene/BaseScene.h"
 
 //engine
+#include "engine/AI/FaceDetection/ScrfdDecoder.h"
 #include "engine/audio/Audio.h"
 #include "engine/camera/Camera.h"
 #include "engine/camera/CameraManager.h"
@@ -67,6 +68,16 @@ private:
 	bool debugOnnxInferenceEnabled_ = true;
 	float debugOnnxInferenceInterval_ = 0.5f;
 	float debugOnnxInferenceTimer_ = 0.0f;
+	float debugScrfdScoreThreshold_ = 0.5f;
+	float debugScrfdNmsThreshold_ = 0.4f;
+	bool debugScrfdMultiplyByStride_ = true;
+	float debugScrfdAnchorCenterOffset_ = 0.0f;
+	float debugScrfdDecodeOffsetX_ = 0.0f;
+	float debugScrfdDecodeOffsetY_ = 0.0f;
+	int debugScrfdInputWidth_ = 640;
+	int debugScrfdInputHeight_ = 640;
+	ScrfdDecoder debugScrfdDecoder_;
+	std::vector<FaceDetectionResult> debugFaceResults_;
 
 	std::vector<float> outputData;
 	std::vector<int64_t> outputShape;

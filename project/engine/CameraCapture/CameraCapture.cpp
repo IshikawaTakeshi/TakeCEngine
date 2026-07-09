@@ -310,6 +310,7 @@ bool CameraCapture::Update() {
 //=============================================================
 void CameraCapture::UpdateImGui(const char* windowName) {
 #if defined(_DEBUG) || defined(_DEVELOP)
+	hasLastImGuiImageRect_ = false;
 	ImGui::Begin(windowName ? windowName : "Camera Capture");
 
 	// カメラデバイスの列挙
@@ -344,6 +345,10 @@ void CameraCapture::UpdateImGui(const char* windowName) {
 			ImGui::Image(
 				reinterpret_cast<ImTextureID>(gpuHandle.ptr),
 				ImVec2(maxWidth, maxWidth * aspect));
+			const ImVec2 imageMin = ImGui::GetItemRectMin();
+			const ImVec2 imageMax = ImGui::GetItemRectMax();
+			lastImGuiImageRect_ = { imageMin.x, imageMin.y, imageMax.x, imageMax.y };
+			hasLastImGuiImageRect_ = true;
 		} else {
 			ImGui::TextUnformatted("Display texture is not ready.");
 		}

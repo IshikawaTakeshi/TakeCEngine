@@ -95,6 +95,97 @@ namespace {
 
 		return runtimeShape[0] == 1;
 	}
+
+	bool ResolveRuntimeImageSize(const std::vector<int64_t>& runtimeShape, int& width, int& height) {
+		if (runtimeShape.size() != 4) {
+			return false;
+		}
+
+		if (runtimeShape[1] == 3 || runtimeShape[1] == 4) {
+			height = static_cast<int>(runtimeShape[2]);
+			width = static_cast<int>(runtimeShape[3]);
+			return width > 0 && height > 0;
+		}
+
+		if (runtimeShape[3] == 3 || runtimeShape[3] == 4) {
+			height = static_cast<int>(runtimeShape[1]);
+			width = static_cast<int>(runtimeShape[2]);
+			return width > 0 && height > 0;
+		}
+
+		return false;
+	}
+
+	void DrawFaceDetectionResult(const FaceDetectionResult& result, size_t index) {
+		ImGui::Text("Face %d score: %.3f", static_cast<int>(index), result.score);
+		ImGui::Text("bbox: min(%.1f, %.1f) max(%.1f, %.1f)",
+			result.bboxMin.x,
+			result.bboxMin.y,
+			result.bboxMax.x,
+			result.bboxMax.y);
+		ImGui::Text("leftEye : %.1f, %.1f", result.landmark.leftEye.x, result.landmark.leftEye.y);
+		ImGui::Text("rightEye: %.1f, %.1f", result.landmark.rightEye.x, result.landmark.rightEye.y);
+		ImGui::Text("nose    : %.1f, %.1f", result.landmark.nose.x, result.landmark.nose.y);
+		ImGui::Text("leftMouth : %.1f, %.1f", result.landmark.leftMouth.x, result.landmark.leftMouth.y);
+		ImGui::Text("rightMouth: %.1f, %.1f", result.landmark.rightMouth.x, result.landmark.rightMouth.y);
+		ImGui::Separator();
+	}
+
+	//================================================================
+	//		顔検出結果のオーバーレイ描画
+	//================================================================
+	void DrawFaceDetectionOverlay(
+		const TakeC::CameraCapture& cameraCapture,
+		const std::vector<FaceDetectionResult>& results,
+		int inputWidth,
+		int inputHeight) {
+
+		if (!cameraCapture.HasLastImGuiImageRect() || inputWidth <= 0 || inputHeight <= 0) {
+			return;
+		}
+
+		const TakeC::CameraCapture::ImGuiImageRect& rect = cameraCapture.GetLastImGuiImageRect();
+		const float imageWidth = rect.maxX - rect.minX;
+		const float imageHeight = rect.maxY - rect.minY;
+		if (imageWidth <= 0.0f || imageHeight <= 0.0f) {
+			return;
+		}
+
+		ImDrawList* drawList = ImGui::GetForegroundDrawList();
+		const ImU32 boxColor = IM_COL32(0, 255, 80, 255);
+		const ImU32 landmarkColor = IM_COL32(255, 80, 40, 255);
+		const ImU32 textColor = IM_COL32(255, 255, 255, 255);
+		const float scaleX = imageWidth / static_cast<float>(inputWidth);
+		const float scaleY = imageHeight / static_cast<float>(inputHeight);
+
+		const auto toScreen = [&](const Vector2& point) {
+			return ImVec2(rect.minX + point.x * scaleX, rect.minY + point.y * scaleY);
+			};
+
+		// 顔検出結果の描画
+		for (size_t i = 0; i < results.size(); ++i) {
+			const FaceDetectionResult& result = results[i];
+			const ImVec2 min = toScreen(result.bboxMin);
+			const ImVec2 max = toScreen(result.bboxMax);
+			drawList->AddRect(min, max, boxColor, 0.0f, 0, 2.0f);
+			drawList->AddText(ImVec2(min.x, min.y - 16.0f), textColor, std::to_string(i).c_str());
+
+			const Vector2 landmarks[5] = {
+				result.landmark.leftEye,
+				result.landmark.rightEye,
+				result.landmark.nose,
+				result.landmark.leftMouth,
+				result.landmark.rightMouth,
+			};
+
+			for (const Vector2& landmark : landmarks) {
+				const ImVec2 center = toScreen(landmark);
+				drawList->AddCircle(center, 4.0f, landmarkColor, 12, 2.0f);
+				drawList->AddLine(ImVec2(center.x - 5.0f, center.y), ImVec2(center.x + 5.0f, center.y), landmarkColor, 1.5f);
+				drawList->AddLine(ImVec2(center.x, center.y - 5.0f), ImVec2(center.x, center.y + 5.0f), landmarkColor, 1.5f);
+			}
+		}
+	}
 }
 
 //====================================================================
@@ -168,6 +259,28 @@ void TitleScene::Update() {
 				std::vector<float>* input = debugOnnxModel_->GetInputData(0);
 				if (input && TakeC::BuildFaceInputFromCamera(*cameraCapture, *input, runtimeInputShape)) {
 					debugOnnxRunSuccess_ = debugOnnxModel_->Run();
+					if (debugOnnxRunSuccess_) {
+						int inputWidth = 0;
+						int inputHeight = 0;
+						if (ResolveRuntimeImageSize(runtimeInputShape, inputWidth, inputHeight)) {
+							ScrfdDecoder::Config config;
+							config.inputWidth = inputWidth;
+							config.inputHeight = inputHeight;
+							config.scoreThreshold = debugScrfdScoreThreshold_;
+							config.nmsThreshold = debugScrfdNmsThreshold_;
+							config.multiplyByStride = debugScrfdMultiplyByStride_;
+							config.anchorCenterOffset = debugScrfdAnchorCenterOffset_;
+							config.decodeOffsetX = debugScrfdDecodeOffsetX_;
+							config.decodeOffsetY = debugScrfdDecodeOffsetY_;
+							debugFaceResults_ = debugScrfdDecoder_.Decode(
+								debugOnnxModel_->GetOutputNames(),
+								debugOnnxModel_->GetOutputDataList(),
+								debugOnnxModel_->GetRuntimeOutputShapes(),
+								config);
+							debugScrfdInputWidth_ = inputWidth;
+							debugScrfdInputHeight_ = inputHeight;
+						}
+					}
 				}
 			}
 		}
@@ -199,7 +312,10 @@ void TitleScene::UpdateImGui() {
 	TakeC::CameraManager::GetInstance().UpdateImGui();
 	TakeC::TakeCFrameWork::GetSpriteManager()->UpdateImGui();
 	Object3dCommon::GetInstance().UpdateImGui();
-	TakeC::TakeCFrameWork::GetCameraCapture()->UpdateImGui();
+	if (TakeC::CameraCapture* cameraCapture = TakeC::TakeCFrameWork::GetCameraCapture()) {
+		cameraCapture->UpdateImGui();
+		DrawFaceDetectionOverlay(*cameraCapture, debugFaceResults_, debugScrfdInputWidth_, debugScrfdInputHeight_);
+	}
 
 	ImGui::Begin("ONNX Model Debug");
 	ImGui::InputText("Model Path", debugOnnxModelPath_.data(), debugOnnxModelPath_.size());
@@ -214,6 +330,12 @@ void TitleScene::UpdateImGui() {
 		ImGui::TextColored(ImVec4(0.3f, 1.0f, 0.4f, 1.0f), "Loaded");
 		ImGui::Checkbox("Enable Inference", &debugOnnxInferenceEnabled_);
 		ImGui::SliderFloat("Inference Interval", &debugOnnxInferenceInterval_, 0.0f, 1.0f, "%.3f sec");
+		ImGui::SliderFloat("SCRFD Score Threshold", &debugScrfdScoreThreshold_, 0.0f, 1.0f, "%.2f");
+		ImGui::SliderFloat("SCRFD NMS Threshold", &debugScrfdNmsThreshold_, 0.0f, 1.0f, "%.2f");
+		ImGui::Checkbox("SCRFD Multiply By Stride", &debugScrfdMultiplyByStride_);
+		ImGui::SliderFloat("SCRFD Anchor Center Offset", &debugScrfdAnchorCenterOffset_, 0.0f, 0.5f, "%.2f");
+		ImGui::SliderFloat("SCRFD Decode Offset X", &debugScrfdDecodeOffsetX_, -64.0f, 64.0f, "%.1f px");
+		ImGui::SliderFloat("SCRFD Decode Offset Y", &debugScrfdDecodeOffsetY_, -64.0f, 64.0f, "%.1f px");
 
 		if (debugOnnxRunSuccess_) {
 			ImGui::TextColored(ImVec4(0.3f, 1.0f, 0.4f, 1.0f), "Run successful.");
@@ -226,6 +348,12 @@ void TitleScene::UpdateImGui() {
 		DrawOnnxTensorInfo("Model Outputs", debugOnnxModel_->GetOutputNames(), debugOnnxModel_->GetOutputShapes());
 		DrawOnnxTensorInfo("Runtime Inputs", debugOnnxModel_->GetInputNames(), debugOnnxModel_->GetRuntimeInputShapes());
 		DrawOnnxTensorInfo("Runtime Outputs", debugOnnxModel_->GetOutputNames(), debugOnnxModel_->GetRuntimeOutputShapes());
+
+		ImGui::Text("Detected faces: %d", static_cast<int>(debugFaceResults_.size()));
+		const size_t displayCount = std::min<size_t>(debugFaceResults_.size(), 5);
+		for (size_t i = 0; i < displayCount; ++i) {
+			DrawFaceDetectionResult(debugFaceResults_[i], i);
+		}
 	}
 	else if (debugOnnxLoadFailed_) {
 		ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.3f, 1.0f), "Load failed. Check model path and Output window log.");

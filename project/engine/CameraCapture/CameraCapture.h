@@ -32,6 +32,13 @@ namespace TakeC {
 			std::wstring symbolicLink;
 		};
 
+		struct ImGuiImageRect {
+			float minX = 0.0f;
+			float minY = 0.0f;
+			float maxX = 0.0f;
+			float maxY = 0.0f;
+		};
+
 	public:
 
 		//=============================================================
@@ -134,6 +141,9 @@ namespace TakeC {
 		size_t GetFrameByteSize() const { return frameRGBA_.size(); }
 		// 最後のエラーメッセージを取得
 		const std::wstring& GetLastErrorMessage() const { return lastErrorMessage_; }
+		// 直近のImGui::Image表示矩形を取得
+		bool HasLastImGuiImageRect() const { return hasLastImGuiImageRect_; }
+		const ImGuiImageRect& GetLastImGuiImageRect() const { return lastImGuiImageRect_; }
 
 	private:
 
@@ -217,6 +227,8 @@ namespace TakeC {
 		uint64_t uploadBufferRowPitch_ = 0;
 		D3D12_RESOURCE_STATES displayTextureState_ = D3D12_RESOURCE_STATE_GENERIC_READ;
 		bool displaySrvAllocated_ = false;
+		bool hasLastImGuiImageRect_ = false;
+		ImGuiImageRect lastImGuiImageRect_;
 
 		// RGBA形式のフレームデータ
 		std::vector<uint8_t> frameRGBA_;

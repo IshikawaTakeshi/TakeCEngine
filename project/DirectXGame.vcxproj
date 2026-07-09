@@ -375,6 +375,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\AI\OnnxRuntimeSystem.cpp" />
     <ClCompile Include="engine\AI\OnnxModel.cpp" />
     <ClCompile Include="engine\CameraCapture\CameraCapture.cpp" />
+    <ClCompile Include="engine\AI\FaceDetection\ScrfdDecoder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Entity\Animation\AnimationMapper.h" />
@@ -466,6 +467,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Light\LightCameraInfo.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveBase.h" />
     <ClInclude Include="engine\3d\Primitive\PrimitiveParameter.h" />
+    <ClInclude Include="engine\AI\FaceDetection\FaceDetectionContext.h" />
     <ClInclude Include="engine\Animation\SpriteSheetSttings.h" />
     <ClInclude Include="engine\Animation\TextureAnimationTypeEnum.h" />
     <ClInclude Include="engine\Animation\TextureAnimationVariant.h" />
@@ -652,6 +654,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.h" />
     <ClInclude Include="application\Entity\State\StateBreakStun.h" />
     <ClInclude Include="engine\PostEffect\DistortionEffect.h" />
+    <ClInclude Include="engine\AI\FaceDetection\ScrfdDecoder.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

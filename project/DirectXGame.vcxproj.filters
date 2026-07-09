@@ -835,6 +835,7 @@
     <ClCompile Include="engine\CameraCapture\CameraCapture.cpp">
       <Filter>engine\CameraCapture</Filter>
     </ClCompile>
+    <ClCompile Include="engine\AI\FaceDetection\ScrfdDecoder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Entity\Animation\AnimationMapper.h">
@@ -1660,6 +1661,8 @@
     <ClInclude Include="engine\PostEffect\DistortionEffect.h">
       <Filter>engine\PostEffect</Filter>
     </ClInclude>
+    <ClInclude Include="engine\AI\FaceDetection\ScrfdDecoder.h" />
+    <ClInclude Include="engine\AI\FaceDetection\FaceDetectionContext.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
