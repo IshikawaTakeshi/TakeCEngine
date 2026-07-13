@@ -14,7 +14,7 @@
 #include "engine/math/MatrixMath.h"
 #include "engine/Utility/ResourceBarrier.h"
 
-namespace TakeC {
+using namespace TakeC;
 
 //=============================================================================
 // 初期化
@@ -33,14 +33,15 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 		//SkinCluster作成
 		skinCluster_.Create(modelCommon_->GetDirectXCommon()->GetDevice(), modelCommon_->GetSrvManager(), skeleton_.get(), modelData_);
 		haveSkeleton_ = true;
-	} else {
+	}
+	else {
 		skeleton_ = nullptr;
 		haveSkeleton_ = false;
 	}
 
 	//メッシュ初期化
 	mesh_ = std::make_unique<Mesh>();
-	mesh_->InitializeMesh(modelCommon_->GetDirectXCommon(),modelData_->materials);
+	mesh_->InitializeMesh(modelCommon_->GetDirectXCommon(), modelData_->materials);
 
 	//inputVertexResource
 	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
@@ -49,7 +50,7 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 
 	if (modelData_->haveBone) {
 		//outputVertexResource
-		mesh_->InitializeOutputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(),modelData_);
+		mesh_->InitializeOutputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 
 		//SRVの設定
 		inputIndex_ = modelCommon_->GetSrvManager()->Allocate();
@@ -66,14 +67,14 @@ void Model::Initialize(ModelCommon* ModelCommon, ModelData* modelData) {
 			sizeof(VertexData),
 			mesh_->GetOutputVertexResource(),
 			uavIndex_);
-	} 
+	}
 }
 
 //=============================================================================
 // 更新処理
 //=============================================================================
 
-void Model::Update(Animation* animation,float animationTime) {
+void Model::Update(Animation* animation, float animationTime) {
 
 	//アニメーションがない場合は何もしない
 	if (animation->duration == 0.0f) {
@@ -91,7 +92,8 @@ void Model::Update(Animation* animation,float animationTime) {
 
 		//SkinClusterの更新
 		skinCluster_.Update(skeleton_.get());
-	} else {
+	}
+	else {
 
 		//rootNodeのAnimationを取得
 		NodeAnimation& rootNodeAnimation = animation->nodeAnimations[modelData_->rootNode.name];
@@ -118,7 +120,7 @@ void Model::UpdateSkinningFromSkeleton() {
 void Model::UpdateImGui() {
 
 	//モデル情報
-	if(ImGui::CollapsingHeader("Model Info")) {
+	if (ImGui::CollapsingHeader("Model Info")) {
 
 		ImGui::Text("Model Name: %s", modelData_->fileName.c_str());
 		ImGui::Text("Num Vertices: %d", static_cast<int>(modelData_->vertices.size()));
@@ -128,7 +130,7 @@ void Model::UpdateImGui() {
 		ImGui::Text("Num SubMeshes: %d", static_cast<int>(modelData_->subMeshes.size()));
 		for (size_t i = 0; i < modelData_->subMeshes.size(); ++i) {
 			const SubMesh& subMesh = modelData_->subMeshes[i];
-			ImGui::Text("vertexCount:%d, vertexStart:%d", subMesh.vertexCount,subMesh.vertexStart);
+			ImGui::Text("vertexCount:%d, vertexStart:%d", subMesh.vertexCount, subMesh.vertexStart);
 			ImGui::Text(" SubMesh %d: IndexCount:%d, IndexStart:%d", static_cast<int>(i), subMesh.indexCount, subMesh.indexStart);
 		}
 
@@ -136,7 +138,7 @@ void Model::UpdateImGui() {
 		mesh_->GetMaterial()->UpdateMaterialImGui();
 
 		//モデルのリロード
-		if(ImGui::Button("Reload Model")) {
+		if (ImGui::Button("Reload Model")) {
 			TakeC::ModelManager::GetInstance().RequestReload(modelData_->fileName);
 		}
 
@@ -304,7 +306,7 @@ void Model::Reload(ModelData* newModelData) {
 	// 既存メッシュの再初期化
 	if (modelData_->haveBone) {
 		// Skeletonがなければ作成
-		if(!skeleton_) {
+		if (!skeleton_) {
 			skeleton_ = std::make_unique<Skeleton>();
 		}
 		// Skeleton を新しい rootNode で構築し直す
@@ -317,7 +319,8 @@ void Model::Reload(ModelData* newModelData) {
 			skeleton_.get(),
 			modelData_);
 		haveSkeleton_ = true;
-	} else {
+	}
+	else {
 		//ボーンがないモデルに差し替えた場合はSkeletonを破棄
 		skeleton_.reset();
 		haveSkeleton_ = false;
@@ -329,7 +332,7 @@ void Model::Reload(ModelData* newModelData) {
 
 	// 既存メッシュの再初期化
 	mesh_->InitializeMesh(
-		modelCommon_->GetDirectXCommon(),modelData_->materials);
+		modelCommon_->GetDirectXCommon(), modelData_->materials);
 
 	//inputVertexResource
 	mesh_->InitializeInputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
@@ -340,9 +343,9 @@ void Model::Reload(ModelData* newModelData) {
 	// スキニング用リソース再初期化
 	//--------------------------------------------------------
 
-	if(modelData_->haveBone) {
+	if (modelData_->haveBone) {
 		//outputVertexResource
-		mesh_->InitializeOutputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(),modelData_);
+		mesh_->InitializeOutputVertexResourceModel(modelCommon_->GetDirectXCommon()->GetDevice(), modelData_);
 
 		// 入力頂点用 SRV
 		if (inputIndex_ == 0) {
@@ -362,7 +365,7 @@ void Model::Reload(ModelData* newModelData) {
 			// 未割り当ての場合のみ新規割り当て
 			uavIndex_ = modelCommon_->GetSrvManager()->Allocate();
 		}
-		
+
 		modelCommon_->GetSrvManager()->CreateUAVforStructuredBuffer(
 			modelData_->skinningInfoData.numVertices,
 			sizeof(VertexData),
@@ -382,4 +385,3 @@ void Model::Reload(ModelData* newModelData) {
 	}
 }
 
-} // namespace TakeC
