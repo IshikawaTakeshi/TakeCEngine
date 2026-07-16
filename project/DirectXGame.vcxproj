@@ -375,6 +375,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\AI\OnnxRuntimeSystem.cpp" />
     <ClCompile Include="engine\AI\OnnxModel.cpp" />
     <ClCompile Include="engine\CameraCapture\CameraCapture.cpp" />
+    <ClCompile Include="engine\AI\FaceDetection\FaceAligner.cpp" />
     <ClCompile Include="engine\AI\FaceDetection\ScrfdDecoder.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -606,6 +607,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\AI\OnnxRuntimeSystem.h" />
     <ClInclude Include="engine\AI\OnnxModel.h" />
     <ClInclude Include="engine\CameraCapture\CameraCapture.h" />
+    <ClInclude Include="engine\AI\FaceDetection\FaceAligner.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

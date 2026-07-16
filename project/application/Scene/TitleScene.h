@@ -5,6 +5,7 @@
 #include "application/Scene/BaseScene.h"
 
 //engine
+#include "engine/AI/FaceDetection/FaceAligner.h"
 #include "engine/AI/FaceDetection/ScrfdDecoder.h"
 #include "engine/audio/Audio.h"
 #include "engine/camera/Camera.h"
@@ -63,8 +64,12 @@ private:
 	//ONNX debug
 	TakeC::OnnxModel* debugOnnxModel_ = nullptr;
 	std::array<char, 260> debugOnnxModelPath_ = { "Resources/OnnxModels/scrfd_10g_bnkps.onnx" };
+	TakeC::OnnxModel* debugLandmarkModel_ = nullptr;
+	std::array<char, 260> debugLandmarkModelPath_ = { "Resources/OnnxModels/2d106det.onnx" };
 	bool debugOnnxLoadFailed_ = false;
 	bool debugOnnxRunSuccess_ = false;
+	bool debugLandmarkLoadFailed_ = false;
+	bool debugLandmarkRunSuccess_ = false;
 	bool debugOnnxInferenceEnabled_ = true;
 	float debugOnnxInferenceInterval_ = 0.5f;
 	float debugOnnxInferenceTimer_ = 0.0f;
@@ -78,6 +83,14 @@ private:
 	int debugScrfdInputHeight_ = 640;
 	ScrfdDecoder debugScrfdDecoder_;
 	std::vector<FaceDetectionResult> debugFaceResults_;
+	FaceAligner debugFaceAligner_;
+	AlignedFaceImage debugAlignedFaceImage_;
+	bool debugFaceAlignSuccess_ = false;
+	int debugAlignedFaceSize_ = 112;
+	bool debugLandmarkOutputMinusOneToOne_ = true;
+	bool debugLandmarkSwapRedBlue_ = false;
+	bool debugLandmarkNormalizeToUnit_ = true;
+	std::vector<Vector2> debugLandmark106Points_;
 
 	std::vector<float> outputData;
 	std::vector<int64_t> outputShape;

@@ -96,6 +96,51 @@ namespace {
 		return runtimeShape[0] == 1;
 	}
 
+	bool ResolveRuntimeImageInputShapeWithFallback(
+		const std::vector<int64_t>& modelShape,
+		int fallbackWidth,
+		int fallbackHeight,
+		std::vector<int64_t>& runtimeShape) {
+
+		if (modelShape.size() != 4 || fallbackWidth <= 0 || fallbackHeight <= 0) {
+			return false;
+		}
+
+		runtimeShape = modelShape;
+		if (runtimeShape[0] <= 0) {
+			runtimeShape[0] = 1;
+		}
+
+		const bool mayBeNchw = runtimeShape[1] == 3 || runtimeShape[1] == 4 || runtimeShape[1] <= 0;
+		const bool mayBeNhwc = runtimeShape[3] == 3 || runtimeShape[3] == 4 || runtimeShape[3] <= 0;
+
+		if (mayBeNchw) {
+			if (runtimeShape[1] <= 0) {
+				runtimeShape[1] = 3;
+			}
+			if (runtimeShape[2] <= 0) {
+				runtimeShape[2] = fallbackHeight;
+			}
+			if (runtimeShape[3] <= 0) {
+				runtimeShape[3] = fallbackWidth;
+			}
+		} else if (mayBeNhwc) {
+			if (runtimeShape[1] <= 0) {
+				runtimeShape[1] = fallbackHeight;
+			}
+			if (runtimeShape[2] <= 0) {
+				runtimeShape[2] = fallbackWidth;
+			}
+			if (runtimeShape[3] <= 0) {
+				runtimeShape[3] = 3;
+			}
+		} else {
+			return false;
+		}
+
+		return runtimeShape[0] == 1;
+	}
+
 	bool ResolveRuntimeImageSize(const std::vector<int64_t>& runtimeShape, int& width, int& height) {
 		if (runtimeShape.size() != 4) {
 			return false;
@@ -116,6 +161,19 @@ namespace {
 		return false;
 	}
 
+	bool TryResolveModelImageSize(const TakeC::OnnxModel* model, int& width, int& height) {
+		if (!model || model->GetInputShapes().empty()) {
+			return false;
+		}
+
+		std::vector<int64_t> runtimeShape;
+		if (!ResolveRuntimeImageInputShapeWithFallback(model->GetInputShapes()[0], 192, 192, runtimeShape)) {
+			return false;
+		}
+
+		return ResolveRuntimeImageSize(runtimeShape, width, height);
+	}
+
 	void DrawFaceDetectionResult(const FaceDetectionResult& result, size_t index) {
 		ImGui::Text("Face %d score: %.3f", static_cast<int>(index), result.score);
 		ImGui::Text("bbox: min(%.1f, %.1f) max(%.1f, %.1f)",
@@ -129,6 +187,37 @@ namespace {
 		ImGui::Text("leftMouth : %.1f, %.1f", result.landmark.leftMouth.x, result.landmark.leftMouth.y);
 		ImGui::Text("rightMouth: %.1f, %.1f", result.landmark.rightMouth.x, result.landmark.rightMouth.y);
 		ImGui::Separator();
+	}
+
+	std::vector<Vector2> DecodeLandmark106Points(
+		const std::vector<std::vector<float>>& outputDataList,
+		int alignedWidth,
+		int alignedHeight,
+		bool outputMinusOneToOne) {
+
+		std::vector<Vector2> points;
+		if (outputDataList.empty() || outputDataList[0].size() < 212 || alignedWidth <= 0 || alignedHeight <= 0) {
+			return points;
+		}
+
+		const std::vector<float>& output = outputDataList[0];
+		points.reserve(106);
+		for (size_t i = 0; i < 106; ++i) {
+			float x = output[i * 2 + 0];
+			float y = output[i * 2 + 1];
+
+			if (outputMinusOneToOne) {
+				x = (x + 1.0f) * 0.5f * static_cast<float>(alignedWidth);
+				y = (y + 1.0f) * 0.5f * static_cast<float>(alignedHeight);
+			} else if (x >= 0.0f && x <= 1.5f && y >= 0.0f && y <= 1.5f) {
+				x *= static_cast<float>(alignedWidth);
+				y *= static_cast<float>(alignedHeight);
+			}
+
+			points.push_back({ x, y });
+		}
+
+		return points;
 	}
 
 	//================================================================
@@ -186,6 +275,32 @@ namespace {
 			}
 		}
 	}
+
+	void DrawLandmark106Canvas(const std::vector<Vector2>& points, int width, int height) {
+		if (points.empty() || width <= 0 || height <= 0 || !ImGui::TreeNode("106 Landmark Preview")) {
+			return;
+		}
+
+		const float canvasSize = std::min(ImGui::GetContentRegionAvail().x, 360.0f);
+		const ImVec2 origin = ImGui::GetCursorScreenPos();
+		const ImVec2 canvasEnd = ImVec2(origin.x + canvasSize, origin.y + canvasSize);
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+		drawList->AddRectFilled(origin, canvasEnd, IM_COL32(20, 20, 20, 255));
+		drawList->AddRect(origin, canvasEnd, IM_COL32(120, 120, 120, 255));
+
+		const float scaleX = canvasSize / static_cast<float>(width);
+		const float scaleY = canvasSize / static_cast<float>(height);
+		for (size_t i = 0; i < points.size(); ++i) {
+			const ImVec2 p = ImVec2(origin.x + points[i].x * scaleX, origin.y + points[i].y * scaleY);
+			drawList->AddCircleFilled(p, 2.0f, IM_COL32(255, 180, 40, 255), 8);
+			if (i == 0 || i == 105) {
+				drawList->AddText(ImVec2(p.x + 3.0f, p.y + 3.0f), IM_COL32(255, 255, 255, 255), std::to_string(i).c_str());
+			}
+		}
+
+		ImGui::Dummy(ImVec2(canvasSize, canvasSize));
+		ImGui::TreePop();
+	}
 }
 
 //====================================================================
@@ -217,6 +332,15 @@ void TitleScene::Initialize() {
 		"TitleSceneDebugModel",
 		StringUtility::ConvertString(debugOnnxModelPath_.data()));
 	debugOnnxLoadFailed_ = debugOnnxModel_ == nullptr;
+
+	debugLandmarkModel_ = TakeC::TakeCFrameWork::GetOnnxRuntimeSystem()->LoadModel(
+		"TitleSceneLandmarkModel",
+		StringUtility::ConvertString(debugLandmarkModelPath_.data()));
+	debugLandmarkLoadFailed_ = debugLandmarkModel_ == nullptr;
+	if (int landmarkInputWidth = 0, landmarkInputHeight = 0;
+		TryResolveModelImageSize(debugLandmarkModel_, landmarkInputWidth, landmarkInputHeight)) {
+		debugAlignedFaceSize_ = std::max(landmarkInputWidth, landmarkInputHeight);
+	}
 }
 
 //====================================================================
@@ -279,6 +403,56 @@ void TitleScene::Update() {
 								config);
 							debugScrfdInputWidth_ = inputWidth;
 							debugScrfdInputHeight_ = inputHeight;
+
+							debugFaceAlignSuccess_ = false;
+							debugAlignedFaceImage_ = {};
+							if (!debugFaceResults_.empty()) {
+								FaceAligner::Config alignConfig;
+								alignConfig.outputWidth = debugAlignedFaceSize_;
+								alignConfig.outputHeight = debugAlignedFaceSize_;
+								debugFaceAlignSuccess_ = debugFaceAligner_.AlignFromCamera(
+									*cameraCapture,
+									debugFaceResults_.front(),
+									debugScrfdInputWidth_,
+									debugScrfdInputHeight_,
+									debugAlignedFaceImage_,
+									alignConfig);
+							}
+
+							debugLandmarkRunSuccess_ = false;
+							debugLandmark106Points_.clear();
+							if (debugFaceAlignSuccess_ && debugLandmarkModel_) {
+								const auto& landmarkModelInputShapes = debugLandmarkModel_->GetInputShapes();
+								if (!landmarkModelInputShapes.empty()) {
+									std::vector<int64_t> landmarkRuntimeInputShape;
+									if (ResolveRuntimeImageInputShapeWithFallback(
+										landmarkModelInputShapes[0],
+										debugAlignedFaceImage_.width,
+										debugAlignedFaceImage_.height,
+										landmarkRuntimeInputShape) &&
+										debugLandmarkModel_->ResizeInputBuffer(0, landmarkRuntimeInputShape)) {
+
+										std::vector<float>* landmarkInput = debugLandmarkModel_->GetInputData(0);
+										if (landmarkInput &&
+											debugFaceAligner_.BuildInputFromAlignedFace(
+												debugAlignedFaceImage_,
+												*landmarkInput,
+												landmarkRuntimeInputShape,
+												debugLandmarkSwapRedBlue_,
+												debugLandmarkNormalizeToUnit_)) {
+
+											debugLandmarkRunSuccess_ = debugLandmarkModel_->Run();
+											if (debugLandmarkRunSuccess_) {
+												debugLandmark106Points_ = DecodeLandmark106Points(
+													debugLandmarkModel_->GetOutputDataList(),
+													debugAlignedFaceImage_.width,
+													debugAlignedFaceImage_.height,
+													debugLandmarkOutputMinusOneToOne_);
+											}
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -325,6 +499,17 @@ void TitleScene::UpdateImGui() {
 			StringUtility::ConvertString(debugOnnxModelPath_.data()));
 		debugOnnxLoadFailed_ = debugOnnxModel_ == nullptr;
 	}
+	ImGui::InputText("Landmark Model Path", debugLandmarkModelPath_.data(), debugLandmarkModelPath_.size());
+	if (ImGui::Button("Load Landmark Model")) {
+		debugLandmarkModel_ = TakeC::TakeCFrameWork::GetOnnxRuntimeSystem()->LoadModel(
+			"TitleSceneLandmarkModel",
+			StringUtility::ConvertString(debugLandmarkModelPath_.data()));
+		debugLandmarkLoadFailed_ = debugLandmarkModel_ == nullptr;
+		if (int landmarkInputWidth = 0, landmarkInputHeight = 0;
+			TryResolveModelImageSize(debugLandmarkModel_, landmarkInputWidth, landmarkInputHeight)) {
+			debugAlignedFaceSize_ = std::max(landmarkInputWidth, landmarkInputHeight);
+		}
+	}
 
 	if (debugOnnxModel_) {
 		ImGui::TextColored(ImVec4(0.3f, 1.0f, 0.4f, 1.0f), "Loaded");
@@ -336,6 +521,10 @@ void TitleScene::UpdateImGui() {
 		ImGui::SliderFloat("SCRFD Anchor Center Offset", &debugScrfdAnchorCenterOffset_, 0.0f, 0.5f, "%.2f");
 		ImGui::SliderFloat("SCRFD Decode Offset X", &debugScrfdDecodeOffsetX_, -64.0f, 64.0f, "%.1f px");
 		ImGui::SliderFloat("SCRFD Decode Offset Y", &debugScrfdDecodeOffsetY_, -64.0f, 64.0f, "%.1f px");
+		ImGui::SliderInt("Aligned Face Size", &debugAlignedFaceSize_, 64, 256);
+		ImGui::Checkbox("Landmark Output -1..1", &debugLandmarkOutputMinusOneToOne_);
+		ImGui::Checkbox("Landmark Swap R/B", &debugLandmarkSwapRedBlue_);
+		ImGui::Checkbox("Landmark Normalize 0..1", &debugLandmarkNormalizeToUnit_);
 
 		if (debugOnnxRunSuccess_) {
 			ImGui::TextColored(ImVec4(0.3f, 1.0f, 0.4f, 1.0f), "Run successful.");
@@ -349,7 +538,32 @@ void TitleScene::UpdateImGui() {
 		DrawOnnxTensorInfo("Runtime Inputs", debugOnnxModel_->GetInputNames(), debugOnnxModel_->GetRuntimeInputShapes());
 		DrawOnnxTensorInfo("Runtime Outputs", debugOnnxModel_->GetOutputNames(), debugOnnxModel_->GetRuntimeOutputShapes());
 
+		if (debugLandmarkModel_) {
+			ImGui::TextColored(ImVec4(0.3f, 1.0f, 0.4f, 1.0f), "Landmark model loaded.");
+			ImGui::Text("Landmark Run: %s", debugLandmarkRunSuccess_ ? "success" : "not run / failed");
+			DrawOnnxTensorInfo("Landmark Model Inputs", debugLandmarkModel_->GetInputNames(), debugLandmarkModel_->GetInputShapes());
+			DrawOnnxTensorInfo("Landmark Model Outputs", debugLandmarkModel_->GetOutputNames(), debugLandmarkModel_->GetOutputShapes());
+			DrawOnnxTensorInfo("Landmark Runtime Inputs", debugLandmarkModel_->GetInputNames(), debugLandmarkModel_->GetRuntimeInputShapes());
+			DrawOnnxTensorInfo("Landmark Runtime Outputs", debugLandmarkModel_->GetOutputNames(), debugLandmarkModel_->GetRuntimeOutputShapes());
+		} else if (debugLandmarkLoadFailed_) {
+			ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.3f, 1.0f), "Landmark model load failed.");
+		}
+
 		ImGui::Text("Detected faces: %d", static_cast<int>(debugFaceResults_.size()));
+		if (debugFaceAlignSuccess_ && debugAlignedFaceImage_.IsValid()) {
+			ImGui::TextColored(ImVec4(0.3f, 1.0f, 0.4f, 1.0f),
+				"Aligned face generated: %d x %d",
+				debugAlignedFaceImage_.width,
+				debugAlignedFaceImage_.height);
+		} else {
+			ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.3f, 1.0f), "Aligned face not generated.");
+		}
+		ImGui::Text("106 landmarks: %d", static_cast<int>(debugLandmark106Points_.size()));
+		if (!debugLandmark106Points_.empty()) {
+			ImGui::Text("landmark[0]: %.1f, %.1f", debugLandmark106Points_[0].x, debugLandmark106Points_[0].y);
+			ImGui::Text("landmark[105]: %.1f, %.1f", debugLandmark106Points_[105].x, debugLandmark106Points_[105].y);
+			DrawLandmark106Canvas(debugLandmark106Points_, debugAlignedFaceImage_.width, debugAlignedFaceImage_.height);
+		}
 		const size_t displayCount = std::min<size_t>(debugFaceResults_.size(), 5);
 		for (size_t i = 0; i < displayCount; ++i) {
 			DrawFaceDetectionResult(debugFaceResults_[i], i);
