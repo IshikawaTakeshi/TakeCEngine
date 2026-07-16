@@ -5,6 +5,7 @@
 #include "application/Scene/SceneManager.h"
 #include "application/Tool/FaceAnalysisDebugRenderer.h"
 
+#include "engine/AI/FaceAnalysis/FacePartRatioCalculator.h"
 #include "engine/AI/FaceDetection/Landmark106Decoder.h"
 #include "engine/AI/FaceInputBuilder.h"
 #include "engine/AI/OnnxImageTensorUtility.h"
@@ -157,6 +158,7 @@ void TitleScene::Update() {
 
 							debugLandmarkRunSuccess_ = false;
 							debugLandmark106Points_.clear();
+							debugFacePartRatios_.reset();
 
 							// 顔アラインメントが成功し、ランドマークモデルがロードされている場合、ランドマーク推論を実行
 							if (debugFaceAlignSuccess_ && debugLandmarkModel_) {
@@ -188,6 +190,8 @@ void TitleScene::Update() {
 													debugAlignedFaceImage_.width,
 													debugAlignedFaceImage_.height,
 													landmarkConfig);
+												debugFacePartRatios_ = FacePartRatioCalculator::Calculate(
+													debugLandmark106Points_);
 											}
 										}
 									}
@@ -339,6 +343,9 @@ void TitleScene::UpdateImGui() {
 				debugLandmark106Points_,
 				debugAlignedFaceImage_.width,
 				debugAlignedFaceImage_.height);
+		}
+		if (debugFacePartRatios_) {
+			FaceAnalysisDebugRenderer::DrawFacePartRatios(*debugFacePartRatios_);
 		}
 		const size_t displayCount = std::min<size_t>(debugFaceResults_.size(), 5);
 		for (size_t i = 0; i < displayCount; ++i) {

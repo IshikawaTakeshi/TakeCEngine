@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "engine/AI/FaceAnalysis/Landmark106Topology.h"
 #include "engine/Math/Vector2.h"
 
 namespace TakeC {
@@ -13,7 +14,7 @@ namespace TakeC {
 	class Landmark106Decoder {
 	public:
 
-		static constexpr size_t kLandmarkCount = 106;
+		static constexpr size_t kLandmarkCount = Landmark106Topology::kLandmarkCount;
 
 		struct Config {
 			bool outputMinusOneToOne = true;

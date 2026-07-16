@@ -154,6 +154,9 @@
     <Filter Include="engine\AI\FaceDetection">
       <UniqueIdentifier>{DF826967-AB3C-4F64-A959-243873420984}</UniqueIdentifier>
     </Filter>
+    <Filter Include="engine\AI\FaceAnalysis">
+      <UniqueIdentifier>{D166AC7C-8D7C-4BD6-93A4-06C81F541D1E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="engine\CameraCapture">
       <UniqueIdentifier>{9B90F42F-47ED-5C3A-A1FD-49664D673C28}</UniqueIdentifier>
     </Filter>
@@ -831,6 +834,9 @@
     </ClCompile>
     <ClCompile Include="engine\AI\FaceInputBuilder.cpp">
       <Filter>engine\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\AI\FaceAnalysis\FacePartRatioCalculator.cpp">
+      <Filter>engine\AI\FaceAnalysis</Filter>
     </ClCompile>
     <ClCompile Include="engine\AI\OnnxImageTensorUtility.cpp">
       <Filter>engine\AI</Filter>
@@ -1677,6 +1683,15 @@
     </ClInclude>
     <ClInclude Include="application\Tool\FaceAnalysisDebugRenderer.h">
       <Filter>application\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AI\FaceAnalysis\FacePartRatioCalculator.h">
+      <Filter>engine\AI\FaceAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AI\FaceAnalysis\FacePartRatios.h">
+      <Filter>engine\AI\FaceAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AI\FaceAnalysis\Landmark106Topology.h">
+      <Filter>engine\AI\FaceAnalysis</Filter>
     </ClInclude>
     <ClInclude Include="engine\PostEffect\DistortionEffect.h">
       <Filter>engine\PostEffect</Filter>

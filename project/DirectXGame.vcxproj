@@ -373,6 +373,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Entity\State\StateBreakStun.cpp" />
     <ClCompile Include="application\Tool\FaceAnalysisDebugRenderer.cpp" />
     <ClCompile Include="engine\AI\FaceInputBuilder.cpp" />
+    <ClCompile Include="engine\AI\FaceAnalysis\FacePartRatioCalculator.cpp" />
     <ClCompile Include="engine\AI\OnnxImageTensorUtility.cpp" />
     <ClCompile Include="engine\AI\OnnxRuntimeSystem.cpp" />
     <ClCompile Include="engine\AI\OnnxModel.cpp" />
@@ -608,6 +609,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h" />
     <ClInclude Include="application\Tool\FaceAnalysisDebugRenderer.h" />
     <ClInclude Include="engine\AI\FaceInputBuilder.h" />
+    <ClInclude Include="engine\AI\FaceAnalysis\FacePartRatioCalculator.h" />
+    <ClInclude Include="engine\AI\FaceAnalysis\FacePartRatios.h" />
+    <ClInclude Include="engine\AI\FaceAnalysis\Landmark106Topology.h" />
     <ClInclude Include="engine\AI\OnnxImageTensorUtility.h" />
     <ClInclude Include="engine\AI\OnnxRuntimeSystem.h" />
     <ClInclude Include="engine\AI\OnnxModel.h" />

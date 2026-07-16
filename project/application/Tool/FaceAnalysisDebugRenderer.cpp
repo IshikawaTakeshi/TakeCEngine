@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "engine/AI/FaceAnalysis/FacePartRatios.h"
 #include "engine/CameraCapture/CameraCapture.h"
 #include "externals/imgui/imgui.h"
 
@@ -156,5 +157,64 @@ void TakeC::FaceAnalysisDebugRenderer::DrawLandmark106Canvas(
 	}
 
 	ImGui::Dummy(ImVec2(canvasSize, canvasSize));
+	ImGui::TreePop();
+}
+
+void TakeC::FaceAnalysisDebugRenderer::DrawFacePartRatios(
+	const FacePartRatios& ratios) {
+
+	if (!ImGui::TreeNode("Normalized Face Part Ratios")) {
+		return;
+	}
+
+	ImGui::Text(
+		"Reference: width %.1f px / height %.1f px / H/W %.3f",
+		ratios.faceWidthPixels,
+		ratios.faceHeightPixels,
+		ratios.faceHeightToWidth);
+	ImGui::Text(
+		"Contour: cheek W/FW %.3f / lower jaw W/FW %.3f",
+		ratios.cheekWidthByFaceWidth,
+		ratios.lowerJawWidthByFaceWidth);
+
+	ImGui::Separator();
+	ImGui::TextUnformatted("Eyes (image-coordinate left / right)");
+	ImGui::Text(
+		"Left : W/FW %.3f / H/FH %.3f / W/H %.3f",
+		ratios.imageLeftEye.widthByFaceWidth,
+		ratios.imageLeftEye.heightByFaceHeight,
+		ratios.imageLeftEye.widthToHeight);
+	ImGui::Text(
+		"Right: W/FW %.3f / H/FH %.3f / W/H %.3f",
+		ratios.imageRightEye.widthByFaceWidth,
+		ratios.imageRightEye.heightByFaceHeight,
+		ratios.imageRightEye.widthToHeight);
+	ImGui::Text("Eye gap W/FW: %.3f", ratios.eyeGapByFaceWidth);
+	ImGui::Text(
+		"Eyebrow W/FW: left %.3f / right %.3f",
+		ratios.imageLeftEyebrowWidthByFaceWidth,
+		ratios.imageRightEyebrowWidthByFaceWidth);
+	ImGui::Text(
+		"Eyebrow-eye H/FH: left %.3f / right %.3f",
+		ratios.imageLeftEyebrowToEyeByFaceHeight,
+		ratios.imageRightEyebrowToEyeByFaceHeight);
+
+	ImGui::Separator();
+	ImGui::Text(
+		"Nose: W/FW %.3f / H/FH %.3f / W/H %.3f",
+		ratios.nose.widthByFaceWidth,
+		ratios.nose.heightByFaceHeight,
+		ratios.nose.widthToHeight);
+	ImGui::Text(
+		"Mouth: W/FW %.3f / H/FH %.3f / W/H %.3f",
+		ratios.mouth.widthByFaceWidth,
+		ratios.mouth.heightByFaceHeight,
+		ratios.mouth.widthToHeight);
+	ImGui::Text(
+		"Vertical H/FH: opening %.3f / nose-mouth %.3f / mouth-chin %.3f",
+		ratios.mouthOpeningByFaceHeight,
+		ratios.noseToMouthByFaceHeight,
+		ratios.mouthToChinByFaceHeight);
+
 	ImGui::TreePop();
 }

@@ -11,6 +11,7 @@
 namespace TakeC {
 
 	class CameraCapture;
+	struct FacePartRatios;
 
 	//==============================================================================================
 	//		FaceAnalysisDebugRenderer class
@@ -37,6 +38,8 @@ namespace TakeC {
 			const std::vector<Vector2>& points,
 			int width,
 			int height);
+
+		static void DrawFacePartRatios(const FacePartRatios& ratios);
 
 	private:
 

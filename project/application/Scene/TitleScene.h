@@ -1,10 +1,12 @@
 #pragma once
 #include <array>
+#include <optional>
 #include <vector>
 //base class
 #include "application/Scene/BaseScene.h"
 
 //engine
+#include "engine/AI/FaceAnalysis/FacePartRatios.h"
 #include "engine/AI/FaceDetection/FaceAligner.h"
 #include "engine/AI/FaceDetection/ScrfdDecoder.h"
 #include "engine/audio/Audio.h"
@@ -91,6 +93,7 @@ private:
 	bool debugLandmarkSwapRedBlue_ = false;
 	bool debugLandmarkNormalizeToUnit_ = true;
 	std::vector<Vector2> debugLandmark106Points_;
+	std::optional<TakeC::FacePartRatios> debugFacePartRatios_;
 
 	std::vector<float> outputData;
 	std::vector<int64_t> outputShape;
