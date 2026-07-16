@@ -151,6 +151,9 @@
     <Filter Include="engine\AI">
       <UniqueIdentifier>{63775ED2-C686-5BF1-A9F3-DFBA68F70240}</UniqueIdentifier>
     </Filter>
+    <Filter Include="engine\AI\FaceDetection">
+      <UniqueIdentifier>{DF826967-AB3C-4F64-A959-243873420984}</UniqueIdentifier>
+    </Filter>
     <Filter Include="engine\CameraCapture">
       <UniqueIdentifier>{9B90F42F-47ED-5C3A-A1FD-49664D673C28}</UniqueIdentifier>
     </Filter>
@@ -823,7 +826,13 @@
     <ClCompile Include="application\Entity\State\StateBreakStun.cpp">
       <Filter>application\Entity\State</Filter>
     </ClCompile>
+    <ClCompile Include="application\Tool\FaceAnalysisDebugRenderer.cpp">
+      <Filter>application\Tool</Filter>
+    </ClCompile>
     <ClCompile Include="engine\AI\FaceInputBuilder.cpp">
+      <Filter>engine\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\AI\OnnxImageTensorUtility.cpp">
       <Filter>engine\AI</Filter>
     </ClCompile>
     <ClCompile Include="engine\AI\OnnxRuntimeSystem.cpp">
@@ -835,8 +844,15 @@
     <ClCompile Include="engine\CameraCapture\CameraCapture.cpp">
       <Filter>engine\CameraCapture</Filter>
     </ClCompile>
-    <ClCompile Include="engine\AI\FaceDetection\FaceAligner.cpp" />
-    <ClCompile Include="engine\AI\FaceDetection\ScrfdDecoder.cpp" />
+    <ClCompile Include="engine\AI\FaceDetection\FaceAligner.cpp">
+      <Filter>engine\AI\FaceDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\AI\FaceDetection\Landmark106Decoder.cpp">
+      <Filter>engine\AI\FaceDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\AI\FaceDetection\ScrfdDecoder.cpp">
+      <Filter>engine\AI\FaceDetection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Entity\Animation\AnimationMapper.h">
@@ -1659,12 +1675,27 @@
     <ClInclude Include="application\Entity\State\StateBreakStun.h">
       <Filter>application\Entity\State</Filter>
     </ClInclude>
+    <ClInclude Include="application\Tool\FaceAnalysisDebugRenderer.h">
+      <Filter>application\Tool</Filter>
+    </ClInclude>
     <ClInclude Include="engine\PostEffect\DistortionEffect.h">
       <Filter>engine\PostEffect</Filter>
     </ClInclude>
-    <ClInclude Include="engine\AI\FaceDetection\ScrfdDecoder.h" />
-    <ClInclude Include="engine\AI\FaceDetection\FaceAligner.h" />
-    <ClInclude Include="engine\AI\FaceDetection\FaceDetectionContext.h" />
+    <ClInclude Include="engine\AI\OnnxImageTensorUtility.h">
+      <Filter>engine\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AI\FaceDetection\ScrfdDecoder.h">
+      <Filter>engine\AI\FaceDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AI\FaceDetection\FaceAligner.h">
+      <Filter>engine\AI\FaceDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AI\FaceDetection\FaceDetectionContext.h">
+      <Filter>engine\AI\FaceDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AI\FaceDetection\Landmark106Decoder.h">
+      <Filter>engine\AI\FaceDetection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">

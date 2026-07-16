@@ -371,11 +371,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStateGameClear.cpp" />
     <ClCompile Include="application\Scene\SceneState\GamePlayScene\SceneStatePause.cpp" />
     <ClCompile Include="application\Entity\State\StateBreakStun.cpp" />
+    <ClCompile Include="application\Tool\FaceAnalysisDebugRenderer.cpp" />
     <ClCompile Include="engine\AI\FaceInputBuilder.cpp" />
+    <ClCompile Include="engine\AI\OnnxImageTensorUtility.cpp" />
     <ClCompile Include="engine\AI\OnnxRuntimeSystem.cpp" />
     <ClCompile Include="engine\AI\OnnxModel.cpp" />
     <ClCompile Include="engine\CameraCapture\CameraCapture.cpp" />
     <ClCompile Include="engine\AI\FaceDetection\FaceAligner.cpp" />
+    <ClCompile Include="engine\AI\FaceDetection\Landmark106Decoder.cpp" />
     <ClCompile Include="engine\AI\FaceDetection\ScrfdDecoder.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -603,11 +606,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\context_wrapper.h" />
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.h" />
     <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h" />
+    <ClInclude Include="application\Tool\FaceAnalysisDebugRenderer.h" />
     <ClInclude Include="engine\AI\FaceInputBuilder.h" />
+    <ClInclude Include="engine\AI\OnnxImageTensorUtility.h" />
     <ClInclude Include="engine\AI\OnnxRuntimeSystem.h" />
     <ClInclude Include="engine\AI\OnnxModel.h" />
     <ClInclude Include="engine\CameraCapture\CameraCapture.h" />
     <ClInclude Include="engine\AI\FaceDetection\FaceAligner.h" />
+    <ClInclude Include="engine\AI\FaceDetection\Landmark106Decoder.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="engine\Utility\StringUtility.h" />
     <ClInclude Include="engine\3d\Model.h" />

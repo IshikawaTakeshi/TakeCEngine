@@ -1,11 +1,13 @@
 #include "TitleScene.h"
 #include <algorithm>
-#include <string>
 #include <vector>
 
 #include "application/Scene/SceneManager.h"
+#include "application/Tool/FaceAnalysisDebugRenderer.h"
 
+#include "engine/AI/FaceDetection/Landmark106Decoder.h"
 #include "engine/AI/FaceInputBuilder.h"
+#include "engine/AI/OnnxImageTensorUtility.h"
 #include "engine/base/TakeCFrameWork.h"
 #include "engine/CameraCapture/CameraCapture.h"
 #include "engine/Math/Quaternion.h"
@@ -13,295 +15,6 @@
 #include "externals/imgui/imgui.h"
 
 using namespace TakeC;
-
-namespace {
-	std::string ShapeToString(const std::vector<int64_t>& shape) {
-		if (shape.empty()) {
-			return "[]";
-		}
-
-		std::string result = "[";
-		for (size_t i = 0; i < shape.size(); ++i) {
-			if (i != 0) {
-				result += ", ";
-			}
-			result += shape[i] < 0 ? "dynamic" : std::to_string(shape[i]);
-		}
-		result += "]";
-		return result;
-	}
-
-	void DrawOnnxTensorInfo(
-		const char* label,
-		const std::vector<std::string>& names,
-		const std::vector<std::vector<int64_t>>& shapes) {
-
-		if (!ImGui::TreeNode(label)) {
-			return;
-		}
-
-		for (size_t i = 0; i < names.size(); ++i) {
-			const std::string shape = i < shapes.size() ? ShapeToString(shapes[i]) : "[]";
-			ImGui::Text("Name : %s", names[i].c_str());
-			ImGui::Text("Shape: %s", shape.c_str());
-			ImGui::Separator();
-		}
-
-		ImGui::TreePop();
-	}
-
-	bool ResolveRuntimeImageInputShape(const std::vector<int64_t>& modelShape, std::vector<int64_t>& runtimeShape) {
-		constexpr int64_t kDefaultInputWidth = 640;
-		constexpr int64_t kDefaultInputHeight = 640;
-
-		if (modelShape.size() != 4) {
-			return false;
-		}
-
-		// modelShapeはONNXモデルに定義されている情報。dynamic(-1)の場合は推論実行用に具体値を入れる。
-		runtimeShape = modelShape;
-		if (runtimeShape[0] <= 0) {
-			runtimeShape[0] = 1;
-		}
-
-		const bool mayBeNchw = runtimeShape[1] == 3 || runtimeShape[1] == 4 || runtimeShape[1] <= 0;
-		const bool mayBeNhwc = runtimeShape[3] == 3 || runtimeShape[3] == 4 || runtimeShape[3] <= 0;
-
-		if (mayBeNchw) {
-			if (runtimeShape[1] <= 0) {
-				runtimeShape[1] = 3;
-			}
-			if (runtimeShape[2] <= 0) {
-				runtimeShape[2] = kDefaultInputHeight;
-			}
-			if (runtimeShape[3] <= 0) {
-				runtimeShape[3] = kDefaultInputWidth;
-			}
-		}
-		else if (mayBeNhwc) {
-			if (runtimeShape[1] <= 0) {
-				runtimeShape[1] = kDefaultInputHeight;
-			}
-			if (runtimeShape[2] <= 0) {
-				runtimeShape[2] = kDefaultInputWidth;
-			}
-			if (runtimeShape[3] <= 0) {
-				runtimeShape[3] = 3;
-			}
-		}
-		else {
-			return false;
-		}
-
-		return runtimeShape[0] == 1;
-	}
-
-	bool ResolveRuntimeImageInputShapeWithFallback(
-		const std::vector<int64_t>& modelShape,
-		int fallbackWidth,
-		int fallbackHeight,
-		std::vector<int64_t>& runtimeShape) {
-
-		if (modelShape.size() != 4 || fallbackWidth <= 0 || fallbackHeight <= 0) {
-			return false;
-		}
-
-		runtimeShape = modelShape;
-		if (runtimeShape[0] <= 0) {
-			runtimeShape[0] = 1;
-		}
-
-		const bool mayBeNchw = runtimeShape[1] == 3 || runtimeShape[1] == 4 || runtimeShape[1] <= 0;
-		const bool mayBeNhwc = runtimeShape[3] == 3 || runtimeShape[3] == 4 || runtimeShape[3] <= 0;
-
-		if (mayBeNchw) {
-			if (runtimeShape[1] <= 0) {
-				runtimeShape[1] = 3;
-			}
-			if (runtimeShape[2] <= 0) {
-				runtimeShape[2] = fallbackHeight;
-			}
-			if (runtimeShape[3] <= 0) {
-				runtimeShape[3] = fallbackWidth;
-			}
-		} else if (mayBeNhwc) {
-			if (runtimeShape[1] <= 0) {
-				runtimeShape[1] = fallbackHeight;
-			}
-			if (runtimeShape[2] <= 0) {
-				runtimeShape[2] = fallbackWidth;
-			}
-			if (runtimeShape[3] <= 0) {
-				runtimeShape[3] = 3;
-			}
-		} else {
-			return false;
-		}
-
-		return runtimeShape[0] == 1;
-	}
-
-	bool ResolveRuntimeImageSize(const std::vector<int64_t>& runtimeShape, int& width, int& height) {
-		if (runtimeShape.size() != 4) {
-			return false;
-		}
-
-		if (runtimeShape[1] == 3 || runtimeShape[1] == 4) {
-			height = static_cast<int>(runtimeShape[2]);
-			width = static_cast<int>(runtimeShape[3]);
-			return width > 0 && height > 0;
-		}
-
-		if (runtimeShape[3] == 3 || runtimeShape[3] == 4) {
-			height = static_cast<int>(runtimeShape[1]);
-			width = static_cast<int>(runtimeShape[2]);
-			return width > 0 && height > 0;
-		}
-
-		return false;
-	}
-
-	bool TryResolveModelImageSize(const TakeC::OnnxModel* model, int& width, int& height) {
-		if (!model || model->GetInputShapes().empty()) {
-			return false;
-		}
-
-		std::vector<int64_t> runtimeShape;
-		if (!ResolveRuntimeImageInputShapeWithFallback(model->GetInputShapes()[0], 192, 192, runtimeShape)) {
-			return false;
-		}
-
-		return ResolveRuntimeImageSize(runtimeShape, width, height);
-	}
-
-	void DrawFaceDetectionResult(const FaceDetectionResult& result, size_t index) {
-		ImGui::Text("Face %d score: %.3f", static_cast<int>(index), result.score);
-		ImGui::Text("bbox: min(%.1f, %.1f) max(%.1f, %.1f)",
-			result.bboxMin.x,
-			result.bboxMin.y,
-			result.bboxMax.x,
-			result.bboxMax.y);
-		ImGui::Text("leftEye : %.1f, %.1f", result.landmark.leftEye.x, result.landmark.leftEye.y);
-		ImGui::Text("rightEye: %.1f, %.1f", result.landmark.rightEye.x, result.landmark.rightEye.y);
-		ImGui::Text("nose    : %.1f, %.1f", result.landmark.nose.x, result.landmark.nose.y);
-		ImGui::Text("leftMouth : %.1f, %.1f", result.landmark.leftMouth.x, result.landmark.leftMouth.y);
-		ImGui::Text("rightMouth: %.1f, %.1f", result.landmark.rightMouth.x, result.landmark.rightMouth.y);
-		ImGui::Separator();
-	}
-
-	std::vector<Vector2> DecodeLandmark106Points(
-		const std::vector<std::vector<float>>& outputDataList,
-		int alignedWidth,
-		int alignedHeight,
-		bool outputMinusOneToOne) {
-
-		std::vector<Vector2> points;
-		if (outputDataList.empty() || outputDataList[0].size() < 212 || alignedWidth <= 0 || alignedHeight <= 0) {
-			return points;
-		}
-
-		const std::vector<float>& output = outputDataList[0];
-		points.reserve(106);
-		for (size_t i = 0; i < 106; ++i) {
-			float x = output[i * 2 + 0];
-			float y = output[i * 2 + 1];
-
-			if (outputMinusOneToOne) {
-				x = (x + 1.0f) * 0.5f * static_cast<float>(alignedWidth);
-				y = (y + 1.0f) * 0.5f * static_cast<float>(alignedHeight);
-			} else if (x >= 0.0f && x <= 1.5f && y >= 0.0f && y <= 1.5f) {
-				x *= static_cast<float>(alignedWidth);
-				y *= static_cast<float>(alignedHeight);
-			}
-
-			points.push_back({ x, y });
-		}
-
-		return points;
-	}
-
-	//================================================================
-	//		顔検出結果のオーバーレイ描画
-	//================================================================
-	void DrawFaceDetectionOverlay(
-		const TakeC::CameraCapture& cameraCapture,
-		const std::vector<FaceDetectionResult>& results,
-		int inputWidth,
-		int inputHeight) {
-
-		if (!cameraCapture.HasLastImGuiImageRect() || inputWidth <= 0 || inputHeight <= 0) {
-			return;
-		}
-
-		const TakeC::CameraCapture::ImGuiImageRect& rect = cameraCapture.GetLastImGuiImageRect();
-		const float imageWidth = rect.maxX - rect.minX;
-		const float imageHeight = rect.maxY - rect.minY;
-		if (imageWidth <= 0.0f || imageHeight <= 0.0f) {
-			return;
-		}
-
-		ImDrawList* drawList = ImGui::GetForegroundDrawList();
-		const ImU32 boxColor = IM_COL32(0, 255, 80, 255);
-		const ImU32 landmarkColor = IM_COL32(255, 80, 40, 255);
-		const ImU32 textColor = IM_COL32(255, 255, 255, 255);
-		const float scaleX = imageWidth / static_cast<float>(inputWidth);
-		const float scaleY = imageHeight / static_cast<float>(inputHeight);
-
-		const auto toScreen = [&](const Vector2& point) {
-			return ImVec2(rect.minX + point.x * scaleX, rect.minY + point.y * scaleY);
-			};
-
-		// 顔検出結果の描画
-		for (size_t i = 0; i < results.size(); ++i) {
-			const FaceDetectionResult& result = results[i];
-			const ImVec2 min = toScreen(result.bboxMin);
-			const ImVec2 max = toScreen(result.bboxMax);
-			drawList->AddRect(min, max, boxColor, 0.0f, 0, 2.0f);
-			drawList->AddText(ImVec2(min.x, min.y - 16.0f), textColor, std::to_string(i).c_str());
-
-			const Vector2 landmarks[5] = {
-				result.landmark.leftEye,
-				result.landmark.rightEye,
-				result.landmark.nose,
-				result.landmark.leftMouth,
-				result.landmark.rightMouth,
-			};
-
-			for (const Vector2& landmark : landmarks) {
-				const ImVec2 center = toScreen(landmark);
-				drawList->AddCircle(center, 4.0f, landmarkColor, 12, 2.0f);
-				drawList->AddLine(ImVec2(center.x - 5.0f, center.y), ImVec2(center.x + 5.0f, center.y), landmarkColor, 1.5f);
-				drawList->AddLine(ImVec2(center.x, center.y - 5.0f), ImVec2(center.x, center.y + 5.0f), landmarkColor, 1.5f);
-			}
-		}
-	}
-
-	void DrawLandmark106Canvas(const std::vector<Vector2>& points, int width, int height) {
-		if (points.empty() || width <= 0 || height <= 0 || !ImGui::TreeNode("106 Landmark Preview")) {
-			return;
-		}
-
-		const float canvasSize = std::min(ImGui::GetContentRegionAvail().x, 360.0f);
-		const ImVec2 origin = ImGui::GetCursorScreenPos();
-		const ImVec2 canvasEnd = ImVec2(origin.x + canvasSize, origin.y + canvasSize);
-		ImDrawList* drawList = ImGui::GetWindowDrawList();
-		drawList->AddRectFilled(origin, canvasEnd, IM_COL32(20, 20, 20, 255));
-		drawList->AddRect(origin, canvasEnd, IM_COL32(120, 120, 120, 255));
-
-		const float scaleX = canvasSize / static_cast<float>(width);
-		const float scaleY = canvasSize / static_cast<float>(height);
-		for (size_t i = 0; i < points.size(); ++i) {
-			const ImVec2 p = ImVec2(origin.x + points[i].x * scaleX, origin.y + points[i].y * scaleY);
-			drawList->AddCircleFilled(p, 2.0f, IM_COL32(255, 180, 40, 255), 8);
-			if (i == 0 || i == 105) {
-				drawList->AddText(ImVec2(p.x + 3.0f, p.y + 3.0f), IM_COL32(255, 255, 255, 255), std::to_string(i).c_str());
-			}
-		}
-
-		ImGui::Dummy(ImVec2(canvasSize, canvasSize));
-		ImGui::TreePop();
-	}
-}
 
 //====================================================================
 //			初期化
@@ -338,7 +51,12 @@ void TitleScene::Initialize() {
 		StringUtility::ConvertString(debugLandmarkModelPath_.data()));
 	debugLandmarkLoadFailed_ = debugLandmarkModel_ == nullptr;
 	if (int landmarkInputWidth = 0, landmarkInputHeight = 0;
-		TryResolveModelImageSize(debugLandmarkModel_, landmarkInputWidth, landmarkInputHeight)) {
+		OnnxImageTensorUtility::TryResolveModelInputSize(
+			debugLandmarkModel_,
+			192,
+			192,
+			landmarkInputWidth,
+			landmarkInputHeight)) {
 		debugAlignedFaceSize_ = std::max(landmarkInputWidth, landmarkInputHeight);
 	}
 }
@@ -370,6 +88,7 @@ void TitleScene::Update() {
 	if (debugOnnxInferenceTimer_ > 0.0f) {
 		debugOnnxInferenceTimer_ -= TakeC::TakeCFrameWork::GetDeltaTime();
 	}
+
 	if (debugOnnxInferenceEnabled_ && debugOnnxInferenceTimer_ <= 0.0f &&
 		debugOnnxModel_ && cameraCapture && cameraCapture->GetFrameRGBA()) {
 
@@ -377,16 +96,26 @@ void TitleScene::Update() {
 		const auto& modelInputShapes = debugOnnxModel_->GetInputShapes();
 		if (!modelInputShapes.empty()) {
 			std::vector<int64_t> runtimeInputShape;
-			if (ResolveRuntimeImageInputShape(modelInputShapes[0], runtimeInputShape) &&
+			if (OnnxImageTensorUtility::ResolveRuntimeInputShape(modelInputShapes[0], runtimeInputShape) &&
 				debugOnnxModel_->ResizeInputBuffer(0, runtimeInputShape)) {
 
 				std::vector<float>* input = debugOnnxModel_->GetInputData(0);
+
+				// カメラキャプチャから入力テンソルを構築
 				if (input && TakeC::BuildFaceInputFromCamera(*cameraCapture, *input, runtimeInputShape)) {
+
+					// ONNXモデルの実行
 					debugOnnxRunSuccess_ = debugOnnxModel_->Run();
+
+					// 推論成功時に顔検出結果をデコード
 					if (debugOnnxRunSuccess_) {
 						int inputWidth = 0;
 						int inputHeight = 0;
-						if (ResolveRuntimeImageSize(runtimeInputShape, inputWidth, inputHeight)) {
+
+						// runtimeInputShapeから画像サイズを取得
+						if (OnnxImageTensorUtility::ResolveImageSize(runtimeInputShape, inputWidth, inputHeight)) {
+
+							// 顔検出結果のデコード設定
 							ScrfdDecoder::Config config;
 							config.inputWidth = inputWidth;
 							config.inputHeight = inputHeight;
@@ -396,20 +125,27 @@ void TitleScene::Update() {
 							config.anchorCenterOffset = debugScrfdAnchorCenterOffset_;
 							config.decodeOffsetX = debugScrfdDecodeOffsetX_;
 							config.decodeOffsetY = debugScrfdDecodeOffsetY_;
+
+							// 顔検出結果のデコード
 							debugFaceResults_ = debugScrfdDecoder_.Decode(
 								debugOnnxModel_->GetOutputNames(),
 								debugOnnxModel_->GetOutputDataList(),
 								debugOnnxModel_->GetRuntimeOutputShapes(),
 								config);
+							// 顔検出結果を入力サイズに設定
 							debugScrfdInputWidth_ = inputWidth;
 							debugScrfdInputHeight_ = inputHeight;
 
 							debugFaceAlignSuccess_ = false;
 							debugAlignedFaceImage_ = {};
+
+							// 顔検出結果が存在する場合、最初の顔をアラインメント
 							if (!debugFaceResults_.empty()) {
 								FaceAligner::Config alignConfig;
 								alignConfig.outputWidth = debugAlignedFaceSize_;
 								alignConfig.outputHeight = debugAlignedFaceSize_;
+
+								// 顔アラインメントの実行
 								debugFaceAlignSuccess_ = debugFaceAligner_.AlignFromCamera(
 									*cameraCapture,
 									debugFaceResults_.front(),
@@ -421,11 +157,13 @@ void TitleScene::Update() {
 
 							debugLandmarkRunSuccess_ = false;
 							debugLandmark106Points_.clear();
+
+							// 顔アラインメントが成功し、ランドマークモデルがロードされている場合、ランドマーク推論を実行
 							if (debugFaceAlignSuccess_ && debugLandmarkModel_) {
 								const auto& landmarkModelInputShapes = debugLandmarkModel_->GetInputShapes();
 								if (!landmarkModelInputShapes.empty()) {
 									std::vector<int64_t> landmarkRuntimeInputShape;
-									if (ResolveRuntimeImageInputShapeWithFallback(
+									if (OnnxImageTensorUtility::ResolveRuntimeInputShape(
 										landmarkModelInputShapes[0],
 										debugAlignedFaceImage_.width,
 										debugAlignedFaceImage_.height,
@@ -443,11 +181,13 @@ void TitleScene::Update() {
 
 											debugLandmarkRunSuccess_ = debugLandmarkModel_->Run();
 											if (debugLandmarkRunSuccess_) {
-												debugLandmark106Points_ = DecodeLandmark106Points(
+												Landmark106Decoder::Config landmarkConfig;
+												landmarkConfig.outputMinusOneToOne = debugLandmarkOutputMinusOneToOne_;
+												debugLandmark106Points_ = Landmark106Decoder::Decode(
 													debugLandmarkModel_->GetOutputDataList(),
 													debugAlignedFaceImage_.width,
 													debugAlignedFaceImage_.height,
-													debugLandmarkOutputMinusOneToOne_);
+													landmarkConfig);
 											}
 										}
 									}
@@ -488,7 +228,11 @@ void TitleScene::UpdateImGui() {
 	Object3dCommon::GetInstance().UpdateImGui();
 	if (TakeC::CameraCapture* cameraCapture = TakeC::TakeCFrameWork::GetCameraCapture()) {
 		cameraCapture->UpdateImGui();
-		DrawFaceDetectionOverlay(*cameraCapture, debugFaceResults_, debugScrfdInputWidth_, debugScrfdInputHeight_);
+		FaceAnalysisDebugRenderer::DrawFaceDetectionOverlay(
+			*cameraCapture,
+			debugFaceResults_,
+			debugScrfdInputWidth_,
+			debugScrfdInputHeight_);
 	}
 
 	ImGui::Begin("ONNX Model Debug");
@@ -506,7 +250,12 @@ void TitleScene::UpdateImGui() {
 			StringUtility::ConvertString(debugLandmarkModelPath_.data()));
 		debugLandmarkLoadFailed_ = debugLandmarkModel_ == nullptr;
 		if (int landmarkInputWidth = 0, landmarkInputHeight = 0;
-			TryResolveModelImageSize(debugLandmarkModel_, landmarkInputWidth, landmarkInputHeight)) {
+			OnnxImageTensorUtility::TryResolveModelInputSize(
+				debugLandmarkModel_,
+				192,
+				192,
+				landmarkInputWidth,
+				landmarkInputHeight)) {
 			debugAlignedFaceSize_ = std::max(landmarkInputWidth, landmarkInputHeight);
 		}
 	}
@@ -533,18 +282,42 @@ void TitleScene::UpdateImGui() {
 			ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.3f, 1.0f), "Run failed.");
 		}
 
-		DrawOnnxTensorInfo("Model Inputs", debugOnnxModel_->GetInputNames(), debugOnnxModel_->GetInputShapes());
-		DrawOnnxTensorInfo("Model Outputs", debugOnnxModel_->GetOutputNames(), debugOnnxModel_->GetOutputShapes());
-		DrawOnnxTensorInfo("Runtime Inputs", debugOnnxModel_->GetInputNames(), debugOnnxModel_->GetRuntimeInputShapes());
-		DrawOnnxTensorInfo("Runtime Outputs", debugOnnxModel_->GetOutputNames(), debugOnnxModel_->GetRuntimeOutputShapes());
+		FaceAnalysisDebugRenderer::DrawOnnxTensorInfo(
+			"Model Inputs",
+			debugOnnxModel_->GetInputNames(),
+			debugOnnxModel_->GetInputShapes());
+		FaceAnalysisDebugRenderer::DrawOnnxTensorInfo(
+			"Model Outputs",
+			debugOnnxModel_->GetOutputNames(),
+			debugOnnxModel_->GetOutputShapes());
+		FaceAnalysisDebugRenderer::DrawOnnxTensorInfo(
+			"Runtime Inputs",
+			debugOnnxModel_->GetInputNames(),
+			debugOnnxModel_->GetRuntimeInputShapes());
+		FaceAnalysisDebugRenderer::DrawOnnxTensorInfo(
+			"Runtime Outputs",
+			debugOnnxModel_->GetOutputNames(),
+			debugOnnxModel_->GetRuntimeOutputShapes());
 
 		if (debugLandmarkModel_) {
 			ImGui::TextColored(ImVec4(0.3f, 1.0f, 0.4f, 1.0f), "Landmark model loaded.");
 			ImGui::Text("Landmark Run: %s", debugLandmarkRunSuccess_ ? "success" : "not run / failed");
-			DrawOnnxTensorInfo("Landmark Model Inputs", debugLandmarkModel_->GetInputNames(), debugLandmarkModel_->GetInputShapes());
-			DrawOnnxTensorInfo("Landmark Model Outputs", debugLandmarkModel_->GetOutputNames(), debugLandmarkModel_->GetOutputShapes());
-			DrawOnnxTensorInfo("Landmark Runtime Inputs", debugLandmarkModel_->GetInputNames(), debugLandmarkModel_->GetRuntimeInputShapes());
-			DrawOnnxTensorInfo("Landmark Runtime Outputs", debugLandmarkModel_->GetOutputNames(), debugLandmarkModel_->GetRuntimeOutputShapes());
+			FaceAnalysisDebugRenderer::DrawOnnxTensorInfo(
+				"Landmark Model Inputs",
+				debugLandmarkModel_->GetInputNames(),
+				debugLandmarkModel_->GetInputShapes());
+			FaceAnalysisDebugRenderer::DrawOnnxTensorInfo(
+				"Landmark Model Outputs",
+				debugLandmarkModel_->GetOutputNames(),
+				debugLandmarkModel_->GetOutputShapes());
+			FaceAnalysisDebugRenderer::DrawOnnxTensorInfo(
+				"Landmark Runtime Inputs",
+				debugLandmarkModel_->GetInputNames(),
+				debugLandmarkModel_->GetRuntimeInputShapes());
+			FaceAnalysisDebugRenderer::DrawOnnxTensorInfo(
+				"Landmark Runtime Outputs",
+				debugLandmarkModel_->GetOutputNames(),
+				debugLandmarkModel_->GetRuntimeOutputShapes());
 		} else if (debugLandmarkLoadFailed_) {
 			ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.3f, 1.0f), "Landmark model load failed.");
 		}
@@ -562,11 +335,14 @@ void TitleScene::UpdateImGui() {
 		if (!debugLandmark106Points_.empty()) {
 			ImGui::Text("landmark[0]: %.1f, %.1f", debugLandmark106Points_[0].x, debugLandmark106Points_[0].y);
 			ImGui::Text("landmark[105]: %.1f, %.1f", debugLandmark106Points_[105].x, debugLandmark106Points_[105].y);
-			DrawLandmark106Canvas(debugLandmark106Points_, debugAlignedFaceImage_.width, debugAlignedFaceImage_.height);
+			FaceAnalysisDebugRenderer::DrawLandmark106Canvas(
+				debugLandmark106Points_,
+				debugAlignedFaceImage_.width,
+				debugAlignedFaceImage_.height);
 		}
 		const size_t displayCount = std::min<size_t>(debugFaceResults_.size(), 5);
 		for (size_t i = 0; i < displayCount; ++i) {
-			DrawFaceDetectionResult(debugFaceResults_[i], i);
+			FaceAnalysisDebugRenderer::DrawFaceDetectionResult(debugFaceResults_[i], i);
 		}
 	}
 	else if (debugOnnxLoadFailed_) {
