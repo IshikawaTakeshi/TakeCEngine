@@ -7,6 +7,9 @@
 // AIBrainSystemのスコアに基づいてコンボを選択
 // → ユーティリティAI + ビヘイビアツリーの融合
 //============================================================================
+/// <summary>
+/// ビヘイビアツリーのScoreConditionNodeとして判定または処理を実行するクラスです。
+/// </summary>
 class ScoreConditionNode : public BehaviorNode {
 public:
 

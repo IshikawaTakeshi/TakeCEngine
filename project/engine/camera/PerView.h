@@ -6,6 +6,9 @@
 //=============================================================================
 
 //View情報
+/// <summary>
+/// PerViewに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct PerView {
 	Matrix4x4 viewProjection;  //ビュー射影行列
 	Matrix4x4 billboardMatrix; //ビルボード行列

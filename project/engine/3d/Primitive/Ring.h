@@ -19,6 +19,9 @@ namespace TakeC {
 	//============================================================
 
 	// Ring全体のデータ
+	/// <summary>
+	/// RingDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct RingData : public PrimitiveBaseData {
 		float outerRadius = 1.0f; // 外側の半径
 		float innerRadius = 0.01f; // 内側の半径
@@ -29,6 +32,9 @@ namespace TakeC {
 	//	Ring class
 	//============================================================
 
+	/// <summary>
+	/// リング状プリミティブの頂点を生成し、3D形状として描画するクラスです。
+	/// </summary>
 	class Ring : public PrimitiveBase<RingData> {
 	public:
 

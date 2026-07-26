@@ -8,6 +8,9 @@ namespace TakeC {
 	//	cubeデータ構造体
 	//========================================================
 	// Cube全体のデータ
+	/// <summary>
+	/// CubeDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct CubeData : public PrimitiveBaseData {
 		AABB size;
 	};
@@ -16,6 +19,9 @@ namespace TakeC {
 	//	Cube class
 	//============================================================
 
+	/// <summary>
+	/// 立方体プリミティブの頂点を生成し、3D形状として描画するクラスです。
+	/// </summary>
 	class Cube : public PrimitiveBase<CubeData> {
 	public:
 

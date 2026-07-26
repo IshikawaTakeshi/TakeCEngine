@@ -15,6 +15,9 @@ enum class SpriteDrawLayer {
 // SpriteConfig struct
 //=============================================================================
 
+/// <summary>
+/// SpriteConfigで使用する設定値を保持する構造体です。
+/// </summary>
 struct SpriteConfig {
 	std::string name = ""; //JSONファイルパス
 	std::string textureFilePath_ = "white1x1.png"; //テクスチャファイルパス

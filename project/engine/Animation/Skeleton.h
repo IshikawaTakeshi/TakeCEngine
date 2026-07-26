@@ -10,6 +10,9 @@
 #include <map>
 
 //jointの構造体
+/// <summary>
+/// Jointに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct Joint {
 	QuaternionTransform transform; 
 	Matrix4x4 localMatrix;
@@ -29,6 +32,9 @@ enum class AnimationBlendMode {
 //==============================================================
 // Skeletonクラス
 //==============================================================
+/// <summary>
+/// モデルのジョイント階層と姿勢行列を保持・更新するクラスです。
+/// </summary>
 class Skeleton {
 public:
 

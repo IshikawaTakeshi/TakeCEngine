@@ -8,6 +8,9 @@
 //============================================================================
 //DirectionalLightのデータ
 //============================================================================
+/// <summary>
+/// DirectionalLightDataに関するデータを保持する構造体です。
+/// </summary>
 struct DirectionalLightData {
 	Vector4 color_; //ライトの色
 	Vector3 direction_; //ライトの向き

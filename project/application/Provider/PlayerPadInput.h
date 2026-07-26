@@ -6,6 +6,9 @@
 //============================================================================
 // PlayerPadInput class
 //============================================================================
+/// <summary>
+/// PlayerPadInputから操作状態を取得し、ゲーム用入力へ変換するクラスです。
+/// </summary>
 class PlayerPadInput : public IInputDevice<CharacterActionInput> {
 public:
 

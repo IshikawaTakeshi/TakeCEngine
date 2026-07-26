@@ -11,6 +11,9 @@
 //============================================================================
 
 //定数バッファ用の構造体
+/// <summary>
+/// CameraForGPUに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct CameraForGPU {
 	Matrix4x4 viewProjectionInverse; // ビュー射影行列の逆行列
 	Matrix4x4 ProjectionInverse; // 投影行列の逆行列
@@ -18,6 +21,9 @@ struct CameraForGPU {
 	float padding;
 };
 
+/// <summary>
+/// CameraConfigで使用する設定値を保持する構造体です。
+/// </summary>
 struct CameraConfig {
 
 	//カメラ設定JSONファイルのパス
@@ -39,6 +45,9 @@ void to_json(nlohmann::json& json, const CameraConfig& cameraConfig);
 void from_json(const nlohmann::json& json, CameraConfig& cameraConfig);
 
 // JSONディレクトリパスの特殊化
+/// <summary>
+/// 型ごとのJSON保存先ディレクトリを提供するテンプレート構造体です。
+/// </summary>
 template<>
 struct JsonPath<CameraConfig> {
 	static std::filesystem::path GetDirectory() {

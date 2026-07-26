@@ -16,6 +16,9 @@ namespace TakeC {
 	//====================================================================
 	// 	OnnxRuntimeSystem class
 	//====================================================================
+	/// <summary>
+	/// ONNX RuntimeとDirectMLの実行環境を初期化し、推論基盤を提供するクラスです。
+	/// </summary>
 	class OnnxRuntimeSystem {
 	public:
 		

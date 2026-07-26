@@ -2,6 +2,9 @@
 #include "application/Entity/Behavior/BehaviorNode.h"
 #include <string>
 
+/// <summary>
+/// ビヘイビアツリーのSetBlackboardBoolNodeとして判定または処理を実行するクラスです。
+/// </summary>
 class SetBlackboardBoolNode : public BehaviorNode {
 public:
 	/// <summary>

@@ -10,6 +10,9 @@
 
 
 //パーティクル用の行列,色データ
+/// <summary>
+/// ParticleForGPUに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct ParticleForGPU {
 	Vector3 translate;
 	Quaternion rotate;

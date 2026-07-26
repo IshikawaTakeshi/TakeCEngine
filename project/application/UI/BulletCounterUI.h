@@ -9,6 +9,9 @@
 //============================================================================
 // BulletCounterUI class
 //============================================================================
+/// <summary>
+/// BulletCounterUIの画面表示と更新処理を担当するクラスです。
+/// </summary>
 class BulletCounterUI : public BaseUI {
 public:
 	BulletCounterUI() = default;

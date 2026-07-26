@@ -10,6 +10,9 @@ class BaseScene;
 // SceneStateManager class
 // シーン非依存のステートマネージャー
 //============================================================================
+/// <summary>
+/// SceneStateに関する生成、更新、破棄を一元管理するクラスです。
+/// </summary>
 class SceneStateManager {
 public:
   SceneStateManager() = default;

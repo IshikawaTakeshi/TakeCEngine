@@ -60,6 +60,7 @@ local commonIncludeDirs = {
     externalsRoot .. "/ImNodeFlow-1.2.2/include",
     packagesRoot,
     packagesRoot .. "/Microsoft.AI.DirectML.1.15.4/include",
+    packagesRoot .. "/Microsoft.Direct3D.DXC.1.9.2602.24/build/native/include",
     packagesRoot .. "/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/build/native/include"
 }
 
@@ -166,6 +167,7 @@ project "DirectXGame"
 
     libdirs {
         packagesRoot .. "/Microsoft.AI.DirectML.1.15.4/bin/x64-win",
+        packagesRoot .. "/Microsoft.Direct3D.DXC.1.9.2602.24/build/native/lib/x64",
         packagesRoot .. "/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/runtimes/win-x64/native",
         externalsRoot .. "/assimp/lib/Debug",
         externalsRoot .. "/assimp/lib/Release"
@@ -185,5 +187,7 @@ project "DirectXGame"
     postbuildcommands {
         '{COPYFILE} "' .. packagesRoot .. '/Microsoft.AI.DirectML.1.15.4/bin/x64-win/DirectML.dll" "%{cfg.targetdir}"',
         '{COPYFILE} "' .. packagesRoot .. '/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/runtimes/win-x64/native/onnxruntime.dll" "%{cfg.targetdir}"',
-        '{COPYFILE} "' .. packagesRoot .. '/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/runtimes/win-x64/native/onnxruntime_providers_shared.dll" "%{cfg.targetdir}"'
+        '{COPYFILE} "' .. packagesRoot .. '/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/runtimes/win-x64/native/onnxruntime_providers_shared.dll" "%{cfg.targetdir}"',
+        '{COPYFILE} "' .. packagesRoot .. '/Microsoft.Direct3D.DXC.1.9.2602.24/build/native/bin/x64/dxcompiler.dll" "%{cfg.targetdir}"',
+        '{COPYFILE} "' .. packagesRoot .. '/Microsoft.Direct3D.DXC.1.9.2602.24/build/native/bin/x64/dxil.dll" "%{cfg.targetdir}"'
     }

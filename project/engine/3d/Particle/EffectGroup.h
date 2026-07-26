@@ -12,6 +12,9 @@
 
 namespace TakeC {
 
+	/// <summary>
+	/// 複数のエミッターをまとめ、ひとつのパーティクル演出として制御するクラスです。
+	/// </summary>
 	class EffectGroup {
 	public:
 		EffectGroup() = default;

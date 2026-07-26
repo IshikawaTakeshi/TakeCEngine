@@ -7,6 +7,9 @@
 
 namespace {
 
+	/// <summary>
+	/// TensorLayoutに必要な値をまとめて保持する構造体です。
+	/// </summary>
 	struct TensorLayout {
 		int64_t batch = 1;
 		int64_t channels = 0;

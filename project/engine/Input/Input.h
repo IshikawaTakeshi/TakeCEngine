@@ -23,6 +23,9 @@ namespace TakeC {
 // Input class
 //============================================================================
 namespace TakeC {
+	/// <summary>
+	/// Inputから操作状態を取得し、ゲーム用入力へ変換するクラスです。
+	/// </summary>
 	class Input {
 	private:
 
@@ -35,6 +38,9 @@ namespace TakeC {
 	public:
 
 		// マウス移動量構造体
+		/// <summary>
+		/// MouseMoveに必要な値をまとめて保持する構造体です。
+		/// </summary>
 		struct MouseMove {
 			LONG lX;
 			LONG lY;

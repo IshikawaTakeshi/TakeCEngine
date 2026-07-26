@@ -19,6 +19,9 @@ template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 
 // シェーダーリソース情報を一意に識別するためのキー
+/// <summary>
+/// ShaderResourceKeyに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct ShaderResourceKey {
 	D3D_SHADER_INPUT_TYPE type;
 	D3D12_SHADER_VISIBILITY visibility;
@@ -38,6 +41,9 @@ struct ShaderResourceKey {
 };
 
 // リソース情報をまとめるデータ構造
+/// <summary>
+/// BindResourceInfoに関するデータを保持する構造体です。
+/// </summary>
 struct BindResourceInfo {
 	ShaderResourceKey key;
 	std::string name;
@@ -46,6 +52,9 @@ struct BindResourceInfo {
 using ShaderResourceMap = std::map<ShaderResourceKey, BindResourceInfo>;
 
 // グラフィックシェーダーデータ
+/// <summary>
+/// GraphicShaderDataに関するデータを保持する構造体です。
+/// </summary>
 struct GraphicShaderData {
 	ComPtr<IDxcBlob> vertexBlob;
 	ComPtr<IDxcBlob> pixelBlob;
@@ -59,6 +68,9 @@ namespace TakeC {
 //============================================================================
 // PipelineStateObject class
 //============================================================================
+/// <summary>
+/// DirectX 12のルートシグネチャとパイプラインステートを構築・保持するクラスです。
+/// </summary>
 class PSO {
 public:
 

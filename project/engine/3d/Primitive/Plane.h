@@ -7,6 +7,9 @@ namespace TakeC {
 	//	平面データ構造体
 	//========================================================
 	// Plane全体のデータ
+	/// <summary>
+	/// PlaneDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct PlaneData : public PrimitiveBaseData {
 		float width = 1.0f;
 		float height = 1.0f;
@@ -17,6 +20,9 @@ namespace TakeC {
 	//	Plane class
 	//============================================================
 
+	/// <summary>
+	/// 平面プリミティブの頂点を生成し、3D形状として描画するクラスです。
+	/// </summary>
 	class Plane : public PrimitiveBase<PlaneData> {
 	public:
 

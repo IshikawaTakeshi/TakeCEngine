@@ -2,6 +2,9 @@
 #include "3d/Particle/BaseParticleGroup.h"
 
 //加速フィールド
+/// <summary>
+/// AccelerationFieldに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct AccelerationField {
 	Vector3 acceleration_; //加速度
 	Vector3 position_;     //位置
@@ -14,6 +17,9 @@ class ParticleCommon;
 //============================================================================
 // Particle3d class
 //============================================================================
+/// <summary>
+/// CPUで更新する3Dパーティクル群を生成・更新・描画するクラスです。
+/// </summary>
 class Particle3d : public BaseParticleGroup {
 public:
 

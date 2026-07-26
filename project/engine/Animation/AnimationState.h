@@ -7,6 +7,9 @@
 // AnimationState
 // アニメーションの再生状態（アニメポインタ + 再生時間）を保持する軽量構造体
 //============================================================================
+/// <summary>
+/// AnimationStateに関するデータを保持する構造体です。
+/// </summary>
 struct AnimationState {
 	Animation* animation = nullptr; // 対象アニメーション（非所有）
 	float time = 0.0f;              // 現在の再生時間（秒）

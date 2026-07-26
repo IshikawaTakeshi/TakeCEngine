@@ -5,6 +5,9 @@
 //=============================================================
 // ScoreConditionNodeView class
 //=============================================================
+/// <summary>
+/// ScoreConditionNodeをエディター上で表示・編集するクラスです。
+/// </summary>
 class ScoreConditionNodeView : public BehaviorNodeView {
 public:
 

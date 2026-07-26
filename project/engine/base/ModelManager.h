@@ -21,6 +21,9 @@ namespace TakeC {
 	class SrvManager;
 	class DirectXCommon;
 
+	/// <summary>
+	/// Modelに関する生成、更新、破棄を一元管理するクラスです。
+	/// </summary>
 	class ModelManager {
 	private:
 

@@ -7,6 +7,9 @@ class baseInputProvider;
 //============================================================================
 // StateJumping class
 //============================================================================
+/// <summary>
+/// キャラクターのジャンプ中の移動と着地遷移を制御する状態クラスです。
+/// </summary>
 class StateJumping : public BaseGameCharacterState {
 public:
 

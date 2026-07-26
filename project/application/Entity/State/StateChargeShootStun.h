@@ -7,6 +7,9 @@ class baseInputProvider;
 //============================================================================
 // StateChargeShootStun class
 //============================================================================
+/// <summary>
+/// チャージ射撃後の硬直時間と復帰遷移を制御する状態クラスです。
+/// </summary>
 class StateChargeShootStun : public BaseGameCharacterState {
 public:
 

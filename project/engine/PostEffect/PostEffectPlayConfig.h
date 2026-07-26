@@ -8,6 +8,9 @@
 // PostEffectPlayConfig struct
 // PostEffect 一時再生リクエストのパラメータ。JSONで保存・読み込みする。
 //============================================================
+/// <summary>
+/// PostEffectPlayConfigで使用する設定値を保持する構造体です。
+/// </summary>
 struct PostEffectPlayConfig {
 	// 対象エフェクト名 (例: "Vignette")
 	std::string effectName;

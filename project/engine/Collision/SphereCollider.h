@@ -8,6 +8,9 @@ class BoxCollider;
 //=============================================================================
 // SphereCollider class
 //=============================================================================
+/// <summary>
+/// SphereCollider形状の衝突判定とデバッグ描画を担当するクラスです。
+/// </summary>
 class SphereCollider : public Collider {
 public:
 

@@ -7,6 +7,9 @@ namespace TakeC {
 	// sphere情報の構造体
 	//========================================================
 
+	/// <summary>
+	/// SphereDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct SphereData : public PrimitiveBaseData {
 		float radius = 1.0f; // 半径
 		uint32_t subDivision = 16; // 分割数
@@ -16,6 +19,9 @@ namespace TakeC {
 	//	Sphere class
 	//============================================================
 
+	/// <summary>
+	/// 球体プリミティブの頂点を生成し、3D形状として描画するクラスです。
+	/// </summary>
 	class Sphere : public PrimitiveBase<SphereData> {
 	public:
 

@@ -7,6 +7,9 @@
 
 class BaseWeapon;
 
+/// <summary>
+/// MuzzleFlashEffectの描画演出とパラメーター更新を担当するクラスです。
+/// </summary>
 class MuzzleFlashEffect {
 public:
 	//========================================================================

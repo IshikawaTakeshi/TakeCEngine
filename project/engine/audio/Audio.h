@@ -14,6 +14,9 @@
 #pragma comment(lib, "mfuuid.lib")
 #pragma comment(lib, "shlwapi.lib")
 
+/// <summary>
+/// Audioに関する生成、更新、破棄を一元管理するクラスです。
+/// </summary>
 class AudioManager {
 public:
 
@@ -25,24 +28,36 @@ public:
 	//===================================================================================
 
 	//チャンクヘッダ
+	/// <summary>
+	/// ChunkHeaderに必要な値をまとめて保持する構造体です。
+	/// </summary>
 	struct ChunkHeader {
 		char id[4]; //チャンクID
 		int32_t size; //チャンクサイズ
 	};
 
 	//RIFFヘッダチャンク
+	/// <summary>
+	/// RiffHeaderに必要な値をまとめて保持する構造体です。
+	/// </summary>
 	struct RiffHeader {
 		ChunkHeader chunk; //"RIFF"
 		char type[4]; // "WAVE"
 	};
 
 	//FMTチャンク
+	/// <summary>
+	/// FormatChunkに必要な値をまとめて保持する構造体です。
+	/// </summary>
 	struct FormatChunk {
 		ChunkHeader chunk; //"fmt"
 		WAVEFORMATEX fmt; //波形フォーマット
 	};
 
 	//音声データ
+	/// <summary>
+	/// SoundDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct SoundData {
 
 		//波形フォーマット

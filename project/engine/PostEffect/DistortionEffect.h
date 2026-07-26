@@ -7,6 +7,9 @@
 //=============================================================================
 
 // ノイズベースの歪み情報 (16バイトアライメント)
+/// <summary>
+/// DistortionInfoに関するデータを保持する構造体です。
+/// </summary>
 struct DistortionInfo {
 	float strength;
 	float timer;
@@ -30,6 +33,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(DistortionInfo,
 // DistortionEffect class
 //=============================================================================
 
+/// <summary>
+/// DistortionEffectの描画演出とパラメーター更新を担当するクラスです。
+/// </summary>
 class DistortionEffect : public PostEffect {
 public:
 

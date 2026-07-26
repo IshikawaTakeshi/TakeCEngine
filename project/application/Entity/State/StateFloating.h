@@ -7,6 +7,9 @@ class baseInputProvider;
 //============================================================================
 // StateFloating class
 //============================================================================
+/// <summary>
+/// キャラクターの空中浮遊中の移動と落下遷移を制御する状態クラスです。
+/// </summary>
 class StateFloating : public BaseGameCharacterState {
 public:
 

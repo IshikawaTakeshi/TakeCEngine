@@ -6,6 +6,9 @@
 //=============================================================
 // ConditionNodeView class
 //=============================================================
+/// <summary>
+/// ConditionNodeをエディター上で表示・編集するクラスです。
+/// </summary>
 class ConditionNodeView : public BehaviorNodeView {
 public:
 

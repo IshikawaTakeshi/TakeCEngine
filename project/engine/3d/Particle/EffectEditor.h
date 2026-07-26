@@ -23,6 +23,9 @@ namespace TakeC {
 	// EffectEditor class
 	//============================================================================
 
+	/// <summary>
+	/// EffectEditorに関するデータを表示・編集する開発支援クラスです。
+	/// </summary>
 	class EffectEditor {
 	public:
 		EffectEditor() = default;

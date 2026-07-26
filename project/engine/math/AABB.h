@@ -7,6 +7,9 @@
 //============================================================================
 
 // Axis-Aligned Bounding Box
+/// <summary>
+/// AABBに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct AABB {
 	Vector3 min; // 最小座標
 	Vector3 max; // 最大座標

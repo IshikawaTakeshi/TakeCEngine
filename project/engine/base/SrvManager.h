@@ -8,6 +8,9 @@
 // SrvManager class
 //============================================================================
 namespace TakeC {
+	/// <summary>
+	/// Srvに関する生成、更新、破棄を一元管理するクラスです。
+	/// </summary>
 	class SrvManager {
 	public:
 

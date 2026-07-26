@@ -11,6 +11,9 @@
 // JSON namespace alias
 using json = nlohmann::json;
 
+/// <summary>
+/// 型ごとのJSON保存先ディレクトリを提供するテンプレート構造体です。
+/// </summary>
 template<typename T>
 struct JsonPath {
 	static std::filesystem::path GetDirectory() {
@@ -20,6 +23,9 @@ struct JsonPath {
 
 // マクロ定義
 #define TAKEC_DEFINE_JSON_DIRECTORY_PATH(Type, Directory) \
+/** <summary> \
+ * 型ごとのJSON保存先ディレクトリを提供するテンプレート構造体です。 \
+ * </summary> */ \
 template<> \
 struct JsonPath<Type> { \
     static std::filesystem::path GetDirectory() { \

@@ -76,7 +76,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -99,7 +99,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NOMINMAX;_DEVELOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -127,7 +127,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>

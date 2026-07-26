@@ -21,6 +21,9 @@ namespace TakeC {
 //============================================================================
 // SpriteInstanceData structure
 //============================================================================
+/// <summary>
+/// SpriteInstanceDataに関するデータを保持する構造体です。
+/// </summary>
 struct SpriteInstanceData {
 	Matrix4x4 WVP;                     // 座標変換行列
 	Matrix4x4 World;                   // ワールド行列
@@ -39,6 +42,9 @@ struct SpriteInstanceData {
 //============================================================================
 namespace TakeC {
 
+/// <summary>
+/// スプライト描画で共有するパイプラインとGPUリソースを管理するクラスです。
+/// </summary>
 class SpriteCommon {
 private:
 

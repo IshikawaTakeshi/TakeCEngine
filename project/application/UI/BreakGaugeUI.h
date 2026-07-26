@@ -13,6 +13,9 @@
 // 対象のBreakGauge値をEventManager経由で監視し、UI上のゲージとして表示する。
 // 「実数（赤）」と「遅延減衰待ちの蓄積値（黄）」の二重ゲージ構造を持つ。
 //============================================================================
+/// <summary>
+/// BreakGaugeUIの画面表示と更新処理を担当するクラスです。
+/// </summary>
 class BreakGaugeUI : public BaseUI {
 public:
 

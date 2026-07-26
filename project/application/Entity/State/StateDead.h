@@ -7,6 +7,9 @@ class baseInputProvider;
 //============================================================================
 // StateDead class
 //============================================================================
+/// <summary>
+/// キャラクターが戦闘不能になった後の処理を制御する状態クラスです。
+/// </summary>
 class StateDead : public BaseGameCharacterState {
 public:
 	StateDead(baseInputProvider* provider);

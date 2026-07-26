@@ -7,6 +7,9 @@ class baseInputProvider;
 //============================================================================
 // StateRunning class
 //============================================================================
+/// <summary>
+/// キャラクターの走行中の移動と状態遷移を制御する状態クラスです。
+/// </summary>
 class StateRunning : public BaseGameCharacterState {
 public:
 

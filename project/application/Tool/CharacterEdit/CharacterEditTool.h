@@ -23,6 +23,9 @@ enum class EditMode {
 //============================================================================
 //		CharacterEditTool class
 //============================================================================
+/// <summary>
+/// CharacterEditToolに関するデータを表示・編集する開発支援クラスです。
+/// </summary>
 class CharacterEditTool {
 public:
 

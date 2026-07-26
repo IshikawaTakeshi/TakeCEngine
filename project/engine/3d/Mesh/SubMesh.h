@@ -6,6 +6,9 @@
 //=============================================
 
 namespace TakeC {
+	/// <summary>
+	/// SubMeshに必要な値をまとめて保持する構造体です。
+	/// </summary>
 	struct SubMesh {
 
 		uint32_t indexCount;        // インデックス数

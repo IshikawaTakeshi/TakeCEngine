@@ -15,6 +15,9 @@
 #include <list>
 
 //Particle1個分のデータ
+/// <summary>
+/// Particleに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct Particle {
 	QuaternionTransform transforms_;  //位置
 	Vector3 velocity_; 	    //速度
@@ -33,6 +36,9 @@ class ParticleCommon;
 //============================================================================
 // BaseParticleGroup class
 //============================================================================
+/// <summary>
+/// BaseParticleGroupに共通する処理とインターフェースを提供する基底クラスです。
+/// </summary>
 class BaseParticleGroup {
 public:
 	BaseParticleGroup() = default;

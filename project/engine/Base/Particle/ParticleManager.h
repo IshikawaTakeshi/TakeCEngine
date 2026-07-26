@@ -17,6 +17,9 @@ class ParticleCommon;
 // パーティクルマネージャー
 //==================================================================================
 namespace TakeC {
+	/// <summary>
+	/// Particleに関する生成、更新、破棄を一元管理するクラスです。
+	/// </summary>
 	class ParticleManager {
 	public:
 

@@ -10,6 +10,9 @@ class PostEffect;
 //============================================================
 //	PostEffectFactory class
 //============================================================
+/// <summary>
+/// 要求された種類に応じてPostEffectを生成するクラスです。
+/// </summary>
 class PostEffectFactory {
 public:
 

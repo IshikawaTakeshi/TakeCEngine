@@ -5,6 +5,9 @@
 // WaitNodeView class
 // WaitNode の View。エディタ上で待機時間を直接編集できる。
 //=============================================================
+/// <summary>
+/// WaitNodeをエディター上で表示・編集するクラスです。
+/// </summary>
 class WaitNodeView : public BehaviorNodeView {
 public:
 

@@ -9,6 +9,9 @@
 #include <wrl.h>
 #include <span>
 
+/// <summary>
+/// LightCountDataに関するデータを保持する構造体です。
+/// </summary>
 struct LightCountData {
 	uint32_t pointLightCount;
 	uint32_t spotLightCount;
@@ -26,6 +29,9 @@ namespace TakeC {
 	class DirectXCommon;
 	class SrvManager;
 
+	/// <summary>
+	/// Lightに関する生成、更新、破棄を一元管理するクラスです。
+	/// </summary>
 	class LightManager {
 	public:
 		//========================================================================

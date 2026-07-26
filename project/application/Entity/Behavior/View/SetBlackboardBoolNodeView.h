@@ -5,6 +5,9 @@
 //=============================================================
 // SetBlackboardBoolNodeView class
 //=============================================================
+/// <summary>
+/// SetBlackboardBoolNodeをエディター上で表示・編集するクラスです。
+/// </summary>
 class SetBlackboardBoolNodeView : public BehaviorNodeView {
 public:
 

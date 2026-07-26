@@ -13,6 +13,9 @@ class SpriteCommon;
 // SpriteManager class
 //============================================================================
 namespace TakeC {
+	/// <summary>
+	/// Spriteに関する生成、更新、破棄を一元管理するクラスです。
+	/// </summary>
 	class SpriteManager {
 	public:
 

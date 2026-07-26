@@ -5,6 +5,9 @@
 // SceneStatePause class
 // ポーズ時の状態
 //============================================================================
+/// <summary>
+/// ゲームプレイ中のポーズ処理と復帰遷移を担当するシーン状態クラスです。
+/// </summary>
 class SceneStatePause : public GamePlaySceneState {
 public:
 

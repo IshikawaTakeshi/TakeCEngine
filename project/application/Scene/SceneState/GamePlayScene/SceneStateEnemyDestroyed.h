@@ -6,6 +6,9 @@
 // SceneStateEnemyDestroyed class
 // 敵撃破時の状態
 //============================================================================
+/// <summary>
+/// 敵撃破後の演出と次状態への遷移を担当するシーン状態クラスです。
+/// </summary>
 class SceneStateEnemyDestroyed : public GamePlaySceneState {
 public:
 	SceneStateEnemyDestroyed() = default;

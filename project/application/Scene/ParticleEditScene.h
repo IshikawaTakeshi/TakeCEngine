@@ -10,6 +10,9 @@
 //============================================================================
 // ParticleEditScene class
 //============================================================================
+/// <summary>
+/// ParticleEditSceneの初期化、更新、描画、終了を担当するクラスです。
+/// </summary>
 class ParticleEditScene : public BaseScene {
 public:
 

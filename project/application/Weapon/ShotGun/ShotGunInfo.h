@@ -6,6 +6,9 @@
 // ShotGunInfo struct
 //============================================================================
 
+/// <summary>
+/// ShotGunInfoに関するデータを保持する構造体です。
+/// </summary>
 struct ShotGunInfo {
 	float spreadDeg = 15.0f; // 散布角度（度）
 	int pelletCount = 10;    // ペレット数
@@ -13,6 +16,9 @@ struct ShotGunInfo {
 	void EditConfigImGui();
 };
 
+/// <summary>
+/// 型ごとのJSON保存先ディレクトリを提供するテンプレート構造体です。
+/// </summary>
 template<>
 struct JsonPath<ShotGunInfo> {
 	static std::filesystem::path GetDirectory() {

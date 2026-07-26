@@ -14,12 +14,18 @@
 const uint32_t kNumMaxInfluence = 4;
 
 //頂点の影響情報構造体
+/// <summary>
+/// VertexInfluenceに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct VertexInfluence {
 	std::array<float, kNumMaxInfluence> weights;
 	std::array<int32_t, kNumMaxInfluence> jointIndices;
 };
 
 //GPU用のウェル構造体
+/// <summary>
+/// WellForGPUに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct WellForGPU {
 	Matrix4x4 skeletonSpaceMatrix; //位置用
 	Matrix4x4 skeletonSpaceInvTransposeMatrix; //法線用
@@ -28,6 +34,9 @@ struct WellForGPU {
 //==============================================================
 //スキンクラスター構造体
 //==============================================================
+/// <summary>
+/// SkinClusterに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct SkinCluster {
 
 	//inverseBindPoseMatrices

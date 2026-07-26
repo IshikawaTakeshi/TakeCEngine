@@ -4,6 +4,9 @@
 //=============================================================
 // SelectorNodeView class
 //=============================================================
+/// <summary>
+/// SelectorNodeをエディター上で表示・編集するクラスです。
+/// </summary>
 class SelectorNodeView : public BehaviorNodeView {
 public:
 

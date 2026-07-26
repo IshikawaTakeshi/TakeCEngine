@@ -14,6 +14,9 @@
 
 namespace TakeC {
 	//モデル1個分のマテリアルデータ
+	/// <summary>
+	/// ModelMaterialDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct ModelMaterialData {
 
 		std::string textureFilePath; //テクスチャファイルのパス
@@ -25,6 +28,9 @@ namespace TakeC {
 	};
 
 	//アニメーションノード構造体
+	/// <summary>
+	/// Nodeに必要な値をまとめて保持する構造体です。
+	/// </summary>
 	struct Node {
 		QuaternionTransform transform;
 		Matrix4x4 localMatrix;
@@ -33,23 +39,35 @@ namespace TakeC {
 	};
 
 	//頂点ウェイトデータ構造体
+	/// <summary>
+	/// VertexWeightDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct VertexWeightData {
 		float weight;
 		uint32_t vertexIndex;
 	};
 
 	//ジョイントウェイトデータ構造体
+	/// <summary>
+	/// JointWeightDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct JointWeightData {
 		Matrix4x4 inverseBindPoseMatrix;
 		std::vector<VertexWeightData> vertexWeights;
 	};
 
 	//スキニング情報構造体
+	/// <summary>
+	/// SkinningInfoに関するデータを保持する構造体です。
+	/// </summary>
 	struct SkinningInfo {
 		uint32_t numVertices;
 	};
 
 	//モデル1個分のデータ
+	/// <summary>
+	/// ModelDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct ModelData {
 		std::string fileName; //モデル名
 		std::map<std::string, JointWeightData> skinClusterData;

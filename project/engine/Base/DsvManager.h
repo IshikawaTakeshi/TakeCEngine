@@ -14,6 +14,9 @@ namespace TakeC {
 		// 前方宣言
 		class DirectXCommon;
 
+	/// <summary>
+	/// Dsvに関する生成、更新、破棄を一元管理するクラスです。
+	/// </summary>
 	class DsvManager {
 	public:
 

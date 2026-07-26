@@ -55,6 +55,9 @@
 
 namespace TakeC {
 
+/// <summary>
+/// ゲームループと各エンジンサブシステムの初期化・終了を統括する基底クラスです。
+/// </summary>
 class TakeCFrameWork {
 public:
 

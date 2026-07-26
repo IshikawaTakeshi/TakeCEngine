@@ -17,6 +17,9 @@ enum class PhaseMessage {
 //============================================================================
 // PhaseMessageUI class
 //============================================================================
+/// <summary>
+/// PhaseMessageUIの画面表示と更新処理を担当するクラスです。
+/// </summary>
 class PhaseMessageUI {
 public:
 

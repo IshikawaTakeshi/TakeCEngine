@@ -8,6 +8,9 @@ namespace TakeC {
 
 	class CameraCapture;
 
+	/// <summary>
+	/// FaceInputBuildSettingsで使用する設定値を保持する構造体です。
+	/// </summary>
 	struct FaceInputBuildSettings {
 		bool swapRedBlue = false;
 		bool normalizeToUnit = true;

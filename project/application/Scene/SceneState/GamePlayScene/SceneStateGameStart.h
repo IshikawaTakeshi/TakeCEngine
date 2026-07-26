@@ -5,6 +5,9 @@
 // SceneStateGameStart class
 // ゲーム開始時の状態
 //============================================================================
+/// <summary>
+/// ゲーム開始時の演出と通常プレイへの遷移を担当するシーン状態クラスです。
+/// </summary>
 class SceneStateGameStart : public GamePlaySceneState {
 public:
 

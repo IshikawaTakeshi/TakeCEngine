@@ -6,6 +6,9 @@ class baseInputProvider; // 前方宣言
 //============================================================================
 // StateStepBoost class
 //============================================================================
+/// <summary>
+/// キャラクターのステップブースト中の移動と終了条件を制御する状態クラスです。
+/// </summary>
 class StateStepBoost : public BaseGameCharacterState {
 public:
 	StateStepBoost(baseInputProvider* provider);

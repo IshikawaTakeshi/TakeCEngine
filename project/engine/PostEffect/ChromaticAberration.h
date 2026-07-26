@@ -4,6 +4,9 @@
 #include <json.hpp>
 
 // 色収差情報構造体
+/// <summary>
+/// ChromaticAberrationInfoに関するデータを保持する構造体です。
+/// </summary>
 struct ChromaticAberrationInfo {
 	Vector2 center = { 0.5f, 0.5f }; // 中心位置(UV)
 	float intensity = 1.0f;                 // エフェクト強度
@@ -27,6 +30,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
 //============================================================================
 // ChromaticAberration class
 //============================================================================
+/// <summary>
+/// 色チャンネルをずらす色収差ポストエフェクトを適用するクラスです。
+/// </summary>
 class ChromaticAberration : public PostEffect {
 public:
 

@@ -5,6 +5,9 @@
 // SceneStateGamePlay class
 // ゲームプレイ中の状態
 //============================================================================
+/// <summary>
+/// ゲームプレイ中の進行、勝敗判定、状態遷移を担当するシーン状態クラスです。
+/// </summary>
 class SceneStateGamePlay : public GamePlaySceneState {
 public:
 

@@ -9,6 +9,9 @@ class Collider;
 //=============================================================================
 
 /// レイ構造体
+/// <summary>
+/// 衝突判定で使用するRayの形状または判定結果を表す構造体です。
+/// </summary>
 struct Ray {
 	Vector3 origin;  // レイの始点
 	Vector3 direction; // レイの方向ベクトル
@@ -16,6 +19,9 @@ struct Ray {
 };
 
 /// レイキャストヒット情報構造体
+/// <summary>
+/// 衝突判定で使用するRayCastHitの形状または判定結果を表す構造体です。
+/// </summary>
 struct RayCastHit {
 	bool isHit; // ヒットしたかどうか
 	Vector3 position; // ヒット位置

@@ -2,6 +2,9 @@
 #include "PostEffect/PostEffect.h"
 #include <wrl.h>
 
+/// <summary>
+/// ScanlineParamで使用する設定値を保持する構造体です。
+/// </summary>
 struct ScanlineParam {
 	float intensity = 0.35f;   // 0~1
 	float frequency = 420.0f;  // 縞密度
@@ -23,6 +26,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ScanlineParam,
 //==============================================================================
 // ScanlineEffect class
 //==============================================================================
+/// <summary>
+/// ScanlineEffectの描画演出とパラメーター更新を担当するクラスです。
+/// </summary>
 class ScanlineEffect : public PostEffect {
 public:
 	

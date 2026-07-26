@@ -24,6 +24,9 @@ enum class ParticleModelType {
 };
 
 // 属性の範囲を表す構造体
+/// <summary>
+/// AttributeRangeに関するデータを保持する構造体です。
+/// </summary>
 struct AttributeRange {
 	float min;
 	float max;
@@ -50,6 +53,9 @@ enum class ScaleSetting {
 };
 
 // パーティクルの属性を保持する構造体
+/// <summary>
+/// ParticleAttributesに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct ParticleAttributes {
 	Vector3 scale = { 1.0f,1.0f,1.0f };
 	Vector3 color = { 1.0f,1.0f,1.0f };
@@ -92,6 +98,9 @@ struct ParticleAttributes {
 };
 
 // パーティクルプリセットを保持する構造体
+/// <summary>
+/// ParticlePresetに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct ParticlePreset {
 	std::string presetName; //プリセットの名前
 	ParticleAttributes attribute; //パーティクルの属性情報

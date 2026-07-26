@@ -6,6 +6,9 @@
 //============================================================================
 // AnimationEntry struct
 //============================================================================
+/// <summary>
+/// AnimationEntryに関するデータを保持する構造体です。
+/// </summary>
 struct AnimationEntry {
 	Animation* animation = nullptr; //アニメーションへの非所有ポインタ
 	float blendDuration = 0.2f;    //ブレンドにかかる時間（秒）
@@ -16,6 +19,9 @@ struct AnimationEntry {
 // AnimationMapper class
 // GameCharacterState から AnimationEntry へのマッピングを管理する
 //============================================================================
+/// <summary>
+/// ゲーム内のアニメーション識別子とモデル側クリップを対応付けるクラスです。
+/// </summary>
 class AnimationMapper {
 public:
 

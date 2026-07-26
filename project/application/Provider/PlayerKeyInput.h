@@ -5,6 +5,9 @@
 //============================================================================
 // PlayerKeyInput class
 //============================================================================
+/// <summary>
+/// PlayerKeyInputから操作状態を取得し、ゲーム用入力へ変換するクラスです。
+/// </summary>
 class PlayerKeyInput : public IInputDevice<CharacterActionInput> {
 public:
 

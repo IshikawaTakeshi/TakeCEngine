@@ -3,6 +3,9 @@
 #include "engine/PostEffect/PostEffectFactory.h"
 
 // エフェクト情報構造体
+/// <summary>
+/// BloomEffectInfoに関するデータを保持する構造体です。
+/// </summary>
 struct BloomEffectInfo {
 	bool isActive = false; // エフェクトの有効無効
 	float threshold = 0.8f; // 輝度の閾値
@@ -15,6 +18,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BloomEffectInfo, isActive, threshold, strengt
 //============================================================
 //	BloomEffect class
 //============================================================
+/// <summary>
+/// BloomEffectの描画演出とパラメーター更新を担当するクラスです。
+/// </summary>
 class BloomEffect : public PostEffect {
 public:
 

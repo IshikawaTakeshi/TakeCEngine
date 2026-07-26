@@ -6,6 +6,9 @@ namespace TakeC {
 	//========================================================
 	//cylinderのデータ
 	//========================================================
+	/// <summary>
+	/// CylinderDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct CylinderData : public PrimitiveBaseData {
 		float radius = 1.0f;
 		float height = 1.0f;
@@ -15,6 +18,9 @@ namespace TakeC {
 	//============================================================
 	//	Cylinder class
 	//============================================================
+	/// <summary>
+	/// 円柱プリミティブの頂点を生成し、3D形状として描画するクラスです。
+	/// </summary>
 	class Cylinder : public PrimitiveBase<CylinderData> {
 	public:
 

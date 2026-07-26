@@ -9,6 +9,9 @@ class GamePlayScene;
 // GamePlayScene用の中間ステートクラス
 // BaseScene* → GamePlayScene* のキャスト変換を吸収する
 //============================================================================
+/// <summary>
+/// GamePlaySceneStateに対応する状態固有の遷移と更新処理を担当するクラスです。
+/// </summary>
 class GamePlaySceneState : public BaseSceneState {
 public:
 
