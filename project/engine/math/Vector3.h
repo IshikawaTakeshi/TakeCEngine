@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <json.hpp>
 
+namespace TakeC {
+
 /// <summary>
 /// 3次元ベクトル
 /// </summary>
@@ -45,3 +47,8 @@ bool operator>(const Vector3& lhs, const Vector3& rhs);
 bool operator>=(const Vector3& lhs, const Vector3& rhs);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Vector3, x, y, z)
+
+}
+
+// 既存コードを段階的にTakeC名前空間へ移行するための互換用宣言。
+using TakeC::Vector3;

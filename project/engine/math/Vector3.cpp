@@ -2,6 +2,8 @@
 #include "Vector3Math.h"
 #include "Utility/Logger.h"
 
+namespace TakeC {
+
 //===============================================================
 //		演算子オーバーロード
 //===============================================================
@@ -114,4 +116,6 @@ float Vector3::Length() const {
 Vector3 Vector3::Normalize() const {
 	float len = Length();
 	return (len > 0) ? (*this * (1.0f / len)) : *this;
+}
+
 }

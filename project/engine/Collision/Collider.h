@@ -7,6 +7,12 @@
 #include <cstdint>
 #include <memory>
 
+// 前方宣言
+class Model;
+class GameCharacter;
+
+namespace TakeC {
+
 // 衝突レイヤーの列挙型
 enum class CollisionLayer {
 	None = 0,
@@ -20,13 +26,7 @@ enum class CollisionLayer {
 	Ignoe = Player | Bullet | Enemy | Missile| Sensor, 
 };
 
-// 前方宣言
-class Model;
-class GameCharacter;
-
-namespace TakeC {
-	class DirectXCommon;
-}
+class DirectXCommon;
 
 //=================================================================================
 // Collider class
@@ -170,3 +170,9 @@ protected:
 	//種別ID
 	CollisionLayer layerID_ = CollisionLayer::None;
 };
+
+}
+
+// 既存コードを段階的にTakeC名前空間へ移行するための互換用宣言。
+using TakeC::Collider;
+using TakeC::CollisionLayer;

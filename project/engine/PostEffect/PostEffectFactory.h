@@ -5,7 +5,10 @@
 #include <unordered_map>
 
 //前方宣言
-class PostEffect;
+namespace TakeC {
+	class PostEffect;
+}
+using TakeC::PostEffect;
 
 //============================================================
 //	PostEffectFactory class

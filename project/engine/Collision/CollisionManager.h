@@ -9,7 +9,10 @@
 
 //前方宣言
 class DirectXCommon;
-class Collider;
+namespace TakeC {
+	class Collider;
+}
+using TakeC::Collider;
 
 //============================================================================
 //	CollisionManager class

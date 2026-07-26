@@ -5,6 +5,8 @@
 #include "engine/base/PipelineStateObject.h"
 #include <string>
 
+namespace TakeC {
+
 //============================================================
 //	PostEffect class
 //============================================================
@@ -120,3 +122,8 @@ protected:
 	ComPtr<ID3D12Resource> lightCameraDepthTextureResource_; // ライトカメラ深度テクスチャリソース
 	uint32_t lightCameraDepthTextureSrvIndex_ = 0;           // ライトカメラ深度テクスチャのDSVインデックス
 };
+
+}
+
+// 既存コードを段階的にTakeC名前空間へ移行するための互換用宣言。
+using TakeC::PostEffect;

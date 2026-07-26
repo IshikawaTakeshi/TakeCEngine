@@ -81,14 +81,13 @@ namespace TakeC {
 		template<typename T>
 		bool IsJsonDataExists(const std::string& filePath) const;
 	};
-}
 
 //-------------------------------------------------------------------------------
 // JSONデータの保存
 //-------------------------------------------------------------------------------
 template<typename T>
 	// フルパスを生成
-inline void TakeC::JsonLoader::SaveJsonData(const std::string& filePath, const T& data) {
+inline void JsonLoader::SaveJsonData(const std::string& filePath, const T& data) {
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
 	std::filesystem::path fileFullPath = directory / filePath;
 
@@ -116,7 +115,7 @@ inline void TakeC::JsonLoader::SaveJsonData(const std::string& filePath, const T
 // JSONデータの読み込み
 //-------------------------------------------------------------------------------
 template<typename T>
-inline T TakeC::JsonLoader::LoadJsonData(const std::string& filePath) const {
+inline T JsonLoader::LoadJsonData(const std::string& filePath) const {
 	
 	// フルパスを生成
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
@@ -141,7 +140,7 @@ inline T TakeC::JsonLoader::LoadJsonData(const std::string& filePath) const {
 // JSONデータの削除
 //-------------------------------------------------------------------------------
 template<typename T>
-inline void TakeC::JsonLoader::DeleteJsonData(const std::string& filePath) {
+inline void JsonLoader::DeleteJsonData(const std::string& filePath) {
 
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
 	std::filesystem::path fileFullPath = directory / filePath;
@@ -160,7 +159,7 @@ inline void TakeC::JsonLoader::DeleteJsonData(const std::string& filePath) {
 // JSONデータリストの取得
 //-------------------------------------------------------------------------------
 template<typename T>
-inline std::vector<std::string> TakeC::JsonLoader::GetJsonDataList() const {
+inline std::vector<std::string> JsonLoader::GetJsonDataList() const {
 	
 	std::vector<std::string> dataList;
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
@@ -184,7 +183,7 @@ inline std::vector<std::string> TakeC::JsonLoader::GetJsonDataList() const {
 // JSONデータの存在チェック
 //-------------------------------------------------------------------------------
 template<typename T>
-inline bool TakeC::JsonLoader::IsJsonDataExists(const std::string& filePath) const {
+inline bool JsonLoader::IsJsonDataExists(const std::string& filePath) const {
 	
 	// フルパスを生成して存在チェック
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
@@ -192,4 +191,6 @@ inline bool TakeC::JsonLoader::IsJsonDataExists(const std::string& filePath) con
 
 	// ファイルの存在を返す
 	return std::filesystem::exists(fileFullPath);
+}
+
 }

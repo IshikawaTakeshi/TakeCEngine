@@ -2,7 +2,10 @@
 #include "engine/math/Vector3.h"
 
 // 前方宣言
-class Collider;
+namespace TakeC {
+	class Collider;
+}
+using TakeC::Collider;
 
 //=============================================================================
 // Ray.h

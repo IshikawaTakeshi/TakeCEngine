@@ -3,7 +3,7 @@
 #include "ImGuiManager.h"
 #include <cassert>
 
-using namespace TakeC;
+namespace TakeC {
 
 //=============================================================================
 // 初期化
@@ -37,4 +37,6 @@ void PostEffect::Initialize(
 	srvManager_->CreateSRVforRenderTexture(outputResource_.Get(),DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, outputTexSrvIndex_);
 	//uav生成
 	srvManager_->CreateUAVforRenderTexture(outputResource_.Get(),DXGI_FORMAT_R8G8B8A8_UNORM, outputTexUavIndex_);
+}
+
 }

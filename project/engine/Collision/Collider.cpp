@@ -1,5 +1,7 @@
 #include "Collider.h"
 
+namespace TakeC {
+
 // コライダーの色を取得
 Vector4 Collider::GetColor() const {
 	return color_;
@@ -18,4 +20,6 @@ CollisionLayer Collider::GetCollisionLayerID() {
 //surfaceTypeの取得
 SurfaceType Collider::GetSurfaceType() const {
 	return surfaceType_;
+}
+
 }
