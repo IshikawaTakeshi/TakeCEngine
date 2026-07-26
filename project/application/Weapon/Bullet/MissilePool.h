@@ -9,6 +9,9 @@
 //============================================================================
 // MissilePool class
 //============================================================================
+/// <summary>
+/// Missileの再利用可能なインスタンスを管理するオブジェクトプールです。
+/// </summary>
 class MissilePool : public ObjectPool<VerticalMissile> {
 public:
 	MissilePool() = default;

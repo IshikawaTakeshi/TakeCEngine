@@ -10,6 +10,9 @@
 //============================================================================
 // EmitterConfig struct - エミッター個別の設定
 //============================================================================
+/// <summary>
+/// EmitterConfigで使用する設定値を保持する構造体です。
+/// </summary>
 struct EmitterConfig {
 	std::string emitterName;           // エミッター名
 	std::string presetFilePath;        // プリセットJSONファイルパス
@@ -24,6 +27,9 @@ struct EmitterConfig {
 //============================================================================
 // EffectGroupConfig struct - エフェクトグループ全体の設定
 //============================================================================
+/// <summary>
+/// EffectGroupConfigで使用する設定値を保持する構造体です。
+/// </summary>
 struct EffectGroupConfig {
 	std::string effectName;                    // エフェクト名
 	std::vector<EmitterConfig> emitters;       // エミッター設定のリスト
@@ -35,6 +41,9 @@ struct EffectGroupConfig {
 //============================================================================
 // EmitterInstance struct - 実行時のエミッターインスタンス
 //============================================================================
+/// <summary>
+/// EmitterInstanceに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct EmitterInstance {
 	std::unique_ptr<ParticleEmitter> emitter; // エミッター本体
 	EmitterConfig config;                      // 設定

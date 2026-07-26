@@ -7,6 +7,9 @@
 // 条件を評価し、trueならSuccess、falseならFailure
 // → コンボの「発動条件」を表現
 //============================================================================
+/// <summary>
+/// ビヘイビアツリーのConditionNodeとして判定または処理を実行するクラスです。
+/// </summary>
 class ConditionNode : public BehaviorNode {
 public:
 

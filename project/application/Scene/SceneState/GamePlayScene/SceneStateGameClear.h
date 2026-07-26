@@ -5,6 +5,9 @@
 // SceneStateGameClear class
 // ゲームクリア時の状態
 //============================================================================
+/// <summary>
+/// 勝利時の演出とゲームクリア遷移を担当するシーン状態クラスです。
+/// </summary>
 class SceneStateGameClear : public GamePlaySceneState {
 public:
 	SceneStateGameClear() = default;

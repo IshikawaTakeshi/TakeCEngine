@@ -3,6 +3,9 @@
 #include "Matrix4x4.h"
 
 // クォータニオン構造体
+/// <summary>
+/// Quaternionの数学的な値と変換情報を表す構造体です。
+/// </summary>
 struct Quaternion {
 	float x;
 	float y;

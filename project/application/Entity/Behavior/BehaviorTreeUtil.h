@@ -24,6 +24,9 @@ enum class BehaviorNodeType {
 //============================================================================
 // ノードデータ（JSONシリアライズ用 / エディタ・ゲーム共用）
 //============================================================================
+/// <summary>
+/// BehaviorNodeDataに関するデータを保持する構造体です。
+/// </summary>
 struct BehaviorNodeData {
 	std::string name = "UnnamedNode";          // ノード名
 	std::string nodeType = "ACTION";           // ノードタイプ（文字列）
@@ -54,6 +57,9 @@ struct BehaviorNodeData {
 //============================================================================
 // リンクデータ（エディタ接続保存用）
 //============================================================================
+/// <summary>
+/// BehaviorLinkDataに関するデータを保持する構造体です。
+/// </summary>
 struct BehaviorLinkData {
 	int fromNodeUID = -1;
 	int fromPinIndex = 0;
@@ -64,6 +70,9 @@ struct BehaviorLinkData {
 //============================================================================
 // コンボデータ（1つのコンボセット）
 //============================================================================
+/// <summary>
+/// ComboDataに関するデータを保持する構造体です。
+/// </summary>
 struct ComboData {
 	std::string comboName = "UnnamedCombo";    // コンボ名
 	BehaviorNodeData rootNode;                 // ルートノード
@@ -72,6 +81,9 @@ struct ComboData {
 //============================================================================
 // コンボセットデータ（複数のコンボをまとめたもの / エディタ保存・読み込み単位）
 //============================================================================
+/// <summary>
+/// ComboSetDataに関するデータを保持する構造体です。
+/// </summary>
 struct ComboSetData {
 	std::string setName = "DefaultComboSet";   // セット名
 	std::vector<ComboData> combos;             // コンボリスト（ゲーム実行用ツリー）

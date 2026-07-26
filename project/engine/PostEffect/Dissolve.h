@@ -2,6 +2,9 @@
 #include "PostEffect/PostEffect.h"
 
 // Dissolve情報構造体
+/// <summary>
+/// DissolveInfoに関するデータを保持する構造体です。
+/// </summary>
 struct DissolveInfo {
 	float threshold;
 	bool isDissolve;
@@ -13,6 +16,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(DissolveInfo, threshold, isDissolve)
 //============================================================================
 //	Dissolve class
 //============================================================================
+/// <summary>
+/// マスク値に基づいて画面を消失させるディゾルブ効果を適用するクラスです。
+/// </summary>
 class Dissolve : public PostEffect {
 public:
 

@@ -18,6 +18,9 @@ class Camera;
 //============================================================================
 // WarningUI class
 //============================================================================
+/// <summary>
+/// WarningUIの画面表示と更新処理を担当するクラスです。
+/// </summary>
 class WarningUI : public BaseUI {
 public:
 
@@ -56,6 +59,9 @@ private:
 	Camera* targetCamera_ = nullptr;
 
 	// 各方向ごとの状態管理用構造体
+	/// <summary>
+	/// DirectionStateに関するデータを保持する構造体です。
+	/// </summary>
 	struct DirectionState {
 		TakeC::Sprite* spritePtr = nullptr; 
 

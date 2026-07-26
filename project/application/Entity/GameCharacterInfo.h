@@ -9,6 +9,9 @@
 #include "application/Weapon/WeaponData.h"
 
 // ステップブースト情報
+/// <summary>
+/// StepBoostInfoに関するデータを保持する構造体です。
+/// </summary>
 struct StepBoostInfo {
 	Vector3 direction = { 0.0f,0.0f,0.0f };    // ステップブーストの方向
 	float speed = 0.0f;    // ステップブーストの速度
@@ -21,6 +24,9 @@ struct StepBoostInfo {
 };
 
 // ジャンプ情報
+/// <summary>
+/// JumpInfoに関するデータを保持する構造体です。
+/// </summary>
 struct JumpInfo {
 	float speed = 50.0f;        // ジャンプの速度
 	float jumpTimer = 0.0f;               // ジャンプのタイマー
@@ -31,6 +37,9 @@ struct JumpInfo {
 };
 
 // チャージ攻撃後の硬直情報
+/// <summary>
+/// ChargeAttackStunInfoに関するデータを保持する構造体です。
+/// </summary>
 struct ChargeAttackStunInfo {
 	float stunTimer = 0.0f;    //チャージ攻撃後の硬直時間
 	float stunDuration = 0.5f; // チャージ攻撃後の硬直時間
@@ -38,6 +47,9 @@ struct ChargeAttackStunInfo {
 };
 
 // エネルギー情報
+/// <summary>
+/// EnergyInfoに関するデータを保持する構造体です。
+/// </summary>
 struct EnergyInfo {
 	float energy = 0.0f;               // 現在のエネルギー
 	float maxEnergy = 1000.0f;         // 最大エネルギー
@@ -47,6 +59,9 @@ struct EnergyInfo {
 };
 
 // オーバーヒート情報
+/// <summary>
+/// OverHeatInfoに関するデータを保持する構造体です。
+/// </summary>
 struct OverHeatInfo {
 	float overheatTimer = 0.0f;          // オーバーヒートのタイマー
 	float overheatDuration = 3.0f;       // オーバーヒートの持続時間
@@ -54,12 +69,18 @@ struct OverHeatInfo {
 };
 
 //コライダーの情報（ボックスコライダー限定）
+/// <summary>
+/// ColliderInfoに関するデータを保持する構造体です。
+/// </summary>
 struct ColliderInfo {
 	Vector3 offset{};   //コライダーのオフセット位置
 	Vector3 halfSize{}; //コライダーの半径
 };
 
 //被弾1回分のブレイクゲージ蓄積エントリ
+/// <summary>
+/// BreakGaugeEntryに関するデータを保持する構造体です。
+/// </summary>
 struct BreakGaugeEntry {
 	float amount     = 0.0f;    // この被弾が与えたブレイク蓄積（残量）
 	float decayDelay = 3.0f;    // 減衰開始までの遅延時間
@@ -67,6 +88,9 @@ struct BreakGaugeEntry {
 };
 
 //ブレイクスタンの情報
+/// <summary>
+/// BreakGaugeInfoに関するデータを保持する構造体です。
+/// </summary>
 struct BreakGaugeInfo {
 	float breakGauge    = 0.0f;   // ブレイクゲージ
 	float maxBreakGauge = 500.0f; // 最大ブレイクゲージ
@@ -82,6 +106,9 @@ struct BreakGaugeInfo {
 };
 
 // 操作可能なキャラクターの基礎情報
+/// <summary>
+/// 操作可能キャラクターの移動、攻撃、耐久力などの基礎パラメーターを保持する構造体です。
+/// </summary>
 struct PlayableCharacterInfo {
 	std::string characterName; //キャラクター名
 	std::string modelFilePath; //モデルファイルパス
@@ -111,6 +138,9 @@ struct PlayableCharacterInfo {
 };
 
 // 実際に使用するゲームキャラクターデータ
+/// <summary>
+/// キャラクターの識別情報と戦闘用パラメーター一式を保持する構造体です。
+/// </summary>
 struct CharacterData {
 
 	PlayableCharacterInfo characterInfo; // コンテキスト情報

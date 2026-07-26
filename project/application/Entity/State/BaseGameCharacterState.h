@@ -14,6 +14,9 @@ class baseInputProvider;
 //============================================================================
 // BaseGameCharacterState class
 //============================================================================
+/// <summary>
+/// BaseGameCharacterStateに共通する処理とインターフェースを提供する基底クラスです。
+/// </summary>
 class BaseGameCharacterState {
 public:
 

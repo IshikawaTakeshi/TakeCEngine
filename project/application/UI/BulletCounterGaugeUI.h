@@ -17,6 +17,9 @@ class Sprite;
 //============================================================================
 // BulletCounterGaugeUI class
 //============================================================================
+/// <summary>
+/// BulletCounterGaugeUIの画面表示と更新処理を担当するクラスです。
+/// </summary>
 class BulletCounterGaugeUI : public BaseUI {
 public:
 

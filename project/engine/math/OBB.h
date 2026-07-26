@@ -6,6 +6,9 @@
 //============================================================================
 
 // Oriented Bounding Box (OBB)構造体
+/// <summary>
+/// OBBに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct OBB {
 	Vector3 center; // 中心座標
 	Vector3 axis[3]; // 3つの軸ベクトル

@@ -6,6 +6,9 @@
 //============================================================================
 // PauseMenuPadInput class
 //============================================================================
+/// <summary>
+/// PauseMenuPadInputから操作状態を取得し、ゲーム用入力へ変換するクラスです。
+/// </summary>
 class PauseMenuPadInput : public IInputDevice<PauseMenuInput> {
 public:
 

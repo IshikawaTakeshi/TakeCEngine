@@ -3,6 +3,9 @@
 #include "engine/camera/CameraForGPU.h"
 
 // 深度ベースのアウトライン情報
+/// <summary>
+/// DepthBasedOutlineInfoに関するデータを保持する構造体です。
+/// </summary>
 struct DepthBasedOutlineInfo {
 	Vector4 color = { 0.0f, 0.0f, 0.0f, 1.0f }; // アウトラインの色
 	float weight = 1.0f;                        // 輪郭の強さ
@@ -17,6 +20,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(DepthBasedOutlineInfo, color, weight, distant
 //=============================================================================
 //	DepthBasedOutline class
 //=============================================================================
+/// <summary>
+/// DepthBasedOutlineに共通する処理とインターフェースを提供する基底クラスです。
+/// </summary>
 class DepthBasedOutline : public PostEffect {
 public:
 

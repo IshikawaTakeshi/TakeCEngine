@@ -10,6 +10,9 @@
 //=============================================================
 //BehaviorNodeView class
 //=============================================================
+/// <summary>
+/// BehaviorNodeをエディター上で表示・編集するクラスです。
+/// </summary>
 class BehaviorNodeView : public ImFlow::BaseNode {
 public:
 	

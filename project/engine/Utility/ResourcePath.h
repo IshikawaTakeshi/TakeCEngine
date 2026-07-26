@@ -9,6 +9,9 @@ namespace TakeC {
 		Engine,
 	};
 
+	/// <summary>
+	/// ゲーム用とエンジン用のリソースルート設定を保持する構造体です。
+	/// </summary>
 	struct ResourceRootConfig {
 		std::filesystem::path gameRoot = "Resources";
 		std::filesystem::path engineRoot = "Resources";

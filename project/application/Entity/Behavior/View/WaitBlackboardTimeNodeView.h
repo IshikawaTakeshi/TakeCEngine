@@ -8,6 +8,9 @@
 // Blackboard の float キーをコンボで選択し、
 // その値を待機時間として WaitBlackboardTimeNode に渡す View
 //=============================================================
+/// <summary>
+/// WaitBlackboardTimeNodeをエディター上で表示・編集するクラスです。
+/// </summary>
 class WaitBlackboardTimeNodeView : public BehaviorNodeView {
 public:
 

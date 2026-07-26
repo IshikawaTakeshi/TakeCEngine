@@ -5,6 +5,9 @@
 // SceneStateGameOver class
 // ゲームオーバー時の状態
 //============================================================================
+/// <summary>
+/// 敗北時の演出とゲームオーバー遷移を担当するシーン状態クラスです。
+/// </summary>
 class SceneStateGameOver : public GamePlaySceneState {
 public:
 

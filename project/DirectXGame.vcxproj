@@ -79,7 +79,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -91,20 +91,22 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>DirectML.lib;onnxruntime.lib;mfplat.lib;mf.lib;mfreadwrite.lib;mfuuid.lib;dxguid.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>packages\Microsoft.AI.DirectML.1.15.4\bin\x64-win;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native;externals\assimp\lib\Debug;externals\assimp\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>packages\Microsoft.AI.DirectML.1.15.4\bin\x64-win;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\lib\x64;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native;externals\assimp\lib\Debug;externals\assimp\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference>
     </ProjectReference>
     <PostBuildEvent>
       <Command>copy /B /Y "..\project\packages\Microsoft.AI.DirectML.1.15.4\bin\x64-win\DirectML.dll" "bin\Debug"
 copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native\onnxruntime.dll" "bin\Debug"
-copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native\onnxruntime_providers_shared.dll" "bin\Debug"</Command>
+copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native\onnxruntime_providers_shared.dll" "bin\Debug"
+copy /B /Y "..\project\packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\bin\x64\dxcompiler.dll" "bin\Debug"
+copy /B /Y "..\project\packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\bin\x64\dxil.dll" "bin\Debug"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">
@@ -113,7 +115,7 @@ copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtime
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NOMINMAX;_DEVELOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -128,7 +130,7 @@ copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtime
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NOMINMAX;_DEVELOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -136,14 +138,16 @@ copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtime
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>DirectML.lib;onnxruntime.lib;mfplat.lib;mf.lib;mfreadwrite.lib;mfuuid.lib;dxguid.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>packages\Microsoft.AI.DirectML.1.15.4\bin\x64-win;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native;externals\assimp\lib\Debug;externals\assimp\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>packages\Microsoft.AI.DirectML.1.15.4\bin\x64-win;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\lib\x64;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native;externals\assimp\lib\Debug;externals\assimp\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference>
     </ProjectReference>
     <PostBuildEvent>
       <Command>copy /B /Y "..\project\packages\Microsoft.AI.DirectML.1.15.4\bin\x64-win\DirectML.dll" "bin\Develop"
 copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native\onnxruntime.dll" "bin\Develop"
-copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native\onnxruntime_providers_shared.dll" "bin\Develop"</Command>
+copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native\onnxruntime_providers_shared.dll" "bin\Develop"
+copy /B /Y "..\project\packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\bin\x64\dxcompiler.dll" "bin\Develop"
+copy /B /Y "..\project\packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\bin\x64\dxil.dll" "bin\Develop"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -152,7 +156,7 @@ copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtime
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -166,21 +170,23 @@ copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtime
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\scene;engine\math;engine\camera;application;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>DirectML.lib;onnxruntime.lib;mfplat.lib;mf.lib;mfreadwrite.lib;mfuuid.lib;dxguid.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>packages\Microsoft.AI.DirectML.1.15.4\bin\x64-win;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native;externals\assimp\lib\Debug;externals\assimp\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>packages\Microsoft.AI.DirectML.1.15.4\bin\x64-win;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\lib\x64;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native;externals\assimp\lib\Debug;externals\assimp\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference>
     </ProjectReference>
     <PostBuildEvent>
       <Command>copy /B /Y "..\project\packages\Microsoft.AI.DirectML.1.15.4\bin\x64-win\DirectML.dll" "bin\Release"
 copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native\onnxruntime.dll" "bin\Release"
-copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native\onnxruntime_providers_shared.dll" "bin\Release"</Command>
+copy /B /Y "..\project\packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\runtimes\win-x64\native\onnxruntime_providers_shared.dll" "bin\Release"
+copy /B /Y "..\project\packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\bin\x64\dxcompiler.dll" "bin\Release"
+copy /B /Y "..\project\packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\bin\x64\dxil.dll" "bin\Release"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

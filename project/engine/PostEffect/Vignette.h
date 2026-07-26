@@ -2,6 +2,9 @@
 #include "Posteffect/PostEffect.h"
 
 //Vignette情報構造体
+/// <summary>
+/// VignetteInfoに関するデータを保持する構造体です。
+/// </summary>
 struct VignetteInfo {
 	float vignetteScale = 0.0f; //中心から外側への減衰の速さ
 	float vignettePower = 0.0f; //Vignetteの強さ
@@ -13,6 +16,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(VignetteInfo, vignetteScale, vignettePower, i
 //============================================================================
 // Vignette class
 //============================================================================
+/// <summary>
+/// 画面周辺を暗くするビネットポストエフェクトを適用するクラスです。
+/// </summary>
 class Vignette : public PostEffect {
 public:
 

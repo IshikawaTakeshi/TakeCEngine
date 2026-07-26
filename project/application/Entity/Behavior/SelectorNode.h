@@ -5,6 +5,9 @@
 // SelectorNode class
 // 子ノードを順番に実行し、最初の成功したノードで成功を返す
 //==================================================================================
+/// <summary>
+/// ビヘイビアツリーのSelectorNodeとして判定または処理を実行するクラスです。
+/// </summary>
 class SelectorNode : public CompositeNode {
 public:
 

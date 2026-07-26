@@ -27,6 +27,9 @@
 // EnemySelectScene class
 //=============================================================================
 
+/// <summary>
+/// EnemySelectSceneの初期化、更新、描画、終了を担当するクラスです。
+/// </summary>
 class EnemySelectScene : public BaseScene {
 public:
 

@@ -19,6 +19,9 @@ namespace TakeC {
 	// 共通プリミティブメッシュ構造体
 	// 全プリミティブで使用する頂点バッファ・インデックスバッファ情報
 	//============================================================================
+	/// <summary>
+	/// PrimitiveMeshに必要な値をまとめて保持する構造体です。
+	/// </summary>
 	struct PrimitiveMesh {
 		ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
@@ -26,6 +29,9 @@ namespace TakeC {
 		D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
 	};
 
+	/// <summary>
+	/// PrimitiveBaseDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct PrimitiveBaseData {
 		PrimitiveMesh mesh;
 		VertexData* vertexData = nullptr;
@@ -39,6 +45,9 @@ namespace TakeC {
 	//プリミティブ基底クラステンプレート
 	//============================================================================
 
+	/// <summary>
+	/// PrimitiveBaseに共通する処理とインターフェースを提供する基底クラスです。
+	/// </summary>
 	template <typename TData>
 	class PrimitiveBase {
 

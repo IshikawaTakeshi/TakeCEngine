@@ -7,6 +7,9 @@
 //============================================================================
 // ParticleEmitterAllocator class
 //============================================================================
+/// <summary>
+/// パーティクルエミッター用リソースの割り当てと再利用を管理するクラスです。
+/// </summary>
 class ParticleEmitterAllocator {
 public:
 	ParticleEmitterAllocator() = default;

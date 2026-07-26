@@ -2,6 +2,9 @@
 #include "engine/PostEffect/PostEffect.h"
 
 // シャドウマップエフェクト情報構造体
+/// <summary>
+/// ShadowMapEffectInfoに関するデータを保持する構造体です。
+/// </summary>
 struct ShadowMapEffectInfo {
 	bool isActive = false; // エフェクトの有効無効
 	float bias = 0.005f; // シャドウのバイアス値
@@ -13,6 +16,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ShadowMapEffectInfo, isActive, bias, pcfRange
 //============================================================================
 // ShadowMapEffect class
 //============================================================================
+/// <summary>
+/// ShadowMapEffectの描画演出とパラメーター更新を担当するクラスです。
+/// </summary>
 class ShadowMapEffect : public PostEffect {
 public:
 	//=========================================================

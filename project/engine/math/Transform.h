@@ -8,6 +8,9 @@
 //=================================================================================
 
 // オイラー角による変換情報
+/// <summary>
+/// EulerTransformの数学的な値と変換情報を表す構造体です。
+/// </summary>
 struct EulerTransform {
 	Vector3 scale;
 	Vector3 rotate;
@@ -17,6 +20,9 @@ struct EulerTransform {
 };
 
 // クォータニオンによる変換情報
+/// <summary>
+/// QuaternionTransformの数学的な値と変換情報を表す構造体です。
+/// </summary>
 struct QuaternionTransform {
 	Vector3 scale;
 	Quaternion rotate;

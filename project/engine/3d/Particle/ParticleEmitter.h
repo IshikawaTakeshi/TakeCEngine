@@ -8,6 +8,9 @@
 #include <string>
 
 //球状エミッター情報構造体
+/// <summary>
+/// EmitterSphereInfoに関するデータを保持する構造体です。
+/// </summary>
 struct EmitterSphereInfo {
 	Vector3 translate; //エミッターの位置
 	float radius; //射出半径
@@ -27,6 +30,9 @@ class GPUParticle;
 //============================================================================
 // ParticleEmitter class
 //============================================================================
+/// <summary>
+/// 指定範囲と頻度に従ってパーティクルを放出するクラスです。
+/// </summary>
 class ParticleEmitter {
 public:
 

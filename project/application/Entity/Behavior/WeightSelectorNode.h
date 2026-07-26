@@ -6,6 +6,9 @@
 // 子ノードの評価値を計算し評価値の分布からランダムにノードを選択して実行する
 //===============================================================================
 
+/// <summary>
+/// ビヘイビアツリーのWeightSelectorNodeとして判定または処理を実行するクラスです。
+/// </summary>
 class WeightSelectorNode : public CompositeNode {
 	public:
 	/// <summary>

@@ -19,6 +19,9 @@ class Blackboard;
 //==================================================================================
 // BehaviorTreeEditor class
 //==================================================================================
+/// <summary>
+/// BehaviorTreeEditorに関するデータを表示・編集する開発支援クラスです。
+/// </summary>
 class BehaviorTreeEditor {
 public:
 

@@ -1,6 +1,9 @@
 #pragma once
 #include "PostEffect/PostEffect.h"
 
+/// <summary>
+/// GrayScaleInfoに関するデータを保持する構造体です。
+/// </summary>
 struct GrayScaleInfo {
 	int32_t grayScaleType; // グレースケールの種類
 	bool isActive = true; // グレースケールの有効無効
@@ -11,6 +14,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GrayScaleInfo, grayScaleType, isActive)
 //============================================================================
 //	GrayScale class
 //============================================================================
+/// <summary>
+/// 描画結果をグレースケールへ変換するポストエフェクトを適用するクラスです。
+/// </summary>
 class GrayScale : public PostEffect {
 public:
 

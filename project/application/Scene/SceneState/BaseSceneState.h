@@ -9,6 +9,9 @@ class BaseScene;
 // BaseSceneState class
 // シーンの状態基底クラス（汎用）
 //============================================================================
+/// <summary>
+/// BaseSceneStateに共通する処理とインターフェースを提供する基底クラスです。
+/// </summary>
 class BaseSceneState {
 public:
 

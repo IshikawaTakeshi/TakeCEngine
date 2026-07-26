@@ -2,6 +2,9 @@
 #include "engine/Math/Vector2.h"
 #include <json.hpp>
 
+/// <summary>
+/// ArcGaugeParamで使用する設定値を保持する構造体です。
+/// </summary>
 struct ArcGaugeParam {
     Vector2 center = { 0.0f,0.0f }; // 中心座標
     float fillAmount  = 0.0f; // 塗りつぶし量

@@ -19,12 +19,18 @@ enum IntermediateResourceType {
 };
 
 //名前付きPostEffect構造体
+/// <summary>
+/// NamedPostEffectに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct NamedPostEffect {
 	std::string name;
 	std::unique_ptr<PostEffect> postEffect;
 };
 
 // 一時エフェクト再生リクエスト
+/// <summary>
+/// PlayRequestに関するデータを保持する構造体です。
+/// </summary>
 struct PlayRequest {
 	PostEffectPlayConfig config;
 	Timer timer;
@@ -38,6 +44,9 @@ struct PlayRequest {
 class RenderTexture;
 
 namespace TakeC {
+	/// <summary>
+	/// PostEffectに関する生成、更新、破棄を一元管理するクラスです。
+	/// </summary>
 	class PostEffectManager {
 	public:
 

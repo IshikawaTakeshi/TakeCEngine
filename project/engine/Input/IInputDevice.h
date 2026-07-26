@@ -11,6 +11,9 @@ concept InputEnum = std::is_enum_v<T>;
 //============================================================================
 //	IInputDevice class
 //============================================================================
+/// <summary>
+/// IInputDeviceから操作状態を取得し、ゲーム用入力へ変換するクラスです。
+/// </summary>
 template<InputEnum Enum>
 class IInputDevice {
 public:

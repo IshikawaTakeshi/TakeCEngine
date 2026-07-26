@@ -3,6 +3,9 @@
 #include "math/Vector2.h"
 
 //RadialBlur情報構造体
+/// <summary>
+/// RadialBlurInfoに関するデータを保持する構造体です。
+/// </summary>
 struct RadialBlurInfo {
 	Vector2 center; // 中心UV座標
 	float blurWidth; // ブラーの幅
@@ -14,6 +17,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RadialBlurInfo, center, blurWidth, enable)
 //============================================================================
 //	RadialBlur class
 //============================================================================
+/// <summary>
+/// 指定中心から放射状にぼかすポストエフェクトを適用するクラスです。
+/// </summary>
 class RadialBlur : public PostEffect {
 public:
 

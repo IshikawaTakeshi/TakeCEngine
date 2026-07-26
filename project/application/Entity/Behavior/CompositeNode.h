@@ -7,6 +7,9 @@
 // CompositeNode class
 // 子を持つノードの共通基底クラス
 //============================================================================
+/// <summary>
+/// ビヘイビアツリーのCompositeNodeとして判定または処理を実行するクラスです。
+/// </summary>
 class CompositeNode : public BehaviorNode {
 public:
 

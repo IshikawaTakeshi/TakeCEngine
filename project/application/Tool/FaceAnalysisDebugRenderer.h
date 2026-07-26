@@ -16,6 +16,9 @@ namespace TakeC {
 	//==============================================================================================
 	//		FaceAnalysisDebugRenderer class
 	//==============================================================================================
+	/// <summary>
+	/// FaceAnalysisDebugの描画処理を担当するクラスです。
+	/// </summary>
 	class FaceAnalysisDebugRenderer {
 	public:
 

@@ -4,6 +4,9 @@
 //=============================================================
 // SequenceNodeView class
 //=============================================================
+/// <summary>
+/// SequenceNodeをエディター上で表示・編集するクラスです。
+/// </summary>
 class SequenceNodeView : public BehaviorNodeView {
 public:
 

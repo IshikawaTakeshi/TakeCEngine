@@ -6,6 +6,9 @@
 // 目標ごとに評価値を計算し、評価値の分布からランダムにノードを選択して実行する
 //====================================================================
 
+/// <summary>
+/// ビヘイビアツリーのPlannerSelectorNodeとして判定または処理を実行するクラスです。
+/// </summary>
 class PlannerSelectorNode : public CompositeNode {
 public:
 

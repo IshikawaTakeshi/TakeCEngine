@@ -4,6 +4,9 @@
 //=============================================================================
 //	LightCameraInfo struct
 //=============================================================================
+/// <summary>
+/// LightCameraInfoに関するデータを保持する構造体です。
+/// </summary>
 struct LightCameraInfo {
 	Matrix4x4 viewProjection_;
 	Vector3 position_;

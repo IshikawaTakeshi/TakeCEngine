@@ -7,6 +7,9 @@ namespace TakeC {
 	//	coneデータ構造体
 	//========================================================
 	// Cone全体のデータ
+	/// <summary>
+	/// ConeDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct ConeData : public PrimitiveBaseData {
 		float radius = 0.0f;
 		float height = 0.0f;
@@ -17,6 +20,9 @@ namespace TakeC {
 	//	Cone class
 	//============================================================
 
+	/// <summary>
+	/// 円錐プリミティブの頂点を生成し、3D形状として描画するクラスです。
+	/// </summary>
 	class Cone : public PrimitiveBase<ConeData> {	
 	public:
 

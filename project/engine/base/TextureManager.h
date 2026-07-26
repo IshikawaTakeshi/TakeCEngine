@@ -30,6 +30,9 @@ namespace TakeC {
 	//前方宣言
 	class SrvManager;
 
+	/// <summary>
+	/// Textureに関する生成、更新、破棄を一元管理するクラスです。
+	/// </summary>
 	class TextureManager {
 	private:
 
@@ -46,6 +49,9 @@ namespace TakeC {
 		/////////////////////////////////////////////////////////////////////////////////////
 
 		//テクスチャ1枚分のデータ
+		/// <summary>
+		/// TextureDataに関するデータを保持する構造体です。
+		/// </summary>
 		struct TextureData {
 			DirectX::TexMetadata metadata; //テクスチャのメタデータ
 			ComPtr<ID3D12Resource> resource; //テクスチャリソース
@@ -55,12 +61,18 @@ namespace TakeC {
 			D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU; //GPUディスクリプタハンドル
 		};
 
+		/// <summary>
+		/// TextureCPUDataに関するデータを保持する構造体です。
+		/// </summary>
 		struct TextureCPUData {
 			std::string filePath; //テクスチャファイルのパス
 			DirectX::ScratchImage mipImages; //ミップマップを含むテクスチャイメージ
 			DirectX::TexMetadata metadata; //テクスチャのメタデータ
 		};
 
+		/// <summary>
+		/// TextureLoadRequestに関するデータを保持する構造体です。
+		/// </summary>
 		struct TextureLoadRequest {
 			std::string filePath;
 			ResourceDomain domain = ResourceDomain::Game;

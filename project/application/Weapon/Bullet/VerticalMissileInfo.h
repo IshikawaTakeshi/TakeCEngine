@@ -6,6 +6,9 @@
 // VerticalMissileLauncherInfo struct
 //============================================================================
 
+/// <summary>
+/// VerticalMissileInfoに関するデータを保持する構造体です。
+/// </summary>
 struct VerticalMissileInfo {
 	//撃ちだされてからの上昇値
 	float maxAltitude = 100.0f;

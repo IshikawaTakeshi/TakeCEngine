@@ -24,6 +24,9 @@ namespace TakeC {
 	template<typename T>
 	concept InputEnum = std::is_enum_v<T>;
 
+	/// <summary>
+	/// ImGuiに関する生成、更新、破棄を一元管理するクラスです。
+	/// </summary>
 	class ImGuiManager {
 	public:
 

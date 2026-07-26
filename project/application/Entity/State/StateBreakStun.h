@@ -9,6 +9,9 @@ class baseInputProvider;
 //============================================================================
 // StateBreakStun class
 //============================================================================
+/// <summary>
+/// ブレイクスタン中の行動制限と復帰遷移を制御する状態クラスです。
+/// </summary>
 class StateBreakStun : public BaseGameCharacterState {
 public:
 

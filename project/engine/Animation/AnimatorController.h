@@ -7,10 +7,16 @@
 //============================================================================
 // AnimatorController class
 //============================================================================
+/// <summary>
+/// Animatorの状態遷移と制御を担当するクラスです。
+/// </summary>
 class AnimatorController {
 public:
 
 	// レイヤー情報構造体
+	/// <summary>
+	/// Layerに必要な値をまとめて保持する構造体です。
+	/// </summary>
 	struct Layer {
 		std::string name;
 		AnimationState currentState; // 現在のアニメーション

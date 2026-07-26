@@ -9,6 +9,9 @@
  * AIパラメータ（ウェイトJSONファイル名など）を
  * BT 経由で切り替えるために使う。
  */
+/// <summary>
+/// ビヘイビアツリーのSetBlackboardStringNodeとして判定または処理を実行するクラスです。
+/// </summary>
 class SetBlackboardStringNode : public BehaviorNode {
 public:
 	SetBlackboardStringNode(const std::string& key = "", const std::string& value = "", const std::string& name = "SetBBString");

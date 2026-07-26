@@ -20,6 +20,9 @@
 // DirectXCommon class
 //============================================================================
 namespace TakeC {
+	/// <summary>
+	/// DirectX 12のデバイス、コマンド、スワップチェーンなどの基盤機能を管理するクラスです。
+	/// </summary>
 	class DirectXCommon {
 	public:
 

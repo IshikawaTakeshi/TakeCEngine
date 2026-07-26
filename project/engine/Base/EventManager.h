@@ -12,6 +12,9 @@
 
 namespace TakeC {
 
+	/// <summary>
+	/// Eventに関する生成、更新、破棄を一元管理するクラスです。
+	/// </summary>
 	class EventManager {
 	public:
 
@@ -25,6 +28,9 @@ namespace TakeC {
 		using EventCallback = std::function<void(const std::any&)>;
 		using EventId = uint32_t;
 
+		/// <summary>
+		/// ObserverInfoに関するデータを保持する構造体です。
+		/// </summary>
 		struct ObserverInfo {
 			EventId id;
 			EventCallback callback;

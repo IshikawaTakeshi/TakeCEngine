@@ -13,6 +13,9 @@ enum class WarningType {
 /**
  * @brief 警告データ
  */
+/// <summary>
+/// WarningDataに関するデータを保持する構造体です。
+/// </summary>
 struct WarningData {
 	Vector3 position;
 	WarningType type;

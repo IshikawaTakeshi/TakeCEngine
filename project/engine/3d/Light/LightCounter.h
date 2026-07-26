@@ -8,6 +8,9 @@
 //		LightCounter class
 //==============================================================================
 
+/// <summary>
+/// シーンに登録された各ライト種別の使用数を追跡するクラスです。
+/// </summary>
 template<typename LightT>
 class LightCounter {
 public:

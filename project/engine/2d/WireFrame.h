@@ -14,17 +14,26 @@
 #include <wrl.h>
 
 //線用の頂点データ構造体
+/// <summary>
+/// WireFrameVertexDataに関するデータを保持する構造体です。
+/// </summary>
 struct WireFrameVertexData {
 	Vector3 position;
 	Vector4 color;
 };
 
 //線用の変換行列データ構造体
+/// <summary>
+/// WireFrameTransFormMatrixDataに関するデータを保持する構造体です。
+/// </summary>
 struct WireFrameTransFormMatrixData {
 	Matrix4x4 WVP;
 };
 
 //線データ構造体
+/// <summary>
+/// LineDataに関するデータを保持する構造体です。
+/// </summary>
 struct LineData {
 	ComPtr<ID3D12Resource> vertexBuffer_;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViews_;
@@ -35,6 +44,9 @@ struct LineData {
 // WireFrame class
 //============================================================================
 namespace TakeC {
+	/// <summary>
+	/// 線分データをGPUへ転送し、ワイヤーフレームとして描画するクラスです。
+	/// </summary>
 	class WireFrame {
 	public:
 

@@ -11,6 +11,9 @@
 
 namespace TakeC {
 	//マテリアル情報構造体
+	/// <summary>
+	/// MaterialDataに関するデータを保持する構造体です。
+	/// </summary>
 	struct MaterialData {
 		Vector4 color; //カラー
 		Matrix4x4 uvTransform; //UVトランスフォーム
@@ -24,6 +27,9 @@ namespace TakeC {
 	//============================================================================
 	// Material class
 	//============================================================================
+	/// <summary>
+	/// 3D描画に使用する色、ライティング、テクスチャ設定を保持するクラスです。
+	/// </summary>
 	class Material {
 	public:
 

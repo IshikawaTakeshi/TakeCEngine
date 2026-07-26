@@ -2,6 +2,9 @@
 #include "PostEffect/PostEffect.h"
 
 // フィルター情報構造体
+/// <summary>
+/// BoxFilterInfoに関するデータを保持する構造体です。
+/// </summary>
 struct BoxFilterInfo {
 	bool isActive = true; // フィルターの有効無効
 };
@@ -10,6 +13,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BoxFilterInfo, isActive)
 //============================================================================
 // BoxFilter class
 //============================================================================
+/// <summary>
+/// 周辺画素を平均化するボックスフィルタを適用するクラスです。
+/// </summary>
 class BoxFilter : public PostEffect {
 public:
 

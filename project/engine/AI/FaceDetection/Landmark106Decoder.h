@@ -11,11 +11,17 @@ namespace TakeC {
 	//==============================================================================================
 	//		Landmark106Decoder class
 	//==============================================================================================
+	/// <summary>
+	/// モデルの出力を解析し、Landmark106結果へ変換するクラスです。
+	/// </summary>
 	class Landmark106Decoder {
 	public:
 
 		static constexpr size_t kLandmarkCount = Landmark106Topology::kLandmarkCount;
 
+		/// <summary>
+		/// Configで使用する設定値を保持する構造体です。
+		/// </summary>
 		struct Config {
 			bool outputMinusOneToOne = true;
 		};

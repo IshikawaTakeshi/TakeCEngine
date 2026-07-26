@@ -19,6 +19,9 @@ namespace TakeC {
 	//=============================================================
 	// CameraCapture class
 	//=============================================================
+	/// <summary>
+	/// カメラデバイスから映像フレームを取得し、描画用テクスチャへ転送するクラスです。
+	/// </summary>
 	class CameraCapture {
 	public:
 		template <class T>
@@ -32,6 +35,9 @@ namespace TakeC {
 			std::wstring symbolicLink;
 		};
 
+		/// <summary>
+		/// ImGuiImageRectに必要な値をまとめて保持する構造体です。
+		/// </summary>
 		struct ImGuiImageRect {
 			float minX = 0.0f;
 			float minY = 0.0f;

@@ -3,6 +3,9 @@
 #include "engine/math/Vector4.h"
 
 // 輝度ベースのアウトライン情報
+/// <summary>
+/// LuminanceBasedOutlineInfoに関するデータを保持する構造体です。
+/// </summary>
 struct LuminanceBasedOutlineInfo {
 	Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; // アウトラインの色
 	float weight = 6.0f; // 輪郭の強さ
@@ -14,6 +17,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LuminanceBasedOutlineInfo, color, weight, isA
 //============================================================================
 // LuminanceBasedOutline class
 //============================================================================
+/// <summary>
+/// LuminanceBasedOutlineに共通する処理とインターフェースを提供する基底クラスです。
+/// </summary>
 class LuminanceBasedOutline : public PostEffect {
 public:
 

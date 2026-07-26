@@ -11,6 +11,9 @@
 #include <memory>
 
 //ComputeShader用パーティクルデータ構造体
+/// <summary>
+/// ParticleForCSに必要な値をまとめて保持する構造体です。
+/// </summary>
 struct ParticleForCS {
 	Vector3 translate;
 	Vector3 scale;
@@ -23,6 +26,9 @@ struct ParticleForCS {
 //=============================================================================
 // GPUParticle class
 //=============================================================================
+/// <summary>
+/// コンピュートシェーダーで粒子を生成・更新して描画するクラスです。
+/// </summary>
 class GPUParticle {
 public:
 

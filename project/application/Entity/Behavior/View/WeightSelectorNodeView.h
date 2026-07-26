@@ -4,6 +4,9 @@
 //=============================================================
 // WeightSelectorNodeView class
 //=============================================================
+/// <summary>
+/// WeightSelectorNodeをエディター上で表示・編集するクラスです。
+/// </summary>
 class WeightSelectorNodeView : public BehaviorNodeView {
 public:
 

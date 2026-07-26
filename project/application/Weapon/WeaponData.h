@@ -12,6 +12,9 @@
 //============================================================================
 
 // 武器データ構造体
+/// <summary>
+/// WeaponConfigで使用する設定値を保持する構造体です。
+/// </summary>
 struct WeaponConfig {
 
 	float power = 0.0f; //武器の攻撃力
@@ -36,6 +39,9 @@ struct WeaponConfig {
 };
 
 // 武器の実行中の情報構造体
+/// <summary>
+/// WeaponStateに関するデータを保持する構造体です。
+/// </summary>
 struct WeaponState {
 	
 	float attackInterval = 0.0f;       //攻撃間隔
@@ -48,6 +54,9 @@ struct WeaponState {
 	bool isCharging = false;           // チャージ攻撃フラグ
 };
 
+/// <summary>
+/// WeaponDataに関するデータを保持する構造体です。
+/// </summary>
 struct WeaponData {
 	std::string weaponName = ""; //武器名
 	std::string modelFilePath = ""; //モデルファイルパス
@@ -65,6 +74,9 @@ void from_json(const nlohmann::json& jsonData, WeaponConfig& weaponContext);
 void from_json(const nlohmann::json& jsonData, WeaponData& weaponData);
 
 //ディレクトリパス取得用テンプレート特殊化
+/// <summary>
+/// 型ごとのJSON保存先ディレクトリを提供するテンプレート構造体です。
+/// </summary>
 template<>
 struct JsonPath<WeaponData> {
 	static std::filesystem::path GetDirectory() {

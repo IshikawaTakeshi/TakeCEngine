@@ -6,6 +6,9 @@
 // WaitBlackboardTimeNode
 // Blackboard の float キーを待機秒数として使い、経過後 Success を返す
 //============================================================================
+/// <summary>
+/// ビヘイビアツリーのWaitBlackboardTimeNodeとして判定または処理を実行するクラスです。
+/// </summary>
 class WaitBlackboardTimeNode : public BehaviorNode {
 public:
 
