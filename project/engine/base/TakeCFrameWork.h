@@ -36,6 +36,7 @@
 #include "scene/AbstractSceneFactory.h"
 #include "Utility/Logger.h"
 #include "Utility/ResourceBarrier.h"
+#include "Utility/ResourcePath.h"
 #include "Utility/JsonLoader.h"
 #include "Utility/Timer.h"
 #include "engine/math/Easing.h"
@@ -75,7 +76,9 @@ public:
 	virtual bool IsEndRequest() const { return isEnd_; }
 
 	//実行処理
-	void Run(const std::wstring& titleName);
+	void Run(
+		const std::wstring& titleName,
+		const ResourceRootConfig& resourceRoots = {});
 
 	//=========================================================================
 	// accessor

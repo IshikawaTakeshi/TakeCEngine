@@ -1,5 +1,8 @@
 #pragma once
+#include <filesystem>
 #include <string>
+
+#include "engine/Utility/ResourcePath.h"
 
 //==================================================================================
 // JsonDirectoryPathData.h
@@ -10,8 +13,8 @@ using json = nlohmann::json;
 
 template<typename T>
 struct JsonPath {
-	static std::string GetDirectory() {
-		return "Resources/JsonLoader/"; // デフォルトのディレクトリ
+	static std::filesystem::path GetDirectory() {
+		return TakeC::ResourcePath::Game("JsonLoader");
 	}
 };
 
@@ -19,17 +22,24 @@ struct JsonPath {
 #define TAKEC_DEFINE_JSON_DIRECTORY_PATH(Type, Directory) \
 template<> \
 struct JsonPath<Type> { \
-    static std::string GetDirectory() { \
-        return Directory; \
+    static std::filesystem::path GetDirectory() { \
+        return TakeC::ResourcePath::Game(Directory); \
     } \
 }
 
-//グローバル変数の保存先ファイルパス
-const std::string kDirectoryPath = "Resources/JsonLoader/";
-//WeaponDataの保存先
-const std::string kWeaponDataPath = "Resources/JsonLoader/WeaponConfig/";
-//拡張ショット情報の保存先
-const std::string kWeaponActionDataPath = "Resources/JsonLoader/WeaponConfig/Extra/";
-//cameraDataの保存先
-const std::string kCameraDataPath = "Resources/JsonLoader/Camera/";
+inline std::filesystem::path GetJsonDirectoryPath() {
+	return TakeC::ResourcePath::Game("JsonLoader");
+}
+
+inline std::filesystem::path GetWeaponDataPath() {
+	return TakeC::ResourcePath::Game("JsonLoader/WeaponConfig");
+}
+
+inline std::filesystem::path GetWeaponActionDataPath() {
+	return TakeC::ResourcePath::Game("JsonLoader/WeaponConfig/Extra");
+}
+
+inline std::filesystem::path GetCameraDataPath() {
+	return TakeC::ResourcePath::Game("JsonLoader/Camera");
+}
 

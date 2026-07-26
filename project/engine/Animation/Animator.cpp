@@ -1,5 +1,6 @@
 #include "Animator.h"
 #include "Easing.h"
+#include "engine/Utility/ResourcePath.h"
 //assimp
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -65,7 +66,7 @@ std::map<std::string, Animation*> AnimationManager::LoadAnimationFile(const std:
 	std::string ext = fileNamePath.extension().string();
 
 	// ベースディレクトリ
-	fs::path baseDir = "./Resources/Models/";
+	const fs::path baseDir = ResourcePath::Game("Models");
 
 	// 最終的なフルパス
 	fs::path fullPath = baseDir / filename;

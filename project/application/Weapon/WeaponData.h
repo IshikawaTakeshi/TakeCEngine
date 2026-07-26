@@ -68,6 +68,6 @@ void from_json(const nlohmann::json& jsonData, WeaponData& weaponData);
 template<>
 struct JsonPath<WeaponData> {
 	static std::filesystem::path GetDirectory() {
-		return kWeaponDataPath;
+		return GetWeaponDataPath();
 	}
 };

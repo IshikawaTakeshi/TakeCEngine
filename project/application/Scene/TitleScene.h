@@ -1,10 +1,12 @@
 #pragma once
 #include <array>
+#include <optional>
 #include <vector>
 //base class
 #include "application/Scene/BaseScene.h"
 
 //engine
+#include "engine/AI/FaceAnalysis/FacePartRatios.h"
 #include "engine/AI/FaceDetection/FaceAligner.h"
 #include "engine/AI/FaceDetection/ScrfdDecoder.h"
 #include "engine/audio/Audio.h"
@@ -63,9 +65,9 @@ private:
 	TakeC::Sprite* titleTextSprite_ = nullptr;
 	//ONNX debug
 	TakeC::OnnxModel* debugOnnxModel_ = nullptr;
-	std::array<char, 260> debugOnnxModelPath_ = { "Resources/OnnxModels/scrfd_10g_bnkps.onnx" };
+	std::array<char, 260> debugOnnxModelPath_ = { "OnnxModels/scrfd_10g_bnkps.onnx" };
 	TakeC::OnnxModel* debugLandmarkModel_ = nullptr;
-	std::array<char, 260> debugLandmarkModelPath_ = { "Resources/OnnxModels/2d106det.onnx" };
+	std::array<char, 260> debugLandmarkModelPath_ = { "OnnxModels/2d106det.onnx" };
 	bool debugOnnxLoadFailed_ = false;
 	bool debugOnnxRunSuccess_ = false;
 	bool debugLandmarkLoadFailed_ = false;
@@ -91,6 +93,7 @@ private:
 	bool debugLandmarkSwapRedBlue_ = false;
 	bool debugLandmarkNormalizeToUnit_ = true;
 	std::vector<Vector2> debugLandmark106Points_;
+	std::optional<TakeC::FacePartRatios> debugFacePartRatios_;
 
 	std::vector<float> outputData;
 	std::vector<int64_t> outputShape;

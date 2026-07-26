@@ -20,10 +20,7 @@
 #include "engine/camera/CameraManager.h"
 
 // app
-#include "application/Entity/Enemy/Enemy.h"
-#include "application/Entity/Player/Player.h"
 #include "application/Entity/Behavior/BehaviorTreeEditor.h"
-#include "application/Ground/Ground.h"
 #include "application/Scene/GamePlaySceneBehavior.h"
 #include "application/Scene/SceneState/SceneStateManager.h"
 // UI

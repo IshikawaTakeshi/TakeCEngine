@@ -1,5 +1,6 @@
 #include "DirectXShaderCompiler.h"
 #include "Utility/Logger.h"
+#include "Utility/ResourcePath.h"
 #include "Utility/StringUtility.h"
 #include <cassert>
 #include <format>
@@ -60,7 +61,8 @@ Microsoft::WRL::ComPtr<IDxcBlob> DXC::CompileShader(
 
 	HRESULT result = S_FALSE;
 
-	std::wstring fullPath = L"Resources/shaders/" + filePath;
+	const std::wstring fullPath = TakeC::ResourcePath::Engine(
+		std::filesystem::path("shaders") / filePath).wstring();
 
 	//これからシェーダーをコンパイルする旨をログに出す
 	Logger::Log(StringUtility::ConvertString(std::format(L"Begin CompileShader, path:{},profile{}\n", fullPath, profile)));

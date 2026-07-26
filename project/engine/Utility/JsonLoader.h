@@ -1,6 +1,5 @@
 #pragma once
 #include "engine/3d/Particle/ParticleAttribute.h"
-#include "application/Entity/GameCharacterInfo.h"
 #include "engine/Utility/JsonDirectoryPathData.h"
 #include "scene/LevelData.h"
 #include <iostream>
@@ -88,7 +87,7 @@ template<typename T>
 	// フルパスを生成
 inline void TakeC::JsonLoader::SaveJsonData(const std::string& filePath, const T& data) {
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
-	std::string fileFullPath = directory.string() + filePath;
+	std::filesystem::path fileFullPath = directory / filePath;
 
 	//ディレクトリがなければ作成する
 	if (!std::filesystem::exists(directory)) {
@@ -99,7 +98,7 @@ inline void TakeC::JsonLoader::SaveJsonData(const std::string& filePath, const T
 	std::ofstream ofs(fileFullPath);
 	//ファイルオープンが失敗した場合
 	if (ofs.fail()) {
-		std::string message = "Failed open json file for write:" + fileFullPath;
+		std::string message = "Failed open json file for write:" + fileFullPath.string();
 		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
 		assert(0);
 		return;
@@ -118,11 +117,11 @@ inline T TakeC::JsonLoader::LoadJsonData(const std::string& filePath) const {
 	
 	// フルパスを生成
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
-	std::string fileFullPath = directory.string() + filePath;
+	std::filesystem::path fileFullPath = directory / filePath;
 	std::ifstream ifs(fileFullPath);
 	//ファイルオープンが失敗した場合
 	if (ifs.fail()) {
-		std::string message = "Failed open json file for read:" + fileFullPath;
+		std::string message = "Failed open json file for read:" + fileFullPath.string();
 		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
 		assert(0);
 		return T();
@@ -142,13 +141,13 @@ template<typename T>
 inline void TakeC::JsonLoader::DeleteJsonData(const std::string& filePath) {
 
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
-	std::string fileFullPath = directory.string() + filePath;
+	std::filesystem::path fileFullPath = directory / filePath;
 	//ファイルが存在する場合
 	if (std::filesystem::exists(fileFullPath)) {
 		//ファイルを削除
 		std::filesystem::remove(fileFullPath);
 	} else {
-		std::string message = "Json data not found: " + fileFullPath;
+		std::string message = "Json data not found: " + fileFullPath.string();
 		MessageBoxA(nullptr, message.c_str(), "JsonLoader", 0);
 		assert(0);
 	}
@@ -186,7 +185,7 @@ inline bool TakeC::JsonLoader::IsJsonDataExists(const std::string& filePath) con
 	
 	// フルパスを生成して存在チェック
 	std::filesystem::path directory = JsonPath<T>::GetDirectory();
-	std::string fileFullPath = directory.string() + filePath;
+	std::filesystem::path fileFullPath = directory / filePath;
 
 	// ファイルの存在を返す
 	return std::filesystem::exists(fileFullPath);

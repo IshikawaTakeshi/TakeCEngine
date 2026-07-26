@@ -1,4 +1,5 @@
 #include "ModelManager.h"
+#include "engine/Utility/ResourcePath.h"
 #include "engine/3d/Model.h"
 #include "engine/3d/ModelCommon.h"
 #include "engine/base/DirectXCommon.h"
@@ -65,7 +66,7 @@ void TakeC::ModelManager::LoadModelAll(const std::string& envMapFile) {
 
 	//Resources/Modelsフォルダ内の全てのモデルファイルを読み込む
 	namespace fs = std::filesystem;
-	std::string directoryPath = "Resources/Models/";
+	const fs::path directoryPath = ResourcePath::Game("Models");
 
 	if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
 		return;
@@ -137,7 +138,7 @@ ModelData* TakeC::ModelManager::LoadModelFile(const std::string& modelFile,const
 	std::string ext = fileNamePath.extension().string();
 
 	// ベースディレクトリ
-	fs::path baseDir = "./Resources/Models/";
+	const fs::path baseDir = ResourcePath::Game("Models");
 
 	// 最終的なフルパス
 	fs::path fullPath = baseDir / modelFile;

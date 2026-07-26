@@ -1,4 +1,5 @@
 #include "EffectEditor.h"
+#include "engine/Utility/ResourcePath.h"
 #include "base/TakeCFrameWork.h"
 #include "base/ImGuiManager.h"
 #include <imgui.h>
@@ -475,7 +476,8 @@ void TakeC::EffectEditor::LoadSavedEffects() {
 
 	savedEffects_.clear();
 	// effects/ディレクトリ内の全JSONファイルを読み込み
-	std::string effectsDir = "Resources/JsonLoader/EffectGroup/";
+	const std::filesystem::path effectsDir =
+		ResourcePath::Game("JsonLoader/EffectGroup");
 	if (std::filesystem::exists(effectsDir)) {
 		for (const auto& entry : std::filesystem::directory_iterator(effectsDir)) {
 			if (entry.path().extension() == ".json") {
@@ -637,7 +639,8 @@ void EffectEditor::LoadAvailablePresets() {
 	availablePresets_.clear();
 
 	// presets/ディレクトリ内の全JSONファイルを読み込み
-	std::string presetDir = "Resources/JsonLoader/ParticlePresets/";
+	const std::filesystem::path presetDir =
+		ResourcePath::Game("JsonLoader/ParticlePresets");
 	if (std::filesystem::exists(presetDir)) {
 		for (const auto& entry : std::filesystem::directory_iterator(presetDir)) {
 			if (entry.path().extension() == ".json") {

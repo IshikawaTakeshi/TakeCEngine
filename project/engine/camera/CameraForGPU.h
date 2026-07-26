@@ -41,7 +41,7 @@ void from_json(const nlohmann::json& json, CameraConfig& cameraConfig);
 // JSONディレクトリパスの特殊化
 template<>
 struct JsonPath<CameraConfig> {
-	static std::string GetDirectory() {
-		return kCameraDataPath;
+	static std::filesystem::path GetDirectory() {
+		return GetCameraDataPath();
 	}
 };

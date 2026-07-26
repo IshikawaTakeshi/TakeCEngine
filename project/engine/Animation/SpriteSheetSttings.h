@@ -19,4 +19,4 @@ struct SpriteSheetSettings {
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SpriteSheetSettings, columns, rows, totalFrames, frameDuration, loop)
-TAKEC_DEFINE_JSON_DIRECTORY_PATH(SpriteSheetSettings, "Resources/JsonLoader/UVTextureAnimation/SpriteSheet/");
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(SpriteSheetSettings, "JsonLoader/UVTextureAnimation/SpriteSheet");

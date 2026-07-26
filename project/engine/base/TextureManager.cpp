@@ -8,6 +8,24 @@
 #include <filesystem>
 #include <chrono>
 
+namespace {
+
+	std::filesystem::path ResolveTexturePath(
+		const std::string& filePath,
+		TakeC::ResourceDomain domain) {
+
+		std::filesystem::path relativePath(filePath);
+		if (relativePath.extension() == ".dds" &&
+			relativePath.parent_path().empty()) {
+			relativePath = std::filesystem::path("dds") / relativePath;
+		}
+		return TakeC::ResourcePath::Resolve(
+			domain,
+			std::filesystem::path("Images") / relativePath);
+	}
+
+}
+
 //================================================================
 // シングルトンインスタンスの取得
 //================================================================
@@ -32,7 +50,7 @@ void TakeC::TextureManager::Initialize(TakeC::DirectXCommon* dxCommon, TakeC::Sr
 	// --- プレースホルダ（白テクスチャ）の生成 ---
 	DirectX::ScratchImage image;
 	DirectX::TexMetadata metadata;
-	DecodeTexture("", image, metadata); // 空パスで白1x1が読み込まれる
+	DecodeTexture("", ResourceDomain::Engine, image, metadata); // 空パスで白1x1が読み込まれる
 
 	DirectX::ScratchImage mipImages;
 	BuildMipMaps(image, metadata, mipImages);
@@ -71,6 +89,7 @@ void TakeC::TextureManager::Finalize() {
 	}
 	workerThreads_.clear();
 	textureDatas_.clear();
+	textureDomains_.clear();
 
 	// 白テクスチャのリソース解放
 	if (whiteTextureData_.resource) {
@@ -134,13 +153,16 @@ void TakeC::TextureManager::CheckAndReloadTextures() {
 
 	//テクスチャの更新チェック
 	for (auto& [filePath, textureData] : textureDatas_) {
-		std::string fullPath = "Resources/Images/" + filePath;
+		const ResourceDomain domain = textureDomains_.contains(filePath)
+			? textureDomains_.at(filePath)
+			: ResourceDomain::Game;
+		const std::string fullPath = ResolveTexturePath(filePath, domain).string();
 		//ファイルの最終更新日時を取得
 		time_t newTime = GetFileLastWriteTime(fullPath);
 
 		if (fileUpdateTimes_[filePath] != newTime) {
 			//更新されていたら再読み込み
-			LoadTexture(filePath, true);
+			LoadTexture(filePath, true, domain);
 			//更新日時を更新
 			fileUpdateTimes_[filePath] = newTime;
 		}
@@ -150,13 +172,17 @@ void TakeC::TextureManager::CheckAndReloadTextures() {
 //=============================================================================================
 ///			テクスチャの読み込み
 //=============================================================================================
-void TakeC::TextureManager::LoadTexture(const std::string& filePath, bool forceReload) {
+void TakeC::TextureManager::LoadTexture(
+	const std::string& filePath,
+	bool forceReload,
+	ResourceDomain domain) {
 
 	std::string normalizedPath = NormalizeTextureFilePath(filePath);
 
 	{
 		std::lock_guard<std::mutex> lock(mapMutex_);
 		if (!forceReload && textureDatas_.contains(normalizedPath)) return;
+		textureDomains_[normalizedPath] = domain;
 
 		// エントリがなければ仮登録
 		if (!textureDatas_.contains(normalizedPath)) {
@@ -178,7 +204,7 @@ void TakeC::TextureManager::LoadTexture(const std::string& filePath, bool forceR
 
 	{
 		std::lock_guard<std::mutex> lock(mutex_);
-		requestQueue_.push(normalizedPath);
+		requestQueue_.push({ normalizedPath, domain });
 		pendingCount_++;
 	}
 }
@@ -190,7 +216,7 @@ void TakeC::TextureManager::LoadTextureAll() {
 
 	//Resources/imagesフォルダ内の全ての画像ファイルを読み込む
 	namespace fs = std::filesystem;
-	std::string directoryPath = "Resources/Images/";
+	const fs::path directoryPath = ResourcePath::Game("Images");
 
 	if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
 		assert(false && "ディレクトリが存在しないか、ディレクトリではありません");
@@ -237,13 +263,22 @@ void TakeC::TextureManager::WaitForAllLoads() {
 std::string TakeC::TextureManager::NormalizeTextureFilePath(const std::string& filePath) {
 	namespace fs = std::filesystem;
 
-	// すでに"Resources/Images/"を含む場合は相対に変換
-	const fs::path base = "Resources/Images";
 	fs::path p = fs::path(filePath);
 
-	// もしfilePathが絶対"Resources/Images"を含むなら相対化
-	if (p.is_absolute() || filePath.find("Resources/Images/") != std::string::npos) {
-		p = fs::relative(p, base); //ui/foo.pngなど
+	if (p.is_absolute()) {
+		for (ResourceDomain domain : { ResourceDomain::Game, ResourceDomain::Engine }) {
+			const fs::path base = ResourcePath::Resolve(domain, "Images");
+			const fs::path relative = p.lexically_relative(base);
+			if (!relative.empty() && *relative.begin() != "..") {
+				return relative.generic_string();
+			}
+		}
+	}
+
+	const std::string genericPath = p.generic_string();
+	constexpr std::string_view legacyPrefix = "Resources/Images/";
+	if (genericPath.starts_with(legacyPrefix)) {
+		return genericPath.substr(legacyPrefix.size());
 	}
 
 	return p.generic_string();
@@ -428,20 +463,21 @@ bool TakeC::TextureManager::IsSupportedTextureExt(const std::string& ext) {
 //============================================================================================
 // 			テクスチャファイルのデコード
 //============================================================================================
-bool TakeC::TextureManager::DecodeTexture(const std::string& filePath, DirectX::ScratchImage& outImage, DirectX::TexMetadata& outMetadata) {
-	std::wstring filePathW = StringUtility::ConvertString(filePath);
-	std::wstring fullPathW = L"Resources/Images/" + filePathW;
+bool TakeC::TextureManager::DecodeTexture(
+	const std::string& filePath,
+	ResourceDomain domain,
+	DirectX::ScratchImage& outImage,
+	DirectX::TexMetadata& outMetadata) {
+
+	const std::wstring fullPathW = filePath.empty()
+		? ResourcePath::Engine("Images/white1x1.png").wstring()
+		: ResolveTexturePath(filePath, domain).wstring();
 	HRESULT hr;
 
-	if (filePathW.empty()) {
-		hr = DirectX::LoadFromWICFile(L"Resources/Images/white1x1.png", DirectX::WIC_FLAGS_FORCE_SRGB, &outMetadata, outImage);
+	if (filePath.empty()) {
+		hr = DirectX::LoadFromWICFile(fullPathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, &outMetadata, outImage);
 	}
-	else if (filePathW.ends_with(L".dds")) {
-		// "dds/" が含まれていなければ
-		if (filePathW.find(L"dds/") == std::wstring::npos && filePathW.find(L"dds\\") == std::wstring::npos) {
-			filePathW = L"dds/" + filePathW;
-		}
-		fullPathW = L"Resources/Images/" + filePathW;
+	else if (std::filesystem::path(filePath).extension() == ".dds") {
 		hr = DirectX::LoadFromDDSFile(fullPathW.c_str(), DirectX::DDS_FLAGS_NONE, &outMetadata, outImage);
 	}
 	else {
@@ -497,14 +533,14 @@ void TakeC::TextureManager::StartWorker() {
 
 void TakeC::TextureManager::WorkerLoop() {
 	while (threadRunning_) {
-		std::string path;
+		TextureLoadRequest request;
 		bool isEmpty = false;
 
 		{
 			std::lock_guard lock(mutex_);
 			isEmpty = requestQueue_.empty();
 			if (!isEmpty) {
-				path = requestQueue_.front();
+				request = requestQueue_.front();
 				requestQueue_.pop();
 			}
 		}
@@ -517,13 +553,13 @@ void TakeC::TextureManager::WorkerLoop() {
 		// --- CPU処理 ---
 		DirectX::ScratchImage image;
 		DirectX::TexMetadata metadata;
-		DecodeTexture(path, image, metadata);
+		DecodeTexture(request.filePath, request.domain, image, metadata);
 
 		DirectX::ScratchImage mipImages;
 		BuildMipMaps(image, metadata, mipImages);
 
 		TextureCPUData data;
-		data.filePath = path;
+		data.filePath = request.filePath;
 		data.mipImages = std::move(mipImages);
 		data.metadata = metadata;
 

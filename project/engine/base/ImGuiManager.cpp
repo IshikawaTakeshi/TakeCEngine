@@ -1,5 +1,6 @@
 #include "ImGuiManager.h"
 #include "engine/Base/TextureManager.h"
+#include "engine/Utility/ResourcePath.h"
 #include <wrl.h>
 #include <cassert>
 #include <format>
@@ -38,8 +39,10 @@ void TakeC::ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, Sr
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; 
 	
 	// フォント読み込み
-	const char* baseFontPath = "Resources/Fonts/FiraMono-Regular_0.ttf";
-	const char* jpFontPath = "Resources/Fonts/meiryo.ttc";
+	const std::string baseFontPath =
+		ResourcePath::Engine("Fonts/FiraMono-Regular_0.ttf").string();
+	const std::string jpFontPath =
+		ResourcePath::Engine("Fonts/meiryo.ttc").string();
 
 	ImFontConfig config;
 	config.OversampleH = 2;
@@ -59,9 +62,9 @@ void TakeC::ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon, Sr
 
 	// 英字フォントと日本語フォントを同時に読み込む
 	//1. 英字フォント
-	io.Fonts->AddFontFromFileTTF(baseFontPath, 18.0f, &config, fontRanges.Data);
+	io.Fonts->AddFontFromFileTTF(baseFontPath.c_str(), 18.0f, &config, fontRanges.Data);
 	//2. 日本語フォント
-	io.Fonts->AddFontFromFileTTF(jpFontPath, 18.0f, &mergeConfig, fontRanges.Data);
+	io.Fonts->AddFontFromFileTTF(jpFontPath.c_str(), 18.0f, &mergeConfig, fontRanges.Data);
 
 
 	//ウィンドウ全体に描画できるようにする

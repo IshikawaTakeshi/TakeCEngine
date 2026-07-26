@@ -62,6 +62,14 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 	//TextureManager
 	TakeC::TextureManager::GetInstance().Initialize(directXCommon_.get(), srvManager_.get());
+	TakeC::TextureManager::GetInstance().LoadTexture(
+		"white1x1.png", false, ResourceDomain::Engine);
+	TakeC::TextureManager::GetInstance().LoadTexture(
+		"black.png", false, ResourceDomain::Engine);
+	TakeC::TextureManager::GetInstance().LoadTexture(
+		"ic_play.png", false, ResourceDomain::Engine);
+	TakeC::TextureManager::GetInstance().LoadTexture(
+		"ic_pause.png", false, ResourceDomain::Engine);
 
 	//JsonLoader
 	jsonLoader_ = std::make_unique<JsonLoader>();
@@ -135,9 +143,6 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 	cameraCapture_ = std::make_unique<CameraCapture>();
 	cameraCapture_->Initialize();
 	cameraCapture_->InitializeImGuiResources(directXCommon_.get(), srvManager_.get());
-
-	TextureManager::GetInstance().LoadTexture("ic_play.png", false);
-	TextureManager::GetInstance().LoadTexture("ic_pause.png", false);
 
 	playSrvIndex_ = TextureManager::GetInstance().GetSrvIndex("ic_play.png");
 	pauseSrvIndex_ = TextureManager::GetInstance().GetSrvIndex("ic_pause.png");
@@ -250,7 +255,11 @@ void TakeCFrameWork::Update() {
 //			実行処理
 //====================================================================
 
-void TakeCFrameWork::Run(const std::wstring& titleName) {
+void TakeCFrameWork::Run(
+	const std::wstring& titleName,
+	const ResourceRootConfig& resourceRoots) {
+	ResourcePath::Configure(resourceRoots);
+
 	//ゲームクラスの生成と初期化
 	Initialize(titleName);
 
