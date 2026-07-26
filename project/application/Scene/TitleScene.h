@@ -65,9 +65,9 @@ private:
 	TakeC::Sprite* titleTextSprite_ = nullptr;
 	//ONNX debug
 	TakeC::OnnxModel* debugOnnxModel_ = nullptr;
-	std::array<char, 260> debugOnnxModelPath_ = { "Resources/OnnxModels/scrfd_10g_bnkps.onnx" };
+	std::array<char, 260> debugOnnxModelPath_ = { "OnnxModels/scrfd_10g_bnkps.onnx" };
 	TakeC::OnnxModel* debugLandmarkModel_ = nullptr;
-	std::array<char, 260> debugLandmarkModelPath_ = { "Resources/OnnxModels/2d106det.onnx" };
+	std::array<char, 260> debugLandmarkModelPath_ = { "OnnxModels/2d106det.onnx" };
 	bool debugOnnxLoadFailed_ = false;
 	bool debugOnnxRunSuccess_ = false;
 	bool debugLandmarkLoadFailed_ = false;

@@ -19,6 +19,6 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(VerticalMissileLauncherInfo, burstShotInfo, v
 template<>
 struct JsonPath<VerticalMissileLauncherInfo> {
 	static std::filesystem::path GetDirectory() {
-		return kWeaponActionDataPath;
+		return GetWeaponActionDataPath();
 	}
 };

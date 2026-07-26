@@ -35,4 +35,4 @@ namespace TakeC {
 }
 
 // UIConfigのJSONディレクトリパスを指定
-TAKEC_DEFINE_JSON_DIRECTORY_PATH(TakeC::UIConfig, "Resources/JsonLoader/UIConfig/");
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(TakeC::UIConfig, "JsonLoader/UIConfig");

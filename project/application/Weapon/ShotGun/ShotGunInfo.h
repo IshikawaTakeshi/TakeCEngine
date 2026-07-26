@@ -16,7 +16,7 @@ struct ShotGunInfo {
 template<>
 struct JsonPath<ShotGunInfo> {
 	static std::filesystem::path GetDirectory() {
-		return kWeaponActionDataPath;
+		return GetWeaponActionDataPath();
 	}
 };
 

@@ -66,4 +66,4 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(EffectGroupConfig,
 )
 
 // JSONディレクトリパスの定義
-TAKEC_DEFINE_JSON_DIRECTORY_PATH(EffectGroupConfig, "Resources/JsonLoader/EffectGroup/");
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(EffectGroupConfig, "JsonLoader/EffectGroup");

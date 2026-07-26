@@ -1,4 +1,5 @@
 #include "JsonLoader.h"
+#include "ResourcePath.h"
 #include "Windows.h"
 
 #include <fstream>
@@ -14,7 +15,7 @@ using namespace TakeC;
 LevelData* JsonLoader::LoadLevelFile(const std::string& groupName) {
 
 	//読み込むJSONファイルのフルパスを合成する
-	std::string filePath = kDirectoryPath + groupName + ".json";
+	std::filesystem::path filePath = ResourcePath::Game("JsonLoader") / (groupName + ".json");
 	//読み込み用ファイルストリーム
 	std::ifstream ifs;
 	//ファイルを読み込み用に開く

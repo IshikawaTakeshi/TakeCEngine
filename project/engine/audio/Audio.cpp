@@ -1,4 +1,5 @@
 #include "../Audio/Audio.h"
+#include "engine/Utility/ResourcePath.h"
 #include <cassert>
 #include <fstream>
 #include <algorithm>
@@ -27,7 +28,7 @@ void AudioManager::Initialize() {
 }
 
 SoundData AudioManager::LoadSound(const std::string& filename) {
-	std::string fullpath = "Resources/AudioSources/" + filename;
+	const std::string fullpath = (TakeC::ResourcePath::Game("AudioSources") / filename).string();
 	if (IsWaveFile(fullpath)) {
 		return SoundLoadWave(fullpath.c_str());
 	} else if (IsMP3File(fullpath)) {

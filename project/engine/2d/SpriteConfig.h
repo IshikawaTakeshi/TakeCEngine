@@ -38,4 +38,4 @@ void to_json(nlohmann::json& j, const SpriteConfig& spriteConfig);
 //JSON形式から構造体に変換
 void from_json(const nlohmann::json& j, SpriteConfig& spriteConfig);
 
-TAKEC_DEFINE_JSON_DIRECTORY_PATH(SpriteConfig, "Resources/JsonLoader/SpriteConfig/");
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(SpriteConfig, "JsonLoader/SpriteConfig");

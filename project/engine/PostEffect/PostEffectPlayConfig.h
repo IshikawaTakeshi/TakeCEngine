@@ -41,4 +41,4 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PostEffectPlayConfig,
 )
 
 // JSONディレクトリ
-TAKEC_DEFINE_JSON_DIRECTORY_PATH(PostEffectPlayConfig, "Resources/JsonLoader/PostEffectPresets/");
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(PostEffectPlayConfig, "JsonLoader/PostEffectPresets");

@@ -94,4 +94,4 @@ void from_json(const nlohmann::json& j, BehaviorNodeData& data);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BehaviorLinkData, fromNodeUID, fromPinIndex, toNodeUID, toPinIndex)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ComboData, comboName, rootNode)
 //JSONディレクトリパスの定義
-TAKEC_DEFINE_JSON_DIRECTORY_PATH(ComboSetData, "Resources/JsonLoader/ComboSet/");
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(ComboSetData, "JsonLoader/ComboSet");

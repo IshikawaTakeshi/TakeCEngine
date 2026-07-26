@@ -80,5 +80,5 @@ namespace TakeC {
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(CylinderParam, radius, height, subDivision)
 
 	//JSONディレクトリパス定義
-	TAKEC_DEFINE_JSON_DIRECTORY_PATH(PrimitiveParameter, "Resources/JsonLoader/PrimitiveParameters/");
+	TAKEC_DEFINE_JSON_DIRECTORY_PATH(PrimitiveParameter, "JsonLoader/PrimitiveParameters");
 };

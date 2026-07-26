@@ -20,4 +20,4 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
 	direction_,
 	intensity_)
 
-TAKEC_DEFINE_JSON_DIRECTORY_PATH(DirectionalLightData, "Resources/JsonLoader/LightData/");
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(DirectionalLightData, "JsonLoader/LightData");

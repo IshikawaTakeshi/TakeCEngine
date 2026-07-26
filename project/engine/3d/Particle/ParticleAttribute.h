@@ -118,4 +118,4 @@ void from_json(const json& j, AttributeRange& attributeRange);
 void from_json(const json& j, ParticlePreset& preset);
 
 //ディレクトリパス設定
-TAKEC_DEFINE_JSON_DIRECTORY_PATH(ParticlePreset, "Resources/JsonLoader/ParticlePresets/");
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(ParticlePreset, "JsonLoader/ParticlePresets");

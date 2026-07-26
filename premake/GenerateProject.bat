@@ -1,46 +1,28 @@
 @echo off
-:: このバッチファイルと同じフォルダを作業ディレクトリにする
-chdir /d "%~dp0"
+setlocal
+pushd "%~dp0"
 
-echo ================================================
-echo  VSフィルタを整理しています...
-echo  (premake5 vs2022)
-echo ================================================
-echo.
+set "TOOLSET=%~1"
+if not defined TOOLSET set "TOOLSET=v143"
 
-:: 同じフォルダにある premake5.exe を直接呼ぶ
-premake5.exe --file=premake.lua vs2022
+echo Generating Visual Studio 2022 projects (PlatformToolset=%TOOLSET%)...
+"%~dp0premake5.exe" --file="%~dp0premake.lua" vs2022
+if errorlevel 1 goto :error
 
-if %errorlevel% neq 0 (
-    echo.
-    echo [エラー] プロジェクト生成に失敗しました。
-    pause
-    exit /b 1
+if /I "%TOOLSET%"=="v143" goto :success
+
+for %%F in ("%~dp0..\project\TakeCEngine.vcxproj" "%~dp0..\project\DirectXGame.vcxproj") do (
+    powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+        "$path = '%%~fF'; $content = [IO.File]::ReadAllText($path); $content = $content.Replace('<PlatformToolset>v143</PlatformToolset>', '<PlatformToolset>%TOOLSET%</PlatformToolset>'); [IO.File]::WriteAllText($path, $content, [Text.UTF8Encoding]::new($false))"
+    if errorlevel 1 goto :error
 )
 
-:: ---------------------------------------------------------------
-:: PlatformToolset を v143 -> v145 に修正する
-::   premake5 の vs2022 アクションは v143 を出力するが、
-::   このプロジェクトは v145 (Microsoft C++ Build Tools) を使用する。
-::   ライブラリ名 (assimp-vc143-mtd.lib 等) は変えないよう
-::   タグごと完全一致で置換する。
-:: ---------------------------------------------------------------
-echo [後処理] PlatformToolset を v143 -^> v145 に修正しています...
-powershell -NoProfile -Command ^
-    "(Get-Content '..\project\DirectXGame.vcxproj') ^
-        -replace '<PlatformToolset>v143</PlatformToolset>', '<PlatformToolset>v145</PlatformToolset>' ^
-    | Set-Content '..\project\DirectXGame.vcxproj'"
+:success
+echo Generated: %~dp0..\project\DirectXGame.sln
+popd
+exit /b 0
 
-if %errorlevel% neq 0 (
-    echo.
-    echo [エラー] PlatformToolset の修正に失敗しました。
-    pause
-    exit /b 1
-)
-
-echo.
-echo [完了] プロジェクトファイルを生成しました。
-echo   出力先: ..\project\DirectXGame.sln
-echo.
-echo Visual Studio でソリューションを開き直すとフィルタが反映されます。
-pause
+:error
+echo Project generation failed.
+popd
+exit /b 1

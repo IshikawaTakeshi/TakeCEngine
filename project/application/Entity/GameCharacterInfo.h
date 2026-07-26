@@ -135,5 +135,5 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ColliderInfo, offset, halfSize)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BreakGaugeInfo, breakGauge, maxBreakGauge, decayRate, stunDuration,stunGraceDuration, isStunned)
 
 //データ保存先ディレクトリパスの設定
-TAKEC_DEFINE_JSON_DIRECTORY_PATH(PlayableCharacterInfo, "Resources/JsonLoader/GameCharacters/");
-TAKEC_DEFINE_JSON_DIRECTORY_PATH(CharacterData, "Resources/JsonLoader/GameCharacterData/");
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(PlayableCharacterInfo, "JsonLoader/GameCharacters");
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(CharacterData, "JsonLoader/GameCharacterData");

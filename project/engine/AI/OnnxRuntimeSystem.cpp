@@ -2,6 +2,7 @@
 #include <cassert>
 #include <exception>
 #include "engine/Utility/Logger.h"
+#include "engine/Utility/ResourcePath.h"
 
 using namespace TakeC;
 
@@ -67,10 +68,19 @@ OnnxModel* TakeC::OnnxRuntimeSystem::LoadModel(const std::string& name, const st
 		return loadedModel;
 	}
 
+	std::filesystem::path resolvedModelPath(modelPath);
+	if (!resolvedModelPath.is_absolute()) {
+		resolvedModelPath = ResourcePath::Game(resolvedModelPath);
+	}
+
 	// 新しいモデルをロード
 	auto model = std::make_unique<OnnxModel>();
 	try {
-		if (!model->Initialize(*env_, modelPath, dmlDevice_.Get(), dxCommon_->GetCommandQueue())) {
+		if (!model->Initialize(
+			*env_,
+			resolvedModelPath.wstring(),
+			dmlDevice_.Get(),
+			dxCommon_->GetCommandQueue())) {
 			Logger::Log("\n OnnxModel load failed.\n");
 			return nullptr;
 		}

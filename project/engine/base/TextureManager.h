@@ -17,6 +17,7 @@
 
 #include "engine/base/DirectXCommon.h"
 #include "engine/base/ComPtrAliasTemplates.h"
+#include "engine/Utility/ResourcePath.h"
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
 
@@ -60,6 +61,11 @@ namespace TakeC {
 			DirectX::TexMetadata metadata; //テクスチャのメタデータ
 		};
 
+		struct TextureLoadRequest {
+			std::string filePath;
+			ResourceDomain domain = ResourceDomain::Game;
+		};
+
 	public:
 
 		//================================================================================
@@ -94,7 +100,10 @@ namespace TakeC {
 		/// <param name="filePath">テクスチャファイルのパス</param>
 		/// <param name="forceReload">強制再読み込みフラグ</param>
 		/// <returns>画像イメージデータ</returns>
-		void LoadTexture(const std::string& filePath, bool forceReload);
+		void LoadTexture(
+			const std::string& filePath,
+			bool forceReload,
+			ResourceDomain domain = ResourceDomain::Game);
 
 		/// <summary>
 		/// 全テクスチャの読み込み
@@ -146,7 +155,11 @@ namespace TakeC {
 		/// <param name="outImage"></param>
 		/// <param name="outMetadata"></param>
 		/// <returns></returns>
-		bool DecodeTexture(const std::string& filePath, DirectX::ScratchImage& outImage, DirectX::TexMetadata& outMetadata);
+		bool DecodeTexture(
+			const std::string& filePath,
+			ResourceDomain domain,
+			DirectX::ScratchImage& outImage,
+			DirectX::TexMetadata& outMetadata);
 
 		/// <summary>
 		/// ミップマップの生成
@@ -200,6 +213,7 @@ namespace TakeC {
 
 		//テクスチャデータのリスト
 		std::unordered_map<std::string, TextureData> textureDatas_;
+		std::unordered_map<std::string, ResourceDomain> textureDomains_;
 		//テクスチャファイルの更新時刻を管理するマップ
 		std::unordered_map<std::string, time_t> fileUpdateTimes_;
 
@@ -208,7 +222,7 @@ namespace TakeC {
 
 		std::vector<std::thread> workerThreads_;
 		// リクエスト（読み込み依頼）
-		std::queue<std::string> requestQueue_;
+		std::queue<TextureLoadRequest> requestQueue_;
 		// 完了（CPU処理済み）
 		std::queue<TextureCPUData> completedQueue_;
 		std::mutex mutex_; // queue用
