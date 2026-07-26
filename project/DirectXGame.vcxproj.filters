@@ -330,9 +330,6 @@
     <ClCompile Include="application\Entity\State\StateFloating.cpp">
       <Filter>application\Entity\State</Filter>
     </ClCompile>
-    <ClCompile Include="application\Provider\EnemyInputProvider.cpp">
-      <Filter>application\Provider</Filter>
-    </ClCompile>
     <ClCompile Include="application\Entity\State\StateJumping.cpp">
       <Filter>application\Entity\State</Filter>
     </ClCompile>
@@ -347,9 +344,6 @@
     </ClCompile>
     <ClCompile Include="application\Entity\State\StateChargeShootStun.cpp">
       <Filter>application\Entity\State</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Entity\Enemy\BulletSensor.cpp">
-      <Filter>application\Entity\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="application\Effect\BoostEffect.cpp">
       <Filter>application\Effect</Filter>
@@ -444,9 +438,6 @@
     <ClCompile Include="engine\Collision\CollisionManager.cpp">
       <Filter>engine\Collision</Filter>
     </ClCompile>
-    <ClCompile Include="application\Ground\Ground.cpp">
-      <Filter>application\Ground</Filter>
-    </ClCompile>
     <ClCompile Include="application\UI\HPBar.cpp">
       <Filter>application\UI</Filter>
     </ClCompile>
@@ -479,9 +470,6 @@
     </ClCompile>
     <ClCompile Include="application\Weapon\Bullet\BulletManager.cpp">
       <Filter>application\Weapon\Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Entity\Enemy\Enemy.cpp">
-      <Filter>application\Entity\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="engine\PostEffect\Dissolve.cpp">
       <Filter>engine\PostEffect</Filter>
@@ -694,9 +682,6 @@
     <ClCompile Include="engine\3d\Primitive\Ring.cpp">
       <Filter>engine\3d\Primitive</Filter>
     </ClCompile>
-    <ClCompile Include="application\Entity\Player\Player.cpp">
-      <Filter>application\Entity\Player</Filter>
-    </ClCompile>
     <ClCompile Include="engine\PostEffect\PostEffect.cpp">
       <Filter>engine\PostEffect</Filter>
     </ClCompile>
@@ -753,9 +738,6 @@
     </ClCompile>
     <ClCompile Include="application\UI\PlayerReticle.cpp">
       <Filter>application\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Provider\PlayerInputProvider.cpp">
-      <Filter>application\Provider</Filter>
     </ClCompile>
     <ClCompile Include="application\Provider\PlayerKeyInput.cpp">
       <Filter>application\Provider</Filter>
@@ -954,9 +936,6 @@
     <ClInclude Include="application\Entity\BoostDirectionEnum.h">
       <Filter>application\Entity</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\Enemy\ActionWeightParam.h">
-      <Filter>application\Entity\Enemy</Filter>
-    </ClInclude>
     <ClInclude Include="application\Provider\Enum\PauseMenuInputEnum.h">
       <Filter>application\Provider\Enum</Filter>
     </ClInclude>
@@ -980,9 +959,6 @@
     </ClInclude>
     <ClInclude Include="application\Entity\State\GameCharacterState.h">
       <Filter>application\Entity\State</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\Player\PlayerData.h">
-      <Filter>application\Entity\Player</Filter>
     </ClInclude>
     <ClInclude Include="application\Entity\WeaponUnit.h">
       <Filter>application\Entity</Filter>
@@ -1059,9 +1035,6 @@
     <ClInclude Include="application\Entity\State\StateFloating.h">
       <Filter>application\Entity\State</Filter>
     </ClInclude>
-    <ClInclude Include="application\Provider\EnemyInputProvider.h">
-      <Filter>application\Provider</Filter>
-    </ClInclude>
     <ClInclude Include="application\Entity\State\StateJumping.h">
       <Filter>application\Entity\State</Filter>
     </ClInclude>
@@ -1076,9 +1049,6 @@
     </ClInclude>
     <ClInclude Include="application\Entity\State\StateChargeShootStun.h">
       <Filter>application\Entity\State</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\Enemy\BulletSensor.h">
-      <Filter>application\Entity\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="application\Effect\BoostEffect.h">
       <Filter>application\Effect</Filter>
@@ -1221,9 +1191,6 @@
     <ClInclude Include="engine\Collision\CollisionManager.h">
       <Filter>engine\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="application\Ground\Ground.h">
-      <Filter>application\Ground</Filter>
-    </ClInclude>
     <ClInclude Include="application\UI\HPBar.h">
       <Filter>application\UI</Filter>
     </ClInclude>
@@ -1259,9 +1226,6 @@
     </ClInclude>
     <ClInclude Include="application\Weapon\Bullet\BulletManager.h">
       <Filter>application\Weapon\Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Entity\Enemy\Enemy.h">
-      <Filter>application\Entity\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="engine\PostEffect\Dissolve.h">
       <Filter>engine\PostEffect</Filter>
@@ -1428,9 +1392,6 @@
     <ClInclude Include="engine\3d\Primitive\PrimitiveDrawer.h">
       <Filter>engine\3d\Primitive</Filter>
     </ClInclude>
-    <ClInclude Include="application\Entity\Player\Player.h">
-      <Filter>application\Entity\Player</Filter>
-    </ClInclude>
     <ClInclude Include="engine\PostEffect\PostEffect.h">
       <Filter>engine\PostEffect</Filter>
     </ClInclude>
@@ -1477,9 +1438,6 @@
       <Filter>application\UI</Filter>
     </ClInclude>
     <ClInclude Include="application\Provider\BaseInputProvider.h">
-      <Filter>application\Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Provider\PlayerInputProvider.h">
       <Filter>application\Provider</Filter>
     </ClInclude>
     <ClInclude Include="engine\Input\InputMapper.h">

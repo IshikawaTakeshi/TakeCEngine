@@ -14,7 +14,6 @@
 #include "base/Particle/ParticleManager.h"
 #include "3d/Particle/ParticleEmitter.h"
 #include "SkyBox/SkyBox.h"
-#include "Ground/Ground.h"
 
 //============================================================================
 // GameOverScene class
