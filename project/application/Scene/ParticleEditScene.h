@@ -1,5 +1,5 @@
 #pragma once
-#include "BaseScene.h"
+#include "engine/Scene/BaseScene.h"
 #include "camera/Camera.h"
 #include "SkyBox/SkyBox.h"
 #include "2d/Sprite.h"

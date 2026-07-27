@@ -28,6 +28,9 @@ void MyGame::Initialize(const std::wstring& titleName) {
 
 	//シーンマネージャーのセット
 	SceneManager::GetInstance().SetSceneFactory(sceneFactory_.get());
+	SceneManager::GetInstance().SetDebugSceneNames({
+		"GAMEPLAY", "TITLE", "GAMEOVER", "GAMECLEAR", "PARTICLEEDITOR", "ENEMYSELECT"
+	});
 
 	//影描画用レンダ���テクスチャの生成
 	shadowRenderTexture_ = std::make_unique<RenderTexture>();

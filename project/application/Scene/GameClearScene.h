@@ -1,5 +1,5 @@
 #pragma once
-#include "BaseScene.h"
+#include "engine/Scene/BaseScene.h"
 
 #include "Audio.h"
 #include "Camera.h"

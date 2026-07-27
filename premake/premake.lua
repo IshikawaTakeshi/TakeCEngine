@@ -33,95 +33,29 @@ workspace "TakeCEngine"
 
     filter {}
 
+local repositoryRoot = ".."
 local projectRoot = "../project"
-local engineRoot = projectRoot .. "/engine"
 local applicationRoot = projectRoot .. "/application"
 local externalsRoot = projectRoot .. "/externals"
-local packagesRoot = projectRoot .. "/packages"
 
-local commonIncludeDirs = {
-    projectRoot,
-    engineRoot,
-    engineRoot .. "/2d",
-    engineRoot .. "/3d",
-    engineRoot .. "/audio",
-    engineRoot .. "/base",
-    engineRoot .. "/io",
-    engineRoot .. "/scene",
-    engineRoot .. "/math",
-    engineRoot .. "/camera",
-    applicationRoot,
-    externalsRoot,
-    externalsRoot .. "/assimp/include",
-    externalsRoot .. "/DirectXTex",
-    externalsRoot .. "/imgui",
-    externalsRoot .. "/nlohmann",
-    externalsRoot .. "/magic_enum",
-    externalsRoot .. "/ImNodeFlow-1.2.2/include",
-    packagesRoot,
-    packagesRoot .. "/Microsoft.AI.DirectML.1.15.4/include",
-    packagesRoot .. "/Microsoft.Direct3D.DXC.1.9.2602.24/build/native/include",
-    packagesRoot .. "/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/build/native/include"
+dofile(path.join(_SCRIPT_DIR, "TakeCEngineProject.lua"))
+DefineTakeCEngineProject {
+    repositoryRoot = repositoryRoot,
+    projectLocation = projectRoot,
+    targetDir = projectRoot .. "/bin/%{cfg.buildcfg}",
+    objectDir = projectRoot .. "/obj/%{prj.name}/%{cfg.buildcfg}"
 }
-
-project "TakeCEngine"
-    location (projectRoot)
-    kind "StaticLib"
-    targetdir (projectRoot .. "/bin/%{cfg.buildcfg}")
-    objdir (projectRoot .. "/obj/%{prj.name}/%{cfg.buildcfg}")
-    includedirs (commonIncludeDirs)
-
-    files {
-        engineRoot .. "/**.h",
-        engineRoot .. "/**.hpp",
-        engineRoot .. "/**.cpp",
-        projectRoot .. "/Resources/shaders/**.hlsl",
-        externalsRoot .. "/imgui/**.h",
-        externalsRoot .. "/imgui/**.cpp",
-        externalsRoot .. "/DirectXTex/**.h",
-        externalsRoot .. "/DirectXTex/**.cpp",
-
-        -- These scene abstractions are currently required by TakeCFrameWork.
-        -- They remain here during the transition and can be moved into engine later.
-        applicationRoot .. "/Scene/AbstractSceneFactory.h",
-        applicationRoot .. "/Scene/BaseScene.h",
-        applicationRoot .. "/Scene/LevelData.h",
-        applicationRoot .. "/Scene/SceneManager.h",
-        applicationRoot .. "/Scene/SceneManager.cpp",
-        applicationRoot .. "/Scene/SceneTransition.h",
-        applicationRoot .. "/Scene/SceneTransition.cpp"
-    }
-
-    -- GPU compression sources require generated shader .inc files that are not
-    -- included in this repository. CPU texture loading remains available.
-    removefiles {
-        externalsRoot .. "/DirectXTex/BCDirectCompute.cpp",
-        externalsRoot .. "/DirectXTex/DirectXTexCompressGPU.cpp"
-    }
-
-    vpaths {
-        ["Engine/*"] = { engineRoot .. "/**" },
-        ["Engine/Scene/*"] = { applicationRoot .. "/Scene/**" },
-        ["Shaders/*"] = { projectRoot .. "/Resources/shaders/**" },
-        ["External/imgui/*"] = { externalsRoot .. "/imgui/**" },
-        ["External/DirectXTex/*"] = { externalsRoot .. "/DirectXTex/**" }
-    }
-
-    filter "files:**.hlsl"
-        buildaction "None"
-
-    filter { "files:../project/externals/**.cpp" }
-        warnings "Off"
-
-    filter {}
 
 project "DirectXGame"
     location (projectRoot)
     kind "WindowedApp"
     targetdir (projectRoot .. "/bin/%{cfg.buildcfg}")
     objdir (projectRoot .. "/obj/%{prj.name}/%{cfg.buildcfg}")
-    includedirs (commonIncludeDirs)
-    dependson { "TakeCEngine" }
+    debugdir (projectRoot)
+    includedirs {
+        applicationRoot,
+        externalsRoot .. "/ImNodeFlow-1.2.2/include"
+    }
 
     files {
         applicationRoot .. "/**.h",
@@ -138,11 +72,6 @@ project "DirectXGame"
         projectRoot .. "/packages.config"
     }
 
-    removefiles {
-        applicationRoot .. "/Scene/SceneManager.cpp",
-        applicationRoot .. "/Scene/SceneTransition.cpp"
-    }
-
     vpaths {
         ["Application/*"] = { applicationRoot .. "/**" },
         ["External/ImNodeFlow/*"] = { externalsRoot .. "/ImNodeFlow-1.2.2/**" },
@@ -154,40 +83,4 @@ project "DirectXGame"
         }
     }
 
-    links {
-        "TakeCEngine",
-        "DirectML",
-        "onnxruntime",
-        "mfplat",
-        "mf",
-        "mfreadwrite",
-        "mfuuid",
-        "dxguid"
-    }
-
-    libdirs {
-        packagesRoot .. "/Microsoft.AI.DirectML.1.15.4/bin/x64-win",
-        packagesRoot .. "/Microsoft.Direct3D.DXC.1.9.2602.24/build/native/lib/x64",
-        packagesRoot .. "/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/runtimes/win-x64/native",
-        externalsRoot .. "/assimp/lib/Debug",
-        externalsRoot .. "/assimp/lib/Release"
-    }
-
-    filter "configurations:Debug"
-        links { "assimp-vc143-mtd" }
-
-    filter "configurations:Develop"
-        links { "assimp-vc143-mt" }
-
-    filter "configurations:Release"
-        links { "assimp-vc143-mt" }
-
-    filter {}
-
-    postbuildcommands {
-        '{COPYFILE} "' .. packagesRoot .. '/Microsoft.AI.DirectML.1.15.4/bin/x64-win/DirectML.dll" "%{cfg.targetdir}"',
-        '{COPYFILE} "' .. packagesRoot .. '/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/runtimes/win-x64/native/onnxruntime.dll" "%{cfg.targetdir}"',
-        '{COPYFILE} "' .. packagesRoot .. '/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/runtimes/win-x64/native/onnxruntime_providers_shared.dll" "%{cfg.targetdir}"',
-        '{COPYFILE} "' .. packagesRoot .. '/Microsoft.Direct3D.DXC.1.9.2602.24/build/native/bin/x64/dxcompiler.dll" "%{cfg.targetdir}"',
-        '{COPYFILE} "' .. packagesRoot .. '/Microsoft.Direct3D.DXC.1.9.2602.24/build/native/bin/x64/dxil.dll" "%{cfg.targetdir}"'
-    }
+    ConfigureTakeCEngineConsumer { repositoryRoot = repositoryRoot }

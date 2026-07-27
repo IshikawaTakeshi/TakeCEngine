@@ -1,5 +1,5 @@
 #pragma once
-#include "AbstractSceneFactory.h"
+#include "engine/Scene/AbstractSceneFactory.h"
 
 //============================================================================
 // SceneFactory class

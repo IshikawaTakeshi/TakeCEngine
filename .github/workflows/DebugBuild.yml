@@ -16,6 +16,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+      - name: Check engine boundary
+        run: python tools/check_engine_boundary.py
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
         with:

@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/Entity/GameCharacter.h"
 #include "engine/3d/Object3dCommon.h"
-#include "scene/LevelData.h"
+#include "application/Scene/LevelData.h"
 #include <string>
 
 //================================================================================

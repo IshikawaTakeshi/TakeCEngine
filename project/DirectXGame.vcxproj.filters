@@ -22,6 +22,9 @@
     <Filter Include="Application\Entity\Enemy">
       <UniqueIdentifier>{F2AA738E-DECF-C20E-071B-A89EF39EC12C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\Entity\LevelObject">
+      <UniqueIdentifier>{63FDB2FB-4F23-7D62-3869-022E242EA22E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Application\Entity\State">
       <UniqueIdentifier>{153C748F-0161-C30F-2AAC-A89F1630C22D}</UniqueIdentifier>
     </Filter>
@@ -204,6 +207,9 @@
     <ClInclude Include="application\Entity\GameCharacterInfo.h">
       <Filter>Application\Entity</Filter>
     </ClInclude>
+    <ClInclude Include="application\Entity\LevelObject\LevelObject.h">
+      <Filter>Application\Entity\LevelObject</Filter>
+    </ClInclude>
     <ClInclude Include="application\Entity\State\BaseGameCharacterState.h">
       <Filter>Application\Entity\State</Filter>
     </ClInclude>
@@ -258,16 +264,13 @@
     <ClInclude Include="application\Provider\PlayerPadInput.h">
       <Filter>Application\Provider</Filter>
     </ClInclude>
-    <ClInclude Include="application\Scene\AbstractSceneFactory.h">
-      <Filter>Application\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Scene\BaseScene.h">
-      <Filter>Application\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="application\Scene\EnemySelectScene.h">
       <Filter>Application\Scene</Filter>
     </ClInclude>
     <ClInclude Include="application\Scene\GameClearScene.h">
+      <Filter>Application\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Scene\GameLevel.h">
       <Filter>Application\Scene</Filter>
     </ClInclude>
     <ClInclude Include="application\Scene\GameOverScene.h">
@@ -286,9 +289,6 @@
       <Filter>Application\Scene</Filter>
     </ClInclude>
     <ClInclude Include="application\Scene\SceneFactory.h">
-      <Filter>Application\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Scene\SceneManager.h">
       <Filter>Application\Scene</Filter>
     </ClInclude>
     <ClInclude Include="application\Scene\SceneState\BaseSceneState.h">
@@ -317,9 +317,6 @@
     </ClInclude>
     <ClInclude Include="application\Scene\SceneState\SceneStateManager.h">
       <Filter>Application\Scene\SceneState</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Scene\SceneTransition.h">
-      <Filter>Application\Scene</Filter>
     </ClInclude>
     <ClInclude Include="application\Scene\TitleScene.h">
       <Filter>Application\Scene</Filter>
@@ -566,6 +563,9 @@
     <ClCompile Include="application\Entity\GameCharacterInfo.cpp">
       <Filter>Application\Entity</Filter>
     </ClCompile>
+    <ClCompile Include="application\Entity\LevelObject\LevelObject.cpp">
+      <Filter>Application\Entity\LevelObject</Filter>
+    </ClCompile>
     <ClCompile Include="application\Entity\State\BaseGameCharacterState.cpp">
       <Filter>Application\Entity\State</Filter>
     </ClCompile>
@@ -609,6 +609,9 @@
       <Filter>Application\Scene</Filter>
     </ClCompile>
     <ClCompile Include="application\Scene\GameClearScene.cpp">
+      <Filter>Application\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Scene\GameLevel.cpp">
       <Filter>Application\Scene</Filter>
     </ClCompile>
     <ClCompile Include="application\Scene\GameOverScene.cpp">

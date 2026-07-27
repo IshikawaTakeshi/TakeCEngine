@@ -1,9 +1,9 @@
 #pragma once
 #include <memory>
+#include <string>
+#include <vector>
 #include "BaseScene.h"
 #include "AbstractSceneFactory.h"
-#include "scene//LevelData.h"
-#include "engine/Entity/LevelObject/Levelobject.h"
 
 //========================================================================
 //	SceneManager class
@@ -79,25 +79,11 @@ public:
 	/// </summary>
 	void ChangeToNextScene();
 
-	/// <summary>
-	/// レベルデータの読み込み
-	/// </summary>
-	/// <param name="sceneName"></param>
-	void LoadLevelData(const std::string& sceneName);
-
-	//========================================================================
-	//	accessors
-	//========================================================================
-
-	//----- getter --------------------
-
-	/// 現在のシーンの取得
-	std::map<std::string,std::unique_ptr<LevelObject>>& GetLevelObjects() { return levelObjects_; }
-
-	//----- setter --------------------
-
 	/// シーンファクトリーのセット
 	void SetSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; }
+
+	/// デバッグUIに表示するシーン名を登録
+	void SetDebugSceneNames(std::vector<std::string> sceneNames);
 
 
 private:
@@ -110,11 +96,8 @@ private:
 	AbstractSceneFactory* sceneFactory_ = nullptr;
 
 	//ImGuiCombo用インデックス
-	uint32_t itemCurrentIdx = 0;
+	size_t itemCurrentIdx_ = 0;
+	std::vector<std::string> debugSceneNames_;
 	// 遷移時間
 	float transitionTime_ = 0.5f;
-	// レベルデータの格納
-	LevelData* levelData_; 
-	// レベル内のオブジェクトのリスト
-	std::map<std::string,std::unique_ptr<LevelObject>> levelObjects_;
 };

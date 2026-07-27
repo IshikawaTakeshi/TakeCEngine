@@ -1,7 +1,6 @@
 #pragma once
 #include "engine/3d/Particle/ParticleAttribute.h"
 #include "engine/Utility/JsonDirectoryPathData.h"
-#include "scene/LevelData.h"
 #include <iostream>
 #include <variant>
 #include <string>
@@ -30,13 +29,6 @@ namespace TakeC {
 		/// </summary>
 		JsonLoader() = default;
 		~JsonLoader() = default;
-
-		/// <summary>
-		/// ファイルから読み込む
-		/// </summary>
-		/// <param name="groupName">グループ名</param>
-		LevelData* LoadLevelFile(const std::string& groupName);
-
 
 		/// <summary>
 		/// JSONデータの保存

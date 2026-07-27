@@ -24,38 +24,28 @@
 
 ---
 
-## エンジンとしての利用
+## エンジンとゲームの分離
 
-Premakeで次の2プロジェクトを生成します。
-
-- `TakeCEngine`: `project/engine`をビルドする静的ライブラリ
-- `DirectXGame`: 現在の`project/application`を使うサンプルゲーム
-
-これにより、現在のリポジトリをエンジン兼サンプルとして残し、新しいゲーム側から
-`TakeCEngine.vcxproj`をサブプロジェクトとして参照できます。
-
-新しいゲームリポジトリでは、例えば次の構成を想定します。
+現在はリポジトリを物理分割する直前の移行用モノレポです。ディレクトリの責務は次のとおりです。
 
 ```text
-NewGame/
-├─ vendor/TakeCEngine/       # git submodule
-├─ Source/                   # 新ゲーム固有コード
-├─ Resources/                # 新ゲーム固有アセット
-└─ NewGame.sln
+project/
+├─ engine/          # TakeCEngineのソース。applicationを参照しない
+├─ EngineContent/   # シェーダー、フォント、エンジン既定画像
+├─ application/     # A_CORE固有のゲームコード
+└─ Assets/          # A_CORE固有のモデル、画像、音声、JSON、ONNX
 ```
 
-```bat
-git submodule add https://github.com/IshikawaTakeshi/TakeCEngine vendor/TakeCEngine
-vendor\TakeCEngine\premake\GenerateProject.bat v143
-```
-
-生成された`vendor/TakeCEngine/project/TakeCEngine.vcxproj`を新ゲームのソリューションへ追加し、
-ゲームプロジェクトからプロジェクト参照を設定します。ローカル環境でv145を使う場合は、
-バッチの引数を`v145`にします。
+SceneManager、BaseScene、SceneTransition、AbstractSceneFactoryは`engine/Scene`へ移動済みです。
+ゲーム固有のLevelData、LevelObject、GameLevelはapplication側に置き、エンジンからゲームへの
+逆依存をなくしています。`tools/check_engine_boundary.py`がこの境界を検査し、CIでも実行します。
 
 ### プロジェクト生成とビルド
 
-必要なNuGetパッケージは`project/packages.config`に定義されています。
+必要なNuGetパッケージは`project/packages.config`に定義されています。構成は`Debug`、
+`Develop`、`Release`の3種類です。
+
+モノレポ全体を生成・ビルドする場合:
 
 ```bat
 nuget restore project\packages.config -PackagesDirectory project\packages
@@ -63,26 +53,80 @@ premake\GenerateProject.bat v143
 msbuild project\DirectXGame.sln /p:Platform=x64 /p:Configuration=Debug /p:PlatformToolset=v143 /m
 ```
 
-構成は`Debug`、`Develop`、`Release`の3種類です。GitHub Actionsも、NuGet復元、Premake生成、
-MSBuildの順で同じ設定を再現します。
+エンジンだけを生成・ビルドする場合:
+
+```bat
+premake\GenerateEngineProject.bat v143
+msbuild project\TakeCEngine.sln /p:Platform=x64 /p:Configuration=Debug /p:PlatformToolset=v143 /m
+```
+
+ローカル環境でVisual Studio 2026を使う場合は`v143`を`v145`へ変更します。
+
+### 別ゲームから利用する
+
+分割後のゲームリポジトリは次の構成を想定しています。
+
+```text
+NewGame/
+├─ vendor/TakeCEngine/  # git submodule
+├─ Source/              # ゲーム固有コード
+├─ Assets/              # ゲーム固有アセット
+└─ premake.lua
+```
+
+ゲーム側のPremakeからエンジンの共通定義を読み込みます。
+
+```lua
+local engineRepository = "vendor/TakeCEngine"
+dofile(path.join(engineRepository, "premake/TakeCEngineProject.lua"))
+
+DefineTakeCEngineProject {
+    repositoryRoot = engineRepository,
+    projectLocation = "build/projects/TakeCEngine"
+}
+
+project "NewGame"
+    -- ゲーム側のfiles、targetdir、objdirなどを設定
+    ConfigureTakeCEngineConsumer {
+        repositoryRoot = engineRepository
+    }
+```
+
+`ConfigureTakeCEngineConsumer`はincludeパス、静的ライブラリ参照、DirectML、ONNX Runtime、
+Assimpなどのリンク設定と実行時DLLのコピーを設定します。
 
 ### リソースルート
 
-リソースパスは`Resources/...`を各機能へ直書きせず、`TakeC::ResourcePath`で解決します。
-ゲーム開始時にゲーム用とエンジン用のルートをそれぞれ指定できます。
+ゲーム開始時に、ゲーム資産とエンジン資産のルートを明示します。
 
 ```cpp
 TakeC::ResourceRootConfig resources{
-    .gameRoot = "Resources",
-    .engineRoot = "vendor/TakeCEngine/project/Resources",
+    .gameRoot = "Assets",
+    .engineRoot = "vendor/TakeCEngine/project/EngineContent",
 };
 game->Run(L"NewGame", resources);
 ```
 
-既存ゲームとの互換性のため、未指定時は両方とも`Resources`です。新ゲーム側のモデル、画像、
-音声、JSON、ONNXモデルはゲームルートから、シェーダー、フォント、エンジン既定画像は
-エンジンルートから解決されます。
+モデル、画像、音声、JSON、ONNXモデルはゲームルートから、シェーダー、フォント、エンジン
+既定画像はエンジンルートから解決されます。互換性維持のため、未指定時の既定値は両方とも
+`Resources`です。
 
-現時点では`TakeCFrameWork`が既存のシーン抽象クラスを参照しているため、Premake上では
-一部の`application/Scene`ファイルも移行用としてエンジンライブラリへ含めています。
-完全分離の次段階では、これらを`engine/Scene`へ移動してアプリケーションへの逆依存を解消します。
+### 履歴を保って2リポジトリへ分割する手順
+
+リモートリポジトリを用意した後、現在の作業をコミットし、必ず新しいclone上で
+`git filter-repo`を実行します。元の作業ディレクトリでは実行しません。
+
+1. エンジン用cloneでは`project/engine`、`project/EngineContent`、エンジンの外部依存、
+   `premake/TakeCEngineProject.lua`、`premake/engine.lua`を残してエンジン用リモートへpushする。
+2. ゲーム用cloneでは`project/application`、`project/Assets`、エントリーポイントとゲーム設定を
+   残してゲーム用リモートへpushする。
+3. ゲームリポジトリへエンジンを追加する。
+
+```bat
+git submodule add <TakeCEngineのURL> vendor/TakeCEngine
+git submodule update --init --recursive
+```
+
+4. ゲーム側Premakeを上記の共通定義へ切り替え、Debug、Develop、ReleaseをCIで確認する。
+
+実際の抽出対象とpush先を確定するには、エンジン用とゲーム用のリモートURLが必要です。

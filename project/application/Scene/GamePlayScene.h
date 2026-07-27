@@ -1,5 +1,5 @@
 #pragma once
-#include "BaseScene.h"
+#include "engine/Scene/BaseScene.h"
 
 #include "Input/Input.h"
 #include "ModelManager.h"
@@ -13,7 +13,7 @@
 #include "engine/3d/Particle/Particle3d.h"
 #include "engine/3d/Particle/ParticleCommon.h"
 #include "engine/3d/Particle/ParticleEmitter.h"
-#include "engine/Entity/LevelObject/LevelObject.h"
+#include "application/Entity/LevelObject/LevelObject.h"
 #include "engine/Utility/Timer.h"
 #include "engine/base/Particle/ParticleManager.h"
 #include "engine/camera/Camera.h"

@@ -37,9 +37,9 @@ struct LevelData {
 	/// </summary>
 	struct ColliderData {
 		std::string type; // コライダーの種類
-		Vector3 center; // コライダーの中心位置
+		Vector3 center{}; // コライダーの中心位置
 		std::variant<BoxCollider, SphereCollider> colliderData; // コライダーのデータ
-		bool isValid; // 有効かどうか
+		bool isValid = false; // 有効かどうか
 	};
 
 	// オブジェクトデータ構造体
@@ -50,9 +50,9 @@ struct LevelData {
 		std::string name; // オブジェクトの名前
 		std::string type; // オブジェクトの種類
 		std::string file_name; // モデルファイル名
-		Vector3 translation; // 位置
-		Vector3 rotation; // 回転
-		Vector3 scale; // スケール
+		Vector3 translation{}; // 位置
+		Vector3 rotation{}; // 回転
+		Vector3 scale{ 1.0f, 1.0f, 1.0f }; // スケール
 
 		ColliderData collider; // コライダー情報
 	};
