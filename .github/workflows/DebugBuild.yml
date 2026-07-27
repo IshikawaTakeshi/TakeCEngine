@@ -5,7 +5,7 @@ on:
       - master
 
 env:
-  SOLUTION_FILE_PATH: project/DirectXGame.sln
+  SOLUTION_FILE_PATH: project/TakeCEngine.sln
   CONFIGURATION: Debug
 
 jobs:

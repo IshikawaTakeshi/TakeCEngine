@@ -2,10 +2,10 @@ name: DevelopBuild
 on:
   push:
     branches:
-      - engine
+      - develop
 
 env:
-  SOLUTION_FILE_PATH: project/DirectXGame.sln
+  SOLUTION_FILE_PATH: project/TakeCEngine.sln
   CONFIGURATION: Develop
 
 jobs:
