@@ -151,17 +151,27 @@ void TakeC::ImGuiManager::CreateDockSpace() {
 //====================================================================
 void TakeC::ImGuiManager::DrawDebugScreen() {
 
+	viewportImageState_ = {};
+
 	ImGui::Begin("Viewport");
 	{
-		// Viewport内にレンダー結果を表示
 		const ImVec2 avail = ImGui::GetContentRegionAvail();
+
 		ImGui::Image(
-			ImTextureID(srvManager_->GetSrvDescriptorHandleGPU(renderTextureIndex_).ptr),
+			ImTextureID(
+				srvManager_
+				->GetSrvDescriptorHandleGPU(renderTextureIndex_)
+				.ptr),
 			avail,
 			ImVec2(0, 0),
 			ImVec2(1, 1),
-			ImVec4(1, 1, 1, 1)
-		);
+			ImVec4(1, 1, 1, 1));
+
+		viewportImageState_.minimum = ImGui::GetItemRectMin();
+		viewportImageState_.maximum = ImGui::GetItemRectMax();
+		viewportImageState_.isHovered = ImGui::IsItemHovered();
+		viewportImageState_.isLeftClicked =
+			ImGui::IsItemClicked(ImGuiMouseButton_Left);
 	}
 	ImGui::End();
 }

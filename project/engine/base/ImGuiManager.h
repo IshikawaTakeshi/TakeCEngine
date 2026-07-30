@@ -24,11 +24,24 @@ namespace TakeC {
 	template<typename T>
 	concept InputEnum = std::is_enum_v<T>;
 
+
+
 	/// <summary>
 	/// ImGuiに関する生成、更新、破棄を一元管理するクラスです。
 	/// </summary>
 	class ImGuiManager {
 	public:
+
+		struct ViewportImageState {
+			ImVec2 minimum{};
+			ImVec2 maximum{};
+			bool isHovered = false;
+			bool isLeftClicked = false;
+		};
+
+		static const ViewportImageState& GetViewportImageState() {
+			return viewportImageState_;
+		}
 
 		//====================================================================
 		// functions
@@ -152,6 +165,8 @@ namespace TakeC {
 		ImGuiWindowFlags windowFlags_ = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollWithMouse;
 		// フォントの文字コード範囲
 		ImVector<ImWchar> fontRanges;
+		// ビューポートイメージの状態
+		inline static ViewportImageState viewportImageState_{};
 	};
 
 
