@@ -375,7 +375,7 @@ bool TakeC::CameraCapture::UpdateDisplayTexture() {
 	}
 
 	// 新しいフレームがない場合は、直前に転送したテクスチャを再利用する
-	if(!displayTextureDirty_ && isDisplayTextureReady()) {
+	if(!displayTextureDirty_ && IsDisplayTextureReady()) {
 		return true;
 	}
 

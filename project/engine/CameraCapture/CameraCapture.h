@@ -156,7 +156,7 @@ namespace TakeC {
 		bool HasLastImGuiImageRect() const { return hasLastImGuiImageRect_; }
 		const ImGuiImageRect& GetLastImGuiImageRect() const { return lastImGuiImageRect_; }
 		// ImGui表示用テクスチャが準備できているかどうかを取得
-		bool isDisplayTextureReady() const { return displayTexture_ && displaySrvAllocated_; }
+		bool IsDisplayTextureReady() const { return displayTexture_ && displaySrvAllocated_; }
 
 		uint32_t GetDisplaySrvIndex() const { return displaySrvIndex_; }
 		uint32_t GetDisplayWidth() const { return displayWidth_; }
