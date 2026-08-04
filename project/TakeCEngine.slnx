@@ -5,5 +5,5 @@
     <BuildType Name="Release" />
     <Platform Name="x64" />
   </Configurations>
-  <Project Path="TakeCEngine.vcxproj" />
+  <Project Path="TakeCEngine.vcxproj" Id="832045ea-efd5-bddf-78ca-b7b6e47eb4e3" />
 </Solution>
