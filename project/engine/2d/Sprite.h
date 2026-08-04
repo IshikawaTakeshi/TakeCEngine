@@ -131,14 +131,12 @@ public:
 	// 座標設定
 	void SetTranslate(const Vector2& position) {
 		spriteConfig_.position_ = position;
-		firstUpdate_ = true;
 	}
 	// 回転設定
 	void SetRotate(const float rotation) { spriteConfig_.rotation_ = rotation; }
 	// サイズ設定
 	void SetSize(const Vector2& size) {
 		spriteConfig_.size_ = size;
-		firstUpdate_ = true;
 	}
 	// 左右フリップ設定
 	void SetIsFlipX(const bool isFlipX) { isFlipX_ = isFlipX; }
@@ -160,6 +158,7 @@ public:
 	void SetMaterialColor(const Vector4& color) {
 		mesh_->GetMaterial()->SetMaterialColor(color);
 	}
+	// アルファ値設定
 	void SetAlpha(float alpha) {
 		Vector4 color = mesh_->GetMaterial()->GetMaterialData()->color;
 		color.w = alpha;
@@ -167,9 +166,19 @@ public:
 	}
 	// テクスチャファイルパス設定
 	void SetTextureFilePath(const std::string& filePath);
+	// 外部テクスチャのSRVインデックスとサイズを設定
+	void SetExternalTexture(uint32_t srvIndex, const Vector2& textureSize) {
+		externalTextureSrvIndex_ = srvIndex;
+		externalTextureSize_ = textureSize;
+		spriteConfig_.textureLeftTop_ = { 0.0f, 0.0f };
+		spriteConfig_.textureSize_ = textureSize;
+	}
+	void ClearExternalTexture() {
+		externalTextureSrvIndex_.reset();
+	}
 	// コンフィグデータの名前を設定
 	void SetName(const std::string& name) { spriteConfig_.name = name; }
-
+	// 親行列設定
 	void SetParent(const Matrix4x4* parentMatrix) { parentMatrix_ = parentMatrix; }
 
 	// レイヤー（Zオーダー）設定
@@ -203,8 +212,9 @@ private:
 	bool isFlipX_ = false;      // 左右フリップ
 	bool isFlipY_ = false;      // 上下フリップ
 	bool adjustSwitch_ = false; // テクスチャサイズ調整スイッチ
-	bool firstUpdate_ = true;   // 初回更新フラグ
 	bool isActive_ = true;      // 表示・非表示フラグ
+	std::optional<uint32_t> externalTextureSrvIndex_; // 外部テクスチャのSRVインデックス
+	Vector2 externalTextureSize_ = { 1.0f, 1.0f }; // 外部テクスチャのサイズ
 
 	// Sprite設定データ
 	SpriteConfig spriteConfig_{};

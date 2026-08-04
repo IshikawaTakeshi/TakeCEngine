@@ -367,6 +367,27 @@ void CameraCapture::UpdateImGui(const char* windowName) {
 }
 
 //=============================================================
+// 最新フレームをGPUテクスチャへアップロード
+//=============================================================
+bool TakeC::CameraCapture::UpdateDisplayTexture() {
+	if (!GetFrameRGBA()) {
+		return false;
+	}
+
+	// 新しいフレームがない場合は、直前に転送したテクスチャを再利用する
+	if(!displayTextureDirty_ && isDisplayTextureReady()) {
+		return true;
+	}
+
+	const bool uploaded = UploadFrameToTexture();
+	if (uploaded) {
+		displayTextureDirty_ = false;
+	}
+
+	return uploaded;
+}
+
+//=============================================================
 // 最後のエラーメッセージを設定
 //=============================================================
 void CameraCapture::SetLastErrorMessage(const wchar_t* message) {

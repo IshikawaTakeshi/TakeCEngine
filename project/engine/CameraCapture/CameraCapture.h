@@ -108,6 +108,11 @@ namespace TakeC {
 		void UpdateImGui(const char* windowName = "Camera Capture");
 
 		/// <summary>
+		/// 最新フレームをGPUテクスチャへアップロード
+		/// </summary>
+		bool UpdateDisplayTexture();
+
+		/// <summary>
 		/// 初期化済みかどうかを取得
 		/// </summary>
 		/// <returns></returns>
@@ -150,6 +155,12 @@ namespace TakeC {
 		// 直近のImGui::Image表示矩形を取得
 		bool HasLastImGuiImageRect() const { return hasLastImGuiImageRect_; }
 		const ImGuiImageRect& GetLastImGuiImageRect() const { return lastImGuiImageRect_; }
+		// ImGui表示用テクスチャが準備できているかどうかを取得
+		bool isDisplayTextureReady() const { return displayTexture_ && displaySrvAllocated_; }
+
+		uint32_t GetDisplaySrvIndex() const { return displaySrvIndex_; }
+		uint32_t GetDisplayWidth() const { return displayWidth_; }
+		uint32_t GetDisplayHeight() const { return displayHeight_; }
 
 	private:
 
@@ -215,6 +226,8 @@ namespace TakeC {
 		bool comInitialized_ = false;
 		// 新しいフレームがあるかどうか
 		bool hasNewFrame_ = false;
+		// ImGui表示用リソースが確保されているかどうか
+		bool displayTextureDirty_ = false;
 
 		// Media Foundationのオブジェクト
 		ComPtr<IMFMediaSource> mediaSource_;
