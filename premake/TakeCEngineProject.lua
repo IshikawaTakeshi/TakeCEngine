@@ -30,6 +30,7 @@ function TakeCEngineIncludeDirs(repositoryRoot)
         path.join(paths.externalsRoot, "assimp/include"),
         path.join(paths.externalsRoot, "DirectXTex"),
         path.join(paths.externalsRoot, "imgui"),
+        path.join(paths.externalsRoot, "ImGuizmo"),
         path.join(paths.externalsRoot, "nlohmann"),
         path.join(paths.externalsRoot, "magic_enum"),
         paths.packagesRoot,
@@ -57,6 +58,8 @@ function DefineTakeCEngineProject(options)
             path.join(paths.contentRoot, "shaders/**.hlsl"),
             path.join(paths.externalsRoot, "imgui/**.h"),
             path.join(paths.externalsRoot, "imgui/**.cpp"),
+            path.join(paths.externalsRoot, "ImGuizmo/**.h"),
+            path.join(paths.externalsRoot, "ImGuizmo/**.cpp"),
             path.join(paths.externalsRoot, "DirectXTex/**.h"),
             path.join(paths.externalsRoot, "DirectXTex/**.cpp")
         }
@@ -71,6 +74,7 @@ function DefineTakeCEngineProject(options)
             ["Engine/Scene/*"] = { path.join(paths.engineRoot, "Scene/**") },
             ["Shaders/*"] = { path.join(paths.contentRoot, "shaders/**") },
             ["External/imgui/*"] = { path.join(paths.externalsRoot, "imgui/**") },
+            ["External/ImGuizmo/**"] = {path.join(paths.externalsRoot, "ImGuizmo/**") },
             ["External/DirectXTex/*"] = { path.join(paths.externalsRoot, "DirectXTex/**") }
         }
 
