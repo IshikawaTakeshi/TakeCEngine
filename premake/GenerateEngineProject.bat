@@ -3,16 +3,16 @@ setlocal
 pushd "%~dp0"
 
 set "TOOLSET=%~1"
-if not defined TOOLSET set "TOOLSET=v143"
+if not defined TOOLSET set "TOOLSET=v145"
 
 echo Generating TakeCEngine standalone project (PlatformToolset=%TOOLSET%)...
-"%~dp0premake5.exe" --file="%~dp0engine.lua" vs2022
+"%~dp0premake5.exe" --file="%~dp0engine.lua" vs2026
 if errorlevel 1 goto :error
 
-if /I "%TOOLSET%"=="v143" goto :success
+if /I "%TOOLSET%"=="v145" goto :success
 
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-    "$path = '%~dp0..\project\TakeCEngine.vcxproj'; $content = [IO.File]::ReadAllText($path); $content = $content.Replace('<PlatformToolset>v143</PlatformToolset>', '<PlatformToolset>%TOOLSET%</PlatformToolset>'); [IO.File]::WriteAllText($path, $content, [Text.UTF8Encoding]::new($false))"
+    "$path = '%~dp0..\project\TakeCEngine.vcxproj'; $content = [IO.File]::ReadAllText($path); $content = $content.Replace('<PlatformToolset>v145</PlatformToolset>', '<PlatformToolset>%TOOLSET%</PlatformToolset>'); [IO.File]::WriteAllText($path, $content, [Text.UTF8Encoding]::new($false))"
 if errorlevel 1 goto :error
 
 :success
