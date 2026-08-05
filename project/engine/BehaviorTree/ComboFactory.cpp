@@ -1,196 +1,77 @@
 #include "ComboFactory.h"
+
+#include "CompositeNode.h"
 #include "engine/Base/TakeCFrameWork.h"
-#include "engine/Base/ImGuiManager.h"
-#include "engine/Utility/StringUtility.h"
-#include "application/Entity/Behavior/SetBlackboardBoolNode.h"
-#include "application/Entity/Behavior/SetBlackboardStringNode.h"
-#include "application/Entity/Behavior/WaitNode.h"
-#include "application/Entity/Behavior/WaitBlackboardTimeNode.h"
-#include "application/Entity/Behavior/ScoreConditionNode.h"
 
-//========================================================================
-// JSONファイルからコンボセットを読み込み、ツリーを構築
-//========================================================================
-std::unique_ptr<BehaviorNode> ComboFactory::LoadComboSetData(
-	const std::string& comboSetFilePath,
-	GameCharacterStateManager* stateManager) {
-	ComboSetData comboSetData = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<ComboSetData>(comboSetFilePath);
-	return BuildBehaviorTree(comboSetData, stateManager);
+#include <utility>
+
+namespace TakeC {
+
+ComboFactory::ComboFactory()
+	: registry_(&defaultRegistry_) {
+	RegisterBuiltInBehaviorNodes(defaultRegistry_);
 }
 
-//========================================================================
-// ComboSetData からビヘイビアツリーを構築
-//========================================================================
-std::unique_ptr<BehaviorNode> ComboFactory::BuildBehaviorTree(
-	const ComboSetData& comboSetData,
-	GameCharacterStateManager* stateManager) {
-	// ルートノードの生成
-	std::unique_ptr<CompositeNode> root;
-	if (comboSetData.rootType == "SEQUENCE") {
-		root = std::make_unique<SequenceNode>();
-	} else if (comboSetData.rootType == "PLANNER_SELECTOR") {
-		root = std::make_unique<PlannerSelectorNode>();
-	} else if (comboSetData.rootType == "WEIGHT_SELECTOR") {
-		root = std::make_unique<WeightSelectorNode>();
-	} else {
-		// SELECTOR または不明な場合は SelectorNodeにフォールバック
-		root = std::make_unique<SelectorNode>();
-	}
-	root->SetName(comboSetData.setName);
+ComboFactory::ComboFactory(BehaviorNodeRegistry& registry)
+	: registry_(&registry) {}
 
-	// 各コンボを子として追加
-	for (const auto& comboData : comboSetData.combos) {
-		auto comboNode = BuildNode(comboData.rootNode, stateManager);
-		if (comboNode) {
-			comboNode->SetName(comboData.comboName);
-			root->AddChild(std::move(comboNode));
-		}
-	}
-
-	// フォールバック（空ツリー時のみ）
-	if (root->GetChildren().empty()) {
-		root->AddChild(std::make_unique<ActionNode>(
-			GameCharacterState::RUNNING, stateManager, "DefaultRunning"));
-	}
-
-	return root;
+std::unique_ptr<BehaviorNode> ComboFactory::LoadBehaviorTreeAsset(const std::string& assetFilePath) {
+	const BehaviorTreeAsset asset =
+		TakeCFrameWork::GetJsonLoader()->LoadJsonData<BehaviorTreeAsset>(assetFilePath);
+	return BuildBehaviorTree(asset);
 }
 
-//========================================================================
-// ノードデータから再帰的にノードを構築
-//========================================================================
-std::unique_ptr<BehaviorNode> ComboFactory::BuildNode(
-	const BehaviorNodeData& nodeData,
-	GameCharacterStateManager* stateManager) {
-	BehaviorNodeType type = StringUtility::StringToEnum<BehaviorNodeType>(nodeData.nodeType);
+std::unique_ptr<BehaviorNode> ComboFactory::LoadBehaviorTreeAsset(
+	const std::filesystem::path& directory,
+	const std::string& assetFilePath) {
+	return LoadBehaviorTreeAsset(*TakeCFrameWork::GetJsonLoader(), directory, assetFilePath);
+}
 
-	switch (type) {
-	case BehaviorNodeType::ACTION:
-		return BuildActionNode(nodeData, stateManager);
+std::unique_ptr<BehaviorNode> ComboFactory::LoadBehaviorTreeAsset(
+	JsonLoader& jsonLoader,
+	const std::filesystem::path& directory,
+	const std::string& assetFilePath) {
+	const BehaviorTreeAsset asset = jsonLoader.LoadJsonDataAt<BehaviorTreeAsset>(directory, assetFilePath);
+	return BuildBehaviorTree(asset);
+}
 
-	case BehaviorNodeType::CONDITION:
-		return BuildConditionNode(nodeData);
-
-	case BehaviorNodeType::SET_BB_BOOL:
-	{
-		auto node = std::make_unique<SetBlackboardBoolNode>(nodeData.bbKey, nodeData.bbValue, nodeData.name);
-		node->SetUID(nodeData.nodeUID);
-		return node;
-	}
-
-	case BehaviorNodeType::SET_BB_STRING:
-	{
-		auto node = std::make_unique<SetBlackboardStringNode>(nodeData.bbKey, nodeData.bbStringValue, nodeData.name);
-		node->SetUID(nodeData.nodeUID);
-		return node;
-	}
-
-	case BehaviorNodeType::SEQUENCE:
-	{
-		auto composite = std::make_unique<SequenceNode>();
-		composite->SetName(nodeData.name);
-		for (const auto& child : nodeData.children) {
-			auto childNode = BuildNode(child, stateManager);
-			if (childNode) {
-				composite->AddChild(std::move(childNode));
-			}
-		}
-		composite->SetUID(nodeData.nodeUID);
-		return composite;
-	}
-
-	case BehaviorNodeType::SELECTOR:
-	{
-		auto composite = std::make_unique<SelectorNode>();
-		composite->SetName(nodeData.name);
-		for (const auto& child : nodeData.children) {
-			auto childNode = BuildNode(child, stateManager);
-			if (childNode) {
-				composite->AddChild(std::move(childNode));
-			}
-		}
-		composite->SetUID(nodeData.nodeUID);
-		return composite;
-	}
-
-	case BehaviorNodeType::PLANNER_SELECTOR:
-	{
-		auto composite = std::make_unique<PlannerSelectorNode>();
-		composite->SetName(nodeData.name);
-		for (const auto& child : nodeData.children) {
-			auto childNode = BuildNode(child, stateManager);
-			if (childNode) {
-				composite->AddChild(std::move(childNode));
-			}
-		}
-		composite->SetUID(nodeData.nodeUID);
-		return composite;
-	}
-
-	case BehaviorNodeType::WEIGHT_SELECTOR:
-	{
-		auto composite = std::make_unique<WeightSelectorNode>();
-		composite->SetName(nodeData.name);
-		for (const auto& child : nodeData.children) {
-			auto childNode = BuildNode(child, stateManager);
-			if (childNode) {
-				composite->AddChild(std::move(childNode));
-			}
-		}
-		composite->SetUID(nodeData.nodeUID);
-		return composite;
-	}
-
-	case BehaviorNodeType::WAIT:
-	{
-		auto node = std::make_unique<WaitNode>(nodeData.waitTime, nodeData.name);
-		node->SetUID(nodeData.nodeUID);
-		return node;
-	}
-
-	case BehaviorNodeType::WAIT_BB_TIME:
-	{
-		auto node = std::make_unique<WaitBlackboardTimeNode>(nodeData.bbKey, nodeData.name);
-		node->SetUID(nodeData.nodeUID);
-		return node;
-	}
-
-	case BehaviorNodeType::SCORE_CONDITION:
-	{
-		auto node = std::make_unique<ScoreConditionNode>([]() { return 0.0f; }, nodeData.conditionThreshold, nodeData.name);
-		node->SetUID(nodeData.nodeUID);
-		return node;
-	}
-
-	default:
+std::unique_ptr<BehaviorNode> ComboFactory::BuildBehaviorTree(const BehaviorTreeAsset& asset) const {
+	if (!Validate(asset).IsValid()) {
 		return nullptr;
 	}
+	return BuildNode(asset.root);
 }
 
-//========================================================================
-// ACTIONノードのビルド
-//========================================================================
-std::unique_ptr<BehaviorNode> ComboFactory::BuildActionNode(
-	const BehaviorNodeData& nodeData,
-	GameCharacterStateManager* stateManager) {
-	GameCharacterState state = StringUtility::StringToEnum<GameCharacterState>(nodeData.targetState);
-	auto node = std::make_unique<ActionNode>(state, stateManager, nodeData.name);
-	node->SetUID(nodeData.nodeUID);
+BehaviorTreeValidationResult ComboFactory::Validate(const BehaviorTreeAsset& asset) const {
+	return BehaviorTreeAssetValidator::Validate(asset, *registry_);
+}
+
+std::unique_ptr<BehaviorNode> ComboFactory::LoadComboSetData(const std::string& comboSetFilePath) {
+	const ComboSetData comboSetData =
+		TakeCFrameWork::GetJsonLoader()->LoadJsonData<ComboSetData>(comboSetFilePath);
+	return BuildBehaviorTree(comboSetData);
+}
+
+std::unique_ptr<BehaviorNode> ComboFactory::BuildBehaviorTree(const ComboSetData& comboSetData) const {
+	return BuildBehaviorTree(ConvertComboSetToBehaviorTreeAsset(comboSetData));
+}
+
+std::unique_ptr<BehaviorNode> ComboFactory::BuildNode(const BehaviorNodeData& nodeData) const {
+	std::unique_ptr<BehaviorNode> node = registry_->Create(nodeData);
+	if (!node) {
+		return nullptr;
+	}
+
+	if (auto* composite = dynamic_cast<CompositeNode*>(node.get())) {
+		for (const BehaviorNodeData& childData : nodeData.children) {
+			std::unique_ptr<BehaviorNode> child = BuildNode(childData);
+			if (child) {
+				composite->AddChild(std::move(child));
+			}
+		}
+	}
+
 	return node;
 }
 
-//========================================================================
-// CONDITIONノードのビルド
-//========================================================================
-std::unique_ptr<BehaviorNode> ComboFactory::BuildConditionNode(
-	const BehaviorNodeData& nodeData) {
-	// JSONから読んだ field, op, value をそのまま渡すだけ
-	auto node = std::make_unique<ConditionNode>(
-		nodeData.field,
-		nodeData.op,
-		nodeData.conditionThreshold,
-		nodeData.name
-	);
-	node->SetUID(nodeData.nodeUID);
-	return node;
-}
+} // namespace TakeC

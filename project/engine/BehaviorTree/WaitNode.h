@@ -1,5 +1,5 @@
 #pragma once
-#include "application/Entity/Behavior/BehaviorNode.h"
+#include "BehaviorNode.h"
 
 //============================================================================
 // WaitNode: 指定秒数だけ Running を返し続け、経過後 Success を返す

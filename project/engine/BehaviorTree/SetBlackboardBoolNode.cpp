@@ -1,5 +1,5 @@
 #include "SetBlackboardBoolNode.h"
-#include "application/Entity/Behavior/Blackboard.h"
+#include "Blackboard.h"
 
 //====================================================================
 // コンストラクタ
@@ -14,7 +14,7 @@ SetBlackboardBoolNode::SetBlackboardBoolNode(const std::string& key, bool value,
 //====================================================================
 BehaviorStatus SetBlackboardBoolNode::Execute(Blackboard& blackboard) {
 	// 指定されたキーにbool値をセットする
-	blackboard.SetValue<bool>(key_, value_);
+	blackboard.Set(key_, value_);
 	return BehaviorStatus::Success; // 実行は即座に成功する
 }
 

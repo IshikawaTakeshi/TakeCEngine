@@ -1,5 +1,121 @@
 #include "BehaviorTreeUtil.h"
 
+namespace {
+
+void RemoveEditorLayout(nlohmann::json& nodeJson) {
+	nodeJson.erase("posX");
+	nodeJson.erase("posY");
+	nodeJson.erase("sizeW");
+	nodeJson.erase("sizeH");
+	if (nodeJson.contains("children") && nodeJson["children"].is_array()) {
+		for (auto& child : nodeJson["children"]) {
+			RemoveEditorLayout(child);
+		}
+	}
+}
+
+} // namespace
+
+void to_json(nlohmann::json& j, const BehaviorEditorNodeData& data) {
+	nlohmann::json nodeJson;
+	to_json(nodeJson, data.node);
+	RemoveEditorLayout(nodeJson);
+	j = nlohmann::json{
+		{"node", std::move(nodeJson)},
+		{"posX", data.posX},
+		{"posY", data.posY},
+		{"sizeW", data.sizeW},
+		{"sizeH", data.sizeH}
+	};
+}
+
+void from_json(const nlohmann::json& j, BehaviorEditorNodeData& data) {
+	data.node = j.value("node", BehaviorNodeData{});
+	data.posX = j.value("posX", 0.0f);
+	data.posY = j.value("posY", 0.0f);
+	data.sizeW = j.value("sizeW", 0.0f);
+	data.sizeH = j.value("sizeH", 0.0f);
+}
+
+//============================================================================
+// BehaviorTreeAsset の JSON 変換関数
+//============================================================================
+
+void to_json(nlohmann::json& j, const BehaviorTreeAsset& data) {
+	nlohmann::json rootJson;
+	to_json(rootJson, data.root);
+	RemoveEditorLayout(rootJson);
+
+	j = nlohmann::json{
+		{"formatVersion", data.formatVersion},
+		{"name", data.name},
+		{"root", std::move(rootJson)},
+		{"editor", data.editor}
+	};
+}
+
+void from_json(const nlohmann::json& j, BehaviorTreeAsset& data) {
+	// 旧ComboSet JSONを新APIから直接読み込んだ場合も移行できるようにする。
+	if (j.contains("combos") || j.contains("setName")) {
+		data = ConvertComboSetToBehaviorTreeAsset(j.get<ComboSetData>());
+		return;
+	}
+
+	data.formatVersion = j.value("formatVersion", BehaviorTreeAsset::kCurrentFormatVersion);
+	data.name = j.value("name", "BehaviorTree");
+	data.root = j.value("root", BehaviorNodeData{});
+	data.editor = j.value("editor", BehaviorTreeEditorData{});
+}
+
+BehaviorTreeAsset ConvertComboSetToBehaviorTreeAsset(const ComboSetData& legacyData) {
+	BehaviorTreeAsset asset;
+	asset.name = legacyData.setName;
+	asset.root.name = legacyData.setName;
+	asset.root.nodeType = legacyData.rootType.empty() ? "SELECTOR" : legacyData.rootType;
+
+	for (const auto& combo : legacyData.combos) {
+		auto root = combo.rootNode;
+		if (!combo.comboName.empty()) {
+			root.name = combo.comboName;
+		}
+		asset.root.children.push_back(std::move(root));
+	}
+
+	asset.editor.nodes.reserve(legacyData.editorNodes.size());
+	for (const auto& legacyNode : legacyData.editorNodes) {
+		BehaviorEditorNodeData editorNode;
+		editorNode.node = legacyNode;
+		editorNode.posX = legacyNode.posX;
+		editorNode.posY = legacyNode.posY;
+		editorNode.sizeW = legacyNode.sizeW;
+		editorNode.sizeH = legacyNode.sizeH;
+		asset.editor.nodes.push_back(std::move(editorNode));
+	}
+	asset.editor.links = legacyData.editorLinks;
+	return asset;
+}
+
+ComboSetData ConvertBehaviorTreeAssetToComboSet(const BehaviorTreeAsset& asset) {
+	ComboSetData legacyData;
+	legacyData.setName = asset.name;
+	legacyData.rootType = asset.root.nodeType;
+	for (const auto& child : asset.root.children) {
+		legacyData.combos.push_back(ComboData{child.name, child});
+	}
+
+	legacyData.editorNodes.reserve(asset.editor.nodes.size());
+	for (const auto& editorNode : asset.editor.nodes) {
+		auto legacyNode = editorNode.node;
+		legacyNode.posX = editorNode.posX;
+		legacyNode.posY = editorNode.posY;
+		legacyNode.sizeW = editorNode.sizeW;
+		legacyNode.sizeH = editorNode.sizeH;
+		legacyData.editorNodes.push_back(std::move(legacyNode));
+	}
+	legacyData.editorLinks = asset.editor.links;
+	return legacyData;
+}
+
 
 //============================================================================
 // ComboSetData の JSON 変換関数
@@ -90,6 +206,7 @@ void from_json(const nlohmann::json& j, BehaviorNodeData& data) {
 	data.bbValue = j.value("bbValue", false);
 	data.bbStringValue = j.value("bbStringValue", "");
 	data.waitTime = j.value("waitTime", 1.0f);
+	data.properties = j.value("properties", nlohmann::json::object());
 }
 
 void to_json(nlohmann::json& j, const BehaviorNodeData& data) {
@@ -118,4 +235,5 @@ void to_json(nlohmann::json& j, const BehaviorNodeData& data) {
 	j["bbValue"] = data.bbValue;
 	j["bbStringValue"] = data.bbStringValue;
 	j["waitTime"] = data.waitTime;
+	j["properties"] = data.properties;
 }

@@ -1,16 +1,15 @@
 #include "ActionNodeView.h"
-#include "application/Entity/Behavior/ActionNode.h"
-#include "engine/Utility/StringUtility.h"
+#include "engine/BehaviorTree/ActionNode.h"
 
 //====================================================================
 // コンストラクタ
 //====================================================================
-ActionNodeView::ActionNodeView(const std::string& stateName) {
+ActionNodeView::ActionNodeView(const std::string& actionId) {
 
-	targetStateName_ = stateName;
+	actionId_ = actionId;
 
 	// すでに "Action:" が付いている場合は重ねない
-	std::string title = targetStateName_;
+	std::string title = actionId_;
 	if (title.find("Action:") == std::string::npos) {
 		title = "Action:" + title;
 	}
@@ -39,31 +38,31 @@ void ActionNodeView::draw() {
 	// 共通部分の描画（状態表示）
 	BehaviorNodeView::draw();
 
-	// ノード固有の描画: ターゲットステート名の表示・編集
+	// ノード固有の描画: アクションIDの表示・編集
 	if (logicNode_) {
 		// ロジックノードがある場合はそのインスペクタ（ActionNode::DrawInspector）が
 		// インタラクティブなUIを出すため、ここではステート名を表示するだけにする
 		auto* action = static_cast<ActionNode*>(logicNode_);
-		targetStateName_ = std::string(magic_enum::enum_name(action->GetTargetState()));
+		actionId_ = action->GetActionId();
 
 		// タイトルの同期
 		if (nodeCustomName_ == "UnnamedNode" || nodeCustomName_.empty() || nodeCustomName_ == "Action:NONE" || nodeCustomName_ == "ACTION" || nodeCustomName_.starts_with("Action:")) {
-			nodeCustomName_ = "Action:" + targetStateName_;
+			nodeCustomName_ = "Action:" + actionId_;
 			setTitle(nodeCustomName_);
 		}
 
-		ImGui::Text("State: %s", targetStateName_.c_str());
+		ImGui::Text("Action ID: %s", actionId_.c_str());
 	}
 	else {
 		// 紐づくロジックノードがない場合はエディタ上で編集可能にする
 		ImGui::PushItemWidth(120.0f);
 
 		char buffer[256];
-		strncpy_s(buffer, targetStateName_.c_str(), sizeof(buffer));
-		if (ImGui::InputText("Target State", buffer, sizeof(buffer))) {
-			targetStateName_ = buffer;
+		strncpy_s(buffer, actionId_.c_str(), sizeof(buffer));
+		if (ImGui::InputText("Action ID", buffer, sizeof(buffer))) {
+			actionId_ = buffer;
 			if (nodeCustomName_ == "Action:NONE" || nodeCustomName_ == "UnnamedNode" || nodeCustomName_.empty() || nodeCustomName_.starts_with("Action:")) {
-				nodeCustomName_ = "Action:" + targetStateName_;
+				nodeCustomName_ = "Action:" + actionId_;
 				setTitle(nodeCustomName_);
 			}
 		}
@@ -80,17 +79,17 @@ void ActionNodeView::SaveParameters(BehaviorNodeData& data) const {
 	if (logicNode_) {
 		auto* action = static_cast<ActionNode*>(logicNode_);
 		data.name = action->GetName();
-		const_cast<ActionNodeView*>(this)->targetStateName_ = std::string(magic_enum::enum_name(action->GetTargetState()));
+		const_cast<ActionNodeView*>(this)->actionId_ = action->GetActionId();
 	}
 	BehaviorNodeView::SaveParameters(data);
-	data.targetState = targetStateName_;
+	data.targetState = actionId_;
 }
 
 void ActionNodeView::LoadParameters(const BehaviorNodeData& data) {
 	BehaviorNodeView::LoadParameters(data);
-	targetStateName_ = data.targetState;
+	actionId_ = data.targetState;
 	if (nodeCustomName_ == "UnnamedNode" || nodeCustomName_.empty() || nodeCustomName_ == "Action:NONE" || nodeCustomName_ == "ACTION" || nodeCustomName_.starts_with("Action:")) {
-		nodeCustomName_ = "Action:" + targetStateName_;
+		nodeCustomName_ = "Action:" + actionId_;
 	}
 	setTitle(nodeCustomName_);
 }

@@ -1,5 +1,5 @@
 #include "WaitBlackboardTimeNodeView.h"
-#include "application/Entity/Behavior/WaitBlackboardTimeNode.h"
+#include "engine/BehaviorTree/WaitBlackboardTimeNode.h"
 #include <imgui.h>
 
 //====================================================================

@@ -1,7 +1,7 @@
 #include "BehaviorNodeView.h"
 #include "engine/base/ImGuiManager.h"
 #include "engine/Utility/StringUtility.h"
-#include "application/Entity/Behavior/BehaviorNode.h"
+#include "engine/BehaviorTree/BehaviorNode.h"
 
 //====================================================================
 // ノードの内容描画

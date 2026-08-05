@@ -1,11 +1,11 @@
 #pragma once
 #include "BehaviorNode.h"
-#include "application/Entity/Enemy/AIBrainSystem.h"
+#include <functional>
+#include <utility>
 
 //============================================================================
 // ScoreConditionNode class
-// AIBrainSystemのスコアに基づいてコンボを選択
-// → ユーティリティAI + ビヘイビアツリーの融合
+// 登録されたスコア取得関数の結果に基づいて条件を判定
 //============================================================================
 /// <summary>
 /// ビヘイビアツリーのScoreConditionNodeとして判定または処理を実行するクラスです。
@@ -33,13 +33,14 @@ public:
 	/// <returns></returns>
 	BehaviorStatus Execute(Blackboard& blackboard) override;
 
-	void Reset() override {}
+	void Reset() override { BehaviorNode::Reset(); }
 
 	/// <summary>
 	/// スコア関数の設定
 	/// </summary>
 	/// <param name="threshold"></param>
 	void SetThreshold(float threshold) { threshold_ = threshold; }
+	float GetThreshold() const noexcept { return threshold_; }
 
 	/// <summary>
 	/// スコア関数の設定

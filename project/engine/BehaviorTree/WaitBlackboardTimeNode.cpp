@@ -1,5 +1,5 @@
 #include "WaitBlackboardTimeNode.h"
-#include "application/Entity/Behavior/Blackboard.h"
+#include "Blackboard.h"
 #include "engine/Base/TakeCFrameWork.h"
 #include <imgui.h>
 
@@ -17,9 +17,7 @@ WaitBlackboardTimeNode::WaitBlackboardTimeNode(const std::string& bbKey, const s
 BehaviorStatus WaitBlackboardTimeNode::Execute(Blackboard& blackboard) {
 	// 初回 Execute 時に待機時間をキャッシュ
 	if (!isCached_) {
-		cachedWaitTime_ = blackboard.HasKey(bbKey_)
-			? blackboard.GetValue<float>(bbKey_)
-			: 0.0f;
+		cachedWaitTime_ = blackboard.GetOr<float>(bbKey_, 0.0f);
 		isCached_ = true;
 	}
 

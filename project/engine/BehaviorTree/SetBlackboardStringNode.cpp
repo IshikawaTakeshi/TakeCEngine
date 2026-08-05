@@ -1,5 +1,5 @@
 #include "SetBlackboardStringNode.h"
-#include "application/Entity/Behavior/Blackboard.h"
+#include "Blackboard.h"
 
 //====================================================================
 // コンストラクタ
@@ -13,7 +13,7 @@ SetBlackboardStringNode::SetBlackboardStringNode(const std::string& key, const s
 // 実行：指定キーに文字列をセットして即 Success を返す
 //====================================================================
 BehaviorStatus SetBlackboardStringNode::Execute(Blackboard& blackboard) {
-	blackboard.SetValue<std::string>(key_, value_);
+	blackboard.Set(key_, value_);
 	return BehaviorStatus::Success;
 }
 

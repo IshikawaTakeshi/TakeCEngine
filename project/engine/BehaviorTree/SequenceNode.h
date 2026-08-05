@@ -1,5 +1,5 @@
 #pragma once
-#include "application/Entity/Behavior/CompositeNode.h"
+#include "CompositeNode.h"
 
 //==================================================================================
 // SequenceNode class

@@ -24,11 +24,16 @@ ConditionNode::ConditionNode(const std::string& field, const std::string& op, fl
 // ノードの実行
 //====================================================================================
 BehaviorStatus ConditionNode::Execute(Blackboard& blackboard) {
-	// variant の中身が何であっても GetAsFloat() で float に統一して比較
-	float current = blackboard.GetAsFloat(field_, 0.0f);
-	return compare_(current, threshold_)
+	const std::optional<float> current = blackboard.TryGetNumberAsFloat(field_);
+	if (!current.has_value()) {
+		currentStatus_ = BehaviorStatus::Failure;
+		return currentStatus_;
+	}
+
+	currentStatus_ = compare_(*current, threshold_)
 		? BehaviorStatus::Success
 		: BehaviorStatus::Failure;
+	return currentStatus_;
 }
 
 //====================================================================================

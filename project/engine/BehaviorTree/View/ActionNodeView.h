@@ -1,6 +1,5 @@
 #pragma once
 #include "BehaviorNodeView.h"
-#include "application/Entity/State/GameCharacterState.h"
 #include <string>
 
 //=============================================================
@@ -15,8 +14,8 @@ public:
 	/// <summary>
 	/// コンストラクタ・デストラクタ
 	/// </summary>
-	/// <param name="stateName"></param>
-	ActionNodeView(const std::string& stateName = "NONE");
+	/// <param name="actionId"></param>
+	ActionNodeView(const std::string& actionId = "NONE");
 	~ActionNodeView() override = default;
 
 	//=========================================================
@@ -40,9 +39,9 @@ public:
 	// accsesser
 	//=========================================================
 
-	const std::string& GetTargetStateName() const { return targetStateName_; }
-	void SetTargetStateName(const std::string& stateName) { targetStateName_ = stateName; }
+	const std::string& GetActionId() const { return actionId_; }
+	void SetActionId(const std::string& actionId) { actionId_ = actionId; }
 
 private:
-	std::string targetStateName_;  // "ATTACK", "RUNNING" 等
+	std::string actionId_;
 };

@@ -1,61 +1,36 @@
 #pragma once
-#include "application/Entity/Behavior/BehaviorNode.h"
-#include "application/Entity/State/GameCharacterState.h"
-#include "application/Entity/State/GameCharacterStateManager.h"
 
-//============================================================================
-// ActionNode: 実際のステート遷移をリクエストし、完了を待つ
-// → 既存のステートシステムとビヘイビアツリーの橋渡し
-//============================================================================
+#include "BehaviorNode.h"
+
+#include <functional>
+#include <string>
+#include <utility>
+
 /// <summary>
-/// ビヘイビアツリーのActionNodeとして判定または処理を実行するクラスです。
+/// 登録されたコールバックを実行する、ゲーム非依存の汎用アクションノードです。
 /// </summary>
 class ActionNode : public BehaviorNode {
 public:
+	using ExecuteCallback = std::function<BehaviorStatus(Blackboard&)>;
+	using ResetCallback = std::function<void()>;
 
-	/// <summary>
-	/// コンストラクタ・デストラクタ
-	/// </summary>
-	ActionNode(GameCharacterState targetState,
-		GameCharacterStateManager* stateManager,
-		const std::string& name = "Action");
+	ActionNode(
+		std::string actionId = {},
+		ExecuteCallback execute = {},
+		ResetCallback reset = {},
+		std::string name = "Action");
 	~ActionNode() override = default;
 
-	//========================================================================
-	// functions
-	//========================================================================
-
-	/// <summary>
-	/// ノードの実行
-	/// </summary>
 	BehaviorStatus Execute(Blackboard& blackboard) override;
-
-	/// <summary>
-	/// ノードのリセット（再実行時に状態をクリア）
-	/// </summary>
 	void Reset() override;
 
-	/// <summary>
-	/// ImGuiを用いたデバッグ用情報の描画
-	/// </summary>
-	void DrawInspector() override;
-
-public:
-
-	//=============================================================================
-	// accessors
-	//=============================================================================
-
-	//---- getter ---------------------------
-
-	/// 遷移先のステートを取得
-	GameCharacterState GetTargetState() const { return targetState_; }
-	/// 遷移先のステートを設定
-	void SetTargetState(GameCharacterState state) { targetState_ = state; }
+	const std::string& GetActionId() const noexcept { return actionId_; }
+	void SetActionId(std::string actionId) { actionId_ = std::move(actionId); }
+	void SetExecuteCallback(ExecuteCallback execute) { execute_ = std::move(execute); }
+	void SetResetCallback(ResetCallback reset) { reset_ = std::move(reset); }
 
 private:
-
-	GameCharacterState targetState_;
-	GameCharacterStateManager* stateManager_;
-	bool isStarted_ = false; // アクションが開始されたかどうか
+	std::string actionId_;
+	ExecuteCallback execute_;
+	ResetCallback reset_;
 };

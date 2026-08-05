@@ -11,6 +11,7 @@
 #include "engine/Math/Quaternion.h"
 #include "engine/Math/Vector3.h"
 #include "engine/Math/Matrix4x4.h"
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -96,7 +97,8 @@ namespace TakeC {
 		/// <returns></returns>
 		template<typename T>
 		static bool ShowSavePopup(JsonLoader* jsonLoader, const char* popupId, const char* defaultFilename,
-			const T& data, std::string& outFilePath);
+			const T& data, std::string& outFilePath,
+			const std::filesystem::path& directory = {});
 
 		/// <summary>
 		/// 読み込みポップアップの表示
@@ -176,7 +178,8 @@ namespace TakeC {
 	template<typename T>
 	inline bool ImGuiManager::ShowSavePopup(
 		JsonLoader* jsonLoader,
-		const char* popupId, const char* defaultFilename, const T& data, std::string& outFilePath) {
+		const char* popupId, const char* defaultFilename, const T& data, std::string& outFilePath,
+		const std::filesystem::path& directory) {
 
 		// 保存完了フラグ
 		bool saved = false;
@@ -203,7 +206,11 @@ namespace TakeC {
 			// OKボタン
 			if (ImGui::Button("OK", ImVec2(120, 0))) {
 				outFilePath = std::string(filenameBuf);
-				jsonLoader->SaveJsonData<T>(outFilePath, data);
+				if (directory.empty()) {
+					jsonLoader->SaveJsonData<T>(outFilePath, data);
+				} else {
+					jsonLoader->SaveJsonDataAt<T>(directory, outFilePath, data);
+				}
 				saved = true;
 				initialized = false;  // リセット
 				ImGui::CloseCurrentPopup();

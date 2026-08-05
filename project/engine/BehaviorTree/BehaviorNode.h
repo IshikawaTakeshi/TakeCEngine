@@ -1,10 +1,9 @@
 #pragma once
-#include "application/Entity/Behavior/BehaviorStatusEnum.h"
-#include "application/Entity/Behavior/Blackboard.h"
-#include <vector>
-#include <memory>
+#include "BehaviorStatusEnum.h"
+#include "Blackboard.h"
 #include <string>
-#include <ImNodeFlow-1.2.2/include/ImNodeFlow.h>
+#include <string_view>
+#include <utility>
 
 //==================================================================================
 // BehaviorNode class
@@ -74,6 +73,16 @@ public:
 	/// </summary>
 	int GetUID() const { return uid_; }
 
+	/// <summary>
+	/// レジストリに登録されたノード型IDを設定します。
+	/// </summary>
+	void SetTypeId(std::string typeId) { typeId_ = std::move(typeId); }
+
+	/// <summary>
+	/// レジストリに登録されたノード型IDを取得します。
+	/// </summary>
+	std::string_view GetTypeId() const noexcept { return typeId_; }
+
 protected:
 	
 	// デバッグ用の名前
@@ -81,6 +90,9 @@ protected:
 
 	// 保存データとの紐付け用の一意識別子
 	int uid_ = -1;
+
+	// レジストリで使用する永続的なノード型ID
+	std::string typeId_;
 
 	// 実行状態を保持するメンバ
 	BehaviorStatus currentStatus_ = BehaviorStatus::Invalid;

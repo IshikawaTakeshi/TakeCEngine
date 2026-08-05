@@ -31,6 +31,7 @@ function TakeCEngineIncludeDirs(repositoryRoot)
         path.join(paths.externalsRoot, "DirectXTex"),
         path.join(paths.externalsRoot, "imgui"),
         path.join(paths.externalsRoot, "ImGuizmo"),
+        path.join(paths.externalsRoot, "ImNodeFlow-1.2.2/include"),
         path.join(paths.externalsRoot, "nlohmann"),
         path.join(paths.externalsRoot, "magic_enum"),
         paths.packagesRoot,
@@ -60,6 +61,9 @@ function DefineTakeCEngineProject(options)
             path.join(paths.externalsRoot, "imgui/**.cpp"),
             path.join(paths.externalsRoot, "ImGuizmo/**.h"),
             path.join(paths.externalsRoot, "ImGuizmo/**.cpp"),
+            path.join(paths.externalsRoot, "ImNodeFlow-1.2.2/**.h"),
+            path.join(paths.externalsRoot, "ImNodeFlow-1.2.2/**.inl"),
+            path.join(paths.externalsRoot, "ImNodeFlow-1.2.2/**.cpp"),
             path.join(paths.externalsRoot, "DirectXTex/**.h"),
             path.join(paths.externalsRoot, "DirectXTex/**.cpp")
         }
@@ -75,6 +79,7 @@ function DefineTakeCEngineProject(options)
             ["Shaders/*"] = { path.join(paths.contentRoot, "shaders/**") },
             ["External/imgui/*"] = { path.join(paths.externalsRoot, "imgui/**") },
             ["External/ImGuizmo/**"] = {path.join(paths.externalsRoot, "ImGuizmo/**") },
+            ["External/ImNodeFlow/*"] = { path.join(paths.externalsRoot, "ImNodeFlow-1.2.2/**") },
             ["External/DirectXTex/*"] = { path.join(paths.externalsRoot, "DirectXTex/**") }
         }
 

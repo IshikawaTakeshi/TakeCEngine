@@ -56,7 +56,7 @@ public:
 
 	/**
 	 * @brief Blackboardのキー名リストを注入する。空なら InputText にフォールバック。
-	 * @param keys Blackboard::GetAllData() から収集したキー名
+	 * @param keys Blackboard::Entries() から収集したキー名
 	 */
 	void SetBlackboardKeys(const std::vector<std::string>& keys) { blackboardKeys_ = keys; }
 

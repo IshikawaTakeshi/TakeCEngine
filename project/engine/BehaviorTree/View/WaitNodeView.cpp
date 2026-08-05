@@ -1,5 +1,5 @@
 #include "WaitNodeView.h"
-#include "application/Entity/Behavior/WaitNode.h"
+#include "engine/BehaviorTree/WaitNode.h"
 #include <imgui.h>
 
 //====================================================================

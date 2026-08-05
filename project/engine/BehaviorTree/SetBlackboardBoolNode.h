@@ -1,5 +1,5 @@
 #pragma once
-#include "application/Entity/Behavior/BehaviorNode.h"
+#include "BehaviorNode.h"
 #include <string>
 
 /// <summary>

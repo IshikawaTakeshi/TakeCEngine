@@ -1,42 +1,130 @@
 #include "BehaviorTreeEditor.h"
 // Logic
-#include "application/Entity/Behavior/BehaviorNode.h"
-#include "application/Entity/Behavior/Blackboard.h"
-#include "application/Entity/Behavior/ComboFactory.h"
-#include "application/Entity/Behavior/CompositeNode.h"
-#include "application/Entity/Behavior/SelectorNode.h"
-#include "application/Entity/Behavior/SequenceNode.h"
-#include "application/Entity/Behavior/ConditionNode.h"
-#include "application/Entity/Behavior/ScoreConditionNode.h"
-#include "application/Entity/Behavior/PlannerSelectorNode.h"
-#include "application/Entity/Behavior/ActionNode.h"
-#include "application/Entity/Behavior/WeightSelectorNode.h"
-#include "application/Entity/Behavior/SetBlackboardBoolNode.h"
-#include "application/Entity/Behavior/SetBlackboardStringNode.h"
-#include "application/Entity/Behavior/WaitNode.h"
-#include "application/Entity/Behavior/WaitBlackboardTimeNode.h"
+#include "engine/BehaviorTree/BehaviorNode.h"
+#include "engine/BehaviorTree/Blackboard.h"
+#include "engine/BehaviorTree/CompositeNode.h"
+#include "engine/BehaviorTree/SelectorNode.h"
+#include "engine/BehaviorTree/SequenceNode.h"
+#include "engine/BehaviorTree/ConditionNode.h"
+#include "engine/BehaviorTree/ScoreConditionNode.h"
+#include "engine/BehaviorTree/PlannerSelectorNode.h"
+#include "engine/BehaviorTree/ActionNode.h"
+#include "engine/BehaviorTree/WeightSelectorNode.h"
+#include "engine/BehaviorTree/SetBlackboardBoolNode.h"
+#include "engine/BehaviorTree/SetBlackboardStringNode.h"
+#include "engine/BehaviorTree/WaitNode.h"
+#include "engine/BehaviorTree/WaitBlackboardTimeNode.h"
 
 // Views
-#include "application/Entity/Behavior/View/ActionNodeView.h"
-#include "application/Entity/Behavior/View/SelectorNodeView.h"
-#include "application/Entity/Behavior/View/ConditionNodeView.h"
-#include "application/Entity/Behavior/View/SequenceNodeView.h"
-#include "application/Entity/Behavior/View/ScoreConditionNodeView.h"
-#include "application/Entity/Behavior/View/PlannerSelectorNodeView.h"
-#include "application/Entity/Behavior/View/WeightSelectorNodeView.h"
-#include "application/Entity/Behavior/View/SetBlackboardBoolNodeView.h"
-#include "application/Entity/Behavior/View/SetBlackboardStringNodeView.h"
-#include "application/Entity/Behavior/View/WaitNodeView.h"
-#include "application/Entity/Behavior/View/WaitBlackboardTimeNodeView.h"
+#include "engine/BehaviorTree/View/ActionNodeView.h"
+#include "engine/BehaviorTree/View/SelectorNodeView.h"
+#include "engine/BehaviorTree/View/ConditionNodeView.h"
+#include "engine/BehaviorTree/View/SequenceNodeView.h"
+#include "engine/BehaviorTree/View/ScoreConditionNodeView.h"
+#include "engine/BehaviorTree/View/PlannerSelectorNodeView.h"
+#include "engine/BehaviorTree/View/WeightSelectorNodeView.h"
+#include "engine/BehaviorTree/View/SetBlackboardBoolNodeView.h"
+#include "engine/BehaviorTree/View/SetBlackboardStringNodeView.h"
+#include "engine/BehaviorTree/View/WaitNodeView.h"
+#include "engine/BehaviorTree/View/WaitBlackboardTimeNodeView.h"
 
 #include "engine/Base/ImGuiManager.h"
 #include "engine/Base/TakeCFrameWork.h"
-#include "engine/Utility/StringUtility.h"
+
+#include <algorithm>
 
 using namespace TakeC;
 
-BehaviorTreeEditor::BehaviorTreeEditor() = default;
+BehaviorTreeEditor::BehaviorTreeEditor()
+	: nodeRegistry_(&defaultNodeRegistry_) {
+	TakeC::RegisterBuiltInBehaviorNodes(defaultNodeRegistry_);
+	RegisterBuiltInNodeViews();
+}
 BehaviorTreeEditor::~BehaviorTreeEditor() = default;
+
+void BehaviorTreeEditor::RegisterBuiltInNodeViews() {
+	auto registerView = [this](TakeC::BehaviorNodeViewRegistration registration) {
+		viewRegistry_.Register(std::move(registration), true);
+	};
+
+	registerView({"ACTION", "Action", "Leaf",
+		[](ImFlow::ImNodeFlow& editor, const ImVec2& pos, const BehaviorNodeData& data) {
+			auto view = editor.addNode<ActionNodeView>(pos, data.targetState);
+			view->LoadParameters(data);
+			return view;
+		},
+		[](ImFlow::ImNodeFlow& editor) { editor.placeNode<ActionNodeView>("NONE"); }});
+	registerView({"CONDITION", "Condition", "Leaf",
+		[](ImFlow::ImNodeFlow& editor, const ImVec2& pos, const BehaviorNodeData& data) {
+			auto view = editor.addNode<ConditionNodeView>(pos);
+			view->LoadParameters(data);
+			return view;
+		},
+		[](ImFlow::ImNodeFlow& editor) { editor.placeNode<ConditionNodeView>(); }});
+	registerView({"SCORE_CONDITION", "Score Condition", "Leaf",
+		[](ImFlow::ImNodeFlow& editor, const ImVec2& pos, const BehaviorNodeData& data) {
+			auto view = editor.addNode<ScoreConditionNodeView>(pos);
+			view->LoadParameters(data);
+			return view;
+		},
+		[](ImFlow::ImNodeFlow& editor) { editor.placeNode<ScoreConditionNodeView>(); }});
+	registerView({"WAIT", "Wait", "Leaf",
+		[](ImFlow::ImNodeFlow& editor, const ImVec2& pos, const BehaviorNodeData& data) {
+			auto view = editor.addNode<WaitNodeView>(pos);
+			view->LoadParameters(data);
+			return view;
+		},
+		[](ImFlow::ImNodeFlow& editor) { editor.placeNode<WaitNodeView>(); }});
+	registerView({"SET_BB_BOOL", "Set Blackboard Bool", "Blackboard",
+		[](ImFlow::ImNodeFlow& editor, const ImVec2& pos, const BehaviorNodeData& data) {
+			auto view = editor.addNode<SetBlackboardBoolNodeView>(pos);
+			view->LoadParameters(data);
+			return view;
+		},
+		[](ImFlow::ImNodeFlow& editor) { editor.placeNode<SetBlackboardBoolNodeView>(); }});
+	registerView({"SET_BB_STRING", "Set Blackboard String", "Blackboard",
+		[](ImFlow::ImNodeFlow& editor, const ImVec2& pos, const BehaviorNodeData& data) {
+			auto view = editor.addNode<SetBlackboardStringNodeView>(pos);
+			view->LoadParameters(data);
+			return view;
+		},
+		[](ImFlow::ImNodeFlow& editor) { editor.placeNode<SetBlackboardStringNodeView>(); }});
+	registerView({"WAIT_BB_TIME", "Wait Blackboard Time", "Blackboard",
+		[](ImFlow::ImNodeFlow& editor, const ImVec2& pos, const BehaviorNodeData& data) {
+			auto view = editor.addNode<WaitBlackboardTimeNodeView>(pos);
+			view->LoadParameters(data);
+			return view;
+		},
+		[](ImFlow::ImNodeFlow& editor) { editor.placeNode<WaitBlackboardTimeNodeView>(); }});
+	registerView({"SELECTOR", "Selector", "Composite",
+		[](ImFlow::ImNodeFlow& editor, const ImVec2& pos, const BehaviorNodeData& data) {
+			auto view = editor.addNode<SelectorNodeView>(pos);
+			view->LoadParameters(data);
+			return view;
+		},
+		[](ImFlow::ImNodeFlow& editor) { editor.placeNode<SelectorNodeView>(); }});
+	registerView({"SEQUENCE", "Sequence", "Composite",
+		[](ImFlow::ImNodeFlow& editor, const ImVec2& pos, const BehaviorNodeData& data) {
+			auto view = editor.addNode<SequenceNodeView>(pos);
+			view->LoadParameters(data);
+			return view;
+		},
+		[](ImFlow::ImNodeFlow& editor) { editor.placeNode<SequenceNodeView>(); }});
+	registerView({"PLANNER_SELECTOR", "Planner Selector", "Composite",
+		[](ImFlow::ImNodeFlow& editor, const ImVec2& pos, const BehaviorNodeData& data) {
+			auto view = editor.addNode<PlannerSelectorNodeView>(pos);
+			view->LoadParameters(data);
+			return view;
+		},
+		[](ImFlow::ImNodeFlow& editor) { editor.placeNode<PlannerSelectorNodeView>(); }});
+	registerView({"WEIGHT_SELECTOR", "Weight Selector", "Composite",
+		[](ImFlow::ImNodeFlow& editor, const ImVec2& pos, const BehaviorNodeData& data) {
+			auto view = editor.addNode<WeightSelectorNodeView>(pos);
+			view->LoadParameters(data);
+			return view;
+		},
+		[](ImFlow::ImNodeFlow& editor) { editor.placeNode<WeightSelectorNodeView>(); }});
+}
 
 //==================================================================================
 // 初期化
@@ -49,47 +137,57 @@ void BehaviorTreeEditor::Initialize() {
 	//右クリックメニューのノードを追加可能にする
 	SetupContextMenu();
 
-	//コンボセットのリストを取得
-	comboSetNames_ = TakeC::TakeCFrameWork::GetJsonLoader()->GetJsonDataList<ComboSetData>();
+	RefreshAssetNames();
 	
+}
+
+void BehaviorTreeEditor::SetAssetDirectory(std::filesystem::path directory) {
+	if (directory.empty()) {
+		ClearAssetDirectory();
+		return;
+	}
+	assetDirectory_ = std::move(directory).lexically_normal();
+	if (flowEditor_) RefreshAssetNames();
+}
+
+void BehaviorTreeEditor::ClearAssetDirectory() {
+	assetDirectory_.reset();
+	if (flowEditor_) RefreshAssetNames();
+}
+
+void BehaviorTreeEditor::SetJsonLoader(TakeC::JsonLoader& jsonLoader) {
+	jsonLoader_ = &jsonLoader;
+	if (flowEditor_) RefreshAssetNames();
+}
+
+TakeC::JsonLoader* BehaviorTreeEditor::ResolveJsonLoader() const {
+	return jsonLoader_ ? jsonLoader_ : TakeC::TakeCFrameWork::GetJsonLoader();
+}
+
+void BehaviorTreeEditor::RefreshAssetNames() {
+	auto* jsonLoader = ResolveJsonLoader();
+	if (!jsonLoader) return;
+
+	if (assetDirectory_) {
+		// 新形式のfrom_jsonが旧ComboSet形式も変換できるため、同一フォルダーを一度だけ列挙する。
+		assetNames_ = jsonLoader->GetJsonDataListAt<BehaviorTreeAsset>(*assetDirectory_);
+	} else {
+		assetNames_ = jsonLoader->GetJsonDataList<BehaviorTreeAsset>();
+		const auto legacyNames = jsonLoader->GetJsonDataList<ComboSetData>();
+		assetNames_.insert(assetNames_.end(), legacyNames.begin(), legacyNames.end());
+	}
+
+	std::sort(assetNames_.begin(), assetNames_.end());
+	assetNames_.erase(std::unique(assetNames_.begin(), assetNames_.end()), assetNames_.end());
 }
 
 //==================================================================================
 // ロジックツリーを再帰的に再構築する
 //==================================================================================
 std::unique_ptr<BehaviorNode> BehaviorTreeEditor::BuildLogicTree(const BehaviorNodeData& data, std::map<int, std::shared_ptr<BehaviorNodeView>>& idToNode) {
-	std::unique_ptr<BehaviorNode> node = nullptr;
-
-	// 1. タイプに応じてロジックノードをインスタンス化
-	if (data.nodeType == "ACTION") {
-		GameCharacterState state = StringUtility::StringToEnum<GameCharacterState>(data.targetState);
-		node = std::make_unique<ActionNode>(state, nullptr, data.name);
-	} else if (data.nodeType == "SET_BB_BOOL") {
-		node = std::make_unique<SetBlackboardBoolNode>(data.bbKey, data.bbValue, data.name);
-	} else if (data.nodeType == "SET_BB_STRING") {
-		node = std::make_unique<SetBlackboardStringNode>(data.bbKey, data.bbStringValue, data.name);
-	} else if (data.nodeType == "WAIT") {
-		node = std::make_unique<WaitNode>(data.waitTime, data.name);
-	} else if (data.nodeType == "WAIT_BB_TIME") {
-		node = std::make_unique<WaitBlackboardTimeNode>(data.bbKey, data.name);
-	} else if (data.nodeType == "CONDITION") {
-		node = std::make_unique<ConditionNode>(data.field, data.op, data.conditionThreshold, data.name);
-	} else if (data.nodeType == "SCORE_CONDITION") {
-		// エディタ用なので、ダミーのスコア関数を渡す
-		node = std::make_unique<ScoreConditionNode>([]() { return 0.0f; }, data.conditionThreshold, data.name);
-	} else if (data.nodeType == "SELECTOR") {
-		node = std::make_unique<SelectorNode>();
-	} else if (data.nodeType == "SEQUENCE") {
-		node = std::make_unique<SequenceNode>();
-	} else if (data.nodeType == "PLANNER_SELECTOR") {
-		node = std::make_unique<PlannerSelectorNode>();
-	} else if (data.nodeType == "WEIGHT_SELECTOR") {
-		node = std::make_unique<WeightSelectorNode>();
-	}
+	std::unique_ptr<BehaviorNode> node = nodeRegistry_->Create(data);
 
 	if (!node) return nullptr;
-	node->SetName(data.name);
-	node->SetUID(data.nodeUID);
 
 	// 2. idToNode マップを使用して UI ノードと紐付ける
 	auto it = idToNode.find(data.nodeUID);
@@ -176,32 +274,35 @@ void BehaviorTreeEditor::UpdateImGui(BehaviorNode* activeRoot) {
 		// Blackboardの表示
 		if (ImGui::TreeNode("Blackboard")) {
 			if (blackboard_) {
-				blackboard_->UpdateImGui();
+				blackboardPanel_.Draw(*blackboard_);
 			}
 			ImGui::TreePop();
 		}
 		ImGui::Separator();
-		// コンボセットの保存ボタン
-		SaveComboSet();
+		SaveBehaviorTree();
+		DrawValidationIssues();
 
 		// エネミーへの反映ボタン
 
 		if (ImGui::Button("Apply Behavior Tree")) {
-			currentComboSetData_ = BuildComboSetDataFromEditor();
-			if (applyCallback_) {
-				applyCallback_(currentComboSetData_);
+			currentAsset_ = BuildBehaviorTreeAssetFromEditor();
+			validationResult_ = TakeC::BehaviorTreeAssetValidator::Validate(currentAsset_, *nodeRegistry_);
+			hasLoadError_ = false;
+			if (validationResult_.IsValid() && applyAssetCallback_) {
+				applyAssetCallback_(currentAsset_);
+			}
+			if (validationResult_.IsValid() && legacyApplyCallback_) {
+				legacyApplyCallback_(ConvertBehaviorTreeAssetToComboSet(currentAsset_));
 			}
 		}
 
-		//コンボセットの読み込みボタン
-		if (ImGui::CollapsingHeader("Load ComboSet")) {
+		if (ImGui::CollapsingHeader("Load Behavior Tree")) {
 			int currentPresetIndex_ = -1;
 			bool isSelected = false;
-			isSelected = ImGuiManager::ComboBoxString("ComboSet", comboSetNames_, currentPresetIndex_);
+			isSelected = ImGuiManager::ComboBoxString("Behavior Tree", assetNames_, currentPresetIndex_);
 
 			if (isSelected) {
-				//選択されたプリセットのツリーを読み込む
-				LoadTreeFromJson(comboSetNames_[currentPresetIndex_] + ".json");
+				LoadTreeFromJson(assetNames_[currentPresetIndex_] + ".json");
 			}
 		}
 
@@ -256,9 +357,9 @@ void BehaviorTreeEditor::UpdateImGui(BehaviorNode* activeRoot) {
 }
 
 //===============================================================================
-// Enemyからツリーを読み込む
+// 実行中のツリーを読み込む
 //===============================================================================
-void BehaviorTreeEditor::LoadTreeFromEnemy(BehaviorNode* rootNode, Blackboard* blackboard) {
+void BehaviorTreeEditor::LoadTree(BehaviorNode* rootNode, Blackboard* blackboard) {
 	if (!flowEditor_ || !rootNode) return;
 
 	blackboard_ = blackboard;
@@ -269,28 +370,12 @@ void BehaviorTreeEditor::LoadTreeFromEnemy(BehaviorNode* rootNode, Blackboard* b
 	// 右クリックメニューを再設定
 	SetupContextMenu();
 
-	// ルートのCompositeNodeは「外側のwrapper」として扱い、
-	// その型をrootTypeに記録した上で、子ノード群だけをエディタに展開する。
-	// こうすることでBuildComboSetDataFromEditor()が各子を
-	// 独立したコンボとして正しく収集できる。
-	auto* composite = dynamic_cast<CompositeNode*>(rootNode);
-	if (composite) {
-		currentComboSetData_.rootType = DetectRootType(composite);
-		currentComboSetData_.setName = composite->GetName();
-
-		ImVec2 startPos = ImVec2(100.0f, 100.0f);
-		for (auto& child : composite->GetChildren()) {
-			BuildNodeView(child.get(), startPos);
-			startPos.y += 200.0f; // 兄弟コンボ間のY間隔
-		}
-	} else {
-		// CompositeNodeでない（葉ノード単体）場合はそのまま展開
-		currentComboSetData_.rootType = "SELECTOR";
-		ImVec2 startPos = ImVec2(100.0f, 100.0f);
-		BuildNodeView(rootNode_, startPos);
-	}
-
-	currentComboSetData_ = BuildComboSetDataFromEditor();
+	currentAsset_.name = rootNode->GetName();
+	currentAsset_.root = BuildNodeDataFromLogicNode(rootNode);
+	ImVec2 startPos = ImVec2(100.0f, 100.0f);
+	BuildNodeView(rootNode_, startPos);
+	currentAsset_ = BuildBehaviorTreeAssetFromEditor();
+	hasLoadError_ = false;
 }
 
 //===============================================================================
@@ -299,13 +384,28 @@ void BehaviorTreeEditor::LoadTreeFromEnemy(BehaviorNode* rootNode, Blackboard* b
 void BehaviorTreeEditor::LoadTreeFromJson(const std::string& filepath) {
 	if (!flowEditor_) return;
 
-	// ファイルが存在するか確認
-	if (!TakeC::TakeCFrameWork::GetJsonLoader()->IsJsonDataExists<ComboSetData>(filepath)) {
+	auto* jsonLoader = ResolveJsonLoader();
+	BehaviorTreeAsset loadedAsset;
+	if (assetDirectory_ &&
+		jsonLoader->IsJsonDataExistsAt<BehaviorTreeAsset>(*assetDirectory_, filepath)) {
+		loadedAsset = jsonLoader->LoadJsonDataAt<BehaviorTreeAsset>(*assetDirectory_, filepath);
+	} else if (assetDirectory_) {
+		return;
+	} else if (jsonLoader->IsJsonDataExists<BehaviorTreeAsset>(filepath)) {
+		loadedAsset = jsonLoader->LoadJsonData<BehaviorTreeAsset>(filepath);
+	} else if (jsonLoader->IsJsonDataExists<ComboSetData>(filepath)) {
+		loadedAsset = ConvertComboSetToBehaviorTreeAsset(
+			jsonLoader->LoadJsonData<ComboSetData>(filepath));
+	} else {
 		return;
 	}
-
-	// データの読み込み（JsonLoader::LoadJsonData は T を返す）
-	currentComboSetData_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<ComboSetData>(filepath);
+	validationResult_ = TakeC::BehaviorTreeAssetValidator::Validate(loadedAsset, *nodeRegistry_);
+	if (!validationResult_.IsValid()) {
+		hasLoadError_ = true;
+		return;
+	}
+	currentAsset_ = std::move(loadedAsset);
+	hasLoadError_ = false;
 
 	// FIX: flowEditor_を再作成する前にマップをクリア
 	nodeViewMap_.clear();
@@ -319,20 +419,20 @@ void BehaviorTreeEditor::LoadTreeFromJson(const std::string& filepath) {
 	std::map<int, std::shared_ptr<BehaviorNodeView>> idToNode;
 
 	// 1. ノードの生成
-	for (const auto& nodeData : currentComboSetData_.editorNodes) {
-		ImVec2 pos = ImVec2(nodeData.posX, nodeData.posY);
-		auto v = CreateNodeView(nodeData.nodeType, pos, nodeData.name);
+	for (const auto& editorNode : currentAsset_.editor.nodes) {
+		const auto& nodeData = editorNode.node;
+		ImVec2 pos = ImVec2(editorNode.posX, editorNode.posY);
+		auto v = CreateNodeView(nodeData, pos);
 
 		if (v) {
-			v->LoadParameters(nodeData);
 			v->SetNodeUID(nodeData.nodeUID); // 同期に使う JSON UID をセット
-			v->SetUserSize(ImVec2(nodeData.sizeW, nodeData.sizeH)); // サイズ情報を復元
+			v->SetUserSize(ImVec2(editorNode.sizeW, editorNode.sizeH)); // サイズ情報を復元
 			idToNode[nodeData.nodeUID] = v;
 		}
 	}
 
 	// 2. リンクの構築
-	for (const BehaviorLinkData& linkData : currentComboSetData_.editorLinks) {
+	for (const BehaviorLinkData& linkData : currentAsset_.editor.links) {
 		std::map<int, std::shared_ptr<BehaviorNodeView>>::iterator itFrom = idToNode.find(linkData.fromNodeUID);
 		std::map<int, std::shared_ptr<BehaviorNodeView>>::iterator itTo = idToNode.find(linkData.toNodeUID);
 
@@ -358,56 +458,65 @@ void BehaviorTreeEditor::LoadTreeFromJson(const std::string& filepath) {
 	}
 
 	// 3. ロジックノードの再構築
-	std::unique_ptr<CompositeNode> rootLogicNode = nullptr;
-	if (currentComboSetData_.rootType == "SEQUENCE") {
-		rootLogicNode = std::make_unique<SequenceNode>();
-	} else if (currentComboSetData_.rootType == "SELECTOR") {
-		rootLogicNode = std::make_unique<SelectorNode>();
-	} else if (currentComboSetData_.rootType == "PLANNER_SELECTOR") {
-		rootLogicNode = std::make_unique<PlannerSelectorNode>();
-	} else if (currentComboSetData_.rootType == "WEIGHT_SELECTOR") {
-		rootLogicNode = std::make_unique<WeightSelectorNode>();
-	} else {
-		// デフォルトはセレクター
-		rootLogicNode = std::make_unique<SelectorNode>();
-	}
-	rootLogicNode->SetName(currentComboSetData_.setName);
-
-	for (const auto& combo : currentComboSetData_.combos) {
-		auto comboNode = BuildLogicTree(combo.rootNode, idToNode);
-		if (comboNode) {
-			comboNode->SetName(combo.comboName);
-			rootLogicNode->AddChild(std::move(comboNode));
-		}
-	}
+	std::unique_ptr<BehaviorNode> rootLogicNode = BuildLogicTree(currentAsset_.root, idToNode);
+	if (!rootLogicNode) return;
 
 	// 4. エディタの状態を更新
 	ownedRootNode_ = std::move(rootLogicNode);
 	rootNode_ = ownedRootNode_.get();
+
+	// Editor情報を省略したランタイム用Assetでも編集を開始できるようにする。
+	if (currentAsset_.editor.nodes.empty()) {
+		ImVec2 startPos = ImVec2(100.0f, 100.0f);
+		BuildNodeView(rootNode_, startPos);
+		currentAsset_ = BuildBehaviorTreeAssetFromEditor();
+	}
 }
 
 //===============================================================================
 // ツリーををコンボセットとしてファイルに保存する
 //===============================================================================
 void BehaviorTreeEditor::SaveComboSet() {
+	SaveBehaviorTree();
+}
+
+void BehaviorTreeEditor::SaveBehaviorTree() {
 	if (!flowEditor_) return;
+	if (hasLoadError_) return;
 
-	// 最新のエディタ状態から保存用データを構築し、setNameとrootTypeを引き継ぐ
-	std::string prevSetName = currentComboSetData_.setName;
-	std::string prevRootType = currentComboSetData_.rootType;
+	const std::string previousName = currentAsset_.name;
+	currentAsset_ = BuildBehaviorTreeAssetFromEditor();
+	if (!previousName.empty()) currentAsset_.name = previousName;
+	validationResult_ = TakeC::BehaviorTreeAssetValidator::Validate(currentAsset_, *nodeRegistry_);
+	if (!validationResult_.IsValid()) return;
 
-	currentComboSetData_ = BuildComboSetDataFromEditor();
-	currentComboSetData_.setName = prevSetName;
-	currentComboSetData_.rootType = prevRootType;
+	const std::filesystem::path directory = assetDirectory_.value_or(std::filesystem::path{});
+	const bool saved = ImGuiManager::ShowSavePopup(
+		ResolveJsonLoader(),
+		"Save Behavior Tree",
+		std::string(currentAsset_.name + ".json").c_str(),
+		currentAsset_,
+		currentAsset_.name,
+		directory);
+	if (saved) RefreshAssetNames();
 
-	// ImGuiManagerの保存ポップアップを表示する
-	ImGuiManager::ShowSavePopup(
-		TakeC::TakeCFrameWork::GetJsonLoader(),
-		"Save Combo Set",
-		std::string(currentComboSetData_.setName + ".json").c_str(),
-		currentComboSetData_,
-		currentComboSetData_.setName);
+}
 
+void BehaviorTreeEditor::DrawValidationIssues() const {
+	if (validationResult_.Issues().empty()) return;
+	const ImGuiTreeNodeFlags flags = validationResult_.IsValid() ? 0 : ImGuiTreeNodeFlags_DefaultOpen;
+	if (!ImGui::CollapsingHeader("Validation", flags)) return;
+
+	for (const auto& issue : validationResult_.Issues()) {
+		const bool isError = issue.severity == TakeC::BehaviorTreeIssueSeverity::Error;
+		const ImVec4 color = isError
+			? ImVec4(1.0f, 0.35f, 0.35f, 1.0f)
+			: ImVec4(1.0f, 0.75f, 0.25f, 1.0f);
+		ImGui::TextColored(color, "[%s] %s", issue.code.c_str(), issue.message.c_str());
+		if (!issue.nodePath.empty()) {
+			ImGui::TextDisabled("  %s (UID: %d)", issue.nodePath.c_str(), issue.nodeUID);
+		}
+	}
 }
 
 //===============================================================================
@@ -418,9 +527,9 @@ ImFlow::BaseNode* BehaviorTreeEditor::BuildNodeView(BehaviorNode* node, ImVec2& 
 
 	ImFlow::BaseNode* viewNode = nullptr;
 
-	// 1. ノードクラスに合わせてViewを生成
-	std::string type = DetectRootType(node);
-	auto v = CreateNodeView(type, minPos, node->GetName());
+	// 1. レジストリに登録された型IDからViewを生成
+	BehaviorNodeData nodeData = BuildNodeDataFromLogicNode(node);
+	auto v = CreateNodeView(nodeData, minPos);
 
 	if (!v) {
 		// 未知のノード
@@ -483,24 +592,19 @@ ImFlow::BaseNode* BehaviorTreeEditor::BuildNodeView(BehaviorNode* node, ImVec2& 
 //===============================================================================
 // ノードビューを生成する (内部用)
 //===============================================================================
-std::shared_ptr<BehaviorNodeView> BehaviorTreeEditor::CreateNodeView(const std::string& type, const ImVec2& pos, const std::string& name) {
-	std::shared_ptr<BehaviorNodeView> v = nullptr;
-	if (type == "ACTION") v = flowEditor_->addNode<ActionNodeView>(pos, name);
-	else if (type == "SET_BB_BOOL") v = flowEditor_->addNode<SetBlackboardBoolNodeView>(pos);
-	else if (type == "SET_BB_STRING") v = flowEditor_->addNode<SetBlackboardStringNodeView>(pos);
-	else if (type == "WAIT") v = flowEditor_->addNode<WaitNodeView>(pos);
-	else if (type == "WAIT_BB_TIME") v = flowEditor_->addNode<WaitBlackboardTimeNodeView>(pos);
-	else if (type == "CONDITION") v = flowEditor_->addNode<ConditionNodeView>(pos);
-	else if (type == "SCORE_CONDITION") v = flowEditor_->addNode<ScoreConditionNodeView>(pos);
-	else if (type == "SELECTOR") v = flowEditor_->addNode<SelectorNodeView>(pos);
-	else if (type == "SEQUENCE") v = flowEditor_->addNode<SequenceNodeView>(pos);
-	else if (type == "PLANNER_SELECTOR") v = flowEditor_->addNode<PlannerSelectorNodeView>(pos);
-	else if (type == "WEIGHT_SELECTOR") v = flowEditor_->addNode<WeightSelectorNodeView>(pos);
-
-	if (v && !name.empty()) {
-		v->SetCustomName(name);
+std::shared_ptr<BehaviorNodeView> BehaviorTreeEditor::CreateNodeView(
+	const BehaviorNodeData& data,
+	const ImVec2& pos) {
+	if (!flowEditor_) {
+		return nullptr;
 	}
-	return v;
+
+	std::shared_ptr<BehaviorNodeView> view =
+		viewRegistry_.CreateAt(data.nodeType, *flowEditor_, pos, data);
+	if (view && !data.name.empty()) {
+		view->SetCustomName(data.name);
+	}
+	return view;
 }
 
 
@@ -511,34 +615,16 @@ BehaviorNodeData BehaviorTreeEditor::BuildNodeDataFromLogicNode(const BehaviorNo
 	BehaviorNodeData data;
 	if (!node) return data;
 
-	data.name = node->GetName();
+	if (!nodeRegistry_->SerializeParameters(*node, data)) {
+		data.nodeType = DetectRootType(node);
+		data.name = node->GetName();
+		data.nodeUID = node->GetUID();
+	}
 
-	if (auto* action = dynamic_cast<const ActionNode*>(node)) {
-		data.nodeType = "ACTION";
-		// ActionNodeから遷移先Stateを取得できるAPIが必要
-		// 例: action->GetTargetState()
-		data.targetState = StringUtility::EnumToString(action->GetTargetState());
-	} else if (auto* cond = dynamic_cast<const ConditionNode*>(node)) {
-		data.nodeType = "CONDITION";
-		// ConditionNodeから保存用パラメータを取得できるAPIが必要
-		// 例: cond->GetField(), cond->GetOperator(), cond->GetThreshold()
-		data.field = cond->GetField();
-		data.op = cond->GetOperator();
-		data.conditionThreshold = cond->GetThreshold();
-	} else if (auto* seq = dynamic_cast<const SequenceNode*>(node)) {
-		data.nodeType = "SEQUENCE";
-		for (const auto& c : seq->GetChildren()) {
-			data.children.push_back(BuildNodeDataFromLogicNode(c.get()));
+	if (const auto* composite = dynamic_cast<const CompositeNode*>(node)) {
+		for (const auto& child : composite->GetChildren()) {
+			data.children.push_back(BuildNodeDataFromLogicNode(child.get()));
 		}
-	} else if (auto* sel = dynamic_cast<const SelectorNode*>(node)) {
-		data.nodeType = "SELECTOR";
-		for (const auto& c : sel->GetChildren()) {
-			data.children.push_back(BuildNodeDataFromLogicNode(c.get()));
-		}
-	} else {
-		// 未対応ノードは最低限ACTION/NONEで逃がすなど方針を決める
-		data.nodeType = "ACTION";
-		data.targetState = "NONE";
 	}
 
 	return data;
@@ -548,6 +634,12 @@ BehaviorNodeData BehaviorTreeEditor::BuildNodeDataFromLogicNode(const BehaviorNo
 // ノードの種類を文字列で判別する（保存用）
 //===============================================================================
 std::string BehaviorTreeEditor::DetectRootType(const BehaviorNode* node) const {
+	if (!node) {
+		return "UNKNOWN";
+	}
+	if (!node->GetTypeId().empty()) {
+		return std::string(node->GetTypeId());
+	}
 
 	if (dynamic_cast<const ActionNode*>(node)) {
 		return "ACTION";
@@ -569,22 +661,37 @@ std::string BehaviorTreeEditor::DetectRootType(const BehaviorNode* node) const {
 		return "PLANNER_SELECTOR";
 	} else if (dynamic_cast<const SequenceNode*>(node)) {
 		return "SEQUENCE";
+	} else if (dynamic_cast<const WeightSelectorNode*>(node)) {
+		return "WEIGHT_SELECTOR";
 	} else {
 		return "UNKNOWN";
 	}
 }
 
 //===============================================================================
-// エディタ上のノード接続（ImNodeFlow）から ComboSetData を構成する
+// エディタ上のノード接続（ImNodeFlow）から BehaviorTreeAsset を構成する
 //===============================================================================
-ComboSetData BehaviorTreeEditor::BuildComboSetDataFromEditor() const {
-	ComboSetData out;
+BehaviorTreeAsset BehaviorTreeEditor::BuildBehaviorTreeAssetFromEditor() const {
+	BehaviorTreeAsset out;
+	out.name = currentAsset_.name.empty() ? "BehaviorTree" : currentAsset_.name;
 	if (!flowEditor_) return out;
 
 	const auto& allLinks = flowEditor_->getLinks();
 
-	// --- 1. ルートノード（入力接続がないノード）を特定し、再帰的に構造を構築 ---
 	auto& nodes = flowEditor_->getNodes();
+	// 再帰データとフラットデータが同じUIDを持つよう、先に未採番ノードへUIDを割り当てる。
+	int maxUid = -1;
+	for (auto& pair : nodes) {
+		auto* view = static_cast<BehaviorNodeView*>(pair.second.get());
+		if (view) maxUid = std::max(maxUid, view->GetNodeUID());
+	}
+	int nextId = maxUid + 1;
+	for (auto& pair : nodes) {
+		auto* view = static_cast<BehaviorNodeView*>(pair.second.get());
+		if (view && view->GetNodeUID() < 0) view->SetNodeUID(nextId++);
+	}
+
+	// --- 1. ルートノード（入力接続がないノード）を特定し、再帰的に構造を構築 ---
 	for (auto& pair : nodes) {
 		auto* viewNode = static_cast<BehaviorNodeView*>(pair.second.get());
 		if (!viewNode) continue;
@@ -605,51 +712,45 @@ ComboSetData BehaviorTreeEditor::BuildComboSetDataFromEditor() const {
 
 		// 入力がない = このツリーの(サブ)ルート
 		if (!hasInLink) {
-			ComboData combo;
-			combo.comboName = viewNode->getName();
-			combo.rootNode = BuildRecursiveNodeData(viewNode);
-			out.combos.push_back(combo);
+			auto rootData = BuildRecursiveNodeData(viewNode);
+			rootData.posY = viewNode->getPos().y; // ルート候補の表示順にだけ使用
+			out.root.children.push_back(std::move(rootData));
 		}
 	}
 
-	// 抽出したRootサブツリーの順番もY座標でソートしておく
-	std::sort(out.combos.begin(), out.combos.end(), [](const ComboData& a, const ComboData& b) {
-		return a.rootNode.posY < b.rootNode.posY;
+	std::sort(out.root.children.begin(), out.root.children.end(), [](const BehaviorNodeData& a, const BehaviorNodeData& b) {
+		return a.posY < b.posY;
 		});
+	if (out.root.children.size() == 1) {
+		out.root = std::move(out.root.children.front());
+	} else {
+		out.root.name = out.name;
+		const std::string& previousType = currentAsset_.root.nodeType;
+		const bool isCompositeType = previousType == "SELECTOR" || previousType == "SEQUENCE" ||
+			previousType == "PLANNER_SELECTOR" || previousType == "WEIGHT_SELECTOR";
+		out.root.nodeType = isCompositeType ? previousType : "SELECTOR";
+	}
 
 	// --- 2. エディタレイアウト情報（フラットなリスト）を保存 ---
 	std::map<ImFlow::BaseNode*, int> nodePtrToUid;
-
-	// 既存UIDの最大値を先に拾う
-	int maxUid = -1;
-	for (auto& pair : nodes) {
-		auto* v = static_cast<BehaviorNodeView*>(pair.second.get());
-		if (!v) continue;
-		maxUid = std::max(maxUid, v->GetNodeUID());
-	}
-	int nextId = maxUid + 1;
 
 	for (auto& pair : nodes) {
 		auto* viewNode = static_cast<BehaviorNodeView*>(pair.second.get());
 		if (!viewNode) continue;
 
 		int uid = viewNode->GetNodeUID();
-		if (uid < 0) {
-			uid = nextId++;
-			viewNode->SetNodeUID(uid);
-		}
 		nodePtrToUid[viewNode] = uid;
 
-		BehaviorNodeData nodeData;
-		nodeData.name = viewNode->getName();
-		nodeData.posX = viewNode->getPos().x;
-		nodeData.posY = viewNode->getPos().y;
-		nodeData.nodeUID = uid;
-		nodeData.sizeW = viewNode->GetUserSize().x;
-		nodeData.sizeH = viewNode->GetUserSize().y;
-		viewNode->SaveParameters(nodeData);
+		BehaviorEditorNodeData editorNode;
+		editorNode.node.name = viewNode->getName();
+		editorNode.node.nodeUID = uid;
+		editorNode.posX = viewNode->getPos().x;
+		editorNode.posY = viewNode->getPos().y;
+		editorNode.sizeW = viewNode->GetUserSize().x;
+		editorNode.sizeH = viewNode->GetUserSize().y;
+		viewNode->SaveParameters(editorNode.node);
 
-		out.editorNodes.push_back(nodeData);
+		out.editor.nodes.push_back(std::move(editorNode));
 	}
 
 	// 全リンクの保存
@@ -675,11 +776,15 @@ ComboSetData BehaviorTreeEditor::BuildComboSetDataFromEditor() const {
 			}
 
 			// リンクデータを保存リストに追加
-			out.editorLinks.push_back(linkData);
+			out.editor.links.push_back(linkData);
 		}
 	}
 
 	return out;
+}
+
+ComboSetData BehaviorTreeEditor::BuildComboSetDataFromEditor() const {
+	return ConvertBehaviorTreeAssetToComboSet(BuildBehaviorTreeAssetFromEditor());
 }
 
 //===============================================================================
@@ -694,7 +799,7 @@ void BehaviorTreeEditor::UpdateBlackboardKeys() {
 	} else {
 		// キー名を収集（実行のたびに作り直す。量が少ないので許容範囲）
 		blackboardKeys_.clear();
-		for (const auto& pair : blackboard_->GetAllData()) {
+		for (const auto& pair : blackboard_->Entries()) {
 			blackboardKeys_.push_back(pair.first);
 		}
 		// 毎回順番が変わらないようにソートしておく
@@ -717,18 +822,20 @@ void BehaviorTreeEditor::UpdateBlackboardKeys() {
 //===============================================================================
 void BehaviorTreeEditor::SetupContextMenu() {
 	flowEditor_->rightClickPopUpContent([this](ImFlow::BaseNode* node) {
-		//Add Node メニュー
-		if (ImGui::MenuItem("Add Action")) { flowEditor_->placeNode<ActionNodeView>("NONE"); }
-		if (ImGui::MenuItem("Add SetBlackboardBool")) { flowEditor_->placeNode<SetBlackboardBoolNodeView>(); }
-		if (ImGui::MenuItem("Add SetBlackboardString")) { flowEditor_->placeNode<SetBlackboardStringNodeView>(); }
-		if (ImGui::MenuItem("Add Wait")) { flowEditor_->placeNode<WaitNodeView>(); }
-		if (ImGui::MenuItem("Add WaitBlackboardTime")) { flowEditor_->placeNode<WaitBlackboardTimeNodeView>(); }
-		if (ImGui::MenuItem("Add Condition")) { flowEditor_->placeNode<ConditionNodeView>(); }
-		if (ImGui::MenuItem("Add ScoreCondition")) { flowEditor_->placeNode<ScoreConditionNodeView>(); }
-		if (ImGui::MenuItem("Add Selector")) { flowEditor_->placeNode<SelectorNodeView>(); }
-		if (ImGui::MenuItem("Add Sequence")) { flowEditor_->placeNode<SequenceNodeView>(); }
-		if (ImGui::MenuItem("Add PlannerSelector")) { flowEditor_->placeNode<PlannerSelectorNodeView>(); }
-		if (ImGui::MenuItem("Add WeightSelector")) { flowEditor_->placeNode<WeightSelectorNodeView>(); }
+		std::string currentCategory;
+		for (const auto* registration : viewRegistry_.Registrations()) {
+			if (registration->category != currentCategory) {
+				if (!currentCategory.empty()) {
+					ImGui::Separator();
+				}
+				currentCategory = registration->category;
+				ImGui::TextDisabled("%s", currentCategory.c_str());
+			}
+
+			if (ImGui::MenuItem(registration->displayName.c_str())) {
+				viewRegistry_.Place(registration->typeId, *flowEditor_);
+			}
+		}
 
 		// ノード上で右クリックしたときだけ削除を表示
 		auto* target = dynamic_cast<BehaviorNodeView*>(node);
@@ -825,8 +932,16 @@ void BehaviorTreeEditor::DeleteSubtreeNode(BehaviorNodeView* rootView) {
 // 指定したViewノードから再帰的に BehaviorNodeData を構築する
 //===============================================================================
 BehaviorNodeData BehaviorTreeEditor::BuildRecursiveNodeData(BehaviorNodeView* viewNode) const {
+	std::unordered_set<BehaviorNodeView*> visiting;
+	return BuildRecursiveNodeDataInternal(viewNode, visiting);
+}
+
+BehaviorNodeData BehaviorTreeEditor::BuildRecursiveNodeDataInternal(
+	BehaviorNodeView* viewNode,
+	std::unordered_set<BehaviorNodeView*>& visiting) const {
 	BehaviorNodeData data;
 	if (!viewNode) return data;
+	if (!visiting.insert(viewNode).second) return data;
 
 	// 基本情報とパラメータの保存
 	data.name = viewNode->getName();
@@ -864,8 +979,11 @@ BehaviorNodeData BehaviorTreeEditor::BuildRecursiveNodeData(BehaviorNodeView* vi
 
 	// ソートされた順番で再帰的に子ノードのデータを構築し、childrenに追加する
 	for (BehaviorNodeView* childView : childViews) {
-		data.children.push_back(BuildRecursiveNodeData(childView));
+		if (!visiting.contains(childView)) {
+			data.children.push_back(BuildRecursiveNodeDataInternal(childView, visiting));
+		}
 	}
+	visiting.erase(viewNode);
 
 	return data;
 }

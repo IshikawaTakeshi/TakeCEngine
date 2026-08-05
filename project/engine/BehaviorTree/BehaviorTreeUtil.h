@@ -1,25 +1,9 @@
 #pragma once
+#include <string>
+#include <utility>
 #include <vector>
 #include <json.hpp>
 #include "engine/Utility/JsonDirectoryPathData.h"
-#include "application/Entity/State/GameCharacterState.h"
-
-//============================================================================
-// ノードの種類
-//============================================================================
-enum class BehaviorNodeType {
-	ACTION,           // 行動ノード（ステート遷移）
-	CONDITION,        // 条件ノード
-	SEQUENCE,         // シーケンスノード
-	SELECTOR,         // セレクターノード
-	PLANNER_SELECTOR, // プランナーセレクター
-	WEIGHT_SELECTOR,  // ウェイトセレクター
-	SCORE_CONDITION,  // スコア条件
-	SET_BB_BOOL,      // Blackboard に bool をセット
-	SET_BB_STRING,    // Blackboard に string をセット
-	WAIT,             // 固定秒数の待機
-	WAIT_BB_TIME,     // Blackboard の float 値で待機秒数を決める
-};
 
 //============================================================================
 // ノードデータ（JSONシリアライズ用 / エディタ・ゲーム共用）
@@ -30,7 +14,7 @@ enum class BehaviorNodeType {
 struct BehaviorNodeData {
 	std::string name = "UnnamedNode";          // ノード名
 	std::string nodeType = "ACTION";           // ノードタイプ（文字列）
-	std::string targetState = "NONE";          // ACTION用: 遷移先ステート（文字列）
+	std::string targetState = "NONE";          // ACTION用: ゲーム側で解決するアクションID（旧JSON互換名）
 
 	std::string field = "";                    // 比較する対象（"energy", "hp", "distance" 等）
 	std::string op = ">=";                     // 比較演算子（">=", "<=", ">", "<", "==", "!="）
@@ -52,6 +36,9 @@ struct BehaviorNodeData {
 	// WaitNode 用拡張
 	float waitTime = 1.0f;                     // 待機時間 [s]（WaitNode 用）
 
+	// ゲーム固有ノードが自由に利用する拡張プロパティ
+	nlohmann::json properties = nlohmann::json::object();
+
 };
 
 //============================================================================
@@ -65,6 +52,37 @@ struct BehaviorLinkData {
 	int fromPinIndex = 0;
 	int toNodeUID = -1;
 	int toPinIndex = 0;
+};
+
+/// <summary>
+/// エディタ上の1ノードについて、実行時パラメータと表示レイアウトを分離して保持します。
+/// </summary>
+struct BehaviorEditorNodeData {
+	BehaviorNodeData node;
+	float posX = 0.0f;
+	float posY = 0.0f;
+	float sizeW = 0.0f;
+	float sizeH = 0.0f;
+};
+
+/// <summary>
+/// BehaviorTreeEditorでのみ使用するノード配置と接続情報を保持します。
+/// </summary>
+struct BehaviorTreeEditorData {
+	std::vector<BehaviorEditorNodeData> nodes;
+	std::vector<BehaviorLinkData> links;
+};
+
+/// <summary>
+/// ゲーム固有のコンボ概念に依存しないBehaviorTreeの保存単位です。
+/// </summary>
+struct BehaviorTreeAsset {
+	static constexpr int kCurrentFormatVersion = 1;
+
+	int formatVersion = kCurrentFormatVersion;
+	std::string name = "BehaviorTree";
+	BehaviorNodeData root;
+	BehaviorTreeEditorData editor;
 };
 
 //============================================================================
@@ -100,10 +118,24 @@ struct ComboSetData {
 void to_json(nlohmann::json& j, const ComboSetData& data);
 void from_json(const nlohmann::json& j, ComboSetData& data);
 
+void to_json(nlohmann::json& j, const BehaviorTreeAsset& data);
+void from_json(const nlohmann::json& j, BehaviorTreeAsset& data);
+
+void to_json(nlohmann::json& j, const BehaviorEditorNodeData& data);
+void from_json(const nlohmann::json& j, BehaviorEditorNodeData& data);
+
 void to_json(nlohmann::json& j, const BehaviorNodeData& data);
 void from_json(const nlohmann::json& j, BehaviorNodeData& data);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BehaviorLinkData, fromNodeUID, fromPinIndex, toNodeUID, toPinIndex)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BehaviorTreeEditorData, nodes, links)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ComboData, comboName, rootNode)
+
+/// <summary>旧ComboSet形式を汎用BehaviorTreeAssetへ変換します。</summary>
+BehaviorTreeAsset ConvertComboSetToBehaviorTreeAsset(const ComboSetData& legacyData);
+
+/// <summary>互換API向けにBehaviorTreeAssetを旧ComboSet形式へ変換します。</summary>
+ComboSetData ConvertBehaviorTreeAssetToComboSet(const BehaviorTreeAsset& asset);
 //JSONディレクトリパスの定義
+TAKEC_DEFINE_JSON_DIRECTORY_PATH(BehaviorTreeAsset, "JsonLoader/BehaviorTree");
 TAKEC_DEFINE_JSON_DIRECTORY_PATH(ComboSetData, "JsonLoader/ComboSet");

@@ -13,11 +13,18 @@ ScoreConditionNode::ScoreConditionNode(ScoreFunc scoreFunc, float threshold, con
 // ノードの実行
 //====================================================================================
 BehaviorStatus ScoreConditionNode::Execute(Blackboard&) {
-	float score = scoreFunc_();
-	if (score >= threshold_) {
-		return BehaviorStatus::Success;
+	if (!scoreFunc_) {
+		currentStatus_ = BehaviorStatus::Failure;
+		return currentStatus_;
 	}
-	return BehaviorStatus::Failure;
+
+	const float score = scoreFunc_();
+	if (score >= threshold_) {
+		currentStatus_ = BehaviorStatus::Success;
+		return currentStatus_;
+	}
+	currentStatus_ = BehaviorStatus::Failure;
+	return currentStatus_;
 }
 
 
