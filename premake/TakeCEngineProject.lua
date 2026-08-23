@@ -6,6 +6,7 @@ local function ResolvePaths(repositoryRoot)
     return {
         repositoryRoot = root,
         projectRoot = projectRoot,
+        generatedRoot = path.join(repositoryRoot,"Generated"),
         engineRoot = path.join(projectRoot, "engine"),
         externalsRoot = path.join(projectRoot, "externals"),
         packagesRoot = path.join(projectRoot, "packages"),
@@ -48,8 +49,8 @@ function DefineTakeCEngineProject(options)
     project (options.projectName or "TakeCEngine")
         location (options.projectLocation or paths.projectRoot)
         kind "StaticLib"
-        targetdir (options.targetDir or path.join(paths.projectRoot, "bin/%{cfg.buildcfg}"))
-        objdir (options.objectDir or path.join(paths.projectRoot, "obj/%{prj.name}/%{cfg.buildcfg}"))
+        targetdir (options.targetDir or path.join(paths.generatedRoot, "/outputs/%{cfg.buildcfg}"))
+        objdir (options.objectDir or path.join(paths.generatedRoot, "/obj/%{prj.name}/%{cfg.buildcfg}"))
         includedirs (TakeCEngineIncludeDirs(paths.repositoryRoot))
 
         files {
