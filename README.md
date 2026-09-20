@@ -3,7 +3,7 @@
 
 # TakeCEngine
 
-DirectX 12を使用するゲームエンジンです。ゲーム固有コードとゲーム資産は
+DirectX 12を使用するゲームエンジンです。ゲーム固有コードとインゲームで使われるリソースは
 [Face_Game](https://github.com/IshikawaTakeshi/Face_Game)へ分離されています。
 
 ## 構成
@@ -61,7 +61,7 @@ project "Game"
     }
 ```
 
-ゲーム開始時にゲーム資産とエンジン資産のルートを指定します。
+ゲーム開始時にゲームとエンジンのルートを指定します。
 
 ```cpp
 TakeC::ResourceRootConfig resources{
