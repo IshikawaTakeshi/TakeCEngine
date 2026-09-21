@@ -308,6 +308,14 @@
     <ClInclude Include="externals\DirectXTex\d3dx12.h" />
     <ClInclude Include="externals\DirectXTex\filters.h" />
     <ClInclude Include="externals\DirectXTex\scoped.h" />
+    <ClInclude Include="externals\ImGuizmo\GraphEditor.h" />
+    <ClInclude Include="externals\ImGuizmo\ImCurveEdit.h" />
+    <ClInclude Include="externals\ImGuizmo\ImGradient.h" />
+    <ClInclude Include="externals\ImGuizmo\ImGuizmo.h" />
+    <ClInclude Include="externals\ImGuizmo\ImLightRig.h" />
+    <ClInclude Include="externals\ImGuizmo\ImSequencer.h" />
+    <ClInclude Include="externals\ImGuizmo\ImVectorEditor.h" />
+    <ClInclude Include="externals\ImGuizmo\ImZoomSlider.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
     <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
@@ -316,6 +324,10 @@
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\include\ImNodeFlow.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\context_wrapper.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\2d\BaseUI.cpp" />
@@ -486,6 +498,12 @@
     <ClCompile Include="externals\DirectXTex\DirectXTexWIC.cpp">
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
+    <ClCompile Include="externals\ImGuizmo\GraphEditor.cpp" />
+    <ClCompile Include="externals\ImGuizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="externals\ImGuizmo\ImGradient.cpp" />
+    <ClCompile Include="externals\ImGuizmo\ImGuizmo.cpp" />
+    <ClCompile Include="externals\ImGuizmo\ImSequencer.cpp" />
+    <ClCompile Include="externals\ImGuizmo\ImVectorEditor.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp">
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
@@ -507,6 +525,7 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
+    <ClCompile Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EngineContent\shaders\3d\Object3d.PS.hlsl" />
@@ -546,6 +565,9 @@
     <None Include="EngineContent\shaders\UpdateParticle.CS.hlsl" />
     <None Include="EngineContent\shaders\WireFrame\WireFrame.PS.hlsl" />
     <None Include="EngineContent\shaders\WireFrame\WireFrame.VS.hlsl" />
+    <None Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.inl" />
+    <None Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.inl" />
+    <None Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
