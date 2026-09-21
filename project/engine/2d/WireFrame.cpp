@@ -31,7 +31,7 @@ void TakeC::WireFrame::Initialize(DirectXCommon* directXCommon) {
 	rootSignature_ = pso_->GetGraphicRootSignature();
 
 	//線描画用の頂点データ生成
-	lineData_ = new LineData();
+	lineData_ = std::make_unique<LineData>();
 	CreateVertexData();
 
 	CalculateSphereVertexData();
@@ -347,7 +347,12 @@ void TakeC::WireFrame::Finalize() {
 	pso_.reset();
 	rootSignature_.Reset();
 	wvpResource_.Reset();
-	lineData_->vertexBuffer_.Reset();
+	if (lineData_) {
+		lineData_->vertexBuffer_.Reset();
+		lineData_.reset();
+	}
+	TransformMatrixData_ = nullptr;
+	dxCommon_ = nullptr;
 }
 
 //=============================================================================

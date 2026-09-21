@@ -61,12 +61,12 @@ public:
 	struct SoundData {
 
 		//波形フォーマット
-		WAVEFORMATEX wfex;
+		WAVEFORMATEX wfex{};
 		//バッファの先頭アドレス
-		BYTE* pBuffer;
+		BYTE* pBuffer = nullptr;
 		//バッファのサイズ
-		unsigned int bufferSize;
-		IXAudio2SourceVoice* pSourceVoice;
+		unsigned int bufferSize = 0;
+		IXAudio2SourceVoice* pSourceVoice = nullptr;
 		// 再生カーソル位置
 		uint32_t playCursor = 0; 
 

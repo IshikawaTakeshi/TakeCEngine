@@ -34,6 +34,7 @@ void TakeC::ModelManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvMan
 void TakeC::ModelManager::Finalize() {
 	models_.clear();
 	modelInstances_.clear();
+	modelDatas_.clear();
 	modelCommon_->Finalize();
 }
 
@@ -49,12 +50,13 @@ void TakeC::ModelManager::LoadModel(const std::string& modelFile,const std::stri
 	}
 
 	//モデルの生成とファイル読み込み、初期化
-	ModelData* modelData = LoadModelFile(modelFile,envMapFile);
+	auto modelData = LoadModelFile(modelFile,envMapFile);
 	std::shared_ptr<Model> model = std::make_shared<Model>();
-	model->Initialize(modelCommon_, modelData);
+	model->Initialize(modelCommon_, modelData.get());
 
 	//モデルをコンテナに追加
 	models_.insert({ modelFile, std::move(model) });
+	modelDatas_.insert_or_assign(modelFile, std::move(modelData));
 	// モデルインスタンスを登録
 	RegisterInstance(modelFile, models_.at(modelFile));
 }
@@ -129,7 +131,7 @@ std::shared_ptr<Model> TakeC::ModelManager::CopyModel(const std::string& filePat
 // Modelファイルを読む関数
 //=============================================================================
 
-ModelData* TakeC::ModelManager::LoadModelFile(const std::string& modelFile,const std::string& envMapFile) {
+std::unique_ptr<ModelData> TakeC::ModelManager::LoadModelFile(const std::string& modelFile,const std::string& envMapFile) {
 
 	namespace fs = std::filesystem;
 
@@ -156,7 +158,7 @@ ModelData* TakeC::ModelManager::LoadModelFile(const std::string& modelFile,const
 		fullPath = modelDir / modelFile;
 	}
 
-	ModelData* modelData = new ModelData();
+	auto modelData = std::make_unique<ModelData>();
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(fullPath.string().c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 
@@ -355,7 +357,8 @@ void TakeC::ModelManager::ReloadModel(const std::string& modelFile) {
 
 	const std::string& fileKey = modelFile;
 
-	ModelData* newData = LoadModelFile(fileKey, models_.at(fileKey)->GetModelData()->material.envMapFilePath);
+	auto newData = LoadModelFile(fileKey, models_.at(fileKey)->GetModelData()->material.envMapFilePath);
+	ModelData* newDataPtr = newData.get();
 
 
 	// このモデルファイルを使っている全インスタンスに通知
@@ -365,7 +368,7 @@ void TakeC::ModelManager::ReloadModel(const std::string& modelFile) {
 		for (auto iter = vec.begin(); iter != vec.end(); ) {
 			if (auto instance = iter->lock()) {
 				// 生きているインスタンスなら Reload
-				instance->Reload(newData);
+				instance->Reload(newDataPtr);
 				++iter;
 			} else {
 				// すでに破棄されたインスタンスはリストから消してクリーンアップ
@@ -376,8 +379,10 @@ void TakeC::ModelManager::ReloadModel(const std::string& modelFile) {
 
 	// 元のモデルにも通知
 	if (auto itRep = models_.find(fileKey); itRep != models_.end()) {
-		itRep->second->Reload(newData);
+		itRep->second->Reload(newDataPtr);
 	}
+
+	modelDatas_.insert_or_assign(fileKey, std::move(newData));
 }
 
 //=============================================================================

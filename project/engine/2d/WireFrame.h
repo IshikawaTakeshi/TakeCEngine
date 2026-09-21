@@ -9,6 +9,7 @@
 #include "math/AABB.h"
 #include "math/OBB.h"
 #include <stdint.h>
+#include <memory>
 #include <string>
 #include <d3d12.h>
 #include <wrl.h>
@@ -165,7 +166,7 @@ namespace TakeC {
 		ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 
 		//線データ
-		LineData* lineData_ = nullptr;
+		std::unique_ptr<LineData> lineData_ = nullptr;
 		//球の頂点データ
 		std::vector<Vector3> spheres_;
 

@@ -361,7 +361,10 @@ bool AudioManager::IsMP3File(const std::string& filename) const {
 //================================================================================================
 
 void AudioManager::Finalize() {
+	if (masteringVoice_) {
+		masteringVoice_->DestroyVoice();
+		masteringVoice_ = nullptr;
+	}
 	//XAudio2の解放
 	xAudio2_.Reset();
-	MFShutdown();
 }

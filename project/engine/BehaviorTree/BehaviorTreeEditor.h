@@ -17,7 +17,7 @@
 #include "View/BehaviorNodeViewRegistry.h"
 
 // ImNodeFlow
-#include <ImNodeFlow-1.2.2/include/ImNodeFlow.h>
+#include <ImNodeFlow.h>
 #include "View/BehaviorNodeView.h"
 
 namespace TakeC { class JsonLoader; }

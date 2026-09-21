@@ -12,9 +12,6 @@
 class SceneTransition {
 private:
 
-	//シングルトンインスタンス
-	static SceneTransition* instance_;
-
 	//コンストラクタ・デストラクタ・コピー禁止
 	SceneTransition() = default;
 	~SceneTransition() = default;

@@ -6,19 +6,13 @@
 
 using namespace TakeC;
 
-//シングルトンインスタンスの初期化
-SceneTransition* SceneTransition::instance_ = nullptr;
-
 //=============================================================================
 // シングルトンインスタンス取得
 //=============================================================================
 
 SceneTransition* SceneTransition::GetInstance() {
-
-	if (instance_ == nullptr) {
-		instance_ = new SceneTransition();
-	}
-	return instance_;
+	static SceneTransition instance;
+	return &instance;
 }
 
 //=============================================================================
@@ -49,9 +43,7 @@ void SceneTransition::Finalize() {
 
 	fadeSprite_.reset();
 
-	if(instance_ != nullptr) {
-		instance_ = nullptr;
-	}
+	state_ = TransitionState::NONE;
 }
 
 //=============================================================================

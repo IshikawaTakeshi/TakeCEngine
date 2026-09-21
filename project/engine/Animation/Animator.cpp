@@ -30,9 +30,9 @@ void AnimationManager::LoadAnimation(const std::string& filePath) {
 	}
 
 	//アニメーションの生成とファイル読み込み、初期化
-	std::map<std::string, Animation*> animation = LoadAnimationFile(filePath);
+	auto animation = LoadAnimationFile(filePath);
 	//アニメーションをコンテナに追加
-	animations_.insert(std::make_pair(filePath, animation));
+	animations_.insert(std::make_pair(filePath, std::move(animation)));
 }
 
 //=============================================================================
@@ -45,7 +45,7 @@ Animation* AnimationManager::FindAnimation(const std::string& filePath, const st
 		if (animations_.at(filePath).contains(animName)) {
 
 			//読み込みアニメーションを戻り値としてreturn
-			return animations_.at(filePath).at(animName);
+			return animations_.at(filePath).at(animName).get();
 		}
 	}
 
@@ -57,7 +57,7 @@ Animation* AnimationManager::FindAnimation(const std::string& filePath, const st
 //=============================================================================
 //	アニメーションファイルの読み込み
 //=============================================================================
-std::map<std::string, Animation*> AnimationManager::LoadAnimationFile(const std::string& filename) {
+std::map<std::string, std::unique_ptr<Animation>> AnimationManager::LoadAnimationFile(const std::string& filename) {
 
 	namespace fs = std::filesystem;
 
@@ -84,19 +84,19 @@ std::map<std::string, Animation*> AnimationManager::LoadAnimationFile(const std:
 		fullPath = modelDir / filename;
 	}
 
-	std::map<std::string, Animation*> animations = {};
+	std::map<std::string, std::unique_ptr<Animation>> animations = {};
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(fullPath.string().c_str(), 0);
-    //アニメーションがない場合
-	if(scene->mNumAnimations == 0) {
-		return animations = {};
+	const aiScene* scene = importer.ReadFile(fullPath.string().c_str(), 0);
+	//アニメーションがない場合
+	if (!scene || scene->mNumAnimations == 0) {
+		return {};
 	}
 
 	//複数のアニメーションの情報を取得
 	for (uint32_t animationIndex = 0; animationIndex < scene->mNumAnimations; ++animationIndex) {
 		aiAnimation* animationAssimp = scene->mAnimations[animationIndex];
 		//animationインスタンスの生成
-		Animation* animation = new Animation();
+		auto animation = std::make_unique<Animation>();
 		//時間の単位を秒に変換
 		animation->duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond);
 
@@ -136,7 +136,7 @@ std::map<std::string, Animation*> AnimationManager::LoadAnimationFile(const std:
 		std::string animationName = animationAssimp->mName.C_Str();
 		animation->name = animationName;
 		//アニメーションをmapに追加
-		animations.insert(std::make_pair(animationName, animation));
+		animations.insert(std::make_pair(animationName, std::move(animation)));
 	}
 
 	//読み込んだアニメーションを返す

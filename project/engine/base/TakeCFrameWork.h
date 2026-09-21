@@ -152,7 +152,7 @@ protected:
 	//シーン遷移管理クラス
 	SceneTransition* sceneTransition_ = nullptr;
 	//ImGui管理クラス
-	TakeC::ImGuiManager* imguiManager_ = nullptr;
+	std::unique_ptr<TakeC::ImGuiManager> imguiManager_ = nullptr;
 
 	//シーンファクトリー
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;

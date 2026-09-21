@@ -74,8 +74,13 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 //==============================================================================================
 
 void DirectXCommon::Finalize() {
+	if (commandQueue_ && fence_) {
+		WaitForGPU();
+	}
 
-	CloseHandle(fenceEvent_);
+	if (fenceEvent_) {
+		CloseHandle(fenceEvent_);
+	}
 	fenceEvent_ = nullptr;
 
 	fence_.Reset();
@@ -83,7 +88,11 @@ void DirectXCommon::Finalize() {
 	commandList_.Reset();
 	commandAllocator_.Reset();
 	commandQueue_.Reset();
-	rtvManager_->Finalize();
+	if (rtvManager_) {
+		rtvManager_->Finalize();
+		rtvManager_.reset();
+	}
+	dsvManager_.reset();
 	swapChainResources_[0].Reset();
 	swapChainResources_[1].Reset();
 	swapChain_.Reset();
@@ -94,6 +103,7 @@ void DirectXCommon::Finalize() {
 
 	dxc_.reset();
 	winApp_ = nullptr;
+	timeEndPeriod(1);
 }
 
 //==============================================================================================

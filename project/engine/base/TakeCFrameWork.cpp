@@ -129,7 +129,7 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 
 
 #if defined(_DEBUG) || defined(_DEVELOP)
-	imguiManager_ = new ImGuiManager();
+	imguiManager_ = std::make_unique<ImGuiManager>();
 	imguiManager_->Initialize(winApp_.get(), directXCommon_.get(), srvManager_.get());
 #endif
 
@@ -154,38 +154,114 @@ void TakeCFrameWork::Initialize(const std::wstring& titleName) {
 //====================================================================
 
 void TakeCFrameWork::Finalize() {
+	// Scene objects own most game-side GPU resources, so release them first.
+	if (sceneManager_) {
+		sceneManager_->Finalize();
+		sceneManager_ = nullptr;
+	}
+	if (sceneTransition_) {
+		sceneTransition_->Finalize();
+		sceneTransition_ = nullptr;
+	}
+	sceneFactory_.reset();
+
+	if (cameraCapture_) {
+		cameraCapture_->Finalize();
+		cameraCapture_.reset();
+	}
+
 #if defined(_DEBUG) || defined(_DEVELOP)
-	imguiManager_->Finalize();
+	if (imguiManager_) {
+		imguiManager_->Finalize();
+		imguiManager_.reset();
+	}
 #endif
 
-	wireFrame_->Finalize();
-	animationManager_->Finalize();
-	//onnxRuntimeSystem_->Finalize();
-	TakeC::TextureManager::GetInstance().Finalize();
-	TakeC::ModelManager::GetInstance().Finalize();
-	CameraManager::GetInstance().Finalize();
-	postEffectManager_->Finalize();
+	if (uiManager_) {
+		uiManager_->Clear();
+		uiManager_.reset();
+	}
+	if (spriteManager_) {
+		spriteManager_->Clear();
+		spriteManager_.reset();
+	}
+	if (eventManager_) {
+		eventManager_->ClearObservers();
+		eventManager_.reset();
+	}
+
+	if (particleManager_) {
+		particleManager_->Finalize();
+		particleManager_.reset();
+	}
+	if (postEffectManager_) {
+		postEffectManager_->Finalize();
+		postEffectManager_.reset();
+	}
 	renderTexture_.reset();
-	particleManager_->Finalize();
-	primitiveDrawer_->Finalize();
-	particleCommon_->Finalize();
-	object3dCommon_->Finalize();
-	lightManager_->Finalize();
-	spriteCommon_->Finalize();
-	sceneFactory_.reset();
+	postEffectFactory_.reset();
+
+	if (wireFrame_) {
+		wireFrame_->Finalize();
+		wireFrame_.reset();
+	}
+	if (primitiveDrawer_) {
+		primitiveDrawer_->Finalize();
+		primitiveDrawer_.reset();
+	}
+	if (animationManager_) {
+		animationManager_->Finalize();
+		animationManager_.reset();
+	}
+	if (onnxRuntimeSystem_) {
+		onnxRuntimeSystem_->Finalize();
+		onnxRuntimeSystem_.reset();
+	}
+
+	TakeC::ModelManager::GetInstance().Finalize();
+	TakeC::TextureManager::GetInstance().Finalize();
+	CameraManager::GetInstance().Finalize();
+	if (particleCommon_) {
+		particleCommon_->Finalize();
+		particleCommon_ = nullptr;
+	}
+	if (object3dCommon_) {
+		object3dCommon_->Finalize();
+		object3dCommon_ = nullptr;
+	}
+	if (lightManager_) {
+		lightManager_->Finalize();
+		lightManager_.reset();
+	}
+	if (spriteCommon_) {
+		spriteCommon_->Finalize();
+		spriteCommon_ = nullptr;
+	}
+	jsonLoader_.reset();
+
 	//Audioの開放
-	audio_->Finalize();
+	if (audio_) {
+		audio_->Finalize();
+		audio_ = nullptr;
+	}
 	//入力の開放
-	input_->Finalize();
+	if (input_) {
+		input_->Finalize();
+		input_ = nullptr;
+	}
 	//SrvManagerの開放
 	srvManager_.reset();
 	//directXCommonの開放
-	directXCommon_->Finalize();
-	directXCommon_.reset();
+	if (directXCommon_) {
+		directXCommon_->Finalize();
+		directXCommon_.reset();
+	}
 
 	//winAppの開放
-	winApp_->Finalize();
-	winApp_.reset();
+	if (winApp_) {
+		winApp_->Finalize();
+		winApp_.reset();
+	}
 }
 
 //====================================================================

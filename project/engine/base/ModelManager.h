@@ -78,7 +78,7 @@ namespace TakeC {
 		/// <summary>
 		/// modelファイルを読む関数
 		/// </summary>
-		ModelData* LoadModelFile(const std::string& modelFile, const std::string& envMapFile);
+		std::unique_ptr<ModelData> LoadModelFile(const std::string& modelFile, const std::string& envMapFile);
 
 		void ReloadModel(const std::string& modelFile);
 
@@ -102,6 +102,8 @@ namespace TakeC {
 
 		//モデルデータコンテナ
 		std::map<std::string, std::shared_ptr<Model>> models_;
+		// Model instances borrow these data; the manager owns their lifetime.
+		std::map<std::string, std::unique_ptr<ModelData>> modelDatas_;
 		//ファイルを使用しているモデルを追跡するためのコンテナ
 		std::map<std::string, std::vector<std::weak_ptr<Model>>> modelInstances_;
 

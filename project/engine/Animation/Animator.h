@@ -3,6 +3,7 @@
 #include "Matrix4x4.h"
 #include <string>
 #include <unordered_map>
+#include <memory>
 
 //============================================================================
 // AnimationManager class
@@ -50,7 +51,7 @@ namespace TakeC {
 		/// <param name="directoryPath"></param>
 		/// <param name="filename"></param>
 		/// <returns></returns>
-		static std::map<std::string, Animation*> LoadAnimationFile(const std::string& filename);
+		static std::map<std::string, std::unique_ptr<Animation>> LoadAnimationFile(const std::string& filename);
 
 		/// <summary>
 		/// ベクトルの補間値を計算
@@ -71,6 +72,6 @@ namespace TakeC {
 		/// アニメーションのコンテナ
 		/// (ファイル名, (アニメーション名,アニメーション))
 		/// </summary>
-		std::map<std::string, std::map<std::string, Animation*>> animations_;
+		std::map<std::string, std::map<std::string, std::unique_ptr<Animation>>> animations_;
 	};
 }
