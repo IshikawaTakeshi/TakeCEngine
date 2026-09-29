@@ -255,6 +255,12 @@
     <ClInclude Include="engine\3d\Primitive\Sphere.h">
       <Filter>Engine\3d\Primitive</Filter>
     </ClInclude>
+    <ClInclude Include="engine\3d\Transform.h">
+      <Filter>Engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\TransformMatrix.h">
+      <Filter>Engine\3d</Filter>
+    </ClInclude>
     <ClInclude Include="engine\3d\VertexData.h">
       <Filter>Engine\3d</Filter>
     </ClInclude>
@@ -570,12 +576,6 @@
     <ClInclude Include="engine\Math\Quaternion.h">
       <Filter>Engine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Transform.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\3d\TransformMatrix.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
     <ClInclude Include="engine\Math\Vector2.h">
       <Filter>Engine\Math</Filter>
     </ClInclude>
@@ -872,6 +872,9 @@
     <ClCompile Include="engine\3d\Primitive\Sphere.cpp">
       <Filter>Engine\3d\Primitive</Filter>
     </ClCompile>
+    <ClCompile Include="engine\3d\Transform.cpp">
+      <Filter>Engine\3d</Filter>
+    </ClCompile>
     <ClCompile Include="engine\AI\FaceAnalysis\FacePartRatioCalculator.cpp">
       <Filter>Engine\AI\FaceAnalysis</Filter>
     </ClCompile>
@@ -1112,9 +1115,6 @@
     <ClCompile Include="engine\Math\Quaternion.cpp">
       <Filter>Engine\Math</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Transform.cpp">
-      <Filter>Engine\Math</Filter>
-    </ClCompile>
     <ClCompile Include="engine\Math\Vector2.cpp">
       <Filter>Engine\Math</Filter>
     </ClCompile>
@@ -1202,63 +1202,6 @@
     <ClCompile Include="engine\audio\Audio.cpp">
       <Filter>Engine\audio</Filter>
     </ClCompile>
-    <ClCompile Include="externals\DirectXTex\BC.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\BC4BC5.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\BC6HBC7.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexCompress.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexConvert.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexD3D11.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexD3D12.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexDDS.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexFlipRotate.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexHDR.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexImage.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexMipmaps.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexMisc.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexNormalMaps.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexPMAlpha.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexResize.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexTGA.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexUtil.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexWIC.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
     <ClCompile Include="externals\ImGuizmo\GraphEditor.cpp">
       <Filter>External\ImGuizmo</Filter>
     </ClCompile>
@@ -1279,27 +1222,6 @@
     </ClCompile>
     <ClCompile Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.cpp">
       <Filter>External\ImNodeFlow\src</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui.cpp">
-      <Filter>External\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_demo.cpp">
-      <Filter>External\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_draw.cpp">
-      <Filter>External\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_impl_dx12.cpp">
-      <Filter>External\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_impl_win32.cpp">
-      <Filter>External\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_tables.cpp">
-      <Filter>External\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_widgets.cpp">
-      <Filter>External\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

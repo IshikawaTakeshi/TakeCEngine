@@ -76,7 +76,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;externals;externals\assimp\include;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;externals;externals\assimp\include;externals\imgui;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -99,7 +99,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NOMINMAX;_DEVELOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;externals;externals\assimp\include;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;externals;externals\assimp\include;externals\imgui;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -127,7 +127,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;externals;externals\assimp\include;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;externals;externals\assimp\include;externals\imgui;externals\ImNodeFlow-1.2.2\include;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -192,6 +192,8 @@
     <ClInclude Include="engine\3d\Primitive\PrimitiveType.h" />
     <ClInclude Include="engine\3d\Primitive\Ring.h" />
     <ClInclude Include="engine\3d\Primitive\Sphere.h" />
+    <ClInclude Include="engine\3d\Transform.h" />
+    <ClInclude Include="engine\3d\TransformMatrix.h" />
     <ClInclude Include="engine\3d\VertexData.h" />
     <ClInclude Include="engine\AI\FaceAnalysis\FacePartRatioCalculator.h" />
     <ClInclude Include="engine\AI\FaceAnalysis\FacePartRatios.h" />
@@ -297,8 +299,6 @@
     <ClInclude Include="engine\Math\MatrixMath.h" />
     <ClInclude Include="engine\Math\OBB.h" />
     <ClInclude Include="engine\Math\Quaternion.h" />
-    <ClInclude Include="engine\3d\Transform.h" />
-    <ClInclude Include="engine\3d\TransformMatrix.h" />
     <ClInclude Include="engine\Math\Vector2.h" />
     <ClInclude Include="engine\Math\Vector3.h" />
     <ClInclude Include="engine\Math\Vector3Math.h" />
@@ -399,6 +399,7 @@
     <ClCompile Include="engine\3d\Primitive\PrimitiveType.cpp" />
     <ClCompile Include="engine\3d\Primitive\Ring.cpp" />
     <ClCompile Include="engine\3d\Primitive\Sphere.cpp" />
+    <ClCompile Include="engine\3d\Transform.cpp" />
     <ClCompile Include="engine\AI\FaceAnalysis\FacePartRatioCalculator.cpp" />
     <ClCompile Include="engine\AI\FaceDetection\FaceAligner.cpp" />
     <ClCompile Include="engine\AI\FaceDetection\Landmark106Decoder.cpp" />
@@ -479,7 +480,6 @@
     <ClCompile Include="engine\Math\Matrix4x4.cpp" />
     <ClCompile Include="engine\Math\MatrixMath.cpp" />
     <ClCompile Include="engine\Math\Quaternion.cpp" />
-    <ClCompile Include="engine\3d\Transform.cpp" />
     <ClCompile Include="engine\Math\Vector2.cpp" />
     <ClCompile Include="engine\Math\Vector3.cpp" />
     <ClCompile Include="engine\Math\Vector3Math.cpp" />
@@ -509,63 +509,6 @@
     <ClCompile Include="engine\Utility\StringUtility.cpp" />
     <ClCompile Include="engine\Utility\Timer.cpp" />
     <ClCompile Include="engine\audio\Audio.cpp" />
-    <ClCompile Include="externals\DirectXTex\BC.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\BC4BC5.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\BC6HBC7.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexCompress.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexConvert.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexD3D11.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexD3D12.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexDDS.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexFlipRotate.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexHDR.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexImage.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexMipmaps.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexMisc.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexNormalMaps.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexPMAlpha.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexResize.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexTGA.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexUtil.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\DirectXTex\DirectXTexWIC.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
     <ClCompile Include="externals\ImGuizmo\GraphEditor.cpp">
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
@@ -585,27 +528,6 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <ClCompile Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_demo.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_draw.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_impl_dx12.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_impl_win32.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_tables.cpp">
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
   </ItemGroup>
@@ -647,6 +569,14 @@
     <None Include="EngineContent\shaders\UpdateParticle.CS.hlsl" />
     <None Include="EngineContent\shaders\WireFrame\WireFrame.PS.hlsl" />
     <None Include="EngineContent\shaders\WireFrame\WireFrame.VS.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="externals\imgui\imgui.vcxproj">
+      <Project>{0FDC701F-B692-4B43-896C-0442AF261AB1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022.vcxproj">
+      <Project>{371B9FA9-4C90-4AC6-A123-ACED756D6C77}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

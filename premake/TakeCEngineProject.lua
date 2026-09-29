@@ -14,6 +14,20 @@ local function ResolvePaths(repositoryRoot)
     }
 end
 
+local function DefineTakeCEngineExternalProjects(paths)
+    externalproject "imgui"
+        location (path.join(paths.externalsRoot, "imgui"))
+        uuid "0fdc701f-b692-4b43-896c-0442af261ab1"
+        kind "StaticLib"
+        language "C++"
+
+    externalproject "DirectXTex_Desktop_2022"
+        location (path.join(paths.externalsRoot, "DirectXTex"))
+        uuid "371b9fa9-4c90-4ac6-a123-aced756d6c77"
+        kind "StaticLib"
+        language "C++"
+end
+
 function TakeCEngineIncludeDirs(repositoryRoot)
     local paths = ResolvePaths(repositoryRoot)
     return {
@@ -21,6 +35,7 @@ function TakeCEngineIncludeDirs(repositoryRoot)
         paths.engineRoot,
         paths.externalsRoot,
         path.join(paths.externalsRoot,"assimp/include"),
+        path.join(paths.externalsRoot, "imgui"),
         path.join(paths.externalsRoot,"ImNodeFlow-1.2.2/include"),
         paths.packagesRoot,
         path.join(paths.packagesRoot, "Microsoft.AI.DirectML.1.15.4/include"),
@@ -32,6 +47,8 @@ end
 function DefineTakeCEngineProject(options)
     options = options or {}
     local paths = ResolvePaths(options.repositoryRoot)
+
+    DefineTakeCEngineExternalProjects(paths)
 
     project (options.projectName or "TakeCEngine")
         location (options.projectLocation or paths.projectRoot)
@@ -46,14 +63,13 @@ function DefineTakeCEngineProject(options)
             path.join(paths.engineRoot, "**.cpp"),
             path.join(paths.contentRoot, "shaders/**.hlsl"),
             path.join(paths.externalsRoot, "imgui/**.h"),
-            path.join(paths.externalsRoot, "imgui/**.cpp"),
             path.join(paths.externalsRoot, "ImGuizmo/**.h"),
             path.join(paths.externalsRoot, "ImGuizmo/**.cpp"),
             path.join(paths.externalsRoot, "ImNodeFlow-1.2.2/**.h"),
             path.join(paths.externalsRoot, "ImNodeFlow-1.2.2/**.inl"),
             path.join(paths.externalsRoot, "ImNodeFlow-1.2.2/**.cpp"),
             path.join(paths.externalsRoot, "DirectXTex/**.h"),
-            path.join(paths.externalsRoot, "DirectXTex/**.cpp")
+            path.join(paths.externalsRoot, "DirectXTex/**.hpp")
         }
 
         removefiles {
@@ -79,6 +95,11 @@ function DefineTakeCEngineProject(options)
 
         filter {}
 
+        links {
+            "imgui",
+            "DirectXTex_Desktop_2022"
+        }
+
     return paths
 end
 
@@ -92,6 +113,8 @@ function ConfigureTakeCEngineConsumer(options)
     dependson { options.projectName or "TakeCEngine" }
     links {
         options.projectName or "TakeCEngine",
+        "imgui",
+        "DirectXTex_Desktop_2022",
         "DirectML",
         "onnxruntime",
         "mfplat",
