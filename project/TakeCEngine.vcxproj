@@ -336,6 +336,7 @@
     <ClInclude Include="engine\audio\Audio.h" />
     <ClInclude Include="externals\DirectXTex\BC.h" />
     <ClInclude Include="externals\DirectXTex\BCDirectCompute.h" />
+    <ClInclude Include="externals\DirectXTex\CmdLineHelpers.h" />
     <ClInclude Include="externals\DirectXTex\DDS.h" />
     <ClInclude Include="externals\DirectXTex\DirectXTex.h" />
     <ClInclude Include="externals\DirectXTex\DirectXTexP.h" />
@@ -574,7 +575,7 @@
     <ProjectReference Include="externals\imgui\imgui.vcxproj">
       <Project>{0FDC701F-B692-4B43-896C-0442AF261AB1}</Project>
     </ProjectReference>
-    <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022.vcxproj">
+    <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2026.vcxproj">
       <Project>{371B9FA9-4C90-4AC6-A123-ACED756D6C77}</Project>
     </ProjectReference>
   </ItemGroup>

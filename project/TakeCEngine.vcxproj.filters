@@ -687,6 +687,9 @@
     <ClInclude Include="externals\DirectXTex\BCDirectCompute.h">
       <Filter>External\DirectXTex</Filter>
     </ClInclude>
+    <ClInclude Include="externals\DirectXTex\CmdLineHelpers.h">
+      <Filter>External\DirectXTex</Filter>
+    </ClInclude>
     <ClInclude Include="externals\DirectXTex\DDS.h">
       <Filter>External\DirectXTex</Filter>
     </ClInclude>

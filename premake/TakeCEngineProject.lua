@@ -20,12 +20,14 @@ local function DefineTakeCEngineExternalProjects(paths)
         uuid "0fdc701f-b692-4b43-896c-0442af261ab1"
         kind "StaticLib"
         language "C++"
+        configmap { ["Develop"] = "Release" }
 
-    externalproject "DirectXTex_Desktop_2022"
+    externalproject "DirectXTex_Desktop_2026"
         location (path.join(paths.externalsRoot, "DirectXTex"))
         uuid "371b9fa9-4c90-4ac6-a123-aced756d6c77"
         kind "StaticLib"
         language "C++"
+        configmap { ["Develop"] = "Release" }
 end
 
 function TakeCEngineIncludeDirs(repositoryRoot)
@@ -95,9 +97,14 @@ function DefineTakeCEngineProject(options)
 
         filter {}
 
+        dependson {
+            "imgui",
+            "DirectXTex_Desktop_2026"
+        }
+
         links {
             "imgui",
-            "DirectXTex_Desktop_2022"
+            "DirectXTex_Desktop_2026"
         }
 
     return paths
@@ -110,11 +117,15 @@ function ConfigureTakeCEngineConsumer(options)
     -- 共通設定は呼び出し元の構成フィルタを引き継がない
     filter {}
     includedirs (TakeCEngineIncludeDirs(paths.repositoryRoot))
-    dependson { options.projectName or "TakeCEngine" }
+    dependson {
+        options.projectName or "TakeCEngine",
+        "imgui",
+        "DirectXTex_Desktop_2026"
+    }
     links {
         options.projectName or "TakeCEngine",
         "imgui",
-        "DirectXTex_Desktop_2022",
+        "DirectXTex_Desktop_2026",
         "DirectML",
         "onnxruntime",
         "mfplat",
