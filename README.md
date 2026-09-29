@@ -41,13 +41,13 @@ Visual Studio 2026を使う場合は、`v143`を`v145`へ変更します。
 ゲームリポジトリへsubmoduleとして追加します。
 
 ```bat
-git submodule add https://github.com/IshikawaTakeshi/TakeCEngine vendor\TakeCEngine
+git submodule add https://github.com/IshikawaTakeshi/TakeCEngine TakeCEngine
 ```
 
 ゲーム側Premakeから共通定義を読み込みます。
 
 ```lua
-local engineRepository = "vendor/TakeCEngine"
+local engineRepositoryRoot = "../TakeCEngine"
 dofile(path.join(engineRepository, "premake/TakeCEngineProject.lua"))
 
 DefineTakeCEngineProject {
@@ -57,7 +57,7 @@ DefineTakeCEngineProject {
 
 project "Game"
     ConfigureTakeCEngineConsumer {
-        repositoryRoot = engineRepository
+        repositoryRoot = engineRepositoryRoot
     }
 ```
 
@@ -66,7 +66,7 @@ project "Game"
 ```cpp
 TakeC::ResourceRootConfig resources{
     .gameRoot = "Assets",
-    .engineRoot = "../vendor/TakeCEngine/project/EngineContent",
+    .engineRoot = "../TakeCEngine/project/EngineContent",
 };
 game->Run(L"Game", resources);
 ```
