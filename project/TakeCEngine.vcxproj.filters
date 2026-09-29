@@ -40,6 +40,12 @@
     <Filter Include="Engine\Base\Particle">
       <UniqueIdentifier>{E8C66733-D455-F1FC-7D74-05F869E201A3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\BehaviorTree">
+      <UniqueIdentifier>{2A23CDE6-9684-AAF4-1FF2-F0A68B52E1B3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\BehaviorTree\View">
+      <UniqueIdentifier>{D421F738-C046-46B9-E991-2B49D51545D7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Engine\Camera">
       <UniqueIdentifier>{F3979233-5F58-0E6A-2893-57E794125346}</UniqueIdentifier>
     </Filter>
@@ -81,6 +87,18 @@
     </Filter>
     <Filter Include="External\DirectXTex">
       <UniqueIdentifier>{5BDED392-C73F-B1A0-50AD-F752BC0DE85F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\ImGuizmo">
+      <UniqueIdentifier>{683857F5-D44E-558B-1DC6-E0AC891B2613}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\ImNodeFlow">
+      <UniqueIdentifier>{8B29BB42-F78A-9850-80F8-DE02EC58CF0F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\ImNodeFlow\include">
+      <UniqueIdentifier>{FEABF2F5-6AB9-20DC-F39F-1CC75FACEC92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\ImNodeFlow\src">
+      <UniqueIdentifier>{22B51618-8EEC-5EAF-97F6-C2D203AD85A8}</UniqueIdentifier>
     </Filter>
     <Filter Include="External\imgui">
       <UniqueIdentifier>{72501853-5E1E-0C59-47B2-7C7F331FE8BD}</UniqueIdentifier>
@@ -372,6 +390,108 @@
     <ClInclude Include="engine\Base\WinApp.h">
       <Filter>Engine\Base</Filter>
     </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\ActionNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\BehaviorNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\BehaviorNodeRegistry.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\BehaviorStatusEnum.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\BehaviorTreeAssetValidator.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\BehaviorTreeEditor.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\BehaviorTreeUtil.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\Blackboard.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\ComboFactory.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\CompositeNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\ConditionNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\PlannerSelectorNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\ScoreConditionNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\SelectorNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\SequenceNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\SetBlackboardBoolNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\SetBlackboardStringNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\ActionNodeView.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\BehaviorNodeView.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\BehaviorNodeViewRegistry.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\BlackboardPanel.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\ConditionNodeView.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\PlannerSelectorNodeView.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\ScoreConditionNodeView.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\SelectorNodeView.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\SequenceNodeView.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\SetBlackboardBoolNodeView.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\SetBlackboardStringNodeView.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\WaitBlackboardTimeNodeView.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\WaitNodeView.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\View\WeightSelectorNodeView.h">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\WaitBlackboardTimeNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\WaitNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BehaviorTree\WeightSelectorNode.h">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClInclude>
     <ClInclude Include="engine\Camera\Camera.h">
       <Filter>Engine\Camera</Filter>
     </ClInclude>
@@ -585,6 +705,51 @@
     <ClInclude Include="externals\DirectXTex\scoped.h">
       <Filter>External\DirectXTex</Filter>
     </ClInclude>
+    <ClInclude Include="externals\ImGuizmo\GraphEditor.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImGuizmo\ImCurveEdit.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImGuizmo\ImGradient.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImGuizmo\ImGuizmo.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImGuizmo\ImLightRig.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImGuizmo\ImSequencer.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImGuizmo\ImVectorEditor.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImGuizmo\ImZoomSlider.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\include\ImNodeFlow.h">
+      <Filter>External\ImNodeFlow\include</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.inl">
+      <Filter>External\ImNodeFlow\src</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\context_wrapper.h">
+      <Filter>External\ImNodeFlow\src</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.h">
+      <Filter>External\ImNodeFlow\src</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.inl">
+      <Filter>External\ImNodeFlow\src</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h">
+      <Filter>External\ImNodeFlow\src</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.inl">
+      <Filter>External\ImNodeFlow\src</Filter>
+    </ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h">
       <Filter>External\imgui</Filter>
     </ClInclude>
@@ -609,18 +774,6 @@
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>External\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="externals\ImNodeFlow-1.2.2\include\ImNodeFlow.h" />
-    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\context_wrapper.h" />
-    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.h" />
-    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h" />
-    <ClInclude Include="externals\ImGuizmo\GraphEditor.h" />
-    <ClInclude Include="externals\ImGuizmo\ImCurveEdit.h" />
-    <ClInclude Include="externals\ImGuizmo\ImGradient.h" />
-    <ClInclude Include="externals\ImGuizmo\ImGuizmo.h" />
-    <ClInclude Include="externals\ImGuizmo\ImLightRig.h" />
-    <ClInclude Include="externals\ImGuizmo\ImSequencer.h" />
-    <ClInclude Include="externals\ImGuizmo\ImVectorEditor.h" />
-    <ClInclude Include="externals\ImGuizmo\ImZoomSlider.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\2d\BaseUI.cpp">
@@ -814,6 +967,99 @@
     </ClCompile>
     <ClCompile Include="engine\Base\WinApp.cpp">
       <Filter>Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\ActionNode.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\BehaviorNodeRegistry.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\BehaviorTreeAssetValidator.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\BehaviorTreeEditor.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\BehaviorTreeUtil.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\Blackboard.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\ComboFactory.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\ConditionNode.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\PlannerSelectorNode.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\ScoreConditionNode.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\SelectorNode.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\SequenceNode.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\SetBlackboardBoolNode.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\SetBlackboardStringNode.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\ActionNodeView.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\BehaviorNodeView.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\BehaviorNodeViewRegistry.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\BlackboardPanel.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\ConditionNodeView.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\PlannerSelectorNodeView.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\ScoreConditionNodeView.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\SelectorNodeView.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\SequenceNodeView.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\SetBlackboardBoolNodeView.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\SetBlackboardStringNodeView.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\WaitBlackboardTimeNodeView.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\WaitNodeView.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\View\WeightSelectorNodeView.cpp">
+      <Filter>Engine\BehaviorTree\View</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\WaitBlackboardTimeNode.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\WaitNode.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\BehaviorTree\WeightSelectorNode.cpp">
+      <Filter>Engine\BehaviorTree</Filter>
     </ClCompile>
     <ClCompile Include="engine\Camera\Camera.cpp">
       <Filter>Engine\Camera</Filter>
@@ -1013,6 +1259,27 @@
     <ClCompile Include="externals\DirectXTex\DirectXTexWIC.cpp">
       <Filter>External\DirectXTex</Filter>
     </ClCompile>
+    <ClCompile Include="externals\ImGuizmo\GraphEditor.cpp">
+      <Filter>External\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\ImGuizmo\ImCurveEdit.cpp">
+      <Filter>External\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\ImGuizmo\ImGradient.cpp">
+      <Filter>External\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\ImGuizmo\ImGuizmo.cpp">
+      <Filter>External\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\ImGuizmo\ImSequencer.cpp">
+      <Filter>External\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\ImGuizmo\ImVectorEditor.cpp">
+      <Filter>External\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.cpp">
+      <Filter>External\ImNodeFlow\src</Filter>
+    </ClCompile>
     <ClCompile Include="externals\imgui\imgui.cpp">
       <Filter>External\imgui</Filter>
     </ClCompile>
@@ -1034,13 +1301,6 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>External\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.cpp" />
-    <ClCompile Include="externals\ImGuizmo\GraphEditor.cpp" />
-    <ClCompile Include="externals\ImGuizmo\ImCurveEdit.cpp" />
-    <ClCompile Include="externals\ImGuizmo\ImGradient.cpp" />
-    <ClCompile Include="externals\ImGuizmo\ImGuizmo.cpp" />
-    <ClCompile Include="externals\ImGuizmo\ImSequencer.cpp" />
-    <ClCompile Include="externals\ImGuizmo\ImVectorEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EngineContent\shaders\3d\Object3d.PS.hlsl">
@@ -1154,8 +1414,5 @@
     <None Include="EngineContent\shaders\WireFrame\WireFrame.VS.hlsl">
       <Filter>Shaders\WireFrame</Filter>
     </None>
-    <None Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.inl" />
-    <None Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.inl" />
-    <None Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.inl" />
   </ItemGroup>
 </Project>

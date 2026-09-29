@@ -53,20 +53,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)bin\Debug\</OutDir>
-    <IntDir>$(ProjectDir)obj\TakeCEngine\Debug\</IntDir>
+    <OutDir>$(ProjectDir)..\Generated\outputs\Debug\</OutDir>
+    <IntDir>$(ProjectDir)..\Generated\obj\TakeCEngine\Debug\</IntDir>
     <TargetName>TakeCEngine</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">
-    <OutDir>$(ProjectDir)bin\Develop\</OutDir>
-    <IntDir>$(ProjectDir)obj\TakeCEngine\Develop\</IntDir>
+    <OutDir>$(ProjectDir)..\Generated\outputs\Develop\</OutDir>
+    <IntDir>$(ProjectDir)..\Generated\obj\TakeCEngine\Develop\</IntDir>
     <TargetName>TakeCEngine</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(ProjectDir)bin\Release\</OutDir>
-    <IntDir>$(ProjectDir)obj\TakeCEngine\Release\</IntDir>
+    <OutDir>$(ProjectDir)..\Generated\outputs\Release\</OutDir>
+    <IntDir>$(ProjectDir)..\Generated\obj\TakeCEngine\Release\</IntDir>
     <TargetName>TakeCEngine</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -76,13 +76,13 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\Scene;engine\math;engine\camera;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\Scene;engine\math;engine\camera;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\ImGuizmo;externals\ImNodeFlow-1.2.2\include;externals\nlohmann;externals\magic_enum;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalOptions>/utf-8 /FIWindows.h %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /FIWindows.h /FS %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
@@ -99,7 +99,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NOMINMAX;_DEVELOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\Scene;engine\math;engine\camera;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\Scene;engine\math;engine\camera;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\ImGuizmo;externals\ImNodeFlow-1.2.2\include;externals\nlohmann;externals\magic_enum;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -108,7 +108,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalOptions>/utf-8 /FIWindows.h %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /FIWindows.h /FS %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
@@ -127,7 +127,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\Scene;engine\math;engine\camera;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\nlohmann;externals\magic_enum;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;engine;engine\2d;engine\3d;engine\audio;engine\base;engine\io;engine\Scene;engine\math;engine\camera;externals;externals\assimp\include;externals\DirectXTex;externals\imgui;externals\ImGuizmo;externals\ImNodeFlow-1.2.2\include;externals\nlohmann;externals\magic_enum;packages;packages\Microsoft.AI.DirectML.1.15.4\include;packages\Microsoft.Direct3D.DXC.1.9.2602.24\build\native\include;packages\Microsoft.ML.OnnxRuntime.DirectML.1.24.4\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -135,7 +135,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalOptions>/utf-8 /FIWindows.h %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /FIWindows.h /FS %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
@@ -237,6 +237,40 @@
     <ClInclude Include="engine\Base\TextureManager.h" />
     <ClInclude Include="engine\Base\UIManager.h" />
     <ClInclude Include="engine\Base\WinApp.h" />
+    <ClInclude Include="engine\BehaviorTree\ActionNode.h" />
+    <ClInclude Include="engine\BehaviorTree\BehaviorNode.h" />
+    <ClInclude Include="engine\BehaviorTree\BehaviorNodeRegistry.h" />
+    <ClInclude Include="engine\BehaviorTree\BehaviorStatusEnum.h" />
+    <ClInclude Include="engine\BehaviorTree\BehaviorTreeAssetValidator.h" />
+    <ClInclude Include="engine\BehaviorTree\BehaviorTreeEditor.h" />
+    <ClInclude Include="engine\BehaviorTree\BehaviorTreeUtil.h" />
+    <ClInclude Include="engine\BehaviorTree\Blackboard.h" />
+    <ClInclude Include="engine\BehaviorTree\ComboFactory.h" />
+    <ClInclude Include="engine\BehaviorTree\CompositeNode.h" />
+    <ClInclude Include="engine\BehaviorTree\ConditionNode.h" />
+    <ClInclude Include="engine\BehaviorTree\PlannerSelectorNode.h" />
+    <ClInclude Include="engine\BehaviorTree\ScoreConditionNode.h" />
+    <ClInclude Include="engine\BehaviorTree\SelectorNode.h" />
+    <ClInclude Include="engine\BehaviorTree\SequenceNode.h" />
+    <ClInclude Include="engine\BehaviorTree\SetBlackboardBoolNode.h" />
+    <ClInclude Include="engine\BehaviorTree\SetBlackboardStringNode.h" />
+    <ClInclude Include="engine\BehaviorTree\View\ActionNodeView.h" />
+    <ClInclude Include="engine\BehaviorTree\View\BehaviorNodeView.h" />
+    <ClInclude Include="engine\BehaviorTree\View\BehaviorNodeViewRegistry.h" />
+    <ClInclude Include="engine\BehaviorTree\View\BlackboardPanel.h" />
+    <ClInclude Include="engine\BehaviorTree\View\ConditionNodeView.h" />
+    <ClInclude Include="engine\BehaviorTree\View\PlannerSelectorNodeView.h" />
+    <ClInclude Include="engine\BehaviorTree\View\ScoreConditionNodeView.h" />
+    <ClInclude Include="engine\BehaviorTree\View\SelectorNodeView.h" />
+    <ClInclude Include="engine\BehaviorTree\View\SequenceNodeView.h" />
+    <ClInclude Include="engine\BehaviorTree\View\SetBlackboardBoolNodeView.h" />
+    <ClInclude Include="engine\BehaviorTree\View\SetBlackboardStringNodeView.h" />
+    <ClInclude Include="engine\BehaviorTree\View\WaitBlackboardTimeNodeView.h" />
+    <ClInclude Include="engine\BehaviorTree\View\WaitNodeView.h" />
+    <ClInclude Include="engine\BehaviorTree\View\WeightSelectorNodeView.h" />
+    <ClInclude Include="engine\BehaviorTree\WaitBlackboardTimeNode.h" />
+    <ClInclude Include="engine\BehaviorTree\WaitNode.h" />
+    <ClInclude Include="engine\BehaviorTree\WeightSelectorNode.h" />
     <ClInclude Include="engine\Camera\Camera.h" />
     <ClInclude Include="engine\Camera\CameraForGPU.h" />
     <ClInclude Include="engine\Camera\CameraManager.h" />
@@ -316,6 +350,13 @@
     <ClInclude Include="externals\ImGuizmo\ImSequencer.h" />
     <ClInclude Include="externals\ImGuizmo\ImVectorEditor.h" />
     <ClInclude Include="externals\ImGuizmo\ImZoomSlider.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\include\ImNodeFlow.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.inl" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\context_wrapper.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.inl" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h" />
+    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.inl" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
     <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
@@ -324,10 +365,6 @@
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="externals\ImNodeFlow-1.2.2\include\ImNodeFlow.h" />
-    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\context_wrapper.h" />
-    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.h" />
-    <ClInclude Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\2d\BaseUI.cpp" />
@@ -394,6 +431,37 @@
     <ClCompile Include="engine\Base\TextureManager.cpp" />
     <ClCompile Include="engine\Base\UIManager.cpp" />
     <ClCompile Include="engine\Base\WinApp.cpp" />
+    <ClCompile Include="engine\BehaviorTree\ActionNode.cpp" />
+    <ClCompile Include="engine\BehaviorTree\BehaviorNodeRegistry.cpp" />
+    <ClCompile Include="engine\BehaviorTree\BehaviorTreeAssetValidator.cpp" />
+    <ClCompile Include="engine\BehaviorTree\BehaviorTreeEditor.cpp" />
+    <ClCompile Include="engine\BehaviorTree\BehaviorTreeUtil.cpp" />
+    <ClCompile Include="engine\BehaviorTree\Blackboard.cpp" />
+    <ClCompile Include="engine\BehaviorTree\ComboFactory.cpp" />
+    <ClCompile Include="engine\BehaviorTree\ConditionNode.cpp" />
+    <ClCompile Include="engine\BehaviorTree\PlannerSelectorNode.cpp" />
+    <ClCompile Include="engine\BehaviorTree\ScoreConditionNode.cpp" />
+    <ClCompile Include="engine\BehaviorTree\SelectorNode.cpp" />
+    <ClCompile Include="engine\BehaviorTree\SequenceNode.cpp" />
+    <ClCompile Include="engine\BehaviorTree\SetBlackboardBoolNode.cpp" />
+    <ClCompile Include="engine\BehaviorTree\SetBlackboardStringNode.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\ActionNodeView.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\BehaviorNodeView.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\BehaviorNodeViewRegistry.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\BlackboardPanel.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\ConditionNodeView.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\PlannerSelectorNodeView.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\ScoreConditionNodeView.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\SelectorNodeView.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\SequenceNodeView.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\SetBlackboardBoolNodeView.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\SetBlackboardStringNodeView.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\WaitBlackboardTimeNodeView.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\WaitNodeView.cpp" />
+    <ClCompile Include="engine\BehaviorTree\View\WeightSelectorNodeView.cpp" />
+    <ClCompile Include="engine\BehaviorTree\WaitBlackboardTimeNode.cpp" />
+    <ClCompile Include="engine\BehaviorTree\WaitNode.cpp" />
+    <ClCompile Include="engine\BehaviorTree\WeightSelectorNode.cpp" />
     <ClCompile Include="engine\Camera\Camera.cpp" />
     <ClCompile Include="engine\Camera\CameraForGPU.cpp" />
     <ClCompile Include="engine\Camera\CameraManager.cpp" />
@@ -498,12 +566,27 @@
     <ClCompile Include="externals\DirectXTex\DirectXTexWIC.cpp">
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
-    <ClCompile Include="externals\ImGuizmo\GraphEditor.cpp" />
-    <ClCompile Include="externals\ImGuizmo\ImCurveEdit.cpp" />
-    <ClCompile Include="externals\ImGuizmo\ImGradient.cpp" />
-    <ClCompile Include="externals\ImGuizmo\ImGuizmo.cpp" />
-    <ClCompile Include="externals\ImGuizmo\ImSequencer.cpp" />
-    <ClCompile Include="externals\ImGuizmo\ImVectorEditor.cpp" />
+    <ClCompile Include="externals\ImGuizmo\GraphEditor.cpp">
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="externals\ImGuizmo\ImCurveEdit.cpp">
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="externals\ImGuizmo\ImGradient.cpp">
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="externals\ImGuizmo\ImGuizmo.cpp">
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="externals\ImGuizmo\ImSequencer.cpp">
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="externals\ImGuizmo\ImVectorEditor.cpp">
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.cpp">
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
     <ClCompile Include="externals\imgui\imgui.cpp">
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
@@ -525,7 +608,6 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
-    <ClCompile Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EngineContent\shaders\3d\Object3d.PS.hlsl" />
@@ -565,9 +647,6 @@
     <None Include="EngineContent\shaders\UpdateParticle.CS.hlsl" />
     <None Include="EngineContent\shaders\WireFrame\WireFrame.PS.hlsl" />
     <None Include="EngineContent\shaders\WireFrame\WireFrame.VS.hlsl" />
-    <None Include="externals\ImNodeFlow-1.2.2\src\imgui_bezier_math.inl" />
-    <None Include="externals\ImNodeFlow-1.2.2\src\imgui_extra_math.inl" />
-    <None Include="externals\ImNodeFlow-1.2.2\src\ImNodeFlow.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
