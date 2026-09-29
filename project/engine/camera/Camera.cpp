@@ -19,6 +19,7 @@ void Camera::Initialize(ID3D12Device* device,const std::string& configData) {
 	
 	//カメラの各種パラメータ初期化
 	cameraConfig_ = TakeC::TakeCFrameWork::GetJsonLoader()->LoadJsonData<CameraConfig>(configData);
+	debugCameraInitialized_ = false;
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(cameraConfig_.transform_);
 	viewMatrix_ = MatrixMath::Inverse(worldMatrix_);
 	projectionMatrix_ = MatrixMath::MakePerspectiveFovMatrix(
@@ -49,7 +50,7 @@ void Camera::Update() {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	//デバッグカメラとゲームカメラの切り替え
 	if (TakeC::Input::GetInstance().TriggerKey(DIK_F1)) {
-		isDebug_ = !isDebug_;
+		SetIsDebug(!isDebug_);
 	}
 #endif // _DEBUG
 
@@ -231,6 +232,16 @@ void Camera::UpdateImGui() {
 //=============================================================================
 
 void Camera::UpdateDebugCamera() {
+	// デバッグカメラは「ピボット + ローカルオフセット」で位置を管理する。
+	// これにより、パン後に回転してもワールド原点を中心に位置が飛ばない。
+	if (!debugCameraInitialized_) {
+		cameraConfig_.transform_.rotate =
+			QuaternionMath::Normalize(cameraConfig_.transform_.rotate);
+		const Vector3 rotatedOffset = QuaternionMath::RotateVector(
+			cameraConfig_.offsetDelta_, cameraConfig_.transform_.rotate);
+		debugPivotPosition_ = cameraConfig_.transform_.translate - rotatedOffset;
+		debugCameraInitialized_ = true;
+	}
 
 	// クォータニオンで回転を管理
 	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
@@ -251,20 +262,26 @@ void Camera::UpdateDebugCamera() {
 	}
 
 	// 累積回転を更新
-	cameraConfig_.transform_.rotate = rotationDelta * cameraConfig_.transform_.rotate;
+	cameraConfig_.transform_.rotate = QuaternionMath::Normalize(
+		rotationDelta * cameraConfig_.transform_.rotate);
 
 	if (TakeC::Input::GetInstance().PressMouse(2)) {
-		cameraConfig_.offsetDelta_.x += (float)TakeC::Input::GetInstance().GetMouseMove().lX * 0.1f;
-		cameraConfig_.offsetDelta_.y -= (float)TakeC::Input::GetInstance().GetMouseMove().lY * 0.1f;
+		const TakeC::Input::MouseMove mouseMove = TakeC::Input::GetInstance().GetMouseMove();
+		const Vector3 right = QuaternionMath::RotateVector(
+			Vector3(1.0f, 0.0f, 0.0f), cameraConfig_.transform_.rotate);
+		const Vector3 up = QuaternionMath::RotateVector(
+			Vector3(0.0f, 1.0f, 0.0f), cameraConfig_.transform_.rotate);
+		debugPivotPosition_ += right * (static_cast<float>(mouseMove.lX) * 0.1f);
+		debugPivotPosition_ += up * (-static_cast<float>(mouseMove.lY) * 0.1f);
 	}
 
 	// オフセットを考慮したワールド行列の計算
 	cameraConfig_.offsetDelta_.z += (float)TakeC::Input::GetInstance().GetWheel() * 0.1f;
 
 	// 回転を適用
-	cameraConfig_.offset_ = cameraConfig_.offsetDelta_;
-	cameraConfig_.offset_ = QuaternionMath::RotateVector(cameraConfig_.offset_, cameraConfig_.transform_.rotate);
-	cameraConfig_.transform_.translate = cameraConfig_.offset_;
+	cameraConfig_.offset_ = QuaternionMath::RotateVector(
+		cameraConfig_.offsetDelta_, cameraConfig_.transform_.rotate);
+	cameraConfig_.transform_.translate = debugPivotPosition_ + cameraConfig_.offset_;
 
 }
 
@@ -532,6 +549,7 @@ void Camera::UpdateCameraEnemyDestroyed() {
 
 void Camera::SetRotate(const Quaternion& rotate) {
 	cameraConfig_.transform_.rotate = rotate;
+	debugCameraInitialized_ = false;
 }
 
 //=============================================================================
