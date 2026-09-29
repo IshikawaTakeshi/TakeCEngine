@@ -13,11 +13,12 @@
 #include <wrl.h>
 
 
-#include "Matrix4x4.h"
-#include "Mesh/Mesh.h"
-#include "SpriteCommon.h"
-#include "Transform.h"
-#include "TransformMatrix.h"
+
+#include "math/Matrix4x4.h"
+#include "3d/Mesh/Mesh.h"
+#include "2d/SpriteCommon.h"
+#include "engine/3d/Transform.h"
+#include "engine/3d/TransformMatrix.h"
 #include "engine/2d/SpriteConfig.h"
 #include "engine/Animation/SpriteAnimation.h"
 

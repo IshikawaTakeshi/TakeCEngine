@@ -7,7 +7,8 @@
 #include "base/TextureManager.h"
 #include "3d/Material.h"
 #include "3d/VertexData.h"
-#include "math/TransformMatrix.h"
+#include "3d/Transform.h"
+#include "3d/TransformMatrix.h"
 #include <memory>
 #include <unordered_map>
 #include <string>

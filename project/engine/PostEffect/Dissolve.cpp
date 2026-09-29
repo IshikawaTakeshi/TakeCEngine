@@ -1,7 +1,7 @@
 #include "Dissolve.h"
-#include "Utility/ResourceBarrier.h"
-#include "base/TextureManager.h"
-#include "ImGuiManager.h"
+#include "engine/Utility/ResourceBarrier.h"
+#include "engine/base/TextureManager.h"
+#include "engine/base/ImGuiManager.h"
 #include <cassert>
 
 using namespace TakeC;

@@ -1,7 +1,7 @@
 #pragma once
-#include <json.hpp>
-#include "Vector3.h"
-#include "Quaternion.h"
+#include <nlohmann/json.hpp>
+#include "engine/Math/Vector3.h"
+#include "engine/Math/Quaternion.h"
 
 //=================================================================================
 // Transform struct

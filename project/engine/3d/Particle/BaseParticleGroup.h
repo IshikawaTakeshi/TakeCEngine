@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/base/DirectXCommon.h"
-#include "engine/math/Transform.h"
-#include "engine/math/TransformMatrix.h"
+#include "engine/3d/Transform.h"
+#include "engine/3d/TransformMatrix.h"
 #include "engine/math/AABB.h"
 #include "engine/3d/Model.h"
 #include "engine/3d/Particle/ParticleAttribute.h"

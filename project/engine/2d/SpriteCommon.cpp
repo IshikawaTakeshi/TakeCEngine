@@ -1,11 +1,11 @@
 #include "SpriteCommon.h"
-#include "DirectXCommon.h"
-#include "PipelineStateObject.h"
-#include "Sprite.h"
-#include "Mesh/Mesh.h"
-#include "base/SrvManager.h"
-#include "TextureManager.h"
-#include "MatrixMath.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/PipelineStateObject.h"
+#include "engine/2d/Sprite.h"
+#include "engine/3d/Mesh/Mesh.h"
+#include "engine/base/SrvManager.h"
+#include "engine/base/TextureManager.h"
+#include "engine/math/MatrixMath.h"
 #include <algorithm>
 #include <cassert>
 

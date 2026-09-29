@@ -1,8 +1,8 @@
 #pragma once
 #include "ParticleEmitter.h"
 #include "ParticleCommon.h"
-#include "DirectXCommon.h"
-#include "SrvManager.h"
+#include "engine/Base/DirectXCommon.h"
+#include "engine/Base/SrvManager.h"
 
 //============================================================================
 // ParticleEmitterAllocator class

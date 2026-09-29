@@ -1,9 +1,9 @@
 #pragma once
-#include "DirectXCommon.h"
-#include "PipelineStateObject.h"
-#include "TransformMatrix.h"
-#include "Transform.h"
-#include "Mesh/Mesh.h"
+#include "base/DirectXCommon.h"
+#include "base/PipelineStateObject.h"
+#include "engine/3d/Transform.h"
+#include "engine/3d/TransformMatrix.h"
+#include "3d/Mesh/Mesh.h"
 #include "engine/3d/Primitive/PrimitiveBase.h"
 #include "engine/Base/SrvManager.h"
 

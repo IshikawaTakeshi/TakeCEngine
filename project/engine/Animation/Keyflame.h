@@ -1,6 +1,6 @@
 #pragma once
-#include "Vector3.h"
-#include "Quaternion.h"
+#include "math/Vector3.h"
+#include "math/Quaternion.h"
 
 //============================================================================
 // Keyframe struct

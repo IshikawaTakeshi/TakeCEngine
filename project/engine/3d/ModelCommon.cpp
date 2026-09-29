@@ -1,6 +1,6 @@
 #include "ModelCommon.h"
-#include "DirectXCommon.h"
-#include "SrvManager.h"
+#include "engine/Base/DirectXCommon.h"
+#include "engine/Base/SrvManager.h"
 
 
 namespace TakeC {

@@ -1,10 +1,10 @@
 #pragma once
-#include "engine/math/Transform.h"
+#include "engine/3d/Transform.h"
 #include "engine/math/Vector2.h"
 #include "engine/math/Vector4.h"
 #include "engine/Utility/JsonDirectoryPathData.h"
 #include <string>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 enum class SpriteDrawLayer {
 	Background,

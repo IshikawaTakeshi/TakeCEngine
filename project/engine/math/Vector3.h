@@ -1,7 +1,7 @@
 #pragma once
 #include <cmath>
 #include <algorithm>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 namespace TakeC {
 

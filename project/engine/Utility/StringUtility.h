@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <magic_enum.hpp>
+#include <magic_enum/magic_enum.hpp>
 
 // enumのみに制約をかける
 template<typename T>

@@ -1,10 +1,10 @@
 #pragma once
 #include "engine/math/Vector3.h"
 #include "engine/math/matrix4x4.h"
-#include "engine/math/Transform.h"
+#include "engine/3d/Transform.h"
 #include "engine/Utility/JsonDirectoryPathData.h"
 #include "engine/base/WinApp.h"
-#include <json.hpp>
+
 
 //============================================================================
 // CameraForGPU struct

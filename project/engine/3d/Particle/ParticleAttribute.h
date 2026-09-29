@@ -7,7 +7,7 @@
 #include "engine/Animation/TextureAnimationTypeEnum.h"
 #include "engine/Animation/TextureAnimationVariant.h"
 #include "engine/math/Easing.h"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <numbers>
 #include <string>
 #include <cstdint>

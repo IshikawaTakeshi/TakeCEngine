@@ -1,7 +1,7 @@
 #pragma once
 
-#include "engine/math/Transform.h"
-#include "engine/math/TransformMatrix.h"
+#include "engine/3d/Transform.h"
+#include "engine/3d/TransformMatrix.h"
 #include "Animation/Animator.h"
 #include "Animation/Skeleton.h"
 #include "Animation/SkinCluster.h"

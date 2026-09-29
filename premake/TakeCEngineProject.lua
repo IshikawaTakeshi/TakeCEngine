@@ -19,22 +19,9 @@ function TakeCEngineIncludeDirs(repositoryRoot)
     return {
         paths.projectRoot,
         paths.engineRoot,
-        path.join(paths.engineRoot, "2d"),
-        path.join(paths.engineRoot, "3d"),
-        path.join(paths.engineRoot, "audio"),
-        path.join(paths.engineRoot, "base"),
-        path.join(paths.engineRoot, "io"),
-        path.join(paths.engineRoot, "Scene"),
-        path.join(paths.engineRoot, "math"),
-        path.join(paths.engineRoot, "camera"),
         paths.externalsRoot,
-        path.join(paths.externalsRoot, "assimp/include"),
-        path.join(paths.externalsRoot, "DirectXTex"),
-        path.join(paths.externalsRoot, "imgui"),
-        path.join(paths.externalsRoot, "ImGuizmo"),
-        path.join(paths.externalsRoot, "ImNodeFlow-1.2.2/include"),
-        path.join(paths.externalsRoot, "nlohmann"),
-        path.join(paths.externalsRoot, "magic_enum"),
+        path.join(paths.externalsRoot,"assimp/include"),
+        path.join(paths.externalsRoot,"ImNodeFlow-1.2.2/include"),
         paths.packagesRoot,
         path.join(paths.packagesRoot, "Microsoft.AI.DirectML.1.15.4/include"),
         path.join(paths.packagesRoot, "Microsoft.Direct3D.DXC.1.9.2602.24/build/native/include"),
@@ -99,6 +86,8 @@ function ConfigureTakeCEngineConsumer(options)
     options = options or {}
     local paths = ResolvePaths(options.repositoryRoot)
 
+    -- 共通設定は呼び出し元の構成フィルタを引き継がない
+    filter {}
     includedirs (TakeCEngineIncludeDirs(paths.repositoryRoot))
     dependson { options.projectName or "TakeCEngine" }
     links {
@@ -112,18 +101,23 @@ function ConfigureTakeCEngineConsumer(options)
         "dxguid"
     }
 
+    -- DirectML、DXC、ONNX Runtime は全構成で共通
     libdirs {
         path.join(paths.packagesRoot, "Microsoft.AI.DirectML.1.15.4/bin/x64-win"),
         path.join(paths.packagesRoot, "Microsoft.Direct3D.DXC.1.9.2602.24/build/native/lib/x64"),
-        path.join(paths.packagesRoot, "Microsoft.ML.OnnxRuntime.DirectML.1.24.4/runtimes/win-x64/native"),
-        path.join(paths.externalsRoot, "assimp/lib/Debug"),
-        path.join(paths.externalsRoot, "assimp/lib/Release")
+        path.join(paths.packagesRoot, "Microsoft.ML.OnnxRuntime.DirectML.1.24.4/runtimes/win-x64/native")
     }
 
     filter "configurations:Debug"
+        libdirs {
+            path.join(paths.externalsRoot, "assimp/lib/Debug")
+        }
         links { "assimp-vc143-mtd" }
 
     filter "configurations:Develop or Release"
+        libdirs {
+            path.join(paths.externalsRoot, "assimp/lib/Release")
+        }
         links { "assimp-vc143-mt" }
 
     filter {}

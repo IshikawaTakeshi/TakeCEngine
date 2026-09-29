@@ -4,7 +4,7 @@
 #include "math/Quaternion.h"
 #include <cmath>
 #include <numbers>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 //============================================================================
 // Easing namespace

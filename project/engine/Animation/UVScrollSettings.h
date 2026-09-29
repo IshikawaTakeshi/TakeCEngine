@@ -1,6 +1,6 @@
 #pragma once
 #include "engine/math/Vector2.h"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 //============================================================================
 // UVスクロール設定

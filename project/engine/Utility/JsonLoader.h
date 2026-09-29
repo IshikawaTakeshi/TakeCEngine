@@ -8,10 +8,10 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <typeinfo>
 
-#include "Vector3.h"
+#include "math/Vector3.h"
 
 //=============================================================================================
 /// JsonLoader class

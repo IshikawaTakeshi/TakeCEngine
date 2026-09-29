@@ -1,7 +1,7 @@
 #include "engine/math/Vector3.h"
 #include "engine/math/Matrix4x4.h"
 #include "engine/math/Quaternion.h"
-#include "engine/math/Transform.h"
+#include "engine/3d/Transform.h"
 
 //============================================================================
 // MatrixMath namespace

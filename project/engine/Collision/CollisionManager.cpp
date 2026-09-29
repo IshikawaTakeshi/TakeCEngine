@@ -1,7 +1,7 @@
 #include "CollisionManager.h"
 #include "Collider.h"
-#include "Vector3Math.h"
-#include "DirectXCommon.h"
+#include "engine/Math/Vector3Math.h"
+#include "engine/base/DirectXCommon.h"
 #include "Collision/BoxCollider.h"
 #include "Collision/SphereCollider.h"
 

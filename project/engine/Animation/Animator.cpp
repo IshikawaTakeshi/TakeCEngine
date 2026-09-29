@@ -1,5 +1,5 @@
 #include "Animator.h"
-#include "Easing.h"
+#include "engine/Math/Easing.h"
 #include "engine/Utility/ResourcePath.h"
 //assimp
 #include <assimp/Importer.hpp>

@@ -10,8 +10,8 @@
 #include "engine/3d/Primitive/Cube.h"
 #include "engine/3d/Primitive/Cone.h"
 #include "engine/3d/Primitive/Cylinder.h"
-#include "math/TransformMatrix.h"
-#include "Primitive/PrimitiveType.h"
+#include "engine/3d/TransformMatrix.h"
+#include "engine/3d/Primitive/PrimitiveType.h"
 #include <memory>
 #include <cstdint>
 #include <unordered_map>

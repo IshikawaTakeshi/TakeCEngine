@@ -1,6 +1,6 @@
 #include "BloomEffect.h"
-#include "Utility/ResourceBarrier.h"
-#include "ImGuiManager.h"
+#include "engine/Utility/ResourceBarrier.h"
+#include "engine/base/ImGuiManager.h"
 #include <cassert>
 
 using namespace TakeC;

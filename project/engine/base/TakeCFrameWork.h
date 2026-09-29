@@ -27,7 +27,7 @@
 #include "audio/Audio.h"
 #include "camera/CameraManager.h"
 #include "CameraCapture/CameraCapture.h"
-#include "primitive/Sphere.h"
+#include "3d/Primitive/Sphere.h"
 #include "PostEffect/PostEffectManager.h"
 #include "PostEffect/PostEffectFactory.h"
 #include "PostEffect/RenderTexture.h"

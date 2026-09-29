@@ -1,6 +1,6 @@
 #pragma once
 #include "3d/Particle/BaseParticleGroup.h"
-#include "Primitive/PrimitiveType.h"
+#include "3d/Primitive/PrimitiveType.h"
 
 //============================================================================
 // PrimitiveParticle class

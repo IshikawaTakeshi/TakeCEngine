@@ -5,8 +5,8 @@
 // ParticleForGPU.h
 //==========================================
 
-#include "Vector3.h"
-#include "Vector4.h"
+#include "math/Vector3.h"
+#include "math/Vector4.h"
 
 
 //パーティクル用の行列,色データ

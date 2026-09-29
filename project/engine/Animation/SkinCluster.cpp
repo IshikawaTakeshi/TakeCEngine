@@ -1,6 +1,6 @@
 #include "SkinCluster.h"
-#include "DirectXCommon.h"
-#include "MatrixMath.h"
+#include "engine/Base/DirectXCommon.h"
+#include "engine/Math/MatrixMath.h"
 #include <algorithm>
 #include <cassert>
 

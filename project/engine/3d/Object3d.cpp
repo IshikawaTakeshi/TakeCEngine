@@ -1,13 +1,13 @@
 #include "Object3d.h"
-#include "Object3dCommon.h"
-#include "MatrixMath.h"
-#include "DirectXCommon.h"
-#include "Mesh/Mesh.h"
-#include "TextureManager.h"
-#include "ModelManager.h"
-#include "CameraManager.h"
-#include "ImGuiManager.h"
-#include "TakeCFrameWork.h"
+#include "engine/3d/Object3dCommon.h"
+#include "engine/Math/MatrixMath.h"
+#include "engine/Base/DirectXCommon.h"
+#include "engine/3d/Mesh/Mesh.h"
+#include "engine/Base/TextureManager.h"
+#include "engine/Base/ModelManager.h"
+#include "engine/Camera/CameraManager.h"
+#include "engine/Base/ImGuiManager.h"
+#include "engine/Base/TakeCFrameWork.h"
 
 #include <fstream>
 #include <sstream>

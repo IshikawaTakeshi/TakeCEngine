@@ -570,10 +570,10 @@
     <ClInclude Include="engine\Math\Quaternion.h">
       <Filter>Engine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Math\Transform.h">
+    <ClInclude Include="engine\3d\Transform.h">
       <Filter>Engine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Math\TransformMatrix.h">
+    <ClInclude Include="engine\3d\TransformMatrix.h">
       <Filter>Engine\Math</Filter>
     </ClInclude>
     <ClInclude Include="engine\Math\Vector2.h">
@@ -1112,7 +1112,7 @@
     <ClCompile Include="engine\Math\Quaternion.cpp">
       <Filter>Engine\Math</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Math\Transform.cpp">
+    <ClCompile Include="engine\3d\Transform.cpp">
       <Filter>Engine\Math</Filter>
     </ClCompile>
     <ClCompile Include="engine\Math\Vector2.cpp">

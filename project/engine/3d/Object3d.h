@@ -7,8 +7,8 @@
 #include "engine/3d/Model.h"
 #include "engine/3d/Light/LightCameraInfo.h"
 #include "engine/Animation/Animator.h"
-#include "engine/math/Transform.h"
-#include "engine/math/TransformMatrix.h"
+#include "engine/3d/Transform.h"
+#include "engine/3d/TransformMatrix.h"
 #include "engine/base/PSOType.h"
 #include "engine/Animation/AnimatorController.h"
 

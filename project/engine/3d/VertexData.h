@@ -17,4 +17,4 @@ namespace TakeC {
 		Vector2 texcoord;
 		Vector3 normal;
 	};
-}
+}

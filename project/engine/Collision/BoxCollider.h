@@ -1,6 +1,6 @@
 #pragma once
-#include "Collision/Collider.h"
-#include "OBB.h"
+#include "engine/Collision/Collider.h"
+#include "engine/math/OBB.h"
 
 //前方宣言
 class SphereCollider;

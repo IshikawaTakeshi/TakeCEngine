@@ -1,7 +1,7 @@
 #pragma once
 #include "Posteffect/PostEffect.h"
 #include "engine/math/Vector2.h"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 // 色収差情報構造体
 /// <summary>

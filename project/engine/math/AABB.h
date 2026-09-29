@@ -1,6 +1,6 @@
 #pragma once
 #include "Vector3.h"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 //============================================================================
 // AABB struct

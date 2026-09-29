@@ -1,10 +1,10 @@
 #include "PrimitiveDrawer.h"
-#include "CameraManager.h"
-#include "TextureManager.h"
-#include "Object3dCommon.h"
-#include "ImGuiManager.h"
-#include "MatrixMath.h"
-#include "Particle/Particle3d.h"
+#include "engine/Camera/CameraManager.h"
+#include "engine/Base/TextureManager.h"
+#include "engine/3d/Object3dCommon.h"
+#include "engine/Base/ImGuiManager.h"
+#include "engine/Math/MatrixMath.h"
+#include "engine/3d/Particle/Particle3d.h"
 
 #include <numbers>
 

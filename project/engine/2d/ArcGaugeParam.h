@@ -1,6 +1,6 @@
 #pragma once
 #include "engine/Math/Vector2.h"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 /// <summary>
 /// ArcGaugeParamで使用する設定値を保持する構造体です。

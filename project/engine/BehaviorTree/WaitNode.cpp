@@ -1,6 +1,5 @@
 #include "WaitNode.h"
 #include "engine/Base/TakeCFrameWork.h"
-#include <imgui.h>
 
 //==================================================================================
 // コンストラクタ

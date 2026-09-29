@@ -1,9 +1,9 @@
 #pragma once
 #include <Windows.h>
 #include <d3d12.h>
-#include <packages/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/build/native/include/onnxruntime_cxx_api.h>
-#include <packages/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/build/native/include/dml_provider_factory.h>
-#include <packages/Microsoft.AI.DirectML.1.15.4/include/DirectML.h>
+#include "packages/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/build/native/include/onnxruntime_cxx_api.h"
+#include "packages/Microsoft.ML.OnnxRuntime.DirectML.1.24.4/build/native/include/dml_provider_factory.h"
+#include "packages/Microsoft.AI.DirectML.1.15.4/include/DirectML.h"
 #include <vector>
 #include <string>
 #include <mutex>
