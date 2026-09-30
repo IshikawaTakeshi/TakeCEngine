@@ -106,7 +106,10 @@ public:
 	//カメラの回転の設定
 	void SetRotate(const Quaternion& rotate);
 	//カメラの位置、回転の設定
-	void SetTranslate(const Vector3& Translate) { cameraConfig_.transform_.translate = Translate; }
+	void SetTranslate(const Vector3& Translate) {
+		cameraConfig_.transform_.translate = Translate;
+		debugCameraInitialized_ = false;
+	}
 	//オフセットの設定
 	void SetOffset(const Vector3& offset) { cameraConfig_.offset_ = offset; }
 	
@@ -123,7 +126,12 @@ public:
 	//シェイクするかどうかの設定
 	void SetIsShaking(bool isShaking) { isShaking_ = isShaking; }
 	//デバッグ状態かの設定
-	void SetIsDebug(bool isDebug){ isDebug_ = isDebug; }
+	void SetIsDebug(bool isDebug){
+		if (isDebug_ != isDebug) {
+			debugCameraInitialized_ = false;
+		}
+		isDebug_ = isDebug;
+	}
 	
 	//ヨー回転量の設定
 	void SetYawRot(float yaw) { cameraConfig_.yaw_ = yaw; }
@@ -208,6 +216,10 @@ private:
 
 	//デバッグ状態か
 	bool isDebug_ = false;
+	//デバッグカメラが使用する回転中心（ワールド座標）
+	Vector3 debugPivotPosition_ = { 0.0f, 0.0f, 0.0f };
+	//現在のカメラ位置からデバッグ用ピボットを初期化済みか
+	bool debugCameraInitialized_ = false;
 
 private:
 
