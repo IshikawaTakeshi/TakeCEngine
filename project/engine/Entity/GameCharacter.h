@@ -75,7 +75,7 @@ public:
 	/// キャラクタータイプの取得
 	virtual CharacterType GetCharacterType() { return characterType_; }
 	/// Object3dの取得
-	TakeC::Object3d* GetObject3d() { return object3d_.get(); }
+	virtual TakeC::Object3d* GetObject3d() { return object3d_.get(); }
 
 	//----- setter ---------------
 

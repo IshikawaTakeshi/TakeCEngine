@@ -58,6 +58,9 @@
     <Filter Include="Engine\Entity">
       <UniqueIdentifier>{C70F2C39-33D0-A76F-FC0A-F1EC688AEC4B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\GameObject">
+      <UniqueIdentifier>{7B030729-E719-05BF-3091-90E09CE6D546}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Engine\Input">
       <UniqueIdentifier>{1AB06895-0613-F839-AF98-30F09BDAC3BC}</UniqueIdentifier>
     </Filter>
@@ -536,6 +539,21 @@
     </ClInclude>
     <ClInclude Include="engine\Entity\GameCharacter.h">
       <Filter>Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\GameObject\Component.h">
+      <Filter>Engine\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\GameObject\GameObject.h">
+      <Filter>Engine\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\GameObject\GameObjectManager.h">
+      <Filter>Engine\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\GameObject\ModelRendererComponent.h">
+      <Filter>Engine\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\GameObject\TransformComponent.h">
+      <Filter>Engine\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="engine\Input\Gamepad.h">
       <Filter>Engine\Input</Filter>
@@ -1093,6 +1111,21 @@
     </ClCompile>
     <ClCompile Include="engine\Entity\GameCharacter.cpp">
       <Filter>Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\GameObject\Component.cpp">
+      <Filter>Engine\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\GameObject\GameObject.cpp">
+      <Filter>Engine\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\GameObject\GameObjectManager.cpp">
+      <Filter>Engine\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\GameObject\ModelRendererComponent.cpp">
+      <Filter>Engine\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\GameObject\TransformComponent.cpp">
+      <Filter>Engine\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="engine\Input\Gamepad.cpp">
       <Filter>Engine\Input</Filter>
