@@ -36,33 +36,72 @@ public:
 	CollisionComponent() = default;
 	~CollisionComponent() override;
 
+	/// <summary>
+	///GameObject の Transform だけを使う通常の初期化
+	/// </summary>
+	void Initialize(std::unique_ptr<Collider> collider);
+	/// <summary>
+	/// Transform を使いながら旧 GameCharacter 通知も維持します。
+	/// </summary>
+	void InitializeFromTransform(
+		std::unique_ptr<Collider> collider, 
+		GameCharacter* legacyOwner);
+	/// <summary>
+	/// 移行期間用の Object3d ベースの初期化
+	/// </summary>
 	void Initialize(
 		std::unique_ptr<Collider> collider,
-		DirectXCommon* dxCommon,
 		Object3d* collisionObject,
 		GameCharacter* legacyOwner = nullptr);
+
+	/// <summary>
+	/// 解放処理
+	/// </summary>
 	void Reset();
 
+	/// <summary>
+	/// 判定・キャスト前に現在の変換を形状へ反映する処理
+	/// </summary>
+	void SynchronizeTransform();
+
+	/// <summary>
+	/// 衝突通知を登録されたコールバックへの送信処理
+	/// </summary>
+	/// <param name="contact"></param>
+	void NotifyCollision(const CollisionContact& contact) const;
+	/// <summary>
+	/// 衝突イベント通知を登録されたコールバックへの送信処理
+	/// </summary>
+	/// <param name="event"></param>
+	void NotifyCollisionEvent(const CollisionEvent& event) const;
+
+public:
+
+	//=============================================================================
+	// accessor
+	//=============================================================================
+
+	//----- getter ---------------
 	Collider* GetCollider() const { return collider_.get(); }
 	ColliderId GetColliderId() const { return colliderId_; }
 	GameCharacter* GetLegacyOwner() const { return legacyOwner_; }
+	Vector3 GetLocalOffset() const;
+	std::uint32_t GetCollisionLayer() const;
+	std::uint32_t GetCollisionMask() const { return collisionMask_; }
+
+	//----- setter ---------------
 	void SetCollisionCallback(CollisionCallback callback) {
 		callback_ = std::move(callback);
 	}
-	void NotifyCollision(const CollisionContact& contact) const;
+
 	void SetCollisionEventCallback(CollisionEventCallback callback) {
 		eventCallback_ = std::move(callback);
 	}
-	void NotifyCollisionEvent(const CollisionEvent& event) const;
 
-	Vector3 GetLocalOffset() const;
 	void SetLocalOffset(const Vector3& offset);
-	std::uint32_t GetCollisionLayer() const;
 	void SetCollisionLayer(std::uint32_t layer);
 	bool IsTrigger() const { return isTrigger_; }
 	void SetTrigger(bool trigger) { isTrigger_ = trigger; }
-
-	std::uint32_t GetCollisionMask() const { return collisionMask_; }
 	void SetCollisionMask(std::uint32_t mask) { collisionMask_ = mask; }
 
 protected:
@@ -70,6 +109,7 @@ protected:
 	void OnDetach() override;
 
 private:
+	void PrepareCollider(std::unique_ptr<Collider> collider, GameCharacter* legacyOwner);
 	std::unique_ptr<Collider> collider_;
 	Object3d* collisionObject_ = nullptr;
 	GameCharacter* legacyOwner_ = nullptr;

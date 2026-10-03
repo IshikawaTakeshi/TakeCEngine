@@ -75,6 +75,11 @@ public:
 	/// ゲームキャラクターの解放
 	/// </summary>
 	void ClearGameCharacter();
+	/// <summary>
+	/// 1 フレームにつき一度、衝突 API を呼ぶ前に実行します。
+	/// 旧・新 API が同じフレームに呼ばれても、各コライダー組を一度だけ判定します。
+	/// </summary>
+	void BeginCollisionFrame();
 
 	/// <summary>
 	/// 全てのゲームキャラクターの衝突判定を行う関数
@@ -171,7 +176,12 @@ private:
 	std::unordered_map<GameCharacter*, TakeC::ColliderId> legacyColliderIds_;
 	std::unordered_map<TakeC::ColliderId, CollisionEntry> registeredEntries_;
 	std::unordered_map<PairKey, PairState, PairHash> previousPairs_;
+	std::unordered_map<PairKey, PairState, PairHash> currentPairs_;
+	std::unordered_set<PairKey, PairHash> checkedPairs_;
+	std::unordered_set<PairKey, PairHash> exitedPairs_;
 	std::vector<TakeC::CollisionEvent> eventQueue_;
+	bool frameStarted_ = false;
+	bool fullSweepDone_ = false;
 	bool dispatchingEvents_ = false;
 	//パイプラインステートオブジェクト
 	std::unique_ptr<TakeC::PSO> pso_ = nullptr;

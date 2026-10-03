@@ -1,4 +1,5 @@
 #include "BoxCollider.h"
+#include "engine/3d/Object3d.h"
 #include "3d/Object3dCommon.h"
 #include "3d/Model.h"
 #include "engine/math/MatrixMath.h"
@@ -10,6 +11,8 @@
 #include "engine/Entity/GameCharacter.h"
 #include "engine/Base/TakeCFrameWork.h"
 
+#include <algorithm>
+#include <cfloat>
 #include <cmath>
 
 using namespace TakeC;
@@ -18,9 +21,9 @@ using namespace TakeC;
 // 初期化
 //=============================================================================
 
-void BoxCollider::Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collisionObject) {
+void BoxCollider::Initialize(Object3d* collisionObject) {
 
-	dxCommon_ = dxCommon;
+	isTransformDriven_ = false;
 
 	//半分の大きさをセット
 	rotateMatrix_ = MatrixMath::MakeRotateMatrix(collisionObject->GetRotate());
@@ -59,10 +62,16 @@ void BoxCollider::Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collision
 	camera_ = TakeC::CameraManager::GetInstance().GetActiveCamera();
 }
 
+void BoxCollider::Initialize(const Matrix4x4& worldMatrix) {
+	camera_ = TakeC::CameraManager::GetInstance().GetActiveCamera();
+	Update(worldMatrix);
+}
+
 //=============================================================================
 // 更新処理
 //=============================================================================
 void BoxCollider::Update(Object3d* collisionObject) {
+	isTransformDriven_ = false;
 	minAxis_ = { 0.0f,0.0f,0.0f };
 	minPenetration_ = 0.0f;
 
@@ -93,6 +102,49 @@ void BoxCollider::Update(Object3d* collisionObject) {
 
 	//アフィン行列の更新
 	worldMatrix_ = scaleMat * rotateMatrix_ * translateMat;
+}
+
+void BoxCollider::Update(const Matrix4x4& worldMatrix) {
+	isTransformDriven_ = true;
+	minAxis_ = { 0.0f, 0.0f, 0.0f };
+	minPenetration_ = 0.0f;
+	const WorldPose pose = MakeWorldPose(worldMatrix);
+	obb_.center = pose.center;
+
+	// 親の非一様スケールで生じるせん断も含め、直交 OBB で包む。
+	const Vector3 axisX = pose.basis[0].Length() > 0.000001f
+		? pose.basis[0].Normalize() : Vector3{ 1.0f, 0.0f, 0.0f };
+	Vector3 axisY = pose.basis[1] - axisX * pose.basis[1].Dot(axisX);
+	if (axisY.Length() <= 0.000001f) {
+		const Vector3 fallback = std::fabs(axisX.x) < 0.9f
+			? Vector3{ 1.0f, 0.0f, 0.0f } : Vector3{ 0.0f, 1.0f, 0.0f };
+		axisY = fallback - axisX * fallback.Dot(axisX);
+	}
+	axisY = axisY.Normalize();
+	Vector3 axisZ = axisX.Cross(axisY).Normalize();
+	if (axisZ.Dot(pose.basis[2]) < 0.0f) {
+		axisZ = -axisZ;
+	}
+	obb_.axis[0] = axisX;
+	obb_.axis[1] = axisY;
+	obb_.axis[2] = axisZ;
+	const Vector3 localHalfSize{ std::fabs(halfSize_.x), std::fabs(halfSize_.y), std::fabs(halfSize_.z) };
+	for (int axis = 0; axis < 3; ++axis) {
+		const float extent = std::fabs(pose.basis[0].Dot(obb_.axis[axis])) * localHalfSize.x +
+			std::fabs(pose.basis[1].Dot(obb_.axis[axis])) * localHalfSize.y +
+			std::fabs(pose.basis[2].Dot(obb_.axis[axis])) * localHalfSize.z;
+		if (axis == 0) { obb_.halfSize.x = extent; }
+		if (axis == 1) { obb_.halfSize.y = extent; }
+		if (axis == 2) { obb_.halfSize.z = extent; }
+	}
+	rotateMatrix_ = MatrixMath::MakeIdentity4x4();
+	for (int axis = 0; axis < 3; ++axis) {
+		rotateMatrix_.m[axis][0] = obb_.axis[axis].x;
+		rotateMatrix_.m[axis][1] = obb_.axis[axis].y;
+		rotateMatrix_.m[axis][2] = obb_.axis[axis].z;
+	}
+	transform_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, obb_.center };
+	worldMatrix_ = worldMatrix;
 }
 
 //=============================================================================
@@ -137,35 +189,57 @@ bool BoxCollider::CheckCollision(Collider* other) {
 // レイとの衝突判定
 //=============================================================================
 bool BoxCollider::Intersects(const Ray& ray, RayCastHit& outHit) {
-	// OBBとレイの衝突判定
-	Vector3 invDir = { 1.0f / ray.direction.x, 1.0f / ray.direction.y, 1.0f / ray.direction.z };
-	Vector3 tMin = (obb_.center - obb_.halfSize) - ray.origin;
-	Vector3 tMax = (obb_.center + obb_.halfSize) - ray.origin;
-	float t1 = tMin.x * invDir.x;
-	float t2 = tMax.x * invDir.x;
-	float t3 = tMin.y * invDir.y;
-	float t4 = tMax.y * invDir.y;
-	float t5 = tMin.z * invDir.z;
-	float t6 = tMax.z * invDir.z;
-	float tMinX = std::min(t1, t2);
-	float tMaxX = std::max(t1, t2);
-	float tMinY = std::min(t3, t4);
-	float tMaxY = std::max(t3, t4);
-	float tMinZ = std::min(t5, t6);
-	float tMaxZ = std::max(t5, t6);
-	if (tMinX > tMaxY || tMinY > tMaxX || tMinX > tMaxZ || tMinZ > tMaxX) {
-		return false; // レイとOBBは交差しない
+	const Vector3 relativeOrigin = ray.origin - obb_.center;
+	const float origin[3] = {
+		relativeOrigin.Dot(obb_.axis[0]),
+		relativeOrigin.Dot(obb_.axis[1]),
+		relativeOrigin.Dot(obb_.axis[2]),
+	};
+	const float direction[3] = {
+		ray.direction.Dot(obb_.axis[0]),
+		ray.direction.Dot(obb_.axis[1]),
+		ray.direction.Dot(obb_.axis[2]),
+	};
+	const float halfSize[3] = { obb_.halfSize.x, obb_.halfSize.y, obb_.halfSize.z };
+	float enter = -FLT_MAX;
+	float exit = ray.distance;
+	int enterAxis = -1;
+	float enterSign = 0.0f;
+	for (int axis = 0; axis < 3; ++axis) {
+		if (std::fabs(direction[axis]) < 0.000001f) {
+			if (std::fabs(origin[axis]) > halfSize[axis]) { return false; }
+			continue;
+		}
+		float nearTime = (-halfSize[axis] - origin[axis]) / direction[axis];
+		float farTime = (halfSize[axis] - origin[axis]) / direction[axis];
+		float nearSign = -1.0f;
+		float farSign = 1.0f;
+		if (nearTime > farTime) {
+			std::swap(nearTime, farTime);
+			std::swap(nearSign, farSign);
+		}
+		if (nearTime > enter) {
+			enter = nearTime;
+			enterAxis = axis;
+			enterSign = nearSign;
+		}
+		if (farTime < exit) {
+			exit = farTime;
+		}
+		if (enter > exit) { return false; }
 	}
-	float tNear = std::max(tMinX, std::max(tMinY, tMinZ));
-	float tFar = std::min(tMaxX, std::min(tMaxY, tMaxZ));
-	if (tNear > tFar || tFar < 0) {
-		return false; // レイとOBBは交差しない
-	}
-	outHit.distance = tNear;
-	outHit.position = ray.origin + ray.direction * tNear;
-	outHit.normal = (outHit.position - obb_.center).Normalize(); // 衝突点からOBBの中心への法線ベクトル
-	outHit.hitCollider = this; // 衝突したコライダーを設定
-	return true; // レイとOBBは交差する
+	if (exit < 0.0f) { return false; }
+	const bool startsInside = enter < 0.0f;
+	const float hitTime = startsInside ? 0.0f : enter;
+	const int hitAxis = startsInside ? -1 : enterAxis;
+	const float hitSign = startsInside ? 0.0f : enterSign;
+	if (hitTime < 0.0f || hitTime > ray.distance) { return false; }
+	outHit.isHit = true;
+	outHit.distance = hitTime;
+	outHit.position = ray.origin + ray.direction * hitTime;
+	outHit.normal = hitAxis >= 0 ? obb_.axis[hitAxis] * hitSign : Vector3{};
+	outHit.hitCollider = this;
+	return true;
 }
 
 //=============================================================================
@@ -500,7 +574,11 @@ Vector3 BoxCollider::GetWorldPos() {
 //半径の取得
 void BoxCollider::SetHalfSize(const Vector3& halfSize) {
 	halfSize_ = halfSize;
-	obb_.halfSize = halfSize_;
+	if (isTransformDriven_) {
+		Update(worldMatrix_);
+	} else {
+		obb_.halfSize = halfSize_;
+	}
 }
 
 //=============================================================================

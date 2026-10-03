@@ -23,9 +23,9 @@ std::optional<TakeC::CollisionContactInfo> MakeContact(Collider* first, Collider
 	const Vector3 normal = distance > 0.00001f
 		? difference / distance : Vector3{ 1.0f, 0.0f, 0.0f };
 	return TakeC::CollisionContactInfo{
-		sphereA->GetWorldPos() + normal * sphereA->GetRadius(),
+		sphereA->GetWorldPos() + normal * sphereA->GetWorldRadius(),
 		normal,
-		std::max(0.0f, sphereA->GetRadius() + sphereB->GetRadius() - distance),
+		std::max(0.0f, sphereA->GetWorldRadius() + sphereB->GetWorldRadius() - distance),
 	};
 }
 
@@ -77,7 +77,13 @@ void CollisionManager::Finalize() {
 	legacyColliderIds_.clear();
 	registeredEntries_.clear();
 	previousPairs_.clear();
+	currentPairs_.clear();
+	checkedPairs_.clear();
+	exitedPairs_.clear();
 	eventQueue_.clear();
+	frameStarted_ = false;
+	fullSweepDone_ = false;
+	dispatchingEvents_ = false;
 	pso_.reset();
 	rootSignature_.Reset();
 }
@@ -134,6 +140,18 @@ void CollisionManager::ClearGameCharacter() {
 	activeGameCharacters_.clear();
 }
 
+void CollisionManager::BeginCollisionFrame() {
+	if (dispatchingEvents_) {
+		return;
+	}
+	previousPairs_ = std::move(currentPairs_);
+	currentPairs_.clear();
+	checkedPairs_.clear();
+	exitedPairs_.clear();
+	fullSweepDone_ = false;
+	frameStarted_ = true;
+}
+
 //=============================================================================
 // ゲームキャラクター同士の全衝突判定
 //=============================================================================
@@ -149,6 +167,9 @@ std::vector<CollisionManager::CollisionEntry> CollisionManager::CollectEntries()
 	for (TakeC::CollisionComponent* component : collisionComponents_) {
 		const auto iterator = registeredEntries_.find(component->GetColliderId());
 		if (iterator != registeredEntries_.end()) {
+			if (IsEntryActive(iterator->second)) {
+				component->SynchronizeTransform();
+			}
 			entries.push_back(iterator->second);
 			componentColliders.insert(component->GetCollider());
 		}
@@ -305,20 +326,28 @@ void CollisionManager::DetectCollisions() {
 	if (dispatchingEvents_) {
 		return;
 	}
+	if (!frameStarted_) {
+		BeginCollisionFrame();
+	}
+	if (fullSweepDone_) {
+		return;
+	}
 	const std::vector<CollisionEntry> entries = CollectEntries();
-	std::unordered_map<PairKey, PairState, PairHash> currentPairs;
 	for (std::size_t indexA = 0; indexA < entries.size(); ++indexA) {
 		for (std::size_t indexB = indexA + 1; indexB < entries.size(); ++indexB) {
 			const CollisionEntry& entryA = entries[indexA];
 			const CollisionEntry& entryB = entries[indexB];
+			const PairKey key{ std::min(entryA.colliderId, entryB.colliderId),
+				std::max(entryA.colliderId, entryB.colliderId) };
+			if (!checkedPairs_.insert(key).second) {
+				continue;
+			}
 			bool isTrigger = false;
 			std::optional<TakeC::CollisionContactInfo> contact;
 			if (!TestPair(entryA, entryB, isTrigger, contact)) {
 				continue;
 			}
-			const PairKey key{ std::min(entryA.colliderId, entryB.colliderId),
-				std::max(entryA.colliderId, entryB.colliderId) };
-			currentPairs[key] = entryA.colliderId == key.first
+			currentPairs_[key] = entryA.colliderId == key.first
 				? PairState{ entryA.objectId, entryB.objectId, isTrigger }
 				: PairState{ entryB.objectId, entryA.objectId, isTrigger };
 			QueuePairEvents(entryA, entryB,
@@ -327,14 +356,14 @@ void CollisionManager::DetectCollisions() {
 		}
 	}
 	for (const auto& [key, state] : previousPairs_) {
-		if (!currentPairs.contains(key)) {
+		if (!currentPairs_.contains(key) && exitedPairs_.insert(key).second) {
 			eventQueue_.push_back({ state.firstObjectId, state.secondObjectId,
 				key.first, key.second, TakeC::CollisionPhase::Exit, state.isTrigger, std::nullopt });
 			eventQueue_.push_back({ state.secondObjectId, state.firstObjectId,
 				key.second, key.first, TakeC::CollisionPhase::Exit, state.isTrigger, std::nullopt });
 		}
 	}
-	previousPairs_ = std::move(currentPairs);
+	fullSweepDone_ = true;
 }
 
 void CollisionManager::DispatchCollisionEvents() {
@@ -370,6 +399,9 @@ void CollisionManager::CheckCollisionPairForGameCharacter(GameCharacter* gameCha
 	if (!gameCharacterA || !gameCharacterB || gameCharacterA == gameCharacterB || dispatchingEvents_) {
 		return;
 	}
+	if (!frameStarted_) {
+		BeginCollisionFrame();
+	}
 	const bool temporaryA = !activeGameCharacters_.contains(gameCharacterA);
 	const bool temporaryB = !activeGameCharacters_.contains(gameCharacterB);
 	if (temporaryA) { RegisterGameCharacter(gameCharacterA); }
@@ -388,18 +420,23 @@ void CollisionManager::CheckCollisionPairForGameCharacter(GameCharacter* gameCha
 	}
 	const PairKey key{ std::min(first->colliderId, second->colliderId),
 		std::max(first->colliderId, second->colliderId) };
+	if (!checkedPairs_.insert(key).second) {
+		if (temporaryA) { UnregisterGameCharacter(gameCharacterA); }
+		if (temporaryB) { UnregisterGameCharacter(gameCharacterB); }
+		return;
+	}
 	bool isTrigger = false;
 	std::optional<TakeC::CollisionContactInfo> contact;
 	if (TestPair(*first, *second, isTrigger, contact)) {
 		const TakeC::CollisionPhase phase = previousPairs_.contains(key)
 			? TakeC::CollisionPhase::Stay : TakeC::CollisionPhase::Enter;
-		previousPairs_[key] = first->colliderId == key.first
+		currentPairs_[key] = first->colliderId == key.first
 			? PairState{ first->objectId, second->objectId, isTrigger }
 			: PairState{ second->objectId, first->objectId, isTrigger };
 		QueuePairEvents(*first, *second, phase, isTrigger, contact);
 	} else if (const auto previous = previousPairs_.find(key); previous != previousPairs_.end()) {
 		QueuePairEvents(*first, *second, TakeC::CollisionPhase::Exit, previous->second.isTrigger);
-		previousPairs_.erase(previous);
+		exitedPairs_.insert(key);
 	}
 	DispatchCollisionEvents();
 	if (temporaryA) { UnregisterGameCharacter(gameCharacterA); }
