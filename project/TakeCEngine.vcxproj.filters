@@ -528,6 +528,9 @@
     <ClInclude Include="engine\Collision\Collider.h">
       <Filter>Engine\Collision</Filter>
     </ClInclude>
+    <ClInclude Include="engine\Collision\CollisionEvent.h">
+      <Filter>Engine\Collision</Filter>
+    </ClInclude>
     <ClInclude Include="engine\Collision\CollisionManager.h">
       <Filter>Engine\Collision</Filter>
     </ClInclude>
@@ -539,6 +542,9 @@
     </ClInclude>
     <ClInclude Include="engine\Entity\GameCharacter.h">
       <Filter>Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\GameObject\CollisionComponent.h">
+      <Filter>Engine\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="engine\GameObject\Component.h">
       <Filter>Engine\GameObject</Filter>
@@ -1111,6 +1117,9 @@
     </ClCompile>
     <ClCompile Include="engine\Entity\GameCharacter.cpp">
       <Filter>Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\GameObject\CollisionComponent.cpp">
+      <Filter>Engine\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="engine\GameObject\Component.cpp">
       <Filter>Engine\GameObject</Filter>

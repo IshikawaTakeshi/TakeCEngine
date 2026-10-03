@@ -282,10 +282,12 @@
     <ClInclude Include="engine\Collision\BoxCollider.h" />
     <ClInclude Include="engine\Collision\Capsule.h" />
     <ClInclude Include="engine\Collision\Collider.h" />
+    <ClInclude Include="engine\Collision\CollisionEvent.h" />
     <ClInclude Include="engine\Collision\CollisionManager.h" />
     <ClInclude Include="engine\Collision\SphereCollider.h" />
     <ClInclude Include="engine\Collision\SurfaceType.h" />
     <ClInclude Include="engine\Entity\GameCharacter.h" />
+    <ClInclude Include="engine\GameObject\CollisionComponent.h" />
     <ClInclude Include="engine\GameObject\Component.h" />
     <ClInclude Include="engine\GameObject\GameObject.h" />
     <ClInclude Include="engine\GameObject\GameObjectManager.h" />
@@ -478,6 +480,7 @@
     <ClCompile Include="engine\Collision\CollisionManager.cpp" />
     <ClCompile Include="engine\Collision\SphereCollider.cpp" />
     <ClCompile Include="engine\Entity\GameCharacter.cpp" />
+    <ClCompile Include="engine\GameObject\CollisionComponent.cpp" />
     <ClCompile Include="engine\GameObject\Component.cpp" />
     <ClCompile Include="engine\GameObject\GameObject.cpp" />
     <ClCompile Include="engine\GameObject\GameObjectManager.cpp" />

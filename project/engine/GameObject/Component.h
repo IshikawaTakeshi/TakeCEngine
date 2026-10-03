@@ -5,14 +5,14 @@ namespace TakeC {
 class GameObject;
 
 /// <summary>
-/// コンポーネントのフレーム更新に渡す共通情報です。
+/// コンポーネントのフレーム更新に渡す共通情報
 /// </summary>
 struct ComponentUpdateContext final {
 	float deltaTime = 0.0f;
 };
 
 /// <summary>
-/// GameObjectへ追加できる全コンポーネントの共通基底クラスです。
+/// GameObjectへ追加できる全コンポーネントの共通基底クラス
 /// </summary>
 class Component {
 public:

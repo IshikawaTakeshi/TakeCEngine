@@ -1,5 +1,6 @@
 #include "engine/GameObject/GameObjectManager.h"
 #include "engine/GameObject/TransformComponent.h"
+#include "engine/Collision/CollisionEvent.h"
 
 #include <cassert>
 #include <cmath>
@@ -130,11 +131,31 @@ void TestDeferredDestroyDuringUpdate() {
 	assert(manager.GetObjectCount() == 0);
 }
 
+void TestCollisionEventIdentityAndOptionalContact() {
+	const TakeC::ColliderId first = TakeC::AllocateColliderId();
+	const TakeC::ColliderId second = TakeC::AllocateColliderId();
+	assert(first != TakeC::kInvalidColliderId && second > first);
+
+	TakeC::CollisionEvent trigger;
+	trigger.selfObjectId = 11;
+	trigger.otherObjectId = 12;
+	trigger.selfColliderId = first;
+	trigger.otherColliderId = second;
+	trigger.phase = TakeC::CollisionPhase::Enter;
+	trigger.isTrigger = true;
+	assert(!trigger.contact.has_value());
+
+	trigger.phase = TakeC::CollisionPhase::Exit;
+	assert(trigger.selfColliderId == first && trigger.otherColliderId == second);
+	assert(!trigger.contact.has_value());
+}
+
 } // namespace
 
 int main() {
 	TestComponentLifecycleAndLookup();
 	TestTransformHierarchy();
 	TestDeferredDestroyDuringUpdate();
+	TestCollisionEventIdentityAndOptionalContact();
 	return 0;
 }

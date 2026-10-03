@@ -4,7 +4,7 @@
 
 #include <cassert>
 
-namespace TakeC {
+using namespace TakeC;
 
 GameObject& Component::GetOwner() {
 	assert(owner_ != nullptr);
@@ -67,5 +67,3 @@ void Component::LateUpdateInternal(const ComponentUpdateContext& context) {
 	StartIfNeeded();
 	LateUpdate(context);
 }
-
-} // namespace TakeC
