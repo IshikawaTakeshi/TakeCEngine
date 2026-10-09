@@ -2,13 +2,15 @@
 
 `TakeC::BehaviorTreeComponent`は共通の`AIControllerComponent`を継承し、
 `IAgentBrain`を実装した`BehaviorTreeBrain`を搭載する便利Componentです。
-Controllerが個体別Blackboardと更新を管理し、Brainがツリーとアクション登録を所有します。
+Controllerが個体別Blackboard・AICommandBufferと更新を管理し、
+Brainがツリーとアクション登録を所有します。
 GameObjectManagerの`Update(deltaTime)`、またはGameObjectの`Update(deltaTime)`を呼ぶと
-毎フレーム1回ツリーを実行します。FixedUpdateとLateUpdateでは実行しません。
+毎フレーム1回ツリーを実行します。FixedUpdateとLateUpdateではBrainは実行しません。
+行動要求はLateUpdateで消費するため、毎フレームUpdateの後にLateUpdateも呼びます。
 
 ## 共通AIインターフェース
 
-`AIContext`は`owner`、`blackboard`、`deltaTime`を渡します。
+`AIContext`は`owner`、`blackboard`、`commands`、`deltaTime`を渡します。
 `BehaviorTreeContext`は互換性維持のための`AIContext`の別名です。
 `IAgentBrain`の`Start(AIContext&)`、`Tick(AIContext&)`、`Reset(AIContext&)`で
 BehaviorTreeと自作AIを同じControllerから扱えます。
@@ -45,8 +47,10 @@ Pause/Disable/Inactive中の時間は加算せず、途中までの蓄積は保�
 Reset、交換、ツリー変更、アクション再登録、間隔変更では蓄積時間を破棄します。
 間隔とdeltaTimeは有限かつ0以上でなければなりません。
 
-World参照、AICommandBuffer、判断結果を実行するComponent群、更新フェーズの分離は
-今回の範囲には含めていません。現段階のアクションはownerのComponentへ直接作用します。
+AICommandBufferと実行Componentの接続を実装しています。
+Actionはcommandsへ要求を書き、ControllerのLateUpdateで実行側へ渡します。
+使用方法・命令の寿命・自作実行Componentは[AICommandBuffer](../AI/AICommandBuffer.md)を参照してください。
+World参照、Perception/Navigation等の詳細なフェーズ分離は未実装です。
 
 ## コードでツリーを組み立てる
 
@@ -54,19 +58,21 @@ World参照、AICommandBuffer、判断結果を実行するComponent群、更新
 #include "engine/GameObject/BehaviorTreeComponent.h"
 #include "engine/GameObject/GameObjectManager.h"
 #include "engine/GameObject/TransformComponent.h"
+#include "engine/GameObject/AIMovementComponent.h"
 #include "engine/BehaviorTree/SequenceNode.h"
 #include "engine/BehaviorTree/WaitNode.h"
 
 TakeC::GameObjectManager objects;
 auto& enemy = objects.CreateObject("Enemy");
+auto& movement = enemy.AddComponent<TakeC::AIMovementComponent>();
+movement.SetSpeed(2.0f);
 auto& behavior = enemy.AddComponent<TakeC::BehaviorTreeComponent>();
 
 behavior.BindAction("Game.Move", [](const TakeC::BehaviorTreeContext& context) {
-    auto& transform = context.owner.GetTransform();
-    auto position = transform.GetLocalPosition();
-    position.x += 2.0f * context.deltaTime;
-    transform.SetLocalPosition(position);
-    return BehaviorStatus::Success;
+    auto target = context.owner.GetTransform().GetWorldPosition();
+    target.x += 2.0f;
+    return context.commands.RequestMoveTo(target)
+        ? BehaviorStatus::Success : BehaviorStatus::Failure;
 });
 
 auto sequence = std::make_unique<SequenceNode>();
@@ -74,12 +80,14 @@ sequence->AddChild(std::make_unique<WaitNode>(1.0f));
 sequence->AddChild(std::make_unique<ActionNode>("Game.Move"));
 behavior.SetTree(std::move(sequence));
 
-// ゲームループから呼ぶ。待機1秒 → Moveを繰り返す。
+// 毎フレーム。1秒ごとに移動先を更新し、毎LateUpdateで移動する。
 objects.Update(deltaTime);
+objects.LateUpdate(deltaTime);
 ```
 
 処理が継続中ならアクションは`Running`、完了なら`Success`、
-実行できなければ`Failure`を返します。自作Componentは
+実行できなければ`Failure`を返します。上のSuccessは要求の受付成功であり、到着完了ではありません。
+命令が満杯などで受付失敗ならFailureを返します。自作Componentは
 `context.owner.GetComponent<MyComponent>()`で取得できます。
 同じアクションIDを異なる個体へ登録し、それぞれ別の処理を設定できます。
 
@@ -123,6 +131,8 @@ Blackboardの値は停止・再実行・ツリー交換でも保持します。
 
 `SetEnabled(false)`と所有GameObjectの`SetActive(false)`は状態を保持した一時停止です。
 停止に伴うアクションの終了処理が必要なら先にStopを呼びます。
+Pauseは判断だけを止めます。受け付け済みの行動も止めるにはStopを使います。
+Stop/Reset/Restart/Brain交換/ツリー交換/Action再登録ではBufferを消去し、実行側の行動も取り消します。
 GameObjectの破棄時にもResetが呼ばれ、登録したresetコールバックが実行されます。
 resetは通常完了時にも呼ばれます。繰り返し呼べる、例外を投げない処理にしてください。
 キャプチャするオブジェクトはComponentの破棄まで有効である必要があります。
@@ -132,6 +142,8 @@ resetは通常完了時にも呼ばれます。繰り返し呼べる、例外を
 既存の`Execute(Blackboard&)`のみを実装したノードも利用できます。
 所有GameObjectや時間が必要な独自ノードは
 `Tick(const TakeC::BehaviorTreeContext&)`もoverrideしてください。
+命令は`context.commands`へ発行します。Contextを直接生成する場合は
+`{owner, blackboard, commands, deltaTime}`としてください。
 独自Compositeでは子ノードにも`Tick(context)`を呼んでContextを伝えます。
 Context参照をフレームをまたいで保存してはいけません。
 
@@ -139,7 +151,7 @@ Context参照をフレームをまたいで保存してはいけません。
 WaitとWaitBlackboardTimeはComponentから渡されたdeltaTimeを使います。
 旧Executeを直接呼んだ場合は従来どおりTakeCFrameWorkの時計を使います。
 
-Start、Tick、Resetのコールバック中にSetBrain、SetTickInterval、
+Start、Tick、Reset、命令の実行コールバック中にSetBrain、SetTickInterval、
 SetTree、BindAction、Stop、Restart、Resetを呼ぶと
 `std::logic_error`になります。構造変更はGameObjectの更新外で行ってください。
 PauseとGameObject::Destroyによる遅延破棄要求はコールバック内でも利用できます。
@@ -157,14 +169,15 @@ JSON資産からの生成、4種類のCompositeのContext伝達と中断伝達�
 個体別Blackboard、旧ノード互換、一時停止・停止・再実行・遅延破棄を検証します。
 共通Controller単独でのBehaviorTree実行と自作Brainへの交換、Start/Resetのライフサイクル、
 BrainとBlackboardの個体分離、更新間隔の時間蓄積、不正な間隔、再入防止も検証します。
+同じ実行スクリプトでAICommandBufferTests.cppも実行します。
 
 ## 実装案の進捗
 
 | 順序 | 項目 | 状況 |
 | --- | --- | --- |
-| 1 | ComponentUpdateContextと更新フェーズ | deltaTimeの共通Contextは実装済み。Perception/Decision等のフェーズ分離は未実装 |
-| 2 | AIContext・IAgentBrain・AIControllerComponent | 基本契約・ライフサイクル・個体別Blackboard・更新間隔は実装済み。ContextのWorld/Commandsは未実装 |
-| 3 | AICommandBufferと実行Component | 未実装。現在はActionからownerへ直接作用 |
+| 1 | ComponentUpdateContextと更新フェーズ | 共通ContextとUpdateでの判断/LateUpdateでの実行を実装。詳細なPerception/Navigation等の分離は未実装 |
+| 2 | AIContext・IAgentBrain・AIControllerComponent | 基本契約・ライフサイクル・個体別Blackboard/Commands・更新間隔は実装済み。ContextのWorldは未実装 |
+| 3 | AICommandBufferと実行Component | 移動/停止/攻撃要求、共通Handler、直線移動Componentを実装。ゲーム固有の攻撃・物理処理はゲーム側で接続 |
 | 4 | StateMachineBrain | 未実装。共通契約へ載せる受け口は実装済み |
 | 5 | BehaviorTreeのAIContext対応 | 実装済み。BehaviorTreeBrainへ分離し、既存Component API・JSON・旧Executeとの互換を維持 |
 | 6 | NavigationGraph・A*・NavigationAgentComponent | 保留（依頼により今回の対象外） |

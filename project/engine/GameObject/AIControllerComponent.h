@@ -21,6 +21,9 @@ namespace TakeC {
 		const IAgentBrain* GetBrain() const { return brain_.get(); }
 		Blackboard& GetBlackboard() { return blackboard_; }
 		const Blackboard& GetBlackboard() const { return blackboard_; }
+		AICommandBuffer& GetCommandBuffer() { return commands_; }
+		const AICommandBuffer& GetCommandBuffer() const { return commands_; }
+		std::size_t GetLastUnhandledCommandCount() const { return lastUnhandledCommandCount_; }
 
 		/// 0は毎フレーム。間引く場合、Tickには蓄積した時間を渡します。
 		void SetTickInterval(float seconds);
@@ -45,13 +48,18 @@ namespace TakeC {
 		};
 		void OnAttach() final;
 		void Update(const ComponentUpdateContext& context) final;
+		/// 判断は行わず、要求の消費と継続行動の更新だけを行います。
+		void LateUpdate(const ComponentUpdateContext& context) final;
 		void OnDetach() final;
 		void EnsureNotExecuting() const;
 		void ResetTickClock() { elapsedTime_ = 0.0f; }
+		void ResetCommandExecution();
 
 	private:
 		std::unique_ptr<IAgentBrain> brain_;
 		Blackboard blackboard_;
+		AICommandBuffer commands_;
+		std::size_t lastUnhandledCommandCount_ = 0;
 		GameObject* attachedOwner_ = nullptr;
 		float tickInterval_ = 0.0f;
 		float elapsedTime_ = 0.0f;

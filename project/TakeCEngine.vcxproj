@@ -195,6 +195,8 @@
     <ClInclude Include="engine\3d\Transform.h" />
     <ClInclude Include="engine\3d\TransformMatrix.h" />
     <ClInclude Include="engine\3d\VertexData.h" />
+    <ClInclude Include="engine\AI\AICommand.h" />
+    <ClInclude Include="engine\AI\AICommandBuffer.h" />
     <ClInclude Include="engine\AI\AIContext.h" />
     <ClInclude Include="engine\AI\FaceAnalysis\FacePartRatioCalculator.h" />
     <ClInclude Include="engine\AI\FaceAnalysis\FacePartRatios.h" />
@@ -266,7 +268,9 @@
     <ClInclude Include="engine\Collision\SphereCollider.h" />
     <ClInclude Include="engine\Collision\SurfaceType.h" />
     <ClInclude Include="engine\Entity\GameCharacter.h" />
+    <ClInclude Include="engine\GameObject\AICommandHandlerComponent.h" />
     <ClInclude Include="engine\GameObject\AIControllerComponent.h" />
+    <ClInclude Include="engine\GameObject\AIMovementComponent.h" />
     <ClInclude Include="engine\GameObject\BehaviorTreeComponent.h" />
     <ClInclude Include="engine\GameObject\CollisionComponent.h" />
     <ClInclude Include="engine\GameObject\Component.h" />
@@ -414,6 +418,7 @@
     <ClCompile Include="engine\3d\Primitive\Ring.cpp" />
     <ClCompile Include="engine\3d\Primitive\Sphere.cpp" />
     <ClCompile Include="engine\3d\Transform.cpp" />
+    <ClCompile Include="engine\AI\AICommandBuffer.cpp" />
     <ClCompile Include="engine\AI\FaceAnalysis\FacePartRatioCalculator.cpp" />
     <ClCompile Include="engine\AI\FaceDetection\FaceAligner.cpp" />
     <ClCompile Include="engine\AI\FaceDetection\Landmark106Decoder.cpp" />
@@ -468,7 +473,9 @@
     <ClCompile Include="engine\Collision\CollisionManager.cpp" />
     <ClCompile Include="engine\Collision\SphereCollider.cpp" />
     <ClCompile Include="engine\Entity\GameCharacter.cpp" />
+    <ClCompile Include="engine\GameObject\AICommandHandlerComponent.cpp" />
     <ClCompile Include="engine\GameObject\AIControllerComponent.cpp" />
+    <ClCompile Include="engine\GameObject\AIMovementComponent.cpp" />
     <ClCompile Include="engine\GameObject\BehaviorTreeComponent.cpp" />
     <ClCompile Include="engine\GameObject\CollisionComponent.cpp" />
     <ClCompile Include="engine\GameObject\Component.cpp" />

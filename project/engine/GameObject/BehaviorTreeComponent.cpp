@@ -30,6 +30,7 @@ const BehaviorTreeBrain& BehaviorTreeComponent::GetBehaviorTreeBrain() const {
 void BehaviorTreeComponent::SetTree(std::unique_ptr<BehaviorNode> root) {
     ExecutionGuard guard(*this);
     GetBehaviorTreeBrain().SetTree(std::move(root));
+    ResetCommandExecution();
     ResetTickClock();
     if (GetTree()) {
         Resume();
@@ -43,6 +44,7 @@ void BehaviorTreeComponent::BindAction(
     ActionNode::ResetCallback reset) {
     ExecutionGuard guard(*this);
     GetBehaviorTreeBrain().BindAction(std::move(actionId), std::move(execute), std::move(reset));
+    ResetCommandExecution();
     ResetTickClock();
 }
 

@@ -1,6 +1,7 @@
 #include "engine/GameObject/BehaviorTreeComponent.h"
 #include "engine/GameObject/GameObjectManager.h"
 #include "engine/GameObject/TransformComponent.h"
+#include "engine/GameObject/AIMovementComponent.h"
 #include "engine/BehaviorTree/ComboFactory.h"
 #include "engine/BehaviorTree/PlannerSelectorNode.h"
 #include "engine/BehaviorTree/SelectorNode.h"
@@ -22,6 +23,8 @@ float TakeC::TakeCFrameWork::deltaTime = 0.9f;
 // テストではFactoryへ読み込んだAssetを渡し、フレームワークのSingletonは使いません。
 TakeC::JsonLoader* TakeC::TakeCFrameWork::GetJsonLoader() { return nullptr; }
 
+void RunAICommandBufferTests();
+
 namespace {
 
 using TakeC::BehaviorTreeComponent;
@@ -39,6 +42,7 @@ struct BrainProbe {
     float lastDeltaTime = 0.0f;
     GameObject* owner = nullptr;
     TakeC::Blackboard* blackboard = nullptr;
+    TakeC::AICommandBuffer* commands = nullptr;
 };
 
 class CustomBrain final : public TakeC::IAgentBrain {
@@ -49,6 +53,7 @@ public:
         ++probe_.starts;
         probe_.owner = &context.owner;
         probe_.blackboard = &context.blackboard;
+        probe_.commands = &context.commands;
         assert(context.deltaTime == 0.0f);
     }
     void Tick(TakeC::AIContext& context) override {
@@ -86,6 +91,7 @@ void TestCommonControllerLifecycleAndBrainReplacement() {
         assert(first.starts == 1 && first.ticks == 2);
         assert(first.owner == &object);
         assert(first.blackboard == &controller.GetBlackboard());
+        assert(first.commands == &controller.GetCommandBuffer());
         assert(first.lastDeltaTime == 0.125f);
         controller.Pause();
         object.Update(10.0f);
@@ -267,12 +273,14 @@ void TestInstanceIsolationAndLegacyNodes() {
     auto& first = manager.CreateObject("First");
     auto& second = manager.CreateObject("Second");
     auto configure = [](GameObject& object) {
+        object.AddComponent<TakeC::AIMovementComponent>();
         auto& component = object.AddComponent<BehaviorTreeComponent>();
         component.SetTree(std::make_unique<ActionNode>("Move"));
         component.BindAction("Move", [](const BehaviorTreeContext& context) {
             const int ticks = context.blackboard.GetOr<int>("ticks", 0);
             context.blackboard.Set("ticks", ticks + 1);
-            context.owner.GetTransform().SetLocalPosition({context.deltaTime, 0.0f, 0.0f});
+            const bool accepted = context.commands.RequestMoveTo({context.deltaTime, 0.0f, 0.0f});
+            assert(accepted);
             return BehaviorStatus::Running;
         });
     };
@@ -282,6 +290,8 @@ void TestInstanceIsolationAndLegacyNodes() {
     auto& b = *second.GetComponent<BehaviorTreeComponent>();
     a.GetBlackboard().Set("ticks", 5);
     manager.Update(0.25f);
+    assert(first.GetTransform().GetWorldPosition().x == 0.0f); // 判断だけでは動かしません。
+    manager.LateUpdate(0.25f);
     assert(a.GetBlackboard().GetOr<int>("ticks", 0) == 6);
     assert(b.GetBlackboard().GetOr<int>("ticks", 0) == 1);
     assert(first.GetTransform().GetWorldPosition().x == 0.25f);
@@ -421,20 +431,40 @@ void TestJsonAssetAndCustomNode() {
     })");
     const auto asset = json.get<BehaviorTreeAsset>();
     TakeC::BehaviorTreeFactory factory;
+    int calls = 0;
+    GameObject target("Target");
     GameObject object;
+    class AttackHandler final : public TakeC::AICommandHandlerComponent {
+    public:
+        AttackHandler(int& calls, TakeC::GameObjectId targetId) : calls_(calls), targetId_(targetId) {}
+        bool HandleCommand(const TakeC::AICommand& command) override {
+            const auto* attack = std::get_if<TakeC::AIAttackCommand>(&command);
+            if (!attack) { return false; }
+            assert(attack->targetId == targetId_);
+            ++calls_;
+            return true;
+        }
+    private:
+        int& calls_;
+        TakeC::GameObjectId targetId_;
+    };
+    object.AddComponent<AttackHandler>(calls, target.GetId());
     auto& component = object.AddComponent<BehaviorTreeComponent>();
     component.SetTree(factory.BuildBehaviorTree(asset));
     assert(component.GetTree() != nullptr);
-    int calls = 0;
     component.BindAction("Test.Attack", [&](const BehaviorTreeContext& context) {
         assert(&context.owner == &object);
-        ++calls;
-        return BehaviorStatus::Success;
+        return context.commands.RequestAttack(target.GetId()) ?
+            BehaviorStatus::Success : BehaviorStatus::Failure;
     });
     object.Update(0.25f);
     assert(calls == 0);
     object.Update(0.25f);
+    assert(calls == 0);
+    object.LateUpdate(0.25f);
     assert(calls == 1);
+    object.LateUpdate(0.25f);
+    assert(calls == 1); // 攻撃要求を二重実行しません。
 
     class CustomNode final : public BehaviorNode {
     public:
@@ -468,6 +498,7 @@ void TestAbortPropagation() {
 } // namespace
 
 int main() {
+    RunAICommandBufferTests();
     TestCommonControllerLifecycleAndBrainReplacement();
     TestGenericControllerBehaviorTreeAndIsolation();
     TestControllerTickIntervalAndValidation();

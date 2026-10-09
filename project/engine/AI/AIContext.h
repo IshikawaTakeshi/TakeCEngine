@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/BehaviorTree/Blackboard.h"
+#include "engine/AI/AICommandBuffer.h"
 
 namespace TakeC {
 class GameObject;
@@ -10,6 +11,7 @@ class GameObject;
 struct AIContext final {
     GameObject& owner;
     Blackboard& blackboard;
+    AICommandBuffer& commands;
     float deltaTime = 0.0f;
 };
 } // namespace TakeC

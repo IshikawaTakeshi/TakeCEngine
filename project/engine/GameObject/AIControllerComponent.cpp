@@ -1,4 +1,6 @@
 #include "engine/GameObject/AIControllerComponent.h"
+#include "engine/GameObject/AICommandHandlerComponent.h"
+#include "engine/GameObject/GameObject.h"
 
 #include <cmath>
 #include <stdexcept>
@@ -43,10 +45,25 @@ void AIControllerComponent::Reset() {
     EnsureNotExecuting();
     ExecutionGuard guard(*this);
     if (brain_ && attachedOwner_) {
-        AIContext context{*attachedOwner_, blackboard_, 0.0f};
+        AIContext context{*attachedOwner_, blackboard_, commands_, 0.0f};
         brain_->Reset(context);
     }
+    ResetCommandExecution();
     ResetTickClock();
+}
+
+void AIControllerComponent::ResetCommandExecution() {
+    commands_.Clear();
+    lastUnhandledCommandCount_ = 0;
+    if (attachedOwner_) {
+        for (auto* handler : attachedOwner_->GetComponents<AICommandHandlerComponent>()) {
+            if (handler->UsesController(*this)) {
+                handler->CancelExecution();
+            }
+        }
+    }
+    // CancelExecutionが追加した要求も破棄します。
+    commands_.Clear();
 }
 
 void AIControllerComponent::Stop() {
@@ -68,30 +85,76 @@ void AIControllerComponent::Update(const ComponentUpdateContext& context) {
         return;
     }
 
-    
     EnsureNotExecuting();
     if (!std::isfinite(context.deltaTime) || context.deltaTime < 0.0f ||
         !std::isfinite(elapsedTime_ + context.deltaTime)) {
         throw std::invalid_argument("AI deltaTime must be finite and non-negative.");
     }
     ExecutionGuard guard(*this);
-    if (!brainStarted_) {
-        AIContext startContext{GetOwner(), blackboard_, 0.0f};
-        brain_->Start(startContext);
-        brainStarted_ = true;
-        if (!playing_) {
+    try {
+        if (!brainStarted_) {
+            AIContext startContext{GetOwner(), blackboard_, commands_, 0.0f};
+            brain_->Start(startContext);
+            brainStarted_ = true;
+            if (!playing_) {
+                return;
+            }
+        }
+        elapsedTime_ += context.deltaTime;
+        if (elapsedTime_ < tickInterval_) {
             return;
         }
+        AIContext execution{GetOwner(), blackboard_, commands_, elapsedTime_};
+        ResetTickClock();
+        brain_->Tick(execution);
+        if (brain_->IsFinished()) {
+            playing_ = false;
+        }
+    } catch (...) {
+        ResetCommandExecution();
+        throw;
     }
-    elapsedTime_ += context.deltaTime;
-    if (elapsedTime_ < tickInterval_) {
-        return;
+}
+
+void AIControllerComponent::LateUpdate(const ComponentUpdateContext& context) {
+    if (!std::isfinite(context.deltaTime) || context.deltaTime < 0.0f) {
+        throw std::invalid_argument("AI execution deltaTime must be finite and non-negative.");
     }
-    AIContext execution{GetOwner(), blackboard_, elapsedTime_};
-    ResetTickClock();
-    brain_->Tick(execution);
-    if (brain_->IsFinished()) {
-        playing_ = false;
+    ExecutionGuard guard(*this);
+    const auto handlers = GetOwner().GetComponents<AICommandHandlerComponent>();
+    // スナップショットを消費するため、Handler内で追加した要求は次回へ送られます。
+    const auto batch = commands_.ConsumeAll();
+    lastUnhandledCommandCount_ = 0;
+    try {
+        for (const auto& command : batch) {
+            if (GetOwner().IsDestroyRequested() || !GetOwner().IsActive()) {
+                ResetCommandExecution();
+                return;
+            }
+            bool handled = false;
+            for (auto* handler : handlers) {
+                if (handler->IsEnabled() && handler->UsesController(*this) &&
+                    handler->HandleCommand(command)) {
+                    handled = true;
+                    break;
+                }
+            }
+            if (!handled) {
+                ++lastUnhandledCommandCount_;
+            }
+        }
+        for (auto* handler : handlers) {
+            if (GetOwner().IsDestroyRequested() || !GetOwner().IsActive()) {
+                ResetCommandExecution();
+                return;
+            }
+            if (handler->IsEnabled() && handler->UsesController(*this)) {
+                handler->UpdateExecution(context);
+            }
+        }
+    } catch (...) {
+        ResetCommandExecution();
+        throw;
     }
 }
 

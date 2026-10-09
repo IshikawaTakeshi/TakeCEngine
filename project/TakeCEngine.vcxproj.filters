@@ -267,6 +267,12 @@
     <ClInclude Include="engine\3d\VertexData.h">
       <Filter>Engine\3d</Filter>
     </ClInclude>
+    <ClInclude Include="engine\AI\AICommand.h">
+      <Filter>Engine\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AI\AICommandBuffer.h">
+      <Filter>Engine\AI</Filter>
+    </ClInclude>
     <ClInclude Include="engine\AI\AIContext.h">
       <Filter>Engine\AI</Filter>
     </ClInclude>
@@ -480,7 +486,13 @@
     <ClInclude Include="engine\Entity\GameCharacter.h">
       <Filter>Engine\Entity</Filter>
     </ClInclude>
+    <ClInclude Include="engine\GameObject\AICommandHandlerComponent.h">
+      <Filter>Engine\GameObject</Filter>
+    </ClInclude>
     <ClInclude Include="engine\GameObject\AIControllerComponent.h">
+      <Filter>Engine\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\GameObject\AIMovementComponent.h">
       <Filter>Engine\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="engine\GameObject\BehaviorTreeComponent.h">
@@ -920,6 +932,9 @@
     <ClCompile Include="engine\3d\Transform.cpp">
       <Filter>Engine\3d</Filter>
     </ClCompile>
+    <ClCompile Include="engine\AI\AICommandBuffer.cpp">
+      <Filter>Engine\AI</Filter>
+    </ClCompile>
     <ClCompile Include="engine\AI\FaceAnalysis\FacePartRatioCalculator.cpp">
       <Filter>Engine\AI\FaceAnalysis</Filter>
     </ClCompile>
@@ -1082,7 +1097,13 @@
     <ClCompile Include="engine\Entity\GameCharacter.cpp">
       <Filter>Engine\Entity</Filter>
     </ClCompile>
+    <ClCompile Include="engine\GameObject\AICommandHandlerComponent.cpp">
+      <Filter>Engine\GameObject</Filter>
+    </ClCompile>
     <ClCompile Include="engine\GameObject\AIControllerComponent.cpp">
+      <Filter>Engine\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\GameObject\AIMovementComponent.cpp">
       <Filter>Engine\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="engine\GameObject\BehaviorTreeComponent.cpp">
