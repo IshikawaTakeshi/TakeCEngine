@@ -1,6 +1,7 @@
 #pragma once
 #include "BehaviorStatusEnum.h"
 #include "Blackboard.h"
+#include "BehaviorTreeContext.h"
 #include <string>
 #include <string_view>
 #include <utility>
@@ -30,6 +31,11 @@ public:
 	// ノードの実行
 	/// </summary>
 	virtual BehaviorStatus Execute(Blackboard& blackboard) = 0;
+
+	/// <summary>Component用の実行入口。既存ノードはExecuteへ委譲します。</summary>
+	virtual BehaviorStatus Tick(const TakeC::BehaviorTreeContext& context) {
+		return Execute(context.blackboard);
+	}
 
 	/// <summary>
 	// ノードのリセット（再実行時に状態をクリア）

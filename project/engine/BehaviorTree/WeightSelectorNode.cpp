@@ -4,6 +4,15 @@
 // ノードの実行
 //==================================================================================
 BehaviorStatus WeightSelectorNode::Execute(Blackboard& blackboard) {
+	return ExecuteImpl(blackboard, nullptr);
+}
+
+BehaviorStatus WeightSelectorNode::Tick(const TakeC::BehaviorTreeContext& context) {
+	return ExecuteImpl(context.blackboard, &context);
+}
+
+BehaviorStatus WeightSelectorNode::ExecuteImpl(
+	Blackboard& blackboard, const TakeC::BehaviorTreeContext* context) {
 
 	if (children_.empty()) {
 		currentStatus_ = BehaviorStatus::Failure;
@@ -18,7 +27,7 @@ BehaviorStatus WeightSelectorNode::Execute(Blackboard& blackboard) {
 	// [EXT] 実行中のインデックスを保存 (CompositeNodeの機能を利用)
 	currentIndex_ = selectedIndex;
 
-	BehaviorStatus status = children_[selectedIndex]->Execute(blackboard);
+	BehaviorStatus status = ExecuteChild(*children_[selectedIndex], blackboard, context);
 	currentStatus_ = status;
 
 	if (status == BehaviorStatus::Running) {
@@ -27,7 +36,7 @@ BehaviorStatus WeightSelectorNode::Execute(Blackboard& blackboard) {
 	if (status == BehaviorStatus::Failure) {
 		return BehaviorStatus::Failure; // 選択されたノードが失敗
 	}
-	return BehaviorStatus::Success; // 選択されたノードが成功
+	return status; // 成功・中断・無効もそのまま上位へ伝える
 }
 
 //==================================================================================

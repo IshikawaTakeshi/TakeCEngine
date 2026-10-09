@@ -27,6 +27,11 @@ public:
 	/// <param name="characterInfo"></param>
 	/// <returns></returns>
 	BehaviorStatus Execute(Blackboard& blackboard) override;
+	BehaviorStatus Tick(const TakeC::BehaviorTreeContext& context) override;
+
+private:
+	BehaviorStatus ExecuteImpl(
+		Blackboard& blackboard, const TakeC::BehaviorTreeContext* context);
 
 private:
 
