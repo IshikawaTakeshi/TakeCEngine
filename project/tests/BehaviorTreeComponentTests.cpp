@@ -24,6 +24,7 @@ float TakeC::TakeCFrameWork::deltaTime = 0.9f;
 TakeC::JsonLoader* TakeC::TakeCFrameWork::GetJsonLoader() { return nullptr; }
 
 void RunAICommandBufferTests();
+void RunStateMachineBrainTests();
 
 namespace {
 
@@ -499,6 +500,7 @@ void TestAbortPropagation() {
 
 int main() {
     RunAICommandBufferTests();
+    RunStateMachineBrainTests();
     TestCommonControllerLifecycleAndBrainReplacement();
     TestGenericControllerBehaviorTreeAndIsolation();
     TestControllerTickIntervalAndValidation();

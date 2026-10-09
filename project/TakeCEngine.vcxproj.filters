@@ -303,6 +303,9 @@
     <ClInclude Include="engine\AI\IAgentBrain.h">
       <Filter>Engine\AI</Filter>
     </ClInclude>
+    <ClInclude Include="engine\AI\IAgentState.h">
+      <Filter>Engine\AI</Filter>
+    </ClInclude>
     <ClInclude Include="engine\AI\OnnxImageTensorUtility.h">
       <Filter>Engine\AI</Filter>
     </ClInclude>
@@ -310,6 +313,9 @@
       <Filter>Engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="engine\AI\OnnxRuntimeSystem.h">
+      <Filter>Engine\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AI\StateMachineBrain.h">
       <Filter>Engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="engine\Animation\AnimationState.h">
@@ -957,6 +963,9 @@
       <Filter>Engine\AI</Filter>
     </ClCompile>
     <ClCompile Include="engine\AI\OnnxRuntimeSystem.cpp">
+      <Filter>Engine\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\AI\StateMachineBrain.cpp">
       <Filter>Engine\AI</Filter>
     </ClCompile>
     <ClCompile Include="engine\Animation\Animator.cpp">

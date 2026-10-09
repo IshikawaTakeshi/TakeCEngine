@@ -32,6 +32,7 @@ controller.SetBrain(std::make_unique<MyBrain>());
 ```
 
 MyBrainは`IAgentBrain`を継承してTickを実装します。
+汎用FSMとして[StateMachineBrain](../AI/StateMachineBrain.md)も利用できます。
 便利Componentである`BehaviorTreeComponent`のSetBrainはBehaviorTreeBrainのみを受け付けます。
 AI方式の交換には上記の汎用`AIControllerComponent`を利用してください。
 
@@ -170,6 +171,7 @@ JSON資産からの生成、4種類のCompositeのContext伝達と中断伝達�
 共通Controller単独でのBehaviorTree実行と自作Brainへの交換、Start/Resetのライフサイクル、
 BrainとBlackboardの個体分離、更新間隔の時間蓄積、不正な間隔、再入防止も検証します。
 同じ実行スクリプトでAICommandBufferTests.cppも実行します。
+StateMachineBrainTests.cppと巡回・追跡・攻撃のサンプルも同じスクリプトで検証します。
 
 ## 実装案の進捗
 
@@ -178,7 +180,7 @@ BrainとBlackboardの個体分離、更新間隔の時間蓄積、不正な間�
 | 1 | ComponentUpdateContextと更新フェーズ | 共通ContextとUpdateでの判断/LateUpdateでの実行を実装。詳細なPerception/Navigation等の分離は未実装 |
 | 2 | AIContext・IAgentBrain・AIControllerComponent | 基本契約・ライフサイクル・個体別Blackboard/Commands・更新間隔は実装済み。ContextのWorldは未実装 |
 | 3 | AICommandBufferと実行Component | 移動/停止/攻撃要求、共通Handler、直線移動Componentを実装。ゲーム固有の攻撃・物理処理はゲーム側で接続 |
-| 4 | StateMachineBrain | 未実装。共通契約へ載せる受け口は実装済み |
+| 4 | StateMachineBrain | 実装済み。個体別State、Enter/Tick/Exit、条件/明示要求の優先順位、Reset/Restartと命令発行、サンプル・テストに対応 |
 | 5 | BehaviorTreeのAIContext対応 | 実装済み。BehaviorTreeBrainへ分離し、既存Component API・JSON・旧Executeとの互換を維持 |
 | 6 | NavigationGraph・A*・NavigationAgentComponent | 保留（依頼により今回の対象外） |
 | 7 | Prefab/JSONによるComponentとAI構成の生成 | BT資産からツリー生成は対応済み。Component/Brain構成の自動生成は未実装 |

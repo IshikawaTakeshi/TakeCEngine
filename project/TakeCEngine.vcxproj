@@ -207,9 +207,11 @@
     <ClInclude Include="engine\AI\FaceDetection\ScrfdDecoder.h" />
     <ClInclude Include="engine\AI\FaceInputBuilder.h" />
     <ClInclude Include="engine\AI\IAgentBrain.h" />
+    <ClInclude Include="engine\AI\IAgentState.h" />
     <ClInclude Include="engine\AI\OnnxImageTensorUtility.h" />
     <ClInclude Include="engine\AI\OnnxModel.h" />
     <ClInclude Include="engine\AI\OnnxRuntimeSystem.h" />
+    <ClInclude Include="engine\AI\StateMachineBrain.h" />
     <ClInclude Include="engine\Animation\AnimationState.h" />
     <ClInclude Include="engine\Animation\Animator.h" />
     <ClInclude Include="engine\Animation\AnimatorController.h" />
@@ -427,6 +429,7 @@
     <ClCompile Include="engine\AI\OnnxImageTensorUtility.cpp" />
     <ClCompile Include="engine\AI\OnnxModel.cpp" />
     <ClCompile Include="engine\AI\OnnxRuntimeSystem.cpp" />
+    <ClCompile Include="engine\AI\StateMachineBrain.cpp" />
     <ClCompile Include="engine\Animation\Animator.cpp" />
     <ClCompile Include="engine\Animation\AnimatorController.cpp" />
     <ClCompile Include="engine\Animation\Skeleton.cpp" />
