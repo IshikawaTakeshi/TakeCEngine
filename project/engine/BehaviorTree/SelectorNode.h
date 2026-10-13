@@ -27,10 +27,14 @@ public:
 	/// <param name="characterInfo"></param>
 	/// <returns></returns>
 	BehaviorStatus Execute(Blackboard& blackboard) override;
-	BehaviorStatus Tick(const TakeC::BehaviorTreeContext& context) override;
+	BehaviorStatus Tick(TakeC::AIContext& context) override;
+	BehaviorStatus Tick(const TakeC::BehaviorTreeContext& context) override {
+		auto mutableContext = context;
+		return Tick(mutableContext);
+	}
 
 private:
 	BehaviorStatus ExecuteImpl(
-		Blackboard& blackboard, const TakeC::BehaviorTreeContext* context);
+		Blackboard& blackboard, TakeC::AIContext* context);
 
 };

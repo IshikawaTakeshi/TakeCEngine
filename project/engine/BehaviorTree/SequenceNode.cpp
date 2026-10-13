@@ -8,12 +8,12 @@ BehaviorStatus SequenceNode::Execute(Blackboard& blackboard) {
 	return ExecuteImpl(blackboard, nullptr);
 }
 
-BehaviorStatus SequenceNode::Tick(const TakeC::BehaviorTreeContext& context) {
+BehaviorStatus SequenceNode::Tick(TakeC::AIContext& context) {
 	return ExecuteImpl(context.blackboard, &context);
 }
 
 BehaviorStatus SequenceNode::ExecuteImpl(
-	Blackboard& blackboard, const TakeC::BehaviorTreeContext* context) {
+	Blackboard& blackboard, TakeC::AIContext* context) {
 	while (currentIndex_ < children_.size()) {
 		BehaviorStatus status = ExecuteChild(*children_[currentIndex_], blackboard, context);
 

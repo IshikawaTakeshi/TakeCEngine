@@ -1,5 +1,8 @@
 #pragma once
 
+#include "engine/Math/Vector2.h"
+#include "engine/Math/Vector3.h"
+
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -14,7 +17,8 @@ namespace TakeC {
 /// <summary>
 /// Blackboardに格納できる、保存・比較可能な値の集合です。
 /// </summary>
-using BlackboardValue = std::variant<std::int32_t, float, bool, std::string>;
+using BlackboardValue = std::variant<
+	std::int32_t, float, bool, std::string, ::Vector2, Vector3, std::uint64_t>;
 
 namespace Detail {
 
@@ -23,7 +27,10 @@ inline constexpr bool IsBlackboardValue =
 	std::is_same_v<std::remove_cvref_t<T>, std::int32_t> ||
 	std::is_same_v<std::remove_cvref_t<T>, float> ||
 	std::is_same_v<std::remove_cvref_t<T>, bool> ||
-	std::is_same_v<std::remove_cvref_t<T>, std::string>;
+	std::is_same_v<std::remove_cvref_t<T>, std::string> ||
+	std::is_same_v<std::remove_cvref_t<T>, ::Vector2> ||
+	std::is_same_v<std::remove_cvref_t<T>, Vector3> ||
+	std::is_same_v<std::remove_cvref_t<T>, std::uint64_t>;
 
 } // namespace Detail
 

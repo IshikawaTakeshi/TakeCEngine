@@ -14,7 +14,7 @@
 struct BehaviorNodeData {
 	std::string name = "UnnamedNode";          // ノード名
 	std::string nodeType = "ACTION";           // ノードタイプ（文字列）
-	std::string targetState = "NONE";          // ACTION用: ゲーム側で解決するアクションID（旧JSON互換名）
+	std::string targetState = "NONE";          // ACTION用Action ID。JSONではproperties.actionIdを優先し、旧targetStateも読む。
 
 	std::string field = "";                    // 比較する対象（"energy", "hp", "distance" 等）
 	std::string op = ">=";                     // 比較演算子（">=", "<=", ">", "<", "==", "!="）

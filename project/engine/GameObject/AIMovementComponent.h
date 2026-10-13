@@ -18,6 +18,9 @@ public:
     bool IsMoving() const { return targetPosition_.has_value(); }
     const std::optional<Vector3>& GetTargetPosition() const { return targetPosition_; }
 
+protected:
+    void OnCommandAttach() override;
+
 private:
     std::optional<Vector3> targetPosition_;
     float speed_ = 1.0f;

@@ -207,6 +207,10 @@ void from_json(const nlohmann::json& j, BehaviorNodeData& data) {
 	data.bbStringValue = j.value("bbStringValue", "");
 	data.waitTime = j.value("waitTime", 1.0f);
 	data.properties = j.value("properties", nlohmann::json::object());
+	if (data.nodeType == "ACTION" && data.properties.is_object() &&
+		data.properties.contains("actionId")) {
+		data.targetState = data.properties.at("actionId").get<std::string>();
+	}
 }
 
 void to_json(nlohmann::json& j, const BehaviorNodeData& data) {
@@ -236,4 +240,7 @@ void to_json(nlohmann::json& j, const BehaviorNodeData& data) {
 	j["bbStringValue"] = data.bbStringValue;
 	j["waitTime"] = data.waitTime;
 	j["properties"] = data.properties;
+	if (data.nodeType == "ACTION" && j["properties"].is_object()) {
+		j["properties"]["actionId"] = data.targetState;
+	}
 }

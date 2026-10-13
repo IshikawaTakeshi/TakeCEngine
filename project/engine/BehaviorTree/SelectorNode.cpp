@@ -7,12 +7,12 @@ BehaviorStatus SelectorNode::Execute(Blackboard& blackboard) {
 	return ExecuteImpl(blackboard, nullptr);
 }
 
-BehaviorStatus SelectorNode::Tick(const TakeC::BehaviorTreeContext& context) {
+BehaviorStatus SelectorNode::Tick(TakeC::AIContext& context) {
 	return ExecuteImpl(context.blackboard, &context);
 }
 
 BehaviorStatus SelectorNode::ExecuteImpl(
-	Blackboard& blackboard, const TakeC::BehaviorTreeContext* context) {
+	Blackboard& blackboard, TakeC::AIContext* context) {
 	while (currentIndex_ < children_.size()) {
 		BehaviorStatus status = ExecuteChild(*children_[currentIndex_], blackboard, context);
 

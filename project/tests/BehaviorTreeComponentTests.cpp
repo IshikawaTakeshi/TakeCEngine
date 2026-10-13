@@ -2,6 +2,7 @@
 #include "engine/GameObject/GameObjectManager.h"
 #include "engine/GameObject/TransformComponent.h"
 #include "engine/GameObject/AIMovementComponent.h"
+#include "engine/GameObject/SensorComponent.h"
 #include "engine/BehaviorTree/ComboFactory.h"
 #include "engine/BehaviorTree/PlannerSelectorNode.h"
 #include "engine/BehaviorTree/SelectorNode.h"
@@ -10,6 +11,7 @@
 #include "engine/BehaviorTree/WaitNode.h"
 #include "engine/BehaviorTree/WeightSelectorNode.h"
 #include "engine/base/TakeCFrameWork.h"
+#include "examples/StateMachineBrainExample.h"
 
 #include <cassert>
 #include <cmath>
@@ -420,17 +422,135 @@ void TestDestroyAndReentrantMutation() {
     assert(resets == 1);
 }
 
+void TestContextOnlyNodeThroughComposite() {
+    /// <summary>旧Executeを実装せず、AIContextから命令を発行するノードです。</summary>
+    class ContextOnlyNode final : public BehaviorNode {
+    public:
+        using BehaviorNode::Tick;
+        BehaviorStatus Tick(TakeC::AIContext& context) override {
+            assert(context.world != nullptr);
+            assert(context.commands.RequestStopMovement());
+            currentStatus_ = BehaviorStatus::Success;
+            return currentStatus_;
+        }
+    };
+
+    TakeC::GameObjectManager world;
+    auto& object = world.CreateObject("ContextOnly");
+    object.AddComponent<TakeC::AIMovementComponent>();
+    auto& component = object.AddComponent<BehaviorTreeComponent>();
+    auto root = std::make_unique<SequenceNode>();
+    root->AddChild(std::make_unique<ContextOnlyNode>());
+    component.SetTree(std::move(root));
+    component.SetRepeat(false);
+    world.Update(0.1f);
+    assert(component.GetStatus() == BehaviorStatus::Success);
+    assert(component.GetCommandBuffer().GetCommands().size() == 1);
+    world.LateUpdate(0.1f);
+    assert(component.GetLastUnhandledCommandCount() == 0);
+
+    SequenceNode legacyConstCall;
+    auto action = std::make_unique<ActionNode>("LegacyConstCall");
+    int calls = 0;
+    action->SetContextExecuteCallback([&](TakeC::AIContext&) {
+        ++calls;
+        return BehaviorStatus::Success;
+    });
+    legacyConstCall.AddChild(std::move(action));
+    const TakeC::AIContext context{
+        object, component.GetBlackboard(), component.GetCommandBuffer(), 0.1f, &world, &world.GetServices()};
+    assert(legacyConstCall.Tick(context) == BehaviorStatus::Success && calls == 1);
+}
+
+void TestSwitchEnemyFromStateMachineToBehaviorTree() {
+    /// <summary>AIが発行した攻撃要求を対象IDで検証して消費します。</summary>
+    class Combat final : public TakeC::AICommandHandlerComponent {
+    public:
+        Combat(TakeC::GameObjectManager& world, int& attacks)
+            : world_(world), attacks_(attacks) {}
+        bool HandleCommand(const TakeC::AICommand& command) override {
+            const auto* attack = std::get_if<TakeC::AIAttackCommand>(&command);
+            if (!attack) { return false; }
+            const auto* target = world_.FindObject(attack->targetId);
+            if (target && target->IsActive() && !target->IsDestroyRequested()) { ++attacks_; }
+            return true;
+        }
+    private:
+        TakeC::GameObjectManager& world_;
+        int& attacks_;
+    };
+
+    TakeC::GameObjectManager world;
+    auto& enemy = world.CreateObject("SwitchableEnemy");
+    auto& controller = enemy.AddComponent<TakeC::AIControllerComponent>();
+    auto& movement = enemy.AddComponent<TakeC::AIMovementComponent>();
+    movement.SetSpeed(2.0f);
+    int attacks = 0;
+    enemy.AddComponent<Combat>(world, attacks);
+    auto& sensor = enemy.AddComponent<TakeC::SensorComponent>();
+    auto& target = world.CreateObject("SwitchTarget");
+    target.GetTransform().SetLocalPosition({5.0f, 0.0f, 0.0f});
+    TakeC::Examples::ConfigureDistanceSensor(sensor, target.GetId(), 6.0f, 1.0f);
+    controller.SetBrain(TakeC::Examples::BuildSensedEnemyBrain());
+    world.Update(0.25f);
+    world.LateUpdate(0.25f);
+    assert(controller.GetBlackboard().GetOr(TakeC::Examples::SensedEnemyKeys::kVisible, false));
+
+    auto tree = std::make_unique<TakeC::BehaviorTreeBrain>();
+    tree->SetTree(std::make_unique<ActionNode>("SensedDecision"));
+    tree->BindAction("SensedDecision", [](TakeC::AIContext& context) {
+        using Keys = TakeC::Examples::SensedEnemyKeys;
+        if (!context.blackboard.GetOr(Keys::kVisible, false)) {
+            return context.commands.RequestStopMovement() ? BehaviorStatus::Running : BehaviorStatus::Failure;
+        }
+        if (context.blackboard.GetOr(Keys::kInAttackRange, false)) {
+            const auto* id = context.blackboard.TryGet(Keys::kTargetId);
+            if (!id || !context.commands.RequestStopMovement() ||
+                !context.commands.RequestAttack(*id)) {
+                return BehaviorStatus::Failure;
+            }
+            return BehaviorStatus::Running;
+        }
+        const auto* position = context.blackboard.TryGet(Keys::kTargetPosition);
+        return position && context.commands.RequestMoveTo(*position)
+            ? BehaviorStatus::Running : BehaviorStatus::Failure;
+    });
+    controller.SetBrain(std::move(tree));
+    assert(controller.GetBlackboard().GetOr(TakeC::Examples::SensedEnemyKeys::kVisible, false));
+
+    world.Update(0.25f);
+    world.LateUpdate(0.25f);
+    assert(movement.IsMoving() && attacks == 0);
+    target.GetTransform().SetLocalPosition({1.0f, 0.0f, 0.0f});
+    world.Update(0.25f);
+    world.LateUpdate(0.25f);
+    assert(!movement.IsMoving() && attacks == 1);
+    target.Destroy();
+    world.Update(0.25f);
+    world.LateUpdate(0.25f);
+    assert(!controller.GetBlackboard().GetOr(TakeC::Examples::SensedEnemyKeys::kVisible, true));
+    assert(!movement.IsMoving() && attacks == 1);
+    assert(controller.GetLastUnhandledCommandCount() == 0);
+}
+
 void TestJsonAssetAndCustomNode() {
     const auto json = nlohmann::json::parse(R"({
         "formatVersion": 1, "name": "ComponentTest",
         "root": {
             "nodeType": "SEQUENCE", "children": [
                 {"nodeType": "WAIT", "waitTime": 0.5},
-                {"nodeType": "ACTION", "targetState": "Test.Attack"}
+                {"nodeType": "ACTION", "properties": {"actionId": "Test.Attack"}}
             ]
         }
     })");
     const auto asset = json.get<BehaviorTreeAsset>();
+    assert(asset.root.children[1].targetState == "Test.Attack");
+    nlohmann::json saved;
+    to_json(saved, asset);
+    assert(saved["root"]["children"][1]["properties"]["actionId"] == "Test.Attack");
+    const auto legacyAction = nlohmann::json::parse(
+        R"({"nodeType":"ACTION","targetState":"Legacy.Attack"})").get<BehaviorNodeData>();
+    assert(legacyAction.targetState == "Legacy.Attack");
     TakeC::BehaviorTreeFactory factory;
     int calls = 0;
     GameObject target("Target");
@@ -453,7 +573,7 @@ void TestJsonAssetAndCustomNode() {
     auto& component = object.AddComponent<BehaviorTreeComponent>();
     component.SetTree(factory.BuildBehaviorTree(asset));
     assert(component.GetTree() != nullptr);
-    component.BindAction("Test.Attack", [&](const BehaviorTreeContext& context) {
+    component.BindAction("Test.Attack", [&](TakeC::AIContext& context) {
         assert(&context.owner == &object);
         return context.commands.RequestAttack(target.GetId()) ?
             BehaviorStatus::Success : BehaviorStatus::Failure;
@@ -496,6 +616,63 @@ void TestAbortPropagation() {
     assert(component.GetStatus() == BehaviorStatus::Aborted);
 }
 
+void TestSensorAndTypedBlackboard() {
+    TakeC::GameObjectManager world;
+    auto& enemy = world.CreateObject("Enemy");
+    auto& ai = enemy.AddComponent<BehaviorTreeComponent>(); // Sensorより先に追加しても感知が先です。
+    auto& sensor = enemy.AddComponent<TakeC::SensorComponent>();
+    auto& target = world.CreateObject("Target");
+    target.GetTransform().SetLocalPosition({3.0f, 0.0f, 0.0f});
+    const TakeC::GameObjectId targetId = target.GetId();
+    int decisions = 0;
+
+    sensor.AddSensor([targetId](
+        const TakeC::ComponentUpdateContext& context,
+        const TakeC::GameObject& owner,
+        TakeC::Blackboard& blackboard) {
+        assert(context.world != nullptr);
+        const auto* found = context.world->FindObject(targetId);
+        const bool available = found && found->IsActive() && !found->IsDestroyRequested();
+        const bool wroteAvailability = blackboard.Set("HasTarget", available);
+        assert(wroteAvailability);
+        if (available) {
+            const bool wroteTarget = blackboard.Set("Target", targetId);
+            assert(wroteTarget);
+            const TakeC::Vector3 position = found->GetTransform().GetWorldPosition();
+            const bool wrotePosition = blackboard.Set("TargetPosition", position);
+            const bool wroteDistance = blackboard.Set(
+                "TargetDistance", position.x - owner.GetTransform().GetWorldPosition().x);
+            const bool wroteAim = blackboard.Set("AimPoint", ::Vector2{position.x, position.y});
+            assert(wrotePosition && wroteDistance && wroteAim);
+        } else {
+            blackboard.Remove("Target");
+            blackboard.Remove("TargetPosition");
+            blackboard.Remove("TargetDistance");
+            blackboard.Remove("AimPoint");
+        }
+    });
+    ai.BindAction("Observe", [&](const TakeC::AIContext& context) {
+        ++decisions;
+        assert(context.blackboard.GetOr<bool>("HasTarget", false) == (decisions == 1));
+        if (decisions == 1) {
+            assert(context.blackboard.GetOr<TakeC::GameObjectId>("Target", 0) == targetId);
+            assert(context.blackboard.GetOr<float>("TargetDistance", 0.0f) == 3.0f);
+            assert(context.blackboard.TryGet<TakeC::Vector3>("TargetPosition") != nullptr);
+            assert(context.blackboard.TryGet<::Vector2>("AimPoint") != nullptr);
+        } else {
+            assert(!context.blackboard.Contains("Target"));
+        }
+        return BehaviorStatus::Success;
+    });
+    ai.SetTree(std::make_unique<ActionNode>("Observe"));
+
+    world.Update(0.1f);
+    assert(decisions == 1);
+    target.Destroy();
+    world.Update(0.1f);
+    assert(decisions == 2);
+}
+
 } // namespace
 
 int main() {
@@ -513,10 +690,13 @@ int main() {
     TestPauseDisableStopAndBlackboardWait();
     TestRepeatFailureAndReplacement();
     TestDestroyAndReentrantMutation();
+    TestContextOnlyNodeThroughComposite();
+    TestSwitchEnemyFromStateMachineToBehaviorTree();
     TestJsonAssetAndCustomNode();
     TestAbortPropagation<SequenceNode>();
     TestAbortPropagation<SelectorNode>();
     TestAbortPropagation<PlannerSelectorNode>();
     TestAbortPropagation<WeightSelectorNode>();
+    TestSensorAndTypedBlackboard();
     return 0;
 }

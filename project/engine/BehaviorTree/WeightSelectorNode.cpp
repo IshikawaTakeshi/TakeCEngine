@@ -7,12 +7,12 @@ BehaviorStatus WeightSelectorNode::Execute(Blackboard& blackboard) {
 	return ExecuteImpl(blackboard, nullptr);
 }
 
-BehaviorStatus WeightSelectorNode::Tick(const TakeC::BehaviorTreeContext& context) {
+BehaviorStatus WeightSelectorNode::Tick(TakeC::AIContext& context) {
 	return ExecuteImpl(context.blackboard, &context);
 }
 
 BehaviorStatus WeightSelectorNode::ExecuteImpl(
-	Blackboard& blackboard, const TakeC::BehaviorTreeContext* context) {
+	Blackboard& blackboard, TakeC::AIContext* context) {
 
 	if (children_.empty()) {
 		currentStatus_ = BehaviorStatus::Failure;

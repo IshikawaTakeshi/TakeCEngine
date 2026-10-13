@@ -21,7 +21,7 @@ BehaviorStatus ActionNode::Execute(Blackboard& blackboard) {
 	return currentStatus_;
 }
 
-BehaviorStatus ActionNode::Tick(const TakeC::BehaviorTreeContext& context) {
+BehaviorStatus ActionNode::Tick(TakeC::AIContext& context) {
 	if (!contextExecute_) {
 		return Execute(context.blackboard);
 	}

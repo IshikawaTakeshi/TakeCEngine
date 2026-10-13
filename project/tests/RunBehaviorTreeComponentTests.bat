@@ -38,6 +38,8 @@ cl.exe /nologo /std:c++20 /EHsc /W4 /WX /utf-8 /MT /Gy /O2 /FIWindows.h /DNOMINM
     "%REPOSITORY_ROOT%\project\engine\GameObject\AIControllerComponent.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\GameObject\AICommandHandlerComponent.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\GameObject\AIMovementComponent.cpp" ^
+    "%REPOSITORY_ROOT%\project\engine\GameObject\CharacterMotorComponent.cpp" ^
+    "%REPOSITORY_ROOT%\project\engine\GameObject\NavigationAgentComponent.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\AI\AICommandBuffer.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\AI\StateMachineBrain.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\GameObject\BehaviorTreeComponent.cpp" ^
@@ -67,6 +69,7 @@ cl.exe /nologo /std:c++20 /EHsc /W4 /WX /utf-8 /MT /Gy /O2 /FIWindows.h /DNOMINM
     "%REPOSITORY_ROOT%\project\engine\Math\Matrix4x4.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\Math\MatrixMath.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\Math\Quaternion.cpp" ^
+    "%REPOSITORY_ROOT%\project\engine\Math\Vector2.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\Math\Vector3.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\Math\Vector3Math.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\Utility\Logger.cpp" ^

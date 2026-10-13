@@ -5,6 +5,8 @@
 
 namespace TakeC {
 class GameObject;
+class GameObjectManager;
+class EngineServices;
 
 /// AI方式に依存しない個体別情報。参照をTickの外へ保存しないでください。
 /// deltaTimeは前回の判断からの有効更新時間です。
@@ -13,5 +15,7 @@ struct AIContext final {
     Blackboard& blackboard;
     AICommandBuffer& commands;
     float deltaTime = 0.0f;
+    GameObjectManager* world = nullptr;
+    EngineServices* services = nullptr;
 };
 } // namespace TakeC

@@ -468,6 +468,84 @@ void TestPatrolChaseAttackExample() {
     assert(fsm->GetCurrentStateId() == "Patrol" && attacks == 1);
 }
 
+void TestSensedEnemyPipeline() {
+    /// <summary>有効な対象への攻撃要求だけを消費するゲーム側Handlerです。</summary>
+    class Combat final : public AICommandHandlerComponent {
+    public:
+        Combat(GameObjectManager& objects, int& attacks) : objects_(objects), attacks_(attacks) {}
+        bool HandleCommand(const AICommand& command) override {
+            const auto* attack = std::get_if<AIAttackCommand>(&command);
+            if (!attack) { return false; }
+            const auto* target = objects_.FindObject(attack->targetId);
+            if (target && target->IsActive() && !target->IsDestroyRequested()) { ++attacks_; }
+            return true;
+        }
+    private:
+        GameObjectManager& objects_;
+        int& attacks_;
+    };
+
+    GameObjectManager world;
+    auto& enemy = world.CreateObject("SensedEnemy");
+    auto& controller = enemy.AddComponent<AIControllerComponent>();
+    auto& movement = enemy.AddComponent<AIMovementComponent>();
+    movement.SetSpeed(2.0f);
+    int attacks = 0;
+    enemy.AddComponent<Combat>(world, attacks);
+    auto& sensor = enemy.AddComponent<SensorComponent>(); // Controllerより後でもPerceptionが先。
+    auto& target = world.CreateObject("SensorTarget"); // Enemyより後の対象もIDで解決する。
+    const GameObjectId targetId = target.GetId();
+    target.GetTransform().SetLocalPosition({10.0f, 0.0f, 0.0f});
+    ExpectThrows<std::invalid_argument>([&] {
+        Examples::ConfigureDistanceSensor(sensor, targetId, 1.0f, 2.0f);
+    });
+    assert(sensor.GetSensorCount() == 0);
+    Examples::ConfigureDistanceSensor(sensor, targetId, 6.0f, 1.0f);
+    auto brain = Examples::BuildSensedEnemyBrain();
+    auto* fsm = brain.get();
+    controller.SetBrain(std::move(brain));
+
+    world.Update(0.25f);
+    world.LateUpdate(0.25f);
+    const auto& blackboard = controller.GetBlackboard();
+    assert(fsm->GetCurrentStateId() == "Idle");
+    assert(!blackboard.GetOr(Examples::SensedEnemyKeys::kVisible, true));
+    assert(!blackboard.Contains(Examples::SensedEnemyKeys::kTargetId.name));
+    assert(!movement.IsMoving() && attacks == 0);
+
+    target.GetTransform().SetLocalPosition({5.0f, 0.0f, 0.0f});
+    world.Update(0.25f);
+    assert(fsm->GetCurrentStateId() == "Chase");
+    assert(blackboard.GetOr(Examples::SensedEnemyKeys::kTargetId, kInvalidGameObjectId) == targetId);
+    assert(Near(blackboard.GetOr(Examples::SensedEnemyKeys::kTargetDistance, 0.0f), 5.0f));
+    world.LateUpdate(0.25f);
+    assert(Near(enemy.GetTransform().GetWorldPosition().x, 0.5f));
+
+    target.GetTransform().SetLocalPosition({1.0f, 0.0f, 0.0f});
+    world.Update(0.25f);
+    assert(fsm->GetCurrentStateId() == "Attack" && attacks == 0);
+    assert(blackboard.GetOr(Examples::SensedEnemyKeys::kInAttackRange, false));
+    world.LateUpdate(0.25f);
+    assert(attacks == 1 && !movement.IsMoving());
+    world.Update(0.25f);
+    world.LateUpdate(0.25f);
+    assert(attacks == 1); // Attack.Enterだけが攻撃する。
+
+    target.GetTransform().SetLocalPosition({5.0f, 0.0f, 0.0f});
+    world.Update(0.25f);
+    assert(fsm->GetCurrentStateId() == "Chase");
+    world.LateUpdate(0.25f);
+    assert(Near(enemy.GetTransform().GetWorldPosition().x, 1.0f));
+
+    target.Destroy();
+    world.Update(0.25f);
+    assert(fsm->GetCurrentStateId() == "Idle");
+    assert(!blackboard.Contains(Examples::SensedEnemyKeys::kTargetId.name));
+    assert(!blackboard.Contains(Examples::SensedEnemyKeys::kTargetPosition.name));
+    world.LateUpdate(0.25f);
+    assert(!movement.IsMoving() && attacks == 1);
+}
+
 void TestControllerDropsPartialFailureCommands() {
     std::vector<std::string> trace;
     GameObject object;
@@ -486,6 +564,24 @@ void TestControllerDropsPartialFailureCommands() {
     assert((trace == std::vector<std::string>{"A.Enter", "A.Tick", "A.Exit"}));
 }
 
+void TestControllerReceivesWorldContext() {
+    GameObjectManager world;
+    auto& owner = world.CreateObject("WorldContext");
+    auto& controller = owner.AddComponent<AIControllerComponent>();
+    std::vector<std::string> trace;
+    auto brain = std::make_unique<StateMachineBrain>();
+    auto& state = AddState(*brain, "Observe", trace);
+    brain->SetInitialState("Observe");
+    state.onEnter = [&](AIContext& context) {
+        assert(context.world == &world);
+        assert(context.services == &world.GetServices());
+    };
+    state.onTick = state.onEnter;
+    controller.SetBrain(std::move(brain));
+    world.Update(0.1f);
+    assert((trace == std::vector<std::string>{"Observe.Enter", "Observe.Tick"}));
+}
+
 } // namespace
 
 void RunStateMachineBrainTests() {
@@ -499,5 +595,7 @@ void RunStateMachineBrainTests() {
     TestControllerLifecycleCommandsAndBrainSwap();
     TestInstanceIsolationAndDetach();
     TestPatrolChaseAttackExample();
+    TestSensedEnemyPipeline();
     TestControllerDropsPartialFailureCommands();
+    TestControllerReceivesWorldContext();
 }

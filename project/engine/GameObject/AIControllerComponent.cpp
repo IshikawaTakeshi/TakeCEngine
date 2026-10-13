@@ -45,7 +45,8 @@ void AIControllerComponent::Reset() {
     EnsureNotExecuting();
     ExecutionGuard guard(*this);
     if (brain_ && attachedOwner_) {
-        AIContext context{*attachedOwner_, blackboard_, commands_, 0.0f};
+        AIContext context{*attachedOwner_, blackboard_, commands_, 0.0f,
+            attachedOwner_->GetWorld(), attachedOwner_->GetServices()};
         brain_->Reset(context);
     }
     ResetCommandExecution();
@@ -93,7 +94,8 @@ void AIControllerComponent::Update(const ComponentUpdateContext& context) {
     ExecutionGuard guard(*this);
     try {
         if (!brainStarted_) {
-            AIContext startContext{GetOwner(), blackboard_, commands_, 0.0f};
+            AIContext startContext{GetOwner(), blackboard_, commands_, 0.0f,
+                context.world, context.services};
             brain_->Start(startContext);
             brainStarted_ = true;
             if (!playing_) {
@@ -104,7 +106,8 @@ void AIControllerComponent::Update(const ComponentUpdateContext& context) {
         if (elapsedTime_ < tickInterval_) {
             return;
         }
-        AIContext execution{GetOwner(), blackboard_, commands_, elapsedTime_};
+        AIContext execution{GetOwner(), blackboard_, commands_, elapsedTime_,
+            context.world, context.services};
         ResetTickClock();
         brain_->Tick(execution);
         if (brain_->IsFinished()) {

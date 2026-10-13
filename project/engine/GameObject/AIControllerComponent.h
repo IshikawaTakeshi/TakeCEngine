@@ -24,6 +24,7 @@ namespace TakeC {
 		AICommandBuffer& GetCommandBuffer() { return commands_; }
 		const AICommandBuffer& GetCommandBuffer() const { return commands_; }
 		std::size_t GetLastUnhandledCommandCount() const { return lastUnhandledCommandCount_; }
+		ComponentPhase GetUpdatePhase() const noexcept override { return ComponentPhase::Decision; }
 
 		/// 0は毎フレーム。間引く場合、Tickには蓄積した時間を渡します。
 		void SetTickInterval(float seconds);

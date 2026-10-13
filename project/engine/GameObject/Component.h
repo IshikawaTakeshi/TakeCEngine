@@ -1,14 +1,34 @@
 #pragma once
 
+#include <cstdint>
+
 namespace TakeC {
 
 class GameObject;
+class GameObjectManager;
+class EngineServices;
 
 /// <summary>
-/// コンポーネントのフレーム更新に渡す共通情報
+/// Componentの更新順序を決めるフェーズです。
+/// </summary>
+enum class ComponentPhase {
+	Perception,
+	Decision,
+	Navigation,
+	Simulation,
+	Presentation
+};
+
+/// <summary>
+/// コンポーネントのフレーム更新に渡す共通情報です。
+/// 単独GameObjectの更新ではworldとservicesはnullptrです。
 /// </summary>
 struct ComponentUpdateContext final {
 	float deltaTime = 0.0f;
+	/// FixedUpdate、Update、LateUpdateで共有する1始まりのフレーム番号です。
+	std::uint64_t frameIndex = 0;
+	GameObjectManager* world = nullptr;
+	EngineServices* services = nullptr;
 };
 
 /// <summary>
@@ -30,6 +50,8 @@ public:
 	bool IsEnabled() const { return enabled_; }
 	void SetEnabled(bool enabled) { enabled_ = enabled; }
 	bool HasStarted() const { return started_; }
+	/// <summary>既定はSimulation。同じフェーズ内では追加順に更新されます。</summary>
+	virtual ComponentPhase GetUpdatePhase() const noexcept { return ComponentPhase::Simulation; }
 
 protected:
 	virtual void OnAttach() {}

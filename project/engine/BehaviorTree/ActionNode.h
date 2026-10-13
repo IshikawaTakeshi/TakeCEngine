@@ -12,7 +12,7 @@
 class ActionNode : public BehaviorNode {
 public:
 	using ExecuteCallback = std::function<BehaviorStatus(Blackboard&)>;
-	using ContextExecuteCallback = std::function<BehaviorStatus(const TakeC::BehaviorTreeContext&)>;
+	using ContextExecuteCallback = std::function<BehaviorStatus(TakeC::AIContext&)>;
 	using ResetCallback = std::function<void()>;
 
 	ActionNode(
@@ -23,7 +23,11 @@ public:
 	~ActionNode() override = default;
 
 	BehaviorStatus Execute(Blackboard& blackboard) override;
-	BehaviorStatus Tick(const TakeC::BehaviorTreeContext& context) override;
+	BehaviorStatus Tick(TakeC::AIContext& context) override;
+	BehaviorStatus Tick(const TakeC::BehaviorTreeContext& context) override {
+		auto mutableContext = context;
+		return Tick(mutableContext);
+	}
 	void Reset() override;
 
 	const std::string& GetActionId() const noexcept { return actionId_; }

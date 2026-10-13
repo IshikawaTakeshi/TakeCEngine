@@ -1,5 +1,6 @@
 #include "engine/GameObject/GameObject.h"
 
+#include "engine/GameObject/GameObjectManager.h"
 #include "engine/GameObject/TransformComponent.h"
 
 #include <atomic>
@@ -34,6 +35,14 @@ const TransformComponent& GameObject::GetTransform() const {
 	return *transform_;
 }
 
+EngineServices* GameObject::GetServices() {
+	return manager_ ? &manager_->GetServices() : nullptr;
+}
+
+const EngineServices* GameObject::GetServices() const {
+	return manager_ ? &manager_->GetServices() : nullptr;
+}
+
 void GameObject::Start() {
 	if (!active_ || destroyRequested_) {
 		return;
@@ -48,43 +57,83 @@ void GameObject::Start() {
 }
 
 void GameObject::Update(float deltaTime) {
-	if (!active_ || destroyRequested_) {
-		return;
-	}
-
-	const ComponentUpdateContext context{ deltaTime };
-	iteratingComponents_ = true;
-	for (const std::unique_ptr<Component>& component : components_) {
-		component->UpdateInternal(context);
-	}
-	iteratingComponents_ = false;
-	FlushPendingComponents();
+	RunPhasedUpdate(UpdateKind::Update, deltaTime);
 }
 
 void GameObject::FixedUpdate(float fixedDeltaTime) {
-	if (!active_ || destroyRequested_) {
-		return;
-	}
-
-	const ComponentUpdateContext context{ fixedDeltaTime };
-	iteratingComponents_ = true;
-	for (const std::unique_ptr<Component>& component : components_) {
-		component->FixedUpdateInternal(context);
-	}
-	iteratingComponents_ = false;
-	FlushPendingComponents();
+	RunPhasedUpdate(UpdateKind::FixedUpdate, fixedDeltaTime);
 }
 
 void GameObject::LateUpdate(float deltaTime) {
+	RunPhasedUpdate(UpdateKind::LateUpdate, deltaTime);
+}
+
+void GameObject::RunPhasedUpdate(UpdateKind kind, float deltaTime) {
 	if (!active_ || destroyRequested_) {
 		return;
 	}
 
-	const ComponentUpdateContext context{ deltaTime };
-	iteratingComponents_ = true;
-	for (const std::unique_ptr<Component>& component : components_) {
-		component->LateUpdateInternal(context);
+	if (!standaloneFrameOpen_ || (kind == UpdateKind::Update && standaloneUpdatedThisFrame_)) {
+		++standaloneFrameIndex_;
+		standaloneFrameOpen_ = true;
+		standaloneUpdatedThisFrame_ = false;
 	}
+	if (kind == UpdateKind::Update) {
+		standaloneUpdatedThisFrame_ = true;
+	}
+	const ComponentUpdateContext context{
+		deltaTime,
+		manager_ ? manager_->GetFrameIndex() : standaloneFrameIndex_,
+		manager_,
+		GetServices()
+	};
+	BeginComponentUpdate();
+	try {
+		for (const ComponentPhase phase : kUpdatePhases) {
+			UpdatePhase(phase, kind, context);
+		}
+	} catch (...) {
+		EndComponentUpdate();
+		if (kind == UpdateKind::LateUpdate) {
+			standaloneFrameOpen_ = false;
+		}
+		throw;
+	}
+	EndComponentUpdate();
+	if (kind == UpdateKind::LateUpdate) {
+		standaloneFrameOpen_ = false;
+	}
+}
+
+void GameObject::BeginComponentUpdate() {
+	assert(!iteratingComponents_);
+	iteratingComponents_ = true;
+}
+
+void GameObject::UpdatePhase(ComponentPhase phase, UpdateKind kind, const ComponentUpdateContext& context) {
+	if (!active_ || destroyRequested_) {
+		return;
+	}
+
+	for (const std::unique_ptr<Component>& component : components_) {
+		if (component->GetUpdatePhase() != phase) {
+			continue;
+		}
+		switch (kind) {
+		case UpdateKind::Update:
+			component->UpdateInternal(context);
+			break;
+		case UpdateKind::FixedUpdate:
+			component->FixedUpdateInternal(context);
+			break;
+		case UpdateKind::LateUpdate:
+			component->LateUpdateInternal(context);
+			break;
+		}
+	}
+}
+
+void GameObject::EndComponentUpdate() {
 	iteratingComponents_ = false;
 	FlushPendingComponents();
 }

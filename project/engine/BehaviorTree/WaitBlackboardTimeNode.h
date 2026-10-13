@@ -26,6 +26,7 @@ public:
 	/// ノードの実行
 	/// </summary>
 	BehaviorStatus Execute(Blackboard& blackboard) override;
+	using BehaviorNode::Tick;
 	BehaviorStatus Tick(const TakeC::BehaviorTreeContext& context) override;
 
 	/// <summary>

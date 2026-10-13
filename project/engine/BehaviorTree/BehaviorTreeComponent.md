@@ -51,7 +51,8 @@ Reset、交換、ツリー変更、アクション再登録、間隔変更では
 AICommandBufferと実行Componentの接続を実装しています。
 Actionはcommandsへ要求を書き、ControllerのLateUpdateで実行側へ渡します。
 使用方法・命令の寿命・自作実行Componentは[AICommandBuffer](../AI/AICommandBuffer.md)を参照してください。
-World参照、Perception/Navigation等の詳細なフェーズ分離は未実装です。
+World参照とPerception/Decision等の更新順序は共通AIContextとComponentPhaseで利用できます。
+NavigationAgentによる経路探索は今後の実装です。
 
 ## コードでツリーを組み立てる
 
@@ -106,7 +107,7 @@ if (root) {
 }
 ```
 
-既存JSONの`ACTION.targetState`がアクションIDです。
+ACTIONノードのアクションIDは`properties.actionId`に保存します。既存JSONの`ACTION.targetState`も読み込めます。
 登録はSetTreeの前後どちらでもできます。
 組み込みACTIONに登録がなく、ノード自身にも実行コールバックがなければFailureになります。
 独自ノードは既存のBehaviorNodeRegistryへ登録できます。
@@ -140,9 +141,8 @@ resetは通常完了時にも呼ばれます。繰り返し呼べる、例外を
 
 ## 自作ノードと互換性
 
-既存の`Execute(Blackboard&)`のみを実装したノードも利用できます。
-所有GameObjectや時間が必要な独自ノードは
-`Tick(const TakeC::BehaviorTreeContext&)`もoverrideしてください。
+新しいノードは`Tick(TakeC::AIContext&)`のみを実装できます。
+既存の`Execute(Blackboard&)`のみ、または旧`Tick(const TakeC::BehaviorTreeContext&)`を実装したノードも利用できます。
 命令は`context.commands`へ発行します。Contextを直接生成する場合は
 `{owner, blackboard, commands, deltaTime}`としてください。
 独自Compositeでは子ノードにも`Tick(context)`を呼んでContextを伝えます。
@@ -156,7 +156,7 @@ Start、Tick、Reset、命令の実行コールバック中にSetBrain、SetTick
 SetTree、BindAction、Stop、Restart、Resetを呼ぶと
 `std::logic_error`になります。構造変更はGameObjectの更新外で行ってください。
 PauseとGameObject::Destroyによる遅延破棄要求はコールバック内でも利用できます。
-ノードの追加順などによるComponent更新順の変更は、このComponentでは行いません。
+SensorComponentはPerception、AIControllerはDecisionで更新され、追加順に関係なく感知が先になります。
 
 ## 検証
 

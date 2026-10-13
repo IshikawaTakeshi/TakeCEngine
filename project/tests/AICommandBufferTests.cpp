@@ -1,12 +1,16 @@
 #include "engine/AI/AICommandBuffer.h"
 #include "engine/GameObject/BehaviorTreeComponent.h"
 #include "engine/GameObject/AIMovementComponent.h"
+#include "engine/GameObject/CharacterMotorComponent.h"
 #include "engine/GameObject/GameObjectManager.h"
+#include "engine/GameObject/NavigationAgentComponent.h"
 #include "engine/GameObject/TransformComponent.h"
+#include "engine/Navigation/IPathfindingService.h"
 
 #include <cassert>
 #include <cmath>
 #include <limits>
+#include <memory>
 #include <stdexcept>
 #include <vector>
 
@@ -213,6 +217,88 @@ void TestWorldSpaceMovementAndInputValidation() {
     }
 }
 
+void TestNavigationAgentDirectRouteAndStop() {
+    GameObjectManager world;
+    auto& object = world.CreateObject("DirectNavigation");
+    auto& controller = object.AddComponent<AIControllerComponent>();
+    auto& navigation = object.AddComponent<NavigationAgentComponent>();
+    auto& motor = object.AddComponent<CharacterMotorComponent>();
+    motor.SetSpeed(2.0f);
+    assert(controller.GetCommandBuffer().RequestMoveTo({2.0f, 0.0f, 0.0f}, 0.0f));
+    world.LateUpdate(0.5f);
+    assert(Near(object.GetTransform().GetWorldPosition().x, 1.0f));
+    assert(navigation.GetStatus() == NavigationStatus::Following);
+    assert(navigation.GetWaypoints().size() == 1);
+    world.LateUpdate(0.5f);
+    assert(Near(object.GetTransform().GetWorldPosition().x, 2.0f));
+    assert(navigation.GetStatus() == NavigationStatus::Arrived && !navigation.IsMoving());
+    assert(controller.GetLastUnhandledCommandCount() == 0);
+
+    assert(controller.GetCommandBuffer().RequestMoveTo({10.0f, 0.0f, 0.0f}));
+    world.LateUpdate(0.25f);
+    assert(navigation.IsMoving());
+    assert(controller.GetCommandBuffer().RequestStopMovement());
+    world.LateUpdate(0.25f);
+    assert(navigation.GetStatus() == NavigationStatus::Idle && !navigation.GetGoal());
+    const float stopped = object.GetTransform().GetWorldPosition().x;
+    world.LateUpdate(1.0f);
+    assert(Near(object.GetTransform().GetWorldPosition().x, stopped));
+}
+
+void TestNavigationAgentServiceWaypointsAndRepath() {
+    /// <summary>同期探索の呼び出し回数と探索不能を検証するテスト用サービスです。</summary>
+    class MockPathfindingService final : public IPathfindingService {
+    public:
+        std::optional<std::vector<Vector3>> FindPath(
+            const Vector3& start, const Vector3& goal) override {
+            ++calls;
+            if (blocked) { return std::nullopt; }
+            return std::vector<Vector3>{
+                {(start.x + goal.x) * 0.5f, 0.0f, 0.0f}, goal};
+        }
+        int calls = 0;
+        bool blocked = false;
+    };
+
+    GameObjectManager world;
+    auto service = std::make_shared<MockPathfindingService>();
+    world.GetServices().Register<IPathfindingService>(service);
+    auto& object = world.CreateObject("PathNavigation");
+    auto& controller = object.AddComponent<AIControllerComponent>();
+    auto& navigation = object.AddComponent<NavigationAgentComponent>();
+    auto& motor = object.AddComponent<CharacterMotorComponent>();
+    motor.SetSpeed(2.0f);
+
+    assert(controller.GetCommandBuffer().RequestMoveTo({4.0f, 0.0f, 0.0f}, 0.0f));
+    world.LateUpdate(1.0f);
+    assert(service->calls == 1 && navigation.GetWaypoints().size() == 2);
+    assert(navigation.GetCurrentWaypointIndex() == 1);
+    assert(Near(object.GetTransform().GetWorldPosition().x, 2.0f));
+    assert(controller.GetCommandBuffer().RequestMoveTo({4.0f, 0.0f, 0.0f}, 0.0f));
+    world.LateUpdate(1.0f);
+    assert(service->calls == 1 && navigation.GetStatus() == NavigationStatus::Arrived);
+    assert(Near(object.GetTransform().GetWorldPosition().x, 4.0f));
+
+    assert(controller.GetCommandBuffer().RequestMoveTo({6.0f, 0.0f, 0.0f}, 0.0f));
+    world.LateUpdate(0.5f);
+    assert(service->calls == 2 && navigation.GetCurrentWaypointIndex() == 1);
+    assert(Near(object.GetTransform().GetWorldPosition().x, 5.0f));
+    service->blocked = true;
+    assert(controller.GetCommandBuffer().RequestMoveTo({10.0f, 0.0f, 0.0f}, 0.0f));
+    world.LateUpdate(0.5f);
+    assert(service->calls == 3 && navigation.GetStatus() == NavigationStatus::NoPath);
+    assert(Near(object.GetTransform().GetWorldPosition().x, 5.0f));
+    assert(controller.GetCommandBuffer().RequestMoveTo({10.0f, 0.0f, 0.0f}, 0.0f));
+    world.LateUpdate(0.5f);
+    assert(service->calls == 3); // 同じ失敗経路を毎フレーム探索し直さない。
+    service->blocked = false;
+    navigation.RequestRepath();
+    world.LateUpdate(0.5f);
+    assert(service->calls == 4 && navigation.GetStatus() == NavigationStatus::Following);
+    controller.Stop();
+    assert(navigation.GetStatus() == NavigationStatus::Idle && navigation.GetWaypoints().empty());
+}
+
 void TestCustomBrainStartCommandsAndSnapshot() {
     class StartBrain final : public IAgentBrain {
     public:
@@ -335,6 +421,8 @@ void RunAICommandBufferTests() {
     TestStopResetReplacementAndDisable();
     TestAttackExactlyOnceAndStaleTarget();
     TestWorldSpaceMovementAndInputValidation();
+    TestNavigationAgentDirectRouteAndStop();
+    TestNavigationAgentServiceWaypointsAndRepath();
     TestCustomBrainStartCommandsAndSnapshot();
     TestMultipleControllerRoutingAndUnhandledCommands();
     TestPartialDecisionFailureDiscardsCommands();

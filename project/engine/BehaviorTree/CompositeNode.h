@@ -57,7 +57,7 @@ protected:
 	/// <summary>Component経由ではContextを子へ伝え、旧APIはそのまま実行します。</summary>
 	static BehaviorStatus ExecuteChild(
 		BehaviorNode& child, Blackboard& blackboard,
-		const TakeC::BehaviorTreeContext* context) {
+		TakeC::AIContext* context) {
 		return context ? child.Tick(*context) : child.Execute(blackboard);
 	}
 

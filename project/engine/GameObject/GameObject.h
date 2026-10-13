@@ -2,6 +2,7 @@
 
 #include "engine/GameObject/Component.h"
 
+#include <array>
 #include <concepts>
 #include <cstdint>
 #include <memory>
@@ -90,6 +91,10 @@ public:
 	GameObjectId GetId() const { return id_; }
 	const std::string& GetName() const { return name_; }
 	void SetName(std::string name) { name_ = std::move(name); }
+	GameObjectManager* GetWorld() { return manager_; }
+	const GameObjectManager* GetWorld() const { return manager_; }
+	EngineServices* GetServices();
+	const EngineServices* GetServices() const;
 
 	TransformComponent& GetTransform();
 	const TransformComponent& GetTransform() const;
@@ -106,6 +111,20 @@ public:
 	bool IsDestroyRequested() const { return destroyRequested_; }
 
 private:
+	friend class GameObjectManager;
+
+	enum class UpdateKind { Update, FixedUpdate, LateUpdate };
+	static constexpr std::array kUpdatePhases{
+		ComponentPhase::Perception,
+		ComponentPhase::Decision,
+		ComponentPhase::Navigation,
+		ComponentPhase::Simulation,
+		ComponentPhase::Presentation
+	};
+	void RunPhasedUpdate(UpdateKind kind, float deltaTime);
+	void BeginComponentUpdate();
+	void UpdatePhase(ComponentPhase phase, UpdateKind kind, const ComponentUpdateContext& context);
+	void EndComponentUpdate();
 	void AttachComponent(std::unique_ptr<Component> component);
 	void FlushPendingComponents();
 	void DetachAllComponents();
@@ -114,7 +133,11 @@ private:
 	std::string name_;
 	std::vector<std::unique_ptr<Component>> components_;
 	std::vector<std::unique_ptr<Component>> pendingComponents_;
+	GameObjectManager* manager_ = nullptr;
 	TransformComponent* transform_ = nullptr;
+	std::uint64_t standaloneFrameIndex_ = 0;
+	bool standaloneFrameOpen_ = false;
+	bool standaloneUpdatedThisFrame_ = false;
 	bool active_ = true;
 	bool destroyRequested_ = false;
 	bool iteratingComponents_ = false;
