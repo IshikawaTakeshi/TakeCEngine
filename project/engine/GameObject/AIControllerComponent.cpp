@@ -96,7 +96,7 @@ void AIControllerComponent::Update(const ComponentUpdateContext& context) {
         if (!brainStarted_) {
             AIContext startContext{GetOwner(), blackboard_, commands_, 0.0f,
                 context.world, context.services};
-            brain_->Start(startContext);
+            brain_->Initialize(startContext);
             brainStarted_ = true;
             if (!playing_) {
                 return;

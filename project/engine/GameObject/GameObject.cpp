@@ -43,16 +43,22 @@ const EngineServices* GameObject::GetServices() const {
 	return manager_ ? &manager_->GetServices() : nullptr;
 }
 
-void GameObject::Start() {
+void GameObject::Initialize() {
+	// 無効化されているか破棄要求されている場合は初期化しない
 	if (!active_ || destroyRequested_) {
 		return;
 	}
 
+	// コンポーネントのStartを呼び出す
 	iteratingComponents_ = true;
+
 	for (const std::unique_ptr<Component>& component : components_) {
+		// Startは有効化されているコンポーネントに対してのみ呼び出す
 		component->StartIfNeeded();
 	}
+
 	iteratingComponents_ = false;
+
 	FlushPendingComponents();
 }
 
@@ -68,19 +74,26 @@ void GameObject::LateUpdate(float deltaTime) {
 	RunPhasedUpdate(UpdateKind::LateUpdate, deltaTime);
 }
 
+//=============================================================================
+// フェーズごとの更新処理
+//=============================================================================
 void GameObject::RunPhasedUpdate(UpdateKind kind, float deltaTime) {
 	if (!active_ || destroyRequested_) {
 		return;
 	}
 
+	// Standaloneモードでは、Updateが呼ばれたフレームでLateUpdateも呼ばれると想定して、フレーム番号を1回だけ進める
 	if (!standaloneFrameOpen_ || (kind == UpdateKind::Update && standaloneUpdatedThisFrame_)) {
 		++standaloneFrameIndex_;
 		standaloneFrameOpen_ = true;
 		standaloneUpdatedThisFrame_ = false;
 	}
+
 	if (kind == UpdateKind::Update) {
 		standaloneUpdatedThisFrame_ = true;
 	}
+
+	//
 	const ComponentUpdateContext context{
 		deltaTime,
 		manager_ ? manager_->GetFrameIndex() : standaloneFrameIndex_,

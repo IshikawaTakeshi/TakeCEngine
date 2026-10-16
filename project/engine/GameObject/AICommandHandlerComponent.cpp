@@ -4,8 +4,11 @@
 
 #include <stdexcept>
 
-namespace TakeC {
+using namespace TakeC;
 
+//=============================================================================
+// CommandSourceの設定
+//=============================================================================
 void AICommandHandlerComponent::SetCommandSource(AIControllerComponent* source) {
     if (!commandOwner_) {
         throw std::logic_error("Attach the AI command handler before selecting its source.");
@@ -38,4 +41,3 @@ void AICommandHandlerComponent::OnDetach() {
     commandOwner_ = nullptr;
 }
 
-} // namespace TakeC

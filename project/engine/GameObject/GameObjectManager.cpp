@@ -84,7 +84,7 @@ const GameObject* GameObjectManager::FindObjectByName(std::string_view name) con
 }
 
 void GameObjectManager::Start() {
-	ForEachObject([](GameObject& object) { object.Start(); });
+	ForEachObject([](GameObject& object) { object.Initialize(); });
 }
 
 void GameObjectManager::Update(float deltaTime) {
