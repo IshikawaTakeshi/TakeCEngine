@@ -1,0 +1,10 @@
+{
+  "formatVersion": 1,
+  "name": "Patrol",
+  "root": {
+    "nodeType": "ACTION",
+    "name": "Patrol",
+    "properties": { "actionId": "Patrol" },
+    "children": []
+  }
+}

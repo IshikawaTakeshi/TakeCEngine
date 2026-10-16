@@ -2,11 +2,19 @@
 
 #include <algorithm>
 #include <utility>
+#include <stdexcept>
 
 namespace TakeC {
 
 GameObject& GameObjectManager::CreateObject(std::string name) {
 	auto object = std::make_unique<GameObject>(std::move(name));
+	return AdoptObject(std::move(object));
+}
+
+GameObject& GameObjectManager::AdoptObject(std::unique_ptr<GameObject> object) {
+	if (!object || object->GetWorld() || object->IsDestroyRequested()) {
+		throw std::invalid_argument("AdoptObject requires a live standalone object.");
+	}
 	object->manager_ = this;
 	GameObject& reference = *object;
 	if (iteratingObjects_) {

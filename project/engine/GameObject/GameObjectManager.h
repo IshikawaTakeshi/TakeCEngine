@@ -24,6 +24,8 @@ public:
 	GameObjectManager& operator=(GameObjectManager&&) = delete;
 
 	GameObject& CreateObject(std::string name = "GameObject");
+	/// 完成したStandaloneオブジェクトを登録する。Component本体のアドレスは変えない。
+	GameObject& AdoptObject(std::unique_ptr<GameObject> object);
 	void DestroyObject(GameObjectId id);
 
 	GameObject* FindObject(GameObjectId id);
