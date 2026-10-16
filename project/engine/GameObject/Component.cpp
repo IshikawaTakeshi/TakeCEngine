@@ -37,7 +37,7 @@ void Component::StartIfNeeded() {
 		return;
 	}
 
-	Start();
+	Initialize();
 	started_ = true;
 }
 

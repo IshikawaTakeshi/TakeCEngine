@@ -115,7 +115,7 @@ bool StateMachineBrain::EvaluateCondition(const Condition& condition, const AICo
     }
 }
 
-void StateMachineBrain::Start(AIContext& context) {
+void StateMachineBrain::Initialize(AIContext& context) {
     ExecutionGuard guard(*this);
     if (!std::isfinite(context.deltaTime) || context.deltaTime < 0.0f) {
         throw std::invalid_argument("FSM deltaTime must be finite and non-negative.");

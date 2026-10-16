@@ -68,7 +68,7 @@ protected:
 	virtual void OnDetach() {}
 
 	/// 初期化
-	virtual void Start() {}
+	virtual void Initialize() {}
 	/// 更新処理
 	virtual void Update([[maybe_unused]] const ComponentUpdateContext& context) {}
 	/// 固定更新処理

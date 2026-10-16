@@ -7,7 +7,7 @@ namespace TakeC {
 class IAgentBrain {
 public:
     virtual ~IAgentBrain() = default;
-    virtual void Start([[maybe_unused]] AIContext& context) {}
+    virtual void Initialize([[maybe_unused]] AIContext& context) {}
     virtual void Tick(AIContext& context) = 0;
     /// 終了処理は繰り返し呼び出せる、例外を投げない処理にしてください。
     virtual void Reset([[maybe_unused]] AIContext& context) {}
