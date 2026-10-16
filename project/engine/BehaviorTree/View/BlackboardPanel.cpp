@@ -14,11 +14,14 @@
 namespace TakeC {
 namespace {
 
-constexpr std::array<const char*, 4> kTypeNames = {
+constexpr std::array<const char*, 7> kTypeNames = {
 	"Int",
 	"Float",
 	"Bool",
 	"String",
+	"Vector2",
+	"Vector3",
+	"Object ID",
 };
 
 BlackboardValue CreateDefaultValue(int typeIndex) {
@@ -27,6 +30,9 @@ BlackboardValue CreateDefaultValue(int typeIndex) {
 	case 1: return 0.0f;
 	case 2: return false;
 	case 3: return std::string{};
+	case 4: return ::Vector2{0.0f, 0.0f};
+	case 5: return Vector3{0.0f, 0.0f, 0.0f};
+	case 6: return std::uint64_t{0};
 	default: return std::int32_t{0};
 	}
 }
@@ -140,6 +146,21 @@ void BlackboardPanel::Draw(Blackboard& blackboard) {
 				std::snprintf(buffer.data(), buffer.size(), "%s", value.c_str());
 				if (ImGui::InputText("##Value", buffer.data(), buffer.size())) {
 					blackboard.Set(key, std::string(buffer.data()));
+				}
+			} else if constexpr (std::is_same_v<T, ::Vector2>) {
+				float editedValue[2] = {value.x, value.y};
+				if (ImGui::DragFloat2("##Value", editedValue, 0.1f)) {
+					blackboard.Set(key, ::Vector2{editedValue[0], editedValue[1]});
+				}
+			} else if constexpr (std::is_same_v<T, Vector3>) {
+				float editedValue[3] = {value.x, value.y, value.z};
+				if (ImGui::DragFloat3("##Value", editedValue, 0.1f)) {
+					blackboard.Set(key, Vector3{editedValue[0], editedValue[1], editedValue[2]});
+				}
+			} else if constexpr (std::is_same_v<T, std::uint64_t>) {
+				std::uint64_t editedValue = value;
+				if (ImGui::InputScalar("##Value", ImGuiDataType_U64, &editedValue)) {
+					blackboard.Set(key, editedValue);
 				}
 			}
 		}, currentValue);

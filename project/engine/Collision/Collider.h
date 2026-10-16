@@ -1,17 +1,19 @@
 #pragma once
-#include "engine/3d/Object3d.h"
+#include "engine/3d/Transform.h"
 #include "engine/math/physics/Ray.h"
 #include "engine/Collision/SurfaceType.h"
 #include "engine/Collision/Capsule.h"
-#include "engine/base/ComPtrAliasTemplates.h"
+#include "engine/math/Matrix4x4.h"
+#include "engine/math/Vector4.h"
 #include <cstdint>
-#include <memory>
+#include <string>
 
 // 前方宣言
-class Model;
 class GameCharacter;
+class Camera;
 
 namespace TakeC {
+	class Object3d;
 
 // 衝突レイヤーの列挙型
 enum class CollisionLayer {
@@ -56,13 +58,17 @@ public:
 	/// </summary>
 	/// <param name="dxCommon"></param>
 	/// <param name="collisionObject"></param>
-	virtual void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::Object3d* collisionObject) = 0;
+	virtual void Initialize(TakeC::Object3d* collisionObject);
+	/// <summary>GameObject のワールド変換から初期化します。</summary>
+	virtual void Initialize(const Matrix4x4& worldMatrix);
 
 	/// <summary>
 	/// 更新処理
 	/// </summary>
 	/// <param name="collisionObject"></param>
-	virtual void Update(TakeC::Object3d* collisionObject) = 0;
+	virtual void Update(TakeC::Object3d* collisionObject);
+	/// <summary>GameObject のワールド変換から形状を更新します。</summary>
+	virtual void Update(const Matrix4x4& worldMatrix);
 
 	/// <summary>
 	/// ImGui更新処理
@@ -126,7 +132,7 @@ public:
 
 	/// 色設定
 	void SetColor(const Vector4& color) { color_ = color; }
-	/// オフセットの設定
+	/// オフセットの設定。Transform 経路ではローカル座標、旧 Object3d 経路では従来どおりワールド座標。
 	virtual void SetOffset(const Vector3& offset) { offset_ = offset; }
 	/// 半径の設定
 	virtual void SetRadius(const float& radius) { radius_ = radius; }
@@ -138,13 +144,16 @@ public:
 	void SetOwner(GameCharacter* owner) { owner_ = owner; }
 
 protected:
+	/// <summary>ローカル軸とオフセットをワールド空間へ変換した結果です。</summary>
+	struct WorldPose final {
+		Vector3 center{};
+		Vector3 basis[3]{};
+	};
+	WorldPose MakeWorldPose(const Matrix4x4& worldMatrix) const;
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///		privateメンバ変数
 	////////////////////////////////////////////////////////////////////////////////////////
-
-	//DirectXCommon
-	TakeC::DirectXCommon* dxCommon_ = nullptr;
 
 	//Camera
 	Camera* camera_ = nullptr;

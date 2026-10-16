@@ -1,4 +1,5 @@
 #include "TakeCFrameWork.h"
+#include "engine/Collision/CollisionManager.h"
 #include <cassert>
 
 //Clockの宣言
@@ -313,6 +314,7 @@ void TakeCFrameWork::Update() {
 
 	//シーンの更新
 	if (!isPaused_) {
+		CollisionManager::GetInstance().BeginCollisionFrame();
 		sceneManager_->Update();
 	}
 

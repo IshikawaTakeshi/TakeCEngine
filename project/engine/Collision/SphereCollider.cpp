@@ -1,4 +1,5 @@
 #include "SphereCollider.h"
+#include "engine/3d/Object3d.h"
 #include "engine/Base/TakeCFrameWork.h"
 #include "engine/Base/ModelManager.h"
 #include "engine/Base/DirectXCommon.h"
@@ -15,9 +16,7 @@ using namespace TakeC;
 // 初期化
 //=============================================================================
 
-void SphereCollider::Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collisionObject) {
-
-	dxCommon_ = dxCommon;
+void SphereCollider::Initialize(Object3d* collisionObject) {
 
 	transform_.translate = collisionObject->GetCenterPosition();
 	if (radius_ <= 0.0f) {
@@ -39,6 +38,15 @@ void SphereCollider::Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collis
 
 	//カメラのセット
 	camera_ = TakeC::CameraManager::GetInstance().GetActiveCamera();
+	Update(collisionObject);
+}
+
+void SphereCollider::Initialize(const Matrix4x4& worldMatrix) {
+	if (radius_ <= 0.0f) {
+		radius_ = 1.0f;
+	}
+	camera_ = TakeC::CameraManager::GetInstance().GetActiveCamera();
+	Update(worldMatrix);
 }
 
 //=============================================================================
@@ -46,6 +54,8 @@ void SphereCollider::Initialize(TakeC::DirectXCommon* dxCommon, Object3d* collis
 //=============================================================================
 
 void SphereCollider::Update(Object3d* collisionObject) {
+	worldScale_ = 1.0f;
+	worldRadius_ = radius_;
 
 	transform_ = collisionObject->GetTransform();
 	transform_.translate = collisionObject->GetCenterPosition() + offset_;
@@ -54,6 +64,30 @@ void SphereCollider::Update(Object3d* collisionObject) {
 	worldMatrix_ = MatrixMath::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 }
 
+void SphereCollider::Update(const Matrix4x4& worldMatrix) {
+	const WorldPose pose = MakeWorldPose(worldMatrix);
+	transform_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, pose.center };
+	// A*A^T の Gershgorin 上界を使い、非一様スケールやせん断でも球を過小評価しない。
+	const float diagonal[3] = {
+		pose.basis[0].Dot(pose.basis[0]),
+		pose.basis[1].Dot(pose.basis[1]),
+		pose.basis[2].Dot(pose.basis[2]),
+	};
+	const float cross01 = std::fabs(pose.basis[0].Dot(pose.basis[1]));
+	const float cross02 = std::fabs(pose.basis[0].Dot(pose.basis[2]));
+	const float cross12 = std::fabs(pose.basis[1].Dot(pose.basis[2]));
+	worldScale_ = std::sqrt(std::max({
+		diagonal[0] + cross01 + cross02,
+		diagonal[1] + cross01 + cross12,
+		diagonal[2] + cross02 + cross12,
+	}));
+	worldRadius_ = radius_ * worldScale_;
+	worldMatrix_ = worldMatrix;
+}
+
+//=============================================================================
+// ImGui更新処理
+//=============================================================================
 void SphereCollider::UpdateImGui([[maybe_unused]]const std::string& name) {
 #if defined(_DEBUG) || defined(_DEVELOP)
 	std::string windowName = "SphereCollider" + name;
@@ -90,7 +124,7 @@ bool SphereCollider::CheckCollision(Collider* other) {
 void SphereCollider::DrawCollider() {
 
 	// ワイヤーフレームの描画
-	TakeC::TakeCFrameWork::GetWireFrame()->DrawSphere(transform_.translate, radius_, color_);
+	TakeC::TakeCFrameWork::GetWireFrame()->DrawSphere(transform_.translate, worldRadius_, color_);
 }
 
 //=============================================================================
@@ -101,7 +135,7 @@ bool SphereCollider::Intersects(const Ray& ray, RayCastHit& outHit) {
 	Vector3 oc = ray.origin - transform_.translate; // 球の中心からレイの始点までのベクトル
 	float a = ray.direction.Dot(ray.direction);
 	float b = 2.0f * oc.Dot(ray.direction);
-	float c = oc.Dot(oc) - radius_ * radius_;
+	float c = oc.Dot(oc) - worldRadius_ * worldRadius_;
 	float discriminant = b * b - 4 * a * c;
 
 	if (discriminant < 0) return false; // レイと球は交差しない
@@ -131,7 +165,7 @@ bool SphereCollider::Intersects(const Ray& ray, RayCastHit& outHit) {
 bool SphereCollider::IntersectsSphere(const Ray& ray, float radius, RayCastHit& outHit) {
 
 	// 相手の半径分だけ、自分の当たり判定を大きくしてRayCastするのと同じ計算
-	float totalRadius = radius_ + radius;
+	float totalRadius = worldRadius_ + radius;
 
 	Vector3 oc = ray.origin - transform_.translate;
 	float a = ray.direction.Dot(ray.direction);
@@ -169,7 +203,7 @@ bool SphereCollider::IntersectsCapsule(const Capsule& capsule, RayCastHit& outHi
 	// カプセルが点の場合（移動量がほぼ0）
 	if (capsuleLength < 0.0001f) {
 		// 単純な球同士の判定
-		float totalRadius = radius_ + capsule.radius;
+		float totalRadius = worldRadius_ + capsule.radius;
 		Vector3 diff = transform_.translate - capsule.start;
 		float distSq = Vector3Math::LengthSq(diff);
 
@@ -201,7 +235,7 @@ bool SphereCollider::IntersectsCapsule(const Capsule& capsule, RayCastHit& outHi
 	float distSq = Vector3Math::LengthSq(diff);
 
 	// 衝突判定（カプセルの半径 + 球の半径）
-	float totalRadius = radius_ + capsule.radius;
+	float totalRadius = worldRadius_ + capsule.radius;
 
 	if (distSq <= totalRadius * totalRadius) {
 		float dist = std::sqrt(distSq);
@@ -240,17 +274,17 @@ bool SphereCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 	// 各軸に沿って最近接点を計算
 	for (int i = 0; i < 3; i++) {
 		float distance = Vector3(transform_.translate - obb.center).Dot(obb.axis[i]);
-		float clampedDistance = std::min(distance, obb.halfSize.Dot(obb.axis[i]));
-		clampedDistance = std::max(-obb.halfSize.Dot(obb.axis[i]), clampedDistance);
-
-		closestPoint = closestPoint + otherBox->GetOBB().axis[i] * clampedDistance;
+		const float extent = i == 0 ? obb.halfSize.x
+			: (i == 1 ? obb.halfSize.y : obb.halfSize.z);
+		const float clampedDistance = std::clamp(distance, -extent, extent);
+		closestPoint += obb.axis[i] * clampedDistance;
 	}
 
 	// 球の中心と最近接点の距離を計算
 	Vector3 diff = transform_.translate - closestPoint;
 	
 	// 衝突判定
-	if (diff.Dot(diff) <= (radius_ * radius_)) {
+	if (diff.Dot(diff) <= (worldRadius_ * worldRadius_)) {
 		return true;
 	}
 
@@ -264,7 +298,7 @@ bool SphereCollider::CheckCollisionOBB(BoxCollider* otherBox) {
 bool SphereCollider::CheckCollisionSphere(SphereCollider* sphere) {
 	Vector3 diff = transform_.translate - sphere->transform_.translate;
 	float distanceSquared = diff.Dot(diff);
-	float radiusSum = radius_ + sphere->radius_;
+	float radiusSum = worldRadius_ + sphere->worldRadius_;
 	return distanceSquared <= (radiusSum * radiusSum);
 }
 

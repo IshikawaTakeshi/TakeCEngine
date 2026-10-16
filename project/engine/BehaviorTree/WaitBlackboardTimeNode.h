@@ -26,6 +26,8 @@ public:
 	/// ノードの実行
 	/// </summary>
 	BehaviorStatus Execute(Blackboard& blackboard) override;
+	using BehaviorNode::Tick;
+	BehaviorStatus Tick(const TakeC::BehaviorTreeContext& context) override;
 
 	/// <summary>
 	/// ノードのリセット（再実行時に状態をクリア）
@@ -45,6 +47,8 @@ public:
 	void SetBBKey(const std::string& key) { bbKey_ = key; }
 
 private:
+
+	BehaviorStatus Advance(Blackboard& blackboard, float deltaTime);
 
 	std::string bbKey_;             // Blackboard から待機秒数を読むキー名
 	float elapsedTime_    = 0.0f;  // 累積経過時間 [s]

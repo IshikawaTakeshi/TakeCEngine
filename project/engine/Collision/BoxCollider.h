@@ -23,13 +23,15 @@ public:
 	/// </summary>
 	/// <param name="dxCommon"></param>
 	/// <param name="collisionObject"></param>
-	void Initialize(TakeC::DirectXCommon* dxCommon , TakeC::Object3d* collisionObject) override;
+	void Initialize(TakeC::Object3d* collisionObject) override;
+	void Initialize(const Matrix4x4& worldMatrix) override;
 
 	/// <summary>
 	/// 更新処理
 	/// </summary>
 	/// <param name="collisionObject"></param>
 	void Update(TakeC::Object3d* collisionObject) override;
+	void Update(const Matrix4x4& worldMatrix) override;
 
 	/// <summary>
 	/// ImGui更新処理
@@ -121,4 +123,5 @@ private: // privateメンバ変数
 	Matrix4x4 rotateMatrix_;
 	Vector3 minAxis_;    // 最小分離軸（衝突面の法線）
 	float minPenetration_; // penetration depth
+	bool isTransformDriven_ = false; // Transform経路で駆動されているかどうかのフラグ
 };

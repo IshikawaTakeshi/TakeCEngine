@@ -1,6 +1,7 @@
 #pragma once
 #include "BehaviorStatusEnum.h"
 #include "Blackboard.h"
+#include "BehaviorTreeContext.h"
 #include <string>
 #include <string_view>
 #include <utility>
@@ -27,9 +28,23 @@ public:
 	//====================================================================================
 
 	/// <summary>
-	// ノードの実行
+	// 旧Blackboard専用の実行入口。新しいノードはTick(AIContext&)だけを実装できます。
+	// 未実装の入口を誤って呼んだ場合はFailureを返します。
 	/// </summary>
-	virtual BehaviorStatus Execute(Blackboard& blackboard) = 0;
+	virtual BehaviorStatus Execute([[maybe_unused]] Blackboard& blackboard) {
+		currentStatus_ = BehaviorStatus::Failure;
+		return currentStatus_;
+	}
+
+	/// <summary>AIContext対応ノードの実行入口。旧const Tickにも委譲できます。</summary>
+	virtual BehaviorStatus Tick(TakeC::AIContext& context) {
+		return Tick(static_cast<const TakeC::AIContext&>(context));
+	}
+
+	/// <summary>旧Contextノードとの互換入口。Blackboard専用ノードはExecuteを使用します。</summary>
+	virtual BehaviorStatus Tick(const TakeC::BehaviorTreeContext& context) {
+		return Execute(context.blackboard);
+	}
 
 	/// <summary>
 	// ノードのリセット（再実行時に状態をクリア）

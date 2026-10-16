@@ -40,6 +40,7 @@ public:
 	/// ノードのリセット
 	/// </summary>
 	void Reset() override {
+		BehaviorNode::Reset();
 		currentIndex_ = 0;
 		for (auto& child : children_) {
 			child->Reset();
@@ -52,6 +53,13 @@ public:
 	size_t GetCurrentIndex() const { return currentIndex_; }
 
 protected:
+
+	/// <summary>Component経由ではContextを子へ伝え、旧APIはそのまま実行します。</summary>
+	static BehaviorStatus ExecuteChild(
+		BehaviorNode& child, Blackboard& blackboard,
+		TakeC::AIContext* context) {
+		return context ? child.Tick(*context) : child.Execute(blackboard);
+	}
 
 	// 子ノードのリスト
 	std::vector<std::unique_ptr<BehaviorNode>> children_;

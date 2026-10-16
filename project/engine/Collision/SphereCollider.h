@@ -23,13 +23,15 @@ public:
 	/// </summary>
 	/// <param name="dxCommon"></param>
 	/// <param name="collisionObject"></param>
-	void Initialize(TakeC::DirectXCommon* dxCommon, TakeC::Object3d* collisionObject) override;
+	void Initialize(TakeC::Object3d* collisionObject) override;
+	void Initialize(const Matrix4x4& worldMatrix) override;
 
 	/// <summary>
 	/// 更新処理
 	/// </summary>
 	/// <param name="collisionObject"></param>
 	void Update(TakeC::Object3d* collisionObject) override;
+	void Update(const Matrix4x4& worldMatrix) override;
 
 	/// <summary>
 	/// ImGui更新処理
@@ -104,14 +106,20 @@ public:
 	Vector3 GetWorldPos() override;
 	//半径の取得
 	float GetRadius() const { return radius_; }
+	float GetWorldRadius() const { return worldRadius_; }
 
 	///----- setter ---------------
 	
 	/// 半径の設定
-	void SetRadius(const float& radius) override { radius_ = radius; }
+	void SetRadius(const float& radius) override {
+		radius_ = radius;
+		worldRadius_ = radius_ * worldScale_;
+	}
 
 private:
 
 	//球の半径
-	float radius_;
+	float radius_ = 1.0f;
+	float worldRadius_ = 1.0f;
+	float worldScale_ = 1.0f;
 };

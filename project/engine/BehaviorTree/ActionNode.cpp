@@ -21,6 +21,14 @@ BehaviorStatus ActionNode::Execute(Blackboard& blackboard) {
 	return currentStatus_;
 }
 
+BehaviorStatus ActionNode::Tick(TakeC::AIContext& context) {
+	if (!contextExecute_) {
+		return Execute(context.blackboard);
+	}
+	currentStatus_ = contextExecute_(context);
+	return currentStatus_;
+}
+
 void ActionNode::Reset() {
 	BehaviorNode::Reset();
 	if (reset_) {

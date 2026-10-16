@@ -24,6 +24,8 @@ public:
 	/// ノードの実行
 	/// </summary>
 	BehaviorStatus Execute(Blackboard& blackboard) override;
+	using BehaviorNode::Tick;
+	BehaviorStatus Tick(const TakeC::BehaviorTreeContext& context) override;
 
 	/// <summary>
 	/// ノードのリセット（再実行時に状態をクリア）
@@ -43,6 +45,8 @@ public:
 	void SetWaitTime(float t) { waitTime_ = t; }
 
 private:
+
+	BehaviorStatus Advance(float deltaTime);
 
 	float waitTime_    = 1.0f; // 待機時間 [s]
 	float elapsedTime_ = 0.0f; // 累積経過時間 [s]

@@ -14,13 +14,21 @@ WaitBlackboardTimeNode::WaitBlackboardTimeNode(const std::string& bbKey, const s
 // ノードの実行
 //==================================================================================
 BehaviorStatus WaitBlackboardTimeNode::Execute(Blackboard& blackboard) {
+	return Advance(blackboard, TakeC::TakeCFrameWork::GetDeltaTime());
+}
+
+BehaviorStatus WaitBlackboardTimeNode::Tick(const TakeC::BehaviorTreeContext& context) {
+	return Advance(context.blackboard, context.deltaTime);
+}
+
+BehaviorStatus WaitBlackboardTimeNode::Advance(Blackboard& blackboard, float deltaTime) {
 	// 初回 Execute 時に待機時間をキャッシュ
 	if (!isCached_) {
 		cachedWaitTime_ = blackboard.GetOr<float>(bbKey_, 0.0f);
 		isCached_ = true;
 	}
 
-	elapsedTime_ += TakeC::TakeCFrameWork::GetDeltaTime();
+	elapsedTime_ += deltaTime;
 
 	if (elapsedTime_ >= cachedWaitTime_) {
 		Reset();

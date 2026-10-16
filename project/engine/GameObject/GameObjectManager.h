@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/GameObject/GameObject.h"
+#include "engine/GameObject/EngineServices.h"
 
 #include <memory>
 #include <string>
@@ -36,12 +37,20 @@ public:
 	void LateUpdate(float deltaTime);
 	void FlushPendingChanges();
 	void Clear();
+	/// FixedUpdateを複数回行っても、次のUpdateとLateUpdateまでは同じ番号です。
+	std::uint64_t GetFrameIndex() const { return frameIndex_; }
+	/// 登録したサービスはこのManagerが所有します。
+	EngineServices& GetServices() { return services_; }
+	const EngineServices& GetServices() const { return services_; }
 
 	std::size_t GetObjectCount() const {
 		return objects_.size() + pendingObjects_.size();
 	}
 
 private:
+	void BeginFrameIfNeeded(GameObject::UpdateKind kind);
+	void RunPhasedUpdate(GameObject::UpdateKind kind, float deltaTime);
+
 	template<class Function>
 	void ForEachObject(Function&& function) {
 		iteratingObjects_ = true;
@@ -54,8 +63,12 @@ private:
 		FlushPendingChanges();
 	}
 
+	EngineServices services_;
 	std::vector<std::unique_ptr<GameObject>> objects_;
 	std::vector<std::unique_ptr<GameObject>> pendingObjects_;
+	std::uint64_t frameIndex_ = 0;
+	bool frameOpen_ = false;
+	bool updatedThisFrame_ = false;
 	bool iteratingObjects_ = false;
 	bool clearRequested_ = false;
 };
