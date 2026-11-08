@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "name": "PatrolEnemy",
+  "transform": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] },
+  "components": [
+    { "type": "AIMovement", "speed": 3.0 },
+    {
+      "type": "BehaviorTree",
+      "tree": "PatrolTree.json",
+      "actionSet": "EnemyActions",
+      "tickInterval": 0.1,
+      "repeat": true,
+      "blackboard": { "enemyVisible": false }
+    }
+  ]
+}

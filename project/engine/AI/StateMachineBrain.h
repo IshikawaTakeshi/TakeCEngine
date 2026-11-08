@@ -41,7 +41,7 @@ public:
     std::size_t GetStateCount() const { return states_.size(); }
     std::size_t GetTransitionCount() const { return transitions_.size(); }
 
-    void Start(AIContext& context) override;
+    void Initialize(AIContext& context) override;
     void Tick(AIContext& context) override;
     void Reset(AIContext& context) override;
     // FSMは継続動作します。IsFinishedはIAgentBrainの既定値falseを使います。
