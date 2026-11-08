@@ -4,7 +4,7 @@
 #include <utility>
 #include <stdexcept>
 
-namespace TakeC {
+using namespace TakeC;
 
 GameObject& GameObjectManager::CreateObject(std::string name) {
 	auto object = std::make_unique<GameObject>(std::move(name));
@@ -91,7 +91,7 @@ const GameObject* GameObjectManager::FindObjectByName(std::string_view name) con
 	return nullptr;
 }
 
-void GameObjectManager::Start() {
+void GameObjectManager::Initialize() {
 	ForEachObject([](GameObject& object) { object.Initialize(); });
 }
 
@@ -107,21 +107,36 @@ void GameObjectManager::LateUpdate(float deltaTime) {
 	RunPhasedUpdate(GameObject::UpdateKind::LateUpdate, deltaTime);
 }
 
+//==========================================================================
+// フレーム番号の進行が必要な場合に進める処理
+//==========================================================================
 void GameObjectManager::BeginFrameIfNeeded(GameObject::UpdateKind kind) {
+
+	// Updateの最初の呼び出し時にフレーム番号を進める
 	if (!frameOpen_ || (kind == GameObject::UpdateKind::Update && updatedThisFrame_)) {
 		++frameIndex_;
 		frameOpen_ = true;
 		updatedThisFrame_ = false;
 	}
+
 	if (kind == GameObject::UpdateKind::Update) {
 		updatedThisFrame_ = true;
 	}
 }
 
+//==========================================================================
+// フェーズごとの更新処理
+//==========================================================================
 void GameObjectManager::RunPhasedUpdate(GameObject::UpdateKind kind, float deltaTime) {
+
+	// フレーム番号の進行が必要な場合に進める
 	BeginFrameIfNeeded(kind);
+
+	// コンポーネント更新用のコンテキストを作成
 	const ComponentUpdateContext context{ deltaTime, frameIndex_, this, &services_ };
 	iteratingObjects_ = true;
+
+	// コンポーネントの更新開始
 	for (const std::unique_ptr<GameObject>& object : objects_) {
 		object->BeginComponentUpdate();
 	}
@@ -188,5 +203,3 @@ void GameObjectManager::Clear() {
 	pendingObjects_.clear();
 	objects_.clear();
 }
-
-} // namespace TakeC

@@ -45,6 +45,8 @@ public:
 	void Clear() { services_.clear(); }
 
 private:
+
+	/// サービスの型ごとの所有マップ
 	std::unordered_map<std::type_index, std::shared_ptr<void>> services_;
 };
 
