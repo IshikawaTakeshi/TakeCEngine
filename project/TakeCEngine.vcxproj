@@ -282,6 +282,11 @@
     <ClInclude Include="engine\GameObject\ModelRendererComponent.h" />
     <ClInclude Include="engine\GameObject\NavigationAgentComponent.h" />
     <ClInclude Include="engine\GameObject\TransformComponent.h" />
+    <ClInclude Include="engine\Editor\Level\LevelEditorPanel.h" />
+    <ClInclude Include="engine\Level\LevelDocument.h" />
+    <ClInclude Include="engine\Level\LevelEditorSession.h" />
+    <ClInclude Include="engine\Level\LevelInstance.h" />
+    <ClInclude Include="engine\Level\LevelSerializer.h" />
     <ClInclude Include="engine\Input\Gamepad.h" />
     <ClInclude Include="engine\Input\IInputDevice.h" />
     <ClInclude Include="engine\Input\Input.h" />
@@ -491,6 +496,11 @@
     <ClCompile Include="engine\GameObject\ModelRendererComponent.cpp" />
     <ClCompile Include="engine\GameObject\NavigationAgentComponent.cpp" />
     <ClCompile Include="engine\GameObject\TransformComponent.cpp" />
+    <ClCompile Include="engine\Editor\Level\LevelEditorPanel.cpp" />
+    <ClCompile Include="engine\Level\LevelDocument.cpp" />
+    <ClCompile Include="engine\Level\LevelEditorSession.cpp" />
+    <ClCompile Include="engine\Level\LevelInstance.cpp" />
+    <ClCompile Include="engine\Level\LevelSerializer.cpp" />
     <ClCompile Include="engine\Input\Gamepad.cpp" />
     <ClCompile Include="engine\Input\Input.cpp" />
     <ClCompile Include="engine\PostEffect\BloomEffect.cpp" />

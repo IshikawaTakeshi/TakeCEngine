@@ -52,6 +52,15 @@
     <Filter Include="Engine\GameObject">
       <UniqueIdentifier>{7B030729-E719-05BF-3091-90E09CE6D546}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Editor">
+      <UniqueIdentifier>{EB76F154-B956-4B8B-99E3-E313CA1D53AA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Editor\Level">
+      <UniqueIdentifier>{23F0571B-69C1-420B-882F-F578A363AE04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Level">
+      <UniqueIdentifier>{FB8D8D76-9F6E-4BD8-9FCF-1D981EA39749}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Engine\Navigation">
       <UniqueIdentifier>{EAF70659-AC24-46D2-B10D-34A0E7D25012}</UniqueIdentifier>
     </Filter>
@@ -530,6 +539,21 @@
     </ClInclude>
     <ClInclude Include="engine\GameObject\TransformComponent.h">
       <Filter>Engine\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Editor\Level\LevelEditorPanel.h">
+      <Filter>Engine\Editor\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Level\LevelDocument.h">
+      <Filter>Engine\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Level\LevelEditorSession.h">
+      <Filter>Engine\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Level\LevelInstance.h">
+      <Filter>Engine\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Level\LevelSerializer.h">
+      <Filter>Engine\Level</Filter>
     </ClInclude>
     <ClInclude Include="engine\Navigation\IPathfindingService.h">
       <Filter>Engine\Navigation</Filter>
@@ -1153,6 +1177,21 @@
     </ClCompile>
     <ClCompile Include="engine\GameObject\TransformComponent.cpp">
       <Filter>Engine\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Editor\Level\LevelEditorPanel.cpp">
+      <Filter>Engine\Editor\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Level\LevelDocument.cpp">
+      <Filter>Engine\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Level\LevelEditorSession.cpp">
+      <Filter>Engine\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Level\LevelInstance.cpp">
+      <Filter>Engine\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Level\LevelSerializer.cpp">
+      <Filter>Engine\Level</Filter>
     </ClCompile>
     <ClCompile Include="engine\Input\Gamepad.cpp">
       <Filter>Engine\Input</Filter>

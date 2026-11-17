@@ -1,4 +1,5 @@
 #include "PrefabTests.h"
+#include "LevelTests.h"
 #include "examples/PrefabExample.h"
 #include "engine/base/TakeCFrameWork.h"
 
@@ -7,5 +8,6 @@ TakeC::JsonLoader* TakeC::TakeCFrameWork::GetJsonLoader() { return nullptr; }
 
 int main() {
     RunPrefabTests();
+    RunLevelTests();
     return 0;
 }

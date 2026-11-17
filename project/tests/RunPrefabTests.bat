@@ -64,6 +64,10 @@ cl.exe /nologo /std:c++20 /EHsc /W4 /WX /utf-8 /MT /Gy /O2 /FIWindows.h /DNOMINM
     "%REPOSITORY_ROOT%\project\engine\GameObject\GameObject.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\GameObject\GameObjectManager.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\GameObject\TransformComponent.cpp" ^
+    "%REPOSITORY_ROOT%\project\engine\Level\LevelDocument.cpp" ^
+    "%REPOSITORY_ROOT%\project\engine\Level\LevelEditorSession.cpp" ^
+    "%REPOSITORY_ROOT%\project\engine\Level\LevelSerializer.cpp" ^
+    "%REPOSITORY_ROOT%\project\engine\Level\LevelInstance.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\Math\MathEnv.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\Math\Easing.cpp" ^
     "%REPOSITORY_ROOT%\project\engine\Math\Matrix4x4.cpp" ^
@@ -83,5 +87,14 @@ if errorlevel 1 exit /b 1
 "%TEST_BUILD_DIRECTORY%\PrefabTests.exe"
 if errorlevel 1 exit /b 1
 
-echo Prefab tests passed.
+cl.exe /nologo /std:c++20 /EHsc /W4 /WX /utf-8 /MT /Gy /O2 /FIWindows.h /DNOMINMAX ^
+    /I "%REPOSITORY_ROOT%\project" ^
+    /external:W0 ^
+    /external:I "%REPOSITORY_ROOT%\project\externals" ^
+    /external:I "%REPOSITORY_ROOT%\project\externals\imgui" ^
+    /c "%REPOSITORY_ROOT%\project\engine\Editor\Level\LevelEditorPanel.cpp" ^
+    /Fo:"%TEST_BUILD_DIRECTORY%\LevelEditorPanel.obj"
+if errorlevel 1 exit /b 1
+
+echo Prefab, Level, and LevelEditorSession tests passed; LevelEditorPanel compiled.
 exit /b 0
