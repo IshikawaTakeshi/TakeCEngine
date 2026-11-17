@@ -19,6 +19,7 @@
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>TakeCEngine</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -53,20 +54,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)bin\Debug\</OutDir>
-    <IntDir>$(ProjectDir)obj\TakeCEngine\Debug\</IntDir>
+    <OutDir>$(SolutionDir)$(MSBuildProjectName)\Generated\outputs\Debug\</OutDir>
+    <IntDir>$(SolutionDir)$(MSBuildProjectName)\Generated\obj\Debug\</IntDir>
     <TargetName>TakeCEngine</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">
-    <OutDir>$(ProjectDir)bin\Develop\</OutDir>
-    <IntDir>$(ProjectDir)obj\TakeCEngine\Develop\</IntDir>
+    <OutDir>$(SolutionDir)$(MSBuildProjectName)\Generated\outputs\Develop\</OutDir>
+    <IntDir>$(SolutionDir)$(MSBuildProjectName)\Generated\obj\Develop\</IntDir>
     <TargetName>TakeCEngine</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(ProjectDir)bin\Release\</OutDir>
-    <IntDir>$(ProjectDir)obj\TakeCEngine\Release\</IntDir>
+    <OutDir>$(SolutionDir)$(MSBuildProjectName)\Generated\outputs\Release\</OutDir>
+    <IntDir>$(SolutionDir)$(MSBuildProjectName)\Generated\obj\Release\</IntDir>
     <TargetName>TakeCEngine</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -283,6 +284,7 @@
     <ClInclude Include="engine\GameObject\NavigationAgentComponent.h" />
     <ClInclude Include="engine\GameObject\TransformComponent.h" />
     <ClInclude Include="engine\Editor\Level\LevelEditorPanel.h" />
+    <ClInclude Include="engine\Editor\Level\LevelViewportController.h" />
     <ClInclude Include="engine\Level\LevelDocument.h" />
     <ClInclude Include="engine\Level\LevelEditorSession.h" />
     <ClInclude Include="engine\Level\LevelInstance.h" />
@@ -497,6 +499,7 @@
     <ClCompile Include="engine\GameObject\NavigationAgentComponent.cpp" />
     <ClCompile Include="engine\GameObject\TransformComponent.cpp" />
     <ClCompile Include="engine\Editor\Level\LevelEditorPanel.cpp" />
+    <ClCompile Include="engine\Editor\Level\LevelViewportController.cpp" />
     <ClCompile Include="engine\Level\LevelDocument.cpp" />
     <ClCompile Include="engine\Level\LevelEditorSession.cpp" />
     <ClCompile Include="engine\Level\LevelInstance.cpp" />

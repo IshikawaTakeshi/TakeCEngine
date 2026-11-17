@@ -110,6 +110,7 @@ namespace TakeC {
 		void SetAnimation(Animation* animation);
 		//ペアレントの設定
 		void SetParent(const Matrix4x4& parent) { parentWorldMatrix_ = &parent; }
+		void ClearParent() { parentWorldMatrix_ = nullptr; }
 		//モデルファイルパスの設定
 		void SetModelFilePath(const std::string& filePath) { modelFilePath_ = filePath; }
 		//外部からアニメーションを設定するかどうかの設定

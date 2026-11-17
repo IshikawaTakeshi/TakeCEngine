@@ -37,6 +37,6 @@ dofile(path.join(_SCRIPT_DIR, "TakeCEngineProject.lua"))
 DefineTakeCEngineProject {
     repositoryRoot = "..",
     projectLocation = "../project",
-    targetDir = "../project/bin/%{cfg.buildcfg}",
-    objectDir = "../project/obj/%{prj.name}/%{cfg.buildcfg}"
+    targetDir = "../Generated/outputs/%{cfg.buildcfg}",
+    objectDir = "../Generated/obj/%{cfg.buildcfg}"
 }

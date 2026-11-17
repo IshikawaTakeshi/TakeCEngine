@@ -96,5 +96,14 @@ cl.exe /nologo /std:c++20 /EHsc /W4 /WX /utf-8 /MT /Gy /O2 /FIWindows.h /DNOMINM
     /Fo:"%TEST_BUILD_DIRECTORY%\LevelEditorPanel.obj"
 if errorlevel 1 exit /b 1
 
-echo Prefab, Level, and LevelEditorSession tests passed; LevelEditorPanel compiled.
+cl.exe /nologo /std:c++20 /EHsc /W4 /WX /utf-8 /MT /Gy /O2 /FIWindows.h /DNOMINMAX ^
+    /I "%REPOSITORY_ROOT%\project" ^
+    /external:W0 ^
+    /external:I "%REPOSITORY_ROOT%\project\externals" ^
+    /external:I "%REPOSITORY_ROOT%\project\externals\imgui" ^
+    /c "%REPOSITORY_ROOT%\project\engine\Editor\Level\LevelViewportController.cpp" ^
+    /Fo:"%TEST_BUILD_DIRECTORY%\LevelViewportController.obj"
+if errorlevel 1 exit /b 1
+
+echo Prefab, Level, and LevelEditorSession tests passed; LevelEditorPanel and LevelViewportController compiled.
 exit /b 0

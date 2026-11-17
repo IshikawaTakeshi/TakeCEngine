@@ -543,6 +543,9 @@
     <ClInclude Include="engine\Editor\Level\LevelEditorPanel.h">
       <Filter>Engine\Editor\Level</Filter>
     </ClInclude>
+    <ClInclude Include="engine\Editor\Level\LevelViewportController.h">
+      <Filter>Engine\Editor\Level</Filter>
+    </ClInclude>
     <ClInclude Include="engine\Level\LevelDocument.h">
       <Filter>Engine\Level</Filter>
     </ClInclude>
@@ -1179,6 +1182,9 @@
       <Filter>Engine\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="engine\Editor\Level\LevelEditorPanel.cpp">
+      <Filter>Engine\Editor\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Editor\Level\LevelViewportController.cpp">
       <Filter>Engine\Editor\Level</Filter>
     </ClCompile>
     <ClCompile Include="engine\Level\LevelDocument.cpp">

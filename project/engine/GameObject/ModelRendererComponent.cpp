@@ -33,6 +33,11 @@ void ModelRendererComponent::SynchronizeTransform() {
 	object3d_->SetTranslate(transform.GetLocalPosition());
 	object3d_->SetRotate(QuaternionMath::ToEuler(transform.GetLocalRotation()));
 	object3d_->SetScale(transform.GetLocalScale());
+	if (const TransformComponent* parent = transform.GetParent()) {
+		object3d_->SetParent(parent->GetWorldMatrix());
+	} else {
+		object3d_->ClearParent();
+	}
 }
 
 void ModelRendererComponent::SetCamera(Camera* camera) {
