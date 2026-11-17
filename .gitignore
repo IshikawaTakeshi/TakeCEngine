@@ -324,3 +324,5 @@ TakeCEngine/project/imgui.ini
 *.dll
 **/Debug/
 **/Release/
+
+Knowledge/
