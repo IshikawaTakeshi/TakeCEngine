@@ -244,7 +244,7 @@ void Camera::UpdateDebugCamera() {
 	}
 
 	// クォータニオンで回転を管理
-	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
+	Quaternion rotationDelta = QuaternionMath::Identity();
 
 	if (TakeC::Input::GetInstance().PressMouse(1)) {
 		// マウス入力による回転計算
@@ -347,7 +347,7 @@ void Camera::InitializeCameraFollow() {
 void Camera::UpdateCameraFollow() {
 
 	// クォータニオンで回転を管理
-	Quaternion rotationDelta = QuaternionMath::IdentityQuaternion();
+	Quaternion rotationDelta = QuaternionMath::Identity();
 
 	//スティックによる回転計算
 	float deltaPitch = stick_.y * 0.02f; // X軸回転

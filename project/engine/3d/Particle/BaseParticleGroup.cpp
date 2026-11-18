@@ -50,7 +50,7 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 	Particle particle;
 	particle.transforms_.scale = { attributes.scale.x,attributes.scale.y,attributes.scale.z };
 	// 回転を単位クォータニオンで初期化
-	particle.transforms_.rotate = QuaternionMath::IdentityQuaternion();
+	particle.transforms_.rotate = QuaternionMath::Identity();
 
 	// 回転の設定を条件分岐で明確に分ける
 	if (!attributes.isDirectional && attributes.velocityTarget == static_cast<uint32_t>(VelocityTarget::Default)) {
@@ -137,7 +137,7 @@ Particle BaseParticleGroup::MakeNewParticle(std::mt19937& randomEngine, const Ve
 			Quaternion targetRotate;
 
 			if (d > 1.0f - 1e-5f) {
-				targetRotate = QuaternionMath::IdentityQuaternion();
+				targetRotate = QuaternionMath::Identity();
 			}
 			else if (d < -1.0f + 1e-5f) {
 				// 真逆(180度)は軸が不定なので、fromと直交する軸を適当に選ぶ

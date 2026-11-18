@@ -1,9 +1,7 @@
 #pragma once
 
 #include "engine/GameObject/Component.h"
-#include "engine/Math/Matrix4x4.h"
-#include "engine/Math/Quaternion.h"
-#include "engine/Math/Vector3.h"
+#include "engine/3d/Transform.h"
 
 #include <vector>
 
@@ -17,9 +15,9 @@ public:
 	TransformComponent();
 	~TransformComponent() override = default;
 
-	const Vector3& GetLocalPosition() const { return localPosition_; }
-	const Quaternion& GetLocalRotation() const { return localRotation_; }
-	const Vector3& GetLocalScale() const { return localScale_; }
+	const Vector3& GetLocalPosition() const { return localTransform_.translate; }
+	const Quaternion& GetLocalRotation() const { return localTransform_.rotate; }
+	const Vector3& GetLocalScale() const { return localTransform_.scale; }
 
 	void SetLocalPosition(const Vector3& position);
 	void SetLocalRotation(const Quaternion& rotation);
@@ -41,9 +39,11 @@ private:
 	void UpdateWorldMatrix() const;
 	bool WouldCreateCycle(const TransformComponent* parent) const;
 
-	Vector3 localPosition_ = { 0.0f, 0.0f, 0.0f };
-	Quaternion localRotation_ = { 0.0f, 0.0f, 0.0f, 1.0f };
-	Vector3 localScale_ = { 1.0f, 1.0f, 1.0f };
+	QuaternionTransform localTransform_{
+		{ 1.0f, 1.0f, 1.0f },
+		QuaternionMath::Identity(),
+		{ 0.0f, 0.0f, 0.0f }
+	};
 	TransformComponent* parent_ = nullptr;
 	std::vector<TransformComponent*> children_;
 	mutable Matrix4x4 worldMatrix_{};

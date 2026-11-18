@@ -43,7 +43,7 @@ float QuaternionMath::Dot(const Quaternion& lhs, const Quaternion& rhs) {
 //=============================================================================
 // 単位クォータニオン
 //=============================================================================
-Quaternion QuaternionMath::IdentityQuaternion() {
+Quaternion QuaternionMath::Identity() {
 	Quaternion result;
 	result.x = 0.0f;
 	result.y = 0.0f;

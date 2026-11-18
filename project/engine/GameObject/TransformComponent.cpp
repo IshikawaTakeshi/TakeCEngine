@@ -11,22 +11,22 @@ TransformComponent::TransformComponent()
 	: worldMatrix_(MatrixMath::MakeIdentity4x4()) {}
 
 void TransformComponent::SetLocalPosition(const Vector3& position) {
-	localPosition_ = position;
+	localTransform_.translate = position;
 	MarkDirty();
 }
 
 void TransformComponent::SetLocalRotation(const Quaternion& rotation) {
 	constexpr float kMinimumNorm = 0.000001f;
 	if (QuaternionMath::Norm(rotation) <= kMinimumNorm) {
-		localRotation_ = QuaternionMath::IdentityQuaternion();
+		localTransform_.rotate = QuaternionMath::Identity();
 	} else {
-		localRotation_ = QuaternionMath::Normalize(rotation);
+		localTransform_.rotate = QuaternionMath::Normalize(rotation);
 	}
 	MarkDirty();
 }
 
 void TransformComponent::SetLocalScale(const Vector3& scale) {
-	localScale_ = scale;
+	localTransform_.scale = scale;
 	MarkDirty();
 }
 
@@ -92,8 +92,7 @@ void TransformComponent::UpdateWorldMatrix() const {
 		return;
 	}
 
-	worldMatrix_ = MatrixMath::MakeAffineMatrix(
-		localScale_, localRotation_, localPosition_);
+	worldMatrix_ = MatrixMath::MakeAffineMatrix(localTransform_);
 	if (parent_ != nullptr) {
 		worldMatrix_ = MatrixMath::Multiply(worldMatrix_, parent_->GetWorldMatrix());
 	}

@@ -38,7 +38,7 @@ namespace QuaternionMath {
 	//内積
 	float Dot(const Quaternion& lhs, const Quaternion& rhs);
 	//単位クォータニオン
-	Quaternion IdentityQuaternion();
+	Quaternion Identity();
 	//共役
 	Quaternion Conjugate(const Quaternion& q);
 	//ノルム

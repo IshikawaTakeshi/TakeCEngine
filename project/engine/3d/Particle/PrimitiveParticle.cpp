@@ -370,7 +370,7 @@ void PrimitiveParticle::UpdateMovement(std::list<Particle>::iterator particleIte
 						Quaternion targetRotate;
 
 						if (d > 1.0f - 1e-5f) {
-							targetRotate = QuaternionMath::IdentityQuaternion();
+							targetRotate = QuaternionMath::Identity();
 						}
 						else if (d < -1.0f + 1e-5f) {
 							// 真逆(180度)は軸が不定なので、fromと直交する軸を適当に選ぶ

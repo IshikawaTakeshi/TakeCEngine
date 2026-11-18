@@ -211,7 +211,7 @@ void Skeleton::ApplyLayeredAnimation(Animation* animation, float time, float wei
 			// Rotate: 差分クォータニオンを計算して適用
 			Quaternion q_diff = sampled.rotate * QuaternionMath::Inverse(ref.rotate);
 			// 差分をウェイト分だけ適用（Identityとの補間）
-			Quaternion q_weighted = Easing::Slerp(QuaternionMath::IdentityQuaternion(), q_diff, weight);
+			Quaternion q_weighted = Easing::Slerp(QuaternionMath::Identity(), q_diff, weight);
 			joint.transform.rotate = q_weighted * joint.transform.rotate;
 		}
 	}
