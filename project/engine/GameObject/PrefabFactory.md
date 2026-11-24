@@ -41,7 +41,12 @@ ActionSetは個体ごとに呼ばれる。状態を共有する可変キャプ�
 
 ## 拡張・寿命
 
-RegisterComponent(type, builder)で独自Componentを登録可能。builder内で
+RegisterComponent(type, builder, defaultEntry)で独自Componentを登録可能。第3引数は
+Editorで新規追加するときの初期JSONオブジェクトで、省略時はtypeのみを付ける。
+GetComponentTypes()で標準型と登録済み型を名前順に取得でき、
+CreateComponentEntry(type)で初期JSONを生成できる。必須設定値がある場合は
+defaultEntryに含める。アセット名など実行環境に依存する値は追加後に編集する。
+builder内で
 GameObject.AddComponentを呼び、設定を検証する。builderは未登録かつ非アクティブな
 GameObjectを受け取るので、OnAttachでWorld/EngineServicesの存在を前提にしない。
 サービス利用は登録後のInitialize/Updateまで遅延する。

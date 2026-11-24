@@ -6,6 +6,7 @@
 #include "engine/GameObject/BehaviorTreeComponent.h"
 #include "engine/Math/Quaternion.h"
 #include <nlohmann/json.hpp>
+#include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <filesystem>
@@ -16,6 +17,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 namespace TakeC {
 
@@ -30,12 +32,49 @@ public:
     using ActionSet = std::function<void(BehaviorTreeComponent&)>;
     using BrainBuilder = std::function<std::unique_ptr<IAgentBrain>(const Json&)>;
 
+private:
+    /// <summary>Componentの生成処理とEditor用の初期設定を保持します。</summary>
+    struct ComponentRegistration {
+        ComponentBuilder builder;
+        Json defaultEntry;
+    };
+
+public:
     explicit PrefabFactory(TreeLoader treeLoader = {}) : treeLoader_(std::move(treeLoader)) {}
-    void RegisterComponent(std::string type, ComponentBuilder builder) {
-        if (type.empty() || IsBuiltin(type) || !builder ||
-            !components_.emplace(std::move(type), std::move(builder)).second) {
+    void RegisterComponent(std::string type, ComponentBuilder builder, Json defaultEntry = Json::object()) {
+        if (type.empty() || IsBuiltin(type) || !builder || !defaultEntry.is_object() ||
+            (defaultEntry.contains("type") && defaultEntry.at("type") != type)) {
             throw std::invalid_argument("Prefab: invalid/duplicate component registration");
         }
+        defaultEntry["type"] = type;
+        if (!components_.emplace(std::move(type), ComponentRegistration{
+            std::move(builder), std::move(defaultEntry) }).second) {
+            throw std::invalid_argument("Prefab: invalid/duplicate component registration");
+        }
+    }
+
+    /// <summary>標準型と登録済み型を名前順で返します。</summary>
+    std::vector<std::string> GetComponentTypes() const {
+        std::vector<std::string> types{ "AIMovement", "BehaviorTree", "AIController" };
+        types.reserve(types.size() + components_.size());
+        for (const auto& [type, registration] : components_) {
+            (void)registration;
+            types.push_back(type);
+        }
+        std::sort(types.begin(), types.end());
+        return types;
+    }
+
+    /// <summary>Inspectorで追加するComponentの初期JSONを作成します。</summary>
+    Json CreateComponentEntry(const std::string& type) const {
+        if (type == "AIMovement") { return { { "type", type }, { "speed", 1.0f } }; }
+        if (type == "BehaviorTree") { return { { "type", type }, { "tree", "" } }; }
+        if (type == "AIController") { return { { "type", type }, { "brain", "" } }; }
+        const auto it = components_.find(type);
+        if (it == components_.end()) {
+            throw std::invalid_argument("Prefab component: unknown type " + type);
+        }
+        return it->second.defaultEntry;
     }
     void RegisterActionSet(std::string name, ActionSet binder) {
         if (name.empty() || !binder || !actions_.emplace(std::move(name), std::move(binder)).second) {
@@ -178,10 +217,10 @@ private:
             auto& ai = object.AddComponent<AIControllerComponent>();
             ai.SetBrain(std::move(brain));
             ConfigureAI(ai, entry);
-        } else { components_.at(type)(object, entry); }
+        } else { components_.at(type).builder(object, entry); }
     }
     TreeLoader treeLoader_;
-    std::unordered_map<std::string, ComponentBuilder> components_;
+    std::unordered_map<std::string, ComponentRegistration> components_;
     std::unordered_map<std::string, ActionSet> actions_;
     std::unordered_map<std::string, BrainBuilder> brains_;
 };

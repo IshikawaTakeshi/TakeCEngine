@@ -9,6 +9,11 @@ inline void RunPrefabTests() {
     using namespace TakeC;
     using Json = PrefabFactory::Json;
     PrefabFactory factory([](const std::string&) { return std::make_unique<WaitNode>(); });
+    const auto builtinTypes = factory.GetComponentTypes();
+    assert(std::is_sorted(builtinTypes.begin(), builtinTypes.end()));
+    assert(std::find(builtinTypes.begin(), builtinTypes.end(), "AIMovement") != builtinTypes.end());
+    assert(factory.CreateComponentEntry("AIMovement") ==
+        Json({ { "type", "AIMovement" }, { "speed", 1.0f } }));
     factory.RegisterActionSet("EnemyActions", [](BehaviorTreeComponent&) {});
     const auto recipe = Json::parse(R"({
         "version":1, "name":"PrefabEnemy",
@@ -69,7 +74,12 @@ inline void RunPrefabTests() {
     factory.RegisterComponent("Fails", [&](GameObject& object, const Json&) {
         object.AddComponent<LifetimeProbe>(alive);
         throw std::runtime_error("test");
-    });
+    }, { { "enabled", true } });
+    assert(factory.CreateComponentEntry("Fails") ==
+        Json({ { "type", "Fails" }, { "enabled", true } }));
+    const auto registeredTypes = factory.GetComponentTypes();
+    assert(std::is_sorted(registeredTypes.begin(), registeredTypes.end()));
+    assert(std::find(registeredTypes.begin(), registeredTypes.end(), "Fails") != registeredTypes.end());
     invalid = recipe; invalid["components"].push_back({{"type","Fails"}}); rejects(invalid);
     assert(world.GetObjectCount() == 2);
     assert(alive == 0);

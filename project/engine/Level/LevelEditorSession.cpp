@@ -11,7 +11,7 @@
 namespace TakeC::Level {
 
 LevelEditorSession::LevelEditorSession(GameObjectManager& previewWorld, const PrefabFactory& factory)
-	: preview_(previewWorld, factory) {}
+	: factory_(factory), preview_(previewWorld, factory) {}
 
 const GameObjectDefinition* LevelEditorSession::GetSelectedObject() const {
 	const auto it = std::ranges::find(document_.objects, selectedId_, &GameObjectDefinition::id);

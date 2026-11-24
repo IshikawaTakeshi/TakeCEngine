@@ -19,7 +19,7 @@ inline void RegisterPrefabRendering(PrefabFactory& factory, Object3dCommon& comm
             throw std::runtime_error("model could not be loaded: " + path);
         }
         object.AddComponent<ModelRendererComponent>().Initialize(&common, path);
-    });
+    }, { { "model", "" } });
     factory.RegisterComponent("Collision", [](GameObject& object, const PrefabFactory::Json& j) {
         const auto shape = j.at("shape").get<std::string>();
         std::unique_ptr<Collider> collider;
@@ -49,6 +49,6 @@ inline void RegisterPrefabRendering(PrefabFactory& factory, Object3dCommon& comm
         collision.SetTrigger(j.value("trigger", false));
         if (j.contains("center")) { collision.SetLocalOffset(PrefabFactory::Vector(j.at("center"))); }
         collision.Initialize(std::move(collider));
-    });
+    }, { { "shape", "Box" }, { "halfExtents", { 0.5f, 0.5f, 0.5f } } });
 }
 } // namespace TakeC

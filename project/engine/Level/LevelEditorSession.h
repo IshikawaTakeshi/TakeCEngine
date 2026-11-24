@@ -18,6 +18,7 @@ public:
 	LevelEditorSession(GameObjectManager& previewWorld, const PrefabFactory& factory);
 
 	const LevelDocument& GetLevelDocument() const { return document_; }
+	const PrefabFactory& GetPrefabFactory() const { return factory_; }
 	const LevelInstance& GetPreview() const { return preview_; }
 	const std::filesystem::path& GetFilePath() const { return filePath_; }
 	const std::string& GetSelectedId() const { return selectedId_; }
@@ -55,6 +56,7 @@ private:
 	bool HasObject(std::string_view id) const;
 
 	LevelDocument document_;
+	const PrefabFactory& factory_;
 	LevelInstance preview_;
 	std::filesystem::path filePath_;
 	std::string selectedId_;

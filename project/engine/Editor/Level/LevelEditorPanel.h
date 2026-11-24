@@ -43,7 +43,6 @@ private:
 	std::vector<char> levelNameBuffer_;
 	std::vector<char> nameBuffer_;
 	std::vector<char> componentBuffer_;
-	std::array<char, 128> newComponentType_{};
 	std::array<float, 3> position_{};
 	std::array<float, 3> rotation_{};
 	std::array<float, 3> scale_{ 1.0f, 1.0f, 1.0f };

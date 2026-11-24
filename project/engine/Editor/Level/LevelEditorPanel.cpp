@@ -1,4 +1,5 @@
 #include "engine/Editor/Level/LevelEditorPanel.h"
+#include "engine/GameObject/PrefabFactory.h"
 
 #include <imgui.h>
 
@@ -301,17 +302,36 @@ void LevelEditorPanel::DrawInspector() {
 		ImGui::End();
 		return;
 	}
-	ImGui::InputText("New component type", newComponentType_.data(), newComponentType_.size());
-	if (ImGui::Button("Add Component") && newComponentType_[0] != '\0') {
-		const std::string type = newComponentType_.data();
-		if (session_.ApplyToSelected([&](GameObjectDefinition& object) {
-			object.gameObject["components"].push_back({ { "type", type } });
-		})) {
-			newComponentType_.fill('\0');
-			draftId_.clear();
+	if (ImGui::BeginCombo("Add Component", "Select a component...")) {
+		const auto& components = selected->gameObject.at("components");
+		const bool hasAI = std::any_of(components.begin(), components.end(), [](const auto& entry) {
+			const std::string type = entry.at("type").template get<std::string>();
+			return type == "BehaviorTree" || type == "AIController";
+		});
+		for (const std::string& type : session_.GetPrefabFactory().GetComponentTypes()) {
+			const bool alreadyAdded = std::any_of(components.begin(), components.end(), [&](const auto& entry) {
+				return entry.at("type") == type;
+			});
+			const bool unavailable = alreadyAdded ||
+				(hasAI && (type == "BehaviorTree" || type == "AIController"));
+			ImGui::BeginDisabled(unavailable);
+			const bool chosen = ImGui::Selectable(type.c_str());
+			ImGui::EndDisabled();
+			if (!chosen) { continue; }
+			const nlohmann::json entry = session_.GetPrefabFactory().CreateComponentEntry(type);
+			if (session_.ApplyToSelected([&](GameObjectDefinition& object) {
+				object.gameObject["components"].push_back(entry);
+			})) {
+				status_ = "Added " + type + ". Edit its settings in the JSON array if needed.";
+				draftId_.clear();
+			} else {
+				status_ = session_.GetLastError();
+			}
+			ImGui::EndCombo();
+			ImGui::End();
+			return;
 		}
-		ImGui::End();
-		return;
+		ImGui::EndCombo();
 	}
 	ImGui::End();
 }
